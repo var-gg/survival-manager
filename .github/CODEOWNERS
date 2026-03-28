@@ -1,0 +1,11 @@
+# CODEOWNERS
+
+# 기본 소유자
+* @var-gg
+
+# 중요 협업 경로
+/.github/ @var-gg
+/docs/ @var-gg
+/Assets/ @var-gg
+/Packages/ @var-gg
+/ProjectSettings/ @var-gg

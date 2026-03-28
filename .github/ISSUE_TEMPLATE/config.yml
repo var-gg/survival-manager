@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 문서 거버넌스 확인
+    url: https://github.com/var-gg/survival-manager/blob/main/docs/00_governance/docs-governance.md
+    about: 문서 구조와 상태 규칙을 먼저 확인한다.
