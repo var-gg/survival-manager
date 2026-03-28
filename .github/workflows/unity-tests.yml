@@ -1,0 +1,41 @@
+name: unity-tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  editmode-smoke:
+    runs-on: ubuntu-latest
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Run EditMode tests
+        uses: game-ci/unity-test-runner@v4
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          testMode: editmode
+          projectPath: .
+          checkName: EditMode Smoke Tests
+          artifactsPath: test-results/editmode
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-editmode-results
+          path: test-results/editmode
+
+  playmode-placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "PlayMode tests are intentionally placeholder-only for now."

@@ -1,0 +1,24 @@
+name: docs-lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run markdown lint
+        run: npx --yes markdownlint-cli2 "**/*.md" "#Library/**" "#Logs/**" "#.git/**"
+
+      - name: Run markdown link check
+        run: npx --yes markdown-link-check "docs/**/*.md" "*.md" --quiet
