@@ -2,95 +2,116 @@
 
 - Status: draft
 - Last Updated: 2026-03-29
-- Owner: repository
+- Phase: prototype
 
 ## Purpose
 
-This document defines the preferred data-model direction for `survival-manager`.
-The project should favor cataloged, inspectable, Unity-native assets over hardcoded scattered constants or scene-only configuration.
+This document fixes the MVP data-model direction so that authored content and runtime state do not become mixed together.
 
-## Primary Strategy
+## MVP Rules
 
-Use a ScriptableObject-centered data catalog strategy as the default content-authoring model.
+### Definition vs Instance
 
-This means:
+The project should explicitly separate:
 
-- major gameplay definitions should be representable as ScriptableObject assets
-- runtime systems should consume stable data references rather than depend on scene wiring alone
-- content growth should mostly add or compose assets rather than rewrite core logic
+- Definition: authored content blueprint
+- Instance: runtime or save-backed realization of that blueprint
 
-## Data Domain Boundaries
+Examples:
 
-The following domains should have distinct data ownership:
+- `HeroArchetypeDefinition` versus `HeroInstance`
+- `SkillDefinition` versus `SkillRuntimeState`
+- `ItemDefinition` versus `ItemInstance`
+- `TraitDefinition` versus `TraitRollInstance`
 
-- combat definitions
-- unit definitions
-- enemy definitions
-- ability definitions
-- item definitions
-- drop tables
-- crafting recipes
-- progression tracks
-- save data contracts
+### Definition Storage Rule
 
-## Recommended Catalog Pattern
+Content definitions should be Unity assets first.
+Recommended asset roots:
 
-Each major domain should trend toward:
+```text
+Assets/_Game/Content/Definitions/
+```
 
-- a definition asset type
-- optional grouped catalog/index assets
-- runtime lookup services or bootstrap registries
-- stable IDs for save/load and references where needed
+### Runtime State Rule
 
-Example conceptual shape:
+Runtime state should not be stored back into authored Unity definition assets.
+Runtime and save state should be represented by separate persistence-friendly models.
 
-- `UnitDefinition`
-- `EnemyDefinition`
-- `AbilityDefinition`
-- `ItemDefinition`
-- `DropTableDefinition`
-- `CraftRecipeDefinition`
-- `ProgressionTrackDefinition`
+### Stat Model Direction
 
-## Why ScriptableObject Catalogs
+Do not prematurely freeze the stat space into a giant enum unless truly necessary.
+Prefer evaluation of:
 
-This direction helps Codex and humans because it:
+- `StatDefinition`
+- stable string or numeric ids through a registry
 
-- keeps content diffable in repository history
-- reduces dependence on fragile scene state
-- encourages explicit ownership by domain
-- supports prefab/data composition
-- makes sandbox validation easier before promotion
+Recommended concept:
 
-## Save Boundary Rule
+- `StatDefinition` asset defines semantic meaning
+- stable id registry maps authoring ids to runtime-safe references
 
-Runtime save payloads should not serialize arbitrary live object graphs.
-They should serialize stable identifiers and runtime state snapshots derived from known data catalogs.
+### Extensibility Model
 
-Implications:
+The following concepts should be treated as reusable data-driven nodes:
 
-- save data should reference content by IDs, not by fragile scene paths
-- catalog identity stability matters
-- rename/move operations affecting saved references need review
+- Stat
+- Modifier
+- Trigger
+- Condition
+- Effect
+- Reward
 
-## Preferred Folder Relationship
+### Polymorphic Authoring Rule
 
-Data should generally be project-owned under `Assets/_Game`, not inside `Assets/ThirdParty`.
-Third-party packages may provide source assets or templates, but project gameplay data should live in project-owned catalogs and wrappers.
+For `Condition` and `Effect`, prefer a data-node structure over one giant switch statement.
+Possible authoring pattern:
 
-## Human Review Required
+- abstract authored node base
+- concrete node assets or serialized references
+- runtime factory or translator layer
 
-The following data-model changes should receive explicit human review:
+## Example Model Sketch
 
-- save identifier schema changes
-- catalog renames that may break references
-- bulk migration of ScriptableObject asset types
-- cross-domain merges that blur ownership boundaries
-- generated asset pipelines that create or rewrite large numbers of content assets
+```text
+Definitions
+  StatDefinition
+  ClassDefinition
+  RaceDefinition
+  SkillDefinition
+  TraitDefinition
+  ItemDefinition
+  AffixDefinition
+  AugmentDefinition
+  RewardDefinition
+
+Instances
+  HeroInstance
+  SquadInstance
+  ItemInstance
+  ExpeditionInstance
+  CombatUnitState
+  RewardOfferState
+```
+
+## Proposed Namespaces
+
+- `SurvivalManager.Domain.Definitions`
+- `SurvivalManager.Domain.Model`
+- `SurvivalManager.Domain.Combat`
+- `SurvivalManager.Infrastructure.Authoring`
+- `SurvivalManager.Infrastructure.Persistence.Models`
+
+## Long-Term Expansion Points
+
+- schema validation tooling
+- id migration helpers
+- richer graph-style authored effects
+- formal runtime compilation of authored nodes
 
 ## Open Questions
 
-- Which domains need global catalogs versus local scoped references?
-- What stable ID pattern should be adopted early for save-safe content?
-- Which data assets should be hand-authored versus generated?
-- How much validation tooling is needed before catalog count grows?
+- should stable ids be strings, ints, GUID-backed strings, or generated hashes?
+- should MVP authoring use ScriptableObject per definition type or grouped catalogs for some content?
+- how early should runtime compilation cache authored nodes for performance and validation?
+- where should cross-definition validation live: Editor only or shared validation services?

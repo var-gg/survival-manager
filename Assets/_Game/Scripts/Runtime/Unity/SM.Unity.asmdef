@@ -1,0 +1,14 @@
+{
+  "name": "SM.Unity",
+  "rootNamespace": "SM.Unity",
+  "references": ["SM.Core", "SM.Content", "SM.Combat", "SM.Meta", "SM.Persistence.Abstractions", "SM.Persistence.Json"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

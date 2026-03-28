@@ -2,97 +2,129 @@
 
 - Status: draft
 - Last Updated: 2026-03-29
-- Owner: repository
+- Phase: prototype
 
 ## Purpose
 
-This document defines the high-level technical architecture direction for `survival-manager`.
-The goal is to keep the Unity project safe for incremental expansion by Codex while preserving clear ownership boundaries and human review points.
+This document fixes the MVP technical architecture direction.
+The goal is to support a small playable slice without hardcoding every content rule into scene scripts or giant switches.
 
-## Architectural Goal
+## MVP Rules
 
-Build a Unity project that is:
+### Architectural Direction
 
-- data-driven where practical
-- modular at the system boundary level
-- safe to extend through repository-visible changes
-- resistant to uncontrolled scene drift
-- compatible with third-party asset intake without contaminating project-owned content
+The project should separate:
 
-## Core Direction
+- content definitions
+- runtime instances
+- persistence state
+- presentation adapters
 
-The project should prefer:
+The intent is to keep the domain model small, testable, and expandable.
 
-- ScriptableObject-centered data catalogs
-- prefab and settings asset composition
-- explicit runtime system boundaries
-- minimal direct scene editing
-- repository-tracked documentation for content intake and structural decisions
+### Key Boundary Rules
 
-The project should avoid:
+- definitions and instances are separate concepts
+- content definitions are Unity asset centered
+- runtime state lives in a separate persistence-oriented model
+- combat simulation should live in a pure C# area with minimal UnityEngine coupling
+- DB, UI, and Scene are adapters outside core domain logic
+- direct production DB access is not assumed
 
-- hidden scene-only wiring as the primary source of truth
-- direct mutation of third-party vendor assets
-- tightly coupled monolithic gameplay scripts spanning unrelated systems
-- large risky changes without a sandbox validation path
+### Core Extensibility Points
 
-## System Boundaries
+The MVP architecture should reserve first-class extension seams for:
 
-The following system areas should remain explicitly separated in naming, data ownership, and code structure:
+- Stat
+- Modifier
+- Trigger
+- Condition
+- Effect
+- Reward
 
-- combat
-- units and enemies
-- abilities
-- items
-- drops
-- crafting
-- progression
-- save/load
+These should be modeled as data-driven concepts, not scattered one-off special cases.
 
-These boundaries may communicate through controlled runtime contracts and shared data references, but should not collapse into one generic gameplay bucket.
+## Proposed Folder Layout
 
-## Preferred Authoring Model
+```text
+Assets/_Game/
+  Scripts/
+    Runtime/
+      Domain/
+        Core/
+        Combat/
+        Meta/
+        Progression/
+      Application/
+        UseCases/
+        Services/
+      Infrastructure/
+        Persistence/
+        Authoring/
+        Random/
+      Presentation/
+        UI/
+        Scene/
+        BattleView/
+    Editor/
+      Authoring/
+      Validation/
+  Content/
+    Definitions/
+      Stats/
+      Traits/
+      Classes/
+      Races/
+      Skills/
+      Items/
+      Affixes/
+      Augments/
+      Rewards/
+      Encounters/
+  Tests/
+    EditMode/
+    Runtime/
+```
 
-Codex should prefer authoring through:
+## Proposed asmdef Split
 
-1. data assets
-2. prefabs
-3. settings/config assets
-4. small targeted scripts
-5. scene changes only when necessary
+Recommended assembly split:
 
-This keeps work diffable, reviewable, and safer to validate in automation.
+- `SurvivalManager.Domain`
+- `SurvivalManager.Application`
+- `SurvivalManager.Infrastructure`
+- `SurvivalManager.Presentation`
+- `SurvivalManager.Editor`
+- `SurvivalManager.Tests`
 
-## Third-Party Boundary
+### Dependency Direction
 
-`Assets/ThirdParty` is treated as a vendor boundary.
-Original imported assets should remain intact there.
-Project-owned customization should live under `Assets/_Game` through wrappers, adapters, extension components, configuration assets, derived prefabs, and documentation.
+- Domain depends on no Unity presentation systems
+- Application depends on Domain
+- Infrastructure depends on Domain and Application contracts
+- Presentation depends on Application and Domain read models
+- Editor depends on Domain, Application contracts, and authoring assets
+- Tests may depend on all needed runtime assemblies
 
-## Sandbox-First Intake Principle
+## Proposed Namespace Direction
 
-When introducing risky content or structure changes, the preferred flow is:
+- `SurvivalManager.Domain.*`
+- `SurvivalManager.Application.*`
+- `SurvivalManager.Infrastructure.*`
+- `SurvivalManager.Presentation.*`
+- `SurvivalManager.Editor.*`
 
-1. validate in sandbox or isolated experimental area
-2. verify integration assumptions
-3. review risks and ownership boundaries
-4. promote only the approved subset into mainline project structure
+## Long-Term Expansion Points
 
-## Human Review Required for High-Risk Changes
-
-The following changes should be treated as high-risk and require explicit human review before or during merge:
-
-- broad scene rewiring
-- save format changes
-- destructive asset moves or renames across major folders
-- modifications that affect third-party import integrity
-- rendering pipeline or project-wide settings changes
-- automation that writes many Unity assets at once
-- content migrations with unclear rollback
+- richer authoring validation
+- more formal service boundaries
+- save migration versioning
+- alternative persistence adapters
+- telemetry and replay adapters
 
 ## Open Questions
 
-- Which runtime systems should be pure code-driven versus asset-authored first?
-- How much dependency injection or service registration structure is needed early?
-- What is the smallest scene footprint that still supports safe iteration?
-- Which architecture rule should be enforced by tooling first?
+- should MVP begin with a separate Application layer immediately, or introduce it once use cases multiply?
+- how much of reward generation belongs in Domain versus Infrastructure randomness helpers?
+- which authoring validations are mandatory before content count grows?
+- what is the smallest assembly split that still prevents accidental Unity coupling into combat simulation?

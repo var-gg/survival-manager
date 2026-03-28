@@ -1,0 +1,14 @@
+{
+  "name": "SM.Persistence.Json",
+  "rootNamespace": "SM.Persistence.Json",
+  "references": ["SM.Persistence.Abstractions", "SM.Core", "SM.Content", "SM.Meta"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

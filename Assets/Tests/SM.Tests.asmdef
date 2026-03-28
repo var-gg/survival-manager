@@ -1,0 +1,23 @@
+{
+  "name": "SM.Tests",
+  "rootNamespace": "SM.Tests",
+  "references": ["SM.Core", "SM.Content", "SM.Combat", "SM.Meta", "SM.Persistence.Abstractions", "SM.Persistence.Json", "SM.Unity"],
+  "includePlatforms": ["Editor"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [
+    {
+      "name": "com.unity.test-framework",
+      "expression": "",
+      "define": "UNITY_INCLUDE_TESTS"
+    }
+  ],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

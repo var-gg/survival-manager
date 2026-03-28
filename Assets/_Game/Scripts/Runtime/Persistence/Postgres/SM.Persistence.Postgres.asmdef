@@ -1,0 +1,14 @@
+{
+  "name": "SM.Persistence.Postgres",
+  "rootNamespace": "SM.Persistence.Postgres",
+  "references": ["SM.Persistence.Abstractions", "SM.Core", "SM.Content", "SM.Meta"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}

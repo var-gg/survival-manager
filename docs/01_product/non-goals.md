@@ -2,48 +2,52 @@
 
 - Status: draft
 - Last Updated: 2026-03-29
-- Phase: concept framing
+- Phase: prototype
 
 ## Purpose
 
-This document records what `survival-manager` is **not** trying to do in the current concept phase.
-The purpose is to protect the project from premature complexity and identity drift.
+This document lists explicit non-goals so the MVP does not absorb attractive but destabilizing scope.
 
-## Current Non-Goals
+## MVP Non-Goals
 
-- Not a full traditional turn-based SRPG with exhaustive per-unit command resolution.
-- Not a pure bullet-heaven clone driven only by screen-filling chaos.
-- Not a full card game where combat exists only to deliver card battles.
-- Not a deep economy sim or factory-management game.
-- Not a massive crafting sandbox with unrestricted systemic breadth.
-- Not a direct imitation of any single reference title.
-- Not a commitment to final numeric balance, economy tuning, or exhaustive content scale at this stage.
+The following are out of scope for the MVP:
 
-## Scope Protection Rules
+- PVP
+- advanced crafting
+- seasonal balancing tools
+- live backend services
+- large-scale asset integration
 
-Until the core hybrid proves fun, the project should avoid:
+## Additional Likely Non-Goals for MVP
 
-- multiplying parallel systems without evidence
-- promising large content counts
-- locking in final presentation ambition too early
-- implementing niche depth for every inspiration source
-- adding features only because a reference game has them
+The following should also be treated as deferred unless later justified by the slice:
 
-## Why These Non-Goals Matter
+- deep live-service style progression operations
+- broad content quantity targets
+- high-end cinematic presentation
+- exhaustive unit customization layers
+- production-grade content pipeline expansion beyond slice need
 
-The concept already combines multiple potentially heavy layers:
+## Why These Are Non-Goals
 
-- tactical feel
-- run progression
-- deckmaking
-- loot and crafting
-- repeat-growth meta
+The MVP needs to prove a narrow loop:
 
-Without explicit non-goals, the project is likely to over-expand before finding its real identity.
+- roster pressure
+- synergy value
+- readable auto-battle
+- expedition and return structure
 
-## Open Questions
+Any feature that does not strengthen that proof should stay deferred.
 
-- Which current non-goal is most likely to be challenged once prototyping starts?
-- What tempting feature is most likely to cause identity drift?
-- At what point should one inspiration axis be cut instead of expanded?
-- Which non-goal should become a permanent product boundary even after prototype success?
+## Long-Term Vision Note
+
+Some current non-goals may become future candidates after the MVP is validated.
+That does not make them part of the current target.
+The MVP should be judged by what it proves now, not by what it might someday include.
+
+## 열린 질문
+
+- which non-goal is most likely to sneak back in under a different label?
+- is basic crafting entirely avoidable in MVP, or does some light equipment flow become necessary?
+- what counts as "large-scale asset integration" for this project in practice?
+- which deferred feature is most tempting but least justified right now?

@@ -1,47 +1,86 @@
-# Unity 프로젝트 레이아웃
+# Unity Project Layout
 
-- 상태: active
-- 소유자: repository
-- 최종수정일: 2026-03-29
-- 소스오브트루스: `docs/03_architecture/unity-project-layout.md`
+- Status: draft
+- Last Updated: 2026-03-29
+- Phase: prototype
 
-## 목적
+## Purpose
 
-이 문서는 `survival-manager`의 Unity 프로젝트 구조 초안을 정의한다. asmdef 도입을 전제로 폴더 경계를 먼저 정리한다.
+This document defines the intended Unity project layout for the prototype phase.
 
-## 현재 실제 Unity 루트
+## MVP Rules
 
-`A:\projects\game\survival-manager\survival-manager`
+### Project-Owned Areas
 
-## Assets 구조
+Implementation is currently expected to live under:
 
-- `Assets/ThirdParty/`: 외부 패키지/플러그인/벤더 자산
-- `Assets/_Game/`: 프로젝트 고유 자산과 코드
-- `Assets/_Generated/`: 재생성 가능한 생성 산출물
-- `Assets/Tests/`: EditMode/PlayMode 테스트 자산
+- `Assets/_Game/**`
+- `Assets/Tests/**`
 
-## _Game 내부 초안
+### Protected Area
 
-- `Assets/_Game/Art/`
-- `Assets/_Game/Audio/`
-- `Assets/_Game/Prefabs/`
-- `Assets/_Game/Scenes/`
-- `Assets/_Game/Scripts/`
-- `Assets/_Game/Settings/`
+Original vendor content under `Assets/ThirdParty/**` must not be directly modified.
 
-## asmdef 원칙
+## Proposed Runtime Layout
 
-- 초기에는 최소 개수로 시작한다
-- 기능 또는 계층 경계가 명확해질 때 분리한다
-- 테스트용 asmdef는 `Assets/Tests/` 아래 별도 관리한다
+```text
+Assets/_Game/
+  Content/
+    Definitions/
+  Scenes/
+    Boot.unity
+    Town.unity
+    Expedition.unity
+    Battle.unity
+    Reward.unity
+  Scripts/
+    Runtime/
+      Core/
+      Content/
+      Combat/
+      Meta/
+      Persistence/
+      Unity/
+    Editor/
+```
 
-## 기본 설정 기준
+## Proposed Test Layout
 
-- Version Control: Visible Meta Files
-- Asset Serialization: Force Text
+```text
+Assets/Tests/
+  EditMode/
+  PlayMode/
+```
 
-## 범위 제외
+## Proposed Assembly Mapping
 
-- 실제 게임 로직 구현
-- 시스템 설계 확정
-- 아트/프리팹 제작
+- `Assets/_Game/Scripts/Runtime/Core` -> `SM.Core`
+- `Assets/_Game/Scripts/Runtime/Content` -> `SM.Content`
+- `Assets/_Game/Scripts/Runtime/Combat` -> `SM.Combat`
+- `Assets/_Game/Scripts/Runtime/Meta` -> `SM.Meta`
+- `Assets/_Game/Scripts/Runtime/Persistence/Abstractions` -> `SM.Persistence.Abstractions`
+- `Assets/_Game/Scripts/Runtime/Persistence/Json` -> `SM.Persistence.Json`
+- `Assets/_Game/Scripts/Runtime/Persistence/Postgres` -> `SM.Persistence.Postgres`
+- `Assets/_Game/Scripts/Runtime/Unity` -> `SM.Unity`
+- `Assets/_Game/Scripts/Editor` -> `SM.Editor`
+- `Assets/Tests` -> `SM.Tests`
+
+## Naming Direction
+
+Namespaces should align with the assembly split, for example:
+
+- `SM.Core.*`
+- `SM.Content.*`
+- `SM.Combat.*`
+- `SM.Meta.*`
+- `SM.Persistence.*`
+- `SM.Unity.*`
+- `SM.Editor.*`
+- `SM.Tests.*`
+
+## Open Questions
+
+- should content definitions remain under one root or split by domain sooner?
+- how much scene-local scripting is acceptable before it should move into `SM.Unity`?
+- what shared conventions are needed for scene bootstrapping and data loading?
+- how should test fixtures be partitioned between EditMode and PlayMode as the slice grows?

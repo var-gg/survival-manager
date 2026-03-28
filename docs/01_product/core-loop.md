@@ -2,67 +2,73 @@
 
 - Status: draft
 - Last Updated: 2026-03-29
-- Phase: concept framing
+- Phase: prototype
 
 ## Purpose
 
-This document defines the current high-level core-loop hypothesis for `survival-manager`.
-This is not a final system specification.
-It is a directional model for how a run may create engagement and replayability.
+This document defines the product-level core loop for the MVP and distinguishes it from the longer-term vision.
 
-## Core Loop Hypothesis
+## MVP Core Loop
 
-1. Enter a run with a starting squad state, loadout, deck direction, or tactical setup.
-2. Arrange formation, unit priorities, and other management decisions before or between fights.
-3. Watch combat resolve as continuous-feeling auto-battle pressure.
-4. Interpret outcomes and identify what the current setup is doing well or poorly.
-5. Choose upgrades, cards, loot, or crafting-related options that reshape the run.
-6. Reconfigure the next setup with better information and stronger synergies.
-7. End the run with gains, lessons, and future unlock pressure.
-8. Re-enter with stronger knowledge, broader options, or persistent progression.
+1. recruit or select from a town-held roster
+2. build an expedition squad from that roster
+3. deploy a battle formation of 4 from the expedition group
+4. enter an expedition encounter or short chain of encounters
+5. watch a 3D auto-battle resolve from setup and synergy decisions
+6. receive losses, rewards, or temporary augment choices
+7. return to town and reorganize the roster
+8. prepare the next run with updated information
 
-## Layered Loop View
+## MVP Loop Details
 
-### Battle Observation Loop
+### Roster Layer
 
-- read battlefield state
-- observe whether the formation and priorities are working
-- identify where the setup breaks under pressure
+The player manages a town-held roster cap of 12 and chooses an expedition group of 8.
+This should create selection pressure before combat starts.
 
-### In-Run Management Loop
+### Battle Layer
 
-- choose upgrades or cards
-- adjust tactical intent or role emphasis
-- trade short-term stability for long-term build direction
+Only 4 units are deployed into battle at once.
+Battle is auto-battle and should communicate the result of preparation and synergy, not high-frequency player inputs.
 
-### Meta Loop
+### Reward Layer
 
-- convert run output into future advantage or optionality
-- unlock or widen build paths
-- return with stronger strategic intent
+The MVP includes 9 temporary augments total:
 
-## Design Constraints
+- silver: 3
+- gold: 3
+- platinum: 3
 
-- the loop must stay readable during pressure
-- management decisions must feel meaningful without forcing constant pause-heavy control
-- deckmaking, loot, and crafting must contribute to the same loop rather than compete for attention
-- meta progression must motivate replay without invalidating run-level planning and observation
+The MVP also includes 1 permanent augment slot to create light long-term identity without over-expanding progression.
 
-## Concept Collision Risks
+### Equipment Layer
 
-- too much hidden logic may make outcomes feel opaque
-- too much combat intensity may erase management readability
-- too many reward layers may make outcomes feel noisy rather than earned
-- too much between-fight setup may damage overall run tempo
+Each unit has 3 equipment slots:
 
-## Reference Direction
+- weapon
+- armor
+- accessory
 
-Reference genres are used here for pacing and structure vocabulary only.
-Direct copying of loop structure from any single title is out of scope.
+This should be enough to create loadout differentiation without introducing equipment bloat.
 
-## Open Questions
+## Long-Term Core Loop Direction
 
-- How often should the player reconfigure formation, priorities, or build direction during a run?
-- How much live intervention should exist once combat starts?
-- Which reward type is the primary emotional driver: cards, loot, crafting materials, or persistent unlocks?
-- What should a failed run still grant so the loop stays motivating?
+Longer-term versions may deepen expedition routing, event pressure, roster injuries, loot complexity, or meta progression.
+The MVP should not assume all of those systems exist.
+It only needs enough loop depth to prove that setup → auto-battle → return → reconfigure is compelling.
+
+## Core Loop Failure Conditions
+
+The loop fails at MVP level if:
+
+- deployment choices do not feel consequential
+- race/class synergy is too weak to notice
+- auto-battle outcomes feel opaque or boring
+- returning to town does not create an interesting next decision
+
+## 열린 질문
+
+- should the MVP expedition be a single battle, a short chain, or a minimal node path?
+- how should temporary augments enter the loop without overpowering base roster identity?
+- what return-to-town decision is the most important to make replay meaningful?
+- how much loss persistence is needed before the loop feels like an expedition rather than a skirmish?
