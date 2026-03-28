@@ -1,81 +1,78 @@
-# Reward Economy
+# 보상 경제
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 최종수정일: 2026-03-29
+- phase: prototype
 
-## Purpose
+## 목적
 
-This document defines the MVP reward economy and how value should flow through the expedition loop.
+이 문서는 expedition 보상이 어떤 가치 축으로 흘러야 하는지 정의한다.
+핵심은 즉시 강해지는 보상과 장기적으로 빌드를 바꾸는 보상을 분리하는 것이다.
 
-## MVP Rules
+## 핵심 가치 축
 
-### Battle Reward Composition
-
-Combat rewards should be composed from:
+### 즉시 가치
 
 - gold
-- equipment
-- temporary augment 3-choice offer
+- item
+- temporary augment
 
-Not every battle must grant all three, but these are the main reward building blocks.
+### 장기 가치
 
-### Expedition-End Reward Composition
+- permanent augment 후보 해금/획득
+- trait reroll 희소 재화
 
-Expedition completion rewards should focus on:
+## 경제 규칙
 
-- permanent augment
-- trait reroll currency
+### 전투 보상
+
+전투 보상은 주로 아래에서 구성한다.
+
+- gold
+- item
+- temporary augment 3-choice
+
+### expedition 종료 보상
+
+expedition 종료 보상은 주로 아래를 담당한다.
+
+- permanent augment 관련 진척
+- trait reroll 재화
 - gold
 
-This makes expedition completion feel meaningfully different from ordinary battle resolution.
+### 희소 재화 가치 규칙
 
-### Economy Design Intent
+trait reroll 재화는 **permanent augment와 동급 가치의 희소 재화**다.
+이는 잡화성 currency가 아니라, 장기 빌드 방향을 바꾸는 귀중한 자원이다.
 
-The MVP reward economy should encourage the player to care about:
+### temporary -> permanent 연결 규칙
 
-- immediate power
-- future roster shaping
-- opportunity cost between current squad and future runs
+run 중 temporary augment 최초 선택은 관련 permanent augment 후보 해금으로 이어질 수 있다.
+따라서 temporary augment 보상은 즉시 전투력뿐 아니라 장기 메타 선택까지 건드린다.
 
-### PVP Scope
+## MVP 구현 범위
 
-PVP may exist only as a long-term vision reference.
-It is explicitly not part of the MVP reward or economy design target.
+- gold 보상
+- item 보상
+- temporary augment 보상
+- expedition 종료 시 permanent augment 관련 진척
+- trait reroll 희소 재화
 
-## Long-Term Expansion Points
+## 장기 규칙
 
-- additional currency types
-- material economies
-- event reward modifiers
-- difficulty-based reward scaling
-- PVP-specific rewards only after MVP and only if later justified
+- material economy
+- event reward modifier
+- difficulty reward scaling 확장
+- PVP 전용 보상 체계
 
-## Economic Runaway Risks
+## PVP 경계
 
-- if gold solves too many problems, other reward types lose meaning
-- if permanent reward gain is too fast, long-term decisions become trivial
-- if temporary augment choice is always best, item rewards become dead outcomes
-- if reward variance is too high, planning quality gets replaced by spike luck
+PVP는 비-MVP다.
+PVP가 도입되더라도 run 중 temporary augment는 적용하지 않고, permanent augment만 적용한다.
 
-## Balance Risks
+## 밸런스 기준
 
-- reward tables may accidentally favor one build path too heavily
-- too much reroll currency may erase recruit tradeoffs
-- too little equipment value may make loot feel cosmetic
-- too much equipment value may overshadow synergy and tactics systems
-
-## Data Expansion Points
-
-- reward table definitions
-- node reward rules
-- expedition completion reward bundles
-- currency definition assets
-- reward rarity or weighting controls
-
-## Open Questions
-
-- what is the minimum gold sink set needed to preserve economy tension?
-- how many battles in MVP should be able to offer temporary augment choices?
-- should expedition-end permanent augment rewards always be guaranteed?
-- how much randomness is healthy before reward planning becomes unreliable?
+- gold가 모든 문제를 해결하면 안 된다.
+- temporary augment가 항상 정답이면 item이 죽는다.
+- permanent augment와 trait reroll 재화가 너무 흔하면 장기 가치 축이 붕괴한다.
+- 보상 편차가 너무 크면 전략보다 운에 좌우된다.

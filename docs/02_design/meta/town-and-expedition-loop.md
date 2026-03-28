@@ -1,78 +1,55 @@
 # Town and Expedition Loop
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 최종수정일: 2026-03-29
+- phase: prototype
 
-## Purpose
+## 목적
 
-This document fixes the MVP meta-loop structure for `survival-manager`.
-The goal is to ensure the game is not just a battle simulator, but a loop of preparation, risk, reward, and return.
+이 문서는 MVP meta-loop 구조를 정의한다.
+핵심은 Town에서 원정 준비를 하고, Expedition에서 노드를 선택할 수 있는 상태를 playable slice로 만드는 것이다.
 
-## MVP Rules
+## MVP 규칙
 
-### Core Loop
+### core loop
 
-The MVP loop is:
+1. Town에서 로스터 상태를 본다.
+2. recruit 후보를 확인하고 영입 또는 reroll을 한다.
+3. expedition squad를 준비한다.
+4. deploy preview 4인을 확인한다.
+5. Expedition으로 출발한다.
+6. 5노드 맵에서 다음 전투/진행 또는 귀환을 선택한다.
+7. 귀환 후 다시 Town에서 재정비한다.
 
-1. town upkeep
-2. hero recruitment and equipment organization
-3. expedition departure
-4. battle and reward resolution
-5. return to town
+### Town 최소 기능
 
-This order should remain stable during MVP.
+- 보유 로스터 목록
+- recruit 후보 3개 표시
+- recruit / reroll 버튼
+- expedition squad 현황(최대 8)
+- battle deploy preview(현재 4)
+- gold / permanent augment slot / trait reroll 재화 표시
+- save / load / debug start 버튼
 
-### Expedition Shape
+### Expedition 최소 기능
 
-The MVP expedition should begin as a small branching map of about 5 nodes.
-This is enough to create route choice and reward tension without requiring a full adventure structure.
+- 5노드 분기형 맵 표현
+- 현재 위치
+- 남은 노드
+- 예정 보상
+- 다음 전투 또는 귀환 버튼
 
-### Node Intent
+## 구현 원칙
 
-The initial 5-node style expedition should support:
+- scene에 새 도메인 규칙을 하드코딩하지 않는다.
+- 데이터는 content definition / session state / persistence를 통해 읽는다.
+- save가 없으면 데모용 초기 profile/roster를 만든다.
+- UGUI와 단순 텍스트/버튼 위주로 만든다.
 
-- at least one route choice
-- at least one combat reward moment
-- a sense of committing a squad to a run
-- a meaningful return with changed resources or roster state
+## 장기 확장 지점
 
-### Why This Loop Matters
-
-The game promise is not only "set up a team and watch them fight."
-It is also "prepare a squad, take a risk, come back changed, and decide what to do next."
-
-## Long-Term Expansion Points
-
-- longer expeditions
-- more node types
-- risk escalation systems
-- town facilities
-- event nodes
-- PVP as a long-term vision only, not an MVP target
-
-## Economic Runaway Risks
-
-- if expeditions pay too much gold, roster and item pressure collapses
-- if node rewards are too dense, route choice becomes obvious rather than strategic
-- if return rewards stack too fast, the player exits the MVP tuning envelope too early
-
-## Balance Risks
-
-- a 5-node map may feel too short if rewards do not create meaningful change
-- if expedition losses are too light, return decisions may feel hollow
-- if expedition losses are too harsh, roster variety may collapse into only safest picks
-
-## Data Expansion Points
-
-- node definition catalogs
-- expedition map templates
-- route reward tables
-- return-state event definitions
-
-## Open Questions
-
-- should the first MVP expedition be exactly 5 nodes or a 4-6 node envelope?
-- what is the minimum loss/consequence needed to make return meaningful?
-- how much route information should the player see before committing?
-- what town actions matter most immediately after returning?
+- 편성 drag-and-drop
+- 실제 node branching graph
+- town facility
+- richer event node
+- reward preview sophistication

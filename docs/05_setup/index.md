@@ -1,9 +1,19 @@
-# 05 설정
+# 설정 문서 인덱스
 
-## 목적
+- 상태: active
+- 최종수정일: 2026-03-29
 
-개발 환경 준비, 필수 도구 설치, 로컬 실행 절차를 모은다.
+`05_setup/`는 로컬 개발 환경, Unity 초기 실행, 자동화, persistence, GitHub 푸시 경로를 정리한다.
 
-## 현재 상태
+## 문서 목록
 
-초기 구조만 생성되었고 세부 문서는 아직 없다.
+- `asset-workflow.md`: 에셋 반입/관리 흐름
+- `dev-environment.md`: 개발 환경 기본 설정
+- `github-publish-notes.md`: GitHub publish/push 주의사항
+- `github-setup.md`: GitHub 연동 설정
+- `local-automation.md`: 로컬 자동화 스크립트 사용
+- `local-runbook.md`: 로컬 실행 런북
+- `postgres-setup.md`: local Postgres 설정
+- `unity-bootstrap.md`: Unity 부트스트랩 절차
+- `unity-install.md`: Unity 설치 기준
+- `unity-mcp.md`: Unity MCP 관련 설정

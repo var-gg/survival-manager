@@ -1,96 +1,65 @@
 # MVP Playtest Checklist
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 최종수정일: 2026-03-29
+- phase: prototype
 
-## First Editor Run
+## 첫 에디터 실행
 
-1. Open the Unity project with editor `6000.4.0f1`
-2. Allow package import/reload to finish
-3. Run `SM/Seed/Generate Sample Content`
-4. Run `SM/Validation/Validate Content Definitions`
-5. Open `Assets/_Game/Scenes/Boot.unity`
-6. Confirm project compiles cleanly enough to enter Play Mode
-7. Press Play
+1. Unity editor `6000.4.0f1`로 프로젝트를 연다.
+2. 패키지 import/reload가 끝날 때까지 기다린다.
+3. `SM/Seed/Generate Sample Content`를 실행한다.
+4. `SM/Validation/Validate Content Definitions`를 실행한다.
+5. `Assets/_Game/Scenes/Boot.unity`를 연다.
+6. 프로젝트가 Play Mode에 들어갈 만큼 컴파일되는지 확인한다.
+7. Play를 눌러 최소 Town까지 진입되는지 확인한다.
 
-## Seed Data
-
-Generate sample seed data from:
-
-- `SM/Seed/Generate Sample Content`
-
-Expected generated areas:
-
-- `Assets/_Game/Content/Definitions/Stats`
-- `Assets/_Game/Content/Definitions/Races`
-- `Assets/_Game/Content/Definitions/Classes`
-- `Assets/_Game/Content/Definitions/Traits`
-- `Assets/_Game/Content/Definitions/Skills`
-- `Assets/_Game/Content/Definitions/Archetypes`
-- `Assets/_Game/Content/Definitions/Augments`
-- `Assets/_Game/Content/Definitions/Items`
-- `Assets/_Game/Content/Definitions/Affixes`
-- `Assets/_Game/Content/Definitions/Rewards`
-- `Assets/_Game/Content/Definitions/Expeditions`
-
-## Test Execution
-
-### EditMode
-Run Unity Test Runner EditMode tests and confirm at minimum:
-
-- stat calculation tests pass
-- tactic priority tests pass
-- synergy threshold tests pass
-- reward pick tests pass
-- persistence fallback tests pass once added to scene/runtime wiring
+## 자동 검증 기준
 
 ### PlayMode
-Run at least one smoke test covering:
+현재 PlayMode smoke는 최소 아래를 자동 검증 대상으로 둔다.
 
-- project enters PlayMode
-- a boot scene object exists or scene bootstrap path loads
+- Boot scene load
+- Boot 진입 후 `GameSessionRoot` 존재
+- 가능 시 Boot -> Town 자동 진입
 
-## Manual MVP Flow Target
+Battle/Reward 전체 자동화 대신, 우선 `Boot -> Town` 자동 검증을 확정한다.
 
-Current intended loop target:
+## 수동 검증 기준
 
-- Boot -> Town -> Expedition -> Battle -> Reward -> Town
+### Town 확인 항목
 
-If the scene loop is not yet fully wired, note exactly where the run stops.
+- 로스터 목록이 보인다.
+- recruit 후보 3개가 보인다.
+- recruit 버튼이 동작한다.
+- reroll 버튼이 동작한다.
+- expedition squad 정보가 보인다.
+- battle deploy preview 4인이 보인다.
+- gold / permanent augment slot / trait reroll 재화가 보인다.
+- save / load / debug start 버튼이 동작한다.
 
-## Placeholder vs Real
+### Expedition 확인 항목
 
-### Real Implementations
-- pure C# stat evaluation
-- minimum combat loop
-- minimum tactic evaluation
-- minimum synergy application
-- reward pick application
-- Unity content definition asset types
-- sample seed generator
-- content validator
-- JSON save repository
+- 5노드 맵 텍스트가 보인다.
+- 현재 위치 / 남은 노드 / 예정 보상이 보인다.
+- 다음 전투 버튼이 동작한다.
+- 귀환 버튼이 동작한다.
 
-### Placeholder / Partial Areas
-- scene-to-scene playable slice wiring
-- Postgres CRUD adapter
-- rich equipment flow in Unity scenes
-- polished battle presentation
-- advanced persistence integration into gameplay UI
+### Battle 확인 항목
 
-## Exit Criteria for This Prototype Check
+- 4 아군 / 4 적 primitive가 보인다.
+- HP / 로그 / 승패 / 속도 버튼이 보인다.
 
-- seed generation succeeds
-- content validation succeeds
-- EditMode tests pass
-- PlayMode smoke test passes
-- JSON save fallback is not blocked by DB absence
-- one playable run can be attempted end to end, or the exact broken transition is documented
+### Reward 확인 항목
 
-## Open Questions
+- 3지선다 카드가 보인다.
+- gold / item / temporary augment 중 2종 이상 보인다.
+- 선택 후 Town 복귀가 가능하다.
 
-- which exact scene/controller should own first-load bootstrap?
-- when should build scene registration be automated?
-- what minimum debug HUD is needed before repeated playtests begin?
-- when should manual playtest notes be promoted into structured telemetry?
+## 이 단계 통과 기준
+
+- Boot -> Town 자동 smoke가 돈다.
+- Town debug UI가 보인다.
+- 수동 경로로 첫 Battle 화면까지 갈 수 있다.
+- save가 없을 때 demo profile/roster가 생성된다.
+- JSON save fallback이 기본 성공 경로로 동작한다.

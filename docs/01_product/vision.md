@@ -1,89 +1,87 @@
-# Vision
+# 제품 비전
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 최종수정일: 2026-03-29
+- phase: prototype
 
-## Purpose
+## 목적
 
-This document fixes the current product vision for `survival-manager`.
-The immediate goal is to lock the MVP direction before implementation scope spreads.
+이 문서는 `survival-manager`의 최신 제품 비전을 고정한다.
+핵심은 구현 전에 어떤 규칙을 MVP에서 진짜 증명할지, 어떤 규칙을 장기 비전으로 남길지를 분리하는 것이다.
 
-## Product Definition
+## 제품 정의
 
-`survival-manager` is a management-driven strategy game built from three reference directions:
+`survival-manager`는 다음 세 축을 조합한 운영형 전략 게임이다.
 
-- Unicorn Overlord-style tactical setup and behavior planning
-- Teamfight Tactics-style race/class synergy pressure
-- Darkest Dungeon-style expedition and return loop
+- Unicorn Overlord식 세팅과 행동 규칙 준비
+- Teamfight Tactics식 종족/직업 시너지 압박
+- Darkest Dungeon식 expedition -> 귀환 -> 재정비 루프
 
-This is not a direct-control action game and not a classic stop-and-command SRPG.
-Combat should resolve as auto-battle, while player mastery comes from setup, composition, roster decisions, and return-loop planning.
+플레이어는 직접 손컨을 하는 것이 아니라, 세팅과 편성, 리롤, 아이템, augment, 로스터 운영으로 결과를 만든다.
 
-## MVP Vision
+## 최신 핵심 판별 기준
 
-The MVP should prove that the player can:
+같은 archetype, 심지어 같은 캐릭터 계열이라도 아래 요소에 따라 다른 역할을 가져야 한다.
 
-- assemble a small roster with meaningful race/class identity
-- choose a squad from a larger town-held roster
-- deploy a limited front-line battle formation
-- watch a readable 3D auto-battle resolve from prior decisions
-- return from expedition with gains, losses, and next-step pressure
+- trait roll
+- 장비
+- augment
 
-The MVP must prefer simple and verifiable internal combat logic over ambitious systemic complexity.
+즉 archetype은 출발점이지 최종 역할이 아니다.
+플레이어는 "같은 뼈대 위에서 다른 용도"를 만드는 재미를 느껴야 한다.
 
-## Long-Term Vision
+## MVP 비전
 
-In the longer term, the project may expand toward richer expedition structure, broader roster expression, deeper content variety, and more robust progression layers.
-However, long-term ambition must not weaken MVP clarity.
-The first proof is a wooden-dummy playable vertical slice, not a content-complete strategy RPG.
+MVP는 **목각인형 수준 playable vertical slice**를 증명한다.
 
-## Fixed MVP Direction
+MVP에서 증명할 핵심은 다음이다.
 
-- combat presentation: 3D
-- combat control: auto-battle
-- combat simulation priority: simple, readable, verifiable internal rules
-- player skill focus: tactical setup, synergy selection, roster management, expedition planning
+- 작은 town roster 안에서도 선발/탈락 압박이 생긴다.
+- 4인 배치와 race/class synergy가 실제 선택 압력을 만든다.
+- 같은 archetype도 trait, 장비, augment에 따라 역할이 달라진다.
+- 임시 augment와 영구 augment 해금 문법이 다음 선택을 기대하게 만든다.
+- expedition 종료 보상이 다음 run 준비로 자연스럽게 이어진다.
 
-## MVP Scope Anchors
+## 장기 비전
 
-The current MVP fixed values are:
+장기적으로는 다음을 확장할 수 있다.
+
+- 더 넓은 synergy 가족
+- 고급 crafting
+- 더 복잡한 item rarity / affix 구조
+- 더 많은 permanent augment 경로
+- PVP 규칙과 전용 밸런스
+- 외부 에셋 연동과 시각 품질 상승
+
+하지만 장기 비전은 MVP 구현 범위를 오염시키면 안 된다.
+MVP는 먼저 "이 조합 게임이 한 판 단위로 재미가 있는가"를 증명해야 한다.
+
+## MVP에서 고정할 값
 
 - battle deployment size: 4
 - expedition roster size: 8
 - town-held roster cap: 12
-- race count: 3
-- class count: 4
-- recruit archetype count: 8
-- temporary augments: 9 total
-  - silver: 3
-  - gold: 3
-  - platinum: 3
-- permanent augment slots in MVP: 1
+- races: 3
+- classes: 4
+- recruit archetypes: 8
+- temporary augments: 9
+- permanent augment slot: 1
 - equipment slots: 3
-  - weapon
-  - armor
-  - accessory
 
-## Recommended MVP Roster Base
+## MVP 범위 밖에 두는 것
 
-Recommended MVP playable identity set:
+- PVP 실제 구현
+- run 중 temporary augment를 반영하는 PVP 규칙
+- 고급 crafting recipe 체계
+- 복잡한 rarity ladder
+- material economy 확장
+- 외부 에셋 연동 완료형 파이프라인
 
-- races: Human, Beastkin, Undead
-- classes: Vanguard, Duelist, Ranger, Mystic
+## 성공 조건
 
-## What Must Be Proven First
+MVP는 아래를 만족하면 성공이다.
 
-The MVP is successful only if it proves:
-
-- auto-battle observation is satisfying enough without direct control
-- roster and synergy choices create understandable outcomes
-- the expedition and return loop creates forward pressure
-- the narrow roster cap still generates meaningful decisions
-
-## 열린 질문
-
-- what is the minimum expedition structure needed to make return decisions meaningful?
-- how much tactical rule customization is enough for MVP without reducing readability?
-- what battle feedback is necessary so players understand why an auto-battle result happened?
-- which long-term progression ideas should remain explicitly deferred until after the MVP proof?
+- auto-battle 결과가 세팅의 결과로 납득된다.
+- roster / synergy / trait / item / augment가 각자 의미 있는 축으로 느껴진다.
+- same-archetype variance가 눈에 보인다.
+- 귀환 후 다음 run 준비가 자연스럽게 이어진다.

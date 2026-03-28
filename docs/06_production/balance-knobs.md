@@ -1,76 +1,47 @@
 # Balance Knobs
 
-- Status: draft
-- Last Updated: 2026-03-29
+- 상태: draft
+- 최종수정일: 2026-03-29
 - Phase: prototype
 
-## Purpose
+## 목적
 
-This document lists the current tuning surfaces that can change MVP feel without re-architecting systems.
+이 문서는 MVP 감각을 바꿀 수 있는 현재 조정 지점을 나열한다.
 
 ## Core Combat Knobs
 
-- base max health per archetype
-- base attack per archetype
-- base defense per archetype
-- base speed per archetype
-- base heal power per archetype
-- basic attack damage formula floor
-- active skill power values
-- heal skill power values
-- front/back row range assumptions
+- class별 base max health
+- class별 base attack
+- class별 base defense
+- class별 base speed
+- class별 base heal power
+- basic attack damage floor
+- heal skill power
+- front/back row 배치
+- enemy 4인 조합
+- battle max tick
+- playback speed x1/x2/x4
 
 ## Tactics Knobs
 
-- tactic rule priority ordering
-- ally HP threshold for heal behavior
-- target selector choice per archetype
+- tactic rule priority
+- ally HP threshold for heal
+- target selector per class
 - fallback defend behavior
 
-## Synergy Knobs
+## Synergy / Progression Knobs
 
-- race synergy threshold counts
-- race synergy attack bonus values
-- class synergy threshold counts
-- class synergy defense bonus values
-- future synergy family thresholds and modifier payloads
-
-## Trait / Item / Augment Knobs
-
-- trait modifier values
-- negative trait penalties
-- item base modifier values
-- affix modifier values
-- temporary augment rarity and modifier values
-- permanent augment unlock strength
+- race synergy threshold
+- class synergy threshold
+- temporary augment reward strength
+- gold reward amount
+- item reward frequency
 
 ## Meta / Reward Knobs
 
-- starting roster composition
-- recruit candidate generation pool size
-- reroll frequency and reroll currency income
-- reward table composition
-- gold reward values
-- permanent augment drop timing
-- node count and expedition pacing
-
-## Persistence / Progression Knobs
-
-- how many run summaries to keep
-- what currencies persist between runs
-- which augments are temporary versus permanent
-- what return-to-town summary data is surfaced
-
-## Next-Step Backlog
-
-- PVP tuning surfaces
-- advanced crafting input/output tuning
-- more synergy families and thresholds
-- external asset integration constraints and readability tuning
-
-## Open Questions
-
-- which knobs should move into dedicated designer-facing assets first?
-- what balancing values must remain code-level until the playable slice stabilizes?
-- when does the current single-skill-per-archetype approach become too limiting?
-- what telemetry is needed before changing reward pacing aggressively?
+- starting demo roster composition
+- recruit candidate pool feel
+- reroll cost
+- reward 3-choice 구성
+- temporary augment duration
+- run summary verbosity

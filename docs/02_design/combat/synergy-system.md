@@ -1,72 +1,73 @@
-# Synergy System
+# 시너지 시스템
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 최종수정일: 2026-03-29
+- phase: prototype
 
-## Purpose
+## 목적
 
-This document defines the MVP synergy language for combat and roster building.
-The system should create meaningful composition pressure without becoming mathematically dense too early.
+이 문서는 시너지 문법을 정의한다.
+시너지는 편성 압박을 만들고, augment는 그 시너지를 강화하거나 시너지 밖 유닛을 보정하는 역할을 맡는다.
 
-## MVP Rules
+## MVP 규칙
 
-### Synergy Axes
+### 시너지 축
 
-The MVP uses two synergy axes:
+MVP는 두 축을 사용한다.
 
 - race synergy
 - class synergy
 
-### Recommended MVP Thresholds
+### 권장 threshold
 
-Recommended starting thresholds are:
+- race synergy: 2 / 3
+- class synergy: 2 / 4
 
-- race synergy triggers at 2 and 3
-- class synergy triggers at 2 and 4
-
-This creates visible breakpoints inside a 4-unit deployed squad while still supporting roster-level planning.
-
-### Recommended MVP Races
+### MVP 종족/직업
 
 - Human
 - Beastkin
 - Undead
-
-### Recommended MVP Classes
 
 - Vanguard
 - Duelist
 - Ranger
 - Mystic
 
-### MVP Design Intent
+## augment와의 관계
 
-Synergy should:
+augment는 다음 두 방향을 모두 허용한다.
 
-- influence deployment choices
-- create tradeoffs between immediate unit strength and composition bonuses
-- remain understandable at a glance
-- be easy to describe in UI without large explanation burden
+1. **시너지 강화형 augment**
+   - 특정 race/class threshold를 더 강하게 만든다.
+   - 특정 synergy 활성 시 추가 보너스를 준다.
 
-### MVP Simplicity Rule
+2. **비활성 시너지 유닛 강화형 augment**
+   - 현재 synergy를 못 받는 유닛
+   - threshold를 못 채운 유닛
+   - 혼합 편성 때문에 외로운 유닛
+   를 보정하는 강화도 허용한다.
 
-Synergy effects should begin with simple stat or rule modifiers, not highly nested exception systems.
-The player should be able to predict what a 2-piece or 3-piece race bonus does without reading a rules essay.
+즉 augment는 "활성 시너지 몰빵"만 지원하는 시스템이 아니다.
+실패한 조합, 비주류 조합, 한 장의 좋은 유닛을 살리는 방향도 허용한다.
 
-## Long-Term Expansion Points
+## MVP 구현 범위
 
-- more races and classes
-- more synergy tiers
-- cross-axis synergy interactions
-- anti-synergy or rivalry mechanics
-- expedition or town bonuses linked to roster composition
+- race/class 2축 시너지
+- 단순 threshold 발동
+- 단순 수치형 보너스
+- 일부 augment가 시너지 강화형 또는 비활성 시너지 유닛 강화형으로 설계되는 문법
 
-Long-term growth should happen only if the base 2-axis grammar is already readable and valuable.
+## 장기 규칙
 
-## Open Questions
+- cross-axis synergy interaction
+- anti-synergy / rivalry
+- expedition/town synergy
+- condition-heavy synergy hooks
 
-- should race synergy effects be mostly identity-driven while class synergy effects are mostly tactical?
-- how many simultaneous active synergies should one 4-unit squad realistically express in MVP?
-- should the 4-class threshold create a full-team reward or stay modest?
-- what UI treatment best explains active synergies without cluttering battle readability?
+## 밸런스 기준
+
+- 시너지가 unit 개별 가치보다 너무 세면 안 된다.
+- 반대로 시너지가 약해서 무시돼도 안 된다.
+- augment가 항상 활성 시너지 쪽만 정답으로 만들면 안 된다.
+- same-archetype variance가 시너지에 의해 완전히 사라지면 안 된다.

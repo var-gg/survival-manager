@@ -1,74 +1,67 @@
-# Core Loop
+# 핵심 루프
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 최종수정일: 2026-03-29
+- phase: prototype
 
-## Purpose
+## 목적
 
-This document defines the product-level core loop for the MVP and distinguishes it from the longer-term vision.
+이 문서는 MVP 핵심 루프와 장기 루프를 분리해 정의한다.
+핵심은 한 run 안의 임시 선택과 run 밖의 영구 진척이 서로 다른 의미를 가지게 만드는 것이다.
 
-## MVP Core Loop
+## MVP 핵심 루프
 
-1. recruit or select from a town-held roster
-2. build an expedition squad from that roster
-3. deploy a battle formation of 4 from the expedition group
-4. enter an expedition encounter or short chain of encounters
-5. watch a 3D auto-battle resolve from setup and synergy decisions
-6. receive losses, rewards, or temporary augment choices
-7. return to town and reorganize the roster
-8. prepare the next run with updated information
+1. town roster에서 후보를 확인하고 편성 방향을 정한다.
+2. recruit / 장비 / trait 상태를 보고 expedition 8인을 구성한다.
+3. 4인을 실제 전투 배치로 선택한다.
+4. expedition 전투 또는 짧은 노드 체인을 진행한다.
+5. auto-battle 결과를 본다.
+6. gold / item / temporary augment 보상을 받는다.
+7. temporary augment를 최초 선택하면 관련 permanent augment 후보가 해금된다.
+8. 귀환 후 로스터, 장비, 다음 선택 방향을 재정비한다.
 
-## MVP Loop Details
+## MVP 루프에서 실제 구현할 의미
 
-### Roster Layer
+### 로스터 층
 
-The player manages a town-held roster cap of 12 and chooses an expedition group of 8.
-This should create selection pressure before combat starts.
+- town-held roster cap: 12
+- expedition roster size: 8
+- deployed battle squad: 4
 
-### Battle Layer
+이 구조는 전투 전에 이미 중요한 선택을 만들기 위한 것이다.
 
-Only 4 units are deployed into battle at once.
-Battle is auto-battle and should communicate the result of preparation and synergy, not high-frequency player inputs.
+### 차별화 층
 
-### Reward Layer
+같은 archetype이라도 다음 세 축으로 역할이 달라져야 한다.
 
-The MVP includes 9 temporary augments total:
+- trait roll
+- equipment
+- augment
 
-- silver: 3
-- gold: 3
-- platinum: 3
+즉 recruit 시점의 archetype은 빌드의 시작값일 뿐이다.
 
-The MVP also includes 1 permanent augment slot to create light long-term identity without over-expanding progression.
+### 보상 층
 
-### Equipment Layer
+- 전투 보상: gold / item / temporary augment
+- expedition 종료 보상: permanent augment 관련 진척, trait reroll 재화, gold
 
-Each unit has 3 equipment slots:
+trait reroll 재화는 소모성 잡화가 아니라, permanent augment와 동급 가치의 희소 재화로 본다.
 
-- weapon
-- armor
-- accessory
+## 장기 핵심 루프 방향
 
-This should be enough to create loadout differentiation without introducing equipment bloat.
+장기적으로는 다음이 들어갈 수 있다.
 
-## Long-Term Core Loop Direction
+- 더 긴 expedition routing
+- advanced crafting
+- broader synergy families
+- permanent augment branch 확장
+- PVP용 별도 progression/balance
 
-Longer-term versions may deepen expedition routing, event pressure, roster injuries, loot complexity, or meta progression.
-The MVP should not assume all of those systems exist.
-It only needs enough loop depth to prove that setup → auto-battle → return → reconfigure is compelling.
+하지만 이들은 MVP를 증명한 뒤에만 확장한다.
 
-## Core Loop Failure Conditions
+## MVP 실패 조건
 
-The loop fails at MVP level if:
-
-- deployment choices do not feel consequential
-- race/class synergy is too weak to notice
-- auto-battle outcomes feel opaque or boring
-- returning to town does not create an interesting next decision
-
-## 열린 질문
-
-- should the MVP expedition be a single battle, a short chain, or a minimal node path?
-- how should temporary augments enter the loop without overpowering base roster identity?
-- what return-to-town decision is the most important to make replay meaningful?
-- how much loss persistence is needed before the loop feels like an expedition rather than a skirmish?
+- 같은 archetype 유닛들이 실제로 비슷하게만 느껴진다.
+- trait / 장비 / augment 차이가 역할 차이로 이어지지 않는다.
+- temporary reward가 다음 선택을 기대하게 만들지 못한다.
+- 귀환 후 다음 run 준비가 지루하거나 의미가 없다.
