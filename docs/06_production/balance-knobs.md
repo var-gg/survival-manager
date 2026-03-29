@@ -1,12 +1,8 @@
 # Balance Knobs
 
-- 상태: draft
+- 상태: active
 - 최종수정일: 2026-03-29
-- Phase: prototype
-
-## 목적
-
-이 문서는 MVP 감각을 바꿀 수 있는 현재 조정 지점을 나열한다.
+- phase: prototype
 
 ## Core Combat Knobs
 
@@ -17,31 +13,23 @@
 - class별 base heal power
 - basic attack damage floor
 - heal skill power
-- front/back row 배치
 - enemy 4인 조합
 - battle max tick
-- playback speed x1/x2/x4
 
-## Tactics Knobs
+## Replay / Observer Knobs
 
-- tactic rule priority
-- ally HP threshold for heal
-- target selector per class
-- fallback defend behavior
-
-## Synergy / Progression Knobs
-
-- race synergy threshold
-- class synergy threshold
-- temporary augment reward strength
-- gold reward amount
-- item reward frequency
+- intro frame duration
+- event frame duration
+- result frame duration
+- playback speed x1 / x2 / x4
+- pause default state
+- 최근 로그 유지 개수
+- progress bar 길이 체감
 
 ## Meta / Reward Knobs
 
-- starting demo roster composition
-- recruit candidate pool feel
-- reroll cost
-- reward 3-choice 구성
-- temporary augment duration
-- run summary verbosity
+- recruit 후보 조합
+- gold reward amount
+- item reward frequency
+- temporary augment strength
+- quick battle smoke 기본 deploy 체감

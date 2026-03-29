@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SM.Unity;
 
@@ -26,6 +27,30 @@ public sealed class GameSessionRoot : MonoBehaviour
         SessionState = new GameSessionState();
         Persistence = new PersistenceEntryPoint();
         SceneFlow = new SceneFlowController(this, SessionState);
+        FirstPlayableRuntimeSceneBinder.EnsureSceneBindings(SceneManager.GetActiveScene());
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += HandleSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
+
+    private static void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        FirstPlayableRuntimeSceneBinder.EnsureSceneBindings(scene);
     }
 
     public void BindProfile()

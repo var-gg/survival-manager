@@ -12,22 +12,24 @@ namespace SM.Unity;
 
 public sealed class BattleScreenController : MonoBehaviour
 {
+    private const int MaxRecentLogLines = 10;
+
     [SerializeField] private Text titleText = null!;
     [SerializeField] private Text allyHpText = null!;
     [SerializeField] private Text enemyHpText = null!;
     [SerializeField] private Text logText = null!;
     [SerializeField] private Text resultText = null!;
     [SerializeField] private Text speedText = null!;
+    [SerializeField] private Text statusText = null!;
+    [SerializeField] private Image progressFill = null!;
+    [SerializeField] private BattlePresentationController presentationController = null!;
 
-    private readonly List<GameObject> _spawnedActors = new();
+    private readonly List<string> _recentLogs = new();
     private GameSessionRoot _root = null!;
     private float _playbackSpeed = 1f;
+    private bool _isPaused;
     private bool _playbackFinished;
-
-    private void Awake()
-    {
-        ValidateReferences();
-    }
+    public bool IsPlaybackFinished => _playbackFinished;
 
     private void Start()
     {
@@ -46,6 +48,13 @@ public sealed class BattleScreenController : MonoBehaviour
     public void SetSpeed1() => SetSpeed(1f);
     public void SetSpeed2() => SetSpeed(2f);
     public void SetSpeed4() => SetSpeed(4f);
+
+    public void TogglePause()
+    {
+        _isPaused = !_isPaused;
+        RefreshSpeedText();
+        statusText.text = _isPaused ? "재생 일시정지" : "재생 재개";
+    }
 
     public void ContinueToReward()
     {
@@ -85,6 +94,12 @@ public sealed class BattleScreenController : MonoBehaviour
         AssertText(logText, nameof(logText));
         AssertText(resultText, nameof(resultText));
         AssertText(speedText, nameof(speedText));
+        AssertText(statusText, nameof(statusText));
+        AssertImage(progressFill, nameof(progressFill));
+        if (presentationController == null)
+        {
+            Debug.LogError("[BattleScreenController] Missing BattlePresentationController reference: presentationController");
+        }
     }
 
     private static void AssertText(Text text, string fieldName)
@@ -95,22 +110,33 @@ public sealed class BattleScreenController : MonoBehaviour
         }
     }
 
+    private static void AssertImage(Image image, string fieldName)
+    {
+        if (image == null)
+        {
+            Debug.LogError($"[BattleScreenController] Missing Image reference: {fieldName}");
+        }
+    }
+
     private void SetResult(string message)
     {
         if (resultText != null)
         {
             resultText.text = message;
         }
+
         Debug.LogError($"[BattleScreenController] {message}");
     }
 
     private void SetSpeed(float speed)
     {
         _playbackSpeed = speed;
-        if (speedText != null)
-        {
-            speedText.text = $"Speed x{speed:0}";
-        }
+        RefreshSpeedText();
+    }
+
+    private void RefreshSpeedText()
+    {
+        speedText.text = _isPaused ? $"Speed x{_playbackSpeed:0} | Paused" : $"Speed x{_playbackSpeed:0}";
     }
 
     private void SetupCamera()
@@ -129,85 +155,132 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         if (!EnsureReady()) return;
 
-        titleText.text = "Battle Debug UI";
-        logText.text = "전투 시작 준비중";
+        titleText.text = "Battle Observer UI";
         resultText.text = "전투 진행 중";
+        statusText.text = "Replay track 생성 중";
+        logText.text = "전투 시작 준비중";
+        progressFill.fillAmount = 0f;
         _playbackFinished = false;
+        _isPaused = false;
+        _recentLogs.Clear();
         SetSpeed(1f);
 
-        foreach (var actor in _spawnedActors)
-        {
-            if (actor != null)
-            {
-                Destroy(actor);
-            }
-        }
-        _spawnedActors.Clear();
-
         var allyDefinitions = BuildAllyDefinitions();
+        if (allyDefinitions.Count == 0)
+        {
+            SetResult("전투에 투입할 아군이 없습니다.");
+            return;
+        }
+
         var enemyDefinitions = BuildEnemyDefinitions();
-        var state = BattleFactory.Create(allyDefinitions, enemyDefinitions);
+        var simulationState = BattleFactory.Create(allyDefinitions, enemyDefinitions);
+        var replaySeedState = CloneState(simulationState);
+        var result = BattleResolver.Run(simulationState, 50);
+        var track = BattleReplayBuilder.Build(replaySeedState, result);
 
-        SpawnTeam(state.Allies.ToList(), true);
-        SpawnTeam(state.Enemies.ToList(), false);
-        RefreshHp(state);
+        presentationController.Initialize(track);
+        _root.SessionState.MarkBattleResolved(
+            result.Winner == TeamSide.Ally,
+            $"{result.Winner} / {result.TickCount} ticks / {result.Events.Count} events");
 
-        var result = BattleResolver.Run(state, 50);
-        StartCoroutine(PlaybackResult(state, result));
+        StartCoroutine(PlaybackTrack(track));
     }
 
-    private IEnumerator PlaybackResult(BattleState state, BattleResult result)
+    private IEnumerator PlaybackTrack(BattleReplayTrack track)
     {
-        var lines = new List<string>();
-        foreach (var battleEvent in result.Events)
+        foreach (var frame in track.Frames)
         {
-            lines.Add($"T{battleEvent.Tick} {battleEvent.ActionType} {battleEvent.Note} {battleEvent.Value:0}");
-            logText.text = string.Join("\n", lines.TakeLast(16));
-            RefreshHp(state);
-            yield return new WaitForSeconds(0.35f / _playbackSpeed);
+            ApplyFrame(track, frame);
+
+            var duration = Mathf.Max(0.35f, frame.DurationSeconds);
+            var elapsed = 0f;
+            while (elapsed < duration)
+            {
+                if (!_isPaused)
+                {
+                    elapsed += Time.deltaTime * _playbackSpeed;
+                }
+
+                progressFill.fillAmount = Mathf.Clamp01(elapsed / duration);
+                yield return null;
+            }
         }
 
-        var victory = result.Winner == TeamSide.Ally;
-        resultText.text = victory ? "승리" : "패배";
-        _root.SessionState.SetLastBattleResult(victory, $"{result.Winner} / {result.TickCount} ticks / {result.Events.Count} events");
+        progressFill.fillAmount = 1f;
+        resultText.text = track.Winner == TeamSide.Ally ? "승리" : "패배";
+        statusText.text = $"전투 종료 | {track.TickCount} ticks | {track.EventCount} events";
         _playbackFinished = true;
     }
 
-    private void RefreshHp(BattleState state)
+    private void ApplyFrame(BattleReplayTrack track, BattleReplayFrame frame)
     {
-        allyHpText.text = BuildHpText("아군 HP", state.Allies);
-        enemyHpText.text = BuildHpText("적군 HP", state.Enemies);
-    }
+        presentationController.PresentFrame(frame);
+        RefreshHp(frame.ActorStates);
+        RefreshStatus(track, frame);
 
-    private void SpawnTeam(IReadOnlyList<UnitSnapshot> units, bool ally)
-    {
-        for (var i = 0; i < units.Count; i++)
+        switch (frame.FrameKind)
         {
-            var unit = units[i];
-            var primitive = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            primitive.name = unit.Definition.Name;
-            primitive.transform.position = ally
-                ? new Vector3(-3f + (i % 2) * 1.5f, 0f, i < 2 ? -1f : 1f)
-                : new Vector3(3f - (i % 2) * 1.5f, 0f, i < 2 ? -1f : 1f);
-
-            var renderer = primitive.GetComponent<Renderer>();
-            renderer.material.color = ResolveColor(unit.Definition.RaceId, unit.Definition.ClassId, ally);
-            _spawnedActors.Add(primitive);
+            case BattleReplayFrameKind.Intro:
+                PushLog("전투 개시");
+                resultText.text = "전투 진행 중";
+                break;
+            case BattleReplayFrameKind.Event:
+                PushLog(BuildLogLine(frame));
+                break;
+            case BattleReplayFrameKind.Result:
+                PushLog(track.Winner == TeamSide.Ally ? "결과: 승리" : "결과: 패배");
+                resultText.text = track.Winner == TeamSide.Ally ? "승리" : "패배";
+                break;
         }
     }
 
-    private static Color ResolveColor(string raceId, string classId, bool ally)
+    private void RefreshHp(IReadOnlyList<BattleReplayActorSnapshot> actors)
     {
-        if (raceId == "human") return ally ? Color.blue : new Color(0.3f, 0.3f, 1f);
-        if (raceId == "beastkin") return ally ? Color.green : new Color(0.2f, 0.7f, 0.2f);
-        if (raceId == "undead") return ally ? Color.gray : new Color(0.5f, 0.5f, 0.5f);
-        if (classId == "mystic") return Color.magenta;
-        return ally ? Color.cyan : Color.red;
+        allyHpText.text = BuildHpText("아군 HP", actors.Where(actor => actor.Side == TeamSide.Ally));
+        enemyHpText.text = BuildHpText("적군 HP", actors.Where(actor => actor.Side == TeamSide.Enemy));
+    }
+
+    private void RefreshStatus(BattleReplayTrack track, BattleReplayFrame frame)
+    {
+        RefreshSpeedText();
+        var stepText = $"{frame.SequenceIndex + 1}/{track.Frames.Count}";
+        if (frame.FrameKind == BattleReplayFrameKind.Intro)
+        {
+            statusText.text = $"Tick 0 | 전투 개시 | Step {stepText}";
+            return;
+        }
+
+        if (frame.FrameKind == BattleReplayFrameKind.Result)
+        {
+            statusText.text = $"Tick {track.TickCount} | 결과 확정 | Step {stepText}";
+            return;
+        }
+
+        var source = string.IsNullOrWhiteSpace(frame.SourceName) ? "-" : frame.SourceName;
+        var target = string.IsNullOrWhiteSpace(frame.TargetName) ? "-" : frame.TargetName;
+        var action = frame.ActionType?.ToString() ?? "Unknown";
+        var pauseLabel = _isPaused ? " | Paused" : string.Empty;
+        statusText.text = $"Tick {frame.Tick} | {source} -> {target} | {action} {frame.Value:0}{pauseLabel} | Step {stepText}";
+    }
+
+    private void PushLog(string line)
+    {
+        _recentLogs.Add(line);
+        while (_recentLogs.Count > MaxRecentLogLines)
+        {
+            _recentLogs.RemoveAt(0);
+        }
+
+        logText.text = string.Join("\n", _recentLogs);
     }
 
     private IReadOnlyList<UnitDefinition> BuildAllyDefinitions()
     {
-        return _root.SessionState.BattleDeployHeroIds
+        var heroIds = _root.SessionState.BattleDeployHeroIds.Count > 0
+            ? _root.SessionState.BattleDeployHeroIds
+            : _root.SessionState.Profile.Heroes.Take(4).Select(hero => hero.HeroId).ToList();
+
+        return heroIds
             .Select(id => _root.SessionState.Profile.Heroes.First(h => h.HeroId == id))
             .Select((hero, index) => BuildDefinitionFromHero(hero, index < 2 ? RowPosition.Front : RowPosition.Back))
             .ToList();
@@ -290,14 +363,53 @@ public sealed class BattleScreenController : MonoBehaviour
         return new[] { new SkillDefinition("strike", "Strike", SkillKind.Strike, 2f, classId == "ranger" ? 2 : 1) };
     }
 
-    private static string BuildHpText(string title, IReadOnlyList<UnitSnapshot> units)
+    private static string BuildHpText(string title, IEnumerable<BattleReplayActorSnapshot> units)
     {
         var sb = new StringBuilder();
         sb.AppendLine(title);
         foreach (var unit in units)
         {
-            sb.AppendLine($"- {unit.Definition.Name}: {unit.CurrentHealth:0}/{unit.MaxHealth:0}");
+            var marker = unit.IsAlive ? "-" : "x";
+            sb.AppendLine($"{marker} {unit.Name}: {unit.CurrentHealth:0}/{unit.MaxHealth:0}");
         }
+
         return sb.ToString();
+    }
+
+    private static string BuildLogLine(BattleReplayFrame frame)
+    {
+        var source = string.IsNullOrWhiteSpace(frame.SourceName) ? "?" : frame.SourceName;
+        var target = string.IsNullOrWhiteSpace(frame.TargetName) ? "?" : frame.TargetName;
+        return frame.ActionType switch
+        {
+            BattleActionType.BasicAttack => $"T{frame.Tick} {source}가 {target}에게 {frame.Value:0} 피해",
+            BattleActionType.ActiveSkill when frame.Note == "heal_skill" => $"T{frame.Tick} {source}가 {target}를 {frame.Value:0} 회복",
+            BattleActionType.ActiveSkill => $"T{frame.Tick} {source}가 {target}에게 스킬 {frame.Value:0}",
+            BattleActionType.WaitDefend => $"T{frame.Tick} {source}가 방어 자세",
+            _ => $"T{frame.Tick} {source} {frame.ActionType}"
+        };
+    }
+
+    private static BattleState CloneState(BattleState state)
+    {
+        var allies = state.Allies.Select(CloneUnit).ToList();
+        var enemies = state.Enemies.Select(CloneUnit).ToList();
+        return new BattleState(allies, enemies);
+    }
+
+    private static UnitSnapshot CloneUnit(UnitSnapshot unit)
+    {
+        var definition = new UnitDefinition(
+            unit.Definition.Id,
+            unit.Definition.Name,
+            unit.Definition.RaceId,
+            unit.Definition.ClassId,
+            unit.Definition.Row,
+            new Dictionary<StatKey, float>(unit.Definition.BaseStats),
+            unit.Definition.Tactics.ToList(),
+            unit.Definition.Skills.ToList(),
+            unit.Definition.Packages?.ToList());
+
+        return new UnitSnapshot(unit.Id, unit.Side, definition);
     }
 }

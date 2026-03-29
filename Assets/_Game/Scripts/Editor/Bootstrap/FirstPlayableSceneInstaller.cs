@@ -41,7 +41,7 @@ public static class FirstPlayableSceneInstaller
 
     private static void RebuildBoot()
     {
-        var scene = Open("Boot");
+        var scene = CreateFreshScene("Boot");
         EnsureSceneMarker(scene, "SceneMarker_Boot");
         EnsureCamera("Main Camera", true, new Vector3(0f, 0f, -10f), Quaternion.identity);
         var canvas = EnsureCanvasRoot("BootCanvas");
@@ -51,12 +51,11 @@ public static class FirstPlayableSceneInstaller
         EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 18, "GameBootstrap가 sample content를 확인한 뒤 Town으로 자동 진입한다.");
         EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -48f), new Vector2(760f, 60f), TextAnchor.MiddleCenter, 16, "block25 기준 scene repair/bootstrap 검증용 최소 UI");
         Save(scene);
-        StabilizeComponentAfterReload<GameBootstrap>("Boot", "GameBootstrap");
     }
 
     private static void RebuildTown()
     {
-        var scene = Open("Town");
+        var scene = CreateFreshScene("Town");
         EnsureSceneMarker(scene, "SceneMarker_Town");
         EnsureCamera("Main Camera", true, new Vector3(0f, 0f, -10f), Quaternion.identity);
         var canvas = EnsureCanvasRoot("TownCanvas");
@@ -65,27 +64,47 @@ public static class FirstPlayableSceneInstaller
         var controllerGo = ResetUiChild(canvas.transform, "TownScreenController");
         var controller = EnsureComponent<TownScreenController>(controllerGo);
 
-        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Town Debug UI");
-        var roster = EnsureText(canvas.transform, "RosterText", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -80f), new Vector2(420f, 360f), TextAnchor.UpperLeft);
-        var recruit = EnsureText(canvas.transform, "RecruitText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-80f, -80f), new Vector2(320f, 220f), TextAnchor.UpperLeft);
-        var squad = EnsureText(canvas.transform, "SquadText", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-20f, -80f), new Vector2(260f, 220f), TextAnchor.UpperLeft);
-        var deploy = EnsureText(canvas.transform, "DeployPreviewText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-20f, 40f), new Vector2(260f, 180f), TextAnchor.UpperLeft);
-        var currency = EnsureText(canvas.transform, "CurrencyText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 30f), new Vector2(760f, 30f), TextAnchor.MiddleCenter);
-        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(760f, 30f), TextAnchor.MiddleCenter);
+        EnsurePanel(canvas.transform, "RosterPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(180f, 10f), new Vector2(340f, 440f), new Color(0.12f, 0.15f, 0.22f, 0.92f));
+        EnsurePanel(canvas.transform, "SquadPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-160f, 120f), new Vector2(300f, 220f), new Color(0.14f, 0.15f, 0.26f, 0.92f));
+        EnsurePanel(canvas.transform, "DeployPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-160f, -95f), new Vector2(300f, 190f), new Color(0.14f, 0.15f, 0.26f, 0.92f));
 
-        EnsureButton(canvas.transform, "RecruitButton1", "Recruit 1", new Vector2(0.5f, 0.5f), new Vector2(-120f, 80f), controller.RecruitOffer0);
-        EnsureButton(canvas.transform, "RecruitButton2", "Recruit 2", new Vector2(0.5f, 0.5f), new Vector2(0f, 80f), controller.RecruitOffer1);
-        EnsureButton(canvas.transform, "RecruitButton3", "Recruit 3", new Vector2(0.5f, 0.5f), new Vector2(120f, 80f), controller.RecruitOffer2);
-        EnsureButton(canvas.transform, "RerollButton", "Reroll", new Vector2(0.5f, 0.5f), new Vector2(-180f, 20f), controller.RerollOffers);
-        EnsureButton(canvas.transform, "SaveButton", "Save", new Vector2(0.5f, 0.5f), new Vector2(-60f, 20f), controller.SaveProfile);
-        EnsureButton(canvas.transform, "LoadButton", "Load", new Vector2(0.5f, 0.5f), new Vector2(60f, 20f), controller.LoadProfile);
-        EnsureButton(canvas.transform, "DebugStartButton", "Debug Start", new Vector2(0.5f, 0.5f), new Vector2(180f, 20f), controller.DebugStartExpedition);
+        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Town Operator UI");
+        var roster = EnsureText(canvas.transform, "RosterText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(180f, 10f), new Vector2(300f, 400f), TextAnchor.UpperLeft);
+        var recruit = EnsureText(canvas.transform, "RecruitText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 165f), new Vector2(400f, 44f), TextAnchor.MiddleCenter, 18, "Recruit 후보 3개");
+        var recruitCardsRoot = EnsurePanel(canvas.transform, "RecruitCardsRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(450f, 360f), new Color(0.13f, 0.17f, 0.21f, 0.9f)).rectTransform;
+        var squad = EnsureText(canvas.transform, "SquadText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-160f, 120f), new Vector2(260f, 180f), TextAnchor.UpperLeft);
+        var deploy = EnsureText(canvas.transform, "DeployPreviewText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-160f, -95f), new Vector2(260f, 150f), TextAnchor.UpperLeft);
+        var currency = EnsureText(canvas.transform, "CurrencyText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 30f), new Vector2(840f, 30f), TextAnchor.MiddleCenter);
+        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(840f, 30f), TextAnchor.MiddleCenter);
+
+        var recruitCard1 = EnsurePanel(recruitCardsRoot, "RecruitCard1", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-140f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+        var recruitCard2 = EnsurePanel(recruitCardsRoot, "RecruitCard2", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+        var recruitCard3 = EnsurePanel(recruitCardsRoot, "RecruitCard3", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(140f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+
+        EnsureText(recruitCard1, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(110f, 40f), TextAnchor.MiddleCenter, 16, "Recruit 1");
+        EnsureText(recruitCard1, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(110f, 120f), TextAnchor.UpperCenter, 14, "Body");
+        EnsureButton(recruitCard1, "RecruitButton", "Recruit 1", new Vector2(0.5f, 0f), new Vector2(0f, 26f), controller.RecruitOffer0);
+
+        EnsureText(recruitCard2, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(110f, 40f), TextAnchor.MiddleCenter, 16, "Recruit 2");
+        EnsureText(recruitCard2, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(110f, 120f), TextAnchor.UpperCenter, 14, "Body");
+        EnsureButton(recruitCard2, "RecruitButton", "Recruit 2", new Vector2(0.5f, 0f), new Vector2(0f, 26f), controller.RecruitOffer1);
+
+        EnsureText(recruitCard3, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(110f, 40f), TextAnchor.MiddleCenter, 16, "Recruit 3");
+        EnsureText(recruitCard3, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(110f, 120f), TextAnchor.UpperCenter, 14, "Body");
+        EnsureButton(recruitCard3, "RecruitButton", "Recruit 3", new Vector2(0.5f, 0f), new Vector2(0f, 26f), controller.RecruitOffer2);
+
+        EnsureButton(canvas.transform, "RerollButton", "Reroll", new Vector2(0.5f, 0f), new Vector2(-240f, 115f), controller.RerollOffers);
+        EnsureButton(canvas.transform, "SaveButton", "Save", new Vector2(0.5f, 0f), new Vector2(-120f, 115f), controller.SaveProfile);
+        EnsureButton(canvas.transform, "LoadButton", "Load", new Vector2(0.5f, 0f), new Vector2(0f, 115f), controller.LoadProfile);
+        EnsureButton(canvas.transform, "DebugStartButton", "Debug Start", new Vector2(0.5f, 0f), new Vector2(120f, 115f), controller.DebugStartExpedition);
+        EnsureButton(canvas.transform, "QuickBattleButton", "Quick Battle", new Vector2(0.5f, 0f), new Vector2(240f, 115f), controller.QuickBattle);
 
         Bind(controller, new Dictionary<string, Object>
         {
             ["titleText"] = title,
             ["rosterText"] = roster,
             ["recruitText"] = recruit,
+            ["recruitCardsRoot"] = recruitCardsRoot,
             ["squadText"] = squad,
             ["deployPreviewText"] = deploy,
             ["currencyText"] = currency,
@@ -93,21 +112,11 @@ public static class FirstPlayableSceneInstaller
         });
 
         Save(scene);
-        StabilizeControllerAfterReload<TownScreenController>("Town", "TownScreenController", new Dictionary<string, string>
-        {
-            ["titleText"] = "TitleText",
-            ["rosterText"] = "RosterText",
-            ["recruitText"] = "RecruitText",
-            ["squadText"] = "SquadText",
-            ["deployPreviewText"] = "DeployPreviewText",
-            ["currencyText"] = "CurrencyText",
-            ["statusText"] = "StatusText",
-        });
     }
 
     private static void RebuildExpedition()
     {
-        var scene = Open("Expedition");
+        var scene = CreateFreshScene("Expedition");
         EnsureSceneMarker(scene, "SceneMarker_Expedition");
         EnsureCamera("Main Camera", true, new Vector3(0f, 0f, -10f), Quaternion.identity);
         var canvas = EnsureCanvasRoot("ExpeditionCanvas");
@@ -116,12 +125,24 @@ public static class FirstPlayableSceneInstaller
         var controllerGo = ResetUiChild(canvas.transform, "ExpeditionScreenController");
         var controller = EnsureComponent<ExpeditionScreenController>(controllerGo);
 
-        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Expedition Debug UI");
-        var map = EnsureText(canvas.transform, "MapText", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -80f), new Vector2(340f, 300f), TextAnchor.UpperLeft);
-        var position = EnsureText(canvas.transform, "PositionText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -80f), new Vector2(300f, 30f), TextAnchor.MiddleCenter);
-        var reward = EnsureText(canvas.transform, "RewardText", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-20f, -80f), new Vector2(260f, 220f), TextAnchor.UpperLeft);
-        var squad = EnsureText(canvas.transform, "SquadText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 40f), new Vector2(340f, 220f), TextAnchor.UpperLeft);
-        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(760f, 30f), TextAnchor.MiddleCenter);
+        EnsurePanel(canvas.transform, "MapPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(170f, 0f), new Vector2(300f, 380f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
+        var nodeTrackRoot = EnsurePanel(canvas.transform, "NodeTrackRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 115f), new Vector2(440f, 120f), new Color(0.12f, 0.16f, 0.23f, 0.92f)).rectTransform;
+        EnsurePanel(canvas.transform, "SquadPanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -75f), new Vector2(360f, 220f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
+        EnsurePanel(canvas.transform, "RewardPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 0f), new Vector2(260f, 380f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
+
+        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Expedition Operator UI");
+        var map = EnsureText(canvas.transform, "MapText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(170f, 0f), new Vector2(260f, 330f), TextAnchor.UpperLeft);
+        var position = EnsureText(canvas.transform, "PositionText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -80f), new Vector2(420f, 30f), TextAnchor.MiddleCenter);
+        var reward = EnsureText(canvas.transform, "RewardText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 0f), new Vector2(220f, 330f), TextAnchor.UpperLeft);
+        var squad = EnsureText(canvas.transform, "SquadText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -75f), new Vector2(320f, 180f), TextAnchor.UpperLeft);
+        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(840f, 30f), TextAnchor.MiddleCenter);
+
+        for (var i = 0; i < 5; i++)
+        {
+            var nodeBox = EnsurePanel(nodeTrackRoot, $"NodeBox{i + 1}", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-176f + (i * 88f), 0f), new Vector2(78f, 90f), new Color(0.18f, 0.22f, 0.34f, 0.95f)).rectTransform;
+            EnsureText(nodeBox, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(70f, 40f), TextAnchor.MiddleCenter, 14, $"Node {i + 1}");
+            EnsureText(nodeBox, "RewardText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -6f), new Vector2(70f, 40f), TextAnchor.MiddleCenter, 12, "Reward");
+        }
 
         EnsureButton(canvas.transform, "NextBattleButton", "Next Battle", new Vector2(0.5f, 0f), new Vector2(-80f, 25f), controller.NextBattleOrAdvance);
         EnsureButton(canvas.transform, "ReturnTownButton", "Return Town", new Vector2(0.5f, 0f), new Vector2(80f, 25f), controller.ReturnToTown);
@@ -130,6 +151,7 @@ public static class FirstPlayableSceneInstaller
         {
             ["titleText"] = title,
             ["mapText"] = map,
+            ["nodeTrackRoot"] = nodeTrackRoot,
             ["positionText"] = position,
             ["rewardText"] = reward,
             ["squadText"] = squad,
@@ -137,38 +159,48 @@ public static class FirstPlayableSceneInstaller
         });
 
         Save(scene);
-        StabilizeControllerAfterReload<ExpeditionScreenController>("Expedition", "ExpeditionScreenController", new Dictionary<string, string>
-        {
-            ["titleText"] = "TitleText",
-            ["mapText"] = "MapText",
-            ["positionText"] = "PositionText",
-            ["rewardText"] = "RewardText",
-            ["squadText"] = "SquadText",
-            ["statusText"] = "StatusText",
-        });
     }
 
     private static void RebuildBattle()
     {
-        var scene = Open("Battle");
+        var scene = CreateFreshScene("Battle");
         EnsureSceneMarker(scene, "SceneMarker_Battle");
         EnsureCamera("Main Camera", true, new Vector3(0f, 8f, -8f), Quaternion.Euler(35f, 0f, 0f));
         var canvas = EnsureCanvasRoot("BattleCanvas");
         EnsureEventSystem();
+        var battleStageRoot = EnsureRootObject("BattleStageRoot");
 
         var controllerGo = ResetUiChild(canvas.transform, "BattleScreenController");
         var controller = EnsureComponent<BattleScreenController>(controllerGo);
+        var presentationGo = ResetUiChild(canvas.transform, "BattlePresentationRoot");
+        var presentation = EnsureComponent<BattlePresentationController>(presentationGo);
 
-        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Battle Debug UI");
-        var allyHp = EnsureText(canvas.transform, "AllyHpText", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -80f), new Vector2(220f, 220f), TextAnchor.UpperLeft);
-        var enemyHp = EnsureText(canvas.transform, "EnemyHpText", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-20f, -80f), new Vector2(220f, 220f), TextAnchor.UpperLeft);
-        var log = EnsureText(canvas.transform, "LogText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(420f, 220f), TextAnchor.UpperLeft);
-        var result = EnsureText(canvas.transform, "ResultText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 110f), new Vector2(300f, 30f), TextAnchor.MiddleCenter);
-        var speed = EnsureText(canvas.transform, "SpeedText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 75f), new Vector2(300f, 30f), TextAnchor.MiddleCenter);
+        var actorOverlayRoot = EnsurePanel(presentationGo.transform, "ActorOverlayRoot", new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0f)).rectTransform;
+        actorOverlayRoot.offsetMin = Vector2.zero;
+        actorOverlayRoot.offsetMax = Vector2.zero;
+
+        EnsurePanel(canvas.transform, "LeftPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(150f, 90f), new Vector2(260f, 250f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        EnsurePanel(canvas.transform, "RightPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 90f), new Vector2(260f, 250f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        EnsurePanel(canvas.transform, "LogPanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -70f), new Vector2(440f, 260f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        var progressTrack = EnsurePanel(canvas.transform, "ProgressTrack", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 145f), new Vector2(360f, 18f), new Color(0.08f, 0.08f, 0.08f, 0.9f));
+        var progressFill = EnsurePanel(progressTrack.transform, "ProgressFill", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(348f, 10f), new Color(0.85f, 0.58f, 0.22f, 0.95f));
+        progressFill.type = Image.Type.Filled;
+        progressFill.fillMethod = Image.FillMethod.Horizontal;
+        progressFill.fillOrigin = 0;
+        progressFill.fillAmount = 0f;
+
+        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Battle Observer UI");
+        var allyHp = EnsureText(canvas.transform, "AllyHpText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(150f, 90f), new Vector2(220f, 210f), TextAnchor.UpperLeft);
+        var enemyHp = EnsureText(canvas.transform, "EnemyHpText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 90f), new Vector2(220f, 210f), TextAnchor.UpperLeft);
+        var log = EnsureText(canvas.transform, "LogText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -70f), new Vector2(400f, 220f), TextAnchor.UpperLeft);
+        var result = EnsureText(canvas.transform, "ResultText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 110f), new Vector2(320f, 30f), TextAnchor.MiddleCenter);
+        var speed = EnsureText(canvas.transform, "SpeedText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 75f), new Vector2(320f, 30f), TextAnchor.MiddleCenter);
+        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 180f), new Vector2(640f, 30f), TextAnchor.MiddleCenter);
 
         EnsureButton(canvas.transform, "Speed1Button", "x1", new Vector2(0.5f, 0f), new Vector2(-120f, 25f), controller.SetSpeed1);
         EnsureButton(canvas.transform, "Speed2Button", "x2", new Vector2(0.5f, 0f), new Vector2(0f, 25f), controller.SetSpeed2);
         EnsureButton(canvas.transform, "Speed4Button", "x4", new Vector2(0.5f, 0f), new Vector2(120f, 25f), controller.SetSpeed4);
+        EnsureButton(canvas.transform, "PauseButton", "Pause", new Vector2(0.5f, 0f), new Vector2(240f, 25f), controller.TogglePause);
         EnsureButton(canvas.transform, "ContinueButton", "Continue", new Vector2(1f, 0f), new Vector2(-90f, 25f), controller.ContinueToReward);
 
         Bind(controller, new Dictionary<string, Object>
@@ -179,23 +211,23 @@ public static class FirstPlayableSceneInstaller
             ["logText"] = log,
             ["resultText"] = result,
             ["speedText"] = speed,
+            ["statusText"] = status,
+            ["progressFill"] = progressFill,
+            ["presentationController"] = presentation,
+        });
+
+        Bind(presentation, new Dictionary<string, Object>
+        {
+            ["battleStageRoot"] = battleStageRoot.transform,
+            ["actorOverlayRoot"] = actorOverlayRoot,
         });
 
         Save(scene);
-        StabilizeControllerAfterReload<BattleScreenController>("Battle", "BattleScreenController", new Dictionary<string, string>
-        {
-            ["titleText"] = "TitleText",
-            ["allyHpText"] = "AllyHpText",
-            ["enemyHpText"] = "EnemyHpText",
-            ["logText"] = "LogText",
-            ["resultText"] = "ResultText",
-            ["speedText"] = "SpeedText",
-        });
     }
 
     private static void RebuildReward()
     {
-        var scene = Open("Reward");
+        var scene = CreateFreshScene("Reward");
         EnsureSceneMarker(scene, "SceneMarker_Reward");
         EnsureCamera("Main Camera", true, new Vector3(0f, 0f, -10f), Quaternion.identity);
         var canvas = EnsureCanvasRoot("RewardCanvas");
@@ -204,14 +236,33 @@ public static class FirstPlayableSceneInstaller
         var controllerGo = ResetUiChild(canvas.transform, "RewardScreenController");
         var controller = EnsureComponent<RewardScreenController>(controllerGo);
 
-        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Reward Debug UI");
-        var summary = EnsureText(canvas.transform, "SummaryText", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -80f), new Vector2(360f, 240f), TextAnchor.UpperLeft);
-        var choices = EnsureText(canvas.transform, "ChoicesText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(80f, -80f), new Vector2(360f, 240f), TextAnchor.UpperLeft);
-        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(760f, 30f), TextAnchor.MiddleCenter);
+        EnsurePanel(canvas.transform, "SummaryPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(180f, 40f), new Vector2(320f, 320f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
+        var rewardCardsRoot = EnsurePanel(canvas.transform, "RewardCardsRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(120f, 20f), new Vector2(520f, 340f), new Color(0.12f, 0.16f, 0.23f, 0.92f)).rectTransform;
 
-        EnsureButton(canvas.transform, "Choice1Button", "Choice 1", new Vector2(0.5f, 0f), new Vector2(-180f, 25f), controller.Choose0);
-        EnsureButton(canvas.transform, "Choice2Button", "Choice 2", new Vector2(0.5f, 0f), new Vector2(-40f, 25f), controller.Choose1);
-        EnsureButton(canvas.transform, "Choice3Button", "Choice 3", new Vector2(0.5f, 0f), new Vector2(100f, 25f), controller.Choose2);
+        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Reward Operator UI");
+        var summary = EnsureText(canvas.transform, "SummaryText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(180f, 40f), new Vector2(280f, 280f), TextAnchor.UpperLeft);
+        var choices = EnsureText(canvas.transform, "ChoicesText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(120f, -80f), new Vector2(420f, 30f), TextAnchor.MiddleCenter, 18, "3지선다 보상 카드");
+        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(840f, 30f), TextAnchor.MiddleCenter);
+
+        var choice1 = EnsurePanel(rewardCardsRoot, "ChoiceCard1", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-160f, -10f), new Vector2(140f, 240f), new Color(0.18f, 0.21f, 0.30f, 0.96f)).rectTransform;
+        var choice2 = EnsurePanel(rewardCardsRoot, "ChoiceCard2", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -10f), new Vector2(140f, 240f), new Color(0.18f, 0.21f, 0.30f, 0.96f)).rectTransform;
+        var choice3 = EnsurePanel(rewardCardsRoot, "ChoiceCard3", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(160f, -10f), new Vector2(140f, 240f), new Color(0.18f, 0.21f, 0.30f, 0.96f)).rectTransform;
+
+        EnsureText(choice1, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(120f, 34f), TextAnchor.MiddleCenter, 16, "Choice 1");
+        EnsureText(choice1, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 28f), new Vector2(120f, 88f), TextAnchor.MiddleCenter, 14, "Body");
+        EnsureText(choice1, "KindText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 72f), new Vector2(120f, 26f), TextAnchor.MiddleCenter, 13, "Kind");
+        EnsureButton(choice1, "ChooseButton", "Pick 1", new Vector2(0.5f, 0f), new Vector2(0f, 24f), controller.Choose0);
+
+        EnsureText(choice2, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(120f, 34f), TextAnchor.MiddleCenter, 16, "Choice 2");
+        EnsureText(choice2, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 28f), new Vector2(120f, 88f), TextAnchor.MiddleCenter, 14, "Body");
+        EnsureText(choice2, "KindText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 72f), new Vector2(120f, 26f), TextAnchor.MiddleCenter, 13, "Kind");
+        EnsureButton(choice2, "ChooseButton", "Pick 2", new Vector2(0.5f, 0f), new Vector2(0f, 24f), controller.Choose1);
+
+        EnsureText(choice3, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(120f, 34f), TextAnchor.MiddleCenter, 16, "Choice 3");
+        EnsureText(choice3, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 28f), new Vector2(120f, 88f), TextAnchor.MiddleCenter, 14, "Body");
+        EnsureText(choice3, "KindText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 72f), new Vector2(120f, 26f), TextAnchor.MiddleCenter, 13, "Kind");
+        EnsureButton(choice3, "ChooseButton", "Pick 3", new Vector2(0.5f, 0f), new Vector2(0f, 24f), controller.Choose2);
+
         EnsureButton(canvas.transform, "ReturnTownButton", "Return Town", new Vector2(1f, 0f), new Vector2(-90f, 25f), controller.ReturnToTown);
 
         Bind(controller, new Dictionary<string, Object>
@@ -219,23 +270,25 @@ public static class FirstPlayableSceneInstaller
             ["titleText"] = title,
             ["summaryText"] = summary,
             ["choicesText"] = choices,
+            ["rewardCardsRoot"] = rewardCardsRoot,
             ["statusText"] = status,
         });
 
         Save(scene);
-        StabilizeControllerAfterReload<RewardScreenController>("Reward", "RewardScreenController", new Dictionary<string, string>
-        {
-            ["titleText"] = "TitleText",
-            ["summaryText"] = "SummaryText",
-            ["choicesText"] = "ChoicesText",
-            ["statusText"] = "StatusText",
-        });
     }
 
     private static Scene Open(string sceneName)
     {
         var path = $"{ScenesRoot}/{sceneName}.unity";
         return EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+    }
+
+    private static Scene CreateFreshScene(string sceneName)
+    {
+        var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        var path = $"{ScenesRoot}/{sceneName}.unity";
+        EditorSceneManager.SaveScene(scene, path);
+        return scene;
     }
 
     private static void Save(Scene scene)
@@ -260,31 +313,10 @@ public static class FirstPlayableSceneInstaller
     private static void ValidateSavedSceneContracts()
     {
         ValidateScene("Boot", new[] { "GameBootstrap", "BootCanvas", "Main Camera" });
-        ValidateScene("Town", new[] { "TownCanvas", "EventSystem", "TownScreenController" }, typeof(TownScreenController));
-        ValidateScene("Expedition", new[] { "ExpeditionCanvas", "EventSystem", "ExpeditionScreenController" }, typeof(ExpeditionScreenController));
-        ValidateScene("Battle", new[] { "BattleCanvas", "EventSystem", "BattleScreenController" }, typeof(BattleScreenController));
-        ValidateScene("Reward", new[] { "RewardCanvas", "EventSystem", "RewardScreenController" }, typeof(RewardScreenController));
-    }
-
-    private static void StabilizeControllerAfterReload<T>(string sceneName, string controllerObjectName, IReadOnlyDictionary<string, string> textBindings) where T : Component
-    {
-        var scene = Open(sceneName);
-        var controllerGo = FindGameObject(scene, controllerObjectName)
-            ?? throw new System.InvalidOperationException($"{controllerObjectName} object disappeared during repair.");
-        var controller = EnsureComponent<T>(controllerGo);
-        var refs = textBindings.ToDictionary(pair => pair.Key, pair => (Object)RequireText(scene, pair.Value));
-        Bind(controller, refs);
-
-        Save(scene);
-    }
-
-    private static void StabilizeComponentAfterReload<T>(string sceneName, string objectName) where T : Component
-    {
-        var scene = Open(sceneName);
-        var go = FindGameObject(scene, objectName)
-            ?? throw new System.InvalidOperationException($"{objectName} object disappeared during repair.");
-        EnsureComponent<T>(go);
-        Save(scene);
+        ValidateScene("Town", new[] { "TownCanvas", "EventSystem", "TownScreenController", "RecruitCardsRoot", "QuickBattleButton" }, typeof(TownScreenController));
+        ValidateScene("Expedition", new[] { "ExpeditionCanvas", "EventSystem", "ExpeditionScreenController", "NodeTrackRoot" }, typeof(ExpeditionScreenController));
+        ValidateScene("Battle", new[] { "BattleCanvas", "EventSystem", "BattleScreenController", "BattlePresentationRoot", "BattleStageRoot", "ActorOverlayRoot", "PauseButton", "ProgressTrack", "ProgressFill", "StatusText" }, typeof(BattleScreenController));
+        ValidateScene("Reward", new[] { "RewardCanvas", "EventSystem", "RewardScreenController", "RewardCardsRoot" }, typeof(RewardScreenController));
     }
 
     private static void ValidateScene(string sceneName, IReadOnlyList<string> requiredObjectNames, System.Type? requiredComponentType = null)
@@ -333,6 +365,46 @@ public static class FirstPlayableSceneInstaller
         }
 
         return text;
+    }
+
+    private static void BindByName(Object target, Scene scene, IReadOnlyDictionary<string, string> refsByFieldName)
+    {
+        var resolved = new Dictionary<string, Object>();
+        foreach (var pair in refsByFieldName)
+        {
+            var field = target.GetType().GetField(pair.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (field == null)
+            {
+                continue;
+            }
+
+            var go = FindGameObject(scene, pair.Value)
+                ?? throw new System.InvalidOperationException($"Missing object '{pair.Value}' while binding {target.name} in {scene.path}");
+            var reference = ResolveReference(go, field.FieldType);
+            if (reference == null)
+            {
+                throw new System.InvalidOperationException($"Unable to bind field '{pair.Key}' ({field.FieldType.Name}) from '{pair.Value}' in {scene.path}");
+            }
+
+            resolved[pair.Key] = reference;
+        }
+
+        Bind(target, resolved);
+    }
+
+    private static Object? ResolveReference(GameObject go, System.Type fieldType)
+    {
+        if (fieldType == typeof(GameObject))
+        {
+            return go;
+        }
+
+        if (typeof(Component).IsAssignableFrom(fieldType))
+        {
+            return EnsureComponent(go, fieldType);
+        }
+
+        return null;
     }
 
     private static GameObject EnsureRootObject(string name)
@@ -387,11 +459,24 @@ public static class FirstPlayableSceneInstaller
             return component;
         }
 
-#if UNITY_EDITOR
-        return (T)Undo.AddComponent(go, typeof(T));
-#else
         return go.AddComponent<T>();
+    }
+
+    private static Component EnsureComponent(GameObject go, System.Type componentType)
+    {
+#if UNITY_EDITOR
+        if (GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(go) > 0)
+        {
+            GameObjectUtility.RemoveMonoBehavioursWithMissingScript(go);
+        }
 #endif
+        var component = go.GetComponent(componentType);
+        if (component != null)
+        {
+            return component;
+        }
+
+        return go.AddComponent(componentType);
     }
 
     private static Canvas EnsureCanvasRoot(string name)
@@ -407,11 +492,19 @@ public static class FirstPlayableSceneInstaller
     private static void EnsureEventSystem()
     {
         var existing = Object.FindObjectsOfType<EventSystem>();
+        var inputSystemUiType = System.Type.GetType("UnityEngine.InputSystem.UI.InputSystemUIInputModule, Unity.InputSystem");
         if (existing.Length == 0)
         {
             var go = new GameObject("EventSystem");
             go.AddComponent<EventSystem>();
-            go.AddComponent<StandaloneInputModule>();
+            if (inputSystemUiType != null)
+            {
+                EnsureComponent(go, inputSystemUiType);
+            }
+            else
+            {
+                go.AddComponent<StandaloneInputModule>();
+            }
             return;
         }
 
@@ -421,6 +514,18 @@ public static class FirstPlayableSceneInstaller
         }
 
         existing[0].name = "EventSystem";
+        if (inputSystemUiType != null)
+        {
+            var standalone = existing[0].gameObject.GetComponent<StandaloneInputModule>();
+            if (standalone != null)
+            {
+                Object.DestroyImmediate(standalone);
+            }
+
+            EnsureComponent(existing[0].gameObject, inputSystemUiType);
+            return;
+        }
+
         EnsureComponent<StandaloneInputModule>(existing[0].gameObject);
     }
 
@@ -456,6 +561,21 @@ public static class FirstPlayableSceneInstaller
         text.color = Color.white;
         text.text = initialText ?? name;
         return text;
+    }
+
+    private static Image EnsurePanel(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta, Color color)
+    {
+        var go = EnsureUiChild(parent, name);
+        var rect = EnsureComponent<RectTransform>(go);
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = anchoredPosition;
+        rect.sizeDelta = sizeDelta;
+
+        var image = EnsureComponent<Image>(go);
+        image.color = color;
+        return image;
     }
 
     private static Button EnsureButton(Transform parent, string name, string label, Vector2 anchor, Vector2 anchoredPosition, UnityAction callback)

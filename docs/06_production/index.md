@@ -10,3 +10,5 @@
 - `mvp-playtest-checklist.md`: MVP 플레이테스트 체크리스트
 - `current-known-issues.md`: 현재 알려진 이슈
 - `balance-knobs.md`: 밸런스 조정 가능한 수치 목록
+- `first-playable-review.md`: 현재 operator playable 범위
+- `operator-first-playable-checklist.md`: 첫 전투 수동 검증 체크리스트

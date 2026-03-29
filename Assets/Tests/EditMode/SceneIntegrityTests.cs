@@ -8,7 +8,7 @@ namespace SM.Tests.EditMode;
 public sealed class SceneIntegrityTests
 {
     [OneTimeSetUp]
-    public void PrepareCanonicalContentAndTemporarySceneBridge()
+    public void PrepareCanonicalContentAndObserverPlayableScenes()
     {
         FirstPlayableContentBootstrap.EnsureSampleContent();
         FirstPlayableSceneInstaller.RebuildFirstPlayableScenes();
@@ -35,21 +35,51 @@ public sealed class SceneIntegrityTests
     }
 
     [Test]
-    public void BootScene_TemporaryBridge_Saves_GameBootstrap_Camera_And_Canvas()
+    public void BootScene_Saves_GameBootstrap_Camera_And_Canvas()
     {
         AssertSceneContains("Boot", "m_Name: GameBootstrap", "SM.Unity::SM.Unity.GameBootstrap", "m_Name: BootCanvas", "m_Name: Main Camera");
     }
 
     [Test]
-    public void TownScene_TemporaryBridge_Saves_Controller_Canvas_And_EventSystem()
+    public void TownScene_Saves_Controller_QuickBattle_And_RecruitCards()
     {
-        AssertSceneContains("Town", "m_Name: TownScreenController", "SM.Unity::SM.Unity.TownScreenController", "m_Name: TownCanvas", "m_Name: EventSystem");
+        AssertSceneContains(
+            "Town",
+            "m_Name: TownScreenController",
+            "SM.Unity::SM.Unity.TownScreenController",
+            "m_Name: TownCanvas",
+            "m_Name: EventSystem",
+            "m_Name: RecruitCardsRoot",
+            "m_Name: QuickBattleButton");
     }
 
     [Test]
-    public void BattleScene_TemporaryBridge_Saves_Controller_Canvas_And_EventSystem()
+    public void BattleScene_Saves_Replay_Presentation_And_Controls()
     {
-        AssertSceneContains("Battle", "m_Name: BattleScreenController", "SM.Unity::SM.Unity.BattleScreenController", "m_Name: BattleCanvas", "m_Name: EventSystem");
+        AssertSceneContains(
+            "Battle",
+            "m_Name: BattleScreenController",
+            "SM.Unity::SM.Unity.BattleScreenController",
+            "m_Name: BattlePresentationRoot",
+            "SM.Unity::SM.Unity.BattlePresentationController",
+            "m_Name: BattleStageRoot",
+            "m_Name: ActorOverlayRoot",
+            "m_Name: PauseButton",
+            "m_Name: ProgressFill",
+            "m_Name: BattleCanvas",
+            "m_Name: EventSystem");
+    }
+
+    [Test]
+    public void RewardScene_Saves_Controller_And_RewardCards()
+    {
+        AssertSceneContains(
+            "Reward",
+            "m_Name: RewardScreenController",
+            "SM.Unity::SM.Unity.RewardScreenController",
+            "m_Name: RewardCardsRoot",
+            "m_Name: RewardCanvas",
+            "m_Name: EventSystem");
     }
 
     private static void AssertAssetContains(string assetPath, params string[] fragments)
@@ -70,7 +100,7 @@ public sealed class SceneIntegrityTests
         var text = File.ReadAllText(scenePath);
         foreach (var fragment in fragments)
         {
-            Assert.That(text, Does.Contain(fragment), $"Temporary scene bridge until block25 must save '{fragment}' into {scenePath}");
+            Assert.That(text, Does.Contain(fragment), $"Observer playable scene contract missing '{fragment}' in {scenePath}");
         }
     }
 }

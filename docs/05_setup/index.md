@@ -14,6 +14,7 @@
 - `github-setup.md`: GitHub 연동 설정
 - `local-automation.md`: 로컬 자동화 스크립트 사용
 - `local-runbook.md`: 로컬 실행 런북
+- `quick-battle-smoke.md`: Town Quick Battle smoke 경로
 - `postgres-setup.md`: local Postgres 설정
 - `scene-repair-bootstrap.md`: first playable scene repair/bootstrap 운영 기준
 - `unity-bootstrap.md`: Unity 부트스트랩 절차

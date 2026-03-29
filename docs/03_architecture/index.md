@@ -15,6 +15,7 @@
 - 콘텐츠 authoring 규칙은 `content-authoring-model.md`
 - Unity 프로젝트 폴더/asmdef 배치는 `unity-project-layout.md`
 - scene 흐름과 composition root는 `unity-scene-flow.md`
+- battle replay adapter 계약은 `battle-replay-model.md`
 - persistence 저장 경계는 `persistence-strategy.md`, `persistence-schema.md`
 - 콘텐츠 파이프라인과 로딩은 `content-pipeline.md`, `content-loading-contract.md`, `content-loading-strategy.md`
 - 테스트 전략은 `testing-strategy.md`
@@ -31,6 +32,7 @@
 - `content-authoring-model.md`: 콘텐츠 authoring/validation 경계
 - `unity-project-layout.md`: 실제 폴더와 asmdef 배치
 - `unity-scene-flow.md`: Boot 중심 scene flow 규칙
+- `battle-replay-model.md`: resolve once -> replay track -> observer presentation 계약
 - `persistence-strategy.md`: persistence adapter 경계
 - `persistence-schema.md`: 저장 대상과 비대상
 - `content-pipeline.md`: 콘텐츠 intake와 파이프라인 운영 방향

@@ -1,49 +1,38 @@
-# survival-manager
+# Survival Manager
 
-`survival-manager`는 Unity 프로젝트를 레포지토리 루트에 두는 구조를 전제로 한 게임 저장소 프로토타입이다.
+## 반드시 먼저 실행할 메뉴 1개
 
-## 목적
+- `SM/Bootstrap/Prepare Observer Playable`
 
-이 저장소의 현재 목적은 **목각인형 수준 playable vertical slice**를 빠르게 검증할 수 있는 구현/문서/테스트 기반을 유지하는 것이다.
+## 지금 바로 first playable 보는 3단계
 
-## 현재 단계
+1. Unity `6000.4.0f1`로 프로젝트를 연다.
+2. 메뉴에서 `SM/Bootstrap/Prepare Observer Playable`를 실행한다.
+3. `Boot.unity`가 열리면 Play를 누른다.
 
-- phase: `prototype`
-- 구현 허용 범위: `Assets/_Game/**`, `Assets/Tests/**`
-- 문서 언어: 한국어 기준
-- 파일명, 코드, API 식별자: 영어 유지
+## 첫 전투까지 가장 빠른 클릭 순서
 
-## 현재 범위
+1. Town에서 `Quick Battle`
+2. Battle replay 종료 후 `Continue`
+3. Reward에서 카드 1장 선택 후 `Return Town`
 
-- Unity 루트형 프로젝트 구조 유지
-- 순수 C# 코어/전투/메타 최소 구현 유지
-- 콘텐츠 정의, 시드 생성, 검증 루프 유지
-- JSON fallback 중심 persistence 경계 정리
-- 플레이어블 vertical slice를 위한 씬/프리미티브 기반 작업 준비
+## 지금 실제로 보이는 범위
 
-## 저장소 루트 구조
+- `Boot -> Town -> Battle -> Reward -> Town`
+- Town operator UI: roster / recruit 카드 3개 / squad / deploy preview / save / load / debug start / quick battle
+- Expedition operator UI: 5노드 박스, 현재 위치, 예정 보상, next battle / return town
+- Battle observer UI: replay track, primitive actor, HP label/bar, 로그, speed, pause, progress
+- Reward operator UI: 3지선다 카드, gold / item / temporary augment 즉시 반영
 
-- `Assets/`: Unity 에셋과 게임 코드
-- `Packages/`: Unity 패키지 선언 및 잠금 파일
-- `ProjectSettings/`: Unity 프로젝트 설정
-- `docs/`: 설계 및 운영 문서
-- `prompts/`: 에이전트/자동화 프롬프트
-- `tools/`: 로컬 보조 스크립트와 유틸리티
-- `.agents/`: 에이전트 협업 규칙과 스킬 확장점
-- `.github/`: GitHub 운영 메타파일
-- `.codex/`: Codex 작업 보조 설정
+## 자동 검증
 
-## 작업 원칙
+- EditMode: canonical content, scene integrity, replay builder
+- PlayMode: Boot -> Town 자동 진입, Town Quick Battle smoke, Battle replay UI root, Reward -> Town 복귀
 
-1. Unity 프로젝트는 레포 루트에 둔다.
-2. 지속 문서는 한국어로 유지한다.
-3. 구현 변경 시 문서와 인덱스를 함께 갱신한다.
-4. 게임 구현은 `Assets/_Game/**`, 테스트는 `Assets/Tests/**` 범위에서 진행한다.
-5. 현재 목표는 완성도보다 "한 판이 완주되는지"를 검증하는 playable vertical slice다.
+## 문서 시작점
 
-## 다음 추천 단계
-
-1. Boot -> Town -> Expedition -> Battle -> Reward -> Town 씬 루프 실제 연결
-2. primitive 기반 UI/카메라/디버그 흐름 구현
-3. JSON persistence를 실제 플레이 루프에 접속
-4. PlayMode 통합 검증 루프 보강
+- 실행 절차: `docs/05_setup/local-runbook.md`
+- scene repair/bootstrap: `docs/05_setup/scene-repair-bootstrap.md`
+- quick battle smoke: `docs/05_setup/quick-battle-smoke.md`
+- operator 체크리스트: `docs/06_production/operator-first-playable-checklist.md`
+- 현재 playable 상태: `docs/06_production/first-playable-review.md`

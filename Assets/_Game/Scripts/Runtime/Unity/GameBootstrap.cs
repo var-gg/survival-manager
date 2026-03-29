@@ -1,6 +1,7 @@
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
+using System.IO;
 #endif
 
 namespace SM.Unity;
@@ -8,11 +9,26 @@ namespace SM.Unity;
 public sealed class GameBootstrap : MonoBehaviour
 {
     private const string ResourcesDefinitionsStatsPath = "_Game/Content/Definitions/Stats";
+#if UNITY_EDITOR
+    private const string EditorDefinitionsStatsPath = "Assets/Resources/_Game/Content/Definitions/Stats";
+#endif
 
     [SerializeField] private bool autoEnterTown = true;
+    private bool _hasRun;
 
     private void Start()
     {
+        RunBootstrap();
+    }
+
+    public void RunBootstrap()
+    {
+        if (_hasRun)
+        {
+            return;
+        }
+
+        _hasRun = true;
         var root = EnsureRoot();
         root.SessionState.SetCurrentScene(SceneNames.Boot);
 
@@ -45,7 +61,17 @@ public sealed class GameBootstrap : MonoBehaviour
     private static bool HasSeedContent()
     {
         var stats = Resources.LoadAll<Object>(ResourcesDefinitionsStatsPath);
-        return stats != null && stats.Length > 0;
+        if (stats != null && stats.Length > 0)
+        {
+            return true;
+        }
+
+#if UNITY_EDITOR
+        AssetDatabase.Refresh();
+        return Directory.Exists(EditorDefinitionsStatsPath) && Directory.GetFiles(EditorDefinitionsStatsPath, "*.asset").Length > 0;
+#else
+        return false;
+#endif
     }
 
     private static void HandleMissingSampleContent(GameSessionRoot root)

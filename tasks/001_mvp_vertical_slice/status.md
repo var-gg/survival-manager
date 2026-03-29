@@ -11,40 +11,29 @@
 
 ## 현재 상태
 
-이 task의 current 상태는 다음으로 요약된다.
+- canonical sample content root 고정 완료
+- scene repair/bootstrap 계층 운영 가능
+- Boot / Town / Battle live controller binding은 scene load 시 자동 보정됨
+- Battle replay / presentation observer layer 추가 완료
+- Town / Expedition / Reward operator UI 추가 완료
+- Quick Battle smoke 경로 추가 완료
 
-- canonical sample content root를 `Assets/Resources/_Game/Content/Definitions/**`로 고정했다.
-- stale `SampleScene.unity` smoke 계약을 제거하고 repository integrity 기준을 다시 세웠다.
-- `SM/Bootstrap/Repair First Playable Scenes`와 `SM/Bootstrap/Prepare Observer Playable`를 공식 메뉴로 올렸다.
-- Boot/Town/Expedition/Battle/Reward scene asset repair와 build settings 보정이 재현 가능해졌다.
+## 지금 바로 보이는 화면
 
-## block25에서 보장하는 범위
+- Town operator UI
+- Expedition 5노드 박스 UI
+- Battle observer replay UI
+- Reward 3카드 UI
 
-- canonical content 생성/검증
-- playable scene asset repair/save
-- Boot/Town/Battle live hierarchy 기준 controller/canvas/eventsystem 확인
-- observer playable 진입용 editor bootstrap
+## 아직 남은 이슈
 
-## 아직 남은 구조 작업
-
-- observer-grade battle replay 가시화
-- Town/Expedition/Reward operator UI 정리
-- README / smoke / operator checklist 정리
-
-## known issues
-
-- Town/Expedition/Reward는 아직 debug placeholder UI
-- observer-grade visual feedback은 아직 미구현
-- sample asset이 깨졌을 때는 seed regenerate가 필요할 수 있음
-
-## workaround
-
-- canonical root가 비어 있거나 sample asset 값이 비정상적이면 `SM/Seed/Generate Sample Content` 재실행
-- legacy path가 의심되면 `SM/Seed/Migrate Legacy Sample Content` 선실행
-- scene asset만 다시 맞추고 싶으면 `SM/Bootstrap/Repair First Playable Scenes` 실행
+- Battle 연출은 observer-grade이며 polish 단계가 아니다
+- Expedition branching 선택은 다음 단계다
+- operator UI는 placeholder UGUI 품질이다
+- Town / Battle controller는 아직 scene asset 영속 저장보다 live rebind 경로가 더 안정적이다
 
 ## 다음 추천 단계
 
-1. block26에서 observer-grade battle replay 계층 추가
-2. block27에서 battle visual feedback 계층 추가
-3. block28~29에서 operator UI와 smoke/checklist 정리
+1. Battle actor motion과 hit timing polish
+2. Expedition branching / node choice 실구현
+3. meta progression / reward variety 확장

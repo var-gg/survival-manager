@@ -1,8 +1,19 @@
 {
-  "name": "SM.Tests",
-  "rootNamespace": "SM.Tests",
-  "references": ["SM.Core", "SM.Content", "SM.Combat", "SM.Meta", "SM.Persistence.Abstractions", "SM.Persistence.Json", "SM.Unity"],
-  "includePlatforms": ["Editor"],
+  "name": "SM.Tests.EditMode",
+  "rootNamespace": "SM.Tests.EditMode",
+  "references": [
+    "SM.Core",
+    "SM.Content",
+    "SM.Combat",
+    "SM.Meta",
+    "SM.Persistence.Abstractions",
+    "SM.Persistence.Json",
+    "SM.Unity",
+    "SM.Editor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,

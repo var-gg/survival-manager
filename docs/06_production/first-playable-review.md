@@ -10,40 +10,19 @@
 
 ## 실제 플레이 가능한 범위
 
-현재 솔직하게 playable이라고 부를 수 있는 범위는 아래다.
-
 - `Boot -> Town -> Expedition -> Battle -> Reward -> Town`
-- `SM/Bootstrap/Prepare Observer Playable` 1회 실행으로 scene asset repair와 build settings 보정 가능
-- Town에서 recruit / reroll / save / load / debug start 동작
-- Expedition에서 next battle / return town 동작
-- Battle에서 자동 전투 재생 / 속도 변경 / continue 동작
-- Reward에서 3지선다 선택 / 저장 / Town 귀환 동작
+- Town `Quick Battle`로 `Town -> Battle -> Reward -> Town` smoke 가능
+- Battle은 replay track 기반 observer UI로 5~10초 동안 행동을 따라갈 수 있다
+
+## 지금 바로 보이는 화면
+
+- Town: roster / recruit 카드 / squad / deploy preview / operator 버튼
+- Expedition: 5노드 박스 / 현재 위치 / 예정 보상 / next battle / return town
+- Battle: primitive actor / HP label / 로그 / speed / pause / progress
+- Reward: 3지선다 카드 / 상태 반영 요약
 
 ## 아직 placeholder인 부분
 
-- Town UI는 debug placeholder UGUI
-- Expedition 맵은 텍스트 placeholder
-- Battle은 primitive actor + 로그 표시
-- Reward는 debug 3지선다 카드
-- 최종 HUD / VFX / 정식 UX 아님
-
-## 자동 검증 범위
-
-- EditMode: scene integrity + sample content root 검사
-- PlayMode: Boot -> Town 자동 진입 + first playable 1회전 smoke
-
-## 수동 검증 범위
-
-- UI 가독성
-- 버튼 체감 동선
-- Battle 재생 감각
-- Reward 선택 후 Town 복귀 체감
-- placeholder UI의 실제 사용성
-
-## operator quick path
-
-1. Unity 열기
-2. `SM/Bootstrap/Prepare Observer Playable`
-3. `Boot.unity` Play
-4. Town에서 `Debug Start`
-5. Expedition에서 `Next Battle`
+- Town / Expedition / Reward는 여전히 operator-grade debug UGUI다
+- Battle camera / motion / HUD는 MVP용 observer 표현이다
+- Expedition branching 선택과 장기 progression 연출은 다음 단계다

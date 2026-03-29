@@ -10,6 +10,7 @@ public sealed class TownScreenController : MonoBehaviour
     [SerializeField] private Text titleText = null!;
     [SerializeField] private Text rosterText = null!;
     [SerializeField] private Text recruitText = null!;
+    [SerializeField] private RectTransform recruitCardsRoot = null!;
     [SerializeField] private Text squadText = null!;
     [SerializeField] private Text deployPreviewText = null!;
     [SerializeField] private Text currencyText = null!;
@@ -22,7 +23,7 @@ public sealed class TownScreenController : MonoBehaviour
         _root = GameSessionRoot.Instance!;
         if (_root == null)
         {
-            statusText.text = "GameSessionRoot가 없습니다.";
+            SetStatus("GameSessionRoot가 없습니다.");
             return;
         }
 
@@ -36,30 +37,45 @@ public sealed class TownScreenController : MonoBehaviour
 
     public void RerollOffers()
     {
+        if (!EnsureReady()) return;
         _root.SessionState.RerollRecruitOffers();
         Refresh("Recruit 후보를 리롤했습니다.");
     }
 
     public void SaveProfile()
     {
+        if (!EnsureReady()) return;
         _root.SaveProfile();
         Refresh("프로필을 저장했습니다.");
     }
 
     public void LoadProfile()
     {
+        if (!EnsureReady()) return;
         _root.BindProfile();
         Refresh("프로필을 다시 불러왔습니다.");
     }
 
     public void DebugStartExpedition()
     {
+        if (!EnsureReady()) return;
         _root.SessionState.BeginNewExpedition();
+        _root.SaveProfile();
         _root.SceneFlow.GoToExpedition();
+    }
+
+    public void QuickBattle()
+    {
+        if (!EnsureReady()) return;
+        _root.SessionState.PrepareQuickBattleSmoke();
+        _root.SaveProfile();
+        _root.SceneFlow.GoToBattle();
     }
 
     private void Recruit(int index)
     {
+        if (!EnsureReady()) return;
+
         if (_root.SessionState.Recruit(index))
         {
             Refresh($"후보 {index + 1}을 영입했습니다.");
@@ -69,40 +85,130 @@ public sealed class TownScreenController : MonoBehaviour
         Refresh("영입에 실패했습니다.");
     }
 
+    private bool EnsureReady()
+    {
+        ValidateReferences();
+        if (_root != null)
+        {
+            return true;
+        }
+
+        _root = GameSessionRoot.Instance!;
+        if (_root == null)
+        {
+            SetStatus("GameSessionRoot가 없습니다.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ValidateReferences()
+    {
+        AssertText(titleText, nameof(titleText));
+        AssertText(rosterText, nameof(rosterText));
+        AssertText(recruitText, nameof(recruitText));
+        AssertRect(recruitCardsRoot, nameof(recruitCardsRoot));
+        AssertText(squadText, nameof(squadText));
+        AssertText(deployPreviewText, nameof(deployPreviewText));
+        AssertText(currencyText, nameof(currencyText));
+        AssertText(statusText, nameof(statusText));
+    }
+
+    private static void AssertText(Text text, string fieldName)
+    {
+        if (text == null)
+        {
+            Debug.LogError($"[TownScreenController] Missing Text reference: {fieldName}");
+        }
+    }
+
+    private static void AssertRect(RectTransform rectTransform, string fieldName)
+    {
+        if (rectTransform == null)
+        {
+            Debug.LogError($"[TownScreenController] Missing RectTransform reference: {fieldName}");
+        }
+    }
+
     private void Refresh(string message = "")
     {
+        if (!EnsureReady()) return;
+
         var session = _root.SessionState;
-        titleText.text = "Town Debug UI";
+        session.EnsureBattleDeployReady();
+
+        titleText.text = "Town Operator UI";
         currencyText.text = $"Gold: {session.Profile.Currencies.Gold} | Perm Slots: {session.PermanentAugmentSlotCount} | Trait Reroll: {session.Profile.Currencies.TraitRerollCurrency}";
         rosterText.text = BuildRosterText(session);
-        recruitText.text = BuildRecruitText(session);
+        recruitText.text = BuildRecruitSummary(session);
         squadText.text = BuildSquadText(session);
         deployPreviewText.text = BuildDeployPreviewText(session);
-        statusText.text = string.IsNullOrWhiteSpace(message) ? "원정 준비 상태" : message;
+        RefreshRecruitCards(session);
+        statusText.text = string.IsNullOrWhiteSpace(message)
+            ? "영입/저장/원정/Quick Battle을 바로 눌러 확인하세요."
+            : message;
+    }
+
+    private void RefreshRecruitCards(GameSessionState session)
+    {
+        for (var i = 0; i < 3; i++)
+        {
+            var card = recruitCardsRoot.Find($"RecruitCard{i + 1}");
+            if (card == null)
+            {
+                continue;
+            }
+
+            var offer = i < session.RecruitOffers.Count ? session.RecruitOffers[i] : null;
+            SetCardText(card, "TitleText", offer?.Name ?? "빈 슬롯");
+            SetCardText(card, "BodyText", offer == null
+                ? "후보가 없습니다."
+                : $"{offer.RaceId} / {offer.ClassId}\n+{offer.PositiveTraitId}\n-{offer.NegativeTraitId}");
+        }
+    }
+
+    private void SetStatus(string message)
+    {
+        if (statusText != null)
+        {
+            statusText.text = message;
+        }
+
+        Debug.LogError($"[TownScreenController] {message}");
+    }
+
+    private static void SetCardText(Transform cardRoot, string childName, string value)
+    {
+        var child = cardRoot.Find(childName);
+        if (child == null)
+        {
+            return;
+        }
+
+        var text = child.GetComponent<Text>();
+        if (text != null)
+        {
+            text.text = value;
+        }
     }
 
     private static string BuildRosterText(GameSessionState session)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("보유 로스터");
+        sb.AppendLine("Roster");
         foreach (var hero in session.Profile.Heroes)
         {
             var inSquad = session.ExpeditionSquadHeroIds.Contains(hero.HeroId) ? "[원정]" : "[대기]";
-            sb.AppendLine($"- {inSquad} {hero.Name} / {hero.RaceId} / {hero.ClassId} / +{hero.PositiveTraitId} / -{hero.NegativeTraitId}");
+            sb.AppendLine($"- {inSquad} {hero.Name} / {hero.RaceId} / {hero.ClassId}");
         }
+
         return sb.ToString();
     }
 
-    private static string BuildRecruitText(GameSessionState session)
+    private static string BuildRecruitSummary(GameSessionState session)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine("Recruit 후보 3개");
-        for (var i = 0; i < session.RecruitOffers.Count; i++)
-        {
-            var offer = session.RecruitOffers[i];
-            sb.AppendLine($"{i + 1}. {offer.Name} / {offer.RaceId} / {offer.ClassId} / +{offer.PositiveTraitId} / -{offer.NegativeTraitId}");
-        }
-        return sb.ToString();
+        return $"Recruit 후보 3개\n현재 후보 수: {session.RecruitOffers.Count}\n카드 버튼으로 즉시 영입";
     }
 
     private static string BuildSquadText(GameSessionState session)
@@ -117,13 +223,14 @@ public sealed class TownScreenController : MonoBehaviour
                 sb.AppendLine($"- {hero.Name}");
             }
         }
+
         return sb.ToString();
     }
 
     private static string BuildDeployPreviewText(GameSessionState session)
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"Battle Deploy Preview ({session.BattleDeployHeroIds.Count}/4)");
+        sb.AppendLine($"Deploy Preview ({session.BattleDeployHeroIds.Count}/4)");
         foreach (var heroId in session.BattleDeployHeroIds)
         {
             var hero = session.Profile.Heroes.FirstOrDefault(x => x.HeroId == heroId);
@@ -132,6 +239,11 @@ public sealed class TownScreenController : MonoBehaviour
                 sb.AppendLine($"- {hero.Name}");
             }
         }
+
+        sb.AppendLine();
+        sb.AppendLine(session.IsQuickBattleSmokeActive
+            ? "Quick Battle smoke 준비 완료"
+            : "Quick Battle은 Expedition 진행도를 건드리지 않음");
         return sb.ToString();
     }
 }

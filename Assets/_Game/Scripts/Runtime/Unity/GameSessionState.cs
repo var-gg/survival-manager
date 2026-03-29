@@ -21,6 +21,7 @@ public sealed class GameSessionState
     public int PermanentAugmentSlotCount { get; private set; } = 1;
     public int CurrentExpeditionNodeIndex { get; private set; }
     public bool LastBattleVictory { get; private set; }
+    public bool IsQuickBattleSmokeActive { get; private set; }
     public string LastBattleSummary { get; private set; } = string.Empty;
     public IReadOnlyList<string> ExpeditionSquadHeroIds => _expeditionSquadHeroIds;
     public IReadOnlyList<string> BattleDeployHeroIds => _battleDeployHeroIds;
@@ -47,9 +48,11 @@ public sealed class GameSessionState
             Profile.DisplayName = "Player";
         }
 
+        IsQuickBattleSmokeActive = false;
         Roster = new RosterState(ToHeroRecords(Profile));
         EnsureRecruitOffers();
         EnsureDefaultSquad();
+        EnsureBattleDeployReady();
         EnsureExpeditionNodes();
         EnsureRewardChoices();
         Expedition = new ExpeditionState(CurrentExpeditionNodeIndex);
@@ -57,12 +60,24 @@ public sealed class GameSessionState
 
     public void BeginNewExpedition()
     {
+        IsQuickBattleSmokeActive = false;
         CurrentExpeditionNodeIndex = 0;
         LastBattleVictory = false;
         LastBattleSummary = string.Empty;
+        EnsureBattleDeployReady();
         EnsureExpeditionNodes(reset: true);
         EnsureRewardChoices(reset: true);
         Expedition = new ExpeditionState(CurrentExpeditionNodeIndex);
+    }
+
+    public void PrepareQuickBattleSmoke()
+    {
+        IsQuickBattleSmokeActive = true;
+        LastBattleVictory = false;
+        LastBattleSummary = "Quick Battle smoke";
+        EnsureDefaultSquad();
+        EnsureBattleDeployReady();
+        EnsureRewardChoices(reset: true);
     }
 
     public void AdvanceExpeditionNode()
@@ -139,6 +154,12 @@ public sealed class GameSessionState
         return true;
     }
 
+    public void EnsureBattleDeployReady()
+    {
+        EnsureDefaultSquad();
+        RefillBattleDeployFromSquad();
+    }
+
     public void PromoteToBattleDeploy(string heroId)
     {
         if (!_expeditionSquadHeroIds.Contains(heroId))
@@ -177,6 +198,23 @@ public sealed class GameSessionState
         EnsureRewardChoices(reset: true);
     }
 
+    public void MarkBattleResolved(bool victory, string summary)
+    {
+        LastBattleVictory = victory;
+        LastBattleSummary = summary;
+        EnsureRewardChoices(reset: true);
+
+        if (victory && !IsQuickBattleSmokeActive)
+        {
+            AdvanceExpeditionNode();
+        }
+    }
+
+    public void EndOperatorRunToTown()
+    {
+        IsQuickBattleSmokeActive = false;
+    }
+
     public bool ApplyRewardChoice(int index)
     {
         if (index < 0 || index >= _pendingRewardChoices.Count)
@@ -207,7 +245,7 @@ public sealed class GameSessionState
         Profile.RunSummaries.Add(new RunSummaryRecord
         {
             RunId = Guid.NewGuid().ToString("N"),
-            ExpeditionId = $"node-{CurrentExpeditionNodeIndex}",
+            ExpeditionId = IsQuickBattleSmokeActive ? "quick-battle" : $"node-{CurrentExpeditionNodeIndex}",
             Result = LastBattleVictory ? "victory" : "defeat",
             GoldEarned = choice.Kind == RewardChoiceKind.Gold ? choice.GoldAmount : 0,
             NodesCleared = CurrentExpeditionNodeIndex + 1,

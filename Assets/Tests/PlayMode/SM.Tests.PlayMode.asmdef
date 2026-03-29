@@ -1,0 +1,32 @@
+{
+  "name": "SM.Tests.PlayMode",
+  "rootNamespace": "SM.Tests.PlayMode",
+  "references": [
+    "SM.Core",
+    "SM.Content",
+    "SM.Combat",
+    "SM.Meta",
+    "SM.Persistence.Abstractions",
+    "SM.Persistence.Json",
+    "SM.Unity",
+    "SM.Editor"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [
+    {
+      "name": "com.unity.test-framework",
+      "expression": "",
+      "define": "UNITY_INCLUDE_TESTS"
+    }
+  ],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

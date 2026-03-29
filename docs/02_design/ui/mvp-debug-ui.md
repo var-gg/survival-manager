@@ -1,41 +1,46 @@
 # mvp debug ui
 
-- 상태: draft
+- 상태: active
 - 최종수정일: 2026-03-29
 - phase: prototype
 
-## 목적
-
-이 문서는 Town/Expedition의 MVP debug UI 범위를 정의한다.
-
-## 원칙
+## 현재 원칙
 
 - 고퀄 UI를 만들지 않는다.
 - UGUI와 placeholder만 사용한다.
-- scene은 domain truth를 다시 정의하지 않고 session state를 보여준다.
+- scene installer가 UI 객체 이름과 serialized reference 계약을 만든다.
+- operator가 눌러보고 상태 변화를 즉시 읽을 수 있어야 한다.
 
-## Town 화면 최소 요소
+## Town 화면
 
-- 보유 로스터 목록
-- recruit 후보 3개
-- recruit / reroll 버튼
-- expedition squad 현황(최대 8)
-- battle deploy preview(현재 4)
-- gold / permanent augment slot / trait reroll 재화
-- save / load / debug start 버튼
+- roster 목록
+- recruit summary
+- recruit 카드 3개
+- reroll / save / load / debug start / quick battle 버튼
+- expedition squad 현황
+- battle deploy preview
 
-## Expedition 화면 최소 요소
+## Expedition 화면
 
-- 5노드 맵 텍스트 표현
+- 5노드 box track
 - 현재 위치
-- 남은 노드
 - 예정 보상
-- 다음 전투 버튼
-- 귀환 버튼
+- squad 정보
+- next battle / return town 버튼
 
-## 비목표
+## Battle 화면
 
-- 최종 HUD
-- 고급 인벤토리 UI
-- drag-and-drop 편성 UI
-- 연출형 맵 카메라
+- primitive actor 4v4
+- actor HP label / HP bar
+- 팀 요약 HP 텍스트
+- 로그 패널
+- tick / action / speed / pause 상태 텍스트
+- progress bar
+- x1 / x2 / x4 / pause / continue 버튼
+
+## Reward 화면
+
+- 전투 결과 요약
+- reward 카드 3개
+- 카드 선택 버튼
+- Town 귀환 버튼
