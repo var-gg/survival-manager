@@ -16,6 +16,7 @@ public sealed class BattleActorView : MonoBehaviour
     private RectTransform _overlayParent = null!;
     private RectTransform _overlayRoot = null!;
     private Image _overlayBackground = null!;
+    private GameObject _overlayHpBarRoot = null!;
     private Image _hpFill = null!;
     private Text _nameText = null!;
     private Text _floatingText = null!;
@@ -28,6 +29,7 @@ public sealed class BattleActorView : MonoBehaviour
     private Renderer _shadowRenderer = null!;
     private Vector3 _homePosition;
     private Color _baseColor;
+    private BattlePresentationOptions _options = BattlePresentationOptions.CreateDefault();
     private BattleReplayActorSnapshot _currentState = null!;
     private Coroutine? _movementRoutine;
     private Coroutine? _pulseRoutine;
@@ -57,10 +59,18 @@ public sealed class BattleActorView : MonoBehaviour
         ApplyState(actor);
     }
 
+    public void ApplyOptions(BattlePresentationOptions options)
+    {
+        _options = options;
+        RefreshVisibility();
+    }
+
     public void ApplyState(BattleReplayActorSnapshot actor)
     {
         _currentState = actor;
         var restColor = ResolveRestColor();
+        var healthRatio = actor.MaxHealth <= 0f ? 0f : Mathf.Clamp01(actor.CurrentHealth / actor.MaxHealth);
+        var healthColor = ResolveHealthColor(healthRatio, actor.IsAlive);
 
         if (_renderer != null)
         {
@@ -81,8 +91,8 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_hpFill != null)
         {
-            _hpFill.fillAmount = actor.MaxHealth <= 0f ? 0f : actor.CurrentHealth / actor.MaxHealth;
-            _hpFill.color = actor.IsAlive ? new Color(0.28f, 0.82f, 0.36f, 1f) : new Color(0.45f, 0.45f, 0.45f, 1f);
+            _hpFill.fillAmount = healthRatio;
+            _hpFill.color = healthColor;
         }
 
         if (_overlayBackground != null)
@@ -117,10 +127,11 @@ public sealed class BattleActorView : MonoBehaviour
             var fillRenderer = _worldHpFillRoot.GetComponent<Renderer>();
             if (fillRenderer != null)
             {
-                fillRenderer.material.color = actor.IsAlive ? new Color(0.34f, 0.90f, 0.42f, 1f) : new Color(0.42f, 0.42f, 0.42f, 1f);
+                fillRenderer.material.color = healthColor;
             }
         }
 
+        RefreshVisibility();
         RefreshOverlayPosition();
     }
 
@@ -299,6 +310,7 @@ public sealed class BattleActorView : MonoBehaviour
 
         var barBackGo = new GameObject("HpBarBack", typeof(RectTransform));
         barBackGo.transform.SetParent(_overlayRoot, false);
+        _overlayHpBarRoot = barBackGo;
         var barBackRect = barBackGo.GetComponent<RectTransform>();
         barBackRect.anchorMin = new Vector2(0.5f, 0f);
         barBackRect.anchorMax = new Vector2(0.5f, 0f);
@@ -331,11 +343,11 @@ public sealed class BattleActorView : MonoBehaviour
         floatingRect.anchorMax = new Vector2(0.5f, 0.5f);
         floatingRect.pivot = new Vector2(0.5f, 0.5f);
         floatingRect.anchoredPosition = new Vector2(0f, 12f);
-        floatingRect.sizeDelta = new Vector2(120f, 28f);
+        floatingRect.sizeDelta = new Vector2(156f, 38f);
 
         _floatingText = floatingGo.AddComponent<Text>();
         _floatingText.font = font;
-        _floatingText.fontSize = 18;
+        _floatingText.fontSize = 26;
         _floatingText.alignment = TextAnchor.MiddleCenter;
         _floatingText.color = Color.clear;
         _floatingText.text = string.Empty;
@@ -426,8 +438,8 @@ public sealed class BattleActorView : MonoBehaviour
         }
 
         var rect = _floatingText.rectTransform;
-        var start = new Vector2(0f, 12f);
-        var end = new Vector2(0f, 42f);
+        var start = new Vector2(0f, 10f);
+        var end = new Vector2(0f, 52f);
         _floatingText.text = message;
         _floatingText.color = color;
 
@@ -550,6 +562,29 @@ public sealed class BattleActorView : MonoBehaviour
         return _currentState.IsAlive ? _baseColor : Color.Lerp(_baseColor, Color.gray, 0.82f);
     }
 
+    private void RefreshVisibility()
+    {
+        if (_worldInfoRoot != null)
+        {
+            _worldInfoRoot.gameObject.SetActive(_options.ShowWorldActorHp);
+        }
+
+        if (_overlayBackground != null)
+        {
+            _overlayBackground.enabled = _options.ShowOverlayActorHp;
+        }
+
+        if (_nameText != null)
+        {
+            _nameText.enabled = _options.ShowOverlayActorHp;
+        }
+
+        if (_overlayHpBarRoot != null)
+        {
+            _overlayHpBarRoot.SetActive(_options.ShowOverlayActorHp);
+        }
+    }
+
     private void RestartCoroutine(ref Coroutine? routine, IEnumerator next)
     {
         if (routine != null)
@@ -590,6 +625,26 @@ public sealed class BattleActorView : MonoBehaviour
         {
             Destroy(collider);
         }
+    }
+
+    private static Color ResolveHealthColor(float ratio, bool isAlive)
+    {
+        if (!isAlive)
+        {
+            return new Color(0.42f, 0.42f, 0.42f, 1f);
+        }
+
+        if (ratio <= 0.25f)
+        {
+            return new Color(0.96f, 0.28f, 0.24f, 1f);
+        }
+
+        if (ratio <= 0.55f)
+        {
+            return new Color(0.96f, 0.74f, 0.24f, 1f);
+        }
+
+        return new Color(0.34f, 0.90f, 0.42f, 1f);
     }
 
     private static Color ResolveBaseColor(BattleReplayActorSnapshot actor)

@@ -65,6 +65,8 @@ public sealed class SceneIntegrityTests
             "m_Name: BattleStageRoot",
             "m_Name: ActorOverlayRoot",
             "m_Name: PauseButton",
+            "m_Name: SettingsButton",
+            "m_Name: SettingsPanel",
             "m_Name: ProgressFill",
             "m_Name: BattleCanvas",
             "m_Name: EventSystem");

@@ -47,6 +47,8 @@ public sealed class PlayModeSmokeTests
         Assert.That(presentation, Is.Not.Null, BuildSceneDiagnostic("Battle scene should contain BattlePresentationController."));
         Assert.That(GameObject.Find("BattlePresentationRoot"), Is.Not.Null, "BattlePresentationRoot should be present.");
         Assert.That(GameObject.Find("ActorOverlayRoot"), Is.Not.Null, "ActorOverlayRoot should be present.");
+        Assert.That(FindObjectByName("SettingsButton"), Is.Not.Null, "SettingsButton should be present.");
+        Assert.That(FindObjectByName("SettingsPanel"), Is.Not.Null, "SettingsPanel should be present even when hidden by default.");
 
         battle!.SetSpeed4();
         yield return WaitForCondition(() => battle!.IsPlaybackFinished, 20f);
@@ -151,6 +153,19 @@ public sealed class PlayModeSmokeTests
 
         return Resources.FindObjectsOfTypeAll<T>().FirstOrDefault(component =>
             component.gameObject.scene.IsValid());
+    }
+
+    private static GameObject? FindObjectByName(string objectName)
+    {
+        var active = GameObject.Find(objectName);
+        if (active != null)
+        {
+            return active;
+        }
+
+        return Resources.FindObjectsOfTypeAll<Transform>()
+            .FirstOrDefault(transform => transform.name == objectName && transform.gameObject.scene.IsValid())
+            ?.gameObject;
     }
 
     private static string BuildSceneDiagnostic(string prefix)

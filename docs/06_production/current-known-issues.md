@@ -11,6 +11,7 @@
 ## known issues
 
 - Battle animation은 observer-grade라 hit timing과 HP text가 완전히 cinematic하지는 않다.
+- Battle은 readability 우선이라 world actor HP만 기본 ON이다. overlay HP strip / 팀 HP summary는 `Settings` 패널에서 켜야 한다.
 - Expedition은 고정 5노드 branching까지만 구현되어 있고 procedural map은 아직 없다.
 - Quick Battle은 smoke loop라 Expedition 진행도와 독립적으로 돈다.
 - Town / Battle custom controller는 현재 scene asset 재오픈 시 live rebind에 의존한다. `SM/Bootstrap/Prepare Observer Playable` 또는 scene reopen 이후 binder가 다시 붙인다.

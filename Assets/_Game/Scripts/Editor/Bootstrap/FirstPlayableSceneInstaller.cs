@@ -188,14 +188,17 @@ public static class FirstPlayableSceneInstaller
         var controller = EnsureComponent<BattleScreenController>(controllerGo);
         var presentationGo = ResetUiChild(canvas.transform, "BattlePresentationRoot");
         var presentation = EnsureComponent<BattlePresentationController>(presentationGo);
+        var settingsControllerGo = ResetUiChild(canvas.transform, "BattleSettingsController");
+        var settingsController = EnsureComponent<BattleSettingsPanelController>(settingsControllerGo);
 
         var actorOverlayRoot = EnsurePanel(presentationGo.transform, "ActorOverlayRoot", new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0f)).rectTransform;
         actorOverlayRoot.offsetMin = Vector2.zero;
         actorOverlayRoot.offsetMax = Vector2.zero;
 
-        EnsurePanel(canvas.transform, "LeftPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(150f, 90f), new Vector2(260f, 250f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
-        EnsurePanel(canvas.transform, "RightPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 90f), new Vector2(260f, 250f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
-        EnsurePanel(canvas.transform, "LogPanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -70f), new Vector2(440f, 260f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        var leftPanel = EnsurePanel(canvas.transform, "LeftPanel", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(150f, 170f), new Vector2(240f, 165f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        var rightPanel = EnsurePanel(canvas.transform, "RightPanel", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-150f, 170f), new Vector2(240f, 165f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        EnsurePanel(canvas.transform, "LogPanel", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -120f), new Vector2(540f, 150f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        var settingsPanel = EnsurePanel(canvas.transform, "SettingsPanel", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-130f, -118f), new Vector2(230f, 172f), new Color(0.10f, 0.13f, 0.18f, 0.96f)).rectTransform;
         var progressTrack = EnsurePanel(canvas.transform, "ProgressTrack", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 145f), new Vector2(360f, 18f), new Color(0.08f, 0.08f, 0.08f, 0.9f));
         var progressFill = EnsurePanel(progressTrack.transform, "ProgressFill", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(348f, 10f), new Color(0.85f, 0.58f, 0.22f, 0.95f));
         progressFill.type = Image.Type.Filled;
@@ -204,12 +207,19 @@ public static class FirstPlayableSceneInstaller
         progressFill.fillAmount = 0f;
 
         var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Battle Observer UI");
-        var allyHp = EnsureText(canvas.transform, "AllyHpText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(150f, 90f), new Vector2(220f, 210f), TextAnchor.UpperLeft);
-        var enemyHp = EnsureText(canvas.transform, "EnemyHpText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 90f), new Vector2(220f, 210f), TextAnchor.UpperLeft);
-        var log = EnsureText(canvas.transform, "LogText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -70f), new Vector2(400f, 220f), TextAnchor.UpperLeft);
+        var allyHp = EnsureText(canvas.transform, "AllyHpText", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(150f, 170f), new Vector2(200f, 140f), TextAnchor.UpperLeft);
+        var enemyHp = EnsureText(canvas.transform, "EnemyHpText", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-150f, 170f), new Vector2(200f, 140f), TextAnchor.UpperLeft);
+        var log = EnsureText(canvas.transform, "LogText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -120f), new Vector2(500f, 120f), TextAnchor.UpperLeft, 14);
         var result = EnsureText(canvas.transform, "ResultText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 110f), new Vector2(320f, 30f), TextAnchor.MiddleCenter);
         var speed = EnsureText(canvas.transform, "SpeedText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 75f), new Vector2(320f, 30f), TextAnchor.MiddleCenter);
         var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 180f), new Vector2(640f, 30f), TextAnchor.MiddleCenter);
+        EnsureText(settingsPanel, "SettingsTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(200f, 24f), TextAnchor.MiddleCenter, 16, "Battle View Settings");
+        var worldHpButton = EnsureButton(settingsPanel, "ToggleWorldHpButton", "Actor HP ON", new Vector2(0.5f, 1f), new Vector2(0f, -55f), settingsController.ToggleWorldActorHp);
+        var overlayHpButton = EnsureButton(settingsPanel, "ToggleOverlayHpButton", "Overlay HP OFF", new Vector2(0.5f, 1f), new Vector2(0f, -94f), settingsController.ToggleOverlayActorHp);
+        var teamSummaryButton = EnsureButton(settingsPanel, "ToggleTeamSummaryButton", "Team Summary OFF", new Vector2(0.5f, 1f), new Vector2(0f, -133f), settingsController.ToggleTeamSummary);
+        var settingsStatus = EnsureText(settingsPanel, "SettingsStatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(200f, 32f), TextAnchor.MiddleCenter, 13, "전투 표시 옵션");
+        var settingsButton = EnsureButton(canvas.transform, "SettingsButton", "Settings", new Vector2(1f, 1f), new Vector2(-88f, -26f), settingsController.TogglePanel);
+        settingsButton.GetComponent<RectTransform>().sizeDelta = new Vector2(100f, 32f);
 
         EnsureButton(canvas.transform, "Speed1Button", "x1", new Vector2(0.5f, 0f), new Vector2(-120f, 25f), controller.SetSpeed1);
         EnsureButton(canvas.transform, "Speed2Button", "x2", new Vector2(0.5f, 0f), new Vector2(0f, 25f), controller.SetSpeed2);
@@ -227,13 +237,25 @@ public static class FirstPlayableSceneInstaller
             ["speedText"] = speed,
             ["statusText"] = status,
             ["progressFill"] = progressFill,
+            ["allySummaryPanel"] = leftPanel,
+            ["enemySummaryPanel"] = rightPanel,
             ["presentationController"] = presentation,
+            ["settingsPanelController"] = settingsController,
         });
 
         Bind(presentation, new Dictionary<string, Object>
         {
             ["battleStageRoot"] = battleStageRoot.transform,
             ["actorOverlayRoot"] = actorOverlayRoot,
+        });
+
+        Bind(settingsController, new Dictionary<string, Object>
+        {
+            ["panelRoot"] = settingsPanel,
+            ["worldHpButtonLabel"] = worldHpButton.transform.Find("Label")?.GetComponent<Text>(),
+            ["overlayHpButtonLabel"] = overlayHpButton.transform.Find("Label")?.GetComponent<Text>(),
+            ["teamSummaryButtonLabel"] = teamSummaryButton.transform.Find("Label")?.GetComponent<Text>(),
+            ["statusText"] = settingsStatus,
         });
 
         Save(scene);
@@ -329,7 +351,7 @@ public static class FirstPlayableSceneInstaller
         ValidateScene("Boot", new[] { "GameBootstrap", "BootCanvas", "Main Camera" });
         ValidateScene("Town", new[] { "TownCanvas", "EventSystem", "TownScreenController", "RecruitCardsRoot", "QuickBattleButton" }, typeof(TownScreenController));
         ValidateScene("Expedition", new[] { "ExpeditionCanvas", "EventSystem", "ExpeditionScreenController", "NodeTrackRoot", "SelectButton" }, typeof(ExpeditionScreenController));
-        ValidateScene("Battle", new[] { "BattleCanvas", "EventSystem", "BattleScreenController", "BattlePresentationRoot", "BattleStageRoot", "ActorOverlayRoot", "PauseButton", "ProgressTrack", "ProgressFill", "StatusText" }, typeof(BattleScreenController));
+        ValidateScene("Battle", new[] { "BattleCanvas", "EventSystem", "BattleScreenController", "BattlePresentationRoot", "BattleStageRoot", "ActorOverlayRoot", "PauseButton", "SettingsButton", "SettingsPanel", "ProgressTrack", "ProgressFill", "StatusText" }, typeof(BattleScreenController));
         ValidateScene("Reward", new[] { "RewardCanvas", "EventSystem", "RewardScreenController", "RewardCardsRoot" }, typeof(RewardScreenController));
     }
 

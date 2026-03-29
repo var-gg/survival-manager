@@ -13,10 +13,11 @@
 - 좌측 아군 4슬롯, 우측 적 4슬롯 고정 배치
 - capsule primitive actor
 - actor 머리 위 world-space name + HP label
-- world-space HP bar + overlay HP strip
-- 최근 로그 10줄
+- world-space HP bar 기본 표시, overlay HP strip / 팀 HP summary는 settings panel에서 ON/OFF
+- 최근 로그 8줄
 - tick / current action / speed / pause 상태 텍스트
 - progress bar
+- settings 버튼 + battle view settings panel
 - continue 버튼
 
 ## 행동 피드백
@@ -37,6 +38,6 @@
 
 ## 운영 메모
 
-- scene installer가 `BattlePresentationRoot`, `BattleStageRoot`, `ActorOverlayRoot`, `PauseButton`, `ProgressFill`을 만든다.
+- scene installer가 `BattlePresentationRoot`, `BattleStageRoot`, `ActorOverlayRoot`, `PauseButton`, `SettingsButton`, `SettingsPanel`, `ProgressFill`을 만든다.
 - Quick Battle smoke는 Expedition 진행도를 건드리지 않고 Battle observer만 빠르게 확인한다.
 - observer readability는 polished animation보다 상태 추적 가능성을 우선한다.

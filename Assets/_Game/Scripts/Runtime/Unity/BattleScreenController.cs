@@ -12,7 +12,7 @@ namespace SM.Unity;
 
 public sealed class BattleScreenController : MonoBehaviour
 {
-    private const int MaxRecentLogLines = 10;
+    private const int MaxRecentLogLines = 8;
 
     [SerializeField] private Text titleText = null!;
     [SerializeField] private Text allyHpText = null!;
@@ -22,9 +22,13 @@ public sealed class BattleScreenController : MonoBehaviour
     [SerializeField] private Text speedText = null!;
     [SerializeField] private Text statusText = null!;
     [SerializeField] private Image progressFill = null!;
+    [SerializeField] private Image allySummaryPanel = null!;
+    [SerializeField] private Image enemySummaryPanel = null!;
     [SerializeField] private BattlePresentationController presentationController = null!;
+    [SerializeField] private BattleSettingsPanelController settingsPanelController = null!;
 
     private readonly List<string> _recentLogs = new();
+    private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
     private GameSessionRoot _root = null!;
     private float _playbackSpeed = 1f;
     private bool _isPaused;
@@ -98,9 +102,16 @@ public sealed class BattleScreenController : MonoBehaviour
         AssertText(speedText, nameof(speedText));
         AssertText(statusText, nameof(statusText));
         AssertImage(progressFill, nameof(progressFill));
+        AssertImage(allySummaryPanel, nameof(allySummaryPanel));
+        AssertImage(enemySummaryPanel, nameof(enemySummaryPanel));
         if (presentationController == null)
         {
             Debug.LogError("[BattleScreenController] Missing BattlePresentationController reference: presentationController");
+        }
+
+        if (settingsPanelController == null)
+        {
+            Debug.LogError("[BattleScreenController] Missing BattleSettingsPanelController reference: settingsPanelController");
         }
     }
 
@@ -181,7 +192,10 @@ public sealed class BattleScreenController : MonoBehaviour
         var track = BattleReplayBuilder.Build(replaySeedState, result);
 
         presentationController.Initialize(track);
+        presentationController.ApplyOptions(_presentationOptions);
         presentationController.SetPaused(false);
+        settingsPanelController.Initialize(_presentationOptions, ApplyPresentationOptions);
+        ApplyPresentationOptions(_presentationOptions);
         _root.SessionState.MarkBattleResolved(
             result.Winner == TeamSide.Ally,
             $"{result.Winner} / {result.TickCount} ticks / {result.Events.Count} events");
@@ -234,6 +248,32 @@ public sealed class BattleScreenController : MonoBehaviour
                 PushLog(track.Winner == TeamSide.Ally ? "결과: 승리" : "결과: 패배");
                 resultText.text = track.Winner == TeamSide.Ally ? "승리" : "패배";
                 break;
+        }
+    }
+
+    private void ApplyPresentationOptions(BattlePresentationOptions options)
+    {
+        presentationController.ApplyOptions(options);
+
+        var showTeamSummary = options.ShowTeamHpSummary;
+        if (allySummaryPanel != null)
+        {
+            allySummaryPanel.gameObject.SetActive(showTeamSummary);
+        }
+
+        if (enemySummaryPanel != null)
+        {
+            enemySummaryPanel.gameObject.SetActive(showTeamSummary);
+        }
+
+        if (allyHpText != null)
+        {
+            allyHpText.gameObject.SetActive(showTeamSummary);
+        }
+
+        if (enemyHpText != null)
+        {
+            enemyHpText.gameObject.SetActive(showTeamSummary);
         }
     }
 

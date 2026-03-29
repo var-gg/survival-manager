@@ -139,7 +139,8 @@ public static class FirstPlayableRuntimeSceneBinder
     {
         var presentationGo = FindGameObject(scene, "BattlePresentationRoot");
         var controllerGo = FindGameObject(scene, "BattleScreenController");
-        if (presentationGo == null || controllerGo == null)
+        var settingsGo = FindGameObject(scene, "BattleSettingsController");
+        if (presentationGo == null || controllerGo == null || settingsGo == null)
         {
             return;
         }
@@ -149,6 +150,16 @@ public static class FirstPlayableRuntimeSceneBinder
         {
             ["battleStageRoot"] = GetComponentFromNamedObject<Transform>(scene, "BattleStageRoot"),
             ["actorOverlayRoot"] = GetComponentFromNamedObject<RectTransform>(scene, "ActorOverlayRoot"),
+        });
+
+        var settingsController = EnsureComponent<BattleSettingsPanelController>(settingsGo);
+        Bind(settingsController, new Dictionary<string, Object?>
+        {
+            ["panelRoot"] = GetComponentFromNamedObject<RectTransform>(scene, "SettingsPanel"),
+            ["worldHpButtonLabel"] = FindChildGameObject(scene, "ToggleWorldHpButton", "Label")?.GetComponent<Text>(),
+            ["overlayHpButtonLabel"] = FindChildGameObject(scene, "ToggleOverlayHpButton", "Label")?.GetComponent<Text>(),
+            ["teamSummaryButtonLabel"] = FindChildGameObject(scene, "ToggleTeamSummaryButton", "Label")?.GetComponent<Text>(),
+            ["statusText"] = GetComponentFromNamedObject<Text>(scene, "SettingsStatusText"),
         });
 
         var controller = EnsureComponent<BattleScreenController>(controllerGo);
@@ -162,7 +173,10 @@ public static class FirstPlayableRuntimeSceneBinder
             ["speedText"] = GetComponentFromNamedObject<Text>(scene, "SpeedText"),
             ["statusText"] = GetComponentFromNamedObject<Text>(scene, "StatusText"),
             ["progressFill"] = GetComponentFromNamedObject<Image>(scene, "ProgressFill"),
+            ["allySummaryPanel"] = GetComponentFromNamedObject<Image>(scene, "LeftPanel"),
+            ["enemySummaryPanel"] = GetComponentFromNamedObject<Image>(scene, "RightPanel"),
             ["presentationController"] = presentation,
+            ["settingsPanelController"] = settingsController,
         });
 
         BindButton(scene, "Speed1Button", controller.SetSpeed1);
@@ -170,6 +184,10 @@ public static class FirstPlayableRuntimeSceneBinder
         BindButton(scene, "Speed4Button", controller.SetSpeed4);
         BindButton(scene, "PauseButton", controller.TogglePause);
         BindButton(scene, "ContinueButton", controller.ContinueToReward);
+        BindButton(scene, "SettingsButton", settingsController.TogglePanel);
+        BindButton(scene, "ToggleWorldHpButton", settingsController.ToggleWorldActorHp);
+        BindButton(scene, "ToggleOverlayHpButton", settingsController.ToggleOverlayActorHp);
+        BindButton(scene, "ToggleTeamSummaryButton", settingsController.ToggleTeamSummary);
     }
 
     private static void EnsureReward(Scene scene)
