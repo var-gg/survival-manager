@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: rewardtable_battle
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RewardTableDefinition
+  Id: rewardtable_battle
+  DisplayName: Battle Rewards
+  Rewards:
+  - Id: reward.gold.10
+    RewardType: 0
+    Amount: 10
+    Label: 10 Gold
+  - Id: augment_silver_guard
+    RewardType: 1
+    Amount: 1
+    Label: Guard Instinct
+  - Id: reward.reroll.1
+    RewardType: 2
+    Amount: 1
+    Label: 1 Trait Reroll

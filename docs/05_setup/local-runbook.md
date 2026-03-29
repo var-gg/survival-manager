@@ -1,68 +1,47 @@
 # Local Runbook
 
-- 상태: draft
+## 반드시 먼저 실행할 메뉴 1개
+
+- `SM/Seed/Generate Sample Content`
+
+- 상태: active
 - 최종수정일: 2026-03-29
 - phase: prototype
 
-## 목적
+## block24에서 먼저 고정한 것
 
-이 문서는 현재 로컬 Unity truth를 기준으로 프로젝트를 실행/검증하는 절차를 정리한다.
+- canonical sample content root를 `Assets/Resources/_Game/Content/Definitions/**`로 고정했다.
+- stale `SampleScene.unity` smoke 계약을 제거했다.
+- Boot/Town/Battle wiring 검증은 temporary scene bridge 기준으로만 확인한다.
+- reproducible scene repair는 block25에서 공식화한다.
 
-## 현재 Unity truth
+## 빠른 검증 절차
 
-- 에디터 버전: `6000.4.0f1`
-- 시작 씬: `Boot`
-- 자동 검증 가능 흐름: `Boot -> Town`
-- 수동 playable 목표 흐름: `Town -> Expedition -> Battle -> Reward -> Town`
-- 빌드 등록 씬 순서:
-  1. `Boot`
-  2. `Town`
-  3. `Expedition`
-  4. `Battle`
-  5. `Reward`
+1. Unity 열기
+2. `SM/Seed/Generate Sample Content`
+3. 필요하면 `SM/Seed/Migrate Legacy Sample Content`
+4. `SM/Validation/Validate Content Definitions`
+5. EditMode tests 실행
 
-## 초기 실행 순서
+## temporary bridge 메모
 
-1. Unity `6000.4.0f1`로 프로젝트를 연다.
-2. 패키지 import와 스크립트 컴파일이 끝날 때까지 기다린다.
-3. `SM/Seed/Generate Sample Content`를 실행한다.
-4. `SM/Validation/Validate Content Definitions`를 실행한다.
-5. `Assets/_Game/Scenes/Boot.unity`를 연다.
-6. Play를 누른다.
-7. 정상이라면 `GameBootstrap`이 session root를 만들고 Town으로 진입한다.
+현재 dirty tree에는 `SM/Bootstrap/Prepare First Playable`와 scene installer WIP가 있다.
+다만 block24의 공식 계약은 이 bridge가 아니라 **content contract와 integrity diagnosis**다.
 
-## 첫 전투 화면까지 가는 수동 경로
+즉:
 
-1. `Boot.unity`를 연다.
-2. Play를 누른다.
-3. Town debug UI가 보이면 `Debug Start`를 누른다.
-4. Expedition debug UI가 보이면 `Next Battle`을 누른다.
-5. Battle debug UI 진입을 확인한다.
+- block24는 “플레이 가능 인증” 단계가 아니다.
+- scene repair를 공식 메뉴/계층으로 승격하는 일은 block25 범위다.
 
-## PlayMode 테스트
+## known issues
 
-현재 PlayMode smoke는 실제 씬 진입 기준으로 다음을 본다.
+- scene repair/bootstrap은 아직 temporary bridge에 의존한다.
+- `SceneIntegrityTests`는 block24 동안 scene asset text contract를 우선 확인한다. live component query 정합성은 block25 범위다.
+- manual observer playable 인증은 아직 끝나지 않았다.
+- Battle observer-grade replay와 operator UI는 아직 다음 블록 범위다.
 
-- Boot scene load
-- `GameSessionRoot` 생성
-- 가능 시 Boot -> Town 자동 진입
+## workaround
 
-Battle/Reward 전체 자동화보다 먼저 Boot -> Town 안정화를 우선한다.
-
-## 샘플 콘텐츠가 없을 때
-
-- 에디터: 안내 로그를 띄우고 샘플 콘텐츠 생성을 유도한다.
-- 런타임: 명확한 blocking error를 기록한다.
-
-## 현재 상태 구분
-
-### 실제 구현됨
-- Boot scene load 기반 PlayMode smoke
-- Boot -> Town 자동 진입 검증 시도
-- session root / scene flow adapter
-- Town/Expedition/Battle/Reward debug adapter 코드
-
-### 아직 부분 구현/placeholder
-- 전체 씬 wiring의 에디터 내 최종 확인
-- Battle/Reward PlayMode integration test
-- polished presentation/UI
+- canonical root가 비어 있으면 `SM/Seed/Generate Sample Content`를 다시 실행한다.
+- legacy path 흔적이 의심되면 `SM/Seed/Migrate Legacy Sample Content`를 먼저 실행한다.
+- local WIP bridge까지 같이 점검할 때만 `SM/Bootstrap/Prepare First Playable`를 임시로 사용한다.

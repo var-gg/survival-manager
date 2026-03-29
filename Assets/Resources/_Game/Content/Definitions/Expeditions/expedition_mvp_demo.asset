@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: expedition_mvp_demo
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ExpeditionDefinition
+  Id: expedition_mvp_demo
+  DisplayName: MVP Demo Expedition
+  Nodes:
+  - Id: node_1
+    Label: Fork
+    RewardTable: {fileID: 11400000, guid: 9d9ac10e39911da4f8f9787f146b5bfd, type: 2}
+  - Id: node_2
+    Label: Skirmish
+    RewardTable: {fileID: 11400000, guid: 9d9ac10e39911da4f8f9787f146b5bfd, type: 2}
+  - Id: node_3
+    Label: Cache
+    RewardTable: {fileID: 11400000, guid: 9d9ac10e39911da4f8f9787f146b5bfd, type: 2}
+  - Id: node_4
+    Label: Elite
+    RewardTable: {fileID: 11400000, guid: 9d9ac10e39911da4f8f9787f146b5bfd, type: 2}
+  - Id: node_5
+    Label: Return
+    RewardTable: {fileID: 11400000, guid: 3231d7c345ac38e4f9379e68b6a3f5ab, type: 2}

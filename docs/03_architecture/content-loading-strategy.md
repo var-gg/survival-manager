@@ -5,35 +5,41 @@
 - 최종수정일: 2026-03-29
 - 소스오브트루스: `docs/03_architecture/content-loading-strategy.md`
 - 관련문서:
+  - `docs/03_architecture/content-loading-contract.md`
   - `docs/03_architecture/content-authoring-model.md`
   - `docs/03_architecture/content-seed-assets.md`
   - `docs/05_setup/first-playable-bootstrap.md`
 
 ## 목적
 
-이 문서는 prototype 단계의 sample content 로딩 계약을 하나로 고정한다.
+이 문서는 prototype 단계에서 왜 현재 sample content 계약을 채택했는지 설명하는 **rationale 문서**다.
+구체적 계약 자체는 `content-loading-contract.md`를 따른다.
 
-## 현재 채택안
+## 현재 채택 전략
 
-- sample content root: `Assets/Resources/_Game/Content/Definitions/**`
-- runtime load contract: `Resources.LoadAll("_Game/Content/Definitions/Stats")`
-- bootstrap menu: `SM/Bootstrap/Ensure Sample Content`
+- canonical root는 `Assets/Resources/_Game/Content/Definitions/**`로 고정한다.
+- runtime은 `Resources.LoadAll("_Game/Content/Definitions/Stats")`만 본다.
+- 기본 복구 메뉴는 `SM/Seed/Generate Sample Content`로 단순화한다.
 
-## 현재 역할 분담
+## 이 전략을 택한 이유
 
-### editor 측
+- clean clone 재현성을 우선하기 쉽다.
+- prototype 단계에서 별도 catalog/bootstrap asset 없이도 바로 복구 가능하다.
+- 런타임 쪽 판단을 최소 `Stats` 존재 여부로 단순화할 수 있다.
+- editor code, scene asset, 테스트, MCP 검증 경로를 같은 contract 위에 올릴 수 있다.
 
-- `SampleSeedGenerator`는 `Assets/Resources/_Game/Content/Definitions/**`에 asset을 생성한다.
-- 반복 실행 시 기존 asset을 재사용하거나 갱신하는 idempotent 흐름을 유지한다.
+## block24 기준 메모
 
-### runtime 측
+- block24에서는 content contract와 진단 정확성을 먼저 고정한다.
+- scene repair는 existing temporary bridge를 테스트에만 활용하고, 공식 계층은 block25에서 정리한다.
+- legacy path가 남아 있어도 canonical root를 우선 복구한다.
 
-- `GameBootstrap`은 `Resources` 경로만 사용한다.
-- 최소 검증 기준은 `Stats` asset 존재 여부다.
+## 관련 구현
 
-### bootstrap 측
-
-- `SM/Bootstrap/Ensure Sample Content`는 sample content가 없을 때만 seed 생성 흐름을 실행한다.
+- `SampleSeedGenerator`: canonical root 생성/갱신
+- `SM/Seed/Migrate Legacy Sample Content`: legacy path 이동 시도
+- `GameBootstrap`: canonical root missing 시 부팅 차단
+- `SceneIntegrityTests`: block24 repository integrity 확인
 
 ## 향후 방향
 

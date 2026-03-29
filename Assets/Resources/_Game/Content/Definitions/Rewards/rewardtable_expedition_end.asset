@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: rewardtable_expedition_end
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RewardTableDefinition
+  Id: rewardtable_expedition_end
+  DisplayName: Expedition End Rewards
+  Rewards:
+  - Id: reward.gold.30
+    RewardType: 0
+    Amount: 30
+    Label: 30 Gold
+  - Id: reward.reroll.2
+    RewardType: 2
+    Amount: 2
+    Label: 2 Trait Reroll
+  - Id: augment_perm_legacy_blade
+    RewardType: 1
+    Amount: 1
+    Label: Legacy Blade

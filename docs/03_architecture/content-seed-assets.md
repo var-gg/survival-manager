@@ -5,6 +5,7 @@
 - 최종수정일: 2026-03-29
 - 소스오브트루스: `docs/03_architecture/content-seed-assets.md`
 - 관련문서:
+  - `docs/03_architecture/content-loading-contract.md`
   - `docs/03_architecture/content-loading-strategy.md`
   - `docs/03_architecture/content-authoring-model.md`
 
@@ -15,6 +16,7 @@
 ## 자산 생성 위치
 
 - 생성 메뉴: `SM/Seed/Generate Sample Content`
+- legacy migration 메뉴: `SM/Seed/Migrate Legacy Sample Content`
 - 생성 경로: `Assets/Resources/_Game/Content/Definitions/**`
 - 검증 메뉴: `SM/Validation/Validate Content Definitions`
 

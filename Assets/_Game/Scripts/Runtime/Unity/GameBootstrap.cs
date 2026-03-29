@@ -7,13 +7,14 @@ namespace SM.Unity;
 
 public sealed class GameBootstrap : MonoBehaviour
 {
+    private const string ResourcesDefinitionsStatsPath = "_Game/Content/Definitions/Stats";
+
     [SerializeField] private bool autoEnterTown = true;
 
     private void Start()
     {
         var root = EnsureRoot();
         root.SessionState.SetCurrentScene(SceneNames.Boot);
-        root.BindProfile();
 
         if (!HasSeedContent())
         {
@@ -21,6 +22,7 @@ public sealed class GameBootstrap : MonoBehaviour
             return;
         }
 
+        root.BindProfile();
         root.ClearBlockingError();
 
         if (autoEnterTown)
@@ -42,19 +44,19 @@ public sealed class GameBootstrap : MonoBehaviour
 
     private static bool HasSeedContent()
     {
-        var stats = Resources.LoadAll<Object>("_Game/Content/Definitions/Stats");
+        var stats = Resources.LoadAll<Object>(ResourcesDefinitionsStatsPath);
         return stats != null && stats.Length > 0;
     }
 
     private static void HandleMissingSampleContent(GameSessionRoot root)
     {
 #if UNITY_EDITOR
-        const string message = "샘플 콘텐츠가 없습니다. SM/Seed/Generate Sample Content를 먼저 실행한 뒤 다시 Play 하세요.";
+        const string message = "샘플 콘텐츠 canonical root가 비어 있습니다. SM/Seed/Generate Sample Content를 먼저 실행한 뒤 다시 Play 하세요. 계약 경로: Assets/Resources/_Game/Content/Definitions/**";
         root.SetBlockingError(message);
         Debug.LogWarning(message);
         EditorApplication.isPaused = true;
 #else
-        root.SetBlockingError("필수 샘플 콘텐츠가 없어 시작할 수 없습니다. 콘텐츠 데이터를 확인하세요.");
+        root.SetBlockingError("필수 샘플 콘텐츠 canonical root가 비어 있어 시작할 수 없습니다. Resources content contract를 확인하세요.");
 #endif
     }
 }

@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: traitpool_hexer
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TraitPoolDefinition
+  Id: traitpool_hexer
+  ArchetypeId: hexer
+  PositiveTraits:
+  - Id: hexer_positive_brave
+    DisplayName: Brave
+    Description: Brave
+    Modifiers:
+    - StatId: attack
+      Op: 0
+      Value: 2
+  - Id: hexer_positive_sturdy
+    DisplayName: Sturdy
+    Description: Sturdy
+    Modifiers:
+    - StatId: defense
+      Op: 0
+      Value: 1
+  - Id: hexer_positive_swift
+    DisplayName: Swift
+    Description: Swift
+    Modifiers:
+    - StatId: speed
+      Op: 0
+      Value: 1
+  NegativeTraits:
+  - Id: hexer_negative_frail
+    DisplayName: Frail
+    Description: Frail
+    Modifiers:
+    - StatId: max_health
+      Op: 0
+      Value: -3
+  - Id: hexer_negative_clumsy
+    DisplayName: Clumsy
+    Description: Clumsy
+    Modifiers:
+    - StatId: attack
+      Op: 0
+      Value: -1
+  - Id: hexer_negative_slow
+    DisplayName: Slow
+    Description: Slow
+    Modifiers:
+    - StatId: speed
+      Op: 0
+      Value: -1

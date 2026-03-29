@@ -17,7 +17,7 @@
 ## 기본 규칙
 
 - 현재 prototype의 sample content 기준 저장소는 `Assets/Resources/_Game/Content/Definitions/**`다.
-- 이 경로 선택 이유와 로딩 계약은 `content-loading-strategy.md`를 따른다.
+- 이 경로의 concrete contract는 `content-loading-contract.md`, 선택 이유는 `content-loading-strategy.md`를 따른다.
 - authored definition과 runtime instance는 같은 타입으로 합치지 않는다.
 - `Condition`, `Effect` 같은 다형 규칙은 giant switch 대신 데이터 노드 구조를 우선 검토한다.
 - validation은 가능하면 editor 단계에서 수행하고, play 진입 전에 실패를 드러낸다.

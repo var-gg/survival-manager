@@ -16,7 +16,7 @@
 - Unity 프로젝트 폴더/asmdef 배치는 `unity-project-layout.md`
 - scene 흐름과 composition root는 `unity-scene-flow.md`
 - persistence 저장 경계는 `persistence-strategy.md`, `persistence-schema.md`
-- 콘텐츠 파이프라인과 로딩은 `content-pipeline.md`, `content-loading-strategy.md`
+- 콘텐츠 파이프라인과 로딩은 `content-pipeline.md`, `content-loading-contract.md`, `content-loading-strategy.md`
 - 테스트 전략은 `testing-strategy.md`
 - 서드파티 에셋 intake 경계는 `asset-intake-boundary.md`
 
@@ -34,6 +34,7 @@
 - `persistence-strategy.md`: persistence adapter 경계
 - `persistence-schema.md`: 저장 대상과 비대상
 - `content-pipeline.md`: 콘텐츠 intake와 파이프라인 운영 방향
+- `content-loading-contract.md`: canonical content root와 runtime/editor 계약
 - `content-loading-strategy.md`: MVP content loading 계약
 - `testing-strategy.md`: 저비용 검증 우선 테스트 전략
 - `asset-intake-boundary.md`: `Assets/ThirdParty/**` intake boundary
