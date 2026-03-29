@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Model;
 using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;
 
@@ -8,8 +9,18 @@ namespace SM.Unity;
 
 public sealed class GameSessionState
 {
+    private static readonly DeploymentAnchorId[] DeploymentAnchorOrder =
+    {
+        DeploymentAnchorId.FrontTop,
+        DeploymentAnchorId.FrontCenter,
+        DeploymentAnchorId.FrontBottom,
+        DeploymentAnchorId.BackTop,
+        DeploymentAnchorId.BackCenter,
+        DeploymentAnchorId.BackBottom
+    };
+
     private readonly List<string> _expeditionSquadHeroIds = new();
-    private readonly List<string> _battleDeployHeroIds = new();
+    private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
     private readonly List<RecruitOffer> _recruitOffers = new();
     private readonly List<ExpeditionNodeViewModel> _expeditionNodes = new();
     private readonly List<RewardChoiceViewModel> _pendingRewardChoices = new();
@@ -28,8 +39,15 @@ public sealed class GameSessionState
     public string LastBattleSummary { get; private set; } = string.Empty;
     public string LastExpeditionEffectMessage { get; private set; } = string.Empty;
     public string LastRewardApplicationSummary { get; private set; } = string.Empty;
+    public TeamPostureType SelectedTeamPosture { get; private set; } = TeamPostureType.StandardAdvance;
     public IReadOnlyList<string> ExpeditionSquadHeroIds => _expeditionSquadHeroIds;
-    public IReadOnlyList<string> BattleDeployHeroIds => _battleDeployHeroIds;
+    public IReadOnlyList<DeploymentAnchorId> DeploymentAnchors => DeploymentAnchorOrder;
+    public IReadOnlyList<string> BattleDeployHeroIds => DeploymentAnchorOrder
+        .Select(anchor => _deploymentAssignments.TryGetValue(anchor, out var heroId) ? heroId : null)
+        .Where(heroId => !string.IsNullOrWhiteSpace(heroId))
+        .Cast<string>()
+        .ToList();
+    public IReadOnlyDictionary<DeploymentAnchorId, string?> DeploymentAssignments => _deploymentAssignments;
     public IReadOnlyList<RecruitOffer> RecruitOffers => _recruitOffers;
     public IReadOnlyList<ExpeditionNodeViewModel> ExpeditionNodes => _expeditionNodes;
     public IReadOnlyList<RewardChoiceViewModel> PendingRewardChoices => _pendingRewardChoices;
@@ -63,7 +81,9 @@ public sealed class GameSessionState
         LastBattleSummary = string.Empty;
         LastExpeditionEffectMessage = string.Empty;
         LastRewardApplicationSummary = string.Empty;
+        SelectedTeamPosture = TeamPostureType.StandardAdvance;
         _resolvedExpeditionNodeIds.Clear();
+        ResetDeploymentAssignments();
 
         Roster = new RosterState(ToHeroRecords(Profile));
         EnsureRecruitOffers();
@@ -228,8 +248,8 @@ public sealed class GameSessionState
         if (_expeditionSquadHeroIds.Contains(heroId))
         {
             _expeditionSquadHeroIds.Remove(heroId);
-            _battleDeployHeroIds.Remove(heroId);
-            RefillBattleDeployFromSquad();
+            ClearDeploymentForHero(heroId);
+            EnsureBattleDeployReady();
             return true;
         }
 
@@ -239,17 +259,14 @@ public sealed class GameSessionState
         }
 
         _expeditionSquadHeroIds.Add(heroId);
-        if (_battleDeployHeroIds.Count < 4)
-        {
-            _battleDeployHeroIds.Add(heroId);
-        }
+        EnsureBattleDeployReady();
         return true;
     }
 
     public void EnsureBattleDeployReady()
     {
         EnsureDefaultSquad();
-        RefillBattleDeployFromSquad();
+        EnsureDefaultDeploymentAssignments();
     }
 
     public void PromoteToBattleDeploy(string heroId)
@@ -259,15 +276,94 @@ public sealed class GameSessionState
             return;
         }
 
-        _battleDeployHeroIds.Remove(heroId);
-        _battleDeployHeroIds.Insert(0, heroId);
+        var preferredAnchor = ResolvePreferredAnchor(heroId);
+        AssignHeroToAnchor(preferredAnchor, heroId);
+    }
 
-        while (_battleDeployHeroIds.Count > 4)
+    public string? GetAssignedHeroId(DeploymentAnchorId anchor)
+    {
+        return _deploymentAssignments.TryGetValue(anchor, out var heroId) ? heroId : null;
+    }
+
+    public bool AssignHeroToAnchor(DeploymentAnchorId anchor, string? heroId)
+    {
+        EnsureDefaultSquad();
+        EnsureAssignmentMapInitialized();
+
+        heroId = string.IsNullOrWhiteSpace(heroId) ? null : heroId;
+        if (heroId != null && !_expeditionSquadHeroIds.Contains(heroId))
         {
-            _battleDeployHeroIds.RemoveAt(_battleDeployHeroIds.Count - 1);
+            return false;
         }
 
-        RefillBattleDeployFromSquad();
+        var currentHero = GetAssignedHeroId(anchor);
+        var occupiedBefore = BattleDeployHeroIds.Count;
+        var candidateAlreadyAssigned = heroId != null && BattleDeployHeroIds.Contains(heroId);
+        var occupiedAfter = occupiedBefore
+            - (string.IsNullOrWhiteSpace(currentHero) ? 0 : 1)
+            + (heroId == null || candidateAlreadyAssigned ? 0 : 1);
+        if (occupiedAfter > 4)
+        {
+            return false;
+        }
+
+        if (heroId != null)
+        {
+            foreach (var existingAnchor in DeploymentAnchorOrder)
+            {
+                if (existingAnchor == anchor)
+                {
+                    continue;
+                }
+
+                if (_deploymentAssignments.TryGetValue(existingAnchor, out var existingHero) && existingHero == heroId)
+                {
+                    _deploymentAssignments[existingAnchor] = null;
+                }
+            }
+        }
+
+        _deploymentAssignments[anchor] = heroId;
+        return true;
+    }
+
+    public bool CycleDeploymentAssignment(DeploymentAnchorId anchor)
+    {
+        EnsureBattleDeployReady();
+
+        var candidates = new List<string?> { null };
+        candidates.AddRange(_expeditionSquadHeroIds);
+
+        var current = GetAssignedHeroId(anchor);
+        var startIndex = candidates.FindIndex(candidate => candidate == current);
+        startIndex = startIndex < 0 ? 0 : startIndex;
+
+        for (var offset = 1; offset <= candidates.Count; offset++)
+        {
+            var candidate = candidates[(startIndex + offset) % candidates.Count];
+            if (AssignHeroToAnchor(anchor, candidate))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void CycleTeamPosture()
+    {
+        var values = (TeamPostureType[])Enum.GetValues(typeof(TeamPostureType));
+        var currentIndex = Array.IndexOf(values, SelectedTeamPosture);
+        SelectedTeamPosture = values[(currentIndex + 1) % values.Length];
+    }
+
+    public IEnumerable<(DeploymentAnchorId Anchor, string? HeroId)> EnumerateDeploymentAssignments()
+    {
+        EnsureBattleDeployReady();
+        foreach (var anchor in DeploymentAnchorOrder)
+        {
+            yield return (anchor, GetAssignedHeroId(anchor));
+        }
     }
 
     public void SaveDebugSnapshot(string note = "manual-debug-save")
@@ -407,26 +503,121 @@ public sealed class GameSessionState
         {
             _expeditionSquadHeroIds.Add(hero.HeroId);
         }
-
-        RefillBattleDeployFromSquad();
     }
 
-    private void RefillBattleDeployFromSquad()
+    private void EnsureAssignmentMapInitialized()
     {
-        foreach (var heroId in _expeditionSquadHeroIds)
+        foreach (var anchor in DeploymentAnchorOrder)
         {
-            if (_battleDeployHeroIds.Count >= 4)
+            if (!_deploymentAssignments.ContainsKey(anchor))
             {
-                break;
+                _deploymentAssignments[anchor] = null;
             }
+        }
+    }
 
-            if (!_battleDeployHeroIds.Contains(heroId))
+    private void ResetDeploymentAssignments()
+    {
+        _deploymentAssignments.Clear();
+        EnsureAssignmentMapInitialized();
+    }
+
+    private void EnsureDefaultDeploymentAssignments()
+    {
+        EnsureAssignmentMapInitialized();
+
+        foreach (var anchor in DeploymentAnchorOrder)
+        {
+            if (_deploymentAssignments.TryGetValue(anchor, out var heroId) && !string.IsNullOrWhiteSpace(heroId) && !_expeditionSquadHeroIds.Contains(heroId))
             {
-                _battleDeployHeroIds.Add(heroId);
+                _deploymentAssignments[anchor] = null;
             }
         }
 
-        _battleDeployHeroIds.RemoveAll(id => !_expeditionSquadHeroIds.Contains(id));
+        foreach (var heroId in BattleDeployHeroIds.Where(heroId => !_expeditionSquadHeroIds.Contains(heroId)).ToList())
+        {
+            ClearDeploymentForHero(heroId);
+        }
+
+        foreach (var heroId in _expeditionSquadHeroIds.Take(4))
+        {
+            if (BattleDeployHeroIds.Contains(heroId))
+            {
+                continue;
+            }
+
+            AssignHeroToAnchor(ResolvePreferredAnchor(heroId), heroId);
+            if (BattleDeployHeroIds.Count >= 4)
+            {
+                break;
+            }
+        }
+    }
+
+    private void ClearDeploymentForHero(string heroId)
+    {
+        foreach (var anchor in DeploymentAnchorOrder)
+        {
+            if (_deploymentAssignments.TryGetValue(anchor, out var assignedHero) && assignedHero == heroId)
+            {
+                _deploymentAssignments[anchor] = null;
+            }
+        }
+    }
+
+    private DeploymentAnchorId ResolvePreferredAnchor(string heroId)
+    {
+        var hero = Profile.Heroes.FirstOrDefault(entry => entry.HeroId == heroId);
+        var preferredOrder = hero?.ClassId switch
+        {
+            "vanguard" => new[]
+            {
+                DeploymentAnchorId.FrontCenter,
+                DeploymentAnchorId.FrontTop,
+                DeploymentAnchorId.FrontBottom,
+                DeploymentAnchorId.BackCenter,
+                DeploymentAnchorId.BackTop,
+                DeploymentAnchorId.BackBottom
+            },
+            "duelist" => new[]
+            {
+                DeploymentAnchorId.FrontTop,
+                DeploymentAnchorId.FrontBottom,
+                DeploymentAnchorId.FrontCenter,
+                DeploymentAnchorId.BackTop,
+                DeploymentAnchorId.BackBottom,
+                DeploymentAnchorId.BackCenter
+            },
+            "ranger" => new[]
+            {
+                DeploymentAnchorId.BackTop,
+                DeploymentAnchorId.BackCenter,
+                DeploymentAnchorId.BackBottom,
+                DeploymentAnchorId.FrontTop,
+                DeploymentAnchorId.FrontCenter,
+                DeploymentAnchorId.FrontBottom
+            },
+            "mystic" => new[]
+            {
+                DeploymentAnchorId.BackCenter,
+                DeploymentAnchorId.BackTop,
+                DeploymentAnchorId.BackBottom,
+                DeploymentAnchorId.FrontCenter,
+                DeploymentAnchorId.FrontTop,
+                DeploymentAnchorId.FrontBottom
+            },
+            _ => DeploymentAnchorOrder
+        };
+
+        foreach (var anchor in preferredOrder)
+        {
+            if (string.IsNullOrWhiteSpace(GetAssignedHeroId(anchor)))
+            {
+                return anchor;
+            }
+        }
+
+        return preferredOrder[0];
     }
 
     private void EnsureExpeditionNodes(bool reset = false)

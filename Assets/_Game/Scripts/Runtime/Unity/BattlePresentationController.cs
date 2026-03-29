@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Model;
 using UnityEngine;
 
 namespace SM.Unity;
@@ -12,6 +13,7 @@ public sealed class BattlePresentationController : MonoBehaviour
     private readonly Dictionary<string, BattleActorView> _actorViews = new();
     private Camera _camera = null!;
     private BattlePresentationOptions _options = BattlePresentationOptions.CreateDefault();
+
     public bool IsPaused { get; private set; }
 
     private void Update()
@@ -27,22 +29,24 @@ public sealed class BattlePresentationController : MonoBehaviour
         }
     }
 
-    public void Initialize(BattleReplayTrack track)
+    public void Initialize(BattleSimulationStep initialStep)
     {
         ValidateReferences();
         _camera = Camera.main!;
         IsPaused = false;
         Clear();
 
-        foreach (var actor in track.InitialRoster)
+        foreach (var actor in initialStep.Units)
         {
             var actorGo = new GameObject(actor.Name);
             actorGo.transform.SetParent(battleStageRoot, false);
             var view = actorGo.AddComponent<BattleActorView>();
-            view.Initialize(actor, actorOverlayRoot, _camera, ResolveSlotPosition(track.InitialRoster, actor), this);
+            view.Initialize(actor, actorOverlayRoot, _camera, this);
             view.ApplyOptions(_options);
             _actorViews[actor.Id] = view;
         }
+
+        SetBlend(initialStep, initialStep, 1f);
     }
 
     public void SetPaused(bool isPaused)
@@ -60,40 +64,49 @@ public sealed class BattlePresentationController : MonoBehaviour
         }
     }
 
-    public void PresentFrame(BattleReplayFrame frame)
+    public void PushStep(BattleSimulationStep previousStep, BattleSimulationStep currentStep)
+    {
+        TriggerEvents(currentStep.Events);
+        SetBlend(previousStep, currentStep, 0f);
+    }
+
+    public void SetBlend(BattleSimulationStep fromStep, BattleSimulationStep toStep, float alpha)
     {
         if (_actorViews.Count == 0)
         {
             return;
         }
 
-        var stateById = frame.ActorStates.ToDictionary(actor => actor.Id);
-        foreach (var kv in _actorViews)
+        var fromById = fromStep.Units.ToDictionary(unit => unit.Id);
+        var toById = toStep.Units.ToDictionary(unit => unit.Id);
+        foreach (var (id, view) in _actorViews)
         {
-            if (stateById.TryGetValue(kv.Key, out var snapshot))
+            if (!toById.TryGetValue(id, out var toState))
             {
-                kv.Value.ApplyState(snapshot);
-            }
-        }
-
-        if (frame.FrameKind != BattleReplayFrameKind.Event || frame.ActionType == null)
-        {
-            return;
-        }
-
-        if (frame.SourceId != null && _actorViews.TryGetValue(frame.SourceId, out var sourceView))
-        {
-            BattleActorView? targetView = null;
-            if (frame.TargetId != null && _actorViews.TryGetValue(frame.TargetId, out var resolvedTarget))
-            {
-                targetView = resolvedTarget;
+                continue;
             }
 
-            sourceView.PlayAsSource(frame, targetView);
+            var fromState = fromById.TryGetValue(id, out var resolvedFrom)
+                ? resolvedFrom
+                : toState;
+            view.ApplyBlend(fromState, toState, alpha);
+        }
+    }
 
-            if (targetView != null)
+    private void TriggerEvents(IReadOnlyList<BattleEvent> events)
+    {
+        foreach (var eventData in events)
+        {
+            if (_actorViews.TryGetValue(eventData.ActorId.Value, out var sourceView))
             {
-                targetView.PlayAsTarget(frame);
+                BattleActorView? targetView = null;
+                if (eventData.TargetId is { } targetId && _actorViews.TryGetValue(targetId.Value, out var resolvedTarget))
+                {
+                    targetView = resolvedTarget;
+                }
+
+                sourceView.PlayAsSource(eventData, targetView);
+                targetView?.PlayAsTarget(eventData);
             }
         }
     }
@@ -130,22 +143,5 @@ public sealed class BattlePresentationController : MonoBehaviour
                 Destroy(actorOverlayRoot.GetChild(i).gameObject);
             }
         }
-    }
-
-    private static Vector3 ResolveSlotPosition(IReadOnlyList<BattleReplayActorSnapshot> roster, BattleReplayActorSnapshot actor)
-    {
-        var sameSide = roster.Where(entry => entry.Side == actor.Side).ToList();
-        var rowIndex = sameSide.Where(entry => entry.Row == actor.Row).TakeWhile(entry => entry.Id != actor.Id).Count();
-        var z = rowIndex == 0 ? -1.3f : 1.3f;
-        if (actor.Side == SM.Combat.Model.TeamSide.Enemy)
-        {
-            z *= -1f;
-        }
-
-        var x = actor.Side == SM.Combat.Model.TeamSide.Ally
-            ? actor.Row == SM.Combat.Model.RowPosition.Front ? -1.85f : -3.85f
-            : actor.Row == SM.Combat.Model.RowPosition.Front ? 1.85f : 3.85f;
-
-        return new Vector3(x, 0f, z);
     }
 }

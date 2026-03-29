@@ -8,7 +8,7 @@ public sealed record UnitDefinition(
     string Name,
     string RaceId,
     string ClassId,
-    RowPosition Row,
+    DeploymentAnchorId PreferredAnchor,
     Dictionary<StatKey, float> BaseStats,
     IReadOnlyList<TacticRule> Tactics,
     IReadOnlyList<SkillDefinition> Skills,

@@ -1,7 +1,7 @@
 {
   "name": "SM.Combat",
   "rootNamespace": "SM.Combat",
-  "references": ["SM.Core", "SM.Content"],
+  "references": ["SM.Core"],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

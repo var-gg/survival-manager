@@ -5,4 +5,4 @@ public sealed record SkillDefinition(
     string Name,
     SkillKind Kind,
     float Power,
-    int Range);
+    float Range);

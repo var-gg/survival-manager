@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using NUnit.Framework;
+using SM.Combat.Model;
 using SM.Unity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -36,6 +37,20 @@ public sealed class PlayModeSmokeTests
 
         var town = FindAny<TownScreenController>();
         Assert.That(town, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownScreenController after scene settle."));
+        var root = GameSessionRoot.Instance!;
+        Assert.That(FindObjectByName("TownDeploymentPanel"), Is.Not.Null, "Town should expose a runtime deployment panel.");
+        Assert.That(FindObjectByName("DeployButton_FrontTop"), Is.Not.Null, "Town should expose deployment anchor buttons.");
+        Assert.That(FindObjectByName("TeamPostureButton"), Is.Not.Null, "Town should expose a team posture button.");
+
+        var heroA = root.SessionState.ExpeditionSquadHeroIds[0];
+        var heroB = root.SessionState.ExpeditionSquadHeroIds[1];
+        Assert.That(root.SessionState.AssignHeroToAnchor(DeploymentAnchorId.BackBottom, heroA), Is.True);
+        Assert.That(root.SessionState.AssignHeroToAnchor(DeploymentAnchorId.FrontCenter, heroB), Is.True);
+        while (root.SessionState.SelectedTeamPosture != TeamPostureType.AllInBackline)
+        {
+            root.SessionState.CycleTeamPosture();
+        }
+
         town!.QuickBattle();
 
         yield return WaitForScene(SceneNames.Battle);
@@ -49,6 +64,9 @@ public sealed class PlayModeSmokeTests
         Assert.That(GameObject.Find("ActorOverlayRoot"), Is.Not.Null, "ActorOverlayRoot should be present.");
         Assert.That(FindObjectByName("SettingsButton"), Is.Not.Null, "SettingsButton should be present.");
         Assert.That(FindObjectByName("SettingsPanel"), Is.Not.Null, "SettingsPanel should be present even when hidden by default.");
+        yield return WaitForCondition(() => battle!.LatestStep != null, 5f);
+        Assert.That(battle!.ActiveAllyPosture, Is.EqualTo(TeamPostureType.AllInBackline));
+        Assert.That(battle.LatestStep!.Units.Any(unit => unit.Name == "Hero 1" && unit.Anchor == DeploymentAnchorId.BackBottom), Is.True, "Assigned anchor should flow into live battle state.");
 
         battle!.SetSpeed4();
         yield return WaitForCondition(() => battle!.IsPlaybackFinished, 20f);
@@ -84,6 +102,9 @@ public sealed class PlayModeSmokeTests
         yield return WaitForComponent<ExpeditionScreenController>();
         var expedition = FindAny<ExpeditionScreenController>();
         Assert.That(expedition, Is.Not.Null, BuildSceneDiagnostic("Expedition scene should contain ExpeditionScreenController."));
+        Assert.That(FindObjectByName("ExpeditionDeploymentPanel"), Is.Not.Null, "Expedition scene should expose deployment controls.");
+        Assert.That(FindObjectByName("DeployButton_BackCenter"), Is.Not.Null, "Expedition scene should expose anchor buttons.");
+        Assert.That(FindObjectByName("TeamPostureButton"), Is.Not.Null, "Expedition scene should expose a posture button.");
         expedition!.SelectNode3();
         expedition.NextBattleOrAdvance();
 

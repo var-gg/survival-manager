@@ -1,4 +1,3 @@
-using SM.Combat.Model;
 using UnityEngine;
 
 namespace SM.Content.Definitions;
@@ -7,9 +6,9 @@ namespace SM.Content.Definitions;
 public sealed class TacticPresetEntry
 {
     public int Priority;
-    public TacticConditionType ConditionType;
+    public TacticConditionTypeValue ConditionType;
     public float Threshold;
-    public BattleActionType ActionType;
-    public TargetSelectorType TargetSelector;
+    public BattleActionTypeValue ActionType;
+    public TargetSelectorTypeValue TargetSelector;
     public SkillDefinitionAsset Skill;
 }

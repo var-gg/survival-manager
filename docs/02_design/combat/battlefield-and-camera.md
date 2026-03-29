@@ -1,0 +1,52 @@
+# 전장과 카메라
+
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-30
+- 소스오브트루스: `docs/02_design/combat/battlefield-and-camera.md`
+- 관련문서:
+  - `docs/02_design/combat/deployment-and-anchors.md`
+  - `docs/02_design/combat/realtime-simulation-model.md`
+  - `docs/02_design/combat/combat-readability.md`
+  - `docs/03_architecture/combat-runtime-architecture.md`
+  - `docs/02_design/ui/battle-observer-ui.md`
+
+## 목적
+
+이 문서는 prototype 전투에서 플레이어가 실제로 보게 되는 전장 구도와 카메라 기준을 고정한다.
+목표는 4v4 auto-skirmish를 읽기 쉬운 관전자 화면으로 유지하면서, 배치의 의미와 전투 중 움직임을 동시에 살리는 것이다.
+
+## 전장 기준
+
+- 전장은 항상 좌측 아군 vs 우측 적군 구도로 시작한다.
+- side마다 `3x2` 배치 앵커를 가진다.
+- 배치 페이즈에서는 유닛을 앵커에 올린다.
+- 전투가 시작되면 유닛은 앵커에 고정되지 않고 연속 좌표계 위에서 이동한다.
+- `top / center / bottom`은 lane 의미를 제공하지만, 전투 중 실제 이동은 off-grid다.
+- MVP 스케일은 `4v4`를 유지한다.
+
+## 앵커와 공간의 역할 분리
+
+- 앵커는 spawn 위치, home 위치, leash 기준점, 초기 배치 의미를 만든다.
+- 실제 교전 위치는 `CombatVector2` 연속 좌표를 기준으로 계산한다.
+- 배치의 의미는 남기되, 전투 표현은 "제자리에 서서 숫자만 교환하는" 모델로 되돌리지 않는다.
+
+## 카메라 기준
+
+- 카메라는 약한 사선 구도를 유지한다.
+- 화면 하나에서 양 팀, 체력바, 현재 타깃, windup 상태를 동시에 읽을 수 있어야 한다.
+- 전투 중 카메라는 유닛 하나를 과하게 따라가지 않는다.
+- 현재 Battle scene prototype은 고정 카메라에 가까운 slanted view를 사용한다.
+
+## 비목표
+
+- TFT식 board-locked hex 전장
+- LoL 전체 맵, lane objective, minion wave, tower
+- NavMesh 중심 자유 이동
+- 자유 회전 관전 카메라
+
+## 현재 구현 메모
+
+- Battle scene은 capsule actor와 단순한 카메라 세팅을 유지한다.
+- 읽기 쉬움이 깨지지 않는 선에서만 위치 보간과 간단한 충돌 회피를 사용한다.
+- 전장 가독성 예산은 `docs/02_design/combat/combat-readability.md`를 따른다.

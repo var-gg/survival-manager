@@ -1,70 +1,20 @@
-# Formation and Targeting
+# 배치와 타깃팅
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: deprecated
+- 소유자: repository
+- 최종수정일: 2026-03-30
+- 소스오브트루스: `docs/02_design/combat/deployment-and-anchors.md`
+- 관련문서:
+  - `docs/02_design/combat/team-tactics-and-unit-rules.md`
+  - `docs/03_architecture/combat-state-and-event-model.md`
+  - `docs/04_decisions/adr-0014-grid-deployment-continuous-combat.md`
 
-## Purpose
+## 폐기 이유
 
-This document defines the MVP formation and targeting language for combat.
+이 문서는 front/back 2-row와 단순 row targeting을 전제로 했고, 현재 spatial target scoring 구조와 맞지 않는다.
 
-## MVP Rules
+## 현재 기준 문서
 
-### Formation Structure
-
-The battle formation is fixed to a 2-row layout with 4 deployed units total.
-A simple MVP interpretation is:
-
-- front row: 2 slots
-- back row: 2 slots
-
-This structure should remain stable during MVP so that positioning meaning is easy to read.
-
-### Formation Intent
-
-The formation should support:
-
-- front-line protection roles
-- back-line ranged or support roles
-- readable target relationships
-- simple positioning consequences
-
-### Targeting Baseline
-
-MVP targeting should remain intentionally narrow.
-Target selection should derive from:
-
-- tactic rule result
-- valid range
-- row accessibility or simple reach assumptions
-- lowest HP logic when specified
-
-### Recommended Baseline Target Rules
-
-- front-row units generally target front-row enemies first if valid
-- back-row targeting should depend on range, skill permission, or explicit tactic logic
-- lowest HP enemy targeting should only work if the enemy is valid and targetable
-- ally targeting should use the same validity logic rather than bypassing all constraints
-
-### Implementation Preference
-
-Use a simple and verifiable targeting validator.
-Do not begin MVP with complex line-of-sight, collision, or spatial simulation.
-
-## Long-Term Expansion Points
-
-- taunt or guard mechanics
-- formation shifts
-- positional area skills
-- targeting exceptions by class or skill
-- movement or reordering during battle
-- more detailed reach logic
-
-Those can come later if the 2-row baseline proves readable first.
-
-## Open Questions
-
-- should MVP allow back-row units to be directly attacked only after front-row collapse?
-- how much class-based targeting exception is needed for the first proof?
-- should defend or guard alter target priority in MVP?
-- does the battle need row-breaking skills in the first slice, or should that wait?
+- 배치 구조는 `deployment-and-anchors.md`를 본다.
+- 타깃 선정 규칙은 `team-tactics-and-unit-rules.md`를 본다.
+- state/event 모델은 `docs/03_architecture/combat-state-and-event-model.md`를 본다.

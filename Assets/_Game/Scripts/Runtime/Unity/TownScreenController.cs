@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Text;
+using SM.Combat.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,7 @@ public sealed class TownScreenController : MonoBehaviour
     [SerializeField] private Text statusText = null!;
 
     private GameSessionRoot _root = null!;
+    private DeploymentSetupPanelView? _deploymentPanel;
 
     private void Start()
     {
@@ -28,6 +30,7 @@ public sealed class TownScreenController : MonoBehaviour
         }
 
         _root.SessionState.SetCurrentScene(SceneNames.Town);
+        EnsureRuntimeControls();
         Refresh();
     }
 
@@ -76,6 +79,40 @@ public sealed class TownScreenController : MonoBehaviour
         _root.SessionState.PrepareQuickBattleSmoke();
         _root.SaveProfile();
         _root.SceneFlow.GoToBattle();
+    }
+
+    public void EnsureRuntimeControls()
+    {
+        if (_deploymentPanel != null || statusText == null)
+        {
+            return;
+        }
+
+        var parent = statusText.transform.parent as RectTransform;
+        if (parent == null)
+        {
+            return;
+        }
+
+        _deploymentPanel = DeploymentSetupPanelView.Create(
+            "TownDeploymentPanel",
+            parent,
+            anchor => CycleAnchor(anchor),
+            CycleTeamPosture);
+    }
+
+    public void CycleFrontTop() => CycleAnchor(DeploymentAnchorId.FrontTop);
+    public void CycleFrontCenter() => CycleAnchor(DeploymentAnchorId.FrontCenter);
+    public void CycleFrontBottom() => CycleAnchor(DeploymentAnchorId.FrontBottom);
+    public void CycleBackTop() => CycleAnchor(DeploymentAnchorId.BackTop);
+    public void CycleBackCenter() => CycleAnchor(DeploymentAnchorId.BackCenter);
+    public void CycleBackBottom() => CycleAnchor(DeploymentAnchorId.BackBottom);
+
+    public void CycleTeamPosture()
+    {
+        if (!EnsureReady()) return;
+        _root.SessionState.CycleTeamPosture();
+        Refresh($"Team posture: {_root.SessionState.SelectedTeamPosture}");
     }
 
     private void Recruit(int index)
@@ -151,6 +188,7 @@ public sealed class TownScreenController : MonoBehaviour
         squadText.text = BuildSquadText(session);
         deployPreviewText.text = BuildDeployPreviewText(session);
         RefreshRecruitCards(session);
+        _deploymentPanel?.Refresh(session);
         statusText.text = string.IsNullOrWhiteSpace(message)
             ? session.CanResumeExpedition
                 ? "영입/저장/Debug Start(원정 재개)/Quick Battle을 바로 눌러 확인하세요."
@@ -239,13 +277,12 @@ public sealed class TownScreenController : MonoBehaviour
     {
         var sb = new StringBuilder();
         sb.AppendLine($"Deploy Preview ({session.BattleDeployHeroIds.Count}/4)");
-        foreach (var heroId in session.BattleDeployHeroIds)
+        sb.AppendLine($"Team Posture: {session.SelectedTeamPosture}");
+        foreach (var (anchor, heroId) in session.EnumerateDeploymentAssignments())
         {
             var hero = session.Profile.Heroes.FirstOrDefault(x => x.HeroId == heroId);
-            if (hero != null)
-            {
-                sb.AppendLine($"- {hero.Name}");
-            }
+            var heroName = hero?.Name ?? "Empty";
+            sb.AppendLine($"- {anchor.ToDisplayName()}: {heroName}");
         }
 
         sb.AppendLine();
@@ -275,5 +312,12 @@ public sealed class TownScreenController : MonoBehaviour
         }
 
         return sb.ToString();
+    }
+
+    private void CycleAnchor(DeploymentAnchorId anchor)
+    {
+        if (!EnsureReady()) return;
+        _root.SessionState.CycleDeploymentAssignment(anchor);
+        Refresh($"{anchor.ToDisplayName()} 배치를 갱신했습니다.");
     }
 }

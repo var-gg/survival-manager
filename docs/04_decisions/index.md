@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-03-30
 - 소스오브트루스: `docs/04_decisions/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -27,6 +27,7 @@
 - `adr-0011-mcp-adoption-policy.md`: MCP 도입 정책
 - `adr-0012-code-structure-and-dependency-policy.md`: 코드 구조와 의존 정책 채택
 - `adr-0013-unity-cli-hybrid-lane.md`: Unity CLI hybrid lane 채택
+- `adr-0014-grid-deployment-continuous-combat.md`: grid 배치 + continuous combat 채택
 
 ## 운영 메모
 

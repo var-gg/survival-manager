@@ -95,6 +95,7 @@ public static class FirstPlayableRuntimeSceneBinder
             ["currencyText"] = GetComponentFromNamedObject<Text>(scene, "CurrencyText"),
             ["statusText"] = GetComponentFromNamedObject<Text>(scene, "StatusText"),
         });
+        controller.EnsureRuntimeControls();
 
         BindButton(scene, "RerollButton", controller.RerollOffers);
         BindButton(scene, "SaveButton", controller.SaveProfile);
@@ -125,6 +126,7 @@ public static class FirstPlayableRuntimeSceneBinder
             ["squadText"] = GetComponentFromNamedObject<Text>(scene, "SquadText"),
             ["statusText"] = GetComponentFromNamedObject<Text>(scene, "StatusText"),
         });
+        controller.EnsureRuntimeControls();
 
         BindButton(scene, "NextBattleButton", controller.NextBattleOrAdvance);
         BindButton(scene, "ReturnTownButton", controller.ReturnToTown);

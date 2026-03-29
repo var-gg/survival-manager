@@ -1,30 +1,20 @@
 # 전투 루프
 
-- 상태: active
+- 상태: deprecated
+- 소유자: repository
 - 최종수정일: 2026-03-30
-- phase: prototype
+- 소스오브트루스: `docs/02_design/combat/realtime-simulation-model.md`
+- 관련문서:
+  - `docs/02_design/combat/battlefield-and-camera.md`
+  - `docs/03_architecture/combat-runtime-architecture.md`
+  - `docs/04_decisions/adr-0014-grid-deployment-continuous-combat.md`
 
-## 현재 전투 시퀀스
+## 폐기 이유
 
-1. battle deploy 4인이 전투에 진입한다.
-2. enemy 4인이 생성된다.
-3. `BattleFactory`가 simulation state를 만든다.
-4. `BattleResolver`가 simulation state를 끝까지 계산한다.
-5. `BattleReplayBuilder`가 시작 상태 + result에서 replay track을 만든다.
-6. `BattlePresentationController`가 frame을 시간 순서대로 재생한다.
-7. 결과를 `Reward` scene으로 넘긴다.
+이 문서는 `resolve once -> replay` 전제를 기준으로 작성되었고, 현재 prototype 구현과 더 이상 맞지 않는다.
 
-## 현재 action 집합
+## 현재 기준 문서
 
-- basic attack
-- active skill
-- wait / defend
-
-## observer 원칙
-
-- Battle scene은 final mutated state dump를 다시 그리지 않는다.
-- intro frame / event frame / result frame을 모두 보여준다.
-- x1 / x2 / x4 / pause는 playback 제어다.
-- 외부 animation package 없이 coroutine / lerp로 표현한다.
-- pause는 actor lunge / hit / floating text까지 함께 멈춘다.
-- smoke battle은 operator progression 검증을 위해 적 스탯이 소폭 낮아진다.
+- 전투 흐름과 fixed-step 규칙은 `realtime-simulation-model.md`를 본다.
+- Battle scene 역할은 `docs/03_architecture/combat-runtime-architecture.md`를 본다.
+- 전장 표현은 `battlefield-and-camera.md`를 본다.

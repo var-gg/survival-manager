@@ -227,6 +227,13 @@ public static class SampleSeedGenerator
             CreateAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_defense.asset", a => { a.Id = "defense"; a.DisplayName = "Defense"; }),
             CreateAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_speed.asset", a => { a.Id = "speed"; a.DisplayName = "Speed"; }),
             CreateAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_heal_power.asset", a => { a.Id = "heal_power"; a.DisplayName = "Heal Power"; }),
+            CreateAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_move_speed.asset", a => { a.Id = "move_speed"; a.DisplayName = "Move Speed"; }),
+            CreateAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_attack_range.asset", a => { a.Id = "attack_range"; a.DisplayName = "Attack Range"; }),
+            CreateAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_aggro_radius.asset", a => { a.Id = "aggro_radius"; a.DisplayName = "Aggro Radius"; }),
+            CreateAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_attack_windup.asset", a => { a.Id = "attack_windup"; a.DisplayName = "Attack Windup"; }),
+            CreateAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_attack_cooldown.asset", a => { a.Id = "attack_cooldown"; a.DisplayName = "Attack Cooldown"; }),
+            CreateAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_leash_distance.asset", a => { a.Id = "leash_distance"; a.DisplayName = "Leash Distance"; }),
+            CreateAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_target_switch_delay.asset", a => { a.Id = "target_switch_delay"; a.DisplayName = "Target Switch Delay"; }),
         };
     }
 
@@ -294,18 +301,18 @@ public static class SampleSeedGenerator
         Dictionary<string, SkillDefinitionAsset> skills)
     {
         var result = new Dictionary<string, UnitArchetypeDefinition>();
-        result["warden"] = CreateArchetype("warden", "Warden", races["human"], classes["vanguard"], traitPools["warden"], skills["skill_power_strike"], 24, 5, 3, 3, 0);
-        result["guardian"] = CreateArchetype("guardian", "Guardian", races["undead"], classes["vanguard"], traitPools["guardian"], skills["skill_power_strike"], 26, 4, 4, 2, 0);
-        result["slayer"] = CreateArchetype("slayer", "Slayer", races["human"], classes["duelist"], traitPools["slayer"], skills["skill_power_strike"], 20, 7, 2, 4, 0);
-        result["raider"] = CreateArchetype("raider", "Raider", races["beastkin"], classes["duelist"], traitPools["raider"], skills["skill_power_strike"], 19, 8, 1, 5, 0);
-        result["hunter"] = CreateArchetype("hunter", "Hunter", races["human"], classes["ranger"], traitPools["hunter"], skills["skill_precision_shot"], 18, 6, 2, 5, 0);
-        result["scout"] = CreateArchetype("scout", "Scout", races["beastkin"], classes["ranger"], traitPools["scout"], skills["skill_precision_shot"], 17, 5, 2, 6, 0);
-        result["priest"] = CreateArchetype("priest", "Priest", races["human"], classes["mystic"], traitPools["priest"], skills["skill_minor_heal"], 18, 3, 2, 4, 5);
-        result["hexer"] = CreateArchetype("hexer", "Hexer", races["undead"], classes["mystic"], traitPools["hexer"], skills["skill_minor_heal"], 17, 4, 2, 4, 4);
+        result["warden"] = CreateArchetype("warden", "Warden", races["human"], classes["vanguard"], traitPools["warden"], skills["skill_power_strike"], 24, 5, 3, 3, 0, DeploymentAnchorValue.FrontCenter, TeamPostureTypeValue.HoldLine);
+        result["guardian"] = CreateArchetype("guardian", "Guardian", races["undead"], classes["vanguard"], traitPools["guardian"], skills["skill_power_strike"], 26, 4, 4, 2, 0, DeploymentAnchorValue.FrontTop, TeamPostureTypeValue.ProtectCarry);
+        result["slayer"] = CreateArchetype("slayer", "Slayer", races["human"], classes["duelist"], traitPools["slayer"], skills["skill_power_strike"], 20, 7, 2, 4, 0, DeploymentAnchorValue.FrontBottom, TeamPostureTypeValue.StandardAdvance);
+        result["raider"] = CreateArchetype("raider", "Raider", races["beastkin"], classes["duelist"], traitPools["raider"], skills["skill_power_strike"], 19, 8, 1, 5, 0, DeploymentAnchorValue.FrontTop, TeamPostureTypeValue.CollapseWeakSide);
+        result["hunter"] = CreateArchetype("hunter", "Hunter", races["human"], classes["ranger"], traitPools["hunter"], skills["skill_precision_shot"], 18, 6, 2, 5, 0, DeploymentAnchorValue.BackTop, TeamPostureTypeValue.StandardAdvance);
+        result["scout"] = CreateArchetype("scout", "Scout", races["beastkin"], classes["ranger"], traitPools["scout"], skills["skill_precision_shot"], 17, 5, 2, 6, 0, DeploymentAnchorValue.BackBottom, TeamPostureTypeValue.CollapseWeakSide);
+        result["priest"] = CreateArchetype("priest", "Priest", races["human"], classes["mystic"], traitPools["priest"], skills["skill_minor_heal"], 18, 3, 2, 4, 5, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.ProtectCarry);
+        result["hexer"] = CreateArchetype("hexer", "Hexer", races["undead"], classes["mystic"], traitPools["hexer"], skills["skill_minor_heal"], 17, 4, 2, 4, 4, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.AllInBackline);
         return result;
     }
 
-    private static UnitArchetypeDefinition CreateArchetype(string id, string name, RaceDefinition race, ClassDefinition @class, TraitPoolDefinition pool, SkillDefinitionAsset skill, float hp, float atk, float def, float spd, float heal)
+    private static UnitArchetypeDefinition CreateArchetype(string id, string name, RaceDefinition race, ClassDefinition @class, TraitPoolDefinition pool, SkillDefinitionAsset skill, float hp, float atk, float def, float spd, float heal, DeploymentAnchorValue defaultAnchor, TeamPostureTypeValue preferredPosture)
     {
         return CreateAsset<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_{id}.asset", a =>
         {
@@ -315,11 +322,37 @@ public static class SampleSeedGenerator
             a.Class = @class;
             a.TraitPool = pool;
             a.Skills = new List<SkillDefinitionAsset> { skill };
+            a.DefaultAnchor = defaultAnchor;
+            a.PreferredTeamPosture = preferredPosture;
             a.BaseMaxHealth = hp;
             a.BaseAttack = atk;
             a.BaseDefense = def;
             a.BaseSpeed = spd;
             a.BaseHealPower = heal;
+            a.BaseMoveSpeed = @class.Id switch
+            {
+                "vanguard" => 1.65f,
+                "duelist" => 2.05f,
+                "ranger" => 1.85f,
+                "mystic" => 1.7f,
+                _ => 1.75f
+            };
+            a.BaseAttackRange = @class.Id switch
+            {
+                "ranger" => 3.2f,
+                "mystic" => 2.8f,
+                _ => 1.3f
+            };
+            a.BaseAggroRadius = @class.Id == "ranger" ? 8f : 7.2f;
+            a.BaseAttackWindup = @class.Id == "ranger" ? 0.18f : 0.22f;
+            a.BaseAttackCooldown = @class.Id == "duelist" ? 0.85f : 1.0f;
+            a.BaseLeashDistance = @class.Id switch
+            {
+                "ranger" => 4.6f,
+                "mystic" => 4.8f,
+                _ => 5.2f
+            };
+            a.BaseTargetSwitchDelay = @class.Id == "ranger" ? 0.30f : 0.40f;
             a.TacticPreset = BuildTacticPreset(@class.Id, skill);
         });
     }
@@ -331,15 +364,15 @@ public static class SampleSeedGenerator
             return new List<TacticPresetEntry>
             {
                 new() { Priority = 0, ConditionType = TacticConditionTypeValue.AllyHpBelow, Threshold = 0.6f, ActionType = BattleActionTypeValue.ActiveSkill, TargetSelector = TargetSelectorTypeValue.LowestHpAlly, Skill = skill },
-                new() { Priority = 1, ConditionType = TacticConditionTypeValue.EnemyInRange, Threshold = 0f, ActionType = BattleActionTypeValue.BasicAttack, TargetSelector = TargetSelectorTypeValue.FirstEnemyInRange },
+                new() { Priority = 1, ConditionType = TacticConditionTypeValue.EnemyExposed, Threshold = 1.5f, ActionType = BattleActionTypeValue.BasicAttack, TargetSelector = TargetSelectorTypeValue.MostExposedEnemy },
                 new() { Priority = 2, ConditionType = TacticConditionTypeValue.Fallback, Threshold = 0f, ActionType = BattleActionTypeValue.WaitDefend, TargetSelector = TargetSelectorTypeValue.Self },
             };
         }
 
         return new List<TacticPresetEntry>
         {
-            new() { Priority = 0, ConditionType = TacticConditionTypeValue.LowestHpEnemy, Threshold = 0f, ActionType = BattleActionTypeValue.ActiveSkill, TargetSelector = TargetSelectorTypeValue.LowestHpEnemy, Skill = skill },
-            new() { Priority = 1, ConditionType = TacticConditionTypeValue.EnemyInRange, Threshold = 0f, ActionType = BattleActionTypeValue.BasicAttack, TargetSelector = TargetSelectorTypeValue.FirstEnemyInRange },
+            new() { Priority = 0, ConditionType = TacticConditionTypeValue.EnemyExposed, Threshold = 1.5f, ActionType = BattleActionTypeValue.ActiveSkill, TargetSelector = TargetSelectorTypeValue.MostExposedEnemy, Skill = skill },
+            new() { Priority = 1, ConditionType = TacticConditionTypeValue.LowestHpEnemy, Threshold = 0f, ActionType = BattleActionTypeValue.BasicAttack, TargetSelector = TargetSelectorTypeValue.LowestHpEnemy },
             new() { Priority = 2, ConditionType = TacticConditionTypeValue.Fallback, Threshold = 0f, ActionType = BattleActionTypeValue.WaitDefend, TargetSelector = TargetSelectorTypeValue.Self },
         };
     }

@@ -26,7 +26,18 @@
 - 문서 거버넌스: `00_governance/docs-governance.md`
 - 구현 검수 체크리스트: `00_governance/implementation-review-checklist.md`
 - 제품 인덱스: `01_product/index.md`
+- 디자인 인덱스: `02_design/index.md`
 - 아키텍처 인덱스: `03_architecture/index.md`
 - 의사결정 인덱스: `04_decisions/index.md`
 - 설정 인덱스: `05_setup/index.md`
 - 운영 인덱스: `06_production/index.md`
+
+## 현재 전투 기준 빠른 링크
+
+- 전장과 카메라: `02_design/combat/battlefield-and-camera.md`
+- 배치와 앵커: `02_design/combat/deployment-and-anchors.md`
+- 실시간 체감 시뮬레이션 모델: `02_design/combat/realtime-simulation-model.md`
+- 팀 전술과 유닛 규칙: `02_design/combat/team-tactics-and-unit-rules.md`
+- 전투 런타임 아키텍처: `03_architecture/combat-runtime-architecture.md`
+- 전투 상태와 이벤트 모델: `03_architecture/combat-state-and-event-model.md`
+- ADR-0014: `04_decisions/adr-0014-grid-deployment-continuous-combat.md`

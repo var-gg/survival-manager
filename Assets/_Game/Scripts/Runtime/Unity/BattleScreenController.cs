@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +12,7 @@ namespace SM.Unity;
 public sealed class BattleScreenController : MonoBehaviour
 {
     private const int MaxRecentLogLines = 8;
+    private const int MaxBattleSteps = 320;
 
     [SerializeField] private Text titleText = null!;
     [SerializeField] private Text allyHpText = null!;
@@ -30,10 +30,19 @@ public sealed class BattleScreenController : MonoBehaviour
     private readonly List<string> _recentLogs = new();
     private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
     private GameSessionRoot _root = null!;
+    private BattleSimulator? _simulator;
+    private BattleSimulationStep? _previousStep;
+    private BattleSimulationStep? _currentStep;
     private float _playbackSpeed = 1f;
+    private float _stepAccumulator;
     private bool _isPaused;
-    private bool _playbackFinished;
-    public bool IsPlaybackFinished => _playbackFinished;
+    private bool _battleFinished;
+    private int _totalEventCount;
+
+    public bool IsPlaybackFinished => _battleFinished;
+    public bool IsBattleFinished => _battleFinished;
+    public BattleSimulationStep? LatestStep => _currentStep;
+    public TeamPostureType? ActiveAllyPosture => _simulator?.State.AllyPosture;
 
     private void Start()
     {
@@ -49,6 +58,29 @@ public sealed class BattleScreenController : MonoBehaviour
         RunBattle();
     }
 
+    private void Update()
+    {
+        if (_simulator == null || _currentStep == null || _previousStep == null)
+        {
+            return;
+        }
+
+        if (!_battleFinished && !_isPaused)
+        {
+            _stepAccumulator += Time.deltaTime * _playbackSpeed;
+            while (_stepAccumulator >= _simulator.State.FixedStepSeconds && !_battleFinished)
+            {
+                _stepAccumulator -= _simulator.State.FixedStepSeconds;
+                AdvanceSimulation();
+            }
+        }
+
+        var fixedStep = Mathf.Max(0.0001f, _simulator.State.FixedStepSeconds);
+        var alpha = _battleFinished ? 1f : Mathf.Clamp01(_stepAccumulator / fixedStep);
+        presentationController.SetBlend(_previousStep, _currentStep, alpha);
+        progressFill.fillAmount = Mathf.Clamp01((float)_currentStep.StepIndex / MaxBattleSteps);
+    }
+
     public void SetSpeed1() => SetSpeed(1f);
     public void SetSpeed2() => SetSpeed(2f);
     public void SetSpeed4() => SetSpeed(4f);
@@ -59,15 +91,15 @@ public sealed class BattleScreenController : MonoBehaviour
         _isPaused = !_isPaused;
         presentationController.SetPaused(_isPaused);
         RefreshSpeedText();
-        statusText.text = _isPaused ? "재생 일시정지" : "재생 재개";
+        statusText.text = _isPaused ? "전투 일시정지" : "전투 재개";
     }
 
     public void ContinueToReward()
     {
         if (!EnsureReady()) return;
-        if (!_playbackFinished)
+        if (!_battleFinished)
         {
-            SetResult("전투 재생이 아직 끝나지 않았습니다.");
+            SetResult("전투가 아직 끝나지 않았습니다.");
             return;
         }
 
@@ -160,8 +192,8 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
-        cam.transform.position = new Vector3(0f, 8f, -8f);
-        cam.transform.rotation = Quaternion.Euler(35f, 0f, 0f);
+        cam.transform.position = new Vector3(0.4f, 7.8f, -9.1f);
+        cam.transform.rotation = Quaternion.Euler(33f, -12f, 0f);
     }
 
     private void RunBattle()
@@ -170,11 +202,13 @@ public sealed class BattleScreenController : MonoBehaviour
 
         titleText.text = "Battle Observer UI";
         resultText.text = "전투 진행 중";
-        statusText.text = "Replay track 생성 중";
+        statusText.text = "live simulation 초기화";
         logText.text = "전투 시작 준비중";
         progressFill.fillAmount = 0f;
-        _playbackFinished = false;
+        _battleFinished = false;
         _isPaused = false;
+        _stepAccumulator = 0f;
+        _totalEventCount = 0;
         _recentLogs.Clear();
         SetSpeed(1f);
 
@@ -186,69 +220,60 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         var enemyDefinitions = BuildEnemyDefinitions();
-        var simulationState = BattleFactory.Create(allyDefinitions, enemyDefinitions);
-        var replaySeedState = CloneState(simulationState);
-        var result = BattleResolver.Run(simulationState, 50);
-        var track = BattleReplayBuilder.Build(replaySeedState, result);
+        var simulationState = BattleFactory.Create(
+            allyDefinitions,
+            enemyDefinitions,
+            _root.SessionState.SelectedTeamPosture,
+            TeamPostureType.StandardAdvance,
+            BattleSimulator.DefaultFixedStepSeconds,
+            seed: 17);
 
-        presentationController.Initialize(track);
+        _simulator = new BattleSimulator(simulationState, MaxBattleSteps);
+        _previousStep = _simulator.CurrentStep;
+        _currentStep = _simulator.CurrentStep;
+
+        presentationController.Initialize(_currentStep);
         presentationController.ApplyOptions(_presentationOptions);
         presentationController.SetPaused(false);
         settingsPanelController.Initialize(_presentationOptions, ApplyPresentationOptions);
         ApplyPresentationOptions(_presentationOptions);
-        _root.SessionState.MarkBattleResolved(
-            result.Winner == TeamSide.Ally,
-            $"{result.Winner} / {result.TickCount} ticks / {result.Events.Count} events");
-
-        StartCoroutine(PlaybackTrack(track));
+        RefreshHud(_currentStep);
     }
 
-    private IEnumerator PlaybackTrack(BattleReplayTrack track)
+    private void AdvanceSimulation()
     {
-        foreach (var frame in track.Frames)
+        if (_simulator == null || _currentStep == null)
         {
-            ApplyFrame(track, frame);
-
-            var duration = Mathf.Max(0.35f, frame.DurationSeconds);
-            var elapsed = 0f;
-            while (elapsed < duration)
-            {
-                if (!_isPaused)
-                {
-                    elapsed += Time.deltaTime * _playbackSpeed;
-                }
-
-                progressFill.fillAmount = Mathf.Clamp01(elapsed / duration);
-                yield return null;
-            }
+            return;
         }
 
+        _previousStep = _currentStep;
+        _currentStep = _simulator.Step();
+        _totalEventCount += _currentStep.Events.Count;
+        presentationController.PushStep(_previousStep, _currentStep);
+        RefreshHud(_currentStep);
+
+        if (_currentStep.IsFinished)
+        {
+            FinishBattle();
+        }
+    }
+
+    private void FinishBattle()
+    {
+        if (_simulator == null || _currentStep == null || _battleFinished)
+        {
+            return;
+        }
+
+        _battleFinished = true;
         progressFill.fillAmount = 1f;
-        resultText.text = track.Winner == TeamSide.Ally ? "승리" : "패배";
-        statusText.text = $"전투 종료 | {track.TickCount} ticks | {track.EventCount} events";
-        _playbackFinished = true;
-    }
-
-    private void ApplyFrame(BattleReplayTrack track, BattleReplayFrame frame)
-    {
-        presentationController.PresentFrame(frame);
-        RefreshHp(frame.ActorStates);
-        RefreshStatus(track, frame);
-
-        switch (frame.FrameKind)
-        {
-            case BattleReplayFrameKind.Intro:
-                PushLog("전투 개시");
-                resultText.text = "전투 진행 중";
-                break;
-            case BattleReplayFrameKind.Event:
-                PushLog(BuildLogLine(frame));
-                break;
-            case BattleReplayFrameKind.Result:
-                PushLog(track.Winner == TeamSide.Ally ? "결과: 승리" : "결과: 패배");
-                resultText.text = track.Winner == TeamSide.Ally ? "승리" : "패배";
-                break;
-        }
+        resultText.text = _currentStep.Winner == TeamSide.Ally ? "승리" : "패배";
+        statusText.text = $"전투 종료 | {_currentStep.StepIndex} steps | {_totalEventCount} events";
+        var winner = _currentStep.Winner ?? TeamSide.Ally;
+        _root.SessionState.MarkBattleResolved(
+            winner == TeamSide.Ally,
+            $"{winner} / {_currentStep.StepIndex} steps / {_totalEventCount} events");
     }
 
     private void ApplyPresentationOptions(BattlePresentationOptions options)
@@ -277,33 +302,47 @@ public sealed class BattleScreenController : MonoBehaviour
         }
     }
 
-    private void RefreshHp(IReadOnlyList<BattleReplayActorSnapshot> actors)
+    private void RefreshHud(BattleSimulationStep step)
+    {
+        RefreshHp(step.Units);
+        RefreshStatus(step);
+        foreach (var eventData in step.Events)
+        {
+            PushLog(BuildLogLine(eventData));
+        }
+    }
+
+    private void RefreshHp(IReadOnlyList<BattleUnitReadModel> actors)
     {
         allyHpText.text = BuildHpText("아군 HP", actors.Where(actor => actor.Side == TeamSide.Ally));
         enemyHpText.text = BuildHpText("적군 HP", actors.Where(actor => actor.Side == TeamSide.Enemy));
     }
 
-    private void RefreshStatus(BattleReplayTrack track, BattleReplayFrame frame)
+    private void RefreshStatus(BattleSimulationStep step)
     {
         RefreshSpeedText();
-        var stepText = $"{frame.SequenceIndex + 1}/{track.Frames.Count}";
-        if (frame.FrameKind == BattleReplayFrameKind.Intro)
-        {
-            statusText.text = $"Tick 0 | 전투 개시 | Step {stepText}";
-            return;
-        }
-
-        if (frame.FrameKind == BattleReplayFrameKind.Result)
-        {
-            statusText.text = $"Tick {track.TickCount} | 결과 확정 | Step {stepText}";
-            return;
-        }
-
-        var source = string.IsNullOrWhiteSpace(frame.SourceName) ? "-" : frame.SourceName;
-        var target = string.IsNullOrWhiteSpace(frame.TargetName) ? "-" : frame.TargetName;
-        var action = frame.ActionType?.ToString() ?? "Unknown";
         var pauseLabel = _isPaused ? " | Paused" : string.Empty;
-        statusText.text = $"Tick {frame.Tick} | {source} -> {target} | {action} {frame.Value:0}{pauseLabel} | Step {stepText}";
+        if (step.IsFinished)
+        {
+            statusText.text = $"Step {step.StepIndex} | 결과 확정 {pauseLabel}";
+            return;
+        }
+
+        var lastEvent = step.Events.LastOrDefault();
+        if (lastEvent != null)
+        {
+            statusText.text = $"Step {step.StepIndex} | {lastEvent.ActorName} -> {lastEvent.TargetName ?? "-"} | {lastEvent.ActionType} {lastEvent.Value:0}{pauseLabel}";
+            return;
+        }
+
+        var windingUp = step.Units.FirstOrDefault(unit => unit.ActionState == CombatActionState.Windup);
+        if (windingUp != null)
+        {
+            statusText.text = $"Step {step.StepIndex} | {windingUp.Name} windup {Mathf.RoundToInt(windingUp.WindupProgress * 100f)}% -> {windingUp.TargetName ?? "-"}{pauseLabel}";
+            return;
+        }
+
+        statusText.text = $"Step {step.StepIndex} | posture {_root.SessionState.SelectedTeamPosture}{pauseLabel}";
     }
 
     private void PushLog(string line)
@@ -319,13 +358,15 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private IReadOnlyList<UnitDefinition> BuildAllyDefinitions()
     {
-        var heroIds = _root.SessionState.BattleDeployHeroIds.Count > 0
-            ? _root.SessionState.BattleDeployHeroIds
-            : _root.SessionState.Profile.Heroes.Take(4).Select(hero => hero.HeroId).ToList();
-
-        return heroIds
-            .Select(id => _root.SessionState.Profile.Heroes.First(h => h.HeroId == id))
-            .Select((hero, index) => BuildDefinitionFromHero(hero, index < 2 ? RowPosition.Front : RowPosition.Back))
+        _root.SessionState.EnsureBattleDeployReady();
+        return _root.SessionState
+            .EnumerateDeploymentAssignments()
+            .Where(entry => !string.IsNullOrWhiteSpace(entry.HeroId))
+            .Select(entry =>
+            {
+                var hero = _root.SessionState.Profile.Heroes.First(h => h.HeroId == entry.HeroId);
+                return BuildDefinitionFromHero(hero, entry.Anchor);
+            })
             .ToList();
     }
 
@@ -333,34 +374,34 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         return new[]
         {
-            BuildEnemy("enemy-1", "Enemy 1", "undead", "vanguard", RowPosition.Front),
-            BuildEnemy("enemy-2", "Enemy 2", "beastkin", "duelist", RowPosition.Front),
-            BuildEnemy("enemy-3", "Enemy 3", "human", "ranger", RowPosition.Back),
-            BuildEnemy("enemy-4", "Enemy 4", "undead", "mystic", RowPosition.Back)
+            BuildEnemy("enemy-1", "Enemy 1", "undead", "vanguard", DeploymentAnchorId.FrontTop),
+            BuildEnemy("enemy-2", "Enemy 2", "beastkin", "duelist", DeploymentAnchorId.FrontBottom),
+            BuildEnemy("enemy-3", "Enemy 3", "human", "ranger", DeploymentAnchorId.BackTop),
+            BuildEnemy("enemy-4", "Enemy 4", "undead", "mystic", DeploymentAnchorId.BackBottom)
         };
     }
 
-    private static UnitDefinition BuildEnemy(string id, string name, string raceId, string classId, RowPosition row)
+    private static UnitDefinition BuildEnemy(string id, string name, string raceId, string classId, DeploymentAnchorId anchor)
     {
         return new UnitDefinition(
             id,
             name,
             raceId,
             classId,
-            row,
+            anchor,
             BuildEnemyBaseStats(classId),
             BuildTactics(classId),
             BuildSkills(classId));
     }
 
-    private static UnitDefinition BuildDefinitionFromHero(SM.Persistence.Abstractions.Models.HeroInstanceRecord hero, RowPosition row)
+    private static UnitDefinition BuildDefinitionFromHero(SM.Persistence.Abstractions.Models.HeroInstanceRecord hero, DeploymentAnchorId anchor)
     {
         return new UnitDefinition(
             hero.HeroId,
             hero.Name,
             hero.RaceId,
             hero.ClassId,
-            row,
+            anchor,
             BuildBaseStats(hero.ClassId),
             BuildTactics(hero.ClassId),
             BuildSkills(hero.ClassId));
@@ -370,11 +411,81 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         return classId switch
         {
-            "vanguard" => new Dictionary<StatKey, float> { { StatKey.MaxHealth, 20 }, { StatKey.Attack, 5 }, { StatKey.Defense, 3 }, { StatKey.Speed, 2 }, { StatKey.HealPower, 1 } },
-            "duelist" => new Dictionary<StatKey, float> { { StatKey.MaxHealth, 16 }, { StatKey.Attack, 6 }, { StatKey.Defense, 2 }, { StatKey.Speed, 4 }, { StatKey.HealPower, 1 } },
-            "ranger" => new Dictionary<StatKey, float> { { StatKey.MaxHealth, 14 }, { StatKey.Attack, 5 }, { StatKey.Defense, 1 }, { StatKey.Speed, 5 }, { StatKey.HealPower, 1 } },
-            "mystic" => new Dictionary<StatKey, float> { { StatKey.MaxHealth, 12 }, { StatKey.Attack, 3 }, { StatKey.Defense, 1 }, { StatKey.Speed, 3 }, { StatKey.HealPower, 4 } },
-            _ => new Dictionary<StatKey, float> { { StatKey.MaxHealth, 15 }, { StatKey.Attack, 4 }, { StatKey.Defense, 2 }, { StatKey.Speed, 3 }, { StatKey.HealPower, 1 } }
+            "vanguard" => new Dictionary<StatKey, float>
+            {
+                [StatKey.MaxHealth] = 20f,
+                [StatKey.Attack] = 5f,
+                [StatKey.Defense] = 3f,
+                [StatKey.Speed] = 2f,
+                [StatKey.HealPower] = 1f,
+                [StatKey.MoveSpeed] = 1.65f,
+                [StatKey.AttackRange] = 1.2f,
+                [StatKey.AggroRadius] = 7f,
+                [StatKey.AttackWindup] = 0.25f,
+                [StatKey.AttackCooldown] = 1.0f,
+                [StatKey.LeashDistance] = 5.2f,
+                [StatKey.TargetSwitchDelay] = 0.45f
+            },
+            "duelist" => new Dictionary<StatKey, float>
+            {
+                [StatKey.MaxHealth] = 16f,
+                [StatKey.Attack] = 6f,
+                [StatKey.Defense] = 2f,
+                [StatKey.Speed] = 4f,
+                [StatKey.HealPower] = 1f,
+                [StatKey.MoveSpeed] = 2.05f,
+                [StatKey.AttackRange] = 1.3f,
+                [StatKey.AggroRadius] = 7.5f,
+                [StatKey.AttackWindup] = 0.20f,
+                [StatKey.AttackCooldown] = 0.85f,
+                [StatKey.LeashDistance] = 5.8f,
+                [StatKey.TargetSwitchDelay] = 0.35f
+            },
+            "ranger" => new Dictionary<StatKey, float>
+            {
+                [StatKey.MaxHealth] = 14f,
+                [StatKey.Attack] = 5f,
+                [StatKey.Defense] = 1f,
+                [StatKey.Speed] = 5f,
+                [StatKey.HealPower] = 1f,
+                [StatKey.MoveSpeed] = 1.8f,
+                [StatKey.AttackRange] = 3.2f,
+                [StatKey.AggroRadius] = 8f,
+                [StatKey.AttackWindup] = 0.18f,
+                [StatKey.AttackCooldown] = 1.05f,
+                [StatKey.LeashDistance] = 4.6f,
+                [StatKey.TargetSwitchDelay] = 0.30f
+            },
+            "mystic" => new Dictionary<StatKey, float>
+            {
+                [StatKey.MaxHealth] = 12f,
+                [StatKey.Attack] = 3f,
+                [StatKey.Defense] = 1f,
+                [StatKey.Speed] = 3f,
+                [StatKey.HealPower] = 4f,
+                [StatKey.MoveSpeed] = 1.7f,
+                [StatKey.AttackRange] = 2.8f,
+                [StatKey.AggroRadius] = 7.2f,
+                [StatKey.AttackWindup] = 0.24f,
+                [StatKey.AttackCooldown] = 1.10f,
+                [StatKey.LeashDistance] = 4.8f,
+                [StatKey.TargetSwitchDelay] = 0.35f
+            },
+            _ => new Dictionary<StatKey, float>
+            {
+                [StatKey.MaxHealth] = 15f,
+                [StatKey.Attack] = 4f,
+                [StatKey.Defense] = 2f,
+                [StatKey.Speed] = 3f,
+                [StatKey.HealPower] = 1f,
+                [StatKey.MoveSpeed] = 1.75f,
+                [StatKey.AttackRange] = 1.5f,
+                [StatKey.AggroRadius] = 7f,
+                [StatKey.AttackWindup] = 0.22f,
+                [StatKey.AttackCooldown] = 0.95f,
+                [StatKey.LeashDistance] = 5f,
+                [StatKey.TargetSwitchDelay] = 0.35f
+            }
         };
     }
 
@@ -393,15 +504,18 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             return new[]
             {
-                new TacticRule(1, TacticConditionType.AllyHpBelow, 0.5f, BattleActionType.ActiveSkill, TargetSelectorType.LowestHpAlly, "heal"),
-                new TacticRule(2, TacticConditionType.LowestHpEnemy, 0f, BattleActionType.BasicAttack, TargetSelectorType.LowestHpEnemy)
+                new TacticRule(1, TacticConditionType.AllyHpBelow, 0.55f, BattleActionType.ActiveSkill, TargetSelectorType.LowestHpAlly, "heal"),
+                new TacticRule(2, TacticConditionType.EnemyExposed, 1.5f, BattleActionType.BasicAttack, TargetSelectorType.MostExposedEnemy),
+                new TacticRule(3, TacticConditionType.LowestHpEnemy, 0f, BattleActionType.BasicAttack, TargetSelectorType.LowestHpEnemy),
+                new TacticRule(4, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self)
             };
         }
 
         return new[]
         {
-            new TacticRule(1, TacticConditionType.LowestHpEnemy, 0f, BattleActionType.BasicAttack, TargetSelectorType.LowestHpEnemy),
-            new TacticRule(2, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self)
+            new TacticRule(1, TacticConditionType.EnemyExposed, 1.5f, BattleActionType.ActiveSkill, TargetSelectorType.MostExposedEnemy, "strike"),
+            new TacticRule(2, TacticConditionType.LowestHpEnemy, 0f, BattleActionType.BasicAttack, TargetSelectorType.LowestHpEnemy),
+            new TacticRule(3, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self)
         };
     }
 
@@ -409,13 +523,13 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         if (classId == "mystic")
         {
-            return new[] { new SkillDefinition("heal", "Heal", SkillKind.Heal, 3f, 2) };
+            return new[] { new SkillDefinition("heal", "Heal", SkillKind.Heal, 3f, 3.0f) };
         }
 
-        return new[] { new SkillDefinition("strike", "Strike", SkillKind.Strike, 2f, classId == "ranger" ? 2 : 1) };
+        return new[] { new SkillDefinition("strike", "Strike", SkillKind.Strike, 2f, classId == "ranger" ? 3.6f : 1.5f) };
     }
 
-    private static string BuildHpText(string title, IEnumerable<BattleReplayActorSnapshot> units)
+    private static string BuildHpText(string title, IEnumerable<BattleUnitReadModel> units)
     {
         var sb = new StringBuilder();
         sb.AppendLine(title);
@@ -428,40 +542,17 @@ public sealed class BattleScreenController : MonoBehaviour
         return sb.ToString();
     }
 
-    private static string BuildLogLine(BattleReplayFrame frame)
+    private static string BuildLogLine(BattleEvent eventData)
     {
-        var source = string.IsNullOrWhiteSpace(frame.SourceName) ? "?" : frame.SourceName;
-        var target = string.IsNullOrWhiteSpace(frame.TargetName) ? "?" : frame.TargetName;
-        return frame.ActionType switch
+        var source = string.IsNullOrWhiteSpace(eventData.ActorName) ? "?" : eventData.ActorName;
+        var target = string.IsNullOrWhiteSpace(eventData.TargetName) ? "?" : eventData.TargetName;
+        return eventData.ActionType switch
         {
-            BattleActionType.BasicAttack => $"T{frame.Tick} {source}가 {target}에게 {frame.Value:0} 피해",
-            BattleActionType.ActiveSkill when frame.Note == "heal_skill" => $"T{frame.Tick} {source}가 {target}를 {frame.Value:0} 회복",
-            BattleActionType.ActiveSkill => $"T{frame.Tick} {source}가 {target}에게 스킬 {frame.Value:0}",
-            BattleActionType.WaitDefend => $"T{frame.Tick} {source}가 방어 자세",
-            _ => $"T{frame.Tick} {source} {frame.ActionType}"
+            BattleActionType.BasicAttack => $"S{eventData.StepIndex} {source}가 {target}에게 {eventData.Value:0} 피해",
+            BattleActionType.ActiveSkill when eventData.Note == "heal_skill" => $"S{eventData.StepIndex} {source}가 {target}를 {eventData.Value:0} 회복",
+            BattleActionType.ActiveSkill => $"S{eventData.StepIndex} {source}가 {target}에게 스킬 {eventData.Value:0}",
+            BattleActionType.WaitDefend => $"S{eventData.StepIndex} {source}가 방어 자세",
+            _ => $"S{eventData.StepIndex} {source} {eventData.ActionType}"
         };
-    }
-
-    private static BattleState CloneState(BattleState state)
-    {
-        var allies = state.Allies.Select(CloneUnit).ToList();
-        var enemies = state.Enemies.Select(CloneUnit).ToList();
-        return new BattleState(allies, enemies);
-    }
-
-    private static UnitSnapshot CloneUnit(UnitSnapshot unit)
-    {
-        var definition = new UnitDefinition(
-            unit.Definition.Id,
-            unit.Definition.Name,
-            unit.Definition.RaceId,
-            unit.Definition.ClassId,
-            unit.Definition.Row,
-            new Dictionary<StatKey, float>(unit.Definition.BaseStats),
-            unit.Definition.Tactics.ToList(),
-            unit.Definition.Skills.ToList(),
-            unit.Definition.Packages?.ToList());
-
-        return new UnitSnapshot(unit.Id, unit.Side, definition);
     }
 }

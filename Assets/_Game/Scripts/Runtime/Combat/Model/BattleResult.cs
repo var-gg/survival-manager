@@ -4,5 +4,7 @@ namespace SM.Combat.Model;
 
 public sealed record BattleResult(
     TeamSide Winner,
-    int TickCount,
-    IReadOnlyList<BattleEvent> Events);
+    int StepCount,
+    float DurationSeconds,
+    IReadOnlyList<BattleEvent> Events,
+    IReadOnlyList<BattleUnitReadModel> FinalUnits);

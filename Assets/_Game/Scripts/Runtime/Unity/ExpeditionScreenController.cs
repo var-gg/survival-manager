@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SM.Combat.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,7 @@ public sealed class ExpeditionScreenController : MonoBehaviour
     [SerializeField] private Text statusText = null!;
 
     private GameSessionRoot _root = null!;
+    private DeploymentSetupPanelView? _deploymentPanel;
 
     private void Start()
     {
@@ -28,6 +30,7 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         }
 
         _root.SessionState.SetCurrentScene(SceneNames.Expedition);
+        EnsureRuntimeControls();
         Refresh();
     }
 
@@ -78,6 +81,40 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         _root.SessionState.AbandonExpeditionRun();
         _root.SaveProfile();
         _root.SceneFlow.ReturnToTown();
+    }
+
+    public void EnsureRuntimeControls()
+    {
+        if (_deploymentPanel != null || statusText == null)
+        {
+            return;
+        }
+
+        var parent = statusText.transform.parent as RectTransform;
+        if (parent == null)
+        {
+            return;
+        }
+
+        _deploymentPanel = DeploymentSetupPanelView.Create(
+            "ExpeditionDeploymentPanel",
+            parent,
+            anchor => CycleAnchor(anchor),
+            CycleTeamPosture);
+    }
+
+    public void CycleFrontTop() => CycleAnchor(DeploymentAnchorId.FrontTop);
+    public void CycleFrontCenter() => CycleAnchor(DeploymentAnchorId.FrontCenter);
+    public void CycleFrontBottom() => CycleAnchor(DeploymentAnchorId.FrontBottom);
+    public void CycleBackTop() => CycleAnchor(DeploymentAnchorId.BackTop);
+    public void CycleBackCenter() => CycleAnchor(DeploymentAnchorId.BackCenter);
+    public void CycleBackBottom() => CycleAnchor(DeploymentAnchorId.BackBottom);
+
+    public void CycleTeamPosture()
+    {
+        if (!EnsureReady()) return;
+        _root.SessionState.CycleTeamPosture();
+        Refresh($"Team posture: {_root.SessionState.SelectedTeamPosture}");
     }
 
     private void SelectNode(int nodeIndex)
@@ -154,6 +191,7 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         rewardText.text = BuildRewardText(session);
         squadText.text = BuildSquadText(session);
         RefreshNodeTrack(session);
+        _deploymentPanel?.Refresh(session);
         statusText.text = string.IsNullOrWhiteSpace(message)
             ? BuildDefaultStatus(session, selectedNode)
             : message;
@@ -287,9 +325,18 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         var tempAugments = session.Expedition.TemporaryAugmentIds.Count == 0
             ? "없음"
             : string.Join(", ", session.Expedition.TemporaryAugmentIds);
+        var deploymentSummary = string.Join(
+            "\n",
+            session.EnumerateDeploymentAssignments().Select(entry =>
+            {
+                var heroName = session.Profile.Heroes.FirstOrDefault(hero => hero.HeroId == entry.HeroId)?.Name ?? "Empty";
+                return $"{entry.Anchor.ToDisplayName()}: {heroName}";
+            }));
 
         return "현재 원정 스쿼드\n" +
                string.Join("\n", names) +
+               $"\n\nTeam Posture\n{session.SelectedTeamPosture}" +
+               $"\n\nDeployment\n{deploymentSummary}" +
                $"\n\nTemp Augments\n{tempAugments}";
     }
 
@@ -341,5 +388,12 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         }
 
         return new Color(0.18f, 0.22f, 0.34f, 0.95f);
+    }
+
+    private void CycleAnchor(DeploymentAnchorId anchor)
+    {
+        if (!EnsureReady()) return;
+        _root.SessionState.CycleDeploymentAssignment(anchor);
+        Refresh($"{anchor.ToDisplayName()} 배치를 갱신했습니다.");
     }
 }

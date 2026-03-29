@@ -7,8 +7,8 @@ namespace SM.Unity;
 
 public sealed class BattleActorView : MonoBehaviour
 {
-    private const float OverlayHeight = 2.2f;
-    private const float WorldInfoHeight = 2.05f;
+    private const float OverlayHeight = 2.3f;
+    private const float WorldInfoHeight = 2.0f;
     private const float WorldHpWidth = 1.3f;
 
     private Camera _camera = null!;
@@ -19,44 +19,40 @@ public sealed class BattleActorView : MonoBehaviour
     private GameObject _overlayHpBarRoot = null!;
     private Image _hpFill = null!;
     private Text _nameText = null!;
+    private Text _stateText = null!;
     private Text _floatingText = null!;
     private Transform _visualRoot = null!;
     private Transform _worldInfoRoot = null!;
     private Transform _worldHpFillRoot = null!;
     private TextMesh _worldNameText = null!;
     private TextMesh _worldNameShadowText = null!;
+    private TextMesh _worldStateText = null!;
+    private TextMesh _worldStateShadowText = null!;
     private Renderer _renderer = null!;
     private Renderer _shadowRenderer = null!;
-    private Vector3 _homePosition;
     private Color _baseColor;
     private BattlePresentationOptions _options = BattlePresentationOptions.CreateDefault();
-    private BattleReplayActorSnapshot _currentState = null!;
-    private Coroutine? _movementRoutine;
+    private BattleUnitReadModel _currentState = null!;
     private Coroutine? _pulseRoutine;
     private Coroutine? _floatingRoutine;
     private Coroutine? _impactRoutine;
     private Coroutine? _accentRoutine;
 
-    public string ActorId => _currentState.Id;
-    public Vector3 HomePosition => _homePosition;
-
     public void Initialize(
-        BattleReplayActorSnapshot actor,
+        BattleUnitReadModel actor,
         RectTransform overlayParent,
         Camera camera,
-        Vector3 homePosition,
         BattlePresentationController owner)
     {
         _overlayParent = overlayParent;
         _camera = camera;
         _owner = owner;
-        _homePosition = homePosition;
-        transform.position = homePosition;
+        transform.position = ToWorldPosition(actor.Position);
 
         CreateVisualRoot(actor);
-        CreateWorldInfo(actor);
+        CreateWorldInfo();
         CreateOverlay(actor);
-        ApplyState(actor);
+        ApplyBlend(actor, actor, 1f);
     }
 
     public void ApplyOptions(BattlePresentationOptions options)
@@ -65,132 +61,53 @@ public sealed class BattleActorView : MonoBehaviour
         RefreshVisibility();
     }
 
-    public void ApplyState(BattleReplayActorSnapshot actor)
+    public void ApplyBlend(BattleUnitReadModel from, BattleUnitReadModel to, float alpha)
     {
-        _currentState = actor;
-        var restColor = ResolveRestColor();
-        var healthRatio = actor.MaxHealth <= 0f ? 0f : Mathf.Clamp01(actor.CurrentHealth / actor.MaxHealth);
-        var healthColor = ResolveHealthColor(healthRatio, actor.IsAlive);
+        _currentState = to;
+        transform.position = Vector3.Lerp(ToWorldPosition(from.Position), ToWorldPosition(to.Position), Mathf.Clamp01(alpha));
 
-        if (_renderer != null)
-        {
-            _renderer.material.color = restColor;
-        }
-
-        if (_shadowRenderer != null)
-        {
-            _shadowRenderer.material.color = actor.IsAlive
-                ? new Color(0f, 0f, 0f, 0.28f)
-                : new Color(0.12f, 0.12f, 0.12f, 0.20f);
-        }
-
-        if (_visualRoot != null)
-        {
-            _visualRoot.localScale = actor.IsAlive ? Vector3.one : new Vector3(1f, 0.82f, 1f);
-        }
-
-        if (_hpFill != null)
-        {
-            _hpFill.fillAmount = healthRatio;
-            _hpFill.color = healthColor;
-        }
-
-        if (_overlayBackground != null)
-        {
-            var overlayTint = actor.Side == TeamSide.Ally
-                ? new Color(0.08f, 0.12f, 0.18f, 0.66f)
-                : new Color(0.18f, 0.10f, 0.10f, 0.66f);
-            _overlayBackground.color = actor.IsAlive ? overlayTint : new Color(0.10f, 0.10f, 0.10f, 0.50f);
-        }
-
-        if (_nameText != null)
-        {
-            _nameText.text = $"{actor.Name}\nHP {Mathf.CeilToInt(actor.CurrentHealth)}/{Mathf.CeilToInt(actor.MaxHealth)}";
-            _nameText.color = actor.IsAlive ? Color.white : new Color(0.72f, 0.72f, 0.72f, 1f);
-        }
-
-        if (_worldNameText != null && _worldNameShadowText != null)
-        {
-            var label = $"{actor.Name}\n{Mathf.CeilToInt(actor.CurrentHealth)}/{Mathf.CeilToInt(actor.MaxHealth)}";
-            _worldNameText.text = label;
-            _worldNameShadowText.text = label;
-            _worldNameText.color = actor.IsAlive ? Color.white : new Color(0.78f, 0.78f, 0.78f, 1f);
-            _worldNameShadowText.color = new Color(0.04f, 0.04f, 0.04f, 0.92f);
-        }
-
-        if (_worldHpFillRoot != null)
-        {
-            var ratio = actor.MaxHealth <= 0f ? 0f : Mathf.Clamp01(actor.CurrentHealth / actor.MaxHealth);
-            var width = Mathf.Max(0.05f, WorldHpWidth * ratio);
-            _worldHpFillRoot.localScale = new Vector3(width, 0.08f, 0.06f);
-            _worldHpFillRoot.localPosition = new Vector3((-WorldHpWidth * 0.5f) + (width * 0.5f), -0.42f, 0f);
-            var fillRenderer = _worldHpFillRoot.GetComponent<Renderer>();
-            if (fillRenderer != null)
-            {
-                fillRenderer.material.color = healthColor;
-            }
-        }
-
-        RefreshVisibility();
+        var displayedHealth = Mathf.Lerp(from.CurrentHealth, to.CurrentHealth, Mathf.Clamp01(alpha));
+        ApplyDisplay(to, displayedHealth);
         RefreshOverlayPosition();
     }
 
-    public void PlayAsSource(BattleReplayFrame frame, BattleActorView? targetView)
+    public void PlayAsSource(BattleEvent eventData, BattleActorView? targetView)
     {
-        if (frame.ActionType == null)
-        {
-            return;
-        }
-
-        RestartCoroutine(ref _accentRoutine, AccentRoutine(new Color(1f, 0.82f, 0.26f, 1f), frame.DurationSeconds * 0.9f));
-
-        switch (frame.ActionType.Value)
+        switch (eventData.ActionType)
         {
             case BattleActionType.BasicAttack:
-                if (targetView != null)
-                {
-                    RestartCoroutine(ref _movementRoutine, LungeRoutine(targetView.HomePosition, frame.DurationSeconds));
-                }
+                RestartCoroutine(ref _accentRoutine, AccentRoutine(new Color(1f, 0.84f, 0.24f, 1f), 0.20f));
+                RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(1f, 0.84f, 0.24f, 1f), 0.18f, 1.04f));
+                break;
+            case BattleActionType.ActiveSkill when eventData.Note == "heal_skill":
+                RestartCoroutine(ref _accentRoutine, AccentRoutine(new Color(0.28f, 1f, 0.52f, 1f), 0.24f));
+                RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(0.28f, 1f, 0.52f, 1f), 0.22f, 1.05f));
                 break;
             case BattleActionType.ActiveSkill:
-                if (frame.Note == "heal_skill")
-                {
-                    RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(0.22f, 1f, 0.52f, 1f), frame.DurationSeconds * 0.8f, 1.06f));
-                }
-                else if (targetView != null)
-                {
-                    RestartCoroutine(ref _movementRoutine, LungeRoutine(targetView.HomePosition, frame.DurationSeconds));
-                }
+                RestartCoroutine(ref _accentRoutine, AccentRoutine(new Color(1f, 0.58f, 0.18f, 1f), 0.22f));
+                RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(1f, 0.58f, 0.18f, 1f), 0.20f, 1.05f));
                 break;
             case BattleActionType.WaitDefend:
-                RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(0.32f, 0.72f, 1f, 1f), frame.DurationSeconds * 0.8f, 1.05f));
+                RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(0.32f, 0.74f, 1f, 1f), 0.20f, 1.03f));
                 break;
         }
     }
 
-    public void PlayAsTarget(BattleReplayFrame frame)
+    public void PlayAsTarget(BattleEvent eventData)
     {
-        if (frame.ActionType == null || frame.BeforeTargetHealth == null || frame.AfterTargetHealth == null)
+        if (eventData.Note == "heal_skill")
         {
+            RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(0.28f, 1f, 0.52f, 1f), 0.22f, 1.05f));
+            RestartCoroutine(ref _floatingRoutine, FloatingTextRoutine($"+{Mathf.CeilToInt(eventData.Value)}", new Color(0.48f, 1f, 0.58f, 1f), 0.45f));
             return;
         }
 
-        var delta = frame.AfterTargetHealth.Value - frame.BeforeTargetHealth.Value;
-        if (Mathf.Approximately(delta, 0f))
+        if (eventData.ActionType is BattleActionType.BasicAttack or BattleActionType.ActiveSkill)
         {
-            return;
+            RestartCoroutine(ref _impactRoutine, ImpactRoutine(0.22f));
+            RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(1f, 0.24f, 0.24f, 1f), 0.18f, 1.03f));
+            RestartCoroutine(ref _floatingRoutine, FloatingTextRoutine($"-{Mathf.CeilToInt(eventData.Value)}", new Color(1f, 0.45f, 0.45f, 1f), 0.45f));
         }
-
-        if (delta < 0f)
-        {
-            RestartCoroutine(ref _impactRoutine, ImpactRoutine(frame.DurationSeconds * 0.65f));
-            RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(1f, 0.22f, 0.22f, 1f), frame.DurationSeconds * 0.7f, 1.03f));
-            RestartCoroutine(ref _floatingRoutine, FloatingTextRoutine($"-{Mathf.CeilToInt(Mathf.Abs(delta))}", new Color(1f, 0.45f, 0.45f, 1f), frame.DurationSeconds * 0.72f));
-            return;
-        }
-
-        RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(0.24f, 1f, 0.48f, 1f), frame.DurationSeconds * 0.72f, 1.05f));
-        RestartCoroutine(ref _floatingRoutine, FloatingTextRoutine($"+{Mathf.CeilToInt(delta)}", new Color(0.48f, 1f, 0.58f, 1f), frame.DurationSeconds * 0.72f));
     }
 
     public void RefreshOverlayPosition()
@@ -227,7 +144,104 @@ public sealed class BattleActorView : MonoBehaviour
 
     private bool IsPaused => _owner != null && _owner.IsPaused;
 
-    private void CreateVisualRoot(BattleReplayActorSnapshot actor)
+    private void ApplyDisplay(BattleUnitReadModel actor, float displayedHealth)
+    {
+        var restColor = ResolveRestColor(actor);
+        var healthRatio = actor.MaxHealth <= 0f ? 0f : Mathf.Clamp01(displayedHealth / actor.MaxHealth);
+        var healthColor = ResolveHealthColor(healthRatio, actor.IsAlive);
+
+        if (_renderer != null)
+        {
+            _renderer.material.color = restColor;
+        }
+
+        if (_shadowRenderer != null)
+        {
+            _shadowRenderer.material.color = actor.IsAlive
+                ? new Color(0f, 0f, 0f, 0.28f)
+                : new Color(0.12f, 0.12f, 0.12f, 0.20f);
+        }
+
+        if (_visualRoot != null)
+        {
+            _visualRoot.localScale = actor.IsAlive ? Vector3.one : new Vector3(1f, 0.8f, 1f);
+        }
+
+        if (_hpFill != null)
+        {
+            _hpFill.fillAmount = healthRatio;
+            _hpFill.color = healthColor;
+        }
+
+        if (_overlayBackground != null)
+        {
+            _overlayBackground.color = actor.Side == TeamSide.Ally
+                ? new Color(0.08f, 0.12f, 0.18f, 0.66f)
+                : new Color(0.18f, 0.10f, 0.10f, 0.66f);
+        }
+
+        if (_nameText != null)
+        {
+            _nameText.text = $"{actor.Name}\nHP {Mathf.CeilToInt(displayedHealth)}/{Mathf.CeilToInt(actor.MaxHealth)}";
+            _nameText.color = actor.IsAlive ? Color.white : new Color(0.72f, 0.72f, 0.72f, 1f);
+        }
+
+        var statusLine = BuildStatusLine(actor);
+        if (_stateText != null)
+        {
+            _stateText.text = statusLine;
+            _stateText.color = actor.IsAlive ? new Color(0.88f, 0.92f, 1f, 1f) : new Color(0.68f, 0.68f, 0.68f, 1f);
+        }
+
+        if (_worldNameText != null && _worldNameShadowText != null)
+        {
+            _worldNameText.text = actor.Name;
+            _worldNameShadowText.text = actor.Name;
+        }
+
+        if (_worldStateText != null && _worldStateShadowText != null)
+        {
+            _worldStateText.text = $"HP {Mathf.CeilToInt(displayedHealth)}/{Mathf.CeilToInt(actor.MaxHealth)}\n{statusLine}";
+            _worldStateShadowText.text = _worldStateText.text;
+        }
+
+        if (_worldHpFillRoot != null)
+        {
+            var width = Mathf.Max(0.05f, WorldHpWidth * healthRatio);
+            _worldHpFillRoot.localScale = new Vector3(width, 0.08f, 0.06f);
+            _worldHpFillRoot.localPosition = new Vector3((-WorldHpWidth * 0.5f) + (width * 0.5f), -0.46f, 0f);
+            var fillRenderer = _worldHpFillRoot.GetComponent<Renderer>();
+            if (fillRenderer != null)
+            {
+                fillRenderer.material.color = healthColor;
+            }
+        }
+
+        RefreshVisibility();
+    }
+
+    private string BuildStatusLine(BattleUnitReadModel actor)
+    {
+        if (!actor.IsAlive)
+        {
+            return "Dead";
+        }
+
+        var target = string.IsNullOrWhiteSpace(actor.TargetName) ? "-" : actor.TargetName;
+        return actor.ActionState switch
+        {
+            CombatActionState.Windup => $"Windup {Mathf.RoundToInt(actor.WindupProgress * 100f)}% -> {target}",
+            CombatActionState.MoveToEngage => $"Advance -> {target}",
+            CombatActionState.Retreat => $"Retreat <- {target}",
+            CombatActionState.Recovery => actor.IsDefending ? "Guard" : $"Recover {actor.CooldownRemaining:0.0}s",
+            CombatActionState.Reposition => actor.IsDefending ? "Hold Line" : "Reposition",
+            CombatActionState.AdvanceToAnchor => "To Anchor",
+            CombatActionState.SeekTarget => $"Seek -> {target}",
+            _ => target == "-" ? actor.ActionState.ToString() : $"{actor.ActionState} -> {target}"
+        };
+    }
+
+    private void CreateVisualRoot(BattleUnitReadModel actor)
     {
         var visualGo = new GameObject("VisualRoot");
         visualGo.transform.SetParent(transform, false);
@@ -245,7 +259,7 @@ public sealed class BattleActorView : MonoBehaviour
         body.name = "Body";
         body.transform.SetParent(_visualRoot, false);
         body.transform.localPosition = Vector3.zero;
-        body.transform.localScale = actor.Row == RowPosition.Front
+        body.transform.localScale = actor.Anchor.IsFrontRow()
             ? new Vector3(0.96f, 1.18f, 0.96f)
             : new Vector3(0.90f, 1.02f, 0.90f);
         RemoveCollider(body);
@@ -254,21 +268,24 @@ public sealed class BattleActorView : MonoBehaviour
         _renderer.material.color = _baseColor;
     }
 
-    private void CreateWorldInfo(BattleReplayActorSnapshot actor)
+    private void CreateWorldInfo()
     {
         var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         var infoGo = new GameObject("WorldInfoRoot");
         infoGo.transform.SetParent(transform, false);
         _worldInfoRoot = infoGo.transform;
-        _worldInfoRoot.localPosition = new Vector3(0f, WorldInfoHeight, 0f);
 
-        _worldNameShadowText = CreateWorldText(_worldInfoRoot, "NameShadowText", font, new Vector3(0.02f, -0.02f, 0.03f), new Color(0.04f, 0.04f, 0.04f, 0.92f));
-        _worldNameText = CreateWorldText(_worldInfoRoot, "NameText", font, Vector3.zero, Color.white);
+        _worldNameShadowText = CreateWorldText(_worldInfoRoot, "NameShadowText", font, new Vector3(0.02f, -0.02f, 0.03f), new Color(0.04f, 0.04f, 0.04f, 0.92f), 38, 0.06f);
+        _worldNameText = CreateWorldText(_worldInfoRoot, "NameText", font, Vector3.zero, Color.white, 38, 0.06f);
+        _worldStateShadowText = CreateWorldText(_worldInfoRoot, "StateShadowText", font, new Vector3(0.02f, -0.02f, 0.03f), new Color(0.04f, 0.04f, 0.04f, 0.92f), 26, 0.05f);
+        _worldStateText = CreateWorldText(_worldInfoRoot, "StateText", font, Vector3.zero, Color.white, 26, 0.05f);
+        _worldStateText.transform.localPosition = new Vector3(0f, -0.24f, 0f);
+        _worldStateShadowText.transform.localPosition = new Vector3(0.02f, -0.26f, 0.03f);
 
         var barBack = GameObject.CreatePrimitive(PrimitiveType.Cube);
         barBack.name = "WorldHpBack";
         barBack.transform.SetParent(_worldInfoRoot, false);
-        barBack.transform.localPosition = new Vector3(0f, -0.42f, 0.02f);
+        barBack.transform.localPosition = new Vector3(0f, -0.52f, 0.02f);
         barBack.transform.localScale = new Vector3(WorldHpWidth, 0.10f, 0.07f);
         RemoveCollider(barBack);
         var backRenderer = barBack.GetComponent<Renderer>();
@@ -281,32 +298,19 @@ public sealed class BattleActorView : MonoBehaviour
         _worldHpFillRoot = fill.transform;
     }
 
-    private void CreateOverlay(BattleReplayActorSnapshot actor)
+    private void CreateOverlay(BattleUnitReadModel actor)
     {
         var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         var overlayGo = new GameObject($"{actor.Name}_Overlay", typeof(RectTransform), typeof(Image));
         overlayGo.transform.SetParent(_overlayParent, false);
 
         _overlayRoot = overlayGo.GetComponent<RectTransform>();
-        _overlayRoot.sizeDelta = new Vector2(148f, 60f);
+        _overlayRoot.sizeDelta = new Vector2(154f, 78f);
         _overlayBackground = overlayGo.GetComponent<Image>();
         _overlayBackground.raycastTarget = false;
 
-        var nameGo = new GameObject("NameText", typeof(RectTransform));
-        nameGo.transform.SetParent(_overlayRoot, false);
-        var nameRect = nameGo.GetComponent<RectTransform>();
-        nameRect.anchorMin = new Vector2(0.5f, 1f);
-        nameRect.anchorMax = new Vector2(0.5f, 1f);
-        nameRect.pivot = new Vector2(0.5f, 1f);
-        nameRect.anchoredPosition = new Vector2(0f, -2f);
-        nameRect.sizeDelta = new Vector2(140f, 34f);
-
-        _nameText = nameGo.AddComponent<Text>();
-        _nameText.font = font;
-        _nameText.fontSize = 15;
-        _nameText.alignment = TextAnchor.MiddleCenter;
-        _nameText.color = Color.white;
-        AddOutline(_nameText, new Color(0f, 0f, 0f, 0.86f));
+        _nameText = CreateOverlayText(_overlayRoot, "NameText", font, new Vector2(0f, -4f), new Vector2(146f, 34f), 14, TextAnchor.MiddleCenter);
+        _stateText = CreateOverlayText(_overlayRoot, "StateText", font, new Vector2(0f, -34f), new Vector2(146f, 22f), 12, TextAnchor.MiddleCenter);
 
         var barBackGo = new GameObject("HpBarBack", typeof(RectTransform));
         barBackGo.transform.SetParent(_overlayRoot, false);
@@ -316,7 +320,7 @@ public sealed class BattleActorView : MonoBehaviour
         barBackRect.anchorMax = new Vector2(0.5f, 0f);
         barBackRect.pivot = new Vector2(0.5f, 0f);
         barBackRect.anchoredPosition = new Vector2(0f, 4f);
-        barBackRect.sizeDelta = new Vector2(116f, 12f);
+        barBackRect.sizeDelta = new Vector2(118f, 12f);
 
         var barBackImage = barBackGo.AddComponent<Image>();
         barBackImage.color = new Color(0.04f, 0.04f, 0.04f, 0.92f);
@@ -342,38 +346,15 @@ public sealed class BattleActorView : MonoBehaviour
         floatingRect.anchorMin = new Vector2(0.5f, 0.5f);
         floatingRect.anchorMax = new Vector2(0.5f, 0.5f);
         floatingRect.pivot = new Vector2(0.5f, 0.5f);
-        floatingRect.anchoredPosition = new Vector2(0f, 12f);
-        floatingRect.sizeDelta = new Vector2(156f, 38f);
+        floatingRect.anchoredPosition = new Vector2(0f, 8f);
+        floatingRect.sizeDelta = new Vector2(156f, 34f);
 
         _floatingText = floatingGo.AddComponent<Text>();
         _floatingText.font = font;
-        _floatingText.fontSize = 26;
+        _floatingText.fontSize = 24;
         _floatingText.alignment = TextAnchor.MiddleCenter;
         _floatingText.color = Color.clear;
-        _floatingText.text = string.Empty;
         AddOutline(_floatingText, new Color(0f, 0f, 0f, 0.92f));
-    }
-
-    private IEnumerator LungeRoutine(Vector3 targetPosition, float duration)
-    {
-        var direction = (targetPosition - _homePosition).normalized;
-        if (direction.sqrMagnitude < 0.001f)
-        {
-            direction = _currentState.Side == TeamSide.Ally ? Vector3.right : Vector3.left;
-        }
-
-        var anticipation = _homePosition - (direction * 0.12f);
-        var impact = _homePosition + (direction * 0.72f);
-        var anticipationDuration = Mathf.Max(0.06f, duration * 0.18f);
-        var burstDuration = Mathf.Max(0.08f, duration * 0.18f);
-        var holdDuration = Mathf.Max(0.03f, duration * 0.08f);
-        var returnDuration = Mathf.Max(0.12f, duration * 0.42f);
-
-        yield return AnimateWorldPosition(_homePosition, anticipation, anticipationDuration, true);
-        yield return AnimateWorldPosition(anticipation, impact, burstDuration, false);
-        yield return Hold(holdDuration);
-        yield return AnimateWorldPosition(impact, _homePosition, returnDuration, true);
-        transform.position = _homePosition;
     }
 
     private IEnumerator ImpactRoutine(float duration)
@@ -383,16 +364,10 @@ public sealed class BattleActorView : MonoBehaviour
             yield break;
         }
 
-        var direction = _currentState.Side == TeamSide.Ally ? Vector3.left : Vector3.right;
-        var impactPosition = direction * 0.16f;
-        var impactScale = new Vector3(1.08f, 0.92f, 1.08f);
-        var forwardDuration = Mathf.Max(0.06f, duration * 0.35f);
-        var returnDuration = Mathf.Max(0.08f, duration * 0.45f);
-
-        yield return AnimateLocalVisual(Vector3.zero, impactPosition, Vector3.one, impactScale, forwardDuration);
-        yield return AnimateLocalVisual(impactPosition, Vector3.zero, impactScale, Vector3.one, returnDuration);
-        _visualRoot.localPosition = Vector3.zero;
-        _visualRoot.localScale = _currentState.IsAlive ? Vector3.one : new Vector3(1f, 0.82f, 1f);
+        var forwardDuration = Mathf.Max(0.05f, duration * 0.4f);
+        var returnDuration = Mathf.Max(0.07f, duration * 0.5f);
+        yield return AnimateLocalVisual(Vector3.zero, new Vector3(0f, 0f, -0.12f), Vector3.one, new Vector3(1.05f, 0.94f, 1.05f), forwardDuration);
+        yield return AnimateLocalVisual(new Vector3(0f, 0f, -0.12f), Vector3.zero, new Vector3(1.05f, 0.94f, 1.05f), Vector3.one, returnDuration);
     }
 
     private IEnumerator PulseRoutine(Color flashColor, float duration, float punchScale)
@@ -402,15 +377,13 @@ public sealed class BattleActorView : MonoBehaviour
             yield break;
         }
 
-        var baseScale = _currentState.IsAlive ? Vector3.one : new Vector3(1f, 0.82f, 1f);
+        var baseScale = _currentState.IsAlive ? Vector3.one : new Vector3(1f, 0.8f, 1f);
         var peakScale = baseScale * punchScale;
-        var restColor = ResolveRestColor();
-        var half = Mathf.Max(0.05f, duration * 0.5f);
+        var restColor = ResolveRestColor(_currentState);
+        var half = Mathf.Max(0.04f, duration * 0.5f);
 
         yield return AnimatePulse(restColor, flashColor, baseScale, peakScale, half);
         yield return AnimatePulse(flashColor, restColor, peakScale, baseScale, half);
-        _renderer.material.color = restColor;
-        _visualRoot.localScale = baseScale;
     }
 
     private IEnumerator AccentRoutine(Color accentColor, float duration)
@@ -426,8 +399,6 @@ public sealed class BattleActorView : MonoBehaviour
 
         yield return AnimateAccent(baseShadowColor, accentColor, baseOverlayColor, half);
         yield return AnimateAccent(accentColor, baseShadowColor, baseOverlayColor, half);
-        _shadowRenderer.material.color = baseShadowColor;
-        _overlayBackground.color = baseOverlayColor;
     }
 
     private IEnumerator FloatingTextRoutine(string message, Color color, float duration)
@@ -438,8 +409,8 @@ public sealed class BattleActorView : MonoBehaviour
         }
 
         var rect = _floatingText.rectTransform;
-        var start = new Vector2(0f, 10f);
-        var end = new Vector2(0f, 52f);
+        var start = new Vector2(0f, 8f);
+        var end = new Vector2(0f, 44f);
         _floatingText.text = message;
         _floatingText.color = color;
 
@@ -454,7 +425,7 @@ public sealed class BattleActorView : MonoBehaviour
 
             elapsed += Time.deltaTime;
             var progress = Mathf.Clamp01(elapsed / duration);
-            rect.anchoredPosition = Vector2.Lerp(start, end, Mathf.SmoothStep(0f, 1f, progress));
+            rect.anchoredPosition = Vector2.Lerp(start, end, progress);
             _floatingText.color = new Color(color.r, color.g, color.b, 1f - progress);
             yield return null;
         }
@@ -462,25 +433,6 @@ public sealed class BattleActorView : MonoBehaviour
         rect.anchoredPosition = start;
         _floatingText.color = Color.clear;
         _floatingText.text = string.Empty;
-    }
-
-    private IEnumerator AnimateWorldPosition(Vector3 from, Vector3 to, float duration, bool smooth)
-    {
-        var elapsed = 0f;
-        while (elapsed < duration)
-        {
-            if (IsPaused)
-            {
-                yield return null;
-                continue;
-            }
-
-            elapsed += Time.deltaTime;
-            var t = Mathf.Clamp01(elapsed / duration);
-            t = smooth ? Mathf.SmoothStep(0f, 1f, t) : 1f - Mathf.Pow(1f - t, 3f);
-            transform.position = Vector3.Lerp(from, to, t);
-            yield return null;
-        }
     }
 
     private IEnumerator AnimateLocalVisual(Vector3 fromPosition, Vector3 toPosition, Vector3 fromScale, Vector3 toScale, float duration)
@@ -501,6 +453,8 @@ public sealed class BattleActorView : MonoBehaviour
             _visualRoot.localScale = Vector3.Lerp(fromScale, toScale, t);
             yield return null;
         }
+
+        _visualRoot.localPosition = Vector3.zero;
     }
 
     private IEnumerator AnimatePulse(Color fromColor, Color toColor, Vector3 fromScale, Vector3 toScale, float duration)
@@ -521,6 +475,8 @@ public sealed class BattleActorView : MonoBehaviour
             _visualRoot.localScale = Vector3.Lerp(fromScale, toScale, t);
             yield return null;
         }
+
+        _visualRoot.localScale = _currentState.IsAlive ? Vector3.one : new Vector3(1f, 0.8f, 1f);
     }
 
     private IEnumerator AnimateAccent(Color fromShadow, Color toShadow, Color overlayBaseColor, float duration)
@@ -543,25 +499,6 @@ public sealed class BattleActorView : MonoBehaviour
         }
     }
 
-    private IEnumerator Hold(float duration)
-    {
-        var elapsed = 0f;
-        while (elapsed < duration)
-        {
-            if (!IsPaused)
-            {
-                elapsed += Time.deltaTime;
-            }
-
-            yield return null;
-        }
-    }
-
-    private Color ResolveRestColor()
-    {
-        return _currentState.IsAlive ? _baseColor : Color.Lerp(_baseColor, Color.gray, 0.82f);
-    }
-
     private void RefreshVisibility()
     {
         if (_worldInfoRoot != null)
@@ -577,6 +514,11 @@ public sealed class BattleActorView : MonoBehaviour
         if (_nameText != null)
         {
             _nameText.enabled = _options.ShowOverlayActorHp;
+        }
+
+        if (_stateText != null)
+        {
+            _stateText.enabled = _options.ShowOverlayActorHp;
         }
 
         if (_overlayHpBarRoot != null)
@@ -595,7 +537,7 @@ public sealed class BattleActorView : MonoBehaviour
         routine = StartCoroutine(next);
     }
 
-    private static TextMesh CreateWorldText(Transform parent, string name, Font font, Vector3 localPosition, Color color)
+    private static TextMesh CreateWorldText(Transform parent, string name, Font font, Vector3 localPosition, Color color, int fontSize, float characterSize)
     {
         var go = new GameObject(name);
         go.transform.SetParent(parent, false);
@@ -605,10 +547,35 @@ public sealed class BattleActorView : MonoBehaviour
         textMesh.GetComponent<MeshRenderer>().material = font.material;
         textMesh.anchor = TextAnchor.MiddleCenter;
         textMesh.alignment = TextAlignment.Center;
-        textMesh.fontSize = 44;
-        textMesh.characterSize = 0.06f;
+        textMesh.fontSize = fontSize;
+        textMesh.characterSize = characterSize;
         textMesh.color = color;
         return textMesh;
+    }
+
+    private static Text CreateOverlayText(RectTransform parent, string name, Font font, Vector2 anchoredPosition, Vector2 size, int fontSize, TextAnchor alignment)
+    {
+        var go = new GameObject(name, typeof(RectTransform));
+        go.transform.SetParent(parent, false);
+        var rect = go.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 1f);
+        rect.anchorMax = new Vector2(0.5f, 1f);
+        rect.pivot = new Vector2(0.5f, 1f);
+        rect.anchoredPosition = anchoredPosition;
+        rect.sizeDelta = size;
+
+        var text = go.AddComponent<Text>();
+        text.font = font;
+        text.fontSize = fontSize;
+        text.alignment = alignment;
+        text.color = Color.white;
+        AddOutline(text, new Color(0f, 0f, 0f, 0.86f));
+        return text;
+    }
+
+    private static Vector3 ToWorldPosition(CombatVector2 position)
+    {
+        return new Vector3(position.X, 0f, position.Y);
     }
 
     private static void AddOutline(Graphic graphic, Color color)
@@ -647,12 +614,17 @@ public sealed class BattleActorView : MonoBehaviour
         return new Color(0.34f, 0.90f, 0.42f, 1f);
     }
 
-    private static Color ResolveBaseColor(BattleReplayActorSnapshot actor)
+    private static Color ResolveBaseColor(BattleUnitReadModel actor)
     {
         if (actor.RaceId == "human") return actor.Side == TeamSide.Ally ? new Color(0.25f, 0.55f, 1f) : new Color(0.34f, 0.46f, 0.96f);
         if (actor.RaceId == "beastkin") return actor.Side == TeamSide.Ally ? new Color(0.24f, 0.78f, 0.28f) : new Color(0.24f, 0.66f, 0.22f);
         if (actor.RaceId == "undead") return actor.Side == TeamSide.Ally ? new Color(0.62f, 0.62f, 0.72f) : new Color(0.48f, 0.48f, 0.56f);
         if (actor.ClassId == "mystic") return new Color(0.82f, 0.38f, 0.92f);
         return actor.Side == TeamSide.Ally ? new Color(0.25f, 0.88f, 0.88f) : new Color(0.94f, 0.35f, 0.35f);
+    }
+
+    private Color ResolveRestColor(BattleUnitReadModel actor)
+    {
+        return actor.IsAlive ? _baseColor : Color.Lerp(_baseColor, Color.gray, 0.82f);
     }
 }
