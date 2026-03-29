@@ -26,6 +26,7 @@
 - `adr-0010-local-postgres-policy.md`: 로컬 Postgres 정책 채택
 - `adr-0011-mcp-adoption-policy.md`: MCP 도입 정책
 - `adr-0012-code-structure-and-dependency-policy.md`: 코드 구조와 의존 정책 채택
+- `adr-0013-unity-cli-hybrid-lane.md`: Unity CLI hybrid lane 채택
 
 ## 운영 메모
 

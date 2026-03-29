@@ -18,5 +18,6 @@
 - `postgres-setup.md`: local Postgres 설정
 - `scene-repair-bootstrap.md`: first playable scene repair/bootstrap 운영 기준
 - `unity-bootstrap.md`: Unity 부트스트랩 절차
+- `unity-cli.md`: Unity CLI optional fast lane
 - `unity-install.md`: Unity 설치 기준
 - `unity-mcp.md`: Unity MCP 관련 설정
