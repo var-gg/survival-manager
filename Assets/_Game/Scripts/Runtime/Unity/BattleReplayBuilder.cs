@@ -7,7 +7,6 @@ namespace SM.Unity;
 public static class BattleReplayBuilder
 {
     private const float IntroDurationSeconds = 0.55f;
-    private const float EventDurationSeconds = 0.45f;
     private const float ResultDurationSeconds = 0.60f;
 
     public static BattleReplayTrack Build(BattleState initialState, BattleResult result)
@@ -116,8 +115,20 @@ public static class BattleReplayBuilder
             source.CurrentHealth,
             beforeTargetHealth,
             target?.CurrentHealth,
-            EventDurationSeconds,
+            ResolveEventDuration(battleEvent),
             SnapshotActors(order, actors));
+    }
+
+    private static float ResolveEventDuration(BattleEvent battleEvent)
+    {
+        return battleEvent.ActionType switch
+        {
+            BattleActionType.BasicAttack => 0.52f,
+            BattleActionType.ActiveSkill when battleEvent.Note == "heal_skill" => 0.60f,
+            BattleActionType.ActiveSkill => 0.56f,
+            BattleActionType.WaitDefend => 0.40f,
+            _ => 0.45f
+        };
     }
 
     private static MutableActorState BuildMutableState(BattleState initialState, string actorId)

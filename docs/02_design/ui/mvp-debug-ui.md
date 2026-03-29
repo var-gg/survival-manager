@@ -1,7 +1,7 @@
 # mvp debug ui
 
 - 상태: active
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-03-30
 - phase: prototype
 
 ## 현재 원칙
@@ -24,14 +24,15 @@
 
 - 5노드 box track
 - 현재 위치
-- 예정 보상
+- 선택 분기 / 예정 보상 / node effect
 - squad 정보
+- node별 route 버튼
 - next battle / return town 버튼
 
 ## Battle 화면
 
 - primitive actor 4v4
-- actor HP label / HP bar
+- actor world-space HP label / HP bar
 - 팀 요약 HP 텍스트
 - 로그 패널
 - tick / action / speed / pause 상태 텍스트
@@ -42,5 +43,6 @@
 
 - 전투 결과 요약
 - reward 카드 3개
+- gold / item / trait reroll / permanent slot / temporary augment 표현
 - 카드 선택 버튼
 - Town 귀환 버튼

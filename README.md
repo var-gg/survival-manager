@@ -18,11 +18,11 @@
 
 ## 지금 실제로 보이는 범위
 
-- `Boot -> Town -> Battle -> Reward -> Town`
+- `Boot -> Town -> Expedition -> Battle -> Reward -> Town`
 - Town operator UI: roster / recruit 카드 3개 / squad / deploy preview / save / load / debug start / quick battle
-- Expedition operator UI: 5노드 박스, 현재 위치, 예정 보상, next battle / return town
-- Battle observer UI: replay track, primitive actor, HP label/bar, 로그, speed, pause, progress
-- Reward operator UI: 3지선다 카드, gold / item / temporary augment 즉시 반영
+- Expedition operator UI: 5노드 박스, route 버튼, 현재 위치, node effect, next battle / return town
+- Battle observer UI: replay track, primitive actor, world-space HP label/bar, 로그, speed, pause, progress
+- Reward operator UI: 3지선다 카드, gold / item / temporary augment / trait reroll / permanent slot 즉시 반영
 
 ## 자동 검증
 

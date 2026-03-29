@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -30,33 +31,66 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         Refresh();
     }
 
+    public void SelectNode1() => SelectNode(0);
+    public void SelectNode2() => SelectNode(1);
+    public void SelectNode3() => SelectNode(2);
+    public void SelectNode4() => SelectNode(3);
+    public void SelectNode5() => SelectNode(4);
+
     public void NextBattleOrAdvance()
     {
         if (!EnsureReady()) return;
 
         var session = _root.SessionState;
-        session.EnsureBattleDeployReady();
-        if (session.BattleDeployHeroIds.Count == 0)
+        var selectedNode = session.GetSelectedExpeditionNode();
+        if (selectedNode == null)
         {
-            Refresh("배치 가능한 영웅이 없습니다.");
+            Refresh("다음 경로를 먼저 선택하세요.");
             return;
         }
 
-        if (session.CurrentExpeditionNodeIndex >= session.ExpeditionNodes.Count - 1)
+        if (selectedNode.RequiresBattle)
         {
-            Refresh("마지막 노드입니다. 귀환하세요.");
+            session.EnsureBattleDeployReady();
+            if (session.BattleDeployHeroIds.Count == 0)
+            {
+                Refresh("배치 가능한 영웅이 없습니다.");
+                return;
+            }
+
+            _root.SceneFlow.GoToBattle();
             return;
         }
 
-        _root.SceneFlow.GoToBattle();
+        if (session.ResolveSelectedExpeditionNode())
+        {
+            _root.SaveProfile();
+            Refresh($"{selectedNode.Label} 경로를 전투 없이 정리했습니다.");
+            return;
+        }
+
+        Refresh("다음 노드 진행에 실패했습니다.");
     }
 
     public void ReturnToTown()
     {
         if (!EnsureReady()) return;
-        _root.SessionState.EndOperatorRunToTown();
+        _root.SessionState.AbandonExpeditionRun();
         _root.SaveProfile();
         _root.SceneFlow.ReturnToTown();
+    }
+
+    private void SelectNode(int nodeIndex)
+    {
+        if (!EnsureReady()) return;
+
+        if (_root.SessionState.SelectNextExpeditionNode(nodeIndex))
+        {
+            Refresh($"경로 {nodeIndex + 1}을 선택했습니다.");
+            return;
+        }
+
+        Refresh("현재 위치에서 선택할 수 없는 노드입니다.");
     }
 
     private bool EnsureReady()
@@ -109,19 +143,26 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         if (!EnsureReady()) return;
 
         var session = _root.SessionState;
+        var currentNode = session.GetCurrentExpeditionNode();
+        var selectedNode = session.GetSelectedExpeditionNode();
         titleText.text = "Expedition Operator UI";
-        positionText.text = $"현재 위치: {session.CurrentExpeditionNodeIndex + 1}/{session.ExpeditionNodes.Count}";
+        positionText.text =
+            $"현재 위치: {session.CurrentExpeditionNodeIndex + 1}/{session.ExpeditionNodes.Count}" +
+            $" | 현재 노드: {currentNode?.Label ?? "-"}" +
+            $" | 선택 경로: {selectedNode?.Label ?? "선택 필요"}";
         mapText.text = BuildMapText(session);
         rewardText.text = BuildRewardText(session);
         squadText.text = BuildSquadText(session);
         RefreshNodeTrack(session);
         statusText.text = string.IsNullOrWhiteSpace(message)
-            ? "현재 노드를 보고 Next Battle 또는 Return Town을 선택하세요."
+            ? BuildDefaultStatus(session, selectedNode)
             : message;
     }
 
     private void RefreshNodeTrack(GameSessionState session)
     {
+        var selectable = session.GetSelectableNextNodeIndices().ToHashSet();
+
         for (var i = 0; i < 5; i++)
         {
             var nodeRoot = nodeTrackRoot.Find($"NodeBox{i + 1}");
@@ -133,6 +174,8 @@ public sealed class ExpeditionScreenController : MonoBehaviour
             var image = nodeRoot.GetComponent<Image>();
             var label = nodeRoot.Find("TitleText")?.GetComponent<Text>();
             var reward = nodeRoot.Find("RewardText")?.GetComponent<Text>();
+            var button = nodeRoot.Find("SelectButton")?.GetComponent<Button>();
+            var buttonLabel = nodeRoot.Find("SelectButton/Label")?.GetComponent<Text>();
             if (i >= session.ExpeditionNodes.Count)
             {
                 nodeRoot.gameObject.SetActive(false);
@@ -148,16 +191,32 @@ public sealed class ExpeditionScreenController : MonoBehaviour
 
             if (reward != null)
             {
-                reward.text = node.PlannedReward;
+                reward.text = $"{node.PlannedReward}\n{BuildNodeEffectTag(node)}";
             }
 
             if (image != null)
             {
-                image.color = node.Index == session.CurrentExpeditionNodeIndex
-                    ? new Color(0.88f, 0.66f, 0.24f, 0.95f)
-                    : node.Index < session.CurrentExpeditionNodeIndex
-                        ? new Color(0.26f, 0.58f, 0.34f, 0.95f)
-                        : new Color(0.18f, 0.22f, 0.34f, 0.95f);
+                image.color = ResolveNodeColor(session, node, selectable);
+            }
+
+            if (button != null)
+            {
+                var isCurrent = node.Index == session.CurrentExpeditionNodeIndex;
+                var isSelected = node.Index == session.SelectedExpeditionNodeIndex;
+                var isSelectable = selectable.Contains(node.Index);
+                button.gameObject.SetActive(isSelectable || isSelected);
+                button.interactable = isSelectable;
+
+                if (buttonLabel != null)
+                {
+                    buttonLabel.text = isSelected
+                        ? "Selected"
+                        : isCurrent
+                            ? "Here"
+                            : isSelectable
+                                ? "Route"
+                                : "Locked";
+                }
             }
         }
     }
@@ -178,8 +237,18 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         sb.AppendLine("5노드 운영자 맵");
         foreach (var node in session.ExpeditionNodes)
         {
-            var marker = node.Index == session.CurrentExpeditionNodeIndex ? "[현재]" : node.Index < session.CurrentExpeditionNodeIndex ? "[완료]" : "[예정]";
-            sb.AppendLine($"- {marker} {node.Index + 1}. {node.Label}");
+            var marker = node.Index == session.CurrentExpeditionNodeIndex
+                ? "[현재]"
+                : node.Index == session.SelectedExpeditionNodeIndex
+                    ? "[선택]"
+                    : session.GetSelectableNextNodeIndices().Contains(node.Index)
+                        ? "[후보]"
+                        : node.Index < session.CurrentExpeditionNodeIndex
+                            ? "[완료]"
+                            : "[예정]";
+            var battleMarker = node.RequiresBattle ? "Battle" : "Travel";
+            sb.AppendLine($"- {marker} {node.Index + 1}. {node.Label} / {battleMarker}");
+            sb.AppendLine($"  {node.Description}");
         }
 
         return sb.ToString();
@@ -187,15 +256,90 @@ public sealed class ExpeditionScreenController : MonoBehaviour
 
     private static string BuildRewardText(GameSessionState session)
     {
-        var remaining = session.ExpeditionNodes.Where(x => x.Index >= session.CurrentExpeditionNodeIndex)
-            .Select(x => $"{x.Index + 1}. {x.PlannedReward}");
-        return "예정 보상\n" + string.Join("\n", remaining);
+        var sb = new StringBuilder();
+        var selected = session.GetSelectedExpeditionNode();
+        sb.AppendLine("선택 경로 / 노드 효과");
+        if (selected != null)
+        {
+            sb.AppendLine($"{selected.Label}");
+            sb.AppendLine($"- 예정 보상: {selected.PlannedReward}");
+            sb.AppendLine($"- 노드 효과: {BuildNodeEffectTag(selected)}");
+            sb.AppendLine($"- 설명: {selected.Description}");
+        }
+        else
+        {
+            sb.AppendLine("아직 선택된 분기가 없습니다.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(session.LastExpeditionEffectMessage))
+        {
+            sb.AppendLine();
+            sb.AppendLine($"직전 적용 효과: {session.LastExpeditionEffectMessage}");
+        }
+
+        return sb.ToString();
     }
 
     private static string BuildSquadText(GameSessionState session)
     {
         var names = session.ExpeditionSquadHeroIds
             .Select(id => session.Profile.Heroes.FirstOrDefault(h => h.HeroId == id)?.Name ?? id);
-        return "현재 원정 스쿼드\n" + string.Join("\n", names);
+        var tempAugments = session.Expedition.TemporaryAugmentIds.Count == 0
+            ? "없음"
+            : string.Join(", ", session.Expedition.TemporaryAugmentIds);
+
+        return "현재 원정 스쿼드\n" +
+               string.Join("\n", names) +
+               $"\n\nTemp Augments\n{tempAugments}";
+    }
+
+    private static string BuildDefaultStatus(GameSessionState session, ExpeditionNodeViewModel? selectedNode)
+    {
+        if (selectedNode == null)
+        {
+            return "분기를 고른 뒤 Next Battle로 진행하세요.";
+        }
+
+        return selectedNode.RequiresBattle
+            ? $"{selectedNode.Label} 전투에 진입할 준비가 됐습니다."
+            : $"{selectedNode.Label}은 전투 없이 정리 가능한 안전 노드입니다.";
+    }
+
+    private static string BuildNodeEffectTag(ExpeditionNodeViewModel node)
+    {
+        return node.EffectKind switch
+        {
+            ExpeditionNodeEffectKind.None => "효과 없음",
+            ExpeditionNodeEffectKind.Gold => $"+{node.EffectAmount} Gold",
+            ExpeditionNodeEffectKind.TraitRerollCurrency => $"Trait Reroll +{node.EffectAmount}",
+            ExpeditionNodeEffectKind.TemporaryAugment => $"Temp Augment: {node.EffectPayloadId}",
+            ExpeditionNodeEffectKind.PermanentAugmentSlot => $"Permanent Slot +{Mathf.Max(1, node.EffectAmount)}",
+            _ => "효과 없음"
+        };
+    }
+
+    private static Color ResolveNodeColor(GameSessionState session, ExpeditionNodeViewModel node, HashSet<int> selectable)
+    {
+        if (node.Index == session.CurrentExpeditionNodeIndex)
+        {
+            return new Color(0.88f, 0.66f, 0.24f, 0.95f);
+        }
+
+        if (node.Index == session.SelectedExpeditionNodeIndex)
+        {
+            return new Color(0.22f, 0.72f, 0.90f, 0.96f);
+        }
+
+        if (selectable.Contains(node.Index))
+        {
+            return new Color(0.24f, 0.46f, 0.82f, 0.95f);
+        }
+
+        if (node.Index < session.CurrentExpeditionNodeIndex)
+        {
+            return new Color(0.26f, 0.58f, 0.34f, 0.95f);
+        }
+
+        return new Color(0.18f, 0.22f, 0.34f, 0.95f);
     }
 }

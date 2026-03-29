@@ -11,6 +11,7 @@ public sealed class BattlePresentationController : MonoBehaviour
 
     private readonly Dictionary<string, BattleActorView> _actorViews = new();
     private Camera _camera = null!;
+    public bool IsPaused { get; private set; }
 
     private void Update()
     {
@@ -29,6 +30,7 @@ public sealed class BattlePresentationController : MonoBehaviour
     {
         ValidateReferences();
         _camera = Camera.main!;
+        IsPaused = false;
         Clear();
 
         foreach (var actor in track.InitialRoster)
@@ -36,9 +38,14 @@ public sealed class BattlePresentationController : MonoBehaviour
             var actorGo = new GameObject(actor.Name);
             actorGo.transform.SetParent(battleStageRoot, false);
             var view = actorGo.AddComponent<BattleActorView>();
-            view.Initialize(actor, actorOverlayRoot, _camera, ResolveSlotPosition(track.InitialRoster, actor));
+            view.Initialize(actor, actorOverlayRoot, _camera, ResolveSlotPosition(track.InitialRoster, actor), this);
             _actorViews[actor.Id] = view;
         }
+    }
+
+    public void SetPaused(bool isPaused)
+    {
+        IsPaused = isPaused;
     }
 
     public void PresentFrame(BattleReplayFrame frame)

@@ -139,9 +139,23 @@ public static class FirstPlayableSceneInstaller
 
         for (var i = 0; i < 5; i++)
         {
-            var nodeBox = EnsurePanel(nodeTrackRoot, $"NodeBox{i + 1}", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-176f + (i * 88f), 0f), new Vector2(78f, 90f), new Color(0.18f, 0.22f, 0.34f, 0.95f)).rectTransform;
-            EnsureText(nodeBox, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(70f, 40f), TextAnchor.MiddleCenter, 14, $"Node {i + 1}");
-            EnsureText(nodeBox, "RewardText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -6f), new Vector2(70f, 40f), TextAnchor.MiddleCenter, 12, "Reward");
+            var nodeBox = EnsurePanel(nodeTrackRoot, $"NodeBox{i + 1}", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-176f + (i * 88f), 0f), new Vector2(78f, 108f), new Color(0.18f, 0.22f, 0.34f, 0.95f)).rectTransform;
+            EnsureText(nodeBox, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(70f, 32f), TextAnchor.MiddleCenter, 13, $"Node {i + 1}");
+            EnsureText(nodeBox, "RewardText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 2f), new Vector2(70f, 42f), TextAnchor.MiddleCenter, 11, "Reward");
+            var selectButton = EnsureButton(nodeBox, "SelectButton", "Route", new Vector2(0.5f, 0f), new Vector2(0f, 18f), i switch
+            {
+                0 => controller.SelectNode1,
+                1 => controller.SelectNode2,
+                2 => controller.SelectNode3,
+                3 => controller.SelectNode4,
+                _ => controller.SelectNode5
+            });
+            selectButton.GetComponent<RectTransform>().sizeDelta = new Vector2(62f, 24f);
+            var selectLabel = selectButton.transform.Find("Label")?.GetComponent<Text>();
+            if (selectLabel != null)
+            {
+                selectLabel.fontSize = 12;
+            }
         }
 
         EnsureButton(canvas.transform, "NextBattleButton", "Next Battle", new Vector2(0.5f, 0f), new Vector2(-80f, 25f), controller.NextBattleOrAdvance);
@@ -314,7 +328,7 @@ public static class FirstPlayableSceneInstaller
     {
         ValidateScene("Boot", new[] { "GameBootstrap", "BootCanvas", "Main Camera" });
         ValidateScene("Town", new[] { "TownCanvas", "EventSystem", "TownScreenController", "RecruitCardsRoot", "QuickBattleButton" }, typeof(TownScreenController));
-        ValidateScene("Expedition", new[] { "ExpeditionCanvas", "EventSystem", "ExpeditionScreenController", "NodeTrackRoot" }, typeof(ExpeditionScreenController));
+        ValidateScene("Expedition", new[] { "ExpeditionCanvas", "EventSystem", "ExpeditionScreenController", "NodeTrackRoot", "SelectButton" }, typeof(ExpeditionScreenController));
         ValidateScene("Battle", new[] { "BattleCanvas", "EventSystem", "BattleScreenController", "BattlePresentationRoot", "BattleStageRoot", "ActorOverlayRoot", "PauseButton", "ProgressTrack", "ProgressFill", "StatusText" }, typeof(BattleScreenController));
         ValidateScene("Reward", new[] { "RewardCanvas", "EventSystem", "RewardScreenController", "RewardCardsRoot" }, typeof(RewardScreenController));
     }

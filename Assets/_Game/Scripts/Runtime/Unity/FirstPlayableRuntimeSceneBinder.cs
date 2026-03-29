@@ -128,6 +128,11 @@ public static class FirstPlayableRuntimeSceneBinder
 
         BindButton(scene, "NextBattleButton", controller.NextBattleOrAdvance);
         BindButton(scene, "ReturnTownButton", controller.ReturnToTown);
+        BindButton(scene, "SelectButton", controller.SelectNode1, "NodeBox1");
+        BindButton(scene, "SelectButton", controller.SelectNode2, "NodeBox2");
+        BindButton(scene, "SelectButton", controller.SelectNode3, "NodeBox3");
+        BindButton(scene, "SelectButton", controller.SelectNode4, "NodeBox4");
+        BindButton(scene, "SelectButton", controller.SelectNode5, "NodeBox5");
     }
 
     private static void EnsureBattle(Scene scene)

@@ -51,7 +51,9 @@ public sealed class BattleScreenController : MonoBehaviour
 
     public void TogglePause()
     {
+        if (!EnsureReady()) return;
         _isPaused = !_isPaused;
+        presentationController.SetPaused(_isPaused);
         RefreshSpeedText();
         statusText.text = _isPaused ? "재생 일시정지" : "재생 재개";
     }
@@ -179,6 +181,7 @@ public sealed class BattleScreenController : MonoBehaviour
         var track = BattleReplayBuilder.Build(replaySeedState, result);
 
         presentationController.Initialize(track);
+        presentationController.SetPaused(false);
         _root.SessionState.MarkBattleResolved(
             result.Winner == TeamSide.Ally,
             $"{result.Winner} / {result.TickCount} ticks / {result.Events.Count} events");
@@ -305,7 +308,7 @@ public sealed class BattleScreenController : MonoBehaviour
             raceId,
             classId,
             row,
-            BuildBaseStats(classId),
+            BuildEnemyBaseStats(classId),
             BuildTactics(classId),
             BuildSkills(classId));
     }
@@ -333,6 +336,15 @@ public sealed class BattleScreenController : MonoBehaviour
             "mystic" => new Dictionary<StatKey, float> { { StatKey.MaxHealth, 12 }, { StatKey.Attack, 3 }, { StatKey.Defense, 1 }, { StatKey.Speed, 3 }, { StatKey.HealPower, 4 } },
             _ => new Dictionary<StatKey, float> { { StatKey.MaxHealth, 15 }, { StatKey.Attack, 4 }, { StatKey.Defense, 2 }, { StatKey.Speed, 3 }, { StatKey.HealPower, 1 } }
         };
+    }
+
+    private static Dictionary<StatKey, float> BuildEnemyBaseStats(string classId)
+    {
+        var stats = BuildBaseStats(classId);
+        stats[StatKey.MaxHealth] = Mathf.Max(8f, stats[StatKey.MaxHealth] - 3f);
+        stats[StatKey.Attack] = Mathf.Max(2f, stats[StatKey.Attack] - 1f);
+        stats[StatKey.Defense] = Mathf.Max(0f, stats[StatKey.Defense] - 1f);
+        return stats;
     }
 
     private static IReadOnlyList<TacticRule> BuildTactics(string classId)

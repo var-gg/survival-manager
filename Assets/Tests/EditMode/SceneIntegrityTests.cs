@@ -82,6 +82,19 @@ public sealed class SceneIntegrityTests
             "m_Name: EventSystem");
     }
 
+    [Test]
+    public void ExpeditionScene_Saves_Node_Selection_Buttons()
+    {
+        AssertSceneContains(
+            "Expedition",
+            "m_Name: ExpeditionScreenController",
+            "SM.Unity::SM.Unity.ExpeditionScreenController",
+            "m_Name: NodeTrackRoot",
+            "m_Name: NodeBox1",
+            "m_Name: SelectButton",
+            "m_Name: NextBattleButton");
+    }
+
     private static void AssertAssetContains(string assetPath, params string[] fragments)
     {
         Assert.That(File.Exists(assetPath), Is.True, $"Canonical sample asset is missing: {assetPath}");

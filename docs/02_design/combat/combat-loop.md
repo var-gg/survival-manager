@@ -1,7 +1,7 @@
 # 전투 루프
 
 - 상태: active
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-03-30
 - phase: prototype
 
 ## 현재 전투 시퀀스
@@ -26,3 +26,5 @@
 - intro frame / event frame / result frame을 모두 보여준다.
 - x1 / x2 / x4 / pause는 playback 제어다.
 - 외부 animation package 없이 coroutine / lerp로 표현한다.
+- pause는 actor lunge / hit / floating text까지 함께 멈춘다.
+- smoke battle은 operator progression 검증을 위해 적 스탯이 소폭 낮아진다.

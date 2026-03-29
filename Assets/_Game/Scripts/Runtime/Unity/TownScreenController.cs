@@ -59,6 +59,12 @@ public sealed class TownScreenController : MonoBehaviour
     public void DebugStartExpedition()
     {
         if (!EnsureReady()) return;
+        if (_root.SessionState.CanResumeExpedition)
+        {
+            _root.SceneFlow.GoToExpedition();
+            return;
+        }
+
         _root.SessionState.BeginNewExpedition();
         _root.SaveProfile();
         _root.SceneFlow.GoToExpedition();
@@ -146,7 +152,9 @@ public sealed class TownScreenController : MonoBehaviour
         deployPreviewText.text = BuildDeployPreviewText(session);
         RefreshRecruitCards(session);
         statusText.text = string.IsNullOrWhiteSpace(message)
-            ? "영입/저장/원정/Quick Battle을 바로 눌러 확인하세요."
+            ? session.CanResumeExpedition
+                ? "영입/저장/Debug Start(원정 재개)/Quick Battle을 바로 눌러 확인하세요."
+                : "영입/저장/원정/Quick Battle을 바로 눌러 확인하세요."
             : message;
     }
 
@@ -241,9 +249,31 @@ public sealed class TownScreenController : MonoBehaviour
         }
 
         sb.AppendLine();
-        sb.AppendLine(session.IsQuickBattleSmokeActive
-            ? "Quick Battle smoke 준비 완료"
-            : "Quick Battle은 Expedition 진행도를 건드리지 않음");
+        if (session.IsQuickBattleSmokeActive)
+        {
+            sb.AppendLine("Quick Battle smoke 준비 완료");
+        }
+        else if (session.CanResumeExpedition)
+        {
+            var nextNode = session.GetSelectedExpeditionNode();
+            var routeLabel = nextNode == null ? "경로 선택 필요" : $"{nextNode.Label} -> {nextNode.PlannedReward}";
+            sb.AppendLine($"Resume Expedition: {routeLabel}");
+        }
+        else
+        {
+            sb.AppendLine("Quick Battle은 Expedition 진행도를 건드리지 않음");
+        }
+
+        if (!string.IsNullOrWhiteSpace(session.LastRewardApplicationSummary))
+        {
+            sb.AppendLine($"Last Reward: {session.LastRewardApplicationSummary}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(session.LastExpeditionEffectMessage))
+        {
+            sb.AppendLine($"Last Node Effect: {session.LastExpeditionEffectMessage}");
+        }
+
         return sb.ToString();
     }
 }

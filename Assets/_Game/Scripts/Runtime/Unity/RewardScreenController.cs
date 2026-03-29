@@ -33,7 +33,7 @@ public sealed class RewardScreenController : MonoBehaviour
     public void ReturnToTown()
     {
         if (!EnsureReady()) return;
-        _root.SessionState.EndOperatorRunToTown();
+        _root.SessionState.ReturnToTownAfterReward();
         _root.SaveProfile();
         _root.SceneFlow.ReturnToTown();
     }
@@ -45,7 +45,7 @@ public sealed class RewardScreenController : MonoBehaviour
         if (_root.SessionState.ApplyRewardChoice(index))
         {
             _root.SaveProfile();
-            Refresh($"보상 {index + 1}을 선택했고 저장까지 반영했습니다.");
+            Refresh(_root.SessionState.LastRewardApplicationSummary);
             return;
         }
 
@@ -115,9 +115,11 @@ public sealed class RewardScreenController : MonoBehaviour
             $"전투 결과: {(session.LastBattleVictory ? "승리" : "패배")}\n" +
             $"{session.LastBattleSummary}\n" +
             $"Gold: {session.Profile.Currencies.Gold}\n" +
+            $"Trait Reroll: {session.Profile.Currencies.TraitRerollCurrency}\n" +
+            $"Perm Slots: {session.PermanentAugmentSlotCount}\n" +
             $"Inventory: {session.Profile.Inventory.Count}\n" +
             $"Temp Augments: {session.Expedition.TemporaryAugmentIds.Count}";
-        choicesText.text = "3지선다 보상 카드";
+        choicesText.text = "3지선다 보상 카드 / meta progression";
         RefreshRewardCards(session);
         statusText.text = string.IsNullOrWhiteSpace(message)
             ? "카드를 하나 고르고 Town으로 돌아가세요."
@@ -137,7 +139,13 @@ public sealed class RewardScreenController : MonoBehaviour
             var choice = i < session.PendingRewardChoices.Count ? session.PendingRewardChoices[i] : null;
             SetCardText(card, "TitleText", choice?.Title ?? "빈 카드");
             SetCardText(card, "BodyText", choice == null ? "선택지가 없습니다." : choice.Description);
-            SetCardText(card, "KindText", choice == null ? "-" : choice.Kind.ToString());
+            SetCardText(card, "KindText", choice == null ? "-" : BuildKindText(choice));
+
+            var image = card.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = ResolveCardColor(choice);
+            }
         }
     }
 
@@ -154,5 +162,36 @@ public sealed class RewardScreenController : MonoBehaviour
         {
             text.text = value;
         }
+    }
+
+    private static string BuildKindText(RewardChoiceViewModel choice)
+    {
+        return choice.Kind switch
+        {
+            RewardChoiceKind.Gold => $"Gold +{choice.GoldAmount}",
+            RewardChoiceKind.Item => $"Item / {choice.PayloadId}",
+            RewardChoiceKind.TemporaryAugment => $"Temp / {choice.PayloadId}",
+            RewardChoiceKind.TraitRerollCurrency => $"Trait Reroll +{choice.TraitRerollAmount}",
+            RewardChoiceKind.PermanentAugmentSlot => $"Permanent Slot +{choice.PermanentSlotAmount}",
+            _ => choice.Kind.ToString()
+        };
+    }
+
+    private static Color ResolveCardColor(RewardChoiceViewModel? choice)
+    {
+        if (choice == null)
+        {
+            return new Color(0.18f, 0.21f, 0.30f, 0.96f);
+        }
+
+        return choice.Kind switch
+        {
+            RewardChoiceKind.Gold => new Color(0.48f, 0.36f, 0.16f, 0.96f),
+            RewardChoiceKind.Item => new Color(0.20f, 0.28f, 0.42f, 0.96f),
+            RewardChoiceKind.TemporaryAugment => new Color(0.18f, 0.34f, 0.24f, 0.96f),
+            RewardChoiceKind.TraitRerollCurrency => new Color(0.28f, 0.22f, 0.44f, 0.96f),
+            RewardChoiceKind.PermanentAugmentSlot => new Color(0.40f, 0.24f, 0.14f, 0.96f),
+            _ => new Color(0.18f, 0.21f, 0.30f, 0.96f)
+        };
     }
 }

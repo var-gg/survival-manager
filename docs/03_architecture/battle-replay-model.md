@@ -1,7 +1,7 @@
 # Battle Replay Model
 
 - 상태: active
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-03-30
 - phase: prototype
 
 ## 목적
@@ -28,7 +28,7 @@
   - value / note
   - before / after HP
   - actor state snapshot
-  - duration seconds
+  - action별 duration seconds
 
 ## adapter 흐름
 
@@ -38,6 +38,14 @@
 4. `BattleResolver.Run`이 simulation state를 끝까지 계산한다.
 5. `BattleReplayBuilder.Build`가 replay seed + result에서 frame 목록을 만든다.
 6. `BattlePresentationController`가 frame 단위로 actor view를 재생한다.
+
+## 현재 playback 세부
+
+- x1 기준 event frame은 대략 `0.40s ~ 0.60s` 범위에서 action별로 다르게 보인다.
+- `BasicAttack`은 anticipation -> impact -> return timing을 가진다.
+- hit / heal / defend는 actor motion과 분리된 presentation feedback으로 처리한다.
+- pause는 frame advance만 멈추는 것이 아니라 actor motion coroutine도 같이 멈춘다.
+- Battle scene은 simulation state를 다시 mutate하지 않고 frame snapshot만 적용한다.
 
 ## 경계 규칙
 
