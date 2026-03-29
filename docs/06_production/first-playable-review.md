@@ -1,41 +1,49 @@
 # First Playable Review
 
-- 상태: draft
+## 반드시 먼저 실행할 메뉴 1개
+
+- `SM/Bootstrap/Prepare Observer Playable`
+
+- 상태: active
 - 최종수정일: 2026-03-29
 - phase: prototype
 
-## 지금 직접 볼 수 있는 화면
+## 실제 플레이 가능한 범위
 
-- Boot scene 시작
-- Town debug UI
-- Expedition debug UI
-- Battle debug UI
-- Reward debug UI
+현재 솔직하게 playable이라고 부를 수 있는 범위는 아래다.
 
-단, Battle/Reward 포함 전체는 코드/adapter 기준으로 구성되어 있으며, Unity scene wiring 최종 확인은 별도로 필요하다.
+- `Boot -> Town -> Expedition -> Battle -> Reward -> Town`
+- `SM/Bootstrap/Prepare Observer Playable` 1회 실행으로 scene asset repair와 build settings 보정 가능
+- Town에서 recruit / reroll / save / load / debug start 동작
+- Expedition에서 next battle / return town 동작
+- Battle에서 자동 전투 재생 / 속도 변경 / continue 동작
+- Reward에서 3지선다 선택 / 저장 / Town 귀환 동작
 
-## 실제로 동작하는 루프 구간
-
-현재 기준으로 가장 보수적으로 확인 가능한 자동 구간은 다음이다.
-
-- Boot scene load
-- GameSessionRoot 생성
-- Boot -> Town 자동 진입
-
-수동 경로 기준 의도된 첫 playable 루프는 다음이다.
-
-- Town -> Expedition -> Battle -> Reward -> Town
-
-## 아직 placeholder인 구간
+## 아직 placeholder인 부분
 
 - Town UI는 debug placeholder UGUI
-- Expedition 맵은 텍스트 기반 placeholder
-- Battle은 primitive / 텍스트 로그 중심 placeholder
-- Reward는 debug 3지선다 카드 placeholder
-- 실제 씬 Canvas/Text/Button 참조 연결은 최종 확인 필요
+- Expedition 맵은 텍스트 placeholder
+- Battle은 primitive actor + 로그 표시
+- Reward는 debug 3지선다 카드
+- 최종 HUD / VFX / 정식 UX 아님
 
-## 다음 수정 우선순위 3개
+## 자동 검증 범위
 
-1. Town / Expedition / Battle / Reward 씬 내부 Canvas와 버튼 참조를 실제로 연결하고 PlayMode에서 확인
-2. Battle 결과 replay와 Reward 선택 반영을 PlayMode integration test 범위까지 확대
-3. recruit / squad 편성 / deploy preview를 실제 상호작용 가능한 버튼 목록 UI로 정리
+- EditMode: scene integrity + sample content root 검사
+- PlayMode: Boot -> Town 자동 진입 + first playable 1회전 smoke
+
+## 수동 검증 범위
+
+- UI 가독성
+- 버튼 체감 동선
+- Battle 재생 감각
+- Reward 선택 후 Town 복귀 체감
+- placeholder UI의 실제 사용성
+
+## operator quick path
+
+1. Unity 열기
+2. `SM/Bootstrap/Prepare Observer Playable`
+3. `Boot.unity` Play
+4. Town에서 `Debug Start`
+5. Expedition에서 `Next Battle`

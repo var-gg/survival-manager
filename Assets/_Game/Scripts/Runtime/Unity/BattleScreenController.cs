@@ -21,15 +21,20 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private readonly List<GameObject> _spawnedActors = new();
     private GameSessionRoot _root = null!;
-    private BattleResult? _result;
     private float _playbackSpeed = 1f;
+    private bool _playbackFinished;
+
+    private void Awake()
+    {
+        ValidateReferences();
+    }
 
     private void Start()
     {
         _root = GameSessionRoot.Instance!;
         if (_root == null)
         {
-            resultText.text = "GameSessionRoot가 없습니다.";
+            SetResult("GameSessionRoot가 없습니다.");
             return;
         }
 
@@ -44,13 +49,68 @@ public sealed class BattleScreenController : MonoBehaviour
 
     public void ContinueToReward()
     {
+        if (!EnsureReady()) return;
+        if (!_playbackFinished)
+        {
+            SetResult("전투 재생이 아직 끝나지 않았습니다.");
+            return;
+        }
+
         _root.SceneFlow.GoToReward();
+    }
+
+    private bool EnsureReady()
+    {
+        ValidateReferences();
+        if (_root != null)
+        {
+            return true;
+        }
+
+        _root = GameSessionRoot.Instance!;
+        if (_root == null)
+        {
+            SetResult("GameSessionRoot가 없습니다.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ValidateReferences()
+    {
+        AssertText(titleText, nameof(titleText));
+        AssertText(allyHpText, nameof(allyHpText));
+        AssertText(enemyHpText, nameof(enemyHpText));
+        AssertText(logText, nameof(logText));
+        AssertText(resultText, nameof(resultText));
+        AssertText(speedText, nameof(speedText));
+    }
+
+    private static void AssertText(Text text, string fieldName)
+    {
+        if (text == null)
+        {
+            Debug.LogError($"[BattleScreenController] Missing Text reference: {fieldName}");
+        }
+    }
+
+    private void SetResult(string message)
+    {
+        if (resultText != null)
+        {
+            resultText.text = message;
+        }
+        Debug.LogError($"[BattleScreenController] {message}");
     }
 
     private void SetSpeed(float speed)
     {
         _playbackSpeed = speed;
-        speedText.text = $"Speed x{speed:0}";
+        if (speedText != null)
+        {
+            speedText.text = $"Speed x{speed:0}";
+        }
     }
 
     private void SetupCamera()
@@ -67,8 +127,22 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void RunBattle()
     {
+        if (!EnsureReady()) return;
+
         titleText.text = "Battle Debug UI";
+        logText.text = "전투 시작 준비중";
+        resultText.text = "전투 진행 중";
+        _playbackFinished = false;
         SetSpeed(1f);
+
+        foreach (var actor in _spawnedActors)
+        {
+            if (actor != null)
+            {
+                Destroy(actor);
+            }
+        }
+        _spawnedActors.Clear();
 
         var allyDefinitions = BuildAllyDefinitions();
         var enemyDefinitions = BuildEnemyDefinitions();
@@ -78,8 +152,8 @@ public sealed class BattleScreenController : MonoBehaviour
         SpawnTeam(state.Enemies.ToList(), false);
         RefreshHp(state);
 
-        _result = BattleResolver.Run(state, 50);
-        StartCoroutine(PlaybackResult(state, _result));
+        var result = BattleResolver.Run(state, 50);
+        StartCoroutine(PlaybackResult(state, result));
     }
 
     private IEnumerator PlaybackResult(BattleState state, BattleResult result)
@@ -96,6 +170,7 @@ public sealed class BattleScreenController : MonoBehaviour
         var victory = result.Winner == TeamSide.Ally;
         resultText.text = victory ? "승리" : "패배";
         _root.SessionState.SetLastBattleResult(victory, $"{result.Winner} / {result.TickCount} ticks / {result.Events.Count} events");
+        _playbackFinished = true;
     }
 
     private void RefreshHp(BattleState state)

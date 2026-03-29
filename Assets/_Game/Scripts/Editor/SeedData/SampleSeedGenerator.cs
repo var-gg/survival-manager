@@ -81,10 +81,10 @@ public static class SampleSeedGenerator
 
     public static bool HasCanonicalMinimumContent()
     {
-        return HasAssets<StatDefinition>("Stats")
-               && HasAssets<RaceDefinition>("Races")
-               && HasAssets<ClassDefinition>("Classes")
-               && HasAssets<UnitArchetypeDefinition>("Archetypes");
+        return HasAssetText($"{ResourcesRoot}/Stats/stat_max_health.asset", "Id: max_health")
+               && HasAssetText($"{ResourcesRoot}/Races/race_human.asset", "Id: human")
+               && HasAssetText($"{ResourcesRoot}/Classes/class_vanguard.asset", "Id: vanguard")
+               && HasAssetText($"{ResourcesRoot}/Archetypes/archetype_warden.asset", "Id: warden");
     }
 
     private static void EnsureFolders()
@@ -213,9 +213,9 @@ public static class SampleSeedGenerator
             : normalized;
     }
 
-    private static bool HasAssets<T>(string leafFolder) where T : ScriptableObject
+    private static bool HasAssetText(string path, string fragment)
     {
-        return AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { $"{ResourcesRoot}/{leafFolder}" }).Length > 0;
+        return File.Exists(path) && File.ReadAllText(path).Contains(fragment);
     }
 
     private static List<StatDefinition> CreateStats()

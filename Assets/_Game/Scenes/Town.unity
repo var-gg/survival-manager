@@ -311,7 +311,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 241206364}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 816291287}
+        m_TargetAssemblyTypeName: SM.Unity.TownScreenController, SM.Unity
+        m_MethodName: SaveProfile
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &241206364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -459,7 +471,7 @@ RectTransform:
   - {fileID: 241206362}
   - {fileID: 1086651609}
   - {fileID: 1267741791}
-  - {fileID: 1183984918}
+  - {fileID: 816291286}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -614,6 +626,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 371265154}
   m_CullTransparentMesh: 1
+--- !u!115 &656192388
+MonoScript:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  serializedVersion: 7
+  m_DefaultReferences: {}
+  m_Icon: {fileID: 0}
+  m_Type: 0
+  m_ExecutionOrder: 0
+  m_ClassName: TownScreenController
+  m_Namespace: SM.Unity
+  m_AssemblyName: SM.Unity
 --- !u!1 &676787630
 GameObject:
   m_ObjectHideFlags: 0
@@ -835,7 +862,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 18
+    m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
@@ -846,7 +873,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: TitleText
+  m_Text: Town Debug UI
 --- !u!222 &795129100
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -855,6 +882,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 795129097}
   m_CullTransparentMesh: 1
+--- !u!1 &816291285
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 816291286}
+  - component: {fileID: 816291287}
+  - component: {fileID: 816291288}
+  m_Layer: 0
+  m_Name: TownScreenController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &816291286
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816291285}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 294848446}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &816291287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816291285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1355789259}
+  m_Name: 
+  m_EditorClassIdentifier: SM.Unity::SM.Unity.TownScreenController
+  titleText: {fileID: 795129099}
+  rosterText: {fileID: 230882612}
+  recruitText: {fileID: 1809466870}
+  squadText: {fileID: 735180629}
+  deployPreviewText: {fileID: 1944731088}
+  currencyText: {fileID: 1839295464}
+  statusText: {fileID: 862876835}
+--- !u!114 &816291288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816291285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 656192388}
+  m_Name: 
+  m_EditorClassIdentifier: SM.Unity::SM.Unity.TownScreenController
+  titleText: {fileID: 795129099}
+  rosterText: {fileID: 230882612}
+  recruitText: {fileID: 1809466870}
+  squadText: {fileID: 735180629}
+  deployPreviewText: {fileID: 1944731088}
+  currencyText: {fileID: 1839295464}
+  statusText: {fileID: 862876835}
 --- !u!1 &829586828
 GameObject:
   m_ObjectHideFlags: 0
@@ -937,7 +1039,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 829586831}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 816291287}
+        m_TargetAssemblyTypeName: SM.Unity.TownScreenController, SM.Unity
+        m_MethodName: RecruitOffer2
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &829586831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1137,7 +1251,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 882741210}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 816291287}
+        m_TargetAssemblyTypeName: SM.Unity.TownScreenController, SM.Unity
+        m_MethodName: RecruitOffer0
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &882741210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1337,7 +1463,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1022841693}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 816291287}
+        m_TargetAssemblyTypeName: SM.Unity.TownScreenController, SM.Unity
+        m_MethodName: RerollOffers
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1022841693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1458,7 +1596,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1086651611}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 816291287}
+        m_TargetAssemblyTypeName: SM.Unity.TownScreenController, SM.Unity
+        m_MethodName: LoadProfile
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1086651611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1576,57 +1726,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1142450752}
   m_CullTransparentMesh: 1
---- !u!1 &1183984917
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1183984918}
-  - component: {fileID: 1183984919}
-  m_Layer: 0
-  m_Name: TownScreenController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1183984918
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1183984917}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 294848446}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1183984919
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1183984917}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1680221012}
-  m_Name: 
-  m_EditorClassIdentifier: SM.Unity::SM.Unity.TownScreenController
-  titleText: {fileID: 795129099}
-  rosterText: {fileID: 230882612}
-  recruitText: {fileID: 1809466870}
-  squadText: {fileID: 735180629}
-  deployPreviewText: {fileID: 1944731088}
-  currencyText: {fileID: 1839295464}
-  statusText: {fileID: 862876835}
 --- !u!1 &1239653513
 GameObject:
   m_ObjectHideFlags: 0
@@ -1788,7 +1887,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1267741793}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 816291287}
+        m_TargetAssemblyTypeName: SM.Unity.TownScreenController, SM.Unity
+        m_MethodName: DebugStartExpedition
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1267741793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1827,6 +1938,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1267741790}
   m_CullTransparentMesh: 1
+--- !u!115 &1355789259
+MonoScript:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  serializedVersion: 7
+  m_DefaultReferences: {}
+  m_Icon: {fileID: 0}
+  m_Type: 0
+  m_ExecutionOrder: 0
+  m_ClassName: TownScreenController
+  m_Namespace: SM.Unity
+  m_AssemblyName: SM.Unity
 --- !u!1 &1407907398
 GameObject:
   m_ObjectHideFlags: 0
@@ -1985,21 +2111,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1538410184}
   m_CullTransparentMesh: 1
---- !u!115 &1680221012
-MonoScript:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
-  m_Icon: {fileID: 0}
-  m_Type: 0
-  m_ExecutionOrder: 0
-  m_ClassName: TownScreenController
-  m_Namespace: SM.Unity
-  m_AssemblyName: SM.Unity
 --- !u!1 &1809466868
 GameObject:
   m_ObjectHideFlags: 0
@@ -2398,7 +2509,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2127825077}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 816291287}
+        m_TargetAssemblyTypeName: SM.Unity.TownScreenController, SM.Unity
+        m_MethodName: RecruitOffer1
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2127825077
 MonoBehaviour:
   m_ObjectHideFlags: 0
