@@ -1,89 +1,35 @@
-# Persistence Schema
+# persistence 스키마
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 소유자: repository
+- 최종수정일: 2026-03-29
+- 소스오브트루스: `docs/03_architecture/persistence-schema.md`
+- 관련문서:
+  - `docs/03_architecture/persistence-strategy.md`
+  - `docs/04_decisions/adr-0009-persistence-boundary.md`
+  - `docs/04_decisions/adr-0010-local-postgres-policy.md`
 
-## Purpose
+## 목적
 
-This document defines what persistence data exists for MVP and what is explicitly excluded.
+이 문서는 MVP에서 저장하는 데이터와 저장하지 않는 데이터를 명시한다.
 
-## Persisted Data
-
-The MVP persistence boundary stores:
+## 저장 대상
 
 - profile
-- hero instances
+- hero instance
 - inventory
-- currencies
-- unlocked permanent augments
+- currency
+- unlocked permanent augment
 - run summary
 
-## Excluded Data
-
-The MVP persistence boundary does not store:
+## 저장 비대상
 
 - per-frame combat simulation state
 - scene-local transient presentation state
-- authored content definitions
+- authored content definition 본문
 
-## Definition Boundary
+## 경계 규칙
 
-Content definitions are Unity assets.
-Persistence references definitions by stable ids but does not own those definitions.
-
-## Proposed Save Model
-
-### Profile
-- `profile_id`
-- `display_name`
-
-### Hero Instance
-- `hero_id`
-- `name`
-- `archetype_id`
-- `race_id`
-- `class_id`
-- `positive_trait_id`
-- `negative_trait_id`
-- `equipped_item_ids[]`
-
-### Inventory Item
-- `item_instance_id`
-- `item_base_id`
-- `affix_ids[]`
-- `equipped_hero_id`
-
-### Currency
-- `gold`
-- `trait_reroll_currency`
-
-### Permanent Progress
-- `unlocked_permanent_augment_ids[]`
-
-### Run Summary
-- `run_id`
-- `expedition_id`
-- `result`
-- `gold_earned`
-- `nodes_cleared`
-- `completed_at_utc`
-
-## Postgres Schema
-
-Postgres local-dev schema name:
-
-- `survival_manager`
-
-## Adapter Policy
-
-- JSON is the guaranteed fallback path
-- Postgres is a local-dev adapter only at this phase
-- runtime must not fail closed when DB is unavailable
-
-## Open Questions
-
-- should permanent augments be stored as a join table in all adapters or as a flat list in JSON only?
-- how many run summaries should the MVP retain before pruning matters?
-- what migration/version header should be added to the JSON format?
-- when should profile-level metadata like seed history be persisted?
+- definition은 Unity asset이 소유한다.
+- persistence는 stable id로 definition을 참조하되 definition 본문을 소유하지 않는다.
+- runtime은 DB가 없어도 fail-closed 되지 않아야 한다.

@@ -1,80 +1,29 @@
-# Testing Strategy
+# 테스트 전략
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Owner: repository
+- 상태: draft
+- 소유자: repository
+- 최종수정일: 2026-03-29
+- 소스오브트루스: `docs/03_architecture/testing-strategy.md`
+- 관련문서:
+  - `docs/00_governance/implementation-review-checklist.md`
+  - `docs/03_architecture/dependency-direction.md`
+  - `docs/03_architecture/unity-boundaries.md`
 
-## Purpose
+## 목적
 
-This document defines the current testing strategy direction for `survival-manager`.
-The goal is to support safe, incremental project growth with a bias toward low-cost validation first.
+이 문서는 현재 저장소의 검증 우선순위를 정의한다.
 
-## Testing Priorities
+## 우선순위
 
-The project should prefer this validation order:
-
-1. document and structure checks
+1. 문서와 구조 점검
 2. data/catalog validation
-3. EditMode smoke tests
-4. focused integration tests
-5. PlayMode tests where runtime behavior justifies them
-6. broader manual play validation
+3. EditMode smoke test
+4. 집중된 integration test
+5. PlayMode test
+6. 수동 플레이 검증
 
-## Why This Order
+## 핵심 편향
 
-The project is early and architecture-sensitive.
-Low-cost checks should catch drift before expensive runtime validation is needed.
-
-## Coverage Areas
-
-Testing should gradually cover:
-
-- folder and structure invariants
-- presence and integrity of key assets
-- ScriptableObject catalog validity
-- domain boundary assumptions
-- prefab integration assumptions
-- save/load contract stability
-
-## Scene Testing Bias
-
-Do not make scenes the only validation surface.
-Prefer validations that can run against data, prefabs, and settings assets first.
-Scene-driven checks are allowed when behavior cannot be validated another way.
-
-## Sandbox Validation
-
-New risky content should be validated in sandbox before mainline promotion.
-Sandbox validation may include:
-
-- isolated prefabs
-- temporary test scenes
-- asset catalog probes
-- smoke tests against imported content wrappers
-
-## Human Review Required
-
-Automated tests do not replace human review for:
-
-- visual readability
-- gameplay feel
-- third-party licensing or source integrity concerns
-- broad scene or settings migrations
-- changes that may alter save compatibility
-
-## High-Risk Testing Triggers
-
-The following changes should trigger extra validation and human attention:
-
-- changes to save/load contracts
-- major content catalog additions or migrations
-- rendering or pipeline setting changes
-- replacement of core prefabs used widely across content
-- changes touching third-party import boundaries
-
-## Open Questions
-
-- What catalog validators should be built first?
-- Which domain deserves the first deeper EditMode integration tests?
-- When does PlayMode become necessary instead of optional?
-- What should the minimum manual regression checklist contain?
+- scene만 유일한 검증 표면으로 삼지 않는다.
+- data, prefab, settings asset 검증을 먼저 만든다.
+- save/load 계약, asmdef 경계, content catalog 무결성 변화에는 추가 검증을 붙인다.

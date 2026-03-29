@@ -1,19 +1,20 @@
-# Discord Handoff Format
+# Discord 핸드오프 형식
 
-- Status: active
-- Owner: repository
-- Last Updated: 2026-03-29
-- Source of Truth: `docs/00_governance/discord-handoff-format.md`
-- Applies To: Codex only
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-29
+- 소스오브트루스: `docs/00_governance/discord-handoff-format.md`
+- 관련문서:
+  - `docs/00_governance/agent-operating-model.md`
+  - `docs/00_governance/task-execution-pattern.md`
+- 적용범위: Codex 전용
 
-## Purpose
+## 목적
 
-This document defines the standard Discord reporting format for Codex in this repository.
-The goal is to keep handoffs short, scannable, and operationally useful.
+이 문서는 Codex가 Discord나 동등한 텍스트 핸드오프 채널에 남기는 완료 보고 형식을 정의한다.
+목표는 보고를 짧고 읽기 쉽게 유지하면서도, 구조 변경과 리스크를 빠뜨리지 않는 것이다.
 
-## Required Sections
-
-Every completion report on Discord should use the following section order:
+## 필수 섹션 순서
 
 1. 완료
 2. 변경 파일
@@ -21,101 +22,56 @@ Every completion report on Discord should use the following section order:
 4. 리스크
 5. 다음 단계
 
-## Section Rules
+## 섹션 규칙
 
-### 1. 완료
+### 완료
 
-Summarize what was finished in short Korean bullet points.
-Only include completed work, not intention.
+- 실제로 끝난 일만 쓴다.
+- 의도나 희망 사항을 섞지 않는다.
+- 한국어 짧은 bullet을 사용한다.
 
-Example:
+### 변경 파일
 
-- Unity 프로젝트 루트 평탄화 완료
-- `AGENTS.md` 상위 규칙 작성 완료
-- Discord 보고 형식 문서 추가 완료
+- 생성/수정 파일만 나열한다.
+- 저장소 상대 경로를 사용한다.
 
-### 2. 변경 파일
+### 결정사항
 
-List the files created or modified.
-Use repository-relative paths.
+- 앞으로 기준이 되는 결정만 남긴다.
+- 설명이 길어지면 ADR이나 기준 문서로 보낸다.
 
-Example:
+### 리스크
 
-- `AGENTS.md`
-- `docs/00_governance/agent-operating-model.md`
-- `docs/00_governance/discord-handoff-format.md`
+- 미해결 이슈, 검증 공백, 후속 필요 사항을 적는다.
+- 의미 있는 리스크가 없으면 없다고 명시한다.
 
-### 3. 결정사항
+### 다음 단계
 
-State the decisions that now govern future work.
-Keep these concise and concrete.
+- 지금 작업을 자동 확장하지 않고 다음 작업 후보만 남긴다.
+- task 문서의 `Next Steps`와 모순되면 안 된다.
 
-Example:
+## 스타일 규칙
 
-- Codex 운영 상위 규칙은 `AGENTS.md`에만 둔다
-- 상세 운영 규칙은 `agent-operating-model.md`에서 관리한다
-- Discord 보고는 지정된 5개 섹션 형식을 따른다
+- 보고는 한국어로 쓴다.
+- 코드, 명령어, 파일명, 식별자는 영어를 유지한다.
+- 장문의 서론 없이 바로 본문으로 들어간다.
+- 숨겨진 추론이나 내부 chain-of-thought는 적지 않는다.
 
-### 4. 리스크
-
-List unresolved issues, uncertainty, or deferred work.
-If there is no meaningful risk, say so plainly.
-
-Example:
-
-- 현재 리스크 없음
-- ADR 문서 체계는 추후 실제 의사결정 누적 시 확장 필요
-
-### 5. 다음 단계
-
-State the most logical next actions without expanding scope automatically.
-This section should guide the next task, not silently start it.
-
-Example:
-
-- 초기 README 구조 정리
-- Unity 기본 씬 정책 문서화
-- 첫 ADR 작성 기준 확정
-
-## Style Rules
-
-- Write the report in Korean.
-- Keep code, commands, file names, and identifiers in English.
-- Prefer bullets over long paragraphs.
-- Keep the handoff compact and easy to scan in Discord.
-- Do not include internal chain-of-thought or hidden reasoning.
-- Do not inflate the report with unrelated context.
-
-## Recommended Template
+## 권장 템플릿
 
 ```md
 완료
 - ...
-- ...
 
 변경 파일
-- `...`
 - `...`
 
 결정사항
 - ...
-- ...
 
 리스크
-- ...
 - ...
 
 다음 단계
 - ...
-- ...
 ```
-
-## When to Use
-
-Use this format for:
-
-- task completion reports
-- meaningful progress updates
-- handoff summaries after repository changes
-
-If the update is extremely small, Codex may shorten content, but should preserve the same section order when reporting formal completion.

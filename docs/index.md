@@ -24,7 +24,9 @@
 ## 시작점
 
 - 문서 거버넌스: `00_governance/docs-governance.md`
+- 구현 검수 체크리스트: `00_governance/implementation-review-checklist.md`
 - 제품 인덱스: `01_product/index.md`
+- 아키텍처 인덱스: `03_architecture/index.md`
 - 의사결정 인덱스: `04_decisions/index.md`
 - 설정 인덱스: `05_setup/index.md`
 - 운영 인덱스: `06_production/index.md`

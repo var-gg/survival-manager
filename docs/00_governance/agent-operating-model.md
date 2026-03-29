@@ -1,147 +1,68 @@
-# Codex Agent Operating Model
+# Codex 에이전트 운영 모델
 
-- Status: active
-- Owner: repository
-- Last Updated: 2026-03-29
-- Source of Truth: `docs/00_governance/agent-operating-model.md`
-- Applies To: Codex only
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-29
+- 소스오브트루스: `docs/00_governance/agent-operating-model.md`
+- 관련문서:
+  - `AGENTS.md`
+  - `docs/00_governance/docs-governance.md`
+  - `docs/00_governance/task-execution-pattern.md`
+  - `docs/00_governance/discord-handoff-format.md`
+- 적용범위: Codex 전용
 
-## Purpose
+## 목적
 
-This document defines the detailed operating model for Codex working inside the `survival-manager` repository.
-It exists to keep execution disciplined, documentation synchronized, and reporting consistent.
+이 문서는 Codex가 `survival-manager` 저장소에서 작업할 때 따라야 할 세부 운영 모델을 정의한다.
+상위 비가역 규칙은 `AGENTS.md`에 두고, 이 문서는 그 규칙을 실제 작업 절차로 풀어쓴다.
 
-## Relationship to `AGENTS.md`
+## 핵심 운영 규칙
 
-- `AGENTS.md` contains short, top-level, non-negotiable rules.
-- This document explains how those rules are applied during actual work.
-- If there is any ambiguity, follow `AGENTS.md` first.
+### 1. 문서와 변경을 같이 움직인다
 
-## Core Operating Rules
+- 구조, 정책, 작업 흐름이 바뀌면 관련 문서를 같은 작업 단위에서 갱신한다.
+- 문서 갱신이 빠졌다면 완료로 보고하지 않는다.
+- 구현과 문서 중 하나만 바뀐 상태를 정상 상태로 취급하지 않는다.
 
-### 1. Keep docs and implementation together
+### 2. 요청 범위를 임의로 넓히지 않는다
 
-Codex should update documentation and implementation in the same work unit whenever practical.
-This applies especially to:
+- 요청과 직접 무관한 리팩터링을 끼워 넣지 않는다.
+- 구조 정책 문서화가 필요한 최소 인접 수정은 허용한다.
+- 후속 제안이 있어도 자동으로 다음 작업까지 시작하지 않는다.
 
-- new systems
-- folder structure changes
-- scene/bootstrap changes
-- workflow or policy changes
-- package or dependency changes
+### 3. 벤더 경계를 침범하지 않는다
 
-If implementation changes but documentation is deferred, Codex should explicitly call out the gap as a risk.
+- `Assets/ThirdParty/**` 원본은 직접 수정하지 않는다.
+- 필요한 확장은 프로젝트 소유 경로에서 감싸거나 연결한다.
+- 벤더 패치가 꼭 필요하면 문서와 승인 경로를 먼저 확인한다.
 
-### 2. Update structure and policy docs with the change
+### 4. 보고와 기록을 분리하지 않는다
 
-When a task changes repository structure, development policy, workflow, or technical direction, Codex must update the related documentation and ADR first or in the same change set.
+- 사람에게 전달하는 진행/완료 보고는 한국어로 작성한다.
+- 중요한 다중 세션 작업은 task 문서에 남긴다.
+- Discord 보고는 `status.md`와 모순되지 않게 유지한다.
 
-Typical targets include:
+### 5. 구조 결정은 추적 가능해야 한다
 
-- governance docs under `docs/00_governance/`
-- architecture docs under `docs/03_architecture/`
-- setup docs under `docs/05_setup/`
-- ADR documents when a design or policy decision becomes durable
+- 의존 방향, asmdef 경계, 저장 규칙, Unity 경계 같은 durable choice는 ADR로 남긴다.
+- 구조 정책 문서와 ADR이 충돌하면 충돌을 바로 해소한다.
 
-Codex should avoid leaving structural decisions undocumented.
+## 문서 갱신이 필수인 변화
 
-### 3. Do not modify original vendor files in `Assets/ThirdParty`
+- 저장소 폴더 구조 변경
+- asmdef 또는 namespace 경계 변경
+- Boot/scene 흐름 변경
+- persistence 정책 변경
+- 에이전트 작업 절차 변경
+- 보고 형식 변경
+- 벤더 에셋 처리 정책 변경
 
-`Assets/ThirdParty` is treated as an imported/vendor area.
-Codex must not directly edit original third-party source files there unless the task explicitly authorizes a vendor patch workflow.
+## 완료 기준
 
-Preferred approaches:
+다음이 모두 맞아야 작업이 정리된 것으로 본다.
 
-- configure through project settings
-- wrap third-party code from project-owned code
-- document version and integration assumptions
-- isolate local extensions outside original vendor roots
-
-If a third-party patch becomes unavoidable, Codex should stop and ask for explicit approval.
-
-### 4. Prevent unnecessary scope expansion
-
-Codex should finish the requested task cleanly without opportunistically widening scope.
-Examples of disallowed behavior:
-
-- adding unrelated refactors
-- rewriting naming conventions without approval
-- changing architecture beyond the task boundary
-- introducing new systems because they seem useful
-- bundling extra cleanup that changes review surface significantly
-
-Allowed behavior:
-
-- minimal adjacent fixes required to complete the requested task safely
-- documentation updates required by the change
-- reporting a follow-up recommendation without doing it automatically
-
-### 5. Report in Korean
-
-All human-facing progress reports and completion summaries should be written in Korean.
-The following should remain in English where applicable:
-
-- code
-- commands
-- file names
-- folder names
-- identifiers
-- package names
-- branch names
-- commit messages when a repository convention requires English
-
-## Working Style
-
-### Plan size
-
-Prefer small, reviewable task units.
-When possible, make changes that are easy to validate in one pass.
-
-### File discipline
-
-Prefer editing the smallest set of files needed to complete the task.
-Do not create new governance or process files unless the task asks for them.
-
-### Consistency
-
-When adding a new rule, structure, or convention, ensure that related docs do not contradict it.
-If contradictions exist, resolve them in the same task when practical.
-
-### Risk visibility
-
-When there is uncertainty, report it explicitly under risk rather than masking it with confident language.
-
-## Documentation Update Triggers
-
-Codex should consider documentation updates mandatory when a task changes any of the following:
-
-- project structure
-- package/dependency policy
-- scene/bootstrap flow
-- coding workflow policy
-- branching or handoff policy
-- reporting format
-- durable technical decisions
-
-## ADR Expectation
-
-Create or update an ADR when a task makes a durable choice about:
-
-- architecture boundaries
-- dependency policy
-- repository structure
-- third-party integration policy
-- project workflow rules
-
-If an ADR is not created during such a change, Codex should explain why.
-
-## Completion Standard
-
-A task is considered cleanly complete when all of the following are true where relevant:
-
-- requested change is implemented
-- directly affected documentation is updated
-- avoidable scope expansion did not occur
-- third-party vendor boundaries were respected
-- the report is delivered in Korean
-- remaining risks or follow-ups are explicitly stated
+- 요청된 변경이 반영됨
+- 직접 영향받는 문서가 같이 갱신됨
+- 불필요한 범위 확장이 없음
+- `Assets/ThirdParty/**` 경계를 침범하지 않음
+- 남은 리스크나 후속 결정이 명시됨

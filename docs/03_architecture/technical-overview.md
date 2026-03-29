@@ -1,85 +1,67 @@
 # 기술 개요
 
-- 상태: draft
+- 상태: active
+- 소유자: repository
 - 최종수정일: 2026-03-29
-- phase: prototype
+- 소스오브트루스: `docs/03_architecture/technical-overview.md`
+- 관련문서:
+  - `docs/03_architecture/index.md`
+  - `docs/03_architecture/coding-principles.md`
+  - `docs/03_architecture/dependency-direction.md`
+  - `docs/03_architecture/unity-boundaries.md`
+  - `docs/03_architecture/unity-project-layout.md`
 
 ## 목적
 
-이 문서는 현재 prototype 구현을 기준으로 MVP 기술 구조 방향을 정리한다.
-목표는 씬 스크립트에 모든 규칙을 하드코딩하지 않으면서, 작은 playable slice를 빠르게 검증할 수 있는 구조를 유지하는 것이다.
+이 문서는 현재 prototype 구현이 어떤 기술 경계를 전제로 하는지 요약한다.
+상세 규칙은 개별 기준 문서로 분리하고, 이 문서는 상위 지도를 제공한다.
 
-## MVP 구조 원칙
+## 현재 구조 요약
 
-### 아키텍처 방향
+프로젝트는 다음 네 층을 분리하는 것을 기본 선택으로 둔다.
 
-프로젝트는 다음을 분리한다.
+- authored content
+- pure runtime/domain rule
+- persistence abstraction과 저장 어댑터
+- Unity orchestration/presentation
 
-- 콘텐츠 정의
-- 런타임 인스턴스
-- persistence 상태
-- Unity adapter / presentation layer
+## 실제 asmdef 기준
 
-### 핵심 경계 규칙
-
-- definition과 instance는 분리된 개념이다.
-- 콘텐츠 정의의 기준은 Unity asset이다.
-- 런타임/저장 상태는 별도 persistence 모델에 둔다.
-- 전투 시뮬레이션은 UnityEngine 결합을 최소화한 순수 C# 영역에 둔다.
-- DB, UI, Scene은 core domain 바깥 adapter다.
-- direct production DB access는 전제하지 않는다.
-- Boot scene은 composition root 역할만 수행한다.
-- save truth는 `PersistenceFacade`를 통한다.
-
-## 현재 코드 기준 asmdef/namespace 정규화
-
-현재 코드 기준 주요 asmdef는 다음과 같다.
+현재 저장소의 주요 asmdef는 아래와 같다.
 
 - `SM.Core`
+- `SM.Content`
 - `SM.Combat`
 - `SM.Meta`
-- `SM.Content`
 - `SM.Persistence.Abstractions`
 - `SM.Persistence.Json`
 - `SM.Persistence.Postgres`
 - `SM.Unity`
 - `SM.Editor`
-- `SM.Tests`
+- `SM.Tests.EditMode`
+- `SM.Tests.PlayMode`
 
-현재 및 제안 namespace 방향도 `SM.*` 계열로 정규화한다.
+문서에서는 두 테스트 asmdef를 묶어 `SM.Tests` 테스트 어셈블리 그룹이라고 부른다.
 
-- `SM.Core.*`
-- `SM.Combat.*`
-- `SM.Meta.*`
-- `SM.Content.*`
-- `SM.Persistence.*`
-- `SM.Unity.*`
-- `SM.Editor.*`
-- `SM.Tests.*`
+## 기본 구조 원칙
 
-## Unity adapter 계층
+- core rule은 `SM.Core`, `SM.Combat`, `SM.Meta`에 둔다.
+- 콘텐츠 정의와 authored asset 규칙은 `SM.Content`와 `Assets/_Game/Content/**`를 기준으로 둔다.
+- persistence truth는 `SM.Persistence.Abstractions` 뒤에 두고 구현은 adapter로 분리한다.
+- `SM.Unity`는 scene/input/view orchestration만 담당한다.
+- `SM.Editor`는 bootstrap, validation, authoring 지원만 담당한다.
 
-현재 Unity adapter는 `Assets/_Game/Scripts/Runtime/Unity/**` 아래에 둔다.
+## 어떤 문서를 먼저 봐야 하는가
 
-주요 책임:
+- 클래스/파일 분리 기준이 필요하면 `coding-principles.md`
+- asmdef 참조를 결정해야 하면 `dependency-direction.md`
+- `MonoBehaviour`나 scene script 책임이 헷갈리면 `unity-boundaries.md`
+- context 책임이 헷갈리면 `bounded-contexts.md`
+- 데이터 모델 분리가 필요하면 `data-model.md`
 
-- `GameBootstrap`: Boot composition root
-- `GameSessionRoot`: `DontDestroyOnLoad` root
-- `GameSessionState`: 현재 profile / roster / expedition 상태 보관
-- `SceneFlowController`: 씬 전환 담당
-- `PersistenceEntryPoint`: JSON fallback 기본 진입점
+## 현재 구현 범위
 
-이 계층은 orchestration만 담당하고, 전투/메타/save truth 자체를 재정의하지 않는다.
-
-## 현재 저장소 기준 구현 범위
-
-- 게임 구현: `Assets/_Game/**`
+- 게임 코드와 씬: `Assets/_Game/**`
+- sample content 로딩 자산: `Assets/Resources/_Game/**`
 - 테스트: `Assets/Tests/**`
-
-## 장기 확장 지점
-
-- richer authoring validation
-- save migration versioning
-- alternative persistence adapters
-- telemetry and replay adapters
-- scene/controller layer stabilization
+- 벤더 원본 보호 구역: `Assets/ThirdParty/**`

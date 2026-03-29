@@ -1,137 +1,85 @@
-# Task Execution Pattern
+# Task 실행 문서 패턴
 
-- Status: active
-- Owner: repository
-- Last Updated: 2026-03-29
-- Source of Truth: `docs/00_governance/task-execution-pattern.md`
-- Applies To: Codex only
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-29
+- 소스오브트루스: `docs/00_governance/task-execution-pattern.md`
+- 관련문서:
+  - `tasks/_templates/spec.md`
+  - `tasks/_templates/plan.md`
+  - `tasks/_templates/implement.md`
+  - `tasks/_templates/status.md`
+  - `docs/00_governance/agent-operating-model.md`
+  - `docs/00_governance/discord-handoff-format.md`
+- 적용범위: Codex 전용
 
-## Purpose
+## 목적
 
-This document defines the execution-document pattern for long-running or multi-step work in the `survival-manager` repository.
-Because important work in this project will often span multiple sessions, every major task should leave durable execution documents behind.
+이 문서는 다중 단계 작업을 `tasks/<next-id>_<topic>/` 폴더 아래의 실행 문서로 남기는 패턴을 정의한다.
+목표는 세션이 끊겨도 작업 의도, 계획, 상태가 복원되게 만드는 것이다.
 
-## Required Template Set
+## 기본 템플릿 세트
 
-The repository provides the following task templates under `tasks/_templates/`:
+`tasks/_templates/` 아래 기본 템플릿은 다음과 같다.
 
 - `spec.md`
 - `plan.md`
 - `implement.md`
 - `status.md`
 
-These templates are used to create task-scoped execution documents.
+모든 작업이 네 파일을 다 요구하지는 않지만, 큰 작업은 필요한 최소 집합을 시작 전에 만든다.
 
-## Template Roles
+## 문서 역할
 
 ### `spec.md`
 
-Use `spec.md` to define what the task is.
-It should capture:
-
-- goal
-- non-goals
-- constraints
-- deliverables
-- done criteria
-
-This file is used to prevent ambiguity and scope drift before implementation expands.
+- 목표
+- 비목표
+- 제약
+- 산출물
+- 완료 기준
 
 ### `plan.md`
 
-Use `plan.md` to define how the task will move forward.
-It should capture:
-
-- milestones
-- approval criteria
-- verification commands
-- stop conditions
-
-This file is used to structure execution and define when work must pause for review.
+- 마일스톤
+- 승인 기준
+- 검증 명령
+- 중단 조건
 
 ### `implement.md`
 
-Use `implement.md` to define how the work should be carried out.
-It should capture:
-
-- working method
-- scope limits
-- documentation update rules
-- test rules
-
-This file keeps implementation discipline consistent across long-running work.
+- 실행 방식
+- 구현 범위 제한
+- 문서 동시 갱신 규칙
+- 테스트/검증 규칙
 
 ### `status.md`
 
-Use `status.md` to record the live state of execution.
-It should capture:
+- 현재 상태
+- 완료 항목
+- 보류 항목
+- 이슈
+- 결정
+- 다음 단계
 
-- current status
-- completed
-- on hold
-- issues
-- decisions
-- next steps
+## 필수 적용 시점
 
-This file is the durable progress surface for work that continues across sessions.
+아래 작업에는 이 패턴을 강하게 적용한다.
 
-## Minimum Required Set
+- 다중 세션으로 이어질 가능성이 큰 작업
+- 구조/정책/의존 방향을 바꾸는 작업
+- 승인 지점이나 중단 조건이 있는 작업
+- 문서와 구현을 함께 맞춰야 하는 작업
 
-Every major task should create the minimum necessary subset of these four documents before execution starts.
+## 폴더 규칙
 
-Recommended default:
+- 새 task 폴더는 `tasks/<next-id>_<topic>/` 형식을 기본으로 한다.
+- `<next-id>`는 기존 숫자 task 폴더 다음 정수 값을 쓴다.
+- `<topic>`은 영어 `snake_case` 짧은 주제를 쓴다.
+- task 문서는 복붙한 뒤 방치하지 않고 실제 상태에 맞게 즉시 채운다.
 
-- use `spec.md` when task boundaries or acceptance need clarification
-- use `plan.md` when the task has multiple milestones, approvals, or pause points
-- use `implement.md` when execution discipline needs explicit rules
-- use `status.md` whenever progress must survive across sessions
+## 운영 메모
 
-For simple work, not all four are required.
-For major or long-running work, Codex should create the smallest set that still makes the task durable and reviewable.
-
-## When This Pattern Is Mandatory
-
-Codex should strongly prefer this pattern for:
-
-- multi-session tasks
-- milestone-based work
-- tasks requiring explicit approval points
-- tasks with meaningful risk of scope drift
-- structure or policy changes that need durable tracking
-- implementation efforts that need repeated status handoff
-
-## Discord Reporting Rule
-
-Discord completion and progress reports should be written as a compact summary of `status.md`.
-That means reports should naturally mirror these categories:
-
-- current status / completed
-- on hold when relevant
-- issues or risks
-- decisions
-- next steps
-
-This keeps chat reporting aligned with durable task records instead of inventing a separate reporting style.
-
-## Recommended Task Folder Pattern
-
-A task folder may be created like this when needed:
-
-```text
-tasks/
-  2026-03-feature-name/
-    spec.md
-    plan.md
-    implement.md
-    status.md
-```
-
-The exact task folder naming convention may evolve later, but each task should keep its execution docs together.
-
-## Operating Notes
-
-- Keep execution documents concise and operational.
-- Update them when the task meaningfully changes.
-- Do not create unnecessary template copies for trivial work.
-- Prefer durable written decisions over relying on chat memory.
-- Keep Discord reporting consistent with `status.md` summaries.
+- `status.md`는 핸드오프 기준 문서다.
+- Discord 보고는 `status.md` 요약과 어긋나지 않아야 한다.
+- trivial한 작업에는 불필요한 템플릿 복제를 만들지 않는다.

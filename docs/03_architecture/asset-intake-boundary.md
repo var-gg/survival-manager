@@ -1,66 +1,39 @@
-# Asset Intake Boundary
+# 에셋 intake 경계
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Owner: repository
+- 상태: draft
+- 소유자: repository
+- 최종수정일: 2026-03-29
+- 소스오브트루스: `docs/03_architecture/asset-intake-boundary.md`
+- 관련문서:
+  - `docs/04_decisions/adr-0007-thirdparty-asset-policy.md`
+  - `docs/05_setup/asset-workflow.md`
 
-## Purpose
+## 목적
 
-This document defines the asset-intake boundary for `survival-manager`.
-The goal is to make third-party asset adoption safe, reviewable, and compatible with Codex-assisted project growth.
+이 문서는 서드파티 에셋 도입 시 프로젝트 소유 영역과 벤더 원본 영역의 경계를 정의한다.
 
-## Core Boundary Rule
+## 핵심 규칙
 
-`Assets/ThirdParty` contains original vendor assets and should be treated as a protected boundary.
-Project-owned modifications, wrappers, adaptations, and gameplay-facing integrations should live under `Assets/_Game`.
+- `Assets/ThirdParty/**`는 벤더 원본 보호 구역이다.
+- 프로젝트 소유 wrapper, adaptation, integration asset은 `Assets/_Game/**`에 둔다.
+- 벤더 원본을 참조하기 쉽게 만들려고 `_Game` 쪽으로 이동시키지 않는다.
 
-## Do Not Do
+## 금지 사항
 
-- do not directly edit original vendor files in `Assets/ThirdParty`
-- do not move vendor originals into project-owned folders just to simplify references
-- do not merge project gameplay logic into vendor scripts unless explicitly approved
-- do not treat imported example scenes as production content by default
+- `Assets/ThirdParty/**` 원본 직접 수정
+- 벤더 스크립트에 프로젝트 gameplay logic 직접 병합
+- 예제 scene을 production content처럼 사용하는 방식
 
-## Do Instead
+## 권장 대안
 
-- create wrapper prefabs under `Assets/_Game`
-- create adapter or bridge scripts under `Assets/_Game/Scripts`
-- create project-owned ScriptableObject catalogs that reference or parameterize imported content
-- validate imported assets in sandbox before production promotion
-- document integration assumptions and risks
+- `_Game` 아래 wrapper prefab 작성
+- `_Game/Scripts` 아래 adapter/bridge script 작성
+- 프로젝트 소유 `ScriptableObject` catalog나 설정 asset으로 연결
+- sandbox scene이나 integration harness에서 먼저 검증
 
-## Sandbox-to-Mainline Flow
+## 사람 리뷰가 필요한 경우
 
-1. import or receive the third-party asset under `Assets/ThirdParty`
-2. inspect structure, dependencies, and update risk
-3. validate in sandbox scene, prefab, or integration harness
-4. create project-owned wrappers and configuration assets under `Assets/_Game`
-5. promote only the approved project-owned integration layer into the main gameplay path
-
-## Human Review Required
-
-The following cases require human review before approval:
-
-- license or usage-right uncertainty
-- vendor assets that appear to require direct modification for basic use
-- plugin imports that affect global project settings
-- rendering pipeline compatibility changes
-- package imports with broad folder churn or generated code
-- changes that would make future vendor updates hard to merge
-
-## Acceptance Questions
-
-Before an asset is adopted, answer:
-
-- what problem is this asset solving?
-- can the same value be achieved with lower integration risk?
-- where does the project-owned wrapper layer live?
-- what breaks when the vendor asset updates?
-- what part of the intake requires manual review or visual QA?
-
-## Open Questions
-
-- Which asset categories are safe enough for lightweight intake?
-- Which imported asset types most often force hidden project-wide changes?
-- What sandbox checklist should become mandatory for every intake?
-- How should wrapper naming and folder conventions be enforced?
+- 라이선스나 사용 권리 불명확
+- 기본 사용만으로도 원본 수정이 필요한 에셋
+- 전역 프로젝트 설정을 바꾸는 plugin import
+- 렌더링 파이프라인 호환성 변경

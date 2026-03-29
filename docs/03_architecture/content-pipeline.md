@@ -1,93 +1,34 @@
-# Content Pipeline
+# 콘텐츠 파이프라인
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Owner: repository
+- 상태: draft
+- 소유자: repository
+- 최종수정일: 2026-03-29
+- 소스오브트루스: `docs/03_architecture/content-pipeline.md`
+- 관련문서:
+  - `docs/03_architecture/content-authoring-model.md`
+  - `docs/03_architecture/content-loading-strategy.md`
+  - `docs/05_setup/asset-workflow.md`
 
-## Purpose
+## 목적
 
-This document defines the preferred content pipeline direction for `survival-manager`.
-The goal is to keep content intake and project growth safe, reviewable, and compatible with Codex-driven expansion.
+이 문서는 콘텐츠 추가와 승격이 어떤 순서로 이뤄져야 하는지 정의한다.
 
-## Pipeline Principle
+## 권장 순서
 
-Prefer data assets, prefabs, and settings assets over direct scene editing whenever practical.
-Scene changes should be the last step, not the primary authoring surface.
+1. 데이터 계약을 정의하거나 갱신한다.
+2. `ScriptableObject` 기반 콘텐츠 asset을 만든다.
+3. 프로젝트 소유 prefab과 wrapper를 만든다.
+4. sandbox나 격리된 검증 경로에서 확인한다.
+5. 승인된 asset과 설정만 메인 gameplay 경로로 승격한다.
+6. 다른 방법이 없을 때만 scene을 좁게 수정한다.
 
-## Preferred Pipeline Order
+## 자동화 선호
 
-1. Define or update data contracts
-2. Create or update ScriptableObject content assets
-3. Create or update project-owned prefabs and wrappers
-4. Validate in sandbox or isolated test area
-5. Promote approved assets/configuration into production folders
-6. Touch scenes only if the content cannot be activated another way
+Codex 자동화는 아래 산출물을 우선 작성해야 한다.
 
-## Project-Owned Content Rule
+- data asset
+- project-owned prefab
+- config asset
+- validation report
 
-Project-owned gameplay content should live under `Assets/_Game`.
-This includes:
-
-- gameplay definitions
-- derived prefabs
-- integration wrappers
-- balancing assets
-- project settings assets specific to game behavior
-
-## Third-Party Intake Rule
-
-Third-party originals stay under `Assets/ThirdParty`.
-Codex should not directly mutate vendor originals as part of normal intake or extension work.
-Instead, the project should create:
-
-- wrapper prefabs
-- adapter scripts
-- bridge configuration assets
-- project-owned documentation
-- sandbox verification assets
-
-## Sandbox Validation Rule
-
-Before promoting new content into the main gameplay path, validate it in a sandbox or isolated integration path.
-Examples include:
-
-- experimental test scenes
-- sandbox prefabs
-- temporary catalog entries marked for review
-- isolated test harnesses
-
-Sandbox results should answer:
-
-- does the asset integrate cleanly?
-- does it violate ownership boundaries?
-- does it create hidden dependencies?
-- does it create merge or upgrade risk?
-
-## High-Risk Change Categories
-
-The following content changes should be reviewed explicitly by a human:
-
-- batch prefab rewrites
-- scene-wide object relinking
-- asset migration across ownership boundaries
-- replacement of core project settings assets
-- import flows that generate large opaque metadata churn
-- changes that may affect save compatibility or runtime identity
-
-## Automation Preference
-
-If Codex automates content work, prefer automation that writes:
-
-- data assets
-- project-owned prefabs
-- settings/config assets
-- validation reports
-
-Avoid automation that primarily edits live scenes unless the change is narrow, reviewable, and necessary.
-
-## Open Questions
-
-- Which kinds of sandbox content should be kept versus cleaned up after validation?
-- What promotion checklist is needed before sandbox assets become production assets?
-- Which content checks should become automated first?
-- How should asset IDs and naming conventions be validated over time?
+live scene 대량 편집은 기본 경로로 삼지 않는다.

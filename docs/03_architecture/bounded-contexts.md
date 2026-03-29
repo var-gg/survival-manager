@@ -1,110 +1,76 @@
-# Bounded Contexts
+# bounded context 기준
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-29
+- 소스오브트루스: `docs/03_architecture/bounded-contexts.md`
+- 관련문서:
+  - `docs/03_architecture/technical-overview.md`
+  - `docs/03_architecture/dependency-direction.md`
+  - `docs/03_architecture/data-model.md`
 
-## Purpose
+## 목적
 
-This document defines the MVP bounded-context proposal so that game rules do not collapse into one giant code bucket.
+이 문서는 MVP 기준 bounded context 책임을 정의한다.
+의존 방향 자체는 `dependency-direction.md`에서 다루고, 여기서는 각 context가 무엇을 책임지는지에만 집중한다.
 
-## MVP Rules
+## context 기준
 
-### Proposed Contexts
+### `SM.Core`
 
-#### 1. Content Definition Context
+- 공통 식별자, 결과 타입, RNG, stat/tag 같은 가장 낮은 공통 규칙
+- Unity, persistence, scene 지식 금지
 
-Responsible for authored data assets such as:
+### `SM.Content`
 
-- stat definitions
-- race/class definitions
-- skill definitions
-- trait definitions
-- item and affix definitions
-- reward definitions
+- authored definition 해석에 필요한 런타임 친화 모델
+- definition id, catalog 조회, content translation 진입점
+- scene 상태나 저장 세부 구현 금지
 
-Suggested namespace:
+### `SM.Combat`
 
-- `SurvivalManager.Domain.Definitions`
-- `SurvivalManager.Infrastructure.Authoring`
+- 전투 시뮬레이션, 타겟팅, 해상도 규칙, 전투 결과 산출
+- UI 재생, scene 연출, 저장 I/O 금지
 
-#### 2. Combat Simulation Context
+### `SM.Meta`
 
-Responsible for:
+- town, recruitment, expedition, reward, progression 같은 상위 루프 규칙
+- `SM.Combat` 결과를 소비할 수 있지만 Unity presentation truth를 만들지 않음
 
-- formation
-- targeting
-- tactics rule evaluation
-- stat resolution
-- action execution
-- combat outcome
+### `SM.Persistence`
 
-Suggested namespace:
+- save model, repository contract, serializer/DB adapter
+- authored asset 직접 참조나 scene truth 생성 금지
 
-- `SurvivalManager.Domain.Combat`
+### `SM.Unity`
 
-This context should remain minimally coupled to UnityEngine.
+- Boot, input, view, scene orchestration, adapter glue
+- 전투/메타/save 규칙 자체를 정의하지 않음
 
-#### 3. Meta Loop Context
+### `SM.Editor`
 
-Responsible for:
+- bootstrap, content validation, editor utility
+- 런타임 truth를 editor-only 코드에 숨기지 않음
 
-- town loop
-- recruitment
-- expedition progression
-- reward allocation
-- augment acquisition
-- roster decisions
+## namespace 정규화 규칙
 
-Suggested namespace:
+현재 저장소의 namespace 기준은 `SM.*` 계열로 통일한다.
+과거 full-name namespace 제안은 더 이상 기준으로 사용하지 않는다.
 
-- `SurvivalManager.Domain.Meta`
-- `SurvivalManager.Domain.Progression`
+권장 예시는 다음과 같다.
 
-#### 4. Persistence Context
+- `SM.Core.*`
+- `SM.Content.*`
+- `SM.Combat.*`
+- `SM.Meta.*`
+- `SM.Persistence.Abstractions.*`
+- `SM.Persistence.Json.*`
+- `SM.Persistence.Postgres.*`
+- `SM.Unity.*`
+- `SM.Editor.*`
 
-Responsible for:
+## context 경계 신호
 
-- save models
-- runtime state snapshots
-- serialization format boundaries
-- versioning and migration hooks
-
-Suggested namespace:
-
-- `SurvivalManager.Infrastructure.Persistence`
-- `SurvivalManager.Application.Save`
-
-#### 5. Presentation Context
-
-Responsible for:
-
-- scene orchestration
-- UI rendering
-- battle visuals
-- player input surfaces
-
-Suggested namespace:
-
-- `SurvivalManager.Presentation.UI`
-- `SurvivalManager.Presentation.Scene`
-- `SurvivalManager.Presentation.BattleView`
-
-## Adapter Rule
-
-DB, UI, and Scene are adapters around the domain model.
-They may translate into and out of domain/application flows, but they should not become the location where core rules are invented.
-
-## Long-Term Expansion Points
-
-- external analytics adapters
-- cloud save adapters
-- replay adapters
-- automated balancing utilities
-
-## Open Questions
-
-- should recruitment and expedition flow remain in one meta context for MVP, or split earlier?
-- how much reward-generation logic should live beside expedition logic versus standalone reward services?
-- which read models need to be separate from write models even in MVP?
-- what is the earliest signal that a context boundary is leaking?
+- 하나의 타입이 context 두 개 이상의 truth를 동시에 만들면 분리 신호다.
+- Unity adapter가 전투 규칙을 직접 계산하면 `SM.Unity` 침범이다.
+- save model이 authored asset 인스턴스를 직접 들고 있으면 persistence 경계 누수다.

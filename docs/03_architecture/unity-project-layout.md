@@ -1,32 +1,37 @@
-# Unity Project Layout
+# Unity 프로젝트 레이아웃
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-29
+- 소스오브트루스: `docs/03_architecture/unity-project-layout.md`
+- 관련문서:
+  - `docs/03_architecture/technical-overview.md`
+  - `docs/03_architecture/dependency-direction.md`
+  - `docs/03_architecture/unity-boundaries.md`
 
-## Purpose
+## 목적
 
-This document defines the intended Unity project layout for the prototype phase.
+이 문서는 현재 prototype 단계에서 유지할 Unity 프로젝트 레이아웃과 asmdef 배치를 정의한다.
+폴더 구조를 scene-first 해킹 경로로 무너뜨리지 않도록 실제 기준 경로를 고정한다.
 
-## MVP Rules
+## 프로젝트 소유 영역
 
-### Project-Owned Areas
+- 코드와 씬: `Assets/_Game/**`
+- 테스트: `Assets/Tests/**`
+- 현재 sample content 로딩 자산: `Assets/Resources/_Game/**`
 
-Implementation is currently expected to live under:
+## 보호 영역
 
-- `Assets/_Game/**`
-- `Assets/Tests/**`
+- `Assets/ThirdParty/**` 원본 직접 수정 금지
 
-### Protected Area
-
-Original vendor content under `Assets/ThirdParty/**` must not be directly modified.
-
-## Proposed Runtime Layout
+## 런타임 레이아웃
 
 ```text
+Assets/Resources/
+  _Game/
+    Content/
+      Definitions/
 Assets/_Game/
-  Content/
-    Definitions/
   Scenes/
     Boot.unity
     Town.unity
@@ -40,11 +45,17 @@ Assets/_Game/
       Combat/
       Meta/
       Persistence/
+        Abstractions/
+        Json/
+        Postgres/
       Unity/
     Editor/
+      Bootstrap/
+      SeedData/
+      Validation/
 ```
 
-## Proposed Test Layout
+## 테스트 레이아웃
 
 ```text
 Assets/Tests/
@@ -52,7 +63,7 @@ Assets/Tests/
   PlayMode/
 ```
 
-## Proposed Assembly Mapping
+## asmdef 매핑
 
 - `Assets/_Game/Scripts/Runtime/Core` -> `SM.Core`
 - `Assets/_Game/Scripts/Runtime/Content` -> `SM.Content`
@@ -63,11 +74,10 @@ Assets/Tests/
 - `Assets/_Game/Scripts/Runtime/Persistence/Postgres` -> `SM.Persistence.Postgres`
 - `Assets/_Game/Scripts/Runtime/Unity` -> `SM.Unity`
 - `Assets/_Game/Scripts/Editor` -> `SM.Editor`
-- `Assets/Tests` -> `SM.Tests`
+- `Assets/Tests/EditMode` -> `SM.Tests.EditMode`
+- `Assets/Tests/PlayMode` -> `SM.Tests.PlayMode`
 
-## Naming Direction
-
-Namespaces should align with the assembly split, for example:
+## namespace 방향
 
 - `SM.Core.*`
 - `SM.Content.*`
@@ -77,10 +87,3 @@ Namespaces should align with the assembly split, for example:
 - `SM.Unity.*`
 - `SM.Editor.*`
 - `SM.Tests.*`
-
-## Open Questions
-
-- should content definitions remain under one root or split by domain sooner?
-- how much scene-local scripting is acceptable before it should move into `SM.Unity`?
-- what shared conventions are needed for scene bootstrapping and data loading?
-- how should test fixtures be partitioned between EditMode and PlayMode as the slice grows?

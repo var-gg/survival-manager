@@ -1,118 +1,43 @@
-# Content Seed Assets
+# 콘텐츠 시드 자산
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 소유자: repository
+- 최종수정일: 2026-03-29
+- 소스오브트루스: `docs/03_architecture/content-seed-assets.md`
+- 관련문서:
+  - `docs/03_architecture/content-loading-strategy.md`
+  - `docs/03_architecture/content-authoring-model.md`
 
-## Asset Types Added
+## 목적
 
-CreateAssetMenu-enabled content definition types:
+이 문서는 sample seed generator가 만드는 초기 콘텐츠 자산 범위를 기록한다.
 
-- StatDefinition
-- RaceDefinition
-- ClassDefinition
-- TraitPoolDefinition
-- UnitArchetypeDefinition
-- SkillDefinitionAsset
-- AugmentDefinition
-- ItemBaseDefinition
-- AffixDefinition
-- ExpeditionDefinition
-- RewardTableDefinition
+## 자산 생성 위치
 
-## CreateAssetMenu Paths
+- 생성 메뉴: `SM/Seed/Generate Sample Content`
+- 생성 경로: `Assets/Resources/_Game/Content/Definitions/**`
+- 검증 메뉴: `SM/Validation/Validate Content Definitions`
 
-All new definition assets are exposed under:
+## 주요 정의 타입
 
-- `SM/Definitions/...`
+- `StatDefinition`
+- `RaceDefinition`
+- `ClassDefinition`
+- `TraitPoolDefinition`
+- `UnitArchetypeDefinition`
+- `SkillDefinitionAsset`
+- `AugmentDefinition`
+- `ItemBaseDefinition`
+- `AffixDefinition`
+- `ExpeditionDefinition`
+- `RewardTableDefinition`
 
-## Seed Generator
+## 현재 권장 시드 수량
 
-A sample seed generator is provided via:
-
-- `SM/Seed/Generate Sample Content`
-
-This generator creates the initial prototype asset set under:
-
-- `Assets/_Game/Content/Definitions/`
-
-## Validator
-
-A validator is provided via:
-
-- `SM/Validation/Validate Content Definitions`
-
-Current checks include:
-
-- duplicate IDs across definitions
-- missing archetype references
-- missing reward table references on expedition nodes
-- missing tactic presets
-- trait pools not meeting the documented 3 positive / 3 negative baseline
-
-## Recommended Seed Counts
-
-The generator is designed around the current MVP recommendation:
-
-- races: 3
-- classes: 4
-- archetypes: 8
-- temporary augments: 9
-- permanent augments: 3
-- item bases: 6
-- affixes: 8
-
-## Battle Demo Asset Usage
-
-The following assets are intended to be used first by the battle demo:
-
-### Stats
-- `stat_max_health`
-- `stat_attack`
-- `stat_defense`
-- `stat_speed`
-- `stat_heal_power`
-
-### Races
-- `human`
-- `beastkin`
-- `undead`
-
-### Classes
-- `vanguard`
-- `duelist`
-- `ranger`
-- `mystic`
-
-### Skills
-- `skill_power_strike`
-- `skill_precision_shot`
-- `skill_minor_heal`
-
-### Archetypes
-- `warden`
-- `guardian`
-- `slayer`
-- `raider`
-- `hunter`
-- `scout`
-- `priest`
-- `hexer`
-
-### Reward / Expedition
-- `rewardtable_battle`
-- `rewardtable_expedition_end`
-- `expedition_mvp_demo`
-
-## Notes
-
-- trait pools are documented as archetype-level 3 positive / 3 negative pools
-- data reuse is allowed through repeated trait patterns across different archetype pools
-- primitive visuals are acceptable at this phase; data variety is the priority
-
-## Open Questions
-
-- should trait definitions become standalone assets later instead of embedded pool entries?
-- when should augment and item effects move from simple stat modifiers toward richer effect nodes?
-- what subset of these assets should be loaded for the first Boot -> Battle demo path?
-- when do reward tables need weighting rather than flat lists?
+- race: 3
+- class: 4
+- archetype: 8
+- temporary augment: 9
+- permanent augment: 3
+- item base: 6
+- affix: 8
