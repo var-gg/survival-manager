@@ -17,8 +17,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run markdown lint
-        run: npx --yes markdownlint-cli2 "**/*.md" "#Library/**" "#Logs/**" "#.git/**"
+      - name: Run docs policy check
+        shell: pwsh
+        run: pwsh -File tools/docs-policy-check.ps1 -RepoRoot .
 
-      - name: Run markdown link check
-        run: npx --yes markdown-link-check "docs/**/*.md" "*.md" --quiet
+      - name: Run smoke check
+        shell: pwsh
+        run: pwsh -File tools/smoke-check.ps1 -RepoRoot .

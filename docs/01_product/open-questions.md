@@ -1,17 +1,17 @@
-# Open Questions
+# 열린 질문
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 최종수정일: 2026-03-31
+- 단계: prototype
 
-## Purpose
+## 목적
 
-This document centralizes unresolved product questions after the MVP baseline has been locked.
-The goal is to separate what is fixed now from what still needs discovery.
+이 문서는 MVP 기준선이 고정된 이후에도 남아 있는 제품 질문을 한 곳에 모은다.
+목표는 지금 확정된 것과, 아직 탐색이 필요한 것을 분리하는 것이다.
 
-## Locked for MVP
+## MVP에서 고정한 것
 
-The following are currently treated as fixed for MVP:
+현재 MVP에서 고정으로 보는 항목은 아래와 같다.
 
 - genre blend: tactical setup + race/class synergy + expedition/return loop
 - combat mode: auto-battle
@@ -23,35 +23,35 @@ The following are currently treated as fixed for MVP:
 - races: 3
 - classes: 4
 - recruit archetypes: 8
-- temporary augments: 9 total across silver/gold/platinum
+- temporary augments: silver/gold/platinum 합계 9개
 - permanent augment slots: 1
 - equipment slots: 3
-- recommended identity base: Human / Beastkin / Undead + Vanguard / Duelist / Ranger / Mystic
-- MVP non-goals include PVP, advanced crafting, seasonal balancing tools, live backend, and large-scale asset integration
+- 권장 identity 기반: Human / Beastkin / Undead + Vanguard / Duelist / Ranger / Mystic
+- MVP 비목표: PVP, advanced crafting, seasonal balancing tool, live backend, large-scale asset integration
 
-## MVP Questions
+## MVP 질문
 
-- what exact battle rule set is simplest while still showing tactical setup payoff?
-- how are race/class synergies surfaced to the player without heavy UI overload?
-- how many encounters define one meaningful expedition in MVP?
-- what form should temporary augment choice take during a run?
-- what post-run state changes are necessary to make the return loop matter?
+- tactical setup payoff를 보여 주면서도 가장 단순한 battle rule set은 무엇인가?
+- race/class synergy를 과한 UI overload 없이 어떻게 드러낼 것인가?
+- MVP에서 의미 있는 expedition 하나는 몇 개의 encounter로 구성되는가?
+- temporary augment 선택은 run 중 어떤 형태가 가장 적절한가?
+- return loop가 의미 있으려면 어떤 post-run state change가 필요한가?
 
-## Long-Term Questions
+## 장기 질문
 
-- should permanent progression expand through more augment slots, town systems, or unit development?
-- how deep should expedition structure eventually become?
-- which future systems best increase replay value without weakening readability?
-- what content expansion order makes the most sense after the MVP proof?
+- permanent progression은 augment slot, town system, unit development 중 어디로 확장되는가?
+- expedition 구조는 장기적으로 어느 정도 깊어져야 하는가?
+- readability를 해치지 않으면서 replay value를 높이는 미래 시스템은 무엇인가?
+- MVP 검증 이후 콘텐츠 확장 순서는 무엇이 가장 타당한가?
 
-## Decision Use Rule
+## 결정 사용 규칙
 
-If a question can be deferred without weakening the MVP proof, defer it.
-If a question blocks the wooden-dummy playable slice, resolve it narrowly and document the decision.
+MVP 증명을 약화시키지 않고 미룰 수 있는 질문이면 미룬다.
+목각인형 수준 playable slice를 막는 질문이면 좁게 해결하고 결정을 기록한다.
 
 ## 열린 질문
 
-- which currently open question is most likely to block implementation first?
-- which long-term question is dangerous because it could distort MVP choices too early?
-- what is the minimum acceptable answer quality for each MVP question before coding begins?
-- should any currently fixed MVP value be revisited only after the first playable proof exists?
+- 지금 열려 있는 질문 중 구현을 가장 먼저 막을 가능성이 높은 것은 무엇인가?
+- 장기 질문 중에서 MVP 선택을 너무 일찍 왜곡시킬 위험이 큰 것은 무엇인가?
+- 코드를 시작하기 전에 각 MVP 질문에 대해 받아들일 수 있는 최소 답변 품질은 어느 정도인가?
+- 현재 고정한 MVP 값 중 first playable proof 이후에만 재검토해야 하는 것은 무엇인가?

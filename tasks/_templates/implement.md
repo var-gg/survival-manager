@@ -1,21 +1,20 @@
-# Task Implement Template
+# 작업 구현
 
-## Metadata
-- Task Name:
-- Owner:
-- Status:
-- Last Updated:
-- Execution Scope:
+## 메타데이터
+- 작업명:
+- 담당:
+- 상태:
+- 최종수정일:
+- 실행범위:
 
-## Working Method
+## 작업 방식
 - 
 
-## Scope Limits
+## 범위 제한
 - 
 
-## Documentation Update Rules
-- Keep documentation and implementation changes in the same work unit whenever practical.
-- If structure or policy changes, update related docs and ADRs first or in the same change.
+## 문서 동시 갱신 규칙
+- 
 
-## Test Rules
+## 테스트 및 검증 규칙
 - 

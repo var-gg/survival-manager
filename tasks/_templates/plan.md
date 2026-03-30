@@ -1,24 +1,24 @@
-# Task Plan Template
+# 작업 계획
 
-## Metadata
-- Task Name:
-- Owner:
-- Status:
-- Last Updated:
-- Depends On:
+## 메타데이터
+- 작업명:
+- 담당:
+- 상태:
+- 최종수정일:
+- 의존:
 
-## Milestones
+## 마일스톤
 1. 
 2. 
 3. 
 
-## Approval Criteria
+## 승인 기준
 - 
 
-## Verification Commands
+## 검증 명령
 ```bash
-# add commands used to validate the task
+# task 검증에 사용할 명령을 적는다
 ```
 
-## Stop Conditions
+## 중단 조건
 - 

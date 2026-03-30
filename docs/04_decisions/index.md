@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-03-31
 - 소스오브트루스: `docs/04_decisions/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -30,6 +30,7 @@
 - `adr-0014-grid-deployment-continuous-combat.md`: grid 배치 + continuous combat 채택
 - `adr-0015-build-compile-audit-pipeline.md`: build-compile-audit 파이프라인 채택
 - `adr-0016-localization-boundary.md`: localization 경계와 공식 패키지 채택
+- `adr-0017-docs-context-harness.md`: 문서 컨텍스트 하네스와 tombstone registry 채택
 
 ## 운영 메모
 

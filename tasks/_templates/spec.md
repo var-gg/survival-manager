@@ -1,24 +1,24 @@
-# Task Spec Template
+# 작업 명세
 
-## Metadata
-- Task Name:
-- Owner:
-- Status:
-- Last Updated:
-- Related Paths:
-- Related Docs:
+## 메타데이터
+- 작업명:
+- 담당:
+- 상태:
+- 최종수정일:
+- 관련경로:
+- 관련문서:
 
-## Goal
+## 목표
 - 
 
-## Non-Goals
+## 비목표
 - 
 
-## Constraints
+## 제약
 - 
 
-## Deliverables
+## 산출물
 - 
 
-## Done Criteria
+## 완료 기준
 - 

@@ -6,7 +6,7 @@
 
 - 상태: active
 - 최종수정일: 2026-03-29
-- phase: prototype
+- 단계: prototype
 
 ## 첫 전투까지 클릭 순서
 

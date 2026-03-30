@@ -1,44 +1,44 @@
-# Task Spec: 001 MVP Vertical Slice
+# 작업 명세: 001 MVP Vertical Slice
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
-- Task ID: 001
+- 상태: draft
+- 최종수정일: 2026-03-31
+- 단계: prototype
+- 작업 ID: 001
 
-## Purpose
+## 목적
 
-Define the scope of the first prototype-phase playable vertical slice.
-This document is intentionally narrow and should not expand into a full production feature list.
+이 문서는 prototype 단계의 첫 playable vertical slice 범위를 정의한다.
+전체 production feature list로 확장하지 않기 위해 의도적으로 좁게 유지한다.
 
-## Task Goal
+## 작업 목표
 
-Produce a **playable vertical slice at wooden-dummy fidelity** that proves the core management-driven auto-battle loop.
+관리 중심 auto-battle 루프의 핵심 감각을 증명하는 **playable vertical slice at wooden-dummy fidelity**를 만든다.
 
-## Success Shape
+## 성공 형태
 
-The slice should eventually demonstrate, at minimum:
+이 slice는 최소한 아래를 보여 줄 수 있어야 한다.
 
-- a controllable prototype path inside approved implementation zones
-- recognizable pre-battle or between-battle setup decisions
-- visible auto-battle resolution or battle observation payoff
-- enough feedback to judge whether the loop is promising
+- 허용된 구현 구역 안에서 조작 가능한 prototype path
+- 전투 전 또는 전투 사이에 의미 있는 setup 결정
+- 눈에 보이는 auto-battle resolution 또는 battle observation payoff
+- 루프의 가능성을 판단할 수 있을 정도의 피드백
 
-## Constraints
+## 제약
 
-- implementation scope remains limited to `Assets/_Game/**` and `Assets/Tests/**`
-- no direct modification of original vendor contents under `Assets/ThirdParty/**`
-- do not turn this task into broad production architecture expansion
-- document and implementation changes should remain synchronized
+- 구현 범위는 `Assets/_Game/**`, `Assets/Tests/**`로 제한한다.
+- `Assets/ThirdParty/**` 원본은 직접 수정하지 않는다.
+- 이 작업을 broad production architecture 확장으로 바꾸지 않는다.
+- 문서와 구현 변경은 같은 기준으로 동기화한다.
 
-## Out of Scope for This Task Track
+## 이 작업 트랙의 범위 밖
 
 - large-scale content production
-- broad polish work
+- 광범위한 polish 작업
 - production-quality balance
-- unrestricted system expansion outside slice needs
+- slice 필요를 넘는 무제한 시스템 확장
 
-## Open Questions
+## 열린 질문
 
-- what is the minimum battle scenario needed for the slice?
-- what setup decisions must be present to prove the fantasy?
-- what can be faked or simplified safely at wooden-dummy fidelity?
+- 이 slice를 가장 빨리 증명하는 최소 battle scenario는 무엇인가?
+- fantasy를 증명하려면 어떤 setup 결정이 반드시 있어야 하는가?
+- 목각인형 수준 fidelity에서 무엇을 가짜로 두거나 단순화할 수 있는가?

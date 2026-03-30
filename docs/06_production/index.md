@@ -1,9 +1,17 @@
 # 운영 문서 인덱스
 
 - 상태: active
-- 최종수정일: 2026-03-30
+- 소유자: repository
+- 최종수정일: 2026-03-31
+- 소스오브트루스: `docs/06_production/index.md`
+- 관련문서:
+  - `docs/index.md`
+  - `tasks/001_mvp_vertical_slice/status.md`
+  - `docs/05_setup/quick-battle-smoke.md`
 
-`06_production/`는 prototype 단계에서 필요한 플레이테스트 / 운영 기준 문서를 모아 둔다.
+## 목적
+
+`06_production/`는 prototype 단계에서 필요한 플레이테스트, 운영 체크, live 검증 기준 문서를 모아 둔다.
 
 ## live 상태 문서
 
@@ -16,3 +24,5 @@
 - `balance-knobs.md`: 밸런스 조정 가능한 수치 목록
 - `first-playable-review.md`: 현재 playable 범위 스냅샷
 - `operator-first-playable-checklist.md`: 첫 전투 수동 검증 체크리스트
+- `mcp-usage-checklist.md`: MCP 세션 전후 운영 체크리스트
+- `scene-integrity-contract.md`: first playable scene 최소 무결성 계약

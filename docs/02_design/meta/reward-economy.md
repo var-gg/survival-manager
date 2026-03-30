@@ -2,7 +2,7 @@
 
 - 상태: active
 - 최종수정일: 2026-03-30
-- phase: prototype
+- 단계: prototype
 
 ## 현재 operator 범위
 

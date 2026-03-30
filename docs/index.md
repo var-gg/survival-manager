@@ -20,10 +20,16 @@
 - 구조 변경 시 관련 인덱스와 링크를 함께 갱신한다.
 - 지속 문서는 한국어로 유지한다.
 - 파일명, 코드, API 식별자는 영어를 유지한다.
+- 기본 시작 컨텍스트는 `AGENTS.md` -> `docs/index.md` -> 관련 폴더 `index.md` -> 현재 task 상태 문서 순서를 따른다.
+- active index는 active/draft 문서만 노출하고 deprecated 문서는 중앙 registry로 관리한다.
 
 ## 시작점
 
 - 문서 거버넌스: `00_governance/docs-governance.md`
+- 문서 하네스와 lifecycle: `00_governance/docs-harness.md`
+- 중앙 deprecated registry: `00_governance/deprecated-docs-registry.md`
+- source-of-truth matrix: `00_governance/source-of-truth-matrix.md`
+- docs eval 초안: `00_governance/docs-evals.md`
 - 구현 검수 체크리스트: `00_governance/implementation-review-checklist.md`
 - 제품 인덱스: `01_product/index.md`
 - 디자인 인덱스: `02_design/index.md`
@@ -42,10 +48,13 @@
 ## 현재 전투 기준 빠른 링크
 
 - 출시 기준 허브: `02_design/systems/launch-content-scope-and-balance.md`
+- launch floor archetype matrix: `02_design/systems/launch-floor-content-matrix.md`
 - 로스터와 archetype: `02_design/deck/roster-archetype-launch-scope.md`
 - skill taxonomy와 데미지 모델: `02_design/combat/skill-taxonomy-and-damage-model.md`
 - item / passive / augment budget: `02_design/meta/item-passive-augment-budget.md`
+- passive board node catalog: `02_design/meta/passive-board-node-catalog.md`
 - synergy breakpoint와 soft counter: `02_design/meta/synergy-breakpoints-and-soft-counters.md`
+- synergy family catalog: `02_design/meta/synergy-family-catalog.md`
 - authoring과 balance data 경계: `03_architecture/content-authoring-and-balance-data.md`
 - 전장과 카메라: `02_design/combat/battlefield-and-camera.md`
 - 배치와 앵커: `02_design/combat/deployment-and-anchors.md`
@@ -57,6 +66,7 @@
 - editor sandbox tooling: `03_architecture/editor-sandbox-tooling.md`
 - 전투 상태와 이벤트 모델: `03_architecture/combat-state-and-event-model.md`
 - loadout compiler와 battle snapshot: `03_architecture/loadout-compiler-and-battle-snapshot.md`
+- sim sweep과 balance KPI: `03_architecture/sim-sweep-and-balance-kpis.md`
 - replay persistence와 run audit: `03_architecture/replay-persistence-and-run-audit.md`
 - ADR-0014: `04_decisions/adr-0014-grid-deployment-continuous-combat.md`
 - ADR-0015: `04_decisions/adr-0015-build-compile-audit-pipeline.md`

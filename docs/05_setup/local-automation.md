@@ -1,27 +1,27 @@
-# Local Automation
+# 로컬 자동화
 
-- Status: active
-- Owner: repository
-- Last Updated: 2026-03-29
-- Source of Truth: `docs/05_setup/local-automation.md`
-- Applies To: Codex and local contributors
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-31
+- 소스오브트루스: `docs/05_setup/local-automation.md`
+- 적용범위: Codex와 로컬 기여자
 
-## Purpose
+## 목적
 
-This document defines the minimum local automation and CI entry points for documentation checks, Unity tests, and basic smoke checks.
-The goal is to keep validation lightweight and immediately useful without overbuilding deployment automation.
+이 문서는 문서 검사, Unity 테스트, 기본 smoke check를 위한 최소 로컬 자동화와 CI 진입점을 정의한다.
+목표는 배포 자동화를 과하게 키우지 않으면서도, 즉시 도움이 되는 가벼운 검증 루프를 유지하는 것이다.
 
-## Principles
+## 원칙
 
-- Prioritize markdown linting and link/structure checks first.
-- Prefer EditMode tests as the initial Unity smoke-test layer.
-- Keep PlayMode as a placeholder until runtime test coverage is justified.
-- Do not store secrets or tokens in the repository.
-- Document local commands and CI commands together.
+- markdown lint와 link/structure check를 먼저 수행한다.
+- Unity smoke-test의 첫 계층은 EditMode를 우선한다.
+- runtime test coverage가 정당화되기 전까지 PlayMode는 placeholder로 유지한다.
+- 저장소에 secret이나 token을 보관하지 않는다.
+- 로컬 명령과 CI 명령을 같은 문서에서 관리한다.
 
-## Document Checks
+## 문서 검사
 
-### Local
+### 로컬
 
 ```powershell
 pwsh -File tools/docs-check.ps1 -RepoRoot .
@@ -29,20 +29,30 @@ pwsh -File tools/docs-check.ps1 -RepoRoot .
 
 ### CI
 
-Workflow: `.github/workflows/docs-lint.yml`
+워크플로: `.github/workflows/docs-lint.yml`
 
-Core commands:
+로컬 기본 명령:
 
 ```bash
 npx --yes markdownlint-cli2 "**/*.md" "#Library/**" "#Logs/**" "#.git/**"
 npx --yes markdown-link-check "docs/**/*.md" "*.md" --quiet
 ```
 
-## Unity Tests
+CI 기본 명령:
 
-### Local
+```powershell
+pwsh -File tools/docs-policy-check.ps1 -RepoRoot .
+pwsh -File tools/smoke-check.ps1 -RepoRoot .
+```
 
-Run EditMode smoke tests with a local Unity editor path:
+`tools/docs-check.ps1`는 `tools/docs-policy-check.ps1`를 먼저 실행한 뒤 markdownlint와 markdown-link-check를 수행한다.
+현재 CI는 repo-wide markdown style debt와 분리해서 docs harness policy gate를 우선 강제한다.
+
+## Unity 테스트
+
+### 로컬
+
+로컬 Unity editor 경로를 지정해 EditMode smoke test를 실행한다.
 
 ```powershell
 pwsh -File tools/unity-editmode-smoke.ps1 -UnityExe "C:\Program Files\Unity\Hub\Editor\6000.0.56f1\Editor\Unity.exe" -ProjectPath .
@@ -50,71 +60,71 @@ pwsh -File tools/unity-editmode-smoke.ps1 -UnityExe "C:\Program Files\Unity\Hub\
 
 ### CI
 
-Workflow: `.github/workflows/unity-tests.yml`
+워크플로: `.github/workflows/unity-tests.yml`
 
-Current CI target:
+현재 CI 대상:
 
-- EditMode smoke tests via `game-ci/unity-test-runner@v4`
-- PlayMode placeholder job only
+- `game-ci/unity-test-runner@v4` 기반 EditMode smoke test
+- PlayMode placeholder job
 
-Expected environment keys in GitHub Actions secrets:
+GitHub Actions secrets에 기대하는 환경 키:
 
 - `UNITY_LICENSE`
 - `UNITY_EMAIL`
 - `UNITY_PASSWORD`
 
-Do not commit real values for these keys.
+실제 값은 커밋하지 않는다.
 
-## Basic Smoke Check
+## 기본 Smoke Check
 
-### Local
+### 로컬
 
 ```powershell
 pwsh -File tools/smoke-check.ps1 -RepoRoot .
 ```
 
-### CI-aligned intent
+### CI와 맞춘 의도
 
-The smoke check verifies that key repository paths and governance documents still exist.
-This is intended as a fast sanity layer before or alongside heavier checks.
+smoke check는 핵심 저장소 경로와 거버넌스 문서가 여전히 존재하는지 확인한다.
+더 무거운 검증 앞뒤에 둘 수 있는 빠른 sanity layer로 유지한다.
 
-## Failure Triage: Check These First
+## 실패 시 먼저 볼 것
 
-When checks fail, a human should verify these items first:
+검증이 실패하면 아래 항목을 먼저 확인한다.
 
-1. whether required files or folders were renamed or moved intentionally
-2. whether documentation links reference files that no longer exist
-3. whether Unity editor version and package state match project expectations
-4. whether local Unity path is correct for the machine running the test
-5. whether GitHub Actions secrets for Unity test execution are configured correctly
-6. whether the failure came from project-owned code or third-party/vendor boundaries
+1. 필수 파일이나 폴더가 의도적으로 이름 변경 또는 이동되었는지
+2. 문서 링크가 더 이상 존재하지 않는 파일을 가리키는지
+3. Unity editor 버전과 package 상태가 프로젝트 기대값과 맞는지
+4. 로컬 Unity 경로가 해당 머신에서 올바른지
+5. Unity 테스트용 GitHub Actions secrets가 올바르게 설정됐는지
+6. 실패 원인이 project-owned code인지 third-party/vendor 경계인지
 
-## Scope Boundary
+## 범위 경계
 
-This automation layer intentionally does **not** include full build/deploy automation yet.
-It is limited to:
+이 자동화 계층은 아직 full build/deploy automation을 포함하지 않는다.
+현재 범위는 아래로 제한한다.
 
 - documentation validation
 - EditMode-oriented Unity smoke testing
 - basic repository smoke checks
 
-## Current Readiness Split
+## 현재 readiness 구분
 
-### Immediately runnable in CI
+### 즉시 CI에서 실행 가능
 
 - markdown lint
 - markdown link check
 - PlayMode placeholder job
 
-### Requires follow-up configuration
+### 추가 설정이 필요한 항목
 
-- Unity EditMode CI execution requires Unity license-related secrets:
+- Unity EditMode CI 실행에는 Unity license 관련 secrets가 필요하다:
   - `UNITY_LICENSE`
   - `UNITY_EMAIL`
   - `UNITY_PASSWORD`
 
-### Immediately runnable locally
+### 즉시 로컬에서 실행 가능
 
 - `tools/docs-check.ps1`
 - `tools/smoke-check.ps1`
-- `tools/unity-editmode-smoke.ps1` once a valid local Unity editor path is supplied
+- `tools/unity-editmode-smoke.ps1`는 올바른 로컬 Unity editor 경로를 넣으면 바로 실행할 수 있다

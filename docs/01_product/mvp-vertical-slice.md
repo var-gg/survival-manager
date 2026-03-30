@@ -1,23 +1,23 @@
-# MVP Vertical Slice
+# MVP vertical slice
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 최종수정일: 2026-03-31
+- 단계: prototype
 
-## Purpose
+## 목적
 
-This document locks the MVP vertical-slice product scope before broader implementation begins.
+이 문서는 더 넓은 구현에 들어가기 전에 MVP vertical slice의 제품 범위를 고정한다.
 
-## MVP Objective
+## MVP 목표
 
-Build a **wooden-dummy playable vertical slice** that proves the following fantasy:
+다음 fantasy를 증명하는 **목각인형 수준 playable vertical slice**를 만든다.
 
-- configure a small squad with race/class synergy
-- send them into an expedition
-- watch a readable 3D auto-battle resolve
-- return with enough consequence to want another run
+- race/class synergy를 가진 작은 squad를 구성한다.
+- squad를 expedition에 보낸다.
+- 읽을 수 있는 3D auto-battle 결과를 본다.
+- 다음 run을 다시 해 보고 싶을 정도의 consequence를 들고 돌아온다.
 
-## Fixed MVP Values
+## 고정 MVP 수치
 
 - battle deployment size: 4
 - expedition roster size: 8
@@ -35,64 +35,64 @@ Build a **wooden-dummy playable vertical slice** that proves the following fanta
   - armor
   - accessory
 
-## Recommended MVP Content Base
+## 권장 MVP 콘텐츠 기반
 
-### Recommended Races
+### 권장 race
 
 - Human
 - Beastkin
 - Undead
 
-### Recommended Classes
+### 권장 class
 
 - Vanguard
 - Duelist
 - Ranger
 - Mystic
 
-## What MVP Must Include
+## MVP에 반드시 포함할 것
 
-- a roster selection flow
-- a way to choose an expedition squad from the roster
-- a way to deploy 4 units into battle
-- visible race/class synergy value
-- 3D auto-battle presentation
-- simple and verifiable internal battle resolution
-- return-loop consequences and next-step decisions
+- roster selection flow
+- roster에서 expedition squad를 고르는 과정
+- 4개 유닛을 battle에 배치하는 과정
+- 눈에 보이는 race/class synergy 가치
+- 3D auto-battle 표현
+- 단순하고 검증 가능한 내부 전투 resolution
+- return loop consequence와 다음 선택
 
-## What MVP May Fake or Simplify
+## MVP에서 가짜로 두거나 단순화해도 되는 것
 
-- limited encounter variety
-- minimal story framing
-- simplified town presentation
-- minimal animation range
-- placeholder UI and placeholder content naming where needed
+- 제한된 encounter variety
+- 최소한의 story framing
+- 단순화된 town presentation
+- 적은 animation 범위
+- 필요한 경우 placeholder UI와 placeholder content naming
 
-## Long-Term Vision Beyond MVP
+## MVP 이후 장기 비전
 
-Later development may add:
+이후 단계에서 다음을 추가할 수 있다.
 
-- more races and classes
-- deeper recruit identity variation
-- broader progression systems
-- richer expedition structure
-- stronger audiovisual polish
+- 더 많은 race와 class
+- 더 깊은 recruit identity variation
+- 더 넓은 progression system
+- 더 풍부한 expedition 구조
+- 더 높은 audiovisual polish
 
-Those expansions are explicitly not required to validate the MVP vertical slice.
+하지만 이런 확장은 MVP vertical slice를 검증하는 데 필수 조건이 아니다.
 
-## MVP Exit Criteria
+## MVP 종료 기준
 
-The slice is ready for evaluation if a player can:
+플레이어가 아래를 할 수 있으면 slice를 평가할 준비가 된 것으로 본다.
 
-- understand who is in the roster
-- make a meaningful 8-from-12 expedition choice
-- make a meaningful 4-unit deployment choice
-- observe a readable combat result
-- make a post-run decision that changes the next run
+- roster 안의 구성을 이해한다.
+- 12명 중 8명을 고르는 expedition 선택을 의미 있게 한다.
+- 4-unit deployment 선택을 의미 있게 한다.
+- 읽을 수 있는 combat 결과를 관전한다.
+- 다음 run을 바꾸는 post-run 결정을 한다.
 
 ## 열린 질문
 
-- which of the fixed MVP values are truly non-negotiable if implementation pressure rises?
-- what is the minimum UI needed to communicate roster, synergy, and augment choices?
-- what post-run consequence should be strongest in the first playable proof?
-- how much expedition structure is needed before the slice feels distinct from a pure battle sandbox?
+- 구현 압력이 커질 때도 정말 포기할 수 없는 고정 MVP 수치는 무엇인가?
+- roster, synergy, augment 선택을 전달하는 최소 UI는 무엇인가?
+- 첫 playable proof에서 가장 강하게 드러나야 할 post-run consequence는 무엇인가?
+- 이 slice가 단순 battle sandbox와 구분되려면 최소 어느 정도의 expedition 구조가 필요한가?

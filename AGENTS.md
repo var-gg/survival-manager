@@ -47,3 +47,12 @@
 - Unity 확인, compile, smoke, aggregate report는 `pwsh -File tools/unity-bridge.ps1 <verb>`를 먼저 사용한다.
 - scene/prefab/component/package 구조 편집이나 typed guardrail이 중요한 경우에만 MCP를 사용한다.
 - trivial inspect 때문에 MCP tool catalog를 먼저 훑지 않는다.
+
+## 문서 하네스 규칙
+
+- `docs/**`, `prompts/**`, `.agents/skills/**`, `tasks/**`를 건드리는 작업이면 먼저 `$docs-maintainer`를 사용한다.
+- 문서 구조, 문서 수명주기, deprecated 정리, 언어 정책, index 체계가 바뀌는 작업이면 task 문서를 먼저 만들고 `status.md`를 handoff 기준으로 유지한다.
+- 기본 시작 컨텍스트는 `AGENTS.md` -> `docs/index.md` -> 관련 폴더 `index.md` -> 현재 task `status.md`로 제한한다. 모든 Markdown 파일을 한 번에 읽지 않는다.
+- `status: deprecated` 문서와 index의 deprecated pointer는 active source로 쓰지 않는다. replacement, ADR, registry를 우선한다.
+- 문서를 수정했으면 같은 작업 단위에서 관련 `index.md`, 관련문서 링크, task `status.md`, 검증 스크립트를 같이 갱신한다.
+- `docs/**`와 human-facing task/status 보고는 한국어 본문과 한국어 메타데이터를 유지한다. 파일명, 코드, 명령어, API 식별자는 영어를 유지한다.

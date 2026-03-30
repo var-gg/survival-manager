@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-03-31
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -42,8 +42,8 @@
 - `combat-state-and-event-model.md`: 상태, snapshot, event, result 모델 정의
 - `editor-sandbox-tooling.md`: Unity combat sandbox/editor tooling 경계
 - `loadout-compiler-and-battle-snapshot.md`: build -> compile -> battle snapshot 경계
+- `sim-sweep-and-balance-kpis.md`: deterministic sweep, KPI, artifact, review/fail 규칙
 - `replay-persistence-and-run-audit.md`: active run / replay / ledger persistence 기준
-- `battle-replay-model.md`: deprecated pointer
 
 ## 기타 운영 문서
 

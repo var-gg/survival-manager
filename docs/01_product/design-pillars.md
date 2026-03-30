@@ -1,82 +1,82 @@
-# Design Pillars
+# 디자인 원칙
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: prototype
+- 상태: draft
+- 최종수정일: 2026-03-31
+- 단계: prototype
 
-## Purpose
+## 목적
 
-This document defines the design pillars that should constrain MVP decisions for `survival-manager`.
-Each pillar should help keep the project focused on a playable vertical slice rather than a broad genre mash-up.
+이 문서는 `survival-manager`의 MVP 결정을 제약해야 하는 디자인 원칙을 정의한다.
+각 원칙은 장르 혼합을 넓게 약속하기보다, 플레이 가능한 vertical slice에 집중하도록 돕는 기준이어야 한다.
 
-## Pillar 1. Setup Decides the Fight
+## 원칙 1. Setup이 전투 결과를 결정해야 한다
 
-The player should feel that the battle outcome begins before combat starts.
-Formation, class mix, race synergy, and preparation choices should matter more than direct input during battle.
+플레이어는 전투가 시작되기 전에 이미 결과의 방향이 정해진다고 느껴야 한다.
+formation, class 조합, race synergy, 준비 선택이 전투 중 직접 조작보다 더 중요해야 한다.
 
-### MVP Meaning
+### MVP 의미
 
-For MVP, this means a small but meaningful set of deploy, roster, and synergy decisions.
+MVP에서는 작지만 의미 있는 배치, roster, synergy 선택이 있어야 한다.
 
-### Long-Term Direction
+### 장기 방향
 
-Later versions may allow richer tactical scripting or deeper formation rules, but the MVP should not depend on those expansions.
+이후 버전에서 더 풍부한 tactical scripting이나 깊은 formation rule을 추가할 수 있지만, MVP는 그런 확장에 의존하지 않는다.
 
-## Pillar 2. Auto-Battle Must Stay Readable
+## 원칙 2. Auto-battle은 끝까지 읽혀야 한다
 
-Combat is auto-battle and presented in 3D, but the underlying logic should stay simple and verifiable first.
-The player should be able to understand cause and effect from composition and setup.
+전투는 3D auto-battle로 보이더라도, 내부 로직은 먼저 단순하고 검증 가능해야 한다.
+플레이어는 조합과 준비에서 어떤 원인과 결과가 나왔는지 이해할 수 있어야 한다.
 
-### MVP Meaning
+### MVP 의미
 
-The MVP should favor clear resolution logic over spectacle or simulation depth.
+MVP는 화려함이나 simulation 깊이보다, 명확한 resolution logic을 우선한다.
 
-### Long-Term Direction
+### 장기 방향
 
-Later versions may increase encounter complexity and presentation density if readability remains strong.
+readability가 유지되는 범위에서만 encounter complexity와 presentation density를 늘린다.
 
-## Pillar 3. Synergy Must Create Real Roster Pressure
+## 원칙 3. Synergy는 실제 roster pressure를 만들어야 한다
 
-Race and class combinations should create meaningful roster-building decisions.
-The player should care not only about individual unit strength, but also about combinations.
+race와 class 조합은 의미 있는 roster-building 결정을 만들어야 한다.
+플레이어는 개별 유닛 강함뿐 아니라, 조합 자체를 신경 써야 한다.
 
-### MVP Meaning
+### MVP 의미
 
-The MVP fixed set of 3 races and 4 classes must be enough to create noticeable synergy tradeoffs.
+고정된 3개 race와 4개 class만으로도 눈에 띄는 synergy tradeoff가 나와야 한다.
 
-### Long-Term Direction
+### 장기 방향
 
-Additional races, classes, and edge-case interactions can come later only if the base synergy grammar works first.
+추가 race, class, edge-case interaction은 기본 synergy 문법이 먼저 작동할 때만 확장한다.
 
-## Pillar 4. Expedition and Return Must Matter
+## 원칙 4. Expedition과 Return은 실제 의미가 있어야 한다
 
-The game needs more than isolated combat.
-The player should feel pressure from taking a squad out, surviving the run, and returning to town with consequences and choices.
+게임은 단순히 전투 하나로 끝나면 안 된다.
+플레이어는 squad를 내보내고, run을 버티고, town으로 돌아와 결과와 다음 선택을 맞닥뜨리는 압박을 느껴야 한다.
 
-### MVP Meaning
+### MVP 의미
 
-The MVP needs a visible expedition/return loop, even if simplified.
+단순화되어도 expedition/return loop가 화면과 선택으로 드러나야 한다.
 
-### Long-Term Direction
+### 장기 방향
 
-Longer-term structure may deepen into richer runs, events, or risk layers after the loop is proven.
+루프가 검증된 뒤에만 더 긴 run 구조, event, risk layer를 추가한다.
 
-## Pillar 5. Narrow Scope Beats Broad Promise
+## 원칙 5. 넓은 약속보다 좁은 완성이 우선이다
 
-The project should prefer a small but working loop over premature feature spread.
-If a feature does not strengthen the wooden-dummy playable slice, it should likely wait.
+프로젝트는 큰 약속보다, 작더라도 실제로 돌아가는 루프를 우선해야 한다.
+목각인형 수준 playable slice를 강화하지 않는 기능은 대체로 뒤로 미룬다.
 
-### MVP Meaning
+### MVP 의미
 
-Fixed counts and explicit non-goals are part of the design pillar set, not temporary suggestions.
+고정 수치와 명시적 비목표는 임시 제안이 아니라 디자인 원칙의 일부다.
 
-### Long-Term Direction
+### 장기 방향
 
-Future expansion is allowed only after the MVP loop is genuinely validated.
+미래 확장은 MVP 루프가 실제로 검증된 뒤에만 허용한다.
 
 ## 열린 질문
 
-- which pillar is most likely to fail first under real implementation pressure?
-- how much roster synergy depth is enough to feel meaningful with only 3 races and 4 classes?
-- what is the minimum expedition structure needed to satisfy Pillar 4?
-- which long-term ideas are most dangerous because they sound valuable but weaken Pillar 5?
+- 실제 구현 압력이 커졌을 때 가장 먼저 흔들릴 가능성이 높은 원칙은 무엇인가?
+- 3개 race와 4개 class만으로 의미 있는 roster synergy 깊이를 만들려면 어느 정도면 충분한가?
+- 원칙 4를 만족시키는 최소 expedition 구조는 무엇인가?
+- 그럴듯해 보이지만 원칙 5를 약화시키는 장기 아이디어는 무엇인가?

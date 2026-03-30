@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-03-31
 - 소스오브트루스: `docs/02_design/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -25,10 +25,6 @@
 - `combat/combat-readability.md`: 전투 가독성 예산과 표시 기준
 - `combat/hero-traits.md`: hero trait 방향
 - `combat/synergy-system.md`: race/class synergy 설계
-- `combat/combat-loop.md`: deprecated pointer
-- `combat/formation-and-targeting.md`: deprecated pointer
-- `combat/tactics-rules.md`: deprecated pointer
-- `combat/explanation-combat-premise.md`: deprecated pointer
 
 ## meta 문서
 
@@ -37,23 +33,25 @@
 - `meta/reward-economy.md`: 보상 경제 설계
 - `meta/item-and-affix-system.md`: 아이템과 affix 구조
 - `meta/item-passive-augment-budget.md`: 출시 기준 item/passive/augment 예산 허브
+- `meta/passive-board-node-catalog.md`: launch floor passive board node 카탈로그
 - `meta/augment-system.md`: augment 문법
 - `meta/augment-synergy-operating-model.md`: augment offer와 synergy 운영 기준
 - `meta/permanent-augment-progression.md`: 영구 강화 진행
 - `meta/crafting-and-reroll-economy.md`: 제작과 리롤 비용 구조
 - `meta/pvp-boundary.md`: PVP 범위 경계
 - `meta/synergy-breakpoints-and-soft-counters.md`: 출시 기준 breakpoint와 soft counter
+- `meta/synergy-family-catalog.md`: 7 family exact 2/3/4 payload 카탈로그
 
 ## systems 문서
 
 - `systems/launch-content-scope-and-balance.md`: 출시 기준 콘텐츠 수량과 밸런스 허브
+- `systems/launch-floor-content-matrix.md`: 12 core archetype launch floor matrix
 - `systems/squad-blueprint-and-build-ownership.md`: squad blueprint와 빌드 소유권 기준
 - `systems/skills-items-and-passive-boards.md`: 스킬, 아이템, 패시브 보드 빌드 구조
 
 ## 기타 디자인 문서
 
 - `deck/roster-archetype-launch-scope.md`: 출시 기준 roster와 archetype package
-- `deck/explanation-deck-premise.md`: deprecated pointer, deck 용어 이전 문서
 - `progression/explanation-progression-premise.md`: progression premise 설명 문서
 - `ui/battle-observer-ui.md`: 전투 관전자 UI 기준
 - `ui/mvp-debug-ui.md`: MVP debug UI 기준

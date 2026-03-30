@@ -1,25 +1,25 @@
-# Task Status Template
+# 작업 상태
 
-## Metadata
-- Task Name:
-- Owner:
-- Status:
-- Last Updated:
+## 메타데이터
+- 작업명:
+- 담당:
+- 상태:
+- 최종수정일:
 
-## Current Status
+## 현재 상태
 - 
 
-## Completed
+## 완료
 - 
 
-## On Hold
+## 보류
 - 
 
-## Issues
+## 이슈
 - 
 
-## Decisions
+## 결정
 - 
 
-## Next Steps
+## 다음 단계
 - 

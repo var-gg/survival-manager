@@ -2,7 +2,7 @@
 
 - 상태: draft
 - 최종수정일: 2026-03-29
-- phase: prototype
+- 단계: prototype
 
 ## 목적
 
