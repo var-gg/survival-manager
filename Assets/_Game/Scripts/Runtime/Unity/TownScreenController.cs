@@ -41,8 +41,10 @@ public sealed class TownScreenController : MonoBehaviour
     public void RerollOffers()
     {
         if (!EnsureReady()) return;
-        _root.SessionState.RerollRecruitOffers();
-        Refresh("Recruit 후보를 리롤했습니다.");
+        var result = _root.SessionState.RerollRecruitOffers();
+        Refresh(result.IsSuccess
+            ? $"Recruit 후보를 리롤했습니다. (-{SM.Meta.Model.MetaBalanceDefaults.RecruitRerollCost} Gold)"
+            : result.Error ?? "Recruit 후보 리롤에 실패했습니다.");
     }
 
     public void SaveProfile()
@@ -119,13 +121,14 @@ public sealed class TownScreenController : MonoBehaviour
     {
         if (!EnsureReady()) return;
 
-        if (_root.SessionState.Recruit(index))
+        var result = _root.SessionState.Recruit(index);
+        if (result.IsSuccess)
         {
-            Refresh($"후보 {index + 1}을 영입했습니다.");
+            Refresh($"후보 {index + 1}을 영입했습니다. (-{SM.Meta.Model.MetaBalanceDefaults.RecruitCost} Gold)");
             return;
         }
 
-        Refresh("영입에 실패했습니다.");
+        Refresh(result.Error ?? "영입에 실패했습니다.");
     }
 
     private bool EnsureReady()
@@ -254,7 +257,11 @@ public sealed class TownScreenController : MonoBehaviour
 
     private static string BuildRecruitSummary(GameSessionState session)
     {
-        return $"Recruit 후보 3개\n현재 후보 수: {session.RecruitOffers.Count}\n카드 버튼으로 즉시 영입";
+        return
+            $"Recruit 후보 3개\n현재 후보 수: {session.RecruitOffers.Count}\n" +
+            $"영입 비용: {SM.Meta.Model.MetaBalanceDefaults.RecruitCost} Gold\n" +
+            $"리롤 비용: {SM.Meta.Model.MetaBalanceDefaults.RecruitRerollCost} Gold\n" +
+            $"Town roster: {session.Profile.Heroes.Count}/{SM.Meta.Model.MetaBalanceDefaults.TownRosterCap}";
     }
 
     private static string BuildSquadText(GameSessionState session)

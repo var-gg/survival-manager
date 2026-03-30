@@ -7,6 +7,7 @@ public sealed class GameSessionRoot : MonoBehaviour
 {
     public static GameSessionRoot? Instance { get; private set; }
 
+    public RuntimeCombatContentLookup CombatContentLookup { get; private set; } = null!;
     public GameSessionState SessionState { get; private set; } = null!;
     public PersistenceEntryPoint Persistence { get; private set; } = null!;
     public SceneFlowController SceneFlow { get; private set; } = null!;
@@ -24,7 +25,8 @@ public sealed class GameSessionRoot : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        SessionState = new GameSessionState();
+        CombatContentLookup = new RuntimeCombatContentLookup();
+        SessionState = new GameSessionState(CombatContentLookup);
         Persistence = new PersistenceEntryPoint();
         SceneFlow = new SceneFlowController(this, SessionState);
         FirstPlayableRuntimeSceneBinder.EnsureSceneBindings(SceneManager.GetActiveScene());

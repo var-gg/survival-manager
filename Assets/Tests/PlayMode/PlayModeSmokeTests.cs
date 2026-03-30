@@ -127,6 +127,14 @@ public sealed class PlayModeSmokeTests
         Assert.That(root.SessionState.CurrentExpeditionNodeIndex, Is.EqualTo(2), "Relay route should advance expedition state to node index 2.");
         Assert.That(root.SessionState.Profile.Currencies.TraitRerollCurrency, Is.EqualTo(initialTraitReroll + 1), "Relay route node effect should grant Trait Reroll +1.");
         Assert.That(root.SessionState.CanResumeExpedition, Is.True, "Town should allow resuming the expedition after a successful route battle.");
+
+        town = FindAny<TownScreenController>();
+        Assert.That(town, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownScreenController before expedition resume."));
+        town!.DebugStartExpedition();
+
+        yield return WaitForScene(SceneNames.Expedition);
+        yield return WaitForComponent<ExpeditionScreenController>();
+        Assert.That(root.SessionState.CurrentExpeditionNodeIndex, Is.EqualTo(2), "Debug Start should resume the advanced expedition node instead of starting from camp.");
     }
 
     private static IEnumerator WaitForScene(string sceneName, float timeout = 8f)

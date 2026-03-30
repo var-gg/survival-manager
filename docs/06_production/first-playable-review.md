@@ -1,28 +1,23 @@
-# First Playable Review
+# 첫 플레이어블 스냅샷
 
-## 반드시 먼저 실행할 메뉴 1개
+- 상태: active
+- 최종수정일: 2026-03-30
+- phase: prototype
+
+## 먼저 실행할 메뉴
 
 - `SM/Bootstrap/Prepare Observer Playable`
 
-- 상태: active
-- 최종수정일: 2026-03-29
-- phase: prototype
+## 한 줄 요약
 
-## 실제 플레이 가능한 범위
+- 현재 prototype의 관찰 가능한 playable 경계는 `Boot -> Town -> Expedition -> Battle -> Reward -> Town`이다.
 
-- `Boot -> Town -> Expedition -> Battle -> Reward -> Town`
-- Town `Quick Battle`로 `Town -> Battle -> Reward -> Town` smoke 가능
-- Battle은 replay track 기반 observer UI로 5~10초 동안 행동을 따라갈 수 있다
+## 운영자 관점 핵심 포인트
 
-## 지금 바로 보이는 화면
+- Town과 Expedition에서 3x2 anchor 배치와 team posture를 바꿀 수 있다.
+- Battle은 live simulation observer UI로 진행되며, Reward 이후 Town으로 복귀한다.
+- 원정은 Town `Debug Start`로 이어서 재개할 수 있다.
 
-- Town: roster / recruit 카드 / squad / deploy preview / operator 버튼
-- Expedition: 5노드 박스 / 현재 위치 / 예정 보상 / next battle / return town
-- Battle: primitive actor / HP label / 로그 / speed / pause / progress
-- Reward: 3지선다 카드 / 상태 반영 요약
+## live 상태 문서
 
-## 아직 placeholder인 부분
-
-- Town / Expedition / Reward는 여전히 operator-grade debug UGUI다
-- Battle camera / motion / HUD는 MVP용 observer 표현이다
-- Expedition branching 선택과 장기 progression 연출은 다음 단계다
+- 최신 상태, 리스크, 다음 우선순위는 [tasks/001_mvp_vertical_slice/status.md](../../tasks/001_mvp_vertical_slice/status.md)를 기준으로 본다.

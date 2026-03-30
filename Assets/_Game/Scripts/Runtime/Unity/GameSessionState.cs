@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Core.Results;
 using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;
 
@@ -19,12 +20,14 @@ public sealed class GameSessionState
         DeploymentAnchorId.BackBottom
     };
 
+    private readonly RuntimeCombatContentLookup _combatContentLookup;
     private readonly List<string> _expeditionSquadHeroIds = new();
     private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
     private readonly List<RecruitOffer> _recruitOffers = new();
     private readonly List<ExpeditionNodeViewModel> _expeditionNodes = new();
     private readonly List<RewardChoiceViewModel> _pendingRewardChoices = new();
     private readonly HashSet<string> _resolvedExpeditionNodeIds = new(StringComparer.Ordinal);
+    private int _recruitOfferGeneration;
 
     public SaveProfile Profile { get; private set; } = new();
     public RosterState Roster { get; private set; } = new();
@@ -53,9 +56,15 @@ public sealed class GameSessionState
     public IReadOnlyList<RewardChoiceViewModel> PendingRewardChoices => _pendingRewardChoices;
     public bool CanResumeExpedition => HasActiveExpeditionRun && !IsQuickBattleSmokeActive && CurrentExpeditionNodeIndex < _expeditionNodes.Count - 1;
 
+    public GameSessionState(RuntimeCombatContentLookup combatContentLookup)
+    {
+        _combatContentLookup = combatContentLookup;
+    }
+
     public void BindProfile(SaveProfile profile)
     {
         Profile = profile;
+        Profile.Heroes ??= new List<HeroInstanceRecord>();
 
         if (Profile.Heroes.Count == 0)
         {
@@ -66,6 +75,7 @@ public sealed class GameSessionState
         Profile.Inventory ??= new List<InventoryItemRecord>();
         Profile.UnlockedPermanentAugmentIds ??= new List<string>();
         Profile.RunSummaries ??= new List<RunSummaryRecord>();
+        NormalizeProfileContentIds();
 
         if (string.IsNullOrWhiteSpace(Profile.DisplayName))
         {
@@ -82,6 +92,7 @@ public sealed class GameSessionState
         LastExpeditionEffectMessage = string.Empty;
         LastRewardApplicationSummary = string.Empty;
         SelectedTeamPosture = TeamPostureType.StandardAdvance;
+        _recruitOfferGeneration = 0;
         _resolvedExpeditionNodeIds.Clear();
         ResetDeploymentAssignments();
 
@@ -206,25 +217,39 @@ public sealed class GameSessionState
         CurrentSceneName = sceneName;
     }
 
-    public void RerollRecruitOffers()
+    public Result RerollRecruitOffers()
     {
-        if (Profile.Currencies.Gold > 0)
+        if (Profile.Currencies.Gold < MetaBalanceDefaults.RecruitRerollCost)
         {
-            Profile.Currencies.Gold = Math.Max(0, Profile.Currencies.Gold - 1);
+            return Result.Fail($"Gold가 부족합니다. 리롤에는 {MetaBalanceDefaults.RecruitRerollCost} Gold가 필요합니다.");
         }
 
+        Profile.Currencies.Gold -= MetaBalanceDefaults.RecruitRerollCost;
+        _recruitOfferGeneration += 1;
         _recruitOffers.Clear();
         EnsureRecruitOffers();
+        return Result.Success();
     }
 
-    public bool Recruit(int offerIndex)
+    public Result Recruit(int offerIndex)
     {
         if (offerIndex < 0 || offerIndex >= _recruitOffers.Count)
         {
-            return false;
+            return Result.Fail("유효하지 않은 영입 후보입니다.");
+        }
+
+        if (Profile.Currencies.Gold < MetaBalanceDefaults.RecruitCost)
+        {
+            return Result.Fail($"Gold가 부족합니다. 영입에는 {MetaBalanceDefaults.RecruitCost} Gold가 필요합니다.");
+        }
+
+        if (Profile.Heroes.Count >= MetaBalanceDefaults.TownRosterCap)
+        {
+            return Result.Fail($"Town roster cap {MetaBalanceDefaults.TownRosterCap}에 도달했습니다.");
         }
 
         var offer = _recruitOffers[offerIndex];
+        Profile.Currencies.Gold -= MetaBalanceDefaults.RecruitCost;
         Profile.Heroes.Add(new HeroInstanceRecord
         {
             HeroId = offer.HeroId,
@@ -240,7 +265,7 @@ public sealed class GameSessionState
         Roster = new RosterState(ToHeroRecords(Profile));
         _recruitOffers.RemoveAt(offerIndex);
         EnsureRecruitOffers();
-        return true;
+        return Result.Success();
     }
 
     public bool ToggleExpeditionHero(string heroId)
@@ -253,7 +278,7 @@ public sealed class GameSessionState
             return true;
         }
 
-        if (_expeditionSquadHeroIds.Count >= 8)
+        if (_expeditionSquadHeroIds.Count >= MetaBalanceDefaults.ExpeditionSquadCap)
         {
             return false;
         }
@@ -302,7 +327,7 @@ public sealed class GameSessionState
         var occupiedAfter = occupiedBefore
             - (string.IsNullOrWhiteSpace(currentHero) ? 0 : 1)
             + (heroId == null || candidateAlreadyAssigned ? 0 : 1);
-        if (occupiedAfter > 4)
+        if (occupiedAfter > MetaBalanceDefaults.BattleDeployCap)
         {
             return false;
         }
@@ -364,6 +389,37 @@ public sealed class GameSessionState
         {
             yield return (anchor, GetAssignedHeroId(anchor));
         }
+    }
+
+    public IReadOnlyList<BattleParticipantSpec> BuildBattleParticipants()
+    {
+        EnsureBattleDeployReady();
+
+        var temporaryAugments = Expedition.TemporaryAugmentIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+        var inventoryByInstanceId = Profile.Inventory
+            .Where(item => !string.IsNullOrWhiteSpace(item.ItemInstanceId))
+            .GroupBy(item => item.ItemInstanceId, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+
+        return EnumerateDeploymentAssignments()
+            .Where(entry => !string.IsNullOrWhiteSpace(entry.HeroId))
+            .Select(entry =>
+            {
+                var hero = Profile.Heroes.First(record => record.HeroId == entry.HeroId);
+                return new BattleParticipantSpec(
+                    hero.HeroId,
+                    hero.Name,
+                    hero.ArchetypeId,
+                    entry.Anchor,
+                    hero.PositiveTraitId,
+                    hero.NegativeTraitId,
+                    BuildEquippedItemSpecs(hero, inventoryByInstanceId),
+                    temporaryAugments);
+            })
+            .ToList();
     }
 
     public void SaveDebugSnapshot(string note = "manual-debug-save")
@@ -480,15 +536,7 @@ public sealed class GameSessionState
     {
         while (_recruitOffers.Count < 3)
         {
-            var index = Profile.Heroes.Count + _recruitOffers.Count + 1;
-            _recruitOffers.Add(new RecruitOffer(
-                $"offer-{index}",
-                $"Recruit {index}",
-                $"archetype-{((index - 1) % 8) + 1}",
-                index % 3 == 1 ? "human" : index % 3 == 2 ? "beastkin" : "undead",
-                index % 4 == 1 ? "vanguard" : index % 4 == 2 ? "duelist" : index % 4 == 3 ? "ranger" : "mystic",
-                $"positive-trait-{((index - 1) % 6) + 1}",
-                $"negative-trait-{((index - 1) % 6) + 1}"));
+            _recruitOffers.Add(CreateRecruitOffer(_recruitOfferGeneration + Profile.Heroes.Count + _recruitOffers.Count));
         }
     }
 
@@ -499,7 +547,7 @@ public sealed class GameSessionState
             return;
         }
 
-        foreach (var hero in Profile.Heroes.Take(8))
+        foreach (var hero in Profile.Heroes.Take(MetaBalanceDefaults.ExpeditionSquadCap))
         {
             _expeditionSquadHeroIds.Add(hero.HeroId);
         }
@@ -539,7 +587,7 @@ public sealed class GameSessionState
             ClearDeploymentForHero(heroId);
         }
 
-        foreach (var heroId in _expeditionSquadHeroIds.Take(4))
+        foreach (var heroId in _expeditionSquadHeroIds.Take(MetaBalanceDefaults.BattleDeployCap))
         {
             if (BattleDeployHeroIds.Contains(heroId))
             {
@@ -547,7 +595,7 @@ public sealed class GameSessionState
             }
 
             AssignHeroToAnchor(ResolvePreferredAnchor(heroId), heroId);
-            if (BattleDeployHeroIds.Count >= 4)
+            if (BattleDeployHeroIds.Count >= MetaBalanceDefaults.BattleDeployCap)
             {
                 break;
             }
@@ -674,7 +722,7 @@ public sealed class GameSessionState
             true,
             ExpeditionNodeEffectKind.TemporaryAugment,
             0,
-            "temp-shrine-beat",
+            ResolveRewardAugmentId(2),
             new[] { 4 }));
         _expeditionNodes.Add(new ExpeditionNodeViewModel(
             4,
@@ -715,7 +763,7 @@ public sealed class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "Fallback Stash", "패배 보정: +3 Gold", 3, 0, 0, string.Empty),
                 new RewardChoiceViewModel(RewardChoiceKind.TraitRerollCurrency, "Tactical Notes", "패배 보정: Trait Reroll +1", 0, 1, 0, string.Empty),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "Guard Spark", "다음 run 전까지 방어 템포를 보정하는 temp augment", 0, 0, 0, "temp-guard-spark")
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "Guard Spark", "다음 run 전까지 방어 템포를 보정하는 temp augment", 0, 0, 0, ResolveRewardAugmentId(0))
             };
         }
 
@@ -724,8 +772,8 @@ public sealed class GameSessionState
             return new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "Gold Cache", "+5 Gold", 5, 0, 0, string.Empty),
-                new RewardChoiceViewModel(RewardChoiceKind.Item, "Iron Blade", "Base item 1개", 0, 0, 0, "item-iron-blade"),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "Aggro Spark", "이번 run 동안 공격 템포 + 보정", 0, 0, 0, "temp-aggro-spark")
+                new RewardChoiceViewModel(RewardChoiceKind.Item, "Iron Blade", "Base item 1개", 0, 0, 0, ResolveRewardItemId(0)),
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "Aggro Spark", "이번 run 동안 공격 템포 + 보정", 0, 0, 0, ResolveRewardAugmentId(1))
             };
         }
 
@@ -734,26 +782,26 @@ public sealed class GameSessionState
             "ambush-route" => new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "War Chest", "공격 경로 보정: +8 Gold", 8, 0, 0, string.Empty),
-                new RewardChoiceViewModel(RewardChoiceKind.Item, "Hook Spear", "전열용 기본 아이템 1개", 0, 0, 0, "item-hook-spear"),
+                new RewardChoiceViewModel(RewardChoiceKind.Item, "Hook Spear", "전열용 기본 아이템 1개", 0, 0, 0, ResolveRewardItemId(1)),
                 new RewardChoiceViewModel(RewardChoiceKind.TraitRerollCurrency, "Scout Intel", "다음 채용 정리에 쓸 Trait Reroll +1", 0, 1, 0, string.Empty)
             },
             "relay-route" => new[]
             {
-                new RewardChoiceViewModel(RewardChoiceKind.Item, "Field Kit", "유틸 아이템 1개", 0, 0, 0, "item-field-kit"),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "Anchor Beat", "이번 run 동안 회복/방어 안정화 temp augment", 0, 0, 0, "temp-anchor-beat"),
+                new RewardChoiceViewModel(RewardChoiceKind.Item, "Field Kit", "유틸 아이템 1개", 0, 0, 0, ResolveRewardItemId(2)),
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "Anchor Beat", "이번 run 동안 회복/방어 안정화 temp augment", 0, 0, 0, ResolveRewardAugmentId(2)),
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "Relay Pouch", "보급품 환전 +6 Gold", 6, 0, 0, string.Empty)
             },
             "shrine-route" => new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.PermanentAugmentSlot, "Permanent Socket", "meta progression: Permanent Slot +1", 0, 0, 1, "perm-slot-shrine"),
-                new RewardChoiceViewModel(RewardChoiceKind.Item, "Sigil Core", "후열용 아이템 1개", 0, 0, 0, "item-sigil-core"),
+                new RewardChoiceViewModel(RewardChoiceKind.Item, "Sigil Core", "후열용 아이템 1개", 0, 0, 0, ResolveRewardItemId(3)),
                 new RewardChoiceViewModel(RewardChoiceKind.TraitRerollCurrency, "Doctrine Cache", "meta 정리용 Trait Reroll +2", 0, 2, 0, string.Empty)
             },
             _ => new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "Gold Cache", "+5 Gold", 5, 0, 0, string.Empty),
-                new RewardChoiceViewModel(RewardChoiceKind.Item, "Iron Blade", "Base item 1개", 0, 0, 0, "item-iron-blade"),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "Aggro Spark", "이번 run 동안 공격 템포 + 보정", 0, 0, 0, "temp-aggro-spark")
+                new RewardChoiceViewModel(RewardChoiceKind.Item, "Iron Blade", "Base item 1개", 0, 0, 0, ResolveRewardItemId(0)),
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "Aggro Spark", "이번 run 동안 공격 템포 + 보정", 0, 0, 0, ResolveRewardAugmentId(1))
             }
         };
     }
@@ -842,21 +890,185 @@ public sealed class GameSessionState
         Profile.Currencies = new CurrencyRecord { Gold = 10, TraitRerollCurrency = 1 };
         Profile.UnlockedPermanentAugmentIds = new List<string> { "perm-slot-1" };
         Profile.Inventory = new List<InventoryItemRecord>();
+        Profile.Heroes.Clear();
 
-        for (var i = 1; i <= 8; i++)
+        var archetypeIds = _combatContentLookup.GetCanonicalArchetypeIds();
+        var itemIds = _combatContentLookup.GetCanonicalItemIds();
+        var affixIds = _combatContentLookup.GetCanonicalAffixIds();
+        for (var i = 0; i < Math.Min(MetaBalanceDefaults.ExpeditionSquadCap, archetypeIds.Count); i++)
         {
+            var archetypeId = archetypeIds[i];
+            _combatContentLookup.TryGetArchetype(archetypeId, out var archetype);
+            var heroId = $"hero-{i + 1}";
+            var equippedItems = new List<string>();
+            if (itemIds.Count > 0 && i < 4)
+            {
+                var itemInstanceId = $"demo-item-{i + 1}";
+                Profile.Inventory.Add(new InventoryItemRecord
+                {
+                    ItemInstanceId = itemInstanceId,
+                    ItemBaseId = itemIds[i % itemIds.Count],
+                    EquippedHeroId = heroId,
+                    AffixIds = affixIds.Count == 0
+                        ? new List<string>()
+                        : new List<string> { affixIds[i % affixIds.Count] }
+                });
+                equippedItems.Add(itemInstanceId);
+            }
+
             Profile.Heroes.Add(new HeroInstanceRecord
             {
-                HeroId = $"hero-{i}",
-                Name = $"Hero {i}",
-                ArchetypeId = $"archetype-{i}",
-                RaceId = i % 3 == 1 ? "human" : i % 3 == 2 ? "beastkin" : "undead",
-                ClassId = i % 4 == 1 ? "vanguard" : i % 4 == 2 ? "duelist" : i % 4 == 3 ? "ranger" : "mystic",
-                PositiveTraitId = $"positive-trait-{((i - 1) % 6) + 1}",
-                NegativeTraitId = $"negative-trait-{((i - 1) % 6) + 1}",
-                EquippedItemIds = new List<string>()
+                HeroId = heroId,
+                Name = $"Hero {i + 1}",
+                ArchetypeId = archetypeId,
+                RaceId = archetype?.Race.Id ?? string.Empty,
+                ClassId = archetype?.Class.Id ?? string.Empty,
+                PositiveTraitId = _combatContentLookup.NormalizePositiveTraitId(archetypeId, string.Empty, i),
+                NegativeTraitId = _combatContentLookup.NormalizeNegativeTraitId(archetypeId, string.Empty, i + 1),
+                EquippedItemIds = equippedItems
             });
         }
+    }
+
+    private IReadOnlyList<BattleEquippedItemSpec> BuildEquippedItemSpecs(
+        HeroInstanceRecord hero,
+        IReadOnlyDictionary<string, InventoryItemRecord> inventoryByInstanceId)
+    {
+        var instanceIds = new HashSet<string>(hero.EquippedItemIds.Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.Ordinal);
+        foreach (var inventoryItem in Profile.Inventory.Where(item => item.EquippedHeroId == hero.HeroId))
+        {
+            instanceIds.Add(inventoryItem.ItemInstanceId);
+        }
+
+        return instanceIds
+            .Where(inventoryByInstanceId.ContainsKey)
+            .Select(id => inventoryByInstanceId[id])
+            .Where(item => !string.IsNullOrWhiteSpace(item.ItemBaseId))
+            .Select(item => new BattleEquippedItemSpec(
+                item.ItemBaseId,
+                item.AffixIds
+                    .Where(id => !string.IsNullOrWhiteSpace(id))
+                    .Distinct(StringComparer.Ordinal)
+                    .ToList()))
+            .ToList();
+    }
+
+    private void NormalizeProfileContentIds()
+    {
+        NormalizeHeroContentIds();
+        NormalizeInventoryContentIds();
+        NormalizeExpeditionContentIds();
+        NormalizeEquippedItemReferences();
+    }
+
+    private void NormalizeHeroContentIds()
+    {
+        for (var i = 0; i < Profile.Heroes.Count; i++)
+        {
+            var hero = Profile.Heroes[i];
+            hero.EquippedItemIds ??= new List<string>();
+            hero.ArchetypeId = _combatContentLookup.NormalizeArchetypeId(hero.ArchetypeId, hero.RaceId, hero.ClassId, i);
+            if (_combatContentLookup.TryGetArchetype(hero.ArchetypeId, out var archetype))
+            {
+                hero.RaceId = archetype.Race.Id;
+                hero.ClassId = archetype.Class.Id;
+            }
+
+            hero.PositiveTraitId = _combatContentLookup.NormalizePositiveTraitId(hero.ArchetypeId, hero.PositiveTraitId, i);
+            hero.NegativeTraitId = _combatContentLookup.NormalizeNegativeTraitId(hero.ArchetypeId, hero.NegativeTraitId, i + 1);
+            hero.EquippedItemIds = hero.EquippedItemIds
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+        }
+    }
+
+    private void NormalizeInventoryContentIds()
+    {
+        for (var i = 0; i < Profile.Inventory.Count; i++)
+        {
+            var item = Profile.Inventory[i];
+            item.AffixIds ??= new List<string>();
+            if (string.IsNullOrWhiteSpace(item.ItemInstanceId))
+            {
+                item.ItemInstanceId = $"inventory-{Guid.NewGuid():N}";
+            }
+
+            item.ItemBaseId = _combatContentLookup.NormalizeItemBaseId(item.ItemBaseId, i);
+            item.AffixIds = item.AffixIds
+                .Select((affixId, affixIndex) => _combatContentLookup.NormalizeAffixId(affixId, i + affixIndex))
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+        }
+    }
+
+    private void NormalizeExpeditionContentIds()
+    {
+        Expedition = new ExpeditionState(
+            Expedition.CurrentNodeIndex,
+            Expedition.TemporaryAugmentIds
+                .Select((augmentId, index) => _combatContentLookup.NormalizeTemporaryAugmentId(augmentId, index))
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList());
+    }
+
+    private void NormalizeEquippedItemReferences()
+    {
+        var inventoryById = Profile.Inventory
+            .Where(item => !string.IsNullOrWhiteSpace(item.ItemInstanceId))
+            .GroupBy(item => item.ItemInstanceId, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+        var heroIds = Profile.Heroes.Select(hero => hero.HeroId).ToHashSet(StringComparer.Ordinal);
+
+        foreach (var inventoryItem in Profile.Inventory)
+        {
+            if (!string.IsNullOrWhiteSpace(inventoryItem.EquippedHeroId) && !heroIds.Contains(inventoryItem.EquippedHeroId))
+            {
+                inventoryItem.EquippedHeroId = string.Empty;
+            }
+        }
+
+        foreach (var hero in Profile.Heroes)
+        {
+            var equippedIds = new HashSet<string>(hero.EquippedItemIds.Where(inventoryById.ContainsKey), StringComparer.Ordinal);
+            foreach (var inventoryItem in Profile.Inventory.Where(item => item.EquippedHeroId == hero.HeroId))
+            {
+                equippedIds.Add(inventoryItem.ItemInstanceId);
+            }
+
+            hero.EquippedItemIds = equippedIds.ToList();
+            foreach (var equippedId in equippedIds)
+            {
+                inventoryById[equippedId].EquippedHeroId = hero.HeroId;
+            }
+        }
+    }
+
+    private RecruitOffer CreateRecruitOffer(int offerSeed)
+    {
+        var archetypeId = _combatContentLookup.NormalizeArchetypeId(string.Empty, string.Empty, string.Empty, offerSeed);
+        _combatContentLookup.TryGetArchetype(archetypeId, out var archetype);
+        var offerIndex = offerSeed + 1;
+        return new RecruitOffer(
+            $"offer-hero-{offerIndex}",
+            $"Recruit {offerIndex}",
+            archetypeId,
+            archetype?.Race.Id ?? string.Empty,
+            archetype?.Class.Id ?? string.Empty,
+            _combatContentLookup.NormalizePositiveTraitId(archetypeId, string.Empty, offerSeed),
+            _combatContentLookup.NormalizeNegativeTraitId(archetypeId, string.Empty, offerSeed + 1));
+    }
+
+    private string ResolveRewardItemId(int index)
+    {
+        return _combatContentLookup.NormalizeItemBaseId(string.Empty, index);
+    }
+
+    private string ResolveRewardAugmentId(int index)
+    {
+        return _combatContentLookup.NormalizeTemporaryAugmentId(string.Empty, index);
     }
 
     private static IEnumerable<HeroRecord> ToHeroRecords(SaveProfile profile)
