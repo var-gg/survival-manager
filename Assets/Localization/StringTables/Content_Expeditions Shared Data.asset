@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Content_Expeditions Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: Content_Expeditions
+  m_TableCollectionNameGuidString: f0e243ebc668c5447a470d6ce68f6d46
+  m_Entries:
+  - m_Id: 88662335488
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_1.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88725250048
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88725250049
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_1.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444352
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_2.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444353
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444354
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_2.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444355
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_3.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444356
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_3.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444357
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_3.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444358
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_4.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444359
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444360
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_4.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444361
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_5.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444362
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_5.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444363
+    m_Key: ui.expedition.node.expedition_mvp_demo.node_5.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444364
+    m_Key: content.expedition.expedition_mvp_demo.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88729444365
+    m_Key: content.expedition.expedition_mvp_demo.desc
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1798213439901401352
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401352
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1774854116502

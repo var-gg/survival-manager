@@ -9,7 +9,9 @@
     "SM.Persistence.Abstractions",
     "SM.Persistence.Json",
     "SM.Unity",
-    "SM.Editor"
+    "SM.Editor",
+    "Unity.Localization",
+    "Unity.ResourceManager"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

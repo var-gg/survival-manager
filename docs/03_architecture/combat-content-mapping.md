@@ -6,8 +6,10 @@
 - 소스오브트루스: `docs/03_architecture/combat-content-mapping.md`
 - 관련문서:
   - `docs/03_architecture/content-authoring-model.md`
+  - `docs/03_architecture/content-authoring-and-balance-data.md`
   - `docs/03_architecture/content-seed-assets.md`
   - `docs/03_architecture/combat-state-and-event-model.md`
+  - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/02_design/combat/team-tactics-and-unit-rules.md`
 
 ## 목적
@@ -22,20 +24,38 @@
 - `TargetSelectorTypeValue` -> `TargetSelectorType`
 - `BattleActionTypeValue` -> `BattleActionType`
 - `SkillKindValue` -> `SkillKind`
+- `SkillDeliveryValue` -> `SkillDelivery`
+- `SkillTargetRuleValue` -> `SkillTargetRule`
 
 ## authored stat 매핑
 
-`UnitArchetypeDefinition`은 아래 base stat을 직접 가진다.
+`UnitArchetypeDefinition`은 canonical stat v2에 대응하는 base field를 직접 가진다.
+현재 구현은 compatibility 목적의 legacy field도 일부 유지하지만, launch authoring은 canonical field를 우선한다.
 
 - `BaseMaxHealth`
-- `BaseAttack`
-- `BaseDefense`
-- `BaseSpeed`
+- `BaseArmor`
+- `BaseResist`
+- `BasePhysPower`
+- `BaseMagPower`
+- `BaseAttackSpeed`
 - `BaseHealPower`
 - `BaseMoveSpeed`
 - `BaseAttackRange`
+- `BaseManaMax`
+- `BaseManaGainOnAttack`
+- `BaseManaGainOnHit`
+- `BaseCooldownRecovery`
+- `BaseCritChance`
+- `BaseCritMultiplier`
+- `BasePhysPen`
+- `BaseMagPen`
 - `BaseAggroRadius`
+- `BasePreferredDistance`
+- `BaseProtectRadius`
 - `BaseAttackWindup`
+- `BaseCastWindup`
+- `BaseProjectileSpeed`
+- `BaseCollisionRadius`
 - `BaseAttackCooldown`
 - `BaseLeashDistance`
 - `BaseTargetSwitchDelay`
@@ -47,6 +67,13 @@
 - `TacticPresetEntry`는 `Priority`, `ConditionType`, `Threshold`, `ActionType`, `TargetSelector`, `Skill`을 가진다.
 - runtime에서는 같은 구조를 `TacticRule`과 `SkillDefinition`으로 옮긴다.
 - row 기반 selector를 다시 들여오지 않는다.
+
+## authored launch taxonomy 연결
+
+- `SkillDefinitionAsset`의 slot, delivery, target, coeff 세부는 `docs/02_design/combat/skill-taxonomy-and-damage-model.md`를 따른다.
+- `PassiveBoardDefinition`은 `ClassId`를 owner로 가진다.
+- `PassiveNodeDefinition`은 `NodeKind`, prerequisite, mutual exclusion tag를 포함할 수 있다.
+- 전체 authoring field ownership은 `docs/03_architecture/content-authoring-and-balance-data.md`를 따른다.
 
 ## authored 배치/팀 성향 매핑
 

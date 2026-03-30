@@ -29,6 +29,7 @@
 - `adr-0013-unity-cli-hybrid-lane.md`: Unity CLI hybrid lane 채택
 - `adr-0014-grid-deployment-continuous-combat.md`: grid 배치 + continuous combat 채택
 - `adr-0015-build-compile-audit-pipeline.md`: build-compile-audit 파이프라인 채택
+- `adr-0016-localization-boundary.md`: localization 경계와 공식 패키지 채택
 
 ## 운영 메모
 

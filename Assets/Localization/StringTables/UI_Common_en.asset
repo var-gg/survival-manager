@@ -1,0 +1,147 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_Common_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 2a07303f2a9245043a4dd8d7c059cd98, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 1798213439901401355
+  m_TableData:
+  - m_Id: 4142915584
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4780449792
+    m_Localized: Current
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4788838400
+    m_Localized: Korean
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4788838401
+    m_Localized: English
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032704
+    m_Localized: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032705
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032706
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032707
+    m_Localized: Load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032708
+    m_Localized: Return Town
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032709
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032710
+    m_Localized: Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032711
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032712
+    m_Localized: ON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032713
+    m_Localized: OFF
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032714
+    m_Localized: Empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032715
+    m_Localized: None
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032716
+    m_Localized: Selected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032717
+    m_Localized: Here
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032718
+    m_Localized: Locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032719
+    m_Localized: Posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032720
+    m_Localized: Deployment Setup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4793032721
+    m_Localized: Deploy {0}/4
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401355
+  - m_Id: 4809809920
+    m_Localized: Front Top
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4814004224
+    m_Localized: Front Center
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4814004225
+    m_Localized: Front Bottom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4814004226
+    m_Localized: Back Top
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4814004227
+    m_Localized: Back Center
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4814004228
+    m_Localized: Back Bottom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4814004229
+    m_Localized: Unknown Anchor
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401355
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 4793032721

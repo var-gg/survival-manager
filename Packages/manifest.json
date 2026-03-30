@@ -1,11 +1,12 @@
 {
   "dependencies": {
     "com.coplaydev.unity-mcp": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#beta",
-    "com.youngwoocho02.unity-cli-connector": "https://github.com/youngwoocho02/unity-cli.git?path=unity-connector#v0.3.5",
     "com.unity.inputsystem": "1.13.1",
+    "com.unity.localization": "1.5.9",
     "com.unity.render-pipelines.universal": "17.4.0",
     "com.unity.test-framework": "1.6.0",
     "com.unity.textmeshpro": "5.0.0",
-    "com.unity.ugui": "2.0.0"
+    "com.unity.ugui": "2.0.0",
+    "com.youngwoocho02.unity-cli-connector": "https://github.com/youngwoocho02/unity-cli.git?path=unity-connector#v0.3.5"
   }
 }

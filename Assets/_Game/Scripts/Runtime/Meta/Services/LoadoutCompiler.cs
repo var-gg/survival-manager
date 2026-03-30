@@ -271,7 +271,11 @@ public sealed class LoadoutCompiler
                     continue;
                 }
 
-                equipped.Add(skill with { SlotKind = instance.SlotKind, CompileTags = instance.CompileTags });
+                equipped.Add(skill with
+                {
+                    SlotKind = CompiledSkillSlots.Normalize(instance.SlotKind, skill.SlotKind),
+                    CompileTags = instance.CompileTags
+                });
                 hasEquippedLoadout = true;
             }
 
@@ -297,9 +301,24 @@ public sealed class LoadoutCompiler
         }
 
         return equipped
-            .GroupBy(skill => $"{skill.Id}:{skill.SlotKind}", StringComparer.Ordinal)
+            .Select(skill => skill with { SlotKind = CompiledSkillSlots.Normalize(skill.SlotKind) })
+            .GroupBy(skill => skill.SlotKind, StringComparer.Ordinal)
             .Select(group => group.First())
+            .OrderBy(GetCompiledSkillSlotOrder)
             .ToList();
+    }
+
+    private static int GetCompiledSkillSlotOrder(BattleSkillSpec skill)
+    {
+        for (var i = 0; i < CompiledSkillSlots.Ordered.Count; i++)
+        {
+            if (string.Equals(CompiledSkillSlots.Ordered[i], skill.SlotKind, StringComparison.Ordinal))
+            {
+                return i;
+            }
+        }
+
+        return int.MaxValue;
     }
 
     private static TeamTacticProfile ResolveTeamTactic(SquadBlueprintState blueprint, CombatContentSnapshot content)
@@ -374,12 +393,25 @@ public sealed class LoadoutCompiler
             {
                 sb.Append(skill.Id).Append(':')
                     .Append(skill.SlotKind).Append(':')
+                    .Append(skill.DamageType).Append(':')
+                    .Append(skill.Delivery).Append(':')
+                    .Append(skill.TargetRule).Append(':')
                     .Append(skill.Range.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                     .Append(skill.Power.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    .Append(skill.PowerFlat.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    .Append(skill.PhysCoeff.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    .Append(skill.MagCoeff.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    .Append(skill.HealCoeff.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    .Append(skill.HealthCoeff.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    .Append(skill.CanCrit ? "1" : "0").Append(':')
                     .Append(skill.ManaCost.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                     .Append(skill.BaseCooldownSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                     .Append(skill.CastWindupSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
-                    .Append(string.Join(",", skill.RuleModifierTags ?? Array.Empty<string>()))
+                    .Append(string.Join(",", skill.CompileTags ?? Array.Empty<string>())).Append(':')
+                    .Append(string.Join(",", skill.RuleModifierTags ?? Array.Empty<string>())).Append(':')
+                    .Append(string.Join(",", skill.SupportAllowedTags ?? Array.Empty<string>())).Append(':')
+                    .Append(string.Join(",", skill.RequiredWeaponTags ?? Array.Empty<string>())).Append(':')
+                    .Append(string.Join(",", skill.RequiredClassTags ?? Array.Empty<string>()))
                     .Append('|');
             }
 

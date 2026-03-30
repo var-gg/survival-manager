@@ -13,20 +13,37 @@ MonoBehaviour:
   m_Name: expedition_mvp_demo
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ExpeditionDefinition
   Id: expedition_mvp_demo
-  DisplayName: MVP Demo Expedition
+  NameKey: content.expedition.expedition_mvp_demo.name
+  DescriptionKey: content.expedition.expedition_mvp_demo.desc
   Nodes:
   - Id: node_1
-    Label: Fork
+    LabelKey: ui.expedition.node.expedition_mvp_demo.node_1.label
+    DescriptionKey: ui.expedition.node.expedition_mvp_demo.node_1.desc
+    RewardSummaryKey: ui.expedition.node.expedition_mvp_demo.node_1.reward
     RewardTable: {fileID: 11400000, guid: 9d9ac10e39911da4f8f9787f146b5bfd, type: 2}
+    legacyLabel: 
   - Id: node_2
-    Label: Skirmish
+    LabelKey: ui.expedition.node.expedition_mvp_demo.node_2.label
+    DescriptionKey: ui.expedition.node.expedition_mvp_demo.node_2.desc
+    RewardSummaryKey: ui.expedition.node.expedition_mvp_demo.node_2.reward
     RewardTable: {fileID: 11400000, guid: 9d9ac10e39911da4f8f9787f146b5bfd, type: 2}
+    legacyLabel: 
   - Id: node_3
-    Label: Cache
+    LabelKey: ui.expedition.node.expedition_mvp_demo.node_3.label
+    DescriptionKey: ui.expedition.node.expedition_mvp_demo.node_3.desc
+    RewardSummaryKey: ui.expedition.node.expedition_mvp_demo.node_3.reward
     RewardTable: {fileID: 11400000, guid: 9d9ac10e39911da4f8f9787f146b5bfd, type: 2}
+    legacyLabel: 
   - Id: node_4
-    Label: Elite
+    LabelKey: ui.expedition.node.expedition_mvp_demo.node_4.label
+    DescriptionKey: ui.expedition.node.expedition_mvp_demo.node_4.desc
+    RewardSummaryKey: ui.expedition.node.expedition_mvp_demo.node_4.reward
     RewardTable: {fileID: 11400000, guid: 9d9ac10e39911da4f8f9787f146b5bfd, type: 2}
+    legacyLabel: 
   - Id: node_5
-    Label: Return
+    LabelKey: ui.expedition.node.expedition_mvp_demo.node_5.label
+    DescriptionKey: ui.expedition.node.expedition_mvp_demo.node_5.desc
+    RewardSummaryKey: ui.expedition.node.expedition_mvp_demo.node_5.reward
     RewardTable: {fileID: 11400000, guid: 3231d7c345ac38e4f9379e68b6a3f5ab, type: 2}
+    legacyLabel: 
+  legacyDisplayName: 

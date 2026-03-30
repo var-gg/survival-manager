@@ -4,6 +4,7 @@ using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Core.Stats;
 using SM.Editor.Authoring.CombatSandbox;
+using SM.Editor.SeedData;
 using SM.Editor.Validation;
 using SM.Unity.Sandbox;
 using UnityEditor;
@@ -23,9 +24,34 @@ public sealed class StatV2AndSandboxTests
         Assert.That(StatKey.TryResolve("attack", out var legacyKey, out var legacyIsLegacy), Is.True);
         Assert.That(legacyKey, Is.EqualTo(StatKey.PhysPower));
         Assert.That(legacyIsLegacy, Is.True);
+        Assert.That(StatKey.TryResolve("lifesteal", out var lifestealKey, out var lifestealIsLegacy), Is.True);
+        Assert.That(lifestealKey, Is.EqualTo(StatKey.Lifesteal));
+        Assert.That(lifestealIsLegacy, Is.False);
+        Assert.That(StatKey.TryResolve("omnivamp", out var omnivampKey, out var omnivampIsLegacy), Is.True);
+        Assert.That(omnivampKey, Is.EqualTo(StatKey.Omnivamp));
+        Assert.That(omnivampIsLegacy, Is.False);
         Assert.That(ContentDefinitionValidator.GetStatIdStatus("attack"), Is.EqualTo(StatIdValidationStatus.LegacyAlias));
         Assert.That(ContentDefinitionValidator.GetStatIdStatus("phys_power"), Is.EqualTo(StatIdValidationStatus.Canonical));
+        Assert.That(ContentDefinitionValidator.GetStatIdStatus("lifesteal"), Is.EqualTo(StatIdValidationStatus.Canonical));
+        Assert.That(ContentDefinitionValidator.GetStatIdStatus("omnivamp"), Is.EqualTo(StatIdValidationStatus.Canonical));
         Assert.That(ContentDefinitionValidator.GetStatIdStatus("unsupported_stat"), Is.EqualTo(StatIdValidationStatus.Unsupported));
+    }
+
+    [Test]
+    public void ContentDefinitionValidator_ExposesLaunchScopeBuckets()
+    {
+        SampleSeedGenerator.Generate();
+
+        var report = ContentDefinitionValidator.BuildLaunchScopeCountReport();
+
+        Assert.That(ContentDefinitionValidator.CurrentMvpMinimum.ArchetypeCount, Is.EqualTo(8));
+        Assert.That(ContentDefinitionValidator.CurrentMvpMinimum.TemporaryAugmentCount, Is.EqualTo(9));
+        Assert.That(ContentDefinitionValidator.PaidLaunchFloor.ArchetypeCount, Is.EqualTo(12));
+        Assert.That(ContentDefinitionValidator.PaidLaunchFloor.SkillCount, Is.EqualTo(40));
+        Assert.That(ContentDefinitionValidator.PaidLaunchSafeTarget.ArchetypeCount, Is.EqualTo(16));
+        Assert.That(ContentDefinitionValidator.PaidLaunchSafeTarget.PassiveNodeCount, Is.EqualTo(96));
+        Assert.That(report.ArchetypeCount, Is.GreaterThanOrEqualTo(ContentDefinitionValidator.CurrentMvpMinimum.ArchetypeCount!.Value));
+        Assert.That(report.TemporaryAugmentCount, Is.GreaterThanOrEqualTo(ContentDefinitionValidator.CurrentMvpMinimum.TemporaryAugmentCount!.Value));
     }
 
     [Test]
@@ -70,6 +96,7 @@ public sealed class StatV2AndSandboxTests
     [Test]
     public void CombatSandboxWindow_BindsAndBuildsRunRequest_WithoutPlayMode()
     {
+        SampleSeedGenerator.Generate();
         var config = ScriptableObject.CreateInstance<CombatSandboxConfig>();
         config.Seed = 29;
         config.BatchCount = 2;

@@ -58,7 +58,7 @@ public static class ReplayAssembler
             }
 
             var digest = ComputeHash(string.Join("|", group.OrderBy(@event => @event.ActorId.Value).Select(@event =>
-                $"{@event.StepIndex}:{@event.ActorId.Value}:{@event.ActionType}:{@event.TargetId?.Value}:{@event.Value:0.###}:{@event.Note}")));
+                $"{@event.StepIndex}:{@event.ActorId.Value}:{@event.ActionType}:{@event.LogCode}:{@event.TargetId?.Value}:{@event.Value:0.###}")));
             keyframes.Add(new BattleKeyframeDigest(group.Key, group.First().TimeSeconds, digest));
         }
 

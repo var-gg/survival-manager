@@ -26,7 +26,7 @@ public sealed class DeploymentSetupPanelView
         Action<DeploymentAnchorId> onCycleAnchor,
         Action onCyclePosture)
     {
-        var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        var font = GameFontCatalog.LoadSharedUiFont();
         var root = CreatePanelRoot(panelName, parent);
         CreateHeader(root, font);
 
@@ -61,6 +61,7 @@ public sealed class DeploymentSetupPanelView
 
     public void Refresh(GameSessionState session)
     {
+        var localization = GameSessionRoot.Instance?.Localization;
         foreach (var anchor in session.DeploymentAnchors)
         {
             if (!_anchorLabels.TryGetValue(anchor, out var label))
@@ -69,12 +70,13 @@ public sealed class DeploymentSetupPanelView
             }
 
             var heroId = session.GetAssignedHeroId(anchor);
-            var heroName = session.Profile.Heroes.FirstOrDefault(hero => hero.HeroId == heroId)?.Name ?? "Empty";
-            label.text = $"{anchor.ToDisplayName()}\n{heroName}";
+            var heroName = session.Profile.Heroes.FirstOrDefault(hero => hero.HeroId == heroId)?.Name
+                ?? Localize(localization, GameLocalizationTables.UICommon, "ui.common.empty", "Empty");
+            label.text = $"{LocalizeAnchor(localization, anchor)}\n{heroName}";
         }
 
-        _postureLabel.text = $"Posture\n{session.SelectedTeamPosture}";
-        _summaryLabel.text = $"Deploy {session.BattleDeployHeroIds.Count}/4";
+        _postureLabel.text = $"{Localize(localization, GameLocalizationTables.UICommon, "ui.common.posture", "Posture")}\n{session.SelectedTeamPosture}";
+        _summaryLabel.text = Localize(localization, GameLocalizationTables.UICommon, "ui.common.deploy_summary", "Deploy {0}/4", session.BattleDeployHeroIds.Count);
     }
 
     private static RectTransform CreatePanelRoot(string panelName, RectTransform parent)
@@ -102,7 +104,7 @@ public sealed class DeploymentSetupPanelView
     private static void CreateHeader(RectTransform root, Font font)
     {
         var header = CreateLabel(root, "DeploymentHeaderText", new Vector2(0f, -10f), new Vector2(210f, 24f), font, 16, TextAnchor.MiddleCenter);
-        header.text = "Deployment Setup";
+        header.text = Localize(GameSessionRoot.Instance?.Localization, GameLocalizationTables.UICommon, "ui.common.deployment_setup", "Deployment Setup");
         header.color = Color.white;
     }
 
@@ -165,5 +167,19 @@ public sealed class DeploymentSetupPanelView
         outline.effectColor = new Color(0f, 0f, 0f, 0.85f);
         outline.effectDistance = new Vector2(1f, -1f);
         return text;
+    }
+
+    private static string LocalizeAnchor(GameLocalizationController? localization, DeploymentAnchorId anchor)
+    {
+        return Localize(localization, GameLocalizationTables.UICommon, anchor.ToLocalizationKey(), anchor.ToDisplayName());
+    }
+
+    private static string Localize(GameLocalizationController? localization, string table, string key, string fallback, params object[] args)
+    {
+        return localization != null
+            ? localization.LocalizeOrFallback(table, key, fallback, args)
+            : args.Length == 0
+                ? fallback
+                : string.Format(fallback, args);
     }
 }

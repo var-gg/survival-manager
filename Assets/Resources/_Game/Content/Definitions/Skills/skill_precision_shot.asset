@@ -13,7 +13,27 @@ MonoBehaviour:
   m_Name: skill_precision_shot
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
   Id: skill_precision_shot
-  DisplayName: Precision Shot
+  NameKey: content.skill.skill_precision_shot.name
+  DescriptionKey: content.skill.skill_precision_shot.desc
   Kind: 0
+  SlotKind: 0
+  DamageType: 0
+  Delivery: 2
+  TargetRule: 2
   Power: 2
   Range: 2
+  PowerFlat: 2
+  PhysCoeff: 1
+  MagCoeff: 0
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 1
+  ManaCost: 0
+  BaseCooldownSeconds: 0
+  CastWindupSeconds: 0
+  CompileTags: []
+  RuleModifierTags: []
+  SupportAllowedTags: []
+  RequiredWeaponTags: []
+  RequiredClassTags: []
+  legacyDisplayName: 

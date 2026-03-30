@@ -9,7 +9,10 @@
     "SM.Persistence.Abstractions",
     "SM.Persistence.Json",
     "SM.Unity",
-    "SM.Editor"
+    "SM.Editor",
+    "Unity.Localization",
+    "Unity.Localization.Editor",
+    "Unity.ResourceManager"
   ],
   "includePlatforms": [
     "Editor"

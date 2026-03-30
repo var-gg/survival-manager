@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: archetype_priest
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
   Id: priest
-  DisplayName: Priest
+  NameKey: content.archetype.priest.name
+  ScopeKind: 0
   Race: {fileID: 11400000, guid: 732863225f9204842af76a32f0d75924, type: 2}
   Class: {fileID: 11400000, guid: 303ce1202540bc442896129adc2f364a, type: 2}
   TraitPool: {fileID: 11400000, guid: 4fa7462e1258bd24f9d88081ee3b6878, type: 2}
@@ -27,19 +28,54 @@ MonoBehaviour:
     TargetSelector: 1
     Skill: {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
   - Priority: 1
-    ConditionType: 2
-    Threshold: 0
+    ConditionType: 4
+    Threshold: 1.5
     ActionType: 0
-    TargetSelector: 2
+    TargetSelector: 5
     Skill: {fileID: 0}
   - Priority: 2
-    ConditionType: 4
+    ConditionType: 5
     Threshold: 0
     ActionType: 2
     TargetSelector: 0
     Skill: {fileID: 0}
+  DefaultAnchor: 4
+  PreferredTeamPosture: 2
+  RoleTag: auto
+  RoleFamilyTag: mystic
+  PrimaryWeaponFamilyTag: focus
+  SupportModifierBiasTags: []
   BaseMaxHealth: 18
+  BaseArmor: 2
+  BaseResist: 0
+  BaseBarrierPower: 0
+  BaseTenacity: 0
+  BasePhysPower: 3
+  BaseMagPower: 0
+  BaseAttackSpeed: 4
   BaseAttack: 3
   BaseDefense: 2
   BaseSpeed: 4
   BaseHealPower: 5
+  BaseMoveSpeed: 1.7
+  BaseAttackRange: 2.8
+  BaseManaMax: 0
+  BaseManaGainOnAttack: 0
+  BaseManaGainOnHit: 0
+  BaseCooldownRecovery: 0
+  BaseCritChance: 0
+  BaseCritMultiplier: 0
+  BasePhysPen: 0
+  BaseMagPen: 0
+  BaseAggroRadius: 7.2
+  BasePreferredDistance: 0
+  BaseProtectRadius: 0
+  BaseAttackWindup: 0.22
+  BaseCastWindup: 0.22
+  BaseProjectileSpeed: 0
+  BaseCollisionRadius: 0.5
+  BaseRepositionCooldown: 0
+  BaseAttackCooldown: 1
+  BaseLeashDistance: 4.8
+  BaseTargetSwitchDelay: 0.4
+  legacyDisplayName: 

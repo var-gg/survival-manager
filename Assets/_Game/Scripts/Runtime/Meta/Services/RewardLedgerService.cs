@@ -20,7 +20,7 @@ public static class RewardLedgerService
         var timestamp = DateTime.UtcNow.ToString("O");
         InventoryLedgerEntry? inventoryEntry = null;
         var amount = option.Amount;
-        var summary = option.Label;
+        var summary = option.SummaryKey;
 
         switch (option.Type)
         {

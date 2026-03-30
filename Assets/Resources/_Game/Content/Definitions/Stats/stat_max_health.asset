@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_max_health
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: max_health
-  DisplayName: Max Health
-  Description: 
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  legacyDisplayName: 
+  legacyDescription: 

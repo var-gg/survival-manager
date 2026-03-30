@@ -7,6 +7,8 @@
 - 관련문서:
   - `docs/03_architecture/data-model.md`
   - `docs/03_architecture/combat-runtime-architecture.md`
+  - `docs/03_architecture/content-authoring-and-balance-data.md`
+  - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/04_decisions/adr-0015-build-compile-audit-pipeline.md`
 
 ## 목적
@@ -25,3 +27,9 @@
 - combat는 profile/save 모델을 직접 읽지 않는다.
 - Unity는 compile 입력을 직접 조립하지 않는다.
 - `BattleSetupBuilder`는 migration 동안만 호환 래퍼로 유지한다.
+
+## compile 계약
+
+- persistence-friendly slot string은 읽을 수 있다.
+- compile 결과의 canonical slot은 `core_active / utility_active / passive / support`다.
+- compile hash는 skill coeff, delivery, target rule, crit 허용 여부를 포함한다.

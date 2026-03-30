@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
 
@@ -7,7 +8,13 @@ namespace SM.Content.Definitions;
 public sealed class SynergyTierDefinition : ScriptableObject
 {
     public string Id = string.Empty;
+    public string NameKey = string.Empty;
+    public string DescriptionKey = string.Empty;
     public int Threshold = 2;
-    [TextArea] public string Description = string.Empty;
     public List<SerializableStatModifier> Modifiers = new();
+
+    [FormerlySerializedAs("Description")]
+    [SerializeField, HideInInspector, TextArea] private string legacyDescription = string.Empty;
+
+    public string LegacyDescription => legacyDescription;
 }

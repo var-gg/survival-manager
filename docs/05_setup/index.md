@@ -13,6 +13,7 @@
 - `github-publish-notes.md`: GitHub publish/push 주의사항
 - `github-setup.md`: GitHub 연동 설정
 - `local-automation.md`: 로컬 자동화 스크립트 사용
+- `localization-workflow.md`: localization foundation, key 추가, locale 검증 절차
 - `local-runbook.md`: 로컬 실행 런북
 - `quick-battle-smoke.md`: Town Quick Battle smoke 경로
 - `postgres-setup.md`: local Postgres 설정

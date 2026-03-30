@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: stat_speed
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
   Id: speed
-  DisplayName: Speed
-  Description: 
+  NameKey: content.stat.speed.name
+  DescriptionKey: content.stat.speed.desc
+  legacyDisplayName: 
+  legacyDescription: 

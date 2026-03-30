@@ -1,8 +1,12 @@
 # 아이템과 affix 시스템
 
-- 상태: draft
-- 최종수정일: 2026-03-29
-- phase: prototype
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-30
+- 소스오브트루스: `docs/02_design/meta/item-and-affix-system.md`
+- 관련문서:
+  - `docs/02_design/meta/item-passive-augment-budget.md`
+  - `docs/02_design/systems/launch-content-scope-and-balance.md`
 
 ## 목적
 
@@ -72,3 +76,8 @@ MVP에서는 아직 하지 않는다.
 - 아이템이 trait/augment보다 너무 강하면 안 된다.
 - 반대로 아이템이 너무 약해서 존재감이 없어도 안 된다.
 - gold reroll은 유용하되 필수 정답이 되면 안 된다.
+
+## launch 기준 연결
+
+- equippable와 affix의 paid launch floor / safe target 숫자는 `docs/02_design/meta/item-passive-augment-budget.md`가 소유한다.
+- unique는 큰 수치보다 granted skill과 rule change를 우선한다.

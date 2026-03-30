@@ -13,9 +13,23 @@ MonoBehaviour:
   m_Name: item_leather_armor
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ItemBaseDefinition
   Id: item_leather_armor
-  DisplayName: Leather Armor
+  NameKey: content.item.item_leather_armor.name
+  DescriptionKey: content.item.item_leather_armor.desc
   SlotType: 1
+  IdentityKind: 0
+  ItemFamilyTag: 
+  RarityTier: 0
+  AffixPoolTag: 
+  CraftCategory: 
+  BudgetBand: personal_power_9
+  GrantedSkills: []
+  CompileTags: []
+  RuleModifierTags: []
+  AllowedClassTags: []
+  AllowedArchetypeTags: []
+  UniqueRuleTags: []
   BaseModifiers:
-  - StatId: defense
+  - StatId: armor
     Op: 0
     Value: 1
+  legacyDisplayName: 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
 
@@ -6,5 +7,10 @@ namespace SM.Content.Definitions;
 public sealed class StableTagDefinition : ScriptableObject
 {
     public string Id = string.Empty;
-    public string DisplayName = string.Empty;
+    public string NameKey = string.Empty;
+
+    [FormerlySerializedAs("DisplayName")]
+    [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;
+
+    public string LegacyDisplayName => legacyDisplayName;
 }

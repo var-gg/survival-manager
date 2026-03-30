@@ -5,8 +5,11 @@
 - 최종수정일: 2026-03-30
 - 소스오브트루스: `docs/02_design/combat/stat-system-and-power-budget.md`
 - 관련문서:
+  - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/02_design/combat/team-tactics-and-unit-rules.md`
   - `docs/02_design/combat/authoritative-replay-and-ledger.md`
+  - `docs/02_design/meta/item-passive-augment-budget.md`
+  - `docs/02_design/systems/launch-content-scope-and-balance.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
   - `docs/04_decisions/adr-0015-build-compile-audit-pipeline.md`
 
@@ -25,7 +28,7 @@
 ## 공개 핵심 스탯
 
 - 생존: `max_health`, `armor`, `resist`, `barrier_power`, `tenacity`, `heal_power`
-- 공격: `phys_power`, `mag_power`, `attack_speed`, `crit_chance`, `crit_multiplier`, `phys_pen`, `mag_pen`
+- 공격: `phys_power`, `mag_power`, `attack_speed`, `crit_chance`, `crit_multiplier`, `phys_pen`, `mag_pen`, `lifesteal`, `omnivamp`
 - 전개: `move_speed`, `attack_range`, `mana_max`, `mana_gain_on_attack`, `mana_gain_on_hit`, `cooldown_recovery`
 
 ## 툴/시스템 전용 스탯
@@ -73,3 +76,8 @@
 
 - accuracy/evasion, rule modifier의 실제 resolver 확장, full balance sweep UI는 다음 패스에서 연다.
 - 수치 변경 시 sandbox preview와 compile determinism 테스트를 함께 갱신한다.
+
+## launch 기준 연결
+
+- canonical 수식과 skill taxonomy는 `docs/02_design/combat/skill-taxonomy-and-damage-model.md`가 소유한다.
+- launch floor / safe target 수량과 source별 예산은 `docs/02_design/meta/item-passive-augment-budget.md`와 `docs/02_design/systems/launch-content-scope-and-balance.md`를 따른다.

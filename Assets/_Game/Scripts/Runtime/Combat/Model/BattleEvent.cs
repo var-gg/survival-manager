@@ -8,7 +8,7 @@ public sealed record BattleEvent(
     EntityId ActorId,
     string ActorName,
     BattleActionType ActionType,
+    BattleLogCode LogCode,
     EntityId? TargetId,
     string? TargetName,
-    float Value,
-    string Note);
+    float Value);

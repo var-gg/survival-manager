@@ -13,9 +13,15 @@ MonoBehaviour:
   m_Name: affix_heavy
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AffixDefinition
   Id: affix_heavy
-  DisplayName: Heavy
-  Description: Heavy
+  NameKey: content.affix.affix_heavy.name
+  DescriptionKey: content.affix.affix_heavy.desc
+  Category: 2
+  AllowedSlotTypes: 0100000002000000
+  CompileTags: []
+  RuleModifierTags: []
   Modifiers:
-  - StatId: defense
+  - StatId: armor
     Op: 0
     Value: 2
+  legacyDisplayName: 
+  legacyDescription: 

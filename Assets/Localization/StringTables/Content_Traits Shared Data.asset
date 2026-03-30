@@ -1,0 +1,412 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Content_Traits Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: Content_Traits
+  m_TableCollectionNameGuidString: d5404813a198bea4ca53e34f610f7cef
+  m_Entries:
+  - m_Id: 48174718976
+    m_Key: content.trait.warden.warden_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48241827840
+    m_Key: content.trait.warden.warden_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022144
+    m_Key: content.trait.warden.warden_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022145
+    m_Key: content.trait.warden.warden_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022146
+    m_Key: content.trait.warden.warden_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022147
+    m_Key: content.trait.warden.warden_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022148
+    m_Key: content.trait.warden.warden_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022149
+    m_Key: content.trait.warden.warden_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022150
+    m_Key: content.trait.warden.warden_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022151
+    m_Key: content.trait.warden.warden_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022152
+    m_Key: content.trait.warden.warden_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022153
+    m_Key: content.trait.warden.warden_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906368
+    m_Key: content.trait.guardian.guardian_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906369
+    m_Key: content.trait.guardian.guardian_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906370
+    m_Key: content.trait.guardian.guardian_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906371
+    m_Key: content.trait.guardian.guardian_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906372
+    m_Key: content.trait.guardian.guardian_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906373
+    m_Key: content.trait.guardian.guardian_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906374
+    m_Key: content.trait.guardian.guardian_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906375
+    m_Key: content.trait.guardian.guardian_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906376
+    m_Key: content.trait.guardian.guardian_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906377
+    m_Key: content.trait.guardian.guardian_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906378
+    m_Key: content.trait.guardian.guardian_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906379
+    m_Key: content.trait.guardian.guardian_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544384
+    m_Key: content.trait.slayer.slayer_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544385
+    m_Key: content.trait.slayer.slayer_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544386
+    m_Key: content.trait.slayer.slayer_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544387
+    m_Key: content.trait.slayer.slayer_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544388
+    m_Key: content.trait.slayer.slayer_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544389
+    m_Key: content.trait.slayer.slayer_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738688
+    m_Key: content.trait.slayer.slayer_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738689
+    m_Key: content.trait.slayer.slayer_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738690
+    m_Key: content.trait.slayer.slayer_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738691
+    m_Key: content.trait.slayer.slayer_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738692
+    m_Key: content.trait.slayer.slayer_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738693
+    m_Key: content.trait.slayer.slayer_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51098148864
+    m_Key: content.trait.raider.raider_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51098148865
+    m_Key: content.trait.raider.raider_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343168
+    m_Key: content.trait.raider.raider_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343169
+    m_Key: content.trait.raider.raider_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343170
+    m_Key: content.trait.raider.raider_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343171
+    m_Key: content.trait.raider.raider_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343172
+    m_Key: content.trait.raider.raider_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343173
+    m_Key: content.trait.raider.raider_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343174
+    m_Key: content.trait.raider.raider_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343175
+    m_Key: content.trait.raider.raider_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343176
+    m_Key: content.trait.raider.raider_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343177
+    m_Key: content.trait.raider.raider_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520448
+    m_Key: content.trait.hunter.hunter_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520449
+    m_Key: content.trait.hunter.hunter_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520450
+    m_Key: content.trait.hunter.hunter_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520451
+    m_Key: content.trait.hunter.hunter_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520452
+    m_Key: content.trait.hunter.hunter_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520453
+    m_Key: content.trait.hunter.hunter_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520454
+    m_Key: content.trait.hunter.hunter_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520455
+    m_Key: content.trait.hunter.hunter_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520456
+    m_Key: content.trait.hunter.hunter_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520457
+    m_Key: content.trait.hunter.hunter_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520458
+    m_Key: content.trait.hunter.hunter_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520459
+    m_Key: content.trait.hunter.hunter_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247104
+    m_Key: content.trait.scout.scout_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247105
+    m_Key: content.trait.scout.scout_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247106
+    m_Key: content.trait.scout.scout_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247107
+    m_Key: content.trait.scout.scout_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247108
+    m_Key: content.trait.scout.scout_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247109
+    m_Key: content.trait.scout.scout_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247110
+    m_Key: content.trait.scout.scout_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247111
+    m_Key: content.trait.scout.scout_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247112
+    m_Key: content.trait.scout.scout_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247113
+    m_Key: content.trait.scout.scout_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247114
+    m_Key: content.trait.scout.scout_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247115
+    m_Key: content.trait.scout.scout_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908544
+    m_Key: content.trait.priest.priest_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908545
+    m_Key: content.trait.priest.priest_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908546
+    m_Key: content.trait.priest.priest_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908547
+    m_Key: content.trait.priest.priest_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908548
+    m_Key: content.trait.priest.priest_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908549
+    m_Key: content.trait.priest.priest_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908550
+    m_Key: content.trait.priest.priest_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908551
+    m_Key: content.trait.priest.priest_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908552
+    m_Key: content.trait.priest.priest_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908553
+    m_Key: content.trait.priest.priest_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908554
+    m_Key: content.trait.priest.priest_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908555
+    m_Key: content.trait.priest.priest_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181376
+    m_Key: content.trait.hexer.hexer_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181377
+    m_Key: content.trait.hexer.hexer_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181378
+    m_Key: content.trait.hexer.hexer_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181379
+    m_Key: content.trait.hexer.hexer_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181380
+    m_Key: content.trait.hexer.hexer_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181381
+    m_Key: content.trait.hexer.hexer_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375680
+    m_Key: content.trait.hexer.hexer_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375681
+    m_Key: content.trait.hexer.hexer_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375682
+    m_Key: content.trait.hexer.hexer_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375683
+    m_Key: content.trait.hexer.hexer_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375684
+    m_Key: content.trait.hexer.hexer_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375685
+    m_Key: content.trait.hexer.hexer_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1798213439901401344
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401344
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1774854114870

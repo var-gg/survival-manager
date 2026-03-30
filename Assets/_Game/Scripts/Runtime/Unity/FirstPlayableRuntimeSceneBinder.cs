@@ -34,6 +34,7 @@ public static class FirstPlayableRuntimeSceneBinder
         }
 
         EnsureEventSystem(scene);
+        EnsureSharedUiFont(scene);
 
         switch (scene.name)
         {
@@ -53,6 +54,20 @@ public static class FirstPlayableRuntimeSceneBinder
                 EnsureReward(scene);
                 break;
         }
+
+        RefreshLocalizedBindings(scene);
+    }
+
+    public static void RefreshLocalizedBindings(Scene scene)
+    {
+        if (!scene.IsValid() || !scene.isLoaded)
+        {
+            return;
+        }
+
+        EnsureSharedUiFont(scene);
+        EnsureStaticLocalizedText(scene);
+        EnsureLocalizationOverlay(scene);
     }
 
     private static void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -214,6 +229,75 @@ public static class FirstPlayableRuntimeSceneBinder
         BindButton(scene, "ChooseButton", controller.Choose1, "ChoiceCard2");
         BindButton(scene, "ChooseButton", controller.Choose2, "ChoiceCard3");
         BindButton(scene, "ReturnTownButton", controller.ReturnToTown);
+    }
+
+    private static void EnsureLocalizationOverlay(Scene scene)
+    {
+        if (!Application.isPlaying || GameSessionRoot.Instance?.Localization == null)
+        {
+            return;
+        }
+
+        var canvas = scene.GetRootGameObjects()
+            .Select(root => root.GetComponentInChildren<Canvas>(true))
+            .FirstOrDefault(candidate => candidate != null);
+        if (canvas == null)
+        {
+            return;
+        }
+
+        GlobalLocalizationOverlayView.EnsureAttached(
+            canvas.GetComponent<RectTransform>(),
+            GameSessionRoot.Instance.Localization);
+    }
+
+    private static void EnsureStaticLocalizedText(Scene scene)
+    {
+        switch (scene.name)
+        {
+            case SceneNames.Town:
+                EnsureLocalizedText(scene, "RerollButton", "Label", GameLocalizationTables.UITown, "ui.town.action.reroll");
+                EnsureLocalizedText(scene, "SaveButton", "Label", GameLocalizationTables.UICommon, "ui.common.save");
+                EnsureLocalizedText(scene, "LoadButton", "Label", GameLocalizationTables.UICommon, "ui.common.load");
+                EnsureLocalizedText(scene, "DebugStartButton", "Label", GameLocalizationTables.UITown, "ui.town.action.debug_start");
+                EnsureLocalizedText(scene, "QuickBattleButton", "Label", GameLocalizationTables.UITown, "ui.town.action.quick_battle");
+                break;
+            case SceneNames.Expedition:
+                EnsureLocalizedText(scene, "NextBattleButton", "Label", GameLocalizationTables.UIExpedition, "ui.expedition.action.next_battle");
+                EnsureLocalizedText(scene, "ReturnTownButton", "Label", GameLocalizationTables.UICommon, "ui.common.return_town");
+                break;
+            case SceneNames.Battle:
+                EnsureLocalizedText(scene, "SettingsTitleText", null, GameLocalizationTables.UIBattle, "ui.battle.settings.title");
+                EnsureLocalizedText(scene, "SettingsButton", "Label", GameLocalizationTables.UICommon, "ui.common.settings");
+                EnsureLocalizedText(scene, "PauseButton", "Label", GameLocalizationTables.UICommon, "ui.common.pause");
+                EnsureLocalizedText(scene, "ContinueButton", "Label", GameLocalizationTables.UICommon, "ui.common.continue");
+                break;
+            case SceneNames.Reward:
+                EnsureLocalizedText(scene, "ReturnTownButton", "Label", GameLocalizationTables.UICommon, "ui.common.return_town");
+                break;
+        }
+    }
+
+    private static void EnsureSharedUiFont(Scene scene)
+    {
+        foreach (var root in scene.GetRootGameObjects())
+        {
+            GameFontCatalog.ApplyToHierarchy(root.transform);
+        }
+    }
+
+    private static void EnsureLocalizedText(Scene scene, string objectName, string? childName, string table, string entryKey)
+    {
+        var go = string.IsNullOrWhiteSpace(childName)
+            ? FindGameObject(scene, objectName)
+            : FindChildGameObject(scene, objectName, childName);
+        if (go == null)
+        {
+            return;
+        }
+
+        var binder = EnsureComponent<UguiTextLocalizerBinder>(go);
+        binder.Configure(table, entryKey);
     }
 
     private static void EnsureEventSystem(Scene scene)

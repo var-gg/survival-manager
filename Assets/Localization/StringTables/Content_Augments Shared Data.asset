@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Content_Augments Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: Content_Augments
+  m_TableCollectionNameGuidString: b33f88567161aad4b88c41ae89e141b9
+  m_Entries:
+  - m_Id: 69704081408
+    m_Key: content.augment.augment_silver_guard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 69771190272
+    m_Key: content.augment.augment_silver_guard.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70723297280
+    m_Key: content.augment.augment_silver_focus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70723297281
+    m_Key: content.augment.augment_silver_focus.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71700570112
+    m_Key: content.augment.augment_silver_stride.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71704764416
+    m_Key: content.augment.augment_silver_stride.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72707203072
+    m_Key: content.augment.augment_gold_bastion.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72707203073
+    m_Key: content.augment.augment_gold_bastion.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73713836032
+    m_Key: content.augment.augment_gold_fury.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73713836033
+    m_Key: content.augment.augment_gold_fury.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 74661748736
+    m_Key: content.augment.augment_gold_mending.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 74661748737
+    m_Key: content.augment.augment_gold_mending.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 75676770304
+    m_Key: content.augment.augment_platinum_overrun.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 75676770305
+    m_Key: content.augment.augment_platinum_overrun.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76813426688
+    m_Key: content.augment.augment_platinum_wall.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76813426689
+    m_Key: content.augment.augment_platinum_wall.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77916528640
+    m_Key: content.augment.augment_platinum_surge.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77916528641
+    m_Key: content.augment.augment_platinum_surge.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 78734417920
+    m_Key: content.augment.augment_perm_legacy_blade.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 78734417921
+    m_Key: content.augment.augment_perm_legacy_blade.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 79640387584
+    m_Key: content.augment.augment_perm_legacy_hide.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 79640387585
+    m_Key: content.augment.augment_perm_legacy_hide.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80617660416
+    m_Key: content.augment.augment_perm_legacy_grace.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80617660417
+    m_Key: content.augment.augment_perm_legacy_grace.desc
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1798213439901401340
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401340
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1774854113991

@@ -6,6 +6,7 @@
 - 소스오브트루스: `docs/03_architecture/content-authoring-model.md`
 - 관련문서:
   - `docs/03_architecture/data-model.md`
+  - `docs/03_architecture/content-authoring-and-balance-data.md`
   - `docs/03_architecture/unity-boundaries.md`
   - `docs/03_architecture/unity-project-layout.md`
 
@@ -51,3 +52,8 @@ Assets/Resources/_Game/Content/Definitions/
 - scene script 안에 콘텐츠 표를 직접 박아 넣는 방식
 - authored asset에 runtime/save mutable state를 직접 저장하는 방식
 - `Helper`, `Util` 하나로 여러 콘텐츠 타입을 뒤섞는 방식
+
+## launch 기준 연결
+
+- launch authoring schema의 필드 단위 소유권은 `docs/03_architecture/content-authoring-and-balance-data.md`가 소유한다.
+- 이 문서는 기본 authoring 경계와 금지 패턴만 유지한다.

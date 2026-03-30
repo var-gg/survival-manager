@@ -13,9 +13,15 @@ MonoBehaviour:
   m_Name: affix_sharp
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AffixDefinition
   Id: affix_sharp
-  DisplayName: Sharp
-  Description: Sharp
+  NameKey: content.affix.affix_sharp.name
+  DescriptionKey: content.affix.affix_sharp.desc
+  Category: 0
+  AllowedSlotTypes: 00000000
+  CompileTags: []
+  RuleModifierTags: []
   Modifiers:
-  - StatId: attack
+  - StatId: phys_power
     Op: 0
     Value: 2
+  legacyDisplayName: 
+  legacyDescription: 

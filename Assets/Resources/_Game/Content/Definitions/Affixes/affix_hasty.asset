@@ -13,9 +13,15 @@ MonoBehaviour:
   m_Name: affix_hasty
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AffixDefinition
   Id: affix_hasty
-  DisplayName: Hasty
-  Description: Hasty
+  NameKey: content.affix.affix_hasty.name
+  DescriptionKey: content.affix.affix_hasty.desc
+  Category: 4
+  AllowedSlotTypes: 0200000001000000
+  CompileTags: []
+  RuleModifierTags: []
   Modifiers:
-  - StatId: speed
+  - StatId: attack_speed
     Op: 0
     Value: 2
+  legacyDisplayName: 
+  legacyDescription: 

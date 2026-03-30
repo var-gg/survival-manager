@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
 
@@ -11,7 +12,8 @@ public enum AugmentEligibleModeValue { Expedition = 1, Pvp = 2 }
 public sealed class AugmentDefinition : ScriptableObject
 {
     public string Id = string.Empty;
-    public string DisplayName = string.Empty;
+    public string NameKey = string.Empty;
+    public string DescriptionKey = string.Empty;
     public AugmentRarity Rarity = AugmentRarity.Silver;
     public bool IsPermanent;
     public AugmentCategoryValue Category = AugmentCategoryValue.Combat;
@@ -19,11 +21,19 @@ public sealed class AugmentDefinition : ScriptableObject
     public int Tier = 1;
     public float OfferWeight = 1f;
     public bool SuppressIfPermanentEquipped;
-    [TextArea] public string Description = string.Empty;
     public List<StableTagDefinition> Tags = new();
     public List<StableTagDefinition> MutualExclusionTags = new();
     public List<StableTagDefinition> RequiresTags = new();
     public List<StableTagDefinition> RuleModifierTags = new();
     public AugmentEligibleModeValue EligibleModes = AugmentEligibleModeValue.Expedition;
     public List<SerializableStatModifier> Modifiers = new();
+
+    [FormerlySerializedAs("DisplayName")]
+    [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;
+
+    [FormerlySerializedAs("Description")]
+    [SerializeField, HideInInspector, TextArea] private string legacyDescription = string.Empty;
+
+    public string LegacyDisplayName => legacyDisplayName;
+    public string LegacyDescription => legacyDescription;
 }

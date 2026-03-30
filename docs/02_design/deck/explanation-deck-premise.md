@@ -13,4 +13,5 @@
 
 - build ownership: `docs/02_design/systems/squad-blueprint-and-build-ownership.md`
 - skill/item/passive build: `docs/02_design/systems/skills-items-and-passive-boards.md`
+- launch roster와 archetype: `docs/02_design/deck/roster-archetype-launch-scope.md`
 - replay/ledger: `docs/02_design/combat/authoritative-replay-and-ledger.md`

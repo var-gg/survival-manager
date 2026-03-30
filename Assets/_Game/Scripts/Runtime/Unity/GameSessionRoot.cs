@@ -11,6 +11,7 @@ public sealed class GameSessionRoot : MonoBehaviour
     public GameSessionState SessionState { get; private set; } = null!;
     public PersistenceEntryPoint Persistence { get; private set; } = null!;
     public SceneFlowController SceneFlow { get; private set; } = null!;
+    public GameLocalizationController Localization { get; private set; } = null!;
     public string? LastBlockingError { get; private set; }
     public bool HasBlockingError => !string.IsNullOrWhiteSpace(LastBlockingError);
 
@@ -25,6 +26,7 @@ public sealed class GameSessionRoot : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        Localization = GetComponent<GameLocalizationController>() ?? gameObject.AddComponent<GameLocalizationController>();
         CombatContentLookup = new RuntimeCombatContentLookup();
         SessionState = new GameSessionState(CombatContentLookup);
         Persistence = new PersistenceEntryPoint();
@@ -53,6 +55,10 @@ public sealed class GameSessionRoot : MonoBehaviour
     private static void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         FirstPlayableRuntimeSceneBinder.EnsureSceneBindings(scene);
+        if (Instance?.Localization.IsInitialized == true)
+        {
+            FirstPlayableRuntimeSceneBinder.RefreshLocalizedBindings(scene);
+        }
     }
 
     public void BindProfile()
@@ -70,6 +76,11 @@ public sealed class GameSessionRoot : MonoBehaviour
     {
         LastBlockingError = message;
         Debug.LogError(message);
+    }
+
+    public void SetBlockingError(string tableCollection, string entryKey, string fallback, params object[] arguments)
+    {
+        SetBlockingError(Localization.LocalizeOrFallback(tableCollection, entryKey, fallback, arguments));
     }
 
     public void ClearBlockingError()

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: race_beastkin
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RaceDefinition
-  Id: beastkin
-  DisplayName: Beastkin
-  Description: Aggressive feral pressure.
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  legacyDisplayName: 
+  legacyDescription: 

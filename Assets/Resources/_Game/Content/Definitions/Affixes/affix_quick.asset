@@ -13,9 +13,15 @@ MonoBehaviour:
   m_Name: affix_quick
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AffixDefinition
   Id: affix_quick
-  DisplayName: Quick
-  Description: Quick
+  NameKey: content.affix.affix_quick.name
+  DescriptionKey: content.affix.affix_quick.desc
+  Category: 4
+  AllowedSlotTypes: 0200000001000000
+  CompileTags: []
+  RuleModifierTags: []
   Modifiers:
-  - StatId: speed
+  - StatId: attack_speed
     Op: 0
     Value: 1
+  legacyDisplayName: 
+  legacyDescription: 

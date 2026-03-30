@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Content_Skills Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: Content_Skills
+  m_TableCollectionNameGuidString: be439bdde235d9b42a7266ace239dfc0
+  m_Entries:
+  - m_Id: 49542062080
+    m_Key: content.skill.skill_power_strike.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49621753856
+    m_Key: content.skill.skill_power_strike.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50661941248
+    m_Key: content.skill.skill_precision_shot.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50661941249
+    m_Key: content.skill.skill_precision_shot.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51689545728
+    m_Key: content.skill.skill_minor_heal.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51689545729
+    m_Key: content.skill.skill_minor_heal.desc
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1798213439901401339
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401339
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1774854113794

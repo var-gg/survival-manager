@@ -13,7 +13,27 @@ MonoBehaviour:
   m_Name: skill_power_strike
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
   Id: skill_power_strike
-  DisplayName: Power Strike
+  NameKey: content.skill.skill_power_strike.name
+  DescriptionKey: content.skill.skill_power_strike.desc
   Kind: 0
+  SlotKind: 0
+  DamageType: 0
+  Delivery: 0
+  TargetRule: 2
   Power: 3
   Range: 1
+  PowerFlat: 3
+  PhysCoeff: 1
+  MagCoeff: 0
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 0
+  ManaCost: 0
+  BaseCooldownSeconds: 0
+  CastWindupSeconds: 0
+  CompileTags: []
+  RuleModifierTags: []
+  SupportAllowedTags: []
+  RequiredWeaponTags: []
+  RequiredClassTags: []
+  legacyDisplayName: 

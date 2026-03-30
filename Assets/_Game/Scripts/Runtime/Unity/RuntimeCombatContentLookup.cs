@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Stats;
@@ -48,6 +49,8 @@ public sealed class RuntimeCombatContentLookup
 
     private readonly Dictionary<string, UnitArchetypeDefinition> _archetypeDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, TraitPoolDefinition> _traitPools = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, RaceDefinition> _raceDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, ClassDefinition> _classDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, ItemBaseDefinition> _itemDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, AffixDefinition> _affixDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, AugmentDefinition> _augmentDefinitions = new(StringComparer.Ordinal);
@@ -89,6 +92,9 @@ public sealed class RuntimeCombatContentLookup
         {
             snapshot = null!;
             error = ex.Message;
+#if UNITY_EDITOR
+            Debug.LogError($"[RuntimeCombatContentLookup] Failed to build combat snapshot: {ex}");
+#endif
             return false;
         }
     }
@@ -134,6 +140,57 @@ public sealed class RuntimeCombatContentLookup
     {
         EnsureLoaded();
         return _archetypeDefinitions.TryGetValue(archetypeId, out archetype!);
+    }
+
+    public bool TryGetItemDefinition(string itemId, out ItemBaseDefinition item)
+    {
+        EnsureLoaded();
+        return _itemDefinitions.TryGetValue(itemId, out item!);
+    }
+
+    public bool TryGetRaceDefinition(string raceId, out RaceDefinition race)
+    {
+        EnsureLoaded();
+        return _raceDefinitions.TryGetValue(raceId, out race!);
+    }
+
+    public bool TryGetClassDefinition(string classId, out ClassDefinition @class)
+    {
+        EnsureLoaded();
+        return _classDefinitions.TryGetValue(classId, out @class!);
+    }
+
+    public bool TryGetAugmentDefinition(string augmentId, out AugmentDefinition augment)
+    {
+        EnsureLoaded();
+        return _augmentDefinitions.TryGetValue(augmentId, out augment!);
+    }
+
+    public bool TryGetSkillDefinition(string skillId, out SkillDefinitionAsset skill)
+    {
+        EnsureLoaded();
+        return _skillDefinitions.TryGetValue(skillId, out skill!);
+    }
+
+    public bool TryGetAffixDefinition(string affixId, out AffixDefinition affix)
+    {
+        EnsureLoaded();
+        return _affixDefinitions.TryGetValue(affixId, out affix!);
+    }
+
+    public bool TryGetTraitEntry(string archetypeId, string traitId, out TraitEntry trait)
+    {
+        EnsureLoaded();
+        trait = null!;
+
+        if (!_traitPools.TryGetValue(archetypeId, out var pool))
+        {
+            return false;
+        }
+
+        trait = pool.PositiveTraits.Concat(pool.NegativeTraits)
+            .FirstOrDefault(entry => entry != null && string.Equals(entry.Id, traitId, StringComparison.Ordinal))!;
+        return trait != null;
     }
 
     public bool TryGetTraitIds(string archetypeId, out IReadOnlyList<string> positiveTraitIds, out IReadOnlyList<string> negativeTraitIds)
@@ -281,7 +338,13 @@ public sealed class RuntimeCombatContentLookup
 
     private void LoadContent()
     {
+#if UNITY_EDITOR
+        EnsureEditorCanonicalSampleContent();
+#endif
         var archetypes = LoadDefinitions<UnitArchetypeDefinition>("_Game/Content/Definitions/Archetypes", "Assets/Resources/_Game/Content/Definitions/Archetypes");
+        var traitPools = LoadDefinitions<TraitPoolDefinition>("_Game/Content/Definitions/Traits", "Assets/Resources/_Game/Content/Definitions/Traits");
+        var races = LoadDefinitions<RaceDefinition>("_Game/Content/Definitions/Races", "Assets/Resources/_Game/Content/Definitions/Races");
+        var classes = LoadDefinitions<ClassDefinition>("_Game/Content/Definitions/Classes", "Assets/Resources/_Game/Content/Definitions/Classes");
         var items = LoadDefinitions<ItemBaseDefinition>("_Game/Content/Definitions/Items", "Assets/Resources/_Game/Content/Definitions/Items");
         var affixes = LoadDefinitions<AffixDefinition>("_Game/Content/Definitions/Affixes", "Assets/Resources/_Game/Content/Definitions/Affixes");
         var augments = LoadDefinitions<AugmentDefinition>("_Game/Content/Definitions/Augments", "Assets/Resources/_Game/Content/Definitions/Augments");
@@ -306,6 +369,8 @@ public sealed class RuntimeCombatContentLookup
 
         _archetypeDefinitions.Clear();
         _traitPools.Clear();
+        _raceDefinitions.Clear();
+        _classDefinitions.Clear();
         _itemDefinitions.Clear();
         _affixDefinitions.Clear();
         _augmentDefinitions.Clear();
@@ -315,13 +380,41 @@ public sealed class RuntimeCombatContentLookup
         _passiveNodeDefinitions.Clear();
         _synergyDefinitions.Clear();
 
+        foreach (var race in races.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _raceDefinitions[race.Id] = race;
+        }
+
+        foreach (var @class in classes.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _classDefinitions[@class.Id] = @class;
+        }
+
         foreach (var archetype in archetypes.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
         {
             _archetypeDefinitions[archetype.Id] = archetype;
-            if (archetype.TraitPool != null && !string.IsNullOrWhiteSpace(archetype.TraitPool.ArchetypeId))
+        }
+
+        foreach (var traitPool in traitPools.Where(definition => definition != null))
+        {
+            var archetypeId = ResolveTraitPoolArchetypeId(traitPool);
+            if (string.IsNullOrWhiteSpace(archetypeId))
             {
-                _traitPools[archetype.TraitPool.ArchetypeId] = archetype.TraitPool;
+                continue;
             }
+
+            _traitPools[archetypeId] = traitPool;
+        }
+
+        foreach (var archetype in archetypes.Where(definition => definition != null && definition.TraitPool != null))
+        {
+            var archetypeId = ResolveTraitPoolArchetypeId(archetype.TraitPool);
+            if (string.IsNullOrWhiteSpace(archetypeId))
+            {
+                continue;
+            }
+
+            _traitPools[archetypeId] = archetype.TraitPool;
         }
 
         foreach (var item in items.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
@@ -418,7 +511,7 @@ public sealed class RuntimeCombatContentLookup
     {
         return new CombatArchetypeTemplate(
             definition.Id,
-            definition.DisplayName,
+            ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
             definition.Race.Id,
             definition.Class.Id,
             (DeploymentAnchorId)definition.DefaultAnchor,
@@ -450,18 +543,18 @@ public sealed class RuntimeCombatContentLookup
     {
         return new BattleSkillSpec(
             skill.Id,
-            skill.DisplayName,
+            ResolveLegacyName(skill.NameKey, skill.LegacyDisplayName, skill.Id),
             (SkillKind)skill.Kind,
             skill.Power,
             skill.Range,
             skill.SlotKind switch
             {
-                SkillSlotKindValue.UtilityActive => "utility_active",
-                SkillSlotKindValue.Passive => "passive",
-                SkillSlotKindValue.Support => "support",
-                _ => "core_active",
+                SkillSlotKindValue.UtilityActive => CompiledSkillSlots.UtilityActive,
+                SkillSlotKindValue.Passive => CompiledSkillSlots.Passive,
+                SkillSlotKindValue.Support => CompiledSkillSlots.Support,
+                _ => CompiledSkillSlots.CoreActive,
             },
-            skill.CompileTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+            ExtractTagIds(skill.CompileTags),
             skill.DamageType switch
             {
                 DamageTypeValue.Magical => DamageType.Magical,
@@ -476,7 +569,14 @@ public sealed class RuntimeCombatContentLookup
             skill.ManaCost,
             skill.BaseCooldownSeconds,
             skill.CastWindupSeconds,
-            skill.RuleModifierTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
+            ExtractTagIds(skill.RuleModifierTags),
+            skill.HealthCoeff,
+            skill.CanCrit,
+            (SkillDelivery)skill.Delivery,
+            (SkillTargetRule)skill.TargetRule,
+            ExtractTagIds(skill.SupportAllowedTags),
+            ExtractTagIds(skill.RequiredWeaponTags),
+            ExtractTagIds(skill.RequiredClassTags));
     }
 
     private static CombatModifierPackage BuildTraitPackage(TraitEntry trait)
@@ -517,7 +617,7 @@ public sealed class RuntimeCombatContentLookup
             definition.Id,
             new TeamTacticProfile(
                 definition.Id,
-                definition.DisplayName,
+                ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
                 (TeamPostureType)definition.Posture,
                 definition.CombatPace,
                 definition.FocusModeBias,
@@ -647,6 +747,74 @@ public sealed class RuntimeCombatContentLookup
     {
         return primary != 0f ? primary : fallback;
     }
+
+    private static List<string> ExtractTagIds(IEnumerable<StableTagDefinition> tags)
+    {
+        return tags
+            .Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id))
+            .Select(tag => tag.Id)
+            .ToList();
+    }
+
+    private static string ResolveLegacyName(string nameKey, string legacyDisplayName, string fallback)
+    {
+        if (!string.IsNullOrWhiteSpace(legacyDisplayName))
+        {
+            return legacyDisplayName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(nameKey))
+        {
+            return nameKey;
+        }
+
+        return fallback;
+    }
+
+    private static string ResolveTraitPoolArchetypeId(TraitPoolDefinition traitPool)
+    {
+        if (!string.IsNullOrWhiteSpace(traitPool.ArchetypeId))
+        {
+            return traitPool.ArchetypeId;
+        }
+
+        if (!string.IsNullOrWhiteSpace(traitPool.Id) && traitPool.Id.StartsWith("traitpool_", StringComparison.Ordinal))
+        {
+            return traitPool.Id["traitpool_".Length..];
+        }
+
+        if (!string.IsNullOrWhiteSpace(traitPool.name) && traitPool.name.StartsWith("traitpool_", StringComparison.Ordinal))
+        {
+            return traitPool.name["traitpool_".Length..];
+        }
+
+        return string.Empty;
+    }
+
+#if UNITY_EDITOR
+    private static void EnsureEditorCanonicalSampleContent()
+    {
+        var generatorType = Type.GetType("SM.Editor.SeedData.SampleSeedGenerator, SM.Editor");
+        if (generatorType == null)
+        {
+            return;
+        }
+
+        var hasMinimumMethod = generatorType.GetMethod("HasCanonicalMinimumContent", BindingFlags.Public | BindingFlags.Static);
+        var generateMethod = generatorType.GetMethod("Generate", BindingFlags.Public | BindingFlags.Static);
+        if (hasMinimumMethod == null || generateMethod == null)
+        {
+            return;
+        }
+
+        if (hasMinimumMethod.Invoke(null, null) is true)
+        {
+            return;
+        }
+
+        generateMethod.Invoke(null, null);
+    }
+#endif
 
     private static CombatRuleModifierPackage? BuildRulePackage(
         string sourceId,

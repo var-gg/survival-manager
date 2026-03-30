@@ -32,8 +32,21 @@
 - 설정 인덱스: `05_setup/index.md`
 - 운영 인덱스: `06_production/index.md`
 
+## localization 빠른 링크
+
+- 정책: `02_design/ui/localization-policy.md`
+- 구조: `03_architecture/localization-runtime-and-content-pipeline.md`
+- 결정: `04_decisions/adr-0016-localization-boundary.md`
+- 운영 절차: `05_setup/localization-workflow.md`
+
 ## 현재 전투 기준 빠른 링크
 
+- 출시 기준 허브: `02_design/systems/launch-content-scope-and-balance.md`
+- 로스터와 archetype: `02_design/deck/roster-archetype-launch-scope.md`
+- skill taxonomy와 데미지 모델: `02_design/combat/skill-taxonomy-and-damage-model.md`
+- item / passive / augment budget: `02_design/meta/item-passive-augment-budget.md`
+- synergy breakpoint와 soft counter: `02_design/meta/synergy-breakpoints-and-soft-counters.md`
+- authoring과 balance data 경계: `03_architecture/content-authoring-and-balance-data.md`
 - 전장과 카메라: `02_design/combat/battlefield-and-camera.md`
 - 배치와 앵커: `02_design/combat/deployment-and-anchors.md`
 - 실시간 체감 시뮬레이션 모델: `02_design/combat/realtime-simulation-model.md`

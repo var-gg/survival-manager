@@ -12,18 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: rewardtable_expedition_end
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RewardTableDefinition
-  Id: rewardtable_expedition_end
-  DisplayName: Expedition End Rewards
-  Rewards:
-  - Id: reward.gold.30
-    RewardType: 0
-    Amount: 30
-    Label: 30 Gold
-  - Id: reward.reroll.2
-    RewardType: 2
-    Amount: 2
-    Label: 2 Trait Reroll
-  - Id: augment_perm_legacy_blade
-    RewardType: 1
-    Amount: 1
-    Label: Legacy Blade
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  Rewards: []
+  legacyDisplayName: 

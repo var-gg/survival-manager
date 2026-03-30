@@ -2,6 +2,9 @@ using System.IO;
 using NUnit.Framework;
 using SM.Editor.Bootstrap;
 using SM.Editor.SeedData;
+using SM.Content.Definitions;
+using UnityEditor;
+using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
@@ -10,18 +13,21 @@ public sealed class SceneIntegrityTests
     [OneTimeSetUp]
     public void PrepareCanonicalContentAndObserverPlayableScenes()
     {
-        FirstPlayableContentBootstrap.EnsureSampleContent();
+        SampleSeedGenerator.EnsureCanonicalSampleContent();
         FirstPlayableSceneInstaller.RebuildFirstPlayableScenes();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
     }
 
     [Test]
     public void CanonicalContentRoot_Has_Minimum_Core_Assets()
     {
+        SampleSeedGenerator.EnsureCanonicalSampleContent();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         Assert.That(Directory.Exists(SampleSeedGenerator.ResourcesRoot), Is.True, $"Missing canonical content root: {SampleSeedGenerator.ResourcesRoot}");
-        AssertAssetContains($"{SampleSeedGenerator.ResourcesRoot}/Stats/stat_max_health.asset", "SM.Content.Definitions:StatDefinition", "Id: max_health");
-        AssertAssetContains($"{SampleSeedGenerator.ResourcesRoot}/Races/race_human.asset", "SM.Content.Definitions:RaceDefinition", "Id: human");
-        AssertAssetContains($"{SampleSeedGenerator.ResourcesRoot}/Classes/class_vanguard.asset", "SM.Content.Definitions:ClassDefinition", "Id: vanguard");
-        AssertAssetContains($"{SampleSeedGenerator.ResourcesRoot}/Archetypes/archetype_warden.asset", "SM.Content.Definitions:UnitArchetypeDefinition", "Id: warden");
+        AssertCoreDefinition<StatDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Stats/stat_max_health.asset", definition => definition.Id, "max_health");
+        AssertCoreDefinition<RaceDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Races/race_human.asset", definition => definition.Id, "human");
+        AssertCoreDefinition<ClassDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Classes/class_vanguard.asset", definition => definition.Id, "vanguard");
+        AssertCoreDefinition<UnitArchetypeDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Archetypes/archetype_warden.asset", definition => definition.Id, "warden");
     }
 
     [TestCase("Assets/_Game/Scenes/Boot.unity")]
@@ -105,6 +111,27 @@ public sealed class SceneIntegrityTests
         {
             Assert.That(text, Does.Contain(fragment), $"Canonical sample asset contract missing '{fragment}' in {assetPath}");
         }
+    }
+
+    private static void AssertCoreDefinition<T>(string assetPath, System.Func<T, string> selector, string expectedId) where T : UnityEngine.Object
+    {
+        Assert.That(File.Exists(assetPath), Is.True, $"Canonical sample asset is missing: {assetPath}");
+        var text = File.ReadAllText(assetPath);
+        Assert.That(text, Does.Contain($"Id: {expectedId}"), $"Canonical sample asset contract missing '{expectedId}' in {assetPath}");
+        AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        var asset = Resources.Load<T>(ToResourcesLoadPath(assetPath)) ?? AssetDatabase.LoadAssetAtPath<T>(assetPath);
+        if (asset != null)
+        {
+            Assert.That(selector(asset), Is.EqualTo(expectedId), $"Canonical sample asset contract missing '{expectedId}' in {assetPath}");
+        }
+    }
+
+    private static string ToResourcesLoadPath(string assetPath)
+    {
+        const string resourcesPrefix = "Assets/Resources/";
+        Assert.That(assetPath.StartsWith(resourcesPrefix), Is.True, $"Canonical sample asset is not under Resources: {assetPath}");
+        var relativePath = assetPath.Substring(resourcesPrefix.Length);
+        return Path.ChangeExtension(relativePath, null)!.Replace('\\', '/');
     }
 
     private static void AssertSceneContains(string sceneName, params string[] fragments)

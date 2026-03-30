@@ -6,7 +6,10 @@
 - 소스오브트루스: `docs/02_design/systems/skills-items-and-passive-boards.md`
 - 관련문서:
   - `docs/02_design/meta/item-and-affix-system.md`
+  - `docs/02_design/meta/item-passive-augment-budget.md`
   - `docs/02_design/meta/permanent-augment-progression.md`
+  - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
+  - `docs/02_design/systems/launch-content-scope-and-balance.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
 
 ## 목적
@@ -26,3 +29,9 @@
 - skill slot: core active / utility active / passive / support
 - passive board: 중형 보드 + keystone 중심
 - loadout compile 결과는 전투 입력과 replay audit에 모두 같은 hash로 남아야 한다.
+
+## 출시 기준 연결
+
+- 출시 기준 수량은 `docs/02_design/systems/launch-content-scope-and-balance.md`가 소유한다.
+- slot taxonomy와 scaling 수식은 `docs/02_design/combat/skill-taxonomy-and-damage-model.md`가 소유한다.
+- item/passive/augment 예산은 `docs/02_design/meta/item-passive-augment-budget.md`가 소유한다.

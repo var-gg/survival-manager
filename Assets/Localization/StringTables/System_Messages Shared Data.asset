@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: System_Messages Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: System_Messages
+  m_TableCollectionNameGuidString: f7eeb41241b42a345a3488c3a4f9d2c6
+  m_Entries:
+  - m_Id: 879747072
+    m_Key: system.bootstrap.missing_sample_content.editor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 955244544
+    m_Key: system.bootstrap.missing_sample_content.player
+    m_Metadata:
+      m_Items: []
+  - m_Id: 955244545
+    m_Key: system.runtime.missing_root
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1798213439901401336
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401336
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1774854113165

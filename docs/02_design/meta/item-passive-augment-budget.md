@@ -1,0 +1,80 @@
+# 아이템, 패시브, 증강체 예산
+
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-30
+- 소스오브트루스: `docs/02_design/meta/item-passive-augment-budget.md`
+- 관련문서:
+  - `docs/02_design/meta/item-and-affix-system.md`
+  - `docs/02_design/meta/augment-system.md`
+  - `docs/02_design/systems/launch-content-scope-and-balance.md`
+  - `docs/03_architecture/content-authoring-and-balance-data.md`
+
+## 목적
+
+이 문서는 item, affix, passive board, augment의 런치 기준 볼륨과 source별 파워 예산을 고정한다.
+
+## 출시 기준 수량
+
+### paid launch floor
+
+- equippables: `36`
+- affixes: `24`
+- passive boards: `4`
+- passive nodes: `72`
+- temporary augments: `18`
+- permanent augments: `9`
+
+### paid launch safe target
+
+- equippables: `42~54`
+- affixes: `30~36`
+- passive boards: `4`
+- passive nodes: `96`
+- temporary augments: `24`
+- permanent augments: `12`
+
+## equippable 구조
+
+- slot은 `weapon / armor / accessory`
+- base item은 역할 뼈대를 만든다.
+- affix는 같은 base item의 개체 차이를 만든다.
+- unique는 큰 수치보다 규칙 변화와 granted skill 중심으로 설계한다.
+
+## passive board 구조
+
+- class board 4개를 유지한다.
+- board당 기준 구조는 `small 14 / notable 8 / keystone 2`
+- passive node는 숫자 증폭보다 role specialization과 rule change를 우선한다.
+
+## augment 구조
+
+- temporary augment는 `silver / gold / platinum or prismatic` 3층으로 본다.
+- permanent augment는 long-tail progression보다 build identity 고정 수단으로 시작한다.
+- temporary는 run 안의 변화, permanent는 run 밖의 준비를 담당한다.
+
+## 권장 파워 예산
+
+- item 1개: 평균 `8~12%` personal power
+- notable 1개: 평균 `3~6%`
+- keystone 1개: 평균 `0~8%` + 규칙 변화
+- synergy 2-piece: `5~8%`
+- synergy 3-piece: `10~15%`
+- synergy 4-piece: `18~25%`
+- silver augment: `6~8%`
+- gold augment: `9~12%`
+- platinum/prismatic augment: `13~18%`
+
+## 금지 원칙
+
+- 하나의 source가 단독으로 `20%+` power spike를 만드는 구조
+- 같은 `% more` 계열이 item/passive/augment에서 3중 이상 중첩되는 구조
+- unique가 granted skill도 rule tag도 없이 숫자만 큰 구조
+
+## authoring acceptance
+
+- `ItemBaseDefinition`은 `IdentityKind`를 명시한다.
+- `IdentityKind == Unique`이면 `GrantedSkills`, `RuleModifierTags`, `UniqueRuleTags` 중 최소 하나를 가져야 한다.
+- `AffixDefinition`은 `Category`와 slot applicability를 가져야 한다.
+- `PassiveBoardDefinition`은 class canonical id를 owner로 가진다.
+- `PassiveNodeDefinition`은 `NodeKind`, prerequisite, mutual exclusion tag를 authoring할 수 있어야 한다.

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Reflection;
 using SM.Content.Definitions;
 using SM.Core.Stats;
 using UnityEngine;
@@ -78,8 +79,10 @@ internal static class RuntimeCombatContentFileParser
             var lines = File.ReadAllLines(path);
             var definition = ScriptableObject.CreateInstance<RaceDefinition>();
             definition.Id = ExtractValue(lines, "Id:");
-            definition.DisplayName = ExtractValue(lines, "DisplayName:");
-            definition.Description = ExtractValue(lines, "Description:");
+            definition.NameKey = ContentLocalizationTables.BuildRaceNameKey(definition.Id);
+            definition.DescriptionKey = ContentLocalizationTables.BuildRaceDescriptionKey(definition.Id);
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "Description:"));
             return definition;
         }, guidToPath);
     }
@@ -91,7 +94,9 @@ internal static class RuntimeCombatContentFileParser
             var lines = File.ReadAllLines(path);
             var definition = ScriptableObject.CreateInstance<ClassDefinition>();
             definition.Id = ExtractValue(lines, "Id:");
-            definition.DisplayName = ExtractValue(lines, "DisplayName:");
+            definition.NameKey = ContentLocalizationTables.BuildClassNameKey(definition.Id);
+            definition.DescriptionKey = ContentLocalizationTables.BuildClassDescriptionKey(definition.Id);
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
             return definition;
         }, guidToPath);
     }
@@ -103,10 +108,25 @@ internal static class RuntimeCombatContentFileParser
             var lines = File.ReadAllLines(path);
             var definition = ScriptableObject.CreateInstance<SkillDefinitionAsset>();
             definition.Id = ExtractValue(lines, "Id:");
-            definition.DisplayName = ExtractValue(lines, "DisplayName:");
+            definition.NameKey = ContentLocalizationTables.BuildSkillNameKey(definition.Id);
+            definition.DescriptionKey = ContentLocalizationTables.BuildSkillDescriptionKey(definition.Id);
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
             definition.Kind = (SkillKindValue)ExtractInt(lines, "Kind:");
+            definition.SlotKind = (SkillSlotKindValue)ExtractInt(lines, "SlotKind:");
+            definition.DamageType = (DamageTypeValue)ExtractInt(lines, "DamageType:");
+            definition.Delivery = (SkillDeliveryValue)ExtractInt(lines, "Delivery:");
+            definition.TargetRule = (SkillTargetRuleValue)ExtractInt(lines, "TargetRule:");
             definition.Power = ExtractFloat(lines, "Power:");
             definition.Range = ExtractFloat(lines, "Range:");
+            definition.PowerFlat = ExtractFloat(lines, "PowerFlat:");
+            definition.PhysCoeff = ExtractFloat(lines, "PhysCoeff:");
+            definition.MagCoeff = ExtractFloat(lines, "MagCoeff:");
+            definition.HealCoeff = ExtractFloat(lines, "HealCoeff:");
+            definition.HealthCoeff = ExtractFloat(lines, "HealthCoeff:");
+            definition.CanCrit = ExtractBool(lines, "CanCrit:");
+            definition.ManaCost = ExtractFloat(lines, "ManaCost:");
+            definition.BaseCooldownSeconds = ExtractFloat(lines, "BaseCooldownSeconds:");
+            definition.CastWindupSeconds = ExtractFloat(lines, "CastWindupSeconds:");
             return definition;
         }, guidToPath);
     }
@@ -132,8 +152,12 @@ internal static class RuntimeCombatContentFileParser
             var lines = File.ReadAllLines(path);
             var definition = ScriptableObject.CreateInstance<ItemBaseDefinition>();
             definition.Id = ExtractValue(lines, "Id:");
-            definition.DisplayName = ExtractValue(lines, "DisplayName:");
+            definition.NameKey = ContentLocalizationTables.BuildItemNameKey(definition.Id);
+            definition.DescriptionKey = ContentLocalizationTables.BuildItemDescriptionKey(definition.Id);
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
             definition.SlotType = (ItemSlotType)ExtractInt(lines, "SlotType:");
+            definition.IdentityKind = (ItemIdentityValue)ExtractInt(lines, "IdentityKind:");
+            definition.BudgetBand = ExtractValue(lines, "BudgetBand:");
             definition.BaseModifiers = ParseModifiers(lines, "BaseModifiers:");
             return definition;
         }).Values.ToList();
@@ -146,8 +170,11 @@ internal static class RuntimeCombatContentFileParser
             var lines = File.ReadAllLines(path);
             var definition = ScriptableObject.CreateInstance<AffixDefinition>();
             definition.Id = ExtractValue(lines, "Id:");
-            definition.DisplayName = ExtractValue(lines, "DisplayName:");
-            definition.Description = ExtractValue(lines, "Description:");
+            definition.NameKey = $"content.affix.{ContentLocalizationTables.NormalizeId(definition.Id)}.name";
+            definition.DescriptionKey = $"content.affix.{ContentLocalizationTables.NormalizeId(definition.Id)}.desc";
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "Description:"));
+            definition.Category = (AffixCategoryValue)ExtractInt(lines, "Category:");
             definition.Modifiers = ParseModifiers(lines, "Modifiers:");
             return definition;
         }).Values.ToList();
@@ -160,8 +187,10 @@ internal static class RuntimeCombatContentFileParser
             var lines = File.ReadAllLines(path);
             var definition = ScriptableObject.CreateInstance<AugmentDefinition>();
             definition.Id = ExtractValue(lines, "Id:");
-            definition.DisplayName = ExtractValue(lines, "DisplayName:");
-            definition.Description = ExtractValue(lines, "Description:");
+            definition.NameKey = ContentLocalizationTables.BuildAugmentNameKey(definition.Id);
+            definition.DescriptionKey = ContentLocalizationTables.BuildAugmentDescriptionKey(definition.Id);
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "Description:"));
             definition.Rarity = (AugmentRarity)ExtractInt(lines, "Rarity:");
             definition.IsPermanent = ExtractInt(lines, "IsPermanent:") != 0;
             definition.Modifiers = ParseModifiers(lines, "Modifiers:");
@@ -181,10 +210,14 @@ internal static class RuntimeCombatContentFileParser
             var lines = File.ReadAllLines(path);
             var definition = ScriptableObject.CreateInstance<UnitArchetypeDefinition>();
             definition.Id = ExtractValue(lines, "Id:");
-            definition.DisplayName = ExtractValue(lines, "DisplayName:");
+            definition.NameKey = ContentLocalizationTables.BuildArchetypeNameKey(definition.Id);
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
             definition.Race = ResolveReference(lines, "Race:", guidToPath, races);
             definition.Class = ResolveReference(lines, "Class:", guidToPath, classes);
             definition.TraitPool = ResolveReference(lines, "TraitPool:", guidToPath, traitPools);
+            definition.ScopeKind = (ArchetypeScopeValue)ExtractInt(lines, "ScopeKind:");
+            definition.RoleFamilyTag = ExtractValue(lines, "RoleFamilyTag:");
+            definition.PrimaryWeaponFamilyTag = ExtractValue(lines, "PrimaryWeaponFamilyTag:");
             definition.Skills = ParseGuidList(lines, "Skills:")
                 .Select(guid => ResolveGuid(guid, guidToPath, skills))
                 .Where(skill => skill != null)
@@ -293,6 +326,8 @@ internal static class RuntimeCombatContentFileParser
             {
                 Id = trimmed["- Id:".Length..].Trim()
             };
+            trait.NameKey = ContentLocalizationTables.BuildTraitNameKey(string.Empty, trait.Id);
+            trait.DescriptionKey = ContentLocalizationTables.BuildTraitDescriptionKey(string.Empty, trait.Id);
 
             for (index++; index < lines.Length; index++)
             {
@@ -307,13 +342,13 @@ internal static class RuntimeCombatContentFileParser
 
                 if (trimmed.StartsWith("DisplayName:", StringComparison.Ordinal))
                 {
-                    trait.DisplayName = trimmed["DisplayName:".Length..].Trim();
+                    SetLegacyField(trait, "legacyDisplayName", trimmed["DisplayName:".Length..].Trim());
                     continue;
                 }
 
                 if (trimmed.StartsWith("Description:", StringComparison.Ordinal))
                 {
-                    trait.Description = trimmed["Description:".Length..].Trim();
+                    SetLegacyField(trait, "legacyDescription", trimmed["Description:".Length..].Trim());
                     continue;
                 }
 
@@ -548,6 +583,11 @@ internal static class RuntimeCombatContentFileParser
         return ParseFloat(ExtractValue(lines, key));
     }
 
+    private static bool ExtractBool(string[] lines, string key)
+    {
+        return ParseBool(ExtractValue(lines, key));
+    }
+
     private static int ParseInt(string value)
     {
         return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) ? parsed : 0;
@@ -556,6 +596,13 @@ internal static class RuntimeCombatContentFileParser
     private static float ParseFloat(string value)
     {
         return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : 0f;
+    }
+
+    private static bool ParseBool(string value)
+    {
+        return bool.TryParse(value, out var parsed)
+            ? parsed
+            : ParseInt(value) != 0;
     }
 
     private static int FindLineIndex(string[] lines, string key)
@@ -596,5 +643,14 @@ internal static class RuntimeCombatContentFileParser
     private static string ToUnityPath(string path)
     {
         return path.Replace('\\', '/');
+    }
+
+    private static void SetLegacyField(object instance, string fieldName, string value)
+    {
+        var field = instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+        if (field != null)
+        {
+            field.SetValue(instance, value);
+        }
     }
 }

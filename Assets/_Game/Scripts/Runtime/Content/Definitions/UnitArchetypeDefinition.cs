@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
 
@@ -7,7 +8,8 @@ namespace SM.Content.Definitions;
 public sealed class UnitArchetypeDefinition : ScriptableObject
 {
     public string Id = string.Empty;
-    public string DisplayName = string.Empty;
+    public string NameKey = string.Empty;
+    public ArchetypeScopeValue ScopeKind = ArchetypeScopeValue.Core;
     public RaceDefinition Race;
     public ClassDefinition Class;
     public TraitPoolDefinition TraitPool;
@@ -16,6 +18,9 @@ public sealed class UnitArchetypeDefinition : ScriptableObject
     public DeploymentAnchorValue DefaultAnchor = DeploymentAnchorValue.FrontCenter;
     public TeamPostureTypeValue PreferredTeamPosture = TeamPostureTypeValue.StandardAdvance;
     public string RoleTag = "auto";
+    public string RoleFamilyTag = string.Empty;
+    public string PrimaryWeaponFamilyTag = string.Empty;
+    public List<StableTagDefinition> SupportModifierBiasTags = new();
     public float BaseMaxHealth = 20f;
     public float BaseArmor = 2f;
     public float BaseResist = 0f;
@@ -49,4 +54,9 @@ public sealed class UnitArchetypeDefinition : ScriptableObject
     public float BaseAttackCooldown = 0.95f;
     public float BaseLeashDistance = 5f;
     public float BaseTargetSwitchDelay = 0.35f;
+
+    [FormerlySerializedAs("DisplayName")]
+    [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;
+
+    public string LegacyDisplayName => legacyDisplayName;
 }

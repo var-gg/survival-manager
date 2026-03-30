@@ -1,0 +1,8 @@
+# Survival Manager Codex Unity MCP example
+# Copy the MCP stanza into ~/.codex/config.toml on the local machine.
+
+[mcp_servers.unityMCP]
+url = "http://127.0.0.1:43157/mcp"
+
+[features]
+rmcp_client = true

@@ -18,6 +18,8 @@ public sealed class TownScreenController : MonoBehaviour
     [SerializeField] private Text statusText = null!;
 
     private GameSessionRoot _root = null!;
+    private GameLocalizationController _localization = null!;
+    private ContentTextResolver _contentText = null!;
     private DeploymentSetupPanelView? _deploymentPanel;
 
     private void Start()
@@ -29,9 +31,20 @@ public sealed class TownScreenController : MonoBehaviour
             return;
         }
 
+        _localization = _root.Localization;
+        _contentText = new ContentTextResolver(_localization, _root.CombatContentLookup);
+        _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Town);
         EnsureRuntimeControls();
         Refresh();
+    }
+
+    private void OnDestroy()
+    {
+        if (_localization != null)
+        {
+            _localization.LocaleChanged -= HandleLocaleChanged;
+        }
     }
 
     public void RecruitOffer0() => Recruit(0);
@@ -43,22 +56,22 @@ public sealed class TownScreenController : MonoBehaviour
         if (!EnsureReady()) return;
         var result = _root.SessionState.RerollRecruitOffers();
         Refresh(result.IsSuccess
-            ? $"Recruit 후보를 리롤했습니다. (-{SM.Meta.Model.MetaBalanceDefaults.RecruitRerollCost} Gold)"
-            : result.Error ?? "Recruit 후보 리롤에 실패했습니다.");
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.reroll_success", "Recruit offers rerolled. (-{0} Gold)", SM.Meta.Model.MetaBalanceDefaults.RecruitRerollCost)
+            : result.Error ?? Localize(GameLocalizationTables.UITown, "ui.town.error.reroll_failed", "Failed to reroll recruit offers."));
     }
 
     public void SaveProfile()
     {
         if (!EnsureReady()) return;
         _root.SaveProfile();
-        Refresh("프로필을 저장했습니다.");
+        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.profile_saved", "Profile saved."));
     }
 
     public void LoadProfile()
     {
         if (!EnsureReady()) return;
         _root.BindProfile();
-        Refresh("프로필을 다시 불러왔습니다.");
+        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.profile_loaded", "Profile reloaded."));
     }
 
     public void DebugStartExpedition()
@@ -114,7 +127,7 @@ public sealed class TownScreenController : MonoBehaviour
     {
         if (!EnsureReady()) return;
         _root.SessionState.CycleTeamPosture();
-        Refresh($"Team posture: {_root.SessionState.SelectedTeamPosture}");
+        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.team_posture", "Team posture: {0}", _root.SessionState.SelectedTeamPosture));
     }
 
     private void Recruit(int index)
@@ -124,11 +137,16 @@ public sealed class TownScreenController : MonoBehaviour
         var result = _root.SessionState.Recruit(index);
         if (result.IsSuccess)
         {
-            Refresh($"후보 {index + 1}을 영입했습니다. (-{SM.Meta.Model.MetaBalanceDefaults.RecruitCost} Gold)");
+            Refresh(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.status.recruit_success",
+                "Recruited offer {0}. (-{1} Gold)",
+                index + 1,
+                SM.Meta.Model.MetaBalanceDefaults.RecruitCost));
             return;
         }
 
-        Refresh(result.Error ?? "영입에 실패했습니다.");
+        Refresh(result.Error ?? Localize(GameLocalizationTables.UITown, "ui.town.error.recruit_failed", "Failed to recruit the selected offer."));
     }
 
     private bool EnsureReady()
@@ -184,8 +202,14 @@ public sealed class TownScreenController : MonoBehaviour
         var session = _root.SessionState;
         session.EnsureBattleDeployReady();
 
-        titleText.text = "Town Operator UI";
-        currencyText.text = $"Gold: {session.Profile.Currencies.Gold} | Perm Slots: {session.PermanentAugmentSlotCount} | Trait Reroll: {session.Profile.Currencies.TraitRerollCurrency}";
+        titleText.text = Localize(GameLocalizationTables.UITown, "ui.town.title", "Town Operator UI");
+        currencyText.text = Localize(
+            GameLocalizationTables.UITown,
+            "ui.town.currency.summary",
+            "Gold: {0} | Perm Slots: {1} | Trait Reroll: {2}",
+            session.Profile.Currencies.Gold,
+            session.PermanentAugmentSlotCount,
+            session.Profile.Currencies.TraitRerollCurrency);
         rosterText.text = BuildRosterText(session);
         recruitText.text = BuildRecruitSummary(session);
         squadText.text = BuildSquadText(session);
@@ -194,8 +218,8 @@ public sealed class TownScreenController : MonoBehaviour
         _deploymentPanel?.Refresh(session);
         statusText.text = string.IsNullOrWhiteSpace(message)
             ? session.CanResumeExpedition
-                ? "영입/저장/Debug Start(원정 재개)/Quick Battle을 바로 눌러 확인하세요."
-                : "영입/저장/원정/Quick Battle을 바로 눌러 확인하세요."
+                ? Localize(GameLocalizationTables.UITown, "ui.town.status.default.resume", "Recruit, save, resume the expedition, or run a quick battle.")
+                : Localize(GameLocalizationTables.UITown, "ui.town.status.default.start", "Recruit, save, start an expedition, or run a quick battle.")
             : message;
     }
 
@@ -210,10 +234,9 @@ public sealed class TownScreenController : MonoBehaviour
             }
 
             var offer = i < session.RecruitOffers.Count ? session.RecruitOffers[i] : null;
-            SetCardText(card, "TitleText", offer?.Name ?? "빈 슬롯");
-            SetCardText(card, "BodyText", offer == null
-                ? "후보가 없습니다."
-                : $"{offer.RaceId} / {offer.ClassId}\n+{offer.PositiveTraitId}\n-{offer.NegativeTraitId}");
+            SetCardText(card, "TitleText", offer == null ? Localize(GameLocalizationTables.UITown, "ui.town.recruit.empty", "Empty Slot") : _contentText.GetArchetypeName(offer.ArchetypeId));
+            SetCardText(card, "BodyText", BuildRecruitCardBody(offer));
+            SetCardText(card, "RecruitButton/Label", Localize(GameLocalizationTables.UITown, "ui.town.action.recruit", "Recruit"));
         }
     }
 
@@ -242,32 +265,36 @@ public sealed class TownScreenController : MonoBehaviour
         }
     }
 
-    private static string BuildRosterText(GameSessionState session)
+    private string BuildRosterText(GameSessionState session)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("Roster");
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.roster.header", "Roster"));
         foreach (var hero in session.Profile.Heroes)
         {
-            var inSquad = session.ExpeditionSquadHeroIds.Contains(hero.HeroId) ? "[원정]" : "[대기]";
-            sb.AppendLine($"- {inSquad} {hero.Name} / {hero.RaceId} / {hero.ClassId}");
+            var inSquad = session.ExpeditionSquadHeroIds.Contains(hero.HeroId)
+                ? Localize(GameLocalizationTables.UITown, "ui.town.roster.tag.expedition", "[Expedition]")
+                : Localize(GameLocalizationTables.UITown, "ui.town.roster.tag.reserve", "[Reserve]");
+            sb.AppendLine($"- {inSquad} {hero.Name} / {_contentText.GetRaceName(hero.RaceId)} / {_contentText.GetClassName(hero.ClassId)}");
         }
 
         return sb.ToString();
     }
 
-    private static string BuildRecruitSummary(GameSessionState session)
-    {
-        return
-            $"Recruit 후보 3개\n현재 후보 수: {session.RecruitOffers.Count}\n" +
-            $"영입 비용: {SM.Meta.Model.MetaBalanceDefaults.RecruitCost} Gold\n" +
-            $"리롤 비용: {SM.Meta.Model.MetaBalanceDefaults.RecruitRerollCost} Gold\n" +
-            $"Town roster: {session.Profile.Heroes.Count}/{SM.Meta.Model.MetaBalanceDefaults.TownRosterCap}";
-    }
-
-    private static string BuildSquadText(GameSessionState session)
+    private string BuildRecruitSummary(GameSessionState session)
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"원정 스쿼드 ({session.ExpeditionSquadHeroIds.Count}/8)");
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.header", "Recruit Offers"));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.current_count", "Current offers: {0}", session.RecruitOffers.Count));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.cost", "Recruit cost: {0} Gold", SM.Meta.Model.MetaBalanceDefaults.RecruitCost));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.reroll_cost", "Reroll cost: {0} Gold", SM.Meta.Model.MetaBalanceDefaults.RecruitRerollCost));
+        sb.Append(Localize(GameLocalizationTables.UITown, "ui.town.recruit.roster_count", "Town roster: {0}/{1}", session.Profile.Heroes.Count, SM.Meta.Model.MetaBalanceDefaults.TownRosterCap));
+        return sb.ToString();
+    }
+
+    private string BuildSquadText(GameSessionState session)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.squad.header", "Expedition Squad ({0}/8)", session.ExpeditionSquadHeroIds.Count));
         foreach (var heroId in session.ExpeditionSquadHeroIds)
         {
             var hero = session.Profile.Heroes.FirstOrDefault(x => x.HeroId == heroId);
@@ -280,42 +307,52 @@ public sealed class TownScreenController : MonoBehaviour
         return sb.ToString();
     }
 
-    private static string BuildDeployPreviewText(GameSessionState session)
+    private string BuildDeployPreviewText(GameSessionState session)
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"Deploy Preview ({session.BattleDeployHeroIds.Count}/4)");
-        sb.AppendLine($"Team Posture: {session.SelectedTeamPosture}");
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.header", "Deploy Preview ({0}/4)", session.BattleDeployHeroIds.Count));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.posture", "Team Posture: {0}", session.SelectedTeamPosture));
         foreach (var (anchor, heroId) in session.EnumerateDeploymentAssignments())
         {
             var hero = session.Profile.Heroes.FirstOrDefault(x => x.HeroId == heroId);
-            var heroName = hero?.Name ?? "Empty";
-            sb.AppendLine($"- {anchor.ToDisplayName()}: {heroName}");
+            var heroName = hero?.Name ?? Localize(GameLocalizationTables.UICommon, "ui.common.empty", "Empty");
+            sb.AppendLine($"- {LocalizeAnchor(anchor)}: {heroName}");
         }
 
         sb.AppendLine();
         if (session.IsQuickBattleSmokeActive)
         {
-            sb.AppendLine("Quick Battle smoke 준비 완료");
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.quick_battle_ready", "Quick battle smoke is ready."));
         }
         else if (session.CanResumeExpedition)
         {
             var nextNode = session.GetSelectedExpeditionNode();
-            var routeLabel = nextNode == null ? "경로 선택 필요" : $"{nextNode.Label} -> {nextNode.PlannedReward}";
-            sb.AppendLine($"Resume Expedition: {routeLabel}");
+            var routeLabel = nextNode == null
+                ? Localize(GameLocalizationTables.UITown, "ui.town.deploy.route_needed", "Route selection required")
+                : $"{ResolveExpeditionNodeLabel(nextNode)} -> {ResolveExpeditionNodeReward(nextNode)}";
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.resume", "Resume Expedition: {0}", routeLabel));
         }
         else
         {
-            sb.AppendLine("Quick Battle은 Expedition 진행도를 건드리지 않음");
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.quick_battle_safe", "Quick battle does not consume expedition progress."));
         }
 
-        if (!string.IsNullOrWhiteSpace(session.LastRewardApplicationSummary))
+        if (session.LastRewardApplicationSummary.HasValue)
         {
-            sb.AppendLine($"Last Reward: {session.LastRewardApplicationSummary}");
+            sb.AppendLine(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.deploy.last_reward",
+                "Last Reward: {0}",
+                session.LastRewardApplicationSummary.Resolve(_localization, _contentText)));
         }
 
-        if (!string.IsNullOrWhiteSpace(session.LastExpeditionEffectMessage))
+        if (session.LastExpeditionEffectMessage.HasValue)
         {
-            sb.AppendLine($"Last Node Effect: {session.LastExpeditionEffectMessage}");
+            sb.AppendLine(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.deploy.last_effect",
+                "Last Node Effect: {0}",
+                session.LastExpeditionEffectMessage.Resolve(_localization, _contentText)));
         }
 
         return sb.ToString();
@@ -325,6 +362,49 @@ public sealed class TownScreenController : MonoBehaviour
     {
         if (!EnsureReady()) return;
         _root.SessionState.CycleDeploymentAssignment(anchor);
-        Refresh($"{anchor.ToDisplayName()} 배치를 갱신했습니다.");
+        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.anchor_cycled", "{0} deployment updated.", LocalizeAnchor(anchor)));
+    }
+
+    private string BuildRecruitCardBody(RecruitOffer? offer)
+    {
+        if (offer == null)
+        {
+            return Localize(GameLocalizationTables.UITown, "ui.town.recruit.none", "No recruit offer is available.");
+        }
+
+        return string.Join(
+            "\n",
+            $"{_contentText.GetRaceName(offer.RaceId)} / {_contentText.GetClassName(offer.ClassId)}",
+            $"+ {_contentText.GetTraitName(offer.ArchetypeId, offer.PositiveTraitId)}",
+            $"- {_contentText.GetTraitName(offer.ArchetypeId, offer.NegativeTraitId)}");
+    }
+
+    private string ResolveExpeditionNodeLabel(ExpeditionNodeViewModel node)
+    {
+        return Localize(GameLocalizationTables.UIExpedition, node.LabelKey, node.Id);
+    }
+
+    private string ResolveExpeditionNodeReward(ExpeditionNodeViewModel node)
+    {
+        return Localize(GameLocalizationTables.UIExpedition, node.PlannedRewardKey, node.Id);
+    }
+
+    private string LocalizeAnchor(DeploymentAnchorId anchor)
+    {
+        return Localize(GameLocalizationTables.UICommon, anchor.ToLocalizationKey(), anchor.ToDisplayName());
+    }
+
+    private string Localize(string table, string key, string fallback, params object[] args)
+    {
+        return _localization != null
+            ? _localization.LocalizeOrFallback(table, key, fallback, args)
+            : args.Length == 0
+                ? fallback
+                : string.Format(fallback, args);
+    }
+
+    private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
+    {
+        Refresh();
     }
 }

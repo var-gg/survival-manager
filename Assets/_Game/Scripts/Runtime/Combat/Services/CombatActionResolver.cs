@@ -33,7 +33,7 @@ public static class CombatActionResolver
                 var damage = Math.Max(1f, actor.PhysPower - target.Armor - (target.IsDefending ? 1f : 0f));
                 target.TakeDamage(damage);
                 actor.StartRecovery();
-                events.Add(BuildEvent(state, actor, BattleActionType.BasicAttack, target, damage, "basic_attack"));
+                events.Add(BuildEvent(state, actor, BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, target, damage));
                 if (!target.IsAlive)
                 {
                     actor.ClearTarget(applySwitchDelay: true);
@@ -53,7 +53,7 @@ public static class CombatActionResolver
                     var heal = Math.Max(1f, actor.HealPower + (skill?.ResolvedPowerFlat ?? 0f));
                     target.Heal(heal);
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
-                    events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, target, heal, "heal_skill"));
+                    events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillHeal, target, heal));
                 }
                 else
                 {
@@ -61,7 +61,7 @@ public static class CombatActionResolver
                     var skillDamage = Math.Max(1f, actor.PhysPower + power - target.Armor - (target.IsDefending ? 1f : 0f));
                     target.TakeDamage(skillDamage);
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
-                    events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, target, skillDamage, "strike_skill"));
+                    events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillDamage, target, skillDamage));
                     if (!target.IsAlive)
                     {
                         actor.ClearTarget(applySwitchDelay: true);
@@ -71,7 +71,7 @@ public static class CombatActionResolver
 
             case BattleActionType.WaitDefend:
                 actor.SetDefending();
-                events.Add(BuildEvent(state, actor, BattleActionType.WaitDefend, actor, 0f, "wait_defend"));
+                events.Add(BuildEvent(state, actor, BattleActionType.WaitDefend, BattleLogCode.WaitDefend, actor, 0f));
                 break;
         }
 
@@ -82,9 +82,9 @@ public static class CombatActionResolver
         BattleState state,
         UnitSnapshot actor,
         BattleActionType actionType,
+        BattleLogCode logCode,
         UnitSnapshot? target,
-        float value,
-        string note)
+        float value)
     {
         return new BattleEvent(
             state.StepIndex,
@@ -92,9 +92,9 @@ public static class CombatActionResolver
             actor.Id,
             actor.Definition.Name,
             actionType,
+            logCode,
             target?.Id,
             target?.Definition.Name,
-            value,
-            note);
+            value);
     }
 }

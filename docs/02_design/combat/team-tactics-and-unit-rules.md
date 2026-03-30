@@ -7,6 +7,8 @@
 - 관련문서:
   - `docs/02_design/combat/deployment-and-anchors.md`
   - `docs/02_design/combat/realtime-simulation-model.md`
+  - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
+  - `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
   - `docs/03_architecture/combat-runtime-architecture.md`
   - `docs/03_architecture/combat-content-mapping.md`
 
@@ -70,3 +72,9 @@
 - unit rule은 실제 action 선택을 결정한다.
 - 현재 runtime UI는 posture만 바꾼다.
 - 유닛 tactic preset은 content 또는 code-defined preset으로 유지한다.
+
+## class family 연결
+
+- canonical class id는 `vanguard / duelist / ranger / mystic`를 유지한다.
+- 문서상 역할 family 설명에서는 `Vanguard / Striker / Ranger / Mystic`를 사용한다.
+- `duelist`는 runtime/content canonical id이고, `Striker`는 전술/상성 설명용 라벨이다.

@@ -13,6 +13,7 @@
 - task 문서 운용 방식은 `task-execution-pattern.md`
 - 완료 보고 형식은 `discord-handoff-format.md`
 - 구조 변경 검수 기준은 `implementation-review-checklist.md`
+- localization 운영 기준은 `docs/02_design/ui/localization-policy.md`와 `docs/05_setup/localization-workflow.md`
 
 ## 포함 문서
 

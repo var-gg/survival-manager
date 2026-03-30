@@ -589,7 +589,7 @@ public static class FirstPlayableSceneInstaller
         rect.sizeDelta = sizeDelta;
 
         var text = EnsureComponent<Text>(go);
-        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        text.font = LocalizationFoundationBootstrap.GetSharedUiFont();
         text.fontSize = fontSize;
         text.alignment = alignment;
         text.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -637,7 +637,7 @@ public static class FirstPlayableSceneInstaller
         labelRect.offsetMin = Vector2.zero;
         labelRect.offsetMax = Vector2.zero;
         var labelText = EnsureComponent<Text>(labelGo);
-        labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        labelText.font = LocalizationFoundationBootstrap.GetSharedUiFont();
         labelText.fontSize = 16;
         labelText.alignment = TextAnchor.MiddleCenter;
         labelText.color = Color.white;

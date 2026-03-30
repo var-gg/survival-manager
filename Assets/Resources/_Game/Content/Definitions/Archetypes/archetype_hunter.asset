@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: archetype_hunter
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
   Id: hunter
-  DisplayName: Hunter
+  NameKey: content.archetype.hunter.name
+  ScopeKind: 0
   Race: {fileID: 11400000, guid: 732863225f9204842af76a32f0d75924, type: 2}
   Class: {fileID: 11400000, guid: 9f586812c5ec3d94586eb6362c6288fb, type: 2}
   TraitPool: {fileID: 11400000, guid: 5e7792086dec2f5459dfb34069f3a7fb, type: 2}
@@ -21,25 +22,60 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5ddb89669e0424f479445d2195999821, type: 2}
   TacticPreset:
   - Priority: 0
-    ConditionType: 3
-    Threshold: 0
+    ConditionType: 4
+    Threshold: 1.5
     ActionType: 1
-    TargetSelector: 3
+    TargetSelector: 5
     Skill: {fileID: 11400000, guid: 5ddb89669e0424f479445d2195999821, type: 2}
   - Priority: 1
-    ConditionType: 2
+    ConditionType: 3
     Threshold: 0
     ActionType: 0
-    TargetSelector: 2
+    TargetSelector: 3
     Skill: {fileID: 0}
   - Priority: 2
-    ConditionType: 4
+    ConditionType: 5
     Threshold: 0
     ActionType: 2
     TargetSelector: 0
     Skill: {fileID: 0}
+  DefaultAnchor: 3
+  PreferredTeamPosture: 1
+  RoleTag: auto
+  RoleFamilyTag: ranger
+  PrimaryWeaponFamilyTag: bow
+  SupportModifierBiasTags: []
   BaseMaxHealth: 18
+  BaseArmor: 2
+  BaseResist: 0
+  BaseBarrierPower: 0
+  BaseTenacity: 0
+  BasePhysPower: 6
+  BaseMagPower: 0
+  BaseAttackSpeed: 5
   BaseAttack: 6
   BaseDefense: 2
   BaseSpeed: 5
   BaseHealPower: 0
+  BaseMoveSpeed: 1.85
+  BaseAttackRange: 3.2
+  BaseManaMax: 0
+  BaseManaGainOnAttack: 0
+  BaseManaGainOnHit: 0
+  BaseCooldownRecovery: 0
+  BaseCritChance: 0
+  BaseCritMultiplier: 0
+  BasePhysPen: 0
+  BaseMagPen: 0
+  BaseAggroRadius: 8
+  BasePreferredDistance: 0
+  BaseProtectRadius: 0
+  BaseAttackWindup: 0.18
+  BaseCastWindup: 0.22
+  BaseProjectileSpeed: 0
+  BaseCollisionRadius: 0.5
+  BaseRepositionCooldown: 0
+  BaseAttackCooldown: 1
+  BaseLeashDistance: 4.6
+  BaseTargetSwitchDelay: 0.3
+  legacyDisplayName: 

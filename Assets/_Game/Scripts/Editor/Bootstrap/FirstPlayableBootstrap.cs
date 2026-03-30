@@ -1,3 +1,4 @@
+using SM.Editor.SeedData;
 using SM.Editor.Validation;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -19,19 +20,22 @@ public static class FirstPlayableBootstrap
     {
         try
         {
-            Debug.Log("[ObserverPlayable] Step 1/5: Ensure sample content");
-            FirstPlayableContentBootstrap.EnsureSampleContent();
+            Debug.Log("[ObserverPlayable] Step 1/6: Ensure localization foundation");
+            LocalizationFoundationBootstrap.EnsureFoundationAssets();
 
-            Debug.Log("[ObserverPlayable] Step 2/5: Validate content definitions");
+            Debug.Log("[ObserverPlayable] Step 2/6: Ensure sample content");
+            SampleSeedGenerator.Generate();
+
+            Debug.Log("[ObserverPlayable] Step 3/6: Validate content definitions");
             ContentDefinitionValidator.Validate();
 
-            Debug.Log("[ObserverPlayable] Step 3/5: Repair first playable scenes");
+            Debug.Log("[ObserverPlayable] Step 4/6: Repair first playable scenes");
             FirstPlayableSceneInstaller.RepairFirstPlayableScenes();
 
-            Debug.Log("[ObserverPlayable] Step 4/5: Reset local demo save/profile if present");
+            Debug.Log("[ObserverPlayable] Step 5/6: Reset local demo save/profile if present");
             ResetLocalDemoState();
 
-            Debug.Log("[ObserverPlayable] Step 5/5: Open Boot scene");
+            Debug.Log("[ObserverPlayable] Step 6/6: Open Boot scene");
             EditorSceneManager.OpenScene(BootScenePath, OpenSceneMode.Single);
 
             Debug.Log("[ObserverPlayable] Success. 이제 Boot scene에서 Play를 누르면 Boot -> Town 흐름을 확인할 수 있다.");

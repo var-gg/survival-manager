@@ -1,0 +1,292 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Content_Stats Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: Content_Stats
+  m_TableCollectionNameGuidString: 1b27a0145ebb78749962c38df4a90408
+  m_Entries:
+  - m_Id: 24036499456
+    m_Key: content.stat.max_health.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24099414016
+    m_Key: content.stat.max_health.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25236070400
+    m_Key: content.stat.attack.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25236070401
+    m_Key: content.stat.attack.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26452418560
+    m_Key: content.stat.defense.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26452418561
+    m_Key: content.stat.defense.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27442274304
+    m_Key: content.stat.speed.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27442274305
+    m_Key: content.stat.speed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28373409792
+    m_Key: content.stat.heal_power.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28373409793
+    m_Key: content.stat.heal_power.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28818006016
+    m_Key: content.stat.move_speed.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28818006017
+    m_Key: content.stat.move_speed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29250019328
+    m_Key: content.stat.attack_range.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29250019329
+    m_Key: content.stat.attack_range.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29703004160
+    m_Key: content.stat.aggro_radius.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29703004161
+    m_Key: content.stat.aggro_radius.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30181154816
+    m_Key: content.stat.attack_windup.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30181154817
+    m_Key: content.stat.attack_windup.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30655111168
+    m_Key: content.stat.attack_cooldown.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30655111169
+    m_Key: content.stat.attack_cooldown.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31158427648
+    m_Key: content.stat.leash_distance.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31158427649
+    m_Key: content.stat.leash_distance.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31586246656
+    m_Key: content.stat.target_switch_delay.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31586246657
+    m_Key: content.stat.target_switch_delay.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109906727264256
+    m_Key: content.stat.armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109906840510464
+    m_Key: content.stat.armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109907448684544
+    m_Key: content.stat.resist.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109907448684545
+    m_Key: content.stat.resist.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109908002332672
+    m_Key: content.stat.phys_power.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109908002332673
+    m_Key: content.stat.phys_power.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109908488871936
+    m_Key: content.stat.mag_power.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109908488871937
+    m_Key: content.stat.mag_power.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109910019792896
+    m_Key: content.stat.attack_speed.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109910019792897
+    m_Key: content.stat.attack_speed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109912301494272
+    m_Key: content.stat.mana_max.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109912301494273
+    m_Key: content.stat.mana_max.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109912762867712
+    m_Key: content.stat.mana_gain_on_attack.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109912762867713
+    m_Key: content.stat.mana_gain_on_attack.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109913211658240
+    m_Key: content.stat.mana_gain_on_hit.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109913211658241
+    m_Key: content.stat.mana_gain_on_hit.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109913660448768
+    m_Key: content.stat.cooldown_recovery.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109913660448769
+    m_Key: content.stat.cooldown_recovery.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109914172153856
+    m_Key: content.stat.crit_chance.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109914172153857
+    m_Key: content.stat.crit_chance.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109914734190592
+    m_Key: content.stat.crit_multiplier.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109914734190593
+    m_Key: content.stat.crit_multiplier.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109915304615936
+    m_Key: content.stat.phys_pen.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109915308810240
+    m_Key: content.stat.phys_pen.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109915820515328
+    m_Key: content.stat.mag_pen.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109915820515329
+    m_Key: content.stat.mag_pen.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109916336414720
+    m_Key: content.stat.lifesteal.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109916336414721
+    m_Key: content.stat.lifesteal.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109916835536896
+    m_Key: content.stat.omnivamp.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109916835536897
+    m_Key: content.stat.omnivamp.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109917288521728
+    m_Key: content.stat.tenacity.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109917288521729
+    m_Key: content.stat.tenacity.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109918928494592
+    m_Key: content.stat.preferred_distance.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109918928494593
+    m_Key: content.stat.preferred_distance.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109919402450944
+    m_Key: content.stat.protect_radius.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109919402450945
+    m_Key: content.stat.protect_radius.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109920874651648
+    m_Key: content.stat.cast_windup.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109920874651649
+    m_Key: content.stat.cast_windup.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109924225900544
+    m_Key: content.stat.projectile_speed.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109924225900545
+    m_Key: content.stat.projectile_speed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109924750188544
+    m_Key: content.stat.collision_radius.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109924750188545
+    m_Key: content.stat.collision_radius.desc
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1798213439901401350
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401350
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1774854116075

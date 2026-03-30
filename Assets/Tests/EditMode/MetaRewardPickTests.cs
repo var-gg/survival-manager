@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SM.Content.Definitions;
 using SM.Meta.Model;
 using SM.Meta.Services;
 
@@ -13,9 +14,9 @@ public class MetaRewardPickTests
         var expedition = new ExpeditionState();
         var options = new[]
         {
-            new RewardOption("reward.gold.10", RewardType.Gold, 10, "10 Gold"),
-            new RewardOption("augment.silver.guard", RewardType.TemporaryAugment, 1, "Guard Instinct"),
-            new RewardOption("reward.reroll.2", RewardType.TraitRerollCurrency, 2, "2 Reroll"),
+            new RewardOption("reward.gold.10", RewardType.Gold, 10, "ui.reward.kind.gold"),
+            new RewardOption("augment.silver.guard", RewardType.TemporaryAugment, 1, "ui.reward.kind.temp_augment"),
+            new RewardOption("reward.reroll.2", RewardType.TraitRerollCurrency, 2, "ui.reward.kind.reroll"),
         };
 
         RewardService.ApplyRewardPick(currency, expedition, options, new RewardPick("augment.silver.guard"));

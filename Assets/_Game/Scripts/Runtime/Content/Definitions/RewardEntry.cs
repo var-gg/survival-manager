@@ -1,5 +1,5 @@
-using SM.Meta.Model;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
 
@@ -9,5 +9,10 @@ public sealed class RewardEntry
     public string Id = string.Empty;
     public RewardType RewardType = RewardType.Gold;
     public int Amount = 0;
-    public string Label = string.Empty;
+    public string LabelKey = string.Empty;
+
+    [FormerlySerializedAs("Label")]
+    [SerializeField, HideInInspector] private string legacyLabel = string.Empty;
+
+    public string LegacyLabel => legacyLabel;
 }

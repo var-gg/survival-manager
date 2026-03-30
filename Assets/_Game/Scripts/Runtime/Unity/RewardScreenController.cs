@@ -12,6 +12,8 @@ public sealed class RewardScreenController : MonoBehaviour
     [SerializeField] private Text statusText = null!;
 
     private GameSessionRoot _root = null!;
+    private GameLocalizationController _localization = null!;
+    private ContentTextResolver _contentText = null!;
 
     private void Start()
     {
@@ -22,8 +24,19 @@ public sealed class RewardScreenController : MonoBehaviour
             return;
         }
 
+        _localization = _root.Localization;
+        _contentText = new ContentTextResolver(_localization, _root.CombatContentLookup);
+        _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Reward);
         Refresh();
+    }
+
+    private void OnDestroy()
+    {
+        if (_localization != null)
+        {
+            _localization.LocaleChanged -= HandleLocaleChanged;
+        }
     }
 
     public void Choose0() => Choose(0);
@@ -42,14 +55,19 @@ public sealed class RewardScreenController : MonoBehaviour
     {
         if (!EnsureReady()) return;
 
+        var choice = index >= 0 && index < _root.SessionState.PendingRewardChoices.Count
+            ? _root.SessionState.PendingRewardChoices[index]
+            : null;
         if (_root.SessionState.ApplyRewardChoice(index))
         {
             _root.SaveProfile();
-            Refresh(_root.SessionState.LastRewardApplicationSummary);
+            Refresh(choice == null
+                ? Localize(GameLocalizationTables.UIReward, "ui.reward.status.choice_applied", "Reward applied.")
+                : Localize(GameLocalizationTables.UIReward, "ui.reward.status.choice_applied_named", "{0} applied.", ResolveChoiceTitle(choice)));
             return;
         }
 
-        Refresh("보상 선택에 실패했습니다.");
+        Refresh(Localize(GameLocalizationTables.UIReward, "ui.reward.error.choice_failed", "Failed to apply the selected reward."));
     }
 
     private bool EnsureReady()
@@ -110,19 +128,19 @@ public sealed class RewardScreenController : MonoBehaviour
         if (!EnsureReady()) return;
 
         var session = _root.SessionState;
-        titleText.text = "Reward Operator UI";
+        titleText.text = Localize(GameLocalizationTables.UIReward, "ui.reward.title", "Reward Operator UI");
         summaryText.text =
-            $"전투 결과: {(session.LastBattleVictory ? "승리" : "패배")}\n" +
-            $"{session.LastBattleSummary}\n" +
-            $"Gold: {session.Profile.Currencies.Gold}\n" +
-            $"Trait Reroll: {session.Profile.Currencies.TraitRerollCurrency}\n" +
-            $"Perm Slots: {session.PermanentAugmentSlotCount}\n" +
-            $"Inventory: {session.Profile.Inventory.Count}\n" +
-            $"Temp Augments: {session.Expedition.TemporaryAugmentIds.Count}";
-        choicesText.text = "3지선다 보상 카드 / meta progression";
+            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.battle_result", "Battle Result: {0}", session.LastBattleVictory ? Localize(GameLocalizationTables.UIReward, "ui.reward.result.victory", "Victory") : Localize(GameLocalizationTables.UIReward, "ui.reward.result.defeat", "Defeat"))}\n" +
+            $"{session.LastBattleSummary.Resolve(_localization, _contentText)}\n" +
+            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.gold", "Gold: {0}", session.Profile.Currencies.Gold)}\n" +
+            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.reroll", "Trait Reroll: {0}", session.Profile.Currencies.TraitRerollCurrency)}\n" +
+            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.slots", "Perm Slots: {0}", session.PermanentAugmentSlotCount)}\n" +
+            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.inventory", "Inventory: {0}", session.Profile.Inventory.Count)}\n" +
+            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.temp_augments", "Temp Augments: {0}", session.Expedition.TemporaryAugmentIds.Count)}";
+        choicesText.text = Localize(GameLocalizationTables.UIReward, "ui.reward.choices.header", "Choose one reward card");
         RefreshRewardCards(session);
         statusText.text = string.IsNullOrWhiteSpace(message)
-            ? "카드를 하나 고르고 Town으로 돌아가세요."
+            ? Localize(GameLocalizationTables.UIReward, "ui.reward.status.default", "Pick one card and return to town.")
             : message;
     }
 
@@ -137,9 +155,10 @@ public sealed class RewardScreenController : MonoBehaviour
             }
 
             var choice = i < session.PendingRewardChoices.Count ? session.PendingRewardChoices[i] : null;
-            SetCardText(card, "TitleText", choice?.Title ?? "빈 카드");
-            SetCardText(card, "BodyText", choice == null ? "선택지가 없습니다." : choice.Description);
+            SetCardText(card, "TitleText", choice == null ? Localize(GameLocalizationTables.UIReward, "ui.reward.choice.empty", "Empty Card") : ResolveChoiceTitle(choice));
+            SetCardText(card, "BodyText", choice == null ? Localize(GameLocalizationTables.UIReward, "ui.reward.choice.none", "No reward choice is available.") : ResolveChoiceDescription(choice));
             SetCardText(card, "KindText", choice == null ? "-" : BuildKindText(choice));
+            SetCardText(card, "ChooseButton/Label", Localize(GameLocalizationTables.UIReward, "ui.reward.action.choose", "Choose"));
 
             var image = card.GetComponent<Image>();
             if (image != null)
@@ -164,15 +183,15 @@ public sealed class RewardScreenController : MonoBehaviour
         }
     }
 
-    private static string BuildKindText(RewardChoiceViewModel choice)
+    private string BuildKindText(RewardChoiceViewModel choice)
     {
         return choice.Kind switch
         {
-            RewardChoiceKind.Gold => $"Gold +{choice.GoldAmount}",
-            RewardChoiceKind.Item => $"Item / {choice.PayloadId}",
-            RewardChoiceKind.TemporaryAugment => $"Temp / {choice.PayloadId}",
-            RewardChoiceKind.TraitRerollCurrency => $"Trait Reroll +{choice.TraitRerollAmount}",
-            RewardChoiceKind.PermanentAugmentSlot => $"Permanent Slot +{choice.PermanentSlotAmount}",
+            RewardChoiceKind.Gold => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.gold", "Gold +{0}", choice.GoldAmount),
+            RewardChoiceKind.Item => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.item", "Item / {0}", _contentText.GetItemName(choice.PayloadId)),
+            RewardChoiceKind.TemporaryAugment => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.temp_augment", "Temp / {0}", _contentText.GetAugmentName(choice.PayloadId)),
+            RewardChoiceKind.TraitRerollCurrency => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.reroll", "Trait Reroll +{0}", choice.TraitRerollAmount),
+            RewardChoiceKind.PermanentAugmentSlot => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.permanent_slot", "Permanent Slot +{0}", choice.PermanentSlotAmount),
             _ => choice.Kind.ToString()
         };
     }
@@ -193,5 +212,29 @@ public sealed class RewardScreenController : MonoBehaviour
             RewardChoiceKind.PermanentAugmentSlot => new Color(0.40f, 0.24f, 0.14f, 0.96f),
             _ => new Color(0.18f, 0.21f, 0.30f, 0.96f)
         };
+    }
+
+    private string ResolveChoiceTitle(RewardChoiceViewModel choice)
+    {
+        return Localize(GameLocalizationTables.UIReward, choice.TitleKey, choice.PayloadId);
+    }
+
+    private string ResolveChoiceDescription(RewardChoiceViewModel choice)
+    {
+        return Localize(GameLocalizationTables.UIReward, choice.DescriptionKey, choice.PayloadId);
+    }
+
+    private string Localize(string table, string key, string fallback, params object[] args)
+    {
+        return _localization != null
+            ? _localization.LocalizeOrFallback(table, key, fallback, args)
+            : args.Length == 0
+                ? fallback
+                : string.Format(fallback, args);
+    }
+
+    private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
+    {
+        Refresh();
     }
 }

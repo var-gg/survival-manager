@@ -1,0 +1,168 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-String-Tables-Korean
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Localization-String-Tables-Korean
+  m_GUID: f20c5f09a3cc90349aa65818b773c790
+  m_SerializeEntries:
+  - m_GUID: 0a9dbed6eb366094f82a3acb7376bfc1
+    m_Address: Content_Skills_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0ff4d87d4d4b30f4dbe9d8f82a77bbf8
+    m_Address: UI_Town_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 223107da2c3424c44b1015ac72abe034
+    m_Address: Content_TeamTactics_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 25d135fe16016f840b5c4955ca37fb48
+    m_Address: Content_Synergies_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e7f7cdfaabfa91418f4db4ec20deca2
+    m_Address: Content_Traits_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b5ee47d890009d489b21fe1378a9339
+    m_Address: Content_Roles_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4bb8c2c82ad542f4bb4184b93d7446b1
+    m_Address: Content_Items_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4bbe39b24099a8149b1dde4e3303d2f8
+    m_Address: Content_Passives_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 53de708fbf34f37469df7dbfe71b99f8
+    m_Address: Content_Affixes_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5eaafa47232327144a7140f59be4dcd5
+    m_Address: Content_Tags_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 64809d2de7080524c9e455af1894c28a
+    m_Address: UI_Battle_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6820a877629487f4aa12dcead87f5dca
+    m_Address: Content_Classes_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b2b4d9ac3f12f14eb8de8ccf1640865
+    m_Address: Content_Stats_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 79c3ea12478dca74cb1cbdb88383950f
+    m_Address: Content_Archetypes_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81f031d76a9f6ef4db5d6aa0601341fc
+    m_Address: UI_Expedition_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9f65fa8a8b319634d997d52d9542b6d3
+    m_Address: Combat_Log_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a37d35acd524e6441be7e0b146baf796
+    m_Address: Content_Augments_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af0b0c47e671b594eb48cd6800d7fe09
+    m_Address: Content_Races_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c077c7cb4360062478855c6d4af2b855
+    m_Address: UI_Common_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c136920a298f1d94f9dd8d36d65b6534
+    m_Address: UI_Reward_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5a59701f4388cc40b1cba336aa334f5
+    m_Address: System_Messages_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5360667a3edbf44b8e3bd1a8f20e53c
+    m_Address: Content_Rewards_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd2ae82d86d4cfa4a92db0e1ab8f9b1e
+    m_Address: Content_Expeditions_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: 4f1ff38064f728d40a3a3ec04389c665, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4b3c52238dd4e164fba013dab77ddfda, type: 2}
+    - {fileID: 11400000, guid: 76405445e5cebc94bb59677c9c4b8483, type: 2}

@@ -12,12 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: augment_silver_focus
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
-  Id: augment_silver_focus
-  DisplayName: Focus
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   Rarity: 0
   IsPermanent: 0
-  Description: Focus
-  Modifiers:
-  - StatId: attack
-    Op: 0
-    Value: 1
+  Category: 0
+  FamilyId: 
+  Tier: 1
+  OfferWeight: 1
+  SuppressIfPermanentEquipped: 0
+  Tags: []
+  MutualExclusionTags: []
+  RequiresTags: []
+  RuleModifierTags: []
+  EligibleModes: 1
+  Modifiers: []
+  legacyDisplayName: 
+  legacyDescription: 

@@ -9,14 +9,8 @@ public static class FirstPlayableContentBootstrap
     [MenuItem("SM/Bootstrap/Ensure Sample Content")]
     public static void EnsureSampleContent()
     {
-        if (SampleSeedGenerator.HasCanonicalMinimumContent())
-        {
-            Debug.Log("SM canonical sample content already present. No changes needed.");
-            return;
-        }
-
-        SampleSeedGenerator.EnsureCanonicalSampleContent();
-        Debug.Log("SM sample content bootstrap bridge completed. This bridge remains temporary until block25.");
+        SampleSeedGenerator.Generate();
+        Debug.Log("SM sample content bootstrap regenerated the canonical sample content root.");
     }
 
     [MenuItem("SM/Bootstrap/Ensure Sample Content", true)]

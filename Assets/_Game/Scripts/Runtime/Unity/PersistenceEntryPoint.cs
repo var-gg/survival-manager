@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using SM.Persistence.Abstractions;
+using SM.Persistence.Json;
 
 namespace SM.Unity;
 
@@ -13,7 +14,7 @@ public sealed class PersistenceEntryPoint
     {
         Config = PersistenceConfig.FromEnvironment();
         Config.LocalSaveDirectory = ResolveSaveDirectory(Config.LocalSaveDirectory);
-        Repository = PersistenceFacade.CreateDefault(Config);
+        Repository = SM.Persistence.Json.PersistenceFacade.CreateDefault(Config);
     }
 
     private static string ResolveSaveDirectory(string configuredPath)

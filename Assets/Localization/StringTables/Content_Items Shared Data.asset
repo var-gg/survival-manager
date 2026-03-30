@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Content_Items Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: Content_Items
+  m_TableCollectionNameGuidString: e7246405157ae2e429993728bef81d1b
+  m_Entries:
+  - m_Id: 84237344768
+    m_Key: content.item.item_iron_sword.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84296065024
+    m_Key: content.item.item_iron_sword.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85353029632
+    m_Key: content.item.item_bone_blade.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85353029633
+    m_Key: content.item.item_bone_blade.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86384828416
+    m_Key: content.item.item_leather_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86384828417
+    m_Key: content.item.item_leather_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87370489856
+    m_Key: content.item.item_bone_plate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87370489857
+    m_Key: content.item.item_bone_plate.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88326791168
+    m_Key: content.item.item_lucky_charm.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88326791169
+    m_Key: content.item.item_lucky_charm.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89408921600
+    m_Key: content.item.item_prayer_bead.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89408921601
+    m_Key: content.item.item_prayer_bead.desc
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1798213439901401337
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401337
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1774854113393

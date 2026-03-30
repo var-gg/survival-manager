@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: stat_defense
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
   Id: defense
-  DisplayName: Defense
-  Description: 
+  NameKey: content.stat.defense.name
+  DescriptionKey: content.stat.defense.desc
+  legacyDisplayName: 
+  legacyDescription: 

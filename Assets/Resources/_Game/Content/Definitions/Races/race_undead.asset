@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: race_undead
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RaceDefinition
-  Id: undead
-  DisplayName: Undead
-  Description: Attrition-oriented deathless fighters.
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  legacyDisplayName: 
+  legacyDescription: 

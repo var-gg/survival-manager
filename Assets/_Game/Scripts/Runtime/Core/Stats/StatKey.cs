@@ -25,6 +25,8 @@ public readonly record struct StatKey(string Value)
     public static readonly StatKey CritMultiplier = new("crit_multiplier");
     public static readonly StatKey PhysPen = new("phys_pen");
     public static readonly StatKey MagPen = new("mag_pen");
+    public static readonly StatKey Lifesteal = new("lifesteal");
+    public static readonly StatKey Omnivamp = new("omnivamp");
     public static readonly StatKey AggroRadius = new("aggro_radius");
     public static readonly StatKey LeashDistance = new("leash_distance");
     public static readonly StatKey TargetSwitchDelay = new("target_switch_delay");
@@ -67,6 +69,8 @@ public readonly record struct StatKey(string Value)
         [CritMultiplier.Value] = CritMultiplier,
         [PhysPen.Value] = PhysPen,
         [MagPen.Value] = MagPen,
+        [Lifesteal.Value] = Lifesteal,
+        [Omnivamp.Value] = Omnivamp,
         [AggroRadius.Value] = AggroRadius,
         [LeashDistance.Value] = LeashDistance,
         [TargetSwitchDelay.Value] = TargetSwitchDelay,

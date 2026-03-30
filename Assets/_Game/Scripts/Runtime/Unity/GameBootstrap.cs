@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -15,6 +16,7 @@ public sealed class GameBootstrap : MonoBehaviour
 
     [SerializeField] private bool autoEnterTown = true;
     private bool _hasRun;
+    private Coroutine? _bootstrapRoutine;
 
     private void Start()
     {
@@ -23,19 +25,28 @@ public sealed class GameBootstrap : MonoBehaviour
 
     public void RunBootstrap()
     {
-        if (_hasRun)
+        if (_hasRun || _bootstrapRoutine != null)
         {
             return;
         }
 
-        _hasRun = true;
+        _bootstrapRoutine = StartCoroutine(RunBootstrapRoutine());
+    }
+
+    private IEnumerator RunBootstrapRoutine()
+    {
         var root = EnsureRoot();
+        yield return root.Localization.EnsureInitialized();
+
+        _hasRun = true;
         root.SessionState.SetCurrentScene(SceneNames.Boot);
+        FirstPlayableRuntimeSceneBinder.RefreshLocalizedBindings(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
 
         if (!HasSeedContent())
         {
             HandleMissingSampleContent(root);
-            return;
+            _bootstrapRoutine = null;
+            yield break;
         }
 
         root.BindProfile();
@@ -45,6 +56,8 @@ public sealed class GameBootstrap : MonoBehaviour
         {
             root.SceneFlow.GoToTown();
         }
+
+        _bootstrapRoutine = null;
     }
 
     private static GameSessionRoot EnsureRoot()
@@ -77,12 +90,13 @@ public sealed class GameBootstrap : MonoBehaviour
     private static void HandleMissingSampleContent(GameSessionRoot root)
     {
 #if UNITY_EDITOR
-        const string message = "샘플 콘텐츠 canonical root가 비어 있습니다. SM/Seed/Generate Sample Content를 먼저 실행한 뒤 다시 Play 하세요. 계약 경로: Assets/Resources/_Game/Content/Definitions/**";
-        root.SetBlockingError(message);
-        Debug.LogWarning(message);
+        const string fallback = "샘플 콘텐츠 canonical root가 비어 있습니다. SM/Seed/Generate Sample Content를 먼저 실행한 뒤 다시 Play 하세요. 계약 경로: Assets/Resources/_Game/Content/Definitions/**";
+        root.SetBlockingError(GameLocalizationTables.SystemMessages, "system.bootstrap.missing_sample_content.editor", fallback);
+        Debug.LogWarning(root.LastBlockingError);
         EditorApplication.isPaused = true;
 #else
-        root.SetBlockingError("필수 샘플 콘텐츠 canonical root가 비어 있어 시작할 수 없습니다. Resources content contract를 확인하세요.");
+        const string fallback = "필수 샘플 콘텐츠 canonical root가 비어 있어 시작할 수 없습니다. Resources content contract를 확인하세요.";
+        root.SetBlockingError(GameLocalizationTables.SystemMessages, "system.bootstrap.missing_sample_content.player", fallback);
 #endif
     }
 }

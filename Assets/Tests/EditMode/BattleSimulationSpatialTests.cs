@@ -112,7 +112,7 @@ public sealed class BattleSimulationSpatialTests
         while (!simulator.IsFinished)
         {
             var step = simulator.Step();
-            healEvent = step.Events.FirstOrDefault(evt => evt.Note == "heal_skill");
+            healEvent = step.Events.FirstOrDefault(evt => evt.LogCode == BattleLogCode.ActiveSkillHeal);
             if (healEvent != null)
             {
                 healStep = step;

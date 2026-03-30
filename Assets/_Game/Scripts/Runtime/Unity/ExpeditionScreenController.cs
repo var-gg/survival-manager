@@ -18,6 +18,8 @@ public sealed class ExpeditionScreenController : MonoBehaviour
     [SerializeField] private Text statusText = null!;
 
     private GameSessionRoot _root = null!;
+    private GameLocalizationController _localization = null!;
+    private ContentTextResolver _contentText = null!;
     private DeploymentSetupPanelView? _deploymentPanel;
 
     private void Start()
@@ -29,9 +31,20 @@ public sealed class ExpeditionScreenController : MonoBehaviour
             return;
         }
 
+        _localization = _root.Localization;
+        _contentText = new ContentTextResolver(_localization, _root.CombatContentLookup);
+        _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Expedition);
         EnsureRuntimeControls();
         Refresh();
+    }
+
+    private void OnDestroy()
+    {
+        if (_localization != null)
+        {
+            _localization.LocaleChanged -= HandleLocaleChanged;
+        }
     }
 
     public void SelectNode1() => SelectNode(0);
@@ -48,7 +61,7 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         var selectedNode = session.GetSelectedExpeditionNode();
         if (selectedNode == null)
         {
-            Refresh("다음 경로를 먼저 선택하세요.");
+            Refresh(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.select_route_first", "Select the next route first."));
             return;
         }
 
@@ -57,7 +70,7 @@ public sealed class ExpeditionScreenController : MonoBehaviour
             session.EnsureBattleDeployReady();
             if (session.BattleDeployHeroIds.Count == 0)
             {
-                Refresh("배치 가능한 영웅이 없습니다.");
+                Refresh(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.error.no_deployable_heroes", "No hero is available for deployment."));
                 return;
             }
 
@@ -68,11 +81,11 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         if (session.ResolveSelectedExpeditionNode())
         {
             _root.SaveProfile();
-            Refresh($"{selectedNode.Label} 경로를 전투 없이 정리했습니다.");
+            Refresh(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.node_cleared", "{0} was resolved without a battle.", ResolveNodeLabel(selectedNode)));
             return;
         }
 
-        Refresh("다음 노드 진행에 실패했습니다.");
+        Refresh(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.error.advance_failed", "Failed to advance the selected node."));
     }
 
     public void ReturnToTown()
@@ -114,7 +127,7 @@ public sealed class ExpeditionScreenController : MonoBehaviour
     {
         if (!EnsureReady()) return;
         _root.SessionState.CycleTeamPosture();
-        Refresh($"Team posture: {_root.SessionState.SelectedTeamPosture}");
+        Refresh(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.team_posture", "Team posture: {0}", _root.SessionState.SelectedTeamPosture));
     }
 
     private void SelectNode(int nodeIndex)
@@ -123,11 +136,11 @@ public sealed class ExpeditionScreenController : MonoBehaviour
 
         if (_root.SessionState.SelectNextExpeditionNode(nodeIndex))
         {
-            Refresh($"경로 {nodeIndex + 1}을 선택했습니다.");
+            Refresh(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.route_selected", "Route {0} selected.", nodeIndex + 1));
             return;
         }
 
-        Refresh("현재 위치에서 선택할 수 없는 노드입니다.");
+        Refresh(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.error.invalid_route", "That node cannot be selected from the current position."));
     }
 
     private bool EnsureReady()
@@ -182,11 +195,16 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         var session = _root.SessionState;
         var currentNode = session.GetCurrentExpeditionNode();
         var selectedNode = session.GetSelectedExpeditionNode();
-        titleText.text = "Expedition Operator UI";
+        titleText.text = Localize(GameLocalizationTables.UIExpedition, "ui.expedition.title", "Expedition Operator UI");
         positionText.text =
-            $"현재 위치: {session.CurrentExpeditionNodeIndex + 1}/{session.ExpeditionNodes.Count}" +
-            $" | 현재 노드: {currentNode?.Label ?? "-"}" +
-            $" | 선택 경로: {selectedNode?.Label ?? "선택 필요"}";
+            Localize(
+                GameLocalizationTables.UIExpedition,
+                "ui.expedition.position.summary",
+                "Position: {0}/{1} | Current: {2} | Selected: {3}",
+                session.CurrentExpeditionNodeIndex + 1,
+                session.ExpeditionNodes.Count,
+                currentNode == null ? "-" : ResolveNodeLabel(currentNode),
+                selectedNode == null ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.position.none", "Selection Needed") : ResolveNodeLabel(selectedNode));
         mapText.text = BuildMapText(session);
         rewardText.text = BuildRewardText(session);
         squadText.text = BuildSquadText(session);
@@ -224,12 +242,12 @@ public sealed class ExpeditionScreenController : MonoBehaviour
             var node = session.ExpeditionNodes[i];
             if (label != null)
             {
-                label.text = $"{i + 1}. {node.Label}";
+                label.text = $"{i + 1}. {ResolveNodeLabel(node)}";
             }
 
             if (reward != null)
             {
-                reward.text = $"{node.PlannedReward}\n{BuildNodeEffectTag(node)}";
+                reward.text = $"{ResolveNodeReward(node)}\n{BuildNodeEffectTag(node)}";
             }
 
             if (image != null)
@@ -248,12 +266,12 @@ public sealed class ExpeditionScreenController : MonoBehaviour
                 if (buttonLabel != null)
                 {
                     buttonLabel.text = isSelected
-                        ? "Selected"
+                        ? Localize(GameLocalizationTables.UICommon, "ui.common.selected", "Selected")
                         : isCurrent
-                            ? "Here"
+                            ? Localize(GameLocalizationTables.UICommon, "ui.common.here", "Here")
                             : isSelectable
-                                ? "Route"
-                                : "Locked";
+                                ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.action.route", "Route")
+                                : Localize(GameLocalizationTables.UICommon, "ui.common.locked", "Locked");
                 }
             }
         }
@@ -269,99 +287,105 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         Debug.LogError($"[ExpeditionScreenController] {message}");
     }
 
-    private static string BuildMapText(GameSessionState session)
+    private string BuildMapText(GameSessionState session)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("5노드 운영자 맵");
+        sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.map.header", "Five-node operator map"));
         foreach (var node in session.ExpeditionNodes)
         {
             var marker = node.Index == session.CurrentExpeditionNodeIndex
-                ? "[현재]"
+                ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.map.marker.current", "[Current]")
                 : node.Index == session.SelectedExpeditionNodeIndex
-                    ? "[선택]"
+                    ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.map.marker.selected", "[Selected]")
                     : session.GetSelectableNextNodeIndices().Contains(node.Index)
-                        ? "[후보]"
+                        ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.map.marker.candidate", "[Candidate]")
                         : node.Index < session.CurrentExpeditionNodeIndex
-                            ? "[완료]"
-                            : "[예정]";
-            var battleMarker = node.RequiresBattle ? "Battle" : "Travel";
-            sb.AppendLine($"- {marker} {node.Index + 1}. {node.Label} / {battleMarker}");
-            sb.AppendLine($"  {node.Description}");
+                            ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.map.marker.completed", "[Done]")
+                            : Localize(GameLocalizationTables.UIExpedition, "ui.expedition.map.marker.upcoming", "[Upcoming]");
+            var battleMarker = node.RequiresBattle
+                ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.map.battle", "Battle")
+                : Localize(GameLocalizationTables.UIExpedition, "ui.expedition.map.travel", "Travel");
+            sb.AppendLine($"- {marker} {node.Index + 1}. {ResolveNodeLabel(node)} / {battleMarker}");
+            sb.AppendLine($"  {ResolveNodeDescription(node)}");
         }
 
         return sb.ToString();
     }
 
-    private static string BuildRewardText(GameSessionState session)
+    private string BuildRewardText(GameSessionState session)
     {
         var sb = new StringBuilder();
         var selected = session.GetSelectedExpeditionNode();
-        sb.AppendLine("선택 경로 / 노드 효과");
+        sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.header", "Selected Route / Node Effect"));
         if (selected != null)
         {
-            sb.AppendLine($"{selected.Label}");
-            sb.AppendLine($"- 예정 보상: {selected.PlannedReward}");
-            sb.AppendLine($"- 노드 효과: {BuildNodeEffectTag(selected)}");
-            sb.AppendLine($"- 설명: {selected.Description}");
+            sb.AppendLine(ResolveNodeLabel(selected));
+            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.planned", "- Planned Reward: {0}", ResolveNodeReward(selected)));
+            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.effect", "- Node Effect: {0}", BuildNodeEffectTag(selected)));
+            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.description", "- Description: {0}", ResolveNodeDescription(selected)));
         }
         else
         {
-            sb.AppendLine("아직 선택된 분기가 없습니다.");
+            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.none", "No branch is selected yet."));
         }
 
-        if (!string.IsNullOrWhiteSpace(session.LastExpeditionEffectMessage))
+        if (session.LastExpeditionEffectMessage.HasValue)
         {
             sb.AppendLine();
-            sb.AppendLine($"직전 적용 효과: {session.LastExpeditionEffectMessage}");
+            sb.AppendLine(Localize(
+                GameLocalizationTables.UIExpedition,
+                "ui.expedition.reward.last_effect",
+                "Last Applied Effect: {0}",
+                session.LastExpeditionEffectMessage.Resolve(_localization, _contentText)));
         }
 
         return sb.ToString();
     }
 
-    private static string BuildSquadText(GameSessionState session)
+    private string BuildSquadText(GameSessionState session)
     {
         var names = session.ExpeditionSquadHeroIds
             .Select(id => session.Profile.Heroes.FirstOrDefault(h => h.HeroId == id)?.Name ?? id);
         var tempAugments = session.Expedition.TemporaryAugmentIds.Count == 0
-            ? "없음"
-            : string.Join(", ", session.Expedition.TemporaryAugmentIds);
+            ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None")
+            : string.Join(", ", session.Expedition.TemporaryAugmentIds.Select(_contentText.GetAugmentName));
         var deploymentSummary = string.Join(
             "\n",
             session.EnumerateDeploymentAssignments().Select(entry =>
             {
-                var heroName = session.Profile.Heroes.FirstOrDefault(hero => hero.HeroId == entry.HeroId)?.Name ?? "Empty";
-                return $"{entry.Anchor.ToDisplayName()}: {heroName}";
+                var heroName = session.Profile.Heroes.FirstOrDefault(hero => hero.HeroId == entry.HeroId)?.Name ?? Localize(GameLocalizationTables.UICommon, "ui.common.empty", "Empty");
+                return $"{LocalizeAnchor(entry.Anchor)}: {heroName}";
             }));
 
-        return "현재 원정 스쿼드\n" +
+        return Localize(GameLocalizationTables.UIExpedition, "ui.expedition.squad.header", "Current Expedition Squad") + "\n" +
                string.Join("\n", names) +
-               $"\n\nTeam Posture\n{session.SelectedTeamPosture}" +
-               $"\n\nDeployment\n{deploymentSummary}" +
-               $"\n\nTemp Augments\n{tempAugments}";
+               $"\n\n{Localize(GameLocalizationTables.UIExpedition, "ui.expedition.squad.posture", "Team Posture")}\n{session.SelectedTeamPosture}" +
+               $"\n\n{Localize(GameLocalizationTables.UIExpedition, "ui.expedition.squad.deployment", "Deployment")}\n{deploymentSummary}" +
+               $"\n\n{Localize(GameLocalizationTables.UIExpedition, "ui.expedition.squad.temp_augments", "Temp Augments")}\n{tempAugments}";
     }
 
-    private static string BuildDefaultStatus(GameSessionState session, ExpeditionNodeViewModel? selectedNode)
+    private string BuildDefaultStatus(GameSessionState session, ExpeditionNodeViewModel? selectedNode)
     {
         if (selectedNode == null)
         {
-            return "분기를 고른 뒤 Next Battle로 진행하세요.";
+            return Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.default", "Choose a branch, then continue to the next battle.");
         }
 
         return selectedNode.RequiresBattle
-            ? $"{selectedNode.Label} 전투에 진입할 준비가 됐습니다."
-            : $"{selectedNode.Label}은 전투 없이 정리 가능한 안전 노드입니다.";
+            ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.ready_battle", "{0} is ready for battle.", ResolveNodeLabel(selectedNode))
+            : Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.safe_node", "{0} can be cleared without battle.", ResolveNodeLabel(selectedNode));
     }
 
-    private static string BuildNodeEffectTag(ExpeditionNodeViewModel node)
+    private string BuildNodeEffectTag(ExpeditionNodeViewModel node)
     {
         return node.EffectKind switch
         {
-            ExpeditionNodeEffectKind.None => "효과 없음",
-            ExpeditionNodeEffectKind.Gold => $"+{node.EffectAmount} Gold",
-            ExpeditionNodeEffectKind.TraitRerollCurrency => $"Trait Reroll +{node.EffectAmount}",
-            ExpeditionNodeEffectKind.TemporaryAugment => $"Temp Augment: {node.EffectPayloadId}",
-            ExpeditionNodeEffectKind.PermanentAugmentSlot => $"Permanent Slot +{Mathf.Max(1, node.EffectAmount)}",
-            _ => "효과 없음"
+            ExpeditionNodeEffectKind.None => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.none", "No effect"),
+            ExpeditionNodeEffectKind.Gold => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.gold", "+{0} Gold", node.EffectAmount),
+            ExpeditionNodeEffectKind.TraitRerollCurrency => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.reroll", "Trait Reroll +{0}", node.EffectAmount),
+            ExpeditionNodeEffectKind.TemporaryAugment => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.temp_augment", "Temp Augment: {0}", _contentText.GetAugmentName(node.EffectPayloadId)),
+            ExpeditionNodeEffectKind.PermanentAugmentSlot => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.permanent_slot", "Permanent Slot +{0}", Mathf.Max(1, node.EffectAmount)),
+            _ => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.none", "No effect")
         };
     }
 
@@ -394,6 +418,40 @@ public sealed class ExpeditionScreenController : MonoBehaviour
     {
         if (!EnsureReady()) return;
         _root.SessionState.CycleDeploymentAssignment(anchor);
-        Refresh($"{anchor.ToDisplayName()} 배치를 갱신했습니다.");
+        Refresh(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.anchor_cycled", "{0} deployment updated.", LocalizeAnchor(anchor)));
+    }
+
+    private string ResolveNodeLabel(ExpeditionNodeViewModel node)
+    {
+        return Localize(GameLocalizationTables.UIExpedition, node.LabelKey, node.Id);
+    }
+
+    private string ResolveNodeReward(ExpeditionNodeViewModel node)
+    {
+        return Localize(GameLocalizationTables.UIExpedition, node.PlannedRewardKey, node.Id);
+    }
+
+    private string ResolveNodeDescription(ExpeditionNodeViewModel node)
+    {
+        return Localize(GameLocalizationTables.UIExpedition, node.DescriptionKey, node.Id);
+    }
+
+    private string LocalizeAnchor(DeploymentAnchorId anchor)
+    {
+        return Localize(GameLocalizationTables.UICommon, anchor.ToLocalizationKey(), anchor.ToDisplayName());
+    }
+
+    private string Localize(string table, string key, string fallback, params object[] args)
+    {
+        return _localization != null
+            ? _localization.LocalizeOrFallback(table, key, fallback, args)
+            : args.Length == 0
+                ? fallback
+                : string.Format(fallback, args);
+    }
+
+    private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
+    {
+        Refresh();
     }
 }

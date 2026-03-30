@@ -79,7 +79,7 @@ public sealed class BattleActorView : MonoBehaviour
                 RestartCoroutine(ref _accentRoutine, AccentRoutine(new Color(1f, 0.84f, 0.24f, 1f), 0.20f));
                 RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(1f, 0.84f, 0.24f, 1f), 0.18f, 1.04f));
                 break;
-            case BattleActionType.ActiveSkill when eventData.Note == "heal_skill":
+            case BattleActionType.ActiveSkill when eventData.LogCode == BattleLogCode.ActiveSkillHeal:
                 RestartCoroutine(ref _accentRoutine, AccentRoutine(new Color(0.28f, 1f, 0.52f, 1f), 0.24f));
                 RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(0.28f, 1f, 0.52f, 1f), 0.22f, 1.05f));
                 break;
@@ -95,7 +95,7 @@ public sealed class BattleActorView : MonoBehaviour
 
     public void PlayAsTarget(BattleEvent eventData)
     {
-        if (eventData.Note == "heal_skill")
+        if (eventData.LogCode == BattleLogCode.ActiveSkillHeal)
         {
             RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(0.28f, 1f, 0.52f, 1f), 0.22f, 1.05f));
             RestartCoroutine(ref _floatingRoutine, FloatingTextRoutine($"+{Mathf.CeilToInt(eventData.Value)}", new Color(0.48f, 1f, 0.58f, 1f), 0.45f));
@@ -270,7 +270,7 @@ public sealed class BattleActorView : MonoBehaviour
 
     private void CreateWorldInfo()
     {
-        var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        var font = GameFontCatalog.LoadSharedUiFont();
         var infoGo = new GameObject("WorldInfoRoot");
         infoGo.transform.SetParent(transform, false);
         _worldInfoRoot = infoGo.transform;
@@ -300,7 +300,7 @@ public sealed class BattleActorView : MonoBehaviour
 
     private void CreateOverlay(BattleUnitReadModel actor)
     {
-        var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        var font = GameFontCatalog.LoadSharedUiFont();
         var overlayGo = new GameObject($"{actor.Name}_Overlay", typeof(RectTransform), typeof(Image));
         overlayGo.transform.SetParent(_overlayParent, false);
 

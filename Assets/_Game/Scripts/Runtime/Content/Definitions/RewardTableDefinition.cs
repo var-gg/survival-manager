@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
 
@@ -7,6 +8,12 @@ namespace SM.Content.Definitions;
 public sealed class RewardTableDefinition : ScriptableObject
 {
     public string Id = string.Empty;
-    public string DisplayName = string.Empty;
+    public string NameKey = string.Empty;
+    public string DescriptionKey = string.Empty;
     public List<RewardEntry> Rewards = new();
+
+    [FormerlySerializedAs("DisplayName")]
+    [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;
+
+    public string LegacyDisplayName => legacyDisplayName;
 }

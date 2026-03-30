@@ -12,49 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: traitpool_raider
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TraitPoolDefinition
-  Id: traitpool_raider
-  ArchetypeId: raider
-  PositiveTraits:
-  - Id: raider_positive_brave
-    DisplayName: Brave
-    Description: Brave
-    Modifiers:
-    - StatId: attack
-      Op: 0
-      Value: 2
-  - Id: raider_positive_sturdy
-    DisplayName: Sturdy
-    Description: Sturdy
-    Modifiers:
-    - StatId: defense
-      Op: 0
-      Value: 1
-  - Id: raider_positive_swift
-    DisplayName: Swift
-    Description: Swift
-    Modifiers:
-    - StatId: speed
-      Op: 0
-      Value: 1
-  NegativeTraits:
-  - Id: raider_negative_frail
-    DisplayName: Frail
-    Description: Frail
-    Modifiers:
-    - StatId: max_health
-      Op: 0
-      Value: -3
-  - Id: raider_negative_clumsy
-    DisplayName: Clumsy
-    Description: Clumsy
-    Modifiers:
-    - StatId: attack
-      Op: 0
-      Value: -1
-  - Id: raider_negative_slow
-    DisplayName: Slow
-    Description: Slow
-    Modifiers:
-    - StatId: speed
-      Op: 0
-      Value: -1
+  Id: 
+  ArchetypeId: 
+  PositiveTraits: []
+  NegativeTraits: []

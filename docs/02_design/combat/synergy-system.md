@@ -1,13 +1,17 @@
 # 시너지 시스템
 
-- 상태: draft
-- 최종수정일: 2026-03-29
-- phase: prototype
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-30
+- 소스오브트루스: `docs/02_design/combat/synergy-system.md`
+- 관련문서:
+  - `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
+  - `docs/02_design/systems/launch-content-scope-and-balance.md`
 
 ## 목적
 
-이 문서는 시너지 문법을 정의한다.
-시너지는 편성 압박을 만들고, augment는 그 시너지를 강화하거나 시너지 밖 유닛을 보정하는 역할을 맡는다.
+이 문서는 prototype 기준의 시너지 축과 MVP 범위를 설명한다.
+paid launch 기준의 breakpoint와 soft counter 숫자는 별도 launch 문서가 소유한다.
 
 ## MVP 규칙
 
@@ -71,3 +75,9 @@ augment는 다음 두 방향을 모두 허용한다.
 - 반대로 시너지가 약해서 무시돼도 안 된다.
 - augment가 항상 활성 시너지 쪽만 정답으로 만들면 안 된다.
 - same-archetype variance가 시너지에 의해 완전히 사라지면 안 된다.
+
+## launch 기준 연결
+
+- paid launch에서는 `2 / 3 / 4` breakpoint를 사용한다.
+- counter는 hard counter가 아니라 평균 `10~15%` swing의 soft counter를 목표로 한다.
+- 위 숫자의 source-of-truth는 `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`다.

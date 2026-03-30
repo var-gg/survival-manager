@@ -12,18 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: rewardtable_battle
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RewardTableDefinition
-  Id: rewardtable_battle
-  DisplayName: Battle Rewards
-  Rewards:
-  - Id: reward.gold.10
-    RewardType: 0
-    Amount: 10
-    Label: 10 Gold
-  - Id: augment_silver_guard
-    RewardType: 1
-    Amount: 1
-    Label: Guard Instinct
-  - Id: reward.reroll.1
-    RewardType: 2
-    Amount: 1
-    Label: 1 Trait Reroll
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  Rewards: []
+  legacyDisplayName: 

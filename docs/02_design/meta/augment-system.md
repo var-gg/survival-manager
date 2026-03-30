@@ -1,8 +1,12 @@
 # augment 시스템
 
-- 상태: draft
-- 최종수정일: 2026-03-29
-- phase: prototype
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-03-30
+- 소스오브트루스: `docs/02_design/meta/augment-system.md`
+- 관련문서:
+  - `docs/02_design/meta/item-passive-augment-budget.md`
+  - `docs/02_design/systems/launch-content-scope-and-balance.md`
 
 ## 목적
 
@@ -66,3 +70,9 @@ augment는 아래 두 방향을 모두 허용한다.
 - temporary augment가 기본 roster/gameplay를 덮어쓰면 안 된다.
 - permanent augment는 희귀하고 기대감 있어야 하지만, 금방 power inflation을 만들면 안 된다.
 - off-synergy augment도 실제 선택지가 되어야 한다.
+
+## launch 기준 연결
+
+- paid launch floor는 temporary 18 / permanent 9다.
+- paid launch safe target은 temporary 24 / permanent 12다.
+- source별 power budget은 `docs/02_design/meta/item-passive-augment-budget.md`를 따른다.

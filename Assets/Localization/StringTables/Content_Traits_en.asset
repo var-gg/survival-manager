@@ -1,0 +1,407 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Content_Traits_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: d5404813a198bea4ca53e34f610f7cef, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 48174718976
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48241827840
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022144
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022145
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022146
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022147
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022148
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022149
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022150
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022151
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022152
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48246022153
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906368
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906369
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906370
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906371
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906372
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906373
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906374
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906375
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906376
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906377
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906378
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49214906379
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544384
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544385
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544386
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544387
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544388
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50070544389
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738688
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738689
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738690
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738691
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738692
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50074738693
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51098148864
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51098148865
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343168
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343169
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343170
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343171
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343172
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343173
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343174
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343175
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343176
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51102343177
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520448
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520449
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520450
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520451
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520452
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520453
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520454
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520455
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520456
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520457
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520458
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52444520459
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247104
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247105
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247106
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247107
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247108
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247109
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247110
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247111
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247112
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247113
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247114
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53971247115
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908544
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908545
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908546
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908547
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908548
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908549
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908550
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908551
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908552
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908553
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908554
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54956908555
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181376
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181377
+    m_Localized: Brave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181378
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181379
+    m_Localized: Sturdy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181380
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55934181381
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375680
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375681
+    m_Localized: Frail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375682
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375683
+    m_Localized: Clumsy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375684
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55938375685
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

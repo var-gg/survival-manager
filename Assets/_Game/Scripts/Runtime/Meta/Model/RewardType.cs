@@ -1,8 +1,1 @@
-namespace SM.Meta.Model;
-
-public enum RewardType
-{
-    Gold = 0,
-    TemporaryAugment = 1,
-    TraitRerollCurrency = 2,
-}
+// Moved to SM.Content.Definitions.RewardType to break Content <-> Meta cyclic asmdef dependency.

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
 
@@ -7,11 +8,16 @@ namespace SM.Content.Definitions;
 public sealed class RoleInstructionDefinition : ScriptableObject
 {
     public string Id = string.Empty;
-    public string DisplayName = string.Empty;
+    public string NameKey = string.Empty;
     public DeploymentAnchorValue Anchor = DeploymentAnchorValue.FrontCenter;
     public string RoleTag = string.Empty;
     public float ProtectCarryBias = 0f;
     public float BacklinePressureBias = 0f;
     public float RetreatBias = 0f;
     public List<StableTagDefinition> CompileTags = new();
+
+    [FormerlySerializedAs("DisplayName")]
+    [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;
+
+    public string LegacyDisplayName => legacyDisplayName;
 }

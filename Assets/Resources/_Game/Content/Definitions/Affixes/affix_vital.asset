@@ -13,9 +13,15 @@ MonoBehaviour:
   m_Name: affix_vital
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AffixDefinition
   Id: affix_vital
-  DisplayName: Vital
-  Description: Vital
+  NameKey: content.affix.affix_vital.name
+  DescriptionKey: content.affix.affix_vital.desc
+  Category: 3
+  AllowedSlotTypes: 0100000002000000
+  CompileTags: []
+  RuleModifierTags: []
   Modifiers:
   - StatId: max_health
     Op: 0
     Value: 2
+  legacyDisplayName: 
+  legacyDescription: 

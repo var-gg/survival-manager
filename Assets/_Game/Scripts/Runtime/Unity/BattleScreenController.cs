@@ -29,9 +29,10 @@ public sealed class BattleScreenController : MonoBehaviour
     [SerializeField] private BattlePresentationController presentationController = null!;
     [SerializeField] private BattleSettingsPanelController settingsPanelController = null!;
 
-    private readonly List<string> _recentLogs = new();
+    private readonly List<BattleEvent> _recentLogs = new();
     private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
     private GameSessionRoot _root = null!;
+    private GameLocalizationController _localization = null!;
     private BattleSimulator? _simulator;
     private BattleLoadoutSnapshot? _compiledSnapshot;
     private IReadOnlyList<BattleUnitLoadout> _enemyLoadouts = Array.Empty<BattleUnitLoadout>();
@@ -58,9 +59,19 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
+        _localization = _root.Localization;
+        _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Battle);
         SetupCamera();
         RunBattle();
+    }
+
+    private void OnDestroy()
+    {
+        if (_localization != null)
+        {
+            _localization.LocaleChanged -= HandleLocaleChanged;
+        }
     }
 
     private void Update()
@@ -96,7 +107,9 @@ public sealed class BattleScreenController : MonoBehaviour
         _isPaused = !_isPaused;
         presentationController.SetPaused(_isPaused);
         RefreshSpeedText();
-        statusText.text = _isPaused ? "전투 일시정지" : "전투 재개";
+        statusText.text = _isPaused
+            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.status.paused", "Battle paused")
+            : Localize(GameLocalizationTables.UIBattle, "ui.battle.status.resumed", "Battle resumed");
     }
 
     public void ContinueToReward()
@@ -186,7 +199,9 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void RefreshSpeedText()
     {
-        speedText.text = _isPaused ? $"Speed x{_playbackSpeed:0} | Paused" : $"Speed x{_playbackSpeed:0}";
+        speedText.text = _isPaused
+            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.paused", "Speed x{0:0} | Paused", _playbackSpeed)
+            : Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.active", "Speed x{0:0}", _playbackSpeed);
     }
 
     private void SetupCamera()
@@ -205,10 +220,10 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         if (!EnsureReady()) return;
 
-        titleText.text = "Battle Observer UI";
-        resultText.text = "전투 진행 중";
-        statusText.text = "live simulation 초기화";
-        logText.text = "전투 시작 준비중";
+        titleText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.title", "Battle Observer UI");
+        resultText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.result.in_progress", "Battle in progress");
+        statusText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.status.initializing", "Initializing live simulation");
+        logText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.log.preparing", "Preparing battle log");
         progressFill.fillAmount = 0f;
         _battleFinished = false;
         _isPaused = false;
@@ -230,7 +245,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
         if (allySnapshot.Allies.Count == 0)
         {
-            SetResult("전투에 투입할 아군이 없습니다.");
+            SetResult(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.no_allies", "No allied unit is ready for battle."));
             return;
         }
 
@@ -299,8 +314,15 @@ public sealed class BattleScreenController : MonoBehaviour
 
         _battleFinished = true;
         progressFill.fillAmount = 1f;
-        resultText.text = _currentStep.Winner == TeamSide.Ally ? "승리" : "패배";
-        statusText.text = $"전투 종료 | {_currentStep.StepIndex} steps | {_totalEventCount} events";
+        resultText.text = _currentStep.Winner == TeamSide.Ally
+            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.result.victory", "Victory")
+            : Localize(GameLocalizationTables.UIBattle, "ui.battle.result.defeat", "Defeat");
+        statusText.text = Localize(
+            GameLocalizationTables.UIBattle,
+            "ui.battle.status.finished",
+            "Battle finished | {0} steps | {1} events",
+            _currentStep.StepIndex,
+            _totalEventCount);
         var winner = _currentStep.Winner ?? TeamSide.Ally;
         var result = _simulator.RunToEnd();
         var replay = ReplayAssembler.Assemble(
@@ -313,7 +335,8 @@ public sealed class BattleScreenController : MonoBehaviour
         _root.SessionState.RecordBattleAudit(replay);
         _root.SessionState.MarkBattleResolved(
             winner == TeamSide.Ally,
-            $"{winner} / {_currentStep.StepIndex} steps / {_totalEventCount} events");
+            _currentStep.StepIndex,
+            _totalEventCount);
     }
 
     private void ApplyPresentationOptions(BattlePresentationOptions options)
@@ -348,52 +371,86 @@ public sealed class BattleScreenController : MonoBehaviour
         RefreshStatus(step);
         foreach (var eventData in step.Events)
         {
-            PushLog(BuildLogLine(eventData));
+            PushLog(eventData);
         }
     }
 
     private void RefreshHp(IReadOnlyList<BattleUnitReadModel> actors)
     {
-        allyHpText.text = BuildHpText("아군 HP", actors.Where(actor => actor.Side == TeamSide.Ally));
-        enemyHpText.text = BuildHpText("적군 HP", actors.Where(actor => actor.Side == TeamSide.Enemy));
+        allyHpText.text = BuildHpText(
+            Localize(GameLocalizationTables.UIBattle, "ui.battle.hp.allies", "Allied HP"),
+            actors.Where(actor => actor.Side == TeamSide.Ally));
+        enemyHpText.text = BuildHpText(
+            Localize(GameLocalizationTables.UIBattle, "ui.battle.hp.enemies", "Enemy HP"),
+            actors.Where(actor => actor.Side == TeamSide.Enemy));
     }
 
     private void RefreshStatus(BattleSimulationStep step)
     {
         RefreshSpeedText();
-        var pauseLabel = _isPaused ? " | Paused" : string.Empty;
+        var pauseLabel = _isPaused
+            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.status.pause_suffix", " | Paused")
+            : string.Empty;
         if (step.IsFinished)
         {
-            statusText.text = $"Step {step.StepIndex} | 결과 확정 {pauseLabel}";
+            statusText.text = Localize(
+                GameLocalizationTables.UIBattle,
+                "ui.battle.status.resolved",
+                "Step {0} | Result resolved{1}",
+                step.StepIndex,
+                pauseLabel);
             return;
         }
 
         var lastEvent = step.Events.LastOrDefault();
         if (lastEvent != null)
         {
-            statusText.text = $"Step {step.StepIndex} | {lastEvent.ActorName} -> {lastEvent.TargetName ?? "-"} | {lastEvent.ActionType} {lastEvent.Value:0}{pauseLabel}";
+            statusText.text = Localize(
+                GameLocalizationTables.UIBattle,
+                "ui.battle.status.last_event",
+                "Step {0} | {1} -> {2} | {3} {4:0}{5}",
+                step.StepIndex,
+                lastEvent.ActorName,
+                lastEvent.TargetName ?? "-",
+                lastEvent.ActionType,
+                lastEvent.Value,
+                pauseLabel);
             return;
         }
 
         var windingUp = step.Units.FirstOrDefault(unit => unit.ActionState == CombatActionState.Windup);
         if (windingUp != null)
         {
-            statusText.text = $"Step {step.StepIndex} | {windingUp.Name} windup {Mathf.RoundToInt(windingUp.WindupProgress * 100f)}% -> {windingUp.TargetName ?? "-"}{pauseLabel}";
+            statusText.text = Localize(
+                GameLocalizationTables.UIBattle,
+                "ui.battle.status.windup",
+                "Step {0} | {1} windup {2}% -> {3}{4}",
+                step.StepIndex,
+                windingUp.Name,
+                Mathf.RoundToInt(windingUp.WindupProgress * 100f),
+                windingUp.TargetName ?? "-",
+                pauseLabel);
             return;
         }
 
-        statusText.text = $"Step {step.StepIndex} | posture {_root.SessionState.SelectedTeamPosture}{pauseLabel}";
+        statusText.text = Localize(
+            GameLocalizationTables.UIBattle,
+            "ui.battle.status.posture",
+            "Step {0} | posture {1}{2}",
+            step.StepIndex,
+            _root.SessionState.SelectedTeamPosture,
+            pauseLabel);
     }
 
-    private void PushLog(string line)
+    private void PushLog(BattleEvent eventData)
     {
-        _recentLogs.Add(line);
+        _recentLogs.Add(eventData);
         while (_recentLogs.Count > MaxRecentLogLines)
         {
             _recentLogs.RemoveAt(0);
         }
 
-        logText.text = string.Join("\n", _recentLogs);
+        RefreshLogText();
     }
 
     private static string BuildHpText(string title, IEnumerable<BattleUnitReadModel> units)
@@ -409,17 +466,56 @@ public sealed class BattleScreenController : MonoBehaviour
         return sb.ToString();
     }
 
-    private static string BuildLogLine(BattleEvent eventData)
+    private void RefreshLogText()
+    {
+        logText.text = string.Join("\n", _recentLogs.Select(BuildLogLine));
+    }
+
+    private string BuildLogLine(BattleEvent eventData)
     {
         var source = string.IsNullOrWhiteSpace(eventData.ActorName) ? "?" : eventData.ActorName;
         var target = string.IsNullOrWhiteSpace(eventData.TargetName) ? "?" : eventData.TargetName;
-        return eventData.ActionType switch
+        return eventData.LogCode switch
         {
-            BattleActionType.BasicAttack => $"S{eventData.StepIndex} {source}가 {target}에게 {eventData.Value:0} 피해",
-            BattleActionType.ActiveSkill when eventData.Note == "heal_skill" => $"S{eventData.StepIndex} {source}가 {target}를 {eventData.Value:0} 회복",
-            BattleActionType.ActiveSkill => $"S{eventData.StepIndex} {source}가 {target}에게 스킬 {eventData.Value:0}",
-            BattleActionType.WaitDefend => $"S{eventData.StepIndex} {source}가 방어 자세",
-            _ => $"S{eventData.StepIndex} {source} {eventData.ActionType}"
+            BattleLogCode.BasicAttackDamage => Localize(GameLocalizationTables.CombatLog, "combat.log.damage", "S{0} {1} dealt {3:0} damage to {2}", eventData.StepIndex, source, target, eventData.Value),
+            BattleLogCode.ActiveSkillHeal => Localize(GameLocalizationTables.CombatLog, "combat.log.heal", "S{0} {1} healed {2} for {3:0}", eventData.StepIndex, source, target, eventData.Value),
+            BattleLogCode.ActiveSkillDamage => Localize(GameLocalizationTables.CombatLog, "combat.log.skill", "S{0} {1} used a skill on {2} for {3:0}", eventData.StepIndex, source, target, eventData.Value),
+            BattleLogCode.WaitDefend => Localize(GameLocalizationTables.CombatLog, "combat.log.guard", "S{0} {1} took a guard stance", eventData.StepIndex, source),
+            _ => Localize(GameLocalizationTables.CombatLog, "combat.log.generic", "S{0} {1} {2}", eventData.StepIndex, source, eventData.ActionType)
         };
+    }
+
+    private string Localize(string table, string key, string fallback, params object[] args)
+    {
+        return _localization != null
+            ? _localization.LocalizeOrFallback(table, key, fallback, args)
+            : args.Length == 0
+                ? fallback
+                : string.Format(fallback, args);
+    }
+
+    private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
+    {
+        if (_currentStep == null)
+        {
+            return;
+        }
+
+        titleText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.title", "Battle Observer UI");
+        RefreshHp(_currentStep.Units);
+        RefreshStatus(_currentStep);
+        RefreshLogText();
+        RefreshSpeedText();
+
+        if (_battleFinished)
+        {
+            resultText.text = _currentStep.Winner == TeamSide.Ally
+                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.result.victory", "Victory")
+                : Localize(GameLocalizationTables.UIBattle, "ui.battle.result.defeat", "Defeat");
+        }
+        else
+        {
+            resultText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.result.in_progress", "Battle in progress");
+        }
     }
 }

@@ -14,9 +14,9 @@ public enum ExpeditionNodeEffectKind
 public sealed record ExpeditionNodeViewModel(
     int Index,
     string Id,
-    string Label,
-    string PlannedReward,
-    string Description,
+    string LabelKey,
+    string PlannedRewardKey,
+    string DescriptionKey,
     bool RequiresBattle,
     ExpeditionNodeEffectKind EffectKind,
     int EffectAmount,

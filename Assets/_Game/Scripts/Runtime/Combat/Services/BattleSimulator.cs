@@ -183,7 +183,7 @@ public sealed class BattleSimulator
             if (!actor.IsDefending)
             {
                 actor.SetDefending();
-                stepEvents.Add(CombatActionResolver.BuildEvent(State, actor, BattleActionType.WaitDefend, actor, 0f, "wait_defend"));
+                stepEvents.Add(CombatActionResolver.BuildEvent(State, actor, BattleActionType.WaitDefend, BattleLogCode.WaitDefend, actor, 0f));
             }
             else
             {

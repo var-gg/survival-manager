@@ -18,14 +18,14 @@ jobs:
         with:
           lfs: false
 
-      - name: Run EditMode tests (Unity 6000.4.0f1)
+      - name: Run EditMode scene integrity + domain tests (Unity 6000.4.0f1)
         uses: game-ci/unity-test-runner@v4
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           unityVersion: 6000.4.0f1
           testMode: editmode
           projectPath: .
-          checkName: EditMode Tests
+          checkName: EditMode Scene Integrity Tests
           artifactsPath: test-results/editmode
 
       - name: Upload EditMode results
@@ -47,14 +47,14 @@ jobs:
         with:
           lfs: false
 
-      - name: Run PlayMode smoke tests (Unity 6000.4.0f1)
+      - name: Run PlayMode bootstrap + loop smoke tests (Unity 6000.4.0f1)
         uses: game-ci/unity-test-runner@v4
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           unityVersion: 6000.4.0f1
           testMode: playmode
           projectPath: .
-          checkName: PlayMode Smoke Tests
+          checkName: PlayMode First Playable Smoke Tests
           artifactsPath: test-results/playmode
 
       - name: Upload PlayMode results

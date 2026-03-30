@@ -28,11 +28,13 @@
 
 - `data-model.md`: authored definition, runtime instance, save model 분리 기준
 - `content-authoring-model.md`: 콘텐츠 authoring/validation 경계
+- `content-authoring-and-balance-data.md`: launch authoring schema, validation, count report 경계
 - `content-pipeline.md`: 콘텐츠 intake와 파이프라인 운영 방향
 - `content-loading-contract.md`: canonical content root와 runtime/editor 계약
 - `content-loading-strategy.md`: MVP content loading 계약
 - `content-seed-assets.md`: sample seed asset 기준
 - `combat-content-mapping.md`: spatial combat authored data와 runtime 매핑
+- `localization-runtime-and-content-pipeline.md`: localization runtime, content key, UI refresh 경계
 
 ## 전투 런타임 문서
 

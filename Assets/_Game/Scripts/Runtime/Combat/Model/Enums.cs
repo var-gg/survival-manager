@@ -3,9 +3,12 @@ namespace SM.Combat.Model;
 public enum TeamSide { Ally = 0, Enemy = 1 }
 public enum DeploymentAnchorId { FrontTop = 0, FrontCenter = 1, FrontBottom = 2, BackTop = 3, BackCenter = 4, BackBottom = 5 }
 public enum BattleActionType { BasicAttack = 0, ActiveSkill = 1, WaitDefend = 2 }
+public enum BattleLogCode { Generic = 0, BasicAttackDamage = 1, ActiveSkillDamage = 2, ActiveSkillHeal = 3, WaitDefend = 4 }
 public enum TacticConditionType { SelfHpBelow = 0, AllyHpBelow = 1, EnemyInRange = 2, LowestHpEnemy = 3, EnemyExposed = 4, Fallback = 5 }
 public enum TargetSelectorType { Self = 0, LowestHpAlly = 1, FirstEnemyInRange = 2, LowestHpEnemy = 3, NearestEnemy = 4, MostExposedEnemy = 5 }
-public enum SkillKind { Strike = 0, Heal = 1 }
+public enum SkillKind { Strike = 0, Heal = 1, Shield = 2, Buff = 3, Debuff = 4, Utility = 5 }
+public enum SkillDelivery { Melee = 0, Ranged = 1, Projectile = 2, Nova = 3, Aura = 4, Trap = 5, Zone = 6 }
+public enum SkillTargetRule { NearestEnemy = 0, LowestHpEnemy = 1, MostExposedEnemy = 2, LowestHpAlly = 3, ProtectedAlly = 4, Self = 5, MarkedTarget = 6 }
 public enum CombatActionState { Spawn = 0, AdvanceToAnchor = 1, SeekTarget = 2, MoveToEngage = 3, Windup = 4, Recovery = 5, Reposition = 6, Retreat = 7, Dead = 8 }
 public enum TeamPostureType { HoldLine = 0, StandardAdvance = 1, ProtectCarry = 2, CollapseWeakSide = 3, AllInBackline = 4 }
 
@@ -39,6 +42,20 @@ public static class DeploymentAnchorIdExtensions
             DeploymentAnchorId.BackCenter => "Back Center",
             DeploymentAnchorId.BackBottom => "Back Bottom",
             _ => anchor.ToString(),
+        };
+    }
+
+    public static string ToLocalizationKey(this DeploymentAnchorId anchor)
+    {
+        return anchor switch
+        {
+            DeploymentAnchorId.FrontTop => "ui.common.anchor.front_top",
+            DeploymentAnchorId.FrontCenter => "ui.common.anchor.front_center",
+            DeploymentAnchorId.FrontBottom => "ui.common.anchor.front_bottom",
+            DeploymentAnchorId.BackTop => "ui.common.anchor.back_top",
+            DeploymentAnchorId.BackCenter => "ui.common.anchor.back_center",
+            DeploymentAnchorId.BackBottom => "ui.common.anchor.back_bottom",
+            _ => "ui.common.anchor.unknown",
         };
     }
 }

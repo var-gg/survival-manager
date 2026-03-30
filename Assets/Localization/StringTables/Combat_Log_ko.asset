@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Combat_Log_ko
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: ko
+  m_SharedData: {fileID: 11400000, guid: 724bacf6f1f7cc1458678c569240eb6e, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 1798213439901401353
+  m_TableData:
+  - m_Id: 812638208
+    m_Localized: "S{0} {1}\uC774(\uAC00) {2}\uC5D0\uAC8C {3:0} \uD53C\uD574"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401353
+  - m_Id: 871358464
+    m_Localized: "S{0} {1}\uC774(\uAC00) {2}\uB97C {3:0} \uD68C\uBCF5"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401353
+  - m_Id: 875552768
+    m_Localized: "S{0} {1}\uC774(\uAC00) {2}\uC5D0\uAC8C \uC2A4\uD0AC {3:0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401353
+  - m_Id: 875552769
+    m_Localized: "S{0} {1}\uC774(\uAC00) \uBC29\uC5B4 \uC790\uC138"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401353
+  - m_Id: 879747072
+    m_Localized: S{0} {1} {2}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401353
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401353
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 812638208
+        - id: 871358464
+        - id: 875552768
+        - id: 875552769
+        - id: 879747072

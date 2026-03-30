@@ -1,5 +1,5 @@
 using System.IO;
-using System.Text.Json;
+using Newtonsoft.Json;
 using SM.Persistence.Abstractions;
 using SM.Persistence.Abstractions.Models;
 
@@ -8,7 +8,6 @@ namespace SM.Persistence.Json;
 public sealed class JsonSaveRepository : ISaveRepository
 {
     private readonly string _rootDirectory;
-    private readonly JsonSerializerOptions _options = new() { WriteIndented = true };
 
     public JsonSaveRepository(string rootDirectory)
     {
@@ -27,13 +26,13 @@ public sealed class JsonSaveRepository : ISaveRepository
         }
 
         var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<SaveProfile>(json, _options) ?? new SaveProfile { ProfileId = profileId };
+        return JsonConvert.DeserializeObject<SaveProfile>(json) ?? new SaveProfile { ProfileId = profileId };
     }
 
     public void Save(SaveProfile profile)
     {
         var path = GetPath(profile.ProfileId);
-        var json = JsonSerializer.Serialize(profile, _options);
+        var json = JsonConvert.SerializeObject(profile, Formatting.Indented);
         File.WriteAllText(path, json);
     }
 

@@ -6,6 +6,7 @@
 - 소스오브트루스: `docs/03_architecture/data-model.md`
 - 관련문서:
   - `docs/03_architecture/content-authoring-model.md`
+  - `docs/03_architecture/content-authoring-and-balance-data.md`
   - `docs/03_architecture/persistence-strategy.md`
   - `docs/03_architecture/coding-principles.md`
 

@@ -8,6 +8,6 @@ public sealed class SkillInstanceRecord
 {
     public string SkillInstanceId = string.Empty;
     public string SkillId = string.Empty;
-    public string SlotKind = "active_core";
+    public string SlotKind = "core_active";
     public List<string> CompileTags = new();
 }

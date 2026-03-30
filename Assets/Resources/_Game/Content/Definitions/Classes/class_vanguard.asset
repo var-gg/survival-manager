@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: class_vanguard
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ClassDefinition
-  Id: vanguard
-  DisplayName: Vanguard
-  Description: 
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  legacyDisplayName: 
+  legacyDescription: 

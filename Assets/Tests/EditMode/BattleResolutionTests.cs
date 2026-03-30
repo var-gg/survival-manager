@@ -42,7 +42,7 @@ public sealed class BattleResolutionTests
         var resultB = BattleResolver.Run(CombatTestFactory.CreateBattleState(allies, enemies, seed: 19), 160);
 
         Assert.That(resultA.Winner, Is.EqualTo(resultB.Winner));
-        Assert.That(resultA.Events.Select(evt => $"{evt.StepIndex}:{evt.ActorId.Value}:{evt.TargetId?.Value}:{evt.Note}:{evt.Value:0.0}"), Is.EqualTo(resultB.Events.Select(evt => $"{evt.StepIndex}:{evt.ActorId.Value}:{evt.TargetId?.Value}:{evt.Note}:{evt.Value:0.0}")));
+        Assert.That(resultA.Events.Select(evt => $"{evt.StepIndex}:{evt.ActorId.Value}:{evt.TargetId?.Value}:{evt.LogCode}:{evt.Value:0.0}"), Is.EqualTo(resultB.Events.Select(evt => $"{evt.StepIndex}:{evt.ActorId.Value}:{evt.TargetId?.Value}:{evt.LogCode}:{evt.Value:0.0}")));
         Assert.That(resultA.FinalUnits.Select(unit => $"{unit.Id}:{unit.CurrentHealth:0.0}:{unit.Position.X:0.00}:{unit.Position.Y:0.00}"), Is.EqualTo(resultB.FinalUnits.Select(unit => $"{unit.Id}:{unit.CurrentHealth:0.0}:{unit.Position.X:0.00}:{unit.Position.Y:0.00}")));
     }
 

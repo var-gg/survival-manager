@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: stat_attack
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
   Id: attack
-  DisplayName: Attack
-  Description: 
+  NameKey: content.stat.attack.name
+  DescriptionKey: content.stat.attack.desc
+  legacyDisplayName: 
+  legacyDescription: 

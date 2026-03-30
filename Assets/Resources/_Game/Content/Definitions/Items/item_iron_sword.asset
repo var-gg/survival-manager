@@ -13,9 +13,23 @@ MonoBehaviour:
   m_Name: item_iron_sword
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ItemBaseDefinition
   Id: item_iron_sword
-  DisplayName: Iron Sword
+  NameKey: content.item.item_iron_sword.name
+  DescriptionKey: content.item.item_iron_sword.desc
   SlotType: 0
+  IdentityKind: 0
+  ItemFamilyTag: 
+  RarityTier: 0
+  AffixPoolTag: 
+  CraftCategory: 
+  BudgetBand: personal_power_10
+  GrantedSkills: []
+  CompileTags: []
+  RuleModifierTags: []
+  AllowedClassTags: []
+  AllowedArchetypeTags: []
+  UniqueRuleTags: []
   BaseModifiers:
-  - StatId: attack
+  - StatId: phys_power
     Op: 0
     Value: 2
+  legacyDisplayName: 

@@ -14,12 +14,19 @@ public sealed class BattleSettingsPanelController : MonoBehaviour
 
     private BattlePresentationOptions _options = null!;
     private Action<BattlePresentationOptions>? _applyCallback;
+    private GameLocalizationController? _localization;
     private bool _initialized;
 
     public void Initialize(BattlePresentationOptions options, Action<BattlePresentationOptions> applyCallback)
     {
         _options = options;
         _applyCallback = applyCallback;
+        _localization ??= GameSessionRoot.Instance?.Localization;
+        if (_localization != null)
+        {
+            _localization.LocaleChanged -= HandleLocaleChanged;
+            _localization.LocaleChanged += HandleLocaleChanged;
+        }
 
         if (!_initialized && panelRoot != null)
         {
@@ -36,8 +43,8 @@ public sealed class BattleSettingsPanelController : MonoBehaviour
         if (!EnsureReady()) return;
         panelRoot.gameObject.SetActive(!panelRoot.gameObject.activeSelf);
         statusText.text = panelRoot.gameObject.activeSelf
-            ? "전투 표시 옵션"
-            : "설정 패널 닫힘";
+            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.title", "Battle View Settings")
+            : Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.closed", "Settings panel closed");
         RefreshLabels();
     }
 
@@ -45,60 +52,83 @@ public sealed class BattleSettingsPanelController : MonoBehaviour
     {
         if (!EnsureReady()) return;
         _options.ToggleWorldActorHp();
-        Apply("캐릭터 기반 HP 표시");
+        Apply("WorldActorHp", Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.world_hp_label", "Actor HP"));
     }
 
     public void ToggleOverlayActorHp()
     {
         if (!EnsureReady()) return;
         _options.ToggleOverlayActorHp();
-        Apply("오버레이 HP 카드");
+        Apply("OverlayActorHp", Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.overlay_hp_label", "Overlay HP"));
     }
 
     public void ToggleTeamSummary()
     {
         if (!EnsureReady()) return;
         _options.ToggleTeamHpSummary();
-        Apply("좌/우 팀 요약 패널");
+        Apply("TeamSummary", Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.team_summary_label", "Team Summary"));
     }
 
-    private void Apply(string label)
+    private void Apply(string settingId, string label)
     {
         _applyCallback?.Invoke(_options);
-        statusText.text = $"{label}: {BuildStateLabel(label)}";
+        statusText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.state_changed", "{0}: {1}", label, BuildStateLabel(settingId));
         RefreshLabels();
     }
 
     private string BuildStateLabel(string label)
     {
-        return label switch
+        var isOn = label switch
         {
-            "캐릭터 기반 HP 표시" => _options.ShowWorldActorHp ? "ON" : "OFF",
-            "오버레이 HP 카드" => _options.ShowOverlayActorHp ? "ON" : "OFF",
-            _ => _options.ShowTeamHpSummary ? "ON" : "OFF"
+            "WorldActorHp" => _options.ShowWorldActorHp,
+            "OverlayActorHp" => _options.ShowOverlayActorHp,
+            _ => _options.ShowTeamHpSummary
         };
+        return isOn
+            ? Localize(GameLocalizationTables.UICommon, "ui.common.on", "ON")
+            : Localize(GameLocalizationTables.UICommon, "ui.common.off", "OFF");
     }
 
     private void RefreshLabels()
     {
         if (worldHpButtonLabel != null)
         {
-            worldHpButtonLabel.text = $"Actor HP {( _options?.ShowWorldActorHp == true ? "ON" : "OFF")}";
+            worldHpButtonLabel.text = Localize(
+                GameLocalizationTables.UIBattle,
+                "ui.battle.settings.world_hp",
+                "Actor HP {0}",
+                BuildStateLabel("WorldActorHp"));
         }
 
         if (overlayHpButtonLabel != null)
         {
-            overlayHpButtonLabel.text = $"Overlay HP {( _options?.ShowOverlayActorHp == true ? "ON" : "OFF")}";
+            overlayHpButtonLabel.text = Localize(
+                GameLocalizationTables.UIBattle,
+                "ui.battle.settings.overlay_hp",
+                "Overlay HP {0}",
+                BuildStateLabel("OverlayActorHp"));
         }
 
         if (teamSummaryButtonLabel != null)
         {
-            teamSummaryButtonLabel.text = $"Team Summary {( _options?.ShowTeamHpSummary == true ? "ON" : "OFF")}";
+            teamSummaryButtonLabel.text = Localize(
+                GameLocalizationTables.UIBattle,
+                "ui.battle.settings.team_summary",
+                "Team Summary {0}",
+                BuildStateLabel("TeamSummary"));
         }
 
         if (statusText != null && string.IsNullOrWhiteSpace(statusText.text))
         {
-            statusText.text = "전투 표시 옵션";
+            statusText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.title", "Battle View Settings");
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_localization != null)
+        {
+            _localization.LocaleChanged -= HandleLocaleChanged;
         }
     }
 
@@ -117,5 +147,19 @@ public sealed class BattleSettingsPanelController : MonoBehaviour
         }
 
         return true;
+    }
+
+    private string Localize(string table, string key, string fallback, params object[] args)
+    {
+        return _localization != null
+            ? _localization.LocalizeOrFallback(table, key, fallback, args)
+            : args.Length == 0
+                ? fallback
+                : string.Format(fallback, args);
+    }
+
+    private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
+    {
+        RefreshLabels();
     }
 }

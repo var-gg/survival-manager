@@ -11,8 +11,8 @@ public enum RewardChoiceKind
 
 public sealed record RewardChoiceViewModel(
     RewardChoiceKind Kind,
-    string Title,
-    string Description,
+    string TitleKey,
+    string DescriptionKey,
     int GoldAmount,
     int TraitRerollAmount,
     int PermanentSlotAmount,
