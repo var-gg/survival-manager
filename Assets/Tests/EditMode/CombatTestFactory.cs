@@ -7,7 +7,7 @@ namespace SM.Tests.EditMode;
 
 internal static class CombatTestFactory
 {
-    public static UnitDefinition CreateUnit(
+    public static BattleUnitLoadout CreateUnit(
         string id,
         string race = "human",
         string classId = "vanguard",
@@ -25,9 +25,9 @@ internal static class CombatTestFactory
         float leashDistance = 6f,
         float targetSwitchDelay = 0.3f,
         IReadOnlyList<TacticRule>? tactics = null,
-        IReadOnlyList<SkillDefinition>? skills = null)
+        IReadOnlyList<BattleSkillSpec>? skills = null)
     {
-        return new UnitDefinition(
+        return new BattleUnitLoadout(
             id,
             id,
             race,
@@ -48,17 +48,22 @@ internal static class CombatTestFactory
                 [StatKey.LeashDistance] = leashDistance,
                 [StatKey.TargetSwitchDelay] = targetSwitchDelay,
             },
-            tactics ?? new[]
+            new[]
             {
-                new TacticRule(0, TacticConditionType.LowestHpEnemy, 0f, BattleActionType.BasicAttack, TargetSelectorType.LowestHpEnemy),
-                new TacticRule(1, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
+                new UnitRuleChain(
+                    $"rules:{id}",
+                    tactics ?? new[]
+                    {
+                        new TacticRule(0, TacticConditionType.LowestHpEnemy, 0f, BattleActionType.BasicAttack, TargetSelectorType.LowestHpEnemy),
+                        new TacticRule(1, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
+                    })
             },
-            skills ?? new SkillDefinition[0]);
+            skills ?? new BattleSkillSpec[0]);
     }
 
     public static BattleState CreateBattleState(
-        IReadOnlyList<UnitDefinition> allies,
-        IReadOnlyList<UnitDefinition> enemies,
+        IReadOnlyList<BattleUnitLoadout> allies,
+        IReadOnlyList<BattleUnitLoadout> enemies,
         TeamPostureType allyPosture = TeamPostureType.StandardAdvance,
         TeamPostureType enemyPosture = TeamPostureType.StandardAdvance,
         int seed = 7)

@@ -25,6 +25,14 @@
 - persistence abstraction과 저장 어댑터
 - Unity orchestration/presentation
 
+현재 build-to-battle 흐름은 아래 다섯 단계 파이프라인을 기준으로 본다.
+
+- content definitions
+- instance growth
+- battle compile
+- deterministic battle simulation
+- replay / ledger / audit
+
 ## 실제 asmdef 기준
 
 현재 저장소의 주요 asmdef는 아래와 같다.

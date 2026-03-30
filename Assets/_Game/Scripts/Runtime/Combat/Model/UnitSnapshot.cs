@@ -11,7 +11,7 @@ public sealed class UnitSnapshot
     public UnitSnapshot(
         EntityId id,
         TeamSide side,
-        UnitDefinition definition,
+        BattleUnitLoadout definition,
         CombatVector2 anchorPosition,
         CombatVector2 spawnPosition)
     {
@@ -30,7 +30,7 @@ public sealed class UnitSnapshot
 
     public EntityId Id { get; }
     public TeamSide Side { get; }
-    public UnitDefinition Definition { get; }
+    public BattleUnitLoadout Definition { get; }
     public DeploymentAnchorId Anchor { get; }
     public CombatVector2 AnchorPosition { get; }
     public CombatVector2 Position { get; private set; }
@@ -171,7 +171,7 @@ public sealed class UnitSnapshot
         CurrentHealth = Math.Min(MaxHealth, CurrentHealth + amount);
     }
 
-    public SkillDefinition? ResolveSkill(string? skillId)
+    public BattleSkillSpec? ResolveSkill(string? skillId)
     {
         return string.IsNullOrWhiteSpace(skillId)
             ? null

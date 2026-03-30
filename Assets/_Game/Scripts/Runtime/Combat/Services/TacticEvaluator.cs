@@ -4,7 +4,7 @@ using SM.Combat.Model;
 
 namespace SM.Combat.Services;
 
-public sealed record EvaluatedAction(BattleActionType ActionType, UnitSnapshot? Target, SkillDefinition? Skill, TacticRule Rule, float DesiredRange);
+public sealed record EvaluatedAction(BattleActionType ActionType, UnitSnapshot? Target, BattleSkillSpec? Skill, TacticRule Rule, float DesiredRange);
 
 public static class TacticEvaluator
 {
@@ -30,7 +30,7 @@ public static class TacticEvaluator
         return new EvaluatedAction(BattleActionType.WaitDefend, actor, null, fallbackRule, 0f);
     }
 
-    private static bool ConditionMatches(BattleState state, UnitSnapshot actor, TacticRule rule, SkillDefinition? skill, UnitSnapshot? target)
+    private static bool ConditionMatches(BattleState state, UnitSnapshot actor, TacticRule rule, BattleSkillSpec? skill, UnitSnapshot? target)
     {
         switch (rule.ConditionType)
         {

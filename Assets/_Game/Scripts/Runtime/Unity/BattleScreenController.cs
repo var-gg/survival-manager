@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SM.Combat.Model;
 using SM.Combat.Services;
+using SM.Meta.Model;
 using SM.Meta.Services;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +33,9 @@ public sealed class BattleScreenController : MonoBehaviour
     private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
     private GameSessionRoot _root = null!;
     private BattleSimulator? _simulator;
+    private BattleLoadoutSnapshot? _compiledSnapshot;
+    private IReadOnlyList<BattleUnitLoadout> _enemyLoadouts = Array.Empty<BattleUnitLoadout>();
+    private string _battleStartedAtUtc = string.Empty;
     private BattleSimulationStep? _previousStep;
     private BattleSimulationStep? _currentStep;
     private float _playbackSpeed = 1f;
@@ -212,8 +217,18 @@ public sealed class BattleScreenController : MonoBehaviour
         _recentLogs.Clear();
         SetSpeed(1f);
 
-        var allyParticipants = _root.SessionState.BuildBattleParticipants();
-        if (allyParticipants.Count == 0)
+        BattleLoadoutSnapshot allySnapshot;
+        try
+        {
+            allySnapshot = _root.SessionState.BuildBattleLoadoutSnapshot();
+        }
+        catch (System.Exception ex)
+        {
+            SetResult(ex.Message);
+            return;
+        }
+
+        if (allySnapshot.Allies.Count == 0)
         {
             SetResult("전투에 투입할 아군이 없습니다.");
             return;
@@ -226,17 +241,20 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         var encounter = BattleEncounterPlans.CreateObserverSmokePlan();
-        var buildResult = BattleSetupBuilder.Build(allyParticipants, encounter, snapshot);
+        var buildResult = BattleSetupBuilder.Build(Array.Empty<BattleParticipantSpec>(), encounter, snapshot);
         if (!buildResult.IsSuccess)
         {
             SetResult(buildResult.Error ?? "전투 세팅 빌드에 실패했습니다.");
             return;
         }
 
+        _compiledSnapshot = allySnapshot;
+        _enemyLoadouts = buildResult.Enemies;
+        _battleStartedAtUtc = System.DateTime.UtcNow.ToString("O");
         var simulationState = BattleFactory.Create(
-            buildResult.Allies,
+            allySnapshot.Allies,
             buildResult.Enemies,
-            _root.SessionState.SelectedTeamPosture,
+            allySnapshot.TeamTactic.Posture,
             encounter.EnemyPosture,
             BattleSimulator.DefaultFixedStepSeconds,
             seed: 17);
@@ -274,7 +292,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void FinishBattle()
     {
-        if (_simulator == null || _currentStep == null || _battleFinished)
+        if (_simulator == null || _currentStep == null || _battleFinished || _compiledSnapshot == null)
         {
             return;
         }
@@ -284,6 +302,15 @@ public sealed class BattleScreenController : MonoBehaviour
         resultText.text = _currentStep.Winner == TeamSide.Ally ? "승리" : "패배";
         statusText.text = $"전투 종료 | {_currentStep.StepIndex} steps | {_totalEventCount} events";
         var winner = _currentStep.Winner ?? TeamSide.Ally;
+        var result = _simulator.RunToEnd();
+        var replay = ReplayAssembler.Assemble(
+            _compiledSnapshot,
+            _enemyLoadouts,
+            result,
+            17,
+            _battleStartedAtUtc,
+            System.DateTime.UtcNow.ToString("O"));
+        _root.SessionState.RecordBattleAudit(replay);
         _root.SessionState.MarkBattleResolved(
             winner == TeamSide.Ally,
             $"{winner} / {_currentStep.StepIndex} steps / {_totalEventCount} events");

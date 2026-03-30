@@ -7,7 +7,7 @@ namespace SM.Combat.Services;
 
 public static class SynergyService
 {
-    public static IReadOnlyList<CombatModifierPackage> BuildForTeam(IEnumerable<UnitDefinition> units)
+    public static IReadOnlyList<CombatModifierPackage> BuildForTeam(IEnumerable<BattleUnitLoadout> units)
     {
         var list = new List<CombatModifierPackage>();
         var materialized = units.ToList();
@@ -37,5 +37,28 @@ public static class SynergyService
         }
 
         return list;
+    }
+
+    public static IReadOnlyList<CombatModifierPackage> BuildForTeam(
+        IEnumerable<BattleUnitLoadout> units,
+        IEnumerable<TeamSynergyTierRule> tierRules)
+    {
+        var materialized = units.ToList();
+        var compiled = new List<CombatModifierPackage>();
+        foreach (var rule in tierRules)
+        {
+            var count = materialized.Count(unit => unit.CompileTags?.Contains(rule.CountedTagId) == true);
+            if (count < rule.Threshold)
+            {
+                continue;
+            }
+
+            compiled.Add(new CombatModifierPackage(
+                $"synergy:{rule.SynergyId}:{rule.Threshold}",
+                ModifierSource.Synergy,
+                rule.Modifiers));
+        }
+
+        return compiled.Count > 0 ? compiled : BuildForTeam(materialized);
     }
 }

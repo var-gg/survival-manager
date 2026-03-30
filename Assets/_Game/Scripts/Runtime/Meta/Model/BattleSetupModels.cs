@@ -17,7 +17,10 @@ public sealed record BattleParticipantSpec(
     string PositiveTraitId,
     string NegativeTraitId,
     IReadOnlyList<BattleEquippedItemSpec> EquippedItems,
-    IReadOnlyList<string> TemporaryAugmentIds);
+    IReadOnlyList<string> TemporaryAugmentIds,
+    TeamPostureType TeamPosture = TeamPostureType.StandardAdvance,
+    string RoleTag = "auto",
+    string OpeningIntent = "opening:standard");
 
 public sealed record BattleEncounterPlan(
     IReadOnlyList<BattleParticipantSpec> EnemyParticipants,
@@ -31,24 +34,58 @@ public sealed record CombatArchetypeTemplate(
     DeploymentAnchorId DefaultAnchor,
     IReadOnlyDictionary<StatKey, float> BaseStats,
     IReadOnlyList<TacticRule> Tactics,
-    IReadOnlyList<SkillDefinition> Skills);
+    IReadOnlyList<BattleSkillSpec> Skills);
+
+public sealed record TeamTacticTemplate(
+    string Id,
+    TeamTacticProfile Profile);
+
+public sealed record RoleInstructionTemplate(
+    string Id,
+    SlotRoleInstruction Instruction);
+
+public sealed record PassiveNodeTemplate(
+    string Id,
+    CombatModifierPackage Package,
+    IReadOnlyList<string> CompileTags);
+
+public sealed record AugmentCatalogEntry(
+    string Id,
+    string Category,
+    string FamilyId,
+    int Tier,
+    bool IsPermanent,
+    bool SuppressIfPermanentEquipped,
+    IReadOnlyList<string> Tags,
+    IReadOnlyList<string> MutualExclusionTags,
+    CombatModifierPackage Package);
+
+public sealed record SynergyTierTemplate(
+    string Id,
+    TeamSynergyTierRule Rule);
 
 public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, CombatArchetypeTemplate> Archetypes,
     IReadOnlyDictionary<string, CombatModifierPackage> TraitPackages,
     IReadOnlyDictionary<string, CombatModifierPackage> ItemPackages,
     IReadOnlyDictionary<string, CombatModifierPackage> AffixPackages,
-    IReadOnlyDictionary<string, CombatModifierPackage> AugmentPackages);
+    IReadOnlyDictionary<string, CombatModifierPackage> AugmentPackages,
+    IReadOnlyDictionary<string, BattleSkillSpec> SkillCatalog,
+    IReadOnlyDictionary<string, TeamTacticTemplate> TeamTactics,
+    IReadOnlyDictionary<string, RoleInstructionTemplate> RoleInstructions,
+    IReadOnlyDictionary<string, PassiveNodeTemplate> PassiveNodes,
+    IReadOnlyDictionary<string, AugmentCatalogEntry> AugmentCatalog,
+    IReadOnlyDictionary<string, SynergyTierTemplate> SynergyCatalog);
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,
     string? Error,
-    IReadOnlyList<UnitDefinition> Allies,
-    IReadOnlyList<UnitDefinition> Enemies)
+    IReadOnlyList<BattleUnitLoadout> Allies,
+    IReadOnlyList<BattleUnitLoadout> Enemies)
 {
-    public static BattleSetupBuildResult Success(IReadOnlyList<UnitDefinition> allies, IReadOnlyList<UnitDefinition> enemies)
+    public static BattleSetupBuildResult Success(IReadOnlyList<BattleUnitLoadout> allies, IReadOnlyList<BattleUnitLoadout> enemies)
         => new(true, null, allies, enemies);
 
     public static BattleSetupBuildResult Fail(string error)
-        => new(false, error, Array.Empty<UnitDefinition>(), Array.Empty<UnitDefinition>());
+        => new(false, error, Array.Empty<BattleUnitLoadout>(), Array.Empty<BattleUnitLoadout>());
 }

@@ -51,6 +51,11 @@ public sealed class RuntimeCombatContentLookup
     private readonly Dictionary<string, ItemBaseDefinition> _itemDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, AffixDefinition> _affixDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, AugmentDefinition> _augmentDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, SkillDefinitionAsset> _skillDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, TeamTacticDefinition> _teamTacticDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, RoleInstructionDefinition> _roleInstructionDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, PassiveNodeDefinition> _passiveNodeDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, SynergyDefinition> _synergyDefinitions = new(StringComparer.Ordinal);
     private CombatContentSnapshot? _snapshot;
     private bool _loaded;
 
@@ -280,6 +285,11 @@ public sealed class RuntimeCombatContentLookup
         var items = LoadDefinitions<ItemBaseDefinition>("_Game/Content/Definitions/Items", "Assets/Resources/_Game/Content/Definitions/Items");
         var affixes = LoadDefinitions<AffixDefinition>("_Game/Content/Definitions/Affixes", "Assets/Resources/_Game/Content/Definitions/Affixes");
         var augments = LoadDefinitions<AugmentDefinition>("_Game/Content/Definitions/Augments", "Assets/Resources/_Game/Content/Definitions/Augments");
+        var skills = LoadDefinitions<SkillDefinitionAsset>("_Game/Content/Definitions/Skills", "Assets/Resources/_Game/Content/Definitions/Skills");
+        var teamTactics = LoadDefinitions<TeamTacticDefinition>("_Game/Content/Definitions/TeamTactics", "Assets/Resources/_Game/Content/Definitions/TeamTactics");
+        var roleInstructions = LoadDefinitions<RoleInstructionDefinition>("_Game/Content/Definitions/RoleInstructions", "Assets/Resources/_Game/Content/Definitions/RoleInstructions");
+        var passiveNodes = LoadDefinitions<PassiveNodeDefinition>("_Game/Content/Definitions/PassiveNodes", "Assets/Resources/_Game/Content/Definitions/PassiveNodes");
+        var synergies = LoadDefinitions<SynergyDefinition>("_Game/Content/Definitions/Synergies", "Assets/Resources/_Game/Content/Definitions/Synergies");
 
         if (archetypes.Length == 0)
         {
@@ -299,6 +309,11 @@ public sealed class RuntimeCombatContentLookup
         _itemDefinitions.Clear();
         _affixDefinitions.Clear();
         _augmentDefinitions.Clear();
+        _skillDefinitions.Clear();
+        _teamTacticDefinitions.Clear();
+        _roleInstructionDefinitions.Clear();
+        _passiveNodeDefinitions.Clear();
+        _synergyDefinitions.Clear();
 
         foreach (var archetype in archetypes.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
         {
@@ -324,6 +339,31 @@ public sealed class RuntimeCombatContentLookup
             _augmentDefinitions[augment.Id] = augment;
         }
 
+        foreach (var skill in skills.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _skillDefinitions[skill.Id] = skill;
+        }
+
+        foreach (var teamTactic in teamTactics.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _teamTacticDefinitions[teamTactic.Id] = teamTactic;
+        }
+
+        foreach (var roleInstruction in roleInstructions.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _roleInstructionDefinitions[roleInstruction.Id] = roleInstruction;
+        }
+
+        foreach (var passiveNode in passiveNodes.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _passiveNodeDefinitions[passiveNode.Id] = passiveNode;
+        }
+
+        foreach (var synergy in synergies.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _synergyDefinitions[synergy.Id] = synergy;
+        }
+
         _snapshot = new CombatContentSnapshot(
             _archetypeDefinitions.Values.ToDictionary(definition => definition.Id, BuildArchetypeTemplate, StringComparer.Ordinal),
             _traitPools.Values
@@ -332,7 +372,15 @@ public sealed class RuntimeCombatContentLookup
                 .ToDictionary(entry => entry.Id, entry => BuildTraitPackage(entry), StringComparer.Ordinal),
             _itemDefinitions.Values.ToDictionary(item => item.Id, item => BuildItemPackage(item), StringComparer.Ordinal),
             _affixDefinitions.Values.ToDictionary(affix => affix.Id, affix => BuildAffixPackage(affix), StringComparer.Ordinal),
-            _augmentDefinitions.Values.ToDictionary(augment => augment.Id, augment => BuildAugmentPackage(augment), StringComparer.Ordinal));
+            _augmentDefinitions.Values.ToDictionary(augment => augment.Id, augment => BuildAugmentPackage(augment), StringComparer.Ordinal),
+            _skillDefinitions.Values.ToDictionary(skill => skill.Id, skill => BuildSkillSpec(skill), StringComparer.Ordinal),
+            _teamTacticDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildTeamTacticTemplate(definition), StringComparer.Ordinal),
+            _roleInstructionDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildRoleInstructionTemplate(definition), StringComparer.Ordinal),
+            _passiveNodeDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildPassiveNodeTemplate(definition), StringComparer.Ordinal),
+            _augmentDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildAugmentCatalogEntry(definition), StringComparer.Ordinal),
+            _synergyDefinitions.Values
+                .SelectMany(definition => BuildSynergyTemplates(definition))
+                .ToDictionary(template => template.Id, template => template, StringComparer.Ordinal));
     }
 
     private static T[] LoadDefinitions<T>(string resourcesPath, string editorFolderPath) where T : UnityEngine.Object
@@ -394,13 +442,26 @@ public sealed class RuntimeCombatContentLookup
                 .ToList(),
             definition.Skills
                 .Where(skill => skill != null && !string.IsNullOrWhiteSpace(skill.Id))
-                .Select(skill => new SkillDefinition(
-                    skill.Id,
-                    skill.DisplayName,
-                    (SkillKind)skill.Kind,
-                    skill.Power,
-                    skill.Range))
+                .Select(BuildSkillSpec)
                 .ToList());
+    }
+
+    private static BattleSkillSpec BuildSkillSpec(SkillDefinitionAsset skill)
+    {
+        return new BattleSkillSpec(
+            skill.Id,
+            skill.DisplayName,
+            (SkillKind)skill.Kind,
+            skill.Power,
+            skill.Range,
+            skill.SlotKind switch
+            {
+                SkillSlotKindValue.UtilityActive => "utility_active",
+                SkillSlotKindValue.Passive => "passive",
+                SkillSlotKindValue.Support => "support",
+                _ => "core_active",
+            },
+            skill.CompileTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
     }
 
     private static CombatModifierPackage BuildTraitPackage(TraitEntry trait)
@@ -433,6 +494,79 @@ public sealed class RuntimeCombatContentLookup
             augment.Id,
             ModifierSource.Augment,
             augment.Modifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Augment, augment.Id)).ToList());
+    }
+
+    private static TeamTacticTemplate BuildTeamTacticTemplate(TeamTacticDefinition definition)
+    {
+        return new TeamTacticTemplate(
+            definition.Id,
+            new TeamTacticProfile(
+                definition.Id,
+                definition.DisplayName,
+                (TeamPostureType)definition.Posture,
+                definition.CombatPace,
+                definition.FocusModeBias,
+                definition.FrontSpacingBias,
+                definition.BackSpacingBias,
+                definition.ProtectCarryBias,
+                definition.TargetSwitchPenalty));
+    }
+
+    private static RoleInstructionTemplate BuildRoleInstructionTemplate(RoleInstructionDefinition definition)
+    {
+        return new RoleInstructionTemplate(
+            definition.Id,
+            new SlotRoleInstruction(
+                (DeploymentAnchorId)definition.Anchor,
+                definition.RoleTag,
+                definition.ProtectCarryBias,
+                definition.BacklinePressureBias,
+                definition.RetreatBias));
+    }
+
+    private static PassiveNodeTemplate BuildPassiveNodeTemplate(PassiveNodeDefinition definition)
+    {
+        return new PassiveNodeTemplate(
+            definition.Id,
+            new CombatModifierPackage(
+                definition.Id,
+                ModifierSource.Other,
+                definition.Modifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Other, definition.Id)).ToList()),
+            definition.CompileTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
+    }
+
+    private static AugmentCatalogEntry BuildAugmentCatalogEntry(AugmentDefinition definition)
+    {
+        return new AugmentCatalogEntry(
+            definition.Id,
+            definition.Category switch
+            {
+                AugmentCategoryValue.Synergy => "synergy",
+                AugmentCategoryValue.EconomyLoot => "economy_loot",
+                AugmentCategoryValue.RunUtility => "run_utility",
+                _ => "combat",
+            },
+            string.IsNullOrWhiteSpace(definition.FamilyId) ? definition.Id : definition.FamilyId,
+            Math.Max(1, definition.Tier),
+            definition.IsPermanent,
+            definition.SuppressIfPermanentEquipped,
+            definition.Tags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+            definition.MutualExclusionTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+            BuildAugmentPackage(definition));
+    }
+
+    private static IEnumerable<SynergyTierTemplate> BuildSynergyTemplates(SynergyDefinition definition)
+    {
+        foreach (var tier in definition.Tiers.Where(tier => tier != null && tier.Threshold > 0))
+        {
+            yield return new SynergyTierTemplate(
+                $"{definition.Id}:{tier.Threshold}",
+                new TeamSynergyTierRule(
+                    definition.Id,
+                    definition.CountedTagId,
+                    tier.Threshold,
+                    tier.Modifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Synergy, $"{definition.Id}:{tier.Threshold}")).ToList()));
+        }
     }
 
     private static StatModifier BuildStatModifier(SerializableStatModifier modifier, ModifierSource source, string sourceId)

@@ -12,7 +12,7 @@ public static class BattleSetupBuilder
         BattleEncounterPlan encounter,
         CombatContentSnapshot content)
     {
-        var allyDefinitions = new List<UnitDefinition>(allies.Count);
+        var allyDefinitions = new List<BattleUnitLoadout>(allies.Count);
         foreach (var ally in allies)
         {
             if (!TryBuildDefinition(ally, content, out var definition, out var error))
@@ -23,7 +23,7 @@ public static class BattleSetupBuilder
             allyDefinitions.Add(definition);
         }
 
-        var enemyDefinitions = new List<UnitDefinition>(encounter.EnemyParticipants.Count);
+        var enemyDefinitions = new List<BattleUnitLoadout>(encounter.EnemyParticipants.Count);
         foreach (var enemy in encounter.EnemyParticipants)
         {
             if (!TryBuildDefinition(enemy, content, out var definition, out var error))
@@ -40,7 +40,7 @@ public static class BattleSetupBuilder
     private static bool TryBuildDefinition(
         BattleParticipantSpec participant,
         CombatContentSnapshot content,
-        out UnitDefinition definition,
+        out BattleUnitLoadout definition,
         out string error)
     {
         if (!content.Archetypes.TryGetValue(participant.ArchetypeId, out var archetype))
@@ -60,15 +60,21 @@ public static class BattleSetupBuilder
             return false;
         }
 
-        definition = new UnitDefinition(
+        definition = new BattleUnitLoadout(
             participant.ParticipantId,
             participant.DisplayName,
             archetype.RaceId,
             archetype.ClassId,
             participant.Anchor,
             new Dictionary<SM.Core.Stats.StatKey, float>(archetype.BaseStats),
-            archetype.Tactics.ToList(),
+            new[] { new UnitRuleChain($"rules:{participant.ParticipantId}", archetype.Tactics.ToList()) },
             archetype.Skills.ToList(),
+            new TeamTacticProfile(
+                $"posture:{participant.TeamPosture}",
+                participant.TeamPosture.ToString(),
+                participant.TeamPosture),
+            new SlotRoleInstruction(participant.Anchor, participant.RoleTag),
+            participant.OpeningIntent,
             packages);
         error = string.Empty;
         return true;

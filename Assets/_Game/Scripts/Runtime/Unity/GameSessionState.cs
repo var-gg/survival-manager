@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Results;
 using SM.Meta.Model;
+using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 
 namespace SM.Unity;
@@ -21,6 +22,7 @@ public sealed class GameSessionState
     };
 
     private readonly RuntimeCombatContentLookup _combatContentLookup;
+    private readonly LoadoutCompiler _loadoutCompiler = new();
     private readonly List<string> _expeditionSquadHeroIds = new();
     private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
     private readonly List<RecruitOffer> _recruitOffers = new();
@@ -30,6 +32,8 @@ public sealed class GameSessionState
     private int _recruitOfferGeneration;
 
     public SaveProfile Profile { get; private set; } = new();
+    public ActiveRunState? ActiveRun { get; private set; }
+    public BattleLoadoutSnapshot? LastCompiledBattleSnapshot { get; private set; }
     public RosterState Roster { get; private set; } = new();
     public ExpeditionState Expedition { get; private set; } = new();
     public string CurrentSceneName { get; private set; } = SceneNames.Boot;
@@ -74,8 +78,21 @@ public sealed class GameSessionState
         Profile.Currencies ??= new CurrencyRecord();
         Profile.Inventory ??= new List<InventoryItemRecord>();
         Profile.UnlockedPermanentAugmentIds ??= new List<string>();
+        Profile.HeroLoadouts ??= new List<HeroLoadoutRecord>();
+        Profile.HeroProgressions ??= new List<HeroProgressionRecord>();
+        Profile.SkillInstances ??= new List<SkillInstanceRecord>();
+        Profile.PassiveSelections ??= new List<PassiveSelectionRecord>();
+        Profile.PermanentAugmentLoadouts ??= new List<PermanentAugmentLoadoutRecord>();
+        Profile.SquadBlueprints ??= new List<SquadBlueprintRecord>();
+        Profile.ActiveRun ??= new ActiveRunRecord();
+        Profile.MatchHeaders ??= new List<MatchRecordHeader>();
+        Profile.MatchBlobs ??= new List<MatchRecordBlob>();
+        Profile.InventoryLedger ??= new List<InventoryLedgerEntryRecord>();
+        Profile.RewardLedger ??= new List<RewardLedgerEntryRecord>();
+        Profile.SuspicionFlags ??= new List<SuspicionFlagRecord>();
         Profile.RunSummaries ??= new List<RunSummaryRecord>();
         NormalizeProfileContentIds();
+        EnsureProfileBuildState();
 
         if (string.IsNullOrWhiteSpace(Profile.DisplayName))
         {
@@ -104,6 +121,7 @@ public sealed class GameSessionState
         MarkCurrentNodeResolved();
         AutoSelectNextExpeditionNode();
         EnsureRewardChoices(reset: true);
+        RestoreActiveRunFromProfile();
         SyncExpeditionState();
     }
 
@@ -123,7 +141,9 @@ public sealed class GameSessionState
         MarkCurrentNodeResolved();
         AutoSelectNextExpeditionNode();
         EnsureRewardChoices(reset: true);
-        Expedition = new ExpeditionState(CurrentExpeditionNodeIndex);
+        ActiveRun = RunStateService.StartRun("expedition_mvp_demo", CaptureBlueprintState(), false);
+        SyncActiveRunRecord();
+        SyncExpeditionState();
     }
 
     public void PrepareQuickBattleSmoke()
@@ -137,6 +157,9 @@ public sealed class GameSessionState
         EnsureDefaultSquad();
         EnsureBattleDeployReady();
         EnsureRewardChoices(reset: true);
+        ActiveRun = RunStateService.StartRun("quick-battle", CaptureBlueprintState(), true);
+        SyncActiveRunRecord();
+        SyncExpeditionState();
     }
 
     public void AdvanceExpeditionNode()
@@ -188,6 +211,11 @@ public sealed class GameSessionState
         }
 
         CurrentExpeditionNodeIndex = selected.Index;
+        if (ActiveRun != null)
+        {
+            ActiveRun = RunStateService.AdvanceNode(ActiveRun, selected.Index);
+            SyncActiveRunRecord();
+        }
         MarkCurrentNodeResolved();
         LastExpeditionEffectMessage = ApplyExpeditionNodeEffect(selected);
         SyncExpeditionState();
@@ -201,6 +229,8 @@ public sealed class GameSessionState
         HasActiveExpeditionRun = false;
         SelectedExpeditionNodeIndex = null;
         LastExpeditionEffectMessage = "원정을 종료하고 Town으로 복귀합니다.";
+        ActiveRun = null;
+        SyncActiveRunRecord();
     }
 
     public void ReturnToTownAfterReward()
@@ -209,6 +239,8 @@ public sealed class GameSessionState
         if (!HasActiveExpeditionRun || CurrentExpeditionNodeIndex >= _expeditionNodes.Count - 1)
         {
             HasActiveExpeditionRun = false;
+            ActiveRun = null;
+            SyncActiveRunRecord();
         }
     }
 
@@ -275,6 +307,8 @@ public sealed class GameSessionState
             _expeditionSquadHeroIds.Remove(heroId);
             ClearDeploymentForHero(heroId);
             EnsureBattleDeployReady();
+            CaptureBlueprintState();
+            SyncActiveRunIfPresent();
             return true;
         }
 
@@ -285,6 +319,8 @@ public sealed class GameSessionState
 
         _expeditionSquadHeroIds.Add(heroId);
         EnsureBattleDeployReady();
+        CaptureBlueprintState();
+        SyncActiveRunIfPresent();
         return true;
     }
 
@@ -349,6 +385,8 @@ public sealed class GameSessionState
         }
 
         _deploymentAssignments[anchor] = heroId;
+        CaptureBlueprintState();
+        SyncActiveRunIfPresent();
         return true;
     }
 
@@ -380,6 +418,8 @@ public sealed class GameSessionState
         var values = (TeamPostureType[])Enum.GetValues(typeof(TeamPostureType));
         var currentIndex = Array.IndexOf(values, SelectedTeamPosture);
         SelectedTeamPosture = values[(currentIndex + 1) % values.Length];
+        CaptureBlueprintState();
+        SyncActiveRunIfPresent();
     }
 
     public IEnumerable<(DeploymentAnchorId Anchor, string? HeroId)> EnumerateDeploymentAssignments()
@@ -417,9 +457,101 @@ public sealed class GameSessionState
                     hero.PositiveTraitId,
                     hero.NegativeTraitId,
                     BuildEquippedItemSpecs(hero, inventoryByInstanceId),
-                    temporaryAugments);
+                    temporaryAugments,
+                    SelectedTeamPosture,
+                    ResolveRoleTag(hero.ClassId, entry.Anchor),
+                    "opening:standard");
             })
             .ToList();
+    }
+
+    public BattleLoadoutSnapshot BuildBattleLoadoutSnapshot()
+    {
+        EnsureBattleDeployReady();
+
+        if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out var error))
+        {
+            throw new InvalidOperationException(error);
+        }
+
+        var blueprint = CaptureBlueprintState();
+        var activeRun = ActiveRun ?? RunStateService.StartRun(IsQuickBattleSmokeActive ? "quick-battle" : "expedition_mvp_demo", blueprint, IsQuickBattleSmokeActive);
+        var compiled = _loadoutCompiler.Compile(
+            ToHeroRecords(Profile).ToList(),
+            ToHeroLoadoutStates(Profile),
+            ToHeroProgressionStates(Profile),
+            ToItemInstanceStates(Profile),
+            ToSkillInstanceStates(Profile),
+            ToPassiveSelections(Profile),
+            ToPermanentAugmentLoadout(Profile, blueprint.BlueprintId),
+            blueprint,
+            new RunOverlayState(
+                CurrentExpeditionNodeIndex,
+                Expedition.TemporaryAugmentIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList(),
+                _pendingRewardChoices.Select(choice => choice.PayloadId).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList(),
+                activeRun.Overlay.CompileVersion,
+                activeRun.Overlay.LastCompileHash),
+            snapshot);
+
+        LastCompiledBattleSnapshot = compiled;
+        ActiveRun = RunStateService.SyncBlueprint(
+            activeRun,
+            blueprint,
+            compiled.CompileHash,
+            _pendingRewardChoices.Select(choice => choice.PayloadId).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList());
+        SyncActiveRunRecord();
+        SyncExpeditionState();
+        return compiled;
+    }
+
+    public void RecordBattleAudit(BattleReplayBundle replay)
+    {
+        Profile.MatchHeaders.Add(new MatchRecordHeader
+        {
+            MatchId = replay.Header.MatchId,
+            RunId = ActiveRun?.RunId ?? string.Empty,
+            ContentVersion = replay.Header.ContentVersion,
+            SimVersion = replay.Header.SimVersion,
+            Seed = replay.Header.Seed,
+            PlayerSnapshotHash = replay.Header.PlayerSnapshotHash,
+            EnemySnapshotHash = replay.Header.EnemySnapshotHash,
+            StartedAtUtc = replay.Header.StartedAtUtc,
+            CompletedAtUtc = replay.Header.CompletedAtUtc,
+            Winner = replay.Header.Winner.ToString(),
+            FinalStateHash = replay.Header.FinalStateHash,
+        });
+        Profile.MatchBlobs.Add(new MatchRecordBlob
+        {
+            MatchId = replay.Header.MatchId,
+            CompileVersion = replay.Input.CompileVersion,
+            CompileHash = replay.Input.CompileHash,
+            InputDigest = $"{replay.Input.TeamPosture}|{replay.Input.Allies.Count}|{replay.Input.Enemies.Count}",
+            EventStream = replay.EventStream.Select(@event =>
+                $"{@event.StepIndex}|{@event.ActorId.Value}|{@event.ActionType}|{@event.TargetId?.Value}|{@event.Value:0.###}|{@event.Note}").ToList(),
+            KeyframeDigests = replay.Keyframes.Select(frame =>
+                $"{frame.StepIndex}|{frame.TimeSeconds:0.###}|{frame.StateHash}").ToList(),
+        });
+
+        if (ActiveRun != null)
+        {
+            if (!string.IsNullOrWhiteSpace(ActiveRun.Overlay.LastCompileHash)
+                && !string.Equals(ActiveRun.Overlay.LastCompileHash, replay.Input.CompileHash, StringComparison.Ordinal))
+            {
+                Profile.SuspicionFlags.Add(new SuspicionFlagRecord
+                {
+                    FlagId = Guid.NewGuid().ToString("N"),
+                    RunId = ActiveRun.RunId,
+                    MatchId = replay.Header.MatchId,
+                    Reason = "compile_hash_mismatch",
+                    ExpectedHash = ActiveRun.Overlay.LastCompileHash,
+                    ObservedHash = replay.Input.CompileHash,
+                    CreatedAtUtc = DateTime.UtcNow.ToString("O"),
+                });
+            }
+
+            ActiveRun = RunStateService.CompleteBattle(ActiveRun, replay.Header.MatchId);
+            SyncActiveRunRecord();
+        }
     }
 
     public void SaveDebugSnapshot(string note = "manual-debug-save")
@@ -441,6 +573,7 @@ public sealed class GameSessionState
         LastBattleSummary = summary;
         LastRewardApplicationSummary = string.Empty;
         EnsureRewardChoices(reset: true);
+        SyncActiveRunIfPresent();
     }
 
     public void MarkBattleResolved(bool victory, string summary)
@@ -474,6 +607,12 @@ public sealed class GameSessionState
         }
 
         EnsureRewardChoices(reset: true);
+        if (!victory)
+        {
+            ActiveRun = null;
+            SyncActiveRunRecord();
+        }
+        SyncActiveRunIfPresent();
     }
 
     public bool ApplyRewardChoice(int index)
@@ -484,11 +623,11 @@ public sealed class GameSessionState
         }
 
         var choice = _pendingRewardChoices[index];
+        var timestamp = DateTime.UtcNow.ToString("O");
         switch (choice.Kind)
         {
             case RewardChoiceKind.Gold:
-                Profile.Currencies.Gold += choice.GoldAmount;
-                LastRewardApplicationSummary = $"{choice.Title}: +{choice.GoldAmount} Gold";
+                ApplyLedgerBackedReward(new RewardOption(choice.Title, SM.Content.Definitions.RewardType.Gold, choice.GoldAmount, choice.Description));
                 break;
             case RewardChoiceKind.Item:
                 Profile.Inventory.Add(new InventoryItemRecord
@@ -498,22 +637,47 @@ public sealed class GameSessionState
                     EquippedHeroId = string.Empty,
                     AffixIds = new List<string>()
                 });
+                Profile.InventoryLedger.Add(new InventoryLedgerEntryRecord
+                {
+                    EntryId = Guid.NewGuid().ToString("N"),
+                    RunId = ActiveRun?.RunId ?? string.Empty,
+                    ItemInstanceId = Profile.Inventory.Last().ItemInstanceId,
+                    ItemBaseId = choice.PayloadId,
+                    ChangeKind = "reward_item",
+                    Amount = 1,
+                    CreatedAtUtc = timestamp,
+                    Summary = choice.Title,
+                });
+                Profile.RewardLedger.Add(new RewardLedgerEntryRecord
+                {
+                    EntryId = Guid.NewGuid().ToString("N"),
+                    RunId = ActiveRun?.RunId ?? string.Empty,
+                    RewardId = choice.PayloadId,
+                    RewardType = SM.Content.Definitions.RewardType.Item.ToString(),
+                    Amount = 1,
+                    CreatedAtUtc = timestamp,
+                    Summary = choice.Title,
+                });
                 LastRewardApplicationSummary = $"{choice.Title}: {choice.PayloadId} 획득";
                 break;
             case RewardChoiceKind.TemporaryAugment:
-                if (!string.IsNullOrWhiteSpace(choice.PayloadId) && !Expedition.TemporaryAugmentIds.Contains(choice.PayloadId))
-                {
-                    Expedition.AddTemporaryAugment(choice.PayloadId);
-                }
-
-                LastRewardApplicationSummary = $"{choice.Title}: run 한정 augment 추가";
+                ApplyLedgerBackedReward(new RewardOption(choice.PayloadId, SM.Content.Definitions.RewardType.TemporaryAugment, 1, choice.Title));
                 break;
             case RewardChoiceKind.TraitRerollCurrency:
-                Profile.Currencies.TraitRerollCurrency += choice.TraitRerollAmount;
-                LastRewardApplicationSummary = $"{choice.Title}: Trait Reroll +{choice.TraitRerollAmount}";
+                ApplyLedgerBackedReward(new RewardOption(choice.Title, SM.Content.Definitions.RewardType.TraitRerollCurrency, choice.TraitRerollAmount, choice.Title));
                 break;
             case RewardChoiceKind.PermanentAugmentSlot:
                 GrantPermanentAugmentSlots(choice.PermanentSlotAmount, choice.PayloadId);
+                Profile.RewardLedger.Add(new RewardLedgerEntryRecord
+                {
+                    EntryId = Guid.NewGuid().ToString("N"),
+                    RunId = ActiveRun?.RunId ?? string.Empty,
+                    RewardId = choice.PayloadId,
+                    RewardType = SM.Content.Definitions.RewardType.PermanentAugmentSlot.ToString(),
+                    Amount = choice.PermanentSlotAmount,
+                    CreatedAtUtc = timestamp,
+                    Summary = choice.Title,
+                });
                 LastRewardApplicationSummary = $"{choice.Title}: Permanent Slot +{choice.PermanentSlotAmount}";
                 break;
         }
@@ -529,6 +693,7 @@ public sealed class GameSessionState
         });
 
         _pendingRewardChoices.Clear();
+        SyncActiveRunIfPresent();
         return true;
     }
 
@@ -836,6 +1001,11 @@ public sealed class GameSessionState
         if (!string.IsNullOrWhiteSpace(node.EffectPayloadId) && !Expedition.TemporaryAugmentIds.Contains(node.EffectPayloadId))
         {
             Expedition.AddTemporaryAugment(node.EffectPayloadId);
+            if (ActiveRun != null)
+            {
+                ActiveRun = RunStateService.ApplyTemporaryAugment(ActiveRun, node.EffectPayloadId);
+                SyncActiveRunRecord();
+            }
         }
 
         return $"{node.Label}: temp augment '{node.EffectPayloadId}' 적용";
@@ -862,6 +1032,15 @@ public sealed class GameSessionState
         }
 
         PermanentAugmentSlotCount = Math.Max(1, Profile.UnlockedPermanentAugmentIds.Count);
+        var blueprintId = string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId) ? "blueprint.default" : Profile.ActiveBlueprintId;
+        var record = Profile.PermanentAugmentLoadouts.FirstOrDefault(existing => existing.BlueprintId == blueprintId);
+        if (record == null)
+        {
+            record = new PermanentAugmentLoadoutRecord { BlueprintId = blueprintId };
+            Profile.PermanentAugmentLoadouts.Add(record);
+        }
+
+        record.EquippedAugmentIds = Profile.UnlockedPermanentAugmentIds.Take(Math.Min(PermanentAugmentSlotCount, 3)).ToList();
     }
 
     private void MarkCurrentNodeResolved()
@@ -881,7 +1060,9 @@ public sealed class GameSessionState
 
     private void SyncExpeditionState()
     {
-        Expedition = new ExpeditionState(CurrentExpeditionNodeIndex, Expedition.TemporaryAugmentIds);
+        var currentNodeIndex = ActiveRun?.Overlay.CurrentNodeIndex ?? CurrentExpeditionNodeIndex;
+        var temporaryAugments = ActiveRun?.Overlay.TemporaryAugmentIds ?? Expedition.TemporaryAugmentIds;
+        Expedition = new ExpeditionState(currentNodeIndex, temporaryAugments);
     }
 
     private void SeedDemoProfile()
@@ -959,6 +1140,7 @@ public sealed class GameSessionState
         NormalizeInventoryContentIds();
         NormalizeExpeditionContentIds();
         NormalizeEquippedItemReferences();
+        NormalizeBuildStateRecords();
     }
 
     private void NormalizeHeroContentIds()
@@ -1005,13 +1187,12 @@ public sealed class GameSessionState
 
     private void NormalizeExpeditionContentIds()
     {
-        Expedition = new ExpeditionState(
-            Expedition.CurrentNodeIndex,
-            Expedition.TemporaryAugmentIds
+        var normalizedAugments = Expedition.TemporaryAugmentIds
                 .Select((augmentId, index) => _combatContentLookup.NormalizeTemporaryAugmentId(augmentId, index))
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Distinct(StringComparer.Ordinal)
-                .ToList());
+                .ToList();
+        Expedition = new ExpeditionState(Expedition.CurrentNodeIndex, normalizedAugments);
     }
 
     private void NormalizeEquippedItemReferences()
@@ -1082,9 +1263,333 @@ public sealed class GameSessionState
                 hero.RaceId,
                 hero.ClassId,
                 hero.PositiveTraitId,
-                hero.NegativeTraitId,
-                Array.Empty<MetaModifierPackage>());
+                hero.NegativeTraitId);
         }
+    }
+
+    private void EnsureProfileBuildState()
+    {
+        foreach (var hero in Profile.Heroes)
+        {
+            if (Profile.HeroLoadouts.All(record => record.HeroId != hero.HeroId))
+            {
+                Profile.HeroLoadouts.Add(new HeroLoadoutRecord
+                {
+                    HeroId = hero.HeroId,
+                    EquippedItemInstanceIds = hero.EquippedItemIds.ToList(),
+                });
+            }
+
+            if (Profile.HeroProgressions.All(record => record.HeroId != hero.HeroId))
+            {
+                Profile.HeroProgressions.Add(new HeroProgressionRecord { HeroId = hero.HeroId, Level = 1 });
+            }
+
+            if (Profile.PassiveSelections.All(record => record.HeroId != hero.HeroId))
+            {
+                Profile.PassiveSelections.Add(new PassiveSelectionRecord { HeroId = hero.HeroId });
+            }
+        }
+
+        if (Profile.PermanentAugmentLoadouts.All(record => record.BlueprintId != Profile.ActiveBlueprintId))
+        {
+            Profile.PermanentAugmentLoadouts.Add(new PermanentAugmentLoadoutRecord
+            {
+                BlueprintId = Profile.ActiveBlueprintId,
+                EquippedAugmentIds = Profile.UnlockedPermanentAugmentIds.Take(Math.Min(1, Profile.UnlockedPermanentAugmentIds.Count)).ToList()
+            });
+        }
+
+        if (Profile.SquadBlueprints.All(record => record.BlueprintId != Profile.ActiveBlueprintId))
+        {
+            CaptureBlueprintState();
+        }
+    }
+
+    private void NormalizeBuildStateRecords()
+    {
+        foreach (var loadout in Profile.HeroLoadouts)
+        {
+            loadout.EquippedItemInstanceIds ??= new List<string>();
+            loadout.EquippedSkillInstanceIds ??= new List<string>();
+            loadout.SelectedPassiveNodeIds ??= new List<string>();
+            loadout.EquippedPermanentAugmentIds ??= new List<string>();
+        }
+
+        foreach (var progression in Profile.HeroProgressions)
+        {
+            progression.UnlockedPassiveNodeIds ??= new List<string>();
+            progression.UnlockedSkillIds ??= new List<string>();
+        }
+
+        foreach (var skillInstance in Profile.SkillInstances)
+        {
+            skillInstance.CompileTags ??= new List<string>();
+        }
+
+        foreach (var selection in Profile.PassiveSelections)
+        {
+            selection.SelectedNodeIds ??= new List<string>();
+        }
+
+        foreach (var loadout in Profile.PermanentAugmentLoadouts)
+        {
+            loadout.EquippedAugmentIds ??= new List<string>();
+        }
+
+        foreach (var blueprint in Profile.SquadBlueprints)
+        {
+            blueprint.DeploymentAssignments ??= new Dictionary<string, string>();
+            blueprint.ExpeditionSquadHeroIds ??= new List<string>();
+            blueprint.HeroRoleIds ??= new Dictionary<string, string>();
+        }
+    }
+
+    private void RestoreActiveRunFromProfile()
+    {
+        if (Profile.ActiveRun == null || string.IsNullOrWhiteSpace(Profile.ActiveRun.RunId))
+        {
+            ActiveRun = null;
+            return;
+        }
+
+        var blueprint = TryGetBlueprintState(Profile.ActiveRun.BlueprintId) ?? CaptureBlueprintState();
+        ActiveRun = new ActiveRunState(
+            Profile.ActiveRun.RunId,
+            Profile.ActiveRun.ExpeditionId,
+            blueprint,
+            new RunOverlayState(
+                Profile.ActiveRun.CurrentNodeIndex,
+                Profile.ActiveRun.TemporaryAugmentIds,
+                Profile.ActiveRun.PendingRewardIds,
+                Profile.ActiveRun.CompileVersion,
+                Profile.ActiveRun.CompileHash),
+            Profile.ActiveRun.BattleDeployHeroIds,
+            Profile.ActiveRun.IsQuickBattle,
+            string.IsNullOrWhiteSpace(Profile.ActiveRun.LastBattleMatchId) ? null : Profile.ActiveRun.LastBattleMatchId);
+        SelectedTeamPosture = blueprint.TeamPosture;
+        CurrentExpeditionNodeIndex = ActiveRun.Overlay.CurrentNodeIndex;
+    }
+
+    private void SyncActiveRunIfPresent()
+    {
+        if (ActiveRun == null)
+        {
+            return;
+        }
+
+        var compileHash = LastCompiledBattleSnapshot?.CompileHash ?? ActiveRun.Overlay.LastCompileHash;
+        ActiveRun = RunStateService.SyncBlueprint(
+            ActiveRun,
+            CaptureBlueprintState(),
+            compileHash,
+            _pendingRewardChoices.Select(choice => choice.PayloadId).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList());
+        SyncActiveRunRecord();
+        SyncExpeditionState();
+    }
+
+    private void SyncActiveRunRecord()
+    {
+        if (ActiveRun == null)
+        {
+            Profile.ActiveRun = new ActiveRunRecord();
+            return;
+        }
+
+        Profile.ActiveRun = new ActiveRunRecord
+        {
+            RunId = ActiveRun.RunId,
+            ExpeditionId = ActiveRun.ExpeditionId,
+            BlueprintId = ActiveRun.Blueprint.BlueprintId,
+            IsQuickBattle = ActiveRun.IsQuickBattle,
+            CurrentNodeIndex = ActiveRun.Overlay.CurrentNodeIndex,
+            TemporaryAugmentIds = ActiveRun.Overlay.TemporaryAugmentIds.ToList(),
+            PendingRewardIds = ActiveRun.Overlay.PendingRewardIds.ToList(),
+            BattleDeployHeroIds = ActiveRun.BattleDeployHeroIds.ToList(),
+            CompileVersion = ActiveRun.Overlay.CompileVersion,
+            CompileHash = ActiveRun.Overlay.LastCompileHash,
+            LastBattleMatchId = ActiveRun.LastBattleMatchId ?? string.Empty,
+        };
+    }
+
+    private SquadBlueprintState CaptureBlueprintState()
+    {
+        EnsureAssignmentMapInitialized();
+
+        var blueprint = new SquadBlueprintState(
+            string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId) ? "blueprint.default" : Profile.ActiveBlueprintId,
+            "Default Build",
+            SelectedTeamPosture,
+            string.Empty,
+            EnumerateDeploymentAssignments()
+                .Where(entry => !string.IsNullOrWhiteSpace(entry.HeroId))
+                .ToDictionary(entry => entry.Anchor, entry => entry.HeroId!, EqualityComparer<DeploymentAnchorId>.Default),
+            _expeditionSquadHeroIds.ToList(),
+            Profile.Heroes.ToDictionary(hero => hero.HeroId, hero => ResolveRoleTag(hero.ClassId, ResolvePreferredAnchor(hero.HeroId)), StringComparer.Ordinal));
+
+        var record = Profile.SquadBlueprints.FirstOrDefault(existing => existing.BlueprintId == blueprint.BlueprintId);
+        if (record == null)
+        {
+            record = new SquadBlueprintRecord { BlueprintId = blueprint.BlueprintId };
+            Profile.SquadBlueprints.Add(record);
+        }
+
+        record.DisplayName = blueprint.DisplayName;
+        record.TeamPosture = blueprint.TeamPosture.ToString();
+        record.TeamTacticId = blueprint.TeamTacticId;
+        record.DeploymentAssignments = blueprint.DeploymentAssignments.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value, StringComparer.Ordinal);
+        record.ExpeditionSquadHeroIds = blueprint.ExpeditionSquadHeroIds.ToList();
+        record.HeroRoleIds = blueprint.HeroRoleIds.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        Profile.ActiveBlueprintId = blueprint.BlueprintId;
+        return blueprint;
+    }
+
+    private SquadBlueprintState? TryGetBlueprintState(string blueprintId)
+    {
+        var record = Profile.SquadBlueprints.FirstOrDefault(existing => existing.BlueprintId == blueprintId);
+        if (record == null)
+        {
+            return null;
+        }
+
+        if (!Enum.TryParse<TeamPostureType>(record.TeamPosture, out var posture))
+        {
+            posture = SelectedTeamPosture;
+        }
+
+        return new SquadBlueprintState(
+            record.BlueprintId,
+            string.IsNullOrWhiteSpace(record.DisplayName) ? "Default Build" : record.DisplayName,
+            posture,
+            record.TeamTacticId ?? string.Empty,
+            record.DeploymentAssignments
+                .Where(pair => Enum.TryParse<DeploymentAnchorId>(pair.Key, out _))
+                .ToDictionary(pair => Enum.Parse<DeploymentAnchorId>(pair.Key), pair => pair.Value),
+            record.ExpeditionSquadHeroIds,
+            record.HeroRoleIds);
+    }
+
+    private static IReadOnlyDictionary<string, HeroLoadoutState> ToHeroLoadoutStates(SaveProfile profile)
+    {
+        return profile.HeroLoadouts.ToDictionary(
+            record => record.HeroId,
+            record => new HeroLoadoutState(
+                record.HeroId,
+                record.EquippedItemInstanceIds,
+                record.EquippedSkillInstanceIds,
+                record.PassiveBoardId,
+                record.SelectedPassiveNodeIds,
+                record.EquippedPermanentAugmentIds),
+            StringComparer.Ordinal);
+    }
+
+    private static IReadOnlyDictionary<string, HeroProgressionState> ToHeroProgressionStates(SaveProfile profile)
+    {
+        return profile.HeroProgressions.ToDictionary(
+            record => record.HeroId,
+            record => new HeroProgressionState(
+                record.HeroId,
+                record.Level,
+                record.Experience,
+                record.UnlockedPassiveNodeIds,
+                record.UnlockedSkillIds),
+            StringComparer.Ordinal);
+    }
+
+    private static IReadOnlyDictionary<string, ItemInstanceState> ToItemInstanceStates(SaveProfile profile)
+    {
+        return profile.Inventory.ToDictionary(
+            record => record.ItemInstanceId,
+            record => new ItemInstanceState(
+                record.ItemInstanceId,
+                record.ItemBaseId,
+                record.AffixIds,
+                record.EquippedHeroId),
+            StringComparer.Ordinal);
+    }
+
+    private static IReadOnlyDictionary<string, SkillInstanceState> ToSkillInstanceStates(SaveProfile profile)
+    {
+        return profile.SkillInstances.ToDictionary(
+            record => record.SkillInstanceId,
+            record => new SkillInstanceState(
+                record.SkillInstanceId,
+                record.SkillId,
+                record.SlotKind,
+                record.CompileTags),
+            StringComparer.Ordinal);
+    }
+
+    private static IReadOnlyDictionary<string, PassiveBoardSelectionState> ToPassiveSelections(SaveProfile profile)
+    {
+        return profile.PassiveSelections.ToDictionary(
+            record => record.HeroId,
+            record => new PassiveBoardSelectionState(
+                record.HeroId,
+                record.BoardId,
+                record.SelectedNodeIds),
+            StringComparer.Ordinal);
+    }
+
+    private static PermanentAugmentLoadoutState ToPermanentAugmentLoadout(SaveProfile profile, string blueprintId)
+    {
+        var record = profile.PermanentAugmentLoadouts.FirstOrDefault(existing => existing.BlueprintId == blueprintId)
+            ?? new PermanentAugmentLoadoutRecord { BlueprintId = blueprintId };
+        return new PermanentAugmentLoadoutState(record.BlueprintId, record.EquippedAugmentIds);
+    }
+
+    private void ApplyLedgerBackedReward(RewardOption option)
+    {
+        if (ActiveRun == null)
+        {
+            ActiveRun = RunStateService.StartRun(IsQuickBattleSmokeActive ? "quick-battle" : "expedition_mvp_demo", CaptureBlueprintState(), IsQuickBattleSmokeActive);
+        }
+
+        var currencyState = new CurrencyState(Profile.Currencies.Gold, Profile.Currencies.TraitRerollCurrency);
+        var result = RewardLedgerService.ApplyReward(currencyState, ActiveRun!, option);
+        Profile.Currencies.Gold = currencyState.Gold;
+        Profile.Currencies.TraitRerollCurrency = currencyState.TraitRerollCurrency;
+        Profile.RewardLedger.Add(new RewardLedgerEntryRecord
+        {
+            EntryId = result.RewardEntry.EntryId,
+            RunId = result.RewardEntry.RunId,
+            RewardId = result.RewardEntry.RewardId,
+            RewardType = result.RewardEntry.RewardType,
+            Amount = result.RewardEntry.Amount,
+            CreatedAtUtc = result.RewardEntry.CreatedAtUtc,
+            Summary = result.RewardEntry.Summary,
+        });
+        if (result.InventoryEntry != null)
+        {
+            Profile.InventoryLedger.Add(new InventoryLedgerEntryRecord
+            {
+                EntryId = result.InventoryEntry.EntryId,
+                RunId = result.InventoryEntry.RunId,
+                ItemInstanceId = result.InventoryEntry.ItemInstanceId,
+                ItemBaseId = result.InventoryEntry.ItemBaseId,
+                ChangeKind = result.InventoryEntry.ChangeKind,
+                Amount = result.InventoryEntry.Amount,
+                CreatedAtUtc = result.InventoryEntry.CreatedAtUtc,
+                Summary = result.InventoryEntry.Summary,
+            });
+        }
+
+        ActiveRun = result.UpdatedRun;
+        LastRewardApplicationSummary = result.Summary;
+        SyncActiveRunRecord();
+        SyncExpeditionState();
+    }
+
+    private static string ResolveRoleTag(string classId, DeploymentAnchorId anchor)
+    {
+        return classId switch
+        {
+            "vanguard" => "anchor",
+            "duelist" => "bruiser",
+            "ranger" => "carry",
+            "mystic" => "support",
+            _ => anchor.IsFrontRow() ? "frontline" : "backline",
+        };
     }
 }
 

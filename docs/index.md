@@ -38,6 +38,10 @@
 - 배치와 앵커: `02_design/combat/deployment-and-anchors.md`
 - 실시간 체감 시뮬레이션 모델: `02_design/combat/realtime-simulation-model.md`
 - 팀 전술과 유닛 규칙: `02_design/combat/team-tactics-and-unit-rules.md`
+- squad blueprint와 빌드 소유권: `02_design/systems/squad-blueprint-and-build-ownership.md`
 - 전투 런타임 아키텍처: `03_architecture/combat-runtime-architecture.md`
 - 전투 상태와 이벤트 모델: `03_architecture/combat-state-and-event-model.md`
+- loadout compiler와 battle snapshot: `03_architecture/loadout-compiler-and-battle-snapshot.md`
+- replay persistence와 run audit: `03_architecture/replay-persistence-and-run-audit.md`
 - ADR-0014: `04_decisions/adr-0014-grid-deployment-continuous-combat.md`
+- ADR-0015: `04_decisions/adr-0015-build-compile-audit-pipeline.md`

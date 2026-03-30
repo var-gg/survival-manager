@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace SM.Meta.Model;
 
 public sealed record HeroRecord(
@@ -9,5 +7,4 @@ public sealed record HeroRecord(
     string RaceId,
     string ClassId,
     string PositiveTraitId,
-    string NegativeTraitId,
-    IReadOnlyList<MetaModifierPackage> Packages);
+    string NegativeTraitId);

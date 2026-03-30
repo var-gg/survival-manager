@@ -17,9 +17,17 @@
 
 - profile
 - hero instance
+- hero loadout
+- hero progression
 - inventory
 - currency
 - unlocked permanent augment
+- squad blueprint
+- active run snapshot
+- match record header/blob
+- reward ledger
+- inventory ledger
+- suspicion flag
 - run summary
 
 ## 저장 비대상

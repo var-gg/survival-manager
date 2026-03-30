@@ -27,3 +27,15 @@ Architecture Decision Record의 약자다. 장기 영향이 있는 구조/정책
 ## 상태
 
 문서의 현재 효력을 나타내는 값이다. `draft`, `active`, `deprecated`만 사용한다.
+
+## squad blueprint
+
+출전 4인, 후보 4인, team posture, anchor 배치, role 지시, 영구 augment 장착을 묶는 편성 단위다.
+
+## battle snapshot
+
+content, hero build, run overlay가 `LoadoutCompiler`를 통과한 뒤 전투가 실제로 소비하는 컴파일 결과물이다.
+
+## ledger
+
+reward, inventory, suspicion 같은 가치 이동과 감사 이벤트를 append-only로 남기는 기록이다.

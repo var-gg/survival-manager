@@ -35,3 +35,8 @@
 - 설정 절차는 `05_setup/`
 - 운영 문서는 `06_production/`
 - 릴리스 문서는 `07_release/`
+
+## 시스템 용어 규칙
+
+- 라이브 시스템 명칭에서는 `deck` 대신 `squad blueprint`, `build`, `loadout`를 사용한다.
+- `definition`, `runtime instance`, `save model`은 서로 다른 타입 이름으로 드러나야 한다.

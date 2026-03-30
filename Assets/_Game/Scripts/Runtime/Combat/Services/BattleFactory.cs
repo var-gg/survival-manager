@@ -8,15 +8,15 @@ namespace SM.Combat.Services;
 public static class BattleFactory
 {
     public static BattleState Create(
-        IReadOnlyList<UnitDefinition> allyDefinitions,
-        IReadOnlyList<UnitDefinition> enemyDefinitions,
+        IReadOnlyList<BattleUnitLoadout> allyDefinitions,
+        IReadOnlyList<BattleUnitLoadout> enemyDefinitions,
         TeamPostureType allyPosture = TeamPostureType.StandardAdvance,
         TeamPostureType enemyPosture = TeamPostureType.StandardAdvance,
         float fixedStepSeconds = BattleSimulator.DefaultFixedStepSeconds,
         int seed = 7)
     {
-        var allyPackages = SynergyService.BuildForTeam(allyDefinitions);
-        var enemyPackages = SynergyService.BuildForTeam(enemyDefinitions);
+        var allyPackages = ResolveTeamPackages(allyDefinitions);
+        var enemyPackages = ResolveTeamPackages(enemyDefinitions);
 
         var allies = allyDefinitions.Select((def, index) =>
         {
@@ -37,10 +37,34 @@ public static class BattleFactory
         return new BattleState(allies, enemies, allyPosture, enemyPosture, fixedStepSeconds, seed);
     }
 
-    private static UnitDefinition MergePackages(UnitDefinition definition, IReadOnlyList<CombatModifierPackage> teamPackages)
+    private static IReadOnlyList<CombatModifierPackage> ResolveTeamPackages(IReadOnlyList<BattleUnitLoadout> definitions)
+    {
+        var precompiled = definitions
+            .SelectMany(definition => definition.TeamPackages ?? new List<CombatModifierPackage>())
+            .GroupBy(package => $"{package.Source}:{package.SourceId}")
+            .Select(group => group.First())
+            .ToList();
+        return precompiled.Count > 0 ? precompiled : SynergyService.BuildForTeam(definitions);
+    }
+
+    private static BattleUnitLoadout MergePackages(BattleUnitLoadout definition, IReadOnlyList<CombatModifierPackage> teamPackages)
     {
         var merged = (definition.Packages ?? new List<CombatModifierPackage>()).Concat(teamPackages).ToList();
-        return definition with { Packages = merged };
+        return new BattleUnitLoadout(
+            definition.Id,
+            definition.Name,
+            definition.RaceId,
+            definition.ClassId,
+            definition.PreferredAnchor,
+            definition.BaseStats,
+            definition.RuleChains,
+            definition.Skills,
+            definition.TeamTactic,
+            definition.RoleInstruction,
+            definition.OpeningIntent,
+            merged,
+            teamPackages,
+            definition.CompileTags);
     }
 
     public static CombatVector2 ResolveAnchorPosition(TeamSide side, DeploymentAnchorId anchor)

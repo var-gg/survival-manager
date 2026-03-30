@@ -1,48 +1,16 @@
 # Deck Premise
 
-- Status: draft
-- Last Updated: 2026-03-29
-- Phase: concept framing
+- 상태: deprecated
+- 최종수정일: 2026-03-30
+- 소스오브트루스: `docs/02_design/systems/squad-blueprint-and-build-ownership.md`
 
-## Purpose
+## 폐기 이유
 
-This document defines the current deck-premise hypothesis for `survival-manager`.
-The goal is to clarify why deckmaking exists in the concept before card systems or detailed content are designed.
+이 문서는 `deck` 용어를 중심으로 개념 framing을 하던 시기의 설명이다.
+현재 저장소의 라이브 시스템 명칭은 `squad blueprint`, `build`, `loadout` 기준을 사용한다.
 
-## Premise Hypothesis
+## 현재 기준 문서
 
-Deckmaking should function as a strategic shaping layer, not as a separate game competing with combat.
-The deck exists to influence how a run develops, what choices become available, and how the player expresses intent.
-
-## Possible Roles of the Deck Layer
-
-- define upgrade pools or event outcomes
-- bias tactical options and behavior patterns
-- shape role identity or combat style over a run
-- create combinational replayability across repeated runs
-
-## Constraints
-
-- deck interaction must not overwhelm combat readability
-- the deck layer should not require full card-battle complexity to justify its existence
-- deck choices should connect clearly to battlefield outcomes
-- card volume should stay small until the core interaction is proven
-
-## Reference Notes
-
-Deckbuilding references are used for choice pressure, build direction, and synergy language only.
-Direct system copying is out of scope.
-
-## Deck Risks
-
-- the deck may feel cosmetic if combat outcomes do not reflect deck choices strongly enough
-- the deck may dominate the design and push the game away from its tactical-run identity
-- card complexity may stack badly with loot, crafting, and tactical setup
-- draft pacing may interrupt combat rhythm too often
-
-## Open Questions
-
-- Is the deck persistent, run-bound, or partly meta-driven?
-- Are cards active commands, passive modifiers, tactical rules, or reward-shaping tools?
-- How often should deck decisions appear during a run?
-- What is the smallest useful deck model that proves strategic value without taking over the game?
+- build ownership: `docs/02_design/systems/squad-blueprint-and-build-ownership.md`
+- skill/item/passive build: `docs/02_design/systems/skills-items-and-passive-boards.md`
+- replay/ledger: `docs/02_design/combat/authoritative-replay-and-ledger.md`

@@ -28,6 +28,7 @@
 - `adr-0012-code-structure-and-dependency-policy.md`: 코드 구조와 의존 정책 채택
 - `adr-0013-unity-cli-hybrid-lane.md`: Unity CLI hybrid lane 채택
 - `adr-0014-grid-deployment-continuous-combat.md`: grid 배치 + continuous combat 채택
+- `adr-0015-build-compile-audit-pipeline.md`: build-compile-audit 파이프라인 채택
 
 ## 운영 메모
 
