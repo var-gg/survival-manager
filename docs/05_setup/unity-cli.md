@@ -31,11 +31,12 @@ irm https://raw.githubusercontent.com/youngwoocho02/unity-cli/master/install.ps1
 설치 확인:
 
 ```powershell
-unity-cli --help
+pwsh -File tools/unity-bridge.ps1 status
 ```
 
 이 binary는 로컬 optional tool이다.
 CI mandatory dependency로 취급하지 않는다.
+PowerShell 설치 직후 현재 셸의 `PATH`가 갱신되지 않을 수 있으므로, bare `unity-cli`보다 wrapper 확인을 우선한다.
 
 ## Connector Pin
 
@@ -65,6 +66,7 @@ CLI background 처리 지연을 줄이기 위해 아래 설정을 권장한다.
 기본 실행 진입점은 `tools/unity-bridge.ps1`다.
 wrapper는 항상 현재 repo를 `--project`로 고정한다.
 Windows에서는 instance discovery가 `--project .`나 백슬래시 경로와 잘 맞지 않을 수 있으므로, wrapper가 절대 경로를 `A:/...` 형식으로 정규화해서 넘긴다.
+또한 local install 경로 fallback과 짧은 readiness retry를 포함하므로, transient heartbeat 지연이 있을 때도 기본 경로로 쓴다.
 
 예시:
 
@@ -83,6 +85,13 @@ pwsh -File tools/unity-bridge.ps1 test-play
 
 `console` verb는 wrapper 입력을 `-Filter`로 받지만 실제 `unity-cli`에는 `--type`으로 전달한다.
 현재 `unity-cli v0.3.5` help 기준 콘솔 필터 flag는 `--type`이다.
+
+wrapper로 충분하지 않을 때만 direct command를 쓴다.
+이 경우 `--project .` 대신 절대 경로를 정규화해서 넘긴다.
+
+```powershell
+& "$env:LOCALAPPDATA\unity-cli\unity-cli.exe" --project "A:/projects/game/survival-manager" status
+```
 
 ## Custom Report Tools
 

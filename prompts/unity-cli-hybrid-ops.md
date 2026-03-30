@@ -11,7 +11,9 @@
 - Unity editor는 authoring surface가 아니라 compile / bootstrap / smoke / report surface다.
 
 2. Unity 확인 작업은 CLI-first다.
-- 먼저 `pwsh -File tools/unity-bridge.ps1 <verb>` 또는 `unity-cli --project . ...`를 검토한다.
+- 먼저 `pwsh -File tools/unity-bridge.ps1 <verb>`를 쓴다.
+- bare `unity-cli --project .`는 기본 경로로 쓰지 않는다.
+- wrapper로 해결되지 않을 때만 direct command를 검토하고, 이때는 절대 경로를 정규화한 `--project "A:/..."` 형태를 쓴다.
 - 우선 대상:
   - `status`
   - `list`

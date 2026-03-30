@@ -13,6 +13,8 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $projectRootForUnityCli = ((Resolve-Path $projectRoot).Path -replace '\\', '/')
 Set-Location $projectRoot
+$unityCliReadyRetries = 5
+$unityCliReadyDelaySeconds = 2
 
 function Resolve-UnityCliPath {
     $command = Get-Command unity-cli -ErrorAction SilentlyContinue
@@ -35,9 +37,52 @@ function Invoke-UnityCli {
     )
 
     $unityCli = Resolve-UnityCliPath
-    & $unityCli --project $projectRootForUnityCli @Arguments
-    if ($LASTEXITCODE -ne 0) {
-        throw "unity-cli command failed with exit code $LASTEXITCODE"
+    $lastOutput = @()
+
+    for ($attempt = 1; $attempt -le $unityCliReadyRetries; $attempt++) {
+        $output = & $unityCli --project $projectRootForUnityCli @Arguments 2>&1
+        $exitCode = $LASTEXITCODE
+        $outputText = ($output | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
+
+        if ($exitCode -ne 0) {
+            throw "unity-cli command failed with exit code $exitCode.`n$outputText"
+        }
+
+        if ($outputText -notmatch 'not responding') {
+            if ($output.Count -gt 0) {
+                $output | Write-Output
+            }
+
+            return
+        }
+
+        $lastOutput = $output
+
+        if ($attempt -lt $unityCliReadyRetries) {
+            Start-Sleep -Seconds $unityCliReadyDelaySeconds
+        }
+    }
+
+    $lastOutputText = ($lastOutput | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
+    throw "unity-cli connector is installed, but the Unity instance did not become ready after $unityCliReadyRetries attempts.`n$lastOutputText"
+}
+
+function Invoke-Status {
+    Invoke-UnityCli @('status')
+    Write-Host "Note: wrapper path fallback is active; bare 'unity-cli' is optional and may require a new shell session."
+}
+
+function Invoke-DirectCommandHint {
+    Write-Host "Direct command example: `"$env:LOCALAPPDATA\unity-cli\unity-cli.exe`" --project `"$projectRootForUnityCli`" <command>"
+}
+
+function Invoke-StatusWithHints {
+    try {
+        Invoke-Status
+    }
+    catch {
+        Invoke-DirectCommandHint
+        throw
     }
 }
 
@@ -55,7 +100,7 @@ function Invoke-Step {
 
 switch ($Verb) {
     'status' {
-        Invoke-UnityCli @('status')
+        Invoke-StatusWithHints
     }
     'list' {
         Invoke-UnityCli @('list')
