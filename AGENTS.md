@@ -43,3 +43,7 @@
 - 파일명, 코드, API 식별자는 영어를 유지한다.
 - 구현 변경 시 관련 인덱스와 기준 문서를 함께 갱신한다.
 - 플레이어블 vertical slice 검증을 막지 않는 방향으로 설계/구현/운영 문서를 정리한다.
+- 기본은 file-first다.
+- Unity 확인, compile, smoke, aggregate report는 `pwsh -File tools/unity-bridge.ps1 <verb>`를 먼저 사용한다.
+- scene/prefab/component/package 구조 편집이나 typed guardrail이 중요한 경우에만 MCP를 사용한다.
+- trivial inspect 때문에 MCP tool catalog를 먼저 훑지 않는다.
