@@ -17,5 +17,6 @@ public sealed class ItemBaseDefinition : ScriptableObject
     public string CraftCategory = string.Empty;
     public List<SkillDefinitionAsset> GrantedSkills = new();
     public List<StableTagDefinition> CompileTags = new();
+    public List<StableTagDefinition> RuleModifierTags = new();
     public List<SerializableStatModifier> BaseModifiers = new();
 }

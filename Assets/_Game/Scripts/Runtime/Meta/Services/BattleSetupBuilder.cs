@@ -75,7 +75,14 @@ public static class BattleSetupBuilder
                 participant.TeamPosture),
             new SlotRoleInstruction(participant.Anchor, participant.RoleTag),
             participant.OpeningIntent,
-            packages);
+            packages,
+            null,
+            null,
+            string.IsNullOrWhiteSpace(participant.RoleTag) || participant.RoleTag == "auto" ? archetype.RoleTag : participant.RoleTag,
+            archetype.PreferredDistance,
+            archetype.ProtectRadius,
+            archetype.Mana,
+            archetype.RulePackages);
         error = string.Empty;
         return true;
     }

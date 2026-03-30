@@ -1,6 +1,14 @@
 using System.Collections.Generic;
+using SM.Core.Stats;
 
 namespace SM.Combat.Model;
+
+public sealed record CompileProvenanceEntry(
+    string SubjectId,
+    ModifierSource Source,
+    string SourceId,
+    string ArtifactKind,
+    IReadOnlyList<string> Details);
 
 public sealed record BattleLoadoutSnapshot(
     string SnapshotId,
@@ -9,7 +17,8 @@ public sealed record BattleLoadoutSnapshot(
     TeamTacticProfile TeamTactic,
     IReadOnlyList<BattleUnitLoadout> Allies,
     IReadOnlyList<string> BattleDeployHeroIds,
-    IReadOnlyList<string> TeamTags);
+    IReadOnlyList<string> TeamTags,
+    IReadOnlyList<CompileProvenanceEntry>? Provenance = null);
 
 public sealed record BattleReplayHeader(
     string MatchId,
@@ -29,7 +38,8 @@ public sealed record BattleInputSnapshot(
     TeamPostureType TeamPosture,
     IReadOnlyList<BattleUnitLoadout> Allies,
     IReadOnlyList<BattleUnitLoadout> Enemies,
-    IReadOnlyList<string> TeamTags);
+    IReadOnlyList<string> TeamTags,
+    IReadOnlyList<CompileProvenanceEntry>? Provenance = null);
 
 public sealed record BattleKeyframeDigest(
     int StepIndex,

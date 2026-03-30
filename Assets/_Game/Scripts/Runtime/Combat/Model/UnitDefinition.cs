@@ -26,6 +26,12 @@ public record UnitRuleChain(
     string Id,
     IReadOnlyList<TacticRule> Rules);
 
+public record ManaEnvelope(
+    float Max,
+    float GainOnAttack,
+    float GainOnHit,
+    float Current = 0f);
+
 public record TeamSynergyTierRule(
     string SynergyId,
     string CountedTagId,
@@ -46,9 +52,19 @@ public record BattleUnitLoadout(
     string OpeningIntent = "default",
     IReadOnlyList<CombatModifierPackage>? Packages = null,
     IReadOnlyList<CombatModifierPackage>? TeamPackages = null,
-    IReadOnlyList<string>? CompileTags = null)
+    IReadOnlyList<string>? CompileTags = null,
+    string RoleTag = "auto",
+    float PreferredDistance = 0f,
+    float ProtectRadius = 0f,
+    ManaEnvelope? Mana = null,
+    IReadOnlyList<CombatRuleModifierPackage>? RulePackages = null,
+    IReadOnlyList<CombatRuleModifierPackage>? TeamRulePackages = null)
 {
     public IReadOnlyList<TacticRule> Tactics => RuleChains.SelectMany(chain => chain.Rules).ToList();
+
+    public IReadOnlyList<CombatModifierPackage> NumericPackages => Packages ?? System.Array.Empty<CombatModifierPackage>();
+
+    public ManaEnvelope EffectiveMana => Mana ?? new ManaEnvelope(0f, 0f, 0f, 0f);
 }
 
 [System.Obsolete("Use BattleUnitLoadout for compiled battle inputs.")]

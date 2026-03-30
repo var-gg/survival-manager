@@ -47,6 +47,7 @@ public sealed class GameSessionState
     public string LastExpeditionEffectMessage { get; private set; } = string.Empty;
     public string LastRewardApplicationSummary { get; private set; } = string.Empty;
     public TeamPostureType SelectedTeamPosture { get; private set; } = TeamPostureType.StandardAdvance;
+    public string SelectedTeamTacticId { get; private set; } = string.Empty;
     public IReadOnlyList<string> ExpeditionSquadHeroIds => _expeditionSquadHeroIds;
     public IReadOnlyList<DeploymentAnchorId> DeploymentAnchors => DeploymentAnchorOrder;
     public IReadOnlyList<string> BattleDeployHeroIds => DeploymentAnchorOrder
@@ -109,6 +110,7 @@ public sealed class GameSessionState
         LastExpeditionEffectMessage = string.Empty;
         LastRewardApplicationSummary = string.Empty;
         SelectedTeamPosture = TeamPostureType.StandardAdvance;
+        SelectedTeamTacticId = string.Empty;
         _recruitOfferGeneration = 0;
         _resolvedExpeditionNodeIds.Clear();
         ResetDeploymentAssignments();
@@ -418,6 +420,20 @@ public sealed class GameSessionState
         var values = (TeamPostureType[])Enum.GetValues(typeof(TeamPostureType));
         var currentIndex = Array.IndexOf(values, SelectedTeamPosture);
         SelectedTeamPosture = values[(currentIndex + 1) % values.Length];
+        CaptureBlueprintState();
+        SyncActiveRunIfPresent();
+    }
+
+    public void SetTeamPosture(TeamPostureType posture)
+    {
+        SelectedTeamPosture = posture;
+        CaptureBlueprintState();
+        SyncActiveRunIfPresent();
+    }
+
+    public void SetTeamTactic(string teamTacticId)
+    {
+        SelectedTeamTacticId = teamTacticId ?? string.Empty;
         CaptureBlueprintState();
         SyncActiveRunIfPresent();
     }
@@ -1368,6 +1384,7 @@ public sealed class GameSessionState
             Profile.ActiveRun.IsQuickBattle,
             string.IsNullOrWhiteSpace(Profile.ActiveRun.LastBattleMatchId) ? null : Profile.ActiveRun.LastBattleMatchId);
         SelectedTeamPosture = blueprint.TeamPosture;
+        SelectedTeamTacticId = blueprint.TeamTacticId;
         CurrentExpeditionNodeIndex = ActiveRun.Overlay.CurrentNodeIndex;
     }
 
@@ -1420,7 +1437,7 @@ public sealed class GameSessionState
             string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId) ? "blueprint.default" : Profile.ActiveBlueprintId,
             "Default Build",
             SelectedTeamPosture,
-            string.Empty,
+            SelectedTeamTacticId,
             EnumerateDeploymentAssignments()
                 .Where(entry => !string.IsNullOrWhiteSpace(entry.HeroId))
                 .ToDictionary(entry => entry.Anchor, entry => entry.HeroId!, EqualityComparer<DeploymentAnchorId>.Default),

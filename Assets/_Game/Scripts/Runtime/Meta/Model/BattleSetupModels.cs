@@ -34,7 +34,12 @@ public sealed record CombatArchetypeTemplate(
     DeploymentAnchorId DefaultAnchor,
     IReadOnlyDictionary<StatKey, float> BaseStats,
     IReadOnlyList<TacticRule> Tactics,
-    IReadOnlyList<BattleSkillSpec> Skills);
+    IReadOnlyList<BattleSkillSpec> Skills,
+    string RoleTag = "auto",
+    float PreferredDistance = 0f,
+    float ProtectRadius = 0f,
+    ManaEnvelope? Mana = null,
+    IReadOnlyList<CombatRuleModifierPackage>? RulePackages = null);
 
 public sealed record TeamTacticTemplate(
     string Id,
@@ -47,7 +52,8 @@ public sealed record RoleInstructionTemplate(
 public sealed record PassiveNodeTemplate(
     string Id,
     CombatModifierPackage Package,
-    IReadOnlyList<string> CompileTags);
+    IReadOnlyList<string> CompileTags,
+    CombatRuleModifierPackage? RulePackage = null);
 
 public sealed record AugmentCatalogEntry(
     string Id,
@@ -58,7 +64,8 @@ public sealed record AugmentCatalogEntry(
     bool SuppressIfPermanentEquipped,
     IReadOnlyList<string> Tags,
     IReadOnlyList<string> MutualExclusionTags,
-    CombatModifierPackage Package);
+    CombatModifierPackage Package,
+    CombatRuleModifierPackage? RulePackage = null);
 
 public sealed record SynergyTierTemplate(
     string Id,
@@ -75,7 +82,8 @@ public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, RoleInstructionTemplate> RoleInstructions,
     IReadOnlyDictionary<string, PassiveNodeTemplate> PassiveNodes,
     IReadOnlyDictionary<string, AugmentCatalogEntry> AugmentCatalog,
-    IReadOnlyDictionary<string, SynergyTierTemplate> SynergyCatalog);
+    IReadOnlyDictionary<string, SynergyTierTemplate> SynergyCatalog,
+    IReadOnlyDictionary<string, IReadOnlyList<BattleSkillSpec>>? ItemGrantedSkills = null);
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,

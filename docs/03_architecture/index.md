@@ -38,6 +38,7 @@
 
 - `combat-runtime-architecture.md`: live simulation 전투 런타임 책임 분리
 - `combat-state-and-event-model.md`: 상태, snapshot, event, result 모델 정의
+- `editor-sandbox-tooling.md`: Unity combat sandbox/editor tooling 경계
 - `loadout-compiler-and-battle-snapshot.md`: build -> compile -> battle snapshot 경계
 - `replay-persistence-and-run-audit.md`: active run / replay / ledger persistence 기준
 - `battle-replay-model.md`: deprecated pointer

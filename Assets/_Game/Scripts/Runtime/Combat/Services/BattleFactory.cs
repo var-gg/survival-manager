@@ -49,22 +49,12 @@ public static class BattleFactory
 
     private static BattleUnitLoadout MergePackages(BattleUnitLoadout definition, IReadOnlyList<CombatModifierPackage> teamPackages)
     {
-        var merged = (definition.Packages ?? new List<CombatModifierPackage>()).Concat(teamPackages).ToList();
-        return new BattleUnitLoadout(
-            definition.Id,
-            definition.Name,
-            definition.RaceId,
-            definition.ClassId,
-            definition.PreferredAnchor,
-            definition.BaseStats,
-            definition.RuleChains,
-            definition.Skills,
-            definition.TeamTactic,
-            definition.RoleInstruction,
-            definition.OpeningIntent,
-            merged,
-            teamPackages,
-            definition.CompileTags);
+        var merged = definition.NumericPackages.Concat(teamPackages).ToList();
+        return definition with
+        {
+            Packages = merged,
+            TeamPackages = teamPackages
+        };
     }
 
     public static CombatVector2 ResolveAnchorPosition(TeamSide side, DeploymentAnchorId anchor)

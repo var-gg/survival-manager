@@ -25,7 +25,8 @@ public static class ReplayAssembler
             playerSnapshot.TeamTactic.Posture,
             playerSnapshot.Allies,
             enemySnapshot,
-            playerSnapshot.TeamTags);
+            playerSnapshot.TeamTags,
+            playerSnapshot.Provenance);
 
         var playerHash = ComputeLoadoutHash(playerSnapshot.Allies);
         var enemyHash = ComputeLoadoutHash(enemySnapshot);
@@ -73,7 +74,7 @@ public static class ReplayAssembler
     {
         var builder = string.Join("|", units
             .OrderBy(unit => unit.Id, StringComparer.Ordinal)
-            .Select(unit => $"{unit.Id}:{unit.RaceId}:{unit.ClassId}:{unit.PreferredAnchor}:{string.Join(",", unit.CompileTags ?? Array.Empty<string>())}"));
+            .Select(unit => $"{unit.Id}:{unit.RaceId}:{unit.ClassId}:{unit.PreferredAnchor}:{unit.RoleTag}:{unit.PreferredDistance:0.###}:{unit.ProtectRadius:0.###}:{string.Join(",", unit.CompileTags ?? Array.Empty<string>())}:{string.Join(",", unit.Skills.Select(skill => $"{skill.Id}:{skill.SlotKind}:{skill.BaseCooldownSeconds:0.###}:{skill.CastWindupSeconds:0.###}"))}"));
         return ComputeHash(builder);
     }
 

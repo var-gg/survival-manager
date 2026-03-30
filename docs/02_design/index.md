@@ -20,6 +20,7 @@
 - `combat/deployment-and-anchors.md`: 3x2 앵커와 4인 배치 규칙
 - `combat/team-tactics-and-unit-rules.md`: team posture와 per-unit rule 체계
 - `combat/authoritative-replay-and-ledger.md`: authoritative replay와 전투 원장 기준
+- `combat/stat-system-and-power-budget.md`: stat v2와 파워 예산 기준
 - `combat/combat-readability.md`: 전투 가독성 예산과 표시 기준
 - `combat/hero-traits.md`: hero trait 방향
 - `combat/synergy-system.md`: race/class synergy 설계

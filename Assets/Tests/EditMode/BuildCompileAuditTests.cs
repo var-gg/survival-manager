@@ -115,6 +115,69 @@ public sealed class BuildCompileAuditTests
     }
 
     [Test]
+    public void LoadoutCompiler_ChangesHash_WhenManaEnvelopeOrSkillCooldownChanges()
+    {
+        var lookup = new RuntimeCombatContentLookup();
+        Assert.That(lookup.TryGetCombatSnapshot(out var baseSnapshot, out var error), Is.True, error);
+
+        var archetypeId = lookup.GetCanonicalArchetypeIds().First();
+        Assert.That(lookup.TryGetArchetype(archetypeId, out var archetypeDefinition), Is.True);
+        Assert.That(lookup.TryGetTraitIds(archetypeId, out var positives, out var negatives), Is.True);
+        var hero = new HeroRecord("hero-2", "Hero 2", archetypeId, archetypeDefinition!.Race.Id, archetypeDefinition.Class.Id, positives[0], negatives[0]);
+        var blueprint = new SquadBlueprintState(
+            "blueprint.mana",
+            "Mana Build",
+            TeamPostureType.StandardAdvance,
+            string.Empty,
+            new Dictionary<DeploymentAnchorId, string> { [DeploymentAnchorId.BackCenter] = hero.Id },
+            new[] { hero.Id },
+            new Dictionary<string, string> { [hero.Id] = "carry" });
+        var compiler = new LoadoutCompiler();
+        var overlay = new RunOverlayState(0, Array.Empty<string>(), Array.Empty<string>(), LoadoutCompiler.CurrentCompileVersion, string.Empty);
+
+        var baseline = compiler.Compile(
+            new[] { hero },
+            new Dictionary<string, HeroLoadoutState>(),
+            new Dictionary<string, HeroProgressionState>(),
+            new Dictionary<string, ItemInstanceState>(),
+            new Dictionary<string, SkillInstanceState>(),
+            new Dictionary<string, PassiveBoardSelectionState>(),
+            new PermanentAugmentLoadoutState(blueprint.BlueprintId, Array.Empty<string>()),
+            blueprint,
+            overlay,
+            baseSnapshot);
+
+        var firstArchetype = baseSnapshot.Archetypes[archetypeId];
+        var variantSnapshot = baseSnapshot with
+        {
+            Archetypes = new Dictionary<string, CombatArchetypeTemplate>(baseSnapshot.Archetypes, StringComparer.Ordinal)
+            {
+                [archetypeId] = firstArchetype with
+                {
+                    Mana = new ManaEnvelope(30f, 3f, 4f),
+                    Skills = firstArchetype.Skills.Select(skill => skill with { BaseCooldownSeconds = 2.5f, CastWindupSeconds = 0.4f }).ToList()
+                }
+            }
+        };
+
+        var variant = compiler.Compile(
+            new[] { hero },
+            new Dictionary<string, HeroLoadoutState>(),
+            new Dictionary<string, HeroProgressionState>(),
+            new Dictionary<string, ItemInstanceState>(),
+            new Dictionary<string, SkillInstanceState>(),
+            new Dictionary<string, PassiveBoardSelectionState>(),
+            new PermanentAugmentLoadoutState(blueprint.BlueprintId, Array.Empty<string>()),
+            blueprint,
+            overlay,
+            variantSnapshot);
+
+        Assert.That(variant.CompileHash, Is.Not.EqualTo(baseline.CompileHash));
+        Assert.That(variant.Allies[0].EffectiveMana.Max, Is.EqualTo(30f));
+        Assert.That(variant.Allies[0].Skills.All(skill => skill.BaseCooldownSeconds == 2.5f), Is.True);
+    }
+
+    [Test]
     public void ActiveRun_RoundTrips_WithCompileHash_AndCombatAssemblyDoesNotReferencePersistence()
     {
         var session = new GameSessionState(new RuntimeCombatContentLookup());

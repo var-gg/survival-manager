@@ -20,7 +20,7 @@ public static class SynergyService
                 list.Add(new CombatModifierPackage(
                     $"race:{raceGroup.Key}:{count}",
                     ModifierSource.Synergy,
-                    new[] { new StatModifier(StatKey.Attack, ModifierOp.Flat, count >= 3 ? 4f : 2f, ModifierSource.Synergy, $"race:{raceGroup.Key}:{count}") }));
+                    new[] { new StatModifier(StatKey.PhysPower, ModifierOp.Flat, count >= 3 ? 4f : 2f, ModifierSource.Synergy, $"race:{raceGroup.Key}:{count}") }));
             }
         }
 
@@ -32,7 +32,7 @@ public static class SynergyService
                 list.Add(new CombatModifierPackage(
                     $"class:{classGroup.Key}:{count}",
                     ModifierSource.Synergy,
-                    new[] { new StatModifier(StatKey.Defense, ModifierOp.Flat, count >= 4 ? 4f : 2f, ModifierSource.Synergy, $"class:{classGroup.Key}:{count}") }));
+                    new[] { new StatModifier(StatKey.Armor, ModifierOp.Flat, count >= 4 ? 4f : 2f, ModifierSource.Synergy, $"class:{classGroup.Key}:{count}") }));
             }
         }
 

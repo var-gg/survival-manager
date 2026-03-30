@@ -22,12 +22,17 @@ public sealed class StatBlock
 
     public float Get(StatKey key)
     {
-        var baseValue = _baseValues.TryGetValue(key, out var value) ? value : 0f;
-        var relevant = _modifiers.Where(x => x.Stat.Equals(key)).ToList();
+        var canonicalKey = StatKey.Canonicalize(key);
+        var baseValue = _baseValues
+            .Where(pair => StatKey.Canonicalize(pair.Key).Equals(canonicalKey))
+            .Sum(pair => pair.Value);
+        var relevant = _modifiers
+            .Where(x => StatKey.Canonicalize(x.Stat).Equals(canonicalKey))
+            .ToList();
 
         var flat = relevant.Where(x => x.Op == ModifierOp.Flat).Sum(x => x.Value);
-        var additivePercent = relevant.Where(x => x.Op == ModifierOp.AdditivePercent).Sum(x => x.Value);
-        var multiplicativePercent = relevant.Where(x => x.Op == ModifierOp.MultiplicativePercent).Aggregate(1f, (acc, x) => acc * (1f + x.Value));
+        var additivePercent = relevant.Where(x => x.Op == ModifierOp.Increased).Sum(x => x.Value);
+        var multiplicativePercent = relevant.Where(x => x.Op == ModifierOp.More).Aggregate(1f, (acc, x) => acc * (1f + x.Value));
         var clampMin = relevant.Where(x => x.Op == ModifierOp.ClampMin).Select(x => x.Value).DefaultIfEmpty(float.MinValue).Max();
         var clampMax = relevant.Where(x => x.Op == ModifierOp.ClampMax).Select(x => x.Value).DefaultIfEmpty(float.MaxValue).Min();
 

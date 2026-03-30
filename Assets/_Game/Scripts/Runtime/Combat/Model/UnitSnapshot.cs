@@ -48,17 +48,32 @@ public sealed class UnitSnapshot
     public bool IsAlive => CurrentHealth > 0f;
     public bool IsDefending { get; private set; }
     public float MaxHealth => Stats.Get(StatKey.MaxHealth);
-    public float Attack => Stats.Get(StatKey.Attack);
-    public float Defense => Stats.Get(StatKey.Defense);
-    public float Speed => Stats.Get(StatKey.Speed);
+    public float Armor => Stats.Get(StatKey.Armor);
+    public float Resist => Stats.Get(StatKey.Resist);
+    public float PhysPower => Stats.Get(StatKey.PhysPower);
+    public float MagPower => Stats.Get(StatKey.MagPower);
+    public float AttackSpeed => Math.Max(0.1f, Stats.Get(StatKey.AttackSpeed));
     public float HealPower => Stats.Get(StatKey.HealPower);
     public float MoveSpeed => Stats.Get(StatKey.MoveSpeed);
     public float AttackRange => Math.Max(0.5f, Stats.Get(StatKey.AttackRange));
+    public float ManaMax => Stats.Get(StatKey.ManaMax);
+    public float ManaGainOnAttack => Stats.Get(StatKey.ManaGainOnAttack);
+    public float ManaGainOnHit => Stats.Get(StatKey.ManaGainOnHit);
+    public float CooldownRecovery => Stats.Get(StatKey.CooldownRecovery);
     public float AggroRadius => Math.Max(AttackRange, Stats.Get(StatKey.AggroRadius));
+    public float PreferredDistance => Math.Max(0f, Definition.PreferredDistance > 0f ? Definition.PreferredDistance : Stats.Get(StatKey.PreferredDistance));
+    public float ProtectRadius => Math.Max(0f, Definition.ProtectRadius > 0f ? Definition.ProtectRadius : Stats.Get(StatKey.ProtectRadius));
     public float AttackWindup => Math.Max(0.05f, Stats.Get(StatKey.AttackWindup));
+    public float CastWindup => Math.Max(0.05f, Stats.Get(StatKey.CastWindup));
+    public float ProjectileSpeed => Math.Max(0f, Stats.Get(StatKey.ProjectileSpeed));
+    public float CollisionRadius => Math.Max(0.1f, Stats.Get(StatKey.CollisionRadius));
+    public float RepositionCooldown => Math.Max(0f, Stats.Get(StatKey.RepositionCooldown));
     public float AttackCooldown => Math.Max(0.1f, Stats.Get(StatKey.AttackCooldown));
     public float LeashDistance => Math.Max(0.5f, Stats.Get(StatKey.LeashDistance));
     public float TargetSwitchDelay => Math.Max(0f, Stats.Get(StatKey.TargetSwitchDelay));
+    public float Attack => PhysPower;
+    public float Defense => Armor;
+    public float Speed => AttackSpeed;
     public float HealthRatio => MaxHealth <= 0 ? 0 : CurrentHealth / MaxHealth;
     public float WindupProgress => ActionState == CombatActionState.Windup && ActionTimerTotal > 0f
         ? 1f - (ActionTimerRemaining / ActionTimerTotal)
@@ -114,11 +129,15 @@ public sealed class UnitSnapshot
 
     public void BeginWindup(BattleActionType actionType, EntityId? targetId, string? skillId)
     {
+        var skill = ResolveSkill(skillId);
+        var windupSeconds = actionType == BattleActionType.ActiveSkill && skill != null && skill.CastWindupSeconds > 0f
+            ? skill.CastWindupSeconds
+            : AttackWindup;
         PendingActionType = actionType;
         PendingTargetId = targetId;
         PendingSkillId = skillId;
-        ActionTimerRemaining = AttackWindup;
-        ActionTimerTotal = AttackWindup;
+        ActionTimerRemaining = windupSeconds;
+        ActionTimerTotal = windupSeconds;
         ActionState = CombatActionState.Windup;
         IsDefending = false;
     }
@@ -182,6 +201,14 @@ public sealed class UnitSnapshot
     {
         var skill = ResolveSkill(skillId);
         return skill?.Range ?? AttackRange;
+    }
+
+    public float ResolveActionCooldown(string? skillId)
+    {
+        var skill = ResolveSkill(skillId);
+        return skill != null && skill.BaseCooldownSeconds > 0f
+            ? skill.BaseCooldownSeconds
+            : AttackCooldown;
     }
 
     private void MarkDead()

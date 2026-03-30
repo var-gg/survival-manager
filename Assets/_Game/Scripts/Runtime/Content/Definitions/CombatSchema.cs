@@ -1,6 +1,7 @@
 namespace SM.Content.Definitions;
 
 public enum SkillKindValue { Strike = 0, Heal = 1 }
+public enum DamageTypeValue { Physical = 0, Magical = 1, Healing = 2, True = 3 }
 public enum SkillSlotKindValue { CoreActive = 0, UtilityActive = 1, Passive = 2, Support = 3 }
 public enum BattleActionTypeValue { BasicAttack = 0, ActiveSkill = 1, WaitDefend = 2 }
 public enum TacticConditionTypeValue

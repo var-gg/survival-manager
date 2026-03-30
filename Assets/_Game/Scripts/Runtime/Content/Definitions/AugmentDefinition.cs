@@ -23,6 +23,7 @@ public sealed class AugmentDefinition : ScriptableObject
     public List<StableTagDefinition> Tags = new();
     public List<StableTagDefinition> MutualExclusionTags = new();
     public List<StableTagDefinition> RequiresTags = new();
+    public List<StableTagDefinition> RuleModifierTags = new();
     public AugmentEligibleModeValue EligibleModes = AugmentEligibleModeValue.Expedition;
     public List<SerializableStatModifier> Modifiers = new();
 }

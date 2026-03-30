@@ -30,7 +30,7 @@ public static class CombatActionResolver
                     return events;
                 }
 
-                var damage = Math.Max(1f, actor.Attack - target.Defense - (target.IsDefending ? 1f : 0f));
+                var damage = Math.Max(1f, actor.PhysPower - target.Armor - (target.IsDefending ? 1f : 0f));
                 target.TakeDamage(damage);
                 actor.StartRecovery();
                 events.Add(BuildEvent(state, actor, BattleActionType.BasicAttack, target, damage, "basic_attack"));
@@ -50,17 +50,17 @@ public static class CombatActionResolver
 
                 if (skill?.Kind == SkillKind.Heal)
                 {
-                    var heal = Math.Max(1f, actor.HealPower + skill.Power);
+                    var heal = Math.Max(1f, actor.HealPower + (skill?.ResolvedPowerFlat ?? 0f));
                     target.Heal(heal);
-                    actor.StartRecovery();
+                    actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
                     events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, target, heal, "heal_skill"));
                 }
                 else
                 {
-                    var power = skill?.Power ?? 0f;
-                    var skillDamage = Math.Max(1f, actor.Attack + power - target.Defense - (target.IsDefending ? 1f : 0f));
+                    var power = skill?.ResolvedPowerFlat ?? 0f;
+                    var skillDamage = Math.Max(1f, actor.PhysPower + power - target.Armor - (target.IsDefending ? 1f : 0f));
                     target.TakeDamage(skillDamage);
-                    actor.StartRecovery();
+                    actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
                     events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, target, skillDamage, "strike_skill"));
                     if (!target.IsAlive)
                     {

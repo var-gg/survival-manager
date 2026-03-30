@@ -2,28 +2,27 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
 using SM.Editor.SeedData;
+using SM.Core.Stats;
 using UnityEditor;
 using UnityEngine;
 
 namespace SM.Editor.Validation;
 
+public enum StatIdValidationStatus
+{
+    Unsupported = 0,
+    LegacyAlias = 1,
+    Canonical = 2,
+}
+
 public static class ContentDefinitionValidator
 {
-    private static readonly HashSet<string> SupportedStatIds = new()
+    public static StatIdValidationStatus GetStatIdStatus(string statId)
     {
-        "max_health",
-        "attack",
-        "defense",
-        "speed",
-        "heal_power",
-        "move_speed",
-        "attack_range",
-        "aggro_radius",
-        "attack_windup",
-        "attack_cooldown",
-        "leash_distance",
-        "target_switch_delay",
-    };
+        return StatKey.TryResolve(statId, out _, out var isLegacyAlias)
+            ? isLegacyAlias ? StatIdValidationStatus.LegacyAlias : StatIdValidationStatus.Canonical
+            : StatIdValidationStatus.Unsupported;
+    }
 
     [MenuItem("SM/Validation/Validate Content Definitions")]
     public static void Validate()
@@ -36,6 +35,7 @@ public static class ContentDefinitionValidator
 
         var ids = new Dictionary<string, List<string>>();
         var errors = new List<string>();
+        var warnings = new List<string>();
 
         foreach (var asset in allAssets)
         {
@@ -74,13 +74,21 @@ public static class ContentDefinitionValidator
                     {
                         errors.Add($"Skill has empty compile tag: {AssetDatabase.GetAssetPath(skill)}");
                     }
+                    if (skill.RuleModifierTags.Any(tag => tag == null || string.IsNullOrWhiteSpace(tag.Id)))
+                    {
+                        errors.Add($"Skill has empty rule modifier tag: {AssetDatabase.GetAssetPath(skill)}");
+                    }
                     break;
                 case AugmentDefinition augment:
                     RegisterId(ids, augment.Id, AssetDatabase.GetAssetPath(augment));
-                    ValidateModifiers(errors, augment.Modifiers, AssetDatabase.GetAssetPath(augment));
+                    ValidateModifiers(errors, warnings, augment.Modifiers, AssetDatabase.GetAssetPath(augment));
                     if (string.IsNullOrWhiteSpace(augment.FamilyId))
                     {
                         errors.Add($"Augment missing family id: {AssetDatabase.GetAssetPath(augment)}");
+                    }
+                    if (augment.RuleModifierTags.Any(tag => tag == null || string.IsNullOrWhiteSpace(tag.Id)))
+                    {
+                        errors.Add($"Augment has empty rule modifier tag: {AssetDatabase.GetAssetPath(augment)}");
                     }
                     if (augment.MutualExclusionTags.Select(tag => tag == null ? string.Empty : tag.Id).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct().Count()
                         != augment.MutualExclusionTags.Count(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)))
@@ -90,11 +98,15 @@ public static class ContentDefinitionValidator
                     break;
                 case ItemBaseDefinition item:
                     RegisterId(ids, item.Id, AssetDatabase.GetAssetPath(item));
-                    ValidateModifiers(errors, item.BaseModifiers, AssetDatabase.GetAssetPath(item));
+                    ValidateModifiers(errors, warnings, item.BaseModifiers, AssetDatabase.GetAssetPath(item));
+                    if (item.RuleModifierTags.Any(tag => tag == null || string.IsNullOrWhiteSpace(tag.Id)))
+                    {
+                        errors.Add($"Item has empty rule modifier tag: {AssetDatabase.GetAssetPath(item)}");
+                    }
                     break;
                 case AffixDefinition affix:
                     RegisterId(ids, affix.Id, AssetDatabase.GetAssetPath(affix));
-                    ValidateModifiers(errors, affix.Modifiers, AssetDatabase.GetAssetPath(affix));
+                    ValidateModifiers(errors, warnings, affix.Modifiers, AssetDatabase.GetAssetPath(affix));
                     break;
                 case StableTagDefinition tag:
                     RegisterId(ids, tag.Id, AssetDatabase.GetAssetPath(tag));
@@ -118,7 +130,11 @@ public static class ContentDefinitionValidator
                     break;
                 case PassiveNodeDefinition passiveNode:
                     RegisterId(ids, passiveNode.Id, AssetDatabase.GetAssetPath(passiveNode));
-                    ValidateModifiers(errors, passiveNode.Modifiers, AssetDatabase.GetAssetPath(passiveNode));
+                    ValidateModifiers(errors, warnings, passiveNode.Modifiers, AssetDatabase.GetAssetPath(passiveNode));
+                    if (passiveNode.RuleModifierTags.Any(tag => tag == null || string.IsNullOrWhiteSpace(tag.Id)))
+                    {
+                        errors.Add($"Passive node has empty rule modifier tag: {AssetDatabase.GetAssetPath(passiveNode)}");
+                    }
                     break;
                 case SynergyDefinition synergy:
                     RegisterId(ids, synergy.Id, AssetDatabase.GetAssetPath(synergy));
@@ -133,7 +149,7 @@ public static class ContentDefinitionValidator
                     break;
                 case SynergyTierDefinition tier:
                     RegisterId(ids, tier.Id, AssetDatabase.GetAssetPath(tier));
-                    ValidateModifiers(errors, tier.Modifiers, AssetDatabase.GetAssetPath(tier));
+                    ValidateModifiers(errors, warnings, tier.Modifiers, AssetDatabase.GetAssetPath(tier));
                     break;
                 case ExpeditionDefinition expedition:
                     RegisterId(ids, expedition.Id, AssetDatabase.GetAssetPath(expedition));
@@ -155,6 +171,11 @@ public static class ContentDefinitionValidator
 
         if (errors.Count == 0)
         {
+            foreach (var warning in warnings)
+            {
+                Debug.LogWarning(warning);
+            }
+
             Debug.Log("SM content validation passed.");
             return;
         }
@@ -183,13 +204,22 @@ public static class ContentDefinitionValidator
         list.Add(path);
     }
 
-    private static void ValidateModifiers(ICollection<string> errors, IEnumerable<SerializableStatModifier> modifiers, string path)
+    private static void ValidateModifiers(
+        ICollection<string> errors,
+        ICollection<string> warnings,
+        IEnumerable<SerializableStatModifier> modifiers,
+        string path)
     {
         foreach (var modifier in modifiers)
         {
-            if (!SupportedStatIds.Contains(modifier.StatId))
+            switch (GetStatIdStatus(modifier.StatId))
             {
-                errors.Add($"Unsupported stat id '{modifier.StatId}': {path}");
+                case StatIdValidationStatus.Unsupported:
+                    errors.Add($"Unsupported stat id '{modifier.StatId}': {path}");
+                    break;
+                case StatIdValidationStatus.LegacyAlias:
+                    warnings.Add($"Legacy stat alias '{modifier.StatId}' should migrate to canonical id: {path}");
+                    break;
             }
         }
     }

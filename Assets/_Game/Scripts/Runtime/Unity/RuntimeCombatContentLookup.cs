@@ -380,7 +380,14 @@ public sealed class RuntimeCombatContentLookup
             _augmentDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildAugmentCatalogEntry(definition), StringComparer.Ordinal),
             _synergyDefinitions.Values
                 .SelectMany(definition => BuildSynergyTemplates(definition))
-                .ToDictionary(template => template.Id, template => template, StringComparer.Ordinal));
+                .ToDictionary(template => template.Id, template => template, StringComparer.Ordinal),
+            _itemDefinitions.Values.ToDictionary(
+                definition => definition.Id,
+                definition => (IReadOnlyList<BattleSkillSpec>)definition.GrantedSkills
+                    .Where(skill => skill != null && !string.IsNullOrWhiteSpace(skill.Id))
+                    .Select(BuildSkillSpec)
+                    .ToList(),
+                StringComparer.Ordinal));
     }
 
     private static T[] LoadDefinitions<T>(string resourcesPath, string editorFolderPath) where T : UnityEngine.Object
@@ -415,21 +422,7 @@ public sealed class RuntimeCombatContentLookup
             definition.Race.Id,
             definition.Class.Id,
             (DeploymentAnchorId)definition.DefaultAnchor,
-            new Dictionary<StatKey, float>
-            {
-                [StatKey.MaxHealth] = definition.BaseMaxHealth,
-                [StatKey.Attack] = definition.BaseAttack,
-                [StatKey.Defense] = definition.BaseDefense,
-                [StatKey.Speed] = definition.BaseSpeed,
-                [StatKey.HealPower] = definition.BaseHealPower,
-                [StatKey.MoveSpeed] = definition.BaseMoveSpeed,
-                [StatKey.AttackRange] = definition.BaseAttackRange,
-                [StatKey.AggroRadius] = definition.BaseAggroRadius,
-                [StatKey.AttackWindup] = definition.BaseAttackWindup,
-                [StatKey.AttackCooldown] = definition.BaseAttackCooldown,
-                [StatKey.LeashDistance] = definition.BaseLeashDistance,
-                [StatKey.TargetSwitchDelay] = definition.BaseTargetSwitchDelay
-            },
+            BuildBaseStats(definition),
             definition.TacticPreset
                 .OrderBy(entry => entry.Priority)
                 .Select(entry => new TacticRule(
@@ -443,7 +436,14 @@ public sealed class RuntimeCombatContentLookup
             definition.Skills
                 .Where(skill => skill != null && !string.IsNullOrWhiteSpace(skill.Id))
                 .Select(BuildSkillSpec)
-                .ToList());
+                .ToList(),
+            string.IsNullOrWhiteSpace(definition.RoleTag) ? "auto" : definition.RoleTag,
+            PreferPrimaryOrFallback(definition.BasePreferredDistance, definition.BaseAttackRange),
+            definition.BaseProtectRadius,
+            new ManaEnvelope(
+                definition.BaseManaMax,
+                definition.BaseManaGainOnAttack,
+                definition.BaseManaGainOnHit));
     }
 
     private static BattleSkillSpec BuildSkillSpec(SkillDefinitionAsset skill)
@@ -461,7 +461,22 @@ public sealed class RuntimeCombatContentLookup
                 SkillSlotKindValue.Support => "support",
                 _ => "core_active",
             },
-            skill.CompileTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
+            skill.CompileTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+            skill.DamageType switch
+            {
+                DamageTypeValue.Magical => DamageType.Magical,
+                DamageTypeValue.Healing => DamageType.Healing,
+                DamageTypeValue.True => DamageType.True,
+                _ => DamageType.Physical,
+            },
+            skill.PowerFlat,
+            skill.PhysCoeff,
+            skill.MagCoeff,
+            skill.HealCoeff,
+            skill.ManaCost,
+            skill.BaseCooldownSeconds,
+            skill.CastWindupSeconds,
+            skill.RuleModifierTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
     }
 
     private static CombatModifierPackage BuildTraitPackage(TraitEntry trait)
@@ -532,7 +547,8 @@ public sealed class RuntimeCombatContentLookup
                 definition.Id,
                 ModifierSource.Other,
                 definition.Modifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Other, definition.Id)).ToList()),
-            definition.CompileTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
+            definition.CompileTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+            BuildRulePackage(definition.Id, ModifierSource.Other, definition.RuleModifierTags));
     }
 
     private static AugmentCatalogEntry BuildAugmentCatalogEntry(AugmentDefinition definition)
@@ -552,7 +568,8 @@ public sealed class RuntimeCombatContentLookup
             definition.SuppressIfPermanentEquipped,
             definition.Tags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
             definition.MutualExclusionTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
-            BuildAugmentPackage(definition));
+            BuildAugmentPackage(definition),
+            BuildRulePackage(definition.Id, ModifierSource.Augment, definition.RuleModifierTags));
     }
 
     private static IEnumerable<SynergyTierTemplate> BuildSynergyTemplates(SynergyDefinition definition)
@@ -581,21 +598,67 @@ public sealed class RuntimeCombatContentLookup
 
     private static StatKey ToStatKey(string statId)
     {
-        return statId switch
+        if (StatKey.TryResolve(statId, out var key))
         {
-            "max_health" => StatKey.MaxHealth,
-            "attack" => StatKey.Attack,
-            "defense" => StatKey.Defense,
-            "speed" => StatKey.Speed,
-            "heal_power" => StatKey.HealPower,
-            "move_speed" => StatKey.MoveSpeed,
-            "attack_range" => StatKey.AttackRange,
-            "aggro_radius" => StatKey.AggroRadius,
-            "attack_windup" => StatKey.AttackWindup,
-            "attack_cooldown" => StatKey.AttackCooldown,
-            "leash_distance" => StatKey.LeashDistance,
-            "target_switch_delay" => StatKey.TargetSwitchDelay,
-            _ => throw new InvalidOperationException($"알 수 없는 StatId '{statId}'")
+            return key;
+        }
+
+        throw new InvalidOperationException($"알 수 없는 StatId '{statId}'");
+    }
+
+    private static Dictionary<StatKey, float> BuildBaseStats(UnitArchetypeDefinition definition)
+    {
+        return new Dictionary<StatKey, float>
+        {
+            [StatKey.MaxHealth] = definition.BaseMaxHealth,
+            [StatKey.Armor] = PreferPrimaryOrFallback(definition.BaseArmor, definition.BaseDefense),
+            [StatKey.Resist] = definition.BaseResist,
+            [StatKey.BarrierPower] = definition.BaseBarrierPower,
+            [StatKey.Tenacity] = definition.BaseTenacity,
+            [StatKey.HealPower] = definition.BaseHealPower,
+            [StatKey.PhysPower] = PreferPrimaryOrFallback(definition.BasePhysPower, definition.BaseAttack),
+            [StatKey.MagPower] = definition.BaseMagPower,
+            [StatKey.AttackSpeed] = PreferPrimaryOrFallback(definition.BaseAttackSpeed, definition.BaseSpeed),
+            [StatKey.MoveSpeed] = definition.BaseMoveSpeed,
+            [StatKey.AttackRange] = definition.BaseAttackRange,
+            [StatKey.ManaMax] = definition.BaseManaMax,
+            [StatKey.ManaGainOnAttack] = definition.BaseManaGainOnAttack,
+            [StatKey.ManaGainOnHit] = definition.BaseManaGainOnHit,
+            [StatKey.CooldownRecovery] = definition.BaseCooldownRecovery,
+            [StatKey.CritChance] = definition.BaseCritChance,
+            [StatKey.CritMultiplier] = definition.BaseCritMultiplier,
+            [StatKey.PhysPen] = definition.BasePhysPen,
+            [StatKey.MagPen] = definition.BaseMagPen,
+            [StatKey.AggroRadius] = definition.BaseAggroRadius,
+            [StatKey.LeashDistance] = definition.BaseLeashDistance,
+            [StatKey.TargetSwitchDelay] = definition.BaseTargetSwitchDelay,
+            [StatKey.PreferredDistance] = PreferPrimaryOrFallback(definition.BasePreferredDistance, definition.BaseAttackRange),
+            [StatKey.ProtectRadius] = definition.BaseProtectRadius,
+            [StatKey.AttackWindup] = definition.BaseAttackWindup,
+            [StatKey.CastWindup] = definition.BaseCastWindup,
+            [StatKey.ProjectileSpeed] = definition.BaseProjectileSpeed,
+            [StatKey.CollisionRadius] = definition.BaseCollisionRadius,
+            [StatKey.RepositionCooldown] = definition.BaseRepositionCooldown,
+            [StatKey.AttackCooldown] = definition.BaseAttackCooldown,
         };
+    }
+
+    private static float PreferPrimaryOrFallback(float primary, float fallback)
+    {
+        return primary != 0f ? primary : fallback;
+    }
+
+    private static CombatRuleModifierPackage? BuildRulePackage(
+        string sourceId,
+        ModifierSource source,
+        IEnumerable<StableTagDefinition> tags)
+    {
+        var modifiers = tags
+            .Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id))
+            .Select(tag => new RuleModifier(RuleModifierKind.BehaviorTag, tag.Id))
+            .ToList();
+        return modifiers.Count == 0
+            ? null
+            : new CombatRuleModifierPackage(sourceId, source, modifiers);
     }
 }

@@ -1,0 +1,42 @@
+using System;
+using System.Collections.Generic;
+using SM.Combat.Model;
+using UnityEngine;
+
+namespace SM.Unity.Sandbox;
+
+[Serializable]
+public sealed class CombatSandboxAllySlot
+{
+    public string HeroId = string.Empty;
+    public DeploymentAnchorId Anchor = DeploymentAnchorId.FrontCenter;
+}
+
+[Serializable]
+public sealed class CombatSandboxEnemySlot
+{
+    public string ParticipantId = string.Empty;
+    public string DisplayName = string.Empty;
+    public string ArchetypeId = string.Empty;
+    public DeploymentAnchorId Anchor = DeploymentAnchorId.FrontCenter;
+    public string PositiveTraitId = string.Empty;
+    public string NegativeTraitId = string.Empty;
+    public string RoleTag = "auto";
+    public List<string> TemporaryAugmentIds = new();
+}
+
+[CreateAssetMenu(menuName = "SM/Sandbox/Combat Sandbox Config", fileName = "combat_sandbox_")]
+public sealed class CombatSandboxConfig : ScriptableObject
+{
+    public string Id = "sandbox.default";
+    public string DisplayName = "Combat Sandbox";
+    public TeamPostureType AllyPosture = TeamPostureType.StandardAdvance;
+    public string TeamTacticId = string.Empty;
+    public TeamPostureType EnemyPosture = TeamPostureType.StandardAdvance;
+    public string EnemyTeamTacticId = string.Empty;
+    public int Seed = 17;
+    public int BatchCount = 1;
+    public List<CombatSandboxAllySlot> AllySlots = new();
+    public List<CombatSandboxEnemySlot> EnemySlots = new();
+    public List<string> TemporaryAugmentIds = new();
+}

@@ -12,5 +12,6 @@ public sealed class PassiveNodeDefinition : ScriptableObject
     public bool IsKeystone;
     [TextArea] public string Description = string.Empty;
     public List<StableTagDefinition> CompileTags = new();
+    public List<StableTagDefinition> RuleModifierTags = new();
     public List<SerializableStatModifier> Modifiers = new();
 }
