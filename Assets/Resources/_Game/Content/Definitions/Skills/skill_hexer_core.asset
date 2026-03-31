@@ -32,19 +32,19 @@ MonoBehaviour:
   BaseCooldownSeconds: 2.4
   CastWindupSeconds: 0.23
   CompileTags:
-  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
-  - {fileID: 11400000, guid: f3d6dde03d5ebbc40b81076b5de3c9ca, type: 2}
-  - {fileID: 11400000, guid: 87ee2a1451846e348a799e7d8e57f8b3, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   RuleModifierTags: []
   SupportAllowedTags:
-  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
-  - {fileID: 11400000, guid: f3d6dde03d5ebbc40b81076b5de3c9ca, type: 2}
-  - {fileID: 11400000, guid: 87ee2a1451846e348a799e7d8e57f8b3, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   SupportBlockedTags: []
   RequiredWeaponTags:
-  - {fileID: 11400000, guid: 5b8638d14ee22444e8b2baf4abd01965, type: 2}
+  - {fileID: 0}
   RequiredClassTags:
-  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 0}
   AppliedStatuses:
   - Id: status_burn
     StatusId: burn

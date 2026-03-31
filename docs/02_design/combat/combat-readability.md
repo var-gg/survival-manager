@@ -7,8 +7,17 @@
 - 관련문서:
   - `docs/01_product/mvp-vertical-slice.md`
   - `docs/02_design/combat/battlefield-and-camera.md`
+  - `docs/02_design/combat/battle-presentation-contract.md`
+  - `docs/02_design/combat/combat-spatial-contract.md`
   - `docs/02_design/ui/battle-observer-ui.md`
   - `docs/03_architecture/combat-state-and-event-model.md`
+
+## source-of-truth note
+
+- overhead UI baseline은 `battle-presentation-contract.md`를 우선한다.
+- footprint, slotting, range discipline은
+  `combat-spatial-contract.md`와 `combat-behavior-contract.md`를
+  우선한다.
 
 ## 목적
 

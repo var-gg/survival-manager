@@ -25,6 +25,9 @@ public static class SampleSeedGenerator
         var stats = CreateStats();
         var races = CreateRaces();
         var classes = CreateClasses();
+        var footprintProfiles = CreateFootprintProfiles();
+        var behaviorProfiles = CreateBehaviorProfiles();
+        var mobilityProfiles = CreateMobilityProfiles();
         var skills = CreateSkills();
         CreateStableTags();
         AssetDatabase.SaveAssets();
@@ -34,9 +37,9 @@ public static class SampleSeedGenerator
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         var traitPools = CreateTraitPools();
-        var archetypes = CreateArchetypes(races, classes, traitPools, skills);
+        var archetypes = CreateArchetypes(races, classes, traitPools, skills, footprintProfiles, behaviorProfiles, mobilityProfiles);
         var skillCatalog = LoadDefinitionsById<SkillDefinitionAsset>($"{ResourcesRoot}/Skills");
-        PatchLaunchFloorArchetypes(races, classes, traitPools, skillCatalog);
+        PatchLaunchFloorArchetypes(races, classes, traitPools, skillCatalog, footprintProfiles, behaviorProfiles, mobilityProfiles);
         CreateAugments();
         CreateItems();
         CreateAffixes();
@@ -110,6 +113,9 @@ public static class SampleSeedGenerator
         return HasCanonicalAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_max_health.asset", definition => string.Equals(definition.Id, "max_health", StringComparison.Ordinal))
                && HasCanonicalAsset<RaceDefinition>($"{ResourcesRoot}/Races/race_human.asset", definition => string.Equals(definition.Id, "human", StringComparison.Ordinal))
                && HasCanonicalAsset<ClassDefinition>($"{ResourcesRoot}/Classes/class_vanguard.asset", definition => string.Equals(definition.Id, "vanguard", StringComparison.Ordinal))
+               && HasCanonicalAsset<FootprintProfileDefinition>($"{ResourcesRoot}/FootprintProfiles/footprint_vanguard.asset", definition => definition.EngagementSlotCount > 0)
+               && HasCanonicalAsset<BehaviorProfileDefinition>($"{ResourcesRoot}/BehaviorProfiles/behavior_vanguard.asset", definition => definition.ReevaluationInterval > 0f)
+               && HasCanonicalAsset<MobilityProfileDefinition>($"{ResourcesRoot}/MobilityProfiles/mobility_ranger.asset", definition => definition.Distance > 0f)
                && HasCanonicalAsset<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_warden.asset", definition => string.Equals(definition.Id, "warden", StringComparison.Ordinal))
                && HasCanonicalAsset<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_warden.asset", definition => definition.Skills != null && definition.Skills.Count == 4)
                && HasCanonicalAsset<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/skill_warden_utility.asset", definition => string.Equals(definition.Id, "skill_warden_utility", StringComparison.Ordinal))
@@ -147,6 +153,9 @@ public static class SampleSeedGenerator
             $"{ResourcesRoot}/Stats",
             $"{ResourcesRoot}/Races",
             $"{ResourcesRoot}/Classes",
+            $"{ResourcesRoot}/FootprintProfiles",
+            $"{ResourcesRoot}/BehaviorProfiles",
+            $"{ResourcesRoot}/MobilityProfiles",
             $"{ResourcesRoot}/Traits",
             $"{ResourcesRoot}/Skills",
             $"{ResourcesRoot}/Archetypes",
@@ -440,6 +449,74 @@ public static class SampleSeedGenerator
         });
     }
 
+    private static Dictionary<string, FootprintProfileDefinition> CreateFootprintProfiles()
+    {
+        return new[]
+        {
+            ("vanguard", 0.58f, 0.82f, 1.25f, 0.9f, 1.25f, 5, 1.3f, BodySizeCategoryValue.Large, 2.15f),
+            ("duelist", 0.45f, 0.68f, 1.3f, 0.95f, 1.45f, 6, 1.3f, BodySizeCategoryValue.Medium, 2.0f),
+            ("ranger", 0.34f, 0.74f, 3.2f, 2.55f, 3.35f, 3, 2.2f, BodySizeCategoryValue.Small, 1.92f),
+            ("mystic", 0.34f, 0.78f, 2.8f, 2.35f, 3.15f, 3, 2.0f, BodySizeCategoryValue.Small, 1.96f),
+        }.ToDictionary(tuple => tuple.Item1, tuple => CreateAsset<FootprintProfileDefinition>($"{ResourcesRoot}/FootprintProfiles/footprint_{tuple.Item1}.asset", asset =>
+        {
+            asset.NavigationRadius = tuple.Item2;
+            asset.SeparationRadius = tuple.Item3;
+            asset.CombatReach = tuple.Item4;
+            asset.PreferredRangeMin = tuple.Item5;
+            asset.PreferredRangeMax = tuple.Item6;
+            asset.EngagementSlotCount = tuple.Item7;
+            asset.EngagementSlotRadius = tuple.Item8;
+            asset.BodySizeCategory = tuple.Item9;
+            asset.HeadAnchorHeight = tuple.Item10;
+        }));
+    }
+
+    private static Dictionary<string, BehaviorProfileDefinition> CreateBehaviorProfiles()
+    {
+        return new[]
+        {
+            ("vanguard", 0.42f, 0.16f, 0.04f, 0.05f, 0.34f, 0.82f, 0.02f, 0.28f, 0.38f, 0.88f, 1.0f),
+            ("duelist", 0.30f, 0.22f, 0.22f, 0.24f, 0.72f, 0.58f, 0.08f, 0.12f, 0.18f, 0.62f, 1.15f),
+            ("ranger", 0.24f, 0.28f, 0.72f, 0.84f, 0.58f, 0.74f, 0.12f, 0.04f, 0.12f, 0.34f, 1.5f),
+            ("mystic", 0.28f, 0.30f, 0.68f, 0.78f, 0.50f, 0.84f, 0.06f, 0.06f, 0.18f, 0.45f, 1.35f),
+        }.ToDictionary(tuple => tuple.Item1, tuple => CreateAsset<BehaviorProfileDefinition>($"{ResourcesRoot}/BehaviorProfiles/behavior_{tuple.Item1}.asset", asset =>
+        {
+            asset.ReevaluationInterval = tuple.Item2;
+            asset.RangeHysteresis = tuple.Item3;
+            asset.RetreatBias = tuple.Item4;
+            asset.MaintainRangeBias = tuple.Item5;
+            asset.Opportunism = tuple.Item6;
+            asset.Discipline = tuple.Item7;
+            asset.DodgeChance = tuple.Item8;
+            asset.BlockChance = tuple.Item9;
+            asset.BlockMitigation = tuple.Item10;
+            asset.Stability = tuple.Item11;
+            asset.BlockCooldownSeconds = tuple.Item12;
+        }));
+    }
+
+    private static Dictionary<string, MobilityProfileDefinition> CreateMobilityProfiles()
+    {
+        return new[]
+        {
+            ("vanguard", MobilityStyleValue.Dash, MobilityPurposeValue.Engage, 0.9f, 5.0f, 0f, 0.18f, 1.4f, 2.8f, 0f),
+            ("duelist", MobilityStyleValue.Dash, MobilityPurposeValue.Engage, 1.15f, 4.2f, 0f, 0.16f, 1.3f, 3.0f, 0.2f),
+            ("ranger", MobilityStyleValue.Roll, MobilityPurposeValue.MaintainRange, 1.45f, 3.4f, 0f, 0.22f, 0f, 1.45f, 0.68f),
+            ("mystic", MobilityStyleValue.Blink, MobilityPurposeValue.Disengage, 1.85f, 4.4f, 0f, 0.30f, 0f, 1.35f, 0.35f),
+        }.ToDictionary(tuple => tuple.Item1, tuple => CreateAsset<MobilityProfileDefinition>($"{ResourcesRoot}/MobilityProfiles/mobility_{tuple.Item1}.asset", asset =>
+        {
+            asset.Style = tuple.Item2;
+            asset.Purpose = tuple.Item3;
+            asset.Distance = tuple.Item4;
+            asset.Cooldown = tuple.Item5;
+            asset.CastTime = tuple.Item6;
+            asset.Recovery = tuple.Item7;
+            asset.TriggerMinDistance = tuple.Item8;
+            asset.TriggerMaxDistance = tuple.Item9;
+            asset.LateralBias = tuple.Item10;
+        }));
+    }
+
     private static Dictionary<string, SkillDefinitionAsset> CreateSkills()
     {
         return new[]
@@ -503,21 +580,24 @@ public static class SampleSeedGenerator
         Dictionary<string, RaceDefinition> races,
         Dictionary<string, ClassDefinition> classes,
         Dictionary<string, TraitPoolDefinition> traitPools,
-        Dictionary<string, SkillDefinitionAsset> skills)
+        Dictionary<string, SkillDefinitionAsset> skills,
+        IReadOnlyDictionary<string, FootprintProfileDefinition> footprintProfiles,
+        IReadOnlyDictionary<string, BehaviorProfileDefinition> behaviorProfiles,
+        IReadOnlyDictionary<string, MobilityProfileDefinition> mobilityProfiles)
     {
         var result = new Dictionary<string, UnitArchetypeDefinition>();
-        result["warden"] = CreateArchetype("warden", "Warden", races["human"], classes["vanguard"], traitPools["warden"], skills["skill_power_strike"], 24, 5, 3, 3, 0, DeploymentAnchorValue.FrontCenter, TeamPostureTypeValue.HoldLine);
-        result["guardian"] = CreateArchetype("guardian", "Guardian", races["undead"], classes["vanguard"], traitPools["guardian"], skills["skill_power_strike"], 26, 4, 4, 2, 0, DeploymentAnchorValue.FrontTop, TeamPostureTypeValue.ProtectCarry);
-        result["slayer"] = CreateArchetype("slayer", "Slayer", races["human"], classes["duelist"], traitPools["slayer"], skills["skill_power_strike"], 20, 7, 2, 4, 0, DeploymentAnchorValue.FrontBottom, TeamPostureTypeValue.StandardAdvance);
-        result["raider"] = CreateArchetype("raider", "Raider", races["beastkin"], classes["duelist"], traitPools["raider"], skills["skill_power_strike"], 19, 8, 1, 5, 0, DeploymentAnchorValue.FrontTop, TeamPostureTypeValue.CollapseWeakSide);
-        result["hunter"] = CreateArchetype("hunter", "Hunter", races["human"], classes["ranger"], traitPools["hunter"], skills["skill_precision_shot"], 18, 6, 2, 5, 0, DeploymentAnchorValue.BackTop, TeamPostureTypeValue.StandardAdvance);
-        result["scout"] = CreateArchetype("scout", "Scout", races["beastkin"], classes["ranger"], traitPools["scout"], skills["skill_precision_shot"], 17, 5, 2, 6, 0, DeploymentAnchorValue.BackBottom, TeamPostureTypeValue.CollapseWeakSide);
-        result["priest"] = CreateArchetype("priest", "Priest", races["human"], classes["mystic"], traitPools["priest"], skills["skill_minor_heal"], 18, 3, 2, 4, 5, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.ProtectCarry);
-        result["hexer"] = CreateArchetype("hexer", "Hexer", races["undead"], classes["mystic"], traitPools["hexer"], skills["skill_minor_heal"], 17, 4, 2, 4, 4, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.AllInBackline);
+        result["warden"] = CreateArchetype("warden", "Warden", races["human"], classes["vanguard"], traitPools["warden"], skills["skill_power_strike"], footprintProfiles["vanguard"], behaviorProfiles["vanguard"], mobilityProfiles["vanguard"], 24, 5, 3, 3, 0, DeploymentAnchorValue.FrontCenter, TeamPostureTypeValue.HoldLine);
+        result["guardian"] = CreateArchetype("guardian", "Guardian", races["undead"], classes["vanguard"], traitPools["guardian"], skills["skill_power_strike"], footprintProfiles["vanguard"], behaviorProfiles["vanguard"], mobilityProfiles["vanguard"], 26, 4, 4, 2, 0, DeploymentAnchorValue.FrontTop, TeamPostureTypeValue.ProtectCarry);
+        result["slayer"] = CreateArchetype("slayer", "Slayer", races["human"], classes["duelist"], traitPools["slayer"], skills["skill_power_strike"], footprintProfiles["duelist"], behaviorProfiles["duelist"], mobilityProfiles["duelist"], 20, 7, 2, 4, 0, DeploymentAnchorValue.FrontBottom, TeamPostureTypeValue.StandardAdvance);
+        result["raider"] = CreateArchetype("raider", "Raider", races["beastkin"], classes["duelist"], traitPools["raider"], skills["skill_power_strike"], footprintProfiles["duelist"], behaviorProfiles["duelist"], mobilityProfiles["duelist"], 19, 8, 1, 5, 0, DeploymentAnchorValue.FrontTop, TeamPostureTypeValue.CollapseWeakSide);
+        result["hunter"] = CreateArchetype("hunter", "Hunter", races["human"], classes["ranger"], traitPools["hunter"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 18, 6, 2, 5, 0, DeploymentAnchorValue.BackTop, TeamPostureTypeValue.StandardAdvance);
+        result["scout"] = CreateArchetype("scout", "Scout", races["beastkin"], classes["ranger"], traitPools["scout"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 17, 5, 2, 6, 0, DeploymentAnchorValue.BackBottom, TeamPostureTypeValue.CollapseWeakSide);
+        result["priest"] = CreateArchetype("priest", "Priest", races["human"], classes["mystic"], traitPools["priest"], skills["skill_minor_heal"], footprintProfiles["mystic"], behaviorProfiles["mystic"], mobilityProfiles["mystic"], 18, 3, 2, 4, 5, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.ProtectCarry);
+        result["hexer"] = CreateArchetype("hexer", "Hexer", races["undead"], classes["mystic"], traitPools["hexer"], skills["skill_minor_heal"], footprintProfiles["mystic"], behaviorProfiles["mystic"], mobilityProfiles["mystic"], 17, 4, 2, 4, 4, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.AllInBackline);
         return result;
     }
 
-    private static UnitArchetypeDefinition CreateArchetype(string id, string name, RaceDefinition race, ClassDefinition @class, TraitPoolDefinition pool, SkillDefinitionAsset skill, float hp, float atk, float def, float spd, float heal, DeploymentAnchorValue defaultAnchor, TeamPostureTypeValue preferredPosture)
+    private static UnitArchetypeDefinition CreateArchetype(string id, string name, RaceDefinition race, ClassDefinition @class, TraitPoolDefinition pool, SkillDefinitionAsset skill, FootprintProfileDefinition footprintProfile, BehaviorProfileDefinition behaviorProfile, MobilityProfileDefinition mobilityProfile, float hp, float atk, float def, float spd, float heal, DeploymentAnchorValue defaultAnchor, TeamPostureTypeValue preferredPosture)
     {
         return CreateAsset<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_{id}.asset", a =>
         {
@@ -535,6 +615,9 @@ public static class SampleSeedGenerator
                 "duelist" => "striker",
                 _ => @class.Id
             };
+            a.FootprintProfile = footprintProfile;
+            a.BehaviorProfile = behaviorProfile;
+            a.MobilityProfile = mobilityProfile;
             a.PrimaryWeaponFamilyTag = @class.Id switch
             {
                 "vanguard" => "shield",
@@ -584,7 +667,10 @@ public static class SampleSeedGenerator
         IReadOnlyDictionary<string, RaceDefinition> races,
         IReadOnlyDictionary<string, ClassDefinition> classes,
         IReadOnlyDictionary<string, TraitPoolDefinition> traitPools,
-        IReadOnlyDictionary<string, SkillDefinitionAsset> skills)
+        IReadOnlyDictionary<string, SkillDefinitionAsset> skills,
+        IReadOnlyDictionary<string, FootprintProfileDefinition> footprintProfiles,
+        IReadOnlyDictionary<string, BehaviorProfileDefinition> behaviorProfiles,
+        IReadOnlyDictionary<string, MobilityProfileDefinition> mobilityProfiles)
     {
         var definitions = new[]
         {
@@ -620,6 +706,9 @@ public static class SampleSeedGenerator
                 "duelist" => "striker",
                 _ => definition.ClassId
             };
+            asset.FootprintProfile = footprintProfiles[definition.ClassId];
+            asset.BehaviorProfile = behaviorProfiles[definition.ClassId];
+            asset.MobilityProfile = mobilityProfiles[definition.ClassId];
             asset.PrimaryWeaponFamilyTag = definition.ClassId switch
             {
                 "vanguard" => "shield",

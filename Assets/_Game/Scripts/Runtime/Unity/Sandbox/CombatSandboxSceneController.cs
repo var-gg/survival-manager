@@ -12,11 +12,25 @@ public sealed class CombatSandboxSceneController : MonoBehaviour
     [SerializeField] private Transform[] allyAnchorHandles = Array.Empty<Transform>();
     [SerializeField] private Transform[] enemyAnchorHandles = Array.Empty<Transform>();
     [SerializeField] private float rangePreviewRadius = 2f;
+    [SerializeField] private float navigationPreviewRadius = 0.5f;
+    [SerializeField] private float separationPreviewRadius = 0.75f;
+    [SerializeField] private float preferredRangeMinPreview = 1f;
+    [SerializeField] private float preferredRangeMaxPreview = 3f;
+    [SerializeField] private float engagementSlotRadiusPreview = 1.25f;
+    [SerializeField] private int engagementSlotCountPreview = 4;
+    [SerializeField] private float headAnchorHeightPreview = 2f;
 
     public CombatSandboxConfig SandboxConfig => sandboxConfig;
     public Transform[] AllyAnchorHandles => allyAnchorHandles ?? Array.Empty<Transform>();
     public Transform[] EnemyAnchorHandles => enemyAnchorHandles ?? Array.Empty<Transform>();
     public float RangePreviewRadius => Mathf.Max(0.25f, rangePreviewRadius);
+    public float NavigationPreviewRadius => Mathf.Max(0.1f, navigationPreviewRadius);
+    public float SeparationPreviewRadius => Mathf.Max(NavigationPreviewRadius, separationPreviewRadius);
+    public float PreferredRangeMinPreview => Mathf.Max(0f, preferredRangeMinPreview);
+    public float PreferredRangeMaxPreview => Mathf.Max(PreferredRangeMinPreview, preferredRangeMaxPreview);
+    public float EngagementSlotRadiusPreview => Mathf.Max(0.25f, engagementSlotRadiusPreview);
+    public int EngagementSlotCountPreview => Mathf.Max(1, engagementSlotCountPreview);
+    public float HeadAnchorHeightPreview => Mathf.Max(0.5f, headAnchorHeightPreview);
 
     public static CombatSandboxRunResult Execute(CombatSandboxRunRequest request)
     {

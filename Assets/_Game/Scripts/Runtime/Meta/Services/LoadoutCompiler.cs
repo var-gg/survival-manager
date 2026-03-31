@@ -217,6 +217,9 @@ public sealed class LoadoutCompiler
                 null,
                 artifacts.CompileTags.OrderBy(tag => tag, StringComparer.Ordinal).ToList(),
                 roleInstruction.RoleTag,
+                archetype.Footprint,
+                archetype.Behavior,
+                archetype.Mobility,
                 archetype.PreferredDistance,
                 archetype.ProtectRadius,
                 archetype.Mana,
@@ -579,6 +582,25 @@ public sealed class LoadoutCompiler
                 .Append(unit.RoleInstruction?.ProtectCarryBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
                 .Append(unit.RoleInstruction?.BacklinePressureBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
                 .Append(unit.RoleInstruction?.RetreatBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Footprint?.NavigationRadius.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Footprint?.SeparationRadius.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Footprint?.CombatReach.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Footprint?.PreferredRangeBand.ClampedMin.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Footprint?.PreferredRangeBand.ClampedMax.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Footprint?.EngagementSlotCount.ToString(CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Footprint?.EngagementSlotRadius.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Footprint?.BodySizeCategory.ToString() ?? "none").Append(':')
+                .Append(unit.Behavior?.ReevaluationInterval.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Behavior?.RangeHysteresis.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Behavior?.RetreatBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Behavior?.MaintainRangeBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Behavior?.DodgeChance.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Behavior?.BlockChance.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Behavior?.BlockMitigation.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Mobility?.Style.ToString() ?? "none").Append(':')
+                .Append(unit.Mobility?.Purpose.ToString() ?? "none").Append(':')
+                .Append(unit.Mobility?.Distance.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.Mobility?.Cooldown.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
                 .Append(unit.PreferredDistance.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                 .Append(unit.ProtectRadius.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                 .Append(unit.EffectiveMana.Max.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')

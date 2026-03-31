@@ -21,7 +21,14 @@ public sealed record BattleUnitReadModel(
     float CooldownRemaining,
     bool IsDefending,
     float Barrier = 0f,
-    IReadOnlyList<string>? StatusIds = null);
+    IReadOnlyList<string>? StatusIds = null,
+    float HeadAnchorHeight = 2f,
+    float NavigationRadius = 0.5f,
+    float SeparationRadius = 0.7f,
+    float PreferredRangeMin = 0f,
+    float PreferredRangeMax = 0f,
+    float EngagementSlotRadius = 1.2f,
+    int EngagementSlotCount = 4);
 
 public sealed record BattleSimulationStep(
     int StepIndex,

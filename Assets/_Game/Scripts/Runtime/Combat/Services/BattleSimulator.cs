@@ -65,7 +65,7 @@ public sealed class BattleSimulator
             if (actor.IsStunned)
             {
                 actor.ClearTarget(applySwitchDelay: false);
-                actor.SetActionState(CombatActionState.SeekTarget);
+                actor.SetActionState(CombatActionState.AcquireTarget);
                 continue;
             }
 
@@ -74,7 +74,7 @@ public sealed class BattleSimulator
                 continue;
             }
 
-            if (actor.ActionState == CombatActionState.Windup)
+            if (actor.ActionState == CombatActionState.ExecuteAction)
             {
                 if (TryResolvePendingAction(actor, stepEvents) && CheckForWinner())
                 {
@@ -84,7 +84,13 @@ public sealed class BattleSimulator
                 continue;
             }
 
+            var shouldConsumeCadence = actor.NeedsReevaluation;
             var evaluated = TacticEvaluator.Evaluate(State, actor);
+            if (shouldConsumeCadence)
+            {
+                actor.ConsumeReevaluation();
+            }
+
             if (evaluated.ActionType == BattleActionType.WaitDefend || evaluated.Target == null || !evaluated.Target.IsAlive)
             {
                 HandleDefendOrReposition(actor, stepEvents);
@@ -92,7 +98,13 @@ public sealed class BattleSimulator
             }
 
             actor.SetCurrentTarget(evaluated.Target.Id);
-            if (MovementResolver.IsInActionRange(actor, evaluated.Target, evaluated.DesiredRange))
+            actor.SetEngagementSlot(evaluated.SlotAssignment);
+
+            var inRangeBand = MovementResolver.IsWithinRangeBand(actor, evaluated.Target, evaluated.DesiredRangeBand, actor.Behavior.RangeHysteresis);
+            var slotReady = !evaluated.RequiresEngagementSlot
+                            || evaluated.SlotAssignment == null
+                            || actor.Position.DistanceTo(evaluated.SlotAssignment.Position) <= Math.Max(0.15f, actor.SeparationRadius * 0.4f);
+            if (inRangeBand && slotReady && evaluated.Mobility == null)
             {
                 if (actor.CooldownRemaining <= 0f)
                 {
@@ -100,7 +112,7 @@ public sealed class BattleSimulator
                 }
                 else
                 {
-                    actor.SetActionState(CombatActionState.Recovery);
+                    actor.SetActionState(CombatActionState.Recover);
                 }
             }
             else
@@ -152,7 +164,7 @@ public sealed class BattleSimulator
         if (actor.Position.DistanceTo(home) <= 0.05f)
         {
             actor.SetPosition(home);
-            actor.SetActionState(CombatActionState.SeekTarget);
+            actor.SetActionState(CombatActionState.AcquireTarget);
             return true;
         }
 
@@ -169,15 +181,15 @@ public sealed class BattleSimulator
         if (target == null || !target.IsAlive)
         {
             actor.ClearTarget(applySwitchDelay: true);
-            actor.SetActionState(CombatActionState.SeekTarget);
+            actor.SetActionState(CombatActionState.AcquireTarget);
             return false;
         }
 
         var desiredRange = actor.ResolveActionRange(actor.PendingSkillId);
-        if (!MovementResolver.IsInActionRange(actor, target, desiredRange + 0.2f))
+        if (!MovementResolver.IsInActionRange(actor, target, desiredRange + 0.35f))
         {
             actor.ClearTarget(applySwitchDelay: true);
-            actor.SetActionState(CombatActionState.SeekTarget);
+            actor.SetActionState(CombatActionState.AcquireTarget);
             return false;
         }
 
@@ -215,7 +227,12 @@ public sealed class BattleSimulator
             null,
             null,
             new TacticRule(999, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
-            0f));
+            new FloatRange(0f, 0f),
+            CombatActionState.Reposition,
+            ReevaluationReason.None,
+            false,
+            null,
+            null));
     }
 
     private bool CheckForWinner()

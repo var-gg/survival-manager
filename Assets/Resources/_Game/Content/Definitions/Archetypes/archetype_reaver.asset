@@ -15,9 +15,9 @@ MonoBehaviour:
   Id: reaver
   NameKey: content.archetype.reaver.name
   ScopeKind: 0
-  Race: {fileID: 11400000, guid: 40397d4c74bfc1540a9b6b77e3418712, type: 2}
-  Class: {fileID: 11400000, guid: ae9c9da2287c8624e818c771bc678450, type: 2}
-  TraitPool: {fileID: 11400000, guid: 3c1f5f007b4e91d42a298c3cdf22cede, type: 2}
+  Race: {fileID: 0}
+  Class: {fileID: 0}
+  TraitPool: {fileID: 0}
   Skills:
   - {fileID: 11400000, guid: 2e6f1276316572a409f21d1823a20832, type: 2}
   - {fileID: 11400000, guid: db48c7e154ce1d0478788063fa1be368, type: 2}
@@ -50,6 +50,9 @@ MonoBehaviour:
   SupportModifierBiasTags:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  FootprintProfile: {fileID: 0}
+  BehaviorProfile: {fileID: 0}
+  MobilityProfile: {fileID: 0}
   BaseMaxHealth: 21
   BaseArmor: 2.4
   BaseResist: 0.4

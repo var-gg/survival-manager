@@ -39,6 +39,26 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 1798213439901401353
+  - m_Id: 883941377
+    m_Localized: "S{0} {1}\uC774(\uAC00) {3}\uC5D0\uAC8C {2} \uC801\uC6A9"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401353
+  - m_Id: 883941378
+    m_Localized: "S{0} {1}\uC5D0\uC11C {2} \uD574\uC81C"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401353
+  - m_Id: 883941379
+    m_Localized: "S{0} {1}\uC774(\uAC00) {3}\uC5D0\uAC8C {2} \uC815\uD654"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401353
+  - m_Id: 883941380
+    m_Localized: "S{0} {1} control resist \uD68D\uB4DD"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401353
   - m_Id: 879747072
     m_Localized: S{0} {1} {2}
     m_Metadata:
@@ -56,4 +76,8 @@ MonoBehaviour:
         - id: 871358464
         - id: 875552768
         - id: 875552769
+        - id: 883941377
+        - id: 883941378
+        - id: 883941379
+        - id: 883941380
         - id: 879747072

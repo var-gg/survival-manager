@@ -20,9 +20,6 @@ MonoBehaviour:
   TraitPool: {fileID: 11400000, guid: 5e7792086dec2f5459dfb34069f3a7fb, type: 2}
   Skills:
   - {fileID: 11400000, guid: 5ddb89669e0424f479445d2195999821, type: 2}
-  - {fileID: 11400000, guid: dd86a56c52828af40b28489fe94661a4, type: 2}
-  - {fileID: 11400000, guid: 19277c9f97afc70409f220715bbc77cb, type: 2}
-  - {fileID: 11400000, guid: c0141da1013d60a4ca6d88111715baef, type: 2}
   TacticPreset:
   - Priority: 0
     ConditionType: 4
@@ -48,6 +45,9 @@ MonoBehaviour:
   RoleFamilyTag: ranger
   PrimaryWeaponFamilyTag: bow
   SupportModifierBiasTags: []
+  FootprintProfile: {fileID: 11400000, guid: a81b3870596764c429790a3a0e75a089, type: 2}
+  BehaviorProfile: {fileID: 11400000, guid: 694569802d1952445a6d582f97449372, type: 2}
+  MobilityProfile: {fileID: 11400000, guid: 90f39a3f53210ab4697d716b89c641a6, type: 2}
   BaseMaxHealth: 18
   BaseArmor: 2
   BaseResist: 0

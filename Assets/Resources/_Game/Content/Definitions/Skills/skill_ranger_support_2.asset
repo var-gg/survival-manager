@@ -40,9 +40,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
   SupportBlockedTags: []
   RequiredWeaponTags:
-  - {fileID: 11400000, guid: 29962574aef879948ae1bd7b26653f05, type: 2}
+  - {fileID: 0}
   RequiredClassTags:
-  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
+  - {fileID: 0}
   AppliedStatuses: []
   CleanseProfileId: 
   legacyDisplayName: 

@@ -67,8 +67,14 @@
 - 장비/제작 깊이: `02_design/meta/equipment-family-and-crafting-depth.md`
 - PVP arena ruleset: `02_design/meta/pvp-ruleset-and-arena-loop.md`
 - skill taxonomy와 데미지 모델: `02_design/combat/skill-taxonomy-and-damage-model.md`
+- battle presentation contract: `02_design/combat/battle-presentation-contract.md`
+- combat spatial contract: `02_design/combat/combat-spatial-contract.md`
+- combat behavior contract: `02_design/combat/combat-behavior-contract.md`
+- mobility contract: `02_design/combat/mobility-contract.md`
+- combat mechanics glossary: `02_design/combat/combat-mechanics-glossary.md`
 - squad blueprint와 빌드 소유권: `02_design/systems/squad-blueprint-and-build-ownership.md`
 - 전투 런타임 아키텍처: `03_architecture/combat-runtime-architecture.md`
+- battle harness/debug contract: `03_architecture/combat-harness-and-debug-contract.md`
 - 조우 resolve 구조: `03_architecture/encounter-authoring-and-runtime-resolution.md`
 - status runtime stack: `03_architecture/status-runtime-stack-and-cleanse-rules.md`
 - 드롭/ledger pipeline: `03_architecture/drop-resolution-and-ledger-pipeline.md`

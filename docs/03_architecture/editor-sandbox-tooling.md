@@ -8,6 +8,7 @@
   - `docs/03_architecture/content-authoring-model.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
   - `docs/03_architecture/replay-persistence-and-run-audit.md`
+  - `docs/03_architecture/combat-harness-and-debug-contract.md`
   - `docs/04_decisions/adr-0015-build-compile-audit-pipeline.md`
 
 ## 목적
@@ -38,7 +39,7 @@
 - `SM.Editor.Authoring.CombatSandbox.CombatSandboxExecutionService`: session/build/request 조립기
 - `SM.Editor.Authoring.CombatSandbox.CombatSandboxToolbarOverlay`: scene view overlay
 - `SM.Editor.Authoring.CombatSandbox.DeploymentAnchorTool`: anchor handle 편집기
-- `SM.Editor.Authoring.CombatSandbox.CombatRangeGizmos`: scene view range preview
+- `SM.Editor.Authoring.CombatSandbox.CombatRangeGizmos`: scene view footprint/range/slot preview
 - `SM.Editor.Authoring.Drawers.TacticRuleDrawer`: tactic preset drawer
 
 ## 창 구조
@@ -55,7 +56,7 @@
 ## scene tooling
 
 - `DeploymentAnchorTool`은 `CombatSandboxSceneController`가 가진 anchor transform만 직접 만진다.
-- `CombatRangeGizmos`는 preview ring만 그린다.
+- `CombatRangeGizmos`는 head anchor, navigation/separation, preferred range, slot ring preview를 그린다.
 - scene tool은 배치와 공간 확인 전용이고, 실제 판정 규칙은 domain simulator가 계속 소유한다.
 
 ## 현재 범위

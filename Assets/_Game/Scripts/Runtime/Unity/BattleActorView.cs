@@ -8,7 +8,6 @@ namespace SM.Unity;
 public sealed class BattleActorView : MonoBehaviour
 {
     private const float OverlayHeight = 2.3f;
-    private const float WorldInfoHeight = 2.0f;
     private const float WorldHpWidth = 1.3f;
 
     private Camera _camera = null!;
@@ -22,6 +21,7 @@ public sealed class BattleActorView : MonoBehaviour
     private Text _stateText = null!;
     private Text _floatingText = null!;
     private Transform _visualRoot = null!;
+    private Transform _headAnchor = null!;
     private Transform _worldInfoRoot = null!;
     private Transform _worldHpFillRoot = null!;
     private TextMesh _worldNameText = null!;
@@ -50,7 +50,7 @@ public sealed class BattleActorView : MonoBehaviour
         transform.position = ToWorldPosition(actor.Position);
 
         CreateVisualRoot(actor);
-        CreateWorldInfo();
+        CreateHeadAnchor(actor);
         CreateOverlay(actor);
         ApplyBlend(actor, actor, 1f);
     }
@@ -98,7 +98,10 @@ public sealed class BattleActorView : MonoBehaviour
         if (eventData.LogCode == BattleLogCode.ActiveSkillHeal)
         {
             RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(0.28f, 1f, 0.52f, 1f), 0.22f, 1.05f));
-            RestartCoroutine(ref _floatingRoutine, FloatingTextRoutine($"+{Mathf.CeilToInt(eventData.Value)}", new Color(0.48f, 1f, 0.58f, 1f), 0.45f));
+            if (_options.ShowDamageText)
+            {
+                RestartCoroutine(ref _floatingRoutine, FloatingTextRoutine($"+{Mathf.CeilToInt(eventData.Value)}", new Color(0.48f, 1f, 0.58f, 1f), 0.45f));
+            }
             return;
         }
 
@@ -106,7 +109,10 @@ public sealed class BattleActorView : MonoBehaviour
         {
             RestartCoroutine(ref _impactRoutine, ImpactRoutine(0.22f));
             RestartCoroutine(ref _pulseRoutine, PulseRoutine(new Color(1f, 0.24f, 0.24f, 1f), 0.18f, 1.03f));
-            RestartCoroutine(ref _floatingRoutine, FloatingTextRoutine($"-{Mathf.CeilToInt(eventData.Value)}", new Color(1f, 0.45f, 0.45f, 1f), 0.45f));
+            if (_options.ShowDamageText)
+            {
+                RestartCoroutine(ref _floatingRoutine, FloatingTextRoutine($"-{Mathf.CeilToInt(eventData.Value)}", new Color(1f, 0.45f, 0.45f, 1f), 0.45f));
+            }
         }
     }
 
@@ -124,20 +130,21 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_overlayRoot != null && _overlayParent != null)
         {
-            var screenPosition = RectTransformUtility.WorldToScreenPoint(_camera, transform.position + Vector3.up * OverlayHeight);
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(_overlayParent, screenPosition, null, out var anchored))
+            var anchorWorldPosition = _headAnchor != null
+                ? _headAnchor.position
+                : transform.position + Vector3.up * OverlayHeight;
+            var viewport = _camera.WorldToViewportPoint(anchorWorldPosition);
+            var isVisible = viewport.z > 0f
+                            && viewport.x >= 0f && viewport.x <= 1f
+                            && viewport.y >= 0f && viewport.y <= 1f;
+            _overlayRoot.gameObject.SetActive(_options.ShowOverheadUi && isVisible);
+            if (isVisible)
             {
-                _overlayRoot.anchoredPosition = anchored;
-            }
-        }
-
-        if (_worldInfoRoot != null)
-        {
-            _worldInfoRoot.position = transform.position + Vector3.up * WorldInfoHeight;
-            var facing = _camera.transform.position - _worldInfoRoot.position;
-            if (facing.sqrMagnitude > 0.001f)
-            {
-                _worldInfoRoot.rotation = Quaternion.LookRotation(facing.normalized, Vector3.up);
+                var screenPosition = RectTransformUtility.WorldToScreenPoint(_camera, anchorWorldPosition);
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(_overlayParent, screenPosition, null, out var anchored))
+                {
+                    _overlayRoot.anchoredPosition = anchored;
+                }
             }
         }
     }
@@ -182,7 +189,7 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_nameText != null)
         {
-            _nameText.text = $"{actor.Name}\nHP {Mathf.CeilToInt(displayedHealth)}/{Mathf.CeilToInt(actor.MaxHealth)}";
+            _nameText.text = actor.Name;
             _nameText.color = actor.IsAlive ? Color.white : new Color(0.72f, 0.72f, 0.72f, 1f);
         }
 
@@ -230,13 +237,14 @@ public sealed class BattleActorView : MonoBehaviour
         var target = string.IsNullOrWhiteSpace(actor.TargetName) ? "-" : actor.TargetName;
         return actor.ActionState switch
         {
-            CombatActionState.Windup => $"Windup {Mathf.RoundToInt(actor.WindupProgress * 100f)}% -> {target}",
-            CombatActionState.MoveToEngage => $"Advance -> {target}",
-            CombatActionState.Retreat => $"Retreat <- {target}",
-            CombatActionState.Recovery => actor.IsDefending ? "Guard" : $"Recover {actor.CooldownRemaining:0.0}s",
+            CombatActionState.ExecuteAction => $"Action {Mathf.RoundToInt(actor.WindupProgress * 100f)}% -> {target}",
+            CombatActionState.Approach => $"Approach -> {target}",
+            CombatActionState.SecurePosition => $"Secure -> {target}",
+            CombatActionState.BreakContact => $"Break <- {target}",
+            CombatActionState.Recover => actor.IsDefending ? "Guard" : $"Recover {actor.CooldownRemaining:0.0}s",
             CombatActionState.Reposition => actor.IsDefending ? "Hold Line" : "Reposition",
             CombatActionState.AdvanceToAnchor => "To Anchor",
-            CombatActionState.SeekTarget => $"Seek -> {target}",
+            CombatActionState.AcquireTarget => $"Acquire -> {target}",
             _ => target == "-" ? actor.ActionState.ToString() : $"{actor.ActionState} -> {target}"
         };
     }
@@ -266,6 +274,14 @@ public sealed class BattleActorView : MonoBehaviour
         _renderer = body.GetComponent<Renderer>();
         _baseColor = ResolveBaseColor(actor);
         _renderer.material.color = _baseColor;
+    }
+
+    private void CreateHeadAnchor(BattleUnitReadModel actor)
+    {
+        var headAnchorGo = new GameObject("HeadAnchor");
+        headAnchorGo.transform.SetParent(transform, false);
+        headAnchorGo.transform.localPosition = new Vector3(0f, Mathf.Max(1.2f, actor.HeadAnchorHeight), 0f);
+        _headAnchor = headAnchorGo.transform;
     }
 
     private void CreateWorldInfo()
@@ -501,29 +517,34 @@ public sealed class BattleActorView : MonoBehaviour
 
     private void RefreshVisibility()
     {
-        if (_worldInfoRoot != null)
+        if (_overlayRoot != null)
         {
-            _worldInfoRoot.gameObject.SetActive(_options.ShowWorldActorHp);
+            _overlayRoot.gameObject.SetActive(_options.ShowOverheadUi);
         }
 
         if (_overlayBackground != null)
         {
-            _overlayBackground.enabled = _options.ShowOverlayActorHp;
+            _overlayBackground.enabled = _options.ShowOverheadUi;
         }
 
         if (_nameText != null)
         {
-            _nameText.enabled = _options.ShowOverlayActorHp;
+            _nameText.enabled = _options.ShowOverheadUi;
         }
 
         if (_stateText != null)
         {
-            _stateText.enabled = _options.ShowOverlayActorHp;
+            _stateText.enabled = _options.ShowOverheadUi;
         }
 
         if (_overlayHpBarRoot != null)
         {
-            _overlayHpBarRoot.SetActive(_options.ShowOverlayActorHp);
+            _overlayHpBarRoot.SetActive(_options.ShowOverheadUi);
+        }
+
+        if (_floatingText != null)
+        {
+            _floatingText.enabled = _options.ShowDamageText;
         }
     }
 

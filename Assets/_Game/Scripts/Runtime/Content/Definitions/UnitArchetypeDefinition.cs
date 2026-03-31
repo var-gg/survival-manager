@@ -21,6 +21,9 @@ public sealed class UnitArchetypeDefinition : ScriptableObject
     public string RoleFamilyTag = string.Empty;
     public string PrimaryWeaponFamilyTag = string.Empty;
     public List<StableTagDefinition> SupportModifierBiasTags = new();
+    public FootprintProfileDefinition FootprintProfile;
+    public BehaviorProfileDefinition BehaviorProfile;
+    public MobilityProfileDefinition MobilityProfile;
     public float BaseMaxHealth = 20f;
     public float BaseArmor = 2f;
     public float BaseResist = 0f;

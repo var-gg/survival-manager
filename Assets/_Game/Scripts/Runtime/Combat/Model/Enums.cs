@@ -9,7 +9,24 @@ public enum TargetSelectorType { Self = 0, LowestHpAlly = 1, FirstEnemyInRange =
 public enum SkillKind { Strike = 0, Heal = 1, Shield = 2, Buff = 3, Debuff = 4, Utility = 5 }
 public enum SkillDelivery { Melee = 0, Ranged = 1, Projectile = 2, Nova = 3, Aura = 4, Trap = 5, Zone = 6 }
 public enum SkillTargetRule { NearestEnemy = 0, LowestHpEnemy = 1, MostExposedEnemy = 2, LowestHpAlly = 3, ProtectedAlly = 4, Self = 5, MarkedTarget = 6 }
-public enum CombatActionState { Spawn = 0, AdvanceToAnchor = 1, SeekTarget = 2, MoveToEngage = 3, Windup = 4, Recovery = 5, Reposition = 6, Retreat = 7, Dead = 8 }
+public enum CombatActionState
+{
+    Spawn = 0,
+    AdvanceToAnchor = 1,
+    AcquireTarget = 2,
+    Approach = 3,
+    ExecuteAction = 4,
+    Recover = 5,
+    Reposition = 6,
+    BreakContact = 7,
+    Dead = 8,
+    SecurePosition = 9,
+    SeekTarget = AcquireTarget,
+    MoveToEngage = Approach,
+    Windup = ExecuteAction,
+    Recovery = Recover,
+    Retreat = BreakContact,
+}
 public enum TeamPostureType { HoldLine = 0, StandardAdvance = 1, ProtectCarry = 2, CollapseWeakSide = 3, AllInBackline = 4 }
 
 public static class DeploymentAnchorIdExtensions

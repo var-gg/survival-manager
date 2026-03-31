@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: behavior_mystic
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:BehaviorProfileDefinition
+  ReevaluationInterval: 0.28
+  RangeHysteresis: 0.3
+  RetreatBias: 0.68
+  MaintainRangeBias: 0.78
+  Opportunism: 0.5
+  Discipline: 0.84
+  DodgeChance: 0.06
+  BlockChance: 0.06
+  BlockMitigation: 0.18
+  Stability: 0.45
+  BlockCooldownSeconds: 1.35

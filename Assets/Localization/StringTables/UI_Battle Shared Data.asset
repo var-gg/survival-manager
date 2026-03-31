@@ -14,7 +14,143 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: UI_Battle
   m_TableCollectionNameGuidString: c6c85f816235cb6448507b324adbc5fb
-  m_Entries: []
+  m_Entries:
+  - m_Id: 901000001
+    m_Key: ui.battle.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000002
+    m_Key: ui.battle.hp.allies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000003
+    m_Key: ui.battle.hp.enemies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000004
+    m_Key: ui.battle.log.preparing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000005
+    m_Key: ui.battle.result.in_progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000006
+    m_Key: ui.battle.result.victory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000007
+    m_Key: ui.battle.result.defeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000008
+    m_Key: ui.battle.speed.active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000009
+    m_Key: ui.battle.speed.paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000010
+    m_Key: ui.battle.status.initializing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000011
+    m_Key: ui.battle.status.paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000012
+    m_Key: ui.battle.status.resumed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000013
+    m_Key: ui.battle.status.pause_suffix
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000014
+    m_Key: ui.battle.status.finished
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000015
+    m_Key: ui.battle.status.resolved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000016
+    m_Key: ui.battle.status.last_event
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000017
+    m_Key: ui.battle.status.windup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000018
+    m_Key: ui.battle.status.posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000019
+    m_Key: ui.battle.error.no_allies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000020
+    m_Key: ui.battle.settings.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000021
+    m_Key: ui.battle.settings.closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000022
+    m_Key: ui.battle.settings.state_changed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000023
+    m_Key: ui.battle.settings.world_hp_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000024
+    m_Key: ui.battle.settings.overlay_hp_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000025
+    m_Key: ui.battle.settings.overhead_ui_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000026
+    m_Key: ui.battle.settings.damage_text_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000027
+    m_Key: ui.battle.settings.debug_overlay_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000028
+    m_Key: ui.battle.settings.team_summary_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000029
+    m_Key: ui.battle.settings.world_hp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000030
+    m_Key: ui.battle.settings.overlay_hp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000031
+    m_Key: ui.battle.settings.overhead_ui
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000032
+    m_Key: ui.battle.settings.damage_text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000033
+    m_Key: ui.battle.settings.debug_overlay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000034
+    m_Key: ui.battle.settings.team_summary
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

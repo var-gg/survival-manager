@@ -16,7 +16,7 @@ public sealed class BattlePresentationController : MonoBehaviour
 
     public bool IsPaused { get; private set; }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (_camera == null)
         {

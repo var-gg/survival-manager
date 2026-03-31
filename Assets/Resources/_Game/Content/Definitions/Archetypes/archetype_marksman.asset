@@ -15,9 +15,9 @@ MonoBehaviour:
   Id: marksman
   NameKey: content.archetype.marksman.name
   ScopeKind: 0
-  Race: {fileID: 11400000, guid: 40397d4c74bfc1540a9b6b77e3418712, type: 2}
-  Class: {fileID: 11400000, guid: 9f586812c5ec3d94586eb6362c6288fb, type: 2}
-  TraitPool: {fileID: 11400000, guid: 020172dcb3c1c6d45988dc465f31bd1c, type: 2}
+  Race: {fileID: 0}
+  Class: {fileID: 0}
+  TraitPool: {fileID: 0}
   Skills:
   - {fileID: 11400000, guid: 30c4bf5fea4053d488afb667468e8c8d, type: 2}
   - {fileID: 11400000, guid: 69c477993ea28ef468d3e94c76aa4d74, type: 2}
@@ -50,6 +50,9 @@ MonoBehaviour:
   SupportModifierBiasTags:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
+  FootprintProfile: {fileID: 0}
+  BehaviorProfile: {fileID: 0}
+  MobilityProfile: {fileID: 0}
   BaseMaxHealth: 18
   BaseArmor: 2.1
   BaseResist: 0.4

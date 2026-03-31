@@ -33,6 +33,11 @@
 - `combat/authoritative-replay-and-ledger.md`: authoritative replay와 전투 원장 기준
 - `combat/stat-system-and-power-budget.md`: stat v2와 파워 예산 기준
 - `combat/combat-readability.md`: 전투 가독성 예산과 표시 기준
+- `combat/battle-presentation-contract.md`: overhead UI, nameplate, damage text 기준
+- `combat/combat-spatial-contract.md`: footprint, separation, slotting 기준
+- `combat/combat-behavior-contract.md`: phase, reevaluation, range discipline 기준
+- `combat/mobility-contract.md`: dash/roll/blink 공통 schema 기준
+- `combat/combat-mechanics-glossary.md`: crit/dodge/block/armor/stability 정의
 - `combat/hero-traits.md`: recruit trait/quirk와 token 정책
 - `combat/synergy-system.md`: race/class synergy 설계
 

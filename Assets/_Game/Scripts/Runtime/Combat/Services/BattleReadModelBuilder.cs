@@ -38,7 +38,14 @@ public static class BattleReadModelBuilder
                     unit.CooldownRemaining,
                     unit.IsDefending,
                     unit.Barrier,
-                    unit.Statuses.Select(status => status.StatusId).ToList());
+                    unit.Statuses.Select(status => status.StatusId).ToList(),
+                    unit.HeadAnchorHeight,
+                    unit.NavigationRadius,
+                    unit.SeparationRadius,
+                    unit.PreferredRangeBand.ClampedMin,
+                    unit.PreferredRangeBand.ClampedMax,
+                    unit.Footprint.EngagementSlotRadius,
+                    unit.Footprint.EngagementSlotCount);
             })
             .ToList();
 

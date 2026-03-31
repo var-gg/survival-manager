@@ -7,13 +7,23 @@ namespace SM.Combat.Services;
 
 public static class MovementResolver
 {
-    private const float SameTeamSpacing = 0.7f;
     private const float ArenaHalfWidth = 8f;
     private const float ArenaHalfHeight = 3.2f;
 
+    public static float ComputeEdgeDistance(UnitSnapshot actor, UnitSnapshot target)
+    {
+        var centerDistance = actor.Position.DistanceTo(target.Position);
+        return Math.Max(0f, centerDistance - actor.NavigationRadius - target.NavigationRadius);
+    }
+
     public static bool IsInActionRange(UnitSnapshot actor, UnitSnapshot target, float desiredRange)
     {
-        return actor.Position.DistanceTo(target.Position) <= desiredRange + 0.05f;
+        return ComputeEdgeDistance(actor, target) <= desiredRange + 0.05f;
+    }
+
+    public static bool IsWithinRangeBand(UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand, float hysteresis)
+    {
+        return rangeBand.Contains(ComputeEdgeDistance(actor, target), hysteresis);
     }
 
     public static CombatVector2 ResolveHomePosition(BattleState state, UnitSnapshot actor)
@@ -39,6 +49,60 @@ public static class MovementResolver
         return actor.AnchorPosition + new CombatVector2(xOffset, yOffset);
     }
 
+    public static MobilityDecision? BuildMobilityDecision(UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
+    {
+        if (actor.Mobility is not { IsEnabled: true } mobility)
+        {
+            return null;
+        }
+
+        var distance = ComputeEdgeDistance(actor, target);
+        if (!actor.CanUseMobility(distance))
+        {
+            return null;
+        }
+
+        var toTarget = (target.Position - actor.Position).Normalized;
+        if (toTarget.SqrLength <= 0.0001f)
+        {
+            toTarget = actor.Side == TeamSide.Ally
+                ? new CombatVector2(1f, 0f)
+                : new CombatVector2(-1f, 0f);
+        }
+
+        switch (mobility.Purpose)
+        {
+            case MobilityPurpose.Disengage:
+            case MobilityPurpose.Evade:
+            case MobilityPurpose.MaintainRange:
+                if (distance >= rangeBand.ClampedMin - (actor.Behavior.RangeHysteresis * 0.35f))
+                {
+                    return null;
+                }
+
+                var away = actor.Position - target.Position;
+                var awayDirection = away.SqrLength <= 0.0001f
+                    ? (actor.Side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f))
+                    : away.Normalized;
+                var lateral = new CombatVector2(-awayDirection.Y, awayDirection.X) * mobility.LateralBias;
+                var escapeDirection = (awayDirection + lateral).Normalized;
+                var escapeDestination = actor.Position + (escapeDirection * mobility.Distance);
+                return new MobilityDecision(mobility, escapeDestination);
+
+            case MobilityPurpose.Engage:
+            case MobilityPurpose.Chase:
+                if (distance <= rangeBand.ClampedMax + actor.Behavior.RangeHysteresis)
+                {
+                    return null;
+                }
+
+                return new MobilityDecision(mobility, actor.Position + (toTarget * mobility.Distance));
+
+            default:
+                return null;
+        }
+    }
+
     public static void MoveForIntent(BattleState state, UnitSnapshot actor, EvaluatedAction evaluated)
     {
         if (evaluated.ActionType == BattleActionType.WaitDefend || evaluated.Target == null)
@@ -48,32 +112,73 @@ public static class MovementResolver
         }
 
         actor.StopDefending();
+        actor.SetEngagementSlot(evaluated.SlotAssignment);
 
         var target = evaluated.Target;
-        var desiredRange = evaluated.DesiredRange;
-        var directionToTarget = (target.Position - actor.Position).Normalized;
-        if (directionToTarget.SqrLength <= 0.0001f)
+        if (evaluated.Mobility != null)
         {
-            directionToTarget = actor.Side == TeamSide.Ally ? new CombatVector2(1f, 0f) : new CombatVector2(-1f, 0f);
-        }
-
-        var desiredPosition = target.Position - (directionToTarget * desiredRange);
-        var currentDistance = actor.Position.DistanceTo(target.Position);
-        var shouldRetreat = desiredRange > 1.6f && currentDistance < desiredRange * 0.65f;
-        if (shouldRetreat)
-        {
-            desiredPosition = actor.Position - directionToTarget;
-            MoveTowards(state, actor, desiredPosition, CombatActionState.Retreat);
+            var mobileDestination = ClampToArena(ClampToLeash(state, actor, evaluated.Mobility.Destination));
+            actor.SetPosition(mobileDestination);
+            actor.StartMobilityCooldown();
+            actor.SetActionState(evaluated.DesiredPhase);
             return;
         }
 
-        MoveTowards(state, actor, desiredPosition, CombatActionState.MoveToEngage);
+        var currentDistance = ComputeEdgeDistance(actor, target);
+        var rangeBand = evaluated.DesiredRangeBand;
+        var hysteresis = actor.Behavior.RangeHysteresis;
+
+        if (currentDistance < rangeBand.ClampedMin - hysteresis)
+        {
+            var away = actor.Position - target.Position;
+            var awayDirection = away.SqrLength <= 0.0001f
+                ? (actor.Side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f))
+                : away.Normalized;
+            var retreatOffset = Math.Max(0.35f, (rangeBand.ClampedMin - currentDistance) + 0.2f);
+            MoveTowards(state, actor, actor.Position + (awayDirection * retreatOffset), CombatActionState.BreakContact);
+            return;
+        }
+
+        if (evaluated.SlotAssignment is { } slotAssignment)
+        {
+            var slotDistance = actor.Position.DistanceTo(slotAssignment.Position);
+            if (slotDistance > Math.Max(0.15f, actor.SeparationRadius * 0.35f))
+            {
+                MoveTowards(
+                    state,
+                    actor,
+                    slotAssignment.Position,
+                    slotAssignment.IsOverflow ? CombatActionState.SecurePosition : CombatActionState.Approach);
+                return;
+            }
+        }
+
+        if (currentDistance > rangeBand.ClampedMax + hysteresis)
+        {
+            var desiredPosition = ResolveDesiredPosition(actor, target, rangeBand);
+            MoveTowards(state, actor, desiredPosition, evaluated.SlotAssignment != null ? CombatActionState.SecurePosition : CombatActionState.Approach);
+            return;
+        }
+
+        actor.SetActionState(evaluated.DesiredPhase);
     }
 
     public static void ResolveFormationSpacing(BattleState state)
     {
         ResolveTeamSpacing(state.Allies);
         ResolveTeamSpacing(state.Enemies);
+    }
+
+    private static CombatVector2 ResolveDesiredPosition(UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
+    {
+        var directionToTarget = (target.Position - actor.Position).Normalized;
+        if (directionToTarget.SqrLength <= 0.0001f)
+        {
+            directionToTarget = actor.Side == TeamSide.Ally ? new CombatVector2(1f, 0f) : new CombatVector2(-1f, 0f);
+        }
+
+        var centerDistance = rangeBand.Midpoint + actor.NavigationRadius + target.NavigationRadius;
+        return target.Position - (directionToTarget * centerDistance);
     }
 
     private static void ResolveTeamSpacing(IReadOnlyList<UnitSnapshot> team)
@@ -94,23 +199,30 @@ public static class MovementResolver
                     continue;
                 }
 
+                var minSeparation = left.SeparationRadius + right.SeparationRadius;
                 var delta = right.Position - left.Position;
                 var distance = delta.Length;
-                if (distance <= 0.0001f || distance >= SameTeamSpacing)
+                if (distance <= 0.0001f || distance >= minSeparation)
                 {
                     continue;
                 }
 
-                var push = (SameTeamSpacing - distance) * 0.5f;
+                var push = (minSeparation - distance) * 0.5f;
                 var direction = delta.Normalized;
-                left.SetPosition(left.Position - (direction * push));
-                right.SetPosition(right.Position + (direction * push));
+                left.SetPosition(ClampToArena(left.Position - (direction * push)));
+                right.SetPosition(ClampToArena(right.Position + (direction * push)));
             }
         }
     }
 
     private static void MoveTowards(BattleState state, UnitSnapshot actor, CombatVector2 targetPosition, CombatActionState actionState)
     {
+        if (actor.IsRooted)
+        {
+            actor.SetActionState(actionState);
+            return;
+        }
+
         var stepDistance = Math.Max(0.01f, actor.MoveSpeed * state.FixedStepSeconds);
         var next = CombatVector2.MoveTowards(actor.Position, targetPosition, stepDistance);
         next = ClampToLeash(state, actor, next);

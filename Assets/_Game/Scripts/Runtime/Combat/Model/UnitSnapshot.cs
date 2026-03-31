@@ -8,6 +8,8 @@ namespace SM.Combat.Model;
 
 public sealed class UnitSnapshot
 {
+    private readonly List<AppliedStatusState> _statuses = new();
+
     public UnitSnapshot(
         EntityId id,
         TeamSide side,
@@ -25,10 +27,17 @@ public sealed class UnitSnapshot
 
         var modifiers = definition.Packages?.SelectMany(x => x.Modifiers).ToList() ?? new List<StatModifier>();
         Stats = new StatBlock(new Dictionary<StatKey, float>(definition.BaseStats), modifiers);
+        Footprint = CombatProfileDefaults.ResolveFootprint(
+            definition.Footprint,
+            definition.ClassId,
+            Math.Max(0.5f, Stats.Get(StatKey.AttackRange)),
+            Math.Max(0.1f, Stats.Get(StatKey.CollisionRadius)),
+            Math.Max(1f, Stats.Get(StatKey.MaxHealth)));
+        Behavior = CombatProfileDefaults.ResolveBehavior(definition.Behavior, definition.ClassId);
+        Mobility = CombatProfileDefaults.ResolveMobility(definition.Mobility, definition.ClassId);
         CurrentHealth = MaxHealth;
+        RequestReevaluation(ReevaluationReason.Cadence);
     }
-
-    private readonly List<AppliedStatusState> _statuses = new();
 
     public EntityId Id { get; }
     public TeamSide Side { get; }
@@ -37,6 +46,9 @@ public sealed class UnitSnapshot
     public CombatVector2 AnchorPosition { get; }
     public CombatVector2 Position { get; private set; }
     public StatBlock Stats { get; }
+    public FootprintProfile Footprint { get; }
+    public BehaviorProfile Behavior { get; }
+    public MobilityActionProfile? Mobility { get; }
     public CombatActionState ActionState { get; private set; }
     public EntityId? CurrentTargetId { get; private set; }
     public EntityId? PendingTargetId { get; private set; }
@@ -46,12 +58,18 @@ public sealed class UnitSnapshot
     public float ActionTimerTotal { get; private set; }
     public float CooldownRemaining { get; private set; }
     public float TargetSwitchLockRemaining { get; private set; }
+    public float ReevaluationRemaining { get; private set; }
+    public ReevaluationReason PendingReevaluationReason { get; private set; }
+    public float MobilityCooldownRemaining { get; private set; }
+    public float BlockCooldownRemaining { get; private set; }
     public float CurrentHealth { get; private set; }
     public float Barrier { get; private set; }
     public IReadOnlyList<AppliedStatusState> Statuses => _statuses;
     public ControlResistWindowState? ControlResistWindow { get; private set; }
+    public EngagementSlotAssignment? EngagementSlot { get; private set; }
     public bool IsAlive => CurrentHealth > 0f;
     public bool IsDefending { get; private set; }
+    public bool NeedsReevaluation => PendingReevaluationReason != ReevaluationReason.None || ReevaluationRemaining <= 0f;
     public float MaxHealth => Stats.Get(StatKey.MaxHealth);
     public float Armor => Math.Max(0f, Stats.Get(StatKey.Armor) - GetStatusMagnitude("sunder"));
     public float Resist => Math.Max(0f, Stats.Get(StatKey.Resist) - GetStatusMagnitude("sunder"));
@@ -66,12 +84,19 @@ public sealed class UnitSnapshot
     public float ManaGainOnHit => Stats.Get(StatKey.ManaGainOnHit);
     public float CooldownRecovery => Stats.Get(StatKey.CooldownRecovery);
     public float AggroRadius => Math.Max(AttackRange, Stats.Get(StatKey.AggroRadius));
-    public float PreferredDistance => Math.Max(0f, Definition.PreferredDistance > 0f ? Definition.PreferredDistance : Stats.Get(StatKey.PreferredDistance));
+    public FloatRange PreferredRangeBand => Footprint.PreferredRangeBand;
+    public float PreferredDistance => Definition.PreferredDistance > 0f
+        ? Definition.PreferredDistance
+        : Footprint.PreferredRangeBand.Midpoint;
     public float ProtectRadius => Math.Max(0f, Definition.ProtectRadius > 0f ? Definition.ProtectRadius : Stats.Get(StatKey.ProtectRadius));
     public float AttackWindup => Math.Max(0.05f, Stats.Get(StatKey.AttackWindup));
     public float CastWindup => Math.Max(0.05f, Stats.Get(StatKey.CastWindup));
     public float ProjectileSpeed => Math.Max(0f, Stats.Get(StatKey.ProjectileSpeed));
     public float CollisionRadius => Math.Max(0.1f, Stats.Get(StatKey.CollisionRadius));
+    public float NavigationRadius => Footprint.NavigationRadius;
+    public float SeparationRadius => Footprint.SeparationRadius;
+    public float CombatReach => Footprint.CombatReach;
+    public float HeadAnchorHeight => Footprint.HeadAnchorHeight;
     public float RepositionCooldown => Math.Max(0f, Stats.Get(StatKey.RepositionCooldown));
     public float AttackCooldown => Math.Max(0.1f, Stats.Get(StatKey.AttackCooldown));
     public float LeashDistance => Math.Max(0.5f, Stats.Get(StatKey.LeashDistance));
@@ -86,7 +111,7 @@ public sealed class UnitSnapshot
     public bool IsSlowed => HasStatus("slow");
     public bool IsUnstoppable => HasStatus("unstoppable");
     public bool IsGuarded => HasStatus("guarded") || IsDefending;
-    public float WindupProgress => ActionState == CombatActionState.Windup && ActionTimerTotal > 0f
+    public float WindupProgress => ActionState == CombatActionState.ExecuteAction && ActionTimerTotal > 0f
         ? 1f - (ActionTimerRemaining / ActionTimerTotal)
         : 0f;
 
@@ -97,14 +122,39 @@ public sealed class UnitSnapshot
             ActionTimerRemaining = Math.Max(0f, ActionTimerRemaining - deltaSeconds);
         }
 
+        var previousCooldown = CooldownRemaining;
         if (CooldownRemaining > 0f)
         {
             CooldownRemaining = Math.Max(0f, CooldownRemaining - deltaSeconds);
+            if (previousCooldown > 0f && CooldownRemaining <= 0f)
+            {
+                RequestReevaluation(ReevaluationReason.SkillReady);
+            }
+        }
+
+        var previousMobilityCooldown = MobilityCooldownRemaining;
+        if (MobilityCooldownRemaining > 0f)
+        {
+            MobilityCooldownRemaining = Math.Max(0f, MobilityCooldownRemaining - deltaSeconds);
+            if (previousMobilityCooldown > 0f && MobilityCooldownRemaining <= 0f && Mobility is { IsEnabled: true })
+            {
+                RequestReevaluation(ReevaluationReason.MobilityReady);
+            }
+        }
+
+        if (BlockCooldownRemaining > 0f)
+        {
+            BlockCooldownRemaining = Math.Max(0f, BlockCooldownRemaining - deltaSeconds);
         }
 
         if (TargetSwitchLockRemaining > 0f)
         {
             TargetSwitchLockRemaining = Math.Max(0f, TargetSwitchLockRemaining - deltaSeconds);
+        }
+
+        if (ReevaluationRemaining > 0f)
+        {
+            ReevaluationRemaining = Math.Max(0f, ReevaluationRemaining - deltaSeconds);
         }
 
         if (ControlResistWindow is { } controlResist)
@@ -114,7 +164,6 @@ public sealed class UnitSnapshot
                 ? controlResist with { RemainingSeconds = remaining }
                 : null;
         }
-
     }
 
     public void SetPosition(CombatVector2 position)
@@ -134,16 +183,23 @@ public sealed class UnitSnapshot
 
     public void ClearTarget(bool applySwitchDelay)
     {
+        var hadTarget = CurrentTargetId != null || PendingTargetId != null;
         CurrentTargetId = null;
         PendingTargetId = null;
         PendingActionType = null;
         PendingSkillId = null;
         ActionTimerRemaining = 0f;
         ActionTimerTotal = 0f;
+        EngagementSlot = null;
 
         if (applySwitchDelay)
         {
             TargetSwitchLockRemaining = Math.Max(TargetSwitchLockRemaining, TargetSwitchDelay);
+        }
+
+        if (hadTarget)
+        {
+            RequestReevaluation(ReevaluationReason.TargetLost);
         }
     }
 
@@ -158,7 +214,7 @@ public sealed class UnitSnapshot
         PendingSkillId = skillId;
         ActionTimerRemaining = windupSeconds;
         ActionTimerTotal = windupSeconds;
-        ActionState = CombatActionState.Windup;
+        ActionState = CombatActionState.ExecuteAction;
         IsDefending = false;
     }
 
@@ -172,7 +228,7 @@ public sealed class UnitSnapshot
     {
         FinishWindup();
         CooldownRemaining = cooldownSeconds ?? AttackCooldown;
-        ActionState = CombatActionState.Recovery;
+        ActionState = CombatActionState.Recover;
         IsDefending = false;
     }
 
@@ -192,7 +248,7 @@ public sealed class UnitSnapshot
         IsDefending = false;
         if (ActionState == CombatActionState.Reposition)
         {
-            ActionState = CombatActionState.SeekTarget;
+            ActionState = CombatActionState.AcquireTarget;
         }
     }
 
@@ -209,7 +265,10 @@ public sealed class UnitSnapshot
         if (CurrentHealth <= 0f)
         {
             MarkDead();
+            return;
         }
+
+        RequestReevaluation(ReevaluationReason.TookHit);
     }
 
     public void Heal(float amount)
@@ -325,6 +384,62 @@ public sealed class UnitSnapshot
             : AttackCooldown;
     }
 
+    public void SetEngagementSlot(EngagementSlotAssignment? slot)
+    {
+        var changed = EngagementSlot?.TargetId != slot?.TargetId
+                      || EngagementSlot?.SlotIndex != slot?.SlotIndex
+                      || EngagementSlot?.IsOverflow != slot?.IsOverflow;
+        EngagementSlot = slot;
+        if (changed)
+        {
+            RequestReevaluation(slot == null ? ReevaluationReason.SlotLost : ReevaluationReason.Cadence);
+        }
+    }
+
+    public bool CanUseMobility(float distanceToThreat)
+    {
+        return Mobility is { IsEnabled: true } mobility
+               && MobilityCooldownRemaining <= 0f
+               && distanceToThreat >= mobility.TriggerMinDistance
+               && distanceToThreat <= Math.Max(mobility.TriggerMinDistance, mobility.TriggerMaxDistance);
+    }
+
+    public void StartMobilityCooldown()
+    {
+        if (Mobility is { } mobility)
+        {
+            MobilityCooldownRemaining = Math.Max(0f, mobility.Cooldown);
+        }
+    }
+
+    public bool CanAttemptBlock => BlockCooldownRemaining <= 0f && Behavior.BlockChance > 0f && !IsStunned;
+
+    public void TriggerBlockCooldown()
+    {
+        BlockCooldownRemaining = Math.Max(0f, Behavior.BlockCooldownSeconds);
+    }
+
+    public void RequestReevaluation(ReevaluationReason reason)
+    {
+        if (reason == ReevaluationReason.None)
+        {
+            return;
+        }
+
+        if (PendingReevaluationReason == ReevaluationReason.None || reason != ReevaluationReason.Cadence)
+        {
+            PendingReevaluationReason = reason;
+        }
+
+        ReevaluationRemaining = 0f;
+    }
+
+    public void ConsumeReevaluation()
+    {
+        PendingReevaluationReason = ReevaluationReason.None;
+        ReevaluationRemaining = Math.Max(0.1f, Behavior.ReevaluationInterval);
+    }
+
     private void MarkDead()
     {
         CurrentHealth = 0f;
@@ -332,9 +447,12 @@ public sealed class UnitSnapshot
         IsDefending = false;
         ClearTarget(applySwitchDelay: false);
         CooldownRemaining = 0f;
+        MobilityCooldownRemaining = 0f;
+        BlockCooldownRemaining = 0f;
         ActionState = CombatActionState.Dead;
         _statuses.Clear();
         ControlResistWindow = null;
+        EngagementSlot = null;
     }
 
     private float GetHealingTakenMultiplier()

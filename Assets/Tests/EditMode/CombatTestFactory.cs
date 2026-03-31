@@ -24,8 +24,12 @@ internal static class CombatTestFactory
         float attackCooldown = 0.6f,
         float leashDistance = 6f,
         float targetSwitchDelay = 0.3f,
+        float preferredDistance = 0f,
         IReadOnlyList<TacticRule>? tactics = null,
-        IReadOnlyList<BattleSkillSpec>? skills = null)
+        IReadOnlyList<BattleSkillSpec>? skills = null,
+        FootprintProfile? footprint = null,
+        BehaviorProfile? behavior = null,
+        MobilityActionProfile? mobility = null)
     {
         return new BattleUnitLoadout(
             id,
@@ -58,7 +62,11 @@ internal static class CombatTestFactory
                         new TacticRule(1, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
                     })
             },
-            skills ?? new BattleSkillSpec[0]);
+            skills ?? new BattleSkillSpec[0],
+            Footprint: footprint,
+            Behavior: behavior,
+            Mobility: mobility,
+            PreferredDistance: preferredDistance);
     }
 
     public static BattleState CreateBattleState(

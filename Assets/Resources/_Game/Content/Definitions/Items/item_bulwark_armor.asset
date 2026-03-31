@@ -30,7 +30,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
   RuleModifierTags: []
   AllowedClassTags:
-  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
+  - {fileID: 0}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
   AllowedCraftOperations: 00000000010000000200000004000000

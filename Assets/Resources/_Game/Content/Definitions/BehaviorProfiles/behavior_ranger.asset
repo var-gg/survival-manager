@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: behavior_ranger
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:BehaviorProfileDefinition
+  ReevaluationInterval: 0.24
+  RangeHysteresis: 0.28
+  RetreatBias: 0.72
+  MaintainRangeBias: 0.84
+  Opportunism: 0.58
+  Discipline: 0.74
+  DodgeChance: 0.12
+  BlockChance: 0.04
+  BlockMitigation: 0.12
+  Stability: 0.34
+  BlockCooldownSeconds: 1.5

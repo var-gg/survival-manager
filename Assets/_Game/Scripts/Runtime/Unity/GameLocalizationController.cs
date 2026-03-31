@@ -11,6 +11,8 @@ namespace SM.Unity;
 
 public sealed class GameLocalizationController : MonoBehaviour
 {
+    private readonly HashSet<string> _reportedMissingKeys = new(StringComparer.Ordinal);
+
     public event Action<Locale>? LocaleChanged;
 
     public bool IsInitialized { get; private set; }
@@ -73,9 +75,11 @@ public sealed class GameLocalizationController : MonoBehaviour
             return localized;
         }
 
-        if (!allowFallback)
+        ReportMissingKey(tableCollection, entryKey);
+
+        if (!allowFallback && string.IsNullOrWhiteSpace(fallback))
         {
-            return BuildMissingPlayerFacingString(tableCollection, entryKey);
+            return BuildMissingPlayerFacingString();
         }
 
         if (arguments.Length == 0)
@@ -131,6 +135,22 @@ public sealed class GameLocalizationController : MonoBehaviour
         FirstPlayableRuntimeSceneBinder.RefreshLocalizedBindings(SceneManager.GetActiveScene());
     }
 
+    public void ReportMissingKey(string tableCollection, string entryKey)
+    {
+        if (!IsDevelopmentFallbackContext)
+        {
+            return;
+        }
+
+        var dedupeKey = $"{tableCollection}:{entryKey}";
+        if (!_reportedMissingKeys.Add(dedupeKey))
+        {
+            return;
+        }
+
+        Debug.LogWarning($"[Localization] Missing localized entry '{dedupeKey}'. Player-facing UI is using fallback text.");
+    }
+
     private void OnDestroy()
     {
         LocalizationSettings.SelectedLocaleChanged -= HandleSelectedLocaleChanged;
@@ -142,13 +162,8 @@ public sealed class GameLocalizationController : MonoBehaviour
         LocaleChanged?.Invoke(locale);
     }
 
-    private static string BuildMissingPlayerFacingString(string tableCollection, string entryKey)
+    private static string BuildMissingPlayerFacingString()
     {
-        if (string.IsNullOrWhiteSpace(tableCollection) && string.IsNullOrWhiteSpace(entryKey))
-        {
-            return "[missing-localization]";
-        }
-
-        return $"[missing:{tableCollection}:{entryKey}]";
+        return "[missing-localization]";
     }
 }

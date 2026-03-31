@@ -6,6 +6,8 @@
 - 소스오브트루스: `docs/03_architecture/combat-state-and-event-model.md`
 - 관련문서:
   - `docs/03_architecture/combat-runtime-architecture.md`
+  - `docs/02_design/combat/combat-behavior-contract.md`
+  - `docs/02_design/combat/combat-mechanics-glossary.md`
   - `docs/03_architecture/status-runtime-stack-and-cleanse-rules.md`
   - `docs/02_design/combat/realtime-simulation-model.md`
   - `docs/04_decisions/adr-0006-combat-sim-boundary.md`
@@ -32,7 +34,10 @@
   - `CombatActionState ActionState`
   - `CurrentTargetId`
   - pending action / pending skill
-  - cooldown, windup, switch-lock timer
+  - cooldown, execute-action timer, switch-lock timer
+  - footprint / behavior / mobility profile
+  - reevaluation timer, mobility cooldown, block cooldown
+  - engagement slot assignment
   - current health와 alive/dead 상태
   - `AppliedStatusState`
   - barrier, control resist window
@@ -61,6 +66,7 @@
   - windup progress
   - cooldown remaining
   - defending 여부
+  - head anchor, navigation/separation, preferred range, slot ring preview 값
   - 주요 status와 barrier 요약
 
 ## 이벤트 규칙

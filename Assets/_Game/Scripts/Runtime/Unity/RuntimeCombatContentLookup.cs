@@ -838,12 +838,146 @@ public sealed class RuntimeCombatContentLookup
                 .Select(BuildSkillSpec)
                 .ToList(),
             string.IsNullOrWhiteSpace(definition.RoleTag) ? "auto" : definition.RoleTag,
+            BuildFootprintProfile(definition),
+            BuildBehaviorProfile(definition),
+            BuildMobilityProfile(definition),
             PreferPrimaryOrFallback(definition.BasePreferredDistance, definition.BaseAttackRange),
             definition.BaseProtectRadius,
             new ManaEnvelope(
                 definition.BaseManaMax,
                 definition.BaseManaGainOnAttack,
                 definition.BaseManaGainOnHit));
+    }
+
+    private static FootprintProfile BuildFootprintProfile(UnitArchetypeDefinition definition)
+    {
+        if (definition.FootprintProfile != null)
+        {
+            return new FootprintProfile(
+                Mathf.Max(0.15f, definition.FootprintProfile.NavigationRadius),
+                Mathf.Max(0.2f, definition.FootprintProfile.SeparationRadius),
+                Mathf.Max(0.4f, definition.FootprintProfile.CombatReach),
+                new FloatRange(
+                    Mathf.Max(0f, definition.FootprintProfile.PreferredRangeMin),
+                    Mathf.Max(definition.FootprintProfile.PreferredRangeMin, definition.FootprintProfile.PreferredRangeMax)),
+                Mathf.Max(1, definition.FootprintProfile.EngagementSlotCount),
+                Mathf.Max(0.4f, definition.FootprintProfile.EngagementSlotRadius),
+                (BodySizeCategory)definition.FootprintProfile.BodySizeCategory,
+                Mathf.Max(1.1f, definition.FootprintProfile.HeadAnchorHeight));
+        }
+
+        var attackRange = Mathf.Max(0.8f, definition.BaseAttackRange);
+        var collisionRadius = Mathf.Max(0.15f, definition.BaseCollisionRadius);
+        return definition.Class != null ? definition.Class.Id switch
+        {
+            "vanguard" => new FootprintProfile(
+                Mathf.Max(0.45f, collisionRadius + 0.1f),
+                Mathf.Max(0.65f, collisionRadius + 0.22f),
+                Mathf.Min(1.4f, attackRange),
+                new FloatRange(0.9f, 1.25f),
+                5,
+                1.3f,
+                definition.BaseMaxHealth >= 25f || collisionRadius >= 0.55f ? BodySizeCategory.Large : BodySizeCategory.Medium,
+                2.15f),
+            "duelist" => new FootprintProfile(
+                Mathf.Max(0.4f, collisionRadius),
+                Mathf.Max(0.62f, collisionRadius + 0.18f),
+                Mathf.Min(1.3f, attackRange),
+                new FloatRange(0.95f, 1.45f),
+                6,
+                1.3f,
+                BodySizeCategory.Medium,
+                2.0f),
+            "ranger" => new FootprintProfile(
+                Mathf.Max(0.32f, collisionRadius * 0.8f),
+                Mathf.Max(0.72f, collisionRadius + 0.24f),
+                attackRange,
+                new FloatRange(Mathf.Max(2.3f, attackRange - 0.65f), Mathf.Max(2.8f, attackRange + 0.15f)),
+                3,
+                Mathf.Max(1.5f, attackRange * 0.7f),
+                BodySizeCategory.Small,
+                1.92f),
+            "mystic" => new FootprintProfile(
+                Mathf.Max(0.32f, collisionRadius * 0.8f),
+                Mathf.Max(0.76f, collisionRadius + 0.28f),
+                attackRange,
+                new FloatRange(Mathf.Max(2.1f, attackRange - 0.55f), Mathf.Max(2.7f, attackRange + 0.2f)),
+                3,
+                Mathf.Max(1.45f, attackRange * 0.68f),
+                BodySizeCategory.Small,
+                1.96f),
+            _ => new FootprintProfile(
+                Mathf.Max(0.4f, collisionRadius),
+                Mathf.Max(0.64f, collisionRadius + 0.2f),
+                Mathf.Min(1.3f, attackRange),
+                new FloatRange(Mathf.Max(0.9f, attackRange - 0.2f), attackRange),
+                4,
+                1.2f,
+                BodySizeCategory.Medium,
+                2f),
+        } : new FootprintProfile(
+            Mathf.Max(0.4f, collisionRadius),
+            Mathf.Max(0.64f, collisionRadius + 0.2f),
+            Mathf.Min(1.3f, attackRange),
+            new FloatRange(Mathf.Max(0.9f, attackRange - 0.2f), attackRange),
+            4,
+            1.2f,
+            BodySizeCategory.Medium,
+            2f);
+    }
+
+    private static BehaviorProfile BuildBehaviorProfile(UnitArchetypeDefinition definition)
+    {
+        if (definition.BehaviorProfile != null)
+        {
+            return new BehaviorProfile(
+                Mathf.Max(0.1f, definition.BehaviorProfile.ReevaluationInterval),
+                Mathf.Max(0f, definition.BehaviorProfile.RangeHysteresis),
+                Mathf.Clamp01(definition.BehaviorProfile.RetreatBias),
+                Mathf.Clamp01(definition.BehaviorProfile.MaintainRangeBias),
+                Mathf.Clamp01(definition.BehaviorProfile.Opportunism),
+                Mathf.Clamp01(definition.BehaviorProfile.Discipline),
+                Mathf.Clamp01(definition.BehaviorProfile.DodgeChance),
+                Mathf.Clamp01(definition.BehaviorProfile.BlockChance),
+                Mathf.Clamp(definition.BehaviorProfile.BlockMitigation, 0f, 0.9f),
+                Mathf.Clamp01(definition.BehaviorProfile.Stability),
+                Mathf.Max(0f, definition.BehaviorProfile.BlockCooldownSeconds));
+        }
+
+        return definition.Class != null ? definition.Class.Id switch
+        {
+            "vanguard" => new BehaviorProfile(0.42f, 0.16f, 0.04f, 0.05f, 0.34f, 0.82f, 0.02f, 0.28f, 0.38f, 0.88f, 1f),
+            "duelist" => new BehaviorProfile(0.3f, 0.22f, 0.22f, 0.24f, 0.72f, 0.58f, 0.08f, 0.12f, 0.18f, 0.62f, 1.15f),
+            "ranger" => new BehaviorProfile(0.24f, 0.28f, 0.72f, 0.84f, 0.58f, 0.74f, 0.12f, 0.04f, 0.12f, 0.34f, 1.5f),
+            "mystic" => new BehaviorProfile(0.28f, 0.3f, 0.68f, 0.78f, 0.5f, 0.84f, 0.06f, 0.06f, 0.18f, 0.45f, 1.35f),
+            _ => new BehaviorProfile(0.35f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f),
+        } : new BehaviorProfile(0.35f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f);
+    }
+
+    private static MobilityActionProfile? BuildMobilityProfile(UnitArchetypeDefinition definition)
+    {
+        if (definition.MobilityProfile != null)
+        {
+            return new MobilityActionProfile(
+                (MobilityStyle)definition.MobilityProfile.Style,
+                (MobilityPurpose)definition.MobilityProfile.Purpose,
+                Mathf.Max(0f, definition.MobilityProfile.Distance),
+                Mathf.Max(0f, definition.MobilityProfile.Cooldown),
+                Mathf.Max(0f, definition.MobilityProfile.CastTime),
+                Mathf.Max(0f, definition.MobilityProfile.Recovery),
+                Mathf.Max(0f, definition.MobilityProfile.TriggerMinDistance),
+                Mathf.Max(0f, definition.MobilityProfile.TriggerMaxDistance),
+                Mathf.Clamp(definition.MobilityProfile.LateralBias, -1f, 1f));
+        }
+
+        return definition.Class != null ? definition.Class.Id switch
+        {
+            "vanguard" => new MobilityActionProfile(MobilityStyle.Dash, MobilityPurpose.Engage, 0.9f, 5f, 0f, 0.18f, 1.4f, 2.8f, 0f),
+            "duelist" => new MobilityActionProfile(MobilityStyle.Dash, MobilityPurpose.Engage, 1.15f, 4.2f, 0f, 0.16f, 1.3f, 3f, 0.2f),
+            "ranger" => new MobilityActionProfile(MobilityStyle.Roll, MobilityPurpose.MaintainRange, 1.45f, 3.4f, 0f, 0.22f, 0f, 1.45f, 0.68f),
+            "mystic" => new MobilityActionProfile(MobilityStyle.Blink, MobilityPurpose.Disengage, 1.85f, 4.4f, 0f, 0.3f, 0f, 1.35f, 0.35f),
+            _ => null,
+        } : null;
     }
 
     private IReadOnlyList<SkillDefinitionAsset> ResolveArchetypeSkills(UnitArchetypeDefinition definition)

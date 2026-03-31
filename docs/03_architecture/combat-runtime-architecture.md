@@ -8,6 +8,8 @@
   - `docs/03_architecture/unity-boundaries.md`
   - `docs/03_architecture/combat-state-and-event-model.md`
   - `docs/03_architecture/combat-content-mapping.md`
+  - `docs/02_design/combat/combat-spatial-contract.md`
+  - `docs/02_design/combat/combat-behavior-contract.md`
   - `docs/04_decisions/adr-0006-combat-sim-boundary.md`
   - `docs/04_decisions/adr-0014-grid-deployment-continuous-combat.md`
 
@@ -22,14 +24,16 @@
   - `BattleSimulator`: fixed-step loop를 돌리는 domain orchestrator다.
   - `TacticEvaluator`: rule chain을 평가해 action intent를 만든다.
   - `TargetScoringService`: spatial target score를 계산한다.
-  - `MovementResolver`: home position, engage, retreat, leash, spacing을 계산한다.
+  - `MovementResolver`: home position, slotting, range band, reposition, spacing을 계산한다.
+  - `EngagementSlotService`: target occupancy와 slot ring을 계산한다.
+  - `HitResolutionService`: dodge -> crit -> block -> armor 순서를 소유한다.
   - `CombatActionResolver`: hit, heal, defend event와 수치 변화를 적용한다.
   - `BattleReadModelBuilder`: domain state를 step read model로 변환한다.
 - `SM.Unity`
   - `GameSessionState`: 배치 assignment와 team posture를 session에 유지한다.
   - `BattleScreenController`: simulator를 구동하고 scene flow와 HUD를 연결한다.
   - `BattlePresentationController`: 이전 step과 현재 step을 받아 actor view를 갱신한다.
-  - `BattleActorView`: 위치 보간, HP, target, windup, pulse 같은 presentation만 담당한다.
+  - `BattleActorView`: 위치 보간, head anchor, overhead UI, pulse 같은 presentation만 담당한다.
 
 ## 런타임 흐름
 

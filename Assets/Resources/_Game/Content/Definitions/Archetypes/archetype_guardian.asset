@@ -19,10 +19,7 @@ MonoBehaviour:
   Class: {fileID: 11400000, guid: 2797722ba4364b04ab5a5e375294258b, type: 2}
   TraitPool: {fileID: 11400000, guid: dc9ffa26a6ed9e548ae64351afc17317, type: 2}
   Skills:
-  - {fileID: 11400000, guid: a4bfa3f4cb936c64fb7bef3aaa931b59, type: 2}
-  - {fileID: 11400000, guid: c9597000b38b85d46964a561713062bb, type: 2}
-  - {fileID: 11400000, guid: 503e63056c6cfe84283c55a9afa5d0e8, type: 2}
-  - {fileID: 11400000, guid: 3f09216fe0af34448a6a556b915e1ddf, type: 2}
+  - {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
   TacticPreset:
   - Priority: 0
     ConditionType: 4
@@ -48,6 +45,9 @@ MonoBehaviour:
   RoleFamilyTag: vanguard
   PrimaryWeaponFamilyTag: shield
   SupportModifierBiasTags: []
+  FootprintProfile: {fileID: 11400000, guid: b07c3ef2049972e4ab998768a91f4e02, type: 2}
+  BehaviorProfile: {fileID: 11400000, guid: 07c1e9da8c03c204e9851ccbb5f54987, type: 2}
+  MobilityProfile: {fileID: 11400000, guid: 0d01521760a55c841835084a49d9fb8e, type: 2}
   BaseMaxHealth: 26
   BaseArmor: 4
   BaseResist: 0

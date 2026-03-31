@@ -51,15 +51,15 @@ public sealed class BattleSettingsPanelController : MonoBehaviour
     public void ToggleWorldActorHp()
     {
         if (!EnsureReady()) return;
-        _options.ToggleWorldActorHp();
-        Apply("WorldActorHp", Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.world_hp_label", "Actor HP"));
+        _options.ToggleOverheadUi();
+        Apply("OverheadUi", Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.overhead_ui_label", "Overhead UI"));
     }
 
     public void ToggleOverlayActorHp()
     {
         if (!EnsureReady()) return;
-        _options.ToggleOverlayActorHp();
-        Apply("OverlayActorHp", Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.overlay_hp_label", "Overlay HP"));
+        _options.ToggleDamageText();
+        Apply("DamageText", Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.damage_text_label", "Damage Text"));
     }
 
     public void ToggleTeamSummary()
@@ -80,8 +80,8 @@ public sealed class BattleSettingsPanelController : MonoBehaviour
     {
         var isOn = label switch
         {
-            "WorldActorHp" => _options.ShowWorldActorHp,
-            "OverlayActorHp" => _options.ShowOverlayActorHp,
+            "OverheadUi" => _options.ShowOverheadUi,
+            "DamageText" => _options.ShowDamageText,
             _ => _options.ShowTeamHpSummary
         };
         return isOn
@@ -95,18 +95,18 @@ public sealed class BattleSettingsPanelController : MonoBehaviour
         {
             worldHpButtonLabel.text = Localize(
                 GameLocalizationTables.UIBattle,
-                "ui.battle.settings.world_hp",
-                "Actor HP {0}",
-                BuildStateLabel("WorldActorHp"));
+                "ui.battle.settings.overhead_ui",
+                "Overhead UI {0}",
+                BuildStateLabel("OverheadUi"));
         }
 
         if (overlayHpButtonLabel != null)
         {
             overlayHpButtonLabel.text = Localize(
                 GameLocalizationTables.UIBattle,
-                "ui.battle.settings.overlay_hp",
-                "Overlay HP {0}",
-                BuildStateLabel("OverlayActorHp"));
+                "ui.battle.settings.damage_text",
+                "Damage Text {0}",
+                BuildStateLabel("DamageText"));
         }
 
         if (teamSummaryButtonLabel != null)

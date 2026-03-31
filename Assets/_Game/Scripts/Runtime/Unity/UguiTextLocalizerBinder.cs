@@ -14,6 +14,7 @@ public sealed class UguiTextLocalizerBinder : MonoBehaviour
     [SerializeField] private LocalizeStringEvent localizeStringEvent = null!;
 
     private bool _isBound;
+    private string _fallbackText = string.Empty;
 
     public string TableCollection => tableCollection;
     public string EntryKey => entryKey;
@@ -70,6 +71,10 @@ public sealed class UguiTextLocalizerBinder : MonoBehaviour
         }
 
         GameFontCatalog.ApplyFont(targetText);
+        if (string.IsNullOrWhiteSpace(_fallbackText) && targetText != null && !string.IsNullOrWhiteSpace(targetText.text))
+        {
+            _fallbackText = targetText.text;
+        }
 
         localizeStringEvent.StringReference.TableReference = tableCollection;
         localizeStringEvent.StringReference.TableEntryReference = entryKey;
@@ -87,7 +92,30 @@ public sealed class UguiTextLocalizerBinder : MonoBehaviour
     {
         if (targetText != null)
         {
-            targetText.text = value;
+            if (LooksLikeMissingLocalization(value))
+            {
+                GameSessionRoot.Instance?.Localization?.ReportMissingKey(tableCollection, entryKey);
+                targetText.text = string.IsNullOrWhiteSpace(_fallbackText) ? targetText.text : _fallbackText;
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                targetText.text = value;
+            }
         }
+    }
+
+    private bool LooksLikeMissingLocalization(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return true;
+        }
+
+        return value.Contains("[missing:", System.StringComparison.OrdinalIgnoreCase)
+               || value.Contains("No translation found", System.StringComparison.OrdinalIgnoreCase)
+               || value.Contains(tableCollection, System.StringComparison.OrdinalIgnoreCase)
+               || value.Contains(entryKey, System.StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -19,10 +19,7 @@ MonoBehaviour:
   Class: {fileID: 11400000, guid: ae9c9da2287c8624e818c771bc678450, type: 2}
   TraitPool: {fileID: 11400000, guid: 960c098308840fb4e8271679a8f187fe, type: 2}
   Skills:
-  - {fileID: 11400000, guid: 5e25f95f618389b48a44c1f971c7bd64, type: 2}
-  - {fileID: 11400000, guid: 24f7c6de92fa6ac4986d2534cf33e31d, type: 2}
-  - {fileID: 11400000, guid: 831d9b2dedb75a442a43c870afe77cf9, type: 2}
-  - {fileID: 11400000, guid: 3ae7482bc3e559f4ab4087ade6ddb17f, type: 2}
+  - {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
   TacticPreset:
   - Priority: 0
     ConditionType: 4
@@ -48,6 +45,9 @@ MonoBehaviour:
   RoleFamilyTag: striker
   PrimaryWeaponFamilyTag: blade
   SupportModifierBiasTags: []
+  FootprintProfile: {fileID: 11400000, guid: b2f2e5e70bb089549926606757e3fefe, type: 2}
+  BehaviorProfile: {fileID: 11400000, guid: a9001cce918d9364690dacba52621490, type: 2}
+  MobilityProfile: {fileID: 11400000, guid: 3702f6e1e94b61e47824a966a1a6e776, type: 2}
   BaseMaxHealth: 19
   BaseArmor: 1
   BaseResist: 0

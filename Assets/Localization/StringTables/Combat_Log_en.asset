@@ -39,6 +39,26 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 1798213439901401354
+  - m_Id: 883941377
+    m_Localized: S{0} {1} applied {2} to {3}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401354
+  - m_Id: 883941378
+    m_Localized: S{0} {1} removed {2}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401354
+  - m_Id: 883941379
+    m_Localized: S{0} {1} cleansed {2} on {3}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401354
+  - m_Id: 883941380
+    m_Localized: S{0} {1} gained control resist
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401354
   - m_Id: 879747072
     m_Localized: S{0} {1} {2}
     m_Metadata:
@@ -56,4 +76,8 @@ MonoBehaviour:
         - id: 871358464
         - id: 875552768
         - id: 875552769
+        - id: 883941377
+        - id: 883941378
+        - id: 883941379
+        - id: 883941380
         - id: 879747072

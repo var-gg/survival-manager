@@ -26,6 +26,9 @@ public enum TacticConditionTypeValue
 public enum TargetSelectorTypeValue { Self = 0, LowestHpAlly = 1, FirstEnemyInRange = 2, LowestHpEnemy = 3, NearestEnemy = 4, MostExposedEnemy = 5 }
 public enum TeamPostureTypeValue { HoldLine = 0, StandardAdvance = 1, ProtectCarry = 2, CollapseWeakSide = 3, AllInBackline = 4 }
 public enum DeploymentAnchorValue { FrontTop = 0, FrontCenter = 1, FrontBottom = 2, BackTop = 3, BackCenter = 4, BackBottom = 5 }
+public enum BodySizeCategoryValue { Small = 0, Medium = 1, Large = 2 }
+public enum MobilityStyleValue { None = 0, Dash = 1, Roll = 2, Blink = 3 }
+public enum MobilityPurposeValue { None = 0, Engage = 1, Disengage = 2, Evade = 3, Chase = 4, MaintainRange = 5 }
 public enum AugmentCategoryValue { Combat = 0, Synergy = 1, EconomyLoot = 2, RunUtility = 3 }
 public enum AffixCategoryValue { OffenseFlat = 0, OffenseScaling = 1, DefenseFlat = 2, DefenseScaling = 3, Utility = 4, SynergyTagged = 5 }
 public enum ItemRarityTierValue { Common = 0, Magic = 1, Rare = 2, Epic = 3, Legendary = 4 }

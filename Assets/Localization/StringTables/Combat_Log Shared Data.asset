@@ -31,6 +31,22 @@ MonoBehaviour:
     m_Key: combat.log.guard
     m_Metadata:
       m_Items: []
+  - m_Id: 883941377
+    m_Key: combat.log.status_applied
+    m_Metadata:
+      m_Items: []
+  - m_Id: 883941378
+    m_Key: combat.log.status_removed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 883941379
+    m_Key: combat.log.cleanse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 883941380
+    m_Key: combat.log.control_resist
+    m_Metadata:
+      m_Items: []
   - m_Id: 879747072
     m_Key: combat.log.generic
     m_Metadata:

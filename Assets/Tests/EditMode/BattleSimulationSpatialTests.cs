@@ -164,4 +164,180 @@ public sealed class BattleSimulationSpatialTests
         Assert.That(retargetAttack, Is.Not.Null);
         Assert.That(retargetAttack!.TimeSeconds - firstKill!.TimeSeconds, Is.GreaterThanOrEqualTo(0.4f));
     }
+
+    [Test]
+    public void Melee_Slotting_Separates_Attackers_Around_Same_Target()
+    {
+        var allies = new[]
+        {
+            CombatTestFactory.CreateUnit("ally_slot_a", anchor: DeploymentAnchorId.FrontTop, moveSpeed: 2.1f, attackRange: 1.1f, attackCooldown: 0.75f),
+            CombatTestFactory.CreateUnit("ally_slot_b", anchor: DeploymentAnchorId.FrontCenter, moveSpeed: 2.05f, attackRange: 1.1f, attackCooldown: 0.75f),
+            CombatTestFactory.CreateUnit("ally_slot_c", anchor: DeploymentAnchorId.FrontBottom, moveSpeed: 2.15f, attackRange: 1.1f, attackCooldown: 0.75f),
+        };
+        var enemy = CombatTestFactory.CreateUnit(
+            "enemy_anchor",
+            race: "undead",
+            classId: "vanguard",
+            anchor: DeploymentAnchorId.FrontCenter,
+            hp: 80f,
+            attack: 2f,
+            defense: 4f,
+            moveSpeed: 1.2f,
+            attackCooldown: 1.2f);
+
+        var state = CombatTestFactory.CreateBattleState(allies, new[] { enemy });
+        var simulator = new BattleSimulator(state, 120);
+
+        BattleSimulationStep latest = simulator.CurrentStep;
+        for (var step = 0; step < 60 && !simulator.IsFinished; step++)
+        {
+            latest = simulator.Step();
+        }
+
+        var allyUnits = latest.Units.Where(unit => unit.Side == TeamSide.Ally).ToList();
+        Assert.That(allyUnits, Has.Count.EqualTo(3));
+        Assert.That(FindMinDistance(allyUnits), Is.GreaterThan(0.55f));
+    }
+
+    [Test]
+    public void Ranged_Uses_Mobility_To_Break_Contact_When_Pressed()
+    {
+        var rangerMobility = new MobilityActionProfile(MobilityStyle.Roll, MobilityPurpose.MaintainRange, 1.6f, 2.5f, 0f, 0.2f, 0f, 1.5f, 0.5f);
+        var ranger = CombatTestFactory.CreateUnit(
+            "ally_mobile_ranger",
+            classId: "ranger",
+            anchor: DeploymentAnchorId.BackCenter,
+            moveSpeed: 1.8f,
+            attackRange: 3.2f,
+            preferredDistance: 2.8f,
+            attackWindup: 0.08f,
+            attackCooldown: 0.55f,
+            mobility: rangerMobility);
+        var pursuer = CombatTestFactory.CreateUnit(
+            "enemy_pursuer",
+            race: "undead",
+            classId: "duelist",
+            anchor: DeploymentAnchorId.FrontCenter,
+            moveSpeed: 2.6f,
+            attackRange: 1.15f,
+            attackCooldown: 0.5f);
+
+        var state = CombatTestFactory.CreateBattleState(new[] { ranger }, new[] { pursuer });
+        var simulator = new BattleSimulator(state, 160);
+
+        var sawClosePressure = false;
+        var sawRecoveredDistance = false;
+        while (!simulator.IsFinished)
+        {
+            var step = simulator.Step();
+            var ally = step.Units.First(unit => unit.Id.Contains("ally_mobile_ranger"));
+            var enemyUnit = step.Units.First(unit => unit.Id.Contains("enemy_pursuer"));
+            var distance = ally.Position.DistanceTo(enemyUnit.Position);
+            if (distance < 2f)
+            {
+                sawClosePressure = true;
+            }
+
+            if (sawClosePressure
+                && distance > 2.6f
+                && ally.ActionState is CombatActionState.BreakContact or CombatActionState.Reposition)
+            {
+                sawRecoveredDistance = true;
+                break;
+            }
+        }
+
+        Assert.That(sawClosePressure, Is.True);
+        Assert.That(sawRecoveredDistance, Is.True);
+    }
+
+    [Test]
+    public void Large_Footprint_Profile_Preserves_Spacing()
+    {
+        var largeFootprint = new FootprintProfile(
+            0.8f,
+            1.1f,
+            1.3f,
+            new FloatRange(0.95f, 1.25f),
+            4,
+            1.7f,
+            BodySizeCategory.Large,
+            2.5f);
+        var giantA = CombatTestFactory.CreateUnit("ally_giant_a", classId: "vanguard", anchor: DeploymentAnchorId.FrontTop, hp: 40f, footprint: largeFootprint);
+        var giantB = CombatTestFactory.CreateUnit("ally_giant_b", classId: "vanguard", anchor: DeploymentAnchorId.FrontBottom, hp: 40f, footprint: largeFootprint);
+        var enemy = CombatTestFactory.CreateUnit("enemy_large_target", race: "undead", classId: "vanguard", hp: 70f, attack: 2f, defense: 4f);
+
+        var state = CombatTestFactory.CreateBattleState(new[] { giantA, giantB }, new[] { enemy });
+        var simulator = new BattleSimulator(state, 120);
+
+        BattleSimulationStep latest = simulator.CurrentStep;
+        for (var step = 0; step < 50 && !simulator.IsFinished; step++)
+        {
+            latest = simulator.Step();
+        }
+
+        var allies = latest.Units.Where(unit => unit.Side == TeamSide.Ally).ToList();
+        Assert.That(FindMinDistance(allies), Is.GreaterThan(1.2f));
+    }
+
+    [Test]
+    public void Overflow_Slotting_Uses_SecurePosition_When_Target_Slots_Are_Full()
+    {
+        var targetFootprint = new FootprintProfile(
+            0.6f,
+            0.85f,
+            1.2f,
+            new FloatRange(0.95f, 1.2f),
+            1,
+            1.2f,
+            BodySizeCategory.Large,
+            2.3f);
+        var attackers = new[]
+        {
+            CombatTestFactory.CreateUnit("ally_overflow_a", anchor: DeploymentAnchorId.FrontTop, moveSpeed: 2.15f, attackRange: 1.1f, attackCooldown: 0.8f),
+            CombatTestFactory.CreateUnit("ally_overflow_b", anchor: DeploymentAnchorId.FrontCenter, moveSpeed: 2.05f, attackRange: 1.1f, attackCooldown: 0.8f),
+            CombatTestFactory.CreateUnit("ally_overflow_c", anchor: DeploymentAnchorId.FrontBottom, moveSpeed: 2.1f, attackRange: 1.1f, attackCooldown: 0.8f),
+        };
+        var target = CombatTestFactory.CreateUnit(
+            "enemy_overflow_target",
+            race: "undead",
+            classId: "vanguard",
+            anchor: DeploymentAnchorId.FrontCenter,
+            hp: 120f,
+            attack: 1f,
+            defense: 5f,
+            moveSpeed: 1.1f,
+            attackCooldown: 1.4f,
+            footprint: targetFootprint);
+
+        var state = CombatTestFactory.CreateBattleState(attackers, new[] { target });
+        var simulator = new BattleSimulator(state, 140);
+
+        var sawSecurePosition = false;
+        while (!simulator.IsFinished)
+        {
+            var step = simulator.Step();
+            if (step.Units.Any(unit => unit.Side == TeamSide.Ally && unit.ActionState == CombatActionState.SecurePosition))
+            {
+                sawSecurePosition = true;
+                break;
+            }
+        }
+
+        Assert.That(sawSecurePosition, Is.True);
+    }
+
+    private static float FindMinDistance(System.Collections.Generic.IReadOnlyList<BattleUnitReadModel> units)
+    {
+        var min = float.MaxValue;
+        for (var i = 0; i < units.Count; i++)
+        {
+            for (var j = i + 1; j < units.Count; j++)
+            {
+                min = System.Math.Min(min, units[i].Position.DistanceTo(units[j].Position));
+            }
+        }
+
+        return min;
+    }
 }

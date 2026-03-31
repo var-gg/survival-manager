@@ -26,14 +26,26 @@ public static class CombatActionResolver
                 if (target == null || !target.IsAlive)
                 {
                     actor.ClearTarget(applySwitchDelay: true);
-                    actor.SetActionState(CombatActionState.SeekTarget);
+                    actor.SetActionState(CombatActionState.AcquireTarget);
                     return events;
                 }
 
-                var damage = Math.Max(1f, (actor.PhysPower - target.Armor - (target.IsGuarded ? 1f : 0f)) * target.GetIncomingDamageMultiplier());
-                target.TakeDamage(damage);
+                var attackResult = HitResolutionService.ResolveBasicAttack(state, actor, target);
+                if (attackResult.Value > 0f)
+                {
+                    target.TakeDamage(attackResult.Value);
+                }
+
                 actor.StartRecovery();
-                events.Add(BuildEvent(state, actor, BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, target, damage));
+                events.Add(BuildEvent(
+                    state,
+                    actor,
+                    BattleActionType.BasicAttack,
+                    BattleLogCode.BasicAttackDamage,
+                    target,
+                    attackResult.Value,
+                    attackResult.MitigationValue,
+                    attackResult.Note));
                 if (!target.IsAlive)
                 {
                     actor.ClearTarget(applySwitchDelay: true);
@@ -44,13 +56,13 @@ public static class CombatActionResolver
                 if (target == null || !target.IsAlive)
                 {
                     actor.ClearTarget(applySwitchDelay: true);
-                    actor.SetActionState(CombatActionState.SeekTarget);
+                    actor.SetActionState(CombatActionState.AcquireTarget);
                     return events;
                 }
 
                 if (skill?.Kind == SkillKind.Heal)
                 {
-                    var heal = Math.Max(1f, actor.HealPower + (skill?.ResolvedPowerFlat ?? 0f));
+                    var heal = HitResolutionService.ResolveSupportValue(actor, skill);
                     target.Heal(heal);
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
                     events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillHeal, target, heal));
@@ -58,7 +70,7 @@ public static class CombatActionResolver
                 }
                 else if (skill?.Kind == SkillKind.Shield)
                 {
-                    var barrier = Math.Max(1f, actor.HealPower + (skill?.ResolvedPowerFlat ?? 0f));
+                    var barrier = HitResolutionService.ResolveSupportValue(actor, skill);
                     target.AddBarrier(barrier);
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
                     events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillHeal, target, barrier));
@@ -66,19 +78,24 @@ public static class CombatActionResolver
                 }
                 else
                 {
-                    var power = skill?.ResolvedPowerFlat ?? 0f;
-                    var basePower = skill?.DamageType == DamageType.Magical
-                        ? actor.MagPower + power
-                        : actor.PhysPower + power;
-                    var mitigation = skill?.DamageType == DamageType.Magical ? target.Resist : target.Armor;
-                    var skillDamage = Math.Max(1f, (basePower - mitigation - (target.IsGuarded ? 1f : 0f)) * target.GetIncomingDamageMultiplier());
-                    if (skill?.Kind is not (SkillKind.Buff or SkillKind.Utility))
+                    var skillResult = skill != null
+                        ? HitResolutionService.ResolveSkillDamage(state, actor, target, skill)
+                        : HitResolutionService.ResolveBasicAttack(state, actor, target);
+                    if (skill?.Kind is not (SkillKind.Buff or SkillKind.Utility) && skillResult.Value > 0f)
                     {
-                        target.TakeDamage(skillDamage);
+                        target.TakeDamage(skillResult.Value);
                     }
 
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
-                    events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillDamage, target, skillDamage));
+                    events.Add(BuildEvent(
+                        state,
+                        actor,
+                        BattleActionType.ActiveSkill,
+                        BattleLogCode.ActiveSkillDamage,
+                        target,
+                        skillResult.Value,
+                        skillResult.MitigationValue,
+                        skillResult.Note));
                     StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
                     if (!target.IsAlive)
                     {
@@ -102,7 +119,9 @@ public static class CombatActionResolver
         BattleActionType actionType,
         BattleLogCode logCode,
         UnitSnapshot? target,
-        float value)
+        float value,
+        float secondaryValue = 0f,
+        string note = "")
     {
         return new BattleEvent(
             state.StepIndex,
@@ -113,6 +132,10 @@ public static class CombatActionResolver
             logCode,
             target?.Id,
             target?.Definition.Name,
-            value);
+            value,
+            BattleEventKind.Action,
+            string.Empty,
+            secondaryValue,
+            note);
     }
 }

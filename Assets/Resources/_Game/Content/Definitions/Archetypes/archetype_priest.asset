@@ -19,10 +19,7 @@ MonoBehaviour:
   Class: {fileID: 11400000, guid: 303ce1202540bc442896129adc2f364a, type: 2}
   TraitPool: {fileID: 11400000, guid: 4fa7462e1258bd24f9d88081ee3b6878, type: 2}
   Skills:
-  - {fileID: 11400000, guid: 842b174f92a91a24db7e7ab0d1d7b11c, type: 2}
   - {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
-  - {fileID: 11400000, guid: f61ce839ba26fd14f9057069db7baf57, type: 2}
-  - {fileID: 11400000, guid: c6b69d993a0f7784aba596f64453ae2e, type: 2}
   TacticPreset:
   - Priority: 0
     ConditionType: 1
@@ -48,6 +45,9 @@ MonoBehaviour:
   RoleFamilyTag: mystic
   PrimaryWeaponFamilyTag: focus
   SupportModifierBiasTags: []
+  FootprintProfile: {fileID: 11400000, guid: a4440be1dcd4a5f4fa739e807da0f2ed, type: 2}
+  BehaviorProfile: {fileID: 11400000, guid: fb9fc401a4d91e242b0fe3a2654c3488, type: 2}
+  MobilityProfile: {fileID: 11400000, guid: 7c6ff8e645a78474a8cc9e6813ae9e56, type: 2}
   BaseMaxHealth: 18
   BaseArmor: 2
   BaseResist: 0

@@ -16,8 +16,178 @@ MonoBehaviour:
     m_Code: en
   m_SharedData: {fileID: 11400000, guid: c6c85f816235cb6448507b324adbc5fb, type: 2}
   m_Metadata:
-    m_Items: []
-  m_TableData: []
+    m_Items:
+    - rid: 1798213439901401364
+  m_TableData:
+  - m_Id: 901000001
+    m_Localized: Battle Observer UI
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000002
+    m_Localized: Allied HP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000003
+    m_Localized: Enemy HP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000004
+    m_Localized: Preparing battle log
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000005
+    m_Localized: Battle in progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000006
+    m_Localized: Victory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000007
+    m_Localized: Defeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000008
+    m_Localized: Speed x{0:0}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000009
+    m_Localized: Speed x{0:0} | Paused
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000010
+    m_Localized: Initializing live simulation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000011
+    m_Localized: Battle paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000012
+    m_Localized: Battle resumed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000013
+    m_Localized: ' | Paused'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000014
+    m_Localized: Battle finished | {0} steps | {1} events
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000015
+    m_Localized: Step {0} | Result resolved{1}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000016
+    m_Localized: Step {0} | {1} -> {2} | {3} {4:0}{5}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000017
+    m_Localized: Step {0} | {1} action {2}% -> {3}{4}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000018
+    m_Localized: Step {0} | posture {1}{2}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000019
+    m_Localized: No allied unit is ready for battle.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000020
+    m_Localized: Battle View Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000021
+    m_Localized: Settings panel closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000022
+    m_Localized: '{0}: {1}'
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000023
+    m_Localized: Overhead UI
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000024
+    m_Localized: Damage Text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000025
+    m_Localized: Overhead UI
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000026
+    m_Localized: Damage Text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000027
+    m_Localized: Debug Overlay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000028
+    m_Localized: Team Summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 901000029
+    m_Localized: Overhead UI {0}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000030
+    m_Localized: Damage Text {0}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000031
+    m_Localized: Overhead UI {0}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000032
+    m_Localized: Damage Text {0}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000033
+    m_Localized: Debug Overlay {0}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 901000034
+    m_Localized: Team Summary {0}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 1798213439901401364
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 901000008
+        - id: 901000009
+        - id: 901000014
+        - id: 901000015
+        - id: 901000016
+        - id: 901000017
+        - id: 901000018
+        - id: 901000022
+        - id: 901000029
+        - id: 901000030
+        - id: 901000031
+        - id: 901000032
+        - id: 901000033
+        - id: 901000034

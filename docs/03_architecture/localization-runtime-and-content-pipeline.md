@@ -7,6 +7,7 @@
 - 관련문서:
   - `docs/03_architecture/dependency-direction.md`
   - `docs/03_architecture/unity-boundaries.md`
+  - `docs/02_design/combat/battle-presentation-contract.md`
   - `docs/04_decisions/adr-0016-localization-boundary.md`
   - `docs/05_setup/localization-workflow.md`
 
@@ -36,6 +37,7 @@
 - key naming은 lower-case dot 표기만 허용한다.
 - committed asset이 runtime truth이고, bootstrap/generator는 누락 복구만 담당한다.
 - validator는 duplicate id, duplicate key, missing locale entry, legacy prose 잔존을 함께 검사한다.
+- battle scene은 missing key를 warning으로만 기록하고, 화면에는 fallback label만 보여야 한다.
 
 ## fallback phase와 구현 매핑
 
