@@ -27,9 +27,12 @@
 - `combat/deployment-and-anchors.md`: 3x2 앵커와 4인 배치 규칙
 - `combat/team-tactics-and-unit-rules.md`: team posture와 per-unit rule 체계
 - `combat/skill-taxonomy-and-damage-model.md`: 4-slot compile contract와 수식 기준
+- `combat/skill-authoring-schema.md`: template, AI hint, presentation hook, learn source schema
+- `combat/skill-catalog-v1.md`: role packet 기반 skill seed catalog
 - `combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`: keyword catalog, support compatibility, weapon/class restriction
 - `combat/encounter-catalog-and-scaling.md`: encounter/squad/boss overlay/threat grammar
 - `combat/status-effects-cc-and-cleanse-taxonomy.md`: launch floor status, cleanse, DR 규칙
+- `combat/status-keyword-and-proc-rulebook.md`: status / keyword / proc ownership rulebook
 - `combat/authoritative-replay-and-ledger.md`: authoritative replay와 전투 원장 기준
 - `combat/stat-system-and-power-budget.md`: stat v2와 파워 예산 기준
 - `combat/combat-readability.md`: 전투 가독성 예산과 표시 기준
@@ -47,20 +50,26 @@
 - `meta/campaign-chapter-and-expedition-sites.md`: story chapter, site, endless unlock 기준
 - `meta/recruitment-and-reroll.md`: 리크루트와 리롤 문법
 - `meta/reward-economy.md`: dual reward channel 기준
+- `meta/reward-protection-and-acquisition-loop.md`: RNG protection과 acquisition recovery 기준
 - `meta/drop-table-rarity-bracket-and-source-matrix.md`: automatic drop/source/rarity floor
 - `meta/item-and-affix-system.md`: 아이템과 affix 구조
+- `meta/affix-authoring-schema.md`: affix schema와 budget / line-density 기준
+- `meta/affix-pool-v1.md`: affix catalog와 live subset
 - `meta/equipment-family-and-crafting-depth.md`: weapon family floor와 deep crafting 경계
 - `meta/crafting-currencies-and-sinks.md`: crafting currency와 operation 기준
 - `meta/item-passive-augment-budget.md`: 출시 기준 item/passive/augment 예산 허브
 - `meta/passive-board-node-catalog.md`: launch floor passive board node 카탈로그
 - `meta/augment-system.md`: augment 문법
 - `meta/augment-synergy-operating-model.md`: augment offer와 synergy 운영 기준
+- `meta/augment-catalog-v1.md`: augment catalog와 live subset
 - `meta/permanent-augment-progression.md`: 영구 강화 진행
 - `meta/crafting-and-reroll-economy.md`: 제작과 리롤 비용 구조
 - `meta/pvp-boundary.md`: PVP 경계
 - `meta/pvp-ruleset-and-arena-loop.md`: async arena ruleset과 season cadence
 - `meta/synergy-breakpoints-and-soft-counters.md`: 출시 기준 breakpoint와 soft counter
 - `meta/synergy-family-catalog.md`: 7 family exact 2/3/4 payload 카탈로그
+- `meta/synergy-and-augment-taxonomy.md`: synergy / augment 역할 경계와 bucket taxonomy
+- `meta/skill-acquisition-and-retrain.md`: fixed core + flex + retrain 정책
 
 ## systems 문서
 

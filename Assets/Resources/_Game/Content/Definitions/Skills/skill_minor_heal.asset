@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: skill_minor_heal
   NameKey: content.skill.skill_minor_heal.name
   DescriptionKey: content.skill.skill_minor_heal.desc
+  TemplateType: 0
   Kind: 1
   SlotKind: 1
   DamageType: 2
@@ -22,6 +23,11 @@ MonoBehaviour:
   TargetRule: 3
   Power: 4
   Range: 2
+  RangeMin: 0
+  RangeMax: -1
+  Radius: 0
+  Width: 0
+  ArcDegrees: 0
   PowerFlat: 4
   PhysCoeff: 0
   MagCoeff: 0.8
@@ -29,8 +35,27 @@ MonoBehaviour:
   HealthCoeff: 0
   CanCrit: 0
   ManaCost: 0
+  ResourceCost: -1
   BaseCooldownSeconds: 0
+  CooldownSeconds: -1
   CastWindupSeconds: 0
+  RecoverySeconds: -1
+  PowerBudget: 0
+  AiIntents: 
+  AiScoreHints:
+    BurstBias: 0
+    ProtectBias: 0
+    MaintainRangeBias: 0
+    ExecuteBias: 0
+    ControlBias: 0
+    MinimumTargetHealthRatio: 0
+    MaximumTargetHealthRatio: 1
+    MinimumDistance: 0
+    MaximumDistance: 0
+  AnimationHookId: 
+  VfxHookId: 
+  SfxHookId: 
+  LearnSource: 0
   CompileTags: []
   RuleModifierTags: []
   SupportAllowedTags: []

@@ -29,5 +29,10 @@ MonoBehaviour:
     Magnitude: 0
     MaxStacks: 1
     RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
   legacyDisplayName: 
   legacyDescription: 

@@ -2,9 +2,11 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/meta/item-and-affix-system.md`
 - 관련문서:
+  - `docs/02_design/meta/affix-authoring-schema.md`
+  - `docs/02_design/meta/affix-pool-v1.md`
   - `docs/02_design/meta/item-passive-augment-budget.md`
   - `docs/02_design/meta/equipment-family-and-crafting-depth.md`
   - `docs/02_design/meta/crafting-currencies-and-sinks.md`
@@ -13,7 +15,7 @@
 ## 목적
 
 이 문서는 아이템 방향성과 launch floor 범위를 정의한다.
-장기 방향성은 Torchlight/ARPG식이지만, launch floor는 훨씬 좁고 관리 가능한 구조만 연다.
+affix field schema와 catalog는 별도 문서가 소유하고, 이 문서는 item readability와 경계를 잠근다.
 
 ## launch floor 구현 범위
 
@@ -52,8 +54,11 @@ shield 전용 별도 슬롯은 열지 않는다.
 ## affix와 unique 규칙
 
 - affix slot은 `implicit 1`, `prefix 2`, `suffix 2`를 상한으로 둔다.
+- 아이템 한 장의 핵심 affix 라인은 `2`, 최대 `3`이다.
+- affix family는 `CoreScalar`, `ConditionalTagged`, `BuildShaping`으로 나눈다.
 - unique / boss item은 numeric affix를 늘리지 않고 `signature rule modifier` 1개를 사용한다.
 - item authoring은 canonical `WeaponFamilyTag`, optional `GrantedSkillId`, optional `UniqueRuleModifierTag`를 가진다.
+- `dodge`, `block`, `status_potency`, `summon_power`는 v1 broad affix public layer로 성급히 승격하지 않는다.
 
 ## 재련/리롤 원칙
 
@@ -69,6 +74,7 @@ shield 전용 별도 슬롯은 열지 않는다.
 - rarity ladder
 - material sink 확장
 - advanced crafting station
+- full catalog와 live subset 분리는 `affix-pool-v1.md`를 따른다.
 
 ## 밸런스 기준
 

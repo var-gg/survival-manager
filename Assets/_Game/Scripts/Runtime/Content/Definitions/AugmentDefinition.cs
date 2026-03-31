@@ -20,8 +20,13 @@ public sealed class AugmentDefinition : ScriptableObject
     public string FamilyId = string.Empty;
     public int Tier = 1;
     public float OfferWeight = 1f;
+    public AugmentOfferBucketValue OfferBucket = AugmentOfferBucketValue.LegacyDerived;
+    public AugmentRiskRewardClassValue RiskRewardClass = AugmentRiskRewardClassValue.LegacyDerived;
+    public float BudgetScore = 0f;
     public bool SuppressIfPermanentEquipped;
     public List<StableTagDefinition> Tags = new();
+    public List<StableTagDefinition> BuildBiasTags = new();
+    public List<StableTagDefinition> ProtectionTags = new();
     public List<StableTagDefinition> MutualExclusionTags = new();
     public List<StableTagDefinition> RequiresTags = new();
     public List<StableTagDefinition> RuleModifierTags = new();

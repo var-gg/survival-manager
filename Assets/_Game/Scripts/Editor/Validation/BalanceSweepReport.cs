@@ -18,11 +18,17 @@ public sealed record BalanceSweepScenarioReport
     public float WinRate { get; init; }
     public float AverageBattleDurationSeconds { get; init; }
     public float AverageFirstCastSeconds { get; init; }
+    public float TimeToFirstMeaningfulActionSeconds { get; init; }
+    public float AverageRepositionCount { get; init; }
+    public float AverageTargetAccessTimeSeconds { get; init; }
+    public float AverageFrontlineSurvivalTimeSeconds { get; init; }
     public float TemporaryAugmentDeadOfferRatio { get; init; }
     public int ValidationErrorCount { get; init; }
     public int ValidationWarningCount { get; init; }
     public IReadOnlyList<BalanceSweepShareEntry> DamageShare { get; init; } = Array.Empty<BalanceSweepShareEntry>();
     public IReadOnlyList<BalanceSweepShareEntry> HealShare { get; init; } = Array.Empty<BalanceSweepShareEntry>();
+    public IReadOnlyList<BalanceSweepShareEntry> DamageSourceDistribution { get; init; } = Array.Empty<BalanceSweepShareEntry>();
+    public IReadOnlyList<BalanceSweepShareEntry> DamageTakenDistribution { get; init; } = Array.Empty<BalanceSweepShareEntry>();
     public IReadOnlyList<string> Flags { get; init; } = Array.Empty<string>();
 }
 

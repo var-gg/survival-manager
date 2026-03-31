@@ -21,6 +21,13 @@ MonoBehaviour:
   AffectedByTenacity: 0
   TenacityScale: 0
   IsRuleModifierOnly: 0
+  DefaultStackCap: 1
+  DefaultStackPolicy: 0
+  DefaultRefreshPolicy: 0
+  DefaultProcAttributionPolicy: 0
+  DefaultOwnershipPolicy: 0
+  IsAiRelevant: 1
+  VisualPriority: 0
   CompileTags:
   - burn
   legacyDisplayName: 

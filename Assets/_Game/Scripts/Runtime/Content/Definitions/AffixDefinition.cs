@@ -19,9 +19,20 @@ public sealed class AffixDefinition : ScriptableObject
     public string DescriptionKey = string.Empty;
     public AffixCategoryValue Category = AffixCategoryValue.Utility;
     public AffixTierValue Tier = AffixTierValue.Prefix;
+    public AffixFamilyValue AffixFamily = AffixFamilyValue.LegacyDerived;
+    public AffixEffectTypeValue EffectType = AffixEffectTypeValue.LegacyDerived;
+    public float ValueMin = 0f;
+    public float ValueMax = 0f;
     public List<ItemSlotType> AllowedSlotTypes = new();
     public List<StableTagDefinition> CompileTags = new();
     public List<StableTagDefinition> RuleModifierTags = new();
+    public List<StableTagDefinition> RequiredTags = new();
+    public List<StableTagDefinition> ExcludedTags = new();
+    public int ItemLevelMin = 0;
+    public float SpawnWeight = 1f;
+    public string ExclusiveGroupId = string.Empty;
+    public float BudgetScore = 0f;
+    public string TextTemplateKey = string.Empty;
     public List<SerializableStatModifier> Modifiers = new();
 
     [FormerlySerializedAs("DisplayName")]

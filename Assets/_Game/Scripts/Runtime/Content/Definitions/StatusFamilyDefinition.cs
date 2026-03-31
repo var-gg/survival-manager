@@ -21,6 +21,11 @@ public sealed class StatusApplicationRule
     public float Magnitude = 0f;
     public int MaxStacks = 1;
     public bool RefreshDurationOnReapply = true;
+    public int StackCap = 0;
+    public StatusStackPolicyValue StackPolicy = StatusStackPolicyValue.LegacyDerived;
+    public StatusRefreshPolicyValue RefreshPolicy = StatusRefreshPolicyValue.LegacyDerived;
+    public StatusProcAttributionPolicyValue ProcAttributionPolicy = StatusProcAttributionPolicyValue.LegacyDerived;
+    public StatusOwnershipPolicyValue OwnershipPolicy = StatusOwnershipPolicyValue.LegacyDerived;
 }
 
 [CreateAssetMenu(menuName = "SM/Definitions/Status Family Definition", fileName = "status_family_")]
@@ -35,6 +40,13 @@ public sealed class StatusFamilyDefinition : ScriptableObject
     public bool AffectedByTenacity = true;
     public float TenacityScale = 1f;
     public bool IsRuleModifierOnly;
+    public int DefaultStackCap = 1;
+    public StatusStackPolicyValue DefaultStackPolicy = StatusStackPolicyValue.LegacyDerived;
+    public StatusRefreshPolicyValue DefaultRefreshPolicy = StatusRefreshPolicyValue.LegacyDerived;
+    public StatusProcAttributionPolicyValue DefaultProcAttributionPolicy = StatusProcAttributionPolicyValue.LegacyDerived;
+    public StatusOwnershipPolicyValue DefaultOwnershipPolicy = StatusOwnershipPolicyValue.LegacyDerived;
+    public bool IsAiRelevant = true;
+    public int VisualPriority = 0;
     public List<string> CompileTags = new();
 
     [FormerlySerializedAs("DisplayName")]

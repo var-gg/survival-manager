@@ -2,11 +2,12 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/meta/synergy-family-catalog.md`
 - 관련문서:
   - `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
   - `docs/02_design/meta/augment-synergy-operating-model.md`
+  - `docs/02_design/meta/synergy-and-augment-taxonomy.md`
   - `docs/02_design/systems/launch-floor-content-matrix.md`
   - `docs/03_architecture/content-authoring-and-balance-data.md`
 
@@ -14,6 +15,9 @@
 
 이 문서는 launch floor에서 authoring할 `7 synergy families`의 exact payload를 고정한다.
 `2 / 3 / 4` breakpoint 의미를 문장 수준이 아니라 수치와 대상 기준으로 잠가서, content authoring과 sim sweep가 같은 기준을 보게 한다.
+
+현재 live subset은 7 family를 유지한다.
+schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`에서만 논의하고, 이 문서는 committed exact payload만 소유한다.
 
 ## 공통 규칙
 

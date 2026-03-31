@@ -2,16 +2,18 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/meta/augment-system.md`
 - 관련문서:
+  - `docs/02_design/meta/synergy-and-augment-taxonomy.md`
+  - `docs/02_design/meta/augment-catalog-v1.md`
   - `docs/02_design/meta/item-passive-augment-budget.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
 
 ## 목적
 
 이 문서는 run 중 temporary augment와 run 밖 permanent augment의 관계를 정의한다.
-목표는 한 판의 빌드 변화와 장기 진척을 분리하면서도 서로 연결되게 만드는 것이다.
+bucket taxonomy와 offer protection은 별도 문서가 소유하고, 이 문서는 augment가 “run 전체 규칙을 바꾸는 레버”라는 역할을 잠근다.
 
 ## 핵심 규칙
 
@@ -51,6 +53,15 @@ augment는 아래 두 방향을 모두 허용한다.
 
 즉 활성 조합을 밀어주는 것과, 혼합 조합/외로운 유닛을 살리는 것 둘 다 시스템적으로 허용한다.
 
+### augment bucket
+
+- `NeutralCombat`
+- `EconomyRoster`
+- `SynergyLinked`
+- `WildcardRisk`
+
+작은 stat buff만 가진 augment를 양산하지 않는다.
+
 ## MVP 구현 범위
 
 - temporary augment 3-choice 보상
@@ -76,3 +87,4 @@ augment는 아래 두 방향을 모두 허용한다.
 - paid launch floor는 temporary 18 / permanent 9다.
 - paid launch safe target은 temporary 24 / permanent 12다.
 - source별 power budget은 `docs/02_design/meta/item-passive-augment-budget.md`를 따른다.
+- v1 catalog와 live subset 범위는 `augment-catalog-v1.md`를 따른다.

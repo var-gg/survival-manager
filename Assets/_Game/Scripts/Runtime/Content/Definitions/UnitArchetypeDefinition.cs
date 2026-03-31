@@ -21,6 +21,12 @@ public sealed class UnitArchetypeDefinition : ScriptableObject
     public string RoleFamilyTag = string.Empty;
     public string PrimaryWeaponFamilyTag = string.Empty;
     public List<StableTagDefinition> SupportModifierBiasTags = new();
+    public string LockedAttackProfileId = string.Empty;
+    public string LockedAttackProfileTag = string.Empty;
+    public SkillDefinitionAsset LockedSignatureActiveSkill;
+    public SkillDefinitionAsset LockedSignaturePassiveSkill;
+    public List<SkillDefinitionAsset> FlexUtilitySkillPool = new();
+    public List<SkillDefinitionAsset> FlexSupportSkillPool = new();
     public FootprintProfileDefinition FootprintProfile;
     public BehaviorProfileDefinition BehaviorProfile;
     public MobilityProfileDefinition MobilityProfile;

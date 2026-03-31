@@ -162,6 +162,208 @@ public sealed class ContentValidationWorkflowTests
         Assert.That(gaps, Contains.Item("synergyFamilies 0/7"));
     }
 
+    [Test]
+    public void ContentDefinitionValidator_FlagsDeepSchemaContractDrift()
+    {
+        EnsureFolder(TempRoot);
+        var assets = new List<ScriptableObject>();
+
+        var vanguardTag = CreateTempAsset<StableTagDefinition>("tag_vanguard.asset", asset =>
+        {
+            asset.Id = "vanguard";
+            asset.NameKey = "content.tag.vanguard.name";
+        });
+        assets.Add(vanguardTag);
+
+        var rangerTag = CreateTempAsset<StableTagDefinition>("tag_ranger.asset", asset =>
+        {
+            asset.Id = "ranger";
+            asset.NameKey = "content.tag.ranger.name";
+        });
+        assets.Add(rangerTag);
+
+        var passiveSkill = CreateTempAsset<SkillDefinitionAsset>("skill_temp_passive.asset", asset =>
+        {
+            asset.Id = "skill_temp_passive";
+            asset.NameKey = "content.skill.temp_passive.name";
+            asset.DescriptionKey = "content.skill.temp_passive.desc";
+            asset.TemplateType = SkillTemplateTypeValue.TriggerPassive;
+            asset.Kind = SkillKindValue.Buff;
+            asset.SlotKind = SkillSlotKindValue.Passive;
+            asset.DamageType = DamageTypeValue.Physical;
+            asset.Delivery = SkillDeliveryValue.Aura;
+            asset.TargetRule = SkillTargetRuleValue.Self;
+            asset.AppliedStatuses.Add(new StatusApplicationRule
+            {
+                Id = "rule_temp_status",
+                StatusId = "marked",
+                DurationSeconds = 2f,
+                MaxStacks = 3,
+                StackCap = 1,
+            });
+        });
+        assets.Add(passiveSkill);
+
+        var utilitySkill = CreateTempAsset<SkillDefinitionAsset>("skill_temp_utility.asset", asset =>
+        {
+            asset.Id = "skill_temp_utility";
+            asset.NameKey = "content.skill.temp_utility.name";
+            asset.DescriptionKey = "content.skill.temp_utility.desc";
+            asset.TemplateType = SkillTemplateTypeValue.ProjectileShot;
+            asset.Kind = SkillKindValue.Strike;
+            asset.SlotKind = SkillSlotKindValue.UtilityActive;
+            asset.DamageType = DamageTypeValue.Physical;
+            asset.Delivery = SkillDeliveryValue.Projectile;
+            asset.TargetRule = SkillTargetRuleValue.NearestEnemy;
+            asset.RangeMin = 4f;
+            asset.RangeMax = 2f;
+            asset.AiIntents.Add(SkillAiIntentValue.MaintainRange);
+            asset.AiIntents.Add(SkillAiIntentValue.MaintainRange);
+            asset.AiScoreHints.MinimumTargetHealthRatio = 0.8f;
+            asset.AiScoreHints.MaximumTargetHealthRatio = 0.4f;
+            asset.AnimationHookId = "INVALID HOOK";
+        });
+        assets.Add(utilitySkill);
+
+        var coreSkill = CreateTempAsset<SkillDefinitionAsset>("skill_temp_core.asset", asset =>
+        {
+            asset.Id = "skill_temp_core";
+            asset.NameKey = "content.skill.temp_core.name";
+            asset.DescriptionKey = "content.skill.temp_core.desc";
+            asset.TemplateType = SkillTemplateTypeValue.SingleTargetStrike;
+            asset.Kind = SkillKindValue.Strike;
+            asset.SlotKind = SkillSlotKindValue.CoreActive;
+            asset.DamageType = DamageTypeValue.Physical;
+            asset.Delivery = SkillDeliveryValue.Melee;
+            asset.TargetRule = SkillTargetRuleValue.NearestEnemy;
+        });
+        assets.Add(coreSkill);
+
+        var supportSkill = CreateTempAsset<SkillDefinitionAsset>("skill_temp_support.asset", asset =>
+        {
+            asset.Id = "support_temp_support";
+            asset.NameKey = "content.skill.temp_support.name";
+            asset.DescriptionKey = "content.skill.temp_support.desc";
+            asset.TemplateType = SkillTemplateTypeValue.AllyBuffAuraPulse;
+            asset.Kind = SkillKindValue.Buff;
+            asset.SlotKind = SkillSlotKindValue.Support;
+            asset.DamageType = DamageTypeValue.Physical;
+            asset.Delivery = SkillDeliveryValue.Aura;
+            asset.TargetRule = SkillTargetRuleValue.ProtectedAlly;
+            asset.SupportAllowedTags.Add(vanguardTag);
+        });
+        assets.Add(supportSkill);
+
+        assets.Add(CreateTempAsset<AffixDefinition>("affix_temp_schema.asset", asset =>
+        {
+            asset.Id = "affix_temp_schema";
+            asset.NameKey = "content.affix.temp_schema.name";
+            asset.DescriptionKey = "content.affix.temp_schema.desc";
+            asset.Category = AffixCategoryValue.OffenseFlat;
+            asset.AffixFamily = AffixFamilyValue.ConditionalTagged;
+            asset.EffectType = AffixEffectTypeValue.StatModifier;
+            asset.ValueMin = 10f;
+            asset.ValueMax = 5f;
+            asset.RequiredTags.Add(vanguardTag);
+            asset.ExcludedTags.Add(vanguardTag);
+            asset.ExclusiveGroupId = "INVALID GROUP";
+        }));
+
+        assets.Add(CreateTempAsset<AugmentDefinition>("augment_temp_schema.asset", asset =>
+        {
+            asset.Id = "augment_temp_schema";
+            asset.NameKey = "content.augment.temp_schema.name";
+            asset.DescriptionKey = "content.augment.temp_schema.desc";
+            asset.FamilyId = "augment_temp_schema";
+            asset.OfferBucket = AugmentOfferBucketValue.SynergyLinked;
+            asset.RiskRewardClass = AugmentRiskRewardClassValue.RiskReward;
+            asset.BudgetScore = -1f;
+            asset.ProtectionTags.Add(rangerTag);
+        }));
+
+        assets.Add(CreateTempAsset<StatusFamilyDefinition>("status_family_temp_schema.asset", asset =>
+        {
+            asset.Id = "temp_schema_status";
+            asset.NameKey = "content.status.temp_schema.name";
+            asset.DescriptionKey = "content.status.temp_schema.desc";
+            asset.DefaultStackCap = 0;
+            asset.VisualPriority = -1;
+        }));
+
+        assets.Add(CreateTempAsset<UnitArchetypeDefinition>("archetype_temp_schema.asset", asset =>
+        {
+            asset.Id = "archetype_temp_schema";
+            asset.NameKey = "content.archetype.temp_schema.name";
+            asset.ScopeKind = ArchetypeScopeValue.Core;
+            asset.Race = AssetDatabase.LoadAssetAtPath<RaceDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Races/race_human.asset");
+            asset.Class = AssetDatabase.LoadAssetAtPath<ClassDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Classes/class_vanguard.asset");
+            asset.TraitPool = LoadAnyAsset<TraitPoolDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Traits");
+            asset.RoleFamilyTag = "vanguard";
+            asset.PrimaryWeaponFamilyTag = "shield";
+            asset.TacticPreset = new List<TacticPresetEntry>
+            {
+                new() { Priority = 1, ConditionType = TacticConditionTypeValue.LowestHpEnemy, ActionType = BattleActionTypeValue.BasicAttack, TargetSelector = TargetSelectorTypeValue.LowestHpEnemy }
+            };
+            asset.Skills = new List<SkillDefinitionAsset> { coreSkill, utilitySkill, passiveSkill, supportSkill };
+            asset.LockedSignatureActiveSkill = passiveSkill;
+            asset.LockedSignaturePassiveSkill = passiveSkill;
+            asset.FlexSupportSkillPool.Add(utilitySkill);
+        }));
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+
+        var report = ContentDefinitionValidator.BuildValidationReport(assets);
+        var codes = report.Issues.Select(issue => issue.Code).ToHashSet(StringComparer.Ordinal);
+
+        Assert.That(codes, Contains.Item("affix.value_band"));
+        Assert.That(codes, Contains.Item("affix.tag_overlap"));
+        Assert.That(codes, Contains.Item("affix.effect_payload"));
+        Assert.That(codes, Contains.Item("skill.range_band"));
+        Assert.That(codes, Contains.Item("skill.ai_intents"));
+        Assert.That(codes, Contains.Item("skill.ai_score_hints"));
+        Assert.That(codes, Contains.Item("augment.offer_metadata"));
+        Assert.That(codes, Contains.Item("augment.budget_score"));
+        Assert.That(codes, Contains.Item("status.family_defaults"));
+        Assert.That(codes, Contains.Item("status.rule_stack_cap"));
+        Assert.That(codes, Contains.Item("archetype.locked_signature_active"));
+        Assert.That(codes, Contains.Item("archetype.flex_support_pool"));
+    }
+
+    [Test]
+    public void BalanceSweepRunner_CsvSummary_ContainsExtendedMetricColumns()
+    {
+        var method = typeof(BalanceSweepRunner).GetMethod("BuildCsvSummary", BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(method, Is.Not.Null);
+
+        var report = new BalanceSweepReport
+        {
+            Scenarios = new[]
+            {
+                new BalanceSweepScenarioReport
+                {
+                    ScenarioId = "schema_probe",
+                    TeamTacticId = "team_tactic_standard_advance",
+                    CompileHashDeterministic = true,
+                    FinalStateDeterministic = true,
+                    WinRate = 0.5f,
+                    AverageBattleDurationSeconds = 12f,
+                    AverageFirstCastSeconds = 1.4f,
+                    TimeToFirstMeaningfulActionSeconds = 0.8f,
+                    AverageRepositionCount = 2.5f,
+                    AverageTargetAccessTimeSeconds = 1.9f,
+                    AverageFrontlineSurvivalTimeSeconds = 10.2f,
+                }
+            }
+        };
+
+        var csv = method!.Invoke(null, new object[] { report }) as string;
+        Assert.That(csv, Does.Contain("time_to_first_meaningful_action_seconds"));
+        Assert.That(csv, Does.Contain("avg_reposition_count"));
+        Assert.That(csv, Does.Contain("avg_target_access_time_seconds"));
+        Assert.That(csv, Does.Contain("avg_frontline_survival_time_seconds"));
+    }
+
     private static T CreateTempAsset<T>(string fileName, Action<T> configure) where T : ScriptableObject
     {
         var path = $"{TempRoot}/{fileName}";
@@ -205,5 +407,15 @@ public sealed class ContentValidationWorkflowTests
 
         AssetDatabase.DeleteAsset(TempRoot);
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+    }
+
+    private static T LoadAnyAsset<T>(string folder) where T : UnityEngine.Object
+    {
+        var guid = AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { folder }).FirstOrDefault();
+        Assert.That(guid, Is.Not.Null.And.Not.Empty, $"Missing canonical asset under {folder} for {typeof(T).Name}.");
+        var path = AssetDatabase.GUIDToAssetPath(guid);
+        var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+        Assert.That(asset, Is.Not.Null, $"Failed to load canonical asset at {path}.");
+        return asset!;
     }
 }

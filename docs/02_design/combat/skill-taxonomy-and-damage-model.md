@@ -2,9 +2,11 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
 - 관련문서:
+  - `docs/02_design/combat/skill-authoring-schema.md`
+  - `docs/02_design/combat/skill-catalog-v1.md`
   - `docs/02_design/combat/team-tactics-and-unit-rules.md`
   - `docs/02_design/combat/stat-system-and-power-budget.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
@@ -12,7 +14,8 @@
 
 ## 목적
 
-이 문서는 skill loadout contract, class skill family, damage/heal/shield 계산식의 canonical 용어를 고정한다.
+이 문서는 skill loadout contract와 수식의 canonical 용어를 고정한다.
+template, AI hint, presentation hook, learn source의 세부 schema는 `skill-authoring-schema.md`가 소유한다.
 
 ## loadout contract
 
@@ -56,6 +59,12 @@
 - `ProtectedAlly`
 - `Self`
 - `MarkedTarget`
+
+## template / AI hint boundary
+
+- template type은 skill의 전달 방식과 shape를 잠그는 authoring schema다.
+- AI hint는 이 문서가 아니라 `skill-authoring-schema.md`의 `AiIntents`, `AiScoreHints`에서 잠근다.
+- role packet과 seed catalog는 `skill-catalog-v1.md`를 따른다.
 
 ## class skill family
 
@@ -165,6 +174,7 @@ RawDamage x 100 / (100 + EffectiveArmorOrResist)
 ## authoring 기준
 
 - 모든 `SkillDefinitionAsset`은 `Kind`, `SlotKind`, `DamageType`, `Delivery`, `TargetRule`를 명시한다.
+- template를 explicit하게 쓰기 시작한 asset은 `RangeMin`, `RangeMax`, `Radius/Width/Arc`, `AiIntents`, `LearnSource`까지 같이 채운다.
 - scaling이 있으면 `PhysCoeff`, `MagCoeff`, `HealCoeff`, `HealthCoeff` 중 필요한 값을 채운다.
 - support modifier와 호환 제한은 tag 기반으로 표현한다.
 - pure combat truth는 Unity enum을 직접 참조하지 않고 compile 시 battle-side enum으로 번역한다.

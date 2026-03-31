@@ -45,6 +45,12 @@ MonoBehaviour:
   RoleFamilyTag: striker
   PrimaryWeaponFamilyTag: blade
   SupportModifierBiasTags: []
+  LockedAttackProfileId: 
+  LockedAttackProfileTag: 
+  LockedSignatureActiveSkill: {fileID: 0}
+  LockedSignaturePassiveSkill: {fileID: 0}
+  FlexUtilitySkillPool: []
+  FlexSupportSkillPool: []
   FootprintProfile: {fileID: 11400000, guid: b2f2e5e70bb089549926606757e3fefe, type: 2}
   BehaviorProfile: {fileID: 11400000, guid: a9001cce918d9364690dacba52621490, type: 2}
   MobilityProfile: {fileID: 11400000, guid: 3702f6e1e94b61e47824a966a1a6e776, type: 2}

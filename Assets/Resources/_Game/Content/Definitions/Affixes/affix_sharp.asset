@@ -17,9 +17,20 @@ MonoBehaviour:
   DescriptionKey: content.affix.affix_sharp.desc
   Category: 0
   Tier: 1
+  AffixFamily: 0
+  EffectType: 0
+  ValueMin: 0
+  ValueMax: 0
   AllowedSlotTypes: 00000000
   CompileTags: []
   RuleModifierTags: []
+  RequiredTags: []
+  ExcludedTags: []
+  ItemLevelMin: 0
+  SpawnWeight: 1
+  ExclusiveGroupId: 
+  BudgetScore: 0
+  TextTemplateKey: 
   Modifiers:
   - StatId: phys_power
     Op: 0

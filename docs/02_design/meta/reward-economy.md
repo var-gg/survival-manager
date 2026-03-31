@@ -2,10 +2,12 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/meta/reward-economy.md`
 - 관련문서:
   - `docs/02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
+  - `docs/02_design/meta/reward-protection-and-acquisition-loop.md`
+  - `docs/02_design/meta/skill-acquisition-and-retrain.md`
   - `docs/03_architecture/drop-resolution-and-ledger-pipeline.md`
 
 ## 현재 reward 구조
@@ -37,3 +39,9 @@
 - expedition node context에 따라 카드 풀이 달라진다.
 - 자동 드롭도 같은 reward source와 seed를 기준으로 결정론적으로 계산된다.
 - Reward card presentation은 operator-grade placeholder이며 정식 카드 UX는 다음 단계다.
+
+## acquisition / protection 연결
+
+- reward는 단순 power injection이 아니라 recovery lever를 같이 제공해야 한다.
+- recruit가 RNG인 run에서는 retrain / reroll / economy card가 recovery channel이 된다.
+- augment offer protection과 item reroll 보호 로직의 상세는 `reward-protection-and-acquisition-loop.md`를 따른다.

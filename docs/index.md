@@ -72,6 +72,15 @@
 - combat behavior contract: `02_design/combat/combat-behavior-contract.md`
 - mobility contract: `02_design/combat/mobility-contract.md`
 - combat mechanics glossary: `02_design/combat/combat-mechanics-glossary.md`
+- status / keyword / proc rulebook: `02_design/combat/status-keyword-and-proc-rulebook.md`
+- skill authoring schema: `02_design/combat/skill-authoring-schema.md`
+- skill catalog v1: `02_design/combat/skill-catalog-v1.md`
+- affix authoring schema: `02_design/meta/affix-authoring-schema.md`
+- skill acquisition and retrain: `02_design/meta/skill-acquisition-and-retrain.md`
+- synergy and augment taxonomy: `02_design/meta/synergy-and-augment-taxonomy.md`
+- reward protection and acquisition loop: `02_design/meta/reward-protection-and-acquisition-loop.md`
+- affix pool v1: `02_design/meta/affix-pool-v1.md`
+- augment catalog v1: `02_design/meta/augment-catalog-v1.md`
 - squad blueprint와 빌드 소유권: `02_design/systems/squad-blueprint-and-build-ownership.md`
 - 전투 런타임 아키텍처: `03_architecture/combat-runtime-architecture.md`
 - battle harness/debug contract: `03_architecture/combat-harness-and-debug-contract.md`

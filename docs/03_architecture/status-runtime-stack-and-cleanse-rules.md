@@ -2,10 +2,11 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/03_architecture/status-runtime-stack-and-cleanse-rules.md`
 - 관련문서:
   - `docs/02_design/combat/status-effects-cc-and-cleanse-taxonomy.md`
+  - `docs/02_design/combat/status-keyword-and-proc-rulebook.md`
   - `docs/03_architecture/combat-state-and-event-model.md`
   - `docs/03_architecture/replay-persistence-and-run-audit.md`
 
@@ -22,6 +23,8 @@ launch floor에서는 OOP status 계층 대신 typed family + resolver chain을 
 - `StatusApplicationRule`
 - `CleanseProfileDefinition`
 - `ControlDiminishingRuleDefinition`
+- `DefaultStackCap / DefaultStackPolicy / DefaultRefreshPolicy`
+- `ProcAttributionPolicy / OwnershipPolicy`
 
 ### runtime
 
@@ -35,6 +38,9 @@ launch floor에서는 OOP status 계층 대신 typed family + resolver chain을 
 2. compile 단계가 이를 `BattleSkillSpec`으로 옮긴다.
 3. 전투 중 `StatusResolutionService.ApplySkillStatuses(...)`가 상태 적용과 정화를 처리한다.
 4. `AdvanceStatuses(...)`가 timer 감소, periodic damage, hard CC 종료 시 resist window 부여를 담당한다.
+
+현재 resolver는 launch floor floor-set만 직접 소비한다.
+새 schema의 stack / ownership 정책은 우선 authoring / validation / report contract로 들어가며, follow-up resolver pass에서 점진적으로 소비한다.
 
 ## launch floor DR 규칙
 
@@ -67,6 +73,7 @@ status 관련 event는 typed envelope로 기록한다.
 - duplicate / invalid status id
 - missing cleanse target
 - incompatible status + skill tag
+- invalid stack cap / refresh / ownership policy
 - hard-CC chain DR
 - tenacity / cleanse / DR interaction
 - replay round-trip에서 status event가 유실되지 않는지 검증

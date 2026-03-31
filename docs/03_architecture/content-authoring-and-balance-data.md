@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/03_architecture/content-authoring-and-balance-data.md`
 - 관련문서:
   - `docs/03_architecture/content-authoring-model.md`
@@ -10,6 +10,11 @@
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
   - `docs/02_design/systems/launch-floor-content-matrix.md`
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
+  - `docs/02_design/combat/skill-authoring-schema.md`
+  - `docs/02_design/combat/status-keyword-and-proc-rulebook.md`
+  - `docs/02_design/meta/affix-authoring-schema.md`
+  - `docs/02_design/meta/skill-acquisition-and-retrain.md`
+  - `docs/02_design/meta/synergy-and-augment-taxonomy.md`
   - `docs/02_design/meta/item-passive-augment-budget.md`
   - `docs/02_design/meta/passive-board-node-catalog.md`
   - `docs/02_design/meta/synergy-family-catalog.md`
@@ -41,14 +46,21 @@
 
 ### SkillDefinitionAsset
 
+- `TemplateType`
 - `Kind`
 - `SlotKind`
 - `DamageType`
 - `Delivery`
 - `TargetRule`
+- `RangeMin / RangeMax / Radius / Width / ArcDegrees`
 - `Power / PowerFlat`
 - `PhysCoeff / MagCoeff / HealCoeff / HealthCoeff`
 - `CanCrit`
+- `CooldownSeconds / RecoverySeconds / ResourceCost`
+- `AiIntents / AiScoreHints`
+- `AnimationHookId / VfxHookId / SfxHookId`
+- `PowerBudget`
+- `LearnSource`
 - `RequiredWeaponTags / RequiredClassTags / SupportAllowedTags`
 
 ### ItemBaseDefinition
@@ -62,7 +74,14 @@
 ### AffixDefinition
 
 - `Category`
+- `AffixFamily / EffectType`
+- `ValueMin / ValueMax`
 - `AllowedSlotTypes`
+- `RequiredTags / ExcludedTags`
+- `ItemLevelMin / SpawnWeight`
+- `ExclusiveGroupId`
+- `BudgetScore`
+- `TextTemplateKey`
 - `CompileTags / RuleModifierTags`
 
 ### UnitArchetypeDefinition
@@ -71,6 +90,9 @@
 - `RoleFamilyTag`
 - `PrimaryWeaponFamilyTag`
 - `SupportModifierBiasTags`
+- `LockedAttackProfileId / LockedAttackProfileTag`
+- `LockedSignatureActiveSkill / LockedSignaturePassiveSkill`
+- `FlexUtilitySkillPool / FlexSupportSkillPool`
 - base stat v2 fields
 
 ### PassiveBoardDefinition / PassiveNodeDefinition
@@ -98,6 +120,10 @@
 - invalid stat id
 - invalid class id / role family / enum taxonomy
 - invalid canonical id / scope kind / slot kind
+- affix value band / exclusive group / gating overlap
+- skill template / range band / AI hint / hook id
+- augment offer bucket / build bias / protection overlap
+- status stack cap / refresh policy / ownership policy
 - passive board owner 누락
 - passive node kind 누락
 - exact synergy `2 / 3 / 4` tier 누락
@@ -118,6 +144,7 @@
 
 - canonical class board owner는 `vanguard / duelist / ranger / mystic`
 - skill compile contract는 모든 hero 기준 `2 active + 1 passive/trigger + 1 support`
+- meta acquisition contract는 current 4-slot compile을 깨지 않는다.
 - counter 설계는 hard counter가 아니라 soft counter 문법을 따른다.
 
 ### paid launch floor를 주장하려면

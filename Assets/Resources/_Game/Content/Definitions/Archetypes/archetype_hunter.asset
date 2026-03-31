@@ -45,6 +45,12 @@ MonoBehaviour:
   RoleFamilyTag: ranger
   PrimaryWeaponFamilyTag: bow
   SupportModifierBiasTags: []
+  LockedAttackProfileId: 
+  LockedAttackProfileTag: 
+  LockedSignatureActiveSkill: {fileID: 0}
+  LockedSignaturePassiveSkill: {fileID: 0}
+  FlexUtilitySkillPool: []
+  FlexSupportSkillPool: []
   FootprintProfile: {fileID: 11400000, guid: a81b3870596764c429790a3a0e75a089, type: 2}
   BehaviorProfile: {fileID: 11400000, guid: 694569802d1952445a6d582f97449372, type: 2}
   MobilityProfile: {fileID: 11400000, guid: 90f39a3f53210ab4697d716b89c641a6, type: 2}

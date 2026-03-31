@@ -10,6 +10,7 @@ public sealed class SkillDefinitionAsset : ScriptableObject
     public string Id = string.Empty;
     public string NameKey = string.Empty;
     public string DescriptionKey = string.Empty;
+    public SkillTemplateTypeValue TemplateType = SkillTemplateTypeValue.LegacyDerived;
     public SkillKindValue Kind = SkillKindValue.Strike;
     public SkillSlotKindValue SlotKind = SkillSlotKindValue.CoreActive;
     public DamageTypeValue DamageType = DamageTypeValue.Physical;
@@ -17,6 +18,11 @@ public sealed class SkillDefinitionAsset : ScriptableObject
     public SkillTargetRuleValue TargetRule = SkillTargetRuleValue.NearestEnemy;
     public float Power = 0f;
     public float Range = 1f;
+    public float RangeMin = 0f;
+    public float RangeMax = -1f;
+    public float Radius = 0f;
+    public float Width = 0f;
+    public float ArcDegrees = 0f;
     public float PowerFlat = 0f;
     public float PhysCoeff = 1f;
     public float MagCoeff = 0f;
@@ -24,8 +30,18 @@ public sealed class SkillDefinitionAsset : ScriptableObject
     public float HealthCoeff = 0f;
     public bool CanCrit;
     public float ManaCost = 0f;
+    public float ResourceCost = -1f;
     public float BaseCooldownSeconds = 0f;
+    public float CooldownSeconds = -1f;
     public float CastWindupSeconds = 0f;
+    public float RecoverySeconds = -1f;
+    public float PowerBudget = 0f;
+    public List<SkillAiIntentValue> AiIntents = new();
+    public SkillAiScoreHints AiScoreHints = new();
+    public string AnimationHookId = string.Empty;
+    public string VfxHookId = string.Empty;
+    public string SfxHookId = string.Empty;
+    public SkillLearnSourceValue LearnSource = SkillLearnSourceValue.LegacyDerived;
     public List<StableTagDefinition> CompileTags = new();
     public List<StableTagDefinition> RuleModifierTags = new();
     public List<StableTagDefinition> SupportAllowedTags = new();

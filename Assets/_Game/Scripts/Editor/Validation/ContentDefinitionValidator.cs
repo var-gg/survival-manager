@@ -325,6 +325,7 @@ public static class ContentDefinitionValidator
                 case StatusFamilyDefinition statusFamily:
                     RegisterId(ids, nameof(StatusFamilyDefinition), statusFamily.Id, assetPath);
                     ValidateCanonicalId(statusFamily.Id, assetPath, "StatusFamilyDefinition.Id", issues);
+                    ValidateStatusFamily(statusFamily, assetPath, issues);
                     break;
                 case CleanseProfileDefinition cleanseProfile:
                     RegisterId(ids, nameof(CleanseProfileDefinition), cleanseProfile.Id, assetPath);
@@ -1043,33 +1044,163 @@ public static class ContentDefinitionValidator
         }
 
         ValidateStableTags(issues, archetype.SupportModifierBiasTags, assetPath, "Archetype support modifier bias");
+        if (!string.IsNullOrWhiteSpace(archetype.LockedAttackProfileId))
+        {
+            ValidateCanonicalId(archetype.LockedAttackProfileId, assetPath, "UnitArchetypeDefinition.LockedAttackProfileId", issues);
+        }
+
+        if (!string.IsNullOrWhiteSpace(archetype.LockedAttackProfileTag))
+        {
+            ValidateCanonicalId(archetype.LockedAttackProfileTag, assetPath, "UnitArchetypeDefinition.LockedAttackProfileTag", issues);
+        }
+
+        if (archetype.LockedSignatureActiveSkill != null)
+        {
+            if (archetype.LockedSignatureActiveSkill.SlotKind != SkillSlotKindValue.CoreActive)
+            {
+                AddError(issues, "archetype.locked_signature_active", "Locked signature active must reference a core_active skill.", assetPath);
+            }
+
+            if (!archetype.Skills.Contains(archetype.LockedSignatureActiveSkill))
+            {
+                AddError(issues, "archetype.locked_signature_active_ref", "Locked signature active must also exist in the 4-slot compiled skill list.", assetPath);
+            }
+        }
+
+        if (archetype.LockedSignaturePassiveSkill != null)
+        {
+            if (archetype.LockedSignaturePassiveSkill.SlotKind != SkillSlotKindValue.Passive)
+            {
+                AddError(issues, "archetype.locked_signature_passive", "Locked signature passive must reference a passive skill.", assetPath);
+            }
+
+            if (!archetype.Skills.Contains(archetype.LockedSignaturePassiveSkill))
+            {
+                AddError(issues, "archetype.locked_signature_passive_ref", "Locked signature passive must also exist in the 4-slot compiled skill list.", assetPath);
+            }
+        }
+
+        if (archetype.FlexUtilitySkillPool.Any(skill => skill == null))
+        {
+            AddError(issues, "archetype.flex_utility_pool", "Flex utility pool contains a missing skill reference.", assetPath);
+        }
+        else if (archetype.FlexUtilitySkillPool.Any(skill => skill.SlotKind != SkillSlotKindValue.UtilityActive))
+        {
+            AddError(issues, "archetype.flex_utility_pool", "Flex utility pool must contain only utility_active skills.", assetPath);
+        }
+
+        if (archetype.FlexSupportSkillPool.Any(skill => skill == null))
+        {
+            AddError(issues, "archetype.flex_support_pool", "Flex support pool contains a missing skill reference.", assetPath);
+        }
+        else if (archetype.FlexSupportSkillPool.Any(skill => skill.SlotKind != SkillSlotKindValue.Support))
+        {
+            AddError(issues, "archetype.flex_support_pool", "Flex support pool must contain only support slot skills.", assetPath);
+        }
     }
 
     private static void ValidateSkill(SkillDefinitionAsset skill, string assetPath, ICollection<ContentValidationIssue> issues)
     {
+        ValidateDefinedEnum(skill.TemplateType, "Skill template type", assetPath, issues);
         ValidateDefinedEnum(skill.Kind, "Skill kind", assetPath, issues);
         ValidateDefinedEnum(skill.SlotKind, "Skill slot kind", assetPath, issues);
         ValidateDefinedEnum(skill.DamageType, "Skill damage type", assetPath, issues);
         ValidateDefinedEnum(skill.Delivery, "Skill delivery", assetPath, issues);
         ValidateDefinedEnum(skill.TargetRule, "Skill target rule", assetPath, issues);
+        ValidateDefinedEnum(skill.LearnSource, "Skill learn source", assetPath, issues);
         ValidateStableTags(issues, skill.CompileTags, assetPath, "Skill compile");
         ValidateStableTags(issues, skill.RuleModifierTags, assetPath, "Skill rule modifier");
         ValidateStableTags(issues, skill.SupportAllowedTags, assetPath, "Skill support allowed");
+        ValidateStableTags(issues, skill.SupportBlockedTags, assetPath, "Skill support blocked");
         ValidateStableTags(issues, skill.RequiredWeaponTags, assetPath, "Skill required weapon");
         ValidateStableTags(issues, skill.RequiredClassTags, assetPath, "Skill required class");
+
+        if (skill.RangeMin < 0f)
+        {
+            AddError(issues, "skill.range_band", "Skill RangeMin must be non-negative.", assetPath);
+        }
+
+        var resolvedRangeMax = skill.RangeMax >= 0f ? skill.RangeMax : skill.Range;
+        if (resolvedRangeMax < Math.Max(0f, skill.RangeMin))
+        {
+            AddError(issues, "skill.range_band", "Skill RangeMax must be greater than or equal to RangeMin.", assetPath);
+        }
+
+        if (skill.Radius < 0f || skill.Width < 0f || skill.ArcDegrees < 0f || skill.ArcDegrees > 360f)
+        {
+            AddError(issues, "skill.shape", "Skill radius/width/arc must stay within non-negative bounds and arc must not exceed 360 degrees.", assetPath);
+        }
+
+        if (skill.ResourceCost < -1f || skill.CooldownSeconds < -1f || skill.RecoverySeconds < -1f || skill.PowerBudget < 0f)
+        {
+            AddError(issues, "skill.schema_budget", "Skill resource/cooldown/recovery values must be non-negative or use -1 fallback, and PowerBudget must be non-negative.", assetPath);
+        }
+
+        if (skill.AiIntents.Distinct().Count() != skill.AiIntents.Count)
+        {
+            AddError(issues, "skill.ai_intents", "Skill AI intents contain duplicates.", assetPath);
+        }
+
+        if (skill.AiScoreHints is { } hints)
+        {
+            if (hints.MinimumTargetHealthRatio < 0f
+                || hints.MaximumTargetHealthRatio > 1f
+                || hints.MaximumTargetHealthRatio < hints.MinimumTargetHealthRatio
+                || hints.MinimumDistance < 0f
+                || hints.MaximumDistance < 0f
+                || (hints.MaximumDistance > 0f && hints.MaximumDistance < hints.MinimumDistance))
+            {
+                AddError(issues, "skill.ai_score_hints", "Skill AI score hints must keep health ratios within 0..1 and distance bands ordered.", assetPath);
+            }
+        }
+
+        ValidateSchemaIdOrKey(skill.AnimationHookId, "skill.animation_hook", assetPath, issues);
+        ValidateSchemaIdOrKey(skill.VfxHookId, "skill.vfx_hook", assetPath, issues);
+        ValidateSchemaIdOrKey(skill.SfxHookId, "skill.sfx_hook", assetPath, issues);
+
+        foreach (var status in skill.AppliedStatuses.Where(status => status != null))
+        {
+            ValidateStatusApplicationRule(status, assetPath, issues);
+        }
     }
 
     private static void ValidateAugment(AugmentDefinition augment, string assetPath, ICollection<ContentValidationIssue> issues)
     {
+        ValidateDefinedEnum(augment.OfferBucket, "Augment offer bucket", assetPath, issues);
+        ValidateDefinedEnum(augment.RiskRewardClass, "Augment risk reward class", assetPath, issues);
         ValidateModifiers(issues, augment.Modifiers, assetPath, "AugmentDefinition.Modifiers");
+        ValidateStableTags(issues, augment.Tags, assetPath, "Augment tags");
+        ValidateStableTags(issues, augment.BuildBiasTags, assetPath, "Augment build bias");
+        ValidateStableTags(issues, augment.ProtectionTags, assetPath, "Augment protection");
+        ValidateStableTags(issues, augment.MutualExclusionTags, assetPath, "Augment mutual exclusion");
+        ValidateStableTags(issues, augment.RequiresTags, assetPath, "Augment requires");
+        ValidateStableTags(issues, augment.RuleModifierTags, assetPath, "Augment rule modifier");
         if (string.IsNullOrWhiteSpace(augment.FamilyId))
         {
             AddError(issues, "augment.family_id", "Augment is missing FamilyId.", assetPath);
         }
 
+        if (augment.BudgetScore < 0f)
+        {
+            AddError(issues, "augment.budget_score", "Augment BudgetScore must be non-negative.", assetPath);
+        }
+
         if (augment.RuleModifierTags.Any(tag => tag == null || string.IsNullOrWhiteSpace(tag.Id)))
         {
             AddError(issues, "augment.rule_tag", "Augment has an empty rule modifier tag.", assetPath);
+        }
+
+        if (augment.BuildBiasTags.Select(tag => tag?.Id ?? string.Empty)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Intersect(augment.ProtectionTags.Select(tag => tag?.Id ?? string.Empty), StringComparer.Ordinal)
+            .Any())
+        {
+            AddError(issues, "augment.bias_tag_overlap", "Augment build bias tags and protection tags must not overlap.", assetPath);
+        }
+
+        if (augment.OfferBucket == AugmentOfferBucketValue.SynergyLinked && augment.BuildBiasTags.Count == 0)
+        {
+            AddError(issues, "augment.offer_metadata", "Synergy-linked augments must define at least one build bias tag.", assetPath);
         }
 
         if (augment.MutualExclusionTags.Select(tag => tag == null ? string.Empty : tag.Id).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct().Count()
@@ -1100,9 +1231,94 @@ public static class ContentDefinitionValidator
     private static void ValidateAffix(AffixDefinition affix, string assetPath, ICollection<ContentValidationIssue> issues)
     {
         ValidateDefinedEnum(affix.Category, "Affix category", assetPath, issues);
+        ValidateDefinedEnum(affix.AffixFamily, "Affix family", assetPath, issues);
+        ValidateDefinedEnum(affix.EffectType, "Affix effect type", assetPath, issues);
         ValidateModifiers(issues, affix.Modifiers, assetPath, "AffixDefinition.Modifiers");
         ValidateStableTags(issues, affix.CompileTags, assetPath, "Affix compile");
         ValidateStableTags(issues, affix.RuleModifierTags, assetPath, "Affix rule modifier");
+        ValidateStableTags(issues, affix.RequiredTags, assetPath, "Affix required");
+        ValidateStableTags(issues, affix.ExcludedTags, assetPath, "Affix excluded");
+
+        if (affix.ValueMax < affix.ValueMin)
+        {
+            AddError(issues, "affix.value_band", "Affix ValueMax must be greater than or equal to ValueMin.", assetPath);
+        }
+
+        if (affix.ItemLevelMin < 0 || affix.SpawnWeight < 0f || affix.BudgetScore < 0f)
+        {
+            AddError(issues, "affix.schema_budget", "Affix ItemLevelMin, SpawnWeight, and BudgetScore must be non-negative.", assetPath);
+        }
+
+        if (affix.RequiredTags.Select(tag => tag?.Id ?? string.Empty)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Intersect(affix.ExcludedTags.Select(tag => tag?.Id ?? string.Empty), StringComparer.Ordinal)
+            .Any())
+        {
+            AddError(issues, "affix.tag_overlap", "Affix required tags and excluded tags must not overlap.", assetPath);
+        }
+
+        if (!string.IsNullOrWhiteSpace(affix.ExclusiveGroupId))
+        {
+            ValidateCanonicalId(affix.ExclusiveGroupId, assetPath, "AffixDefinition.ExclusiveGroupId", issues);
+        }
+
+        ValidateSchemaIdOrKey(affix.TextTemplateKey, "affix.text_template", assetPath, issues);
+
+        if (affix.EffectType == AffixEffectTypeValue.StatModifier && affix.Modifiers.Count == 0)
+        {
+            AddError(issues, "affix.effect_payload", "StatModifier affixes must define at least one stat modifier.", assetPath);
+        }
+
+        if (affix.EffectType == AffixEffectTypeValue.RuleModifier && affix.RuleModifierTags.Count == 0)
+        {
+            AddError(issues, "affix.effect_payload", "RuleModifier affixes must define at least one rule modifier tag.", assetPath);
+        }
+
+        if (affix.EffectType == AffixEffectTypeValue.ConditionalTagged && affix.RequiredTags.Count == 0)
+        {
+            AddError(issues, "affix.effect_payload", "ConditionalTagged affixes must define at least one required tag.", assetPath);
+        }
+    }
+
+    private static void ValidateStatusFamily(StatusFamilyDefinition statusFamily, string assetPath, ICollection<ContentValidationIssue> issues)
+    {
+        ValidateDefinedEnum(statusFamily.Group, "Status group", assetPath, issues);
+        ValidateDefinedEnum(statusFamily.DefaultStackPolicy, "Status default stack policy", assetPath, issues);
+        ValidateDefinedEnum(statusFamily.DefaultRefreshPolicy, "Status default refresh policy", assetPath, issues);
+        ValidateDefinedEnum(statusFamily.DefaultProcAttributionPolicy, "Status default proc attribution policy", assetPath, issues);
+        ValidateDefinedEnum(statusFamily.DefaultOwnershipPolicy, "Status default ownership policy", assetPath, issues);
+        if (!statusFamily.IsRuleModifierOnly && statusFamily.DefaultStackCap < 1)
+        {
+            AddError(issues, "status.family_defaults", "Non-rule-only status families must define DefaultStackCap >= 1.", assetPath);
+        }
+
+        if (statusFamily.VisualPriority < 0)
+        {
+            AddError(issues, "status.visual_priority", "Status VisualPriority must be non-negative.", assetPath);
+        }
+    }
+
+    private static void ValidateStatusApplicationRule(StatusApplicationRule statusRule, string assetPath, ICollection<ContentValidationIssue> issues)
+    {
+        if (string.IsNullOrWhiteSpace(statusRule.StatusId))
+        {
+            AddError(issues, "status.rule_status_id", "Status application rule is missing StatusId.", assetPath);
+        }
+
+        if (statusRule.DurationSeconds < 0f || statusRule.MaxStacks < 1 || statusRule.StackCap < 0)
+        {
+            AddError(issues, "status.rule_range", "Status duration must be non-negative, MaxStacks must be >= 1, and StackCap must be >= 0.", assetPath);
+        }
+
+        ValidateDefinedEnum(statusRule.StackPolicy, "Status stack policy", assetPath, issues);
+        ValidateDefinedEnum(statusRule.RefreshPolicy, "Status refresh policy", assetPath, issues);
+        ValidateDefinedEnum(statusRule.ProcAttributionPolicy, "Status proc attribution policy", assetPath, issues);
+        ValidateDefinedEnum(statusRule.OwnershipPolicy, "Status ownership policy", assetPath, issues);
+
+        if (statusRule.StackCap > 0 && statusRule.MaxStacks > statusRule.StackCap)
+        {
+            AddError(issues, "status.rule_stack_cap", "Status rule MaxStacks must not exceed StackCap when StackCap is explicitly set.", assetPath);
+        }
     }
 
     private static void ValidateRoleInstruction(RoleInstructionDefinition roleInstruction, string assetPath, ICollection<ContentValidationIssue> issues)
@@ -1250,6 +1466,19 @@ public static class ContentDefinitionValidator
         if (ids.Distinct(StringComparer.Ordinal).Count() != ids.Count)
         {
             AddError(issues, "tag.duplicate", $"{scope} tags contain duplicates.", assetPath);
+        }
+    }
+
+    private static void ValidateSchemaIdOrKey(string value, string code, string assetPath, ICollection<ContentValidationIssue> issues)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        if (!CanonicalIdPattern.IsMatch(value))
+        {
+            AddError(issues, code, $"'{value}' must use the canonical lower-case id/key pattern.", assetPath);
         }
     }
 

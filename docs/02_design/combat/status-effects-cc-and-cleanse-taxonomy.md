@@ -2,9 +2,10 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/combat/status-effects-cc-and-cleanse-taxonomy.md`
 - 관련문서:
+  - `docs/02_design/combat/status-keyword-and-proc-rulebook.md`
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/02_design/combat/stat-system-and-power-budget.md`
   - `docs/03_architecture/status-runtime-stack-and-cleanse-rules.md`
@@ -12,8 +13,8 @@
 
 ## 목적
 
-이 문서는 launch floor에서 실제로 열어 둘 status family와 cleanse, hard CC diminishing rule을 고정한다.
-목표는 rule drift를 막고, skill / item / trait 조합이 읽히는 최소 집합만 유지하는 것이다.
+이 문서는 launch floor에서 실제로 켜 둘 status family와 cleanse floor를 고정한다.
+stack / refresh / proc / ownership의 깊은 규칙은 `status-keyword-and-proc-rulebook.md`가 소유한다.
 
 ## launch floor status family
 
@@ -70,3 +71,9 @@
 - fear, charm, sleep, polymorph, knockback, suppress 같은 확장 family는 deferred다.
 - cleanse는 status가 아닌 rule modifier를 제거하지 않는다.
 - `Faction`은 status family나 cleanse 분류에 영향을 주지 않는다.
+
+## rulebook 경계
+
+- launch floor taxonomy: 이 문서
+- stack / cap / refresh / proc attribution / summon ownership: `status-keyword-and-proc-rulebook.md`
+- runtime resolver / replay event contract: `docs/03_architecture/status-runtime-stack-and-cleanse-rules.md`

@@ -1,8 +1,13 @@
 # 모집과 리롤
 
-- 상태: draft
-- 최종수정일: 2026-03-29
-- 단계: prototype
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-04-01
+- 소스오브트루스: `docs/02_design/meta/recruitment-and-reroll.md`
+- 관련문서:
+  - `docs/02_design/meta/skill-acquisition-and-retrain.md`
+  - `docs/02_design/meta/reward-protection-and-acquisition-loop.md`
+  - `docs/03_architecture/content-authoring-and-balance-data.md`
 
 ## 목적
 
@@ -26,6 +31,7 @@ recruit 후보는 최소 다음 축으로 달라진다.
 - trait roll
 - 장비
 - augment
+- flex utility / support roll
 
 ### archetype trait pool 규칙
 
@@ -45,6 +51,8 @@ reroll은 두 종류로 분리한다.
    - 주로 gold 기반
 2. trait reroll
    - 희소 재화 기반
+3. skill flex retrain
+   - 일반 재화 또는 희소 재화 기반
 
 ### trait reroll 재화 가치 규칙
 
@@ -57,6 +65,7 @@ trait reroll 재화는 **영구증강체와 동급 가치의 희소 재화**로 
 - recruit refresh
 - trait reroll 재화 정의
 - trait reroll을 장기적 가치 자원으로 문서화
+- fixed core + flex retrain의 meta 계약
 
 ## 장기 규칙
 
@@ -71,3 +80,4 @@ trait reroll 재화는 **영구증강체와 동급 가치의 희소 재화**로 
 - trait reroll 재화가 흔하면 영구 progression과의 가치 축이 무너진다.
 - same-archetype variance가 너무 약하면 roster 선택이 평평해진다.
 - variance가 너무 과하면 계획보다 운빨이 커진다.
+- 모집 RNG를 쓰는 대신, flex retrain으로 partial recovery가 가능해야 한다.

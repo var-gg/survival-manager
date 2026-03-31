@@ -2,11 +2,12 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/03_architecture/sim-sweep-and-balance-kpis.md`
 - 관련문서:
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
   - `docs/03_architecture/content-authoring-and-balance-data.md`
+  - `docs/02_design/meta/reward-protection-and-acquisition-loop.md`
   - `docs/02_design/systems/launch-floor-content-matrix.md`
   - `docs/02_design/meta/synergy-family-catalog.md`
 
@@ -70,10 +71,15 @@
 | validation error count | content validator error 수 | `0` | `> 0` fail |
 | validation warning count | content validator warning 수 | review only | 경향 추적, 단독 fail 아님 |
 | average first cast seconds | scenario별 첫 active cast 평균 시점 | `<= 3.0s` | 초과 시 review flag |
+| time to first meaningful action | ally가 첫 meaningful event를 만드는 평균 시점 | artifact 출력 필수 | cadence review |
+| average reposition count | ally 1인당 reposition-like state 진입 평균 | artifact 출력 필수 | blob / jitter review |
+| average target access time | ally 1인당 첫 damage contact 평균 시점 | artifact 출력 필수 | 접근성 review |
+| average frontline survival time | front row ally 평균 생존 시간 | artifact 출력 필수 | frontline collapse review |
 | average battle duration seconds | scenario별 전투 평균 시간 | `4s ~ 40s` | 범위 밖이면 review flag |
 | temporary augment dead-offer ratio | 현재 팀 tags와 무관한 temporary augment 비율 | `<= 0.6` | 초과 시 review flag |
 | synergy tier uplift win rate | focused synergy comp가 mixed control comp보다 잃는 정도 | `>= -0.05` | 그보다 낮으면 review flag |
-| damage share | ally damage 분포 | artifact 출력 필수 | top-heavy 여부 review |
+| damage source distribution | ally damage 분포 | artifact 출력 필수 | top-heavy 여부 review |
+| damage taken distribution | ally 피해 분포 | artifact 출력 필수 | front/back burden review |
 | heal share | ally heal 분포 | artifact 출력 필수 | sustain concentration review |
 
 ## artifact 출력 규칙
@@ -91,7 +97,11 @@
   - win rate
   - average battle duration
   - average first cast
-  - damage share / heal share
+  - time to first meaningful action
+  - average reposition count
+  - average target access time
+  - average frontline survival time
+  - damage source distribution / damage taken distribution / heal share
   - temporary augment dead-offer ratio
   - synergy tier uplift
   - global outlier flags
@@ -107,6 +117,10 @@
   - win rate
   - avg duration
   - avg first cast
+  - time to first meaningful action
+  - avg reposition count
+  - avg target access time
+  - avg frontline survival time
   - dead-offer ratio
   - validation error/warning count
   - scenario flags

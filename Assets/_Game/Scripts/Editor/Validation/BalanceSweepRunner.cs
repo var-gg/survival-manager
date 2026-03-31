@@ -21,7 +21,163 @@ public static class BalanceSweepRunner
 
     private sealed record BattleRunDigest(
         BattleResult Result,
-        BattleReplayBundle Replay);
+        BattleReplayBundle Replay,
+        BattleRunMetrics Metrics);
+
+    private sealed record BattleRunMetrics(
+        float TimeToFirstMeaningfulActionSeconds,
+        float AverageRepositionCount,
+        float AverageTargetAccessTimeSeconds,
+        float AverageFrontlineSurvivalTimeSeconds,
+        IReadOnlyDictionary<string, float> DamageTakenTotals);
+
+    private sealed class SweepMetricTracker
+    {
+        private readonly HashSet<string> _allyIds;
+        private readonly HashSet<string> _enemyIds;
+        private readonly HashSet<string> _frontlineIds;
+        private readonly Dictionary<string, CombatActionState> _lastActionStates;
+        private readonly Dictionary<string, int> _repositionCounts;
+        private readonly Dictionary<string, float> _firstTargetAccessTimes;
+        private readonly Dictionary<string, float> _deathTimes;
+        private readonly Dictionary<string, string> _allyNames;
+        private readonly Dictionary<string, float> _damageTakenByUnit;
+        private float? _firstMeaningfulActionSeconds;
+
+        public SweepMetricTracker(BattleState state)
+        {
+            _allyIds = state.Allies.Select(unit => unit.Id.Value).ToHashSet(StringComparer.Ordinal);
+            _enemyIds = state.Enemies.Select(unit => unit.Id.Value).ToHashSet(StringComparer.Ordinal);
+            _frontlineIds = state.Allies
+                .Where(unit => unit.Anchor.IsFrontRow())
+                .Select(unit => unit.Id.Value)
+                .ToHashSet(StringComparer.Ordinal);
+            _lastActionStates = state.Allies.ToDictionary(unit => unit.Id.Value, unit => unit.ActionState, StringComparer.Ordinal);
+            _repositionCounts = state.Allies.ToDictionary(unit => unit.Id.Value, _ => 0, StringComparer.Ordinal);
+            _firstTargetAccessTimes = new Dictionary<string, float>(StringComparer.Ordinal);
+            _deathTimes = new Dictionary<string, float>(StringComparer.Ordinal);
+            _allyNames = state.Allies.ToDictionary(unit => unit.Id.Value, unit => unit.Definition.Name, StringComparer.Ordinal);
+            _damageTakenByUnit = state.Allies.ToDictionary(unit => unit.Id.Value, _ => 0f, StringComparer.Ordinal);
+        }
+
+        public void Observe(BattleSimulationStep step)
+        {
+            foreach (var unit in step.Units.Where(unit => _allyIds.Contains(unit.Id)))
+            {
+                if (_lastActionStates.TryGetValue(unit.Id, out var previousState)
+                    && !IsRepositionState(previousState)
+                    && IsRepositionState(unit.ActionState))
+                {
+                    _repositionCounts[unit.Id] = _repositionCounts.TryGetValue(unit.Id, out var current)
+                        ? current + 1
+                        : 1;
+                }
+
+                _lastActionStates[unit.Id] = unit.ActionState;
+
+                if (!unit.IsAlive && !_deathTimes.ContainsKey(unit.Id))
+                {
+                    _deathTimes[unit.Id] = step.TimeSeconds;
+                }
+            }
+
+            foreach (var @event in step.Events)
+            {
+                var actorId = @event.ActorId.Value;
+                var targetId = @event.TargetId?.Value ?? string.Empty;
+
+                if (_firstMeaningfulActionSeconds is null && IsMeaningfulAction(@event, actorId))
+                {
+                    _firstMeaningfulActionSeconds = @event.TimeSeconds;
+                }
+
+                if (_allyIds.Contains(actorId)
+                    && _enemyIds.Contains(targetId)
+                    && !_firstTargetAccessTimes.ContainsKey(actorId)
+                    && IsDamageEvent(@event))
+                {
+                    _firstTargetAccessTimes[actorId] = @event.TimeSeconds;
+                }
+
+                if (_allyIds.Contains(targetId) && IsDamageTakenEvent(@event))
+                {
+                    _damageTakenByUnit[targetId] = _damageTakenByUnit.TryGetValue(targetId, out var current)
+                        ? current + @event.Value
+                        : @event.Value;
+
+                    if (!_allyNames.ContainsKey(targetId) && !string.IsNullOrWhiteSpace(@event.TargetName))
+                    {
+                        _allyNames[targetId] = @event.TargetName;
+                    }
+                }
+            }
+        }
+
+        public BattleRunMetrics Build(float durationSeconds)
+        {
+            var frontlineIds = _frontlineIds.Count > 0 ? _frontlineIds : _allyIds;
+            var averageRepositionCount = (float)_repositionCounts.Values.DefaultIfEmpty(0).Average();
+            var averageTargetAccessTime = (float)_allyIds
+                .Select(id => _firstTargetAccessTimes.TryGetValue(id, out var value) ? value : durationSeconds)
+                .DefaultIfEmpty(durationSeconds)
+                .Average();
+            var averageFrontlineSurvival = (float)frontlineIds
+                .Select(id => _deathTimes.TryGetValue(id, out var value) ? value : durationSeconds)
+                .DefaultIfEmpty(durationSeconds)
+                .Average();
+
+            return new BattleRunMetrics(
+                _firstMeaningfulActionSeconds ?? durationSeconds,
+                averageRepositionCount,
+                averageTargetAccessTime,
+                averageFrontlineSurvival,
+                BuildDamageTakenTotals());
+        }
+
+        private IReadOnlyDictionary<string, float> BuildDamageTakenTotals()
+        {
+            return _damageTakenByUnit
+                .Where(pair => pair.Value > 0f)
+                .OrderByDescending(pair => pair.Value)
+                .ThenBy(pair => pair.Key, StringComparer.Ordinal)
+                .ToDictionary(
+                    pair => _allyNames.TryGetValue(pair.Key, out var name) && !string.IsNullOrWhiteSpace(name) ? name : pair.Key,
+                    pair => pair.Value,
+                    StringComparer.Ordinal);
+        }
+
+        private bool IsMeaningfulAction(BattleEvent @event, string actorId)
+        {
+            if (!_allyIds.Contains(actorId) || @event.ActionType == BattleActionType.WaitDefend)
+            {
+                return false;
+            }
+
+            if (@event.EventKind != BattleEventKind.Action)
+            {
+                return true;
+            }
+
+            return @event.LogCode is BattleLogCode.BasicAttackDamage or BattleLogCode.ActiveSkillDamage or BattleLogCode.ActiveSkillHeal;
+        }
+
+        private static bool IsRepositionState(CombatActionState state)
+        {
+            return state is CombatActionState.Reposition or CombatActionState.BreakContact or CombatActionState.SecurePosition;
+        }
+
+        private static bool IsDamageEvent(BattleEvent @event)
+        {
+            return @event.Value > 0f && @event.LogCode is BattleLogCode.BasicAttackDamage or BattleLogCode.ActiveSkillDamage;
+        }
+
+        private static bool IsDamageTakenEvent(BattleEvent @event)
+        {
+            return @event.Value > 0f
+                   && (@event.LogCode is BattleLogCode.BasicAttackDamage or BattleLogCode.ActiveSkillDamage
+                       || (@event.LogCode == BattleLogCode.Generic && string.Equals(@event.Note, "status_tick", StringComparison.Ordinal)));
+        }
+    }
 
     [MenuItem("SM/Validation/Run Balance Sweep Smoke")]
     public static void RunSmokeMenu()
@@ -115,8 +271,13 @@ public static class BalanceSweepRunner
         var winRate = seededRuns.Count(run => run.Result.Winner == TeamSide.Ally) / (float)totalRuns;
         var averageDuration = seededRuns.Average(run => run.Result.DurationSeconds);
         var averageFirstCast = seededRuns.Average(run => ResolveFirstCastSeconds(run.Result));
+        var averageMeaningfulAction = seededRuns.Average(run => run.Metrics.TimeToFirstMeaningfulActionSeconds);
+        var averageRepositionCount = seededRuns.Average(run => run.Metrics.AverageRepositionCount);
+        var averageTargetAccessTime = seededRuns.Average(run => run.Metrics.AverageTargetAccessTimeSeconds);
+        var averageFrontlineSurvival = seededRuns.Average(run => run.Metrics.AverageFrontlineSurvivalTimeSeconds);
         var damageShare = BuildShareReport(seededRuns, BattleLogCode.BasicAttackDamage, BattleLogCode.ActiveSkillDamage);
         var healShare = BuildShareReport(seededRuns, BattleLogCode.ActiveSkillHeal);
+        var damageTakenDistribution = BuildTakenShareReport(seededRuns);
         var deadOfferRatio = ResolveTemporaryAugmentDeadOfferRatio(input);
 
         var flags = new List<string>();
@@ -161,11 +322,17 @@ public static class BalanceSweepRunner
             WinRate = winRate,
             AverageBattleDurationSeconds = averageDuration,
             AverageFirstCastSeconds = averageFirstCast,
+            TimeToFirstMeaningfulActionSeconds = averageMeaningfulAction,
+            AverageRepositionCount = averageRepositionCount,
+            AverageTargetAccessTimeSeconds = averageTargetAccessTime,
+            AverageFrontlineSurvivalTimeSeconds = averageFrontlineSurvival,
             TemporaryAugmentDeadOfferRatio = deadOfferRatio,
             ValidationErrorCount = validationReport.Issues.Count(issue => issue.Severity == ContentValidationSeverity.Error),
             ValidationWarningCount = validationReport.Issues.Count(issue => issue.Severity == ContentValidationSeverity.Warning),
             DamageShare = damageShare,
             HealShare = healShare,
+            DamageSourceDistribution = damageShare,
+            DamageTakenDistribution = damageTakenDistribution,
             Flags = flags,
         };
     }
@@ -201,10 +368,17 @@ public static class BalanceSweepRunner
             BattleSimulator.DefaultFixedStepSeconds,
             seed);
         var simulator = new BattleSimulator(state, 300);
+        var tracker = new SweepMetricTracker(state);
+        while (!simulator.IsFinished)
+        {
+            tracker.Observe(simulator.Step());
+        }
+
         var result = simulator.RunToEnd();
+        var metrics = tracker.Build(result.DurationSeconds);
         var timestamp = $"seed:{seed}";
         var replay = ReplayAssembler.Assemble(playerSnapshot, enemyLoadout, result, seed, timestamp, timestamp);
-        return new BattleRunDigest(result, replay);
+        return new BattleRunDigest(result, replay, metrics);
     }
 
     private static float ResolveFirstCastSeconds(BattleResult result)
@@ -244,6 +418,32 @@ public static class BalanceSweepRunner
             .ToList();
     }
 
+    private static IReadOnlyList<BalanceSweepShareEntry> BuildTakenShareReport(IReadOnlyList<BattleRunDigest> runs)
+    {
+        var totals = new Dictionary<string, float>(StringComparer.Ordinal);
+        foreach (var run in runs)
+        {
+            foreach (var entry in run.Metrics.DamageTakenTotals)
+            {
+                totals[entry.Key] = totals.TryGetValue(entry.Key, out var current)
+                    ? current + entry.Value
+                    : entry.Value;
+            }
+        }
+
+        var grandTotal = totals.Values.Sum();
+        if (grandTotal <= 0f)
+        {
+            return Array.Empty<BalanceSweepShareEntry>();
+        }
+
+        return totals
+            .OrderByDescending(pair => pair.Value)
+            .ThenBy(pair => pair.Key, StringComparer.Ordinal)
+            .Select(pair => new BalanceSweepShareEntry(pair.Key, pair.Value / grandTotal))
+            .ToList();
+    }
+
     private static float ResolveTemporaryAugmentDeadOfferRatio(BalanceSweepScenarioInput input)
     {
         var temporaryAugments = input.Content.AugmentCatalog.Values
@@ -264,7 +464,7 @@ public static class BalanceSweepRunner
     private static string BuildCsvSummary(BalanceSweepReport report)
     {
         var builder = new StringBuilder();
-        builder.AppendLine("scenario_id,team_tactic_id,compile_hash_deterministic,final_state_deterministic,win_rate,avg_battle_duration_seconds,avg_first_cast_seconds,temporary_augment_dead_offer_ratio,validation_errors,validation_warnings,flags");
+        builder.AppendLine("scenario_id,team_tactic_id,compile_hash_deterministic,final_state_deterministic,win_rate,avg_battle_duration_seconds,avg_first_cast_seconds,time_to_first_meaningful_action_seconds,avg_reposition_count,avg_target_access_time_seconds,avg_frontline_survival_time_seconds,temporary_augment_dead_offer_ratio,validation_errors,validation_warnings,flags");
         foreach (var scenario in report.Scenarios)
         {
             builder.Append(scenario.ScenarioId).Append(',')
@@ -274,6 +474,10 @@ public static class BalanceSweepRunner
                 .Append(scenario.WinRate.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
                 .Append(scenario.AverageBattleDurationSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
                 .Append(scenario.AverageFirstCastSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
+                .Append(scenario.TimeToFirstMeaningfulActionSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
+                .Append(scenario.AverageRepositionCount.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
+                .Append(scenario.AverageTargetAccessTimeSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
+                .Append(scenario.AverageFrontlineSurvivalTimeSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
                 .Append(scenario.TemporaryAugmentDeadOfferRatio.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
                 .Append(scenario.ValidationErrorCount).Append(',')
                 .Append(scenario.ValidationWarningCount).Append(',')

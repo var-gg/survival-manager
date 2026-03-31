@@ -45,6 +45,12 @@ MonoBehaviour:
   RoleFamilyTag: mystic
   PrimaryWeaponFamilyTag: focus
   SupportModifierBiasTags: []
+  LockedAttackProfileId: 
+  LockedAttackProfileTag: 
+  LockedSignatureActiveSkill: {fileID: 0}
+  LockedSignaturePassiveSkill: {fileID: 0}
+  FlexUtilitySkillPool: []
+  FlexSupportSkillPool: []
   FootprintProfile: {fileID: 11400000, guid: a4440be1dcd4a5f4fa739e807da0f2ed, type: 2}
   BehaviorProfile: {fileID: 11400000, guid: fb9fc401a4d91e242b0fe3a2654c3488, type: 2}
   MobilityProfile: {fileID: 11400000, guid: 7c6ff8e645a78474a8cc9e6813ae9e56, type: 2}

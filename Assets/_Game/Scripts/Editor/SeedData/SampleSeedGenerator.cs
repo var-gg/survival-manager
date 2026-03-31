@@ -2174,6 +2174,11 @@ public static class SampleSeedGenerator
             element.FindPropertyRelative(nameof(StatusApplicationRule.Magnitude))!.floatValue = values[index].Magnitude;
             element.FindPropertyRelative(nameof(StatusApplicationRule.MaxStacks))!.intValue = values[index].MaxStacks;
             element.FindPropertyRelative(nameof(StatusApplicationRule.RefreshDurationOnReapply))!.boolValue = values[index].RefreshDurationOnReapply;
+            element.FindPropertyRelative(nameof(StatusApplicationRule.StackCap))!.intValue = values[index].StackCap;
+            element.FindPropertyRelative(nameof(StatusApplicationRule.StackPolicy))!.enumValueIndex = (int)values[index].StackPolicy;
+            element.FindPropertyRelative(nameof(StatusApplicationRule.RefreshPolicy))!.enumValueIndex = (int)values[index].RefreshPolicy;
+            element.FindPropertyRelative(nameof(StatusApplicationRule.ProcAttributionPolicy))!.enumValueIndex = (int)values[index].ProcAttributionPolicy;
+            element.FindPropertyRelative(nameof(StatusApplicationRule.OwnershipPolicy))!.enumValueIndex = (int)values[index].OwnershipPolicy;
         }
     }
 

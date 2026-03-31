@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: support_piercing
   NameKey: content.skill.support_piercing.name
   DescriptionKey: content.skill.support_piercing.desc
+  TemplateType: 0
   Kind: 5
   SlotKind: 3
   DamageType: 0
@@ -22,6 +23,11 @@ MonoBehaviour:
   TargetRule: 5
   Power: 0
   Range: 0
+  RangeMin: 0
+  RangeMax: -1
+  Radius: 0
+  Width: 0
+  ArcDegrees: 0
   PowerFlat: 0
   PhysCoeff: 1
   MagCoeff: 0
@@ -29,8 +35,27 @@ MonoBehaviour:
   HealthCoeff: 0
   CanCrit: 0
   ManaCost: 0
+  ResourceCost: -1
   BaseCooldownSeconds: 0
+  CooldownSeconds: -1
   CastWindupSeconds: 0
+  RecoverySeconds: -1
+  PowerBudget: 0
+  AiIntents: 
+  AiScoreHints:
+    BurstBias: 0
+    ProtectBias: 0
+    MaintainRangeBias: 0
+    ExecuteBias: 0
+    ControlBias: 0
+    MinimumTargetHealthRatio: 0
+    MaximumTargetHealthRatio: 1
+    MinimumDistance: 0
+    MaximumDistance: 0
+  AnimationHookId: 
+  VfxHookId: 
+  SfxHookId: 
+  LearnSource: 0
   CompileTags:
   - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
   - {fileID: 11400000, guid: 81f8159238428fa4fa946849f2e98580, type: 2}

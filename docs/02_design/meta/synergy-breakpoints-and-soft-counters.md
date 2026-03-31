@@ -2,13 +2,13 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
 - 관련문서:
-  - `docs/02_design/combat/synergy-system.md`
   - `docs/02_design/deck/roster-archetype-launch-scope.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
   - `docs/02_design/meta/synergy-family-catalog.md`
+  - `docs/02_design/meta/synergy-and-augment-taxonomy.md`
 
 ## 목적
 
@@ -21,6 +21,7 @@
 - 총 family: 7
 
 family 수는 늘리기보다, 각 family가 `2 / 3 / 4` breakpoint에서 무엇을 주는지를 명확히 만드는 편을 우선한다.
+schema capacity는 더 넓게 열어 두더라도, current live subset validator는 계속 7 family를 기준으로 본다.
 
 ## breakpoint 규칙
 

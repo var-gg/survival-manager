@@ -21,8 +21,13 @@ MonoBehaviour:
   FamilyId: silver
   Tier: 1
   OfferWeight: 1
+  OfferBucket: 0
+  RiskRewardClass: 0
+  BudgetScore: 0
   SuppressIfPermanentEquipped: 0
   Tags: []
+  BuildBiasTags: []
+  ProtectionTags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []

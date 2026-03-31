@@ -40,7 +40,7 @@
 - `content-pipeline.md`: 콘텐츠 intake와 파이프라인 운영 방향
 - `content-loading-contract.md`: canonical content root와 runtime/editor 계약
 - `content-loading-strategy.md`: MVP content loading 계약
-- `content-seed-assets.md`: sample seed asset 기준
+- `content-seed-assets.md`: sample seed asset과 Markdown catalog/live subset 기준
 - `combat-content-mapping.md`: spatial combat authored data와 runtime 매핑
 - `encounter-authoring-and-runtime-resolution.md`: chapter/site/encounter resolve와 debug fallback 경계
 - `skill-tag-catalog-and-compatibility-resolution.md`: stable tag catalog와 compile/validation 계약
@@ -51,7 +51,7 @@
 - `combat-runtime-architecture.md`: live simulation 전투 런타임 책임 분리
 - `combat-state-and-event-model.md`: 상태, status stack, typed event, 결과 모델 정의
 - `combat-harness-and-debug-contract.md`: battle harness, gizmo, acceptance 시나리오 기준
-- `status-runtime-stack-and-cleanse-rules.md`: status apply/cleanse/DR runtime 규칙
+- `status-runtime-stack-and-cleanse-rules.md`: status stack / refresh / ownership runtime 규칙
 - `editor-sandbox-tooling.md`: Unity combat sandbox/editor tooling 경계
 - `loadout-compiler-and-battle-snapshot.md`: build -> compile -> battle snapshot 경계
 - `drop-resolution-and-ledger-pipeline.md`: automatic drop resolve와 reward ledger 계약
