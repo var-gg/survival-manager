@@ -8,7 +8,6 @@
 
 - 문서 체계와 메타데이터 규칙은 `docs-governance.md`
 - 기본 시작 컨텍스트, lifecycle, deprecated suppression 규칙은 `docs-harness.md`
-- deprecated 문서 tombstone은 `deprecated-docs-registry.md`
 - 겹치는 문서군의 역할 표는 `source-of-truth-matrix.md`
 - docs 검증과 eval 초안은 `docs-evals.md`
 - 파일명/경로 규칙은 `naming-conventions.md`
@@ -23,7 +22,6 @@
 
 - `docs-governance.md`: 문서 위치, 메타데이터, 링크 갱신의 기준
 - `docs-harness.md`: 기본 컨텍스트, trust tier, deprecated lifecycle 기준
-- `deprecated-docs-registry.md`: 제거된 문서와 replacement 기록
 - `source-of-truth-matrix.md`: 역할이 겹치는 문서군의 source-of-truth 표
 - `docs-evals.md`: docs harness eval 초안과 검증 관점
 - `naming-conventions.md`: 문서 파일명과 경로 명명 규칙
@@ -36,3 +34,4 @@
 ## 운영 메모
 
 문서 체계나 운영 정책이 durable하게 바뀌면 `docs/04_decisions/` ADR로 남긴다.
+central tombstone은 `docs-harness.md`, `docs-governance.md` 같은 기준 문서의 내부 참조로만 다루고 active index에서는 직접 노출하지 않는다.

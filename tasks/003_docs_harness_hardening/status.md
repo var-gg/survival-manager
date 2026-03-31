@@ -10,6 +10,7 @@
 - docs harness, lifecycle, deprecated registry, source-of-truth matrix, eval 초안, policy check, CI gate를 추가했다.
 - active index에서 deprecated pointer를 제거했고 원본 deprecated 문서는 registry로 흡수한 뒤 삭제했다.
 - `docs/05_setup/index.md`를 실제 파일 집합과 다시 맞췄고, durable docs/task 메타데이터의 영어 drift를 한국어 기준으로 정규화했다.
+- active start surface에서 deprecated registry 직접 링크를 제거했고, mandatory docs workflow 범위를 하네스 enforcement 경로까지 넓혔다.
 - `tools/docs-policy-check.ps1`와 `tools/smoke-check.ps1` 검증은 통과했고, full `tools/docs-check.ps1`는 기존 repo-wide markdownlint debt 때문에 아직 통과하지 않는다.
 
 ## 완료
@@ -22,11 +23,15 @@
 - deprecated pointer였던 전투/아키텍처 문서 6개를 registry에 기록한 뒤 삭제했다.
 - `docs/05_setup/local-automation.md`와 `.agents/skills/docs-maintainer/SKILL.md`를 하네스 규칙에 맞게 강화했다.
 - `tools/docs-policy-check.ps1`를 추가하고 `tools/docs-check.ps1`, `tools/smoke-check.ps1`, `.github/workflows/docs-lint.yml`을 갱신했다.
+- `docs/index.md`와 `docs/00_governance/index.md`에서 deprecated registry 직접 링크를 제거했다.
+- `tools/docs-policy-check.ps1`에 active index의 deprecated registry 직접 링크 금지와 optional routing asset 검사 스위치를 추가했다.
+- `AGENTS.md`와 `.agents/skills/docs-maintainer/SKILL.md`의 mandatory trigger 범위를 `tools/docs*.ps1`, `tools/smoke-check.ps1`, `.github/workflows/**`까지 넓혔다.
 - `pwsh -File tools/docs-policy-check.ps1 -RepoRoot .`, `pwsh -File tools/docs-check.ps1 -RepoRoot . -PolicyOnly`, `pwsh -File tools/smoke-check.ps1 -RepoRoot .`를 확인했다.
 
 ## 보류
 - repo-wide markdownlint / markdown-link-check backlog 정리
 - full `tools/docs-check.ps1`를 CI 기본 gate로 승격하는 작업
+- routing asset 계층 전체를 한국어 기준으로 정규화하고 optional routing asset check를 기본 gate로 올리는 작업
 
 ## 이슈
 - 현재 워크트리에 사용자의 gameplay/content 변경이 많이 있어 문서/도구 범위만 편집해야 한다.
@@ -38,6 +43,7 @@
 - deprecated pointer 원본은 registry 기반으로 정리하고 active index에서 즉시 제거한다.
 - deterministic enforcement는 PowerShell 스크립트 + GitHub Actions를 1차 경로로 둔다.
 - CI는 우선 `docs-policy-check` + `smoke-check`를 gate로 사용하고, repo-wide markdown style debt는 별도 정리 작업으로 분리한다.
+- central tombstone은 기준 문서 내부 참조로만 유지하고 active index/start surface에는 직접 노출하지 않는다.
 
 ## 다음 단계
 - repo-wide markdownlint debt를 별도 task로 inventory하고 정리 범위를 결정한다.

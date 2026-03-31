@@ -81,6 +81,7 @@ deprecated 처리는 아래 순서를 따른다.
 - active index에는 active/draft 문서만 남긴다.
 - 실제 존재하지 않는 문서를 나열하지 않는다.
 - deprecated pointer, archive link, tombstone link를 active index에 노출하지 않는다.
+- central registry는 기준 문서 본문에서만 참조하고, start surface 역할의 index에서는 직접 링크하지 않는다.
 - 각 항목은 목적 차이를 짧게 설명하되 본문을 복제하지 않는다.
 
 ## source-of-truth matrix 규칙

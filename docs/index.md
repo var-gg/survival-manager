@@ -27,7 +27,6 @@
 
 - 문서 거버넌스: `00_governance/docs-governance.md`
 - 문서 하네스와 lifecycle: `00_governance/docs-harness.md`
-- 중앙 deprecated registry: `00_governance/deprecated-docs-registry.md`
 - source-of-truth matrix: `00_governance/source-of-truth-matrix.md`
 - docs eval 초안: `00_governance/docs-evals.md`
 - 구현 검수 체크리스트: `00_governance/implementation-review-checklist.md`

@@ -111,7 +111,9 @@ pwsh -File tools/smoke-check.ps1 -RepoRoot .
 - 문서 변경은 실제 저장소 상태와 맞아야 한다.
 - repository-relative 링크와 안정적인 구조를 우선한다.
 - 구조나 정책이 바뀌면 관련 문서를 같은 작업 단위에서 갱신한다.
+- `tools/docs*.ps1`, `tools/smoke-check.ps1`, `.github/workflows/**`처럼 하네스 enforcement를 바꾸는 작업도 문서 하네스 변경으로 취급한다.
 - active index에 deprecated pointer를 남기지 않는다.
+- active index에서 `deprecated-docs-registry.md`를 직접 노출하지 않는다.
 - `Assets/ThirdParty` 원본은 수정하지 않는다.
 
 ## 기대 산출물

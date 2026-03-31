@@ -1,5 +1,6 @@
 param(
-    [string]$RepoRoot = "."
+    [string]$RepoRoot = ".",
+    [switch]$CheckRoutingAssets
 )
 
 $ErrorActionPreference = 'Stop'
@@ -165,6 +166,11 @@ $humanFacingFiles = @(
 $humanFacingFiles += Get-ChildItem $docsRootPath -Recurse -File -Filter *.md | Select-Object -ExpandProperty FullName
 $humanFacingFiles += Get-ChildItem (Join-Path $repoRootPath 'tasks') -Recurse -File -Filter *.md | Select-Object -ExpandProperty FullName
 
+if ($CheckRoutingAssets) {
+    $humanFacingFiles += Get-ChildItem (Join-Path $repoRootPath 'prompts') -Recurse -File -Filter *.md -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+    $humanFacingFiles += Get-ChildItem (Join-Path $repoRootPath '.agents/skills') -Recurse -File -Filter *.md -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+}
+
 foreach ($filePath in $humanFacingFiles | Sort-Object -Unique) {
     $relativePath = Normalize-RepoPath(([System.IO.Path]::GetRelativePath($repoRootPath, $filePath)))
     $content = Get-Content -Raw $filePath
@@ -188,6 +194,10 @@ foreach ($docFile in $docsFiles) {
     }
 
     if ($docFile.Name -in @('index.md', 'README.md')) {
+        continue
+    }
+
+    if ($relativePath -eq 'docs/00_governance/deprecated-docs-registry.md') {
         continue
     }
 
@@ -226,6 +236,10 @@ foreach ($indexFile in $indexFiles) {
         $referenceStatus = Get-FileStatus -Path $reference
         if ($referenceStatus -eq 'deprecated') {
             Add-PolicyError "active index가 deprecated 문서를 노출합니다: $indexRelativePath -> $referenceRelativePath"
+        }
+
+        if ($referenceRelativePath -eq 'docs/00_governance/deprecated-docs-registry.md') {
+            Add-PolicyError "active index가 deprecated registry를 직접 노출합니다: $indexRelativePath -> $referenceRelativePath"
         }
     }
 }
