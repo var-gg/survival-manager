@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-03-31
 - 소스오브트루스: `docs/00_governance/task-execution-pattern.md`
 - 관련문서:
   - `tasks/_templates/spec.md`
@@ -27,40 +27,51 @@
 - `implement.md`
 - `status.md`
 
-모든 작업이 네 파일을 다 요구하지는 않지만, 큰 작업은 필요한 최소 집합을 시작 전에 만든다.
+모든 작업이 네 파일을 다 요구하지는 않지만, Unity migration, 구조 변경, persistence/asmdef 변경, validator 확장 작업은 네 파일을 모두 만든다.
+특히 umbrella task는 parent 문서와 child phase 문서를 같이 둔다.
 
 ## 문서 역할
 
 ### `spec.md`
 
-- 목표
-- 비목표
-- 제약
-- 산출물
-- 완료 기준
+- `Goal`
+- `Authoritative boundary`
+- `In scope`
+- `Out of scope`
+- `asmdef impact`
+- `persistence impact`
+- `validator / test oracle`
+- `done definition`
+- `deferred`
 
 ### `plan.md`
 
-- 마일스톤
-- 승인 기준
-- 검증 명령
-- 중단 조건
+- `Preflight`
+- `Phase 1 code-only`
+- `Phase 2 asset authoring`
+- `Phase 3 validation`
+- `rollback / escape hatch`
+- `tool usage plan`
+- `loop budget`
 
 ### `implement.md`
 
-- 실행 방식
-- 구현 범위 제한
-- 문서 동시 갱신 규칙
-- 테스트/검증 규칙
+- `Phase log`
+- `deviation`
+- `blockers`
+- `diagnostics`
+- `why this loop happened`
+- 미시 `compile -> refresh -> console` 로그가 아니라 phase별 요약
 
 ### `status.md`
 
-- 현재 상태
-- 완료 항목
-- 보류 항목
-- 이슈
-- 결정
-- 다음 단계
+- `Current state`
+- `Acceptance matrix`
+- `Evidence`
+- `Remaining blockers`
+- `Deferred / debug-only`
+- `Loop budget consumed`
+- `Handoff notes`
 
 ## 필수 적용 시점
 
@@ -70,6 +81,7 @@
 - 구조/정책/의존 방향을 바꾸는 작업
 - 승인 지점이나 중단 조건이 있는 작업
 - 문서와 구현을 함께 맞춰야 하는 작업
+- validator-first, asmdef preflight, asset batch 규칙이 필요한 Unity 작업
 
 ## 폴더 규칙
 
@@ -77,9 +89,11 @@
 - `<next-id>`는 기존 숫자 task 폴더 다음 정수 값을 쓴다.
 - `<topic>`은 영어 `snake_case` 짧은 주제를 쓴다.
 - task 문서는 복붙한 뒤 방치하지 않고 실제 상태에 맞게 즉시 채운다.
+- `compile green`만 적고 닫지 않는다. acceptance oracle과 evidence를 함께 남긴다.
 
 ## 운영 메모
 
 - `status.md`는 핸드오프 기준 문서다.
 - Discord 보고는 `status.md` 요약과 어긋나지 않아야 한다.
 - trivial한 작업에는 불필요한 템플릿 복제를 만들지 않는다.
+- task가 oversized umbrella로 보이면 parent에서 split plan을 먼저 적고 child phase 문서로 분해한다.

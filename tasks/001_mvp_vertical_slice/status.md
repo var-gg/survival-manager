@@ -1,7 +1,7 @@
 # 작업 상태: 001 MVP Vertical Slice
 
 - 상태: 진행 중
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-03-31
 - 단계: prototype
 - 작업 ID: 001
 
@@ -13,6 +13,12 @@
 
 - playable boundary, 현재 리스크, 다음 우선순위에 대한 단일 live source of truth
 - `docs/06_production/**` 문서는 이 상태 문서를 요약하거나 보조하는 역할만 가진다.
+
+## 관련 운영 계약
+
+- 큰 Unity migration이나 catalog closure 작업은 `tasks/004_launch_floor_catalog_closure/status.md`를 parent live state로 참고한다.
+- task shaping, loop budget, validator-first 규칙은 `docs/03_architecture/unity-agent-harness-contract.md`를 따른다.
+- asmdef/persistence ownership은 `docs/03_architecture/assembly-boundaries-and-persistence-ownership.md`를, validator/evidence 규칙은 `docs/03_architecture/validation-and-acceptance-oracles.md`를 우선한다.
 
 ## 현재 검증된 playable 경계
 

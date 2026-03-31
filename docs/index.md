@@ -29,6 +29,7 @@
 - 문서 하네스와 lifecycle: `00_governance/docs-harness.md`
 - source-of-truth matrix: `00_governance/source-of-truth-matrix.md`
 - docs eval 초안: `00_governance/docs-evals.md`
+- task 실행 패턴: `00_governance/task-execution-pattern.md`
 - 구현 검수 체크리스트: `00_governance/implementation-review-checklist.md`
 - 제품 인덱스: `01_product/index.md`
 - 디자인 인덱스: `02_design/index.md`
@@ -36,6 +37,15 @@
 - 의사결정 인덱스: `04_decisions/index.md`
 - 설정 인덱스: `05_setup/index.md`
 - 운영 인덱스: `06_production/index.md`
+
+## Unity 에이전트 하네스 빠른 링크
+
+- 하네스 상위 계약: `03_architecture/unity-agent-harness-contract.md`
+- Editor iteration / asset authoring 규칙: `03_architecture/unity-editor-iteration-and-asset-authoring.md`
+- asmdef / persistence ownership 규칙: `03_architecture/assembly-boundaries-and-persistence-ownership.md`
+- validator / acceptance oracle 규칙: `03_architecture/validation-and-acceptance-oracles.md`
+- Unity MCP capability 계약: `03_architecture/unity-mcp-tooling-contract.md`
+- 현재 retrofit parent task: `../tasks/004_launch_floor_catalog_closure/status.md`
 
 ## localization 빠른 링크
 

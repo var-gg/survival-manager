@@ -14,6 +14,14 @@
 
 이 폴더는 기술 구조, 코딩 경계, 의존 방향, Unity 특화 제약을 정의한다.
 
+## Unity agent harness 문서
+
+- `unity-agent-harness-contract.md`: Unity repo에서 task를 어떻게 shape하고 닫는지에 대한 상위 운영 계약
+- `unity-editor-iteration-and-asset-authoring.md`: code-only / asset batch / validator / smoke 순서와 Editor state 규칙
+- `assembly-boundaries-and-persistence-ownership.md`: `SM.Meta`, `SM.Unity`, `SM.Persistence.Abstractions` 경계와 asmdef 사전 점검 규칙
+- `validation-and-acceptance-oracles.md`: validator-first, acceptance matrix, evidence 기록 규칙
+- `unity-mcp-tooling-contract.md`: low-level loop를 high-level capability contract로 대체하는 기준
+
 ## 핵심 구조 문서
 
 - `technical-overview.md`: 현재 구현과 문서 체계를 연결하는 상위 개요

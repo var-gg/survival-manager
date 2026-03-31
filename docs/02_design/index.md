@@ -13,6 +13,17 @@
 
 게임 디자인, UX 흐름, 화면/시스템 설계 문서를 모은다.
 
+## design와 harness 경계
+
+- 이 폴더는 `무엇을 만들지`와 플레이어 경험 기준을 정의한다.
+- Unity task를 `어떻게 닫을지`에 대한 preflight, phase gate,
+  validator-first, loop budget은
+  `docs/03_architecture/unity-agent-harness-contract.md`와 그 하위 운영
+  계약 문서를 따른다.
+- 큰 migration task의 실행/핸드오프 기준은 design 문서가 아니라 현재
+  task 상태 문서와 task template를 우선한다.
+- design 문서에 implementation loop 규칙을 섞지 않는다. 그런 규칙은 architecture/harness 문서로 보낸다.
+
 ## combat 문서
 
 - `combat/battlefield-and-camera.md`: 좌 vs 우, slanted camera, off-grid 전장 기준

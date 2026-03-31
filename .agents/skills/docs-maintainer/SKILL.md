@@ -106,6 +106,29 @@ pwsh -File tools/smoke-check.ps1 -RepoRoot .
 병렬화가 필요하면 deprecated inventory, language audit, index coverage audit 같은 read-only 조사에 한정한다.
 실제 쓰기와 최종 통합은 한 작업 단위에서 처리한다.
 
+### 8. handoff 체크리스트를 강제한다
+
+task 실행 문서를 닫기 전에는 아래를 모두 확인한다.
+
+- `spec.md`에 최소 `Goal`, `Authoritative boundary`, `In scope`, `Out of scope`, `asmdef impact`, `persistence impact`, `validator / test oracle`, `done definition`, `deferred`가 있다.
+- `plan.md`에 최소 `Preflight`, `Phase 1 code-only`, `Phase 2 asset authoring`, `Phase 3 validation`, `rollback / escape hatch`, `tool usage plan`, `loop budget`이 있다.
+- `implement.md`는 phase별 요약, deviation, blockers, diagnostics, `why this loop happened`를 남기고 미시 `compile -> refresh -> console` 로그를 그대로 나열하지 않는다.
+- `status.md`는 `Current state`, `Acceptance matrix`, `Evidence`, `Remaining blockers`, `Deferred / debug-only`, `Loop budget consumed`, `Handoff notes`를 가진다.
+- 위 필수 섹션이 하나라도 비어 있거나 누락되면 handoff-ready로 올리지 않는다.
+- Unity migration task라면 `compile green`만으로 닫지 않고 validator, targeted test, runtime path oracle 근거까지 남긴다.
+- oversized umbrella task는 parent status만으로 닫지 않고 child phase 문서로 split closure한다.
+
+### 9. index 동기화를 mandatory로 본다
+
+다음 범주를 건드렸으면 관련 index를 같은 작업 단위에서 함께 갱신한다.
+
+- `docs/**` 전반 구조 변경: `docs/index.md`
+- design/architecture 역할 경계 변경: `docs/02_design/index.md`, `docs/03_architecture/index.md`
+- task template / task contract 변경: `docs/00_governance/task-execution-pattern.md`
+- source-of-truth 역할이 바뀐 경우: `docs/00_governance/source-of-truth-matrix.md`
+
+index sync가 빠진 문서 작업은 완료로 보지 않는다.
+
 ## 가드레일
 
 - 문서 변경은 실제 저장소 상태와 맞아야 한다.
@@ -115,6 +138,8 @@ pwsh -File tools/smoke-check.ps1 -RepoRoot .
 - active index에 deprecated pointer를 남기지 않는다.
 - active index에서 `deprecated-docs-registry.md`를 직접 노출하지 않는다.
 - `Assets/ThirdParty` 원본은 수정하지 않는다.
+- Unity repo 운영 계약 문서는 선언문이 아니라 preflight, 금지사항, acceptance, escalation까지 내려와야 한다.
+- asset phase와 code phase를 섞은 task는 문서에서 split plan을 먼저 남긴다.
 
 ## 기대 산출물
 
@@ -122,3 +147,4 @@ pwsh -File tools/smoke-check.ps1 -RepoRoot .
 - 정리된 index, 관련문서 링크, source-of-truth 표
 - registry 기반 deprecated cleanup
 - 검증 결과가 남은 task `status.md`
+- 다음 턴 에이전트가 바로 재사용할 수 있는 task template와 운영 계약
