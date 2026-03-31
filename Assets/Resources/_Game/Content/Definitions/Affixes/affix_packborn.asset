@@ -16,6 +16,7 @@ MonoBehaviour:
   NameKey: content.affix.affix_packborn.name
   DescriptionKey: content.affix.affix_packborn.desc
   Category: 4
+  Tier: 1
   AllowedSlotTypes: 0200000000000000
   CompileTags:
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}

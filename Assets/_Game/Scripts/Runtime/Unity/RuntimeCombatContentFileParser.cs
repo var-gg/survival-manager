@@ -13,9 +13,18 @@ namespace SM.Unity;
 
 internal sealed record RuntimeCombatParsedContent(
     IReadOnlyList<UnitArchetypeDefinition> Archetypes,
+    IReadOnlyList<SkillDefinitionAsset> Skills,
     IReadOnlyList<ItemBaseDefinition> Items,
     IReadOnlyList<AffixDefinition> Affixes,
-    IReadOnlyList<AugmentDefinition> Augments);
+    IReadOnlyList<AugmentDefinition> Augments,
+    IReadOnlyList<CampaignChapterDefinition> CampaignChapters,
+    IReadOnlyList<ExpeditionSiteDefinition> ExpeditionSites,
+    IReadOnlyList<EncounterDefinition> Encounters,
+    IReadOnlyList<EnemySquadTemplateDefinition> EnemySquads,
+    IReadOnlyList<BossOverlayDefinition> BossOverlays,
+    IReadOnlyList<RewardSourceDefinition> RewardSources,
+    IReadOnlyList<DropTableDefinition> DropTables,
+    IReadOnlyList<LootBundleDefinition> LootBundles);
 
 internal static class RuntimeCombatContentFileParser
 {
@@ -42,8 +51,29 @@ internal static class RuntimeCombatContentFileParser
             var affixes = LoadAffixes();
             var augments = LoadAugments();
             var archetypes = LoadArchetypes(guidToPath, races, classes, traitPools, skills);
+            var campaignChapters = LoadCampaignChapters();
+            var expeditionSites = LoadExpeditionSites();
+            var encounters = LoadEncounters();
+            var enemySquads = LoadEnemySquads();
+            var bossOverlays = LoadBossOverlays();
+            var rewardSources = LoadRewardSources();
+            var dropTables = LoadDropTables();
+            var lootBundles = LoadLootBundles();
 
-            parsed = new RuntimeCombatParsedContent(archetypes, items, affixes, augments);
+            parsed = new RuntimeCombatParsedContent(
+                archetypes,
+                skills.Values.ToList(),
+                items,
+                affixes,
+                augments,
+                campaignChapters,
+                expeditionSites,
+                encounters,
+                enemySquads,
+                bossOverlays,
+                rewardSources,
+                dropTables,
+                lootBundles);
             error = string.Empty;
             return true;
         }
@@ -242,6 +272,166 @@ internal static class RuntimeCombatContentFileParser
         }).Values.ToList();
     }
 
+    private static IReadOnlyList<CampaignChapterDefinition> LoadCampaignChapters()
+    {
+        return LoadAssets("CampaignChapters", path =>
+        {
+            var lines = File.ReadAllLines(path);
+            var definition = ScriptableObject.CreateInstance<CampaignChapterDefinition>();
+            definition.Id = ExtractValue(lines, "Id:");
+            definition.NameKey = ExtractValue(lines, "NameKey:");
+            definition.DescriptionKey = ExtractValue(lines, "DescriptionKey:");
+            definition.StoryOrder = ExtractInt(lines, "StoryOrder:");
+            definition.SiteIds = ParseStringList(lines, "SiteIds:");
+            definition.UnlocksEndlessOnClear = ExtractBool(lines, "UnlocksEndlessOnClear:");
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
+            return definition;
+        }).Values.ToList();
+    }
+
+    private static IReadOnlyList<ExpeditionSiteDefinition> LoadExpeditionSites()
+    {
+        return LoadAssets("ExpeditionSites", path =>
+        {
+            var lines = File.ReadAllLines(path);
+            var definition = ScriptableObject.CreateInstance<ExpeditionSiteDefinition>();
+            definition.Id = ExtractValue(lines, "Id:");
+            definition.ChapterId = ExtractValue(lines, "ChapterId:");
+            definition.NameKey = ExtractValue(lines, "NameKey:");
+            definition.DescriptionKey = ExtractValue(lines, "DescriptionKey:");
+            definition.SiteOrder = ExtractInt(lines, "SiteOrder:");
+            definition.FactionId = ExtractValue(lines, "FactionId:");
+            definition.EncounterIds = ParseStringList(lines, "EncounterIds:");
+            definition.ExtractRewardSourceId = ExtractValue(lines, "ExtractRewardSourceId:");
+            definition.ThreatTier = (ThreatTierValue)ExtractInt(lines, "ThreatTier:");
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
+            return definition;
+        }).Values.ToList();
+    }
+
+    private static IReadOnlyList<EncounterDefinition> LoadEncounters()
+    {
+        return LoadAssets("Encounters", path =>
+        {
+            var lines = File.ReadAllLines(path);
+            var definition = ScriptableObject.CreateInstance<EncounterDefinition>();
+            definition.Id = ExtractValue(lines, "Id:");
+            definition.NameKey = ExtractValue(lines, "NameKey:");
+            definition.DescriptionKey = ExtractValue(lines, "DescriptionKey:");
+            definition.Kind = (EncounterKindValue)ExtractInt(lines, "Kind:");
+            definition.SiteId = ExtractValue(lines, "SiteId:");
+            definition.EnemySquadTemplateId = ExtractValue(lines, "EnemySquadTemplateId:");
+            definition.BossOverlayId = ExtractValue(lines, "BossOverlayId:");
+            definition.RewardSourceId = ExtractValue(lines, "RewardSourceId:");
+            definition.FactionId = ExtractValue(lines, "FactionId:");
+            definition.ThreatTier = (ThreatTierValue)ExtractInt(lines, "ThreatTier:");
+            definition.ThreatCost = ExtractInt(lines, "ThreatCost:");
+            definition.ThreatSkulls = ExtractInt(lines, "ThreatSkulls:");
+            definition.DifficultyBand = ExtractValue(lines, "DifficultyBand:");
+            definition.RewardDropTags = ParseStringList(lines, "RewardDropTags:");
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
+            return definition;
+        }).Values.ToList();
+    }
+
+    private static IReadOnlyList<EnemySquadTemplateDefinition> LoadEnemySquads()
+    {
+        return LoadAssets("EnemySquads", path =>
+        {
+            var lines = File.ReadAllLines(path);
+            var definition = ScriptableObject.CreateInstance<EnemySquadTemplateDefinition>();
+            definition.Id = ExtractValue(lines, "Id:");
+            definition.NameKey = ExtractValue(lines, "NameKey:");
+            definition.DescriptionKey = ExtractValue(lines, "DescriptionKey:");
+            definition.FactionId = ExtractValue(lines, "FactionId:");
+            definition.EnemyPosture = (TeamPostureTypeValue)ExtractInt(lines, "EnemyPosture:");
+            definition.ThreatTier = (ThreatTierValue)ExtractInt(lines, "ThreatTier:");
+            definition.ThreatCost = ExtractInt(lines, "ThreatCost:");
+            definition.RewardDropTags = ParseStringList(lines, "RewardDropTags:");
+            definition.Members = ParseEnemySquadMembers(lines);
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
+            return definition;
+        }).Values.ToList();
+    }
+
+    private static IReadOnlyList<BossOverlayDefinition> LoadBossOverlays()
+    {
+        return LoadAssets("BossOverlays", path =>
+        {
+            var lines = File.ReadAllLines(path);
+            var definition = ScriptableObject.CreateInstance<BossOverlayDefinition>();
+            definition.Id = ExtractValue(lines, "Id:");
+            definition.NameKey = ExtractValue(lines, "NameKey:");
+            definition.DescriptionKey = ExtractValue(lines, "DescriptionKey:");
+            definition.PhaseTrigger = (BossPhaseTriggerValue)ExtractInt(lines, "PhaseTrigger:");
+            definition.ThreatCost = ExtractInt(lines, "ThreatCost:");
+            definition.SignatureAuraTag = ExtractValue(lines, "SignatureAuraTag:");
+            definition.SignatureUtilityTag = ExtractValue(lines, "SignatureUtilityTag:");
+            definition.RewardDropTags = ParseStringList(lines, "RewardDropTags:");
+            definition.AppliedStatuses = ParseStatusApplicationRules(lines, "AppliedStatuses:");
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
+            return definition;
+        }).Values.ToList();
+    }
+
+    private static IReadOnlyList<RewardSourceDefinition> LoadRewardSources()
+    {
+        return LoadAssets("RewardSources", path =>
+        {
+            var lines = File.ReadAllLines(path);
+            var definition = ScriptableObject.CreateInstance<RewardSourceDefinition>();
+            definition.Id = ExtractValue(lines, "Id:");
+            definition.NameKey = ExtractValue(lines, "NameKey:");
+            definition.DescriptionKey = ExtractValue(lines, "DescriptionKey:");
+            definition.Kind = (RewardSourceKindValue)ExtractInt(lines, "Kind:");
+            definition.DropTableId = ExtractValue(lines, "DropTableId:");
+            definition.UsesRewardCards = ExtractBool(lines, "UsesRewardCards:");
+            definition.AllowedRarityBrackets = ParsePackedEnumList<RarityBracketValue>(ExtractValue(lines, "AllowedRarityBrackets:"));
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
+            return definition;
+        }).Values.ToList();
+    }
+
+    private static IReadOnlyList<DropTableDefinition> LoadDropTables()
+    {
+        return LoadAssets("DropTables", path =>
+        {
+            var lines = File.ReadAllLines(path);
+            var definition = ScriptableObject.CreateInstance<DropTableDefinition>();
+            definition.Id = ExtractValue(lines, "Id:");
+            definition.NameKey = ExtractValue(lines, "NameKey:");
+            definition.DescriptionKey = ExtractValue(lines, "DescriptionKey:");
+            definition.RewardSourceId = ExtractValue(lines, "RewardSourceId:");
+            definition.Entries = ParseLootEntries(lines);
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
+            return definition;
+        }).Values.ToList();
+    }
+
+    private static IReadOnlyList<LootBundleDefinition> LoadLootBundles()
+    {
+        return LoadAssets("LootBundles", path =>
+        {
+            var lines = File.ReadAllLines(path);
+            var definition = ScriptableObject.CreateInstance<LootBundleDefinition>();
+            definition.Id = ExtractValue(lines, "Id:");
+            definition.NameKey = ExtractValue(lines, "NameKey:");
+            definition.DescriptionKey = ExtractValue(lines, "DescriptionKey:");
+            definition.RewardSourceId = ExtractValue(lines, "RewardSourceId:");
+            definition.Entries = ParseLootEntries(lines);
+            SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
+            SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
+            return definition;
+        }).Values.ToList();
+    }
+
     private static Dictionary<string, T> LoadAssets<T>(
         string folderName,
         Func<string, T> loader,
@@ -296,6 +486,14 @@ internal static class RuntimeCombatContentFileParser
             AffixDefinition affix => affix.Id,
             AugmentDefinition augment => augment.Id,
             UnitArchetypeDefinition archetype => archetype.Id,
+            CampaignChapterDefinition chapter => chapter.Id,
+            ExpeditionSiteDefinition site => site.Id,
+            EncounterDefinition encounter => encounter.Id,
+            EnemySquadTemplateDefinition squad => squad.Id,
+            BossOverlayDefinition overlay => overlay.Id,
+            RewardSourceDefinition rewardSource => rewardSource.Id,
+            DropTableDefinition dropTable => dropTable.Id,
+            LootBundleDefinition lootBundle => lootBundle.Id,
             _ => string.Empty
         };
     }
@@ -525,6 +723,276 @@ internal static class RuntimeCombatContentFileParser
         return result;
     }
 
+    private static List<string> ParseStringList(string[] lines, string sectionHeader)
+    {
+        var result = new List<string>();
+        var index = FindLineIndex(lines, sectionHeader);
+        if (index < 0)
+        {
+            return result;
+        }
+
+        for (index++; index < lines.Length; index++)
+        {
+            var trimmed = lines[index].Trim();
+            if (!trimmed.StartsWith("-", StringComparison.Ordinal))
+            {
+                if (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal))
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            var value = trimmed[1..].Trim();
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                result.Add(value);
+            }
+        }
+
+        return result;
+    }
+
+    private static List<EnemySquadMemberDefinition> ParseEnemySquadMembers(string[] lines)
+    {
+        var result = new List<EnemySquadMemberDefinition>();
+        var index = FindLineIndex(lines, "Members:");
+        if (index < 0)
+        {
+            return result;
+        }
+
+        for (index++; index < lines.Length; index++)
+        {
+            var trimmed = lines[index].Trim();
+            if (!trimmed.StartsWith("- Id:", StringComparison.Ordinal))
+            {
+                if (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal))
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            var member = new EnemySquadMemberDefinition
+            {
+                Id = trimmed["- Id:".Length..].Trim()
+            };
+
+            for (index++; index < lines.Length; index++)
+            {
+                trimmed = lines[index].Trim();
+                if (trimmed.StartsWith("- Id:", StringComparison.Ordinal)
+                    || (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal)))
+                {
+                    index--;
+                    break;
+                }
+
+                if (trimmed.StartsWith("NameKey:", StringComparison.Ordinal))
+                {
+                    member.NameKey = trimmed["NameKey:".Length..].Trim();
+                }
+                else if (trimmed.StartsWith("ArchetypeId:", StringComparison.Ordinal))
+                {
+                    member.ArchetypeId = trimmed["ArchetypeId:".Length..].Trim();
+                }
+                else if (trimmed.StartsWith("Anchor:", StringComparison.Ordinal))
+                {
+                    member.Anchor = (DeploymentAnchorValue)ParseInt(trimmed["Anchor:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("Role:", StringComparison.Ordinal))
+                {
+                    member.Role = (EnemySquadMemberRoleValue)ParseInt(trimmed["Role:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("PositiveTraitId:", StringComparison.Ordinal))
+                {
+                    member.PositiveTraitId = trimmed["PositiveTraitId:".Length..].Trim();
+                }
+                else if (trimmed.StartsWith("NegativeTraitId:", StringComparison.Ordinal))
+                {
+                    member.NegativeTraitId = trimmed["NegativeTraitId:".Length..].Trim();
+                }
+                else if (string.Equals(trimmed, "RuleModifierTags: []", StringComparison.Ordinal))
+                {
+                    member.RuleModifierTags = new List<string>();
+                }
+                else if (string.Equals(trimmed, "RuleModifierTags:", StringComparison.Ordinal))
+                {
+                    member.RuleModifierTags = ParseIndentedStringList(lines, ref index, 4);
+                }
+                else if (trimmed.StartsWith("legacyDisplayName:", StringComparison.Ordinal))
+                {
+                    SetLegacyField(member, "legacyDisplayName", trimmed["legacyDisplayName:".Length..].Trim());
+                }
+            }
+
+            result.Add(member);
+        }
+
+        return result;
+    }
+
+    private static List<StatusApplicationRule> ParseStatusApplicationRules(string[] lines, string sectionHeader)
+    {
+        var result = new List<StatusApplicationRule>();
+        var index = FindLineIndex(lines, sectionHeader);
+        if (index < 0)
+        {
+            return result;
+        }
+
+        for (index++; index < lines.Length; index++)
+        {
+            var trimmed = lines[index].Trim();
+            if (!trimmed.StartsWith("- Id:", StringComparison.Ordinal))
+            {
+                if (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal))
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            var rule = new StatusApplicationRule
+            {
+                Id = trimmed["- Id:".Length..].Trim()
+            };
+
+            for (index++; index < lines.Length; index++)
+            {
+                trimmed = lines[index].Trim();
+                if (trimmed.StartsWith("- Id:", StringComparison.Ordinal)
+                    || (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal)))
+                {
+                    index--;
+                    break;
+                }
+
+                if (trimmed.StartsWith("StatusId:", StringComparison.Ordinal))
+                {
+                    rule.StatusId = trimmed["StatusId:".Length..].Trim();
+                }
+                else if (trimmed.StartsWith("DurationSeconds:", StringComparison.Ordinal))
+                {
+                    rule.DurationSeconds = ParseFloat(trimmed["DurationSeconds:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("Magnitude:", StringComparison.Ordinal))
+                {
+                    rule.Magnitude = ParseFloat(trimmed["Magnitude:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("MaxStacks:", StringComparison.Ordinal))
+                {
+                    rule.MaxStacks = ParseInt(trimmed["MaxStacks:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("RefreshDurationOnReapply:", StringComparison.Ordinal))
+                {
+                    rule.RefreshDurationOnReapply = ParseBool(trimmed["RefreshDurationOnReapply:".Length..].Trim());
+                }
+            }
+
+            result.Add(rule);
+        }
+
+        return result;
+    }
+
+    private static List<LootBundleEntryDefinition> ParseLootEntries(string[] lines)
+    {
+        var result = new List<LootBundleEntryDefinition>();
+        var index = FindLineIndex(lines, "Entries:");
+        if (index < 0)
+        {
+            return result;
+        }
+
+        for (index++; index < lines.Length; index++)
+        {
+            var trimmed = lines[index].Trim();
+            if (!trimmed.StartsWith("- Id:", StringComparison.Ordinal))
+            {
+                if (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal))
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            var entry = new LootBundleEntryDefinition
+            {
+                Id = trimmed["- Id:".Length..].Trim()
+            };
+
+            for (index++; index < lines.Length; index++)
+            {
+                trimmed = lines[index].Trim();
+                if (trimmed.StartsWith("- Id:", StringComparison.Ordinal)
+                    || (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal)))
+                {
+                    index--;
+                    break;
+                }
+
+                if (trimmed.StartsWith("RewardType:", StringComparison.Ordinal))
+                {
+                    entry.RewardType = (RewardType)ParseInt(trimmed["RewardType:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("Amount:", StringComparison.Ordinal))
+                {
+                    entry.Amount = ParseInt(trimmed["Amount:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("RarityBracket:", StringComparison.Ordinal))
+                {
+                    entry.RarityBracket = (RarityBracketValue)ParseInt(trimmed["RarityBracket:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("Weight:", StringComparison.Ordinal))
+                {
+                    entry.Weight = ParseInt(trimmed["Weight:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("IsGuaranteed:", StringComparison.Ordinal))
+                {
+                    entry.IsGuaranteed = ParseBool(trimmed["IsGuaranteed:".Length..].Trim());
+                }
+            }
+
+            result.Add(entry);
+        }
+
+        return result;
+    }
+
+    private static List<string> ParseIndentedStringList(string[] lines, ref int index, int breakIndent)
+    {
+        var result = new List<string>();
+        for (index++; index < lines.Length; index++)
+        {
+            var trimmed = lines[index].Trim();
+            if (!trimmed.StartsWith("-", StringComparison.Ordinal))
+            {
+                if (GetIndent(lines[index]) <= breakIndent && trimmed.EndsWith(":", StringComparison.Ordinal))
+                {
+                    index--;
+                    break;
+                }
+
+                continue;
+            }
+
+            var value = trimmed[1..].Trim();
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                result.Add(value);
+            }
+        }
+
+        return result;
+    }
+
     private static T ResolveReference<T>(
         string[] lines,
         string key,
@@ -591,6 +1059,40 @@ internal static class RuntimeCombatContentFileParser
     private static int ParseInt(string value)
     {
         return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) ? parsed : 0;
+    }
+
+    private static List<TEnum> ParsePackedEnumList<TEnum>(string packedHex) where TEnum : struct, Enum
+    {
+        var result = new List<TEnum>();
+        if (string.IsNullOrWhiteSpace(packedHex) || packedHex.Length < 8)
+        {
+            return result;
+        }
+
+        for (var index = 0; index + 8 <= packedHex.Length; index += 8)
+        {
+            var chunk = packedHex.Substring(index, 8);
+            try
+            {
+                var bytes = new byte[4];
+                for (var byteIndex = 0; byteIndex < 4; byteIndex++)
+                {
+                    bytes[byteIndex] = byte.Parse(
+                        chunk.Substring(byteIndex * 2, 2),
+                        NumberStyles.HexNumber,
+                        CultureInfo.InvariantCulture);
+                }
+
+                var value = BitConverter.ToInt32(bytes, 0);
+                result.Add((TEnum)Enum.ToObject(typeof(TEnum), value));
+            }
+            catch
+            {
+                continue;
+            }
+        }
+
+        return result;
     }
 
     private static float ParseFloat(string value)

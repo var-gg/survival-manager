@@ -35,9 +35,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  SupportBlockedTags: []
   RequiredWeaponTags:
   - {fileID: 11400000, guid: 6579675f3d02790408543c39e489282b, type: 2}
   RequiredClassTags:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  AppliedStatuses: []
+  CleanseProfileId: 
   legacyDisplayName: 

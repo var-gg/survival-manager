@@ -42,19 +42,24 @@
 - `content-loading-strategy.md`: MVP content loading 계약
 - `content-seed-assets.md`: sample seed asset 기준
 - `combat-content-mapping.md`: spatial combat authored data와 runtime 매핑
+- `encounter-authoring-and-runtime-resolution.md`: chapter/site/encounter resolve와 debug fallback 경계
+- `skill-tag-catalog-and-compatibility-resolution.md`: stable tag catalog와 compile/validation 계약
 - `localization-runtime-and-content-pipeline.md`: localization runtime, content key, UI refresh 경계
 
 ## 전투 런타임 문서
 
 - `combat-runtime-architecture.md`: live simulation 전투 런타임 책임 분리
-- `combat-state-and-event-model.md`: 상태, snapshot, event, result 모델 정의
+- `combat-state-and-event-model.md`: 상태, status stack, typed event, 결과 모델 정의
+- `status-runtime-stack-and-cleanse-rules.md`: status apply/cleanse/DR runtime 규칙
 - `editor-sandbox-tooling.md`: Unity combat sandbox/editor tooling 경계
 - `loadout-compiler-and-battle-snapshot.md`: build -> compile -> battle snapshot 경계
+- `drop-resolution-and-ledger-pipeline.md`: automatic drop resolve와 reward ledger 계약
 - `sim-sweep-and-balance-kpis.md`: deterministic sweep, KPI, artifact, review/fail 규칙
 - `replay-persistence-and-run-audit.md`: active run / replay / ledger persistence 기준
 
 ## 기타 운영 문서
 
+- `arena-snapshot-matchmaking-and-season-contract.md`: async arena snapshot, local matchmaking, season contract
 - `persistence-strategy.md`: persistence adapter 경계
 - `persistence-schema.md`: 저장 대상과 비대상
 - `testing-strategy.md`: 저비용 검증 우선 테스트 전략

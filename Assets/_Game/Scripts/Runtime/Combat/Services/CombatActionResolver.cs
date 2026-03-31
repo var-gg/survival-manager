@@ -30,7 +30,7 @@ public static class CombatActionResolver
                     return events;
                 }
 
-                var damage = Math.Max(1f, actor.PhysPower - target.Armor - (target.IsDefending ? 1f : 0f));
+                var damage = Math.Max(1f, (actor.PhysPower - target.Armor - (target.IsGuarded ? 1f : 0f)) * target.GetIncomingDamageMultiplier());
                 target.TakeDamage(damage);
                 actor.StartRecovery();
                 events.Add(BuildEvent(state, actor, BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, target, damage));
@@ -54,14 +54,32 @@ public static class CombatActionResolver
                     target.Heal(heal);
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
                     events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillHeal, target, heal));
+                    StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
+                }
+                else if (skill?.Kind == SkillKind.Shield)
+                {
+                    var barrier = Math.Max(1f, actor.HealPower + (skill?.ResolvedPowerFlat ?? 0f));
+                    target.AddBarrier(barrier);
+                    actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
+                    events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillHeal, target, barrier));
+                    StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
                 }
                 else
                 {
                     var power = skill?.ResolvedPowerFlat ?? 0f;
-                    var skillDamage = Math.Max(1f, actor.PhysPower + power - target.Armor - (target.IsDefending ? 1f : 0f));
-                    target.TakeDamage(skillDamage);
+                    var basePower = skill?.DamageType == DamageType.Magical
+                        ? actor.MagPower + power
+                        : actor.PhysPower + power;
+                    var mitigation = skill?.DamageType == DamageType.Magical ? target.Resist : target.Armor;
+                    var skillDamage = Math.Max(1f, (basePower - mitigation - (target.IsGuarded ? 1f : 0f)) * target.GetIncomingDamageMultiplier());
+                    if (skill?.Kind is not (SkillKind.Buff or SkillKind.Utility))
+                    {
+                        target.TakeDamage(skillDamage);
+                    }
+
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
                     events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillDamage, target, skillDamage));
+                    StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
                     if (!target.IsAlive)
                     {
                         actor.ClearTarget(applySwitchDelay: true);

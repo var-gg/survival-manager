@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SM.Combat.Model;
+using SM.Content.Definitions;
 using SM.Core.Stats;
 
 namespace SM.Meta.Model;
@@ -71,6 +72,122 @@ public sealed record SynergyTierTemplate(
     string Id,
     TeamSynergyTierRule Rule);
 
+public sealed record CampaignChapterTemplate(
+    string Id,
+    string Name,
+    int StoryOrder,
+    IReadOnlyList<string> SiteIds,
+    bool UnlocksEndlessOnClear);
+
+public sealed record ExpeditionSiteTemplate(
+    string Id,
+    string ChapterId,
+    string Name,
+    int SiteOrder,
+    string FactionId,
+    IReadOnlyList<string> EncounterIds,
+    string ExtractRewardSourceId,
+    int ThreatTier);
+
+public sealed record EncounterTemplate(
+    string Id,
+    string Name,
+    string SiteId,
+    string EnemySquadTemplateId,
+    string BossOverlayId,
+    string RewardSourceId,
+    string FactionId,
+    int ThreatTier,
+    int ThreatCost,
+    int ThreatSkulls,
+    string DifficultyBand,
+    EncounterKindValue Kind,
+    IReadOnlyList<string> RewardDropTags);
+
+public sealed record EnemySquadMemberTemplate(
+    string Id,
+    string Name,
+    string ArchetypeId,
+    DeploymentAnchorId Anchor,
+    string PositiveTraitId,
+    string NegativeTraitId,
+    EnemySquadMemberRoleValue Role,
+    IReadOnlyList<string> RuleModifierTags);
+
+public sealed record EnemySquadTemplate(
+    string Id,
+    string Name,
+    string FactionId,
+    TeamPostureType EnemyPosture,
+    int ThreatTier,
+    int ThreatCost,
+    IReadOnlyList<string> RewardDropTags,
+    IReadOnlyList<EnemySquadMemberTemplate> Members);
+
+public sealed record BossOverlayTemplate(
+    string Id,
+    string Name,
+    BossPhaseTriggerValue PhaseTrigger,
+    int ThreatCost,
+    string SignatureAuraTag,
+    string SignatureUtilityTag,
+    IReadOnlyList<string> RewardDropTags,
+    IReadOnlyList<StatusApplicationSpec> AppliedStatuses);
+
+public sealed record StatusFamilyTemplate(
+    string Id,
+    StatusGroupValue Group,
+    bool IsHardControl,
+    bool UsesControlDiminishing,
+    bool AffectedByTenacity,
+    float TenacityScale,
+    bool IsRuleModifierOnly,
+    IReadOnlyList<string> CompileTags);
+
+public sealed record CleanseProfileTemplate(
+    string Id,
+    IReadOnlyList<string> RemovesStatusIds,
+    bool RemovesOneHardControl,
+    bool GrantsUnstoppable,
+    float GrantedUnstoppableDurationSeconds);
+
+public sealed record ControlDiminishingTemplate(
+    string Id,
+    float ControlResistMultiplier,
+    float WindowSeconds,
+    IReadOnlyList<string> FullTenacityStatusIds,
+    IReadOnlyList<string> PartialTenacityStatusIds);
+
+public sealed record RewardSourceTemplate(
+    string Id,
+    string Name,
+    RewardSourceKindValue Kind,
+    string DropTableId,
+    bool UsesRewardCards,
+    IReadOnlyList<RarityBracketValue> AllowedRarityBrackets);
+
+public sealed record LootBundleEntryTemplate(
+    string Id,
+    RewardType RewardType,
+    int Amount,
+    RarityBracketValue RarityBracket,
+    int Weight,
+    bool IsGuaranteed);
+
+public sealed record DropTableTemplate(
+    string Id,
+    string RewardSourceId,
+    IReadOnlyList<LootBundleEntryTemplate> Entries);
+
+public sealed record LootBundleTemplate(
+    string Id,
+    string RewardSourceId,
+    IReadOnlyList<LootBundleEntryTemplate> Entries);
+
+public sealed record TraitTokenTemplate(
+    string Id,
+    RewardType RewardType);
+
 public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, CombatArchetypeTemplate> Archetypes,
     IReadOnlyDictionary<string, CombatModifierPackage> TraitPackages,
@@ -83,7 +200,19 @@ public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, PassiveNodeTemplate> PassiveNodes,
     IReadOnlyDictionary<string, AugmentCatalogEntry> AugmentCatalog,
     IReadOnlyDictionary<string, SynergyTierTemplate> SynergyCatalog,
-    IReadOnlyDictionary<string, IReadOnlyList<BattleSkillSpec>>? ItemGrantedSkills = null);
+    IReadOnlyDictionary<string, IReadOnlyList<BattleSkillSpec>>? ItemGrantedSkills = null,
+    IReadOnlyDictionary<string, CampaignChapterTemplate>? CampaignChapters = null,
+    IReadOnlyDictionary<string, ExpeditionSiteTemplate>? ExpeditionSites = null,
+    IReadOnlyDictionary<string, EncounterTemplate>? Encounters = null,
+    IReadOnlyDictionary<string, EnemySquadTemplate>? EnemySquads = null,
+    IReadOnlyDictionary<string, BossOverlayTemplate>? BossOverlays = null,
+    IReadOnlyDictionary<string, StatusFamilyTemplate>? StatusFamilies = null,
+    IReadOnlyDictionary<string, CleanseProfileTemplate>? CleanseProfiles = null,
+    IReadOnlyDictionary<string, ControlDiminishingTemplate>? ControlDiminishingRules = null,
+    IReadOnlyDictionary<string, RewardSourceTemplate>? RewardSources = null,
+    IReadOnlyDictionary<string, DropTableTemplate>? DropTables = null,
+    IReadOnlyDictionary<string, LootBundleTemplate>? LootBundles = null,
+    IReadOnlyDictionary<string, TraitTokenTemplate>? TraitTokens = null);
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,

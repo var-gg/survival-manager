@@ -49,7 +49,8 @@ public sealed class StatV2AndSandboxTests
         Assert.That(ContentDefinitionValidator.PaidLaunchSafeTarget.ArchetypeCount, Is.EqualTo(16));
         Assert.That(ContentDefinitionValidator.PaidLaunchSafeTarget.PassiveNodeCount, Is.EqualTo(96));
         Assert.That(CountAssets("Archetypes"), Is.EqualTo(12));
-        Assert.That(CountAssets("Skills"), Is.EqualTo(40));
+        Assert.That(CountLaunchFloorSkills(), Is.EqualTo(40));
+        Assert.That(CountSupportModifierSkills(), Is.EqualTo(12));
         Assert.That(CountAssets("Items"), Is.EqualTo(36));
         Assert.That(CountAssets("PassiveBoards"), Is.EqualTo(4));
         Assert.That(CountAssets("PassiveNodes"), Is.EqualTo(72));
@@ -160,5 +161,29 @@ public sealed class StatV2AndSandboxTests
         return Directory.EnumerateFiles(folder, "synergy_*.asset", SearchOption.TopDirectoryOnly)
             .Select(Path.GetFileNameWithoutExtension)
             .Count(name => name != null && !name.StartsWith("synergytier_", System.StringComparison.Ordinal));
+    }
+
+    private static int CountLaunchFloorSkills()
+    {
+        var folder = Path.Combine("Assets", "Resources", "_Game", "Content", "Definitions", "Skills");
+        if (!Directory.Exists(folder))
+        {
+            return 0;
+        }
+
+        return Directory.EnumerateFiles(folder, "*.asset", SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Count(name => name != null && !name.StartsWith("support_", System.StringComparison.Ordinal));
+    }
+
+    private static int CountSupportModifierSkills()
+    {
+        var folder = Path.Combine("Assets", "Resources", "_Game", "Content", "Definitions", "Skills");
+        if (!Directory.Exists(folder))
+        {
+            return 0;
+        }
+
+        return Directory.EnumerateFiles(folder, "support_*.asset", SearchOption.TopDirectoryOnly).Count();
     }
 }

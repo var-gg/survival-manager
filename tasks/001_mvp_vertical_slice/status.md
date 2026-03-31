@@ -29,28 +29,30 @@
 ## 현재 구현 상태
 
 - Battle은 `resolve once -> replay`가 아니라 fixed-step live simulation으로 동작한다.
-- Battle setup은 scene-local 하드코딩 테이블이 아니라 canonical content lookup + `BattleSetupBuilder`를 통해 구성된다.
+- normal battle path는 authored `chapter/site/encounter` catalog를 통해 enemy squad와 seed를 resolve한다.
+- Expedition은 hand-authored `site track` 기반 `skirmish -> skirmish -> elite -> boss -> extract` 5노드 진행을 사용한다.
 - 4인 배치는 3x2 anchor 버튼 UI로 조정되며, team posture 선택이 Town/Expedition 양쪽에 노출된다.
 - trait / item / affix / temporary augment modifier가 실제 전투 세팅으로 전달된다.
+- status / cleanse / DR과 automatic loot가 실제 전투 결과와 Reward 화면에 연결된다.
 - recruit cost `3 Gold`, reroll cost `1 Gold`, town roster cap `12`가 세션 로직에서 강제된다.
 
 ## 지금 바로 보이는 화면
 
 - Town operator UI
-- Expedition 5노드 branching UI
+- Expedition site track UI
 - Battle observer UI
-- Reward 3카드 UI
+- Reward 3카드 UI + automatic loot summary
 
 ## 아직 남은 리스크
 
 - Battle 연출은 readable observer 단계이며 high-fidelity animation, VFX, camera polish 단계는 아니다.
-- canonical sample content는 현재 `Assets/Resources/_Game/Content/Definitions/**` 계약을 전제로 하며, 일부 editor 경로는 raw asset fallback에 의존한다.
-- Expedition은 고정 5노드 그래프 단계라 procedural depth와 장기 메타 다양성은 아직 부족하다.
+- Quick Battle은 정상 authored progression이 아니라 debug smoke fallback 경로를 여전히 가진다.
+- chapter/site count는 launch floor 바닥만 채운 상태라 추가 콘텐츠 다양성은 아직 부족하다.
 - operator UI는 placeholder UGUI 품질이며 최종 UX 기준과는 거리가 있다.
-- Unity MCP console에는 환경에 따라 `UnityCliTools` 관련 로그가 남을 수 있다.
+- live arena backend, leaderboard, season ops는 아직 구현 범위 밖이다.
 
 ## 다음 우선순위
 
 1. Battle camera / floor / hit timing / readability polish
-2. Expedition graph와 node effect 종류 확장
+2. chapter/site/encounter 콘텐츠 확장과 보상 밸런스 보정
 3. reward-to-item / permanent progression / combat feedback 연결 강화

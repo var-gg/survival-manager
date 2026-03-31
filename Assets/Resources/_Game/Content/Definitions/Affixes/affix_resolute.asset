@@ -16,6 +16,7 @@ MonoBehaviour:
   NameKey: content.affix.affix_resolute.name
   DescriptionKey: content.affix.affix_resolute.desc
   Category: 3
+  Tier: 1
   AllowedSlotTypes: 0100000002000000
   CompileTags:
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}

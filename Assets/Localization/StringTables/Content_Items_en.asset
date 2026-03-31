@@ -19,51 +19,51 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 84237344768
-    m_Localized: Warden Armament
+    m_Localized: Iron Sword
     m_Metadata:
       m_Items: []
   - m_Id: 84296065024
-    m_Localized: Warden Armament description.
+    m_Localized: Reliable frontline weapon.
     m_Metadata:
       m_Items: []
   - m_Id: 85353029632
-    m_Localized: Raider Armament
+    m_Localized: Bone Blade
     m_Metadata:
       m_Items: []
   - m_Id: 85353029633
-    m_Localized: Raider Armament description.
+    m_Localized: Aggressive melee blade.
     m_Metadata:
       m_Items: []
   - m_Id: 86384828416
-    m_Localized: Hunter Harness
+    m_Localized: Leather Armor
     m_Metadata:
       m_Items: []
   - m_Id: 86384828417
-    m_Localized: Hunter Harness description.
+    m_Localized: Light defensive armor.
     m_Metadata:
       m_Items: []
   - m_Id: 87370489856
-    m_Localized: Guardian Harness
+    m_Localized: Bone Plate
     m_Metadata:
       m_Items: []
   - m_Id: 87370489857
-    m_Localized: Guardian Harness description.
+    m_Localized: Bulky endurance armor.
     m_Metadata:
       m_Items: []
   - m_Id: 88326791168
-    m_Localized: Scout Trinket
+    m_Localized: Lucky Charm
     m_Metadata:
       m_Items: []
   - m_Id: 88326791169
-    m_Localized: Scout Trinket description.
+    m_Localized: Tempo-focused accessory.
     m_Metadata:
       m_Items: []
   - m_Id: 89408921600
-    m_Localized: Priest Trinket
+    m_Localized: Prayer Bead
     m_Metadata:
       m_Items: []
   - m_Id: 89408921601
-    m_Localized: Priest Trinket description.
+    m_Localized: Support accessory for healing.
     m_Metadata:
       m_Items: []
   - m_Id: 167971547766784

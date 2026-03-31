@@ -4,4 +4,4 @@
 
 현재 주요 진입점:
 
-- `tools/unity-bridge.ps1`: local `unity-cli` fallback, project path normalization, readiness retry를 포함한 repo-scoped wrapper
+- `tools/unity-bridge.ps1`: local `unity-cli` fallback, project path normalization, readiness retry, reconnect recovery 기본 경로를 포함한 repo-scoped wrapper

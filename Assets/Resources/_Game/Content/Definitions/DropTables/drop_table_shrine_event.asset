@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: drop_table_shrine_event
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:DropTableDefinition
+  Id: drop_table_shrine_event
+  NameKey: content.drop_table.drop_table_shrine_event.name
+  DescriptionKey: content.drop_table.drop_table_shrine_event.desc
+  RewardSourceId: reward_source_shrine_event
+  Entries:
+  - Id: trait_lock_token
+    RewardType: 5
+    Amount: 1
+    RarityBracket: 2
+    Weight: 1
+    IsGuaranteed: 1
+  - Id: echo_crystal_shrine
+    RewardType: 8
+    Amount: 1
+    RarityBracket: 1
+    Weight: 2
+    IsGuaranteed: 0
+  legacyDisplayName: 
+  legacyDescription: 

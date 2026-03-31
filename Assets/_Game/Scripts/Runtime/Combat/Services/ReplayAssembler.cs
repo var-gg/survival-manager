@@ -58,7 +58,7 @@ public static class ReplayAssembler
             }
 
             var digest = ComputeHash(string.Join("|", group.OrderBy(@event => @event.ActorId.Value).Select(@event =>
-                $"{@event.StepIndex}:{@event.ActorId.Value}:{@event.ActionType}:{@event.LogCode}:{@event.TargetId?.Value}:{@event.Value:0.###}")));
+                $"{@event.StepIndex}:{@event.ActorId.Value}:{@event.ActionType}:{@event.LogCode}:{@event.TargetId?.Value}:{@event.Value:0.###}:{@event.EventKind}:{@event.PayloadId}:{@event.SecondaryValue:0.###}:{@event.Note}")));
             keyframes.Add(new BattleKeyframeDigest(group.Key, group.First().TimeSeconds, digest));
         }
 
@@ -86,7 +86,9 @@ public static class ReplayAssembler
         {
             builder.Append(unit.Id).Append(':')
                 .Append(unit.CurrentHealth.ToString("0.###")).Append(':')
+                .Append(unit.Barrier.ToString("0.###")).Append(':')
                 .Append(unit.IsAlive).Append(':')
+                .Append(string.Join(",", unit.StatusIds.OrderBy(id => id, StringComparer.Ordinal))).Append(':')
                 .Append(unit.Position.X.ToString("0.###")).Append(':')
                 .Append(unit.Position.Y.ToString("0.###")).Append('|');
         }

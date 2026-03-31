@@ -11,4 +11,6 @@ public sealed class RunSummaryRecord
     public int GoldEarned;
     public int NodesCleared;
     public string CompletedAtUtc = string.Empty;
+    public string ChapterId = string.Empty;
+    public string SiteId = string.Empty;
 }

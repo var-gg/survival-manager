@@ -75,6 +75,154 @@ MonoBehaviour:
     m_Key: content.tag.support.name
     m_Metadata:
       m_Items: []
+  - m_Id: 335555811336192
+    m_Key: content.tag.greatblade.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335556876689408
+    m_Key: content.tag.polearm.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335557820407808
+    m_Key: content.tag.melee.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335558625714176
+    m_Key: content.tag.projectile.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335559326162944
+    m_Key: content.tag.aoe.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335559967891456
+    m_Key: content.tag.zone.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335560655757312
+    m_Key: content.tag.trap.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335561305874432
+    m_Key: content.tag.aura.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335561955991552
+    m_Key: content.tag.strike.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335564011200512
+    m_Key: content.tag.heal.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335564690677760
+    m_Key: content.tag.shield_skill.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335565378543616
+    m_Key: content.tag.dash.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335566032855040
+    m_Key: content.tag.guard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335566754275328
+    m_Key: content.tag.mark.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335567521832960
+    m_Key: content.tag.cleanse.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335568457162752
+    m_Key: content.tag.burn.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335569182777344
+    m_Key: content.tag.bleed.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335569916780544
+    m_Key: content.tag.wound.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335570566897664
+    m_Key: content.tag.sunder.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335571271540736
+    m_Key: content.tag.slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335571971989504
+    m_Key: content.tag.silence.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335572626300928
+    m_Key: content.tag.execute.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335573255446528
+    m_Key: content.tag.pierce.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335573838454784
+    m_Key: content.tag.chain.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335574543097856
+    m_Key: content.tag.support_brutal.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335575289683968
+    m_Key: content.tag.support_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335575981744128
+    m_Key: content.tag.support_piercing.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335576732524544
+    m_Key: content.tag.support_echo.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335577491693568
+    m_Key: content.tag.support_lingering.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335578208919552
+    m_Key: content.tag.support_purifying.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335579035197440
+    m_Key: content.tag.support_guarded.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335579911806976
+    m_Key: content.tag.support_executioner.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335580570312704
+    m_Key: content.tag.support_longshot.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335581249789952
+    m_Key: content.tag.support_siphon.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335581845381120
+    m_Key: content.tag.support_anchored.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335582537441280
+    m_Key: content.tag.support_hunter_mark.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348477245612032
+    m_Key: content.tag.exposed.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

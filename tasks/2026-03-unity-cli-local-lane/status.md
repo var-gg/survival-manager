@@ -12,6 +12,8 @@
 - 현재 `Packages/manifest.json`과 `Packages/packages-lock.json`에는 `com.coplaydev.unity-mcp`와 `com.youngwoocho02.unity-cli-connector`가 함께 존재한다.
 - wrapper, custom report tool, setup/policy/prompt 문서가 같은 변경 단위에서 정리됐다.
 - wrapper-first 운용을 강화했고, local install path fallback과 readiness retry를 넣어 transient heartbeat 지연에 더 강하게 만들었다.
+- 후속 운영 보강으로 `docs/05_setup/unity-cli.md`와 `tools/README.md`에
+  재부팅 후 재연결, compile/test 직후 busy state, split fallback sequence를 추가했다.
 
 ## 완료
 - 필수 기준 문서와 현재 manifest/Unity version을 확인했다.
@@ -40,6 +42,9 @@
 - bare `unity-cli` command는 설치 직후 또는 기존 셸에서 `PATH`가 바로 반영되지 않을 수 있다.
 - `smoke-observer` 실행 뒤 `Unsolicited response received on idle HTTP channel` 메시지가 간헐적으로 출력되지만 검증 결과 자체는 정상 반환됐다.
 - `test-edit`와 `test-play`를 병렬 실행하면 Unity 상태가 엉키므로 순차 실행이 필요하다.
+- compile 직후나 menu/test dispatch 직후에는 `connection closed before response`,
+  `not responding`, `connection refused`가 일시적으로 나올 수 있으므로
+  `status -> report/console` 분리 회수 절차를 문서화했다.
 
 ## 결정
 - 현재 사용 중인 MCP는 유지하며 제거 작업은 하지 않는다.

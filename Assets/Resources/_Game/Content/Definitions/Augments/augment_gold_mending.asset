@@ -18,22 +18,18 @@ MonoBehaviour:
   Rarity: 1
   IsPermanent: 0
   Category: 0
-  FamilyId: mending_loop
-  Tier: 2
+  FamilyId: gold
+  Tier: 1
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags:
-  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  Tags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 3
+  EligibleModes: 1
   Modifiers:
   - StatId: heal_power
     Op: 0
     Value: 2
-  - StatId: cooldown_recovery
-    Op: 0
-    Value: 0.08
   legacyDisplayName: 
   legacyDescription: 

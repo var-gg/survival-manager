@@ -1,0 +1,159 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Content_Status_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: b6948b268c303be45ab6f48db844f308, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 1844436992
+    m_Localized: Stun
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1932517376
+    m_Localized: Stun status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2721046528
+    m_Localized: Root
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2721046529
+    m_Localized: Root status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3463438336
+    m_Localized: Silence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3463438337
+    m_Localized: Silence status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4239384576
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4239384577
+    m_Localized: Slow status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040496640
+    m_Localized: Burn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040496641
+    m_Localized: Burn status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5959049216
+    m_Localized: Bleed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5959049217
+    m_Localized: Bleed status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6986653696
+    m_Localized: Wound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6986653697
+    m_Localized: Wound status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7875846144
+    m_Localized: Sunder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7875846145
+    m_Localized: Sunder status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8546934784
+    m_Localized: Marked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8546934785
+    m_Localized: Marked status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9259966464
+    m_Localized: Exposed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9259966465
+    m_Localized: Exposed status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9989775360
+    m_Localized: Barrier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9989775361
+    m_Localized: Barrier status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10748944384
+    m_Localized: Guarded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10748944385
+    m_Localized: Guarded status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11579416576
+    m_Localized: Unstoppable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11583610880
+    m_Localized: Unstoppable status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12397305856
+    m_Localized: Basic Cleanse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12397305857
+    m_Localized: Removes basic debuffs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13156474880
+    m_Localized: Control Cleanse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13156474881
+    m_Localized: Removes control plus basic debuffs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13898866688
+    m_Localized: Break and Unstoppable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13898866689
+    m_Localized: Breaks one hard control and grants unstoppable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14607704064
+    m_Localized: Launch Control Diminishing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14607704065
+    m_Localized: Short control resist window after hard CC ends
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

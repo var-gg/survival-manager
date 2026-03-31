@@ -29,7 +29,7 @@ MonoBehaviour:
     Threshold: 1.5
     ActionType: 1
     TargetSelector: 5
-    Skill: {fileID: 11400000, guid: 5e25f95f618389b48a44c1f971c7bd64, type: 2}
+    Skill: {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
   - Priority: 1
     ConditionType: 3
     Threshold: 0
@@ -47,40 +47,38 @@ MonoBehaviour:
   RoleTag: bruiser
   RoleFamilyTag: striker
   PrimaryWeaponFamilyTag: blade
-  SupportModifierBiasTags:
-  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  SupportModifierBiasTags: []
   BaseMaxHealth: 19
-  BaseArmor: 1.8
-  BaseResist: 0.2
+  BaseArmor: 1
+  BaseResist: 0
   BaseBarrierPower: 0
-  BaseTenacity: 0.1
-  BasePhysPower: 8.1
+  BaseTenacity: 0
+  BasePhysPower: 8
   BaseMagPower: 0
-  BaseAttackSpeed: 4.45
-  BaseAttack: 8.1
-  BaseDefense: 1.8
-  BaseSpeed: 4.45
+  BaseAttackSpeed: 5
+  BaseAttack: 8
+  BaseDefense: 1
+  BaseSpeed: 5
   BaseHealPower: 0
-  BaseMoveSpeed: 2.15
+  BaseMoveSpeed: 2.05
   BaseAttackRange: 1.3
   BaseManaMax: 0
   BaseManaGainOnAttack: 0
   BaseManaGainOnHit: 0
   BaseCooldownRecovery: 0
-  BaseCritChance: 0.03
-  BaseCritMultiplier: 1.35
-  BasePhysPen: 0.5
+  BaseCritChance: 0
+  BaseCritMultiplier: 0
+  BasePhysPen: 0
   BaseMagPen: 0
   BaseAggroRadius: 7.2
-  BasePreferredDistance: 0.25
+  BasePreferredDistance: 0
   BaseProtectRadius: 0
   BaseAttackWindup: 0.22
-  BaseCastWindup: 0.2
+  BaseCastWindup: 0.22
   BaseProjectileSpeed: 0
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
   BaseAttackCooldown: 0.85
   BaseLeashDistance: 5.2
-  BaseTargetSwitchDelay: 0.36
+  BaseTargetSwitchDelay: 0.4
   legacyDisplayName: 

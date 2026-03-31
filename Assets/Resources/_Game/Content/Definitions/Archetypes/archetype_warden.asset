@@ -19,7 +19,7 @@ MonoBehaviour:
   Class: {fileID: 11400000, guid: 2797722ba4364b04ab5a5e375294258b, type: 2}
   TraitPool: {fileID: 11400000, guid: 1a8fb50f877b800429afce2f9a73fa19, type: 2}
   Skills:
-  - {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
+  - {fileID: 11400000, guid: a4bfa3f4cb936c64fb7bef3aaa931b59, type: 2}
   - {fileID: 11400000, guid: 9079bacc511ab944f9fc2895fe983736, type: 2}
   - {fileID: 11400000, guid: e0d0d4149e2ccc843b00109bfde153ea, type: 2}
   - {fileID: 11400000, guid: 46b032dc7350b0445b83f0258c88a29f, type: 2}
@@ -47,40 +47,38 @@ MonoBehaviour:
   RoleTag: anchor
   RoleFamilyTag: vanguard
   PrimaryWeaponFamilyTag: shield
-  SupportModifierBiasTags:
-  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  SupportModifierBiasTags: []
   BaseMaxHealth: 24
-  BaseArmor: 4
-  BaseResist: 1
+  BaseArmor: 3
+  BaseResist: 0
   BaseBarrierPower: 0
-  BaseTenacity: 0.25
-  BasePhysPower: 5.2
+  BaseTenacity: 0
+  BasePhysPower: 5
   BaseMagPower: 0
-  BaseAttackSpeed: 3.1
-  BaseAttack: 5.2
-  BaseDefense: 4
-  BaseSpeed: 3.1
+  BaseAttackSpeed: 3
+  BaseAttack: 5
+  BaseDefense: 3
+  BaseSpeed: 3
   BaseHealPower: 0
   BaseMoveSpeed: 1.65
-  BaseAttackRange: 1.4
+  BaseAttackRange: 1.3
   BaseManaMax: 0
   BaseManaGainOnAttack: 0
   BaseManaGainOnHit: 0
   BaseCooldownRecovery: 0
-  BaseCritChance: 0.01
-  BaseCritMultiplier: 1.2
+  BaseCritChance: 0
+  BaseCritMultiplier: 0
   BasePhysPen: 0
   BaseMagPen: 0
   BaseAggroRadius: 7.2
-  BasePreferredDistance: 0.25
-  BaseProtectRadius: 1.4
+  BasePreferredDistance: 0
+  BaseProtectRadius: 0
   BaseAttackWindup: 0.22
-  BaseCastWindup: 0.2
+  BaseCastWindup: 0.22
   BaseProjectileSpeed: 0
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
   BaseAttackCooldown: 1
   BaseLeashDistance: 5.2
-  BaseTargetSwitchDelay: 0.36
+  BaseTargetSwitchDelay: 0.4
   legacyDisplayName: 

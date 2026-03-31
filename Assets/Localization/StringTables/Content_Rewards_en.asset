@@ -51,11 +51,139 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 171463775608832
-    m_Localized: Base reward table for battle resolution.
+    m_Localized: Post-battle choice rewards
     m_Metadata:
       m_Items: []
   - m_Id: 171463893049344
-    m_Localized: Reward table used when an expedition ends.
+    m_Localized: End-of-expedition choice rewards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335678436007936
+    m_Localized: Trait Reroll Token
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335678511505408
+    m_Localized: Trait Reroll Token description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335679274868736
+    m_Localized: Trait Lock Token
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335679274868737
+    m_Localized: Trait Lock Token description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335680042426368
+    m_Localized: Trait Purge Token
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335680042426369
+    m_Localized: Trait Purge Token description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335680830955520
+    m_Localized: Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335680830955521
+    m_Localized: Skirmish automatic drops
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335681762091008
+    m_Localized: Elite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335681762091009
+    m_Localized: Elite automatic drops
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335682613534720
+    m_Localized: Boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335682617729024
+    m_Localized: Boss automatic drops
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335683368509440
+    m_Localized: Extract
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335683368509441
+    m_Localized: Extract automatic drops
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335684228341760
+    m_Localized: Shrine/Event
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335684228341761
+    m_Localized: Shrine/Event automatic drops
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335685021065216
+    m_Localized: Salvage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335685021065217
+    m_Localized: Salvage automatic drops
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335685797011456
+    m_Localized: drop_table_skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335685797011457
+    m_Localized: reward_source_skirmish drop table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335686518431744
+    m_Localized: drop_table_elite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335686518431745
+    m_Localized: reward_source_elite drop table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335687269212160
+    m_Localized: drop_table_boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335687273406464
+    m_Localized: reward_source_boss drop table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335687999021056
+    m_Localized: drop_table_extract
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335687999021057
+    m_Localized: reward_source_extract drop table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335688707858432
+    m_Localized: drop_table_shrine_event
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335688707858433
+    m_Localized: reward_source_shrine_event drop table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335689437667328
+    m_Localized: drop_table_salvage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335689437667329
+    m_Localized: reward_source_salvage drop table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335690112950272
+    m_Localized: Extract Bonus Cache
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335690112950273
+    m_Localized: Extra payout when extracting
     m_Metadata:
       m_Items: []
   references:

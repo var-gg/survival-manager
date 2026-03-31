@@ -13,6 +13,11 @@ public static class TacticEvaluator
         var ordered = actor.Definition.Tactics.OrderBy(x => x.Priority);
         foreach (var rule in ordered)
         {
+            if (rule.ActionType == BattleActionType.ActiveSkill && !StatusResolutionService.CanUseActiveSkill(actor))
+            {
+                continue;
+            }
+
             var skill = rule.ActionType == BattleActionType.ActiveSkill
                 ? actor.ResolveSkill(rule.SkillId)
                 : null;

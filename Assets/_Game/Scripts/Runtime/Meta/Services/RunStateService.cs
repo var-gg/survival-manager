@@ -33,7 +33,11 @@ public static class RunStateService
     {
         return run with
         {
-            Overlay = run.Overlay with { CurrentNodeIndex = nodeIndex }
+            Overlay = run.Overlay with
+            {
+                CurrentNodeIndex = nodeIndex,
+                SiteNodeIndex = nodeIndex,
+            }
         };
     }
 
@@ -71,5 +75,23 @@ public static class RunStateService
     public static ActiveRunState CompleteBattle(ActiveRunState run, string matchId)
     {
         return run with { LastBattleMatchId = matchId };
+    }
+
+    public static ActiveRunState SetBattleContext(ActiveRunState run, BattleContextState context)
+    {
+        return run with
+        {
+            Overlay = run.Overlay with
+            {
+                CurrentNodeIndex = context.SiteNodeIndex,
+                ChapterId = context.ChapterId,
+                SiteId = context.SiteId,
+                SiteNodeIndex = context.SiteNodeIndex,
+                EncounterId = context.EncounterId,
+                BattleSeed = context.BattleSeed,
+                BattleContextHash = context.BattleContextHash,
+                RewardSourceId = context.RewardSourceId,
+            }
+        };
     }
 }

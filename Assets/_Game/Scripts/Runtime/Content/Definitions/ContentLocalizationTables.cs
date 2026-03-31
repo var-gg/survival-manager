@@ -20,6 +20,9 @@ public static class ContentLocalizationTables
     public const string Stats = "Content_Stats";
     public const string Rewards = "Content_Rewards";
     public const string Expedition = "Content_Expeditions";
+    public const string Campaign = "Content_Campaign";
+    public const string Encounters = "Content_Encounters";
+    public const string Status = "Content_Status";
     public const string SystemMessages = "System_Messages";
 
     public static string BuildItemNameKey(string id) => $"content.item.{NormalizeId(id)}.name";
@@ -54,6 +57,30 @@ public static class ContentLocalizationTables
     public static string BuildExpeditionNodeLabelKey(string expeditionId, string nodeId) => $"ui.expedition.node.{NormalizeId(expeditionId)}.{NormalizeId(nodeId)}.label";
     public static string BuildExpeditionNodeDescriptionKey(string expeditionId, string nodeId) => $"ui.expedition.node.{NormalizeId(expeditionId)}.{NormalizeId(nodeId)}.desc";
     public static string BuildExpeditionNodeRewardKey(string expeditionId, string nodeId) => $"ui.expedition.node.{NormalizeId(expeditionId)}.{NormalizeId(nodeId)}.reward";
+    public static string BuildCampaignChapterNameKey(string id) => $"content.campaign.chapter.{NormalizeId(id)}.name";
+    public static string BuildCampaignChapterDescriptionKey(string id) => $"content.campaign.chapter.{NormalizeId(id)}.desc";
+    public static string BuildExpeditionSiteNameKey(string id) => $"content.campaign.site.{NormalizeId(id)}.name";
+    public static string BuildExpeditionSiteDescriptionKey(string id) => $"content.campaign.site.{NormalizeId(id)}.desc";
+    public static string BuildEncounterNameKey(string id) => $"content.encounter.{NormalizeId(id)}.name";
+    public static string BuildEncounterDescriptionKey(string id) => $"content.encounter.{NormalizeId(id)}.desc";
+    public static string BuildEnemySquadNameKey(string id) => $"content.enemy_squad.{NormalizeId(id)}.name";
+    public static string BuildEnemySquadDescriptionKey(string id) => $"content.enemy_squad.{NormalizeId(id)}.desc";
+    public static string BuildBossOverlayNameKey(string id) => $"content.boss_overlay.{NormalizeId(id)}.name";
+    public static string BuildBossOverlayDescriptionKey(string id) => $"content.boss_overlay.{NormalizeId(id)}.desc";
+    public static string BuildStatusNameKey(string id) => $"content.status.{NormalizeId(id)}.name";
+    public static string BuildStatusDescriptionKey(string id) => $"content.status.{NormalizeId(id)}.desc";
+    public static string BuildCleanseProfileNameKey(string id) => $"content.cleanse_profile.{NormalizeId(id)}.name";
+    public static string BuildCleanseProfileDescriptionKey(string id) => $"content.cleanse_profile.{NormalizeId(id)}.desc";
+    public static string BuildControlDiminishingNameKey(string id) => $"content.control_diminishing.{NormalizeId(id)}.name";
+    public static string BuildControlDiminishingDescriptionKey(string id) => $"content.control_diminishing.{NormalizeId(id)}.desc";
+    public static string BuildRewardSourceNameKey(string id) => $"content.reward_source.{NormalizeId(id)}.name";
+    public static string BuildRewardSourceDescriptionKey(string id) => $"content.reward_source.{NormalizeId(id)}.desc";
+    public static string BuildDropTableNameKey(string id) => $"content.drop_table.{NormalizeId(id)}.name";
+    public static string BuildDropTableDescriptionKey(string id) => $"content.drop_table.{NormalizeId(id)}.desc";
+    public static string BuildLootBundleNameKey(string id) => $"content.loot_bundle.{NormalizeId(id)}.name";
+    public static string BuildLootBundleDescriptionKey(string id) => $"content.loot_bundle.{NormalizeId(id)}.desc";
+    public static string BuildTraitTokenNameKey(string id) => $"content.trait_token.{NormalizeId(id)}.name";
+    public static string BuildTraitTokenDescriptionKey(string id) => $"content.trait_token.{NormalizeId(id)}.desc";
 
     public static string NormalizeId(string id)
     {
@@ -142,9 +169,37 @@ public static class ContentLocalizationTables
             return Rewards;
         }
 
+        if (definitionType == typeof(RewardSourceDefinition)
+            || definitionType == typeof(DropTableDefinition)
+            || definitionType == typeof(LootBundleDefinition)
+            || definitionType == typeof(TraitTokenDefinition))
+        {
+            return Rewards;
+        }
+
         if (definitionType == typeof(ExpeditionDefinition) || definitionType == typeof(ExpeditionNodeDefinition))
         {
             return Expedition;
+        }
+
+        if (definitionType == typeof(CampaignChapterDefinition) || definitionType == typeof(ExpeditionSiteDefinition))
+        {
+            return Campaign;
+        }
+
+        if (definitionType == typeof(EncounterDefinition)
+            || definitionType == typeof(EnemySquadTemplateDefinition)
+            || definitionType == typeof(BossOverlayDefinition)
+            || definitionType == typeof(EnemySquadMemberDefinition))
+        {
+            return Encounters;
+        }
+
+        if (definitionType == typeof(StatusFamilyDefinition)
+            || definitionType == typeof(CleanseProfileDefinition)
+            || definitionType == typeof(ControlDiminishingRuleDefinition))
+        {
+            return Status;
         }
 
         return SystemMessages;

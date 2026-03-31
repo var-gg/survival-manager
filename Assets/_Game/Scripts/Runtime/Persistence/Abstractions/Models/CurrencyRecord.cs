@@ -7,4 +7,9 @@ public sealed class CurrencyRecord
 {
     public int Gold;
     public int TraitRerollCurrency;
+    public int TraitLockToken;
+    public int TraitPurgeToken;
+    public int EmberDust;
+    public int EchoCrystal;
+    public int BossSigil;
 }

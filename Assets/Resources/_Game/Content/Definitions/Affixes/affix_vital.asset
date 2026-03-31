@@ -16,13 +16,13 @@ MonoBehaviour:
   NameKey: content.affix.affix_vital.name
   DescriptionKey: content.affix.affix_vital.desc
   Category: 3
+  Tier: 1
   AllowedSlotTypes: 0100000002000000
-  CompileTags:
-  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  CompileTags: []
   RuleModifierTags: []
   Modifiers:
   - StatId: max_health
     Op: 0
-    Value: 2.5
+    Value: 2
   legacyDisplayName: 
   legacyDescription: 

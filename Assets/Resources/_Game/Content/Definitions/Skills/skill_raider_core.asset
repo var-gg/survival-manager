@@ -32,12 +32,25 @@ MonoBehaviour:
   BaseCooldownSeconds: 1.8
   CastWindupSeconds: 0.17
   CompileTags:
-  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  - {fileID: 11400000, guid: b3f169cbfb1cd2042af9b8c8c80c8345, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  - {fileID: 11400000, guid: b3f169cbfb1cd2042af9b8c8c80c8345, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
+  SupportBlockedTags: []
   RequiredWeaponTags:
   - {fileID: 11400000, guid: 6579675f3d02790408543c39e489282b, type: 2}
   RequiredClassTags:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  AppliedStatuses:
+  - Id: status_marked
+    StatusId: marked
+    DurationSeconds: 3
+    Magnitude: 0
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+  CleanseProfileId: 
   legacyDisplayName: 

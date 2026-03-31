@@ -1,0 +1,461 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Content_Encounters_ko
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: ko
+  m_SharedData: {fileID: 11400000, guid: df194194b7a104d41a05d636c9984acd, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 1542447104
+    m_Localized: "\uC7BF\uBB38 \uC6B0\uB450\uBA38\uB9AC \uC704\uC0C1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1626333184
+    m_Localized: "\uC704\uC0C1 \uC804\uD658, \uC624\uB77C, \uBCF4\uC0C1 \uD0DC\uADF8\uB97C
+      \uC18C\uC720"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2502942720
+    m_Localized: site_ashen_gate_skirmish_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2502942721
+    m_Localized: "faction_ashen_vanguard \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3295666176
+    m_Localized: site_ashen_gate_skirmish_2_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3295666177
+    m_Localized: "faction_ashen_vanguard \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3912228864
+    m_Localized: site_ashen_gate_elite_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3912228865
+    m_Localized: "faction_ashen_vanguard \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4528791552
+    m_Localized: "site_ashen_gate_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4528791553
+    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5174714368
+    m_Localized: site_ashen_gate_skirmish_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5174714369
+    m_Localized: site_ashen_gate Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5829025792
+    m_Localized: site_ashen_gate_skirmish_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5833220096
+    m_Localized: site_ashen_gate Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6734995456
+    m_Localized: site_ashen_gate_elite_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6734995457
+    m_Localized: site_ashen_gate Elite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7678713856
+    m_Localized: site_ashen_gate_boss_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7678713857
+    m_Localized: site_ashen_gate Boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9402572800
+    m_Localized: "\uC7BF\uBD88 \uB9DD\uB300 \uC6B0\uB450\uBA38\uB9AC \uC704\uC0C1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9402572801
+    m_Localized: "\uC704\uC0C1 \uC804\uD658, \uC624\uB77C, \uBCF4\uC0C1 \uD0DC\uADF8\uB97C
+      \uC18C\uC720"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10157547520
+    m_Localized: site_cinder_watch_skirmish_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10157547521
+    m_Localized: "faction_cinder_watch \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10979631104
+    m_Localized: site_cinder_watch_skirmish_2_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10979631105
+    m_Localized: "faction_cinder_watch \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11742994432
+    m_Localized: site_cinder_watch_elite_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11742994433
+    m_Localized: "faction_cinder_watch \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12456026112
+    m_Localized: "site_cinder_watch_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12460220416
+    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13169057792
+    m_Localized: site_cinder_watch_skirmish_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13169057793
+    m_Localized: site_cinder_watch Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13831757824
+    m_Localized: site_cinder_watch_skirmish_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13831757825
+    m_Localized: site_cinder_watch Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14427348992
+    m_Localized: site_cinder_watch_elite_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14427348993
+    m_Localized: site_cinder_watch Elite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15106826240
+    m_Localized: site_cinder_watch_boss_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15106826241
+    m_Localized: site_cinder_watch Boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16541278208
+    m_Localized: "\uB9DD\uC2E4 \uAD74 \uC6B0\uB450\uBA38\uB9AC \uC704\uC0C1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16541278209
+    m_Localized: "\uC704\uC0C1 \uC804\uD658, \uC624\uB77C, \uBCF4\uC0C1 \uD0DC\uADF8\uB97C
+      \uC18C\uC720"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17262698496
+    m_Localized: site_forgotten_warren_skirmish_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17262698497
+    m_Localized: "faction_warren_pack \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17925398528
+    m_Localized: site_forgotten_warren_skirmish_2_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17925398529
+    m_Localized: "faction_warren_pack \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18621652992
+    m_Localized: site_forgotten_warren_elite_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18621652993
+    m_Localized: "faction_warren_pack \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19284353024
+    m_Localized: "site_forgotten_warren_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19288547328
+    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20064493568
+    m_Localized: site_forgotten_warren_skirmish_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20064493569
+    m_Localized: site_forgotten_warren Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20949491712
+    m_Localized: site_forgotten_warren_skirmish_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20949491713
+    m_Localized: site_forgotten_warren Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21687689216
+    m_Localized: site_forgotten_warren_elite_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21687689217
+    m_Localized: site_forgotten_warren Elite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22392332288
+    m_Localized: site_forgotten_warren_boss_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22392332289
+    m_Localized: site_forgotten_warren Boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23927447552
+    m_Localized: "\uB4A4\uD2C0\uB9B0 \uC18C\uAD74 \uC6B0\uB450\uBA38\uB9AC \uC704\uC0C1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23927447553
+    m_Localized: "\uC704\uC0C1 \uC804\uD658, \uC624\uB77C, \uBCF4\uC0C1 \uD0DC\uADF8\uB97C
+      \uC18C\uC720"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24632090624
+    m_Localized: site_twisted_den_skirmish_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24632090625
+    m_Localized: "faction_twisted_den \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25252847616
+    m_Localized: site_twisted_den_skirmish_2_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25252847617
+    m_Localized: "faction_twisted_den \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25978462208
+    m_Localized: site_twisted_den_elite_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25982656512
+    m_Localized: "faction_twisted_den \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26662133760
+    m_Localized: "site_twisted_den_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26662133761
+    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27299667968
+    m_Localized: site_twisted_den_skirmish_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27299667969
+    m_Localized: site_twisted_den Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27933007872
+    m_Localized: site_twisted_den_skirmish_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27933007873
+    m_Localized: site_twisted_den Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28604096512
+    m_Localized: site_twisted_den_elite_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28604096513
+    m_Localized: site_twisted_den Elite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29438763008
+    m_Localized: site_twisted_den_boss_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29438763009
+    m_Localized: site_twisted_den Boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31196176384
+    m_Localized: "\uD3D0\uD5C8 \uBB18\uC2E4 \uC6B0\uB450\uBA38\uB9AC \uC704\uC0C1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31196176385
+    m_Localized: "\uC704\uC0C1 \uC804\uD658, \uC624\uB77C, \uBCF4\uC0C1 \uD0DC\uADF8\uB97C
+      \uC18C\uC720"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32295084032
+    m_Localized: site_ruined_crypt_skirmish_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32295084033
+    m_Localized: "faction_bone_host \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33096196096
+    m_Localized: site_ruined_crypt_skirmish_2_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33096196097
+    m_Localized: "faction_bone_host \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33796644864
+    m_Localized: site_ruined_crypt_elite_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33796644865
+    m_Localized: "faction_bone_host \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34513870848
+    m_Localized: "site_ruined_crypt_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34513870849
+    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35222708224
+    m_Localized: site_ruined_crypt_skirmish_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35222708225
+    m_Localized: site_ruined_crypt Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36069957632
+    m_Localized: site_ruined_crypt_skirmish_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36069957633
+    m_Localized: site_ruined_crypt Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36900429824
+    m_Localized: site_ruined_crypt_elite_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36900429825
+    m_Localized: site_ruined_crypt Elite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37768650752
+    m_Localized: site_ruined_crypt_boss_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37768650753
+    m_Localized: site_ruined_crypt Boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39517675520
+    m_Localized: "\uBB34\uB364 \uC131\uC18C \uC6B0\uB450\uBA38\uB9AC \uC704\uC0C1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39517675521
+    m_Localized: "\uC704\uC0C1 \uC804\uD658, \uC624\uB77C, \uBCF4\uC0C1 \uD0DC\uADF8\uB97C
+      \uC18C\uC720"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40457199616
+    m_Localized: site_grave_sanctum_skirmish_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40457199617
+    m_Localized: "faction_grave_sanctum \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41254117376
+    m_Localized: site_grave_sanctum_skirmish_2_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41254117377
+    m_Localized: "faction_grave_sanctum \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42000703488
+    m_Localized: site_grave_sanctum_elite_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42000703489
+    m_Localized: "faction_grave_sanctum \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42847952896
+    m_Localized: "site_grave_sanctum_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42847952897
+    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43816837120
+    m_Localized: site_grave_sanctum_skirmish_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43816837121
+    m_Localized: site_grave_sanctum Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44722806784
+    m_Localized: site_grave_sanctum_skirmish_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44722806785
+    m_Localized: site_grave_sanctum Skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45599416320
+    m_Localized: site_grave_sanctum_elite_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45599416321
+    m_Localized: site_grave_sanctum Elite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46446665728
+    m_Localized: site_grave_sanctum_boss_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46446665729
+    m_Localized: site_grave_sanctum Boss
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

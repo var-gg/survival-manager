@@ -20,24 +20,23 @@ MonoBehaviour:
   DamageType: 0
   Delivery: 2
   TargetRule: 2
-  Power: 4
-  Range: 3.3
-  PowerFlat: 4
+  Power: 2
+  Range: 2
+  PowerFlat: 2
   PhysCoeff: 1
   MagCoeff: 0
   HealCoeff: 0
   HealthCoeff: 0
   CanCrit: 1
   ManaCost: 0
-  BaseCooldownSeconds: 2
-  CastWindupSeconds: 0.16
-  CompileTags:
-  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
-  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  BaseCooldownSeconds: 0
+  CastWindupSeconds: 0
+  CompileTags: []
   RuleModifierTags: []
   SupportAllowedTags: []
-  RequiredWeaponTags:
-  - {fileID: 11400000, guid: 29962574aef879948ae1bd7b26653f05, type: 2}
-  RequiredClassTags:
-  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
+  SupportBlockedTags: []
+  RequiredWeaponTags: []
+  RequiredClassTags: []
+  AppliedStatuses: []
+  CleanseProfileId: 
   legacyDisplayName: 

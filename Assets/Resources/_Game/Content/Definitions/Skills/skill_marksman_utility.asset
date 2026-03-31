@@ -32,12 +32,25 @@ MonoBehaviour:
   BaseCooldownSeconds: 3.8
   CastWindupSeconds: 0.08
   CompileTags:
-  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
-  - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
+  - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
+  - {fileID: 11400000, guid: cdb217deb42ffb342806a4bb87db46f3, type: 2}
+  - {fileID: 11400000, guid: 81f8159238428fa4fa946849f2e98580, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
+  - {fileID: 11400000, guid: cdb217deb42ffb342806a4bb87db46f3, type: 2}
+  - {fileID: 11400000, guid: 81f8159238428fa4fa946849f2e98580, type: 2}
+  SupportBlockedTags: []
   RequiredWeaponTags:
   - {fileID: 11400000, guid: 29962574aef879948ae1bd7b26653f05, type: 2}
   RequiredClassTags:
   - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
+  AppliedStatuses:
+  - Id: status_sunder
+    StatusId: sunder
+    DurationSeconds: 3
+    Magnitude: 0.15
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+  CleanseProfileId: 
   legacyDisplayName: 

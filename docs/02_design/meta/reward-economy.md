@@ -1,16 +1,29 @@
 # 보상 경제
 
 - 상태: active
-- 최종수정일: 2026-03-30
-- 단계: prototype
+- 소유자: repository
+- 최종수정일: 2026-03-31
+- 소스오브트루스: `docs/02_design/meta/reward-economy.md`
+- 관련문서:
+  - `docs/02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
+  - `docs/03_architecture/drop-resolution-and-ledger-pipeline.md`
 
-## 현재 operator 범위
+## 현재 reward 구조
 
-- Reward scene은 3지선다 카드 3개를 실제 적용한다.
-- 현재 효과 축은 gold / item / temporary augment / trait reroll / permanent slot이다.
-- 카드 선택 직후 summary / status / 저장 상태가 즉시 갱신된다.
+- 보상은 `automatic battle drops`와 `operator-choice reward cards` 두 채널로 분리된다.
+- Reward scene은 기존 3지선다 카드 3개를 계속 사용한다.
+- 자동 드롭은 Reward scene 진입 전에 먼저 ledger와 inventory/currency에 반영된다.
+- Reward scene은 자동 드롭 summary와 카드 선택 결과를 함께 보여 준다.
 
 ## 현재 구현 규칙
+
+### automatic battle drops
+
+- `reward_source_*`가 드롭 테이블과 rarity bracket을 소유한다.
+- battle result 직후 source-tagged loot bundle을 계산한다.
+- gold / crafting mat / item / skill manual / skill shard / trait token이 여기서 ledger로 들어간다.
+
+### operator-choice reward cards
 
 - gold: 즉시 재화 증가
 - item: inventory 수 증가
@@ -22,4 +35,5 @@
 
 - Quick Battle smoke도 Reward를 정상 통과한다.
 - expedition node context에 따라 카드 풀이 달라진다.
+- 자동 드롭도 같은 reward source와 seed를 기준으로 결정론적으로 계산된다.
 - Reward card presentation은 operator-grade placeholder이며 정식 카드 UX는 다음 단계다.

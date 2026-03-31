@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: cleanse_profile_cleanse_control
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CleanseProfileDefinition
+  Id: cleanse_control
+  NameKey: content.cleanse_profile.cleanse_control.name
+  DescriptionKey: content.cleanse_profile.cleanse_control.desc
+  RemovesStatusIds:
+  - root
+  - silence
+  - slow
+  - burn
+  - bleed
+  - wound
+  - sunder
+  - marked
+  - exposed
+  RemovesOneHardControl: 0
+  GrantsUnstoppable: 0
+  GrantedUnstoppableDurationSeconds: 0
+  legacyDisplayName: 
+  legacyDescription: 

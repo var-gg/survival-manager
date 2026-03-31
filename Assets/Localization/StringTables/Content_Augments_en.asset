@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 69771190272
-    m_Localized: Guard Instinct augment.
+    m_Localized: Improves defensive stability.
     m_Metadata:
       m_Items: []
   - m_Id: 70723297280
@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 70723297281
-    m_Localized: Focus augment.
+    m_Localized: Sharpens offensive focus.
     m_Metadata:
       m_Items: []
   - m_Id: 71700570112
@@ -39,7 +39,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 71704764416
-    m_Localized: Stride augment.
+    m_Localized: Improves battle tempo.
     m_Metadata:
       m_Items: []
   - m_Id: 72707203072
@@ -47,7 +47,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 72707203073
-    m_Localized: Bastion augment.
+    m_Localized: Boosts frontline endurance.
     m_Metadata:
       m_Items: []
   - m_Id: 73713836032
@@ -55,7 +55,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 73713836033
-    m_Localized: Fury augment.
+    m_Localized: Boosts offensive output.
     m_Metadata:
       m_Items: []
   - m_Id: 74661748736
@@ -63,7 +63,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 74661748737
-    m_Localized: Mending augment.
+    m_Localized: Boosts healing throughput.
     m_Metadata:
       m_Items: []
   - m_Id: 75676770304
@@ -71,7 +71,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 75676770305
-    m_Localized: Overrun augment.
+    m_Localized: Heavily boosts attack.
     m_Metadata:
       m_Items: []
   - m_Id: 76813426688
@@ -79,7 +79,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 76813426689
-    m_Localized: Wall augment.
+    m_Localized: Heavily boosts defense.
     m_Metadata:
       m_Items: []
   - m_Id: 77916528640
@@ -87,7 +87,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 77916528641
-    m_Localized: Surge augment.
+    m_Localized: Heavily boosts speed.
     m_Metadata:
       m_Items: []
   - m_Id: 78734417920
@@ -95,7 +95,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 78734417921
-    m_Localized: Legacy Blade augment.
+    m_Localized: Permanent attack bonus.
     m_Metadata:
       m_Items: []
   - m_Id: 79640387584
@@ -103,7 +103,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 79640387585
-    m_Localized: Legacy Hide augment.
+    m_Localized: Permanent defense bonus.
     m_Metadata:
       m_Items: []
   - m_Id: 80617660416
@@ -111,7 +111,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 80617660417
-    m_Localized: Legacy Grace augment.
+    m_Localized: Permanent speed bonus.
     m_Metadata:
       m_Items: []
   - m_Id: 168025746563072

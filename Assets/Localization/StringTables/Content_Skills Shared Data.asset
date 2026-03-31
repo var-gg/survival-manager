@@ -335,6 +335,102 @@ MonoBehaviour:
     m_Key: content.skill.skill_mystic_support_2.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 335591949459456
+    m_Key: content.skill.support_brutal.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335592041734144
+    m_Key: content.skill.support_brutal.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335592779931648
+    m_Key: content.skill.support_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335592779931649
+    m_Key: content.skill.support_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335593555877888
+    m_Key: content.skill.support_piercing.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335593555877889
+    m_Key: content.skill.support_piercing.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335594340212736
+    m_Key: content.skill.support_echo.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335594340212737
+    m_Key: content.skill.support_echo.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335595170684928
+    m_Key: content.skill.support_lingering.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335595170684929
+    m_Key: content.skill.support_lingering.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335595925659648
+    m_Key: content.skill.support_purifying.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335595925659649
+    m_Key: content.skill.support_purifying.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335596651274240
+    m_Key: content.skill.support_guarded.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335596651274241
+    m_Key: content.skill.support_guarded.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335597355917312
+    m_Key: content.skill.support_executioner.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335597355917313
+    m_Key: content.skill.support_executioner.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335598165417984
+    m_Key: content.skill.support_longshot.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335598165417985
+    m_Key: content.skill.support_longshot.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335599134302208
+    m_Key: content.skill.support_siphon.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335599134302209
+    m_Key: content.skill.support_siphon.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335600153518080
+    m_Key: content.skill.support_anchored.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335600153518081
+    m_Key: content.skill.support_anchored.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350400
+    m_Key: content.skill.support_hunter_mark.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350401
+    m_Key: content.skill.support_hunter_mark.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

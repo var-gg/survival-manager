@@ -32,12 +32,23 @@ MonoBehaviour:
   BaseCooldownSeconds: 4
   CastWindupSeconds: 0.1
   CompileTags:
-  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  - {fileID: 11400000, guid: 6474ff9f130f96c40bf0483e6a3206ed, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  - {fileID: 11400000, guid: 6474ff9f130f96c40bf0483e6a3206ed, type: 2}
+  SupportBlockedTags: []
   RequiredWeaponTags:
   - {fileID: 11400000, guid: 2f240f94125537247a2371d267839993, type: 2}
   RequiredClassTags:
   - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
+  AppliedStatuses:
+  - Id: status_unstoppable
+    StatusId: unstoppable
+    DurationSeconds: 0.8
+    Magnitude: 0
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+  CleanseProfileId: break_and_unstoppable
   legacyDisplayName: 

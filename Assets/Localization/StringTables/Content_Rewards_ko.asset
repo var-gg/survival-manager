@@ -51,13 +51,139 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 171463775608832
-    m_Localized: "\uC804\uD22C \uC885\uB8CC \uC2DC \uC0AC\uC6A9\uD558\uB294 \uAE30\uBCF8
-      \uBCF4\uC0C1 \uD14C\uC774\uBE14\uC785\uB2C8\uB2E4."
+    m_Localized: "\uC804\uD22C \uC9C1\uD6C4 \uC120\uD0DD \uBCF4\uC0C1"
     m_Metadata:
       m_Items: []
   - m_Id: 171463893049344
-    m_Localized: "\uC6D0\uC815 \uC885\uB8CC \uC2DC \uC0AC\uC6A9\uD558\uB294 \uBCF4\uC0C1
-      \uD14C\uC774\uBE14\uC785\uB2C8\uB2E4."
+    m_Localized: "\uC6D0\uC815 \uC885\uB8CC \uD6C4 \uC120\uD0DD \uBCF4\uC0C1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335678436007936
+    m_Localized: "\uD2B9\uC131 \uB9AC\uB864 \uD1A0\uD070"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335678511505408
+    m_Localized: "\uD2B9\uC131 \uB9AC\uB864 \uD1A0\uD070 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335679274868736
+    m_Localized: "\uD2B9\uC131 \uACE0\uC815 \uD1A0\uD070"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335679274868737
+    m_Localized: "\uD2B9\uC131 \uACE0\uC815 \uD1A0\uD070 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335680042426368
+    m_Localized: "\uD2B9\uC131 \uC81C\uAC70 \uD1A0\uD070"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335680042426369
+    m_Localized: "\uD2B9\uC131 \uC81C\uAC70 \uD1A0\uD070 \uC124\uBA85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335680830955520
+    m_Localized: "\uC18C\uADDC\uBAA8 \uC804\uD22C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335680830955521
+    m_Localized: "\uC18C\uADDC\uBAA8 \uC804\uD22C \uC790\uB3D9 \uB4DC\uB86D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335681762091008
+    m_Localized: "\uC815\uC608 \uC804\uD22C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335681762091009
+    m_Localized: "\uC815\uC608 \uC804\uD22C \uC790\uB3D9 \uB4DC\uB86D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335682613534720
+    m_Localized: "\uBCF4\uC2A4 \uC804\uD22C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335682617729024
+    m_Localized: "\uBCF4\uC2A4 \uC804\uD22C \uC790\uB3D9 \uB4DC\uB86D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335683368509440
+    m_Localized: "\uCCA0\uC218 \uC815\uC0B0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335683368509441
+    m_Localized: "\uCCA0\uC218 \uC815\uC0B0 \uC790\uB3D9 \uB4DC\uB86D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335684228341760
+    m_Localized: "\uC0AC\uB2F9/\uC774\uBCA4\uD2B8"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335684228341761
+    m_Localized: "\uC0AC\uB2F9/\uC774\uBCA4\uD2B8 \uC790\uB3D9 \uB4DC\uB86D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335685021065216
+    m_Localized: "\uBD84\uD574"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335685021065217
+    m_Localized: "\uBD84\uD574 \uC790\uB3D9 \uB4DC\uB86D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335685797011456
+    m_Localized: drop_table_skirmish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335685797011457
+    m_Localized: "reward_source_skirmish \uB4DC\uB86D \uD14C\uC774\uBE14"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335686518431744
+    m_Localized: drop_table_elite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335686518431745
+    m_Localized: "reward_source_elite \uB4DC\uB86D \uD14C\uC774\uBE14"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335687269212160
+    m_Localized: drop_table_boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335687273406464
+    m_Localized: "reward_source_boss \uB4DC\uB86D \uD14C\uC774\uBE14"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335687999021056
+    m_Localized: drop_table_extract
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335687999021057
+    m_Localized: "reward_source_extract \uB4DC\uB86D \uD14C\uC774\uBE14"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335688707858432
+    m_Localized: drop_table_shrine_event
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335688707858433
+    m_Localized: "reward_source_shrine_event \uB4DC\uB86D \uD14C\uC774\uBE14"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335689437667328
+    m_Localized: drop_table_salvage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335689437667329
+    m_Localized: "reward_source_salvage \uB4DC\uB86D \uD14C\uC774\uBE14"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335690112950272
+    m_Localized: "\uCCA0\uC218 \uBCF4\uB108\uC2A4 \uC0C1\uC790"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335690112950273
+    m_Localized: "\uCCA0\uC218 \uC2DC \uCD94\uAC00 \uC815\uC0B0"
     m_Metadata:
       m_Items: []
   references:

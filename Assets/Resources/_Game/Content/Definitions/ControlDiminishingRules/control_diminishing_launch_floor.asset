@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: control_diminishing_launch_floor
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ControlDiminishingRuleDefinition
+  Id: control_diminishing_launch_floor
+  NameKey: content.control_diminishing.control_diminishing_launch_floor.name
+  DescriptionKey: content.control_diminishing.control_diminishing_launch_floor.desc
+  ControlResistMultiplier: 0.5
+  WindowSeconds: 1.5
+  FullTenacityStatusIds:
+  - stun
+  - root
+  PartialTenacityStatusIds:
+  - silence
+  legacyDisplayName: 
+  legacyDescription: 

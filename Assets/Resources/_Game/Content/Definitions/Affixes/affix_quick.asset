@@ -16,13 +16,13 @@ MonoBehaviour:
   NameKey: content.affix.affix_quick.name
   DescriptionKey: content.affix.affix_quick.desc
   Category: 4
-  AllowedSlotTypes: 0200000000000000
-  CompileTags:
-  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  Tier: 1
+  AllowedSlotTypes: 0200000001000000
+  CompileTags: []
   RuleModifierTags: []
   Modifiers:
   - StatId: attack_speed
     Op: 0
-    Value: 0.12
+    Value: 1
   legacyDisplayName: 
   legacyDescription: 

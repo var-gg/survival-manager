@@ -35,6 +35,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 312251ff0dc8a464c8663c5854c4de25
+    m_Address: Assets/Localization/StringTables/Content_Campaign Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 337a24b83eead414fa5db5c5c0e9f6d7
     m_Address: Assets/Localization/StringTables/Content_Archetypes Shared Data.asset
     m_ReadOnly: 1
@@ -80,6 +85,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b6948b268c303be45ab6f48db844f308
+    m_Address: Assets/Localization/StringTables/Content_Status Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b98a6930fcf60554480f5ef4e8cddec8
     m_Address: Assets/Localization/StringTables/UI_Town Shared Data.asset
     m_ReadOnly: 1
@@ -102,6 +112,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d693e0eba733cda4db37973c1bf598ca
     m_Address: Assets/Localization/StringTables/Content_Tags Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df194194b7a104d41a05d636c9984acd
+    m_Address: Assets/Localization/StringTables/Content_Encounters Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

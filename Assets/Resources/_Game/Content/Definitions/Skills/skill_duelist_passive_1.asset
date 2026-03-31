@@ -33,11 +33,14 @@ MonoBehaviour:
   CastWindupSeconds: 0
   CompileTags:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  SupportBlockedTags: []
   RequiredWeaponTags:
   - {fileID: 11400000, guid: 6579675f3d02790408543c39e489282b, type: 2}
   RequiredClassTags:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  AppliedStatuses: []
+  CleanseProfileId: 
   legacyDisplayName: 

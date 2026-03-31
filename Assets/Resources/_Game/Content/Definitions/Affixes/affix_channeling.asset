@@ -16,6 +16,7 @@ MonoBehaviour:
   NameKey: content.affix.affix_channeling.name
   DescriptionKey: content.affix.affix_channeling.desc
   Category: 0
+  Tier: 1
   AllowedSlotTypes: 0000000002000000
   CompileTags:
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}

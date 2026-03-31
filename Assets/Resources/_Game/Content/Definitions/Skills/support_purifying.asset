@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: support_purifying
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
+  Id: support_purifying
+  NameKey: content.skill.support_purifying.name
+  DescriptionKey: content.skill.support_purifying.desc
+  Kind: 5
+  SlotKind: 3
+  DamageType: 0
+  Delivery: 4
+  TargetRule: 5
+  Power: 0
+  Range: 0
+  PowerFlat: 0
+  PhysCoeff: 1
+  MagCoeff: 0
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 0
+  ManaCost: 0
+  BaseCooldownSeconds: 0
+  CastWindupSeconds: 0
+  CompileTags:
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  - {fileID: 11400000, guid: 21302356fb3b0f144838934d6387e5a4, type: 2}
+  - {fileID: 11400000, guid: 6474ff9f130f96c40bf0483e6a3206ed, type: 2}
+  - {fileID: 11400000, guid: 8166619448199fa42a59830977fddb17, type: 2}
+  RuleModifierTags:
+  - {fileID: 11400000, guid: 8166619448199fa42a59830977fddb17, type: 2}
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  - {fileID: 11400000, guid: 21302356fb3b0f144838934d6387e5a4, type: 2}
+  - {fileID: 11400000, guid: 6474ff9f130f96c40bf0483e6a3206ed, type: 2}
+  - {fileID: 11400000, guid: 8166619448199fa42a59830977fddb17, type: 2}
+  SupportBlockedTags:
+  - {fileID: 11400000, guid: 3086f8cde41918f4189a3562a391a724, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
+  RequiredWeaponTags: []
+  RequiredClassTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  AppliedStatuses: []
+  CleanseProfileId: 
+  legacyDisplayName: 

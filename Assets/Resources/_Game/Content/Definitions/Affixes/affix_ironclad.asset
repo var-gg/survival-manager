@@ -16,6 +16,7 @@ MonoBehaviour:
   NameKey: content.affix.affix_ironclad.name
   DescriptionKey: content.affix.affix_ironclad.desc
   Category: 3
+  Tier: 1
   AllowedSlotTypes: 01000000
   CompileTags:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}

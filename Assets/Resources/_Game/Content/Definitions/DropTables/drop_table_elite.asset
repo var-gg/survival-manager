@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: drop_table_elite
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:DropTableDefinition
+  Id: drop_table_elite
+  NameKey: content.drop_table.drop_table_elite.name
+  DescriptionKey: content.drop_table.drop_table_elite.desc
+  RewardSourceId: reward_source_elite
+  Entries:
+  - Id: gold_elite
+    RewardType: 0
+    Amount: 12
+    RarityBracket: 1
+    Weight: 1
+    IsGuaranteed: 1
+  - Id: ember_dust_elite
+    RewardType: 7
+    Amount: 4
+    RarityBracket: 1
+    Weight: 1
+    IsGuaranteed: 1
+  - Id: item_bone_blade
+    RewardType: 3
+    Amount: 1
+    RarityBracket: 2
+    Weight: 3
+    IsGuaranteed: 0
+  - Id: skill_precision_shot
+    RewardType: 10
+    Amount: 1
+    RarityBracket: 2
+    Weight: 2
+    IsGuaranteed: 0
+  legacyDisplayName: 
+  legacyDescription: 

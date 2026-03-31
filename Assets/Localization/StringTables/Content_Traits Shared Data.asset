@@ -911,6 +911,166 @@ MonoBehaviour:
     m_Key: content.trait.shaman.shaman_negative_dull.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 416078978080768
+    m_Key: content.trait.bulwark.bulwark_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416079066161152
+    m_Key: content.trait.bulwark.bulwark_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416079066161153
+    m_Key: content.trait.bulwark.bulwark_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416079066161154
+    m_Key: content.trait.bulwark.bulwark_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416079066161155
+    m_Key: content.trait.bulwark.bulwark_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416079066161156
+    m_Key: content.trait.bulwark.bulwark_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416079066161157
+    m_Key: content.trait.bulwark.bulwark_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416079066161158
+    m_Key: content.trait.bulwark.bulwark_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416079066161159
+    m_Key: content.trait.bulwark.bulwark_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416079066161160
+    m_Key: content.trait.bulwark.bulwark_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416082023145472
+    m_Key: content.trait.reaver.reaver_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416082023145473
+    m_Key: content.trait.reaver.reaver_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416082023145474
+    m_Key: content.trait.reaver.reaver_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416082023145475
+    m_Key: content.trait.reaver.reaver_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416082023145476
+    m_Key: content.trait.reaver.reaver_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416082023145477
+    m_Key: content.trait.reaver.reaver_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416082023145478
+    m_Key: content.trait.reaver.reaver_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416082023145479
+    m_Key: content.trait.reaver.reaver_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416082023145480
+    m_Key: content.trait.reaver.reaver_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416082023145481
+    m_Key: content.trait.reaver.reaver_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416085164679168
+    m_Key: content.trait.marksman.marksman_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416085164679169
+    m_Key: content.trait.marksman.marksman_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416085164679170
+    m_Key: content.trait.marksman.marksman_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416085164679171
+    m_Key: content.trait.marksman.marksman_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416085164679172
+    m_Key: content.trait.marksman.marksman_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416085164679173
+    m_Key: content.trait.marksman.marksman_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416085164679174
+    m_Key: content.trait.marksman.marksman_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416085164679175
+    m_Key: content.trait.marksman.marksman_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416085164679176
+    m_Key: content.trait.marksman.marksman_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416085164679177
+    m_Key: content.trait.marksman.marksman_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416088364933120
+    m_Key: content.trait.shaman.shaman_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416088369127424
+    m_Key: content.trait.shaman.shaman_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416088369127425
+    m_Key: content.trait.shaman.shaman_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416088369127426
+    m_Key: content.trait.shaman.shaman_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416088369127427
+    m_Key: content.trait.shaman.shaman_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416088369127428
+    m_Key: content.trait.shaman.shaman_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416088369127429
+    m_Key: content.trait.shaman.shaman_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416088369127430
+    m_Key: content.trait.shaman.shaman_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416088369127431
+    m_Key: content.trait.shaman.shaman_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 416088369127432
+    m_Key: content.trait.shaman.shaman_negative_slow.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

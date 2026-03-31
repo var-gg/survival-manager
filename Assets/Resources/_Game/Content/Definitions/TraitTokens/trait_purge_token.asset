@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: trait_purge_token
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TraitTokenDefinition
+  Id: trait_purge_token
+  NameKey: content.trait_token.trait_purge_token.name
+  DescriptionKey: content.trait_token.trait_purge_token.desc
+  RewardType: 6
+  legacyDisplayName: 
+  legacyDescription: 

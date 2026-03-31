@@ -17,22 +17,22 @@ MonoBehaviour:
   DescriptionKey: content.item.item_leather_armor.desc
   SlotType: 1
   IdentityKind: 0
-  ItemFamilyTag: ranger_armor
+  ItemFamilyTag: armor
+  WeaponFamilyTag: 
   RarityTier: 0
-  AffixPoolTag: pool_ranger_armor
-  CraftCategory: ranger
+  AffixPoolTag: pool_armor
+  CraftCategory: armor
   BudgetBand: personal_power_9
+  CraftCurrencyTag: ember_dust
   GrantedSkills: []
-  CompileTags:
-  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
-  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  CompileTags: []
   RuleModifierTags: []
-  AllowedClassTags:
-  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
+  AllowedClassTags: []
   AllowedArchetypeTags: []
   UniqueRuleTags: []
+  AllowedCraftOperations: 00000000010000000200000004000000
   BaseModifiers:
   - StatId: armor
     Op: 0
-    Value: 1.1
+    Value: 1
   legacyDisplayName: 

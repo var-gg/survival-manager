@@ -18,19 +18,18 @@ MonoBehaviour:
   Rarity: 3
   IsPermanent: 1
   Category: 0
-  FamilyId: legacy_grace
+  FamilyId: permanent_legacy
   Tier: 1
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags:
-  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  Tags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 3
+  EligibleModes: 1
   Modifiers:
   - StatId: attack_speed
     Op: 0
-    Value: 0.08
+    Value: 1
   legacyDisplayName: 
   legacyDescription: 

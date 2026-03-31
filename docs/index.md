@@ -58,24 +58,22 @@
 
 - 출시 기준 허브: `02_design/systems/launch-content-scope-and-balance.md`
 - launch floor archetype matrix: `02_design/systems/launch-floor-content-matrix.md`
-- 로스터와 archetype: `02_design/deck/roster-archetype-launch-scope.md`
+- roster와 archetype: `02_design/deck/roster-archetype-launch-scope.md`
+- chapter/site 진행: `02_design/meta/campaign-chapter-and-expedition-sites.md`
+- 조우 카탈로그: `02_design/combat/encounter-catalog-and-scaling.md`
+- 상태이상 taxonomy: `02_design/combat/status-effects-cc-and-cleanse-taxonomy.md`
+- 스킬 키워드와 support restriction: `02_design/combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`
+- 드롭/source matrix: `02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
+- 장비/제작 깊이: `02_design/meta/equipment-family-and-crafting-depth.md`
+- PVP arena ruleset: `02_design/meta/pvp-ruleset-and-arena-loop.md`
 - skill taxonomy와 데미지 모델: `02_design/combat/skill-taxonomy-and-damage-model.md`
-- item / passive / augment budget: `02_design/meta/item-passive-augment-budget.md`
-- passive board node catalog: `02_design/meta/passive-board-node-catalog.md`
-- synergy breakpoint와 soft counter: `02_design/meta/synergy-breakpoints-and-soft-counters.md`
-- synergy family catalog: `02_design/meta/synergy-family-catalog.md`
-- authoring과 balance data 경계: `03_architecture/content-authoring-and-balance-data.md`
-- 전장과 카메라: `02_design/combat/battlefield-and-camera.md`
-- 배치와 앵커: `02_design/combat/deployment-and-anchors.md`
-- 실시간 체감 시뮬레이션 모델: `02_design/combat/realtime-simulation-model.md`
-- 팀 전술과 유닛 규칙: `02_design/combat/team-tactics-and-unit-rules.md`
-- 전투 스탯과 파워 예산: `02_design/combat/stat-system-and-power-budget.md`
 - squad blueprint와 빌드 소유권: `02_design/systems/squad-blueprint-and-build-ownership.md`
 - 전투 런타임 아키텍처: `03_architecture/combat-runtime-architecture.md`
-- editor sandbox tooling: `03_architecture/editor-sandbox-tooling.md`
-- 전투 상태와 이벤트 모델: `03_architecture/combat-state-and-event-model.md`
-- loadout compiler와 battle snapshot: `03_architecture/loadout-compiler-and-battle-snapshot.md`
-- sim sweep과 balance KPI: `03_architecture/sim-sweep-and-balance-kpis.md`
+- 조우 resolve 구조: `03_architecture/encounter-authoring-and-runtime-resolution.md`
+- status runtime stack: `03_architecture/status-runtime-stack-and-cleanse-rules.md`
+- 드롭/ledger pipeline: `03_architecture/drop-resolution-and-ledger-pipeline.md`
+- skill tag catalog: `03_architecture/skill-tag-catalog-and-compatibility-resolution.md`
+- arena snapshot 계약: `03_architecture/arena-snapshot-matchmaking-and-season-contract.md`
 - replay persistence와 run audit: `03_architecture/replay-persistence-and-run-audit.md`
 - ADR-0014: `04_decisions/adr-0014-grid-deployment-continuous-combat.md`
 - ADR-0015: `04_decisions/adr-0015-build-compile-audit-pipeline.md`

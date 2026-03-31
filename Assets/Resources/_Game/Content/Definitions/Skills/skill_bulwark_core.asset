@@ -32,12 +32,25 @@ MonoBehaviour:
   BaseCooldownSeconds: 2.1
   CastWindupSeconds: 0.19
   CompileTags:
-  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  - {fileID: 11400000, guid: 21302356fb3b0f144838934d6387e5a4, type: 2}
+  - {fileID: 11400000, guid: f1af3ef0effc5fa418e9f5aca6f8d1b8, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  - {fileID: 11400000, guid: 21302356fb3b0f144838934d6387e5a4, type: 2}
+  - {fileID: 11400000, guid: f1af3ef0effc5fa418e9f5aca6f8d1b8, type: 2}
+  SupportBlockedTags: []
   RequiredWeaponTags:
   - {fileID: 11400000, guid: 2f240f94125537247a2371d267839993, type: 2}
   RequiredClassTags:
   - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
+  AppliedStatuses:
+  - Id: status_barrier
+    StatusId: barrier
+    DurationSeconds: 0
+    Magnitude: 6
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+  CleanseProfileId: 
   legacyDisplayName: 

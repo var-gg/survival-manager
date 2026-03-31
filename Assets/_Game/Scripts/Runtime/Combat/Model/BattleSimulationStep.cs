@@ -19,7 +19,9 @@ public sealed record BattleUnitReadModel(
     string? TargetName,
     float WindupProgress,
     float CooldownRemaining,
-    bool IsDefending);
+    bool IsDefending,
+    float Barrier = 0f,
+    IReadOnlyList<string>? StatusIds = null);
 
 public sealed record BattleSimulationStep(
     int StepIndex,

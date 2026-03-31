@@ -18,16 +18,15 @@ MonoBehaviour:
   Rarity: 3
   IsPermanent: 1
   Category: 0
-  FamilyId: legacy_blade
+  FamilyId: permanent_legacy
   Tier: 1
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags:
-  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  Tags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 3
+  EligibleModes: 1
   Modifiers:
   - StatId: phys_power
     Op: 0

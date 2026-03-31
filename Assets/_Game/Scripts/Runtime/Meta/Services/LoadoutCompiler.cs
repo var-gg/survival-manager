@@ -381,15 +381,94 @@ public sealed class LoadoutCompiler
             .OrderBy(selection => GetCompiledSkillSlotOrder(selection.Skill))
             .ToList();
 
+        resolved = EnsureCanonicalSkillContract(resolved, archetype, content);
+
         var missingSlots = CompiledSkillSlots.Ordered
             .Where(requiredSlot => resolved.All(selection => !string.Equals(selection.Skill.SlotKind, requiredSlot, StringComparison.Ordinal)))
             .ToList();
         if (missingSlots.Count > 0)
         {
-            throw new InvalidOperationException($"Compiled skill contract requires all four canonical slots. Missing: {string.Join(", ", missingSlots)} for archetype '{archetype.Id}'.");
+            var availableSlots = string.Join(", ", archetype.Skills.Select(skill => $"{skill.Id}:{skill.SlotKind}"));
+            throw new InvalidOperationException($"Compiled skill contract requires all four canonical slots. Missing: {string.Join(", ", missingSlots)} for archetype '{archetype.Id}'. Available: [{availableSlots}]");
         }
 
         return resolved;
+    }
+
+    private static List<ResolvedSkillSelection> EnsureCanonicalSkillContract(
+        IReadOnlyList<ResolvedSkillSelection> current,
+        CombatArchetypeTemplate archetype,
+        CombatContentSnapshot content)
+    {
+        var occupiedSlots = new HashSet<string>(
+            current.Select(selection => selection.Skill.SlotKind),
+            StringComparer.Ordinal);
+        var supplemented = current.ToList();
+
+        foreach (var skillId in GetFallbackSkillIds(archetype))
+        {
+            if (!content.SkillCatalog.TryGetValue(skillId, out var skill))
+            {
+                continue;
+            }
+
+            var normalizedSlot = CompiledSkillSlots.Normalize(skill.SlotKind);
+            if (!occupiedSlots.Add(normalizedSlot))
+            {
+                continue;
+            }
+
+            supplemented.Add(new ResolvedSkillSelection(
+                skill with { SlotKind = normalizedSlot },
+                "archetype_fallback_skill",
+                archetype.Id,
+                skill.SlotKind));
+        }
+
+        return supplemented
+            .GroupBy(selection => selection.Skill.SlotKind, StringComparer.Ordinal)
+            .Select(group => group
+                .OrderBy(GetSkillSourcePriority)
+                .ThenBy(selection => selection.Skill.Id, StringComparer.Ordinal)
+                .ThenBy(selection => selection.SourceId, StringComparer.Ordinal)
+                .First())
+            .OrderBy(selection => GetCompiledSkillSlotOrder(selection.Skill))
+            .ToList();
+    }
+
+    private static IEnumerable<string> GetFallbackSkillIds(CombatArchetypeTemplate archetype)
+    {
+        foreach (var skillId in archetype.Id switch
+                 {
+                     "warden" => new[] { "skill_power_strike", "skill_warden_utility" },
+                     "guardian" => new[] { "skill_guardian_core", "skill_guardian_utility" },
+                     "bulwark" => new[] { "skill_bulwark_core", "skill_bulwark_utility" },
+                     "slayer" => new[] { "skill_slayer_core", "skill_slayer_utility" },
+                     "raider" => new[] { "skill_raider_core", "skill_raider_utility" },
+                     "reaver" => new[] { "skill_reaver_core", "skill_reaver_utility" },
+                     "hunter" => new[] { "skill_precision_shot", "skill_hunter_utility" },
+                     "scout" => new[] { "skill_scout_core", "skill_scout_utility" },
+                     "marksman" => new[] { "skill_marksman_core", "skill_marksman_utility" },
+                     "priest" => new[] { "skill_priest_core", "skill_minor_heal" },
+                     "hexer" => new[] { "skill_hexer_core", "skill_hexer_utility" },
+                     "shaman" => new[] { "skill_shaman_core", "skill_shaman_utility" },
+                     _ => Array.Empty<string>(),
+                 })
+        {
+            yield return skillId;
+        }
+
+        foreach (var skillId in archetype.ClassId switch
+                 {
+                     "vanguard" => new[] { "skill_vanguard_passive_1", "skill_vanguard_support_1" },
+                     "duelist" => new[] { "skill_duelist_passive_1", "skill_duelist_support_1" },
+                     "ranger" => new[] { "skill_ranger_passive_1", "skill_ranger_support_1" },
+                     "mystic" => new[] { "skill_mystic_passive_1", "skill_mystic_support_1" },
+                     _ => Array.Empty<string>(),
+                 })
+        {
+            yield return skillId;
+        }
     }
 
     private static int GetSkillSourcePriority(ResolvedSkillSelection selection)
@@ -534,8 +613,12 @@ public sealed class LoadoutCompiler
                     .Append(string.Join(",", skill.CompileTags ?? Array.Empty<string>())).Append(':')
                     .Append(string.Join(",", skill.RuleModifierTags ?? Array.Empty<string>())).Append(':')
                     .Append(string.Join(",", skill.SupportAllowedTags ?? Array.Empty<string>())).Append(':')
+                    .Append(string.Join(",", skill.SupportBlockedTags ?? Array.Empty<string>())).Append(':')
                     .Append(string.Join(",", skill.RequiredWeaponTags ?? Array.Empty<string>())).Append(':')
-                    .Append(string.Join(",", skill.RequiredClassTags ?? Array.Empty<string>()))
+                    .Append(string.Join(",", skill.RequiredClassTags ?? Array.Empty<string>())).Append(':')
+                    .Append(string.Join(",", (skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>())
+                        .Select(status => $"{status.StatusId}:{status.DurationSeconds.ToString("0.###", CultureInfo.InvariantCulture)}:{status.Magnitude.ToString("0.###", CultureInfo.InvariantCulture)}:{status.MaxStacks}:{status.RefreshDurationOnReapply}"))).Append(':')
+                    .Append(skill.CleanseProfileId ?? string.Empty)
                     .Append('|');
             }
 

@@ -78,6 +78,154 @@ MonoBehaviour:
     m_Localized: Support
     m_Metadata:
       m_Items: []
+  - m_Id: 335555811336192
+    m_Localized: Greatblade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335556876689408
+    m_Localized: Polearm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335557820407808
+    m_Localized: Melee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335558625714176
+    m_Localized: Projectile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335559326162944
+    m_Localized: AOE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335559967891456
+    m_Localized: Zone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335560655757312
+    m_Localized: Trap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335561305874432
+    m_Localized: Aura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335561955991552
+    m_Localized: Strike
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335564011200512
+    m_Localized: Heal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335564690677760
+    m_Localized: Shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335565378543616
+    m_Localized: Dash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335566032855040
+    m_Localized: Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335566754275328
+    m_Localized: Mark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335567521832960
+    m_Localized: Cleanse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335568457162752
+    m_Localized: Burn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335569182777344
+    m_Localized: Bleed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335569916780544
+    m_Localized: Wound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335570566897664
+    m_Localized: Sunder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335571271540736
+    m_Localized: Slow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335571971989504
+    m_Localized: Silence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335572626300928
+    m_Localized: Execute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335573255446528
+    m_Localized: Pierce
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335573838454784
+    m_Localized: Chain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335574543097856
+    m_Localized: Brutal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335575289683968
+    m_Localized: Swift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335575981744128
+    m_Localized: Piercing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335576732524544
+    m_Localized: Echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335577491693568
+    m_Localized: Lingering
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335578208919552
+    m_Localized: Purifying
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335579035197440
+    m_Localized: Guarded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335579911806976
+    m_Localized: Executioner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335580570312704
+    m_Localized: Longshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335581249789952
+    m_Localized: Siphon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335581845381120
+    m_Localized: Anchored
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335582537441280
+    m_Localized: Hunter Mark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348477245612032
+    m_Localized: Exposed
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

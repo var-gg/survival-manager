@@ -18,19 +18,21 @@ MonoBehaviour:
   SlotType: 0
   IdentityKind: 0
   ItemFamilyTag: bow
+  WeaponFamilyTag: bow
   RarityTier: 0
   AffixPoolTag: pool_bow
   CraftCategory: ranger
   BudgetBand: personal_power_10
+  CraftCurrencyTag: ember_dust
   GrantedSkills: []
   CompileTags:
-  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   RuleModifierTags: []
   AllowedClassTags:
   - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
+  AllowedCraftOperations: 00000000010000000200000004000000
   BaseModifiers:
   - StatId: phys_power
     Op: 0

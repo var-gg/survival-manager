@@ -29,8 +29,11 @@ public sealed class SkillDefinitionAsset : ScriptableObject
     public List<StableTagDefinition> CompileTags = new();
     public List<StableTagDefinition> RuleModifierTags = new();
     public List<StableTagDefinition> SupportAllowedTags = new();
+    public List<StableTagDefinition> SupportBlockedTags = new();
     public List<StableTagDefinition> RequiredWeaponTags = new();
     public List<StableTagDefinition> RequiredClassTags = new();
+    public List<StatusApplicationRule> AppliedStatuses = new();
+    public string CleanseProfileId = string.Empty;
 
     [FormerlySerializedAs("DisplayName")]
     [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;

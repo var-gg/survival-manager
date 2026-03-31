@@ -16,9 +16,9 @@ MonoBehaviour:
   NameKey: content.affix.affix_fierce.name
   DescriptionKey: content.affix.affix_fierce.desc
   Category: 0
+  Tier: 1
   AllowedSlotTypes: 00000000
-  CompileTags:
-  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  CompileTags: []
   RuleModifierTags: []
   Modifiers:
   - StatId: phys_power

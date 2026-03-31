@@ -16,6 +16,7 @@ MonoBehaviour:
   NameKey: content.affix.affix_farshot.name
   DescriptionKey: content.affix.affix_farshot.desc
   Category: 1
+  Tier: 1
   AllowedSlotTypes: 0000000002000000
   CompileTags:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}

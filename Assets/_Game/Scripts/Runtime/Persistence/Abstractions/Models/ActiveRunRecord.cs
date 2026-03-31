@@ -17,4 +17,13 @@ public sealed class ActiveRunRecord
     public string CompileVersion = string.Empty;
     public string CompileHash = string.Empty;
     public string LastBattleMatchId = string.Empty;
+    public string ChapterId = string.Empty;
+    public string SiteId = string.Empty;
+    public int SiteNodeIndex = 0;
+    public string EncounterId = string.Empty;
+    public int BattleSeed = 0;
+    public string BattleContextHash = string.Empty;
+    public string RewardSourceId = string.Empty;
+    public bool StoryCleared;
+    public bool EndlessUnlocked;
 }

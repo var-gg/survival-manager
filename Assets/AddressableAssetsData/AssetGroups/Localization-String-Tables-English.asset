@@ -89,6 +89,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e219c260478c6044956c0870b3e719a
+    m_Address: Content_Encounters_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 907b37e47199b9448a3b119ad5563a80
+    m_Address: Content_Campaign_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 91488d5121031f9419fac06f0fdce596
     m_Address: Content_Augments_en
     m_ReadOnly: 1
@@ -159,6 +171,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6616e77f9104c14bbf1b475c8ed3a7f
+    m_Address: Content_Status_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: 4f1ff38064f728d40a3a3ec04389c665, type: 2}

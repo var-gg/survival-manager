@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: site_ashen_gate_skirmish_1
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EncounterDefinition
+  Id: site_ashen_gate_skirmish_1
+  NameKey: content.encounter.site_ashen_gate_skirmish_1.name
+  DescriptionKey: content.encounter.site_ashen_gate_skirmish_1.desc
+  Kind: 0
+  SiteId: site_ashen_gate
+  EnemySquadTemplateId: site_ashen_gate_skirmish_1_squad
+  BossOverlayId: 
+  RewardSourceId: reward_source_skirmish
+  FactionId: faction_ashen_vanguard
+  ThreatTier: 1
+  ThreatCost: 1
+  ThreatSkulls: 1
+  DifficultyBand: chapter_entry
+  RewardDropTags:
+  - reward_source_skirmish
+  - faction_ashen_vanguard
+  - skirmish
+  legacyDisplayName: 
+  legacyDescription: 

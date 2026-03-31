@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: support_siphon
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
+  Id: support_siphon
+  NameKey: content.skill.support_siphon.name
+  DescriptionKey: content.skill.support_siphon.desc
+  Kind: 5
+  SlotKind: 3
+  DamageType: 0
+  Delivery: 4
+  TargetRule: 5
+  Power: 0
+  Range: 0
+  PowerFlat: 0
+  PhysCoeff: 1
+  MagCoeff: 0
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 0
+  ManaCost: 0
+  BaseCooldownSeconds: 0
+  CastWindupSeconds: 0
+  CompileTags:
+  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  - {fileID: 11400000, guid: f3d6dde03d5ebbc40b81076b5de3c9ca, type: 2}
+  - {fileID: 11400000, guid: 9435e6911510af248a0568f41427daf8, type: 2}
+  RuleModifierTags:
+  - {fileID: 11400000, guid: 9435e6911510af248a0568f41427daf8, type: 2}
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  - {fileID: 11400000, guid: f3d6dde03d5ebbc40b81076b5de3c9ca, type: 2}
+  - {fileID: 11400000, guid: 9435e6911510af248a0568f41427daf8, type: 2}
+  SupportBlockedTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 5b8638d14ee22444e8b2baf4abd01965, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  AppliedStatuses: []
+  CleanseProfileId: 
+  legacyDisplayName: 

@@ -32,12 +32,25 @@ MonoBehaviour:
   BaseCooldownSeconds: 1.9
   CastWindupSeconds: 0.18
   CompileTags:
-  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  - {fileID: 11400000, guid: 3086f8cde41918f4189a3562a391a724, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  - {fileID: 11400000, guid: 3086f8cde41918f4189a3562a391a724, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
+  SupportBlockedTags: []
   RequiredWeaponTags:
   - {fileID: 11400000, guid: 6579675f3d02790408543c39e489282b, type: 2}
   RequiredClassTags:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  AppliedStatuses:
+  - Id: status_bleed
+    StatusId: bleed
+    DurationSeconds: 3
+    Magnitude: 2
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+  CleanseProfileId: 
   legacyDisplayName: 

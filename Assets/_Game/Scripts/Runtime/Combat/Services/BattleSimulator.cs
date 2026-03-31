@@ -40,6 +40,14 @@ public sealed class BattleSimulator
             unit.AdvanceTime(State.FixedStepSeconds);
         }
 
+        StatusResolutionService.AdvanceStatuses(State, stepEvents);
+        if (CheckForWinner())
+        {
+            State.AdvanceStep();
+            CurrentStep = BattleReadModelBuilder.BuildStep(State, stepEvents, IsFinished, Winner);
+            return CurrentStep;
+        }
+
         var orderedUnits = State.AllUnits
             .Where(unit => unit.IsAlive)
             .OrderByDescending(unit => unit.Speed)
@@ -51,6 +59,13 @@ public sealed class BattleSimulator
         {
             if (!actor.IsAlive)
             {
+                continue;
+            }
+
+            if (actor.IsStunned)
+            {
+                actor.ClearTarget(applySwitchDelay: false);
+                actor.SetActionState(CombatActionState.SeekTarget);
                 continue;
             }
 

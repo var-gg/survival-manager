@@ -36,6 +36,7 @@ public sealed class BattleScreenController : MonoBehaviour
     private BattleSimulator? _simulator;
     private BattleLoadoutSnapshot? _compiledSnapshot;
     private IReadOnlyList<BattleUnitLoadout> _enemyLoadouts = Array.Empty<BattleUnitLoadout>();
+    private ResolvedEncounterContext? _resolvedEncounterContext;
     private string _battleStartedAtUtc = string.Empty;
     private BattleSimulationStep? _previousStep;
     private BattleSimulationStep? _currentStep;
@@ -255,24 +256,24 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
-        var encounter = BattleEncounterPlans.CreateObserverSmokePlan();
-        var buildResult = BattleSetupBuilder.Build(Array.Empty<BattleParticipantSpec>(), encounter, snapshot);
-        if (!buildResult.IsSuccess)
+        if (!_root.SessionState.TryResolveCurrentEncounter(out var encounter, out var encounterError))
         {
-            SetResult(buildResult.Error ?? "전투 세팅 빌드에 실패했습니다.");
+            SetResult(encounterError);
             return;
         }
 
         _compiledSnapshot = allySnapshot;
-        _enemyLoadouts = buildResult.Enemies;
+        _resolvedEncounterContext = encounter;
+        _enemyLoadouts = encounter.Enemies;
         _battleStartedAtUtc = System.DateTime.UtcNow.ToString("O");
         var simulationState = BattleFactory.Create(
             allySnapshot.Allies,
-            buildResult.Enemies,
+            encounter.Enemies,
             allySnapshot.TeamTactic.Posture,
             encounter.EnemyPosture,
             BattleSimulator.DefaultFixedStepSeconds,
-            seed: 17);
+            seed: encounter.Context.BattleSeed);
+        new EncounterResolutionService(snapshot).ApplyBattleBootstrap(simulationState, encounter);
 
         _simulator = new BattleSimulator(simulationState, MaxBattleSteps);
         _previousStep = _simulator.CurrentStep;
@@ -329,7 +330,7 @@ public sealed class BattleScreenController : MonoBehaviour
             _compiledSnapshot,
             _enemyLoadouts,
             result,
-            17,
+            _resolvedEncounterContext?.Context.BattleSeed ?? 0,
             _battleStartedAtUtc,
             System.DateTime.UtcNow.ToString("O"));
         _root.SessionState.RecordBattleAudit(replay);
@@ -481,6 +482,10 @@ public sealed class BattleScreenController : MonoBehaviour
             BattleLogCode.ActiveSkillHeal => Localize(GameLocalizationTables.CombatLog, "combat.log.heal", "S{0} {1} healed {2} for {3:0}", eventData.StepIndex, source, target, eventData.Value),
             BattleLogCode.ActiveSkillDamage => Localize(GameLocalizationTables.CombatLog, "combat.log.skill", "S{0} {1} used a skill on {2} for {3:0}", eventData.StepIndex, source, target, eventData.Value),
             BattleLogCode.WaitDefend => Localize(GameLocalizationTables.CombatLog, "combat.log.guard", "S{0} {1} took a guard stance", eventData.StepIndex, source),
+            BattleLogCode.Generic when eventData.EventKind == BattleEventKind.StatusApplied => Localize(GameLocalizationTables.CombatLog, "combat.log.status_applied", "S{0} {1} applied {2} to {3}", eventData.StepIndex, source, eventData.PayloadId, target),
+            BattleLogCode.Generic when eventData.EventKind == BattleEventKind.StatusRemoved => Localize(GameLocalizationTables.CombatLog, "combat.log.status_removed", "S{0} {1} removed {2}", eventData.StepIndex, target, eventData.PayloadId),
+            BattleLogCode.Generic when eventData.EventKind == BattleEventKind.CleanseTriggered => Localize(GameLocalizationTables.CombatLog, "combat.log.cleanse", "S{0} {1} cleansed {2} on {3}", eventData.StepIndex, source, eventData.PayloadId, target),
+            BattleLogCode.Generic when eventData.EventKind == BattleEventKind.ControlResistApplied => Localize(GameLocalizationTables.CombatLog, "combat.log.control_resist", "S{0} {1} gained control resist", eventData.StepIndex, target),
             _ => Localize(GameLocalizationTables.CombatLog, "combat.log.generic", "S{0} {1} {2}", eventData.StepIndex, source, eventData.ActionType)
         };
     }

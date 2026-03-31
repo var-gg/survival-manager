@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 49621753856
-    m_Localized: Power Strike slot skill.
+    m_Localized: Heavy melee strike.
     m_Metadata:
       m_Items: []
   - m_Id: 50661941248
@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 50661941249
-    m_Localized: Precision Shot slot skill.
+    m_Localized: Focused ranged shot.
     m_Metadata:
       m_Items: []
   - m_Id: 51689545728
@@ -39,7 +39,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 51689545729
-    m_Localized: Minor Heal slot skill.
+    m_Localized: Small targeted heal.
     m_Metadata:
       m_Items: []
   - m_Id: 167914538786816
@@ -336,6 +336,102 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 167941273280513
     m_Localized: Bind Call slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335591949459456
+    m_Localized: Brutal Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335592041734144
+    m_Localized: Brutal Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335592779931648
+    m_Localized: Swift Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335592779931649
+    m_Localized: Swift Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335593555877888
+    m_Localized: Piercing Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335593555877889
+    m_Localized: Piercing Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335594340212736
+    m_Localized: Echo Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335594340212737
+    m_Localized: Echo Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335595170684928
+    m_Localized: Lingering Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335595170684929
+    m_Localized: Lingering Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335595925659648
+    m_Localized: Purifying Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335595925659649
+    m_Localized: Purifying Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335596651274240
+    m_Localized: Guarded Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335596651274241
+    m_Localized: Guarded Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335597355917312
+    m_Localized: Executioner Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335597355917313
+    m_Localized: Executioner Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335598165417984
+    m_Localized: Longshot Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335598165417985
+    m_Localized: Longshot Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335599134302208
+    m_Localized: Siphon Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335599134302209
+    m_Localized: Siphon Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335600153518080
+    m_Localized: Anchored Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335600153518081
+    m_Localized: Anchored Support modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350400
+    m_Localized: Hunter Mark Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350401
+    m_Localized: Hunter Mark Support modifier
     m_Metadata:
       m_Items: []
   references:

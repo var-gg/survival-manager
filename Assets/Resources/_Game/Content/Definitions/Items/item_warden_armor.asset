@@ -18,10 +18,12 @@ MonoBehaviour:
   SlotType: 1
   IdentityKind: 0
   ItemFamilyTag: vanguard_armor
+  WeaponFamilyTag: 
   RarityTier: 0
   AffixPoolTag: pool_vanguard_armor
   CraftCategory: vanguard
   BudgetBand: personal_power_9
+  CraftCurrencyTag: ember_dust
   GrantedSkills: []
   CompileTags:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
@@ -31,6 +33,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
+  AllowedCraftOperations: 00000000010000000200000004000000
   BaseModifiers:
   - StatId: max_health
     Op: 0

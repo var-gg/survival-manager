@@ -28,6 +28,12 @@ MonoBehaviour:
     - Locale-ko
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ecb3f469e75f1d448e7f5085ccb3317
+    m_Address: Content_Encounters_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 223107da2c3424c44b1015ac72abe034
     m_Address: Content_TeamTactics_ko
     m_ReadOnly: 1
@@ -127,6 +133,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b6ca0b2a472f7f2429df4a9bbbdb2815
+    m_Address: Content_Campaign_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c077c7cb4360062478855c6d4af2b855
     m_Address: UI_Common_ko
     m_ReadOnly: 1
@@ -156,6 +168,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dd2ae82d86d4cfa4a92db0e1ab8f9b1e
     m_Address: Content_Expeditions_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f8c90fba2964a264ca34419c386f80f6
+    m_Address: Content_Status_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko

@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 40599805953
-    m_Localized: Aggressive tempo race.
+    m_Localized: Aggressive feral pressure.
     m_Metadata:
       m_Items: []
   - m_Id: 41568690176
@@ -39,7 +39,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 41568690177
-    m_Localized: Attrition-oriented race.
+    m_Localized: Attrition-oriented deathless fighters.
     m_Metadata:
       m_Items: []
   references:

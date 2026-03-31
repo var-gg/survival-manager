@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 89647996928
-    m_Localized: Sturdy affix.
+    m_Localized: Sturdy
     m_Metadata:
       m_Items: []
   - m_Id: 90751098880
@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 90751098881
-    m_Localized: Fierce affix.
+    m_Localized: Fierce
     m_Metadata:
       m_Items: []
   - m_Id: 91837423616
@@ -39,7 +39,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 91837423617
-    m_Localized: Quick affix.
+    m_Localized: Quick
     m_Metadata:
       m_Items: []
   - m_Id: 92936331264
@@ -47,7 +47,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 92936331265
-    m_Localized: Vital affix.
+    m_Localized: Vital
     m_Metadata:
       m_Items: []
   - m_Id: 93938769920
@@ -55,7 +55,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 93938769921
-    m_Localized: Blessed affix.
+    m_Localized: Blessed
     m_Metadata:
       m_Items: []
   - m_Id: 94983151616
@@ -63,7 +63,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 94987345920
-    m_Localized: Heavy affix.
+    m_Localized: Heavy
     m_Metadata:
       m_Items: []
   - m_Id: 96430186496
@@ -71,7 +71,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 96430186497
-    m_Localized: Sharp affix.
+    m_Localized: Sharp
     m_Metadata:
       m_Items: []
   - m_Id: 97411653632
@@ -79,7 +79,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 97411653633
-    m_Localized: Hasty affix.
+    m_Localized: Hasty
     m_Metadata:
       m_Items: []
   - m_Id: 168006549233664

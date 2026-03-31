@@ -15,40 +15,31 @@ MonoBehaviour:
   Id: traitpool_priest
   ArchetypeId: priest
   PositiveTraits:
-  - Id: priest_positive_drive
-    NameKey: content.trait.priest.priest_positive_drive.name
-    DescriptionKey: content.trait.priest.priest_positive_drive.desc
+  - Id: priest_positive_brave
+    NameKey: content.trait.priest.priest_positive_brave.name
+    DescriptionKey: content.trait.priest.priest_positive_brave.desc
     Modifiers:
     - StatId: phys_power
       Op: 0
-      Value: 0.4
-    - StatId: mag_power
-      Op: 0
-      Value: 0.8
+      Value: 2
     legacyDisplayName: 
     legacyDescription: 
-  - Id: priest_positive_guard
-    NameKey: content.trait.priest.priest_positive_guard.name
-    DescriptionKey: content.trait.priest.priest_positive_guard.desc
+  - Id: priest_positive_sturdy
+    NameKey: content.trait.priest.priest_positive_sturdy.name
+    DescriptionKey: content.trait.priest.priest_positive_sturdy.desc
     Modifiers:
-    - StatId: max_health
-      Op: 0
-      Value: 2
     - StatId: armor
       Op: 0
-      Value: 0.5
+      Value: 1
     legacyDisplayName: 
     legacyDescription: 
-  - Id: priest_positive_pace
-    NameKey: content.trait.priest.priest_positive_pace.name
-    DescriptionKey: content.trait.priest.priest_positive_pace.desc
+  - Id: priest_positive_swift
+    NameKey: content.trait.priest.priest_positive_swift.name
+    DescriptionKey: content.trait.priest.priest_positive_swift.desc
     Modifiers:
     - StatId: attack_speed
       Op: 0
-      Value: 0.08
-    - StatId: move_speed
-      Op: 0
-      Value: 0.04
+      Value: 1
     legacyDisplayName: 
     legacyDescription: 
   NegativeTraits:
@@ -61,27 +52,21 @@ MonoBehaviour:
       Value: -3
     legacyDisplayName: 
     legacyDescription: 
-  - Id: priest_negative_hesitant
-    NameKey: content.trait.priest.priest_negative_hesitant.name
-    DescriptionKey: content.trait.priest.priest_negative_hesitant.desc
-    Modifiers:
-    - StatId: attack_speed
-      Op: 0
-      Value: -0.08
-    - StatId: target_switch_delay
-      Op: 0
-      Value: 0.05
-    legacyDisplayName: 
-    legacyDescription: 
-  - Id: priest_negative_dull
-    NameKey: content.trait.priest.priest_negative_dull.name
-    DescriptionKey: content.trait.priest.priest_negative_dull.desc
+  - Id: priest_negative_clumsy
+    NameKey: content.trait.priest.priest_negative_clumsy.name
+    DescriptionKey: content.trait.priest.priest_negative_clumsy.desc
     Modifiers:
     - StatId: phys_power
       Op: 0
-      Value: 0
-    - StatId: mag_power
+      Value: -1
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: priest_negative_slow
+    NameKey: content.trait.priest.priest_negative_slow.name
+    DescriptionKey: content.trait.priest.priest_negative_slow.desc
+    Modifiers:
+    - StatId: attack_speed
       Op: 0
-      Value: -0.6
+      Value: -1
     legacyDisplayName: 
     legacyDescription: 

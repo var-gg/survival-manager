@@ -18,23 +18,18 @@ MonoBehaviour:
   Rarity: 2
   IsPermanent: 0
   Category: 0
-  FamilyId: focus_drive
-  Tier: 3
+  FamilyId: platinum
+  Tier: 1
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags:
-  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
-  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  Tags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 3
+  EligibleModes: 1
   Modifiers:
   - StatId: phys_power
     Op: 0
     Value: 3
-  - StatId: phys_pen
-    Op: 0
-    Value: 1.5
   legacyDisplayName: 
   legacyDescription: 

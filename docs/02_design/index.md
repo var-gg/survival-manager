@@ -16,12 +16,8 @@
 ## design와 harness 경계
 
 - 이 폴더는 `무엇을 만들지`와 플레이어 경험 기준을 정의한다.
-- Unity task를 `어떻게 닫을지`에 대한 preflight, phase gate,
-  validator-first, loop budget은
-  `docs/03_architecture/unity-agent-harness-contract.md`와 그 하위 운영
-  계약 문서를 따른다.
-- 큰 migration task의 실행/핸드오프 기준은 design 문서가 아니라 현재
-  task 상태 문서와 task template를 우선한다.
+- Unity task를 `어떻게 닫을지`에 대한 preflight, phase gate, validator-first, loop budget은 `docs/03_architecture/unity-agent-harness-contract.md`와 그 하위 운영 계약 문서를 따른다.
+- 큰 migration task의 실행/핸드오프 기준은 design 문서가 아니라 현재 task 상태 문서와 task template를 우선한다.
 - design 문서에 implementation loop 규칙을 섞지 않는다. 그런 규칙은 architecture/harness 문서로 보낸다.
 
 ## combat 문서
@@ -31,25 +27,33 @@
 - `combat/deployment-and-anchors.md`: 3x2 앵커와 4인 배치 규칙
 - `combat/team-tactics-and-unit-rules.md`: team posture와 per-unit rule 체계
 - `combat/skill-taxonomy-and-damage-model.md`: 4-slot compile contract와 수식 기준
+- `combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`: keyword catalog, support compatibility, weapon/class restriction
+- `combat/encounter-catalog-and-scaling.md`: encounter/squad/boss overlay/threat grammar
+- `combat/status-effects-cc-and-cleanse-taxonomy.md`: launch floor status, cleanse, DR 규칙
 - `combat/authoritative-replay-and-ledger.md`: authoritative replay와 전투 원장 기준
 - `combat/stat-system-and-power-budget.md`: stat v2와 파워 예산 기준
 - `combat/combat-readability.md`: 전투 가독성 예산과 표시 기준
-- `combat/hero-traits.md`: hero trait 방향
+- `combat/hero-traits.md`: recruit trait/quirk와 token 정책
 - `combat/synergy-system.md`: race/class synergy 설계
 
 ## meta 문서
 
-- `meta/town-and-expedition-loop.md`: Town -> Expedition 루프 기준
+- `meta/town-and-expedition-loop.md`: Town -> chapter/site -> Battle -> Reward 루프 기준
+- `meta/campaign-chapter-and-expedition-sites.md`: story chapter, site, endless unlock 기준
 - `meta/recruitment-and-reroll.md`: 리크루트와 리롤 문법
-- `meta/reward-economy.md`: 보상 경제 설계
+- `meta/reward-economy.md`: dual reward channel 기준
+- `meta/drop-table-rarity-bracket-and-source-matrix.md`: automatic drop/source/rarity floor
 - `meta/item-and-affix-system.md`: 아이템과 affix 구조
+- `meta/equipment-family-and-crafting-depth.md`: weapon family floor와 deep crafting 경계
+- `meta/crafting-currencies-and-sinks.md`: crafting currency와 operation 기준
 - `meta/item-passive-augment-budget.md`: 출시 기준 item/passive/augment 예산 허브
 - `meta/passive-board-node-catalog.md`: launch floor passive board node 카탈로그
 - `meta/augment-system.md`: augment 문법
 - `meta/augment-synergy-operating-model.md`: augment offer와 synergy 운영 기준
 - `meta/permanent-augment-progression.md`: 영구 강화 진행
 - `meta/crafting-and-reroll-economy.md`: 제작과 리롤 비용 구조
-- `meta/pvp-boundary.md`: PVP 범위 경계
+- `meta/pvp-boundary.md`: PVP 경계
+- `meta/pvp-ruleset-and-arena-loop.md`: async arena ruleset과 season cadence
 - `meta/synergy-breakpoints-and-soft-counters.md`: 출시 기준 breakpoint와 soft counter
 - `meta/synergy-family-catalog.md`: 7 family exact 2/3/4 payload 카탈로그
 

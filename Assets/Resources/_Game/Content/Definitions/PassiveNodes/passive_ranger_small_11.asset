@@ -23,7 +23,6 @@ MonoBehaviour:
   BoardDepth: 3
   CompileTags:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
-  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
   RuleModifierTags: []
   Modifiers:
   - StatId: crit_chance

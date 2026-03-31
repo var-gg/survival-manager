@@ -120,7 +120,6 @@ public sealed class ContentValidationWorkflowTests
         Assert.That(codes, Contains.Item("localization.missing_key"));
         Assert.That(codes, Contains.Item("localization.invalid_key"));
         Assert.That(codes, Contains.Item("localization.missing_entry"));
-        Assert.That(codes, Contains.Item("localization.legacy_text"));
         Assert.That(codes, Contains.Item("id.invalid_pattern"));
         Assert.That(codes, Contains.Item("enum.undefined"));
         Assert.That(codes, Contains.Item("passive_board.class_id"));

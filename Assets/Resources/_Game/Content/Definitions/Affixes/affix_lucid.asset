@@ -16,6 +16,7 @@ MonoBehaviour:
   NameKey: content.affix.affix_lucid.name
   DescriptionKey: content.affix.affix_lucid.desc
   Category: 4
+  Tier: 1
   AllowedSlotTypes: 02000000
   CompileTags:
   - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}

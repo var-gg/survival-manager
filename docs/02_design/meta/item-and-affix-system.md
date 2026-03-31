@@ -2,38 +2,31 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-03-31
 - 소스오브트루스: `docs/02_design/meta/item-and-affix-system.md`
 - 관련문서:
   - `docs/02_design/meta/item-passive-augment-budget.md`
+  - `docs/02_design/meta/equipment-family-and-crafting-depth.md`
+  - `docs/02_design/meta/crafting-currencies-and-sinks.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
 
 ## 목적
 
-이 문서는 아이템 방향성과 MVP 범위를 정의한다.
-장기 방향성은 Torchlight/ARPG식이지만, MVP는 훨씬 좁게 구현한다.
+이 문서는 아이템 방향성과 launch floor 범위를 정의한다.
+장기 방향성은 Torchlight/ARPG식이지만, launch floor는 훨씬 좁고 관리 가능한 구조만 연다.
 
-## 장기 방향성
-
-아이템은 Torchlight/ARPG식으로 다음 감각을 목표로 한다.
-
-- base item이 역할의 뼈대를 만든다.
-- affix가 개체 차이를 만든다.
-- 같은 archetype도 장비에 따라 역할이 갈린다.
-- reroll / crafting이 장기적으로 빌드 파고들기를 만든다.
-
-## MVP 구현 범위
-
-MVP는 아래만 실제 구현 대상으로 둔다.
+## launch floor 구현 범위
 
 - base item
-- 단순 affix
-- gold 기반 재련/리롤
+- `implicit 1 + prefix 2 + suffix 2`
+- `weapon / armor / accessory` 3슬롯
+- `shield / blade / bow / focus` weapon family
+- granted skill
+- `gold`, `ember_dust`, `echo_crystal`, `boss_sigil` 기반 crafting contract
 
-MVP에서는 아직 하지 않는다.
+launch floor에서는 아직 하지 않는다.
 
 - 복잡한 rarity ladder
-- material-based crafting
 - recipe crafting
 - socket/gem 시스템
 - set bonus
@@ -54,30 +47,31 @@ MVP에서는 아직 하지 않는다.
 - armor
 - accessory
 
+shield 전용 별도 슬롯은 열지 않는다.
+
+## affix와 unique 규칙
+
+- affix slot은 `implicit 1`, `prefix 2`, `suffix 2`를 상한으로 둔다.
+- unique / boss item은 numeric affix를 늘리지 않고 `signature rule modifier` 1개를 사용한다.
+- item authoring은 canonical `WeaponFamilyTag`, optional `GrantedSkillId`, optional `UniqueRuleModifierTag`를 가진다.
+
 ## 재련/리롤 원칙
 
-- gold 기반만 허용
-- 값싼 무한 reroll은 금지
-- MVP에선 "아이템을 다듬는 느낌"만 제공
-- crafting 시스템 전체를 열지는 않는다
+- `gold`는 broad sink로 유지한다.
+- item crafting에는 `ember_dust`, `echo_crystal`, `boss_sigil`을 사용한다.
+- 값싼 무한 reroll은 금지한다.
+- launch floor에서는 "아이템을 다듬는 느낌"만 제공한다.
+- crafting 시스템 전체를 열지는 않는다.
 
 ## 장기 규칙
 
-문서로만 남길 장기 항목:
-
 - broader base item family
 - rarity ladder
-- material sink
-- recipe crafting
+- material sink 확장
 - advanced crafting station
 
 ## 밸런스 기준
 
 - 아이템이 trait/augment보다 너무 강하면 안 된다.
 - 반대로 아이템이 너무 약해서 존재감이 없어도 안 된다.
-- gold reroll은 유용하되 필수 정답이 되면 안 된다.
-
-## launch 기준 연결
-
-- equippable와 affix의 paid launch floor / safe target 숫자는 `docs/02_design/meta/item-passive-augment-budget.md`가 소유한다.
 - unique는 큰 수치보다 granted skill과 rule change를 우선한다.

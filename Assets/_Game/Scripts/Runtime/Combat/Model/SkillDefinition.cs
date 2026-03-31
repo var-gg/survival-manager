@@ -97,11 +97,22 @@ public record BattleSkillSpec(
     SkillDelivery Delivery = SkillDelivery.Melee,
     SkillTargetRule TargetRule = SkillTargetRule.NearestEnemy,
     IReadOnlyList<string>? SupportAllowedTags = null,
+    IReadOnlyList<string>? SupportBlockedTags = null,
     IReadOnlyList<string>? RequiredWeaponTags = null,
-    IReadOnlyList<string>? RequiredClassTags = null)
+    IReadOnlyList<string>? RequiredClassTags = null,
+    IReadOnlyList<StatusApplicationSpec>? AppliedStatuses = null,
+    string CleanseProfileId = "")
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
 }
+
+public sealed record StatusApplicationSpec(
+    string Id,
+    string StatusId,
+    float DurationSeconds,
+    float Magnitude,
+    int MaxStacks = 1,
+    bool RefreshDurationOnReapply = true);
 
 [System.Obsolete("Use BattleSkillSpec for compiled battle inputs.")]
 public sealed record SkillDefinition(

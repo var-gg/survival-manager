@@ -1,18 +1,22 @@
 # Town and Expedition Loop
 
 - 상태: active
-- 최종수정일: 2026-03-30
-- 단계: prototype
+- 소유자: repository
+- 최종수정일: 2026-03-31
+- 소스오브트루스: `docs/02_design/meta/town-and-expedition-loop.md`
+- 관련문서:
+  - `docs/02_design/meta/campaign-chapter-and-expedition-sites.md`
+  - `docs/02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
+  - `docs/03_architecture/encounter-authoring-and-runtime-resolution.md`
 
 ## 현재 MVP loop
 
 1. Town에서 roster / recruit / squad / deploy를 본다.
-2. 필요하면 recruit / reroll / save / load를 누른다.
-3. `Debug Start`로 Expedition으로 간다.
-4. Expedition에서 5노드 box track과 현재 노드, 선택 가능한 분기를 본다.
-5. route 버튼으로 다음 node를 고른다.
-6. `Next Battle` 또는 safe advance를 진행한다.
-7. Battle / Reward를 거쳐 Town으로 돌아오고, 진행 중이면 `Debug Start`로 원정을 재개할 수 있다.
+2. 필요하면 recruit / reroll / chapter / site 선택을 조정한다.
+3. `Debug Start` 또는 원정 진입으로 Expedition으로 간다.
+4. Expedition에서 현재 `chapter -> site -> 5-node track`을 본다.
+5. site track은 `skirmish -> skirmish -> elite -> boss -> extract` 순서로 진행한다.
+6. Battle / Reward를 거쳐 Town으로 돌아오고, 진행 중이면 다시 해당 site track을 재개할 수 있다.
 
 ## Quick Battle smoke
 
@@ -21,9 +25,10 @@
 
 ## 현재 구현 메모
 
-- 현재 branching graph는 `camp -> ambush/relay -> shrine -> extract` 고정형이다.
-- node effect는 gold / trait reroll / temporary augment로 실제 적용된다.
-- extract는 safe advance 노드라 전투 없이 정리 가능하다.
+- story progression은 authored `CampaignChapterDefinition` / `ExpeditionSiteDefinition`을 사용한다.
+- node context는 `ChapterId`, `SiteId`, `SiteNodeIndex`, `EncounterId`, `BattleSeed`, `BattleContextHash`를 저장한다.
+- extract는 전투가 아닌 정산 노드다.
+- story clear 뒤에만 endless가 열린다.
 
 ## 비목표
 

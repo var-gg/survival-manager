@@ -11,6 +11,7 @@ public sealed class SaveProfile
     public List<HeroInstanceRecord> Heroes = new();
     public List<InventoryItemRecord> Inventory = new();
     public CurrencyRecord Currencies = new();
+    public CampaignProgressRecord CampaignProgress = new();
     public List<string> UnlockedPermanentAugmentIds = new();
     public List<HeroLoadoutRecord> HeroLoadouts = new();
     public List<HeroProgressionRecord> HeroProgressions = new();
@@ -26,4 +27,9 @@ public sealed class SaveProfile
     public List<RewardLedgerEntryRecord> RewardLedger = new();
     public List<SuspicionFlagRecord> SuspicionFlags = new();
     public List<RunSummaryRecord> RunSummaries = new();
+    public List<ArenaDefenseSnapshotRecord> ArenaDefenseSnapshots = new();
+    public List<ArenaBlueprintSlotRecord> ArenaBlueprintSlots = new();
+    public List<ArenaMatchRecordRecord> ArenaMatchRecords = new();
+    public List<ArenaSeasonStateRecord> ArenaSeasons = new();
+    public List<ArenaRewardLedgerEntryRecord> ArenaRewardLedger = new();
 }

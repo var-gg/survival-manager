@@ -63,6 +63,18 @@ public sealed class RuntimeCombatContentLookup
     private readonly Dictionary<string, RoleInstructionDefinition> _roleInstructionDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, PassiveNodeDefinition> _passiveNodeDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, SynergyDefinition> _synergyDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, CampaignChapterDefinition> _campaignChapterDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, ExpeditionSiteDefinition> _expeditionSiteDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, EncounterDefinition> _encounterDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, EnemySquadTemplateDefinition> _enemySquadDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, BossOverlayDefinition> _bossOverlayDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, StatusFamilyDefinition> _statusFamilyDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, CleanseProfileDefinition> _cleanseProfileDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, ControlDiminishingRuleDefinition> _controlDiminishingDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, RewardSourceDefinition> _rewardSourceDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, DropTableDefinition> _dropTableDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, LootBundleDefinition> _lootBundleDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, TraitTokenDefinition> _traitTokenDefinitions = new(StringComparer.Ordinal);
     private CombatContentSnapshot? _snapshot;
     private bool _loaded;
 
@@ -180,6 +192,33 @@ public sealed class RuntimeCombatContentLookup
     {
         EnsureLoaded();
         return _affixDefinitions.TryGetValue(affixId, out affix!);
+    }
+
+    public bool TryGetCampaignChapterDefinition(string chapterId, out CampaignChapterDefinition chapter)
+    {
+        EnsureLoaded();
+        return _campaignChapterDefinitions.TryGetValue(chapterId, out chapter!);
+    }
+
+    public bool TryGetExpeditionSiteDefinition(string siteId, out ExpeditionSiteDefinition site)
+    {
+        EnsureLoaded();
+        return _expeditionSiteDefinitions.TryGetValue(siteId, out site!);
+    }
+
+    public bool TryGetEncounterDefinition(string encounterId, out EncounterDefinition encounter)
+    {
+        EnsureLoaded();
+        return _encounterDefinitions.TryGetValue(encounterId, out encounter!);
+    }
+
+    public IReadOnlyList<CampaignChapterDefinition> GetOrderedCampaignChapters()
+    {
+        EnsureLoaded();
+        return _campaignChapterDefinitions.Values
+            .OrderBy(definition => definition.StoryOrder)
+            .ThenBy(definition => definition.Id, StringComparer.Ordinal)
+            .ToList();
     }
 
     public bool TryGetTraitEntry(string archetypeId, string traitId, out TraitEntry trait)
@@ -357,18 +396,102 @@ public sealed class RuntimeCombatContentLookup
         var roleInstructions = LoadDefinitions<RoleInstructionDefinition>("_Game/Content/Definitions/RoleInstructions", "Assets/Resources/_Game/Content/Definitions/RoleInstructions");
         var passiveNodes = LoadDefinitions<PassiveNodeDefinition>("_Game/Content/Definitions/PassiveNodes", "Assets/Resources/_Game/Content/Definitions/PassiveNodes");
         var synergies = LoadDefinitions<SynergyDefinition>("_Game/Content/Definitions/Synergies", "Assets/Resources/_Game/Content/Definitions/Synergies");
+        var campaignChapters = LoadDefinitions<CampaignChapterDefinition>("_Game/Content/Definitions/CampaignChapters", "Assets/Resources/_Game/Content/Definitions/CampaignChapters");
+        var expeditionSites = LoadDefinitions<ExpeditionSiteDefinition>("_Game/Content/Definitions/ExpeditionSites", "Assets/Resources/_Game/Content/Definitions/ExpeditionSites");
+        var encounters = LoadDefinitions<EncounterDefinition>("_Game/Content/Definitions/Encounters", "Assets/Resources/_Game/Content/Definitions/Encounters");
+        var enemySquads = LoadDefinitions<EnemySquadTemplateDefinition>("_Game/Content/Definitions/EnemySquads", "Assets/Resources/_Game/Content/Definitions/EnemySquads");
+        var bossOverlays = LoadDefinitions<BossOverlayDefinition>("_Game/Content/Definitions/BossOverlays", "Assets/Resources/_Game/Content/Definitions/BossOverlays");
+        var statusFamilies = LoadDefinitions<StatusFamilyDefinition>("_Game/Content/Definitions/StatusFamilies", "Assets/Resources/_Game/Content/Definitions/StatusFamilies");
+        var cleanseProfiles = LoadDefinitions<CleanseProfileDefinition>("_Game/Content/Definitions/CleanseProfiles", "Assets/Resources/_Game/Content/Definitions/CleanseProfiles");
+        var controlDiminishingRules = LoadDefinitions<ControlDiminishingRuleDefinition>("_Game/Content/Definitions/ControlDiminishingRules", "Assets/Resources/_Game/Content/Definitions/ControlDiminishingRules");
+        var rewardSources = LoadDefinitions<RewardSourceDefinition>("_Game/Content/Definitions/RewardSources", "Assets/Resources/_Game/Content/Definitions/RewardSources");
+        var dropTables = LoadDefinitions<DropTableDefinition>("_Game/Content/Definitions/DropTables", "Assets/Resources/_Game/Content/Definitions/DropTables");
+        var lootBundles = LoadDefinitions<LootBundleDefinition>("_Game/Content/Definitions/LootBundles", "Assets/Resources/_Game/Content/Definitions/LootBundles");
+        var traitTokens = LoadDefinitions<TraitTokenDefinition>("_Game/Content/Definitions/TraitTokens", "Assets/Resources/_Game/Content/Definitions/TraitTokens");
 
-        if (archetypes.Length == 0)
+        var requiresFileFallback =
+            archetypes.Length == 0 ||
+            skills.Length == 0 ||
+            campaignChapters.Length == 0 ||
+            expeditionSites.Length == 0 ||
+            encounters.Length == 0 ||
+            enemySquads.Length == 0 ||
+            bossOverlays.Length == 0 ||
+            rewardSources.Length == 0 ||
+            dropTables.Length == 0 ||
+            lootBundles.Length == 0;
+
+        if (requiresFileFallback)
         {
             if (!RuntimeCombatContentFileParser.TryLoad(out var parsed, out var parseError))
             {
                 throw new InvalidOperationException($"전투 archetype 정의를 Resources에서 찾을 수 없습니다. {parseError}");
             }
 
-            archetypes = parsed.Archetypes.ToArray();
-            items = parsed.Items.ToArray();
-            affixes = parsed.Affixes.ToArray();
-            augments = parsed.Augments.ToArray();
+            if (archetypes.Length == 0)
+            {
+                archetypes = parsed.Archetypes.ToArray();
+            }
+
+            if (skills.Length == 0)
+            {
+                skills = parsed.Skills.ToArray();
+            }
+
+            if (items.Length == 0)
+            {
+                items = parsed.Items.ToArray();
+            }
+
+            if (affixes.Length == 0)
+            {
+                affixes = parsed.Affixes.ToArray();
+            }
+
+            if (augments.Length == 0)
+            {
+                augments = parsed.Augments.ToArray();
+            }
+
+            if (campaignChapters.Length == 0)
+            {
+                campaignChapters = parsed.CampaignChapters.ToArray();
+            }
+
+            if (expeditionSites.Length == 0)
+            {
+                expeditionSites = parsed.ExpeditionSites.ToArray();
+            }
+
+            if (encounters.Length == 0)
+            {
+                encounters = parsed.Encounters.ToArray();
+            }
+
+            if (enemySquads.Length == 0)
+            {
+                enemySquads = parsed.EnemySquads.ToArray();
+            }
+
+            if (bossOverlays.Length == 0)
+            {
+                bossOverlays = parsed.BossOverlays.ToArray();
+            }
+
+            if (rewardSources.Length == 0)
+            {
+                rewardSources = parsed.RewardSources.ToArray();
+            }
+
+            if (dropTables.Length == 0)
+            {
+                dropTables = parsed.DropTables.ToArray();
+            }
+
+            if (lootBundles.Length == 0)
+            {
+                lootBundles = parsed.LootBundles.ToArray();
+            }
         }
 
         _archetypeDefinitions.Clear();
@@ -383,6 +506,18 @@ public sealed class RuntimeCombatContentLookup
         _roleInstructionDefinitions.Clear();
         _passiveNodeDefinitions.Clear();
         _synergyDefinitions.Clear();
+        _campaignChapterDefinitions.Clear();
+        _expeditionSiteDefinitions.Clear();
+        _encounterDefinitions.Clear();
+        _enemySquadDefinitions.Clear();
+        _bossOverlayDefinitions.Clear();
+        _statusFamilyDefinitions.Clear();
+        _cleanseProfileDefinitions.Clear();
+        _controlDiminishingDefinitions.Clear();
+        _rewardSourceDefinitions.Clear();
+        _dropTableDefinitions.Clear();
+        _lootBundleDefinitions.Clear();
+        _traitTokenDefinitions.Clear();
 
         foreach (var race in races.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
         {
@@ -461,30 +596,151 @@ public sealed class RuntimeCombatContentLookup
             _synergyDefinitions[synergy.Id] = synergy;
         }
 
-        _snapshot = new CombatContentSnapshot(
-            _archetypeDefinitions.Values.ToDictionary(definition => definition.Id, BuildArchetypeTemplate, StringComparer.Ordinal),
+        foreach (var chapter in campaignChapters.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _campaignChapterDefinitions[chapter.Id] = chapter;
+        }
+
+        foreach (var site in expeditionSites.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _expeditionSiteDefinitions[site.Id] = site;
+        }
+
+        foreach (var encounter in encounters.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _encounterDefinitions[encounter.Id] = encounter;
+        }
+
+        foreach (var squad in enemySquads.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _enemySquadDefinitions[squad.Id] = squad;
+        }
+
+        foreach (var overlay in bossOverlays.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _bossOverlayDefinitions[overlay.Id] = overlay;
+        }
+
+        foreach (var family in statusFamilies.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _statusFamilyDefinitions[family.Id] = family;
+        }
+
+        foreach (var profile in cleanseProfiles.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _cleanseProfileDefinitions[profile.Id] = profile;
+        }
+
+        foreach (var rule in controlDiminishingRules.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _controlDiminishingDefinitions[rule.Id] = rule;
+        }
+
+        foreach (var rewardSource in rewardSources.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _rewardSourceDefinitions[rewardSource.Id] = rewardSource;
+        }
+
+        foreach (var dropTable in dropTables.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _dropTableDefinitions[dropTable.Id] = dropTable;
+        }
+
+        foreach (var lootBundle in lootBundles.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _lootBundleDefinitions[lootBundle.Id] = lootBundle;
+        }
+
+        foreach (var traitToken in traitTokens.Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id)))
+        {
+            _traitTokenDefinitions[traitToken.Id] = traitToken;
+        }
+
+        var archetypeTemplates = BuildSection("archetype templates", () =>
+            _archetypeDefinitions.Values.ToDictionary(definition => definition.Id, BuildArchetypeTemplate, StringComparer.Ordinal));
+        var traitPackages = BuildSection("trait packages", () =>
             _traitPools.Values
-                .SelectMany(pool => pool.PositiveTraits.Concat(pool.NegativeTraits))
+                .SelectMany(pool => Enumerate(pool.PositiveTraits).Concat(Enumerate(pool.NegativeTraits)))
                 .Where(entry => !string.IsNullOrWhiteSpace(entry.Id))
-                .ToDictionary(entry => entry.Id, entry => BuildTraitPackage(entry), StringComparer.Ordinal),
-            _itemDefinitions.Values.ToDictionary(item => item.Id, item => BuildItemPackage(item), StringComparer.Ordinal),
-            _affixDefinitions.Values.ToDictionary(affix => affix.Id, affix => BuildAffixPackage(affix), StringComparer.Ordinal),
-            _augmentDefinitions.Values.ToDictionary(augment => augment.Id, augment => BuildAugmentPackage(augment), StringComparer.Ordinal),
-            _skillDefinitions.Values.ToDictionary(skill => skill.Id, skill => BuildSkillSpec(skill), StringComparer.Ordinal),
-            _teamTacticDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildTeamTacticTemplate(definition), StringComparer.Ordinal),
-            _roleInstructionDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildRoleInstructionTemplate(definition), StringComparer.Ordinal),
-            _passiveNodeDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildPassiveNodeTemplate(definition), StringComparer.Ordinal),
-            _augmentDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildAugmentCatalogEntry(definition), StringComparer.Ordinal),
+                .ToDictionary(entry => entry.Id, entry => BuildTraitPackage(entry), StringComparer.Ordinal));
+        var itemPackages = BuildSection("item packages", () =>
+            _itemDefinitions.Values.ToDictionary(item => item.Id, item => BuildItemPackage(item), StringComparer.Ordinal));
+        var affixPackages = BuildSection("affix packages", () =>
+            _affixDefinitions.Values.ToDictionary(affix => affix.Id, affix => BuildAffixPackage(affix), StringComparer.Ordinal));
+        var augmentPackages = BuildSection("augment packages", () =>
+            _augmentDefinitions.Values.ToDictionary(augment => augment.Id, augment => BuildAugmentPackage(augment), StringComparer.Ordinal));
+        var skillCatalog = BuildSection("skill catalog", () =>
+            _skillDefinitions.Values.ToDictionary(skill => skill.Id, skill => BuildSkillSpec(skill), StringComparer.Ordinal));
+        var teamTacticsCatalog = BuildSection("team tactics", () =>
+            _teamTacticDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildTeamTacticTemplate(definition), StringComparer.Ordinal));
+        var roleInstructionCatalog = BuildSection("role instructions", () =>
+            _roleInstructionDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildRoleInstructionTemplate(definition), StringComparer.Ordinal));
+        var passiveNodeCatalog = BuildSection("passive nodes", () =>
+            _passiveNodeDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildPassiveNodeTemplate(definition), StringComparer.Ordinal));
+        var augmentCatalog = BuildSection("augment catalog", () =>
+            _augmentDefinitions.Values.ToDictionary(definition => definition.Id, definition => BuildAugmentCatalogEntry(definition), StringComparer.Ordinal));
+        var synergyCatalog = BuildSection("synergy catalog", () =>
             _synergyDefinitions.Values
                 .SelectMany(definition => BuildSynergyTemplates(definition))
-                .ToDictionary(template => template.Id, template => template, StringComparer.Ordinal),
+                .ToDictionary(template => template.Id, template => template, StringComparer.Ordinal));
+        var itemGrantedSkills = BuildSection("item granted skills", () =>
             _itemDefinitions.Values.ToDictionary(
                 definition => definition.Id,
-                definition => (IReadOnlyList<BattleSkillSpec>)definition.GrantedSkills
+                definition => (IReadOnlyList<BattleSkillSpec>)Enumerate(definition.GrantedSkills)
                     .Where(skill => skill != null && !string.IsNullOrWhiteSpace(skill.Id))
                     .Select(BuildSkillSpec)
                     .ToList(),
                 StringComparer.Ordinal));
+        var campaignChaptersCatalog = BuildSection("campaign chapters", () =>
+            _campaignChapterDefinitions.Values.ToDictionary(definition => definition.Id, BuildCampaignChapterTemplate, StringComparer.Ordinal));
+        var expeditionSitesCatalog = BuildSection("expedition sites", () =>
+            _expeditionSiteDefinitions.Values.ToDictionary(definition => definition.Id, BuildExpeditionSiteTemplate, StringComparer.Ordinal));
+        var encounterCatalog = BuildSection("encounters", () =>
+            _encounterDefinitions.Values.ToDictionary(definition => definition.Id, BuildEncounterTemplate, StringComparer.Ordinal));
+        var enemySquadCatalog = BuildSection("enemy squads", () =>
+            _enemySquadDefinitions.Values.ToDictionary(definition => definition.Id, BuildEnemySquadTemplate, StringComparer.Ordinal));
+        var bossOverlayCatalog = BuildSection("boss overlays", () =>
+            _bossOverlayDefinitions.Values.ToDictionary(definition => definition.Id, BuildBossOverlayTemplate, StringComparer.Ordinal));
+        var statusFamilyCatalog = BuildSection("status families", () =>
+            _statusFamilyDefinitions.Values.ToDictionary(definition => definition.Id, BuildStatusFamilyTemplate, StringComparer.Ordinal));
+        var cleanseProfileCatalog = BuildSection("cleanse profiles", () =>
+            _cleanseProfileDefinitions.Values.ToDictionary(definition => definition.Id, BuildCleanseProfileTemplate, StringComparer.Ordinal));
+        var controlDiminishingCatalog = BuildSection("control diminishing", () =>
+            _controlDiminishingDefinitions.Values.ToDictionary(definition => definition.Id, BuildControlDiminishingTemplate, StringComparer.Ordinal));
+        var rewardSourceCatalog = BuildSection("reward sources", () =>
+            _rewardSourceDefinitions.Values.ToDictionary(definition => definition.Id, BuildRewardSourceTemplate, StringComparer.Ordinal));
+        var dropTableCatalog = BuildSection("drop tables", () =>
+            _dropTableDefinitions.Values.ToDictionary(definition => definition.Id, BuildDropTableTemplate, StringComparer.Ordinal));
+        var lootBundleCatalog = BuildSection("loot bundles", () =>
+            _lootBundleDefinitions.Values.ToDictionary(definition => definition.Id, BuildLootBundleTemplate, StringComparer.Ordinal));
+        var traitTokenCatalog = BuildSection("trait tokens", () =>
+            _traitTokenDefinitions.Values.ToDictionary(definition => definition.Id, BuildTraitTokenTemplate, StringComparer.Ordinal));
+
+        _snapshot = new CombatContentSnapshot(
+            archetypeTemplates,
+            traitPackages,
+            itemPackages,
+            affixPackages,
+            augmentPackages,
+            skillCatalog,
+            teamTacticsCatalog,
+            roleInstructionCatalog,
+            passiveNodeCatalog,
+            augmentCatalog,
+            synergyCatalog,
+            itemGrantedSkills,
+            campaignChaptersCatalog,
+            expeditionSitesCatalog,
+            encounterCatalog,
+            enemySquadCatalog,
+            bossOverlayCatalog,
+            statusFamilyCatalog,
+            cleanseProfileCatalog,
+            controlDiminishingCatalog,
+            rewardSourceCatalog,
+            dropTableCatalog,
+            lootBundleCatalog,
+            traitTokenCatalog);
     }
 
     private static T[] LoadDefinitions<T>(string resourcesPath, string editorFolderPath) where T : UnityEngine.Object
@@ -521,7 +777,18 @@ public sealed class RuntimeCombatContentLookup
                      .Select(AssetDatabase.GUIDToAssetPath)
                      .Where(path => !string.IsNullOrWhiteSpace(path) && seenPaths.Add(path)))
         {
-            var asset = AssetDatabase.LoadMainAssetAtPath(path) as T;
+            var asset = LoadEditorAssetAtPath<T>(path);
+            if (asset != null)
+            {
+                results.Add(asset);
+            }
+        }
+
+        foreach (var path in AssetDatabase.FindAssets(string.Empty, new[] { editorFolderPath })
+                     .Select(AssetDatabase.GUIDToAssetPath)
+                     .Where(path => path.EndsWith(".asset", StringComparison.OrdinalIgnoreCase) && seenPaths.Add(path)))
+        {
+            var asset = LoadEditorAssetAtPath<T>(path);
             if (asset != null)
             {
                 results.Add(asset);
@@ -534,8 +801,22 @@ public sealed class RuntimeCombatContentLookup
 #endif
     }
 
-    private static CombatArchetypeTemplate BuildArchetypeTemplate(UnitArchetypeDefinition definition)
+#if UNITY_EDITOR
+    private static T? LoadEditorAssetAtPath<T>(string path) where T : UnityEngine.Object
     {
+        var mainAsset = AssetDatabase.LoadMainAssetAtPath(path) as T;
+        if (mainAsset != null)
+        {
+            return mainAsset;
+        }
+
+        return AssetDatabase.LoadAllAssetsAtPath(path).OfType<T>().FirstOrDefault();
+    }
+#endif
+
+    private CombatArchetypeTemplate BuildArchetypeTemplate(UnitArchetypeDefinition definition)
+    {
+        var resolvedSkills = ResolveArchetypeSkills(definition);
         return new CombatArchetypeTemplate(
             definition.Id,
             ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
@@ -543,7 +824,7 @@ public sealed class RuntimeCombatContentLookup
             definition.Class.Id,
             (DeploymentAnchorId)definition.DefaultAnchor,
             BuildBaseStats(definition),
-            definition.TacticPreset
+            Enumerate(definition.TacticPreset)
                 .OrderBy(entry => entry.Priority)
                 .Select(entry => new TacticRule(
                     entry.Priority,
@@ -553,8 +834,7 @@ public sealed class RuntimeCombatContentLookup
                     (TargetSelectorType)entry.TargetSelector,
                     entry.Skill == null ? null : entry.Skill.Id))
                 .ToList(),
-            definition.Skills
-                .Where(skill => skill != null && !string.IsNullOrWhiteSpace(skill.Id))
+            resolvedSkills
                 .Select(BuildSkillSpec)
                 .ToList(),
             string.IsNullOrWhiteSpace(definition.RoleTag) ? "auto" : definition.RoleTag,
@@ -564,6 +844,109 @@ public sealed class RuntimeCombatContentLookup
                 definition.BaseManaMax,
                 definition.BaseManaGainOnAttack,
                 definition.BaseManaGainOnHit));
+    }
+
+    private IReadOnlyList<SkillDefinitionAsset> ResolveArchetypeSkills(UnitArchetypeDefinition definition)
+    {
+        var resolved = new List<SkillDefinitionAsset>();
+        var occupiedSlots = new HashSet<SkillSlotKindValue>();
+
+        void AddSkill(SkillDefinitionAsset? skill)
+        {
+            if (skill == null || string.IsNullOrWhiteSpace(skill.Id))
+            {
+                return;
+            }
+
+            var slot = NormalizeSkillSlot(skill);
+            if (!occupiedSlots.Add(slot))
+            {
+                return;
+            }
+
+            resolved.Add(skill);
+        }
+
+        foreach (var skill in Enumerate(definition.Skills))
+        {
+            AddSkill(skill);
+        }
+
+        foreach (var skillId in GetDefaultArchetypeSkillIds(definition.Id))
+        {
+            if (_skillDefinitions.TryGetValue(skillId, out var skill))
+            {
+                AddSkill(skill);
+            }
+        }
+
+        foreach (var skillId in GetDefaultClassSkillIds(definition.Class != null ? definition.Class.Id : string.Empty))
+        {
+            if (_skillDefinitions.TryGetValue(skillId, out var skill))
+            {
+                AddSkill(skill);
+            }
+        }
+
+        return resolved
+            .OrderBy(skill => GetSkillSlotOrder(NormalizeSkillSlot(skill)))
+            .ThenBy(skill => skill.Id, StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private static IEnumerable<string> GetDefaultArchetypeSkillIds(string archetypeId)
+    {
+        return archetypeId switch
+        {
+            "warden" => new[] { "skill_power_strike", "skill_warden_utility" },
+            "guardian" => new[] { "skill_guardian_core", "skill_guardian_utility" },
+            "bulwark" => new[] { "skill_bulwark_core", "skill_bulwark_utility" },
+            "slayer" => new[] { "skill_slayer_core", "skill_slayer_utility" },
+            "raider" => new[] { "skill_raider_core", "skill_raider_utility" },
+            "reaver" => new[] { "skill_reaver_core", "skill_reaver_utility" },
+            "hunter" => new[] { "skill_precision_shot", "skill_hunter_utility" },
+            "scout" => new[] { "skill_scout_core", "skill_scout_utility" },
+            "marksman" => new[] { "skill_marksman_core", "skill_marksman_utility" },
+            "priest" => new[] { "skill_priest_core", "skill_minor_heal" },
+            "hexer" => new[] { "skill_hexer_core", "skill_hexer_utility" },
+            "shaman" => new[] { "skill_shaman_core", "skill_shaman_utility" },
+            _ => Array.Empty<string>(),
+        };
+    }
+
+    private static IEnumerable<string> GetDefaultClassSkillIds(string classId)
+    {
+        return classId switch
+        {
+            "vanguard" => new[] { "skill_vanguard_passive_1", "skill_vanguard_support_1" },
+            "duelist" => new[] { "skill_duelist_passive_1", "skill_duelist_support_1" },
+            "ranger" => new[] { "skill_ranger_passive_1", "skill_ranger_support_1" },
+            "mystic" => new[] { "skill_mystic_passive_1", "skill_mystic_support_1" },
+            _ => Array.Empty<string>(),
+        };
+    }
+
+    private static SkillSlotKindValue NormalizeSkillSlot(SkillDefinitionAsset skill)
+    {
+        return skill.SlotKind switch
+        {
+            SkillSlotKindValue.UtilityActive => SkillSlotKindValue.UtilityActive,
+            SkillSlotKindValue.Passive => SkillSlotKindValue.Passive,
+            SkillSlotKindValue.Support => SkillSlotKindValue.Support,
+            _ => SkillSlotKindValue.CoreActive,
+        };
+    }
+
+    private static int GetSkillSlotOrder(SkillSlotKindValue slotKind)
+    {
+        return slotKind switch
+        {
+            SkillSlotKindValue.CoreActive => 0,
+            SkillSlotKindValue.UtilityActive => 1,
+            SkillSlotKindValue.Passive => 2,
+            SkillSlotKindValue.Support => 3,
+            _ => int.MaxValue,
+        };
     }
 
     private static BattleSkillSpec BuildSkillSpec(SkillDefinitionAsset skill)
@@ -602,8 +985,223 @@ public sealed class RuntimeCombatContentLookup
             (SkillDelivery)skill.Delivery,
             (SkillTargetRule)skill.TargetRule,
             ExtractTagIds(skill.SupportAllowedTags),
+            ExtractTagIds(skill.SupportBlockedTags),
             ExtractTagIds(skill.RequiredWeaponTags),
-            ExtractTagIds(skill.RequiredClassTags));
+            ExtractTagIds(skill.RequiredClassTags),
+            Enumerate(skill.AppliedStatuses)
+                .Where(rule => rule != null && !string.IsNullOrWhiteSpace(rule.StatusId))
+                .Select(rule => new StatusApplicationSpec(
+                    string.IsNullOrWhiteSpace(rule.Id) ? $"{skill.Id}:{rule.StatusId}" : rule.Id,
+                    rule.StatusId,
+                    rule.DurationSeconds,
+                    rule.Magnitude,
+                    Math.Max(1, rule.MaxStacks),
+                    rule.RefreshDurationOnReapply))
+                .ToList(),
+            skill.CleanseProfileId ?? string.Empty);
+    }
+
+    private static CampaignChapterTemplate BuildCampaignChapterTemplate(CampaignChapterDefinition definition)
+    {
+        return new CampaignChapterTemplate(
+            definition.Id,
+            ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
+            definition.StoryOrder,
+            Enumerate(definition.SiteIds)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList(),
+            definition.UnlocksEndlessOnClear);
+    }
+
+    private static ExpeditionSiteTemplate BuildExpeditionSiteTemplate(ExpeditionSiteDefinition definition)
+    {
+        return new ExpeditionSiteTemplate(
+            definition.Id,
+            definition.ChapterId,
+            ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
+            definition.SiteOrder,
+            definition.FactionId,
+            Enumerate(definition.EncounterIds)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList(),
+            definition.ExtractRewardSourceId,
+            (int)definition.ThreatTier);
+    }
+
+    private static EncounterTemplate BuildEncounterTemplate(EncounterDefinition definition)
+    {
+        return new EncounterTemplate(
+            definition.Id,
+            ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
+            definition.SiteId,
+            definition.EnemySquadTemplateId,
+            definition.BossOverlayId,
+            definition.RewardSourceId,
+            definition.FactionId,
+            (int)definition.ThreatTier,
+            Math.Max(1, definition.ThreatCost),
+            Math.Max(1, definition.ThreatSkulls),
+            definition.DifficultyBand,
+            definition.Kind,
+            Enumerate(definition.RewardDropTags)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList());
+    }
+
+    private static EnemySquadTemplate BuildEnemySquadTemplate(EnemySquadTemplateDefinition definition)
+    {
+        return new EnemySquadTemplate(
+            definition.Id,
+            ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
+            definition.FactionId,
+            (TeamPostureType)definition.EnemyPosture,
+            (int)definition.ThreatTier,
+            Math.Max(1, definition.ThreatCost),
+            Enumerate(definition.RewardDropTags)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList(),
+            Enumerate(definition.Members)
+                .Where(member => member != null && !string.IsNullOrWhiteSpace(member.ArchetypeId))
+                .Select(member => new EnemySquadMemberTemplate(
+                    string.IsNullOrWhiteSpace(member.Id) ? $"{definition.Id}:{member.ArchetypeId}:{member.Anchor}" : member.Id,
+                    ResolveLegacyName(member.NameKey, member.LegacyDisplayName, member.ArchetypeId),
+                    member.ArchetypeId,
+                    (DeploymentAnchorId)member.Anchor,
+                    member.PositiveTraitId,
+                    member.NegativeTraitId,
+                    member.Role,
+                    Enumerate(member.RuleModifierTags)
+                        .Where(tag => !string.IsNullOrWhiteSpace(tag))
+                        .Distinct(StringComparer.Ordinal)
+                        .ToList()))
+                .ToList());
+    }
+
+    private static BossOverlayTemplate BuildBossOverlayTemplate(BossOverlayDefinition definition)
+    {
+        return new BossOverlayTemplate(
+            definition.Id,
+            ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
+            definition.PhaseTrigger,
+            Math.Max(1, definition.ThreatCost),
+            definition.SignatureAuraTag,
+            definition.SignatureUtilityTag,
+            Enumerate(definition.RewardDropTags)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList(),
+            Enumerate(definition.AppliedStatuses)
+                .Where(rule => rule != null && !string.IsNullOrWhiteSpace(rule.StatusId))
+                .Select(rule => new StatusApplicationSpec(
+                    string.IsNullOrWhiteSpace(rule.Id) ? $"{definition.Id}:{rule.StatusId}" : rule.Id,
+                    rule.StatusId,
+                    rule.DurationSeconds,
+                    rule.Magnitude,
+                    Math.Max(1, rule.MaxStacks),
+                    rule.RefreshDurationOnReapply))
+                .ToList());
+    }
+
+    private static StatusFamilyTemplate BuildStatusFamilyTemplate(StatusFamilyDefinition definition)
+    {
+        return new StatusFamilyTemplate(
+            definition.Id,
+            definition.Group,
+            definition.IsHardControl,
+            definition.UsesControlDiminishing,
+            definition.AffectedByTenacity,
+            definition.TenacityScale,
+            definition.IsRuleModifierOnly,
+            Enumerate(definition.CompileTags)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList());
+    }
+
+    private static CleanseProfileTemplate BuildCleanseProfileTemplate(CleanseProfileDefinition definition)
+    {
+        return new CleanseProfileTemplate(
+            definition.Id,
+            Enumerate(definition.RemovesStatusIds)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList(),
+            definition.RemovesOneHardControl,
+            definition.GrantsUnstoppable,
+            definition.GrantedUnstoppableDurationSeconds);
+    }
+
+    private static ControlDiminishingTemplate BuildControlDiminishingTemplate(ControlDiminishingRuleDefinition definition)
+    {
+        return new ControlDiminishingTemplate(
+            definition.Id,
+            definition.ControlResistMultiplier,
+            definition.WindowSeconds,
+            Enumerate(definition.FullTenacityStatusIds)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList(),
+            Enumerate(definition.PartialTenacityStatusIds)
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList());
+    }
+
+    private static RewardSourceTemplate BuildRewardSourceTemplate(RewardSourceDefinition definition)
+    {
+        return new RewardSourceTemplate(
+            definition.Id,
+            ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
+            definition.Kind,
+            definition.DropTableId,
+            definition.UsesRewardCards,
+            Enumerate(definition.AllowedRarityBrackets)
+                .Distinct()
+                .ToList());
+    }
+
+    private static DropTableTemplate BuildDropTableTemplate(DropTableDefinition definition)
+    {
+        return new DropTableTemplate(
+            definition.Id,
+            definition.RewardSourceId,
+            Enumerate(definition.Entries)
+                .Where(entry => entry != null)
+                .Select(BuildLootBundleEntryTemplate)
+                .ToList());
+    }
+
+    private static LootBundleTemplate BuildLootBundleTemplate(LootBundleDefinition definition)
+    {
+        return new LootBundleTemplate(
+            definition.Id,
+            definition.RewardSourceId,
+            Enumerate(definition.Entries)
+                .Where(entry => entry != null)
+                .Select(BuildLootBundleEntryTemplate)
+                .ToList());
+    }
+
+    private static TraitTokenTemplate BuildTraitTokenTemplate(TraitTokenDefinition definition)
+    {
+        return new TraitTokenTemplate(
+            definition.Id,
+            definition.RewardType);
+    }
+
+    private static LootBundleEntryTemplate BuildLootBundleEntryTemplate(LootBundleEntryDefinition definition)
+    {
+        return new LootBundleEntryTemplate(
+            string.IsNullOrWhiteSpace(definition.Id) ? $"{definition.RewardType}:{definition.RarityBracket}:{definition.Amount}" : definition.Id,
+            definition.RewardType,
+            Math.Max(1, definition.Amount),
+            definition.RarityBracket,
+            Math.Max(1, definition.Weight),
+            definition.IsGuaranteed);
     }
 
     private static CombatModifierPackage BuildTraitPackage(TraitEntry trait)
@@ -611,7 +1209,7 @@ public sealed class RuntimeCombatContentLookup
         return new CombatModifierPackage(
             trait.Id,
             ModifierSource.Trait,
-            trait.Modifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Trait, trait.Id)).ToList());
+            Enumerate(trait.Modifiers).Select(modifier => BuildStatModifier(modifier, ModifierSource.Trait, trait.Id)).ToList());
     }
 
     private static CombatModifierPackage BuildItemPackage(ItemBaseDefinition item)
@@ -619,7 +1217,7 @@ public sealed class RuntimeCombatContentLookup
         return new CombatModifierPackage(
             item.Id,
             ModifierSource.Item,
-            item.BaseModifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Item, item.Id)).ToList());
+            Enumerate(item.BaseModifiers).Select(modifier => BuildStatModifier(modifier, ModifierSource.Item, item.Id)).ToList());
     }
 
     private static CombatModifierPackage BuildAffixPackage(AffixDefinition affix)
@@ -627,7 +1225,7 @@ public sealed class RuntimeCombatContentLookup
         return new CombatModifierPackage(
             affix.Id,
             ModifierSource.Item,
-            affix.Modifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Item, affix.Id)).ToList());
+            Enumerate(affix.Modifiers).Select(modifier => BuildStatModifier(modifier, ModifierSource.Item, affix.Id)).ToList());
     }
 
     private static CombatModifierPackage BuildAugmentPackage(AugmentDefinition augment)
@@ -635,7 +1233,7 @@ public sealed class RuntimeCombatContentLookup
         return new CombatModifierPackage(
             augment.Id,
             ModifierSource.Augment,
-            augment.Modifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Augment, augment.Id)).ToList());
+            Enumerate(augment.Modifiers).Select(modifier => BuildStatModifier(modifier, ModifierSource.Augment, augment.Id)).ToList());
     }
 
     private static TeamTacticTemplate BuildTeamTacticTemplate(TeamTacticDefinition definition)
@@ -673,8 +1271,8 @@ public sealed class RuntimeCombatContentLookup
             new CombatModifierPackage(
                 definition.Id,
                 ModifierSource.Other,
-                definition.Modifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Other, definition.Id)).ToList()),
-            definition.CompileTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+                Enumerate(definition.Modifiers).Select(modifier => BuildStatModifier(modifier, ModifierSource.Other, definition.Id)).ToList()),
+            Enumerate(definition.CompileTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
             BuildRulePackage(definition.Id, ModifierSource.Other, definition.RuleModifierTags));
     }
 
@@ -693,15 +1291,15 @@ public sealed class RuntimeCombatContentLookup
             Math.Max(1, definition.Tier),
             definition.IsPermanent,
             definition.SuppressIfPermanentEquipped,
-            definition.Tags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
-            definition.MutualExclusionTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+            Enumerate(definition.Tags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+            Enumerate(definition.MutualExclusionTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
             BuildAugmentPackage(definition),
             BuildRulePackage(definition.Id, ModifierSource.Augment, definition.RuleModifierTags));
     }
 
     private static IEnumerable<SynergyTierTemplate> BuildSynergyTemplates(SynergyDefinition definition)
     {
-        foreach (var tier in definition.Tiers.Where(tier => tier != null && tier.Threshold > 0))
+        foreach (var tier in Enumerate(definition.Tiers).Where(tier => tier != null && tier.Threshold > 0))
         {
             yield return new SynergyTierTemplate(
                 $"{definition.Id}:{tier.Threshold}",
@@ -777,10 +1375,27 @@ public sealed class RuntimeCombatContentLookup
 
     private static List<string> ExtractTagIds(IEnumerable<StableTagDefinition> tags)
     {
-        return tags
+        return Enumerate(tags)
             .Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id))
             .Select(tag => tag.Id)
             .ToList();
+    }
+
+    private static IEnumerable<T> Enumerate<T>(IEnumerable<T> values)
+    {
+        return values ?? Array.Empty<T>();
+    }
+
+    private static T BuildSection<T>(string label, Func<T> factory)
+    {
+        try
+        {
+            return factory();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to build {label}.", ex);
+        }
     }
 
     private static string ResolveLegacyName(string nameKey, string legacyDisplayName, string fallback)

@@ -32,6 +32,6 @@
 - `scene-installer.md`: first playable scene rebuild installer 기준
 - `scene-repair-bootstrap.md`: first playable scene repair/bootstrap 운영 기준
 - `unity-bootstrap.md`: Unity 부트스트랩 절차
-- `unity-cli.md`: Unity CLI optional fast lane
+- `unity-cli.md`: Unity CLI optional fast lane와 reconnect recovery
 - `unity-install.md`: Unity 설치 기준
 - `unity-mcp.md`: Unity MCP 운영 가이드

@@ -18,26 +18,25 @@ MonoBehaviour:
   Kind: 1
   SlotKind: 1
   DamageType: 2
-  Delivery: 1
+  Delivery: 0
   TargetRule: 3
-  Power: 4.2
-  Range: 2.8
-  PowerFlat: 4.2
+  Power: 4
+  Range: 2
+  PowerFlat: 4
   PhysCoeff: 0
-  MagCoeff: 0
+  MagCoeff: 0.8
   HealCoeff: 1
   HealthCoeff: 0
   CanCrit: 0
-  ManaCost: 5
-  BaseCooldownSeconds: 3.4
-  CastWindupSeconds: 0.22
-  CompileTags:
-  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
-  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  ManaCost: 0
+  BaseCooldownSeconds: 0
+  CastWindupSeconds: 0
+  CompileTags: []
   RuleModifierTags: []
   SupportAllowedTags: []
-  RequiredWeaponTags:
-  - {fileID: 11400000, guid: 5b8638d14ee22444e8b2baf4abd01965, type: 2}
-  RequiredClassTags:
-  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  SupportBlockedTags: []
+  RequiredWeaponTags: []
+  RequiredClassTags: []
+  AppliedStatuses: []
+  CleanseProfileId: 
   legacyDisplayName: 

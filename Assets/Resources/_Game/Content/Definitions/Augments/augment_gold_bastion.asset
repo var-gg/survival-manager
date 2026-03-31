@@ -18,23 +18,18 @@ MonoBehaviour:
   Rarity: 1
   IsPermanent: 0
   Category: 0
-  FamilyId: guard_instinct
-  Tier: 2
+  FamilyId: gold
+  Tier: 1
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags:
-  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  Tags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 3
+  EligibleModes: 1
   Modifiers:
   - StatId: max_health
     Op: 0
     Value: 4
-  - StatId: protect_radius
-    Op: 0
-    Value: 0.35
   legacyDisplayName: 
   legacyDescription: 

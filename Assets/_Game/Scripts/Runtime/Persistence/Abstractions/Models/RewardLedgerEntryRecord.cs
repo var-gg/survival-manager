@@ -12,4 +12,6 @@ public sealed class RewardLedgerEntryRecord
     public int Amount = 0;
     public string CreatedAtUtc = string.Empty;
     public string Summary = string.Empty;
+    public string SourceId = string.Empty;
+    public string SourceKind = string.Empty;
 }

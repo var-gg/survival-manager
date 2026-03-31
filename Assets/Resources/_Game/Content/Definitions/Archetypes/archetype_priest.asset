@@ -33,9 +33,9 @@ MonoBehaviour:
   - Priority: 1
     ConditionType: 4
     Threshold: 1.5
-    ActionType: 1
+    ActionType: 0
     TargetSelector: 5
-    Skill: {fileID: 11400000, guid: 842b174f92a91a24db7e7ab0d1d7b11c, type: 2}
+    Skill: {fileID: 0}
   - Priority: 2
     ConditionType: 5
     Threshold: 0
@@ -47,40 +47,38 @@ MonoBehaviour:
   RoleTag: support
   RoleFamilyTag: mystic
   PrimaryWeaponFamilyTag: focus
-  SupportModifierBiasTags:
-  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
-  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  SupportModifierBiasTags: []
   BaseMaxHealth: 18
   BaseArmor: 2
-  BaseResist: 1
+  BaseResist: 0
   BaseBarrierPower: 0
-  BaseTenacity: 0.1
-  BasePhysPower: 2.5
-  BaseMagPower: 4.2
-  BaseAttackSpeed: 3.1
-  BaseAttack: 2.5
+  BaseTenacity: 0
+  BasePhysPower: 3
+  BaseMagPower: 0
+  BaseAttackSpeed: 4
+  BaseAttack: 3
   BaseDefense: 2
-  BaseSpeed: 3.1
+  BaseSpeed: 4
   BaseHealPower: 5
   BaseMoveSpeed: 1.7
   BaseAttackRange: 2.8
-  BaseManaMax: 18
-  BaseManaGainOnAttack: 2
-  BaseManaGainOnHit: 2
-  BaseCooldownRecovery: 0.04
-  BaseCritChance: 0.01
-  BaseCritMultiplier: 1.2
+  BaseManaMax: 0
+  BaseManaGainOnAttack: 0
+  BaseManaGainOnHit: 0
+  BaseCooldownRecovery: 0
+  BaseCritChance: 0
+  BaseCritMultiplier: 0
   BasePhysPen: 0
-  BaseMagPen: 0.5
+  BaseMagPen: 0
   BaseAggroRadius: 7.2
-  BasePreferredDistance: 2.3999999
-  BaseProtectRadius: 0.4
+  BasePreferredDistance: 0
+  BaseProtectRadius: 0
   BaseAttackWindup: 0.22
   BaseCastWindup: 0.22
-  BaseProjectileSpeed: 5.8
+  BaseProjectileSpeed: 0
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
   BaseAttackCooldown: 1
   BaseLeashDistance: 4.8
-  BaseTargetSwitchDelay: 0.36
+  BaseTargetSwitchDelay: 0.4
   legacyDisplayName: 

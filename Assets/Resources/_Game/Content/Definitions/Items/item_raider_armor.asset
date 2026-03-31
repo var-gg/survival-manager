@@ -18,10 +18,12 @@ MonoBehaviour:
   SlotType: 1
   IdentityKind: 0
   ItemFamilyTag: duelist_armor
+  WeaponFamilyTag: 
   RarityTier: 0
   AffixPoolTag: pool_duelist_armor
   CraftCategory: duelist
   BudgetBand: personal_power_9
+  CraftCurrencyTag: ember_dust
   GrantedSkills: []
   CompileTags:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
@@ -31,6 +33,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
+  AllowedCraftOperations: 00000000010000000200000004000000
   BaseModifiers:
   - StatId: armor
     Op: 0

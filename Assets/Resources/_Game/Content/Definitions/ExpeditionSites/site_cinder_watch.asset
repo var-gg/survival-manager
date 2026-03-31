@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: site_cinder_watch
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ExpeditionSiteDefinition
+  Id: site_cinder_watch
+  ChapterId: chapter_ashen_frontier
+  NameKey: content.campaign.site.site_cinder_watch.name
+  DescriptionKey: content.campaign.site.site_cinder_watch.desc
+  SiteOrder: 2
+  FactionId: faction_cinder_watch
+  EncounterIds:
+  - site_cinder_watch_skirmish_1
+  - site_cinder_watch_skirmish_2
+  - site_cinder_watch_elite_1
+  - site_cinder_watch_boss_1
+  ExtractRewardSourceId: reward_source_extract
+  ThreatTier: 1
+  legacyDisplayName: 
+  legacyDescription: 

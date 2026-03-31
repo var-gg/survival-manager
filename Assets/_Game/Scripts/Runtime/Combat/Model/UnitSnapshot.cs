@@ -28,6 +28,8 @@ public sealed class UnitSnapshot
         CurrentHealth = MaxHealth;
     }
 
+    private readonly List<AppliedStatusState> _statuses = new();
+
     public EntityId Id { get; }
     public TeamSide Side { get; }
     public BattleUnitLoadout Definition { get; }
@@ -45,16 +47,19 @@ public sealed class UnitSnapshot
     public float CooldownRemaining { get; private set; }
     public float TargetSwitchLockRemaining { get; private set; }
     public float CurrentHealth { get; private set; }
+    public float Barrier { get; private set; }
+    public IReadOnlyList<AppliedStatusState> Statuses => _statuses;
+    public ControlResistWindowState? ControlResistWindow { get; private set; }
     public bool IsAlive => CurrentHealth > 0f;
     public bool IsDefending { get; private set; }
     public float MaxHealth => Stats.Get(StatKey.MaxHealth);
-    public float Armor => Stats.Get(StatKey.Armor);
-    public float Resist => Stats.Get(StatKey.Resist);
+    public float Armor => Math.Max(0f, Stats.Get(StatKey.Armor) - GetStatusMagnitude("sunder"));
+    public float Resist => Math.Max(0f, Stats.Get(StatKey.Resist) - GetStatusMagnitude("sunder"));
     public float PhysPower => Stats.Get(StatKey.PhysPower);
     public float MagPower => Stats.Get(StatKey.MagPower);
-    public float AttackSpeed => Math.Max(0.1f, Stats.Get(StatKey.AttackSpeed));
+    public float AttackSpeed => Math.Max(0.1f, Stats.Get(StatKey.AttackSpeed) * GetSlowMultiplier());
     public float HealPower => Stats.Get(StatKey.HealPower);
-    public float MoveSpeed => Stats.Get(StatKey.MoveSpeed);
+    public float MoveSpeed => Math.Max(0.1f, Stats.Get(StatKey.MoveSpeed) * GetSlowMultiplier());
     public float AttackRange => Math.Max(0.5f, Stats.Get(StatKey.AttackRange));
     public float ManaMax => Stats.Get(StatKey.ManaMax);
     public float ManaGainOnAttack => Stats.Get(StatKey.ManaGainOnAttack);
@@ -75,6 +80,12 @@ public sealed class UnitSnapshot
     public float Defense => Armor;
     public float Speed => AttackSpeed;
     public float HealthRatio => MaxHealth <= 0 ? 0 : CurrentHealth / MaxHealth;
+    public bool IsStunned => HasStatus("stun");
+    public bool IsRooted => HasStatus("root");
+    public bool IsSilenced => HasStatus("silence");
+    public bool IsSlowed => HasStatus("slow");
+    public bool IsUnstoppable => HasStatus("unstoppable");
+    public bool IsGuarded => HasStatus("guarded") || IsDefending;
     public float WindupProgress => ActionState == CombatActionState.Windup && ActionTimerTotal > 0f
         ? 1f - (ActionTimerRemaining / ActionTimerTotal)
         : 0f;
@@ -95,6 +106,15 @@ public sealed class UnitSnapshot
         {
             TargetSwitchLockRemaining = Math.Max(0f, TargetSwitchLockRemaining - deltaSeconds);
         }
+
+        if (ControlResistWindow is { } controlResist)
+        {
+            var remaining = Math.Max(0f, controlResist.RemainingSeconds - deltaSeconds);
+            ControlResistWindow = remaining > 0f
+                ? controlResist with { RemainingSeconds = remaining }
+                : null;
+        }
+
     }
 
     public void SetPosition(CombatVector2 position)
@@ -178,6 +198,13 @@ public sealed class UnitSnapshot
 
     public void TakeDamage(float amount)
     {
+        if (Barrier > 0f)
+        {
+            var absorbed = Math.Min(Barrier, amount);
+            Barrier -= absorbed;
+            amount -= absorbed;
+        }
+
         CurrentHealth = Math.Max(0f, CurrentHealth - amount);
         if (CurrentHealth <= 0f)
         {
@@ -187,7 +214,94 @@ public sealed class UnitSnapshot
 
     public void Heal(float amount)
     {
-        CurrentHealth = Math.Min(MaxHealth, CurrentHealth + amount);
+        var adjusted = amount * GetHealingTakenMultiplier();
+        CurrentHealth = Math.Min(MaxHealth, CurrentHealth + adjusted);
+    }
+
+    public void AddBarrier(float amount)
+    {
+        Barrier = Math.Max(0f, Barrier + amount);
+    }
+
+    public bool HasStatus(string statusId)
+    {
+        return _statuses.Any(status => string.Equals(status.StatusId, statusId, StringComparison.Ordinal));
+    }
+
+    public float GetStatusMagnitude(string statusId)
+    {
+        return _statuses
+            .Where(status => string.Equals(status.StatusId, statusId, StringComparison.Ordinal))
+            .Select(status => status.Magnitude)
+            .DefaultIfEmpty(0f)
+            .Max();
+    }
+
+    public float GetIncomingDamageMultiplier()
+    {
+        var multiplier = 1f;
+        if (HasStatus("marked"))
+        {
+            multiplier += Math.Max(0f, GetStatusMagnitude("marked"));
+        }
+
+        if (HasStatus("exposed"))
+        {
+            multiplier += Math.Max(0f, GetStatusMagnitude("exposed"));
+        }
+
+        if (IsGuarded)
+        {
+            multiplier -= 0.1f;
+        }
+
+        return Math.Max(0.25f, multiplier);
+    }
+
+    public void ApplyStatus(StatusApplicationSpec spec)
+    {
+        var existingIndex = _statuses.FindIndex(status => string.Equals(status.StatusId, spec.StatusId, StringComparison.Ordinal));
+        if (existingIndex >= 0)
+        {
+            var existing = _statuses[existingIndex];
+            var stacks = Math.Min(spec.MaxStacks, existing.Stacks + 1);
+            var remaining = spec.RefreshDurationOnReapply ? Math.Max(existing.RemainingSeconds, spec.DurationSeconds) : existing.RemainingSeconds;
+            var magnitude = Math.Max(existing.Magnitude, spec.Magnitude);
+            _statuses[existingIndex] = existing with
+            {
+                RemainingSeconds = remaining,
+                DurationSeconds = Math.Max(existing.DurationSeconds, spec.DurationSeconds),
+                Magnitude = magnitude,
+                Stacks = stacks,
+            };
+            return;
+        }
+
+        _statuses.Add(new AppliedStatusState(spec.StatusId, spec.DurationSeconds, spec.DurationSeconds, spec.Magnitude));
+    }
+
+    public bool RemoveStatus(string statusId)
+    {
+        var removed = _statuses.RemoveAll(status => string.Equals(status.StatusId, statusId, StringComparison.Ordinal));
+        return removed > 0;
+    }
+
+    public int RemoveStatuses(IEnumerable<string> statusIds)
+    {
+        var idSet = new HashSet<string>(statusIds, StringComparer.Ordinal);
+        return _statuses.RemoveAll(status => idSet.Contains(status.StatusId));
+    }
+
+    public void ApplyControlResistWindow(float durationSeconds, float resistMultiplier)
+    {
+        if (durationSeconds <= 0f)
+        {
+            return;
+        }
+
+        ControlResistWindow = new ControlResistWindowState(
+            Math.Max(durationSeconds, ControlResistWindow?.RemainingSeconds ?? 0f),
+            Math.Max(resistMultiplier, ControlResistWindow?.ResistMultiplier ?? 0f));
     }
 
     public BattleSkillSpec? ResolveSkill(string? skillId)
@@ -214,9 +328,44 @@ public sealed class UnitSnapshot
     private void MarkDead()
     {
         CurrentHealth = 0f;
+        Barrier = 0f;
         IsDefending = false;
         ClearTarget(applySwitchDelay: false);
         CooldownRemaining = 0f;
         ActionState = CombatActionState.Dead;
+        _statuses.Clear();
+        ControlResistWindow = null;
+    }
+
+    private float GetHealingTakenMultiplier()
+    {
+        var woundMagnitude = GetStatusMagnitude("wound");
+        return Math.Max(0.1f, 1f - woundMagnitude);
+    }
+
+    private float GetSlowMultiplier()
+    {
+        var slowMagnitude = GetStatusMagnitude("slow");
+        return Math.Max(0.1f, 1f - slowMagnitude);
+    }
+
+    public List<string> AdvanceStatusTimers(float deltaSeconds)
+    {
+        var removed = new List<string>();
+        for (var index = _statuses.Count - 1; index >= 0; index--)
+        {
+            var status = _statuses[index];
+            var remaining = Math.Max(0f, status.RemainingSeconds - deltaSeconds);
+            if (remaining <= 0f)
+            {
+                removed.Add(status.StatusId);
+                _statuses.RemoveAt(index);
+                continue;
+            }
+
+            _statuses[index] = status with { RemainingSeconds = remaining };
+        }
+
+        return removed;
     }
 }

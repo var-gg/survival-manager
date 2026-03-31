@@ -36,7 +36,9 @@ public static class BattleReadModelBuilder
                     target?.Definition.Name,
                     unit.WindupProgress,
                     unit.CooldownRemaining,
-                    unit.IsDefending);
+                    unit.IsDefending,
+                    unit.Barrier,
+                    unit.Statuses.Select(status => status.StatusId).ToList());
             })
             .ToList();
 

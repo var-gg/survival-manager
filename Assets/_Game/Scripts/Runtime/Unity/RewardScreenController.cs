@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using SM.Meta.Services;
 
 namespace SM.Unity;
 
@@ -132,8 +133,10 @@ public sealed class RewardScreenController : MonoBehaviour
         summaryText.text =
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.battle_result", "Battle Result: {0}", session.LastBattleVictory ? Localize(GameLocalizationTables.UIReward, "ui.reward.result.victory", "Victory") : Localize(GameLocalizationTables.UIReward, "ui.reward.result.defeat", "Defeat"))}\n" +
             $"{session.LastBattleSummary.Resolve(_localization, _contentText)}\n" +
+            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.auto_loot", "Auto Loot: {0}", session.LastAutomaticLootBundle == null ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None") : LootResolutionService.FormatSummary(session.LastAutomaticLootBundle))}\n" +
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.gold", "Gold: {0}", session.Profile.Currencies.Gold)}\n" +
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.reroll", "Trait Reroll: {0}", session.Profile.Currencies.TraitRerollCurrency)}\n" +
+            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.crafting", "Craft Mats: Ember {0} / Echo {1} / Sigil {2}", session.Profile.Currencies.EmberDust, session.Profile.Currencies.EchoCrystal, session.Profile.Currencies.BossSigil)}\n" +
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.slots", "Perm Slots: {0}", session.PermanentAugmentSlotCount)}\n" +
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.inventory", "Inventory: {0}", session.Profile.Inventory.Count)}\n" +
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.temp_augments", "Temp Augments: {0}", session.Expedition.TemporaryAugmentIds.Count)}";
