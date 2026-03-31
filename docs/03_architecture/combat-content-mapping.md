@@ -83,7 +83,8 @@
 
 ## seed 데이터 기준
 
-- `SampleSeedGenerator`는 spatial 전투에 필요한 stat definition을 같이 만든다.
+- spatial 전투에 필요한 stat definition과 launch floor asset은 committed canonical root가 소유한다.
+- `SampleSeedGenerator`는 bootstrap repair helper로만 남긴다.
 - sample archetype은 default anchor와 preferred posture를 포함해야 한다.
 - sample tactic preset은 `EnemyExposed`, `MostExposedEnemy` 같은 spatial 규칙을 포함할 수 있다.
 

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_move_speed
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: move_speed
+  NameKey: content.stat.move_speed.name
+  DescriptionKey: content.stat.move_speed.desc
   legacyDisplayName: 
   legacyDescription: 

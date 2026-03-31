@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: archetype_bulwark
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
+  Id: bulwark
+  NameKey: content.archetype.bulwark.name
+  ScopeKind: 0
+  Race: {fileID: 11400000, guid: 9dd3fb1286383554abea4725a9f7c4c4, type: 2}
+  Class: {fileID: 11400000, guid: 2797722ba4364b04ab5a5e375294258b, type: 2}
+  TraitPool: {fileID: 11400000, guid: f960e4513d153a644a406ec80869f2f1, type: 2}
+  Skills:
+  - {fileID: 11400000, guid: 2d2fdece3a6f451469b0c0cc4f60baaf, type: 2}
+  - {fileID: 11400000, guid: 4dd611eacab313b4ba0cdde8577a54c2, type: 2}
+  - {fileID: 11400000, guid: e0d0d4149e2ccc843b00109bfde153ea, type: 2}
+  - {fileID: 11400000, guid: 3f09216fe0af34448a6a556b915e1ddf, type: 2}
+  TacticPreset:
+  - Priority: 0
+    ConditionType: 4
+    Threshold: 1.5
+    ActionType: 1
+    TargetSelector: 5
+    Skill: {fileID: 11400000, guid: 2d2fdece3a6f451469b0c0cc4f60baaf, type: 2}
+  - Priority: 1
+    ConditionType: 3
+    Threshold: 0
+    ActionType: 0
+    TargetSelector: 3
+    Skill: {fileID: 0}
+  - Priority: 2
+    ConditionType: 5
+    Threshold: 0
+    ActionType: 2
+    TargetSelector: 0
+    Skill: {fileID: 0}
+  DefaultAnchor: 2
+  PreferredTeamPosture: 3
+  RoleTag: anchor
+  RoleFamilyTag: vanguard
+  PrimaryWeaponFamilyTag: shield
+  SupportModifierBiasTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  BaseMaxHealth: 25
+  BaseArmor: 4.2
+  BaseResist: 0.8
+  BaseBarrierPower: 0
+  BaseTenacity: 0.25
+  BasePhysPower: 5.8
+  BaseMagPower: 0
+  BaseAttackSpeed: 3.2
+  BaseAttack: 5.8
+  BaseDefense: 4.2
+  BaseSpeed: 3.2
+  BaseHealPower: 0
+  BaseMoveSpeed: 1.75
+  BaseAttackRange: 1.45
+  BaseManaMax: 0
+  BaseManaGainOnAttack: 0
+  BaseManaGainOnHit: 0
+  BaseCooldownRecovery: 0
+  BaseCritChance: 0.01
+  BaseCritMultiplier: 1.2
+  BasePhysPen: 0
+  BaseMagPen: 0
+  BaseAggroRadius: 7.2
+  BasePreferredDistance: 0.25
+  BaseProtectRadius: 1.4
+  BaseAttackWindup: 0.22
+  BaseCastWindup: 0.2
+  BaseProjectileSpeed: 0
+  BaseCollisionRadius: 0.5
+  BaseRepositionCooldown: 0
+  BaseAttackCooldown: 1
+  BaseLeashDistance: 5.2
+  BaseTargetSwitchDelay: 0.36
+  legacyDisplayName: 

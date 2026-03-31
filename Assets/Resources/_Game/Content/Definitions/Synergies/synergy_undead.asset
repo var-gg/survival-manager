@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: synergy_undead
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SynergyDefinition
+  Id: synergy_undead
+  NameKey: content.synergy.synergy_undead.name
+  DescriptionKey: content.synergy.synergy_undead.desc
+  CountedTagId: undead
+  Tiers:
+  - {fileID: 11400000, guid: 47b68cbb07aa35543b6f825630642c87, type: 2}
+  - {fileID: 11400000, guid: 11efc51ceba55ee4c8425a8d02b720f5, type: 2}
+  - {fileID: 11400000, guid: 085d41f84fee4374bb5807eae2e4c0d0, type: 2}
+  legacyDisplayName: 

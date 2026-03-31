@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: augment_platinum_reckoning
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
+  Id: augment_platinum_reckoning
+  NameKey: content.augment.augment_platinum_reckoning.name
+  DescriptionKey: content.augment.augment_platinum_reckoning.desc
+  Rarity: 2
+  IsPermanent: 0
+  Category: 0
+  FamilyId: hunt_line
+  Tier: 3
+  OfferWeight: 1
+  SuppressIfPermanentEquipped: 0
+  Tags:
+  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  MutualExclusionTags: []
+  RequiresTags: []
+  RuleModifierTags: []
+  EligibleModes: 3
+  Modifiers:
+  - StatId: crit_multiplier
+    Op: 0
+    Value: 0.2
+  - StatId: phys_power
+    Op: 0
+    Value: 2.2
+  legacyDisplayName: 
+  legacyDescription: 

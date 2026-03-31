@@ -14,7 +14,231 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: Content_Synergies
   m_TableCollectionNameGuidString: 1f9a38dc9f90a2a4999c153769c0e74f
-  m_Entries: []
+  m_Entries:
+  - m_Id: 168093337772032
+    m_Key: content.synergy.synergy_human.tier_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168093434241024
+    m_Key: content.synergy.synergy_human.tier_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168094067580928
+    m_Key: content.synergy.synergy_human.tier_3.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168094067580929
+    m_Key: content.synergy.synergy_human.tier_3.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168094755446784
+    m_Key: content.synergy.synergy_human.tier_4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168094759641088
+    m_Key: content.synergy.synergy_human.tier_4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168095460089856
+    m_Key: content.synergy.synergy_human.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168095460089857
+    m_Key: content.synergy.synergy_human.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168096177315840
+    m_Key: content.synergy.synergy_beastkin.tier_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168096177315841
+    m_Key: content.synergy.synergy_beastkin.tier_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168096923901952
+    m_Key: content.synergy.synergy_beastkin.tier_3.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168096923901953
+    m_Key: content.synergy.synergy_beastkin.tier_3.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168097574019072
+    m_Key: content.synergy.synergy_beastkin.tier_4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168097574019073
+    m_Key: content.synergy.synergy_beastkin.tier_4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168098194776064
+    m_Key: content.synergy.synergy_beastkin.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168098194776065
+    m_Key: content.synergy.synergy_beastkin.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168098828115968
+    m_Key: content.synergy.synergy_undead.tier_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168098828115969
+    m_Key: content.synergy.synergy_undead.tier_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168099406929920
+    m_Key: content.synergy.synergy_undead.tier_3.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168099411124224
+    m_Key: content.synergy.synergy_undead.tier_3.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168100031881216
+    m_Key: content.synergy.synergy_undead.tier_4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168100031881217
+    m_Key: content.synergy.synergy_undead.tier_4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168100656832512
+    m_Key: content.synergy.synergy_undead.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168100656832513
+    m_Key: content.synergy.synergy_undead.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168101319532544
+    m_Key: content.synergy.synergy_vanguard.tier_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168101319532545
+    m_Key: content.synergy.synergy_vanguard.tier_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168101994815488
+    m_Key: content.synergy.synergy_vanguard.tier_3.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168101994815489
+    m_Key: content.synergy.synergy_vanguard.tier_3.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168102682681344
+    m_Key: content.synergy.synergy_vanguard.tier_4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168102682681345
+    m_Key: content.synergy.synergy_vanguard.tier_4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168103357964288
+    m_Key: content.synergy.synergy_vanguard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168103357964289
+    m_Key: content.synergy.synergy_vanguard.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168104003887104
+    m_Key: content.synergy.synergy_duelist.tier_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168104003887105
+    m_Key: content.synergy.synergy_duelist.tier_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168104674975744
+    m_Key: content.synergy.synergy_duelist.tier_3.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168104674975745
+    m_Key: content.synergy.synergy_duelist.tier_3.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168105371230208
+    m_Key: content.synergy.synergy_duelist.tier_4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168105371230209
+    m_Key: content.synergy.synergy_duelist.tier_4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168106050707456
+    m_Key: content.synergy.synergy_duelist.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168106050707457
+    m_Key: content.synergy.synergy_duelist.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168106826653696
+    m_Key: content.synergy.synergy_ranger.tier_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168106826653697
+    m_Key: content.synergy.synergy_ranger.tier_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168107464187904
+    m_Key: content.synergy.synergy_ranger.tier_3.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168107464187905
+    m_Key: content.synergy.synergy_ranger.tier_3.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168108043001856
+    m_Key: content.synergy.synergy_ranger.tier_4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168108043001857
+    m_Key: content.synergy.synergy_ranger.tier_4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168108605038592
+    m_Key: content.synergy.synergy_ranger.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168108605038593
+    m_Key: content.synergy.synergy_ranger.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168109167075328
+    m_Key: content.synergy.synergy_mystic.tier_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168109167075329
+    m_Key: content.synergy.synergy_mystic.tier_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168109775249408
+    m_Key: content.synergy.synergy_mystic.tier_3.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168109775249409
+    m_Key: content.synergy.synergy_mystic.tier_3.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168110303731712
+    m_Key: content.synergy.synergy_mystic.tier_4.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168110303731713
+    m_Key: content.synergy.synergy_mystic.tier_4.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168110903517184
+    m_Key: content.synergy.synergy_mystic.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168110903517185
+    m_Key: content.synergy.synergy_mystic.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

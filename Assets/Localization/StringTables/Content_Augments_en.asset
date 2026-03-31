@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 69771190272
-    m_Localized: Improves defensive stability.
+    m_Localized: Guard Instinct augment.
     m_Metadata:
       m_Items: []
   - m_Id: 70723297280
@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 70723297281
-    m_Localized: Sharpens offensive focus.
+    m_Localized: Focus augment.
     m_Metadata:
       m_Items: []
   - m_Id: 71700570112
@@ -39,7 +39,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 71704764416
-    m_Localized: Improves battle tempo.
+    m_Localized: Stride augment.
     m_Metadata:
       m_Items: []
   - m_Id: 72707203072
@@ -47,7 +47,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 72707203073
-    m_Localized: Boosts frontline endurance.
+    m_Localized: Bastion augment.
     m_Metadata:
       m_Items: []
   - m_Id: 73713836032
@@ -55,7 +55,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 73713836033
-    m_Localized: Boosts offensive output.
+    m_Localized: Fury augment.
     m_Metadata:
       m_Items: []
   - m_Id: 74661748736
@@ -63,7 +63,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 74661748737
-    m_Localized: Boosts healing throughput.
+    m_Localized: Mending augment.
     m_Metadata:
       m_Items: []
   - m_Id: 75676770304
@@ -71,7 +71,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 75676770305
-    m_Localized: Heavily boosts attack.
+    m_Localized: Overrun augment.
     m_Metadata:
       m_Items: []
   - m_Id: 76813426688
@@ -79,7 +79,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 76813426689
-    m_Localized: Heavily boosts defense.
+    m_Localized: Wall augment.
     m_Metadata:
       m_Items: []
   - m_Id: 77916528640
@@ -87,7 +87,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 77916528641
-    m_Localized: Heavily boosts speed.
+    m_Localized: Surge augment.
     m_Metadata:
       m_Items: []
   - m_Id: 78734417920
@@ -95,7 +95,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 78734417921
-    m_Localized: Permanent attack bonus.
+    m_Localized: Legacy Blade augment.
     m_Metadata:
       m_Items: []
   - m_Id: 79640387584
@@ -103,7 +103,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 79640387585
-    m_Localized: Permanent defense bonus.
+    m_Localized: Legacy Hide augment.
     m_Metadata:
       m_Items: []
   - m_Id: 80617660416
@@ -111,7 +111,127 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 80617660417
-    m_Localized: Permanent speed bonus.
+    m_Localized: Legacy Grace augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168025746563072
+    m_Localized: Hunt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168025826254848
+    m_Localized: Hunt augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168026405068800
+    m_Localized: Ward Sigil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168026405068801
+    m_Localized: Ward Sigil augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168026967105536
+    m_Localized: Hex Sigil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168026967105537
+    m_Localized: Hex Sigil augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168027524947968
+    m_Localized: Barrage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168027524947969
+    m_Localized: Barrage augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168028066013184
+    m_Localized: Pact Circuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168028066013185
+    m_Localized: Pact Circuit augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168028644827136
+    m_Localized: Pack Howl
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168028644827137
+    m_Localized: Pack Howl augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168029211058176
+    m_Localized: Reckoning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168029211058177
+    m_Localized: Reckoning augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168029848592384
+    m_Localized: Hinterland
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168029852786688
+    m_Localized: Hinterland augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168030574206976
+    m_Localized: Catacomb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168030574206977
+    m_Localized: Catacomb augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168036496564224
+    m_Localized: Legacy Oath
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168036496564225
+    m_Localized: Legacy Oath augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037142487040
+    m_Localized: Legacy Scope
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037142487041
+    m_Localized: Legacy Scope augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037763244032
+    m_Localized: Legacy Chalice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037763244033
+    m_Localized: Legacy Chalice augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038367223808
+    m_Localized: Legacy Fang
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038367223809
+    m_Localized: Legacy Fang augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038941843456
+    m_Localized: Legacy Bone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038941843457
+    m_Localized: Legacy Bone augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168039508074496
+    m_Localized: Legacy Signal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168039508074497
+    m_Localized: Legacy Signal augment.
     m_Metadata:
       m_Items: []
   references:

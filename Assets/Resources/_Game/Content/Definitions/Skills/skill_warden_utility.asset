@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: skill_warden_utility
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
+  Id: skill_warden_utility
+  NameKey: content.skill.skill_warden_utility.name
+  DescriptionKey: content.skill.skill_warden_utility.desc
+  Kind: 5
+  SlotKind: 1
+  DamageType: 0
+  Delivery: 4
+  TargetRule: 5
+  Power: 0
+  Range: 0
+  PowerFlat: 0
+  PhysCoeff: 1
+  MagCoeff: 0
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 1
+  ManaCost: 0
+  BaseCooldownSeconds: 4
+  CastWindupSeconds: 0.1
+  CompileTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  RuleModifierTags: []
+  SupportAllowedTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 2f240f94125537247a2371d267839993, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
+  legacyDisplayName: 

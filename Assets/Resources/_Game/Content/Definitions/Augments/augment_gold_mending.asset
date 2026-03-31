@@ -12,21 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: augment_gold_mending
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Rarity: 0
+  Id: augment_gold_mending
+  NameKey: content.augment.augment_gold_mending.name
+  DescriptionKey: content.augment.augment_gold_mending.desc
+  Rarity: 1
   IsPermanent: 0
   Category: 0
-  FamilyId: 
-  Tier: 1
+  FamilyId: mending_loop
+  Tier: 2
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags: []
+  Tags:
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 1
-  Modifiers: []
+  EligibleModes: 3
+  Modifiers:
+  - StatId: heal_power
+    Op: 0
+    Value: 2
+  - StatId: cooldown_recovery
+    Op: 0
+    Value: 0.08
   legacyDisplayName: 
   legacyDescription: 

@@ -57,7 +57,34 @@
 
 - `ScriptableObject` authored definition은 raw prose 대신 `NameKey`, `DescriptionKey`, `LabelKey` 같은 key를 가진다.
 - legacy prose 필드는 migration source로 한 사이클만 숨김 보존한다.
-- validator는 legacy prose 잔존, key naming 위반, missing table entry를 실패로 처리한다.
+- validator는 phase 규칙에 따라 legacy prose 잔존, key naming 위반, missing table entry를 경고 또는 실패로 처리한다.
+
+## fallback phase 정책
+
+### `PhaseA`
+
+- runtime fallback: 허용
+- validator severity: warning
+- 목적: localization 도입 초기 migration
+
+### `PhaseB`
+
+- runtime fallback: `editor/dev`에서만 허용
+- validator severity: shipped player-facing content 기준 error
+- 현재 저장소 기본값: `PhaseB`
+- 목적: committed content를 localization key 중심으로 굳히는 단계
+
+### `PhaseC`
+
+- runtime fallback: 허용 안 함
+- validator severity: missing entry와 legacy prose 모두 error
+- 목적: shipped player-facing content 최종 gate
+
+## sunset rule
+
+- migration fallback은 `PhaseA -> PhaseB -> PhaseC`로 줄여야 한다.
+- `PhaseB` 이후에는 hidden fallback이 빠진 key를 가리면 안 된다.
+- 출시 주장 전에 player-facing content는 `PhaseC` 규칙을 만족해야 한다.
 
 ## 로그 정책
 

@@ -12,21 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: augment_platinum_overrun
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Rarity: 0
+  Id: augment_platinum_overrun
+  NameKey: content.augment.augment_platinum_overrun.name
+  DescriptionKey: content.augment.augment_platinum_overrun.desc
+  Rarity: 2
   IsPermanent: 0
   Category: 0
-  FamilyId: 
-  Tier: 1
+  FamilyId: focus_drive
+  Tier: 3
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags: []
+  Tags:
+  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 1
-  Modifiers: []
+  EligibleModes: 3
+  Modifiers:
+  - StatId: phys_power
+    Op: 0
+    Value: 3
+  - StatId: phys_pen
+    Op: 0
+    Value: 1.5
   legacyDisplayName: 
   legacyDescription: 

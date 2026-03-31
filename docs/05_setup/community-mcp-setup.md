@@ -174,7 +174,7 @@ main 브랜치에서 바로 연결 검증하지 않는다.
 
 프로젝트 기준 bootstrap 예:
 
-- `SM/Bootstrap/Prepare First Playable`
+- `SM/Bootstrap/Prepare Observer Playable`
 
 ## 최소 도입 원칙
 

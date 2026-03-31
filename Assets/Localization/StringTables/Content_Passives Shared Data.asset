@@ -14,7 +14,615 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: Content_Passives
   m_TableCollectionNameGuidString: 99fa1df362c2c5a4f83233226c9be08e
-  m_Entries: []
+  m_Entries:
+  - m_Id: 168041525534720
+    m_Key: content.passive_node.passive_vanguard_small_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168041609420800
+    m_Key: content.passive_node.passive_vanguard_small_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168042213400576
+    m_Key: content.passive_node.passive_vanguard_small_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168042213400577
+    m_Key: content.passive_node.passive_vanguard_small_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168042767048704
+    m_Key: content.passive_node.passive_vanguard_small_03.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168042767048705
+    m_Key: content.passive_node.passive_vanguard_small_03.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168043329085440
+    m_Key: content.passive_node.passive_vanguard_small_04.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168043329085441
+    m_Key: content.passive_node.passive_vanguard_small_04.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168043882733568
+    m_Key: content.passive_node.passive_vanguard_small_05.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168043882733569
+    m_Key: content.passive_node.passive_vanguard_small_05.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168044499296256
+    m_Key: content.passive_node.passive_vanguard_small_06.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168044499296257
+    m_Key: content.passive_node.passive_vanguard_small_06.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168045078110208
+    m_Key: content.passive_node.passive_vanguard_small_07.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168045078110209
+    m_Key: content.passive_node.passive_vanguard_small_07.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168045627564032
+    m_Key: content.passive_node.passive_vanguard_small_08.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168045627564033
+    m_Key: content.passive_node.passive_vanguard_small_08.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168046223155200
+    m_Key: content.passive_node.passive_vanguard_small_09.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168046227349504
+    m_Key: content.passive_node.passive_vanguard_small_09.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168046894243840
+    m_Key: content.passive_node.passive_vanguard_small_10.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168046894243841
+    m_Key: content.passive_node.passive_vanguard_small_10.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168047535972352
+    m_Key: content.passive_node.passive_vanguard_small_11.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168047535972353
+    m_Key: content.passive_node.passive_vanguard_small_11.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168048190283776
+    m_Key: content.passive_node.passive_vanguard_small_12.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168048190283777
+    m_Key: content.passive_node.passive_vanguard_small_12.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168048764903424
+    m_Key: content.passive_node.passive_vanguard_notable_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168048764903425
+    m_Key: content.passive_node.passive_vanguard_notable_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168049486323712
+    m_Key: content.passive_node.passive_vanguard_notable_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168049486323713
+    m_Key: content.passive_node.passive_vanguard_notable_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168050060943360
+    m_Key: content.passive_node.passive_vanguard_notable_03.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168050060943361
+    m_Key: content.passive_node.passive_vanguard_notable_03.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168050635563008
+    m_Key: content.passive_node.passive_vanguard_notable_04.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168050635563009
+    m_Key: content.passive_node.passive_vanguard_notable_04.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168051235348480
+    m_Key: content.passive_node.passive_vanguard_notable_05.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168051235348481
+    m_Key: content.passive_node.passive_vanguard_notable_05.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168051927408640
+    m_Key: content.passive_node.passive_vanguard_keystone_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168051927408641
+    m_Key: content.passive_node.passive_vanguard_keystone_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168052577525760
+    m_Key: content.passive_board.board_vanguard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168052577525761
+    m_Key: content.passive_board.board_vanguard.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168053210865664
+    m_Key: content.passive_node.passive_duelist_small_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168053210865665
+    m_Key: content.passive_node.passive_duelist_small_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168053772902400
+    m_Key: content.passive_node.passive_duelist_small_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168053772902401
+    m_Key: content.passive_node.passive_duelist_small_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168054301384704
+    m_Key: content.passive_node.passive_duelist_small_03.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168054301384705
+    m_Key: content.passive_node.passive_duelist_small_03.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168054863421440
+    m_Key: content.passive_node.passive_duelist_small_04.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168054863421441
+    m_Key: content.passive_node.passive_duelist_small_04.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168055442235392
+    m_Key: content.passive_node.passive_duelist_small_05.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168055442235393
+    m_Key: content.passive_node.passive_duelist_small_05.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168056067186688
+    m_Key: content.passive_node.passive_duelist_small_06.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168056067186689
+    m_Key: content.passive_node.passive_duelist_small_06.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168056759246848
+    m_Key: content.passive_node.passive_duelist_small_07.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168056759246849
+    m_Key: content.passive_node.passive_duelist_small_07.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168057388392448
+    m_Key: content.passive_node.passive_duelist_small_08.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168057388392449
+    m_Key: content.passive_node.passive_duelist_small_08.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168058084646912
+    m_Key: content.passive_node.passive_duelist_small_09.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168058084646913
+    m_Key: content.passive_node.passive_duelist_small_09.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168058797678592
+    m_Key: content.passive_node.passive_duelist_small_10.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168058797678593
+    m_Key: content.passive_node.passive_duelist_small_10.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168059519098880
+    m_Key: content.passive_node.passive_duelist_small_11.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168059519098881
+    m_Key: content.passive_node.passive_duelist_small_11.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168060173410304
+    m_Key: content.passive_node.passive_duelist_small_12.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168060173410305
+    m_Key: content.passive_node.passive_duelist_small_12.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168060748029952
+    m_Key: content.passive_node.passive_duelist_notable_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168060748029953
+    m_Key: content.passive_node.passive_duelist_notable_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168061335232512
+    m_Key: content.passive_node.passive_duelist_notable_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168061335232513
+    m_Key: content.passive_node.passive_duelist_notable_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168061972766720
+    m_Key: content.passive_node.passive_duelist_notable_03.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168061972766721
+    m_Key: content.passive_node.passive_duelist_notable_03.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168062572552192
+    m_Key: content.passive_node.passive_duelist_notable_04.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168062572552193
+    m_Key: content.passive_node.passive_duelist_notable_04.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168063159754752
+    m_Key: content.passive_node.passive_duelist_notable_05.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168063159754753
+    m_Key: content.passive_node.passive_duelist_notable_05.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168063767928832
+    m_Key: content.passive_node.passive_duelist_keystone_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168063767928833
+    m_Key: content.passive_node.passive_duelist_keystone_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168064380297216
+    m_Key: content.passive_board.board_duelist.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168064380297217
+    m_Key: content.passive_board.board_duelist.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168065059774464
+    m_Key: content.passive_node.passive_ranger_small_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168065059774465
+    m_Key: content.passive_node.passive_ranger_small_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168065739251712
+    m_Key: content.passive_node.passive_ranger_small_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168065739251713
+    m_Key: content.passive_node.passive_ranger_small_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168066376785920
+    m_Key: content.passive_node.passive_ranger_small_03.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168066376785921
+    m_Key: content.passive_node.passive_ranger_small_03.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168066943016960
+    m_Key: content.passive_node.passive_ranger_small_04.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168066943016961
+    m_Key: content.passive_node.passive_ranger_small_04.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168067509248000
+    m_Key: content.passive_node.passive_ranger_small_05.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168067509248001
+    m_Key: content.passive_node.passive_ranger_small_05.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168068100644864
+    m_Key: content.passive_node.passive_ranger_small_06.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168068100644865
+    m_Key: content.passive_node.passive_ranger_small_06.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168068650098688
+    m_Key: content.passive_node.passive_ranger_small_07.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168068654292992
+    m_Key: content.passive_node.passive_ranger_small_07.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168069262467072
+    m_Key: content.passive_node.passive_ranger_small_08.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168069266661376
+    m_Key: content.passive_node.passive_ranger_small_08.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168069912584192
+    m_Key: content.passive_node.passive_ranger_small_09.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168069912584193
+    m_Key: content.passive_node.passive_ranger_small_09.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168070680141824
+    m_Key: content.passive_node.passive_ranger_small_10.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168070680141825
+    m_Key: content.passive_node.passive_ranger_small_10.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168071326064640
+    m_Key: content.passive_node.passive_ranger_small_11.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168071326064641
+    m_Key: content.passive_node.passive_ranger_small_11.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168071913267200
+    m_Key: content.passive_node.passive_ranger_small_12.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168071913267201
+    m_Key: content.passive_node.passive_ranger_small_12.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168072479498240
+    m_Key: content.passive_node.passive_ranger_notable_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168072479498241
+    m_Key: content.passive_node.passive_ranger_notable_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168073083478016
+    m_Key: content.passive_node.passive_ranger_notable_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168073083478017
+    m_Key: content.passive_node.passive_ranger_notable_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168073700040704
+    m_Key: content.passive_node.passive_ranger_notable_03.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168073700040705
+    m_Key: content.passive_node.passive_ranger_notable_03.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168074308214784
+    m_Key: content.passive_node.passive_ranger_notable_04.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168074308214785
+    m_Key: content.passive_node.passive_ranger_notable_04.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168074899611648
+    m_Key: content.passive_node.passive_ranger_notable_05.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168074899611649
+    m_Key: content.passive_node.passive_ranger_notable_05.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168075537145856
+    m_Key: content.passive_node.passive_ranger_keystone_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168075537145857
+    m_Key: content.passive_node.passive_ranger_keystone_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168076216623104
+    m_Key: content.passive_board.board_ranger.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168076216623105
+    m_Key: content.passive_board.board_ranger.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168076891906048
+    m_Key: content.passive_node.passive_mystic_small_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168076891906049
+    m_Key: content.passive_node.passive_mystic_small_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168077491691520
+    m_Key: content.passive_node.passive_mystic_small_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168077491691521
+    m_Key: content.passive_node.passive_mystic_small_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168078129225728
+    m_Key: content.passive_node.passive_mystic_small_03.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168078129225729
+    m_Key: content.passive_node.passive_mystic_small_03.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168078733205504
+    m_Key: content.passive_node.passive_mystic_small_04.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168078733205505
+    m_Key: content.passive_node.passive_mystic_small_04.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168079337185280
+    m_Key: content.passive_node.passive_mystic_small_05.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168079337185281
+    m_Key: content.passive_node.passive_mystic_small_05.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168079987302400
+    m_Key: content.passive_node.passive_mystic_small_06.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168079987302401
+    m_Key: content.passive_node.passive_mystic_small_06.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168080645808128
+    m_Key: content.passive_node.passive_mystic_small_07.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168080645808129
+    m_Key: content.passive_node.passive_mystic_small_07.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168081291730944
+    m_Key: content.passive_node.passive_mystic_small_08.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168081291730945
+    m_Key: content.passive_node.passive_mystic_small_08.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168081912487936
+    m_Key: content.passive_node.passive_mystic_small_09.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168081912487937
+    m_Key: content.passive_node.passive_mystic_small_09.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168082579382272
+    m_Key: content.passive_node.passive_mystic_small_10.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168082579382273
+    m_Key: content.passive_node.passive_mystic_small_10.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168083229499392
+    m_Key: content.passive_node.passive_mystic_small_11.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168083229499393
+    m_Key: content.passive_node.passive_mystic_small_11.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168083917365248
+    m_Key: content.passive_node.passive_mystic_small_12.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168083917365249
+    m_Key: content.passive_node.passive_mystic_small_12.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168084592648192
+    m_Key: content.passive_node.passive_mystic_notable_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168084592648193
+    m_Key: content.passive_node.passive_mystic_notable_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168085230182400
+    m_Key: content.passive_node.passive_mystic_notable_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168085230182401
+    m_Key: content.passive_node.passive_mystic_notable_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168085825773568
+    m_Key: content.passive_node.passive_mystic_notable_03.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168085825773569
+    m_Key: content.passive_node.passive_mystic_notable_03.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168086383616000
+    m_Key: content.passive_node.passive_mystic_notable_04.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168086383616001
+    m_Key: content.passive_node.passive_mystic_notable_04.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168086933069824
+    m_Key: content.passive_node.passive_mystic_notable_05.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168086933069825
+    m_Key: content.passive_node.passive_mystic_notable_05.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168087499300864
+    m_Key: content.passive_node.passive_mystic_keystone_01.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168087499300865
+    m_Key: content.passive_node.passive_mystic_keystone_01.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168088141029376
+    m_Key: content.passive_board.board_mystic.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168088141029377
+    m_Key: content.passive_board.board_mystic.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

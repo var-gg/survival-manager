@@ -12,21 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: augment_silver_focus
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: augment_silver_focus
+  NameKey: content.augment.augment_silver_focus.name
+  DescriptionKey: content.augment.augment_silver_focus.desc
   Rarity: 0
   IsPermanent: 0
   Category: 0
-  FamilyId: 
+  FamilyId: focus_drive
   Tier: 1
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags: []
+  Tags:
+  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 1
-  Modifiers: []
+  EligibleModes: 3
+  Modifiers:
+  - StatId: phys_power
+    Op: 0
+    Value: 1
+  - StatId: mag_power
+    Op: 0
+    Value: 1
   legacyDisplayName: 
   legacyDescription: 

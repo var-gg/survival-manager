@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: augment_platinum_hinterland
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
+  Id: augment_platinum_hinterland
+  NameKey: content.augment.augment_platinum_hinterland.name
+  DescriptionKey: content.augment.augment_platinum_hinterland.desc
+  Rarity: 2
+  IsPermanent: 0
+  Category: 0
+  FamilyId: ward_line
+  Tier: 3
+  OfferWeight: 1
+  SuppressIfPermanentEquipped: 0
+  Tags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
+  MutualExclusionTags: []
+  RequiresTags: []
+  RuleModifierTags: []
+  EligibleModes: 3
+  Modifiers:
+  - StatId: preferred_distance
+    Op: 0
+    Value: 0.35
+  - StatId: attack_range
+    Op: 0
+    Value: 0.35
+  legacyDisplayName: 
+  legacyDescription: 

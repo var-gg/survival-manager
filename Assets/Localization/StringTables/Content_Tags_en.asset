@@ -17,7 +17,67 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: d693e0eba733cda4db37973c1bf598ca, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 167883559657472
+    m_Localized: Vanguard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167884423684096
+    m_Localized: Duelist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167885132521472
+    m_Localized: Ranger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167885912662016
+    m_Localized: Mystic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167886734745600
+    m_Localized: Shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167887623938048
+    m_Localized: Blade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167888546684928
+    m_Localized: Bow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167889297465344
+    m_Localized: Focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167890132131840
+    m_Localized: Frontline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167890937438208
+    m_Localized: Backline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167891646275584
+    m_Localized: Sustain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167892355112960
+    m_Localized: Burst
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167893063950336
+    m_Localized: Tempo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167893781176320
+    m_Localized: Control
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167894498402304
+    m_Localized: Support
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

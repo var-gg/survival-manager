@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: skill_bulwark_core
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
+  Id: skill_bulwark_core
+  NameKey: content.skill.skill_bulwark_core.name
+  DescriptionKey: content.skill.skill_bulwark_core.desc
+  Kind: 0
+  SlotKind: 0
+  DamageType: 0
+  Delivery: 0
+  TargetRule: 2
+  Power: 4.2
+  Range: 1.45
+  PowerFlat: 4.2
+  PhysCoeff: 1
+  MagCoeff: 0
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 1
+  ManaCost: 0
+  BaseCooldownSeconds: 2.1
+  CastWindupSeconds: 0.19
+  CompileTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  RuleModifierTags: []
+  SupportAllowedTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 2f240f94125537247a2371d267839993, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
+  legacyDisplayName: 

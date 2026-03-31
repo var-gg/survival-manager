@@ -47,6 +47,22 @@ MonoBehaviour:
     m_Key: content.archetype.hexer.name
     m_Metadata:
       m_Items: []
+  - m_Id: 167952979582976
+    m_Key: content.archetype.bulwark.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167956267917312
+    m_Key: content.archetype.reaver.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167959325564928
+    m_Key: content.archetype.marksman.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167962370629632
+    m_Key: content.archetype.shaman.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

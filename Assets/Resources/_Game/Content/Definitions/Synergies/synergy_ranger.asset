@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: synergy_ranger
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SynergyDefinition
+  Id: synergy_ranger
+  NameKey: content.synergy.synergy_ranger.name
+  DescriptionKey: content.synergy.synergy_ranger.desc
+  CountedTagId: ranger
+  Tiers:
+  - {fileID: 11400000, guid: 96d512900fd8f72408226af5a5ae91d4, type: 2}
+  - {fileID: 11400000, guid: 01eb9590b6c868f4187b8882cf3fb181, type: 2}
+  - {fileID: 11400000, guid: 990213ad7f202fa4eabde4c8041c4686, type: 2}
+  legacyDisplayName: 

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: augment_perm_legacy_fang
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
+  Id: augment_perm_legacy_fang
+  NameKey: content.augment.augment_perm_legacy_fang.name
+  DescriptionKey: content.augment.augment_perm_legacy_fang.desc
+  Rarity: 3
+  IsPermanent: 1
+  Category: 0
+  FamilyId: legacy_fang
+  Tier: 1
+  OfferWeight: 1
+  SuppressIfPermanentEquipped: 0
+  Tags:
+  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  MutualExclusionTags: []
+  RequiresTags: []
+  RuleModifierTags: []
+  EligibleModes: 3
+  Modifiers:
+  - StatId: crit_chance
+    Op: 0
+    Value: 0.02
+  legacyDisplayName: 
+  legacyDescription: 

@@ -16,8 +16,9 @@ MonoBehaviour:
   NameKey: content.affix.affix_blessed.name
   DescriptionKey: content.affix.affix_blessed.desc
   Category: 4
-  AllowedSlotTypes: 0200000001000000
-  CompileTags: []
+  AllowedSlotTypes: 02000000
+  CompileTags:
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
   RuleModifierTags: []
   Modifiers:
   - StatId: heal_power

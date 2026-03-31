@@ -50,6 +50,22 @@ MonoBehaviour:
     m_Localized: Hexer
     m_Metadata:
       m_Items: []
+  - m_Id: 167952979582976
+    m_Localized: Bulwark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167956267917312
+    m_Localized: Reaver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167959325564928
+    m_Localized: Marksman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167962370629632
+    m_Localized: Shaman
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

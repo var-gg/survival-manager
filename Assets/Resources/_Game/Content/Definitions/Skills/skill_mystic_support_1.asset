@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: skill_mystic_support_1
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
+  Id: skill_mystic_support_1
+  NameKey: content.skill.skill_mystic_support_1.name
+  DescriptionKey: content.skill.skill_mystic_support_1.desc
+  Kind: 3
+  SlotKind: 3
+  DamageType: 2
+  Delivery: 4
+  TargetRule: 4
+  Power: 0
+  Range: 0
+  PowerFlat: 0
+  PhysCoeff: 0
+  MagCoeff: 0
+  HealCoeff: 1
+  HealthCoeff: 0
+  CanCrit: 0
+  ManaCost: 0
+  BaseCooldownSeconds: 0
+  CastWindupSeconds: 0
+  CompileTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  RuleModifierTags: []
+  SupportAllowedTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 5b8638d14ee22444e8b2baf4abd01965, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  legacyDisplayName: 

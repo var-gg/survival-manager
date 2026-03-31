@@ -50,6 +50,14 @@ MonoBehaviour:
     m_Localized: Expedition End Rewards
     m_Metadata:
       m_Items: []
+  - m_Id: 171463775608832
+    m_Localized: Base reward table for battle resolution.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171463893049344
+    m_Localized: Reward table used when an expedition ends.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

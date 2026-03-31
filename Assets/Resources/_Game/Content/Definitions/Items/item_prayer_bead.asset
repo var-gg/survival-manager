@@ -17,19 +17,22 @@ MonoBehaviour:
   DescriptionKey: content.item.item_prayer_bead.desc
   SlotType: 2
   IdentityKind: 0
-  ItemFamilyTag: 
+  ItemFamilyTag: mystic_trinket
   RarityTier: 0
-  AffixPoolTag: 
-  CraftCategory: 
+  AffixPoolTag: pool_mystic_trinket
+  CraftCategory: mystic
   BudgetBand: personal_power_8
   GrantedSkills: []
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
   RuleModifierTags: []
-  AllowedClassTags: []
+  AllowedClassTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
   BaseModifiers:
   - StatId: heal_power
     Op: 0
-    Value: 2
+    Value: 1.4
   legacyDisplayName: 

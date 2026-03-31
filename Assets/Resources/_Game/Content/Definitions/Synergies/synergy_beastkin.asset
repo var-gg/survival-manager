@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: synergy_beastkin
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SynergyDefinition
+  Id: synergy_beastkin
+  NameKey: content.synergy.synergy_beastkin.name
+  DescriptionKey: content.synergy.synergy_beastkin.desc
+  CountedTagId: beastkin
+  Tiers:
+  - {fileID: 11400000, guid: ea06e9f2c6320724680fe9904015cf28, type: 2}
+  - {fileID: 11400000, guid: ecbfdfb53d4666a47b6798da49778357, type: 2}
+  - {fileID: 11400000, guid: 5477a287bca2f15499cb31cfb4449239, type: 2}
+  legacyDisplayName: 

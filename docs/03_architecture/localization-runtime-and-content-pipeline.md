@@ -34,8 +34,31 @@
 
 - definition asset은 raw prose 대신 `NameKey`, `DescriptionKey`, `LabelKey`, `RewardSummaryKey`를 가진다.
 - key naming은 lower-case dot 표기만 허용한다.
-- sample seed generator는 canonical asset과 string table entry를 동시에 만든다.
+- committed asset이 runtime truth이고, bootstrap/generator는 누락 복구만 담당한다.
 - validator는 duplicate id, duplicate key, missing locale entry, legacy prose 잔존을 함께 검사한다.
+
+## fallback phase와 구현 매핑
+
+### phase 정의
+
+- `PhaseA`
+  - runtime fallback 허용
+  - validator는 missing entry와 legacy prose를 warning으로 취급
+- `PhaseB`
+  - runtime fallback은 `editor/dev`에서만 허용
+  - validator는 shipped player-facing content의 missing entry와 legacy prose를 error로 취급
+- `PhaseC`
+  - runtime fallback 금지
+  - shipped player-facing content에 raw id나 legacy prose가 드러나면 안 된다
+
+### 현재 구현 매핑
+
+- phase truth: `SM.Content.Definitions.ContentLocalizationPolicy`
+- runtime gate: `SM.Unity.GameLocalizationController`
+- content text resolve: `SM.Unity.ContentTextResolver`
+- validator severity: `SM.Editor.Validation.ContentDefinitionValidator`
+
+현재 저장소 기본 phase는 `PhaseB`다.
 
 ## 세션 요약과 메시지 계약
 
@@ -61,3 +84,4 @@
 - 신규 텍스트는 즉시 localization 경유로 authoring한다.
 - 기존 하드코딩 문자열은 수정되는 파일부터 점진적으로 치환한다.
 - legacy prose 필드는 migration source로만 잠시 유지하고 validator로 퇴거를 강제한다.
+- shipped player-facing content는 `PhaseC` 진입 전에 fallback 없이 동작해야 한다.

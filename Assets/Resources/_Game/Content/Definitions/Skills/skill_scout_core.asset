@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: skill_scout_core
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
+  Id: skill_scout_core
+  NameKey: content.skill.skill_scout_core.name
+  DescriptionKey: content.skill.skill_scout_core.desc
+  Kind: 0
+  SlotKind: 0
+  DamageType: 0
+  Delivery: 2
+  TargetRule: 2
+  Power: 3.7
+  Range: 3.1
+  PowerFlat: 3.7
+  PhysCoeff: 1
+  MagCoeff: 0
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 1
+  ManaCost: 0
+  BaseCooldownSeconds: 1.8
+  CastWindupSeconds: 0.15
+  CompileTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  RuleModifierTags: []
+  SupportAllowedTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 29962574aef879948ae1bd7b26653f05, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
+  legacyDisplayName: 

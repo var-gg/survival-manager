@@ -1,0 +1,88 @@
+name: content-validation
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  content-validation:
+    runs-on: ubuntu-latest
+    container:
+      image: unityci/editor:ubuntu-6000.4.0f1-base-3.1.0
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Activate Unity license
+        uses: game-ci/unity-activate@v2
+
+      - name: Run content validation batch
+        run: >
+          /opt/unity/Editor/Unity
+          -batchmode
+          -nographics
+          -projectPath .
+          -quit
+          -logFile Logs/content-validation-ci.log
+          -executeMethod SM.Editor.Validation.ValidationBatchEntryPoint.RunContentValidation
+
+      - name: Run balance sweep smoke batch
+        run: >
+          /opt/unity/Editor/Unity
+          -batchmode
+          -nographics
+          -projectPath .
+          -quit
+          -logFile Logs/balance-sweep-ci.log
+          -executeMethod SM.Editor.Validation.ValidationBatchEntryPoint.RunBalanceSweepSmoke
+
+      - name: Upload validation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-validation-artifacts
+          path: |
+            Logs/content-validation/**
+            Logs/balance-sweep/**
+            Logs/content-validation-ci.log
+            Logs/balance-sweep-ci.log
+
+      - name: Return Unity license
+        if: always()
+        uses: game-ci/unity-return-license@v2
+
+  editmode-validation-tests:
+    runs-on: ubuntu-latest
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Run EditMode validation and compile tests (Unity 6000.4.0f1)
+        uses: game-ci/unity-test-runner@v4
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          unityVersion: 6000.4.0f1
+          testMode: editmode
+          projectPath: .
+          checkName: EditMode Validation Tests
+          artifactsPath: test-results/editmode-validation
+
+      - name: Upload EditMode validation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-editmode-validation-results
+          path: test-results/editmode-validation

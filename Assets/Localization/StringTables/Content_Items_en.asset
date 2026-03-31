@@ -19,51 +19,291 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 84237344768
-    m_Localized: Iron Sword
+    m_Localized: Warden Armament
     m_Metadata:
       m_Items: []
   - m_Id: 84296065024
-    m_Localized: Reliable frontline weapon.
+    m_Localized: Warden Armament description.
     m_Metadata:
       m_Items: []
   - m_Id: 85353029632
-    m_Localized: Bone Blade
+    m_Localized: Raider Armament
     m_Metadata:
       m_Items: []
   - m_Id: 85353029633
-    m_Localized: Aggressive melee blade.
+    m_Localized: Raider Armament description.
     m_Metadata:
       m_Items: []
   - m_Id: 86384828416
-    m_Localized: Leather Armor
+    m_Localized: Hunter Harness
     m_Metadata:
       m_Items: []
   - m_Id: 86384828417
-    m_Localized: Light defensive armor.
+    m_Localized: Hunter Harness description.
     m_Metadata:
       m_Items: []
   - m_Id: 87370489856
-    m_Localized: Bone Plate
+    m_Localized: Guardian Harness
     m_Metadata:
       m_Items: []
   - m_Id: 87370489857
-    m_Localized: Bulky endurance armor.
+    m_Localized: Guardian Harness description.
     m_Metadata:
       m_Items: []
   - m_Id: 88326791168
-    m_Localized: Lucky Charm
+    m_Localized: Scout Trinket
     m_Metadata:
       m_Items: []
   - m_Id: 88326791169
-    m_Localized: Tempo-focused accessory.
+    m_Localized: Scout Trinket description.
     m_Metadata:
       m_Items: []
   - m_Id: 89408921600
-    m_Localized: Prayer Bead
+    m_Localized: Priest Trinket
     m_Metadata:
       m_Items: []
   - m_Id: 89408921601
-    m_Localized: Support accessory for healing.
+    m_Localized: Priest Trinket description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167971547766784
+    m_Localized: Warden Harness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167971627458560
+    m_Localized: Warden Harness description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167972269187072
+    m_Localized: Warden Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167972269187073
+    m_Localized: Warden Trinket description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167972910915584
+    m_Localized: Guardian Armament
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167972910915585
+    m_Localized: Guardian Armament description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167974802546688
+    m_Localized: Guardian Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167974802546689
+    m_Localized: Guardian Trinket description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167975414915072
+    m_Localized: Bulwark Armament
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167975414915073
+    m_Localized: Bulwark Armament description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167976060837888
+    m_Localized: Bulwark Harness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167976060837889
+    m_Localized: Bulwark Harness description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167976719343616
+    m_Localized: Bulwark Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167976719343617
+    m_Localized: Bulwark Trinket description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167977319129088
+    m_Localized: Slayer Armament
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167977319129089
+    m_Localized: Slayer Armament description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167977914720256
+    m_Localized: Slayer Harness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167977914720257
+    m_Localized: Slayer Harness description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167978535477248
+    m_Localized: Slayer Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167978535477249
+    m_Localized: Slayer Trinket description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167980515188736
+    m_Localized: Raider Harness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167980515188737
+    m_Localized: Raider Harness description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167981249191936
+    m_Localized: Raider Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167981249191937
+    m_Localized: Raider Trinket description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167981979000832
+    m_Localized: Reaver Armament
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167981979000833
+    m_Localized: Reaver Armament description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167982553620480
+    m_Localized: Reaver Harness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167982553620481
+    m_Localized: Reaver Harness description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167983136628736
+    m_Localized: Reaver Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167983136628737
+    m_Localized: Reaver Trinket description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167983740608512
+    m_Localized: Hunter Armament
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167983740608513
+    m_Localized: Hunter Armament description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167985573519360
+    m_Localized: Hunter Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167985573519361
+    m_Localized: Hunter Trinket description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167986164916224
+    m_Localized: Scout Armament
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167986164916225
+    m_Localized: Scout Armament description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167986789867520
+    m_Localized: Scout Harness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167986789867521
+    m_Localized: Scout Harness description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167988681498624
+    m_Localized: Marksman Armament
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167988681498625
+    m_Localized: Marksman Armament description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167989277089792
+    m_Localized: Marksman Harness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167989277089793
+    m_Localized: Marksman Harness description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167989868486656
+    m_Localized: Marksman Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167989868486657
+    m_Localized: Marksman Trinket description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167990438912000
+    m_Localized: Priest Armament
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167990438912001
+    m_Localized: Priest Armament description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167991042891776
+    m_Localized: Priest Harness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167991042891777
+    m_Localized: Priest Harness description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167993127460864
+    m_Localized: Hexer Armament
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167993127460865
+    m_Localized: Hexer Armament description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167993760800768
+    m_Localized: Hexer Harness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167993760800769
+    m_Localized: Hexer Harness description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167994440278016
+    m_Localized: Hexer Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167994440278017
+    m_Localized: Hexer Trinket description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167995056840704
+    m_Localized: Shaman Armament
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167995056840705
+    m_Localized: Shaman Armament description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167995673403392
+    m_Localized: Shaman Harness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167995673403393
+    m_Localized: Shaman Harness description.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167996331909120
+    m_Localized: Shaman Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167996331909121
+    m_Localized: Shaman Trinket description.
     m_Metadata:
       m_Items: []
   references:

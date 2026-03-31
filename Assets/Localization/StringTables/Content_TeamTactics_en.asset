@@ -17,7 +17,27 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: f45cededd98b81746b9397796b9b7301, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 168034042896384
+    m_Localized: Hold Line
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168034663653376
+    m_Localized: Standard Advance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168035238273024
+    m_Localized: Protect Carry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168035833864192
+    m_Localized: Collapse Weak Side
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168036483981312
+    m_Localized: All In Backline
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

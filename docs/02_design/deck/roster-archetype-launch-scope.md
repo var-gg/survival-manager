@@ -6,6 +6,7 @@
 - 소스오브트루스: `docs/02_design/deck/roster-archetype-launch-scope.md`
 - 관련문서:
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
+  - `docs/02_design/systems/launch-floor-content-matrix.md`
   - `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
   - `docs/03_architecture/content-authoring-and-balance-data.md`
 
@@ -89,5 +90,6 @@
 ## authoring acceptance
 
 - paid launch floor를 주장하려면 `core` archetype 12개가 모두 존재해야 한다.
+- `docs/02_design/systems/launch-floor-content-matrix.md`에 적힌 12개 id와 race/class 조합이 그대로 닫혀 있어야 한다.
 - paid launch safe target을 주장하려면 `specialist` archetype 4개가 추가되어야 한다.
 - 각 archetype은 `ScopeKind`, `RoleFamilyTag`, `PrimaryWeaponFamilyTag`를 authored field로 가져야 한다.

@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: item_reaver_armor
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ItemBaseDefinition
+  Id: item_reaver_armor
+  NameKey: content.item.item_reaver_armor.name
+  DescriptionKey: content.item.item_reaver_armor.desc
+  SlotType: 1
+  IdentityKind: 0
+  ItemFamilyTag: duelist_armor
+  RarityTier: 0
+  AffixPoolTag: pool_duelist_armor
+  CraftCategory: duelist
+  BudgetBand: personal_power_9
+  GrantedSkills: []
+  CompileTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  RuleModifierTags: []
+  AllowedClassTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  AllowedArchetypeTags: []
+  UniqueRuleTags: []
+  BaseModifiers:
+  - StatId: armor
+    Op: 0
+    Value: 1.1
+  legacyDisplayName: 

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: skill_hexer_core
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
+  Id: skill_hexer_core
+  NameKey: content.skill.skill_hexer_core.name
+  DescriptionKey: content.skill.skill_hexer_core.desc
+  Kind: 0
+  SlotKind: 0
+  DamageType: 1
+  Delivery: 1
+  TargetRule: 1
+  Power: 4
+  Range: 2.9
+  PowerFlat: 4
+  PhysCoeff: 0
+  MagCoeff: 1.05
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 0
+  ManaCost: 4
+  BaseCooldownSeconds: 2.4
+  CastWindupSeconds: 0.23
+  CompileTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
+  RuleModifierTags: []
+  SupportAllowedTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 5b8638d14ee22444e8b2baf4abd01965, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  legacyDisplayName: 

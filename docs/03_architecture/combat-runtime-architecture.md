@@ -52,5 +52,6 @@
 
 - movement는 custom `CombatVector2` 기반이다.
 - same-team spacing은 약한 분리 보정만 사용한다.
-- 적 roster와 encounter는 아직 stub 비중이 높다.
+- 적 roster와 encounter는 아직 stub 비중이 높고, `BattleSetupBuilder` 경로는 migration-only다.
 - prototype의 live battle definition 일부는 content asset 대신 runtime hero record에서 조립된다.
+- follow-up TODO: encounter asset authoring을 닫으면 enemy build도 authored catalog 기준으로 옮긴다.

@@ -14,7 +14,67 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: Content_Tags
   m_TableCollectionNameGuidString: d693e0eba733cda4db37973c1bf598ca
-  m_Entries: []
+  m_Entries:
+  - m_Id: 167883559657472
+    m_Key: content.tag.vanguard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167884423684096
+    m_Key: content.tag.duelist.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167885132521472
+    m_Key: content.tag.ranger.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167885912662016
+    m_Key: content.tag.mystic.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167886734745600
+    m_Key: content.tag.shield.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167887623938048
+    m_Key: content.tag.blade.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167888546684928
+    m_Key: content.tag.bow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167889297465344
+    m_Key: content.tag.focus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167890132131840
+    m_Key: content.tag.frontline.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167890937438208
+    m_Key: content.tag.backline.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167891646275584
+    m_Key: content.tag.sustain.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167892355112960
+    m_Key: content.tag.burst.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167893063950336
+    m_Key: content.tag.tempo.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167893781176320
+    m_Key: content.tag.control.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167894498402304
+    m_Key: content.tag.support.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

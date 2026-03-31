@@ -8,8 +8,11 @@
   - `docs/03_architecture/content-authoring-model.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
+  - `docs/02_design/systems/launch-floor-content-matrix.md`
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/02_design/meta/item-passive-augment-budget.md`
+  - `docs/02_design/meta/passive-board-node-catalog.md`
+  - `docs/02_design/meta/synergy-family-catalog.md`
 
 ## 목적
 
@@ -82,6 +85,8 @@
 - compile 결과는 `core_active / utility_active / passive / support` 4개만 허용한다.
 - old save의 `active_core`는 compile 과정에서 normalize한다.
 - compile hash는 skill coeff, delivery, target rule, crit 허용 여부까지 포함해야 한다.
+- compile hash는 numeric modifier payload, rule modifier payload, team tactic, role instruction, normalized stat output도 포함해야 한다.
+- compile provenance는 최소 `archetype_base / item / affix / passive_numeric / augment_temporary / augment_permanent / team_tactic / role_instruction / skill_slot / team_numeric`를 남긴다.
 
 ## validator 책임
 
@@ -92,10 +97,20 @@
 - leftover legacy prose
 - invalid stat id
 - invalid class id / role family / enum taxonomy
+- invalid canonical id / scope kind / slot kind
 - passive board owner 누락
 - passive node kind 누락
+- exact synergy `2 / 3 / 4` tier 누락
 - unique item의 rule payload 누락
 - launch-scope count report
+- deterministic report output
+
+## report output
+
+- content validation report path: `Logs/content-validation/content-validation-report.json`
+- content validation summary path: `Logs/content-validation/content-validation-summary.md`
+- balance sweep report path: `Logs/balance-sweep/balance-sweep-report.json`
+- balance sweep summary path: `Logs/balance-sweep/balance-sweep-summary.csv`
 
 ## launch authoring acceptance
 

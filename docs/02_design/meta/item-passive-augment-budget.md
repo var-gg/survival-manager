@@ -22,6 +22,7 @@
 - affixes: `24`
 - passive boards: `4`
 - passive nodes: `72`
+- passive board shape: `12 small / 5 notable / 1 keystone`
 - temporary augments: `18`
 - permanent augments: `9`
 
@@ -31,6 +32,7 @@
 - affixes: `30~36`
 - passive boards: `4`
 - passive nodes: `96`
+- passive board shape: `14 small / 8 notable / 2 keystone`
 - temporary augments: `24`
 - permanent augments: `12`
 
@@ -44,7 +46,8 @@
 ## passive board 구조
 
 - class board 4개를 유지한다.
-- board당 기준 구조는 `small 14 / notable 8 / keystone 2`
+- launch floor board당 기준 구조는 `small 12 / notable 5 / keystone 1`
+- safe target board당 확장 구조는 `small 14 / notable 8 / keystone 2`
 - passive node는 숫자 증폭보다 role specialization과 rule change를 우선한다.
 
 ## augment 구조
@@ -78,3 +81,4 @@
 - `AffixDefinition`은 `Category`와 slot applicability를 가져야 한다.
 - `PassiveBoardDefinition`은 class canonical id를 owner로 가진다.
 - `PassiveNodeDefinition`은 `NodeKind`, prerequisite, mutual exclusion tag를 authoring할 수 있어야 한다.
+- explicit launch floor node roster는 `docs/02_design/meta/passive-board-node-catalog.md`가 소유한다.

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: augment_gold_barrage
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
+  Id: augment_gold_barrage
+  NameKey: content.augment.augment_gold_barrage.name
+  DescriptionKey: content.augment.augment_gold_barrage.desc
+  Rarity: 1
+  IsPermanent: 0
+  Category: 0
+  FamilyId: hunt_line
+  Tier: 2
+  OfferWeight: 1
+  SuppressIfPermanentEquipped: 0
+  Tags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  MutualExclusionTags: []
+  RequiresTags: []
+  RuleModifierTags: []
+  EligibleModes: 3
+  Modifiers:
+  - StatId: attack_speed
+    Op: 0
+    Value: 0.15
+  - StatId: attack_range
+    Op: 0
+    Value: 0.25
+  legacyDisplayName: 
+  legacyDescription: 

@@ -71,7 +71,7 @@ public sealed class ContentTextResolver
 
     private string Localize(string table, string key, string fallback, string finalFallback)
     {
-        return _localization.LocalizeOrFallback(
+        return _localization.LocalizePlayerFacingContent(
             table,
             key,
             string.IsNullOrWhiteSpace(fallback) ? finalFallback : fallback);

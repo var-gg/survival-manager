@@ -12,21 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: augment_platinum_surge
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Rarity: 0
+  Id: augment_platinum_surge
+  NameKey: content.augment.augment_platinum_surge.name
+  DescriptionKey: content.augment.augment_platinum_surge.desc
+  Rarity: 2
   IsPermanent: 0
   Category: 0
-  FamilyId: 
-  Tier: 1
+  FamilyId: tempo_drive
+  Tier: 3
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags: []
+  Tags:
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 1
-  Modifiers: []
+  EligibleModes: 3
+  Modifiers:
+  - StatId: attack_speed
+    Op: 0
+    Value: 0.24
+  - StatId: crit_chance
+    Op: 0
+    Value: 0.04
   legacyDisplayName: 
   legacyDescription: 

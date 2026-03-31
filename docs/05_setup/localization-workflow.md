@@ -21,12 +21,13 @@
 4. `Assets/Localization/Locales/ko.asset`, `Assets/Localization/Locales/en.asset`, pseudo locale asset이 있는지 확인한다.
 5. `Assets/Localization/StringTables/**`와 `Assets/Resources/_Game/Fonts/GameFontCatalog.asset`이 생성됐는지 확인한다.
 
-## sample content 동기화
+## committed content 확인과 bootstrap repair
 
-1. `SM/Seed/Generate Sample Content`를 실행한다.
-2. canonical content asset과 string table entry가 같이 갱신되는지 확인한다.
-3. `SM/Validation/Validate Content Definitions`를 실행한다.
-4. console에 missing key, duplicate key, legacy prose 오류가 없어야 한다.
+1. runtime truth는 committed asset `Assets/Resources/_Game/Content/Definitions/**`다.
+2. 누락 복구만 필요하면 `SM/Bootstrap/Ensure Sample Content`를 실행한다.
+3. committed floor authoring이 실제로 깨졌을 때만 `SM/Seed/Generate Sample Content`를 repair 용도로 사용한다.
+4. `SM/Validation/Validate Content Definitions`를 실행한다.
+5. console과 report에서 missing key, duplicate key, legacy prose error가 없어야 한다.
 
 ## 새 localization key 추가 절차
 
@@ -43,6 +44,12 @@
 3. `ko`와 `en`을 번갈아 선택한다.
 4. Town, Expedition, Battle, Reward 정적 라벨이 즉시 갱신되는지 본다.
 5. scene 이동 후에도 선택 locale이 유지되는지 본다.
+
+## fallback phase 확인
+
+1. 현재 phase는 `PhaseB`를 기본으로 본다.
+2. `editor/dev`에서는 fallback이 보일 수 있지만 shipped player-facing content validator는 missing entry를 error로 취급한다.
+3. 출시 직전에는 `PhaseC` 기준으로 fallback 없는 경로를 재검증한다.
 
 ## pseudo-localization 사용
 

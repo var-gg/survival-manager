@@ -19,14 +19,17 @@ MonoBehaviour:
   Class: {fileID: 11400000, guid: 9f586812c5ec3d94586eb6362c6288fb, type: 2}
   TraitPool: {fileID: 11400000, guid: 0898e17598679cf418b0ab7078dad1d8, type: 2}
   Skills:
-  - {fileID: 11400000, guid: 5ddb89669e0424f479445d2195999821, type: 2}
+  - {fileID: 11400000, guid: bbcc8c7a6e47d1d43bf7e0b8da813739, type: 2}
+  - {fileID: 11400000, guid: ec4f11bb00a058140aadccc582bab6e2, type: 2}
+  - {fileID: 11400000, guid: 512d2459675ba9f499798957a05a08d2, type: 2}
+  - {fileID: 11400000, guid: 79907c95ca267f14f8b4644831834361, type: 2}
   TacticPreset:
   - Priority: 0
     ConditionType: 4
     Threshold: 1.5
     ActionType: 1
     TargetSelector: 5
-    Skill: {fileID: 11400000, guid: 5ddb89669e0424f479445d2195999821, type: 2}
+    Skill: {fileID: 11400000, guid: bbcc8c7a6e47d1d43bf7e0b8da813739, type: 2}
   - Priority: 1
     ConditionType: 3
     Threshold: 0
@@ -41,41 +44,43 @@ MonoBehaviour:
     Skill: {fileID: 0}
   DefaultAnchor: 5
   PreferredTeamPosture: 3
-  RoleTag: auto
+  RoleTag: carry
   RoleFamilyTag: ranger
   PrimaryWeaponFamilyTag: bow
-  SupportModifierBiasTags: []
+  SupportModifierBiasTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   BaseMaxHealth: 17
-  BaseArmor: 2
-  BaseResist: 0
+  BaseArmor: 1.8
+  BaseResist: 0.2
   BaseBarrierPower: 0
-  BaseTenacity: 0
-  BasePhysPower: 5
+  BaseTenacity: 0.1
+  BasePhysPower: 6.7
   BaseMagPower: 0
-  BaseAttackSpeed: 6
-  BaseAttack: 5
-  BaseDefense: 2
-  BaseSpeed: 6
+  BaseAttackSpeed: 4.35
+  BaseAttack: 6.7
+  BaseDefense: 1.8
+  BaseSpeed: 4.35
   BaseHealPower: 0
-  BaseMoveSpeed: 1.85
-  BaseAttackRange: 3.2
+  BaseMoveSpeed: 1.95
+  BaseAttackRange: 3.15
   BaseManaMax: 0
   BaseManaGainOnAttack: 0
   BaseManaGainOnHit: 0
   BaseCooldownRecovery: 0
-  BaseCritChance: 0
-  BaseCritMultiplier: 0
+  BaseCritChance: 0.03
+  BaseCritMultiplier: 1.35
   BasePhysPen: 0
   BaseMagPen: 0
   BaseAggroRadius: 8
-  BasePreferredDistance: 0
+  BasePreferredDistance: 2.75
   BaseProtectRadius: 0
-  BaseAttackWindup: 0.18
-  BaseCastWindup: 0.22
-  BaseProjectileSpeed: 0
+  BaseAttackWindup: 0.17
+  BaseCastWindup: 0.2
+  BaseProjectileSpeed: 5.8
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
-  BaseAttackCooldown: 1
-  BaseLeashDistance: 4.6
+  BaseAttackCooldown: 0.92
+  BaseLeashDistance: 4.8
   BaseTargetSwitchDelay: 0.3
   legacyDisplayName: 

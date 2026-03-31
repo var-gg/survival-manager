@@ -255,7 +255,7 @@ public static class LocalizationFoundationBootstrap
         ["ui.battle.settings.world_hp"] = ("캐릭터 HP {0}", "Actor HP {0}", true),
         ["ui.battle.settings.overlay_hp"] = ("오버레이 HP {0}", "Overlay HP {0}", true),
         ["ui.battle.settings.team_summary"] = ("팀 요약 {0}", "Team Summary {0}", true),
-        ["system.bootstrap.missing_sample_content.editor"] = ("샘플 콘텐츠 canonical root가 비어 있습니다. SM/Seed/Generate Sample Content를 먼저 실행한 뒤 다시 Play 하세요.", "Sample content canonical root is empty. Run SM/Seed/Generate Sample Content before entering Play mode.", false),
+        ["system.bootstrap.missing_sample_content.editor"] = ("샘플 콘텐츠 canonical root가 비어 있습니다. 먼저 SM/Bootstrap/Ensure Sample Content를 실행하고, 복구가 안 되면 SM/Seed/Generate Sample Content를 repair 용도로 실행한 뒤 다시 Play 하세요.", "Sample content canonical root is empty. Run SM/Bootstrap/Ensure Sample Content first, and use SM/Seed/Generate Sample Content only as a repair path before entering Play mode.", false),
         ["system.bootstrap.missing_sample_content.player"] = ("필수 샘플 콘텐츠 canonical root가 비어 있어 시작할 수 없습니다.", "Required sample content canonical root is empty, so boot cannot continue.", false),
         ["system.runtime.missing_root"] = ("GameSessionRoot가 없습니다.", "GameSessionRoot is missing.", false),
         ["combat.log.damage"] = ("S{0} {1}이(가) {2}에게 {3:0} 피해", "S{0} {1} dealt {3:0} damage to {2}", true),

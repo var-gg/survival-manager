@@ -8,6 +8,7 @@
   - `docs/02_design/combat/synergy-system.md`
   - `docs/02_design/deck/roster-archetype-launch-scope.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
+  - `docs/02_design/meta/synergy-family-catalog.md`
 
 ## 목적
 
@@ -26,6 +27,7 @@ family 수는 늘리기보다, 각 family가 `2 / 3 / 4` breakpoint에서 무엇
 - `2-piece`: 방향 제시
 - `3-piece`: 조합 정체성
 - `4-piece`: 조합 헌신 보상
+- exact 수치 payload와 stacking rule은 `docs/02_design/meta/synergy-family-catalog.md`가 소유한다.
 
 ## 금지 규칙
 

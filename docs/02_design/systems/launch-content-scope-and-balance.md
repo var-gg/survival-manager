@@ -6,10 +6,12 @@
 - 소스오브트루스: `docs/02_design/systems/launch-content-scope-and-balance.md`
 - 관련문서:
   - `docs/01_product/vision.md`
+  - `docs/02_design/systems/launch-floor-content-matrix.md`
   - `docs/02_design/deck/roster-archetype-launch-scope.md`
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/02_design/meta/item-passive-augment-budget.md`
   - `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
+  - `docs/02_design/meta/synergy-family-catalog.md`
   - `docs/03_architecture/content-authoring-and-balance-data.md`
 
 ## 목적
@@ -42,23 +44,26 @@
 - canonical class id는 `vanguard / duelist / ranger / mystic`를 유지한다.
 - 문서상 역할 이름으로는 `Vanguard / Striker / Ranger / Mystic`를 쓴다.
 - penetration stat id는 `phys_pen / mag_pen`을 유지한다.
-- skill loadout compile 결과는 `2 active + 1 passive/trigger + 1 support modifier`를 기준으로 한다.
+- skill loadout compile 결과는 `core_active / utility_active / passive / support`를 기준으로 한다.
 - synergy는 `3 race + 4 class`의 총 7 family를 유지한다.
 - counter 설계는 hard counter가 아니라 soft counter를 목표로 한다.
 
 ## 출시 기준 한 줄 요약
 
 - paid launch safe target = `16 archetypes / 40~48 skills / 42~54 equippables / 96 passive nodes / 24 temporary augments / 12 permanent augments`
-- skill loadout = `2 active + 1 passive/trigger + 1 support modifier`
+- skill loadout = `core_active / utility_active / passive / support`
 - synergy family = `3 races + 4 classes`, each `2 / 3 / 4` breakpoints
 - baseline counter swing = 평균 `10~15%`
 
 ## 세부 문서 소유권
 
 - roster와 archetype taxonomy: `docs/02_design/deck/roster-archetype-launch-scope.md`
+- explicit launch floor roster: `docs/02_design/systems/launch-floor-content-matrix.md`
 - skill taxonomy와 수식: `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
 - item/passive/augment 볼륨과 예산: `docs/02_design/meta/item-passive-augment-budget.md`
+- passive node 카탈로그: `docs/02_design/meta/passive-board-node-catalog.md`
 - synergy breakpoint와 soft counter: `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
+- synergy exact payload: `docs/02_design/meta/synergy-family-catalog.md`
 - authoring schema와 validation/compile 경계: `docs/03_architecture/content-authoring-and-balance-data.md`
 
 ## 구현 우선순위
@@ -68,3 +73,9 @@
 3. `LoadoutCompiler`가 4-slot compile 계약과 새 skill metadata를 carry-through 하도록 유지한다.
 4. validator와 headless/editor smoke 기준으로 authoring drift를 막는다.
 5. 실제 16 archetype / 24 augment / 96 passive node authoring은 후속 패스에서 채운다.
+
+## passive board count split
+
+- paid launch floor board shape는 `12 small / 5 notable / 1 keystone`로 잠근다.
+- paid launch safe target board shape는 `14 small / 8 notable / 2 keystone`로 확장한다.
+- floor node 증설은 safe target 문서 갱신 전까지 허용하지 않는다.

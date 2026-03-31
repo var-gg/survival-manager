@@ -111,6 +111,126 @@ MonoBehaviour:
     m_Key: content.augment.augment_perm_legacy_grace.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 168025746563072
+    m_Key: content.augment.augment_silver_hunt.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168025826254848
+    m_Key: content.augment.augment_silver_hunt.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168026405068800
+    m_Key: content.augment.augment_silver_ward.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168026405068801
+    m_Key: content.augment.augment_silver_ward.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168026967105536
+    m_Key: content.augment.augment_silver_hex.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168026967105537
+    m_Key: content.augment.augment_silver_hex.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168027524947968
+    m_Key: content.augment.augment_gold_barrage.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168027524947969
+    m_Key: content.augment.augment_gold_barrage.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168028066013184
+    m_Key: content.augment.augment_gold_pact.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168028066013185
+    m_Key: content.augment.augment_gold_pact.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168028644827136
+    m_Key: content.augment.augment_gold_pack.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168028644827137
+    m_Key: content.augment.augment_gold_pack.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168029211058176
+    m_Key: content.augment.augment_platinum_reckoning.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168029211058177
+    m_Key: content.augment.augment_platinum_reckoning.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168029848592384
+    m_Key: content.augment.augment_platinum_hinterland.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168029852786688
+    m_Key: content.augment.augment_platinum_hinterland.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168030574206976
+    m_Key: content.augment.augment_platinum_catacomb.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168030574206977
+    m_Key: content.augment.augment_platinum_catacomb.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168036496564224
+    m_Key: content.augment.augment_perm_legacy_oath.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168036496564225
+    m_Key: content.augment.augment_perm_legacy_oath.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037142487040
+    m_Key: content.augment.augment_perm_legacy_scope.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037142487041
+    m_Key: content.augment.augment_perm_legacy_scope.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037763244032
+    m_Key: content.augment.augment_perm_legacy_chalice.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037763244033
+    m_Key: content.augment.augment_perm_legacy_chalice.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038367223808
+    m_Key: content.augment.augment_perm_legacy_fang.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038367223809
+    m_Key: content.augment.augment_perm_legacy_fang.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038941843456
+    m_Key: content.augment.augment_perm_legacy_bone.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038941843457
+    m_Key: content.augment.augment_perm_legacy_bone.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168039508074496
+    m_Key: content.augment.augment_perm_legacy_signal.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168039508074497
+    m_Key: content.augment.augment_perm_legacy_signal.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

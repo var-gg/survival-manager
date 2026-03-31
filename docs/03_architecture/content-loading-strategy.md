@@ -19,7 +19,9 @@
 
 - canonical root는 `Assets/Resources/_Game/Content/Definitions/**`로 고정한다.
 - runtime은 `Resources.LoadAll("_Game/Content/Definitions/Stats")`만 본다.
-- 기본 복구 메뉴는 `SM/Seed/Generate Sample Content`로 단순화한다.
+- committed asset을 runtime truth로 유지한다.
+- 기본 복구 메뉴는 `SM/Bootstrap/Ensure Sample Content`다.
+- `SM/Seed/Generate Sample Content`는 repair/bootstrap 전용이다.
 
 ## 이 전략을 택한 이유
 
@@ -36,8 +38,10 @@
 
 ## 관련 구현
 
-- `SampleSeedGenerator`: canonical root 생성/갱신
+- committed asset: runtime/content truth
+- `SampleSeedGenerator`: bootstrap repair helper
 - `SM/Seed/Migrate Legacy Sample Content`: legacy path 이동 시도
+- `SM/Bootstrap/Ensure Sample Content`: minimum bootstrap repair
 - `GameBootstrap`: canonical root missing 시 부팅 차단
 - `SceneIntegrityTests`: block24 repository integrity 확인
 

@@ -25,8 +25,9 @@
 
 ## editor contract
 
-- `SampleSeedGenerator`가 canonical root의 source of truth다.
-- `SM/Seed/Generate Sample Content`는 canonical root를 생성/갱신하는 기본 복구 메뉴다.
+- committed `ScriptableObject` asset이 canonical root의 source of truth다.
+- `SM/Bootstrap/Ensure Sample Content`는 minimum bootstrap content 누락만 복구한다.
+- `SM/Seed/Generate Sample Content`는 canonical root를 repair할 때만 쓰는 bootstrap tool이다.
 - `SM/Seed/Migrate Legacy Sample Content`는 legacy root가 있을 때만 `AssetDatabase.MoveAsset` 기반 이동을 시도한다.
 - legacy 이동이 없거나 실패하면 canonical root 재생성으로 fallback 한다.
 
@@ -40,7 +41,8 @@
 
 - `GameBootstrap`은 `Resources` 경로만 기준으로 본다.
 - boot 시 canonical root가 비어 있으면 플레이를 막고 정확한 recovery menu를 안내한다.
-- recovery action은 `SM/Seed/Generate Sample Content`다.
+- 1차 recovery action은 `SM/Bootstrap/Ensure Sample Content`다.
+- committed floor authoring이 깨진 경우에만 `SM/Seed/Generate Sample Content`를 repair로 사용한다.
 
 ## block24 임시 bridge
 

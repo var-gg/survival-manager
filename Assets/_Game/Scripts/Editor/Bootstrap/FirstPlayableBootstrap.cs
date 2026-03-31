@@ -23,8 +23,8 @@ public static class FirstPlayableBootstrap
             Debug.Log("[ObserverPlayable] Step 1/6: Ensure localization foundation");
             LocalizationFoundationBootstrap.EnsureFoundationAssets();
 
-            Debug.Log("[ObserverPlayable] Step 2/6: Ensure sample content");
-            SampleSeedGenerator.Generate();
+            Debug.Log("[ObserverPlayable] Step 2/6: Ensure minimum canonical content without rewriting committed authoring");
+            SampleSeedGenerator.EnsureCanonicalSampleContent();
 
             Debug.Log("[ObserverPlayable] Step 3/6: Validate content definitions");
             ContentDefinitionValidator.Validate();

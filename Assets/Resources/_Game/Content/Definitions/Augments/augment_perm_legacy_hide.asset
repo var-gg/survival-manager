@@ -12,21 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: augment_perm_legacy_hide
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Rarity: 0
-  IsPermanent: 0
+  Id: augment_perm_legacy_hide
+  NameKey: content.augment.augment_perm_legacy_hide.name
+  DescriptionKey: content.augment.augment_perm_legacy_hide.desc
+  Rarity: 3
+  IsPermanent: 1
   Category: 0
-  FamilyId: 
+  FamilyId: legacy_hide
   Tier: 1
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags: []
+  Tags:
+  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 1
-  Modifiers: []
+  EligibleModes: 3
+  Modifiers:
+  - StatId: armor
+    Op: 0
+    Value: 0.8
   legacyDisplayName: 
   legacyDescription: 

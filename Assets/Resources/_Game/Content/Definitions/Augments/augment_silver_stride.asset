@@ -12,21 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: augment_silver_stride
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: augment_silver_stride
+  NameKey: content.augment.augment_silver_stride.name
+  DescriptionKey: content.augment.augment_silver_stride.desc
   Rarity: 0
   IsPermanent: 0
   Category: 0
-  FamilyId: 
+  FamilyId: tempo_drive
   Tier: 1
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0
-  Tags: []
+  Tags:
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
-  EligibleModes: 1
-  Modifiers: []
+  EligibleModes: 3
+  Modifiers:
+  - StatId: attack_speed
+    Op: 0
+    Value: 0.14
   legacyDisplayName: 
   legacyDescription: 

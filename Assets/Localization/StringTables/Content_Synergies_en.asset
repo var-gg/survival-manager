@@ -17,7 +17,231 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: 1f9a38dc9f90a2a4999c153769c0e74f, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 168093337772032
+    m_Localized: Human Cohesion 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168093434241024
+    m_Localized: Human Cohesion tier 2 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168094067580928
+    m_Localized: Human Cohesion 3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168094067580929
+    m_Localized: Human Cohesion tier 3 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168094755446784
+    m_Localized: Human Cohesion 4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168094759641088
+    m_Localized: Human Cohesion tier 4 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168095460089856
+    m_Localized: Human Cohesion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168095460089857
+    m_Localized: Human Cohesion synergy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168096177315840
+    m_Localized: Beastkin Hunt 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168096177315841
+    m_Localized: Beastkin Hunt tier 2 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168096923901952
+    m_Localized: Beastkin Hunt 3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168096923901953
+    m_Localized: Beastkin Hunt tier 3 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168097574019072
+    m_Localized: Beastkin Hunt 4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168097574019073
+    m_Localized: Beastkin Hunt tier 4 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168098194776064
+    m_Localized: Beastkin Hunt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168098194776065
+    m_Localized: Beastkin Hunt synergy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168098828115968
+    m_Localized: Undead Attrition 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168098828115969
+    m_Localized: Undead Attrition tier 2 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168099406929920
+    m_Localized: Undead Attrition 3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168099411124224
+    m_Localized: Undead Attrition tier 3 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168100031881216
+    m_Localized: Undead Attrition 4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168100031881217
+    m_Localized: Undead Attrition tier 4 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168100656832512
+    m_Localized: Undead Attrition
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168100656832513
+    m_Localized: Undead Attrition synergy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168101319532544
+    m_Localized: Vanguard Front 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168101319532545
+    m_Localized: Vanguard Front tier 2 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168101994815488
+    m_Localized: Vanguard Front 3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168101994815489
+    m_Localized: Vanguard Front tier 3 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168102682681344
+    m_Localized: Vanguard Front 4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168102682681345
+    m_Localized: Vanguard Front tier 4 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168103357964288
+    m_Localized: Vanguard Front
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168103357964289
+    m_Localized: Vanguard Front synergy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168104003887104
+    m_Localized: Duelist Pressure 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168104003887105
+    m_Localized: Duelist Pressure tier 2 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168104674975744
+    m_Localized: Duelist Pressure 3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168104674975745
+    m_Localized: Duelist Pressure tier 3 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168105371230208
+    m_Localized: Duelist Pressure 4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168105371230209
+    m_Localized: Duelist Pressure tier 4 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168106050707456
+    m_Localized: Duelist Pressure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168106050707457
+    m_Localized: Duelist Pressure synergy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168106826653696
+    m_Localized: Ranger Lane 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168106826653697
+    m_Localized: Ranger Lane tier 2 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168107464187904
+    m_Localized: Ranger Lane 3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168107464187905
+    m_Localized: Ranger Lane tier 3 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168108043001856
+    m_Localized: Ranger Lane 4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168108043001857
+    m_Localized: Ranger Lane tier 4 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168108605038592
+    m_Localized: Ranger Lane
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168108605038593
+    m_Localized: Ranger Lane synergy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168109167075328
+    m_Localized: Mystic Resonance 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168109167075329
+    m_Localized: Mystic Resonance tier 2 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168109775249408
+    m_Localized: Mystic Resonance 3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168109775249409
+    m_Localized: Mystic Resonance tier 3 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168110303731712
+    m_Localized: Mystic Resonance 4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168110303731713
+    m_Localized: Mystic Resonance tier 4 effect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168110903517184
+    m_Localized: Mystic Resonance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168110903517185
+    m_Localized: Mystic Resonance synergy.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: synergy_human
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SynergyDefinition
+  Id: synergy_human
+  NameKey: content.synergy.synergy_human.name
+  DescriptionKey: content.synergy.synergy_human.desc
+  CountedTagId: human
+  Tiers:
+  - {fileID: 11400000, guid: 3ecc3a13f7f467f45b696a4c1c18ba28, type: 2}
+  - {fileID: 11400000, guid: 9dc88b711a90faf4c8435917fbdb9b0d, type: 2}
+  - {fileID: 11400000, guid: ecf79b811b8daf646a366e3d894d08ca, type: 2}
+  legacyDisplayName: 

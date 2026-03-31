@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SM.Content.Definitions;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
@@ -15,6 +16,8 @@ public sealed class GameLocalizationController : MonoBehaviour
     public bool IsInitialized { get; private set; }
 
     public Locale? CurrentLocale => LocalizationSettings.SelectedLocale;
+
+    public bool IsDevelopmentFallbackContext => Application.isEditor || Debug.isDebugBuild;
 
     public IReadOnlyList<Locale> AvailableLocales =>
         LocalizationSettings.AvailableLocales != null
@@ -59,10 +62,20 @@ public sealed class GameLocalizationController : MonoBehaviour
 
     public string LocalizeOrFallback(string tableCollection, string entryKey, string fallback, params object[] arguments)
     {
+        return LocalizeOrFallback(tableCollection, entryKey, fallback, true, arguments);
+    }
+
+    public string LocalizeOrFallback(string tableCollection, string entryKey, string fallback, bool allowFallback, params object[] arguments)
+    {
         var localized = Localize(tableCollection, entryKey, arguments);
         if (!string.IsNullOrWhiteSpace(localized))
         {
             return localized;
+        }
+
+        if (!allowFallback)
+        {
+            return BuildMissingPlayerFacingString(tableCollection, entryKey);
         }
 
         if (arguments.Length == 0)
@@ -78,6 +91,12 @@ public sealed class GameLocalizationController : MonoBehaviour
         {
             return fallback;
         }
+    }
+
+    public string LocalizePlayerFacingContent(string tableCollection, string entryKey, string fallback, params object[] arguments)
+    {
+        var allowFallback = ContentLocalizationPolicy.AllowsRuntimeFallback(IsDevelopmentFallbackContext);
+        return LocalizeOrFallback(tableCollection, entryKey, fallback, allowFallback, arguments);
     }
 
     public string GetLocaleButtonLabel(Locale locale)
@@ -121,5 +140,15 @@ public sealed class GameLocalizationController : MonoBehaviour
     {
         RefreshActiveScene();
         LocaleChanged?.Invoke(locale);
+    }
+
+    private static string BuildMissingPlayerFacingString(string tableCollection, string entryKey)
+    {
+        if (string.IsNullOrWhiteSpace(tableCollection) && string.IsNullOrWhiteSpace(entryKey))
+        {
+            return "[missing-localization]";
+        }
+
+        return $"[missing:{tableCollection}:{entryKey}]";
     }
 }

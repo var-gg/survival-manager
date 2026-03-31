@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 41795182592
-    m_Localized: Frontline tank and anchor.
+    m_Localized: Frontline tank role.
     m_Metadata:
       m_Items: []
   - m_Id: 42810204160
@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 42810204161
-    m_Localized: Melee pressure and finishing.
+    m_Localized: Melee pressure role.
     m_Metadata:
       m_Items: []
   - m_Id: 43879751680
@@ -39,7 +39,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 43879751681
-    m_Localized: Ranged carry and pick-off.
+    m_Localized: Backline carry role.
     m_Metadata:
       m_Items: []
   - m_Id: 44911550464
@@ -47,7 +47,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 44911550465
-    m_Localized: Healing and support control.
+    m_Localized: Sustain and control role.
     m_Metadata:
       m_Items: []
   references:

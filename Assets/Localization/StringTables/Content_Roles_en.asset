@@ -17,7 +17,31 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: 9988551a5e93ea746bfa493e04caf4d4, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 168036433649664
+    m_Localized: Anchor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037121515520
+    m_Localized: Bruiser
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037683552256
+    m_Localized: Carry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038258171904
+    m_Localized: Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038799237120
+    m_Localized: Frontline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168039315136512
+    m_Localized: Backline
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

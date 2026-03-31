@@ -12,7 +12,76 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: traitpool_slayer
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TraitPoolDefinition
-  Id: 
-  ArchetypeId: 
-  PositiveTraits: []
-  NegativeTraits: []
+  Id: traitpool_slayer
+  ArchetypeId: slayer
+  PositiveTraits:
+  - Id: slayer_positive_drive
+    NameKey: content.trait.slayer.slayer_positive_drive.name
+    DescriptionKey: content.trait.slayer.slayer_positive_drive.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 0
+      Value: 0.8
+    - StatId: mag_power
+      Op: 0
+      Value: 0
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: slayer_positive_guard
+    NameKey: content.trait.slayer.slayer_positive_guard.name
+    DescriptionKey: content.trait.slayer.slayer_positive_guard.desc
+    Modifiers:
+    - StatId: max_health
+      Op: 0
+      Value: 2
+    - StatId: armor
+      Op: 0
+      Value: 0.5
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: slayer_positive_pace
+    NameKey: content.trait.slayer.slayer_positive_pace.name
+    DescriptionKey: content.trait.slayer.slayer_positive_pace.desc
+    Modifiers:
+    - StatId: attack_speed
+      Op: 0
+      Value: 0.08
+    - StatId: move_speed
+      Op: 0
+      Value: 0.04
+    legacyDisplayName: 
+    legacyDescription: 
+  NegativeTraits:
+  - Id: slayer_negative_frail
+    NameKey: content.trait.slayer.slayer_negative_frail.name
+    DescriptionKey: content.trait.slayer.slayer_negative_frail.desc
+    Modifiers:
+    - StatId: max_health
+      Op: 0
+      Value: -3
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: slayer_negative_hesitant
+    NameKey: content.trait.slayer.slayer_negative_hesitant.name
+    DescriptionKey: content.trait.slayer.slayer_negative_hesitant.desc
+    Modifiers:
+    - StatId: attack_speed
+      Op: 0
+      Value: -0.08
+    - StatId: target_switch_delay
+      Op: 0
+      Value: 0.05
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: slayer_negative_dull
+    NameKey: content.trait.slayer.slayer_negative_dull.name
+    DescriptionKey: content.trait.slayer.slayer_negative_dull.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 0
+      Value: -0.6
+    - StatId: mag_power
+      Op: 0
+      Value: 0
+    legacyDisplayName: 
+    legacyDescription: 

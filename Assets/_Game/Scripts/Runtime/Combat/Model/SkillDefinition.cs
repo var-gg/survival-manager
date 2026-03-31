@@ -17,6 +17,12 @@ public static class CompiledSkillSlots
     public const string Passive = "passive";
     public const string Support = "support";
 
+    private static readonly IReadOnlyDictionary<string, string> LegacyAliases = new Dictionary<string, string>(System.StringComparer.Ordinal)
+    {
+        ["active_core"] = CoreActive,
+        ["active_utility"] = UtilityActive,
+    };
+
     public static readonly IReadOnlyList<string> Ordered = new[]
     {
         CoreActive,
@@ -32,6 +38,11 @@ public static class CompiledSkillSlots
             return false;
         }
 
+        if (LegacyAliases.ContainsKey(slotKind))
+        {
+            return true;
+        }
+
         for (var i = 0; i < Ordered.Count; i++)
         {
             if (string.Equals(Ordered[i], slotKind, System.StringComparison.Ordinal))
@@ -45,7 +56,22 @@ public static class CompiledSkillSlots
 
     public static string Normalize(string? slotKind, string fallback = CoreActive)
     {
-        return IsSupported(slotKind) ? slotKind! : fallback;
+        if (!string.IsNullOrWhiteSpace(slotKind) && LegacyAliases.TryGetValue(slotKind, out var canonical))
+        {
+            return canonical;
+        }
+
+        if (IsSupported(slotKind))
+        {
+            return slotKind!;
+        }
+
+        if (!string.IsNullOrWhiteSpace(fallback) && LegacyAliases.TryGetValue(fallback, out canonical))
+        {
+            return canonical;
+        }
+
+        return IsSupported(fallback) ? fallback : CoreActive;
     }
 }
 

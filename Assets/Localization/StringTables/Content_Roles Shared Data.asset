@@ -14,7 +14,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: Content_Roles
   m_TableCollectionNameGuidString: 9988551a5e93ea746bfa493e04caf4d4
-  m_Entries: []
+  m_Entries:
+  - m_Id: 168036433649664
+    m_Key: content.role.anchor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037121515520
+    m_Key: content.role.bruiser.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168037683552256
+    m_Key: content.role.carry.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038258171904
+    m_Key: content.role.support.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168038799237120
+    m_Key: content.role.frontline.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168039315136512
+    m_Key: content.role.backline.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

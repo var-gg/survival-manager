@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: team_tactic_collapse_weak_side
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TeamTacticDefinition
+  Id: team_tactic_collapse_weak_side
+  NameKey: content.team_tactic.team_tactic_collapse_weak_side.name
+  Posture: 3
+  CombatPace: 1.06
+  FocusModeBias: 0.22
+  FrontSpacingBias: -0.06
+  BackSpacingBias: -0.02
+  ProtectCarryBias: -0.05
+  TargetSwitchPenalty: -0.08
+  CompileTags:
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  legacyDisplayName: 

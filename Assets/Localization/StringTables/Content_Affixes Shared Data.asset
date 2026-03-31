@@ -79,6 +79,134 @@ MonoBehaviour:
     m_Key: content.affix.affix_hasty.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 168006549233664
+    m_Key: content.affix.affix_guarded.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168006624731136
+    m_Key: content.affix.affix_guarded.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168007312596992
+    m_Key: content.affix.affix_ironclad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168007312596993
+    m_Key: content.affix.affix_ironclad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168007950131200
+    m_Key: content.affix.affix_precise.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168007950131201
+    m_Key: content.affix.affix_precise.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168008541528064
+    m_Key: content.affix.affix_relentless.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168008541528065
+    m_Key: content.affix.affix_relentless.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168009099370496
+    m_Key: content.affix.affix_farshot.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168009099370497
+    m_Key: content.affix.affix_farshot.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168009686573056
+    m_Key: content.affix.affix_resolute.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168009686573057
+    m_Key: content.affix.affix_resolute.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168010332495872
+    m_Key: content.affix.affix_channeling.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168010332495873
+    m_Key: content.affix.affix_channeling.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168011028750336
+    m_Key: content.affix.affix_hallowed.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168011028750337
+    m_Key: content.affix.affix_hallowed.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168011729199104
+    m_Key: content.affix.affix_bracing.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168011729199105
+    m_Key: content.affix.affix_bracing.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168012396093440
+    m_Key: content.affix.affix_wraithbound.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168012396093441
+    m_Key: content.affix.affix_wraithbound.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168013004267520
+    m_Key: content.affix.affix_packborn.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168013004267521
+    m_Key: content.affix.affix_packborn.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168013734076416
+    m_Key: content.affix.affix_spined.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168013734076417
+    m_Key: content.affix.affix_spined.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168014329667584
+    m_Key: content.affix.affix_lucid.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168014329667585
+    m_Key: content.affix.affix_lucid.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168014858149888
+    m_Key: content.affix.affix_watchful.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168014858149889
+    m_Key: content.affix.affix_watchful.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168015415992320
+    m_Key: content.affix.affix_mender.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168015415992321
+    m_Key: content.affix.affix_mender.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168015952863232
+    m_Key: content.affix.affix_ravenous.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168015952863233
+    m_Key: content.affix.affix_ravenous.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: affix_watchful
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AffixDefinition
+  Id: affix_watchful
+  NameKey: content.affix.affix_watchful.name
+  DescriptionKey: content.affix.affix_watchful.desc
+  Category: 4
+  AllowedSlotTypes: 0200000001000000
+  CompileTags:
+  - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
+  RuleModifierTags: []
+  Modifiers:
+  - StatId: aggro_radius
+    Op: 0
+    Value: 0.5
+  - StatId: preferred_distance
+    Op: 0
+    Value: 0.2
+  legacyDisplayName: 
+  legacyDescription: 

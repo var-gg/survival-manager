@@ -63,6 +63,246 @@ MonoBehaviour:
     m_Key: content.item.item_prayer_bead.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 167971547766784
+    m_Key: content.item.item_warden_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167971627458560
+    m_Key: content.item.item_warden_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167972269187072
+    m_Key: content.item.item_warden_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167972269187073
+    m_Key: content.item.item_warden_trinket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167972910915584
+    m_Key: content.item.item_guardian_shield.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167972910915585
+    m_Key: content.item.item_guardian_shield.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167974802546688
+    m_Key: content.item.item_guardian_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167974802546689
+    m_Key: content.item.item_guardian_trinket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167975414915072
+    m_Key: content.item.item_bulwark_shield.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167975414915073
+    m_Key: content.item.item_bulwark_shield.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167976060837888
+    m_Key: content.item.item_bulwark_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167976060837889
+    m_Key: content.item.item_bulwark_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167976719343616
+    m_Key: content.item.item_bulwark_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167976719343617
+    m_Key: content.item.item_bulwark_trinket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167977319129088
+    m_Key: content.item.item_slayer_blade.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167977319129089
+    m_Key: content.item.item_slayer_blade.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167977914720256
+    m_Key: content.item.item_slayer_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167977914720257
+    m_Key: content.item.item_slayer_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167978535477248
+    m_Key: content.item.item_slayer_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167978535477249
+    m_Key: content.item.item_slayer_trinket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167980515188736
+    m_Key: content.item.item_raider_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167980515188737
+    m_Key: content.item.item_raider_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167981249191936
+    m_Key: content.item.item_raider_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167981249191937
+    m_Key: content.item.item_raider_trinket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167981979000832
+    m_Key: content.item.item_reaver_blade.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167981979000833
+    m_Key: content.item.item_reaver_blade.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167982553620480
+    m_Key: content.item.item_reaver_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167982553620481
+    m_Key: content.item.item_reaver_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167983136628736
+    m_Key: content.item.item_reaver_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167983136628737
+    m_Key: content.item.item_reaver_trinket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167983740608512
+    m_Key: content.item.item_hunter_bow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167983740608513
+    m_Key: content.item.item_hunter_bow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167985573519360
+    m_Key: content.item.item_hunter_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167985573519361
+    m_Key: content.item.item_hunter_trinket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167986164916224
+    m_Key: content.item.item_scout_bow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167986164916225
+    m_Key: content.item.item_scout_bow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167986789867520
+    m_Key: content.item.item_scout_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167986789867521
+    m_Key: content.item.item_scout_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167988681498624
+    m_Key: content.item.item_marksman_bow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167988681498625
+    m_Key: content.item.item_marksman_bow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167989277089792
+    m_Key: content.item.item_marksman_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167989277089793
+    m_Key: content.item.item_marksman_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167989868486656
+    m_Key: content.item.item_marksman_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167989868486657
+    m_Key: content.item.item_marksman_trinket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167990438912000
+    m_Key: content.item.item_priest_focus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167990438912001
+    m_Key: content.item.item_priest_focus.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167991042891776
+    m_Key: content.item.item_priest_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167991042891777
+    m_Key: content.item.item_priest_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167993127460864
+    m_Key: content.item.item_hexer_focus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167993127460865
+    m_Key: content.item.item_hexer_focus.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167993760800768
+    m_Key: content.item.item_hexer_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167993760800769
+    m_Key: content.item.item_hexer_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167994440278016
+    m_Key: content.item.item_hexer_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167994440278017
+    m_Key: content.item.item_hexer_trinket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167995056840704
+    m_Key: content.item.item_shaman_focus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167995056840705
+    m_Key: content.item.item_shaman_focus.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167995673403392
+    m_Key: content.item.item_shaman_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167995673403393
+    m_Key: content.item.item_shaman_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167996331909120
+    m_Key: content.item.item_shaman_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167996331909121
+    m_Key: content.item.item_shaman_trinket.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

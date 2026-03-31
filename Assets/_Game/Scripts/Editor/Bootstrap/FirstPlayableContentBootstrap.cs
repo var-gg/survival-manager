@@ -9,8 +9,8 @@ public static class FirstPlayableContentBootstrap
     [MenuItem("SM/Bootstrap/Ensure Sample Content")]
     public static void EnsureSampleContent()
     {
-        SampleSeedGenerator.Generate();
-        Debug.Log("SM sample content bootstrap regenerated the canonical sample content root.");
+        SampleSeedGenerator.EnsureCanonicalSampleContent();
+        Debug.Log("SM sample content bootstrap ensured the canonical sample content root without rewriting committed authoring.");
     }
 
     [MenuItem("SM/Bootstrap/Ensure Sample Content", true)]

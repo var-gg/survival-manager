@@ -24,7 +24,11 @@ public sealed class RuntimeCombatContentLookup
         "hunter",
         "scout",
         "priest",
-        "hexer"
+        "hexer",
+        "bulwark",
+        "reaver",
+        "marksman",
+        "shaman"
     };
 
     private static readonly string[] LegacyItemFallbackOrder =
@@ -485,25 +489,48 @@ public sealed class RuntimeCombatContentLookup
 
     private static T[] LoadDefinitions<T>(string resourcesPath, string editorFolderPath) where T : UnityEngine.Object
     {
-        var fromResources = Resources.LoadAll<T>(resourcesPath);
-        if (fromResources.Length > 0)
+        var results = new List<T>();
+#if UNITY_EDITOR
+        var seenPaths = new HashSet<string>(StringComparer.Ordinal);
+#endif
+
+        foreach (var asset in Resources.LoadAll<T>(resourcesPath))
         {
-            return fromResources;
+            if (asset == null)
+            {
+                continue;
+            }
+
+            results.Add(asset);
+#if UNITY_EDITOR
+            var assetPath = AssetDatabase.GetAssetPath(asset);
+            if (!string.IsNullOrWhiteSpace(assetPath))
+            {
+                seenPaths.Add(assetPath);
+            }
+#endif
         }
 
 #if UNITY_EDITOR
         if (!AssetDatabase.IsValidFolder(editorFolderPath))
         {
-            return Array.Empty<T>();
+            return results.ToArray();
         }
 
-        return AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { editorFolderPath })
-            .Select(AssetDatabase.GUIDToAssetPath)
-            .Select(AssetDatabase.LoadMainAssetAtPath)
-            .OfType<T>()
-            .ToArray();
+        foreach (var path in AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { editorFolderPath })
+                     .Select(AssetDatabase.GUIDToAssetPath)
+                     .Where(path => !string.IsNullOrWhiteSpace(path) && seenPaths.Add(path)))
+        {
+            var asset = AssetDatabase.LoadMainAssetAtPath(path) as T;
+            if (asset != null)
+            {
+                results.Add(asset);
+            }
+        }
+
+        return results.ToArray();
 #else
-        return Array.Empty<T>();
+        return results.ToArray();
 #endif
     }
 
@@ -801,8 +828,8 @@ public sealed class RuntimeCombatContentLookup
         }
 
         var hasMinimumMethod = generatorType.GetMethod("HasCanonicalMinimumContent", BindingFlags.Public | BindingFlags.Static);
-        var generateMethod = generatorType.GetMethod("Generate", BindingFlags.Public | BindingFlags.Static);
-        if (hasMinimumMethod == null || generateMethod == null)
+        var ensureMethod = generatorType.GetMethod("EnsureCanonicalSampleContent", BindingFlags.Public | BindingFlags.Static);
+        if (hasMinimumMethod == null || ensureMethod == null)
         {
             return;
         }
@@ -812,7 +839,7 @@ public sealed class RuntimeCombatContentLookup
             return;
         }
 
-        generateMethod.Invoke(null, null);
+        ensureMethod.Invoke(null, null);
     }
 #endif
 

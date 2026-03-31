@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 89647996928
-    m_Localized: Sturdy
+    m_Localized: Sturdy affix.
     m_Metadata:
       m_Items: []
   - m_Id: 90751098880
@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 90751098881
-    m_Localized: Fierce
+    m_Localized: Fierce affix.
     m_Metadata:
       m_Items: []
   - m_Id: 91837423616
@@ -39,7 +39,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 91837423617
-    m_Localized: Quick
+    m_Localized: Quick affix.
     m_Metadata:
       m_Items: []
   - m_Id: 92936331264
@@ -47,7 +47,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 92936331265
-    m_Localized: Vital
+    m_Localized: Vital affix.
     m_Metadata:
       m_Items: []
   - m_Id: 93938769920
@@ -55,7 +55,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 93938769921
-    m_Localized: Blessed
+    m_Localized: Blessed affix.
     m_Metadata:
       m_Items: []
   - m_Id: 94983151616
@@ -63,7 +63,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 94987345920
-    m_Localized: Heavy
+    m_Localized: Heavy affix.
     m_Metadata:
       m_Items: []
   - m_Id: 96430186496
@@ -71,7 +71,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 96430186497
-    m_Localized: Sharp
+    m_Localized: Sharp affix.
     m_Metadata:
       m_Items: []
   - m_Id: 97411653632
@@ -79,7 +79,135 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 97411653633
-    m_Localized: Hasty
+    m_Localized: Hasty affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168006549233664
+    m_Localized: Guarded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168006624731136
+    m_Localized: Guarded affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168007312596992
+    m_Localized: Ironclad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168007312596993
+    m_Localized: Ironclad affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168007950131200
+    m_Localized: Precise
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168007950131201
+    m_Localized: Precise affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168008541528064
+    m_Localized: Relentless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168008541528065
+    m_Localized: Relentless affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168009099370496
+    m_Localized: Farshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168009099370497
+    m_Localized: Farshot affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168009686573056
+    m_Localized: Resolute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168009686573057
+    m_Localized: Resolute affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168010332495872
+    m_Localized: Channeling
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168010332495873
+    m_Localized: Channeling affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168011028750336
+    m_Localized: Hallowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168011028750337
+    m_Localized: Hallowed affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168011729199104
+    m_Localized: Bracing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168011729199105
+    m_Localized: Bracing affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168012396093440
+    m_Localized: Wraithbound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168012396093441
+    m_Localized: Wraithbound affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168013004267520
+    m_Localized: Packborn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168013004267521
+    m_Localized: Packborn affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168013734076416
+    m_Localized: Spined
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168013734076417
+    m_Localized: Spined affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168014329667584
+    m_Localized: Lucid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168014329667585
+    m_Localized: Lucid affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168014858149888
+    m_Localized: Watchful
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168014858149889
+    m_Localized: Watchful affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168015415992320
+    m_Localized: Mender
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168015415992321
+    m_Localized: Mender affix.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168015952863232
+    m_Localized: Ravenous
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168015952863233
+    m_Localized: Ravenous affix.
     m_Metadata:
       m_Items: []
   references:

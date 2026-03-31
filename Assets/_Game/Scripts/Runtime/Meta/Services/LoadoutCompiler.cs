@@ -23,6 +23,12 @@ public sealed class LoadoutCompiler
         public List<CompileProvenanceEntry> Provenance { get; } = new();
     }
 
+    private sealed record ResolvedSkillSelection(
+        BattleSkillSpec Skill,
+        string SourceKind,
+        string SourceId,
+        string RawSlotKind);
+
     public BattleLoadoutSnapshot Compile(
         IReadOnlyList<HeroRecord> heroes,
         IReadOnlyDictionary<string, HeroLoadoutState> heroLoadouts,
@@ -39,6 +45,12 @@ public sealed class LoadoutCompiler
         var compiled = new List<BattleUnitLoadout>();
         var compileProvenance = new List<CompileProvenanceEntry>();
         var teamTactic = ResolveTeamTactic(blueprint, content);
+        compileProvenance.Add(new CompileProvenanceEntry(
+            "team",
+            ModifierSource.Other,
+            teamTactic.Id,
+            "team_tactic",
+            BuildTeamTacticDetails(teamTactic)));
 
         foreach (var assignment in blueprint.DeploymentAssignments.OrderBy(pair => pair.Key))
         {
@@ -61,6 +73,12 @@ public sealed class LoadoutCompiler
             artifacts.CompileTags.Add($"class:{hero.ClassId}");
             artifacts.CompileTags.Add(hero.RaceId);
             artifacts.CompileTags.Add(hero.ClassId);
+            artifacts.Provenance.Add(new CompileProvenanceEntry(
+                hero.Id,
+                ModifierSource.Other,
+                archetype.Id,
+                "archetype_base",
+                BuildBaseStatDetails(archetype.BaseStats)));
 
             AddNumericPackage(content.TraitPackages, hero.PositiveTraitId, artifacts, hero.Id, "trait");
             AddNumericPackage(content.TraitPackages, hero.NegativeTraitId, artifacts, hero.Id, "trait");
@@ -85,15 +103,30 @@ public sealed class LoadoutCompiler
                 }
             }
 
-            foreach (var augmentId in overlay.TemporaryAugmentIds.Concat(permanentAugmentLoadout.EquippedAugmentIds).Distinct(StringComparer.Ordinal))
+            foreach (var augmentId in overlay.TemporaryAugmentIds.Distinct(StringComparer.Ordinal))
             {
-                AddNumericPackage(content.AugmentPackages, augmentId, artifacts, hero.Id, "augment");
+                AddNumericPackage(content.AugmentPackages, augmentId, artifacts, hero.Id, "augment_temporary");
                 if (!content.AugmentCatalog.TryGetValue(augmentId, out var augment))
                 {
                     continue;
                 }
 
-                AddRulePackage(augment.RulePackage, artifacts, hero.Id, "augment_rule");
+                AddRulePackage(augment.RulePackage, artifacts, hero.Id, "augment_temporary_rule");
+                foreach (var tag in augment.Tags)
+                {
+                    artifacts.CompileTags.Add(tag);
+                }
+            }
+
+            foreach (var augmentId in permanentAugmentLoadout.EquippedAugmentIds.Distinct(StringComparer.Ordinal))
+            {
+                AddNumericPackage(content.AugmentPackages, augmentId, artifacts, hero.Id, "augment_permanent");
+                if (!content.AugmentCatalog.TryGetValue(augmentId, out var augment))
+                {
+                    continue;
+                }
+
+                AddRulePackage(augment.RulePackage, artifacts, hero.Id, "augment_permanent_rule");
                 foreach (var tag in augment.Tags)
                 {
                     artifacts.CompileTags.Add(tag);
@@ -127,13 +160,27 @@ public sealed class LoadoutCompiler
                 }
             }
 
-            var skills = ResolveSkills(archetype, loadout, itemInstances, skillInstances, content);
-            foreach (var skill in skills)
+            var resolvedSkills = ResolveSkills(archetype, loadout, itemInstances, skillInstances, content);
+            foreach (var selection in resolvedSkills)
             {
+                var skill = selection.Skill;
                 foreach (var tag in skill.CompileTags ?? Array.Empty<string>())
                 {
                     artifacts.CompileTags.Add(tag);
                 }
+
+                artifacts.Provenance.Add(new CompileProvenanceEntry(
+                    hero.Id,
+                    ModifierSource.Skill,
+                    skill.Id,
+                    "skill_slot",
+                    new[]
+                    {
+                        $"slot:{skill.SlotKind}",
+                        $"source:{selection.SourceKind}",
+                        $"sourceId:{selection.SourceId}",
+                        $"rawSlot:{selection.RawSlotKind}",
+                    }));
 
                 if (skill.RuleModifierTags is { Count: > 0 })
                 {
@@ -147,6 +194,12 @@ public sealed class LoadoutCompiler
 
             var roleInstruction = ResolveRoleInstruction(assignment.Key, hero, blueprint, content);
             artifacts.CompileTags.Add(roleInstruction.RoleTag);
+            artifacts.Provenance.Add(new CompileProvenanceEntry(
+                hero.Id,
+                ModifierSource.Other,
+                roleInstruction.RoleTag,
+                "role_instruction",
+                BuildRoleInstructionDetails(roleInstruction)));
 
             compiled.Add(new BattleUnitLoadout(
                 hero.Id,
@@ -156,7 +209,7 @@ public sealed class LoadoutCompiler
                 assignment.Key,
                 new Dictionary<StatKey, float>(archetype.BaseStats),
                 new[] { new UnitRuleChain($"rules:{hero.Id}", archetype.Tactics.ToList()) },
-                skills,
+                resolvedSkills.Select(selection => selection.Skill).ToList(),
                 teamTactic,
                 roleInstruction,
                 "opening:standard",
@@ -181,7 +234,12 @@ public sealed class LoadoutCompiler
         var teamPackages = SynergyLoadoutService.BuildTeamPackages(compiled, content);
         foreach (var package in teamPackages)
         {
-            compileProvenance.Add(new CompileProvenanceEntry("team", package.Source, package.SourceId, "team_numeric", Array.Empty<string>()));
+            compileProvenance.Add(new CompileProvenanceEntry(
+                "team",
+                package.Source,
+                package.SourceId,
+                "team_numeric",
+                BuildModifierDetails(package.Modifiers)));
         }
 
         var finalized = compiled
@@ -225,7 +283,7 @@ public sealed class LoadoutCompiler
         }
 
         artifacts.NumericPackages.Add(package);
-        artifacts.Provenance.Add(new CompileProvenanceEntry(subjectId, package.Source, package.SourceId, artifactKind, Array.Empty<string>()));
+        artifacts.Provenance.Add(new CompileProvenanceEntry(subjectId, package.Source, package.SourceId, artifactKind, BuildModifierDetails(package.Modifiers)));
     }
 
     private static void AddRulePackage(
@@ -248,14 +306,14 @@ public sealed class LoadoutCompiler
             package.Modifiers.Select(modifier => modifier.Value).ToList()));
     }
 
-    private static IReadOnlyList<BattleSkillSpec> ResolveSkills(
+    private static IReadOnlyList<ResolvedSkillSelection> ResolveSkills(
         CombatArchetypeTemplate archetype,
         HeroLoadoutState? loadout,
         IReadOnlyDictionary<string, ItemInstanceState> itemInstances,
         IReadOnlyDictionary<string, SkillInstanceState> skillInstances,
         CombatContentSnapshot content)
     {
-        var equipped = new List<BattleSkillSpec>();
+        var equipped = new List<ResolvedSkillSelection>();
         var hasEquippedLoadout = false;
         if (loadout != null)
         {
@@ -271,11 +329,15 @@ public sealed class LoadoutCompiler
                     continue;
                 }
 
-                equipped.Add(skill with
-                {
-                    SlotKind = CompiledSkillSlots.Normalize(instance.SlotKind, skill.SlotKind),
-                    CompileTags = instance.CompileTags
-                });
+                equipped.Add(new ResolvedSkillSelection(
+                    skill with
+                    {
+                        SlotKind = CompiledSkillSlots.Normalize(instance.SlotKind, skill.SlotKind),
+                        CompileTags = instance.CompileTags
+                    },
+                    "loadout_skill",
+                    instance.SkillInstanceId,
+                    instance.SlotKind));
                 hasEquippedLoadout = true;
             }
 
@@ -291,21 +353,53 @@ public sealed class LoadoutCompiler
                     continue;
                 }
 
-                equipped.AddRange(grantedSkills);
+                equipped.AddRange(grantedSkills.Select(skill => new ResolvedSkillSelection(
+                    skill with { SlotKind = CompiledSkillSlots.Normalize(skill.SlotKind) },
+                    "item_granted_skill",
+                    itemInstance.ItemBaseId,
+                    skill.SlotKind)));
             }
         }
 
         if (!hasEquippedLoadout)
         {
-            equipped.InsertRange(0, archetype.Skills);
+            equipped.InsertRange(0, archetype.Skills.Select(skill => new ResolvedSkillSelection(
+                skill with { SlotKind = CompiledSkillSlots.Normalize(skill.SlotKind) },
+                "archetype_skill",
+                archetype.Id,
+                skill.SlotKind)));
         }
 
-        return equipped
-            .Select(skill => skill with { SlotKind = CompiledSkillSlots.Normalize(skill.SlotKind) })
-            .GroupBy(skill => skill.SlotKind, StringComparer.Ordinal)
-            .Select(group => group.First())
-            .OrderBy(GetCompiledSkillSlotOrder)
+        var resolved = equipped
+            .Select(selection => selection with { Skill = selection.Skill with { SlotKind = CompiledSkillSlots.Normalize(selection.Skill.SlotKind) } })
+            .GroupBy(selection => selection.Skill.SlotKind, StringComparer.Ordinal)
+            .Select(group => group
+                .OrderBy(GetSkillSourcePriority)
+                .ThenBy(selection => selection.Skill.Id, StringComparer.Ordinal)
+                .ThenBy(selection => selection.SourceId, StringComparer.Ordinal)
+                .First())
+            .OrderBy(selection => GetCompiledSkillSlotOrder(selection.Skill))
             .ToList();
+
+        var missingSlots = CompiledSkillSlots.Ordered
+            .Where(requiredSlot => resolved.All(selection => !string.Equals(selection.Skill.SlotKind, requiredSlot, StringComparison.Ordinal)))
+            .ToList();
+        if (missingSlots.Count > 0)
+        {
+            throw new InvalidOperationException($"Compiled skill contract requires all four canonical slots. Missing: {string.Join(", ", missingSlots)} for archetype '{archetype.Id}'.");
+        }
+
+        return resolved;
+    }
+
+    private static int GetSkillSourcePriority(ResolvedSkillSelection selection)
+    {
+        return selection.SourceKind switch
+        {
+            "loadout_skill" => 0,
+            "item_granted_skill" => 1,
+            _ => 2,
+        };
     }
 
     private static int GetCompiledSkillSlotOrder(BattleSkillSpec skill)
@@ -329,6 +423,19 @@ public sealed class LoadoutCompiler
             return template.Profile;
         }
 
+        var fallbackId = blueprint.TeamPosture switch
+        {
+            TeamPostureType.HoldLine => "team_tactic_hold_line",
+            TeamPostureType.ProtectCarry => "team_tactic_protect_carry",
+            TeamPostureType.CollapseWeakSide => "team_tactic_collapse_weak_side",
+            TeamPostureType.AllInBackline => "team_tactic_all_in_backline",
+            _ => "team_tactic_standard_advance",
+        };
+        if (content.TeamTactics.TryGetValue(fallbackId, out var fallbackTemplate))
+        {
+            return fallbackTemplate.Profile;
+        }
+
         return new TeamTacticProfile(
             $"posture:{blueprint.TeamPosture}",
             blueprint.TeamPosture.ToString(),
@@ -344,7 +451,7 @@ public sealed class LoadoutCompiler
         if (blueprint.HeroRoleIds.TryGetValue(hero.Id, out var roleId)
             && content.RoleInstructions.TryGetValue(roleId, out var role))
         {
-            return role.Instruction;
+            return role.Instruction with { Anchor = anchor };
         }
 
         var fallbackRoleTag = hero.ClassId switch
@@ -365,17 +472,34 @@ public sealed class LoadoutCompiler
         RunOverlayState overlay)
     {
         var sb = new StringBuilder();
+        var resolvedTeamTactic = units.FirstOrDefault()?.TeamTactic;
         sb.Append(blueprint.BlueprintId).Append('|')
             .Append(blueprint.TeamPosture).Append('|')
             .Append(blueprint.TeamTacticId).Append('|')
             .Append(overlay.CurrentNodeIndex).Append('|')
             .Append(overlay.CompileVersion).Append('|');
 
+        if (resolvedTeamTactic != null)
+        {
+            sb.Append("teamTactic:")
+                .Append(resolvedTeamTactic.Id).Append(':')
+                .Append(resolvedTeamTactic.Posture).Append(':')
+                .Append(resolvedTeamTactic.CombatPace.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(resolvedTeamTactic.FocusModeBias.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(resolvedTeamTactic.FrontSpacingBias.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(resolvedTeamTactic.BackSpacingBias.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(resolvedTeamTactic.ProtectCarryBias.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(resolvedTeamTactic.TargetSwitchPenalty.ToString("0.###", CultureInfo.InvariantCulture)).Append('|');
+        }
+
         foreach (var unit in units.OrderBy(unit => unit.Id, StringComparer.Ordinal))
         {
             sb.Append(unit.Id).Append(':')
                 .Append(unit.PreferredAnchor).Append(':')
                 .Append(unit.RoleTag).Append(':')
+                .Append(unit.RoleInstruction?.ProtectCarryBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.RoleInstruction?.BacklinePressureBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(unit.RoleInstruction?.RetreatBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
                 .Append(unit.PreferredDistance.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                 .Append(unit.ProtectRadius.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                 .Append(unit.EffectiveMana.Max.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
@@ -417,7 +541,7 @@ public sealed class LoadoutCompiler
 
             foreach (var package in unit.NumericPackages.OrderBy(package => package.SourceId, StringComparer.Ordinal))
             {
-                sb.Append("num:").Append(package.Source).Append(':').Append(package.SourceId).Append('|');
+                AppendModifierPackage(sb, "num", package.Source, package.SourceId, package.Modifiers);
             }
 
             foreach (var package in (unit.RulePackages ?? Array.Empty<CombatRuleModifierPackage>()).OrderBy(package => package.SourceId, StringComparer.Ordinal))
@@ -430,7 +554,7 @@ public sealed class LoadoutCompiler
 
         foreach (var package in teamPackages.OrderBy(package => package.SourceId, StringComparer.Ordinal))
         {
-            sb.Append(package.SourceId).Append(':').Append(package.Source).Append('|');
+            AppendModifierPackage(sb, "team", package.Source, package.SourceId, package.Modifiers);
         }
 
         using var sha = SHA256.Create();
@@ -442,5 +566,66 @@ public sealed class LoadoutCompiler
         }
 
         return hash.ToString();
+    }
+
+    private static IReadOnlyList<string> BuildBaseStatDetails(IReadOnlyDictionary<StatKey, float> baseStats)
+    {
+        return baseStats
+            .OrderBy(pair => pair.Key.Value, StringComparer.Ordinal)
+            .Select(pair => $"{pair.Key.Value}:{pair.Value.ToString("0.###", CultureInfo.InvariantCulture)}")
+            .ToList();
+    }
+
+    private static IReadOnlyList<string> BuildTeamTacticDetails(TeamTacticProfile profile)
+    {
+        return new[]
+        {
+            $"posture:{profile.Posture}",
+            $"combatPace:{profile.CombatPace.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"focusModeBias:{profile.FocusModeBias.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"frontSpacingBias:{profile.FrontSpacingBias.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"backSpacingBias:{profile.BackSpacingBias.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"protectCarryBias:{profile.ProtectCarryBias.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"targetSwitchPenalty:{profile.TargetSwitchPenalty.ToString("0.###", CultureInfo.InvariantCulture)}",
+        };
+    }
+
+    private static IReadOnlyList<string> BuildRoleInstructionDetails(SlotRoleInstruction instruction)
+    {
+        return new[]
+        {
+            $"anchor:{instruction.Anchor}",
+            $"roleTag:{instruction.RoleTag}",
+            $"protectCarryBias:{instruction.ProtectCarryBias.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"backlinePressureBias:{instruction.BacklinePressureBias.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"retreatBias:{instruction.RetreatBias.ToString("0.###", CultureInfo.InvariantCulture)}",
+        };
+    }
+
+    private static IReadOnlyList<string> BuildModifierDetails(IReadOnlyList<StatModifier> modifiers)
+    {
+        return modifiers
+            .OrderBy(modifier => modifier.Stat.Value, StringComparer.Ordinal)
+            .ThenBy(modifier => modifier.Op)
+            .ThenBy(modifier => modifier.Source)
+            .ThenBy(modifier => modifier.SourceId, StringComparer.Ordinal)
+            .Select(modifier => $"{modifier.Stat.Value}:{modifier.Op}:{modifier.Value.ToString("0.###", CultureInfo.InvariantCulture)}:{modifier.Source}:{modifier.SourceId}")
+            .ToList();
+    }
+
+    private static void AppendModifierPackage(
+        StringBuilder builder,
+        string prefix,
+        ModifierSource source,
+        string sourceId,
+        IReadOnlyList<StatModifier> modifiers)
+    {
+        builder.Append(prefix).Append(':').Append(source).Append(':').Append(sourceId).Append(':');
+        foreach (var detail in BuildModifierDetails(modifiers))
+        {
+            builder.Append(detail).Append(',');
+        }
+
+        builder.Append('|');
     }
 }

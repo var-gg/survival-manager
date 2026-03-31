@@ -19,20 +19,23 @@ MonoBehaviour:
   Class: {fileID: 11400000, guid: 303ce1202540bc442896129adc2f364a, type: 2}
   TraitPool: {fileID: 11400000, guid: df68fb0f32f52ae47b827478fd9829bc, type: 2}
   Skills:
-  - {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
+  - {fileID: 11400000, guid: 87229b6e5ba4a5f4cbaca37ee22c3659, type: 2}
+  - {fileID: 11400000, guid: d33f586ea1fa04847808cfc697d92505, type: 2}
+  - {fileID: 11400000, guid: a487e70efae119b40a0529e4b95ebb05, type: 2}
+  - {fileID: 11400000, guid: 0305e0c3579d4f447b14848e5cb53ece, type: 2}
   TacticPreset:
   - Priority: 0
     ConditionType: 1
     Threshold: 0.6
     ActionType: 1
     TargetSelector: 1
-    Skill: {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
+    Skill: {fileID: 11400000, guid: d33f586ea1fa04847808cfc697d92505, type: 2}
   - Priority: 1
     ConditionType: 4
     Threshold: 1.5
-    ActionType: 0
+    ActionType: 1
     TargetSelector: 5
-    Skill: {fileID: 0}
+    Skill: {fileID: 11400000, guid: 87229b6e5ba4a5f4cbaca37ee22c3659, type: 2}
   - Priority: 2
     ConditionType: 5
     Threshold: 0
@@ -41,41 +44,43 @@ MonoBehaviour:
     Skill: {fileID: 0}
   DefaultAnchor: 4
   PreferredTeamPosture: 4
-  RoleTag: auto
+  RoleTag: support
   RoleFamilyTag: mystic
   PrimaryWeaponFamilyTag: focus
-  SupportModifierBiasTags: []
+  SupportModifierBiasTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
   BaseMaxHealth: 17
-  BaseArmor: 2
-  BaseResist: 0
+  BaseArmor: 2.1
+  BaseResist: 1.4
   BaseBarrierPower: 0
-  BaseTenacity: 0
-  BasePhysPower: 4
-  BaseMagPower: 0
-  BaseAttackSpeed: 4
-  BaseAttack: 4
-  BaseDefense: 2
-  BaseSpeed: 4
+  BaseTenacity: 0.1
+  BasePhysPower: 2.8
+  BaseMagPower: 4
+  BaseAttackSpeed: 3.2
+  BaseAttack: 2.8
+  BaseDefense: 2.1
+  BaseSpeed: 3.2
   BaseHealPower: 4
-  BaseMoveSpeed: 1.7
-  BaseAttackRange: 2.8
-  BaseManaMax: 0
-  BaseManaGainOnAttack: 0
-  BaseManaGainOnHit: 0
-  BaseCooldownRecovery: 0
-  BaseCritChance: 0
-  BaseCritMultiplier: 0
+  BaseMoveSpeed: 1.75
+  BaseAttackRange: 2.9
+  BaseManaMax: 20
+  BaseManaGainOnAttack: 2
+  BaseManaGainOnHit: 2
+  BaseCooldownRecovery: 0.04
+  BaseCritChance: 0.01
+  BaseCritMultiplier: 1.2
   BasePhysPen: 0
-  BaseMagPen: 0
+  BaseMagPen: 0.5
   BaseAggroRadius: 7.2
-  BasePreferredDistance: 0
-  BaseProtectRadius: 0
+  BasePreferredDistance: 2.5
+  BaseProtectRadius: 0.4
   BaseAttackWindup: 0.22
   BaseCastWindup: 0.22
-  BaseProjectileSpeed: 0
+  BaseProjectileSpeed: 5.8
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
   BaseAttackCooldown: 1
   BaseLeashDistance: 4.8
-  BaseTargetSwitchDelay: 0.4
+  BaseTargetSwitchDelay: 0.36
   legacyDisplayName: 

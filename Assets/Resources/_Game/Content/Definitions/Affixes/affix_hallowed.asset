@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: affix_hallowed
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AffixDefinition
+  Id: affix_hallowed
+  NameKey: content.affix.affix_hallowed.name
+  DescriptionKey: content.affix.affix_hallowed.desc
+  Category: 4
+  AllowedSlotTypes: 0200000000000000
+  CompileTags:
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  RuleModifierTags: []
+  Modifiers:
+  - StatId: heal_power
+    Op: 0
+    Value: 1.2
+  legacyDisplayName: 
+  legacyDescription: 

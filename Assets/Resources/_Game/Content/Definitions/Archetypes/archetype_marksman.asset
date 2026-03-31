@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: archetype_marksman
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
+  Id: marksman
+  NameKey: content.archetype.marksman.name
+  ScopeKind: 0
+  Race: {fileID: 11400000, guid: 40397d4c74bfc1540a9b6b77e3418712, type: 2}
+  Class: {fileID: 11400000, guid: 9f586812c5ec3d94586eb6362c6288fb, type: 2}
+  TraitPool: {fileID: 11400000, guid: 020172dcb3c1c6d45988dc465f31bd1c, type: 2}
+  Skills:
+  - {fileID: 11400000, guid: 30c4bf5fea4053d488afb667468e8c8d, type: 2}
+  - {fileID: 11400000, guid: 69c477993ea28ef468d3e94c76aa4d74, type: 2}
+  - {fileID: 11400000, guid: 19277c9f97afc70409f220715bbc77cb, type: 2}
+  - {fileID: 11400000, guid: c0141da1013d60a4ca6d88111715baef, type: 2}
+  TacticPreset:
+  - Priority: 0
+    ConditionType: 4
+    Threshold: 1.5
+    ActionType: 1
+    TargetSelector: 5
+    Skill: {fileID: 11400000, guid: 30c4bf5fea4053d488afb667468e8c8d, type: 2}
+  - Priority: 1
+    ConditionType: 3
+    Threshold: 0
+    ActionType: 0
+    TargetSelector: 3
+    Skill: {fileID: 0}
+  - Priority: 2
+    ConditionType: 5
+    Threshold: 0
+    ActionType: 2
+    TargetSelector: 0
+    Skill: {fileID: 0}
+  DefaultAnchor: 4
+  PreferredTeamPosture: 2
+  RoleTag: carry
+  RoleFamilyTag: ranger
+  PrimaryWeaponFamilyTag: bow
+  SupportModifierBiasTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
+  BaseMaxHealth: 18
+  BaseArmor: 2.1
+  BaseResist: 0.4
+  BaseBarrierPower: 0
+  BaseTenacity: 0.1
+  BasePhysPower: 7.5
+  BaseMagPower: 0
+  BaseAttackSpeed: 3.9
+  BaseAttack: 7.5
+  BaseDefense: 2.1
+  BaseSpeed: 3.9
+  BaseHealPower: 0
+  BaseMoveSpeed: 1.8
+  BaseAttackRange: 3.45
+  BaseManaMax: 0
+  BaseManaGainOnAttack: 0
+  BaseManaGainOnHit: 0
+  BaseCooldownRecovery: 0
+  BaseCritChance: 0.03
+  BaseCritMultiplier: 1.35
+  BasePhysPen: 0
+  BaseMagPen: 0
+  BaseAggroRadius: 8
+  BasePreferredDistance: 3.05
+  BaseProtectRadius: 0
+  BaseAttackWindup: 0.17
+  BaseCastWindup: 0.2
+  BaseProjectileSpeed: 5.8
+  BaseCollisionRadius: 0.5
+  BaseRepositionCooldown: 0
+  BaseAttackCooldown: 0.92
+  BaseLeashDistance: 4.8
+  BaseTargetSwitchDelay: 0.3
+  legacyDisplayName: 

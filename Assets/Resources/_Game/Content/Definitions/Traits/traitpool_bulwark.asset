@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: traitpool_bulwark
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TraitPoolDefinition
+  Id: traitpool_bulwark
+  ArchetypeId: bulwark
+  PositiveTraits:
+  - Id: bulwark_positive_drive
+    NameKey: content.trait.bulwark.bulwark_positive_drive.name
+    DescriptionKey: content.trait.bulwark.bulwark_positive_drive.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 0
+      Value: 0.8
+    - StatId: mag_power
+      Op: 0
+      Value: 0
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: bulwark_positive_guard
+    NameKey: content.trait.bulwark.bulwark_positive_guard.name
+    DescriptionKey: content.trait.bulwark.bulwark_positive_guard.desc
+    Modifiers:
+    - StatId: max_health
+      Op: 0
+      Value: 2
+    - StatId: armor
+      Op: 0
+      Value: 0.5
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: bulwark_positive_pace
+    NameKey: content.trait.bulwark.bulwark_positive_pace.name
+    DescriptionKey: content.trait.bulwark.bulwark_positive_pace.desc
+    Modifiers:
+    - StatId: attack_speed
+      Op: 0
+      Value: 0.08
+    - StatId: move_speed
+      Op: 0
+      Value: 0.04
+    legacyDisplayName: 
+    legacyDescription: 
+  NegativeTraits:
+  - Id: bulwark_negative_frail
+    NameKey: content.trait.bulwark.bulwark_negative_frail.name
+    DescriptionKey: content.trait.bulwark.bulwark_negative_frail.desc
+    Modifiers:
+    - StatId: max_health
+      Op: 0
+      Value: -3
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: bulwark_negative_hesitant
+    NameKey: content.trait.bulwark.bulwark_negative_hesitant.name
+    DescriptionKey: content.trait.bulwark.bulwark_negative_hesitant.desc
+    Modifiers:
+    - StatId: attack_speed
+      Op: 0
+      Value: -0.08
+    - StatId: target_switch_delay
+      Op: 0
+      Value: 0.05
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: bulwark_negative_dull
+    NameKey: content.trait.bulwark.bulwark_negative_dull.name
+    DescriptionKey: content.trait.bulwark.bulwark_negative_dull.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 0
+      Value: -0.6
+    - StatId: mag_power
+      Op: 0
+      Value: 0
+    legacyDisplayName: 
+    legacyDescription: 

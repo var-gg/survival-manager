@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 49621753856
-    m_Localized: Heavy melee strike.
+    m_Localized: Power Strike slot skill.
     m_Metadata:
       m_Items: []
   - m_Id: 50661941248
@@ -31,7 +31,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 50661941249
-    m_Localized: Focused ranged shot.
+    m_Localized: Precision Shot slot skill.
     m_Metadata:
       m_Items: []
   - m_Id: 51689545728
@@ -39,7 +39,303 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 51689545729
-    m_Localized: Small targeted heal.
+    m_Localized: Minor Heal slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167914538786816
+    m_Localized: Guard Step
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167914605895680
+    m_Localized: Guard Step slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167915180515328
+    m_Localized: Grave Bash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167915180515329
+    m_Localized: Grave Bash slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167915805466624
+    m_Localized: Ward Veil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167915805466625
+    m_Localized: Ward Veil slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167916459778048
+    m_Localized: Pack Crash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167916459778049
+    m_Localized: Pack Crash slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167917026009088
+    m_Localized: Howl Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167917030203392
+    m_Localized: Howl Guard slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167917588045824
+    m_Localized: Anchor Plate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167917588045825
+    m_Localized: Anchor Plate slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167918158471168
+    m_Localized: Last Watch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167918158471169
+    m_Localized: Last Watch slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167918796005376
+    m_Localized: Hold Signal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167918796005377
+    m_Localized: Hold Signal slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167919420956672
+    m_Localized: Cover Order
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167919420956673
+    m_Localized: Cover Order slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167920104628224
+    m_Localized: Slayer Riposte
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167920104628225
+    m_Localized: Slayer Riposte slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167920691830784
+    m_Localized: Gap Step
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167920691830785
+    m_Localized: Gap Step slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167921262256128
+    m_Localized: Hook Slash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167921262256129
+    m_Localized: Hook Slash slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167921803321344
+    m_Localized: Flank Skip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167921803321345
+    m_Localized: Flank Skip slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167922403106816
+    m_Localized: Blood Dive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167922403106817
+    m_Localized: Blood Dive slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167923044835328
+    m_Localized: Shadow Feast
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167923044835329
+    m_Localized: Shadow Feast slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167923724312576
+    m_Localized: Executioner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167923724312577
+    m_Localized: Executioner slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167924504453120
+    m_Localized: Bloodrush
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167924504453121
+    m_Localized: Bloodrush slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167925305565184
+    m_Localized: Mark Target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167925305565185
+    m_Localized: Mark Target slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167926022791168
+    m_Localized: Finish Call
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167926022791169
+    m_Localized: Finish Call slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167927880867840
+    m_Localized: Steady Aim
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167927880867841
+    m_Localized: Steady Aim slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167928489041920
+    m_Localized: Split Shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167928489041921
+    m_Localized: Split Shot slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167929013329920
+    m_Localized: Smoke Shift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167929013329921
+    m_Localized: Smoke Shift slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167929680224256
+    m_Localized: Grave Bolt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167929680224257
+    m_Localized: Grave Bolt slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167930296786944
+    m_Localized: Carrion Step
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167930296786945
+    m_Localized: Carrion Step slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167930997235712
+    m_Localized: Overwatch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167930997235713
+    m_Localized: Overwatch slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167931689295872
+    m_Localized: Clean Draw
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167931689295873
+    m_Localized: Clean Draw slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167932502990848
+    m_Localized: Focus Fire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167932502990849
+    m_Localized: Focus Fire slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167933245382656
+    m_Localized: Covering Volley
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167933245382657
+    m_Localized: Covering Volley slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167934088437760
+    m_Localized: Lit Burst
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167934088437761
+    m_Localized: Lit Burst slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167936621797376
+    m_Localized: Soul Flare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167936621797377
+    m_Localized: Soul Flare slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167937280303104
+    m_Localized: Hex Mend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167937280303105
+    m_Localized: Hex Mend slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167937955586048
+    m_Localized: Spirit Arc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167937955586049
+    m_Localized: Spirit Arc slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167938643451904
+    m_Localized: Storm Salve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167938643451905
+    m_Localized: Storm Salve slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167939289374720
+    m_Localized: Warding Breath
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167939289374721
+    m_Localized: Warding Breath slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167939968851968
+    m_Localized: Echo Chant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167939968851969
+    m_Localized: Echo Chant slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167940606386176
+    m_Localized: Blessed Pattern
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167940606386177
+    m_Localized: Blessed Pattern slot skill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167941273280512
+    m_Localized: Bind Call
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167941273280513
+    m_Localized: Bind Call slot skill.
     m_Metadata:
       m_Items: []
   references:

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: passive_vanguard_notable_02
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:PassiveNodeDefinition
+  Id: passive_vanguard_notable_02
+  BoardId: board_vanguard
+  NameKey: content.passive_node.passive_vanguard_notable_02.name
+  DescriptionKey: content.passive_node.passive_vanguard_notable_02.desc
+  NodeKind: 1
+  PrerequisiteNodeIds:
+  - passive_vanguard_small_09
+  MutualExclusionTags: []
+  BoardDepth: 4
+  CompileTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  RuleModifierTags: []
+  Modifiers:
+  - StatId: tenacity
+    Op: 0
+    Value: 0.25
+  - StatId: protect_radius
+    Op: 0
+    Value: 0.3
+  legacyIsKeystone: 0
+  legacyDisplayName: 
+  legacyDescription: 

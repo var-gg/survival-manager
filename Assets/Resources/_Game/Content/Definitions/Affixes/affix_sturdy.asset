@@ -17,7 +17,8 @@ MonoBehaviour:
   DescriptionKey: content.affix.affix_sturdy.desc
   Category: 2
   AllowedSlotTypes: 0100000002000000
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   RuleModifierTags: []
   Modifiers:
   - StatId: armor

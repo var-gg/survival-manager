@@ -14,7 +14,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: Content_TeamTactics
   m_TableCollectionNameGuidString: f45cededd98b81746b9397796b9b7301
-  m_Entries: []
+  m_Entries:
+  - m_Id: 168034042896384
+    m_Key: content.team_tactic.team_tactic_hold_line.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168034663653376
+    m_Key: content.team_tactic.team_tactic_standard_advance.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168035238273024
+    m_Key: content.team_tactic.team_tactic_protect_carry.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168035833864192
+    m_Key: content.team_tactic.team_tactic_collapse_weak_side.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168036483981312
+    m_Key: content.team_tactic.team_tactic_all_in_backline.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

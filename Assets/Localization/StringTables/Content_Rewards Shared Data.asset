@@ -47,6 +47,14 @@ MonoBehaviour:
     m_Key: content.reward_table.rewardtable_expedition_end.name
     m_Metadata:
       m_Items: []
+  - m_Id: 171463775608832
+    m_Key: content.reward_table.rewardtable_battle.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171463893049344
+    m_Key: content.reward_table.rewardtable_expedition_end.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

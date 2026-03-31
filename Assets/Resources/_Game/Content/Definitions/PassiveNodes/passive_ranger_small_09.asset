@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: passive_ranger_small_09
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:PassiveNodeDefinition
+  Id: passive_ranger_small_09
+  BoardId: board_ranger
+  NameKey: content.passive_node.passive_ranger_small_09.name
+  DescriptionKey: content.passive_node.passive_ranger_small_09.desc
+  NodeKind: 0
+  PrerequisiteNodeIds:
+  - passive_ranger_small_06
+  MutualExclusionTags: []
+  BoardDepth: 2
+  CompileTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: a128aa17c1778b74898b49fb628a5c1a, type: 2}
+  RuleModifierTags: []
+  Modifiers:
+  - StatId: attack_speed
+    Op: 0
+    Value: 0.09
+  legacyIsKeystone: 0
+  legacyDisplayName: 
+  legacyDescription: 
