@@ -21,6 +21,7 @@
 - 구조 변경을 문서 없이 남기지 않도록 체크리스트와 스킬이 같은 방향을 가리킨다.
 
 ## 검증 명령
+
 ```bash
 Get-ChildItem docs -Recurse -Filter *.md | Select-String -Pattern 'adr-000[0-9]{1,4}-'
 Get-ChildItem docs -Recurse -Filter *.md | Select-String -Pattern 'SurvivalManager\.'

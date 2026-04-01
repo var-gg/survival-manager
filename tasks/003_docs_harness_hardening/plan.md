@@ -26,6 +26,7 @@
 - docs policy check가 active index, language/meta, index coverage, orphan, registry 유효성을 검증한다.
 
 ## 검증 명령
+
 ```powershell
 pwsh -File tools/docs-policy-check.ps1 -RepoRoot .
 pwsh -File tools/docs-check.ps1 -RepoRoot .

@@ -45,8 +45,10 @@ pwsh -File tools/docs-policy-check.ps1 -RepoRoot .
 pwsh -File tools/smoke-check.ps1 -RepoRoot .
 ```
 
-`tools/docs-check.ps1`는 `tools/docs-policy-check.ps1`를 먼저 실행한 뒤 markdownlint와 markdown-link-check를 수행한다.
-현재 CI는 repo-wide markdown style debt와 분리해서 docs harness policy gate를 우선 강제한다.
+`tools/docs-check.ps1`는 `tools/docs-policy-check.ps1`를 먼저 실행한 뒤
+repo-root `.markdownlint-cli2.jsonc` 설정을 사용해 markdownlint와
+markdown-link-check를 수행한다.
+`Assets/ThirdParty/**` 같은 upstream/vendor 문서는 lint 대상에서 제외한다.
 
 ## Unity 테스트
 

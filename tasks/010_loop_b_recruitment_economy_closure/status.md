@@ -57,7 +57,7 @@
 
 ## Remaining blockers
 
-- `docs-check`의 저장소 전역 markdownlint backlog는 이번 작업 범위를 넘는다.
+- `docs-check`는 `.markdownlint-cli2.jsonc` 추가와 잔여 포맷 정리 후 green이다.
 - legacy crafting currency 문서군은 Loop B pointer 정리 후에도 후속 통합 정리가 더 필요할 수 있다.
 
 ## Deferred / debug-only

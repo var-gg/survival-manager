@@ -21,6 +21,7 @@
 - CLI-first / MCP-typed-lane routing 규칙이 human-facing 문서와 prompt에 모두 반영된다.
 
 ## 검증 명령
+
 ```powershell
 pwsh -File tools/unity-bridge.ps1 status
 pwsh -File tools/unity-bridge.ps1 list
