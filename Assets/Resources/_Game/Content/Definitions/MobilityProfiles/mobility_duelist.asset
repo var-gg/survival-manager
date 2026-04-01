@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: mobility_duelist
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:MobilityProfileDefinition
-  Style: 1
-  Purpose: 1
-  Distance: 1.15
-  Cooldown: 4.2
+  Style: 0
+  Purpose: 0
+  Distance: 0
+  Cooldown: 0
   CastTime: 0
-  Recovery: 0.16
-  TriggerMinDistance: 1.3
-  TriggerMaxDistance: 3
-  LateralBias: 0.2
+  Recovery: 0
+  TriggerMinDistance: 0
+  TriggerMaxDistance: 0
+  LateralBias: 0

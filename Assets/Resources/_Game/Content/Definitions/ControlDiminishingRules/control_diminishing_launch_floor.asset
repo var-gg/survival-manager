@@ -12,15 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: control_diminishing_launch_floor
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ControlDiminishingRuleDefinition
-  Id: control_diminishing_launch_floor
-  NameKey: content.control_diminishing.control_diminishing_launch_floor.name
-  DescriptionKey: content.control_diminishing.control_diminishing_launch_floor.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   ControlResistMultiplier: 0.5
   WindowSeconds: 1.5
-  FullTenacityStatusIds:
-  - stun
-  - root
-  PartialTenacityStatusIds:
-  - silence
+  FullTenacityStatusIds: []
+  PartialTenacityStatusIds: []
   legacyDisplayName: 
   legacyDescription: 

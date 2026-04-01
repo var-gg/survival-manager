@@ -12,6 +12,7 @@ public sealed class SynergyTierDefinition : ScriptableObject
     public string NameKey = string.Empty;
     public string DescriptionKey = string.Empty;
     public int Threshold = 2;
+    public BudgetCard BudgetCard = new() { Domain = BudgetDomain.SynergyBreakpoint, PowerBand = global::SM.Content.Definitions.PowerBand.Standard };
     public List<EffectDescriptor> Effects = new();
     public List<SerializableStatModifier> Modifiers = new();
 

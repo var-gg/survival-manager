@@ -77,7 +77,8 @@ public record BattleUnitLoadout(
     EnergyProfile? Energy = null,
     CombatEntityKind EntityKind = CombatEntityKind.RosterUnit,
     OwnershipLink? Ownership = null,
-    SummonProfile? SummonProfile = null)
+    SummonProfile? SummonProfile = null,
+    ContentGovernanceSummary? Governance = null)
 {
     public IReadOnlyList<TacticRule> Tactics => RuleChains.SelectMany(chain => chain.Rules).ToList();
 

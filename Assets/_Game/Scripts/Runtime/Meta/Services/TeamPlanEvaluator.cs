@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Combat.Services;
 using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Meta.Model;
@@ -111,6 +112,12 @@ public static class TeamPlanEvaluator
             }
         }
 
+        profile.CounterCoverage = CounterCoverageAggregationService.AggregateSummaries(
+            roster
+                .Select(hero => archetypes.TryGetValue(hero.ArchetypeId, out var template) ? template : null)
+                .Where(template => template != null)
+                .SelectMany(template => EnumerateGovernance(template!)));
+
         return profile;
     }
 
@@ -122,5 +129,19 @@ public static class TeamPlanEvaluator
         }
 
         counts[tag] = counts.TryGetValue(tag, out var count) ? count + 1 : 1;
+    }
+
+    private static IEnumerable<ContentGovernanceSummary?> EnumerateGovernance(CombatArchetypeTemplate template)
+    {
+        yield return template.Governance;
+
+        foreach (var skill in template.Skills ?? Array.Empty<BattleSkillSpec>())
+        {
+            yield return skill.Governance;
+        }
+
+        yield return template.SignaturePassive?.Governance;
+        yield return template.FlexPassive?.Governance;
+        yield return template.MobilityReaction?.Governance;
     }
 }

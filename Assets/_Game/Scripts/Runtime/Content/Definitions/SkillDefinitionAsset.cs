@@ -34,6 +34,7 @@ public sealed class SkillDefinitionAsset : ScriptableObject
     public ActionLane Lane = ActionLane.Primary;
     public ActionLockRule LockRule = ActionLockRule.HardCommit;
     public AuthorityLayer AuthorityLayer = AuthorityLayer.Skill;
+    public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Skill };
     public float ManaCost = 0f;
     public float ResourceCost = -1f;
     public float BaseCooldownSeconds = 0f;

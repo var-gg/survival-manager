@@ -109,3 +109,17 @@ Loop B recruit/retrain/duplicate/dismiss 흐름을 Editor에서 재현하고 det
 - retrain sandbox에서 `FullRetrain`
 - dismiss sandbox에서 같은 hero를 dismiss
 - Gold/Echo 환급과 장비 회수 여부를 확인
+
+## Loop C governance inspect
+
+Loop C 이후 `RecruitmentSandboxWindow`는 recruit/retrain inspect에 아래를 추가로 보여 준다.
+
+- `ContentRarity`
+- role profile
+- budget final score
+- derived delta
+- declared threat / counter
+- forbidden flag
+- validation drift
+
+이 정보는 dev harness 전용이다. 일반 town recruit card는 계속 `RecruitTier`만 본다.

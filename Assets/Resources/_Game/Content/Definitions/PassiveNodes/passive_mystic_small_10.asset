@@ -21,9 +21,7 @@ MonoBehaviour:
   - passive_mystic_small_07
   MutualExclusionTags: []
   BoardDepth: 3
-  CompileTags:
-  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
-  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  CompileTags: []
   RuleModifierTags: []
   Modifiers:
   - StatId: cooldown_recovery

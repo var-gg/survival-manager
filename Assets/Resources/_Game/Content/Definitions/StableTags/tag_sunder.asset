@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_sunder
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: sunder
-  NameKey: content.tag.sunder.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

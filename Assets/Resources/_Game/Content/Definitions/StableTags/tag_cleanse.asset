@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_cleanse
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: cleanse
-  NameKey: content.tag.cleanse.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

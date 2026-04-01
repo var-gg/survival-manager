@@ -56,3 +56,32 @@
 - final animation polish
 - advanced tactical AI beyond Loop A vocabulary
 - stamina / morale / equipment 신규 대형 시스템
+
+## Loop C dev overlay
+
+combat harness와 sandbox는 아래 governance view를 제공해야 한다.
+
+- team 8-lane coverage report
+- `None` 또는 `Light` lane 경고
+- selected unit governance summary
+  - `ContentRarity`
+  - role profile
+  - budget final score
+  - derived delta
+  - declared threat/counter
+  - forbidden drift
+
+위 정보는 dev/debug view 전용이며 player-facing battle UI에 그대로 노출하지 않는다.
+
+## Loop C scenario set
+
+`BalanceSweepScenarioFactory`는 아래 threat scenario를 가져야 한다.
+
+- `ArmorFrontlineScenario`
+- `ResistanceShellScenario`
+- `GuardBulwarkScenario`
+- `EvasiveSkirmishScenario`
+- `ControlChainScenario`
+- `SustainBallScenario`
+- `DiveBacklineScenario`
+- `SwarmFloodScenario`

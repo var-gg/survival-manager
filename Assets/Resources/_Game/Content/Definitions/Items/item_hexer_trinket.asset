@@ -25,9 +25,7 @@ MonoBehaviour:
   BudgetBand: personal_power_8
   CraftCurrencyTag: ember_dust
   GrantedSkills: []
-  CompileTags:
-  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
-  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  CompileTags: []
   RuleModifierTags: []
   AllowedClassTags: []
   AllowedArchetypeTags: []

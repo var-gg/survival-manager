@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_mana_max
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: mana_max
-  NameKey: content.stat.mana_max.name
-  DescriptionKey: content.stat.mana_max.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

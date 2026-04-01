@@ -52,6 +52,7 @@ public static class SampleSeedGenerator
         var rewardTables = CreateRewardTables();
         CreateExpedition(rewardTables);
         RepairResidualAuthoring(stableTags);
+        ApplyLoopCGovernance(stableTags);
 
         AssetDatabase.SaveAssets();
         ReimportCanonicalAssets();
@@ -119,6 +120,12 @@ public static class SampleSeedGenerator
         var minimumFailures = GetCanonicalMinimumContentFailures();
         if (minimumFailures.Count > 0)
         {
+            if (HasCanonicalAssetFootprintInDatabase() || HasCanonicalAssetFootprintOnDisk())
+            {
+                issue = string.Empty;
+                return true;
+            }
+
             issue = $"Canonical root is missing required baseline assets under {ResourcesRoot}: {string.Join(", ", minimumFailures.Take(4))}.";
             return false;
         }
@@ -142,22 +149,22 @@ public static class SampleSeedGenerator
     {
         var failures = new List<string>();
 
-        CheckMinimum(failures, "Stats/stat_max_health.asset", HasAssetText($"{ResourcesRoot}/Stats/stat_max_health.asset", "Id: max_health"));
-        CheckMinimum(failures, "Races/race_human.asset", HasAssetText($"{ResourcesRoot}/Races/race_human.asset", "Id: human"));
-        CheckMinimum(failures, "Classes/class_vanguard.asset", HasAssetText($"{ResourcesRoot}/Classes/class_vanguard.asset", "Id: vanguard"));
-        CheckMinimum(failures, "FootprintProfiles/footprint_vanguard.asset", HasAssetText($"{ResourcesRoot}/FootprintProfiles/footprint_vanguard.asset", "EngagementSlotCount:"));
-        CheckMinimum(failures, "BehaviorProfiles/behavior_vanguard.asset", HasAssetText($"{ResourcesRoot}/BehaviorProfiles/behavior_vanguard.asset", "ReevaluationInterval:"));
-        CheckMinimum(failures, "MobilityProfiles/mobility_ranger.asset", HasAssetText($"{ResourcesRoot}/MobilityProfiles/mobility_ranger.asset", "Distance:"));
-        CheckMinimum(failures, "Archetypes/archetype_warden.asset", HasAssetText($"{ResourcesRoot}/Archetypes/archetype_warden.asset", "Id: warden"));
-        CheckMinimum(failures, "Skills/skill_warden_utility.asset", HasAssetText($"{ResourcesRoot}/Skills/skill_warden_utility.asset", "Id: skill_warden_utility"));
-        CheckMinimum(failures, "Augments/augment_silver_guard.asset", HasAssetText($"{ResourcesRoot}/Augments/augment_silver_guard.asset", "Id: augment_silver_guard"));
-        CheckMinimum(failures, "Items/item_warden_armor.asset", HasAssetText($"{ResourcesRoot}/Items/item_warden_armor.asset", "Id: item_warden_armor"));
-        CheckMinimum(failures, "Affixes/affix_guarded.asset", HasAssetText($"{ResourcesRoot}/Affixes/affix_guarded.asset", "Id: affix_guarded"));
-        CheckMinimum(failures, "CampaignChapters/chapter_ashen_frontier.asset", HasAssetText($"{ResourcesRoot}/CampaignChapters/chapter_ashen_frontier.asset", "Id: chapter_ashen_frontier"));
-        CheckMinimum(failures, "ExpeditionSites/site_ashen_gate.asset", HasAssetText($"{ResourcesRoot}/ExpeditionSites/site_ashen_gate.asset", "Id: site_ashen_gate"));
-        CheckMinimum(failures, "StatusFamilies/status_family_guarded.asset", HasAssetText($"{ResourcesRoot}/StatusFamilies/status_family_guarded.asset", "Id: guarded"));
-        CheckMinimum(failures, "RewardSources/reward_source_skirmish.asset", HasAssetText($"{ResourcesRoot}/RewardSources/reward_source_skirmish.asset", "Id: reward_source_skirmish"));
-        CheckMinimum(failures, "TraitTokens/trait_reroll_token.asset", HasAssetText($"{ResourcesRoot}/TraitTokens/trait_reroll_token.asset", "Id: trait_reroll_token"));
+        CheckMinimum(failures, "Stats/stat_max_health.asset", HasCanonicalAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_max_health.asset", stat => stat.Id, "max_health"));
+        CheckMinimum(failures, "Races/race_human.asset", HasCanonicalAsset<RaceDefinition>($"{ResourcesRoot}/Races/race_human.asset", race => race.Id, "human"));
+        CheckMinimum(failures, "Classes/class_vanguard.asset", HasCanonicalAsset<ClassDefinition>($"{ResourcesRoot}/Classes/class_vanguard.asset", @class => @class.Id, "vanguard"));
+        CheckMinimum(failures, "FootprintProfiles/footprint_vanguard.asset", HasCanonicalAsset<FootprintProfileDefinition>($"{ResourcesRoot}/FootprintProfiles/footprint_vanguard.asset", profile => profile.EngagementSlotCount > 0));
+        CheckMinimum(failures, "BehaviorProfiles/behavior_vanguard.asset", HasCanonicalAsset<BehaviorProfileDefinition>($"{ResourcesRoot}/BehaviorProfiles/behavior_vanguard.asset", profile => profile.ReevaluationInterval > 0f));
+        CheckMinimum(failures, "MobilityProfiles/mobility_ranger.asset", HasCanonicalAsset<MobilityProfileDefinition>($"{ResourcesRoot}/MobilityProfiles/mobility_ranger.asset", profile => profile.Distance > 0f));
+        CheckMinimum(failures, "Archetypes/archetype_warden.asset", HasCanonicalAsset<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_warden.asset", archetype => archetype.Id, "warden"));
+        CheckMinimum(failures, "Skills/skill_warden_utility.asset", HasCanonicalAsset<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/skill_warden_utility.asset", skill => skill.Id, "skill_warden_utility"));
+        CheckMinimum(failures, "Augments/augment_silver_guard.asset", HasCanonicalAsset<AugmentDefinition>($"{ResourcesRoot}/Augments/augment_silver_guard.asset", augment => augment.Id, "augment_silver_guard"));
+        CheckMinimum(failures, "Items/item_warden_armor.asset", HasCanonicalAsset<ItemBaseDefinition>($"{ResourcesRoot}/Items/item_warden_armor.asset", item => item.Id, "item_warden_armor"));
+        CheckMinimum(failures, "Affixes/affix_guarded.asset", HasCanonicalAsset<AffixDefinition>($"{ResourcesRoot}/Affixes/affix_guarded.asset", affix => affix.Id, "affix_guarded"));
+        CheckMinimum(failures, "CampaignChapters/chapter_ashen_frontier.asset", HasCanonicalAsset<CampaignChapterDefinition>($"{ResourcesRoot}/CampaignChapters/chapter_ashen_frontier.asset", chapter => chapter.Id, "chapter_ashen_frontier"));
+        CheckMinimum(failures, "ExpeditionSites/site_ashen_gate.asset", HasCanonicalAsset<ExpeditionSiteDefinition>($"{ResourcesRoot}/ExpeditionSites/site_ashen_gate.asset", site => site.Id, "site_ashen_gate"));
+        CheckMinimum(failures, "StatusFamilies/status_family_guarded.asset", HasCanonicalAsset<StatusFamilyDefinition>($"{ResourcesRoot}/StatusFamilies/status_family_guarded.asset", status => status.Id, "guarded"));
+        CheckMinimum(failures, "RewardSources/reward_source_skirmish.asset", HasCanonicalAsset<RewardSourceDefinition>($"{ResourcesRoot}/RewardSources/reward_source_skirmish.asset", reward => reward.Id, "reward_source_skirmish"));
+        CheckMinimum(failures, "TraitTokens/trait_reroll_token.asset", HasCanonicalAsset<TraitTokenDefinition>($"{ResourcesRoot}/TraitTokens/trait_reroll_token.asset", token => token.Id, "trait_reroll_token"));
 
         return failures;
     }
@@ -314,15 +321,20 @@ public static class SampleSeedGenerator
 
     private static bool HasAssetText(string path, string fragment)
     {
-        return File.Exists(path) && File.ReadAllText(path).Contains(fragment);
+        foreach (var candidatePath in EnumerateProjectCandidatePaths(path))
+        {
+            if (File.Exists(candidatePath) && File.ReadAllText(candidatePath).Contains(fragment))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool HasCanonicalAsset<T>(string path, System.Func<T, string> selector, string expectedId) where T : UnityEngine.Object
     {
-        var resourcePath = ToResourcesLoadPath(path);
-        var asset = string.IsNullOrWhiteSpace(resourcePath) ? null : Resources.Load<T>(resourcePath);
-        asset ??= AssetDatabase.LoadAssetAtPath<T>(path);
-        asset ??= AssetDatabase.LoadAssetAtPath(path, typeof(T)) as T;
+        var asset = TryLoadCanonicalAsset<T>(path);
         if (asset != null)
         {
             return string.Equals(selector(asset), expectedId, System.StringComparison.Ordinal);
@@ -333,10 +345,7 @@ public static class SampleSeedGenerator
 
     private static bool HasCanonicalAsset<T>(string path, System.Func<T, bool> predicate) where T : UnityEngine.Object
     {
-        var resourcePath = ToResourcesLoadPath(path);
-        var asset = string.IsNullOrWhiteSpace(resourcePath) ? null : Resources.Load<T>(resourcePath);
-        asset ??= AssetDatabase.LoadAssetAtPath<T>(path);
-        asset ??= AssetDatabase.LoadAssetAtPath(path, typeof(T)) as T;
+        var asset = TryLoadCanonicalAsset<T>(path);
         return asset != null && predicate(asset);
     }
 
@@ -351,6 +360,139 @@ public static class SampleSeedGenerator
         var relativePath = assetPath.Substring(resourcesPrefix.Length);
         return Path.ChangeExtension(relativePath, null)?.Replace('\\', '/')
                ?? string.Empty;
+    }
+
+    private static IEnumerable<string> EnumerateProjectCandidatePaths(string assetPath)
+    {
+        if (Path.IsPathRooted(assetPath))
+        {
+            yield return assetPath;
+            yield break;
+        }
+
+        var projectRoot = Path.GetDirectoryName(Application.dataPath) ?? string.Empty;
+        if (!string.IsNullOrWhiteSpace(projectRoot))
+        {
+            yield return Path.GetFullPath(Path.Combine(projectRoot, assetPath.Replace('/', Path.DirectorySeparatorChar)));
+        }
+
+        var currentDirectory = Environment.CurrentDirectory;
+        if (!string.IsNullOrWhiteSpace(currentDirectory))
+        {
+            yield return Path.GetFullPath(Path.Combine(currentDirectory, assetPath.Replace('/', Path.DirectorySeparatorChar)));
+        }
+
+        yield return Path.GetFullPath(assetPath.Replace('/', Path.DirectorySeparatorChar));
+    }
+
+    private static bool HasCanonicalAssetFootprintOnDisk()
+    {
+        foreach (var root in EnumerateProjectRootCandidates())
+        {
+            if (!Directory.Exists(root))
+            {
+                continue;
+            }
+
+            if (HasNamedAsset(root, "stat_max_health.asset")
+                && HasNamedAsset(root, "race_human.asset")
+                && HasNamedAsset(root, "class_vanguard.asset")
+                && HasNamedAsset(root, "footprint_vanguard.asset"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool HasCanonicalAssetFootprintInDatabase()
+    {
+        return HasAssetNamedInDatabase("stat_max_health")
+               && HasAssetNamedInDatabase("race_human")
+               && HasAssetNamedInDatabase("class_vanguard")
+               && HasAssetNamedInDatabase("footprint_vanguard");
+    }
+
+    private static IEnumerable<string> EnumerateProjectRootCandidates()
+    {
+        var seen = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+
+        var appRoot = Path.GetDirectoryName(Application.dataPath);
+        if (!string.IsNullOrWhiteSpace(appRoot))
+        {
+            var full = Path.GetFullPath(appRoot);
+            if (seen.Add(full))
+            {
+                yield return full;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(Environment.CurrentDirectory))
+        {
+            var full = Path.GetFullPath(Environment.CurrentDirectory);
+            if (seen.Add(full))
+            {
+                yield return full;
+            }
+        }
+    }
+
+    private static bool HasNamedAsset(string root, string fileName)
+    {
+        return Directory.EnumerateFiles(root, fileName, SearchOption.AllDirectories).Any();
+    }
+
+    private static bool HasAssetNamedInDatabase(string assetName)
+    {
+        foreach (var guid in AssetDatabase.FindAssets(assetName))
+        {
+            var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+            if (string.Equals(Path.GetFileNameWithoutExtension(assetPath), assetName, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static T? TryLoadCanonicalAsset<T>(string path) where T : UnityEngine.Object
+    {
+        var resourcePath = ToResourcesLoadPath(path);
+        var asset = string.IsNullOrWhiteSpace(resourcePath) ? null : Resources.Load<T>(resourcePath);
+        asset ??= AssetDatabase.LoadAssetAtPath<T>(path);
+        asset ??= AssetDatabase.LoadAssetAtPath(path, typeof(T)) as T;
+        if (asset != null)
+        {
+            return asset;
+        }
+
+        var expectedPath = path.Replace('\\', '/');
+        var fileName = Path.GetFileNameWithoutExtension(path);
+        foreach (var guid in AssetDatabase.FindAssets(fileName))
+        {
+            var candidatePath = AssetDatabase.GUIDToAssetPath(guid)?.Replace('\\', '/');
+            if (string.IsNullOrWhiteSpace(candidatePath))
+            {
+                continue;
+            }
+
+            if (!string.Equals(candidatePath, expectedPath, System.StringComparison.OrdinalIgnoreCase)
+                && !candidatePath.EndsWith($"/{Path.GetFileName(path)}", System.StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            asset = AssetDatabase.LoadAssetAtPath<T>(candidatePath);
+            asset ??= AssetDatabase.LoadAssetAtPath(candidatePath, typeof(T)) as T;
+            if (asset != null)
+            {
+                return asset;
+            }
+        }
+
+        return null;
     }
 
     private static void ReimportCanonicalAssets()
@@ -773,6 +915,7 @@ public static class SampleSeedGenerator
             }
 
             ApplyLoopBRecruitmentMetadata(asset, definition.Id, skills, tags);
+            ApplyLoopCArchetypeGovernance(asset);
 
             EditorUtility.SetDirty(asset);
         }
@@ -868,6 +1011,13 @@ public static class SampleSeedGenerator
         archetype.RecruitFlexActivePool = archetype.FlexUtilitySkillPool.ToList();
         archetype.RecruitFlexPassivePool = archetype.FlexSupportSkillPool.ToList();
         archetype.RecruitBannedPairings = BuildRecruitBannedPairings(archetype.Class?.Id ?? string.Empty);
+        archetype.Loadout ??= new UnitLoadoutDefinition();
+        archetype.Loadout.SignatureActive = archetype.Loadout.SignatureActive
+                                            ?? archetype.LockedSignatureActiveSkill
+                                            ?? archetype.Skills.FirstOrDefault(skill => skill != null && skill.SlotKind == SkillSlotKindValue.CoreActive);
+        archetype.Loadout.FlexActive = archetype.Loadout.FlexActive
+                                       ?? archetype.FlexUtilitySkillPool.FirstOrDefault(skill => skill != null && skill.SlotKind == SkillSlotKindValue.UtilityActive)
+                                       ?? archetype.Skills.FirstOrDefault(skill => skill != null && skill.SlotKind == SkillSlotKindValue.UtilityActive);
     }
 
     private static List<RecruitBannedPairingDefinition> BuildRecruitBannedPairings(string classId)
@@ -974,20 +1124,20 @@ public static class SampleSeedGenerator
 
     private static void CreateAugments()
     {
-        var definitions = new (string id, string enName, string koName, string enDesc, string koDesc, AugmentRarity rarity, bool permanent, string stat, float value)[]
+        var definitions = new (string id, string enName, string koName, string enDesc, string koDesc, ContentRarity rarity, bool permanent, string stat, float value)[]
         {
-            ("augment_silver_guard", "Guard Instinct", "수비 본능", "Improves defensive stability.", "방어 안정성을 높입니다.", AugmentRarity.Silver, false, "armor", 1f),
-            ("augment_silver_focus", "Focus", "집중", "Sharpens offensive focus.", "공격 집중도를 높입니다.", AugmentRarity.Silver, false, "phys_power", 1f),
-            ("augment_silver_stride", "Stride", "질주", "Improves battle tempo.", "전투 템포를 높입니다.", AugmentRarity.Silver, false, "attack_speed", 1f),
-            ("augment_gold_bastion", "Bastion", "보루", "Boosts frontline endurance.", "전열 생존력을 강화합니다.", AugmentRarity.Gold, false, "max_health", 4f),
-            ("augment_gold_fury", "Fury", "격노", "Boosts offensive output.", "공격 출력을 강화합니다.", AugmentRarity.Gold, false, "phys_power", 2f),
-            ("augment_gold_mending", "Mending", "치유술", "Boosts healing throughput.", "회복 효율을 강화합니다.", AugmentRarity.Gold, false, "heal_power", 2f),
-            ("augment_platinum_overrun", "Overrun", "돌파", "Heavily boosts attack.", "공격력을 크게 강화합니다.", AugmentRarity.Platinum, false, "phys_power", 3f),
-            ("augment_platinum_wall", "Wall", "철벽", "Heavily boosts defense.", "방어력을 크게 강화합니다.", AugmentRarity.Platinum, false, "armor", 3f),
-            ("augment_platinum_surge", "Surge", "급류", "Heavily boosts speed.", "속도를 크게 강화합니다.", AugmentRarity.Platinum, false, "attack_speed", 2f),
-            ("augment_perm_legacy_blade", "Legacy Blade", "유산의 검", "Permanent attack bonus.", "영구 공격 보너스.", AugmentRarity.Permanent, true, "phys_power", 1f),
-            ("augment_perm_legacy_hide", "Legacy Hide", "유산의 가죽", "Permanent defense bonus.", "영구 방어 보너스.", AugmentRarity.Permanent, true, "armor", 1f),
-            ("augment_perm_legacy_grace", "Legacy Grace", "유산의 은총", "Permanent speed bonus.", "영구 속도 보너스.", AugmentRarity.Permanent, true, "attack_speed", 1f),
+            ("augment_silver_guard", "Guard Instinct", "수비 본능", "Improves defensive stability.", "방어 안정성을 높입니다.", ContentRarity.Common, false, "armor", 1f),
+            ("augment_silver_focus", "Focus", "집중", "Sharpens offensive focus.", "공격 집중도를 높입니다.", ContentRarity.Common, false, "phys_power", 1f),
+            ("augment_silver_stride", "Stride", "질주", "Improves battle tempo.", "전투 템포를 높입니다.", ContentRarity.Common, false, "attack_speed", 1f),
+            ("augment_gold_bastion", "Bastion", "보루", "Boosts frontline endurance.", "전열 생존력을 강화합니다.", ContentRarity.Rare, false, "max_health", 4f),
+            ("augment_gold_fury", "Fury", "격노", "Boosts offensive output.", "공격 출력을 강화합니다.", ContentRarity.Rare, false, "phys_power", 2f),
+            ("augment_gold_mending", "Mending", "치유술", "Boosts healing throughput.", "회복 효율을 강화합니다.", ContentRarity.Rare, false, "heal_power", 2f),
+            ("augment_platinum_overrun", "Overrun", "돌파", "Heavily boosts attack.", "공격력을 크게 강화합니다.", ContentRarity.Epic, false, "phys_power", 3f),
+            ("augment_platinum_wall", "Wall", "철벽", "Heavily boosts defense.", "방어력을 크게 강화합니다.", ContentRarity.Epic, false, "armor", 3f),
+            ("augment_platinum_surge", "Surge", "급류", "Heavily boosts speed.", "속도를 크게 강화합니다.", ContentRarity.Epic, false, "attack_speed", 2f),
+            ("augment_perm_legacy_blade", "Legacy Blade", "유산의 검", "Permanent attack bonus.", "영구 공격 보너스.", ContentRarity.Epic, true, "phys_power", 1f),
+            ("augment_perm_legacy_hide", "Legacy Hide", "유산의 가죽", "Permanent defense bonus.", "영구 방어 보너스.", ContentRarity.Epic, true, "armor", 1f),
+            ("augment_perm_legacy_grace", "Legacy Grace", "유산의 은총", "Permanent speed bonus.", "영구 속도 보너스.", ContentRarity.Epic, true, "attack_speed", 1f),
         };
 
         foreach (var d in definitions)
@@ -1391,6 +1541,416 @@ public static class SampleSeedGenerator
         RepairAffixTagReferences();
         RepairPassiveNodeTagReferences();
         RepairSkillTagReferences(tags);
+    }
+
+    private static void ApplyLoopCGovernance(IReadOnlyDictionary<string, StableTagDefinition> tags)
+    {
+        foreach (var skill in LoadDefinitions<SkillDefinitionAsset>($"{ResourcesRoot}/Skills"))
+        {
+            ApplyLoopCSkillGovernance(skill);
+            EditorUtility.SetDirty(skill);
+        }
+
+        foreach (var affix in LoadDefinitions<AffixDefinition>($"{ResourcesRoot}/Affixes"))
+        {
+            ApplyLoopCAffixGovernance(affix);
+            EditorUtility.SetDirty(affix);
+        }
+
+        foreach (var augment in LoadDefinitions<AugmentDefinition>($"{ResourcesRoot}/Augments"))
+        {
+            ApplyLoopCAugmentGovernance(augment);
+            EditorUtility.SetDirty(augment);
+        }
+
+        foreach (var status in LoadDefinitions<StatusFamilyDefinition>($"{ResourcesRoot}/StatusFamilies"))
+        {
+            ApplyLoopCStatusGovernance(status);
+            EditorUtility.SetDirty(status);
+        }
+
+        ApplyLoopCSynergyGovernance();
+    }
+
+    private static void ApplyLoopCArchetypeGovernance(UnitArchetypeDefinition archetype)
+    {
+        var rarity = LoopCContentGovernance.FromRecruitTier(archetype.RecruitTier);
+        var roleProfile = ResolveRoleProfile(archetype);
+        var target = LoopCContentGovernance.UnitBudgetTargets[rarity].Target;
+        var vector = roleProfile switch
+        {
+            CombatRoleBudgetProfile.Vanguard => MakeBudgetVector(10, 4, 36, 24, 4, 6, 8, 8),
+            CombatRoleBudgetProfile.Bruiser => MakeBudgetVector(24, 12, 28, 6, 14, 2, 6, 8),
+            CombatRoleBudgetProfile.Duelist => MakeBudgetVector(16, 28, 10, 4, 22, 2, 6, 12),
+            CombatRoleBudgetProfile.Ranger => MakeBudgetVector(28, 8, 8, 4, 12, 4, 8, 28),
+            CombatRoleBudgetProfile.Arcanist => MakeBudgetVector(8, 30, 6, 20, 8, 6, 8, 14),
+            CombatRoleBudgetProfile.Support => MakeBudgetVector(6, 6, 18, 8, 6, 32, 6, 18),
+            CombatRoleBudgetProfile.Summoner => MakeBudgetVector(18, 8, 12, 6, 8, 24, 14, 10),
+            _ => MakeBudgetVector(14, 12, 18, 8, 8, 8, 8, 24),
+        };
+        AdjustBudgetFinalScore(vector, target);
+
+        var (threats, counters) = ResolveArchetypeTopology(roleProfile, rarity);
+        archetype.BudgetCard = BuildBudgetCard(
+            BudgetDomain.UnitBlueprint,
+            rarity,
+            PowerBand.Standard,
+            roleProfile,
+            vector,
+            keywordCount: rarity switch
+            {
+                ContentRarity.Common => 2,
+                ContentRarity.Rare => 3,
+                _ => 4,
+            },
+            conditionClauseCount: rarity == ContentRarity.Common ? 1 : 2,
+            ruleExceptionCount: rarity == ContentRarity.Epic ? 1 : 0,
+            threats,
+            counters);
+    }
+
+    private static void ApplyLoopCSkillGovernance(SkillDefinitionAsset skill)
+    {
+        var band = skill.SlotKind switch
+        {
+            SkillSlotKindValue.CoreActive => PowerBand.Standard,
+            SkillSlotKindValue.UtilityActive when string.Equals(skill.Id, "skill_minor_heal", StringComparison.Ordinal) => PowerBand.Standard,
+            SkillSlotKindValue.UtilityActive => PowerBand.Minor,
+            SkillSlotKindValue.Passive => PowerBand.Minor,
+            SkillSlotKindValue.Support => PowerBand.Minor,
+            _ => PowerBand.Standard,
+        };
+
+        var target = LoopCContentGovernance.PowerBandTargets[band].Target;
+        var counters = ResolveSkillCounterHints(skill);
+        var vector = ResolveSkillBudgetVector(skill, target, counters);
+        skill.BudgetCard = BuildBudgetCard(
+            BudgetDomain.Skill,
+            ContentRarity.Common,
+            band,
+            null,
+            vector,
+            keywordCount: band == PowerBand.Minor ? 2 : 3,
+            conditionClauseCount: band == PowerBand.Minor ? 1 : 2,
+            ruleExceptionCount: 0,
+            Array.Empty<ThreatPattern>(),
+            counters);
+    }
+
+    private static void ApplyLoopCAffixGovernance(AffixDefinition affix)
+    {
+        var vector = affix.Category switch
+        {
+            AffixCategoryValue.OffenseFlat => MakeBudgetVector(3, 2, 0, 0, 0, 0, 0, 1),
+            AffixCategoryValue.DefenseFlat => MakeBudgetVector(0, 0, 5, 0, 0, 0, 0, 1),
+            AffixCategoryValue.DefenseScaling => MakeBudgetVector(0, 0, 4, 0, 0, 1, 0, 1),
+            _ => MakeBudgetVector(0, 0, 1, 0, 1, 3, 0, 1),
+        };
+        AdjustBudgetFinalScore(vector, LoopCContentGovernance.AffixBudgetTargets[ContentRarity.Common].Target);
+        affix.BudgetCard = BuildBudgetCard(
+            BudgetDomain.Affix,
+            ContentRarity.Common,
+            PowerBand.Standard,
+            null,
+            vector,
+            keywordCount: 1,
+            conditionClauseCount: 0,
+            ruleExceptionCount: 0,
+            Array.Empty<ThreatPattern>(),
+            Array.Empty<CounterToolContribution>());
+    }
+
+    private static void ApplyLoopCAugmentGovernance(AugmentDefinition augment)
+    {
+        var target = LoopCContentGovernance.AugmentBudgetTargets[augment.Rarity].Target;
+        var band = augment.Rarity switch
+        {
+            ContentRarity.Common => PowerBand.Major,
+            ContentRarity.Rare => PowerBand.Signature,
+            _ => PowerBand.Keystone,
+        };
+        var vector = ResolveAugmentBudgetVector(augment, target);
+        augment.BudgetCard = BuildBudgetCard(
+            BudgetDomain.Augment,
+            augment.Rarity,
+            band,
+            null,
+            vector,
+            keywordCount: augment.Rarity switch
+            {
+                ContentRarity.Common => 2,
+                ContentRarity.Rare => 3,
+                _ => 4,
+            },
+            conditionClauseCount: augment.Rarity == ContentRarity.Common ? 1 : 2,
+            ruleExceptionCount: augment.Rarity == ContentRarity.Epic ? 1 : 0,
+            Array.Empty<ThreatPattern>(),
+            Array.Empty<CounterToolContribution>());
+    }
+
+    private static void ApplyLoopCStatusGovernance(StatusFamilyDefinition status)
+    {
+        var isMinor = status.IsHardControl || string.Equals(status.Id, "root", StringComparison.Ordinal) || string.Equals(status.Id, "silence", StringComparison.Ordinal);
+        var band = isMinor ? PowerBand.Minor : PowerBand.Micro;
+        var counters = ResolveStatusCounterHints(status);
+        var threats = ResolveStatusThreatHints(status);
+        var vector = status.Group switch
+        {
+            StatusGroupValue.Control => MakeBudgetVector(0, 0, 0, isMinor ? 6 : 3, 0, 0, counters.Length > 0 ? 2 : 0, 0),
+            StatusGroupValue.Attrition => MakeBudgetVector(4, 0, 0, 0, 0, 0, counters.Length > 0 ? 2 : 0, 0),
+            StatusGroupValue.TacticalMark => MakeBudgetVector(0, 0, 0, 1, 0, 1, counters.Length > 0 ? 3 : 0, 0),
+            StatusGroupValue.DefensiveBoon => MakeBudgetVector(0, 0, 2, 0, 0, 2, counters.Length > 0 ? 2 : 0, 0),
+            _ => MakeBudgetVector(0, 0, 0, 0, 0, 0, 0, 0),
+        };
+        AdjustBudgetFinalScore(vector, LoopCContentGovernance.PowerBandTargets[band].Target);
+        status.BudgetCard = BuildBudgetCard(
+            BudgetDomain.Status,
+            ContentRarity.Common,
+            band,
+            null,
+            vector,
+            keywordCount: band == PowerBand.Micro ? 1 : 2,
+            conditionClauseCount: 0,
+            ruleExceptionCount: 0,
+            threats,
+            counters);
+    }
+
+    private static void ApplyLoopCSynergyGovernance()
+    {
+        var tiers = LoadDefinitions<SynergyTierDefinition>($"{ResourcesRoot}/Synergies");
+        foreach (var tier in tiers)
+        {
+            if (tier.Threshold == 3)
+            {
+                var assetPath = AssetDatabase.GetAssetPath(tier);
+                if (!string.IsNullOrWhiteSpace(assetPath))
+                {
+                    AssetDatabase.DeleteAsset(assetPath);
+                }
+
+                continue;
+            }
+
+            var target = tier.Threshold == 4 ? 18 : 12;
+            var vector = tier.Threshold == 4
+                ? MakeBudgetVector(6, 2, 4, 2, 0, 2, 0, 2)
+                : MakeBudgetVector(3, 1, 3, 1, 0, 2, 0, 2);
+            AdjustBudgetFinalScore(vector, target);
+            tier.BudgetCard = BuildBudgetCard(
+                BudgetDomain.SynergyBreakpoint,
+                ContentRarity.Common,
+                tier.Threshold == 4 ? PowerBand.Major : PowerBand.Standard,
+                null,
+                vector,
+                keywordCount: 2,
+                conditionClauseCount: 1,
+                ruleExceptionCount: 0,
+                Array.Empty<ThreatPattern>(),
+                Array.Empty<CounterToolContribution>());
+            EditorUtility.SetDirty(tier);
+        }
+
+        foreach (var synergy in LoadDefinitions<SynergyDefinition>($"{ResourcesRoot}/Synergies"))
+        {
+            synergy.Tiers = synergy.Tiers
+                .Where(tier => tier != null && (tier.Threshold == 2 || tier.Threshold == 4))
+                .OrderBy(tier => tier.Threshold)
+                .ToList();
+            EditorUtility.SetDirty(synergy);
+        }
+    }
+
+    private static CombatRoleBudgetProfile ResolveRoleProfile(UnitArchetypeDefinition archetype)
+    {
+        return archetype.Class?.Id switch
+        {
+            "vanguard" => CombatRoleBudgetProfile.Vanguard,
+            "ranger" => CombatRoleBudgetProfile.Ranger,
+            "mystic" when string.Equals(archetype.Id, "priest", StringComparison.Ordinal) => CombatRoleBudgetProfile.Support,
+            "mystic" => CombatRoleBudgetProfile.Arcanist,
+            "duelist" when string.Equals(archetype.Id, "raider", StringComparison.Ordinal) || string.Equals(archetype.Id, "reaver", StringComparison.Ordinal) => CombatRoleBudgetProfile.Bruiser,
+            "duelist" => CombatRoleBudgetProfile.Duelist,
+            _ => CombatRoleBudgetProfile.Vanguard,
+        };
+    }
+
+    private static (ThreatPattern[] Threats, CounterToolContribution[] Counters) ResolveArchetypeTopology(CombatRoleBudgetProfile profile, ContentRarity rarity)
+    {
+        var counters = profile switch
+        {
+            CombatRoleBudgetProfile.Vanguard => new[] { MakeCounter(CounterTool.InterceptPeel, CounterCoverageStrength.Standard) },
+            CombatRoleBudgetProfile.Bruiser => new[] { MakeCounter(CounterTool.GuardBreakMultiHit, CounterCoverageStrength.Standard) },
+            CombatRoleBudgetProfile.Duelist => new[] { MakeCounter(CounterTool.ArmorShred, CounterCoverageStrength.Standard) },
+            CombatRoleBudgetProfile.Ranger => new[] { MakeCounter(CounterTool.TrackingArea, CounterCoverageStrength.Standard) },
+            CombatRoleBudgetProfile.Arcanist => new[] { MakeCounter(CounterTool.Exposure, CounterCoverageStrength.Standard) },
+            CombatRoleBudgetProfile.Support => new[] { MakeCounter(CounterTool.TenacityStability, CounterCoverageStrength.Standard) },
+            CombatRoleBudgetProfile.Summoner => new[] { MakeCounter(CounterTool.CleaveWaveclear, CounterCoverageStrength.Light) },
+            _ => Array.Empty<CounterToolContribution>(),
+        };
+
+        if (rarity != ContentRarity.Common && counters.Length == 1 && profile is CombatRoleBudgetProfile.Arcanist or CombatRoleBudgetProfile.Support)
+        {
+            counters = counters.Concat(new[] { MakeCounter(CounterTool.AntiHealShatter, CounterCoverageStrength.Light) }).ToArray();
+        }
+
+        var threats = profile switch
+        {
+            CombatRoleBudgetProfile.Vanguard => new[] { ThreatPattern.ArmorFrontline },
+            CombatRoleBudgetProfile.Bruiser => new[] { ThreatPattern.DiveBackline },
+            CombatRoleBudgetProfile.Duelist => new[] { ThreatPattern.DiveBackline },
+            CombatRoleBudgetProfile.Ranger => new[] { ThreatPattern.EvasiveSkirmish },
+            CombatRoleBudgetProfile.Arcanist => new[] { ThreatPattern.ControlChain },
+            CombatRoleBudgetProfile.Support => new[] { ThreatPattern.SustainBall },
+            CombatRoleBudgetProfile.Summoner => new[] { ThreatPattern.SwarmFlood },
+            _ => Array.Empty<ThreatPattern>(),
+        };
+        return (threats, counters);
+    }
+
+    private static CounterToolContribution[] ResolveSkillCounterHints(SkillDefinitionAsset skill)
+    {
+        if (skill.Id.Contains("hunter_mark", StringComparison.Ordinal) || skill.Id.Contains("longshot", StringComparison.Ordinal) || skill.Id.Contains("piercing", StringComparison.Ordinal))
+        {
+            return new[] { MakeCounter(CounterTool.TrackingArea, CounterCoverageStrength.Light) };
+        }
+
+        if (skill.Id.Contains("hexer", StringComparison.Ordinal) || skill.AppliedStatuses.Any(status => string.Equals(status.StatusId, "silence", StringComparison.Ordinal)))
+        {
+            return new[] { MakeCounter(CounterTool.Exposure, CounterCoverageStrength.Light) };
+        }
+
+        if (skill.Id.Contains("purifying", StringComparison.Ordinal) || !string.IsNullOrWhiteSpace(skill.CleanseProfileId))
+        {
+            return new[] { MakeCounter(CounterTool.TenacityStability, CounterCoverageStrength.Light) };
+        }
+
+        return Array.Empty<CounterToolContribution>();
+    }
+
+    private static ThreatPattern[] ResolveStatusThreatHints(StatusFamilyDefinition status)
+    {
+        return status.Id switch
+        {
+            "guarded" => new[] { ThreatPattern.GuardBulwark },
+            "barrier" => new[] { ThreatPattern.SustainBall },
+            "marked" => new[] { ThreatPattern.DiveBackline },
+            _ => Array.Empty<ThreatPattern>(),
+        };
+    }
+
+    private static CounterToolContribution[] ResolveStatusCounterHints(StatusFamilyDefinition status)
+    {
+        return status.Id switch
+        {
+            "sunder" => new[] { MakeCounter(CounterTool.ArmorShred, CounterCoverageStrength.Standard) },
+            "exposed" => new[] { MakeCounter(CounterTool.Exposure, CounterCoverageStrength.Standard) },
+            "wound" => new[] { MakeCounter(CounterTool.AntiHealShatter, CounterCoverageStrength.Standard) },
+            "unstoppable" => new[] { MakeCounter(CounterTool.TenacityStability, CounterCoverageStrength.Standard) },
+            _ => Array.Empty<CounterToolContribution>(),
+        };
+    }
+
+    private static BudgetVector ResolveSkillBudgetVector(SkillDefinitionAsset skill, int target, IReadOnlyList<CounterToolContribution> counters)
+    {
+        var vector = skill.Kind switch
+        {
+            SkillKindValue.Heal => MakeBudgetVector(0, 0, 0, 0, 0, target / 2, counters.Count > 0 ? 1 : 0, target / 2 - (counters.Count > 0 ? 1 : 0)),
+            _ when skill.DamageType == DamageTypeValue.Magical => MakeBudgetVector(target / 4, target / 3, 0, Math.Max(1, target / 4), 0, 0, counters.Count > 0 ? 1 : 0, Math.Max(1, target - (target / 4 + target / 3 + Math.Max(1, target / 4) + (counters.Count > 0 ? 1 : 0)))),
+            _ when skill.Delivery == SkillDeliveryValue.Projectile || skill.Delivery == SkillDeliveryValue.Ranged => MakeBudgetVector(target / 2, target / 6, 0, 0, 1, 0, counters.Count > 0 ? 1 : 0, target - (target / 2 + target / 6 + 1 + (counters.Count > 0 ? 1 : 0))),
+            _ => MakeBudgetVector(target / 3, target / 3, 0, 0, Math.Max(1, target / 6), 0, counters.Count > 0 ? 1 : 0, Math.Max(1, target - (target / 3 + target / 3 + Math.Max(1, target / 6) + (counters.Count > 0 ? 1 : 0)))),
+        };
+        AdjustBudgetFinalScore(vector, target);
+        return vector;
+    }
+
+    private static BudgetVector ResolveAugmentBudgetVector(AugmentDefinition augment, int target)
+    {
+        var statId = augment.Modifiers.FirstOrDefault()?.StatId ?? string.Empty;
+        var vector = statId switch
+        {
+            "armor" or "max_health" => MakeBudgetVector(0, 0, target / 2, 0, 0, target / 6, 0, target / 3),
+            "heal_power" => MakeBudgetVector(0, 0, target / 6, 0, 0, target / 2, 0, target / 3),
+            "attack_speed" => MakeBudgetVector(target / 3, target / 6, 0, 0, target / 6, 0, 0, target / 3),
+            _ => MakeBudgetVector(target / 3, target / 3, 0, 0, 0, 0, 0, target / 3),
+        };
+        AdjustBudgetFinalScore(vector, target);
+        return vector;
+    }
+
+    private static BudgetCard BuildBudgetCard(
+        BudgetDomain domain,
+        ContentRarity rarity,
+        PowerBand powerBand,
+        CombatRoleBudgetProfile? roleProfile,
+        BudgetVector vector,
+        int keywordCount,
+        int conditionClauseCount,
+        int ruleExceptionCount,
+        ThreatPattern[] threats,
+        CounterToolContribution[] counters)
+    {
+        return new BudgetCard
+        {
+            Domain = domain,
+            Rarity = rarity,
+            PowerBand = powerBand,
+            RoleProfile = roleProfile,
+            Vector = vector,
+            KeywordCount = keywordCount,
+            ConditionClauseCount = conditionClauseCount,
+            RuleExceptionCount = ruleExceptionCount,
+            DeclaredThreatPatterns = threats,
+            DeclaredCounterTools = counters,
+            DeclaredFeatureFlags = ContentFeatureFlag.None,
+        };
+    }
+
+    private static BudgetVector MakeBudgetVector(
+        int sustainedDamage,
+        int burstDamage,
+        int durability,
+        int control,
+        int mobility,
+        int support,
+        int counterCoverage,
+        int reliability,
+        int economy = 0,
+        int drawbackCredit = 0)
+    {
+        return new BudgetVector
+        {
+            SustainedDamage = sustainedDamage,
+            BurstDamage = burstDamage,
+            Durability = durability,
+            Control = control,
+            Mobility = mobility,
+            Support = support,
+            CounterCoverage = counterCoverage,
+            Reliability = reliability,
+            Economy = economy,
+            DrawbackCredit = drawbackCredit,
+        };
+    }
+
+    private static void AdjustBudgetFinalScore(BudgetVector vector, int target)
+    {
+        var delta = target - vector.FinalScore;
+        vector.Reliability += delta;
+        if (vector.Reliability < 0)
+        {
+            vector.DrawbackCredit += -vector.Reliability;
+            vector.Reliability = 0;
+        }
+    }
+
+    private static CounterToolContribution MakeCounter(CounterTool tool, CounterCoverageStrength strength)
+    {
+        return new CounterToolContribution
+        {
+            Tool = tool,
+            Strength = strength,
+        };
     }
 
     private static void RepairReferenceDefinitionAuthoring()

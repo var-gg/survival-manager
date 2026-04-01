@@ -36,7 +36,7 @@
 
 - `data-model.md`: authored definition, runtime instance, save model 분리 기준
 - `content-authoring-model.md`: 콘텐츠 authoring/validation 경계
-- `content-authoring-and-balance-data.md`: launch authoring schema, validation, count report 경계
+- `content-authoring-and-balance-data.md`: launch authoring schema와 Loop C governance/audit 경계
 - `content-pipeline.md`: 콘텐츠 intake와 파이프라인 운영 방향
 - `content-loading-contract.md`: canonical content root와 runtime/editor 계약
 - `content-loading-strategy.md`: MVP content loading 계약
@@ -52,7 +52,7 @@
 
 - `combat-runtime-architecture.md`: live simulation 전투 런타임 책임 분리
 - `combat-state-and-event-model.md`: 상태, status stack, typed event, 결과 모델 정의
-- `combat-harness-and-debug-contract.md`: battle harness, gizmo, acceptance 시나리오 기준
+- `combat-harness-and-debug-contract.md`: battle harness, 8-lane coverage, acceptance 시나리오 기준
 - `status-runtime-stack-and-cleanse-rules.md`: status stack / refresh / ownership runtime 규칙
 - `editor-sandbox-tooling.md`: Unity combat sandbox/editor tooling 경계
 - `loadout-compiler-and-battle-snapshot.md`: build -> compile -> battle snapshot 경계

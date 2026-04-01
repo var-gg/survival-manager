@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: race_undead
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RaceDefinition
-  Id: undead
-  NameKey: content.race.undead.name
-  DescriptionKey: content.race.undead.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

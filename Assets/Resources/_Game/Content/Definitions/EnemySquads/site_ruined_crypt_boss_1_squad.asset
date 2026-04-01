@@ -12,43 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_ruined_crypt_boss_1_squad
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EnemySquadTemplateDefinition
-  Id: site_ruined_crypt_boss_1_squad
-  NameKey: content.enemy_squad.site_ruined_crypt_boss_1_squad.name
-  DescriptionKey: content.enemy_squad.site_ruined_crypt_boss_1_squad.desc
-  FactionId: faction_bone_host
-  EnemyPosture: 2
-  ThreatTier: 3
-  ThreatCost: 3
-  RewardDropTags:
-  - faction_bone_host
-  - boss
-  Members:
-  - Id: site_ruined_crypt_boss_1_squad_captain
-    NameKey: 
-    ArchetypeId: hexer
-    Anchor: 1
-    Role: 1
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RuleModifierTags: []
-    legacyDisplayName: 
-  - Id: site_ruined_crypt_boss_1_squad_escort_1
-    NameKey: 
-    ArchetypeId: priest
-    Anchor: 3
-    Role: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RuleModifierTags: []
-    legacyDisplayName: 
-  - Id: site_ruined_crypt_boss_1_squad_escort_2
-    NameKey: 
-    ArchetypeId: guardian
-    Anchor: 5
-    Role: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RuleModifierTags: []
-    legacyDisplayName: 
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  FactionId: 
+  EnemyPosture: 1
+  ThreatTier: 1
+  ThreatCost: 1
+  RewardDropTags: []
+  Members: []
   legacyDisplayName: 
   legacyDescription: 

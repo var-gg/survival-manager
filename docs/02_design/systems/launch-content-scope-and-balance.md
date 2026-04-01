@@ -37,7 +37,7 @@
 | permanent augment equip slots | 1 | 1~2 | 데이터 모델 3, 운용 1~3 |
 | equipment slots | 3 | 3 | 3 |
 | synergy families | 7 | 7 | 7 |
-| synergy breakpoints | MVP 문서 참조 | 2 / 3 / 4 | 2 / 3 / 4 |
+| synergy breakpoints | MVP 문서 참조 | 2 / 4 | 2 / 4 |
 
 ## 현재 패스에서 고정하는 핵심
 
@@ -53,7 +53,7 @@
 
 - paid launch safe target = `16 archetypes / 40~48 skills / 42~54 equippables / 96 passive nodes / 24 temporary augments / 12 permanent augments`
 - skill loadout = `6-slot topology + 2 visible active`
-- synergy family = `3 races + 4 classes`, each `2 / 3 / 4` breakpoints
+- synergy family = `3 races + 4 classes`, each `2 / 4` breakpoints
 - baseline counter swing = 평균 `10~15%`
 
 ## 세부 문서 소유권
@@ -80,3 +80,11 @@
 - paid launch floor board shape는 `12 small / 5 notable / 1 keystone`로 잠근다.
 - paid launch safe target board shape는 `14 small / 8 notable / 2 keystone`로 확장한다.
 - floor node 증설은 safe target 문서 갱신 전까지 허용하지 않는다.
+
+## Loop C governance seam
+
+- `BudgetCard`가 power-bearing content의 공통 ledger다.
+- `ContentRarity`는 `Common / Rare / Epic` 3단으로 고정한다.
+- counter-system은 8-lane threat/answer topology를 쓴다.
+- forbidden list는 warning이 아니라 fatal validator policy다.
+- recruit economy와 loot rarity는 Loop C에서 다시 열지 않는다.

@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: support_lingering
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
-  Id: support_lingering
-  NameKey: content.skill.support_lingering.name
-  DescriptionKey: content.skill.support_lingering.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   TemplateType: 0
-  Kind: 5
-  SlotKind: 3
+  Kind: 0
+  SlotKind: 0
   DamageType: 0
-  Delivery: 4
-  TargetRule: 5
+  Delivery: 0
+  TargetRule: 0
   Power: 0
-  Range: 0
+  Range: 1
   RangeMin: 0
   RangeMax: -1
   Radius: 0
@@ -34,6 +34,29 @@ MonoBehaviour:
   HealCoeff: 0
   HealthCoeff: 0
   CanCrit: 0
+  ActivationModel: 2
+  Lane: 0
+  LockRule: 2
+  AuthorityLayer: 1
+  BudgetCard:
+    Domain: 1
+    Vector:
+      SustainedDamage: 0
+      BurstDamage: 0
+      Durability: 0
+      Control: 0
+      Mobility: 0
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 0
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 0
+    ConditionClauseCount: 0
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
   ManaCost: 0
   ResourceCost: -1
   BaseCooldownSeconds: 0
@@ -41,6 +64,7 @@ MonoBehaviour:
   CastWindupSeconds: 0
   RecoverySeconds: -1
   PowerBudget: 0
+  InterruptRefundScalar: 0.5
   AiIntents: 
   AiScoreHints:
     BurstBias: 0
@@ -56,16 +80,45 @@ MonoBehaviour:
   VfxHookId: 
   SfxHookId: 
   LearnSource: 0
-  CompileTags:
-  - {fileID: 11400000, guid: 23a43fe9e3d8a514c947f33e62d21c93, type: 2}
-  - {fileID: 11400000, guid: 3030e667d0a65bc4ea69fd43caf30ad9, type: 2}
-  - {fileID: 11400000, guid: 3c20914261aea6e41ab98542472ae4a5, type: 2}
-  RuleModifierTags:
-  - {fileID: 11400000, guid: 3c20914261aea6e41ab98542472ae4a5, type: 2}
-  SupportAllowedTags:
-  - {fileID: 11400000, guid: 23a43fe9e3d8a514c947f33e62d21c93, type: 2}
-  - {fileID: 11400000, guid: 3030e667d0a65bc4ea69fd43caf30ad9, type: 2}
-  - {fileID: 11400000, guid: 3c20914261aea6e41ab98542472ae4a5, type: 2}
+  EffectFamilyId: 
+  MutuallyExclusiveGroupId: 
+  RecruitNativeTags: []
+  RecruitPlanTags: []
+  RecruitScoutTags: []
+  TargetRuleData:
+    Domain: 2
+    PrimarySelector: 1
+    FallbackPolicy: 2
+    Filters: 5
+    ReevaluateIntervalSeconds: 0.25
+    MinimumCommitSeconds: 0.75
+    MaxAcquireRange: 0
+    PreferredMinTargets: 1
+    ClusterRadius: 2.5
+    LockTargetAtCastStart: 1
+    RetargetLockMode: 3
+  SummonProfile:
+    EntityKind: 1
+    BehaviorKind: 1
+    Eligibility: 24
+    CreditPolicy: 15
+    MaxConcurrentPerSource: 2
+    MaxConcurrentPerOwner: 4
+    DespawnOnOwnerDeath: 1
+    OwnerDeathDespawnDelaySeconds: 1
+    InheritOwnerTarget: 1
+    IsPersistent: 1
+    Inheritance:
+      OffenseBonusScalar: 0.5
+      DefenseBonusScalar: 0.35
+      UtilityBonusScalar: 0.25
+      InheritCritChance: 0
+      InheritDodge: 0
+      InheritBlock: 0
+  Effects: []
+  CompileTags: []
+  RuleModifierTags: []
+  SupportAllowedTags: []
   SupportBlockedTags: []
   RequiredWeaponTags: []
   RequiredClassTags: []

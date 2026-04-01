@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_support_piercing
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: support_piercing
-  NameKey: content.tag.support_piercing.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

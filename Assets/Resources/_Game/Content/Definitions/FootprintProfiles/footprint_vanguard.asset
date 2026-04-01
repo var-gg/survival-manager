@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: footprint_vanguard
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:FootprintProfileDefinition
-  NavigationRadius: 0.58
-  SeparationRadius: 0.82
-  CombatReach: 1.25
-  PreferredRangeMin: 0.9
+  NavigationRadius: 0.45
+  SeparationRadius: 0.65
+  CombatReach: 1.2
+  PreferredRangeMin: 0.95
   PreferredRangeMax: 1.25
-  EngagementSlotCount: 5
-  EngagementSlotRadius: 1.3
-  BodySizeCategory: 2
-  HeadAnchorHeight: 2.15
+  EngagementSlotCount: 4
+  EngagementSlotRadius: 1.25
+  BodySizeCategory: 1
+  HeadAnchorHeight: 2.05

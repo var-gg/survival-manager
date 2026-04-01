@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_dash
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: dash
-  NameKey: content.tag.dash.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

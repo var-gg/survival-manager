@@ -12,6 +12,7 @@ public sealed class PassiveDefinition
     public string DescriptionKey = string.Empty;
     public string EffectFamilyId = string.Empty;
     public string MutuallyExclusiveGroupId = string.Empty;
+    public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Passive };
     public List<StableTagDefinition> RecruitNativeTags = new();
     public List<StableTagDefinition> RecruitPlanTags = new();
     public List<StableTagDefinition> RecruitScoutTags = new();

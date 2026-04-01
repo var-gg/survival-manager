@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_attack_cooldown
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: attack_cooldown
-  NameKey: content.stat.attack_cooldown.name
-  DescriptionKey: content.stat.attack_cooldown.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

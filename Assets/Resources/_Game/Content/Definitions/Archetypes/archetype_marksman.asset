@@ -47,15 +47,196 @@ MonoBehaviour:
   RoleTag: carry
   RoleFamilyTag: ranger
   PrimaryWeaponFamilyTag: bow
+  RecruitTier: 1
+  BudgetCard:
+    Domain: 0
+    Vector:
+      SustainedDamage: 28
+      BurstDamage: 8
+      Durability: 8
+      Control: 4
+      Mobility: 12
+      Support: 4
+      CounterCoverage: 8
+      Reliability: 48
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 3
+    ConditionClauseCount: 2
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 03000000
+    DeclaredCounterTools:
+    - Tool: 3
+      Strength: 2
+    DeclaredFeatureFlags: 0
+  IsRecruitable: 1
+  IsSummonOnly: 0
+  IsEventOnly: 0
+  IsBossOnly: 0
+  IsUnreleased: 0
+  IsTestOnly: 0
+  RecruitPlanTags: []
+  ScoutBiasTags: []
   SupportModifierBiasTags:
-  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
   LockedAttackProfileId: 
   LockedAttackProfileTag: 
   LockedSignatureActiveSkill: {fileID: 0}
   LockedSignaturePassiveSkill: {fileID: 0}
-  FlexUtilitySkillPool: []
-  FlexSupportSkillPool: []
+  FlexUtilitySkillPool:
+  - {fileID: 11400000, guid: dd86a56c52828af40b28489fe94661a4, type: 2}
+  - {fileID: 11400000, guid: 69c477993ea28ef468d3e94c76aa4d74, type: 2}
+  - {fileID: 11400000, guid: ec4f11bb00a058140aadccc582bab6e2, type: 2}
+  FlexSupportSkillPool:
+  - {fileID: 11400000, guid: c0141da1013d60a4ca6d88111715baef, type: 2}
+  - {fileID: 11400000, guid: 79907c95ca267f14f8b4644831834361, type: 2}
+  - {fileID: 11400000, guid: 52ad983a86fdaa4408b2c9d688cb4b00, type: 2}
+  RecruitFlexActivePool:
+  - {fileID: 11400000, guid: dd86a56c52828af40b28489fe94661a4, type: 2}
+  - {fileID: 11400000, guid: 69c477993ea28ef468d3e94c76aa4d74, type: 2}
+  - {fileID: 11400000, guid: ec4f11bb00a058140aadccc582bab6e2, type: 2}
+  RecruitFlexPassivePool:
+  - {fileID: 11400000, guid: c0141da1013d60a4ca6d88111715baef, type: 2}
+  - {fileID: 11400000, guid: 79907c95ca267f14f8b4644831834361, type: 2}
+  - {fileID: 11400000, guid: 52ad983a86fdaa4408b2c9d688cb4b00, type: 2}
+  RecruitBannedPairings:
+  - FlexActiveId: skill_scout_utility
+    FlexPassiveId: support_longshot
+  Loadout:
+    BasicAttack:
+      Id: basic_attack
+      NameKey: 
+      DamageType: 0
+      Lane: 0
+      LockRule: 1
+      TargetRule:
+        Domain: 2
+        PrimarySelector: 1
+        FallbackPolicy: 2
+        Filters: 5
+        ReevaluateIntervalSeconds: 0.25
+        MinimumCommitSeconds: 0.75
+        MaxAcquireRange: 0
+        PreferredMinTargets: 1
+        ClusterRadius: 2.5
+        LockTargetAtCastStart: 1
+        RetargetLockMode: 3
+      Effects:
+      - Layer: 0
+        Scope: 1
+        Capabilities: 4
+        AllowMirroredOwnedSummonKill: 0
+        AllowsPersistentSummonChain: 0
+        LoadoutTopologyDelta: 0
+    SignatureActive: {fileID: 11400000, guid: 30c4bf5fea4053d488afb667468e8c8d, type: 2}
+    FlexActive: {fileID: 11400000, guid: dd86a56c52828af40b28489fe94661a4, type: 2}
+    SignaturePassive:
+      Id: 
+      NameKey: 
+      DescriptionKey: 
+      EffectFamilyId: 
+      MutuallyExclusiveGroupId: 
+      BudgetCard:
+        Domain: 2
+        Vector:
+          SustainedDamage: 0
+          BurstDamage: 0
+          Durability: 0
+          Control: 0
+          Mobility: 0
+          Support: 0
+          CounterCoverage: 0
+          Reliability: 0
+          Economy: 0
+          DrawbackCredit: 0
+        KeywordCount: 0
+        ConditionClauseCount: 0
+        RuleExceptionCount: 0
+        DeclaredThreatPatterns: 
+        DeclaredCounterTools: []
+        DeclaredFeatureFlags: 0
+      RecruitNativeTags: []
+      RecruitPlanTags: []
+      RecruitScoutTags: []
+      ActivationModel: 0
+      Lane: 0
+      LockRule: 0
+      Effects: []
+      AllowMirroredOwnedSummonKill: 0
+    FlexPassive:
+      Id: 
+      NameKey: 
+      DescriptionKey: 
+      EffectFamilyId: 
+      MutuallyExclusiveGroupId: 
+      BudgetCard:
+        Domain: 2
+        Vector:
+          SustainedDamage: 0
+          BurstDamage: 0
+          Durability: 0
+          Control: 0
+          Mobility: 0
+          Support: 0
+          CounterCoverage: 0
+          Reliability: 0
+          Economy: 0
+          DrawbackCredit: 0
+        KeywordCount: 0
+        ConditionClauseCount: 0
+        RuleExceptionCount: 0
+        DeclaredThreatPatterns: 
+        DeclaredCounterTools: []
+        DeclaredFeatureFlags: 0
+      RecruitNativeTags: []
+      RecruitPlanTags: []
+      RecruitScoutTags: []
+      ActivationModel: 0
+      Lane: 0
+      LockRule: 0
+      Effects: []
+      AllowMirroredOwnedSummonKill: 0
+    MobilityReaction:
+      Id: 
+      NameKey: 
+      DescriptionKey: 
+      BudgetCard:
+        Domain: 3
+        Vector:
+          SustainedDamage: 0
+          BurstDamage: 0
+          Durability: 0
+          Control: 0
+          Mobility: 0
+          Support: 0
+          CounterCoverage: 0
+          Reliability: 0
+          Economy: 0
+          DrawbackCredit: 0
+        KeywordCount: 0
+        ConditionClauseCount: 0
+        RuleExceptionCount: 0
+        DeclaredThreatPatterns: 
+        DeclaredCounterTools: []
+        DeclaredFeatureFlags: 0
+      ActivationModel: 3
+      Lane: 1
+      LockRule: 2
+      TargetRule:
+        Domain: 2
+        PrimarySelector: 1
+        FallbackPolicy: 2
+        Filters: 5
+        ReevaluateIntervalSeconds: 0.25
+        MinimumCommitSeconds: 0.75
+        MaxAcquireRange: 0
+        PreferredMinTargets: 1
+        ClusterRadius: 2.5
+        LockTargetAtCastStart: 1
+        RetargetLockMode: 3
+      Profile: {fileID: 0}
+      Effects: []
   FootprintProfile: {fileID: 11400000, guid: a81b3870596764c429790a3a0e75a089, type: 2}
   BehaviorProfile: {fileID: 11400000, guid: 694569802d1952445a6d582f97449372, type: 2}
   MobilityProfile: {fileID: 11400000, guid: 90f39a3f53210ab4697d716b89c641a6, type: 2}
@@ -73,6 +254,9 @@ MonoBehaviour:
   BaseHealPower: 0
   BaseMoveSpeed: 1.8
   BaseAttackRange: 3.45
+  BaseMaxEnergy: 100
+  BaseStartingEnergy: 10
+  BaseSkillHaste: 0
   BaseManaMax: 0
   BaseManaGainOnAttack: 0
   BaseManaGainOnHit: 0

@@ -17,18 +17,45 @@ MonoBehaviour:
   DescriptionKey: content.augment.augment_gold_pact.desc
   Rarity: 1
   IsPermanent: 0
+  BudgetCard:
+    Domain: 6
+    Vector:
+      SustainedDamage: 8
+      BurstDamage: 8
+      Durability: 0
+      Control: 0
+      Mobility: 0
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 10
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 3
+    ConditionClauseCount: 2
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
   Category: 0
   FamilyId: ward_line
   Tier: 2
   OfferWeight: 1
+  OfferBucket: 0
+  RiskRewardClass: 0
+  BudgetScore: 0
   SuppressIfPermanentEquipped: 0
   Tags:
-  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
+  BuildBiasTags: []
+  ProtectionTags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
   EligibleModes: 3
+  AuthorityLayer: 4
+  RosterSlotDelta: 0
+  Effects: []
   Modifiers:
   - StatId: mana_max
     Op: 0

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: reward_source_skirmish
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RewardSourceDefinition
-  Id: reward_source_skirmish
-  NameKey: content.reward_source.reward_source_skirmish.name
-  DescriptionKey: content.reward_source.reward_source_skirmish.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   Kind: 0
-  DropTableId: drop_table_skirmish
+  DropTableId: 
   UsesRewardCards: 1
-  AllowedRarityBrackets: 0000000001000000
+  AllowedRarityBrackets: 
   legacyDisplayName: 
   legacyDescription: 

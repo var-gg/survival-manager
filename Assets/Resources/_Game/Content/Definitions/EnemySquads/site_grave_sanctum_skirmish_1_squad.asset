@@ -12,52 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_grave_sanctum_skirmish_1_squad
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EnemySquadTemplateDefinition
-  Id: site_grave_sanctum_skirmish_1_squad
-  NameKey: content.enemy_squad.site_grave_sanctum_skirmish_1_squad.name
-  DescriptionKey: content.enemy_squad.site_grave_sanctum_skirmish_1_squad.desc
-  FactionId: faction_grave_sanctum
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  FactionId: 
   EnemyPosture: 1
   ThreatTier: 1
   ThreatCost: 1
-  RewardDropTags:
-  - faction_grave_sanctum
-  - tier1
-  Members:
-  - Id: site_grave_sanctum_skirmish_1_squad_1
-    NameKey: 
-    ArchetypeId: guardian
-    Anchor: 0
-    Role: 0
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RuleModifierTags: []
-    legacyDisplayName: 
-  - Id: site_grave_sanctum_skirmish_1_squad_2
-    NameKey: 
-    ArchetypeId: hexer
-    Anchor: 2
-    Role: 0
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RuleModifierTags: []
-    legacyDisplayName: 
-  - Id: site_grave_sanctum_skirmish_1_squad_3
-    NameKey: 
-    ArchetypeId: shaman
-    Anchor: 3
-    Role: 0
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RuleModifierTags: []
-    legacyDisplayName: 
-  - Id: site_grave_sanctum_skirmish_1_squad_4
-    NameKey: 
-    ArchetypeId: marksman
-    Anchor: 5
-    Role: 0
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RuleModifierTags: []
-    legacyDisplayName: 
+  RewardDropTags: []
+  Members: []
   legacyDisplayName: 
   legacyDescription: 

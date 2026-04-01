@@ -12,22 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_ashen_gate_skirmish_2
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EncounterDefinition
-  Id: site_ashen_gate_skirmish_2
-  NameKey: content.encounter.site_ashen_gate_skirmish_2.name
-  DescriptionKey: content.encounter.site_ashen_gate_skirmish_2.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   Kind: 0
-  SiteId: site_ashen_gate
-  EnemySquadTemplateId: site_ashen_gate_skirmish_2_squad
+  SiteId: 
+  EnemySquadTemplateId: 
   BossOverlayId: 
-  RewardSourceId: reward_source_skirmish
-  FactionId: faction_ashen_vanguard
+  RewardSourceId: 
+  FactionId: 
   ThreatTier: 1
   ThreatCost: 1
   ThreatSkulls: 1
-  DifficultyBand: chapter_entry
-  RewardDropTags:
-  - reward_source_skirmish
-  - faction_ashen_vanguard
-  - skirmish
+  DifficultyBand: 
+  RewardDropTags: []
   legacyDisplayName: 
   legacyDescription: 

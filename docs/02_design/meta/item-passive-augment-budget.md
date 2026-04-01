@@ -62,7 +62,6 @@
 - notable 1개: 평균 `3~6%`
 - keystone 1개: 평균 `0~8%` + 규칙 변화
 - synergy 2-piece: `5~8%`
-- synergy 3-piece: `10~15%`
 - synergy 4-piece: `18~25%`
 - silver augment: `6~8%`
 - gold augment: `9~12%`
@@ -82,3 +81,23 @@
 - `PassiveBoardDefinition`은 class canonical id를 owner로 가진다.
 - `PassiveNodeDefinition`은 `NodeKind`, prerequisite, mutual exclusion tag를 authoring할 수 있어야 한다.
 - explicit launch floor node roster는 `docs/02_design/meta/passive-board-node-catalog.md`가 소유한다.
+
+## Loop C governance addendum
+
+- affix budget window
+  - `Common 6 ±1`
+  - `Rare 10 ±1`
+  - `Epic 14 ±2`
+- augment budget window
+  - `Common 18 ±2`
+  - `Rare 26 ±3`
+  - `Epic 34 ±3`
+- synergy breakpoint budget
+  - `2-piece = Standard 12 ±2`
+  - `4-piece = Major 18 ±2`
+
+boundary rule:
+
+- item/drop rarity는 loot/economy/UI 체계로 남긴다.
+- `ContentRarity`는 affix/augment/passive governance용이다.
+- item `Unique` identity는 곧 combat `Legendary` rarity를 뜻하지 않는다.

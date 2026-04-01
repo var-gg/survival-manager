@@ -33,6 +33,7 @@ public sealed class AffixDefinition : ScriptableObject
     public float SpawnWeight = 1f;
     public string ExclusiveGroupId = string.Empty;
     public float BudgetScore = 0f;
+    public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Affix };
     public string TextTemplateKey = string.Empty;
     public AuthorityLayer AuthorityLayer = AuthorityLayer.Affix;
     public List<EffectDescriptor> Effects = new();

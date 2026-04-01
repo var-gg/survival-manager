@@ -112,3 +112,30 @@ offer 카드 구매 전 아래를 반드시 보여준다.
 - player가 `Scout(Backline)`을 사용한다.
 - 다음 refresh 1회에서만 `OnPlan` 슬롯 scoring에 `+2` bias가 들어간다.
 - `Protected` 슬롯의 rare/epic pity는 그대로 유지된다.
+
+## Loop C rarity boundary
+
+recruitment의 canonical rarity는 계속 `RecruitTier`다.
+
+- `RecruitTier`
+  - offer generation
+  - pity
+  - save serialization
+  - player-facing badge
+- `ContentRarity`
+  - validator
+  - compiler
+  - runtime combat template
+  - battle snapshot
+  - debug overlay
+
+일반 town recruit card에는 아래만 노출한다.
+
+- `RecruitTier`
+- role fantasy
+- key tag
+- counter hint
+- Gold cost / `OnPlan` / `Protected` / `Scout`
+
+`ContentRarity`, budget final score, derived delta, forbidden drift는
+`RecruitmentSandboxWindow` 같은 dev inspect에서만 노출한다.

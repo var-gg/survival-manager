@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_zone
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: zone
-  NameKey: content.tag.zone.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

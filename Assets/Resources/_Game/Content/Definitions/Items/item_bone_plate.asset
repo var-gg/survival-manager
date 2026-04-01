@@ -12,27 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: item_bone_plate
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ItemBaseDefinition
-  Id: item_bone_plate
-  NameKey: content.item.item_bone_plate.name
-  DescriptionKey: content.item.item_bone_plate.desc
-  SlotType: 1
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  SlotType: 0
   IdentityKind: 0
-  ItemFamilyTag: armor
+  ItemFamilyTag: 
   WeaponFamilyTag: 
   RarityTier: 0
-  AffixPoolTag: pool_armor
-  CraftCategory: armor
-  BudgetBand: personal_power_9
-  CraftCurrencyTag: ember_dust
+  AffixPoolTag: 
+  CraftCategory: 
+  BudgetBand: 
+  CraftCurrencyTag: 
   GrantedSkills: []
   CompileTags: []
   RuleModifierTags: []
   AllowedClassTags: []
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 00000000010000000200000004000000
-  BaseModifiers:
-  - StatId: max_health
-    Op: 0
-    Value: 3
+  AllowedCraftOperations: 
+  BaseModifiers: []
   legacyDisplayName: 

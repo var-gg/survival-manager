@@ -34,6 +34,29 @@ MonoBehaviour:
   HealCoeff: 0
   HealthCoeff: 0
   CanCrit: 1
+  ActivationModel: 2
+  Lane: 0
+  LockRule: 2
+  AuthorityLayer: 1
+  BudgetCard:
+    Domain: 1
+    Vector:
+      SustainedDamage: 4
+      BurstDamage: 4
+      Durability: 0
+      Control: 0
+      Mobility: 2
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 2
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 3
+    ConditionClauseCount: 2
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
   ManaCost: 0
   ResourceCost: -1
   BaseCooldownSeconds: 2.1
@@ -41,6 +64,7 @@ MonoBehaviour:
   CastWindupSeconds: 0.19
   RecoverySeconds: -1
   PowerBudget: 0
+  InterruptRefundScalar: 0.5
   AiIntents: 
   AiScoreHints:
     BurstBias: 0
@@ -56,6 +80,42 @@ MonoBehaviour:
   VfxHookId: 
   SfxHookId: 
   LearnSource: 0
+  EffectFamilyId: bulwark_signature
+  MutuallyExclusiveGroupId: 
+  RecruitNativeTags: []
+  RecruitPlanTags: []
+  RecruitScoutTags: []
+  TargetRuleData:
+    Domain: 2
+    PrimarySelector: 1
+    FallbackPolicy: 2
+    Filters: 5
+    ReevaluateIntervalSeconds: 0.25
+    MinimumCommitSeconds: 0.75
+    MaxAcquireRange: 0
+    PreferredMinTargets: 1
+    ClusterRadius: 2.5
+    LockTargetAtCastStart: 1
+    RetargetLockMode: 3
+  SummonProfile:
+    EntityKind: 1
+    BehaviorKind: 1
+    Eligibility: 24
+    CreditPolicy: 15
+    MaxConcurrentPerSource: 2
+    MaxConcurrentPerOwner: 4
+    DespawnOnOwnerDeath: 1
+    OwnerDeathDespawnDelaySeconds: 1
+    InheritOwnerTarget: 1
+    IsPersistent: 1
+    Inheritance:
+      OffenseBonusScalar: 0.5
+      DefenseBonusScalar: 0.35
+      UtilityBonusScalar: 0.25
+      InheritCritChance: 0
+      InheritDodge: 0
+      InheritBlock: 0
+  Effects: []
   CompileTags: []
   RuleModifierTags: []
   SupportAllowedTags: []
@@ -74,5 +134,6 @@ MonoBehaviour:
     RefreshPolicy: 0
     ProcAttributionPolicy: 0
     OwnershipPolicy: 0
+    Effects: []
   CleanseProfileId: 
   legacyDisplayName: 

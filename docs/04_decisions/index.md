@@ -31,6 +31,7 @@
 - `adr-0015-build-compile-audit-pipeline.md`: build-compile-audit 파이프라인 채택
 - `adr-0016-localization-boundary.md`: localization 경계와 공식 패키지 채택
 - `adr-0017-docs-context-harness.md`: 문서 컨텍스트 하네스와 tombstone registry 채택
+- `adr-0018-loop-c-content-governance.md`: BudgetCard/ContentRarity/8-lane/fatal forbidden policy 채택
 
 ## 운영 메모
 

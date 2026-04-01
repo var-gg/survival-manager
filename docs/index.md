@@ -46,6 +46,7 @@
 - validator / acceptance oracle 규칙: `03_architecture/validation-and-acceptance-oracles.md`
 - Unity MCP capability 계약: `03_architecture/unity-mcp-tooling-contract.md`
 - 현재 retrofit parent task: `../tasks/004_launch_floor_catalog_closure/status.md`
+- Loop C governance task: `../tasks/011_loop_c_content_governance_closure/status.md`
 
 ## localization 빠른 링크
 
@@ -77,10 +78,15 @@
 - combat behavior contract: `02_design/combat/combat-behavior-contract.md`
 - mobility contract: `02_design/combat/mobility-contract.md`
 - combat mechanics glossary: `02_design/combat/combat-mechanics-glossary.md`
+- counter-system topology: `02_design/combat/counter-system-topology.md`
 - status / keyword / proc rulebook: `02_design/combat/status-keyword-and-proc-rulebook.md`
 - skill authoring schema: `02_design/combat/skill-authoring-schema.md`
+- unit blueprint schema: `02_design/combat/unit-blueprint-schema.md`
 - skill catalog v1: `02_design/combat/skill-catalog-v1.md`
 - affix authoring schema: `02_design/meta/affix-authoring-schema.md`
+- content budgeting contract: `02_design/systems/content-budgeting-contract.md`
+- rarity ladder contract: `02_design/systems/rarity-ladder-contract.md`
+- v1 forbidden list: `02_design/systems/v1-forbidden-list.md`
 - recruitment contract: `02_design/meta/recruitment-contract.md`
 - retrain contract: `02_design/meta/retrain-contract.md`
 - economy protection contract: `02_design/meta/economy-protection-contract.md`

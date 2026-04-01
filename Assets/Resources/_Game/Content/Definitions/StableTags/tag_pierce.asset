@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_pierce
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: pierce
-  NameKey: content.tag.pierce.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

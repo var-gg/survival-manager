@@ -12,13 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: chapter_ruined_crypts
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CampaignChapterDefinition
-  Id: chapter_ruined_crypts
-  NameKey: content.campaign.chapter.chapter_ruined_crypts.name
-  DescriptionKey: content.campaign.chapter.chapter_ruined_crypts.desc
-  StoryOrder: 3
-  SiteIds:
-  - site_ruined_crypt
-  - site_grave_sanctum
-  UnlocksEndlessOnClear: 1
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  StoryOrder: 0
+  SiteIds: []
+  UnlocksEndlessOnClear: 0
   legacyDisplayName: 
   legacyDescription: 

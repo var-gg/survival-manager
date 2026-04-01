@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_exposed
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: exposed
-  NameKey: content.tag.exposed.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

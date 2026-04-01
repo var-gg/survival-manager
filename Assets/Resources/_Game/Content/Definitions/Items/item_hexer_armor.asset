@@ -26,7 +26,6 @@ MonoBehaviour:
   CraftCurrencyTag: ember_dust
   GrantedSkills: []
   CompileTags:
-  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
   RuleModifierTags: []
   AllowedClassTags: []

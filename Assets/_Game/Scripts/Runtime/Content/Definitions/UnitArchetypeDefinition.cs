@@ -22,6 +22,7 @@ public sealed class UnitArchetypeDefinition : ScriptableObject
     public string RoleFamilyTag = string.Empty;
     public string PrimaryWeaponFamilyTag = string.Empty;
     public RecruitTier RecruitTier = RecruitTier.Common;
+    public BudgetCard BudgetCard = new();
     public bool IsRecruitable = true;
     public bool IsSummonOnly;
     public bool IsEventOnly;

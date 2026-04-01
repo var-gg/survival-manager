@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_crit_multiplier
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: crit_multiplier
-  NameKey: content.stat.crit_multiplier.name
-  DescriptionKey: content.stat.crit_multiplier.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

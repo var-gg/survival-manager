@@ -93,3 +93,25 @@ Loop A 기준으로 affix는 `owner self` 또는 `owner-owned summons`만 수정
 
 - committed asset live subset은 `16~24 affix`면 충분하다.
 - full catalog는 Markdown source-of-truth로 유지하고, asset runtime 진입은 subset만 허용한다.
+
+## Loop C governance addendum
+
+Loop C부터 affix는 `ContentRarity`와 `BudgetCard`를 함께 가진다.
+
+- `Common`
+  - scalar 또는 single-condition rider
+  - declared counter tool 없음
+- `Rare`
+  - scalar + conditional 또는 local counter hook 1개
+- `Epic`
+  - owner-local build-shaping rule 1개
+
+추가 제약:
+
+- 양수 axis는 최대 3개
+- `Economy > 0` 금지
+- `CounterCoverage`는 `Rare+`만 허용
+- recruit, pity, offer, roster cap, loadout topology 수정 금지
+
+canonical 표는 `docs/02_design/systems/content-budgeting-contract.md`와
+`docs/02_design/systems/rarity-ladder-contract.md`를 따른다.

@@ -12,28 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: drop_table_extract
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:DropTableDefinition
-  Id: drop_table_extract
-  NameKey: content.drop_table.drop_table_extract.name
-  DescriptionKey: content.drop_table.drop_table_extract.desc
-  RewardSourceId: reward_source_extract
-  Entries:
-  - Id: gold_extract
-    RewardType: 0
-    Amount: 16
-    RarityBracket: 0
-    Weight: 1
-    IsGuaranteed: 1
-  - Id: ember_dust_extract
-    RewardType: 7
-    Amount: 5
-    RarityBracket: 1
-    Weight: 1
-    IsGuaranteed: 1
-  - Id: trait_reroll_token
-    RewardType: 2
-    Amount: 1
-    RarityBracket: 1
-    Weight: 2
-    IsGuaranteed: 0
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  RewardSourceId: 
+  Entries: []
   legacyDisplayName: 
   legacyDescription: 

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SM.Combat.Model;
+using SM.Content.Definitions;
 using SM.Core.Contracts;
+using SM.Editor.Validation;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
@@ -24,6 +26,7 @@ public sealed class RecruitmentSandboxWindow : EditorWindow
     private RecruitPityState _previewPityState = null!;
     private int _previewGeneration;
     private Vector2 _scroll;
+    private ContentValidationReport _governanceReport = new();
 
     [MenuItem(MenuPath)]
     public static void OpenWindow()
@@ -40,6 +43,7 @@ public sealed class RecruitmentSandboxWindow : EditorWindow
         _state.hideFlags = HideFlags.HideAndDontSave;
         ResetRuntimeSession();
         ResetPreviewState();
+        RefreshGovernanceReport();
     }
 
     private void OnDisable()
@@ -92,6 +96,11 @@ public sealed class RecruitmentSandboxWindow : EditorWindow
                     ? $"Refresh 성공\nnext cost={_session.CurrentRecruitRefreshCost}\nphase paid={_session.RecruitPhase.PaidRefreshCountThisPhase}"
                     : $"Refresh 실패\n{result.Error}";
             }
+
+            if (GUILayout.Button("Refresh Governance Report"))
+            {
+                RefreshGovernanceReport();
+            }
         }
 
         _state.RuntimeScoutDirectiveKind = (ScoutDirectiveKind)EditorGUILayout.EnumPopup("Scout Directive", _state.RuntimeScoutDirectiveKind);
@@ -126,6 +135,7 @@ public sealed class RecruitmentSandboxWindow : EditorWindow
                     $"flexA={offer.FlexActiveId}  flexP={offer.FlexPassiveId}  pity={offer.Metadata.ProtectedByPity}  scout={offer.Metadata.BiasedByScout}");
                 EditorGUILayout.LabelField(
                     $"score total={offer.Metadata.PlanScore.Total}  breakpoint={offer.Metadata.PlanScore.BreakpointProgressScore}  native={offer.Metadata.PlanScore.NativeTagMatchScore}  role={offer.Metadata.PlanScore.RoleNeedScore}  augment={offer.Metadata.PlanScore.AugmentHookScore}  scout={offer.Metadata.PlanScore.ScoutDirectiveScore}  over={offer.Metadata.PlanScore.OversaturationPenalty}");
+                EditorGUILayout.LabelField(BuildGovernanceSummary(offer.UnitBlueprintId), EditorStyles.wordWrappedMiniLabel);
 
                 if (GUILayout.Button($"Recruit Slot {i + 1}"))
                 {
@@ -391,6 +401,7 @@ public sealed class RecruitmentSandboxWindow : EditorWindow
             builder.AppendLine($"  flexA={offer.FlexActiveId} flexP={offer.FlexPassiveId}");
             builder.AppendLine(
                 $"  score total={offer.Metadata.PlanScore.Total} breakpoint={offer.Metadata.PlanScore.BreakpointProgressScore} native={offer.Metadata.PlanScore.NativeTagMatchScore} role={offer.Metadata.PlanScore.RoleNeedScore} augment={offer.Metadata.PlanScore.AugmentHookScore} scout={offer.Metadata.PlanScore.ScoutDirectiveScore} over={offer.Metadata.PlanScore.OversaturationPenalty}");
+            builder.AppendLine($"  {BuildGovernanceSummary(offer.UnitBlueprintId).Replace(Environment.NewLine, Environment.NewLine + "  ")}");
         }
 
         return builder.ToString().TrimEnd();
@@ -411,6 +422,7 @@ public sealed class RecruitmentSandboxWindow : EditorWindow
         builder.AppendLine($"prevA={hero.RetrainState?.PreviousFlexActiveId} prevP={hero.RetrainState?.PreviousFlexPassiveId}");
         builder.AppendLine($"retrainCount={hero.RetrainState?.RetrainCount ?? 0} planMiss={hero.RetrainState?.ConsecutivePlanIncoherentRetrains ?? 0}");
         builder.AppendLine($"footprint recruitGold={hero.EconomyFootprint?.RecruitGoldPaid ?? 0} retrainEcho={hero.EconomyFootprint?.RetrainEchoPaid ?? 0}");
+        builder.AppendLine(BuildGovernanceSummary(hero.ArchetypeId));
         return builder.ToString().TrimEnd();
     }
 
@@ -523,5 +535,65 @@ public sealed class RecruitmentSandboxWindow : EditorWindow
         var native = RecruitmentTemplateResolver.IsNativeCoherent(template, option);
         var coherent = RecruitmentTemplateResolver.IsPlanCoherent(template, option, plan);
         return $"native={native} plan={coherent}";
+    }
+
+    private void RefreshGovernanceReport()
+    {
+        try
+        {
+            _governanceReport = ContentDefinitionValidator.ValidateAndWriteReport();
+        }
+        catch (Exception ex)
+        {
+            _governanceReport = new ContentValidationReport
+            {
+                Issues = new[]
+                {
+                    new ContentValidationIssue(ContentValidationSeverity.Error, "sandbox.governance_refresh", ex.Message, string.Empty),
+                },
+            };
+        }
+    }
+
+    private string BuildGovernanceSummary(string archetypeId)
+    {
+        if (!_lookup.Snapshot.Archetypes.TryGetValue(archetypeId, out var template) || template.Governance == null)
+        {
+            return "gov missing";
+        }
+
+        var audit = _governanceReport.LoopC.BudgetAudit
+            .FirstOrDefault(entry => string.Equals(entry.ContentKind, nameof(UnitArchetypeDefinition), StringComparison.Ordinal)
+                                     && string.Equals(entry.ContentId, archetypeId, StringComparison.Ordinal));
+        var issues = ResolveGovernanceIssues(archetypeId);
+        var drift = audit == null ? "?" : audit.DerivedDelta.ToString();
+        return string.Join(
+            Environment.NewLine,
+            $"gov rarity={template.Governance.Rarity} role={template.Governance.RoleProfile} budget={template.Governance.BudgetFinalScore} delta={drift}",
+            $"threats=[{string.Join(", ", template.Governance.DeclaredThreatPatterns)}]",
+            $"counters=[{FormatCounters(template.Governance)}] flags={template.Governance.DeclaredFeatureFlags}",
+            $"drift={(issues.Count == 0 ? "clean" : string.Join(", ", issues))}");
+    }
+
+    private IReadOnlyList<string> ResolveGovernanceIssues(string archetypeId)
+    {
+        if (!_lookup.TryGetArchetype(archetypeId, out var archetype))
+        {
+            return Array.Empty<string>();
+        }
+
+        var assetPath = ContentDefinitionValidator.ResolveAssetPath(archetype);
+        return _governanceReport.Issues
+            .Where(issue => string.Equals(issue.AssetPath, assetPath, StringComparison.Ordinal))
+            .Select(issue => issue.Code)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private static string FormatCounters(ContentGovernanceSummary governance)
+    {
+        return governance.DeclaredCounterTools == null || governance.DeclaredCounterTools.Count == 0
+            ? "None"
+            : string.Join(", ", governance.DeclaredCounterTools.Select(tool => $"{tool.Tool}:{tool.Strength}"));
     }
 }

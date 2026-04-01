@@ -21,8 +21,7 @@ MonoBehaviour:
   - passive_duelist_small_08
   MutualExclusionTags: []
   BoardDepth: 3
-  CompileTags:
-  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  CompileTags: []
   RuleModifierTags: []
   Modifiers:
   - StatId: phys_pen

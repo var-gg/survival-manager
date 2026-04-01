@@ -10,6 +10,7 @@ public sealed class MobilityDefinition
     public string Id = string.Empty;
     public string NameKey = string.Empty;
     public string DescriptionKey = string.Empty;
+    public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Mobility };
     public ActivationModel ActivationModel = ActivationModel.Trigger;
     public ActionLane Lane = ActionLane.Reaction;
     public ActionLockRule LockRule = ActionLockRule.HardCommit;

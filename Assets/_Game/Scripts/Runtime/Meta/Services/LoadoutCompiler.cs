@@ -14,7 +14,7 @@ namespace SM.Meta.Services;
 
 public sealed class LoadoutCompiler
 {
-    public const string CurrentCompileVersion = "loop-b-recruitment-economy-closure.v1";
+    public const string CurrentCompileVersion = "loop-c-content-governance-closure.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -235,7 +235,8 @@ public sealed class LoadoutCompiler
                 archetype.Energy,
                 archetype.EntityKind,
                 archetype.Ownership,
-                archetype.SummonProfile));
+                archetype.SummonProfile,
+                archetype.Governance));
 
             compileProvenance.AddRange(artifacts.Provenance);
         }
@@ -263,6 +264,7 @@ public sealed class LoadoutCompiler
                 TeamRulePackages = Array.Empty<CombatRuleModifierPackage>()
             })
             .ToList();
+        var counterCoverage = CounterCoverageAggregationService.AggregateFromLoadouts(finalized);
         var compileHash = ComputeCompileHash(finalized, teamPackages, blueprint, overlay);
 
         return new BattleLoadoutSnapshot(
@@ -276,7 +278,8 @@ public sealed class LoadoutCompiler
                 .Select(pair => pair.Value)
                 .ToList(),
             teamTags,
-            compileProvenance);
+            compileProvenance,
+            counterCoverage);
     }
 
     private static void AddNumericPackage(

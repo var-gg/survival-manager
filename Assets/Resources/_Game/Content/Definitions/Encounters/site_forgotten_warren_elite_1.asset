@@ -12,22 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_forgotten_warren_elite_1
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EncounterDefinition
-  Id: site_forgotten_warren_elite_1
-  NameKey: content.encounter.site_forgotten_warren_elite_1.name
-  DescriptionKey: content.encounter.site_forgotten_warren_elite_1.desc
-  Kind: 1
-  SiteId: site_forgotten_warren
-  EnemySquadTemplateId: site_forgotten_warren_elite_1_squad
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  Kind: 0
+  SiteId: 
+  EnemySquadTemplateId: 
   BossOverlayId: 
-  RewardSourceId: reward_source_elite
-  FactionId: faction_warren_pack
-  ThreatTier: 2
-  ThreatCost: 2
-  ThreatSkulls: 2
-  DifficultyBand: site_mid
-  RewardDropTags:
-  - reward_source_elite
-  - faction_warren_pack
-  - elite
+  RewardSourceId: 
+  FactionId: 
+  ThreatTier: 1
+  ThreatCost: 1
+  ThreatSkulls: 1
+  DifficultyBand: 
+  RewardDropTags: []
   legacyDisplayName: 
   legacyDescription: 

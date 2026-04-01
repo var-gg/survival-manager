@@ -111,7 +111,7 @@
 - augment slot topology mutation
 - summon-chain violation
 - status stack cap / refresh policy / ownership policy
-- exact synergy `2 / 3 / 4` tier 누락
+- exact synergy `2 / 4` tier 누락
 - deterministic report output
 
 ## report output
@@ -148,3 +148,50 @@
 - `96 passive nodes`
 - `24 temporary augments`
 - `12 permanent augments`
+
+## Loop C registry and runtime boundary
+
+Loop C의 governance source-of-truth는 editor-side registry와 각 definition의
+`BudgetCard`다.
+
+- `BudgetCard` required definitions
+  - `UnitArchetypeDefinition`
+  - `SkillDefinitionAsset`
+  - `PassiveDefinition`
+  - `MobilityDefinition`
+  - `AffixDefinition`
+  - `AugmentDefinition`
+  - `SynergyTierDefinition`
+  - `StatusFamilyDefinition`
+- runtime combat summary fields
+  - `ContentRarity`
+  - `PowerBand?`
+  - `CombatRoleBudgetProfile?`
+  - `BudgetFinalScore`
+  - `DeclaredThreatPatterns`
+  - `DeclaredCounterTools`
+  - `DeclaredFeatureFlags`
+- runtime combat summary에는 `RecruitTier`를 싣지 않는다.
+
+## Loop C validator ownership
+
+- `BudgetWindowValidationPass`
+- `BudgetIdentityValidationPass`
+- `RarityComplexityValidationPass`
+- `CounterTopologyValidationPass`
+- `SynergyStructureValidationPass`
+- `V1ForbiddenFeatureValidationPass`
+
+synergy `2 / 4` 구조 검사는 `CounterTopologyValidationPass`가 아니라
+`SynergyStructureValidationPass`가 소유한다.
+
+## Loop C audit artifact
+
+`ContentDefinitionValidator.ValidateAndWriteReport()`는 아래 artifact를 항상 남긴다.
+
+- `Logs/content-validation/content-validation-report.json`
+- `Logs/content-validation/content-validation-summary.md`
+- `Logs/content-validation/content_budget_audit.json`
+- `Logs/content-validation/content_budget_audit.md`
+- `Logs/content-validation/counter_coverage_matrix.md`
+- `Logs/content-validation/v1_forbidden_feature_report.md`

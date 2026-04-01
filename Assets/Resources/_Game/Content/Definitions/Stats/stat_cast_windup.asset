@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_cast_windup
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: cast_windup
-  NameKey: content.stat.cast_windup.name
-  DescriptionKey: content.stat.cast_windup.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

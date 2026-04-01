@@ -22,7 +22,6 @@ MonoBehaviour:
   MutualExclusionTags: []
   BoardDepth: 4
   CompileTags:
-  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
   RuleModifierTags: []
   Modifiers:

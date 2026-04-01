@@ -5,7 +5,6 @@ using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
 
-public enum AugmentRarity { Silver = 0, Gold = 1, Platinum = 2, Permanent = 3 }
 [System.Flags]
 public enum AugmentEligibleModeValue { Expedition = 1, Pvp = 2 }
 
@@ -15,8 +14,9 @@ public sealed class AugmentDefinition : ScriptableObject
     public string Id = string.Empty;
     public string NameKey = string.Empty;
     public string DescriptionKey = string.Empty;
-    public AugmentRarity Rarity = AugmentRarity.Silver;
+    public ContentRarity Rarity = ContentRarity.Common;
     public bool IsPermanent;
+    public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Augment, PowerBand = global::SM.Content.Definitions.PowerBand.Major };
     public AugmentCategoryValue Category = AugmentCategoryValue.Combat;
     public string FamilyId = string.Empty;
     public int Tier = 1;

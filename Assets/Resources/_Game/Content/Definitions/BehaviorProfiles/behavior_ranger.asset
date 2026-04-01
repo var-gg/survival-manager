@@ -12,14 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: behavior_ranger
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:BehaviorProfileDefinition
-  ReevaluationInterval: 0.24
-  RangeHysteresis: 0.28
-  RetreatBias: 0.72
-  MaintainRangeBias: 0.84
-  Opportunism: 0.58
-  Discipline: 0.74
-  DodgeChance: 0.12
-  BlockChance: 0.04
-  BlockMitigation: 0.12
-  Stability: 0.34
-  BlockCooldownSeconds: 1.5
+  FormationLine: 0
+  RangeDiscipline: 1
+  ReevaluationInterval: 0.25
+  RangeHysteresis: 0.25
+  PreferredRangeMin: 0
+  PreferredRangeMax: 0
+  ApproachBuffer: 0.4
+  RetreatBuffer: 0.25
+  ChaseLeashMeters: 5
+  RetreatAtHpPercent: 0
+  RetreatBias: 0.15
+  MaintainRangeBias: 0.15
+  Opportunism: 0.5
+  Discipline: 0.5
+  DodgeChance: 0
+  BlockChance: 0
+  BlockMitigation: 0.25
+  Stability: 0.5
+  BlockCooldownSeconds: 1.2

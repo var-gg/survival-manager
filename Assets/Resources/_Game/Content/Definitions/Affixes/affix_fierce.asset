@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: affix_fierce
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AffixDefinition
-  Id: affix_fierce
-  NameKey: content.affix.affix_fierce.name
-  DescriptionKey: content.affix.affix_fierce.desc
-  Category: 0
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  Category: 4
   Tier: 1
   AffixFamily: 0
   EffectType: 0
   ValueMin: 0
   ValueMax: 0
-  AllowedSlotTypes: 00000000
+  AllowedSlotTypes: 
   CompileTags: []
   RuleModifierTags: []
   RequiredTags: []
@@ -30,10 +30,28 @@ MonoBehaviour:
   SpawnWeight: 1
   ExclusiveGroupId: 
   BudgetScore: 0
+  BudgetCard:
+    Domain: 4
+    Vector:
+      SustainedDamage: 0
+      BurstDamage: 0
+      Durability: 0
+      Control: 0
+      Mobility: 0
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 0
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 0
+    ConditionClauseCount: 0
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
   TextTemplateKey: 
-  Modifiers:
-  - StatId: phys_power
-    Op: 0
-    Value: 1
+  AuthorityLayer: 2
+  Effects: []
+  Modifiers: []
   legacyDisplayName: 
   legacyDescription: 

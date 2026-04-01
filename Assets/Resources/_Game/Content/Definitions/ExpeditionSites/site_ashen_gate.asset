@@ -12,18 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_ashen_gate
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ExpeditionSiteDefinition
-  Id: site_ashen_gate
-  ChapterId: chapter_ashen_frontier
-  NameKey: content.campaign.site.site_ashen_gate.name
-  DescriptionKey: content.campaign.site.site_ashen_gate.desc
-  SiteOrder: 1
-  FactionId: faction_ashen_vanguard
-  EncounterIds:
-  - site_ashen_gate_skirmish_1
-  - site_ashen_gate_skirmish_2
-  - site_ashen_gate_elite_1
-  - site_ashen_gate_boss_1
-  ExtractRewardSourceId: reward_source_extract
+  Id: 
+  ChapterId: 
+  NameKey: 
+  DescriptionKey: 
+  SiteOrder: 0
+  FactionId: 
+  EncounterIds: []
+  ExtractRewardSourceId: 
   ThreatTier: 1
   legacyDisplayName: 
   legacyDescription: 

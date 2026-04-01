@@ -63,6 +63,10 @@ public static class ContentDefinitionValidator
     private const string ReportFolderName = "Logs/content-validation";
     private const string JsonReportFileName = "content-validation-report.json";
     private const string MarkdownSummaryFileName = "content-validation-summary.md";
+    private const string BudgetAuditJsonFileName = "content_budget_audit.json";
+    private const string BudgetAuditMarkdownFileName = "content_budget_audit.md";
+    private const string CounterCoverageMatrixMarkdownFileName = "counter_coverage_matrix.md";
+    private const string ForbiddenFeatureReportMarkdownFileName = "v1_forbidden_feature_report.md";
 
     private static readonly string[] RequiredLocaleCodes = { "ko", "en" };
     private static readonly BindingFlags InstanceFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -93,7 +97,8 @@ public static class ContentDefinitionValidator
     };
     private static readonly HashSet<string> AllowedRoleFamilyTags = new(StringComparer.Ordinal) { "vanguard", "striker", "ranger", "mystic" };
     private static readonly HashSet<string> AllowedRoleInstructionTags = new(StringComparer.Ordinal) { "anchor", "bruiser", "carry", "support", "frontline", "backline" };
-    private static readonly HashSet<int> RequiredSynergyThresholds = new() { 2, 3, 4 };
+    private static readonly HashSet<int> RequiredSynergyThresholds = new() { 2, 4 };
+    private static readonly Dictionary<int, string> FallbackResolvedAssetPaths = new();
 
     public static LaunchScopeThreshold CurrentMvpMinimum { get; } = new()
     {
@@ -144,6 +149,36 @@ public static class ContentDefinitionValidator
     public static LaunchScopeCountReport BuildLaunchScopeCountReport()
     {
         return BuildLaunchScopeCountReport(LoadAllDefinitionAssets());
+    }
+
+    internal static string ResolveAssetPath(UnityEngine.Object asset)
+    {
+        if (asset == null)
+        {
+            return string.Empty;
+        }
+
+#if UNITY_EDITOR
+        var assetPath = AssetDatabase.GetAssetPath(asset);
+        if (!string.IsNullOrWhiteSpace(assetPath))
+        {
+            return assetPath;
+        }
+#endif
+
+        return FallbackResolvedAssetPaths.TryGetValue(asset.GetInstanceID(), out var fallbackPath)
+            ? fallbackPath
+            : asset.name ?? string.Empty;
+    }
+
+    internal static void RegisterResolvedAssetPath(UnityEngine.Object asset, string assetPath)
+    {
+        if (asset == null || string.IsNullOrWhiteSpace(assetPath))
+        {
+            return;
+        }
+
+        FallbackResolvedAssetPaths[asset.GetInstanceID()] = assetPath;
     }
 
     public static LaunchScopeCountReport BuildLaunchScopeCountReport(IEnumerable<ScriptableObject> assets)
@@ -202,7 +237,7 @@ public static class ContentDefinitionValidator
 
         foreach (var asset in allAssets)
         {
-            var assetPath = AssetDatabase.GetAssetPath(asset);
+            var assetPath = ResolveAssetPath(asset);
             ValidateLocalizationAsset(asset, assetPath, localizationKeys, issues);
 
             switch (asset)
@@ -389,6 +424,7 @@ public static class ContentDefinitionValidator
         }
 
         ValidateLaunchFloorCatalogs(allAssets, issues);
+        var loopCSummary = LoopCContentGovernanceValidator.Validate(allAssets, issues);
 
         return new ContentValidationReport
         {
@@ -397,6 +433,7 @@ public static class ContentDefinitionValidator
             FloorGaps = floorGaps,
             SafeTargetGaps = safeTargetGaps,
             PassiveBoards = passiveBoardReports,
+            LoopC = loopCSummary,
             Issues = issues
                 .OrderByDescending(issue => issue.Severity)
                 .ThenBy(issue => issue.Code, StringComparer.Ordinal)
@@ -411,14 +448,26 @@ public static class ContentDefinitionValidator
         Directory.CreateDirectory(reportDirectory);
         var jsonPath = Path.Combine(reportDirectory, JsonReportFileName);
         var markdownPath = Path.Combine(reportDirectory, MarkdownSummaryFileName);
+        var budgetAuditJsonPath = Path.Combine(reportDirectory, BudgetAuditJsonFileName);
+        var budgetAuditMarkdownPath = Path.Combine(reportDirectory, BudgetAuditMarkdownFileName);
+        var counterCoverageMatrixMarkdownPath = Path.Combine(reportDirectory, CounterCoverageMatrixMarkdownFileName);
+        var forbiddenFeatureReportMarkdownPath = Path.Combine(reportDirectory, ForbiddenFeatureReportMarkdownFileName);
         var withPaths = report with
         {
             JsonReportPath = jsonPath,
             MarkdownSummaryPath = markdownPath,
+            ContentBudgetAuditJsonPath = budgetAuditJsonPath,
+            ContentBudgetAuditMarkdownPath = budgetAuditMarkdownPath,
+            CounterCoverageMatrixMarkdownPath = counterCoverageMatrixMarkdownPath,
+            ForbiddenFeatureReportMarkdownPath = forbiddenFeatureReportMarkdownPath,
         };
 
         File.WriteAllText(jsonPath, JsonConvert.SerializeObject(withPaths, Formatting.Indented));
         File.WriteAllText(markdownPath, BuildMarkdownSummary(withPaths));
+        File.WriteAllText(budgetAuditJsonPath, JsonConvert.SerializeObject(withPaths.LoopC.BudgetAudit, Formatting.Indented));
+        File.WriteAllText(budgetAuditMarkdownPath, BuildLoopCBudgetAuditMarkdown(withPaths));
+        File.WriteAllText(counterCoverageMatrixMarkdownPath, BuildCounterCoverageMatrixMarkdown(withPaths));
+        File.WriteAllText(forbiddenFeatureReportMarkdownPath, BuildForbiddenFeatureReportMarkdown(withPaths));
         return withPaths;
     }
 
@@ -668,23 +717,26 @@ public static class ContentDefinitionValidator
 
     private static List<ScriptableObject> LoadAllDefinitionAssets()
     {
-        var results = new List<ScriptableObject>();
-        var seenPaths = new HashSet<string>(StringComparer.Ordinal);
+        var assetsByPath = new Dictionary<string, ScriptableObject>(StringComparer.Ordinal);
+        var pathScores = new Dictionary<string, int>(StringComparer.Ordinal);
+        var looseAssets = new List<ScriptableObject>();
         var root = SampleSeedGenerator.ResourcesRoot.Replace('\\', '/');
         var definitionTypes = GetKnownDefinitionTypes();
         var resourcesAssets = Resources.LoadAll<ScriptableObject>("_Game/Content/Definitions")
             .Where(asset => asset != null)
-            .Select(asset => (asset, AssetDatabase.GetAssetPath(asset)))
+            .Select(asset => (asset, ResolveAssetPath(asset)))
             .ToList();
 
         AddLoadedAssets(
-            results,
-            seenPaths,
+            assetsByPath,
+            pathScores,
+            looseAssets,
             resourcesAssets);
 
 #if UNITY_EDITOR
         var typedQueryCount = 0;
         var genericQueryCount = 0;
+        var diskCount = 0;
         if (AssetDatabase.IsValidFolder(root))
         {
             foreach (var definitionType in definitionTypes)
@@ -695,8 +747,9 @@ public static class ContentDefinitionValidator
                     .ToList();
                 typedQueryCount += paths.Count;
                 AddLoadedAssets(
-                    results,
-                    seenPaths,
+                    assetsByPath,
+                    pathScores,
+                    looseAssets,
                     paths.Select(path => (LoadDefinitionAssetAtPath(path, definitionType), path)));
             }
 
@@ -706,24 +759,26 @@ public static class ContentDefinitionValidator
                 .ToList();
             genericQueryCount = genericPaths.Count;
             AddLoadedAssets(
-                results,
-                seenPaths,
+                assetsByPath,
+                pathScores,
+                looseAssets,
                 genericPaths.Select(path => (LoadDefinitionAssetAtPath(path), path)));
         }
 
-        if (results.Count == 0)
+        if (GetLoadedAssetCount(assetsByPath, looseAssets) == 0)
         {
             var projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
             var diskRoot = Path.Combine(projectRoot, root.Replace('/', Path.DirectorySeparatorChar));
-            var diskCount = Directory.Exists(diskRoot)
+            diskCount = Directory.Exists(diskRoot)
                 ? Directory.EnumerateFiles(diskRoot, "*.asset", SearchOption.AllDirectories).Count()
                 : 0;
             Debug.LogWarning($"[ContentDefinitionValidator] Zero assets loaded. root={root} validFolder={AssetDatabase.IsValidFolder(root)} resources={resourcesAssets.Count} typedQueries={typedQueryCount} genericQuery={genericQueryCount} disk={diskCount}");
             if (Directory.Exists(diskRoot))
             {
                 AddLoadedAssets(
-                    results,
-                    seenPaths,
+                    assetsByPath,
+                    pathScores,
+                    looseAssets,
                     Directory.EnumerateFiles(diskRoot, "*.asset", SearchOption.AllDirectories)
                         .Select(path => path.Replace('\\', '/'))
                         .Select(path => path.StartsWith(projectRoot.Replace('\\', '/') + "/", StringComparison.Ordinal)
@@ -732,14 +787,35 @@ public static class ContentDefinitionValidator
                         .Select(path => (LoadDefinitionAssetAtPath(path), path)));
             }
         }
+
+        var loadedCount = GetLoadedAssetCount(assetsByPath, looseAssets);
+        if (loadedCount == 0 || (genericQueryCount > 0 && loadedCount < genericQueryCount) || (diskCount > 0 && loadedCount < diskCount))
+        {
+            var fallback = ContentDefinitionFileFallbackLoader.Load();
+            AddLoadedAssets(
+                assetsByPath,
+                pathScores,
+                looseAssets,
+                fallback.Assets.Select(asset =>
+                {
+                    var assetPath = fallback.AssetPaths.TryGetValue(asset.GetInstanceID(), out var resolvedPath)
+                        ? resolvedPath
+                        : asset.name;
+                    RegisterResolvedAssetPath(asset, assetPath);
+                    return (asset, assetPath);
+                }));
+        }
 #endif
 
-        return results;
+        return assetsByPath.Values
+            .Concat(looseAssets)
+            .ToList();
     }
 
     private static void AddLoadedAssets(
-        ICollection<ScriptableObject> destination,
-        ISet<string> seenPaths,
+        IDictionary<string, ScriptableObject> assetsByPath,
+        IDictionary<string, int> pathScores,
+        ICollection<ScriptableObject> looseAssets,
         IEnumerable<(ScriptableObject? Asset, string Path)> candidates)
     {
         foreach (var (asset, path) in candidates)
@@ -749,16 +825,133 @@ public static class ContentDefinitionValidator
                 continue;
             }
 
-            if (!string.IsNullOrWhiteSpace(path))
+            if (ShouldSkipLoadedAsset(asset, path))
             {
-                if (!seenPaths.Add(path))
-                {
-                    continue;
-                }
+                continue;
             }
 
-            destination.Add(asset);
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                if (!looseAssets.Contains(asset))
+                {
+                    looseAssets.Add(asset);
+                }
+
+                continue;
+            }
+
+            var score = GetAssetCompletenessScore(asset);
+            if (!assetsByPath.TryGetValue(path, out var existing)
+                || !pathScores.TryGetValue(path, out var existingScore)
+                || score >= existingScore)
+            {
+                assetsByPath[path] = asset;
+                pathScores[path] = score;
+            }
         }
+    }
+
+    private static int GetLoadedAssetCount(
+        IReadOnlyDictionary<string, ScriptableObject> assetsByPath,
+        IReadOnlyCollection<ScriptableObject> looseAssets)
+    {
+        return assetsByPath.Count + looseAssets.Count;
+    }
+
+    private static bool ShouldSkipLoadedAsset(ScriptableObject asset, string path)
+    {
+        if (asset is SynergyTierDefinition tier)
+        {
+            return tier.Threshold == 3
+                   || path.EndsWith("_3.asset", StringComparison.OrdinalIgnoreCase);
+        }
+
+        return false;
+    }
+
+    private static int GetAssetCompletenessScore(ScriptableObject asset)
+    {
+        var score = 0;
+        switch (asset)
+        {
+            case UnitArchetypeDefinition archetype:
+                score += string.IsNullOrWhiteSpace(archetype.Id) ? 0 : 10;
+                score += archetype.Race != null ? 5 : 0;
+                score += archetype.Class != null ? 5 : 0;
+                score += archetype.TraitPool != null ? 5 : 0;
+                score += archetype.Skills?.Count ?? 0;
+                score += archetype.TacticPreset?.Count ?? 0;
+                score += archetype.BudgetCard?.Vector?.FinalScore ?? 0;
+                break;
+            case SkillDefinitionAsset skill:
+                score += string.IsNullOrWhiteSpace(skill.Id) ? 0 : 10;
+                score += skill.BudgetCard?.Vector?.FinalScore ?? 0;
+                score += skill.CompileTags?.Count ?? 0;
+                break;
+            case AugmentDefinition augment:
+                score += string.IsNullOrWhiteSpace(augment.Id) ? 0 : 10;
+                score += augment.BudgetCard?.Vector?.FinalScore ?? 0;
+                score += augment.Modifiers?.Count ?? 0;
+                break;
+            case SynergyTierDefinition tier:
+                score += string.IsNullOrWhiteSpace(tier.Id) ? 0 : 10;
+                score += tier.BudgetCard?.Vector?.FinalScore ?? 0;
+                score += tier.Threshold;
+                break;
+            case StatusFamilyDefinition status:
+                score += string.IsNullOrWhiteSpace(status.Id) ? 0 : 10;
+                score += status.BudgetCard?.Vector?.FinalScore ?? 0;
+                score += status.DefaultStackCap;
+                break;
+            case CleanseProfileDefinition cleanse:
+                score += string.IsNullOrWhiteSpace(cleanse.Id) ? 0 : 10;
+                score += cleanse.RemovesStatusIds?.Count ?? 0;
+                score += cleanse.GrantsUnstoppable ? 2 : 0;
+                break;
+            default:
+                score += string.IsNullOrWhiteSpace(GetCanonicalId(asset)) ? 0 : 10;
+                break;
+        }
+
+        return score;
+    }
+
+    private static string GetCanonicalId(ScriptableObject asset)
+    {
+        return asset switch
+        {
+            StatDefinition stat => stat.Id,
+            RaceDefinition race => race.Id,
+            ClassDefinition @class => @class.Id,
+            TraitPoolDefinition traitPool => traitPool.Id,
+            UnitArchetypeDefinition archetype => archetype.Id,
+            SkillDefinitionAsset skill => skill.Id,
+            AugmentDefinition augment => augment.Id,
+            ItemBaseDefinition item => item.Id,
+            AffixDefinition affix => affix.Id,
+            StableTagDefinition tag => tag.Id,
+            TeamTacticDefinition tactic => tactic.Id,
+            RoleInstructionDefinition role => role.Id,
+            PassiveBoardDefinition board => board.Id,
+            PassiveNodeDefinition node => node.Id,
+            SynergyDefinition synergy => synergy.Id,
+            SynergyTierDefinition tier => tier.Id,
+            ExpeditionDefinition expedition => expedition.Id,
+            RewardTableDefinition rewardTable => rewardTable.Id,
+            CampaignChapterDefinition chapter => chapter.Id,
+            ExpeditionSiteDefinition site => site.Id,
+            EncounterDefinition encounter => encounter.Id,
+            EnemySquadTemplateDefinition squad => squad.Id,
+            BossOverlayDefinition overlay => overlay.Id,
+            StatusFamilyDefinition status => status.Id,
+            CleanseProfileDefinition cleanse => cleanse.Id,
+            ControlDiminishingRuleDefinition controlRule => controlRule.Id,
+            RewardSourceDefinition rewardSource => rewardSource.Id,
+            DropTableDefinition dropTable => dropTable.Id,
+            LootBundleDefinition lootBundle => lootBundle.Id,
+            TraitTokenDefinition traitToken => traitToken.Id,
+            _ => string.Empty,
+        };
     }
 
 #if UNITY_EDITOR
@@ -968,6 +1161,63 @@ public static class ContentDefinitionValidator
             {
                 builder.AppendLine($"- `{issue.Severity}` `{issue.Code}` {issue.Message} ({issue.AssetPath}{(string.IsNullOrWhiteSpace(issue.Scope) ? string.Empty : $" / {issue.Scope}")})");
             }
+        }
+
+        builder.AppendLine();
+        builder.AppendLine("## Loop C Artifacts");
+        builder.AppendLine();
+        builder.AppendLine($"- budgetAuditJson: `{report.ContentBudgetAuditJsonPath}`");
+        builder.AppendLine($"- budgetAuditMarkdown: `{report.ContentBudgetAuditMarkdownPath}`");
+        builder.AppendLine($"- counterCoverageMatrix: `{report.CounterCoverageMatrixMarkdownPath}`");
+        builder.AppendLine($"- forbiddenFeatureReport: `{report.ForbiddenFeatureReportMarkdownPath}`");
+
+        return builder.ToString();
+    }
+
+    private static string BuildLoopCBudgetAuditMarkdown(ContentValidationReport report)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine("# Content Budget Audit");
+        builder.AppendLine();
+        builder.AppendLine("| Content | Kind | Domain | Rarity | PowerBand | Role | Final | Derived | Delta | Counters |");
+        builder.AppendLine("|---|---|---|---|---|---|---:|---:|---:|---|");
+        foreach (var entry in report.LoopC.BudgetAudit)
+        {
+            builder.AppendLine($"| `{entry.ContentId}` | `{entry.ContentKind}` | `{entry.Domain}` | `{entry.Rarity}` | `{entry.PowerBand}` | `{entry.RoleProfile}` | {entry.BudgetFinalScore} | {entry.DerivedScore} | {entry.DerivedDelta} | {entry.CounterTools} |");
+        }
+
+        return builder.ToString();
+    }
+
+    private static string BuildCounterCoverageMatrixMarkdown(ContentValidationReport report)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine("# Counter Coverage Matrix");
+        builder.AppendLine();
+        builder.AppendLine("| Content | Kind | Threats | Counters |");
+        builder.AppendLine("|---|---|---|---|");
+        foreach (var entry in report.LoopC.CounterCoverageMatrix)
+        {
+            builder.AppendLine($"| `{entry.ContentId}` | `{entry.ContentKind}` | {entry.ThreatPatterns} | {entry.CounterTools} |");
+        }
+
+        return builder.ToString();
+    }
+
+    private static string BuildForbiddenFeatureReportMarkdown(ContentValidationReport report)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine("# V1 Forbidden Feature Report");
+        builder.AppendLine();
+        if (report.LoopC.ForbiddenFeatureEntries.Count == 0)
+        {
+            builder.AppendLine("- none");
+            return builder.ToString();
+        }
+
+        foreach (var entry in report.LoopC.ForbiddenFeatureEntries)
+        {
+            builder.AppendLine($"- `{entry.ContentId}` `{entry.FeatureFlags}` {entry.Reason} ({entry.AssetPath})");
         }
 
         return builder.ToString();
@@ -1402,7 +1652,7 @@ public static class ContentDefinitionValidator
             .ToList();
         if (!RequiredSynergyThresholds.SetEquals(thresholds))
         {
-            AddError(issues, "synergy.thresholds", "Synergy must define exact 2/3/4 breakpoint tiers.", assetPath);
+            AddError(issues, "synergy.thresholds", "Synergy must define exact 2/4 breakpoint tiers.", assetPath);
         }
 
         LoopAContractValidator.ValidateSynergy(synergy, assetPath, issues);
@@ -1413,7 +1663,7 @@ public static class ContentDefinitionValidator
         ValidateModifiers(issues, tier.Modifiers, assetPath, "SynergyTierDefinition.Modifiers");
         if (!RequiredSynergyThresholds.Contains(tier.Threshold))
         {
-            AddError(issues, "synergy_tier.threshold", "Synergy tier threshold must be one of 2, 3, or 4.", assetPath);
+            AddError(issues, "synergy_tier.threshold", "Synergy tier threshold must be one of 2 or 4.", assetPath);
         }
     }
 
@@ -1535,7 +1785,7 @@ public static class ContentDefinitionValidator
 
         foreach (var chapter in chapters.Values)
         {
-            var assetPath = AssetDatabase.GetAssetPath(chapter);
+            var assetPath = ResolveAssetPath(chapter);
             if (chapter.SiteIds.Distinct(StringComparer.Ordinal).Count() != 2)
             {
                 AddError(issues, "campaign.chapter_site_count", "Campaign chapter must own exactly 2 expedition sites.", assetPath);
@@ -1552,7 +1802,7 @@ public static class ContentDefinitionValidator
 
         foreach (var site in sites.Values)
         {
-            var assetPath = AssetDatabase.GetAssetPath(site);
+            var assetPath = ResolveAssetPath(site);
             if (!chapters.ContainsKey(site.ChapterId))
             {
                 AddError(issues, "campaign.site_chapter_ref", $"Expedition site references missing chapter '{site.ChapterId}'.", assetPath);
@@ -1579,7 +1829,7 @@ public static class ContentDefinitionValidator
 
         foreach (var encounter in encounters.Values)
         {
-            var assetPath = AssetDatabase.GetAssetPath(encounter);
+            var assetPath = ResolveAssetPath(encounter);
             if (!sites.ContainsKey(encounter.SiteId))
             {
                 AddError(issues, "encounter.site_ref", $"Encounter references missing site '{encounter.SiteId}'.", assetPath);
@@ -1630,7 +1880,7 @@ public static class ContentDefinitionValidator
 
         foreach (var squad in squads.Values)
         {
-            var assetPath = AssetDatabase.GetAssetPath(squad);
+            var assetPath = ResolveAssetPath(squad);
             if (string.IsNullOrWhiteSpace(squad.FactionId))
             {
                 AddError(issues, "enemy_squad.faction_id", "Enemy squad must keep a faction/allegiance id.", assetPath);
@@ -1684,7 +1934,7 @@ public static class ContentDefinitionValidator
         else
         {
             var rule = controlRules[0];
-            var assetPath = AssetDatabase.GetAssetPath(rule);
+            var assetPath = ResolveAssetPath(rule);
             if (Math.Abs(rule.WindowSeconds - 1.5f) > 0.001f || Math.Abs(rule.ControlResistMultiplier - 0.5f) > 0.001f)
             {
                 AddError(issues, "status.dr_values", "Launch-floor DR must stay at 1.5s window and 50% control resist.", assetPath);
@@ -1693,7 +1943,7 @@ public static class ContentDefinitionValidator
 
         foreach (var profile in cleanseProfiles.Values)
         {
-            var assetPath = AssetDatabase.GetAssetPath(profile);
+            var assetPath = ResolveAssetPath(profile);
             foreach (var statusId in profile.RemovesStatusIds)
             {
                 if (!statusIds.Contains(statusId))
@@ -1705,7 +1955,7 @@ public static class ContentDefinitionValidator
 
         foreach (var skill in skills)
         {
-            var assetPath = AssetDatabase.GetAssetPath(skill);
+            var assetPath = ResolveAssetPath(skill);
             foreach (var status in skill.AppliedStatuses.Where(status => status != null))
             {
                 if (!statusIds.Contains(status.StatusId))
@@ -1746,7 +1996,7 @@ public static class ContentDefinitionValidator
         var mappedSourceIds = new HashSet<string>(StringComparer.Ordinal);
         foreach (var rewardSource in rewardSources.Values)
         {
-            var assetPath = AssetDatabase.GetAssetPath(rewardSource);
+            var assetPath = ResolveAssetPath(rewardSource);
             if (string.IsNullOrWhiteSpace(rewardSource.DropTableId) || !dropTables.ContainsKey(rewardSource.DropTableId))
             {
                 AddError(issues, "reward.source_drop_table_ref", $"Reward source '{rewardSource.Id}' references missing drop table '{rewardSource.DropTableId}'.", assetPath);
@@ -1778,7 +2028,7 @@ public static class ContentDefinitionValidator
 
         foreach (var lootBundle in lootBundles.Values)
         {
-            var assetPath = AssetDatabase.GetAssetPath(lootBundle);
+            var assetPath = ResolveAssetPath(lootBundle);
             if (string.IsNullOrWhiteSpace(lootBundle.RewardSourceId) || !rewardSources.ContainsKey(lootBundle.RewardSourceId))
             {
                 AddError(issues, "reward.loot_bundle_source_ref", $"Loot bundle '{lootBundle.Id}' references missing reward source '{lootBundle.RewardSourceId}'.", assetPath);
@@ -1800,7 +2050,7 @@ public static class ContentDefinitionValidator
 
         foreach (var skill in skills)
         {
-            var assetPath = AssetDatabase.GetAssetPath(skill);
+            var assetPath = ResolveAssetPath(skill);
             var compileTagIds = skill.CompileTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToHashSet(StringComparer.Ordinal);
             var allowedTagIds = skill.SupportAllowedTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToHashSet(StringComparer.Ordinal);
             var blockedTagIds = skill.SupportBlockedTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToHashSet(StringComparer.Ordinal);
@@ -1879,7 +2129,7 @@ public static class ContentDefinitionValidator
     {
         foreach (var item in items)
         {
-            var assetPath = AssetDatabase.GetAssetPath(item);
+            var assetPath = ResolveAssetPath(item);
             var weaponFamilyId = NormalizeWeaponFamilyId(item);
             if (item.SlotType == ItemSlotType.Weapon && !AllowedWeaponFamilyIds.Contains(weaponFamilyId))
             {
@@ -1925,7 +2175,7 @@ public static class ContentDefinitionValidator
 
         foreach (var synergy in synergies)
         {
-            var assetPath = AssetDatabase.GetAssetPath(synergy);
+            var assetPath = ResolveAssetPath(synergy);
             if (factionIds.Contains(synergy.CountedTagId))
             {
                 AddError(issues, "faction.synergy_leak", $"Faction id '{synergy.CountedTagId}' must not leak into synergy counted tags.", assetPath);

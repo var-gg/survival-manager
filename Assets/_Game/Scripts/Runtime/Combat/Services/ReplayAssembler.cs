@@ -26,7 +26,9 @@ public static class ReplayAssembler
             playerSnapshot.Allies,
             enemySnapshot,
             playerSnapshot.TeamTags,
-            playerSnapshot.Provenance);
+            playerSnapshot.Provenance,
+            playerSnapshot.TeamCounterCoverage,
+            CounterCoverageAggregationService.AggregateFromLoadouts(enemySnapshot));
 
         var playerHash = ComputeLoadoutHash(playerSnapshot.Allies);
         var enemyHash = ComputeLoadoutHash(enemySnapshot);

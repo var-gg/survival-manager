@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_support_echo
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: support_echo
-  NameKey: content.tag.support_echo.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

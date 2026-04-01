@@ -133,3 +133,33 @@
 - crowd control 전체 catalog의 full runtime rollout
 - displacement, fear, charm, sleep 계열 full closure
 - proc scripting DSL
+
+## Loop C topology alignment
+
+Loop C의 status family source-of-truth는
+`docs/02_design/combat/counter-system-topology.md`와
+`docs/02_design/systems/v1-forbidden-list.md`다.
+
+- canonical counter family
+  - `ArmorShred`
+  - `Exposure`
+  - `GuardBroken`
+  - `MortalWound`
+  - `Stable`
+  - `Intercepting`
+- broad answer 금지
+  - cleanse-all
+  - steal-all-buffs
+  - all-CC immunity
+  - true-damage execute
+
+## Loop C owner credit
+
+- rider status는 standalone budget domain이 아니라 source definition의 secondary axis다.
+- DoT rider는 `SustainedDamage`로 계상한다.
+- CC rider는 `Control`로 계상한다.
+- heal/barrier rider는 `Support`로 계상한다.
+- `ArmorShred`, `Exposure`, `GuardBroken`, `MortalWound`, `Stable`, `Intercepting`
+  계열은 `CounterCoverage`로 계상한다.
+- summon이 가한 status/proc credit은 summon owner가 가져가고, summon budget은 owner
+  `BudgetCard` 안에서 같이 계산한다.

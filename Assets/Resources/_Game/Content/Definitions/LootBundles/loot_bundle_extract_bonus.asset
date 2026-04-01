@@ -12,22 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: loot_bundle_extract_bonus
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:LootBundleDefinition
-  Id: loot_bundle_extract_bonus
-  NameKey: content.loot_bundle.loot_bundle_extract_bonus.name
-  DescriptionKey: content.loot_bundle.loot_bundle_extract_bonus.desc
-  RewardSourceId: reward_source_extract
-  Entries:
-  - Id: gold_extract_bonus
-    RewardType: 0
-    Amount: 6
-    RarityBracket: 0
-    Weight: 1
-    IsGuaranteed: 1
-  - Id: ember_extract_bonus
-    RewardType: 7
-    Amount: 2
-    RarityBracket: 1
-    Weight: 1
-    IsGuaranteed: 1
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  RewardSourceId: 
+  Entries: []
   legacyDisplayName: 
   legacyDescription: 

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_melee
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: melee
-  NameKey: content.tag.melee.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

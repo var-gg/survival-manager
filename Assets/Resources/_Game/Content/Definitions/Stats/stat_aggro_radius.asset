@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_aggro_radius
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: aggro_radius
-  NameKey: content.stat.aggro_radius.name
-  DescriptionKey: content.stat.aggro_radius.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

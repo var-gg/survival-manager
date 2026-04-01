@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_bleed
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: bleed
-  NameKey: content.tag.bleed.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

@@ -12,29 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: item_bone_blade
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ItemBaseDefinition
-  Id: item_bone_blade
-  NameKey: content.item.item_bone_blade.name
-  DescriptionKey: content.item.item_bone_blade.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   SlotType: 0
   IdentityKind: 0
-  ItemFamilyTag: blade
-  WeaponFamilyTag: blade
+  ItemFamilyTag: 
+  WeaponFamilyTag: 
   RarityTier: 0
-  AffixPoolTag: pool_blade
-  CraftCategory: duelist
-  BudgetBand: personal_power_10
-  CraftCurrencyTag: ember_dust
+  AffixPoolTag: 
+  CraftCategory: 
+  BudgetBand: 
+  CraftCurrencyTag: 
   GrantedSkills: []
-  CompileTags:
-  - {fileID: 11400000, guid: 6579675f3d02790408543c39e489282b, type: 2}
+  CompileTags: []
   RuleModifierTags: []
-  AllowedClassTags:
-  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  AllowedClassTags: []
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 00000000010000000200000004000000
-  BaseModifiers:
-  - StatId: phys_power
-    Op: 0
-    Value: 2
+  AllowedCraftOperations: 
+  BaseModifiers: []
   legacyDisplayName: 

@@ -22,9 +22,7 @@ MonoBehaviour:
   ValueMin: 0
   ValueMax: 0
   AllowedSlotTypes: 0100000002000000
-  CompileTags:
-  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  CompileTags: []
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
@@ -32,7 +30,28 @@ MonoBehaviour:
   SpawnWeight: 1
   ExclusiveGroupId: 
   BudgetScore: 0
+  BudgetCard:
+    Domain: 4
+    Vector:
+      SustainedDamage: 0
+      BurstDamage: 0
+      Durability: 1
+      Control: 0
+      Mobility: 1
+      Support: 3
+      CounterCoverage: 0
+      Reliability: 1
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 1
+    ConditionClauseCount: 0
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
   TextTemplateKey: 
+  AuthorityLayer: 2
+  Effects: []
   Modifiers:
   - StatId: protect_radius
     Op: 0

@@ -24,7 +24,7 @@ MVP는 두 축을 사용한다.
 
 ### 권장 threshold
 
-- race synergy: 2 / 3
+- race synergy: 2 / 4
 - class synergy: 2 / 4
 
 ### MVP 종족/직업
@@ -78,6 +78,6 @@ augment는 다음 두 방향을 모두 허용한다.
 
 ## launch 기준 연결
 
-- paid launch에서는 `2 / 3 / 4` breakpoint를 사용한다.
+- paid launch에서는 `2 / 4` breakpoint를 사용한다.
 - counter는 hard counter가 아니라 평균 `10~15%` swing의 soft counter를 목표로 한다.
 - 위 숫자의 source-of-truth는 `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`다.

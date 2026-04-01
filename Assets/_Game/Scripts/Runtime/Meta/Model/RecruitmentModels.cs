@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SM.Combat.Model;
 using SM.Core.Contracts;
 
 namespace SM.Meta.Model;
@@ -237,6 +238,7 @@ public sealed class TeamPlanProfile
     public bool PrefersPhysical;
     public bool PrefersMagical;
     public List<string> AugmentHookTags = new();
+    public TeamCounterCoverageReport CounterCoverage = new();
 }
 
 public sealed record RecruitCandidateEvaluation(

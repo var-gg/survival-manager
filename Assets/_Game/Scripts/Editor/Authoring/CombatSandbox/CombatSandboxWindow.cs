@@ -1,4 +1,8 @@
 using System;
+using System.Linq;
+using System.Text;
+using SM.Combat.Model;
+using SM.Combat.Services;
 using SM.Unity.Sandbox;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -58,6 +62,7 @@ public sealed class CombatSandboxWindow : EditorWindow
         {
             section.Add(new PropertyField(_serializedState.FindProperty(nameof(CombatSandboxState.Seed))));
             section.Add(new PropertyField(_serializedState.FindProperty(nameof(CombatSandboxState.BatchCount))));
+            section.Add(new PropertyField(_serializedState.FindProperty(nameof(CombatSandboxState.InspectUnitId))));
         }));
 
         rootVisualElement.Add(BuildSection("Execution", section =>
@@ -73,6 +78,8 @@ public sealed class CombatSandboxWindow : EditorWindow
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastCompileHash)));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastReplayHash)));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastMetricsSummary), 72f));
+            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastCounterCoverageSummary), 120f));
+            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastGovernanceSummary), 120f));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastValidationMessage), 72f));
         }));
 
@@ -139,6 +146,10 @@ public sealed class CombatSandboxWindow : EditorWindow
             _state.LastReplayHash = result.ReplayHash;
             _state.LastMetricsSummary =
                 $"win_rate={result.Metrics.WinRate:0.###}\navg_duration={result.Metrics.AverageDurationSeconds:0.###}\navg_events={result.Metrics.AverageEventCount:0.###}\nfirst_action={result.Metrics.AverageFirstActionSeconds:0.###}";
+            _state.LastCounterCoverageSummary = BuildCounterCoverageSummary(
+                result.PlayerSnapshot.TeamCounterCoverage,
+                CounterCoverageAggregationService.AggregateFromLoadouts(result.EnemyLoadout));
+            _state.LastGovernanceSummary = BuildGovernanceSummary(result.PlayerSnapshot, _state.InspectUnitId);
             _state.LastValidationMessage =
                 $"config={effectiveRequest.RequestedConfigId}\nprovenance={result.Provenance.Count}\nteam_tags={string.Join(", ", result.PlayerSnapshot.TeamTags)}";
         }
@@ -150,5 +161,60 @@ public sealed class CombatSandboxWindow : EditorWindow
         _serializedState.Update();
         rootVisualElement.Bind(_serializedState);
         Repaint();
+    }
+
+    private static string BuildCounterCoverageSummary(TeamCounterCoverageReport? ally, TeamCounterCoverageReport? enemy)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine("Ally coverage");
+        AppendCoverage(builder, ally);
+        builder.AppendLine();
+        builder.AppendLine("Enemy coverage");
+        AppendCoverage(builder, enemy);
+        return builder.ToString().TrimEnd();
+    }
+
+    private static void AppendCoverage(StringBuilder builder, TeamCounterCoverageReport? report)
+    {
+        if (report == null)
+        {
+            builder.AppendLine("- missing");
+            return;
+        }
+
+        foreach (var lane in new[]
+                 {
+                     ("ArmorShred", report.ArmorShred),
+                     ("Exposure", report.Exposure),
+                     ("GuardBreakMultiHit", report.GuardBreakMultiHit),
+                     ("TrackingArea", report.TrackingArea),
+                     ("TenacityStability", report.TenacityStability),
+                     ("AntiHealShatter", report.AntiHealShatter),
+                     ("InterceptPeel", report.InterceptPeel),
+                     ("CleaveWaveclear", report.CleaveWaveclear),
+                 })
+        {
+            var warning = lane.Item2 is CounterCoverageLevelValue.None or CounterCoverageLevelValue.Light ? " !weak" : string.Empty;
+            builder.AppendLine($"- {lane.Item1}: {lane.Item2}{warning}");
+        }
+    }
+
+    private static string BuildGovernanceSummary(BattleLoadoutSnapshot snapshot, string inspectUnitId)
+    {
+        var unit = !string.IsNullOrWhiteSpace(inspectUnitId)
+            ? snapshot.Allies.FirstOrDefault(candidate => string.Equals(candidate.Id, inspectUnitId, StringComparison.Ordinal))
+            : snapshot.Allies.FirstOrDefault();
+        if (unit?.Governance == null)
+        {
+            return "Selected unit governance unavailable.";
+        }
+
+        var builder = new StringBuilder();
+        builder.AppendLine($"unit={unit.Id}");
+        builder.AppendLine($"rarity={unit.Governance.Rarity} role={unit.Governance.RoleProfile} budget={unit.Governance.BudgetFinalScore}");
+        builder.AppendLine($"threats=[{string.Join(", ", unit.Governance.DeclaredThreatPatterns)}]");
+        builder.AppendLine($"counters=[{string.Join(", ", unit.Governance.DeclaredCounterTools.Select(tool => $"{tool.Tool}:{tool.Strength}"))}]");
+        builder.AppendLine($"flags={unit.Governance.DeclaredFeatureFlags}");
+        return builder.ToString().TrimEnd();
     }
 }

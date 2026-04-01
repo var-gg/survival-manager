@@ -18,7 +18,8 @@ public sealed record BattleLoadoutSnapshot(
     IReadOnlyList<BattleUnitLoadout> Allies,
     IReadOnlyList<string> BattleDeployHeroIds,
     IReadOnlyList<string> TeamTags,
-    IReadOnlyList<CompileProvenanceEntry>? Provenance = null);
+    IReadOnlyList<CompileProvenanceEntry>? Provenance = null,
+    TeamCounterCoverageReport? TeamCounterCoverage = null);
 
 public sealed record BattleReplayHeader(
     string MatchId,
@@ -39,7 +40,9 @@ public sealed record BattleInputSnapshot(
     IReadOnlyList<BattleUnitLoadout> Allies,
     IReadOnlyList<BattleUnitLoadout> Enemies,
     IReadOnlyList<string> TeamTags,
-    IReadOnlyList<CompileProvenanceEntry>? Provenance = null);
+    IReadOnlyList<CompileProvenanceEntry>? Provenance = null,
+    TeamCounterCoverageReport? AllyCounterCoverage = null,
+    TeamCounterCoverageReport? EnemyCounterCoverage = null);
 
 public sealed record BattleKeyframeDigest(
     int StepIndex,

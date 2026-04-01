@@ -12,61 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: traitpool_scout
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TraitPoolDefinition
-  Id: traitpool_scout
-  ArchetypeId: scout
-  PositiveTraits:
-  - Id: scout_positive_brave
-    NameKey: content.trait.scout.scout_positive_brave.name
-    DescriptionKey: content.trait.scout.scout_positive_brave.desc
-    Modifiers:
-    - StatId: phys_power
-      Op: 0
-      Value: 2
-    legacyDisplayName: 
-    legacyDescription: 
-  - Id: scout_positive_sturdy
-    NameKey: content.trait.scout.scout_positive_sturdy.name
-    DescriptionKey: content.trait.scout.scout_positive_sturdy.desc
-    Modifiers:
-    - StatId: armor
-      Op: 0
-      Value: 1
-    legacyDisplayName: 
-    legacyDescription: 
-  - Id: scout_positive_swift
-    NameKey: content.trait.scout.scout_positive_swift.name
-    DescriptionKey: content.trait.scout.scout_positive_swift.desc
-    Modifiers:
-    - StatId: attack_speed
-      Op: 0
-      Value: 1
-    legacyDisplayName: 
-    legacyDescription: 
-  NegativeTraits:
-  - Id: scout_negative_frail
-    NameKey: content.trait.scout.scout_negative_frail.name
-    DescriptionKey: content.trait.scout.scout_negative_frail.desc
-    Modifiers:
-    - StatId: max_health
-      Op: 0
-      Value: -3
-    legacyDisplayName: 
-    legacyDescription: 
-  - Id: scout_negative_clumsy
-    NameKey: content.trait.scout.scout_negative_clumsy.name
-    DescriptionKey: content.trait.scout.scout_negative_clumsy.desc
-    Modifiers:
-    - StatId: phys_power
-      Op: 0
-      Value: -1
-    legacyDisplayName: 
-    legacyDescription: 
-  - Id: scout_negative_slow
-    NameKey: content.trait.scout.scout_negative_slow.name
-    DescriptionKey: content.trait.scout.scout_negative_slow.desc
-    Modifiers:
-    - StatId: attack_speed
-      Op: 0
-      Value: -1
-    legacyDisplayName: 
-    legacyDescription: 
+  Id: 
+  ArchetypeId: 
+  PositiveTraits: []
+  NegativeTraits: []

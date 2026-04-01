@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: race_human
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RaceDefinition
-  Id: human
-  NameKey: content.race.human.name
-  DescriptionKey: content.race.human.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

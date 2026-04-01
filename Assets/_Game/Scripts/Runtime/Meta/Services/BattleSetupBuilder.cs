@@ -85,7 +85,19 @@ public static class BattleSetupBuilder
             archetype.PreferredDistance,
             archetype.ProtectRadius,
             archetype.Mana,
-            archetype.RulePackages);
+            archetype.RulePackages,
+            null,
+            archetype.BasicAttack,
+            archetype.SignatureActive,
+            archetype.FlexActive,
+            archetype.SignaturePassive,
+            archetype.FlexPassive,
+            archetype.MobilityReaction,
+            archetype.Energy,
+            archetype.EntityKind,
+            archetype.Ownership,
+            archetype.SummonProfile,
+            archetype.Governance);
         error = string.Empty;
         return true;
     }

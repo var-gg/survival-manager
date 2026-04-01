@@ -116,7 +116,8 @@ public sealed record BattlePassiveSpec(
     ActivationModel ActivationModel = ActivationModel.Passive,
     IReadOnlyList<EffectDescriptor>? EffectDescriptors = null,
     bool AllowMirroredOwnedSummonKill = false,
-    string EffectFamilyId = "");
+    string EffectFamilyId = "",
+    ContentGovernanceSummary? Governance = null);
 
 public sealed record BattleMobilitySpec(
     string Id,
@@ -126,7 +127,8 @@ public sealed record BattleMobilitySpec(
     ActivationModel ActivationModel = ActivationModel.Trigger,
     ActionLane Lane = ActionLane.Reaction,
     ActionLockRule LockRule = ActionLockRule.HardCommit,
-    IReadOnlyList<EffectDescriptor>? EffectDescriptors = null);
+    IReadOnlyList<EffectDescriptor>? EffectDescriptors = null,
+    ContentGovernanceSummary? Governance = null);
 
 public record BattleSkillSpec(
     string Id,
@@ -168,7 +170,8 @@ public record BattleSkillSpec(
     string MutuallyExclusiveGroupId = "",
     IReadOnlyList<string>? RecruitNativeTags = null,
     IReadOnlyList<string>? RecruitPlanTags = null,
-    IReadOnlyList<string>? RecruitScoutTags = null)
+    IReadOnlyList<string>? RecruitScoutTags = null,
+    ContentGovernanceSummary? Governance = null)
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
 

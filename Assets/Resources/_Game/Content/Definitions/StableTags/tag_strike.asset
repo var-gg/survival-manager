@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_strike
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: strike
-  NameKey: content.tag.strike.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

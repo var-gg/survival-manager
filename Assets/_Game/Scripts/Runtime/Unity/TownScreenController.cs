@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text;
 using SM.Combat.Model;
@@ -382,6 +383,11 @@ public sealed class TownScreenController : MonoBehaviour
         }
 
         _root.CombatContentLookup.TryGetArchetype(offer.UnitBlueprintId, out var archetype);
+        CombatArchetypeTemplate? template = null;
+        if (_root.CombatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+        {
+            snapshot.Archetypes.TryGetValue(offer.UnitBlueprintId, out template);
+        }
         var slotBadge = offer.Metadata.SlotType switch
         {
             SM.Core.Contracts.RecruitOfferSlotType.OnPlan => "[OnPlan]",
@@ -389,15 +395,25 @@ public sealed class TownScreenController : MonoBehaviour
             _ => offer.Metadata.BiasedByScout ? "[Scout]" : $"[{offer.Metadata.SlotType}]",
         };
         var formation = archetype?.BehaviorProfile?.FormationLine.ToString() ?? "Unknown";
+        var roleFantasy = string.IsNullOrWhiteSpace(archetype?.RoleTag)
+            ? formation
+            : $"{archetype.RoleTag} / {formation}";
+        var keyTags = template?.RecruitPlanTags?
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            .Take(3)
+            .ToArray() ?? Array.Empty<string>();
+        var counterHints = template?.Governance?.DeclaredCounterTools?
+            .Select(tool => tool.Tool)
+            .Where(tool => !string.IsNullOrWhiteSpace(tool))
+            .Take(2)
+            .ToArray() ?? Array.Empty<string>();
 
         return string.Join(
             "\n",
             $"{slotBadge} {offer.Metadata.Tier} / {offer.Metadata.PlanFit} / {offer.Metadata.GoldCost} Gold",
-            $"{_contentText.GetRaceName(archetype?.Race.Id ?? string.Empty)} / {_contentText.GetClassName(archetype?.Class.Id ?? string.Empty)} / {formation}",
-            $"Signature: {_contentText.GetSkillName(archetype?.Loadout?.SignatureActive?.Id ?? string.Empty)}",
-            $"Passive: {_contentText.GetSkillName(archetype?.Loadout?.SignaturePassive?.Id ?? string.Empty)}",
-            $"Flex Active: {_contentText.GetSkillName(offer.FlexActiveId)}",
-            $"Flex Passive: {_contentText.GetSkillName(offer.FlexPassiveId)}");
+            $"{_contentText.GetRaceName(archetype?.Race.Id ?? string.Empty)} / {_contentText.GetClassName(archetype?.Class.Id ?? string.Empty)} / {roleFantasy}",
+            $"Tags: {(keyTags.Length == 0 ? "None" : string.Join(", ", keyTags))}",
+            $"Counter: {(counterHints.Length == 0 ? "None" : string.Join(", ", counterHints))}");
     }
 
     private string ResolveExpeditionNodeLabel(ExpeditionNodeViewModel node)

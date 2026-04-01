@@ -24,7 +24,7 @@
 ## synergy policy
 
 - 한 unit은 synergy tag를 최대 `2개`만 가진다.
-- breakpoint는 계속 `2 / 3 / 4`다.
+- breakpoint는 계속 `2 / 4`다.
 - 현재 committed live family는 7개를 유지한다.
 - schema capacity는 `12~16 family`까지 수용하지만, runtime validator와 launch floor는 현재 live subset을 우선한다.
 - summon/deployable은 synergy count에 포함되지 않는다.
@@ -70,3 +70,13 @@
 - augment 하나가 synergy 4-piece identity를 통째로 대체하면 안 된다.
 - 작은 stat buff만 가진 augment를 양산하지 않는다.
 - augment가 6-slot topology 자체를 바꾸면 안 된다.
+
+## Loop C addendum
+
+- synergy breakpoint는 `2 / 4`만 허용한다.
+- `2-piece`는 direction, `4-piece`는 payoff다.
+- `3-piece`는 Loop C source-of-truth에서 제거한다.
+- augment는 `ContentRarity + IsPermanent`를 함께 가진다.
+- permanent augment라도 rarity는 `Common / Rare / Epic`만 쓴다.
+- augment는 topology 밖 새 counter lane을 만들지 않는다.
+- econ keystone과 combat keystone을 같은 augment에 같이 실으면 fail이다.

@@ -12,22 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_forgotten_warren_skirmish_2
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EncounterDefinition
-  Id: site_forgotten_warren_skirmish_2
-  NameKey: content.encounter.site_forgotten_warren_skirmish_2.name
-  DescriptionKey: content.encounter.site_forgotten_warren_skirmish_2.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   Kind: 0
-  SiteId: site_forgotten_warren
-  EnemySquadTemplateId: site_forgotten_warren_skirmish_2_squad
+  SiteId: 
+  EnemySquadTemplateId: 
   BossOverlayId: 
-  RewardSourceId: reward_source_skirmish
-  FactionId: faction_warren_pack
+  RewardSourceId: 
+  FactionId: 
   ThreatTier: 1
   ThreatCost: 1
   ThreatSkulls: 1
-  DifficultyBand: chapter_entry
-  RewardDropTags:
-  - reward_source_skirmish
-  - faction_warren_pack
-  - skirmish
+  DifficultyBand: 
+  RewardDropTags: []
   legacyDisplayName: 
   legacyDescription: 

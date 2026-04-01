@@ -12,22 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_cinder_watch_boss_1
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EncounterDefinition
-  Id: site_cinder_watch_boss_1
-  NameKey: content.encounter.site_cinder_watch_boss_1.name
-  DescriptionKey: content.encounter.site_cinder_watch_boss_1.desc
-  Kind: 2
-  SiteId: site_cinder_watch
-  EnemySquadTemplateId: site_cinder_watch_boss_1_squad
-  BossOverlayId: boss_overlay_cinder_watch
-  RewardSourceId: reward_source_boss
-  FactionId: faction_cinder_watch
-  ThreatTier: 3
-  ThreatCost: 3
-  ThreatSkulls: 3
-  DifficultyBand: site_boss
-  RewardDropTags:
-  - reward_source_boss
-  - faction_cinder_watch
-  - boss
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  Kind: 0
+  SiteId: 
+  EnemySquadTemplateId: 
+  BossOverlayId: 
+  RewardSourceId: 
+  FactionId: 
+  ThreatTier: 1
+  ThreatCost: 1
+  ThreatSkulls: 1
+  DifficultyBand: 
+  RewardDropTags: []
   legacyDisplayName: 
   legacyDescription: 

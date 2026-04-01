@@ -138,3 +138,26 @@ Action = Slot + Template + EffectDescriptors + TargetRule + Presentation Hooks
 
 - template별 full runtime resolver rollout
 - 자유선택형 스킬 트리 전체 구현
+
+## Loop C governance addendum
+
+Loop C부터 `SkillDefinitionAsset`, `PassiveDefinition`, `MobilityDefinition`,
+`StatusFamilyDefinition`은 모두 `BudgetCard`를 가진다.
+
+- required governance field
+  - `BudgetCard.domain`
+  - `BudgetCard.rarity`
+  - `BudgetCard.powerBand`
+  - `BudgetCard.vector`
+  - `BudgetCard.declaredThreatPatterns`
+  - `BudgetCard.declaredCounterTools`
+  - `BudgetCard.declaredFeatureFlags`
+- domain rule
+  - 양수 axis는 최대 3개
+  - `Economy > 0` 금지
+  - threat 최대 1개
+  - counter tool 최대 1개
+- `Mobility` axis는 실제 reposition/engage/disengage가 있을 때만 쓴다.
+- derived delta는 `3` 이하만 허용한다.
+
+자세한 표는 `docs/02_design/systems/content-budgeting-contract.md`를 우선한다.

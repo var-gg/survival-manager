@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_greatblade
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: greatblade
-  NameKey: content.tag.greatblade.name
+  Id: 
+  NameKey: 
   legacyDisplayName: 

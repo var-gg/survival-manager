@@ -28,6 +28,26 @@ public sealed class BalanceSweepAndBootstrapTests
     }
 
     [Test]
+    public void BalanceSweepScenarioFactory_BuildsAllThreatTopologyScenarios()
+    {
+        var scenarios = SM.Editor.Validation.BalanceSweepScenarioFactory.BuildThreatTopologyScenarios();
+
+        Assert.That(scenarios.Select(input => input.ScenarioId), Is.EqualTo(new[]
+        {
+            "ArmorFrontlineScenario",
+            "ResistanceShellScenario",
+            "GuardBulwarkScenario",
+            "EvasiveSkirmishScenario",
+            "ControlChainScenario",
+            "SustainBallScenario",
+            "DiveBacklineScenario",
+            "SwarmFloodScenario",
+        }));
+        Assert.That(scenarios.All(input => input.PlayerSnapshot.TeamCounterCoverage != null), Is.True);
+        Assert.That(scenarios.All(input => input.EnemyLoadout.Count > 0), Is.True);
+    }
+
+    [Test]
     public void RequireSampleContentReady_DoesNotRewriteCommittedFloorContent()
     {
         const string contentPath = "Assets/Resources/_Game/Content/Definitions/Archetypes/archetype_bulwark.asset";

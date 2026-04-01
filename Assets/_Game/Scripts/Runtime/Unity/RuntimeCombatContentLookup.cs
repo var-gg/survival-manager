@@ -545,6 +545,21 @@ public sealed class RuntimeCombatContentLookup
                 throw new InvalidOperationException($"전투 archetype 정의를 Resources에서 찾을 수 없습니다. {parseError}");
             }
 
+            if (traitPools.Length == 0)
+            {
+                traitPools = parsed.TraitPools.ToArray();
+            }
+
+            if (races.Length == 0)
+            {
+                races = parsed.Races.ToArray();
+            }
+
+            if (classes.Length == 0)
+            {
+                classes = parsed.Classes.ToArray();
+            }
+
             if (archetypes.Length == 0)
             {
                 archetypes = parsed.Archetypes.ToArray();
@@ -568,6 +583,26 @@ public sealed class RuntimeCombatContentLookup
             if (augments.Length == 0)
             {
                 augments = parsed.Augments.ToArray();
+            }
+
+            if (teamTactics.Length == 0)
+            {
+                teamTactics = parsed.TeamTactics.ToArray();
+            }
+
+            if (roleInstructions.Length == 0)
+            {
+                roleInstructions = parsed.RoleInstructions.ToArray();
+            }
+
+            if (passiveNodes.Length == 0)
+            {
+                passiveNodes = parsed.PassiveNodes.ToArray();
+            }
+
+            if (synergies.Length == 0)
+            {
+                synergies = parsed.Synergies.ToArray();
             }
 
             if (campaignChapters.Length == 0)
@@ -595,6 +630,21 @@ public sealed class RuntimeCombatContentLookup
                 bossOverlays = parsed.BossOverlays.ToArray();
             }
 
+            if (statusFamilies.Length == 0)
+            {
+                statusFamilies = parsed.StatusFamilies.ToArray();
+            }
+
+            if (cleanseProfiles.Length == 0)
+            {
+                cleanseProfiles = parsed.CleanseProfiles.ToArray();
+            }
+
+            if (controlDiminishingRules.Length == 0)
+            {
+                controlDiminishingRules = parsed.ControlDiminishingRules.ToArray();
+            }
+
             if (rewardSources.Length == 0)
             {
                 rewardSources = parsed.RewardSources.ToArray();
@@ -608,6 +658,11 @@ public sealed class RuntimeCombatContentLookup
             if (lootBundles.Length == 0)
             {
                 lootBundles = parsed.LootBundles.ToArray();
+            }
+
+            if (traitTokens.Length == 0)
+            {
+                traitTokens = parsed.TraitTokens.ToArray();
             }
         }
 
@@ -1003,7 +1058,10 @@ public sealed class RuntimeCombatContentLookup
             new EnergyProfile(
                 Mathf.Max(1f, definition.BaseMaxEnergy),
                 Mathf.Clamp(definition.BaseStartingEnergy, 0f, Mathf.Max(1f, definition.BaseMaxEnergy))),
-            CombatEntityKind.RosterUnit);
+            CombatEntityKind.RosterUnit,
+            null,
+            null,
+            BuildGovernanceSummary(definition.BudgetCard));
     }
 
     private static FootprintProfile BuildFootprintProfile(UnitArchetypeDefinition definition)
@@ -1336,7 +1394,8 @@ public sealed class RuntimeCombatContentLookup
             string.IsNullOrWhiteSpace(skill.MutuallyExclusiveGroupId) ? fallback.MutuallyExclusiveGroupId : skill.MutuallyExclusiveGroupId,
             recruitNativeTags,
             recruitPlanTags,
-            recruitScoutTags);
+            recruitScoutTags,
+            BuildGovernanceSummary(skill.BudgetCard));
     }
 
     private static (BattleBasicAttackSpec BasicAttack, BattleSkillSpec? SignatureActive, BattleSkillSpec? FlexActive, BattlePassiveSpec SignaturePassive, BattlePassiveSpec FlexPassive, BattleMobilitySpec? MobilityReaction) ResolveLoopALoadout(
@@ -1389,7 +1448,12 @@ public sealed class RuntimeCombatContentLookup
         var mobilityReaction = definition.Loadout?.MobilityReaction is { Profile: not null } authoredMobility
             ? BuildMobilitySpec(definition, authoredMobility)
             : defaultMobilityProfile is { IsEnabled: true }
-                ? new BattleMobilitySpec($"{definition.Id}:mobility", "Mobility Reaction", defaultMobilityProfile, new TargetRule())
+                ? new BattleMobilitySpec(
+                    $"{definition.Id}:mobility",
+                    "Mobility Reaction",
+                    defaultMobilityProfile,
+                    new TargetRule(),
+                    Governance: BuildGovernanceSummary(definition.Loadout?.MobilityReaction?.BudgetCard))
                 : null;
         return (
             BuildBasicAttackSpec(definition),
@@ -1433,7 +1497,8 @@ public sealed class RuntimeCombatContentLookup
             authored?.ActivationModel ?? ActivationModel.Passive,
             authored != null ? CloneEffects(authored.Effects) : fallbackSkill?.EffectDescriptors ?? Array.Empty<EffectDescriptor>(),
             authored?.AllowMirroredOwnedSummonKill ?? false,
-            authored?.EffectFamilyId ?? fallbackSkill?.EffectFamilyId ?? string.Empty);
+            authored?.EffectFamilyId ?? fallbackSkill?.EffectFamilyId ?? string.Empty,
+            BuildGovernanceSummary(authored?.BudgetCard));
     }
 
     private static IReadOnlyList<SkillDefinitionAsset> ResolveRecruitPool(
@@ -1494,6 +1559,11 @@ public sealed class RuntimeCombatContentLookup
 
     private static RecruitTier ResolveRecruitTier(UnitArchetypeDefinition definition)
     {
+        if (definition.BudgetCard?.Rarity is { } rarity)
+        {
+            return LoopCContentGovernance.ToRecruitTier(rarity);
+        }
+
         return LoopBRecruitTierFallbacks.TryGetValue(definition.Id, out var tier)
             ? tier
             : definition.RecruitTier;
@@ -1645,7 +1715,8 @@ public sealed class RuntimeCombatContentLookup
             authored.ActivationModel,
             authored.Lane,
             authored.LockRule,
-            CloneEffects(authored.Effects));
+            CloneEffects(authored.Effects),
+            BuildGovernanceSummary(authored.BudgetCard));
     }
 
     private static IReadOnlyList<EffectDescriptor> CloneEffects(IEnumerable<EffectDescriptor>? effects)
@@ -1833,7 +1904,8 @@ public sealed class RuntimeCombatContentLookup
             Enumerate(definition.CompileTags)
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Distinct(StringComparer.Ordinal)
-                .ToList());
+                .ToList(),
+            BuildGovernanceSummary(definition.BudgetCard));
     }
 
     private static CleanseProfileTemplate BuildCleanseProfileTemplate(CleanseProfileDefinition definition)
@@ -2008,7 +2080,8 @@ public sealed class RuntimeCombatContentLookup
             Enumerate(definition.Tags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
             Enumerate(definition.MutualExclusionTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
             BuildAugmentPackage(definition),
-            BuildRulePackage(definition.Id, ModifierSource.Augment, definition.RuleModifierTags));
+            BuildRulePackage(definition.Id, ModifierSource.Augment, definition.RuleModifierTags),
+            BuildGovernanceSummary(definition.BudgetCard));
     }
 
     private static IEnumerable<SynergyTierTemplate> BuildSynergyTemplates(SynergyDefinition definition)
@@ -2021,8 +2094,27 @@ public sealed class RuntimeCombatContentLookup
                     definition.Id,
                     definition.CountedTagId,
                     tier.Threshold,
-                    tier.Modifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Synergy, $"{definition.Id}:{tier.Threshold}")).ToList()));
+                    tier.Modifiers.Select(modifier => BuildStatModifier(modifier, ModifierSource.Synergy, $"{definition.Id}:{tier.Threshold}")).ToList()),
+                BuildGovernanceSummary(tier.BudgetCard));
         }
+    }
+
+    private static ContentGovernanceSummary? BuildGovernanceSummary(BudgetCard? budgetCard)
+    {
+        if (budgetCard == null)
+        {
+            return null;
+        }
+
+        return new ContentGovernanceSummary(
+            budgetCard.Rarity?.ToString() ?? ContentRarity.Common.ToString(),
+            budgetCard.PowerBand?.ToString() ?? string.Empty,
+            budgetCard.RoleProfile?.ToString() ?? string.Empty,
+            budgetCard.Vector?.FinalScore ?? 0,
+            budgetCard.DeclaredThreatPatterns?.Select(pattern => pattern.ToString()).ToList() ?? new List<string>(),
+            budgetCard.DeclaredCounterTools?.Select(tool => new CompiledCounterToolContribution(tool.Tool.ToString(), (int)tool.Strength)).ToList()
+                ?? new List<CompiledCounterToolContribution>(),
+            budgetCard.DeclaredFeatureFlags.ToString());
     }
 
     private static StatModifier BuildStatModifier(SerializableStatModifier modifier, ModifierSource source, string sourceId)

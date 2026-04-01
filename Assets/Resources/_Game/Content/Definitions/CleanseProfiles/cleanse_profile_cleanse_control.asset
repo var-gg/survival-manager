@@ -12,19 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: cleanse_profile_cleanse_control
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CleanseProfileDefinition
-  Id: cleanse_control
-  NameKey: content.cleanse_profile.cleanse_control.name
-  DescriptionKey: content.cleanse_profile.cleanse_control.desc
-  RemovesStatusIds:
-  - root
-  - silence
-  - slow
-  - burn
-  - bleed
-  - wound
-  - sunder
-  - marked
-  - exposed
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  RemovesStatusIds: []
   RemovesOneHardControl: 0
   GrantsUnstoppable: 0
   GrantedUnstoppableDurationSeconds: 0

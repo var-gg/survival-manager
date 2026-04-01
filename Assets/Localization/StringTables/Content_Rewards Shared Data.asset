@@ -183,6 +183,14 @@ MonoBehaviour:
     m_Key: content.loot_bundle.loot_bundle_extract_bonus.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 744426543505408
+    m_Key: content.reward.reward.echo.35.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744427155873792
+    m_Key: content.reward.reward.echo.60.label
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

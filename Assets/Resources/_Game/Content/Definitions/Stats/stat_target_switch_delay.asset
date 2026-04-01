@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_target_switch_delay
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: target_switch_delay
-  NameKey: content.stat.target_switch_delay.name
-  DescriptionKey: content.stat.target_switch_delay.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

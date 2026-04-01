@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_attack_windup
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: attack_windup
-  NameKey: content.stat.attack_windup.name
-  DescriptionKey: content.stat.attack_windup.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

@@ -12,13 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: chapter_warren_depths
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CampaignChapterDefinition
-  Id: chapter_warren_depths
-  NameKey: content.campaign.chapter.chapter_warren_depths.name
-  DescriptionKey: content.campaign.chapter.chapter_warren_depths.desc
-  StoryOrder: 2
-  SiteIds:
-  - site_forgotten_warren
-  - site_twisted_den
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  StoryOrder: 0
+  SiteIds: []
   UnlocksEndlessOnClear: 0
   legacyDisplayName: 
   legacyDescription: 

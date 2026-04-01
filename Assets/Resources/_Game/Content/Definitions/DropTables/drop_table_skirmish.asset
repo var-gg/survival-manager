@@ -12,34 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: drop_table_skirmish
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:DropTableDefinition
-  Id: drop_table_skirmish
-  NameKey: content.drop_table.drop_table_skirmish.name
-  DescriptionKey: content.drop_table.drop_table_skirmish.desc
-  RewardSourceId: reward_source_skirmish
-  Entries:
-  - Id: gold_skirmish
-    RewardType: 0
-    Amount: 8
-    RarityBracket: 0
-    Weight: 1
-    IsGuaranteed: 1
-  - Id: ember_dust_skirmish
-    RewardType: 7
-    Amount: 2
-    RarityBracket: 0
-    Weight: 1
-    IsGuaranteed: 1
-  - Id: item_iron_sword
-    RewardType: 3
-    Amount: 1
-    RarityBracket: 1
-    Weight: 3
-    IsGuaranteed: 0
-  - Id: skill_power_strike
-    RewardType: 11
-    Amount: 1
-    RarityBracket: 1
-    Weight: 2
-    IsGuaranteed: 0
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  RewardSourceId: 
+  Entries: []
   legacyDisplayName: 
   legacyDescription: 

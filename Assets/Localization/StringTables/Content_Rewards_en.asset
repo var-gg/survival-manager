@@ -59,11 +59,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335678436007936
-    m_Localized: Trait Reroll Token
+    m_Localized: Echo Bundle
     m_Metadata:
       m_Items: []
   - m_Id: 335678511505408
-    m_Localized: Trait Reroll Token description
+    m_Localized: Echo Bundle description
     m_Metadata:
       m_Items: []
   - m_Id: 335679274868736
@@ -184,6 +184,14 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 335690112950273
     m_Localized: Extra payout when extracting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744426543505408
+    m_Localized: 35 Echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744427155873792
+    m_Localized: 60 Echo
     m_Metadata:
       m_Items: []
   references:

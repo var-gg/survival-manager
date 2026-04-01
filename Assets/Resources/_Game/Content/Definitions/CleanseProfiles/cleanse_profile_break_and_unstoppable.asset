@@ -12,15 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: cleanse_profile_break_and_unstoppable
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CleanseProfileDefinition
-  Id: break_and_unstoppable
-  NameKey: content.cleanse_profile.break_and_unstoppable.name
-  DescriptionKey: content.cleanse_profile.break_and_unstoppable.desc
-  RemovesStatusIds:
-  - stun
-  - root
-  - silence
-  RemovesOneHardControl: 1
-  GrantsUnstoppable: 1
-  GrantedUnstoppableDurationSeconds: 0.8
+  Id: 
+  NameKey: 
+  DescriptionKey: 
+  RemovesStatusIds: []
+  RemovesOneHardControl: 0
+  GrantsUnstoppable: 0
+  GrantedUnstoppableDurationSeconds: 0
   legacyDisplayName: 
   legacyDescription: 

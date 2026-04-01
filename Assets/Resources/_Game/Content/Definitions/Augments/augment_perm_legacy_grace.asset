@@ -15,8 +15,27 @@ MonoBehaviour:
   Id: augment_perm_legacy_grace
   NameKey: content.augment.augment_perm_legacy_grace.name
   DescriptionKey: content.augment.augment_perm_legacy_grace.desc
-  Rarity: 3
+  Rarity: 2
   IsPermanent: 1
+  BudgetCard:
+    Domain: 6
+    Vector:
+      SustainedDamage: 11
+      BurstDamage: 5
+      Durability: 0
+      Control: 0
+      Mobility: 5
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 13
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 4
+    ConditionClauseCount: 2
+    RuleExceptionCount: 1
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
   Category: 0
   FamilyId: permanent_legacy
   Tier: 1
@@ -32,6 +51,9 @@ MonoBehaviour:
   RequiresTags: []
   RuleModifierTags: []
   EligibleModes: 1
+  AuthorityLayer: 4
+  RosterSlotDelta: 0
+  Effects: []
   Modifiers:
   - StatId: attack_speed
     Op: 0

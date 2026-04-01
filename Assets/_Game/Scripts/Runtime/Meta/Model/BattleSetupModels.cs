@@ -65,7 +65,8 @@ public sealed record CombatArchetypeTemplate(
     EnergyProfile? Energy = null,
     CombatEntityKind EntityKind = CombatEntityKind.RosterUnit,
     OwnershipLink? Ownership = null,
-    SummonProfile? SummonProfile = null);
+    SummonProfile? SummonProfile = null,
+    ContentGovernanceSummary? Governance = null);
 
 public sealed record TeamTacticTemplate(
     string Id,
@@ -91,11 +92,13 @@ public sealed record AugmentCatalogEntry(
     IReadOnlyList<string> Tags,
     IReadOnlyList<string> MutualExclusionTags,
     CombatModifierPackage Package,
-    CombatRuleModifierPackage? RulePackage = null);
+    CombatRuleModifierPackage? RulePackage = null,
+    ContentGovernanceSummary? Governance = null);
 
 public sealed record SynergyTierTemplate(
     string Id,
-    TeamSynergyTierRule Rule);
+    TeamSynergyTierRule Rule,
+    ContentGovernanceSummary? Governance = null);
 
 public sealed record CampaignChapterTemplate(
     string Id,
@@ -167,7 +170,8 @@ public sealed record StatusFamilyTemplate(
     bool AffectedByTenacity,
     float TenacityScale,
     bool IsRuleModifierOnly,
-    IReadOnlyList<string> CompileTags);
+    IReadOnlyList<string> CompileTags,
+    ContentGovernanceSummary? Governance = null);
 
 public sealed record CleanseProfileTemplate(
     string Id,

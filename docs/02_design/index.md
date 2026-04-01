@@ -33,6 +33,8 @@
 - `combat/team-tactics-and-unit-rules.md`: team posture와 per-unit rule 체계
 - `combat/skill-taxonomy-and-damage-model.md`: 6-slot loadout와 수식 기준
 - `combat/skill-authoring-schema.md`: effect descriptor, targeting, presentation hook, learn source schema
+- `combat/unit-blueprint-schema.md`: unit blueprint budget/rarity/counter governance schema
+- `combat/counter-system-topology.md`: 8-lane threat/answer topology와 answer semantics
 - `combat/skill-catalog-v1.md`: role packet 기반 skill seed catalog
 - `combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`: keyword catalog, flex passive modifier compatibility, weapon/class restriction
 - `combat/encounter-catalog-and-scaling.md`: encounter/squad/boss overlay/threat grammar
@@ -70,9 +72,9 @@
 - `meta/permanent-augment-progression.md`: 영구 강화 진행
 - `meta/pvp-boundary.md`: PVP 경계
 - `meta/pvp-ruleset-and-arena-loop.md`: async arena ruleset과 season cadence
-- `meta/synergy-breakpoints-and-soft-counters.md`: 출시 기준 breakpoint와 soft counter
-- `meta/synergy-family-catalog.md`: 7 family exact 2/3/4 payload 카탈로그
-- `meta/synergy-and-augment-taxonomy.md`: synergy / augment 역할 경계와 authority
+- `meta/synergy-breakpoints-and-soft-counters.md`: 출시 기준 2/4 breakpoint와 soft counter
+- `meta/synergy-family-catalog.md`: 7 family 2/4 payload 카탈로그
+- `meta/synergy-and-augment-taxonomy.md`: synergy / augment 역할 경계, 2/4 threshold, rarity
 
 ## systems 문서
 
@@ -80,6 +82,9 @@
 - `systems/launch-floor-content-matrix.md`: 12 core archetype launch floor matrix
 - `systems/squad-blueprint-and-build-ownership.md`: squad blueprint와 빌드 소유권 기준
 - `systems/skills-items-and-passive-boards.md`: 스킬, 아이템, 패시브 보드 빌드 구조
+- `systems/content-budgeting-contract.md`: BudgetCard, domain window, derived sanity 계약
+- `systems/rarity-ladder-contract.md`: `Common / Rare / Epic` governance rarity 계약
+- `systems/v1-forbidden-list.md`: fatal validator forbidden policy
 
 ## 기타 디자인 문서
 

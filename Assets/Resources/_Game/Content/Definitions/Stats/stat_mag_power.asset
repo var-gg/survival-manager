@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_mag_power
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: mag_power
-  NameKey: content.stat.mag_power.name
-  DescriptionKey: content.stat.mag_power.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

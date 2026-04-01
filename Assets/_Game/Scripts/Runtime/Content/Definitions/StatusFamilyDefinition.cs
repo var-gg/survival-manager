@@ -41,6 +41,7 @@ public sealed class StatusFamilyDefinition : ScriptableObject
     public bool UsesControlDiminishing;
     public bool AffectedByTenacity = true;
     public float TenacityScale = 1f;
+    public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Status, PowerBand = global::SM.Content.Definitions.PowerBand.Minor };
     public bool IsRuleModifierOnly;
     public AuthorityLayer AuthorityLayer = AuthorityLayer.Status;
     public int DefaultStackCap = 1;

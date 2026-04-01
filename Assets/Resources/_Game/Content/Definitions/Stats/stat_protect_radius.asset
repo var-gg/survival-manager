@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_protect_radius
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: protect_radius
-  NameKey: content.stat.protect_radius.name
-  DescriptionKey: content.stat.protect_radius.desc
+  Id: 
+  NameKey: 
+  DescriptionKey: 
   legacyDisplayName: 
   legacyDescription: 

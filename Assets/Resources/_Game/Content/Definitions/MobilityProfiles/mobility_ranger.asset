@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: mobility_ranger
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:MobilityProfileDefinition
-  Style: 2
-  Purpose: 5
-  Distance: 1.45
-  Cooldown: 3.4
+  Style: 0
+  Purpose: 0
+  Distance: 0
+  Cooldown: 0
   CastTime: 0
-  Recovery: 0.22
+  Recovery: 0
   TriggerMinDistance: 0
-  TriggerMaxDistance: 1.45
-  LateralBias: 0.68
+  TriggerMaxDistance: 0
+  LateralBias: 0

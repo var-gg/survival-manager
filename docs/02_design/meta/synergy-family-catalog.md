@@ -14,7 +14,7 @@
 ## 목적
 
 이 문서는 launch floor에서 authoring할 `7 synergy families`의 exact payload를 고정한다.
-`2 / 3 / 4` breakpoint 의미를 문장 수준이 아니라 수치와 대상 기준으로 잠가서, content authoring과 sim sweep가 같은 기준을 보게 한다.
+`2 / 4` breakpoint 의미를 문장 수준이 아니라 수치와 대상 기준으로 잠가서, content authoring과 sim sweep가 같은 기준을 보게 한다.
 
 현재 live subset은 7 family를 유지한다.
 schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`에서만 논의하고, 이 문서는 committed exact payload만 소유한다.
@@ -24,9 +24,9 @@ schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`
 - counted tag는 authored content의 canonical tag를 그대로 쓴다.
 - counted target은 roster unit만 포함하고 summon/deployable은 제외한다.
 - affected target은 기본적으로 `AlliedRosterUnits + AlliedCombatants`다.
-- breakpoint는 `2 / 3 / 4`만 허용한다.
+- breakpoint는 `2 / 4`만 허용한다.
 - runtime은 달성한 breakpoint package를 누적 적용한다.
-  - 예: 4-piece면 `2 + 3 + 4` package를 전부 얻는다.
+  - 예: 4-piece면 `2 + 4` package를 전부 얻는다.
 - 같은 family는 동일 threshold package를 한 번만 적용한다.
 - soft counter 기준은 `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`를 따른다.
 
@@ -128,3 +128,10 @@ schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`
 - 같은 팀이 race family와 class family를 함께 달성하는 것은 허용한다.
 - 다만 한 family의 4-piece identity를 다른 source가 통째로 복제하면 안 된다.
 - item, passive, augment는 family의 방향을 보조할 수 있지만, family payload 자체를 다시 한 번 제공하면 overlap violation으로 본다.
+
+## Loop C addendum
+
+- `3-piece` breakpoint는 Loop C source-of-truth에서 제거한다.
+- `2-piece`는 direction, `4-piece`는 payoff다.
+- counter topology와 overlap rule은
+  `docs/02_design/combat/counter-system-topology.md`를 우선한다.
