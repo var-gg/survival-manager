@@ -13,6 +13,11 @@ public static class FirstPlayableContentBootstrap
         Debug.Log("SM sample content bootstrap ensured the canonical sample content root without rewriting committed authoring.");
     }
 
+    public static void RequireSampleContentReady(string consumer)
+    {
+        SampleSeedGenerator.RequireCanonicalSampleContentReady(consumer);
+    }
+
     [MenuItem("SM/Bootstrap/Ensure Sample Content", true)]
     public static bool ValidateEnsureSampleContent()
     {

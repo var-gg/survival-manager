@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: skill_mystic_passive_1
   NameKey: content.skill.skill_mystic_passive_1.name
   DescriptionKey: content.skill.skill_mystic_passive_1.desc
+  TemplateType: 0
   Kind: 3
   SlotKind: 2
   DamageType: 2
@@ -22,6 +23,11 @@ MonoBehaviour:
   TargetRule: 5
   Power: 0
   Range: 0
+  RangeMin: 0
+  RangeMax: -1
+  Radius: 0
+  Width: 0
+  ArcDegrees: 0
   PowerFlat: 0
   PhysCoeff: 0
   MagCoeff: 0
@@ -29,8 +35,27 @@ MonoBehaviour:
   HealthCoeff: 0
   CanCrit: 0
   ManaCost: 0
+  ResourceCost: -1
   BaseCooldownSeconds: 0
+  CooldownSeconds: -1
   CastWindupSeconds: 0
+  RecoverySeconds: -1
+  PowerBudget: 0
+  AiIntents: 
+  AiScoreHints:
+    BurstBias: 0
+    ProtectBias: 0
+    MaintainRangeBias: 0
+    ExecuteBias: 0
+    ControlBias: 0
+    MinimumTargetHealthRatio: 0
+    MaximumTargetHealthRatio: 1
+    MinimumDistance: 0
+    MaximumDistance: 0
+  AnimationHookId: 
+  VfxHookId: 
+  SfxHookId: 
+  LearnSource: 0
   CompileTags:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
@@ -39,10 +64,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
   SupportBlockedTags: []
-  RequiredWeaponTags:
-  - {fileID: 0}
-  RequiredClassTags:
-  - {fileID: 0}
+  RequiredWeaponTags: []
+  RequiredClassTags: []
   AppliedStatuses: []
   CleanseProfileId: 
   legacyDisplayName: 

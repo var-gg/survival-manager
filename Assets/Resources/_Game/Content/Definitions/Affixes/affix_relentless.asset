@@ -17,10 +17,21 @@ MonoBehaviour:
   DescriptionKey: content.affix.affix_relentless.desc
   Category: 4
   Tier: 1
+  AffixFamily: 0
+  EffectType: 0
+  ValueMin: 0
+  ValueMax: 0
   AllowedSlotTypes: 02000000
   CompileTags:
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   RuleModifierTags: []
+  RequiredTags: []
+  ExcludedTags: []
+  ItemLevelMin: 0
+  SpawnWeight: 1
+  ExclusiveGroupId: 
+  BudgetScore: 0
+  TextTemplateKey: 
   Modifiers:
   - StatId: target_switch_delay
     Op: 0

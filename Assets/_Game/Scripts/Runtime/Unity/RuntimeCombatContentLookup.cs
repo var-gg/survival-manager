@@ -382,7 +382,7 @@ public sealed class RuntimeCombatContentLookup
     private void LoadContent()
     {
 #if UNITY_EDITOR
-        EnsureEditorCanonicalSampleContent();
+        RequireEditorCanonicalSampleContentReady();
 #endif
         var archetypes = LoadDefinitions<UnitArchetypeDefinition>("_Game/Content/Definitions/Archetypes", "Assets/Resources/_Game/Content/Definitions/Archetypes");
         var traitPools = LoadDefinitions<TraitPoolDefinition>("_Game/Content/Definitions/Traits", "Assets/Resources/_Game/Content/Definitions/Traits");
@@ -1568,7 +1568,7 @@ public sealed class RuntimeCombatContentLookup
     }
 
 #if UNITY_EDITOR
-    private static void EnsureEditorCanonicalSampleContent()
+    private static void RequireEditorCanonicalSampleContentReady()
     {
         var generatorType = Type.GetType("SM.Editor.SeedData.SampleSeedGenerator, SM.Editor");
         if (generatorType == null)
@@ -1576,9 +1576,22 @@ public sealed class RuntimeCombatContentLookup
             return;
         }
 
+        var requireMethod = generatorType.GetMethod("RequireCanonicalSampleContentReady", BindingFlags.Public | BindingFlags.Static);
+        if (requireMethod != null)
+        {
+            try
+            {
+                requireMethod.Invoke(null, new object[] { nameof(RuntimeCombatContentLookup) });
+                return;
+            }
+            catch (TargetInvocationException ex) when (ex.InnerException != null)
+            {
+                throw ex.InnerException;
+            }
+        }
+
         var hasMinimumMethod = generatorType.GetMethod("HasCanonicalMinimumContent", BindingFlags.Public | BindingFlags.Static);
-        var ensureMethod = generatorType.GetMethod("EnsureCanonicalSampleContent", BindingFlags.Public | BindingFlags.Static);
-        if (hasMinimumMethod == null || ensureMethod == null)
+        if (hasMinimumMethod == null)
         {
             return;
         }
@@ -1588,7 +1601,9 @@ public sealed class RuntimeCombatContentLookup
             return;
         }
 
-        ensureMethod.Invoke(null, null);
+        throw new InvalidOperationException(
+            "SM canonical sample content is not preflight-ready for RuntimeCombatContentLookup. " +
+            "Run 'pwsh -File tools/unity-bridge.ps1 seed-content' or Unity menu 'SM/Seed/Generate Sample Content' before using editor-side runtime lookup.");
     }
 #endif
 

@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: skill_priest_core
   NameKey: content.skill.skill_priest_core.name
   DescriptionKey: content.skill.skill_priest_core.desc
+  TemplateType: 0
   Kind: 0
   SlotKind: 0
   DamageType: 1
@@ -22,6 +23,11 @@ MonoBehaviour:
   TargetRule: 2
   Power: 3.8
   Range: 2.8
+  RangeMin: 0
+  RangeMax: -1
+  Radius: 0
+  Width: 0
+  ArcDegrees: 0
   PowerFlat: 3.8
   PhysCoeff: 0
   MagCoeff: 1.05
@@ -29,22 +35,33 @@ MonoBehaviour:
   HealthCoeff: 0
   CanCrit: 0
   ManaCost: 4
+  ResourceCost: -1
   BaseCooldownSeconds: 2.2
+  CooldownSeconds: -1
   CastWindupSeconds: 0.22
-  CompileTags:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  RecoverySeconds: -1
+  PowerBudget: 0
+  AiIntents: 
+  AiScoreHints:
+    BurstBias: 0
+    ProtectBias: 0
+    MaintainRangeBias: 0
+    ExecuteBias: 0
+    ControlBias: 0
+    MinimumTargetHealthRatio: 0
+    MaximumTargetHealthRatio: 1
+    MinimumDistance: 0
+    MaximumDistance: 0
+  AnimationHookId: 
+  VfxHookId: 
+  SfxHookId: 
+  LearnSource: 0
+  CompileTags: []
   RuleModifierTags: []
-  SupportAllowedTags:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  SupportAllowedTags: []
   SupportBlockedTags: []
-  RequiredWeaponTags:
-  - {fileID: 0}
-  RequiredClassTags:
-  - {fileID: 0}
+  RequiredWeaponTags: []
+  RequiredClassTags: []
   AppliedStatuses:
   - Id: status_barrier_priest
     StatusId: barrier
@@ -52,5 +69,10 @@ MonoBehaviour:
     Magnitude: 5
     MaxStacks: 1
     RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
   CleanseProfileId: cleanse_control
   legacyDisplayName: 

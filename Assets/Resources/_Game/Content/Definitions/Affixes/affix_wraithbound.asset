@@ -17,10 +17,21 @@ MonoBehaviour:
   DescriptionKey: content.affix.affix_wraithbound.desc
   Category: 4
   Tier: 1
+  AffixFamily: 0
+  EffectType: 0
+  ValueMin: 0
+  ValueMax: 0
   AllowedSlotTypes: 0100000002000000
   CompileTags:
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
   RuleModifierTags: []
+  RequiredTags: []
+  ExcludedTags: []
+  ItemLevelMin: 0
+  SpawnWeight: 1
+  ExclusiveGroupId: 
+  BudgetScore: 0
+  TextTemplateKey: 
   Modifiers:
   - StatId: resist
     Op: 0

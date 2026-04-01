@@ -15,9 +15,9 @@ MonoBehaviour:
   Id: marksman
   NameKey: content.archetype.marksman.name
   ScopeKind: 0
-  Race: {fileID: 0}
-  Class: {fileID: 0}
-  TraitPool: {fileID: 0}
+  Race: {fileID: 11400000, guid: 40397d4c74bfc1540a9b6b77e3418712, type: 2}
+  Class: {fileID: 11400000, guid: 9f586812c5ec3d94586eb6362c6288fb, type: 2}
+  TraitPool: {fileID: 11400000, guid: 020172dcb3c1c6d45988dc465f31bd1c, type: 2}
   Skills:
   - {fileID: 11400000, guid: 30c4bf5fea4053d488afb667468e8c8d, type: 2}
   - {fileID: 11400000, guid: 69c477993ea28ef468d3e94c76aa4d74, type: 2}
@@ -50,9 +50,15 @@ MonoBehaviour:
   SupportModifierBiasTags:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
-  FootprintProfile: {fileID: 0}
-  BehaviorProfile: {fileID: 0}
-  MobilityProfile: {fileID: 0}
+  LockedAttackProfileId: 
+  LockedAttackProfileTag: 
+  LockedSignatureActiveSkill: {fileID: 0}
+  LockedSignaturePassiveSkill: {fileID: 0}
+  FlexUtilitySkillPool: []
+  FlexSupportSkillPool: []
+  FootprintProfile: {fileID: 11400000, guid: a81b3870596764c429790a3a0e75a089, type: 2}
+  BehaviorProfile: {fileID: 11400000, guid: 694569802d1952445a6d582f97449372, type: 2}
+  MobilityProfile: {fileID: 11400000, guid: 90f39a3f53210ab4697d716b89c641a6, type: 2}
   BaseMaxHealth: 18
   BaseArmor: 2.1
   BaseResist: 0.4

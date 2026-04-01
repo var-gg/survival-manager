@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: skill_scout_core
   NameKey: content.skill.skill_scout_core.name
   DescriptionKey: content.skill.skill_scout_core.desc
+  TemplateType: 0
   Kind: 0
   SlotKind: 0
   DamageType: 0
@@ -22,6 +23,11 @@ MonoBehaviour:
   TargetRule: 2
   Power: 3.7
   Range: 3.1
+  RangeMin: 0
+  RangeMax: -1
+  Radius: 0
+  Width: 0
+  ArcDegrees: 0
   PowerFlat: 3.7
   PhysCoeff: 1
   MagCoeff: 0
@@ -29,8 +35,27 @@ MonoBehaviour:
   HealthCoeff: 0
   CanCrit: 1
   ManaCost: 0
+  ResourceCost: -1
   BaseCooldownSeconds: 1.8
+  CooldownSeconds: -1
   CastWindupSeconds: 0.15
+  RecoverySeconds: -1
+  PowerBudget: 0
+  AiIntents: 
+  AiScoreHints:
+    BurstBias: 0
+    ProtectBias: 0
+    MaintainRangeBias: 0
+    ExecuteBias: 0
+    ControlBias: 0
+    MinimumTargetHealthRatio: 0
+    MaximumTargetHealthRatio: 1
+    MinimumDistance: 0
+    MaximumDistance: 0
+  AnimationHookId: 
+  VfxHookId: 
+  SfxHookId: 
+  LearnSource: 0
   CompileTags:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
@@ -39,10 +64,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   SupportBlockedTags: []
-  RequiredWeaponTags:
-  - {fileID: 0}
-  RequiredClassTags:
-  - {fileID: 0}
+  RequiredWeaponTags: []
+  RequiredClassTags: []
   AppliedStatuses: []
   CleanseProfileId: 
   legacyDisplayName: 

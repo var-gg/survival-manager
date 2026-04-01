@@ -101,7 +101,7 @@ public sealed class StatV2AndSandboxTests
     [Test]
     public void CombatSandboxWindow_BindsAndBuildsRunRequest_WithoutPlayMode()
     {
-        SampleSeedGenerator.EnsureCanonicalSampleContent();
+        SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(CombatSandboxWindow_BindsAndBuildsRunRequest_WithoutPlayMode));
         var config = ScriptableObject.CreateInstance<CombatSandboxConfig>();
         config.Seed = 29;
         config.BatchCount = 2;

@@ -13,7 +13,7 @@ public sealed class EncounterAndLootResolutionTests
     [SetUp]
     public void SetUp()
     {
-        SampleSeedGenerator.EnsureCanonicalSampleContent();
+        SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(EncounterAndLootResolutionTests));
     }
 
     [Test]

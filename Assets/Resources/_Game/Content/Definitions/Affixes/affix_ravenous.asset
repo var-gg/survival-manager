@@ -17,10 +17,21 @@ MonoBehaviour:
   DescriptionKey: content.affix.affix_ravenous.desc
   Category: 1
   Tier: 1
+  AffixFamily: 0
+  EffectType: 0
+  ValueMin: 0
+  ValueMax: 0
   AllowedSlotTypes: 0000000002000000
   CompileTags:
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
   RuleModifierTags: []
+  RequiredTags: []
+  ExcludedTags: []
+  ItemLevelMin: 0
+  SpawnWeight: 1
+  ExclusiveGroupId: 
+  BudgetScore: 0
+  TextTemplateKey: 
   Modifiers:
   - StatId: lifesteal
     Op: 0

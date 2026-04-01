@@ -26,8 +26,9 @@
 ## editor contract
 
 - committed `ScriptableObject` asset이 canonical root의 source of truth다.
-- `SM/Bootstrap/Ensure Sample Content`는 minimum bootstrap content 누락만 복구한다.
-- `SM/Seed/Generate Sample Content`는 canonical root를 repair할 때만 쓰는 bootstrap tool이다.
+- `SM/Bootstrap/Ensure Sample Content`와 `SM/Seed/Generate Sample Content`는 explicit preflight/write lane이다.
+- runtime lookup, EditMode test, content bootstrap helper는 canonical root가 준비되지 않았을 때 asset rewrite를 하지 않는다.
+- canonical root가 미준비이거나 drift 상태면 caller를 fail-fast시키고 explicit preflight command를 안내한다.
 - `SM/Seed/Migrate Legacy Sample Content`는 legacy root가 있을 때만 `AssetDatabase.MoveAsset` 기반 이동을 시도한다.
 - legacy 이동이 없거나 실패하면 canonical root 재생성으로 fallback 한다.
 
@@ -42,7 +43,8 @@
 - `GameBootstrap`은 `Resources` 경로만 기준으로 본다.
 - boot 시 canonical root가 비어 있으면 플레이를 막고 정확한 recovery menu를 안내한다.
 - 1차 recovery action은 `SM/Bootstrap/Ensure Sample Content`다.
-- committed floor authoring이 깨진 경우에만 `SM/Seed/Generate Sample Content`를 repair로 사용한다.
+- committed floor authoring이 깨졌거나 launch-floor coverage가 모자라면 `SM/Seed/Generate Sample Content`를 명시적으로 실행해 repair한다.
+- runtime/editor read path는 recovery를 위해 canonical asset을 암묵적으로 regenerate하지 않는다.
 
 ## block24 임시 bridge
 
@@ -55,6 +57,8 @@ scene repair를 공식 계약으로 승격하는 일은 block25에서 다룬다.
 ## 검증 기준
 
 - EditMode integrity suite는 canonical root 아래 최소 `StatDefinition`, `RaceDefinition`, `ClassDefinition`, `UnitArchetypeDefinition` 존재를 확인한다.
+- canonical readiness check는 minimum asset 존재와 stale authoring drift를 함께 본다.
+- launch-floor count coverage와 completeness gap은 validator/test 책임으로 남기고, read path의 repair gate와 섞지 않는다.
 - playable scene asset 존재 여부를 확인한다.
 - Boot/Town/Battle wiring은 temporary bridge 기준으로만 확인한다.
 

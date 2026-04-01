@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: skill_marksman_utility
   NameKey: content.skill.skill_marksman_utility.name
   DescriptionKey: content.skill.skill_marksman_utility.desc
+  TemplateType: 0
   Kind: 5
   SlotKind: 1
   DamageType: 0
@@ -22,6 +23,11 @@ MonoBehaviour:
   TargetRule: 5
   Power: 0
   Range: 0
+  RangeMin: 0
+  RangeMax: -1
+  Radius: 0
+  Width: 0
+  ArcDegrees: 0
   PowerFlat: 0
   PhysCoeff: 1
   MagCoeff: 0
@@ -29,22 +35,33 @@ MonoBehaviour:
   HealthCoeff: 0
   CanCrit: 1
   ManaCost: 0
+  ResourceCost: -1
   BaseCooldownSeconds: 3.8
+  CooldownSeconds: -1
   CastWindupSeconds: 0.08
-  CompileTags:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  RecoverySeconds: -1
+  PowerBudget: 0
+  AiIntents: 
+  AiScoreHints:
+    BurstBias: 0
+    ProtectBias: 0
+    MaintainRangeBias: 0
+    ExecuteBias: 0
+    ControlBias: 0
+    MinimumTargetHealthRatio: 0
+    MaximumTargetHealthRatio: 1
+    MinimumDistance: 0
+    MaximumDistance: 0
+  AnimationHookId: 
+  VfxHookId: 
+  SfxHookId: 
+  LearnSource: 0
+  CompileTags: []
   RuleModifierTags: []
-  SupportAllowedTags:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  SupportAllowedTags: []
   SupportBlockedTags: []
-  RequiredWeaponTags:
-  - {fileID: 0}
-  RequiredClassTags:
-  - {fileID: 0}
+  RequiredWeaponTags: []
+  RequiredClassTags: []
   AppliedStatuses:
   - Id: status_sunder
     StatusId: sunder
@@ -52,5 +69,10 @@ MonoBehaviour:
     Magnitude: 0.15
     MaxStacks: 1
     RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
   CleanseProfileId: 
   legacyDisplayName: 

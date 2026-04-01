@@ -11,7 +11,7 @@ public sealed class BalanceSweepAndBootstrapTests
     [SetUp]
     public void SetUp()
     {
-        SampleSeedGenerator.EnsureCanonicalSampleContent();
+        SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(BalanceSweepAndBootstrapTests));
     }
 
     [Test]
@@ -28,16 +28,16 @@ public sealed class BalanceSweepAndBootstrapTests
     }
 
     [Test]
-    public void EnsureSampleContent_DoesNotRewriteCommittedFloorContent()
+    public void RequireSampleContentReady_DoesNotRewriteCommittedFloorContent()
     {
         const string contentPath = "Assets/Resources/_Game/Content/Definitions/Archetypes/archetype_bulwark.asset";
         var before = File.ReadAllText(contentPath);
 
-        FirstPlayableContentBootstrap.EnsureSampleContent();
+        FirstPlayableContentBootstrap.RequireSampleContentReady(nameof(RequireSampleContentReady_DoesNotRewriteCommittedFloorContent));
 
         var after = File.ReadAllText(contentPath);
 
         Assert.That(after, Is.EqualTo(before));
-        Assert.That(SampleSeedGenerator.HasCanonicalMinimumContent(), Is.True);
+        Assert.That(SampleSeedGenerator.TryGetCanonicalSampleContentReadinessIssue(out _), Is.True);
     }
 }

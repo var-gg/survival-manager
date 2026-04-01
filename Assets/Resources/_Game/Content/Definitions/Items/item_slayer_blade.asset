@@ -28,8 +28,7 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   RuleModifierTags: []
-  AllowedClassTags:
-  - {fileID: 0}
+  AllowedClassTags: []
   AllowedArchetypeTags: []
   UniqueRuleTags: []
   AllowedCraftOperations: 00000000010000000200000004000000

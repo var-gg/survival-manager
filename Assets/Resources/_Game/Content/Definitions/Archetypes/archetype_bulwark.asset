@@ -15,9 +15,9 @@ MonoBehaviour:
   Id: bulwark
   NameKey: content.archetype.bulwark.name
   ScopeKind: 0
-  Race: {fileID: 0}
-  Class: {fileID: 0}
-  TraitPool: {fileID: 0}
+  Race: {fileID: 11400000, guid: 9dd3fb1286383554abea4725a9f7c4c4, type: 2}
+  Class: {fileID: 11400000, guid: 2797722ba4364b04ab5a5e375294258b, type: 2}
+  TraitPool: {fileID: 11400000, guid: f960e4513d153a644a406ec80869f2f1, type: 2}
   Skills:
   - {fileID: 11400000, guid: 2d2fdece3a6f451469b0c0cc4f60baaf, type: 2}
   - {fileID: 11400000, guid: 4dd611eacab313b4ba0cdde8577a54c2, type: 2}
@@ -50,9 +50,15 @@ MonoBehaviour:
   SupportModifierBiasTags:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
-  FootprintProfile: {fileID: 0}
-  BehaviorProfile: {fileID: 0}
-  MobilityProfile: {fileID: 0}
+  LockedAttackProfileId: 
+  LockedAttackProfileTag: 
+  LockedSignatureActiveSkill: {fileID: 0}
+  LockedSignaturePassiveSkill: {fileID: 0}
+  FlexUtilitySkillPool: []
+  FlexSupportSkillPool: []
+  FootprintProfile: {fileID: 11400000, guid: b07c3ef2049972e4ab998768a91f4e02, type: 2}
+  BehaviorProfile: {fileID: 11400000, guid: 07c1e9da8c03c204e9851ccbb5f54987, type: 2}
+  MobilityProfile: {fileID: 11400000, guid: 0d01521760a55c841835084a49d9fb8e, type: 2}
   BaseMaxHealth: 25
   BaseArmor: 4.2
   BaseResist: 0.8

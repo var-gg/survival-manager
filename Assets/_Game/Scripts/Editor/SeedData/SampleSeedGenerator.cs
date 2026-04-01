@@ -54,7 +54,6 @@ public static class SampleSeedGenerator
 
         AssetDatabase.SaveAssets();
         ReimportCanonicalAssets();
-        ForceReserializeCanonicalAssets();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         Debug.Log($"SM sample content generated under Resources. Root={ResourcesRoot}, Stats={stats.Count}, Races={races.Count}, Classes={classes.Count}, Skills={skills.Count}, Archetypes={archetypes.Count}");
@@ -91,55 +90,83 @@ public static class SampleSeedGenerator
         EnsureFolders();
         LocalizationFoundationBootstrap.EnsureFoundationAssets();
 
-        if (HasCanonicalMinimumContent())
+        if (TryGetCanonicalSampleContentReadinessIssue(out var issue))
         {
-            if (HasCanonicalAuthoringDrift())
-            {
-                Debug.Log($"SM canonical sample content drift detected. Regenerating under {ResourcesRoot}.");
-                Generate();
-                return;
-            }
-
-            Debug.Log($"SM canonical sample content already present. Root={ResourcesRoot}");
+            Debug.Log($"SM canonical sample content already preflight-ready. Root={ResourcesRoot}");
             return;
         }
 
-        Debug.Log($"SM canonical sample content missing or incomplete. Regenerating under {ResourcesRoot}.");
+        Debug.Log($"SM canonical sample content is not preflight-ready. {issue} Regenerating under {ResourcesRoot}.");
         Generate();
+    }
+
+    public static void RequireCanonicalSampleContentReady(string consumer)
+    {
+        if (TryGetCanonicalSampleContentReadinessIssue(out var issue))
+        {
+            return;
+        }
+
+        var consumerLabel = string.IsNullOrWhiteSpace(consumer) ? "current caller" : consumer;
+        throw new InvalidOperationException(
+            $"SM canonical sample content is not preflight-ready for {consumerLabel}. {issue} " +
+            "Run 'pwsh -File tools/unity-bridge.ps1 seed-content' or Unity menu 'SM/Seed/Generate Sample Content' before running this path.");
+    }
+
+    public static bool TryGetCanonicalSampleContentReadinessIssue(out string issue)
+    {
+        var minimumFailures = GetCanonicalMinimumContentFailures();
+        if (minimumFailures.Count > 0)
+        {
+            issue = $"Canonical root is missing required baseline assets under {ResourcesRoot}: {string.Join(", ", minimumFailures.Take(4))}.";
+            return false;
+        }
+
+        if (HasCanonicalAuthoringDrift())
+        {
+            issue = "Canonical root contains stale or drifted authored assets.";
+            return false;
+        }
+
+        issue = string.Empty;
+        return true;
     }
 
     public static bool HasCanonicalMinimumContent()
     {
-        return HasCanonicalAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_max_health.asset", definition => string.Equals(definition.Id, "max_health", StringComparison.Ordinal))
-               && HasCanonicalAsset<RaceDefinition>($"{ResourcesRoot}/Races/race_human.asset", definition => string.Equals(definition.Id, "human", StringComparison.Ordinal))
-               && HasCanonicalAsset<ClassDefinition>($"{ResourcesRoot}/Classes/class_vanguard.asset", definition => string.Equals(definition.Id, "vanguard", StringComparison.Ordinal))
-               && HasCanonicalAsset<FootprintProfileDefinition>($"{ResourcesRoot}/FootprintProfiles/footprint_vanguard.asset", definition => definition.EngagementSlotCount > 0)
-               && HasCanonicalAsset<BehaviorProfileDefinition>($"{ResourcesRoot}/BehaviorProfiles/behavior_vanguard.asset", definition => definition.ReevaluationInterval > 0f)
-               && HasCanonicalAsset<MobilityProfileDefinition>($"{ResourcesRoot}/MobilityProfiles/mobility_ranger.asset", definition => definition.Distance > 0f)
-               && HasCanonicalAsset<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_warden.asset", definition => string.Equals(definition.Id, "warden", StringComparison.Ordinal))
-               && HasCanonicalAsset<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_warden.asset", definition => definition.Skills != null && definition.Skills.Count == 4)
-               && HasCanonicalAsset<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/skill_warden_utility.asset", definition => string.Equals(definition.Id, "skill_warden_utility", StringComparison.Ordinal))
-               && HasCanonicalAsset<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/skill_bulwark_utility.asset", definition => definition.RequiredWeaponTags != null && definition.RequiredWeaponTags.Count > 0 && definition.RequiredWeaponTags.All(tag => tag != null))
-               && HasCanonicalAsset<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/support_brutal.asset", definition => string.Equals(definition.Id, "support_brutal", StringComparison.Ordinal))
-               && HasCanonicalAsset<AugmentDefinition>($"{ResourcesRoot}/Augments/augment_silver_guard.asset", definition => string.Equals(definition.Id, "augment_silver_guard", StringComparison.Ordinal))
-               && HasCanonicalAsset<AugmentDefinition>($"{ResourcesRoot}/Augments/augment_silver_guard.asset", definition => !string.IsNullOrWhiteSpace(definition.FamilyId))
-               && HasCanonicalAsset<ItemBaseDefinition>($"{ResourcesRoot}/Items/item_warden_armor.asset", definition => string.Equals(definition.Id, "item_warden_armor", StringComparison.Ordinal))
-               && HasCanonicalAsset<AffixDefinition>($"{ResourcesRoot}/Affixes/affix_guarded.asset", definition => string.Equals(definition.Id, "affix_guarded", StringComparison.Ordinal))
-               && HasCanonicalAsset<AffixDefinition>($"{ResourcesRoot}/Affixes/affix_precise.asset", definition => definition.CompileTags != null && definition.CompileTags.All(tag => tag != null))
-               && HasCanonicalAsset<CampaignChapterDefinition>($"{ResourcesRoot}/CampaignChapters/chapter_ashen_frontier.asset", definition => string.Equals(definition.Id, "chapter_ashen_frontier", StringComparison.Ordinal))
-               && HasCanonicalAsset<ExpeditionSiteDefinition>($"{ResourcesRoot}/ExpeditionSites/site_ashen_gate.asset", definition => string.Equals(definition.Id, "site_ashen_gate", StringComparison.Ordinal))
-               && HasCanonicalAsset<EncounterDefinition>($"{ResourcesRoot}/Encounters/site_ashen_gate_skirmish_1.asset", definition => string.Equals(definition.Id, "site_ashen_gate_skirmish_1", StringComparison.Ordinal))
-               && HasCanonicalAsset<EnemySquadTemplateDefinition>($"{ResourcesRoot}/EnemySquads/site_ashen_gate_skirmish_1_squad.asset", definition => string.Equals(definition.Id, "site_ashen_gate_skirmish_1_squad", StringComparison.Ordinal))
-               && HasCanonicalAsset<BossOverlayDefinition>($"{ResourcesRoot}/BossOverlays/boss_overlay_ashen_gate.asset", definition => string.Equals(definition.Id, "boss_overlay_ashen_gate", StringComparison.Ordinal))
-               && HasCanonicalAsset<StatusFamilyDefinition>($"{ResourcesRoot}/StatusFamilies/status_family_guarded.asset", definition => string.Equals(definition.Id, "guarded", StringComparison.Ordinal))
-               && HasCanonicalAsset<CleanseProfileDefinition>($"{ResourcesRoot}/CleanseProfiles/cleanse_profile_cleanse_basic.asset", definition => string.Equals(definition.Id, "cleanse_basic", StringComparison.Ordinal))
-               && HasCanonicalAsset<ControlDiminishingRuleDefinition>($"{ResourcesRoot}/ControlDiminishingRules/control_diminishing_launch_floor.asset", definition => string.Equals(definition.Id, "control_diminishing_launch_floor", StringComparison.Ordinal))
-               && HasCanonicalAsset<RewardSourceDefinition>($"{ResourcesRoot}/RewardSources/reward_source_skirmish.asset", definition => string.Equals(definition.Id, "reward_source_skirmish", StringComparison.Ordinal))
-               && HasCanonicalAsset<DropTableDefinition>($"{ResourcesRoot}/DropTables/drop_table_skirmish.asset", definition => string.Equals(definition.Id, "drop_table_skirmish", StringComparison.Ordinal))
-               && HasCanonicalAsset<LootBundleDefinition>($"{ResourcesRoot}/LootBundles/loot_bundle_extract_bonus.asset", definition => string.Equals(definition.Id, "loot_bundle_extract_bonus", StringComparison.Ordinal))
-               && HasCanonicalAsset<RewardTableDefinition>($"{ResourcesRoot}/Rewards/rewardtable_battle.asset", definition => !string.IsNullOrWhiteSpace(definition.DescriptionKey))
-               && HasCanonicalAsset<PassiveNodeDefinition>($"{ResourcesRoot}/PassiveNodes/passive_duelist_small_01.asset", definition => definition.CompileTags != null && definition.CompileTags.All(tag => tag != null))
-               && HasCanonicalAsset<TraitTokenDefinition>($"{ResourcesRoot}/TraitTokens/trait_reroll_token.asset", definition => string.Equals(definition.Id, "trait_reroll_token", StringComparison.Ordinal));
+        return GetCanonicalMinimumContentFailures().Count == 0;
+    }
+
+    public static IReadOnlyList<string> GetCanonicalMinimumContentFailures()
+    {
+        var failures = new List<string>();
+
+        CheckMinimum(failures, "Stats/stat_max_health.asset", HasAssetText($"{ResourcesRoot}/Stats/stat_max_health.asset", "Id: max_health"));
+        CheckMinimum(failures, "Races/race_human.asset", HasAssetText($"{ResourcesRoot}/Races/race_human.asset", "Id: human"));
+        CheckMinimum(failures, "Classes/class_vanguard.asset", HasAssetText($"{ResourcesRoot}/Classes/class_vanguard.asset", "Id: vanguard"));
+        CheckMinimum(failures, "FootprintProfiles/footprint_vanguard.asset", HasAssetText($"{ResourcesRoot}/FootprintProfiles/footprint_vanguard.asset", "EngagementSlotCount:"));
+        CheckMinimum(failures, "BehaviorProfiles/behavior_vanguard.asset", HasAssetText($"{ResourcesRoot}/BehaviorProfiles/behavior_vanguard.asset", "ReevaluationInterval:"));
+        CheckMinimum(failures, "MobilityProfiles/mobility_ranger.asset", HasAssetText($"{ResourcesRoot}/MobilityProfiles/mobility_ranger.asset", "Distance:"));
+        CheckMinimum(failures, "Archetypes/archetype_warden.asset", HasAssetText($"{ResourcesRoot}/Archetypes/archetype_warden.asset", "Id: warden"));
+        CheckMinimum(failures, "Skills/skill_warden_utility.asset", HasAssetText($"{ResourcesRoot}/Skills/skill_warden_utility.asset", "Id: skill_warden_utility"));
+        CheckMinimum(failures, "Augments/augment_silver_guard.asset", HasAssetText($"{ResourcesRoot}/Augments/augment_silver_guard.asset", "Id: augment_silver_guard"));
+        CheckMinimum(failures, "Items/item_warden_armor.asset", HasAssetText($"{ResourcesRoot}/Items/item_warden_armor.asset", "Id: item_warden_armor"));
+        CheckMinimum(failures, "Affixes/affix_guarded.asset", HasAssetText($"{ResourcesRoot}/Affixes/affix_guarded.asset", "Id: affix_guarded"));
+        CheckMinimum(failures, "CampaignChapters/chapter_ashen_frontier.asset", HasAssetText($"{ResourcesRoot}/CampaignChapters/chapter_ashen_frontier.asset", "Id: chapter_ashen_frontier"));
+        CheckMinimum(failures, "ExpeditionSites/site_ashen_gate.asset", HasAssetText($"{ResourcesRoot}/ExpeditionSites/site_ashen_gate.asset", "Id: site_ashen_gate"));
+        CheckMinimum(failures, "StatusFamilies/status_family_guarded.asset", HasAssetText($"{ResourcesRoot}/StatusFamilies/status_family_guarded.asset", "Id: guarded"));
+        CheckMinimum(failures, "RewardSources/reward_source_skirmish.asset", HasAssetText($"{ResourcesRoot}/RewardSources/reward_source_skirmish.asset", "Id: reward_source_skirmish"));
+        CheckMinimum(failures, "TraitTokens/trait_reroll_token.asset", HasAssetText($"{ResourcesRoot}/TraitTokens/trait_reroll_token.asset", "Id: trait_reroll_token"));
+
+        return failures;
+    }
+
+    private static void CheckMinimum(List<string> failures, string label, bool passed)
+    {
+        if (!passed)
+        {
+            failures.Add(label);
+        }
     }
 
     private static void EnsureFolders()
@@ -340,20 +367,6 @@ public static class SampleSeedGenerator
         {
             AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         }
-    }
-
-    private static void ForceReserializeCanonicalAssets()
-    {
-        var assetPaths = Directory
-            .EnumerateFiles(ResourcesRoot, "*.asset", SearchOption.AllDirectories)
-            .Select(ToUnityPath)
-            .ToList();
-        if (assetPaths.Count == 0)
-        {
-            return;
-        }
-
-        AssetDatabase.ForceReserializeAssets(assetPaths, ForceReserializeAssetsOptions.ReserializeAssetsAndMetadata);
     }
 
     private static List<StatDefinition> CreateStats()
@@ -2319,7 +2332,7 @@ public static class SampleSeedGenerator
     private static T CreateAsset<T>(string path, System.Action<T> configure) where T : ScriptableObject
     {
         var existing = AssetDatabase.LoadAssetAtPath<T>(path);
-        if (existing == null)
+        if (existing == null || HasBrokenScriptReference(path))
         {
             if (AssetDatabase.LoadMainAssetAtPath(path) != null || File.Exists(path))
             {
@@ -2335,6 +2348,11 @@ public static class SampleSeedGenerator
         ClearLegacyTextFields(existing);
         EditorUtility.SetDirty(existing);
         return existing;
+    }
+
+    private static bool HasBrokenScriptReference(string path)
+    {
+        return File.Exists(path) && File.ReadAllText(path).Contains("m_Script: {fileID: 0}", StringComparison.Ordinal);
     }
 
     private static void UpsertStringEntry(string tableName, string key, string koValue, string enValue, bool smart = false)

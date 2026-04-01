@@ -17,10 +17,21 @@ MonoBehaviour:
   DescriptionKey: content.affix.affix_spined.desc
   Category: 3
   Tier: 1
+  AffixFamily: 0
+  EffectType: 0
+  ValueMin: 0
+  ValueMax: 0
   AllowedSlotTypes: 01000000
   CompileTags:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   RuleModifierTags: []
+  RequiredTags: []
+  ExcludedTags: []
+  ItemLevelMin: 0
+  SpawnWeight: 1
+  ExclusiveGroupId: 
+  BudgetScore: 0
+  TextTemplateKey: 
   Modifiers:
   - StatId: max_health
     Op: 0

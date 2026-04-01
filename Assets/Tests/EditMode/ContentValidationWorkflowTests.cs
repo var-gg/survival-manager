@@ -19,7 +19,7 @@ public sealed class ContentValidationWorkflowTests
     [SetUp]
     public void SetUp()
     {
-        SampleSeedGenerator.EnsureCanonicalSampleContent();
+        SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(ContentValidationWorkflowTests));
         DeleteTempRoot();
     }
 

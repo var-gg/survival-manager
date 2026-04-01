@@ -13,7 +13,7 @@ public sealed class SceneIntegrityTests
     [OneTimeSetUp]
     public void PrepareCanonicalContentAndObserverPlayableScenes()
     {
-        SampleSeedGenerator.EnsureCanonicalSampleContent();
+        SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(SceneIntegrityTests));
         FirstPlayableSceneInstaller.RebuildFirstPlayableScenes();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
     }
@@ -21,7 +21,7 @@ public sealed class SceneIntegrityTests
     [Test]
     public void CanonicalContentRoot_Has_Minimum_Core_Assets()
     {
-        SampleSeedGenerator.EnsureCanonicalSampleContent();
+        SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(CanonicalContentRoot_Has_Minimum_Core_Assets));
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         Assert.That(Directory.Exists(SampleSeedGenerator.ResourcesRoot), Is.True, $"Missing canonical content root: {SampleSeedGenerator.ResourcesRoot}");
         AssertCoreDefinition<StatDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Stats/stat_max_health.asset", definition => definition.Id, "max_health");
