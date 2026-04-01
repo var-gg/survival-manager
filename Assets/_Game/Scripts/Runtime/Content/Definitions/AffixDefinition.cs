@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SM.Core.Contracts;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -33,6 +34,8 @@ public sealed class AffixDefinition : ScriptableObject
     public string ExclusiveGroupId = string.Empty;
     public float BudgetScore = 0f;
     public string TextTemplateKey = string.Empty;
+    public AuthorityLayer AuthorityLayer = AuthorityLayer.Affix;
+    public List<EffectDescriptor> Effects = new();
     public List<SerializableStatModifier> Modifiers = new();
 
     [FormerlySerializedAs("DisplayName")]

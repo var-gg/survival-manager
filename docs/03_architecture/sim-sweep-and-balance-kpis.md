@@ -14,7 +14,7 @@
 ## 목적
 
 이 문서는 launch floor authoring 이후 어떤 deterministic sweep를 돌리고, 어떤 KPI로 review/fail을 판단할지 고정한다.
-의도는 “밸런스 감상”이 아니라 `LoadoutCompiler -> BattleFactory -> BattleSimulator` 경로가 같은 입력에서 같은 산출을 내는지와, launch floor 예산이 크게 벗어나지 않는지를 기계적으로 확인하는 데 있다.
+의도는 `LoadoutCompiler -> BattleFactory -> BattleSimulator` 경로가 같은 입력에서 같은 산출을 내는지와, launch floor 예산이 크게 벗어나지 않는지를 기계적으로 확인하는 데 있다.
 
 ## 현재 smoke sweep 범위
 
@@ -31,7 +31,7 @@
 ### content snapshot
 
 - source: committed `ScriptableObject` assets under `Assets/Resources/_Game/Content/Definitions/**`
-- compile contract: `core_active / utility_active / passive / support`
+- compile contract: Loop A 6-slot topology
 - compile version: `LoadoutCompiler.CurrentCompileVersion`
 - runtime truth는 committed asset이고, generator는 bootstrap repair 용도다.
 
@@ -48,14 +48,6 @@
   - temporary augments: `augment_silver_stride`, `augment_silver_ward`
   - permanent augment: `augment_perm_legacy_fang`
 
-### enemy template
-
-- smoke encounter는 현재 `BattleEncounterPlans.CreateObserverSmokePlan()`을 사용한다.
-- enemy build는 `BattleSetupBuilder.Build(...)`를 경유한다.
-- 이 경로는 launch floor pass에서는 `migration-only encounter path`로 취급한다.
-- follow-up TODO:
-  - encounter asset authoring이 들어오면 `BattleSetupBuilder` 의존을 줄이고, authored encounter catalog를 primary source로 승격한다.
-
 ### seed policy
 
 - smoke sweep seed ladder: `17 / 23 / 29`
@@ -70,7 +62,7 @@
 | final state determinism | 같은 snapshot + seed에서 winner / step count / final state hash 일치 여부 | `100%` | 하나라도 다르면 fail |
 | validation error count | content validator error 수 | `0` | `> 0` fail |
 | validation warning count | content validator warning 수 | review only | 경향 추적, 단독 fail 아님 |
-| average first cast seconds | scenario별 첫 active cast 평균 시점 | `<= 3.0s` | 초과 시 review flag |
+| average first signature cast seconds | scenario별 첫 signature cast 평균 시점 | `5.0s ~ 9.0s` | 범위 밖이면 review flag |
 | time to first meaningful action | ally가 첫 meaningful event를 만드는 평균 시점 | artifact 출력 필수 | cadence review |
 | average reposition count | ally 1인당 reposition-like state 진입 평균 | artifact 출력 필수 | blob / jitter review |
 | average target access time | ally 1인당 첫 damage contact 평균 시점 | artifact 출력 필수 | 접근성 review |
@@ -78,52 +70,6 @@
 | average battle duration seconds | scenario별 전투 평균 시간 | `4s ~ 40s` | 범위 밖이면 review flag |
 | temporary augment dead-offer ratio | 현재 팀 tags와 무관한 temporary augment 비율 | `<= 0.6` | 초과 시 review flag |
 | synergy tier uplift win rate | focused synergy comp가 mixed control comp보다 잃는 정도 | `>= -0.05` | 그보다 낮으면 review flag |
-| damage source distribution | ally damage 분포 | artifact 출력 필수 | top-heavy 여부 review |
-| damage taken distribution | ally 피해 분포 | artifact 출력 필수 | front/back burden review |
-| heal share | ally heal 분포 | artifact 출력 필수 | sustain concentration review |
-
-## artifact 출력 규칙
-
-### JSON
-
-- 파일: `Logs/balance-sweep/balance-sweep-report.json`
-- 포함 항목:
-  - generation time
-  - validation report path
-  - validation error/warning count
-  - scenario별 compile hash
-  - compile hash determinism
-  - final state determinism
-  - win rate
-  - average battle duration
-  - average first cast
-  - time to first meaningful action
-  - average reposition count
-  - average target access time
-  - average frontline survival time
-  - damage source distribution / damage taken distribution / heal share
-  - temporary augment dead-offer ratio
-  - synergy tier uplift
-  - global outlier flags
-
-### CSV
-
-- 파일: `Logs/balance-sweep/balance-sweep-summary.csv`
-- 목적: branch/PR artifact에서 빠르게 scan 가능한 summary
-- 포함 항목:
-  - scenario id
-  - team tactic id
-  - determinism booleans
-  - win rate
-  - avg duration
-  - avg first cast
-  - time to first meaningful action
-  - avg reposition count
-  - avg target access time
-  - avg frontline survival time
-  - dead-offer ratio
-  - validation error/warning count
-  - scenario flags
 
 ## review와 fail 조건
 
@@ -135,28 +81,12 @@
 
 ### review required
 
-- `first_cast_over_3_0s`
+- `first_signature_cast_out_of_band`
 - `battle_duration_out_of_band`
 - `dead_offer_ratio_over_0_6`
 - `global:synergy_uplift_negative`
 
-### 이번 패스의 운영 원칙
+## 이번 패스의 운영 원칙
 
 - smoke runner는 outlier를 flag로 남기고 artifact에 기록한다.
 - branch CI는 determinism/validation fail만 즉시 차단하고, balance outlier는 artifact review를 요구한다.
-
-## 후속 sweep 확장
-
-### unit micro sweep
-
-- 단일 archetype / item / passive / augment의 delta를 측정한다.
-- target: item 1개, notable 1개, keystone 1개, synergy 1단계, augment 1개가 예산 문서 범위를 벗어나는지 확인한다.
-
-### canonical squad sweep
-
-- launch floor 12 archetypes로 만든 대표 4인 조합들을 대진표로 돌린다.
-- top / bottom win-rate spread를 추적한다.
-
-### delta sweep
-
-- 장비 1개, passive notable 1개, synergy 1단계, augment 1개가 compile hash와 전투 KPI에 주는 변화를 기록한다.

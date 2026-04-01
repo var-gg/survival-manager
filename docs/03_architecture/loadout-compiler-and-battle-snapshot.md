@@ -2,13 +2,13 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
 - 관련문서:
   - `docs/03_architecture/data-model.md`
   - `docs/03_architecture/combat-runtime-architecture.md`
   - `docs/03_architecture/content-authoring-and-balance-data.md`
-  - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
+  - `docs/02_design/combat/resource-cadence-loadout.md`
   - `docs/04_decisions/adr-0015-build-compile-audit-pipeline.md`
 
 ## 목적
@@ -32,12 +32,21 @@
 
 ## compile 계약
 
-- persistence-friendly slot string은 읽을 수 있다.
-- compile 결과의 canonical slot은 `core_active / utility_active / passive / support`다.
-- legacy slot alias `active_core`는 compile 과정에서 canonical slot으로 normalize한다.
-- compile hash는 skill coeff, delivery, target rule, crit 허용 여부를 포함한다.
-- compile hash는 numeric package payload, rule package payload, team tactic profile, role instruction profile, normalized base stat을 포함한다.
+- persistence-friendly legacy slot string은 읽을 수 있다.
+- compile 결과의 canonical slot은 `ActionSlotKind` 기준 6-slot topology다.
+- legacy slot alias `active_core`, `core_active`, `utility_active`, `support`는 migration 과정에서만 normalize한다.
+- compile hash는 skill coeff, delivery, target rule, crit 허용 여부, energy profile, behavior profile, entity kind를 포함한다.
+- compile hash는 numeric package payload, rule package payload, team tactic profile, role instruction profile, normalized base stat, summon ownership profile을 포함한다.
 - compile provenance는 source kind별 상세를 남겨야 하며, balance sweep와 audit가 그 provenance를 artifact로 읽을 수 있어야 한다.
+
+## snapshot 포함 항목
+
+- explicit 6-slot loadout
+- energy state 초기값
+- targeting/behavior profile
+- `CombatEntityKind`
+- optional `OwnershipLink`와 `SummonProfile`
+- mutable flex slot persistence 정보
 
 ## validation과 sweep 연결
 

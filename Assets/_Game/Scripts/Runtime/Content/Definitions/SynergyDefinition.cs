@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SM.Core.Contracts;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -11,6 +12,7 @@ public sealed class SynergyDefinition : ScriptableObject
     public string NameKey = string.Empty;
     public string DescriptionKey = string.Empty;
     public string CountedTagId = string.Empty;
+    public AuthorityLayer AuthorityLayer = AuthorityLayer.Synergy;
     public List<SynergyTierDefinition> Tiers = new();
 
     [FormerlySerializedAs("DisplayName")]

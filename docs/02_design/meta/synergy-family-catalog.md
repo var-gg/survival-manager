@@ -22,7 +22,8 @@ schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`
 ## 공통 규칙
 
 - counted tag는 authored content의 canonical tag를 그대로 쓴다.
-- affected target은 기본적으로 `ally teamwide`다.
+- counted target은 roster unit만 포함하고 summon/deployable은 제외한다.
+- affected target은 기본적으로 `AlliedRosterUnits + AlliedCombatants`다.
 - breakpoint는 `2 / 3 / 4`만 허용한다.
 - runtime은 달성한 breakpoint package를 누적 적용한다.
   - 예: 4-piece면 `2 + 3 + 4` package를 전부 얻는다.
@@ -34,7 +35,7 @@ schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`
 ### `synergy_human`
 
 - counted tag: `human`
-- affected targets: `ally teamwide`
+- affected targets: `AlliedRosterUnits + AlliedCombatants`
 - tags: `baseline`, `flex`, `sustain`
 - 2 breakpoint: `phys_power +1`
 - 3 breakpoint: `phys_power +2`, `heal_power +1`
@@ -47,7 +48,7 @@ schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`
 ### `synergy_beastkin`
 
 - counted tag: `beastkin`
-- affected targets: `ally teamwide`
+- affected targets: `AlliedRosterUnits + AlliedCombatants`
 - tags: `tempo`, `collapse`, `crit`
 - 2 breakpoint: `attack_speed +0.08`
 - 3 breakpoint: `attack_speed +0.14`, `move_speed +0.05`
@@ -60,7 +61,7 @@ schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`
 ### `synergy_undead`
 
 - counted tag: `undead`
-- affected targets: `ally teamwide`
+- affected targets: `AlliedRosterUnits + AlliedCombatants`
 - tags: `attrition`, `frontline`, `tenacity`
 - 2 breakpoint: `max_health +2`
 - 3 breakpoint: `max_health +3`, `resist +0.6`
@@ -73,7 +74,7 @@ schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`
 ### `synergy_vanguard`
 
 - counted tag: `vanguard`
-- affected targets: `ally teamwide`
+- affected targets: `AlliedRosterUnits + AlliedCombatants`
 - tags: `frontline`, `protect`, `anchor`
 - 2 breakpoint: `armor +1`
 - 3 breakpoint: `armor +1.5`, `protect_radius +0.2`
@@ -86,20 +87,20 @@ schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`
 ### `synergy_duelist`
 
 - counted tag: `duelist`
-- affected targets: `ally teamwide`
+- affected targets: `AlliedRosterUnits + AlliedCombatants`
 - tags: `burst`, `execution`, `pressure`
 - 2 breakpoint: `phys_power +1`
 - 3 breakpoint: `phys_power +1.5`, `crit_chance +0.02`
 - 4 breakpoint: `phys_power +2`, `crit_chance +0.03`, `phys_pen +1`
 - stacking notes: burst와 execution 지표가 함께 누적되는 offensive family다.
 - prohibited overlap cases:
-  - duelist 4-piece 위에 같은 축의 `crit + phys_pen` burst rule을 support skill 하나로 추가하지 않는다.
+  - duelist 4-piece 위에 같은 축의 `crit + phys_pen` burst rule을 flex passive 하나로 추가하지 않는다.
   - 2-piece만으로 squishy backline kill-check가 확정되도록 base damage budget을 올리지 않는다.
 
 ### `synergy_ranger`
 
 - counted tag: `ranger`
-- affected targets: `ally teamwide`
+- affected targets: `AlliedRosterUnits + AlliedCombatants`
 - tags: `backline`, `lane`, `crit`
 - 2 breakpoint: `attack_speed +0.08`
 - 3 breakpoint: `attack_speed +0.12`, `attack_range +0.15`
@@ -112,18 +113,18 @@ schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`
 ### `synergy_mystic`
 
 - counted tag: `mystic`
-- affected targets: `ally teamwide`
-- tags: `support`, `control`, `cooldown`
+- affected targets: `AlliedRosterUnits + AlliedCombatants`
+- tags: `support`, `control`, `cadence`
 - 2 breakpoint: `heal_power +1`
 - 3 breakpoint: `heal_power +1.5`, `mag_power +1`
-- 4 breakpoint: `heal_power +2`, `mag_power +1.5`, `cooldown_recovery +0.06`
+- 4 breakpoint: `heal_power +2`, `mag_power +1.5`, `skill_haste +0.06`
 - stacking notes: sustain과 spell throughput이 함께 누적된다.
 - prohibited overlap cases:
   - mystic 4-piece 위에 전원 광역 무조건 회복 rule을 같은 tier에서 추가하지 않는다.
-  - cooldown recovery를 augment와 passive로 동시에 과증폭해 cast loop가 무한에 가까워지게 만들지 않는다.
+  - skill haste를 augment와 passive로 동시에 과증폭해 cast loop가 무한에 가까워지게 만들지 않는다.
 
 ## overlap 운영 규칙
 
 - 같은 팀이 race family와 class family를 함께 달성하는 것은 허용한다.
 - 다만 한 family의 4-piece identity를 다른 source가 통째로 복제하면 안 된다.
-- item / passive / augment는 family의 방향을 보조할 수 있지만, family payload 자체를 다시 한 번 제공하면 overlap violation으로 본다.
+- item, passive, augment는 family의 방향을 보조할 수 있지만, family payload 자체를 다시 한 번 제공하면 overlap violation으로 본다.

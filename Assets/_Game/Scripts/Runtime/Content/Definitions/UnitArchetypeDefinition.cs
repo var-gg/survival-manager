@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SM.Core.Contracts;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -27,6 +28,7 @@ public sealed class UnitArchetypeDefinition : ScriptableObject
     public SkillDefinitionAsset LockedSignaturePassiveSkill;
     public List<SkillDefinitionAsset> FlexUtilitySkillPool = new();
     public List<SkillDefinitionAsset> FlexSupportSkillPool = new();
+    public UnitLoadoutDefinition Loadout = new();
     public FootprintProfileDefinition FootprintProfile;
     public BehaviorProfileDefinition BehaviorProfile;
     public MobilityProfileDefinition MobilityProfile;
@@ -44,6 +46,9 @@ public sealed class UnitArchetypeDefinition : ScriptableObject
     public float BaseHealPower = 0f;
     public float BaseMoveSpeed = 1.7f;
     public float BaseAttackRange = 1.5f;
+    public float BaseMaxEnergy = 100f;
+    public float BaseStartingEnergy = 10f;
+    public float BaseSkillHaste = 0f;
     public float BaseManaMax = 0f;
     public float BaseManaGainOnAttack = 0f;
     public float BaseManaGainOnHit = 0f;

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/03_architecture/skill-tag-catalog-and-compatibility-resolution.md`
 - 관련문서:
   - `docs/02_design/combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`
@@ -16,7 +16,7 @@
 
 ## canonical tag root
 
-- keyword와 support modifier는 `StableTags` asset root를 canonical catalog로 사용한다.
+- keyword와 flex passive modifier는 `StableTags` asset root를 canonical catalog로 사용한다.
 - launch floor keyword는 `tag_melee`, `tag_projectile`, `tag_aoe`, `tag_zone`, `tag_trap`, `tag_aura`, `tag_strike`, `tag_burst`, `tag_heal`, `tag_shield_skill`, `tag_dash`, `tag_guard`, `tag_mark`, `tag_cleanse`, `tag_burn`, `tag_bleed`, `tag_wound`, `tag_sunder`, `tag_slow`, `tag_silence`, `tag_execute`, `tag_pierce`, `tag_chain`을 사용한다.
 - safe target weapon family는 `tag_greatblade`, `tag_polearm`로 먼저 예약한다.
 
@@ -50,9 +50,9 @@ item 쪽은 아래 authoring field를 가진다.
 
 ## validator 규칙
 
-- invalid support compatibility 금지
+- invalid flex passive compatibility 금지
 - invalid weapon-family lock 금지
-- support asset는 canonical `support` slot만 사용
+- flex passive modifier asset는 canonical `FlexPassive` slot만 사용
 - include / exclude 같은 tag 중복 사용 금지
 - missing cleanse profile ref 금지
 - incompatible skill / weapon family 조합 금지

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Meta.Model;
 using UnityEngine;
@@ -817,6 +818,10 @@ public sealed class RuntimeCombatContentLookup
     private CombatArchetypeTemplate BuildArchetypeTemplate(UnitArchetypeDefinition definition)
     {
         var resolvedSkills = ResolveArchetypeSkills(definition);
+        var compiledSkills = resolvedSkills
+            .Select(BuildSkillSpec)
+            .ToList();
+        var loopALoadout = ResolveLoopALoadout(definition, resolvedSkills, compiledSkills);
         return new CombatArchetypeTemplate(
             definition.Id,
             ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
@@ -834,9 +839,7 @@ public sealed class RuntimeCombatContentLookup
                     (TargetSelectorType)entry.TargetSelector,
                     entry.Skill == null ? null : entry.Skill.Id))
                 .ToList(),
-            resolvedSkills
-                .Select(BuildSkillSpec)
-                .ToList(),
+            compiledSkills,
             string.IsNullOrWhiteSpace(definition.RoleTag) ? "auto" : definition.RoleTag,
             BuildFootprintProfile(definition),
             BuildBehaviorProfile(definition),
@@ -846,7 +849,18 @@ public sealed class RuntimeCombatContentLookup
             new ManaEnvelope(
                 definition.BaseManaMax,
                 definition.BaseManaGainOnAttack,
-                definition.BaseManaGainOnHit));
+                definition.BaseManaGainOnHit),
+            null,
+            loopALoadout.BasicAttack,
+            loopALoadout.SignatureActive,
+            loopALoadout.FlexActive,
+            loopALoadout.SignaturePassive,
+            loopALoadout.FlexPassive,
+            loopALoadout.MobilityReaction,
+            new EnergyProfile(
+                Mathf.Max(1f, definition.BaseMaxEnergy),
+                Mathf.Clamp(definition.BaseStartingEnergy, 0f, Mathf.Max(1f, definition.BaseMaxEnergy))),
+            CombatEntityKind.RosterUnit);
     }
 
     private static FootprintProfile BuildFootprintProfile(UnitArchetypeDefinition definition)
@@ -941,17 +955,25 @@ public sealed class RuntimeCombatContentLookup
                 Mathf.Clamp01(definition.BehaviorProfile.BlockChance),
                 Mathf.Clamp(definition.BehaviorProfile.BlockMitigation, 0f, 0.9f),
                 Mathf.Clamp01(definition.BehaviorProfile.Stability),
-                Mathf.Max(0f, definition.BehaviorProfile.BlockCooldownSeconds));
+                Mathf.Max(0f, definition.BehaviorProfile.BlockCooldownSeconds),
+                definition.BehaviorProfile.FormationLine,
+                definition.BehaviorProfile.RangeDiscipline,
+                Mathf.Max(0f, definition.BehaviorProfile.PreferredRangeMin),
+                Mathf.Max(definition.BehaviorProfile.PreferredRangeMin, definition.BehaviorProfile.PreferredRangeMax),
+                Mathf.Max(0f, definition.BehaviorProfile.ApproachBuffer),
+                Mathf.Max(0f, definition.BehaviorProfile.RetreatBuffer),
+                Mathf.Max(0.5f, definition.BehaviorProfile.ChaseLeashMeters),
+                Mathf.Clamp01(definition.BehaviorProfile.RetreatAtHpPercent));
         }
 
         return definition.Class != null ? definition.Class.Id switch
         {
-            "vanguard" => new BehaviorProfile(0.42f, 0.16f, 0.04f, 0.05f, 0.34f, 0.82f, 0.02f, 0.28f, 0.38f, 0.88f, 1f),
-            "duelist" => new BehaviorProfile(0.3f, 0.22f, 0.22f, 0.24f, 0.72f, 0.58f, 0.08f, 0.12f, 0.18f, 0.62f, 1.15f),
-            "ranger" => new BehaviorProfile(0.24f, 0.28f, 0.72f, 0.84f, 0.58f, 0.74f, 0.12f, 0.04f, 0.12f, 0.34f, 1.5f),
-            "mystic" => new BehaviorProfile(0.28f, 0.3f, 0.68f, 0.78f, 0.5f, 0.84f, 0.06f, 0.06f, 0.18f, 0.45f, 1.35f),
-            _ => new BehaviorProfile(0.35f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f),
-        } : new BehaviorProfile(0.35f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f);
+            "vanguard" => new BehaviorProfile(0.25f, 0.16f, 0.04f, 0.05f, 0.34f, 0.82f, 0.02f, 0.28f, 0.38f, 0.88f, 1f, FormationLine.Frontline, RangeDiscipline.Collapse, 0.9f, 1.25f, 0.4f, 0.2f, 5f, 0f),
+            "duelist" => new BehaviorProfile(0.25f, 0.22f, 0.22f, 0.24f, 0.72f, 0.58f, 0.08f, 0.12f, 0.18f, 0.62f, 1.15f, FormationLine.Frontline, RangeDiscipline.HoldBand, 0.95f, 1.45f, 0.4f, 0.25f, 5.5f, 0.2f),
+            "ranger" => new BehaviorProfile(0.25f, 0.28f, 0.72f, 0.84f, 0.58f, 0.74f, 0.12f, 0.04f, 0.12f, 0.34f, 1.5f, FormationLine.Backline, RangeDiscipline.KiteBackward, 2.3f, 3.1f, 0.45f, 0.3f, 6.5f, 0.35f),
+            "mystic" => new BehaviorProfile(0.25f, 0.3f, 0.68f, 0.78f, 0.5f, 0.84f, 0.06f, 0.06f, 0.18f, 0.45f, 1.35f, FormationLine.Backline, RangeDiscipline.AnchorNearFrontline, 2.1f, 2.9f, 0.4f, 0.25f, 6f, 0.3f),
+            _ => new BehaviorProfile(0.25f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f, FormationLine.Midline, RangeDiscipline.HoldBand, 1f, 2f, 0.4f, 0.25f, 5f, 0.25f),
+        } : new BehaviorProfile(0.25f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f, FormationLine.Midline, RangeDiscipline.HoldBand, 1f, 2f, 0.4f, 0.25f, 5f, 0.25f);
     }
 
     private static MobilityActionProfile? BuildMobilityProfile(UnitArchetypeDefinition definition)
@@ -1132,7 +1154,210 @@ public sealed class RuntimeCombatContentLookup
                     Math.Max(1, rule.MaxStacks),
                     rule.RefreshDurationOnReapply))
                 .ToList(),
-            skill.CleanseProfileId ?? string.Empty);
+            skill.CleanseProfileId ?? string.Empty,
+            CompiledSkillSlots.ToActionSlotKind(skill.SlotKind switch
+            {
+                SkillSlotKindValue.UtilityActive => CompiledSkillSlots.UtilityActive,
+                SkillSlotKindValue.Passive => CompiledSkillSlots.Passive,
+                SkillSlotKindValue.Support => CompiledSkillSlots.Support,
+                _ => CompiledSkillSlots.CoreActive,
+            }),
+            skill.ActivationModel,
+            skill.Lane,
+            skill.LockRule,
+            skill.AuthorityLayer,
+            CloneTargetRule(skill.TargetRuleData),
+            CloneEffects(skill.Effects),
+            CloneSummonProfile(skill.SummonProfile),
+            Mathf.Clamp01(skill.InterruptRefundScalar));
+    }
+
+    private static (BattleBasicAttackSpec BasicAttack, BattleSkillSpec? SignatureActive, BattleSkillSpec? FlexActive, BattlePassiveSpec SignaturePassive, BattlePassiveSpec FlexPassive, BattleMobilitySpec? MobilityReaction) ResolveLoopALoadout(
+        UnitArchetypeDefinition definition,
+        IReadOnlyList<SkillDefinitionAsset> resolvedSkillAssets,
+        IReadOnlyList<BattleSkillSpec> compiledSkills)
+    {
+        var signatureActiveAsset = definition.Loadout?.SignatureActive
+            ?? definition.LockedSignatureActiveSkill
+            ?? resolvedSkillAssets.FirstOrDefault(skill => NormalizeSkillSlot(skill) == SkillSlotKindValue.CoreActive);
+        var flexActiveAsset = definition.Loadout?.FlexActive
+            ?? resolvedSkillAssets.FirstOrDefault(skill => NormalizeSkillSlot(skill) == SkillSlotKindValue.UtilityActive);
+        var signatureSkill = signatureActiveAsset == null ? null : BuildSkillSpec(signatureActiveAsset) with
+        {
+            SlotKind = CompiledSkillSlots.CoreActive,
+            ResolvedSlotKind = ActionSlotKind.SignatureActive,
+            ActivationModel = ActivationModel.Energy,
+            Lane = ActionLane.Primary,
+            LockRule = ActionLockRule.HardCommit,
+            ManaCost = 0f,
+            BaseCooldownSeconds = 0f,
+            TargetRuleData = CloneTargetRule(signatureActiveAsset.TargetRuleData) ?? new TargetRule(),
+        };
+        var flexSkill = flexActiveAsset == null ? null : BuildSkillSpec(flexActiveAsset) with
+        {
+            SlotKind = CompiledSkillSlots.UtilityActive,
+            ResolvedSlotKind = ActionSlotKind.FlexActive,
+            ActivationModel = flexActiveAsset.ActivationModel is ActivationModel.Trigger ? ActivationModel.Trigger : ActivationModel.Cooldown,
+            Lane = ActionLane.Primary,
+            LockRule = ActionLockRule.HardCommit,
+            TargetRuleData = CloneTargetRule(flexActiveAsset.TargetRuleData) ?? new TargetRule(),
+        };
+        var passiveBySlot = compiledSkills
+            .Where(skill => skill.EffectiveSlotKind is ActionSlotKind.SignaturePassive or ActionSlotKind.FlexPassive)
+            .GroupBy(skill => skill.EffectiveSlotKind)
+            .ToDictionary(group => group.Key, group => group.First());
+        var signaturePassive = BuildPassiveSpec(
+            definition.Loadout?.SignaturePassive,
+            passiveBySlot.TryGetValue(ActionSlotKind.SignaturePassive, out var compiledSignaturePassive) ? compiledSignaturePassive : null,
+            ActionSlotKind.SignaturePassive,
+            $"{definition.Id}:signature_passive",
+            "Signature Passive");
+        var flexPassive = BuildPassiveSpec(
+            definition.Loadout?.FlexPassive,
+            passiveBySlot.TryGetValue(ActionSlotKind.FlexPassive, out var compiledFlexPassive) ? compiledFlexPassive : null,
+            ActionSlotKind.FlexPassive,
+            $"{definition.Id}:flex_passive",
+            "Flex Passive");
+        var defaultMobilityProfile = BuildMobilityProfile(definition);
+        var mobilityReaction = definition.Loadout?.MobilityReaction is { Profile: not null } authoredMobility
+            ? BuildMobilitySpec(definition, authoredMobility)
+            : defaultMobilityProfile is { IsEnabled: true }
+                ? new BattleMobilitySpec($"{definition.Id}:mobility", "Mobility Reaction", defaultMobilityProfile, new TargetRule())
+                : null;
+        return (
+            BuildBasicAttackSpec(definition),
+            signatureSkill,
+            flexSkill,
+            signaturePassive,
+            flexPassive,
+            mobilityReaction);
+    }
+
+    private static BattleBasicAttackSpec BuildBasicAttackSpec(UnitArchetypeDefinition definition)
+    {
+        var authored = definition.Loadout?.BasicAttack;
+        return new BattleBasicAttackSpec(
+            string.IsNullOrWhiteSpace(authored?.Id) ? $"{definition.Id}:basic_attack" : authored.Id,
+            ResolveLegacyName(authored?.NameKey ?? string.Empty, string.Empty, "Basic Attack"),
+            authored?.DamageType switch
+            {
+                DamageTypeValue.Magical => DamageType.Magical,
+                DamageTypeValue.Healing => DamageType.Healing,
+                DamageTypeValue.True => DamageType.True,
+                _ => DamageType.Physical,
+            },
+            CloneTargetRule(authored?.TargetRule) ?? new TargetRule(),
+            authored?.Lane ?? ActionLane.Primary,
+            authored?.LockRule ?? ActionLockRule.SoftCommit,
+            CloneEffects(authored?.Effects));
+    }
+
+    private static BattlePassiveSpec BuildPassiveSpec(
+        PassiveDefinition? authored,
+        BattleSkillSpec? fallbackSkill,
+        ActionSlotKind slotKind,
+        string fallbackId,
+        string fallbackName)
+    {
+        return new BattlePassiveSpec(
+            string.IsNullOrWhiteSpace(authored?.Id) ? fallbackSkill?.Id ?? fallbackId : authored.Id,
+            ResolveLegacyName(authored?.NameKey ?? string.Empty, string.Empty, fallbackSkill?.Name ?? fallbackName),
+            slotKind,
+            authored?.ActivationModel ?? ActivationModel.Passive,
+            authored != null ? CloneEffects(authored.Effects) : fallbackSkill?.EffectDescriptors ?? Array.Empty<EffectDescriptor>(),
+            authored?.AllowMirroredOwnedSummonKill ?? false);
+    }
+
+    private static BattleMobilitySpec BuildMobilitySpec(UnitArchetypeDefinition definition, MobilityDefinition authored)
+    {
+        var profile = authored.Profile == null
+            ? BuildMobilityProfile(definition) ?? new MobilityActionProfile(MobilityStyle.None, MobilityPurpose.None, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
+            : new MobilityActionProfile(
+                (MobilityStyle)authored.Profile.Style,
+                (MobilityPurpose)authored.Profile.Purpose,
+                Mathf.Max(0f, authored.Profile.Distance),
+                Mathf.Max(0f, authored.Profile.Cooldown),
+                Mathf.Max(0f, authored.Profile.CastTime),
+                Mathf.Max(0f, authored.Profile.Recovery),
+                Mathf.Max(0f, authored.Profile.TriggerMinDistance),
+                Mathf.Max(0f, authored.Profile.TriggerMaxDistance),
+                Mathf.Clamp(authored.Profile.LateralBias, -1f, 1f));
+        return new BattleMobilitySpec(
+            string.IsNullOrWhiteSpace(authored.Id) ? $"{definition.Id}:mobility" : authored.Id,
+            ResolveLegacyName(authored.NameKey, string.Empty, "Mobility Reaction"),
+            profile,
+            CloneTargetRule(authored.TargetRule) ?? new TargetRule(),
+            authored.ActivationModel,
+            authored.Lane,
+            authored.LockRule,
+            CloneEffects(authored.Effects));
+    }
+
+    private static IReadOnlyList<EffectDescriptor> CloneEffects(IEnumerable<EffectDescriptor>? effects)
+    {
+        if (effects == null)
+        {
+            return Array.Empty<EffectDescriptor>();
+        }
+
+        return effects
+            .Where(effect => effect != null)
+            .Select(effect => new EffectDescriptor
+            {
+                Layer = effect.Layer,
+                Scope = effect.Scope,
+                Capabilities = effect.Capabilities,
+                AllowMirroredOwnedSummonKill = effect.AllowMirroredOwnedSummonKill,
+                AllowsPersistentSummonChain = effect.AllowsPersistentSummonChain,
+                LoadoutTopologyDelta = effect.LoadoutTopologyDelta,
+            })
+            .ToList();
+    }
+
+    private static TargetRule? CloneTargetRule(TargetRule? rule)
+    {
+        if (rule == null)
+        {
+            return null;
+        }
+
+        return new TargetRule
+        {
+            Domain = rule.Domain,
+            PrimarySelector = rule.PrimarySelector,
+            FallbackPolicy = rule.FallbackPolicy,
+            Filters = rule.Filters,
+            ReevaluateIntervalSeconds = rule.ReevaluateIntervalSeconds,
+            MinimumCommitSeconds = rule.MinimumCommitSeconds,
+            MaxAcquireRange = rule.MaxAcquireRange,
+            PreferredMinTargets = rule.PreferredMinTargets,
+            ClusterRadius = rule.ClusterRadius,
+            LockTargetAtCastStart = rule.LockTargetAtCastStart,
+            RetargetLockMode = rule.RetargetLockMode,
+        };
+    }
+
+    private static SummonProfile? CloneSummonProfile(SummonProfile? profile)
+    {
+        if (profile == null)
+        {
+            return null;
+        }
+
+        return new SummonProfile
+        {
+            EntityKind = profile.EntityKind,
+            BehaviorKind = profile.BehaviorKind,
+            Eligibility = profile.Eligibility,
+            CreditPolicy = profile.CreditPolicy,
+            MaxConcurrentPerSource = profile.MaxConcurrentPerSource,
+            MaxConcurrentPerOwner = profile.MaxConcurrentPerOwner,
+            DespawnOnOwnerDeath = profile.DespawnOnOwnerDeath,
+            OwnerDeathDespawnDelaySeconds = profile.OwnerDeathDespawnDelaySeconds,
+            InheritOwnerTarget = profile.InheritOwnerTarget,
+            IsPersistent = profile.IsPersistent,
+            Inheritance = profile.Inheritance,
+        };
     }
 
     private static CampaignChapterTemplate BuildCampaignChapterTemplate(CampaignChapterDefinition definition)
@@ -1480,6 +1705,7 @@ public sealed class RuntimeCombatContentLookup
             [StatKey.AttackSpeed] = PreferPrimaryOrFallback(definition.BaseAttackSpeed, definition.BaseSpeed),
             [StatKey.MoveSpeed] = definition.BaseMoveSpeed,
             [StatKey.AttackRange] = definition.BaseAttackRange,
+            [StatKey.SkillHaste] = PreferPrimaryOrFallback(definition.BaseSkillHaste, definition.BaseCooldownRecovery),
             [StatKey.ManaMax] = definition.BaseManaMax,
             [StatKey.ManaGainOnAttack] = definition.BaseManaGainOnAttack,
             [StatKey.ManaGainOnHit] = definition.BaseManaGainOnHit,

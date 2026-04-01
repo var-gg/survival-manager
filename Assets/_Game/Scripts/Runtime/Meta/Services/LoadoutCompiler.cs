@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using SM.Combat.Model;
 using SM.Combat.Services;
+using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Meta.Model;
 
@@ -13,7 +14,7 @@ namespace SM.Meta.Services;
 
 public sealed class LoadoutCompiler
 {
-    public const string CurrentCompileVersion = "build-compile-audit.v1";
+    public const string CurrentCompileVersion = "loop-a-contract-closure.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -224,7 +225,17 @@ public sealed class LoadoutCompiler
                 archetype.ProtectRadius,
                 archetype.Mana,
                 artifacts.RulePackages.ToList(),
-                null));
+                null,
+                archetype.BasicAttack,
+                ResolveLoopASkill(resolvedSkills, ActionSlotKind.SignatureActive, archetype.SignatureActive),
+                ResolveLoopASkill(resolvedSkills, ActionSlotKind.FlexActive, archetype.FlexActive),
+                archetype.SignaturePassive,
+                archetype.FlexPassive,
+                archetype.MobilityReaction,
+                archetype.Energy,
+                archetype.EntityKind,
+                archetype.Ownership,
+                archetype.SummonProfile));
 
             compileProvenance.AddRange(artifacts.Provenance);
         }
@@ -335,7 +346,9 @@ public sealed class LoadoutCompiler
                 equipped.Add(new ResolvedSkillSelection(
                     skill with
                     {
-                        SlotKind = CompiledSkillSlots.Normalize(instance.SlotKind, skill.SlotKind),
+                        SlotKind = instance.ResolvedSlotKind is { } resolvedSlotKind
+                            ? CompiledSkillSlots.FromActionSlotKind(resolvedSlotKind)
+                            : CompiledSkillSlots.Normalize(instance.SlotKind, skill.SlotKind),
                         CompileTags = instance.CompileTags
                     },
                     "loadout_skill",
@@ -396,6 +409,17 @@ public sealed class LoadoutCompiler
         }
 
         return resolved;
+    }
+
+    private static BattleSkillSpec? ResolveLoopASkill(
+        IReadOnlyList<ResolvedSkillSelection> resolved,
+        ActionSlotKind slotKind,
+        BattleSkillSpec? fallback)
+    {
+        return resolved
+            .Select(selection => selection.Skill)
+            .FirstOrDefault(skill => skill.EffectiveSlotKind == slotKind)
+            ?? fallback;
     }
 
     private static List<ResolvedSkillSelection> EnsureCanonicalSkillContract(
@@ -605,7 +629,16 @@ public sealed class LoadoutCompiler
                 .Append(unit.ProtectRadius.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                 .Append(unit.EffectiveMana.Max.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                 .Append(unit.EffectiveMana.GainOnAttack.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
-                .Append(unit.EffectiveMana.GainOnHit.ToString("0.###", CultureInfo.InvariantCulture)).Append('|');
+                .Append(unit.EffectiveMana.GainOnHit.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(unit.EffectiveEnergy.Max.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(unit.EffectiveEnergy.Starting.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(unit.EntityKind).Append(':')
+                .Append(unit.EffectiveBasicAttack.Id).Append(':')
+                .Append(unit.EffectiveSignatureActive?.Id ?? "none").Append(':')
+                .Append(unit.EffectiveFlexActive?.Id ?? "none").Append(':')
+                .Append(unit.EffectiveSignaturePassive.Id).Append(':')
+                .Append(unit.EffectiveFlexPassive.Id).Append(':')
+                .Append(unit.EffectiveMobilityReaction?.Id ?? "none").Append('|');
 
             foreach (var stat in unit.BaseStats.OrderBy(pair => pair.Key.Value, StringComparer.Ordinal))
             {

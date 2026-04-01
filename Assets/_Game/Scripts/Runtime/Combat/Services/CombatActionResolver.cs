@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 
 namespace SM.Combat.Services;
 
@@ -31,9 +32,12 @@ public static class CombatActionResolver
                 }
 
                 var attackResult = HitResolutionService.ResolveBasicAttack(state, actor, target);
+                actor.GainEnergyFromBasicAttackResolved();
                 if (attackResult.Value > 0f)
                 {
+                    state.RegisterDamage(actor, target);
                     target.TakeDamage(attackResult.Value);
+                    target.GainEnergyFromDirectHitTaken();
                 }
 
                 actor.StartRecovery();
@@ -48,6 +52,7 @@ public static class CombatActionResolver
                     attackResult.Note));
                 if (!target.IsAlive)
                 {
+                    events.AddRange(ResolveKillAndAssist(state, actor, target, BattleActionType.BasicAttack));
                     actor.ClearTarget(applySwitchDelay: true);
                 }
                 break;
@@ -83,7 +88,9 @@ public static class CombatActionResolver
                         : HitResolutionService.ResolveBasicAttack(state, actor, target);
                     if (skill?.Kind is not (SkillKind.Buff or SkillKind.Utility) && skillResult.Value > 0f)
                     {
+                        state.RegisterDamage(actor, target);
                         target.TakeDamage(skillResult.Value);
+                        target.GainEnergyFromDirectHitTaken();
                     }
 
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
@@ -99,6 +106,7 @@ public static class CombatActionResolver
                     StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
                     if (!target.IsAlive)
                     {
+                        events.AddRange(ResolveKillAndAssist(state, actor, target, BattleActionType.ActiveSkill));
                         actor.ClearTarget(applySwitchDelay: true);
                     }
                 }
@@ -137,5 +145,71 @@ public static class CombatActionResolver
             string.Empty,
             secondaryValue,
             note);
+    }
+
+    private static IReadOnlyList<BattleEvent> ResolveKillAndAssist(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleActionType actionType)
+    {
+        var events = new List<BattleEvent>();
+        var killPayload = BuildKillPayload(actor, target);
+
+        actor.GainEnergyFromKill();
+
+        if (killPayload.IsMirroredFromOwnedSummon && killPayload.MirroredOwner != default)
+        {
+            var owner = state.FindUnit(killPayload.MirroredOwner);
+            if (killPayload.GrantsOwnerEnergy)
+            {
+                owner?.GainEnergyFromKill();
+            }
+        }
+
+        foreach (var assister in state.ConsumeAssistContributors(target.Id, actor.Id))
+        {
+            assister.GainEnergyFromAssist();
+        }
+
+        events.Add(new BattleEvent(
+            state.StepIndex,
+            state.ElapsedSeconds,
+            actor.Id,
+            actor.Definition.Name,
+            actionType,
+            BattleLogCode.Generic,
+            target.Id,
+            target.Definition.Name,
+            0f,
+            BattleEventKind.Kill,
+            string.Empty,
+            0f,
+            killPayload.IsMirroredFromOwnedSummon ? "mirrored_kill" : "kill",
+            killPayload));
+
+        return events;
+    }
+
+    private static KillEventPayload BuildKillPayload(UnitSnapshot actor, UnitSnapshot target)
+    {
+        var payload = new KillEventPayload
+        {
+            ActualKiller = actor.Id,
+            ActualVictim = target.Id,
+            MirroredOwner = default,
+            IsMirroredFromOwnedSummon = false,
+            GrantsOwnerEnergy = false,
+            GrantsOwnerOnKillTriggers = false,
+        };
+
+        if (actor.EntityKind is CombatEntityKind.OwnedSummon or CombatEntityKind.Deployable
+            && actor.Ownership is { } ownership
+            && actor.SummonProfile != null
+            && actor.SummonProfile.CreditPolicy.HasFlag(CombatCreditFlags.EligibleForMirroredOwnerKill))
+        {
+            payload.MirroredOwner = ownership.OwnerEntity;
+            payload.IsMirroredFromOwnedSummon = true;
+            payload.GrantsOwnerEnergy = actor.SummonProfile.CreditPolicy.HasFlag(CombatCreditFlags.EligibleForOwnerEnergyGain);
+            payload.GrantsOwnerOnKillTriggers = actor.SummonProfile.CreditPolicy.HasFlag(CombatCreditFlags.EligibleForOwnerOnKillTriggers);
+        }
+
+        return payload;
     }
 }

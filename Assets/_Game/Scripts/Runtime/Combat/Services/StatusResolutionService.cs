@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 using SM.Core.Stats;
 
 namespace SM.Combat.Services;
@@ -58,6 +59,31 @@ public static class StatusResolutionService
     public static bool CanUseActiveSkill(UnitSnapshot actor)
     {
         return actor.IsAlive && !actor.IsStunned && !actor.IsSilenced;
+    }
+
+    public static bool CanUseSkillSlot(UnitSnapshot actor, BattleSkillSpec skill)
+    {
+        if (!actor.IsAlive || actor.IsStunned)
+        {
+            return false;
+        }
+
+        if (skill.EffectiveSlotKind is ActionSlotKind.SignatureActive or ActionSlotKind.FlexActive)
+        {
+            return !actor.IsSilenced;
+        }
+
+        return true;
+    }
+
+    public static bool CanUseBasicAttack(UnitSnapshot actor)
+    {
+        return actor.IsAlive && !actor.IsStunned;
+    }
+
+    public static bool CanUseMobility(UnitSnapshot actor)
+    {
+        return actor.IsAlive && !actor.IsStunned && !actor.IsRooted;
     }
 
     private static void ApplyStatus(BattleState state, UnitSnapshot actor, UnitSnapshot target, StatusApplicationSpec spec, List<BattleEvent> stepEvents)

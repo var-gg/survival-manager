@@ -1,4 +1,5 @@
 using SM.Core.Ids;
+using SM.Core.Contracts;
 
 namespace SM.Combat.Model;
 
@@ -9,6 +10,7 @@ public enum BattleEventKind
     StatusRemoved = 2,
     CleanseTriggered = 3,
     ControlResistApplied = 4,
+    Kill = 5,
 }
 
 public sealed record BattleEvent(
@@ -24,4 +26,5 @@ public sealed record BattleEvent(
     BattleEventKind EventKind = BattleEventKind.Action,
     string PayloadId = "",
     float SecondaryValue = 0f,
-    string Note = "");
+    string Note = "",
+    KillEventPayload? KillPayload = null);

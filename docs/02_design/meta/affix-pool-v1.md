@@ -26,7 +26,7 @@
 - `affix.core.spell_power_flat` — flat `mag_power`
 - `affix.core.spell_power_percent` — percent `mag_power`
 - `affix.core.attack_speed` — `attack_speed`
-- `affix.core.skill_haste` — `cooldown_recovery`
+- `affix.core.skill_haste` — `skill_haste`
 - `affix.core.crit_chance` — `crit_chance`
 - `affix.core.crit_damage` — `crit_multiplier`
 - `affix.core.physical_penetration` — `phys_pen`
@@ -42,9 +42,9 @@
 - `affix.core.healing_received` — incoming heal multiplier
 - `affix.core.nearby_damage_reduction` — nearby DR conditional scalar
 - `affix.core.move_speed` — `move_speed`
-- `affix.core.starting_resource` — opening mana / energy
-- `affix.core.resource_on_hit` — hit resource gain
-- `affix.core.cooldown_recovery_on_kill` — kill reset scalar
+- `affix.core.starting_resource` — opening energy
+- `affix.core.resource_on_hit` — direct-hit energy gain 보정
+- `affix.core.skill_haste_on_kill` — flex cooldown reset scalar
 
 ## conditional tagged 18
 
@@ -62,7 +62,7 @@
 - `affix.cond.summon_attack_speed` — summon tempo
 - `affix.cond.channeling_damage_reduction` — channel DR
 - `affix.cond.first_hit_after_reposition_crit` — reposition follow-up
-- `affix.cond.basic_attack_reduces_skill_cd` — attack -> skill cadence
+- `affix.cond.basic_attack_reduces_skill_cd` — attack -> flex cadence
 - `affix.cond.long_range_skill_bonus` — long-range cast bonus
 - `affix.cond.execute_low_life_bonus` — low-life execute
 - `affix.cond.on_block_minor_retaliate` — block pulse

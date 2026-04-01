@@ -34,7 +34,8 @@ schema capacity는 더 넓게 열어 두더라도, current live subset validator
 
 - 2-piece에서 정답 조합처럼 과도하게 강한 효과
 - 4-piece가 아니면 의미가 사라지는 설계
-- 하나의 family가 offense / defense / utility를 전부 다 가져가는 만능화
+- 하나의 family가 offense, defense, utility를 전부 다 가져가는 만능화
+- summon/deployable을 breakpoint count에 넣는 설계
 
 ## soft counter 원칙
 
@@ -62,10 +63,4 @@ schema capacity는 더 넓게 열어 두더라도, current live subset validator
 ### Mystic
 
 - clump, armor stack, 긴 교전을 처벌한다.
-- silence, mana deny, fast dive에 약하다.
-
-## 운영 메모
-
-- class canonical id는 `duelist`를 유지한다.
-- 문서상 soft counter 설명에서만 `Striker` 용어를 사용한다.
-- paid launch floor와 safe target 숫자는 `docs/02_design/systems/launch-content-scope-and-balance.md`가 소유한다.
+- silence, exposed-backline punish, fast dive에 약하다.

@@ -57,12 +57,17 @@
 ## 현재 전투 기준 빠른 링크
 
 - 출시 기준 허브: `02_design/systems/launch-content-scope-and-balance.md`
+- authority matrix: `02_design/combat/authority-matrix.md`
+- resource cadence/loadout: `02_design/combat/resource-cadence-loadout.md`
+- targeting and AI vocabulary: `02_design/combat/targeting-and-ai-vocabulary.md`
+- summon ownership/deployables: `02_design/combat/summon-ownership-and-deployables.md`
+- v1 exclusions: `02_design/combat/v1-exclusions.md`
 - launch floor archetype matrix: `02_design/systems/launch-floor-content-matrix.md`
 - roster와 archetype: `02_design/deck/roster-archetype-launch-scope.md`
 - chapter/site 진행: `02_design/meta/campaign-chapter-and-expedition-sites.md`
 - 조우 카탈로그: `02_design/combat/encounter-catalog-and-scaling.md`
 - 상태이상 taxonomy: `02_design/combat/status-effects-cc-and-cleanse-taxonomy.md`
-- 스킬 키워드와 support restriction: `02_design/combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`
+- 스킬 키워드와 flex passive restriction: `02_design/combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`
 - 드롭/source matrix: `02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
 - 장비/제작 깊이: `02_design/meta/equipment-family-and-crafting-depth.md`
 - PVP arena ruleset: `02_design/meta/pvp-ruleset-and-arena-loop.md`

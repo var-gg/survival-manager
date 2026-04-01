@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`
 - 관련문서:
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
@@ -12,7 +12,7 @@
 
 ## 목적
 
-이 문서는 current 4-slot compile contract 위에서 launch floor keyword catalog와 support modifier floor를 고정한다.
+이 문서는 Loop A compile contract 위에서 launch floor keyword catalog와 `support modifier` 계열의 flex passive compatibility floor를 고정한다.
 rule의 중심은 하드코딩 예외가 아니라 stable tag catalog다.
 
 ## canonical keyword catalog
@@ -52,6 +52,8 @@ rule의 중심은 하드코딩 예외가 아니라 stable tag catalog다.
 runtime asset에서는 위 키워드를 `tag_*` stable tag로 materialize한다.
 
 ## support modifier floor
+
+이 문서의 `support modifier`는 Loop A topology에서 `FlexPassive`로 해석한다.
 
 | support id | include tags | exclude tags | required weapon | required class |
 | --- | --- | --- | --- | --- |
@@ -96,7 +98,7 @@ runtime asset에서는 위 키워드를 `tag_*` stable tag로 materialize한다.
 ## 운영 규칙
 
 - compatibility는 `include tags`, `exclude tags`, `required weapon tags`, `required class tags` 조합으로만 푼다.
-- `support` slot은 계속 하나만 유지한다.
+- `FlexPassive` modifier는 계속 하나만 유지한다.
 - `LoadoutCompiler`는 normalized tag 집합을 compile output과 hash에 보존한다.
 - `SkillDefinitionAsset` authoring은 stable tag catalog 밖의 ad-hoc string을 허용하지 않는다.
 
@@ -104,4 +106,4 @@ runtime asset에서는 위 키워드를 `tag_*` stable tag로 materialize한다.
 
 - summon, totem, stealth, ricochet 같은 추가 keyword family
 - launch floor 밖 weapon family 실전 authoring
-- support slot 다중 장착
+- flex passive modifier 다중 장착

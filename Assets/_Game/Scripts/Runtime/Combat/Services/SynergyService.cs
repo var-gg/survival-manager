@@ -10,7 +10,9 @@ public static class SynergyService
     public static IReadOnlyList<CombatModifierPackage> BuildForTeam(IEnumerable<BattleUnitLoadout> units)
     {
         var list = new List<CombatModifierPackage>();
-        var materialized = units.ToList();
+        var materialized = units
+            .Where(unit => unit.EntityKind == SM.Core.Contracts.CombatEntityKind.RosterUnit)
+            .ToList();
 
         foreach (var raceGroup in materialized.GroupBy(x => x.RaceId))
         {
@@ -43,7 +45,9 @@ public static class SynergyService
         IEnumerable<BattleUnitLoadout> units,
         IEnumerable<TeamSynergyTierRule> tierRules)
     {
-        var materialized = units.ToList();
+        var materialized = units
+            .Where(unit => unit.EntityKind == SM.Core.Contracts.CombatEntityKind.RosterUnit)
+            .ToList();
         var compiled = new List<CombatModifierPackage>();
         foreach (var rule in tierRules)
         {

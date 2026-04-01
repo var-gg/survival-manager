@@ -41,6 +41,8 @@ public sealed class BattleSimulator
         }
 
         StatusResolutionService.AdvanceStatuses(State, stepEvents);
+        State.ScheduleOwnedEntityDespawnIfOwnerDead();
+        State.AdvanceOwnedEntityDespawns();
         if (CheckForWinner())
         {
             State.AdvanceStep();
@@ -106,6 +108,12 @@ public sealed class BattleSimulator
                             || actor.Position.DistanceTo(evaluated.SlotAssignment.Position) <= Math.Max(0.15f, actor.SeparationRadius * 0.4f);
             if (inRangeBand && slotReady && evaluated.Mobility == null)
             {
+                if (evaluated.ActionType == BattleActionType.BasicAttack && !StatusResolutionService.CanUseBasicAttack(actor))
+                {
+                    actor.SetActionState(CombatActionState.AcquireTarget);
+                    continue;
+                }
+
                 if (actor.CooldownRemaining <= 0f)
                 {
                     actor.BeginWindup(evaluated.ActionType, evaluated.Target.Id, evaluated.Skill?.Id);
@@ -254,6 +262,7 @@ public sealed class BattleSimulator
         }
 
         IsFinished = true;
+        State.DespawnNonRosterEntities();
         if (State.LivingAllies.Any() && !State.LivingEnemies.Any())
         {
             Winner = TeamSide.Ally;

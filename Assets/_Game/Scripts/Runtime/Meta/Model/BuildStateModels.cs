@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 
 namespace SM.Meta.Model;
 
@@ -28,7 +29,8 @@ public sealed record SkillInstanceState(
     string SkillInstanceId,
     string SkillId,
     string SlotKind,
-    IReadOnlyList<string> CompileTags);
+    IReadOnlyList<string> CompileTags,
+    ActionSlotKind? ResolvedSlotKind = null);
 
 public sealed record PassiveBoardSelectionState(
     string HeroId,

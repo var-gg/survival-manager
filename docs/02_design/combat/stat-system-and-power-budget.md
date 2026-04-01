@@ -2,11 +2,11 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/combat/stat-system-and-power-budget.md`
 - 관련문서:
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
-  - `docs/02_design/combat/team-tactics-and-unit-rules.md`
+  - `docs/02_design/combat/resource-cadence-loadout.md`
   - `docs/02_design/combat/authoritative-replay-and-ledger.md`
   - `docs/02_design/meta/item-passive-augment-budget.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
@@ -29,7 +29,8 @@
 
 - 생존: `max_health`, `armor`, `resist`, `barrier_power`, `tenacity`, `heal_power`
 - 공격: `phys_power`, `mag_power`, `attack_speed`, `crit_chance`, `crit_multiplier`, `phys_pen`, `mag_pen`, `lifesteal`, `omnivamp`
-- 전개: `move_speed`, `attack_range`, `mana_max`, `mana_gain_on_attack`, `mana_gain_on_hit`, `cooldown_recovery`
+- 전개: `move_speed`, `attack_range`, `skill_haste`
+- resource cadence는 public stat이 아니라 `Energy` profile과 event gain rule로 정의한다.
 
 ## 툴/시스템 전용 스탯
 
@@ -42,6 +43,7 @@
 - `attack` -> `phys_power`
 - `defense` -> `armor`
 - `speed` -> `attack_speed`
+- `cooldown_recovery` -> `skill_haste`
 
 이 alias는 migration 동안만 허용한다. editor validation은 이를 warning으로 보고, unsupported stat id만 error로 처리한다.
 
@@ -76,8 +78,3 @@
 
 - accuracy/evasion, rule modifier의 실제 resolver 확장, full balance sweep UI는 다음 패스에서 연다.
 - 수치 변경 시 sandbox preview와 compile determinism 테스트를 함께 갱신한다.
-
-## launch 기준 연결
-
-- canonical 수식과 skill taxonomy는 `docs/02_design/combat/skill-taxonomy-and-damage-model.md`가 소유한다.
-- launch floor / safe target 수량과 source별 예산은 `docs/02_design/meta/item-passive-augment-budget.md`와 `docs/02_design/systems/launch-content-scope-and-balance.md`를 따른다.

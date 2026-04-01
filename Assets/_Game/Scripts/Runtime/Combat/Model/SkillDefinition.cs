@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SM.Core.Contracts;
 
 namespace SM.Combat.Model;
 
@@ -73,7 +74,58 @@ public static class CompiledSkillSlots
 
         return IsSupported(fallback) ? fallback : CoreActive;
     }
+
+    public static ActionSlotKind ToActionSlotKind(string? slotKind, ActionSlotKind fallback = ActionSlotKind.FlexActive)
+    {
+        return Normalize(slotKind) switch
+        {
+            CoreActive => ActionSlotKind.SignatureActive,
+            UtilityActive => ActionSlotKind.FlexActive,
+            Passive => ActionSlotKind.SignaturePassive,
+            Support => ActionSlotKind.FlexPassive,
+            _ => fallback,
+        };
+    }
+
+    public static string FromActionSlotKind(ActionSlotKind slotKind)
+    {
+        return slotKind switch
+        {
+            ActionSlotKind.SignatureActive => CoreActive,
+            ActionSlotKind.FlexActive => UtilityActive,
+            ActionSlotKind.SignaturePassive => Passive,
+            ActionSlotKind.FlexPassive => Support,
+            _ => CoreActive,
+        };
+    }
 }
+
+public sealed record BattleBasicAttackSpec(
+    string Id,
+    string Name,
+    DamageType DamageType = DamageType.Physical,
+    TargetRule? TargetRuleData = null,
+    ActionLane Lane = ActionLane.Primary,
+    ActionLockRule LockRule = ActionLockRule.SoftCommit,
+    IReadOnlyList<EffectDescriptor>? EffectDescriptors = null);
+
+public sealed record BattlePassiveSpec(
+    string Id,
+    string Name,
+    ActionSlotKind SlotKind = ActionSlotKind.SignaturePassive,
+    ActivationModel ActivationModel = ActivationModel.Passive,
+    IReadOnlyList<EffectDescriptor>? EffectDescriptors = null,
+    bool AllowMirroredOwnedSummonKill = false);
+
+public sealed record BattleMobilitySpec(
+    string Id,
+    string Name,
+    MobilityActionProfile Profile,
+    TargetRule? TargetRuleData = null,
+    ActivationModel ActivationModel = ActivationModel.Trigger,
+    ActionLane Lane = ActionLane.Reaction,
+    ActionLockRule LockRule = ActionLockRule.HardCommit,
+    IReadOnlyList<EffectDescriptor>? EffectDescriptors = null);
 
 public record BattleSkillSpec(
     string Id,
@@ -101,9 +153,22 @@ public record BattleSkillSpec(
     IReadOnlyList<string>? RequiredWeaponTags = null,
     IReadOnlyList<string>? RequiredClassTags = null,
     IReadOnlyList<StatusApplicationSpec>? AppliedStatuses = null,
-    string CleanseProfileId = "")
+    string CleanseProfileId = "",
+    ActionSlotKind ResolvedSlotKind = ActionSlotKind.SignatureActive,
+    ActivationModel ActivationModel = ActivationModel.Cooldown,
+    ActionLane Lane = ActionLane.Primary,
+    ActionLockRule LockRule = ActionLockRule.HardCommit,
+    AuthorityLayer AuthorityLayer = AuthorityLayer.Skill,
+    TargetRule? TargetRuleData = null,
+    IReadOnlyList<EffectDescriptor>? EffectDescriptors = null,
+    SummonProfile? SummonProfile = null,
+    float InterruptRefundScalar = 0.5f)
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
+
+    public ActionSlotKind EffectiveSlotKind => ResolvedSlotKind;
+
+    public bool UsesEnergy => ActivationModel == ActivationModel.Energy;
 }
 
 public sealed record StatusApplicationSpec(

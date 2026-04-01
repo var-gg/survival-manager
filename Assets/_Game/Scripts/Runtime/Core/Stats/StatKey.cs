@@ -17,9 +17,12 @@ public readonly record struct StatKey(string Value)
     public static readonly StatKey AttackSpeed = new("attack_speed");
     public static readonly StatKey MoveSpeed = new("move_speed");
     public static readonly StatKey AttackRange = new("attack_range");
+    public static readonly StatKey SkillHaste = new("skill_haste");
     public static readonly StatKey ManaMax = new("mana_max");
     public static readonly StatKey ManaGainOnAttack = new("mana_gain_on_attack");
     public static readonly StatKey ManaGainOnHit = new("mana_gain_on_hit");
+
+    [Obsolete("Use SkillHaste instead.")]
     public static readonly StatKey CooldownRecovery = new("cooldown_recovery");
     public static readonly StatKey CritChance = new("crit_chance");
     public static readonly StatKey CritMultiplier = new("crit_multiplier");
@@ -61,6 +64,7 @@ public readonly record struct StatKey(string Value)
         [AttackSpeed.Value] = AttackSpeed,
         [MoveSpeed.Value] = MoveSpeed,
         [AttackRange.Value] = AttackRange,
+        [SkillHaste.Value] = SkillHaste,
         [ManaMax.Value] = ManaMax,
         [ManaGainOnAttack.Value] = ManaGainOnAttack,
         [ManaGainOnHit.Value] = ManaGainOnHit,
@@ -89,6 +93,7 @@ public readonly record struct StatKey(string Value)
         [Attack.Value] = PhysPower,
         [Defense.Value] = Armor,
         [Speed.Value] = AttackSpeed,
+        [CooldownRecovery.Value] = SkillHaste,
     };
 
     private static readonly IReadOnlyDictionary<string, IReadOnlyList<StatKey>> CanonicalToLegacyAliases = new Dictionary<string, IReadOnlyList<StatKey>>(StringComparer.Ordinal)
@@ -96,6 +101,7 @@ public readonly record struct StatKey(string Value)
         [PhysPower.Value] = new[] { Attack },
         [Armor.Value] = new[] { Defense },
         [AttackSpeed.Value] = new[] { Speed },
+        [SkillHaste.Value] = new[] { CooldownRecovery },
     };
 
     public override string ToString() => Value;

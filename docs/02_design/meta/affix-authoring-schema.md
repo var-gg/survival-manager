@@ -6,12 +6,16 @@
 - 소스오브트루스: `docs/02_design/meta/affix-authoring-schema.md`
 - 관련문서:
   - `docs/02_design/meta/item-and-affix-system.md`
+  - `docs/02_design/combat/authority-matrix.md`
+  - `docs/02_design/combat/summon-ownership-and-deployables.md`
   - `docs/02_design/meta/affix-pool-v1.md`
   - `docs/03_architecture/content-authoring-and-balance-data.md`
 
 ## 목적
 
 이 문서는 아이템 affix가 얼마나 복잡해질 수 있는지의 capacity를 넉넉하게 두되, launch floor item readability를 무너뜨리지 않는 schema를 정의한다.
+
+Loop A 기준으로 affix는 `owner self` 또는 `owner-owned summons`만 수정할 수 있으며, teamwide/global/economy/offer rule을 건드릴 수 없다.
 
 ## 핵심 원칙
 
@@ -46,7 +50,7 @@
   - `mag_power`
   - `heal_power`
   - `attack_speed`
-  - `cooldown_recovery`
+  - `skill_haste`
   - `crit_chance`
   - `crit_multiplier`
   - `tenacity`
@@ -67,13 +71,23 @@
 | `ExclusiveGroupId` | overlap lock |
 | `BudgetScore` | tuning language |
 | `TextTemplateKey` | concise line template |
+| `AuthorityLayer` | affix authority 판별 |
+| `Effects` | `Self`, `OwnerOwnedSummons` 한정 payload |
 | `CompileTags`, `RuleModifierTags`, `Modifiers` | actual payload |
+
+## authority closure
+
+- 허용 scope: `Self`, `OwnerOwnedSummons`
+- 허용 capability: `ModifyStats`, 제한적 `ApplyStatus`, `ModifyResource(Self)`, `ModifyCooldown(Self)`, `GrantPassive(Self)`
+- 금지 scope: `AlliedRosterUnits`, `AlliedCombatants`, `EnemyCombatants`, `GlobalCombat`, `RewardPhase`, `ShopPhase`
+- 금지 capability: `ModifyEconomyRule`, `ModifyOfferWeights`, `ModifyCompositionPayoff`, `SpawnSummon`, `SpawnDeployable`, `ModifyTargeting`
 
 ## overlap rule
 
 - additive / multiplicative로 같은 의미가 폭주하지 않게 `ExclusiveGroupId`를 둔다.
 - `ConditionalTagged`와 `BuildShaping`이 같은 payload를 다시 복제하면 안 된다.
 - synergy 4-piece identity를 affix 1개가 그대로 복사하면 금지다.
+- affix가 teamwide/global identity를 흉내 내면 authority violation으로 본다.
 
 ## live subset rule
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Contracts;
 using SM.Core.Stats;
 
 namespace SM.Meta.Model;
@@ -43,7 +44,17 @@ public sealed record CombatArchetypeTemplate(
     float PreferredDistance = 0f,
     float ProtectRadius = 0f,
     ManaEnvelope? Mana = null,
-    IReadOnlyList<CombatRuleModifierPackage>? RulePackages = null);
+    IReadOnlyList<CombatRuleModifierPackage>? RulePackages = null,
+    BattleBasicAttackSpec? BasicAttack = null,
+    BattleSkillSpec? SignatureActive = null,
+    BattleSkillSpec? FlexActive = null,
+    BattlePassiveSpec? SignaturePassive = null,
+    BattlePassiveSpec? FlexPassive = null,
+    BattleMobilitySpec? MobilityReaction = null,
+    EnergyProfile? Energy = null,
+    CombatEntityKind EntityKind = CombatEntityKind.RosterUnit,
+    OwnershipLink? Ownership = null,
+    SummonProfile? SummonProfile = null);
 
 public sealed record TeamTacticTemplate(
     string Id,

@@ -1023,24 +1023,10 @@ public static class ContentDefinitionValidator
             AddError(issues, "archetype.weapon_family", "Archetype is missing PrimaryWeaponFamilyTag.", assetPath);
         }
 
-        if (archetype.Skills.Count != 4)
+        if (archetype.Skills.Count == 0
+            && (archetype.Loadout == null || !archetype.Loadout.IsComplete()))
         {
-            AddError(issues, "archetype.skill_contract", "Archetype must carry exactly 4 compiled skills (core_active, utility_active, passive, support).", assetPath);
-        }
-        else
-        {
-            var slotKinds = archetype.Skills
-                .Where(skill => skill != null)
-                .Select(skill => skill.SlotKind)
-                .ToList();
-            var hasExpectedSlots = slotKinds.Contains(SkillSlotKindValue.CoreActive)
-                                   && slotKinds.Contains(SkillSlotKindValue.UtilityActive)
-                                   && slotKinds.Contains(SkillSlotKindValue.Passive)
-                                   && slotKinds.Contains(SkillSlotKindValue.Support);
-            if (!hasExpectedSlots)
-            {
-                AddError(issues, "archetype.skill_slots", "Archetype skill loadout must include all 4 canonical slot kinds.", assetPath);
-            }
+            AddError(issues, "archetype.skill_contract", "Archetype must resolve a Loop A loadout or provide legacy migration skills.", assetPath);
         }
 
         ValidateStableTags(issues, archetype.SupportModifierBiasTags, assetPath, "Archetype support modifier bias");
@@ -1097,6 +1083,8 @@ public static class ContentDefinitionValidator
         {
             AddError(issues, "archetype.flex_support_pool", "Flex support pool must contain only support slot skills.", assetPath);
         }
+
+        LoopAContractValidator.ValidateArchetype(archetype, assetPath, issues);
     }
 
     private static void ValidateSkill(SkillDefinitionAsset skill, string assetPath, ICollection<ContentValidationIssue> issues)
@@ -1162,6 +1150,8 @@ public static class ContentDefinitionValidator
         {
             ValidateStatusApplicationRule(status, assetPath, issues);
         }
+
+        LoopAContractValidator.ValidateSkill(skill, assetPath, issues);
     }
 
     private static void ValidateAugment(AugmentDefinition augment, string assetPath, ICollection<ContentValidationIssue> issues)
@@ -1208,6 +1198,8 @@ public static class ContentDefinitionValidator
         {
             AddError(issues, "augment.mutual_exclusion", "Augment has duplicate mutual exclusion tags.", assetPath);
         }
+
+        LoopAContractValidator.ValidateAugment(augment, assetPath, issues);
     }
 
     private static void ValidateItem(ItemBaseDefinition item, string assetPath, ICollection<ContentValidationIssue> issues)
@@ -1278,6 +1270,8 @@ public static class ContentDefinitionValidator
         {
             AddError(issues, "affix.effect_payload", "ConditionalTagged affixes must define at least one required tag.", assetPath);
         }
+
+        LoopAContractValidator.ValidateAffix(affix, assetPath, issues);
     }
 
     private static void ValidateStatusFamily(StatusFamilyDefinition statusFamily, string assetPath, ICollection<ContentValidationIssue> issues)
@@ -1296,6 +1290,8 @@ public static class ContentDefinitionValidator
         {
             AddError(issues, "status.visual_priority", "Status VisualPriority must be non-negative.", assetPath);
         }
+
+        LoopAContractValidator.ValidateStatusFamily(statusFamily, assetPath, issues);
     }
 
     private static void ValidateStatusApplicationRule(StatusApplicationRule statusRule, string assetPath, ICollection<ContentValidationIssue> issues)
@@ -1407,6 +1403,8 @@ public static class ContentDefinitionValidator
         {
             AddError(issues, "synergy.thresholds", "Synergy must define exact 2/3/4 breakpoint tiers.", assetPath);
         }
+
+        LoopAContractValidator.ValidateSynergy(synergy, assetPath, issues);
     }
 
     private static void ValidateSynergyTier(SynergyTierDefinition tier, string assetPath, ICollection<ContentValidationIssue> issues)

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/systems/squad-blueprint-and-build-ownership.md`
 - 관련문서:
   - `docs/01_product/vision.md`
@@ -11,7 +11,7 @@
 
 ## 목적
 
-이 문서는 deck 용어를 `squad blueprint`와 `build`로 교체하고, 영구 성장 / 런 오버레이 / 전투 입력의 소유권을 분리한다.
+이 문서는 deck 용어를 `squad blueprint`와 `build`로 교체하고, 영구 성장, 런 오버레이, 전투 입력의 소유권을 분리한다.
 
 ## 핵심 모델
 
@@ -31,4 +31,4 @@
 
 - squad blueprint 장착 영구 augment 슬롯 운용값은 `1`이다.
 - 데이터 모델은 슬롯 `3`까지 확장 가능해야 한다.
-- 스킬 슬롯은 `2 active + 2 passive/support`로 고정한다.
+- 스킬 topology는 `BasicAttack / SignatureActive / FlexActive / SignaturePassive / FlexPassive / MobilityReaction`으로 고정한다.

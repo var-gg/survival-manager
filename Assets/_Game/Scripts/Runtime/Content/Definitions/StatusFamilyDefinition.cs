@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SM.Core.Contracts;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -26,6 +27,7 @@ public sealed class StatusApplicationRule
     public StatusRefreshPolicyValue RefreshPolicy = StatusRefreshPolicyValue.LegacyDerived;
     public StatusProcAttributionPolicyValue ProcAttributionPolicy = StatusProcAttributionPolicyValue.LegacyDerived;
     public StatusOwnershipPolicyValue OwnershipPolicy = StatusOwnershipPolicyValue.LegacyDerived;
+    public List<EffectDescriptor> Effects = new();
 }
 
 [CreateAssetMenu(menuName = "SM/Definitions/Status Family Definition", fileName = "status_family_")]
@@ -40,6 +42,7 @@ public sealed class StatusFamilyDefinition : ScriptableObject
     public bool AffectedByTenacity = true;
     public float TenacityScale = 1f;
     public bool IsRuleModifierOnly;
+    public AuthorityLayer AuthorityLayer = AuthorityLayer.Status;
     public int DefaultStackCap = 1;
     public StatusStackPolicyValue DefaultStackPolicy = StatusStackPolicyValue.LegacyDerived;
     public StatusRefreshPolicyValue DefaultRefreshPolicy = StatusRefreshPolicyValue.LegacyDerived;
@@ -47,6 +50,7 @@ public sealed class StatusFamilyDefinition : ScriptableObject
     public StatusOwnershipPolicyValue DefaultOwnershipPolicy = StatusOwnershipPolicyValue.LegacyDerived;
     public bool IsAiRelevant = true;
     public int VisualPriority = 0;
+    public List<EffectDescriptor> Effects = new();
     public List<string> CompileTags = new();
 
     [FormerlySerializedAs("DisplayName")]

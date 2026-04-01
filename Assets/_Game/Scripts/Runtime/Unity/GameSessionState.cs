@@ -2027,7 +2027,8 @@ public sealed class GameSessionState
                 record.SkillInstanceId,
                 record.SkillId,
                 CompiledSkillSlots.Normalize(record.SlotKind),
-                record.CompileTags),
+                record.CompileTags,
+                record.ResolvedSlotKind),
             StringComparer.Ordinal);
     }
 

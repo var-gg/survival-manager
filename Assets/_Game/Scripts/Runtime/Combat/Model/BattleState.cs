@@ -1,11 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
+using SM.Core.Contracts;
 using SM.Core.Ids;
 
 namespace SM.Combat.Model;
 
 public sealed class BattleState
 {
+    private readonly Dictionary<string, HashSet<string>> _damageContributorsByVictim = new();
+    private readonly HashSet<string> _scheduledOwnerDeaths = new();
+    private readonly Dictionary<string, float> _ownedEntityDespawnTimers = new();
+
     public BattleState(
         IReadOnlyList<UnitSnapshot> allies,
         IReadOnlyList<UnitSnapshot> enemies,
@@ -47,6 +52,82 @@ public sealed class BattleState
     }
 
     public UnitSnapshot? FindUnit(EntityId? id) => id is { } value ? FindUnitById(value.Value) : null;
+
+    public void RegisterDamage(UnitSnapshot attacker, UnitSnapshot victim)
+    {
+        if (!_damageContributorsByVictim.TryGetValue(victim.Id.Value, out var contributors))
+        {
+            contributors = new HashSet<string>();
+            _damageContributorsByVictim[victim.Id.Value] = contributors;
+        }
+
+        contributors.Add(attacker.Id.Value);
+    }
+
+    public IReadOnlyList<UnitSnapshot> ConsumeAssistContributors(EntityId victimId, EntityId actualKillerId)
+    {
+        if (!_damageContributorsByVictim.Remove(victimId.Value, out var contributors))
+        {
+            return System.Array.Empty<UnitSnapshot>();
+        }
+
+        return contributors
+            .Where(id => !string.Equals(id, actualKillerId.Value, System.StringComparison.Ordinal))
+            .Select(FindUnitById)
+            .Where(unit => unit is { IsAlive: true })
+            .Cast<UnitSnapshot>()
+            .ToList();
+    }
+
+    public void ScheduleOwnedEntityDespawnIfOwnerDead()
+    {
+        foreach (var owner in AllUnits.Where(unit => !unit.IsAlive))
+        {
+            if (!_scheduledOwnerDeaths.Add(owner.Id.Value))
+            {
+                continue;
+            }
+
+            foreach (var owned in AllUnits.Where(unit =>
+                         unit.IsAlive
+                         && unit.EntityKind is not CombatEntityKind.RosterUnit
+                         && unit.Ownership is { } ownership
+                         && ownership.OwnerEntity == owner.Id))
+            {
+                var delay = owned.SummonProfile?.OwnerDeathDespawnDelaySeconds ?? 1f;
+                _ownedEntityDespawnTimers[owned.Id.Value] = delay;
+            }
+        }
+    }
+
+    public void AdvanceOwnedEntityDespawns()
+    {
+        var keys = _ownedEntityDespawnTimers.Keys.ToList();
+        foreach (var unitId in keys)
+        {
+            var remaining = _ownedEntityDespawnTimers[unitId] - FixedStepSeconds;
+            if (remaining > 0f)
+            {
+                _ownedEntityDespawnTimers[unitId] = remaining;
+                continue;
+            }
+
+            _ownedEntityDespawnTimers.Remove(unitId);
+            var unit = FindUnitById(unitId);
+            if (unit is { IsAlive: true })
+            {
+                unit.Despawn();
+            }
+        }
+    }
+
+    public void DespawnNonRosterEntities()
+    {
+        foreach (var unit in AllUnits.Where(unit => unit.IsAlive && unit.EntityKind is not CombatEntityKind.RosterUnit))
+        {
+            unit.Despawn();
+        }
+    }
 
     public void AdvanceStep()
     {

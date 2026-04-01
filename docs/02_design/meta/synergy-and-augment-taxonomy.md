@@ -9,6 +9,7 @@
   - `docs/02_design/meta/synergy-family-catalog.md`
   - `docs/02_design/meta/augment-system.md`
   - `docs/02_design/meta/augment-catalog-v1.md`
+  - `docs/02_design/combat/authority-matrix.md`
 
 ## 목적
 
@@ -16,8 +17,8 @@
 
 ## 분리 규칙
 
-- synergy: 조합 기준선, count grammar, build guide
-- augment: 한 run 전체의 규칙을 휘는 글로벌 레버
+- synergy: 조합 기준선, count grammar, composition payoff
+- augment: 한 run 전체의 전투/경제 규칙을 휘는 글로벌 레버
 - affix: 개별 unit / item 최적화
 
 ## synergy policy
@@ -26,6 +27,8 @@
 - breakpoint는 계속 `2 / 3 / 4`다.
 - 현재 committed live family는 7개를 유지한다.
 - schema capacity는 `12~16 family`까지 수용하지만, runtime validator와 launch floor는 현재 live subset을 우선한다.
+- summon/deployable은 synergy count에 포함되지 않는다.
+- synergy는 economy와 offer를 수정하지 않는다.
 
 ## augment bucket
 
@@ -39,7 +42,7 @@
 
 ### `SynergyLinked`
 
-- 현재 팀 조합과 태그 count를 밀어주는 레버
+- 현재 팀 조합과 tag count를 밀어주는 레버
 
 ### `WildcardRisk`
 
@@ -54,8 +57,16 @@
   - wildcard or economy 1
 - 완전 dead option 3개는 금지
 
+## authority boundary
+
+| layer | 허용 | 금지 |
+| --- | --- | --- |
+| `Synergy` | `AlliedRosterUnits`, `AlliedCombatants`, `EnemyCombatants`에 대한 stats/status/passive/composition payoff | economy, offer, reroll, recruit, shop, reward 직접 수정 |
+| `Augment` | synergy가 할 수 있는 것 전체 + `GlobalCombat`, `RewardPhase`, `ShopPhase`, economy/offer/global combat rule | roster unit loadout slot 수 변경, core slot 추가, persistent summon chain 허용 |
+
 ## overlap 금지
 
 - synergy와 augment가 같은 축을 같은 강도로 중복 복제하면 안 된다.
 - augment 하나가 synergy 4-piece identity를 통째로 대체하면 안 된다.
 - 작은 stat buff만 가진 augment를 양산하지 않는다.
+- augment가 6-slot topology 자체를 바꾸면 안 된다.

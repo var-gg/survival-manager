@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Core.Contracts;
 using SM.Core.Ids;
 using SM.Core.Stats;
 
@@ -9,6 +10,7 @@ namespace SM.Combat.Model;
 public sealed class UnitSnapshot
 {
     private readonly List<AppliedStatusState> _statuses = new();
+    private bool _pendingSignatureEnergySpent;
 
     public UnitSnapshot(
         EntityId id,
@@ -36,6 +38,7 @@ public sealed class UnitSnapshot
         Behavior = CombatProfileDefaults.ResolveBehavior(definition.Behavior, definition.ClassId);
         Mobility = CombatProfileDefaults.ResolveMobility(definition.Mobility, definition.ClassId);
         CurrentHealth = MaxHealth;
+        CurrentEnergy = Math.Clamp(definition.EffectiveEnergy.Starting, 0f, Math.Max(0f, definition.EffectiveEnergy.Max));
         RequestReevaluation(ReevaluationReason.Cadence);
     }
 
@@ -62,15 +65,32 @@ public sealed class UnitSnapshot
     public ReevaluationReason PendingReevaluationReason { get; private set; }
     public float MobilityCooldownRemaining { get; private set; }
     public float BlockCooldownRemaining { get; private set; }
+    public float DirectHitEnergyIcdRemaining { get; private set; }
     public float CurrentHealth { get; private set; }
+    public float CurrentEnergy { get; private set; }
     public float Barrier { get; private set; }
     public IReadOnlyList<AppliedStatusState> Statuses => _statuses;
     public ControlResistWindowState? ControlResistWindow { get; private set; }
     public EngagementSlotAssignment? EngagementSlot { get; private set; }
+    public ActionLane PendingLane { get; private set; } = ActionLane.Primary;
+    public ActionLockRule PendingLockRule { get; private set; } = ActionLockRule.None;
+    public ActionSlotKind? PendingSlotKind { get; private set; }
+    public TargetSelector CurrentTargetSelector { get; private set; } = TargetSelector.CurrentTarget;
+    public TargetFallbackPolicy CurrentFallbackPolicy { get; private set; } = TargetFallbackPolicy.KeepCurrentIfStillValid;
     public bool IsAlive => CurrentHealth > 0f;
     public bool IsDefending { get; private set; }
     public bool NeedsReevaluation => PendingReevaluationReason != ReevaluationReason.None || ReevaluationRemaining <= 0f;
+    public CombatEntityKind EntityKind => Definition.EntityKind;
+    public OwnershipLink? Ownership => Definition.Ownership;
+    public SummonProfile? SummonProfile => Definition.SummonProfile;
+    public BattleBasicAttackSpec EffectiveBasicAttack => Definition.EffectiveBasicAttack;
+    public BattleSkillSpec? EffectiveSignatureActive => Definition.EffectiveSignatureActive;
+    public BattleSkillSpec? EffectiveFlexActive => Definition.EffectiveFlexActive;
+    public BattlePassiveSpec EffectiveSignaturePassive => Definition.EffectiveSignaturePassive;
+    public BattlePassiveSpec EffectiveFlexPassive => Definition.EffectiveFlexPassive;
+    public BattleMobilitySpec? EffectiveMobilityReaction => Definition.EffectiveMobilityReaction;
     public float MaxHealth => Stats.Get(StatKey.MaxHealth);
+    public float MaxEnergy => Math.Max(0f, Definition.EffectiveEnergy.Max);
     public float Armor => Math.Max(0f, Stats.Get(StatKey.Armor) - GetStatusMagnitude("sunder"));
     public float Resist => Math.Max(0f, Stats.Get(StatKey.Resist) - GetStatusMagnitude("sunder"));
     public float PhysPower => Stats.Get(StatKey.PhysPower);
@@ -79,10 +99,11 @@ public sealed class UnitSnapshot
     public float HealPower => Stats.Get(StatKey.HealPower);
     public float MoveSpeed => Math.Max(0.1f, Stats.Get(StatKey.MoveSpeed) * GetSlowMultiplier());
     public float AttackRange => Math.Max(0.5f, Stats.Get(StatKey.AttackRange));
+    public float SkillHaste => Math.Max(0f, Stats.Get(StatKey.SkillHaste));
     public float ManaMax => Stats.Get(StatKey.ManaMax);
     public float ManaGainOnAttack => Stats.Get(StatKey.ManaGainOnAttack);
     public float ManaGainOnHit => Stats.Get(StatKey.ManaGainOnHit);
-    public float CooldownRecovery => Stats.Get(StatKey.CooldownRecovery);
+    public float CooldownRecovery => SkillHaste;
     public float AggroRadius => Math.Max(AttackRange, Stats.Get(StatKey.AggroRadius));
     public FloatRange PreferredRangeBand => Footprint.PreferredRangeBand;
     public float PreferredDistance => Definition.PreferredDistance > 0f
@@ -114,6 +135,9 @@ public sealed class UnitSnapshot
     public float WindupProgress => ActionState == CombatActionState.ExecuteAction && ActionTimerTotal > 0f
         ? 1f - (ActionTimerRemaining / ActionTimerTotal)
         : 0f;
+    public float RetargetLockRemaining => TargetSwitchLockRemaining;
+    public bool IsHardCommitted => PendingLockRule == ActionLockRule.HardCommit
+        || (PendingLockRule == ActionLockRule.SoftCommit && WindupProgress >= 0.4f);
 
     public void AdvanceTime(float deltaSeconds)
     {
@@ -145,6 +169,11 @@ public sealed class UnitSnapshot
         if (BlockCooldownRemaining > 0f)
         {
             BlockCooldownRemaining = Math.Max(0f, BlockCooldownRemaining - deltaSeconds);
+        }
+
+        if (DirectHitEnergyIcdRemaining > 0f)
+        {
+            DirectHitEnergyIcdRemaining = Math.Max(0f, DirectHitEnergyIcdRemaining - deltaSeconds);
         }
 
         if (TargetSwitchLockRemaining > 0f)
@@ -181,13 +210,28 @@ public sealed class UnitSnapshot
         CurrentTargetId = targetId;
     }
 
+    public void SetTargetDebugState(TargetSelector selector, TargetFallbackPolicy fallbackPolicy)
+    {
+        CurrentTargetSelector = selector;
+        CurrentFallbackPolicy = fallbackPolicy;
+    }
+
+    public void StartRetargetLock(float durationSeconds)
+    {
+        TargetSwitchLockRemaining = Math.Max(TargetSwitchLockRemaining, Math.Max(0f, durationSeconds));
+    }
+
     public void ClearTarget(bool applySwitchDelay)
     {
         var hadTarget = CurrentTargetId != null || PendingTargetId != null;
+        var shouldRefundSignature = PendingActionType == BattleActionType.ActiveSkill && _pendingSignatureEnergySpent;
         CurrentTargetId = null;
         PendingTargetId = null;
         PendingActionType = null;
         PendingSkillId = null;
+        PendingLane = ActionLane.Primary;
+        PendingLockRule = ActionLockRule.None;
+        PendingSlotKind = null;
         ActionTimerRemaining = 0f;
         ActionTimerTotal = 0f;
         EngagementSlot = null;
@@ -201,6 +245,11 @@ public sealed class UnitSnapshot
         {
             RequestReevaluation(ReevaluationReason.TargetLost);
         }
+
+        if (shouldRefundSignature)
+        {
+            RefundInterruptedSignatureCast();
+        }
     }
 
     public void BeginWindup(BattleActionType actionType, EntityId? targetId, string? skillId)
@@ -212,10 +261,19 @@ public sealed class UnitSnapshot
         PendingActionType = actionType;
         PendingTargetId = targetId;
         PendingSkillId = skillId;
+        PendingLane = actionType == BattleActionType.BasicAttack ? ActionLane.Primary : skill?.Lane ?? ActionLane.Primary;
+        PendingLockRule = actionType == BattleActionType.BasicAttack ? ActionLockRule.SoftCommit : skill?.LockRule ?? ActionLockRule.HardCommit;
+        PendingSlotKind = actionType == BattleActionType.BasicAttack ? ActionSlotKind.BasicAttack : skill?.EffectiveSlotKind;
         ActionTimerRemaining = windupSeconds;
         ActionTimerTotal = windupSeconds;
         ActionState = CombatActionState.ExecuteAction;
         IsDefending = false;
+        if (actionType == BattleActionType.ActiveSkill && skill?.UsesEnergy == true)
+        {
+            SpendSignatureCastEnergy();
+        }
+
+        StartRetargetLock(ResolveMinimumCommitSeconds(actionType, skill));
     }
 
     public void FinishWindup()
@@ -230,6 +288,12 @@ public sealed class UnitSnapshot
         CooldownRemaining = cooldownSeconds ?? AttackCooldown;
         ActionState = CombatActionState.Recover;
         IsDefending = false;
+        PendingLockRule = ActionLockRule.None;
+        PendingSlotKind = null;
+        PendingSkillId = null;
+        PendingActionType = null;
+        PendingTargetId = null;
+        _pendingSignatureEnergySpent = false;
     }
 
     public void SetDefending()
@@ -365,9 +429,22 @@ public sealed class UnitSnapshot
 
     public BattleSkillSpec? ResolveSkill(string? skillId)
     {
-        return string.IsNullOrWhiteSpace(skillId)
-            ? null
-            : Definition.Skills.FirstOrDefault(skill => skill.Id == skillId);
+        if (string.IsNullOrWhiteSpace(skillId))
+        {
+            return null;
+        }
+
+        if (Definition.EffectiveSignatureActive?.Id == skillId)
+        {
+            return Definition.EffectiveSignatureActive;
+        }
+
+        if (Definition.EffectiveFlexActive?.Id == skillId)
+        {
+            return Definition.EffectiveFlexActive;
+        }
+
+        return Definition.Skills.FirstOrDefault(skill => skill.Id == skillId);
     }
 
     public float ResolveActionRange(string? skillId)
@@ -379,9 +456,22 @@ public sealed class UnitSnapshot
     public float ResolveActionCooldown(string? skillId)
     {
         var skill = ResolveSkill(skillId);
-        return skill != null && skill.BaseCooldownSeconds > 0f
+        if (skill == null)
+        {
+            return AttackCooldown;
+        }
+
+        if (skill.UsesEnergy)
+        {
+            return 0f;
+        }
+
+        var cooldown = skill.BaseCooldownSeconds > 0f
             ? skill.BaseCooldownSeconds
             : AttackCooldown;
+        return skill.EffectiveSlotKind == ActionSlotKind.FlexActive
+            ? ApplySkillHaste(cooldown)
+            : cooldown;
     }
 
     public void SetEngagementSlot(EngagementSlotAssignment? slot)
@@ -410,7 +500,7 @@ public sealed class UnitSnapshot
     {
         if (Mobility is { } mobility)
         {
-            MobilityCooldownRemaining = Math.Max(0f, mobility.Cooldown);
+            MobilityCooldownRemaining = ApplySkillHaste(Math.Max(0f, mobility.Cooldown));
         }
     }
 
@@ -419,6 +509,37 @@ public sealed class UnitSnapshot
     public void TriggerBlockCooldown()
     {
         BlockCooldownRemaining = Math.Max(0f, Behavior.BlockCooldownSeconds);
+    }
+
+    public bool CanSpendSignatureCastEnergy()
+    {
+        return CurrentEnergy >= 100f;
+    }
+
+    public void GainEnergyFromBasicAttackResolved()
+    {
+        GainEnergy(12f);
+    }
+
+    public void GainEnergyFromDirectHitTaken()
+    {
+        if (DirectHitEnergyIcdRemaining > 0f)
+        {
+            return;
+        }
+
+        GainEnergy(6f);
+        DirectHitEnergyIcdRemaining = 0.35f;
+    }
+
+    public void GainEnergyFromKill()
+    {
+        GainEnergy(15f);
+    }
+
+    public void GainEnergyFromAssist()
+    {
+        GainEnergy(8f);
     }
 
     public void RequestReevaluation(ReevaluationReason reason)
@@ -446,15 +567,22 @@ public sealed class UnitSnapshot
     {
         CurrentHealth = 0f;
         Barrier = 0f;
+        CurrentEnergy = Math.Clamp(CurrentEnergy, 0f, MaxEnergy);
         IsDefending = false;
         ClearTarget(applySwitchDelay: false);
         CooldownRemaining = 0f;
         MobilityCooldownRemaining = 0f;
         BlockCooldownRemaining = 0f;
+        DirectHitEnergyIcdRemaining = 0f;
         ActionState = CombatActionState.Dead;
         _statuses.Clear();
         ControlResistWindow = null;
         EngagementSlot = null;
+    }
+
+    public void Despawn()
+    {
+        MarkDead();
     }
 
     private float GetHealingTakenMultiplier()
@@ -467,6 +595,63 @@ public sealed class UnitSnapshot
     {
         var slowMagnitude = GetStatusMagnitude("slow");
         return Math.Max(0.1f, 1f - slowMagnitude);
+    }
+
+    private void GainEnergy(float amount)
+    {
+        if (amount <= 0f || MaxEnergy <= 0f)
+        {
+            return;
+        }
+
+        CurrentEnergy = Math.Clamp(CurrentEnergy + amount, 0f, MaxEnergy);
+    }
+
+    private void SpendSignatureCastEnergy()
+    {
+        if (_pendingSignatureEnergySpent)
+        {
+            return;
+        }
+
+        if (!CanSpendSignatureCastEnergy())
+        {
+            return;
+        }
+
+        CurrentEnergy = Math.Clamp(CurrentEnergy - 100f, 0f, MaxEnergy);
+        _pendingSignatureEnergySpent = true;
+    }
+
+    private void RefundInterruptedSignatureCast()
+    {
+        if (!_pendingSignatureEnergySpent)
+        {
+            return;
+        }
+
+        GainEnergy(50f);
+        _pendingSignatureEnergySpent = false;
+    }
+
+    private float ResolveMinimumCommitSeconds(BattleActionType actionType, BattleSkillSpec? skill)
+    {
+        if (actionType == BattleActionType.BasicAttack)
+        {
+            return Definition.EffectiveBasicAttack.TargetRuleData?.MinimumCommitSeconds ?? 0.75f;
+        }
+
+        return skill?.TargetRuleData?.MinimumCommitSeconds ?? 0.75f;
+    }
+
+    private float ApplySkillHaste(float cooldownSeconds)
+    {
+        if (cooldownSeconds <= 0f)
+        {
+            return 0f;
+        }
+
+        return cooldownSeconds / Math.Max(1f, 1f + SkillHaste);
     }
 
     public List<string> AdvanceStatusTimers(float deltaSeconds)

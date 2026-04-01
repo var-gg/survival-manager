@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 
 namespace SM.Combat.Services;
 
@@ -25,7 +26,126 @@ public static class TacticEvaluator
             : actor.NeedsReevaluation
                 ? ReevaluationReason.Cadence
                 : ReevaluationReason.None;
-        var stableTarget = ResolveStableTarget(state, actor);
+
+        if (actor.Definition.HasLoopALoadout)
+        {
+            return EvaluateLoopA(state, actor, reevaluationReason);
+        }
+
+        return EvaluateLegacy(state, actor, reevaluationReason);
+    }
+
+    private static EvaluatedAction EvaluateLoopA(BattleState state, UnitSnapshot actor, ReevaluationReason reevaluationReason)
+    {
+        var fallbackRule = new TacticRule(999, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self, null);
+        var stableTarget = ResolveStableTarget(state, actor, actor.Definition.EffectiveBasicAttack.TargetRuleData);
+        var baseRangeBand = ResolveLoopARangeBand(actor, null, BattleActionType.BasicAttack);
+
+        if (actor.EffectiveMobilityReaction is { } mobilityReaction
+            && !actor.IsStunned
+            && !actor.IsRooted
+            && actor.MobilityCooldownRemaining <= 0f)
+        {
+            var mobilityTarget = stableTarget ?? TargetScoringService.SelectTarget(state, actor, mobilityReaction.TargetRuleData);
+            var mobilityDecision = mobilityTarget == null ? null : MovementResolver.BuildMobilityDecision(actor, mobilityTarget, baseRangeBand);
+            if (mobilityDecision != null)
+            {
+                return new EvaluatedAction(
+                    BattleActionType.BasicAttack,
+                    mobilityTarget,
+                    null,
+                    fallbackRule,
+                    baseRangeBand,
+                    ResolvePhase(actor, mobilityTarget, baseRangeBand, null, mobilityDecision),
+                    reevaluationReason,
+                    false,
+                    null,
+                    mobilityDecision);
+            }
+        }
+
+        if (actor.Definition.EffectiveSignatureActive is { } signature
+            && StatusResolutionService.CanUseSkillSlot(actor, signature)
+            && actor.CanSpendSignatureCastEnergy())
+        {
+            var target = ResolveStableTarget(state, actor, signature.TargetRuleData) ?? TargetScoringService.SelectTarget(state, actor, signature.TargetRuleData);
+            if (target != null)
+            {
+                var rangeBand = ResolveLoopARangeBand(actor, signature, BattleActionType.ActiveSkill);
+                var requiresSlot = target.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, rangeBand);
+                var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, target, rangeBand) : null;
+                return new EvaluatedAction(
+                    BattleActionType.ActiveSkill,
+                    target,
+                    signature,
+                    fallbackRule,
+                    rangeBand,
+                    ResolvePhase(actor, target, rangeBand, slotAssignment, null),
+                    reevaluationReason,
+                    requiresSlot,
+                    slotAssignment,
+                    null);
+            }
+        }
+
+        if (actor.Definition.EffectiveFlexActive is { } flex
+            && StatusResolutionService.CanUseSkillSlot(actor, flex)
+            && actor.CooldownRemaining <= 0f)
+        {
+            var target = ResolveStableTarget(state, actor, flex.TargetRuleData) ?? TargetScoringService.SelectTarget(state, actor, flex.TargetRuleData);
+            if (target != null)
+            {
+                var rangeBand = ResolveLoopARangeBand(actor, flex, BattleActionType.ActiveSkill);
+                var requiresSlot = target.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, rangeBand);
+                var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, target, rangeBand) : null;
+                return new EvaluatedAction(
+                    BattleActionType.ActiveSkill,
+                    target,
+                    flex,
+                    fallbackRule,
+                    rangeBand,
+                    ResolvePhase(actor, target, rangeBand, slotAssignment, null),
+                    reevaluationReason,
+                    requiresSlot,
+                    slotAssignment,
+                    null);
+            }
+        }
+
+        var basicTarget = stableTarget ?? TargetScoringService.SelectTarget(state, actor, actor.Definition.EffectiveBasicAttack.TargetRuleData);
+        if (basicTarget != null)
+        {
+            var requiresSlot = basicTarget.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, baseRangeBand);
+            var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, basicTarget, baseRangeBand) : null;
+            return new EvaluatedAction(
+                BattleActionType.BasicAttack,
+                basicTarget,
+                null,
+                fallbackRule,
+                baseRangeBand,
+                ResolvePhase(actor, basicTarget, baseRangeBand, slotAssignment, null),
+                reevaluationReason,
+                requiresSlot,
+                slotAssignment,
+                null);
+        }
+
+        return new EvaluatedAction(
+            BattleActionType.WaitDefend,
+            actor,
+            null,
+            fallbackRule,
+            new FloatRange(0f, 0f),
+            CombatActionState.Reposition,
+            reevaluationReason,
+            false,
+            null,
+            null);
+    }
+
+    private static EvaluatedAction EvaluateLegacy(BattleState state, UnitSnapshot actor, ReevaluationReason reevaluationReason)
+    {
+        var stableTarget = ResolveStableTarget(state, actor, null);
         var ordered = actor.Definition.Tactics.OrderBy(x => x.Priority);
         foreach (var rule in ordered)
         {
@@ -37,13 +157,13 @@ public static class TacticEvaluator
             var skill = rule.ActionType == BattleActionType.ActiveSkill
                 ? actor.ResolveSkill(rule.SkillId)
                 : null;
-            var target = ResolveTarget(state, actor, stableTarget, rule, skill);
+            var target = ResolveLegacyTarget(state, actor, stableTarget, rule, skill);
             if (!ConditionMatches(state, actor, rule, skill, target))
             {
                 continue;
             }
 
-            var rangeBand = ResolveRangeBand(actor, skill, rule.ActionType);
+            var rangeBand = ResolveLegacyRangeBand(actor, skill, rule.ActionType);
             var requiresSlot = target != null && target.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, rangeBand);
             var slotAssignment = requiresSlot && target != null
                 ? EngagementSlotService.Resolve(state, actor, target, rangeBand)
@@ -78,7 +198,7 @@ public static class TacticEvaluator
             null);
     }
 
-    private static UnitSnapshot? ResolveTarget(
+    private static UnitSnapshot? ResolveLegacyTarget(
         BattleState state,
         UnitSnapshot actor,
         UnitSnapshot? stableTarget,
@@ -109,7 +229,7 @@ public static class TacticEvaluator
         return TargetScoringService.SelectTarget(state, actor, rule.TargetSelector, rule.ActionType, rule.SkillId);
     }
 
-    private static UnitSnapshot? ResolveStableTarget(BattleState state, UnitSnapshot actor)
+    private static UnitSnapshot? ResolveStableTarget(BattleState state, UnitSnapshot actor, TargetRule? targetRule)
     {
         var currentTarget = state.FindUnit(actor.CurrentTargetId);
         if (currentTarget == null || !currentTarget.IsAlive)
@@ -117,15 +237,36 @@ public static class TacticEvaluator
             return null;
         }
 
-        if (!actor.NeedsReevaluation || actor.TargetSwitchLockRemaining > 0f)
+        if (targetRule != null)
         {
-            return currentTarget;
+            var maxAcquireRange = targetRule.MaxAcquireRange > 0f ? targetRule.MaxAcquireRange : actor.AttackRange;
+            if (MovementResolver.ComputeEdgeDistance(actor, currentTarget) > maxAcquireRange + 1f)
+            {
+                return null;
+            }
         }
 
-        return null;
+        return !actor.NeedsReevaluation || actor.TargetSwitchLockRemaining > 0f
+            ? currentTarget
+            : null;
     }
 
-    private static FloatRange ResolveRangeBand(UnitSnapshot actor, BattleSkillSpec? skill, BattleActionType actionType)
+    private static FloatRange ResolveLoopARangeBand(UnitSnapshot actor, BattleSkillSpec? skill, BattleActionType actionType)
+    {
+        if (actionType == BattleActionType.WaitDefend)
+        {
+            return new FloatRange(0f, 0f);
+        }
+
+        var desiredMax = Math.Max(0.4f, skill?.Range ?? actor.AttackRange);
+        var preferredMin = actor.Behavior.PreferredRangeMin > 0f ? actor.Behavior.PreferredRangeMin : actor.PreferredRangeBand.ClampedMin;
+        var preferredMax = actor.Behavior.PreferredRangeMax > 0f ? actor.Behavior.PreferredRangeMax : actor.PreferredRangeBand.ClampedMax;
+        var min = Math.Min(preferredMin, desiredMax);
+        var max = Math.Min(Math.Max(min, preferredMax), desiredMax);
+        return new FloatRange(min, max <= 0f ? desiredMax : max);
+    }
+
+    private static FloatRange ResolveLegacyRangeBand(UnitSnapshot actor, BattleSkillSpec? skill, BattleActionType actionType)
     {
         if (actionType == BattleActionType.WaitDefend)
         {
@@ -187,12 +328,12 @@ public static class TacticEvaluator
         }
 
         var distance = MovementResolver.ComputeEdgeDistance(actor, target);
-        if (distance > rangeBand.ClampedMax + actor.Behavior.RangeHysteresis)
+        if (distance > rangeBand.ClampedMax + actor.Behavior.ApproachBuffer)
         {
             return CombatActionState.Approach;
         }
 
-        if (distance < rangeBand.ClampedMin - actor.Behavior.RangeHysteresis)
+        if (distance < rangeBand.ClampedMin - actor.Behavior.RetreatBuffer)
         {
             return CombatActionState.BreakContact;
         }

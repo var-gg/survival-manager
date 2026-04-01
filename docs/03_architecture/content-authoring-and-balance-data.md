@@ -8,16 +8,13 @@
   - `docs/03_architecture/content-authoring-model.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
-  - `docs/02_design/systems/launch-floor-content-matrix.md`
-  - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
+  - `docs/02_design/combat/authority-matrix.md`
+  - `docs/02_design/combat/resource-cadence-loadout.md`
+  - `docs/02_design/combat/targeting-and-ai-vocabulary.md`
   - `docs/02_design/combat/skill-authoring-schema.md`
-  - `docs/02_design/combat/status-keyword-and-proc-rulebook.md`
   - `docs/02_design/meta/affix-authoring-schema.md`
   - `docs/02_design/meta/skill-acquisition-and-retrain.md`
   - `docs/02_design/meta/synergy-and-augment-taxonomy.md`
-  - `docs/02_design/meta/item-passive-augment-budget.md`
-  - `docs/02_design/meta/passive-board-node-catalog.md`
-  - `docs/02_design/meta/synergy-family-catalog.md`
 
 ## 목적
 
@@ -39,80 +36,67 @@
 
 ## 주요 authored field
 
-### StatKey
+### shared seam
 
-- canonical stat id를 우선한다.
-- legacy alias는 migration 동안만 읽고, 새 authored content는 canonical stat을 사용한다.
+- `AuthorityLayer`
+- `EffectScope`
+- `EffectCapability`
+- `ActionSlotKind`
+- `ActivationModel`
+- `ActionLane`
+- `ActionLockRule`
+- `TargetRule`
+- `BehaviorProfile`
+- `CombatEntityKind`
+- `SummonProfile`
 
 ### SkillDefinitionAsset
 
-- `TemplateType`
-- `Kind`
-- `SlotKind`
-- `DamageType`
-- `Delivery`
-- `TargetRule`
-- `RangeMin / RangeMax / Radius / Width / ArcDegrees`
-- `Power / PowerFlat`
-- `PhysCoeff / MagCoeff / HealCoeff / HealthCoeff`
-- `CanCrit`
-- `CooldownSeconds / RecoverySeconds / ResourceCost`
-- `AiIntents / AiScoreHints`
+- `AuthorityLayer`
+- `ActivationModel`
+- `ActionLane`
+- `ActionLockRule`
+- `TargetRuleData`
+- `Effects`
+- `SummonProfile`
+- `CastWindupSeconds / CooldownSeconds / RecoverySeconds`
 - `AnimationHookId / VfxHookId / SfxHookId`
-- `PowerBudget`
-- `LearnSource`
-- `RequiredWeaponTags / RequiredClassTags / SupportAllowedTags`
 
-### ItemBaseDefinition
+### BasicAttackDefinition / PassiveDefinition / MobilityDefinition
 
-- `SlotType`
-- `IdentityKind`
-- `BudgetBand`
-- `AllowedClassTags / AllowedArchetypeTags`
-- `GrantedSkills / RuleModifierTags / UniqueRuleTags`
-
-### AffixDefinition
-
-- `Category`
-- `AffixFamily / EffectType`
-- `ValueMin / ValueMax`
-- `AllowedSlotTypes`
-- `RequiredTags / ExcludedTags`
-- `ItemLevelMin / SpawnWeight`
-- `ExclusiveGroupId`
-- `BudgetScore`
-- `TextTemplateKey`
-- `CompileTags / RuleModifierTags`
+- 각 slot 전용 topology와 cadence
+- `AuthorityLayer`
+- `TargetRuleData`
+- `Effects`
+- `SummonProfile`
 
 ### UnitArchetypeDefinition
 
-- `ScopeKind`
-- `RoleFamilyTag`
-- `PrimaryWeaponFamilyTag`
-- `SupportModifierBiasTags`
-- `LockedAttackProfileId / LockedAttackProfileTag`
-- `LockedSignatureActiveSkill / LockedSignaturePassiveSkill`
-- `FlexUtilitySkillPool / FlexSupportSkillPool`
+- `Loadout`
+- `BehaviorProfile`
+- `FormationLine`
+- `BaseMaxEnergy`
+- `BaseStartingEnergy`
+- `BaseSkillHaste`
 - base stat v2 fields
 
-### PassiveBoardDefinition / PassiveNodeDefinition
+### AffixDefinition / SynergyDefinition / AugmentDefinition / StatusFamilyDefinition
 
-- board owner는 `ClassId`
-- node는 `NodeKind`
-- prerequisite와 mutual exclusion을 data로 가진다.
+- `AuthorityLayer`
+- `Effects`
+- layer별 allowed scope/capability boundary
 
 ## compile contract
 
-- 저장 포맷은 string slot kind를 유지할 수 있다.
-- compile 결과는 `core_active / utility_active / passive / support` 4개만 허용한다.
-- old save의 `active_core`는 compile 과정에서 normalize한다.
-- compile hash는 skill coeff, delivery, target rule, crit 허용 여부까지 포함해야 한다.
-- compile hash는 numeric modifier payload, rule modifier payload, team tactic, role instruction, normalized stat output도 포함해야 한다.
+- persistence-friendly legacy slot string은 migration 동안 읽을 수 있다.
+- compile 결과의 canonical topology는 `BasicAttack / SignatureActive / FlexActive / SignaturePassive / FlexPassive / MobilityReaction`이다.
+- legacy `mana_*`, `cooldown_recovery`, `core_active`, `utility_active`, `support`는 migration alias로만 취급한다.
+- compile hash는 skill coeff, delivery, target rule, crit 허용 여부, energy profile, entity kind, ownership/summon profile을 포함해야 한다.
 - compile provenance는 최소 `archetype_base / item / affix / passive_numeric / augment_temporary / augment_permanent / team_tactic / role_instruction / skill_slot / team_numeric`를 남긴다.
 
 ## validator 책임
 
-`SM.Editor.Validation.ContentDefinitionValidator`는 최소 아래를 검사한다.
+`SM.Editor.Validation.ContentDefinitionValidator`와 `LoopAContractValidator`는 최소 아래를 검사한다.
 
 - missing localization key
 - invalid localization key naming
@@ -120,15 +104,14 @@
 - invalid stat id
 - invalid class id / role family / enum taxonomy
 - invalid canonical id / scope kind / slot kind
+- 6-slot topology drift
+- signature/flex/mobility activation model drift
+- authority matrix violation
 - affix value band / exclusive group / gating overlap
-- skill template / range band / AI hint / hook id
-- augment offer bucket / build bias / protection overlap
+- augment slot topology mutation
+- summon-chain violation
 - status stack cap / refresh policy / ownership policy
-- passive board owner 누락
-- passive node kind 누락
 - exact synergy `2 / 3 / 4` tier 누락
-- unique item의 rule payload 누락
-- launch-scope count report
 - deterministic report output
 
 ## report output
@@ -143,9 +126,10 @@
 ### 현재 패스에서 필수
 
 - canonical class board owner는 `vanguard / duelist / ranger / mystic`
-- skill compile contract는 모든 hero 기준 `2 active + 1 passive/trigger + 1 support`
-- meta acquisition contract는 current 4-slot compile을 깨지 않는다.
-- counter 설계는 hard counter가 아니라 soft counter 문법을 따른다.
+- 모든 roster archetype은 6-slot topology를 만족한다
+- `SignatureActive`는 energy 전용이고 `FlexActive`는 cooldown/trigger 전용이다
+- meta acquisition contract는 fixed signature + flex rule을 깨지 않는다
+- counter 설계는 hard counter가 아니라 soft counter 문법을 따른다
 
 ### paid launch floor를 주장하려면
 
@@ -164,8 +148,3 @@
 - `96 passive nodes`
 - `24 temporary augments`
 - `12 permanent augments`
-
-## 열린 질문
-
-- `lifesteal`, `omnivamp`, `HealthCoeff`의 실전 resolver 적용은 다음 패스에서 닫는다.
-- `duelist` canonical id와 `Striker` 문서 라벨을 localization/UI에서 어떻게 같이 보여줄지는 다음 UI pass에서 정리한다.

@@ -1,4 +1,5 @@
 using System;
+using SM.Core.Contracts;
 using SM.Core.Ids;
 
 namespace SM.Combat.Model;
@@ -78,7 +79,15 @@ public sealed record BehaviorProfile(
     float BlockChance,
     float BlockMitigation,
     float Stability,
-    float BlockCooldownSeconds = 1.2f);
+    float BlockCooldownSeconds = 1.2f,
+    FormationLine FormationLine = FormationLine.Frontline,
+    RangeDiscipline RangeDiscipline = RangeDiscipline.HoldBand,
+    float PreferredRangeMin = 0f,
+    float PreferredRangeMax = 0f,
+    float ApproachBuffer = 0.4f,
+    float RetreatBuffer = 0.25f,
+    float ChaseLeashMeters = 5f,
+    float RetreatAtHpPercent = 0f);
 
 public sealed record MobilityActionProfile(
     MobilityStyle Style,
@@ -193,16 +202,22 @@ public static class CombatProfileDefaults
                 BlockMitigation = Math.Clamp(authored.BlockMitigation, 0f, 0.9f),
                 Stability = Math.Clamp(authored.Stability, 0f, 1f),
                 BlockCooldownSeconds = MathF.Max(0f, authored.BlockCooldownSeconds),
+                PreferredRangeMin = MathF.Max(0f, authored.PreferredRangeMin),
+                PreferredRangeMax = MathF.Max(authored.PreferredRangeMin, authored.PreferredRangeMax),
+                ApproachBuffer = MathF.Max(0f, authored.ApproachBuffer),
+                RetreatBuffer = MathF.Max(0f, authored.RetreatBuffer),
+                ChaseLeashMeters = MathF.Max(0.5f, authored.ChaseLeashMeters),
+                RetreatAtHpPercent = Math.Clamp(authored.RetreatAtHpPercent, 0f, 1f),
             };
         }
 
         return classId switch
         {
-            "vanguard" => new BehaviorProfile(0.42f, 0.16f, 0.04f, 0.05f, 0.34f, 0.82f, 0.02f, 0.28f, 0.38f, 0.88f, 1f),
-            "duelist" => new BehaviorProfile(0.3f, 0.22f, 0.22f, 0.24f, 0.72f, 0.58f, 0.08f, 0.12f, 0.18f, 0.62f, 1.15f),
-            "ranger" => new BehaviorProfile(0.24f, 0.28f, 0.72f, 0.84f, 0.58f, 0.74f, 0.12f, 0.04f, 0.12f, 0.34f, 1.5f),
-            "mystic" => new BehaviorProfile(0.28f, 0.3f, 0.68f, 0.78f, 0.5f, 0.84f, 0.06f, 0.06f, 0.18f, 0.45f, 1.35f),
-            _ => new BehaviorProfile(0.35f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f),
+            "vanguard" => new BehaviorProfile(0.25f, 0.16f, 0.04f, 0.05f, 0.34f, 0.82f, 0.02f, 0.28f, 0.38f, 0.88f, 1f, FormationLine.Frontline, RangeDiscipline.Collapse, 0.9f, 1.25f, 0.4f, 0.2f, 5f, 0f),
+            "duelist" => new BehaviorProfile(0.25f, 0.22f, 0.22f, 0.24f, 0.72f, 0.58f, 0.08f, 0.12f, 0.18f, 0.62f, 1.15f, FormationLine.Frontline, RangeDiscipline.HoldBand, 0.95f, 1.45f, 0.4f, 0.25f, 5.5f, 0.2f),
+            "ranger" => new BehaviorProfile(0.25f, 0.28f, 0.72f, 0.84f, 0.58f, 0.74f, 0.12f, 0.04f, 0.12f, 0.34f, 1.5f, FormationLine.Backline, RangeDiscipline.KiteBackward, 2.3f, 3.1f, 0.45f, 0.3f, 6.5f, 0.35f),
+            "mystic" => new BehaviorProfile(0.25f, 0.3f, 0.68f, 0.78f, 0.5f, 0.84f, 0.06f, 0.06f, 0.18f, 0.45f, 1.35f, FormationLine.Backline, RangeDiscipline.AnchorNearFrontline, 2.1f, 2.9f, 0.4f, 0.25f, 6f, 0.3f),
+            _ => new BehaviorProfile(0.25f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f, FormationLine.Midline, RangeDiscipline.HoldBand, 1f, 2f, 0.4f, 0.25f, 5f, 0.25f),
         };
     }
 

@@ -15,6 +15,7 @@
 - PR 2 catalog 문서 추가 완료
 - compile / docs-policy / smoke evidence 수집 완료
 - targeted EditMode test 결과 회수는 여전히 불안정
+- Loop A authority/cadence/targeting/summon closure는 follow-up task `tasks/009_loop_a_contract_closure/`에서 완료했다
 
 ## Acceptance matrix
 
@@ -63,6 +64,7 @@
 - 5-slot skill compile
 - meta progression / encounter scripting / summon ownership full closure
 - Markdown line-length debt 정리
+- authority matrix / 6-slot energy / summon ownership runtime는 `tasks/009_loop_a_contract_closure/`에서 진행
 
 ## Loop budget consumed
 
@@ -79,6 +81,7 @@
   - `tasks/006_system_deepening_pass/spec.md`
   - `tasks/006_system_deepening_pass/plan.md`
   - `tasks/006_system_deepening_pass/implement.md`
+- Loop A follow-up는 `tasks/009_loop_a_contract_closure/status.md`를 새 시작점으로 본다.
 - phase split 문서가 있으므로 PR 1과 PR 2 범위를 섞지 않는다.
 - current worktree에는 의도한 code/doc diff 외에 `Assets/Resources/_Game/Content/Definitions/**` 재직렬화 흔적이 크다.
 - 이 asset diff를 유지할지 줄일지는 다음 세션에서 명시적으로 판단해야 한다.

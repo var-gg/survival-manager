@@ -36,6 +36,8 @@ public static class BattleReadModelBuilder
                     target?.Definition.Name,
                     unit.WindupProgress,
                     unit.CooldownRemaining,
+                    unit.CurrentEnergy,
+                    unit.MaxEnergy,
                     unit.IsDefending,
                     unit.Barrier,
                     unit.Statuses.Select(status => status.StatusId).ToList(),
@@ -45,7 +47,16 @@ public static class BattleReadModelBuilder
                     unit.PreferredRangeBand.ClampedMin,
                     unit.PreferredRangeBand.ClampedMax,
                     unit.Footprint.EngagementSlotRadius,
-                    unit.Footprint.EngagementSlotCount);
+                    unit.Footprint.EngagementSlotCount,
+                    unit.EntityKind,
+                    unit.CurrentTargetSelector.ToString(),
+                    unit.CurrentFallbackPolicy.ToString(),
+                    unit.RetargetLockRemaining,
+                    2.5f,
+                    unit.Definition.EffectiveSignatureActive?.TargetRuleData?.ClusterRadius
+                        ?? unit.Definition.EffectiveFlexActive?.TargetRuleData?.ClusterRadius
+                        ?? unit.Definition.EffectiveBasicAttack.TargetRuleData?.ClusterRadius
+                        ?? 2.5f);
             })
             .ToList();
 

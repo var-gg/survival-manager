@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SM.Core.Contracts;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -31,6 +32,9 @@ public sealed class AugmentDefinition : ScriptableObject
     public List<StableTagDefinition> RequiresTags = new();
     public List<StableTagDefinition> RuleModifierTags = new();
     public AugmentEligibleModeValue EligibleModes = AugmentEligibleModeValue.Expedition;
+    public AuthorityLayer AuthorityLayer = AuthorityLayer.Augment;
+    public int RosterSlotDelta = 0;
+    public List<EffectDescriptor> Effects = new();
     public List<SerializableStatModifier> Modifiers = new();
 
     [FormerlySerializedAs("DisplayName")]

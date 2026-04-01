@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SM.Core.Contracts;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -11,6 +12,7 @@ public sealed class SynergyTierDefinition : ScriptableObject
     public string NameKey = string.Empty;
     public string DescriptionKey = string.Empty;
     public int Threshold = 2;
+    public List<EffectDescriptor> Effects = new();
     public List<SerializableStatModifier> Modifiers = new();
 
     [FormerlySerializedAs("Description")]

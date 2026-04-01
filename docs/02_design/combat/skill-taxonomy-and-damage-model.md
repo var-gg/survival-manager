@@ -5,29 +5,33 @@
 - 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
 - 관련문서:
+  - `docs/02_design/combat/resource-cadence-loadout.md`
+  - `docs/02_design/combat/targeting-and-ai-vocabulary.md`
   - `docs/02_design/combat/skill-authoring-schema.md`
   - `docs/02_design/combat/skill-catalog-v1.md`
-  - `docs/02_design/combat/team-tactics-and-unit-rules.md`
   - `docs/02_design/combat/stat-system-and-power-budget.md`
-  - `docs/02_design/systems/launch-content-scope-and-balance.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
 
 ## 목적
 
-이 문서는 skill loadout contract와 수식의 canonical 용어를 고정한다.
-template, AI hint, presentation hook, learn source의 세부 schema는 `skill-authoring-schema.md`가 소유한다.
+이 문서는 Loop A 기준의 skill loadout contract와 수식 용어를 고정한다.
+effect descriptor, targeting, presentation hook, learn source의 세부 schema는 `skill-authoring-schema.md`가 소유한다.
 
 ## loadout contract
 
-출전 유닛의 skill loadout은 전투 직전에 아래 4슬롯으로 compile된다.
+출전 유닛의 loadout은 전투 직전에 아래 6슬롯으로 compile된다.
 
-- `core_active`
-- `utility_active`
-- `passive`
-- `support`
+| slot | 의미 | 가변 여부 |
+| --- | --- | --- |
+| `BasicAttack` | 기본 공격 | 고정 |
+| `SignatureActive` | archetype signature active | 고정 |
+| `FlexActive` | flex active | 가변 |
+| `SignaturePassive` | archetype signature passive | 고정 |
+| `FlexPassive` | flex passive | 가변 |
+| `MobilityReaction` | mobility / evade / intercept reaction | 고정 |
 
-설계 의도는 `2 active + 1 passive/trigger + 1 support modifier`다.
-`SM.Meta.LoadoutCompiler`는 이 4슬롯 밖의 저장 표현을 읽더라도 compile 시 위 계약으로 normalize한다.
+설계 의도는 `정체성 고정 + 제한적 유연성`이다.
+가시적 active는 `SignatureActive`, `FlexActive` 두 개뿐이다.
 
 ## skill taxonomy
 
@@ -52,18 +56,24 @@ template, AI hint, presentation hook, learn source의 세부 schema는 `skill-au
 
 ### target rule
 
-- `NearestEnemy`
-- `LowestHpEnemy`
-- `MostExposedEnemy`
-- `LowestHpAlly`
-- `ProtectedAlly`
+- `NearestReachableEnemy`
+- `NearestFrontlineEnemy`
+- `LowestCurrentHpEnemy`
+- `LowestHpPercentEnemy`
+- `LowestEhpEnemy`
+- `MarkedEnemy`
+- `LargestEnemyCluster`
+- `BacklineExposedEnemy`
+- `LowestCurrentHpAlly`
+- `LowestHpPercentAlly`
+- `LowestEhpAlly`
+- `NearestInjuredAlly`
 - `Self`
-- `MarkedTarget`
 
-## template / AI hint boundary
+## template / targeting boundary
 
-- template type은 skill의 전달 방식과 shape를 잠그는 authoring schema다.
-- AI hint는 이 문서가 아니라 `skill-authoring-schema.md`의 `AiIntents`, `AiScoreHints`에서 잠근다.
+- template type는 skill의 전달 방식과 shape를 잠그는 authoring schema다.
+- target selector, fallback, hysteresis는 freeform score bias가 아니라 `TargetRule`과 `BehaviorProfile` data로 잠근다.
 - role packet과 seed catalog는 `skill-catalog-v1.md`를 따른다.
 
 ## class skill family
@@ -99,7 +109,7 @@ template, AI hint, presentation hook, learn source의 세부 schema는 `skill-au
 - dot / curse
 - cleanse / heal
 - shield
-- mana deny
+- exposed-backline punish
 - zone control
 
 ## canonical 용어
@@ -107,8 +117,10 @@ template, AI hint, presentation hook, learn source의 세부 schema는 `skill-au
 - heal scaling stat은 `heal_power`
 - armor penetration 개념의 canonical stat id는 `phys_pen`
 - resist penetration 개념의 canonical stat id는 `mag_pen`
-- bonus health 계수는 `HealthCoeff`를 사용한다.
-- `duelist`는 canonical class id이고, 문서상 `Striker` family와 대응된다.
+- cadence용 canonical stat id는 `skill_haste`
+- combat resource는 `Energy` 하나만 사용한다
+- bonus health 계수는 `HealthCoeff`를 사용한다
+- `duelist`는 canonical class id이고, 문서상 `Striker` family와 대응된다
 
 ## 계산식 초안
 
@@ -170,11 +182,14 @@ RawDamage x 100 / (100 + EffectiveArmorOrResist)
 - crit 기본 배율: `150%`
 - crit 허용 대상: 기본 공격과 지정 스킬
 - 기본 금지 대상: DoT, 반사, 사망 폭발, 비지정 보조 효과
+- `SignatureActive`는 energy 전용이고 cooldown 기반으로 바꾸지 않는다
+- `FlexActive`는 cooldown/trigger 전용이고 energy 기반으로 바꾸지 않는다
 
 ## authoring 기준
 
-- 모든 `SkillDefinitionAsset`은 `Kind`, `SlotKind`, `DamageType`, `Delivery`, `TargetRule`를 명시한다.
-- template를 explicit하게 쓰기 시작한 asset은 `RangeMin`, `RangeMax`, `Radius/Width/Arc`, `AiIntents`, `LearnSource`까지 같이 채운다.
+- 모든 authored action은 `AuthorityLayer`, `ActivationModel`, `ActionLane`, `ActionLockRule`, `TargetRule`, `EffectDescriptor`를 명시한다.
+- `SkillDefinitionAsset`은 `SignatureActive` 또는 `FlexActive`만 맡고, `BasicAttack`, `Passive`, `MobilityReaction`은 전용 definition이 소유한다.
+- template를 explicit하게 쓰는 asset은 `RangeMin`, `RangeMax`, `Radius/Width/Arc`, `LearnSource`까지 같이 채운다.
 - scaling이 있으면 `PhysCoeff`, `MagCoeff`, `HealCoeff`, `HealthCoeff` 중 필요한 값을 채운다.
-- support modifier와 호환 제한은 tag 기반으로 표현한다.
+- flex passive modifier와 호환 제한은 tag 기반으로 표현한다.
 - pure combat truth는 Unity enum을 직접 참조하지 않고 compile 시 battle-side enum으로 번역한다.

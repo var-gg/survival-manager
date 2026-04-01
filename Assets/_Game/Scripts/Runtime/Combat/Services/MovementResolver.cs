@@ -137,9 +137,10 @@ public static class MovementResolver
 
         var currentDistance = ComputeEdgeDistance(actor, target);
         var rangeBand = evaluated.DesiredRangeBand;
-        var hysteresis = actor.Behavior.RangeHysteresis;
+        var approachBuffer = Math.Max(actor.Behavior.RangeHysteresis, actor.Behavior.ApproachBuffer);
+        var retreatBuffer = Math.Max(actor.Behavior.RangeHysteresis, actor.Behavior.RetreatBuffer);
 
-        if (currentDistance < rangeBand.ClampedMin - hysteresis)
+        if (currentDistance < rangeBand.ClampedMin - retreatBuffer)
         {
             var away = actor.Position - target.Position;
             var awayDirection = away.SqrLength <= 0.0001f
@@ -164,7 +165,7 @@ public static class MovementResolver
             }
         }
 
-        if (currentDistance > rangeBand.ClampedMax + hysteresis)
+        if (currentDistance > rangeBand.ClampedMax + approachBuffer)
         {
             var desiredPosition = ResolveDesiredPosition(actor, target, rangeBand);
             MoveTowards(state, actor, desiredPosition, evaluated.SlotAssignment != null ? CombatActionState.SecurePosition : CombatActionState.Approach);

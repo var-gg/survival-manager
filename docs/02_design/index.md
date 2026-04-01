@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -22,14 +22,19 @@
 
 ## combat 문서
 
+- `combat/authority-matrix.md`: UnitKit/Skill/Affix/Synergy/Augment/Status 권한 경계
+- `combat/resource-cadence-loadout.md`: 6-slot topology, energy cadence, action lane 기준
+- `combat/targeting-and-ai-vocabulary.md`: selector, fallback, hysteresis, range discipline vocabulary
+- `combat/summon-ownership-and-deployables.md`: summon/deployable category, ownership, credit, cap
+- `combat/v1-exclusions.md`: Loop A에서 막는 exclusion registry
 - `combat/battlefield-and-camera.md`: 좌 vs 우, slanted camera, off-grid 전장 기준
 - `combat/realtime-simulation-model.md`: fixed-step 기반 실시간 체감 전투 모델
 - `combat/deployment-and-anchors.md`: 3x2 앵커와 4인 배치 규칙
 - `combat/team-tactics-and-unit-rules.md`: team posture와 per-unit rule 체계
-- `combat/skill-taxonomy-and-damage-model.md`: 4-slot compile contract와 수식 기준
-- `combat/skill-authoring-schema.md`: template, AI hint, presentation hook, learn source schema
+- `combat/skill-taxonomy-and-damage-model.md`: 6-slot loadout와 수식 기준
+- `combat/skill-authoring-schema.md`: effect descriptor, targeting, presentation hook, learn source schema
 - `combat/skill-catalog-v1.md`: role packet 기반 skill seed catalog
-- `combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`: keyword catalog, support compatibility, weapon/class restriction
+- `combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`: keyword catalog, flex passive modifier compatibility, weapon/class restriction
 - `combat/encounter-catalog-and-scaling.md`: encounter/squad/boss overlay/threat grammar
 - `combat/status-effects-cc-and-cleanse-taxonomy.md`: launch floor status, cleanse, DR 규칙
 - `combat/status-keyword-and-proc-rulebook.md`: status / keyword / proc ownership rulebook
@@ -40,7 +45,7 @@
 - `combat/combat-spatial-contract.md`: footprint, separation, slotting 기준
 - `combat/combat-behavior-contract.md`: phase, reevaluation, range discipline 기준
 - `combat/mobility-contract.md`: dash/roll/blink 공통 schema 기준
-- `combat/combat-mechanics-glossary.md`: crit/dodge/block/armor/stability 정의
+- `combat/combat-mechanics-glossary.md`: crit/dodge/block/energy/summon 용어집
 - `combat/hero-traits.md`: recruit trait/quirk와 token 정책
 - `combat/synergy-system.md`: race/class synergy 설계
 
@@ -53,7 +58,7 @@
 - `meta/reward-protection-and-acquisition-loop.md`: RNG protection과 acquisition recovery 기준
 - `meta/drop-table-rarity-bracket-and-source-matrix.md`: automatic drop/source/rarity floor
 - `meta/item-and-affix-system.md`: 아이템과 affix 구조
-- `meta/affix-authoring-schema.md`: affix schema와 budget / line-density 기준
+- `meta/affix-authoring-schema.md`: affix schema와 authority / budget / line-density 기준
 - `meta/affix-pool-v1.md`: affix catalog와 live subset
 - `meta/equipment-family-and-crafting-depth.md`: weapon family floor와 deep crafting 경계
 - `meta/crafting-currencies-and-sinks.md`: crafting currency와 operation 기준
@@ -68,12 +73,12 @@
 - `meta/pvp-ruleset-and-arena-loop.md`: async arena ruleset과 season cadence
 - `meta/synergy-breakpoints-and-soft-counters.md`: 출시 기준 breakpoint와 soft counter
 - `meta/synergy-family-catalog.md`: 7 family exact 2/3/4 payload 카탈로그
-- `meta/synergy-and-augment-taxonomy.md`: synergy / augment 역할 경계와 bucket taxonomy
-- `meta/skill-acquisition-and-retrain.md`: fixed core + flex + retrain 정책
+- `meta/synergy-and-augment-taxonomy.md`: synergy / augment 역할 경계와 authority
+- `meta/skill-acquisition-and-retrain.md`: fixed signature + flex + retrain 정책
 
 ## systems 문서
 
-- `systems/launch-content-scope-and-balance.md`: 출시 기준 콘텐츠 수량과 밸런스 허브
+- `systems/launch-content-scope-and-balance.md`: 출시 기준 콘텐츠 수량과 Loop A loadout 문법 허브
 - `systems/launch-floor-content-matrix.md`: 12 core archetype launch floor matrix
 - `systems/squad-blueprint-and-build-ownership.md`: squad blueprint와 빌드 소유권 기준
 - `systems/skills-items-and-passive-boards.md`: 스킬, 아이템, 패시브 보드 빌드 구조

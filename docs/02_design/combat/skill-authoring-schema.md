@@ -5,6 +5,10 @@
 - 최종수정일: 2026-04-01
 - 소스오브트루스: `docs/02_design/combat/skill-authoring-schema.md`
 - 관련문서:
+  - `docs/02_design/combat/authority-matrix.md`
+  - `docs/02_design/combat/resource-cadence-loadout.md`
+  - `docs/02_design/combat/targeting-and-ai-vocabulary.md`
+  - `docs/02_design/combat/summon-ownership-and-deployables.md`
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/02_design/combat/skill-catalog-v1.md`
   - `docs/02_design/meta/skill-acquisition-and-retrain.md`
@@ -12,25 +16,25 @@
 
 ## 목적
 
-이 문서는 skill authoring이 어떤 필드를 가져야 하고, tag만으로 닫히지 않는 의도를 어디에 기록해야 하는지 정의한다.
+이 문서는 Loop A 기준의 action authoring 필드와, tag만으로 닫히지 않는 의도를 어디에 기록해야 하는지 정의한다.
 
 ## canonical formula
 
 ```text
-Skill = Template + Tags + Payload + AI Hints + Presentation Hooks
+Action = Slot + Template + EffectDescriptors + TargetRule + Presentation Hooks
 ```
 
+- slot은 cadence와 topology를 잠근다.
 - template는 전달 방식과 기본 shape를 잠근다.
-- tags는 검색과 restriction, synergy를 담당한다.
-- payload는 damage / heal / shield / status / summon 실효를 담당한다.
-- AI hints는 사용 타이밍과 score bias를 담는다.
+- effect descriptor는 authority, scope, capability를 담는다.
+- target rule은 selector, fallback, lock, hysteresis 해석을 닫는다.
 - presentation hook은 animation / vfx / sfx 분리를 담당한다.
 
 ## compile boundary
 
-- battle compile contract는 계속 `core_active / utility_active / passive / support` 4-slot이다.
-- `basic attack profile`은 skill slot이 아니라 archetype / meta 소유 프로필이다.
-- fixed core / flex policy는 recruitment layer에서만 바뀌고, compile 결과는 4-slot으로 normalize된다.
+- battle compile contract는 `BasicAttack / SignatureActive / FlexActive / SignaturePassive / FlexPassive / MobilityReaction` 6-slot이다.
+- `SkillDefinitionAsset`은 active slot만 소유하고, `BasicAttackDefinition`, `PassiveDefinition`, `MobilityDefinition`이 나머지 slot을 소유한다.
+- recruit/retrain은 `FlexActive`, `FlexPassive`만 바꿀 수 있다.
 
 ## template catalog
 
@@ -67,14 +71,18 @@ Skill = Template + Tags + Payload + AI Hints + Presentation Hooks
 | 필드 | 목적 |
 | --- | --- |
 | `Id`, `NameKey`, `DescriptionKey` | canonical 식별과 localization |
+| `AuthorityLayer` | effect authority 판별 |
 | `TemplateType` | template closure |
-| `Kind`, `SlotKind`, `DamageType`, `Delivery`, `TargetRule` | compile-visible taxonomy |
+| `ActionSlotKind`, `ActivationModel`, `ActionLane`, `ActionLockRule` | cadence / topology / arbitration |
+| `Kind`, `DamageType`, `Delivery`, `TargetRule` | compile-visible taxonomy |
+| `Effects` | `EffectScope`, `EffectCapability` 기반 payload 선언 |
 | `RangeMin`, `RangeMax`, `Radius`, `Width`, `ArcDegrees` | shape / distance |
 | `Power`, `PowerFlat`, coeffs | numeric payload |
-| `CastWindupSeconds`, `CooldownSeconds`, `RecoverySeconds`, `ResourceCost` | cadence |
+| `CastWindupSeconds`, `CooldownSeconds`, `RecoverySeconds` | cadence |
 | `AppliedStatuses`, `CleanseProfileId` | status payload |
 | `CompileTags`, `RuleModifierTags` | search / restriction / synergy |
-| `AiIntents`, `AiScoreHints` | evaluator hint |
+| `TargetRuleData` | selector / fallback / lock / cluster |
+| `SummonProfile` | summon/deployable ownership 규칙 |
 | `AnimationHookId`, `VfxHookId`, `SfxHookId` | presentation binding |
 | `PowerBudget` | balance language |
 | `LearnSource` | recruit / retrain / item / augment provenance |
@@ -118,8 +126,11 @@ Skill = Template + Tags + Payload + AI Hints + Presentation Hooks
 
 ## authoring rule
 
-- template가 `LegacyDerived`가 아니면 range / shape / AI intent를 함께 채운다.
-- `support` slot은 support compatibility tag를 반드시 가진다.
+- template가 `LegacyDerived`가 아니면 range / shape와 target rule을 함께 채운다.
+- `SignatureActive`는 반드시 `ActivationModel = Energy`와 `ActionLane = Primary`를 가진다.
+- `FlexActive`는 `ActivationModel = Cooldown` 또는 `Trigger`만 허용한다.
+- `MobilityReaction`은 `ActivationModel = Trigger`, `ActionLane = Reaction`을 가져야 한다.
+- `FlexPassive` modifier 계열은 compatibility tag를 반드시 가진다.
 - `blink / dash / roll` 계열은 movement style이 아니라 `purpose`와 `distance band`를 함께 기록한다.
 - presentation hook이 비어 있어도 compile은 가능하지만, design catalog에는 hook placeholder를 남긴다.
 

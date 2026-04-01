@@ -121,22 +121,22 @@
 | --- | --- | --- | --- | --- |
 | `passive_mystic_small_01` | `small` | `mag_power +0.8` | `backline`, `support` | `small_floor_linear` |
 | `passive_mystic_small_02` | `small` | `heal_power +0.8` | `backline`, `support` | `small_floor_linear` |
-| `passive_mystic_small_03` | `small` | `mana_max +3` | `backline`, `support` | `small_floor_linear` |
-| `passive_mystic_small_04` | `small` | `cooldown_recovery +0.04` | `backline`, `support` | `small_floor_linear` |
+| `passive_mystic_small_03` | `small` | `starting_energy +10` | `backline`, `support` | `small_floor_linear` |
+| `passive_mystic_small_04` | `small` | `skill_haste +0.04` | `backline`, `support` | `small_floor_linear` |
 | `passive_mystic_small_05` | `small` | `resist +0.5` | `backline`, `support` | `small_floor_linear` |
-| `passive_mystic_small_06` | `small` | `mana_gain_on_hit +0.4` | `backline`, `support` | `small_floor_linear` |
+| `passive_mystic_small_06` | `small` | `direct_hit_energy_gain +0.4` | `backline`, `support` | `small_floor_linear` |
 | `passive_mystic_small_07` | `small` | `mag_power +0.8` | `backline`, `support` | `small_floor_linear` |
 | `passive_mystic_small_08` | `small` | `heal_power +0.8` | `backline`, `support` | `small_floor_linear` |
-| `passive_mystic_small_09` | `small` | `mana_max +3` | `backline`, `support` | `small_floor_linear` |
-| `passive_mystic_small_10` | `small` | `cooldown_recovery +0.04` | `backline`, `support` | `small_floor_linear` |
+| `passive_mystic_small_09` | `small` | `starting_energy +10` | `backline`, `support` | `small_floor_linear` |
+| `passive_mystic_small_10` | `small` | `skill_haste +0.04` | `backline`, `support` | `small_floor_linear` |
 | `passive_mystic_small_11` | `small` | `resist +0.5` | `backline`, `support` | `small_floor_linear` |
-| `passive_mystic_small_12` | `small` | `mana_gain_on_hit +0.4` | `backline`, `support` | `small_floor_linear` |
-| `passive_mystic_notable_01` | `notable` | `mag_power +0.9`, `cooldown_recovery +0.05` | `backline`, `support` | `notable_floor_bundle` |
+| `passive_mystic_small_12` | `small` | `direct_hit_energy_gain +0.4` | `backline`, `support` | `small_floor_linear` |
+| `passive_mystic_notable_01` | `notable` | `mag_power +0.9`, `skill_haste +0.05` | `backline`, `support` | `notable_floor_bundle` |
 | `passive_mystic_notable_02` | `notable` | `heal_power +0.9`, `resist +0.6` | `backline`, `support` | `notable_floor_bundle` |
-| `passive_mystic_notable_03` | `notable` | `mana_max +4`, `mana_gain_on_hit +0.4` | `backline`, `support` | `notable_floor_bundle` |
+| `passive_mystic_notable_03` | `notable` | `starting_energy +15`, `direct_hit_energy_gain +0.4` | `backline`, `support` | `notable_floor_bundle` |
 | `passive_mystic_notable_04` | `notable` | `mag_power +0.8`, `resist +0.6` | `backline`, `support` | `notable_floor_bundle` |
-| `passive_mystic_notable_05` | `notable` | `heal_power +0.9`, `cooldown_recovery +0.05` | `backline`, `support` | `notable_floor_bundle` |
-| `passive_mystic_keystone_01` | `keystone` | `mag_power +1`, `heal_power +1.2`, `cooldown_recovery +0.08` | `backline`, `support` | `keystone_floor_signature` |
+| `passive_mystic_notable_05` | `notable` | `heal_power +0.9`, `skill_haste +0.05` | `backline`, `support` | `notable_floor_bundle` |
+| `passive_mystic_keystone_01` | `keystone` | `mag_power +1`, `heal_power +1.2`, `skill_haste +0.08` | `backline`, `support` | `keystone_floor_signature` |
 
 ## acceptance
 
