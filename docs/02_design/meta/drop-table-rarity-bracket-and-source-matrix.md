@@ -5,9 +5,9 @@
 - 최종수정일: 2026-03-31
 - 소스오브트루스: `docs/02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
 - 관련문서:
-  - `docs/02_design/meta/reward-economy.md`
+  - `docs/02_design/meta/economy-protection-contract.md`
   - `docs/02_design/combat/hero-traits.md`
-  - `docs/03_architecture/drop-resolution-and-ledger-pipeline.md`
+  - `docs/03_architecture/unit-economy-schema.md`
 
 ## 목적
 

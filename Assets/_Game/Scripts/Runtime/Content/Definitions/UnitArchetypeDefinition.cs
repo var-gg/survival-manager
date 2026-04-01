@@ -21,6 +21,15 @@ public sealed class UnitArchetypeDefinition : ScriptableObject
     public string RoleTag = "auto";
     public string RoleFamilyTag = string.Empty;
     public string PrimaryWeaponFamilyTag = string.Empty;
+    public RecruitTier RecruitTier = RecruitTier.Common;
+    public bool IsRecruitable = true;
+    public bool IsSummonOnly;
+    public bool IsEventOnly;
+    public bool IsBossOnly;
+    public bool IsUnreleased;
+    public bool IsTestOnly;
+    public List<StableTagDefinition> RecruitPlanTags = new();
+    public List<StableTagDefinition> ScoutBiasTags = new();
     public List<StableTagDefinition> SupportModifierBiasTags = new();
     public string LockedAttackProfileId = string.Empty;
     public string LockedAttackProfileTag = string.Empty;
@@ -28,6 +37,9 @@ public sealed class UnitArchetypeDefinition : ScriptableObject
     public SkillDefinitionAsset LockedSignaturePassiveSkill;
     public List<SkillDefinitionAsset> FlexUtilitySkillPool = new();
     public List<SkillDefinitionAsset> FlexSupportSkillPool = new();
+    public List<SkillDefinitionAsset> RecruitFlexActivePool = new();
+    public List<SkillDefinitionAsset> RecruitFlexPassivePool = new();
+    public List<RecruitBannedPairingDefinition> RecruitBannedPairings = new();
     public UnitLoadoutDefinition Loadout = new();
     public FootprintProfileDefinition FootprintProfile;
     public BehaviorProfileDefinition BehaviorProfile;

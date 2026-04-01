@@ -7,7 +7,7 @@
 - 관련문서:
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
   - `docs/03_architecture/content-authoring-and-balance-data.md`
-  - `docs/02_design/meta/reward-protection-and-acquisition-loop.md`
+  - `docs/02_design/meta/economy-protection-contract.md`
   - `docs/02_design/systems/launch-floor-content-matrix.md`
   - `docs/02_design/meta/synergy-family-catalog.md`
 

@@ -16,7 +16,7 @@ public class MetaRewardPickTests
         {
             new RewardOption("reward.gold.10", RewardType.Gold, 10, "ui.reward.kind.gold"),
             new RewardOption("augment.silver.guard", RewardType.TemporaryAugment, 1, "ui.reward.kind.temp_augment"),
-            new RewardOption("reward.reroll.2", RewardType.TraitRerollCurrency, 2, "ui.reward.kind.reroll"),
+            new RewardOption("reward.echo.2", RewardType.Echo, 2, "ui.reward.kind.echo"),
         };
 
         RewardService.ApplyRewardPick(currency, expedition, options, new RewardPick("augment.silver.guard"));
@@ -25,5 +25,6 @@ public class MetaRewardPickTests
         Assert.That(expedition.TemporaryAugmentIds, Has.Count.EqualTo(1));
         Assert.That(expedition.TemporaryAugmentIds[0], Is.EqualTo("augment.silver.guard"));
         Assert.That(currency.Gold, Is.EqualTo(10));
+        Assert.That(currency.Echo, Is.EqualTo(0));
     }
 }

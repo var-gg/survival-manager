@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Text;
 using SM.Combat.Model;
+using SM.Meta.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,13 +51,15 @@ public sealed class TownScreenController : MonoBehaviour
     public void RecruitOffer0() => Recruit(0);
     public void RecruitOffer1() => Recruit(1);
     public void RecruitOffer2() => Recruit(2);
+    public void RecruitOffer3() => Recruit(3);
 
     public void RerollOffers()
     {
         if (!EnsureReady()) return;
+        var refreshCost = _root.SessionState.CurrentRecruitRefreshCost;
         var result = _root.SessionState.RerollRecruitOffers();
         Refresh(result.IsSuccess
-            ? Localize(GameLocalizationTables.UITown, "ui.town.status.reroll_success", "Recruit offers rerolled. (-{0} Gold)", SM.Meta.Model.MetaBalanceDefaults.RecruitRerollCost)
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.reroll_success", "Recruit offers rerolled. (-{0} Gold)", refreshCost)
             : result.Error ?? Localize(GameLocalizationTables.UITown, "ui.town.error.reroll_failed", "Failed to reroll recruit offers."));
     }
 
@@ -134,6 +137,9 @@ public sealed class TownScreenController : MonoBehaviour
     {
         if (!EnsureReady()) return;
 
+        var offerCost = index >= 0 && index < _root.SessionState.RecruitOffers.Count
+            ? _root.SessionState.RecruitOffers[index].Metadata.GoldCost
+            : 0;
         var result = _root.SessionState.Recruit(index);
         if (result.IsSuccess)
         {
@@ -142,7 +148,7 @@ public sealed class TownScreenController : MonoBehaviour
                 "ui.town.status.recruit_success",
                 "Recruited offer {0}. (-{1} Gold)",
                 index + 1,
-                SM.Meta.Model.MetaBalanceDefaults.RecruitCost));
+                offerCost));
             return;
         }
 
@@ -206,10 +212,10 @@ public sealed class TownScreenController : MonoBehaviour
         currencyText.text = Localize(
             GameLocalizationTables.UITown,
             "ui.town.currency.summary",
-            "Gold: {0} | Perm Slots: {1} | Trait Reroll: {2}",
+            "Gold: {0} | Echo: {1} | Perm Slots: {2}",
             session.Profile.Currencies.Gold,
-            session.PermanentAugmentSlotCount,
-            session.Profile.Currencies.TraitRerollCurrency);
+            session.Profile.Currencies.Echo,
+            session.PermanentAugmentSlotCount);
         rosterText.text = BuildRosterText(session);
         recruitText.text = BuildRecruitSummary(session);
         squadText.text = BuildSquadText(session);
@@ -225,7 +231,7 @@ public sealed class TownScreenController : MonoBehaviour
 
     private void RefreshRecruitCards(GameSessionState session)
     {
-        for (var i = 0; i < 3; i++)
+        for (var i = 0; i < 4; i++)
         {
             var card = recruitCardsRoot.Find($"RecruitCard{i + 1}");
             if (card == null)
@@ -234,7 +240,7 @@ public sealed class TownScreenController : MonoBehaviour
             }
 
             var offer = i < session.RecruitOffers.Count ? session.RecruitOffers[i] : null;
-            SetCardText(card, "TitleText", offer == null ? Localize(GameLocalizationTables.UITown, "ui.town.recruit.empty", "Empty Slot") : _contentText.GetArchetypeName(offer.ArchetypeId));
+            SetCardText(card, "TitleText", offer == null ? Localize(GameLocalizationTables.UITown, "ui.town.recruit.empty", "Empty Slot") : _contentText.GetArchetypeName(offer.UnitBlueprintId));
             SetCardText(card, "BodyText", BuildRecruitCardBody(offer));
             SetCardText(card, "RecruitButton/Label", Localize(GameLocalizationTables.UITown, "ui.town.action.recruit", "Recruit"));
         }
@@ -285,8 +291,11 @@ public sealed class TownScreenController : MonoBehaviour
         var sb = new StringBuilder();
         sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.header", "Recruit Offers"));
         sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.current_count", "Current offers: {0}", session.RecruitOffers.Count));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.cost", "Recruit cost: {0} Gold", SM.Meta.Model.MetaBalanceDefaults.RecruitCost));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.reroll_cost", "Reroll cost: {0} Gold", SM.Meta.Model.MetaBalanceDefaults.RecruitRerollCost));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.refresh_cost", "Refresh cost: {0} Gold", session.CurrentRecruitRefreshCost));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.free_refresh", "Free refreshes: {0}", session.RecruitPhase.FreeRefreshesRemaining));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.pity.rare", "Rare pity: {0}/3", session.RecruitPity.PacksSinceRarePlusSeen));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.pity.epic", "Epic pity: {0}/8", session.RecruitPity.PacksSinceEpicSeen));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.scout", "Scout: {0}", session.CanUseScout ? "Available" : "Used"));
         sb.Append(Localize(GameLocalizationTables.UITown, "ui.town.recruit.roster_count", "Town roster: {0}/{1}", session.Profile.Heroes.Count, SM.Meta.Model.MetaBalanceDefaults.TownRosterCap));
         return sb.ToString();
     }
@@ -365,18 +374,30 @@ public sealed class TownScreenController : MonoBehaviour
         Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.anchor_cycled", "{0} deployment updated.", LocalizeAnchor(anchor)));
     }
 
-    private string BuildRecruitCardBody(RecruitOffer? offer)
+    private string BuildRecruitCardBody(RecruitUnitPreview? offer)
     {
         if (offer == null)
         {
             return Localize(GameLocalizationTables.UITown, "ui.town.recruit.none", "No recruit offer is available.");
         }
 
+        _root.CombatContentLookup.TryGetArchetype(offer.UnitBlueprintId, out var archetype);
+        var slotBadge = offer.Metadata.SlotType switch
+        {
+            SM.Core.Contracts.RecruitOfferSlotType.OnPlan => "[OnPlan]",
+            SM.Core.Contracts.RecruitOfferSlotType.Protected => offer.Metadata.BiasedByScout ? "[Protected][Scout]" : "[Protected]",
+            _ => offer.Metadata.BiasedByScout ? "[Scout]" : $"[{offer.Metadata.SlotType}]",
+        };
+        var formation = archetype?.BehaviorProfile?.FormationLine.ToString() ?? "Unknown";
+
         return string.Join(
             "\n",
-            $"{_contentText.GetRaceName(offer.RaceId)} / {_contentText.GetClassName(offer.ClassId)}",
-            $"+ {_contentText.GetTraitName(offer.ArchetypeId, offer.PositiveTraitId)}",
-            $"- {_contentText.GetTraitName(offer.ArchetypeId, offer.NegativeTraitId)}");
+            $"{slotBadge} {offer.Metadata.Tier} / {offer.Metadata.PlanFit} / {offer.Metadata.GoldCost} Gold",
+            $"{_contentText.GetRaceName(archetype?.Race.Id ?? string.Empty)} / {_contentText.GetClassName(archetype?.Class.Id ?? string.Empty)} / {formation}",
+            $"Signature: {_contentText.GetSkillName(archetype?.Loadout?.SignatureActive?.Id ?? string.Empty)}",
+            $"Passive: {_contentText.GetSkillName(archetype?.Loadout?.SignaturePassive?.Id ?? string.Empty)}",
+            $"Flex Active: {_contentText.GetSkillName(offer.FlexActiveId)}",
+            $"Flex Passive: {_contentText.GetSkillName(offer.FlexPassiveId)}");
     }
 
     private string ResolveExpeditionNodeLabel(ExpeditionNodeViewModel node)

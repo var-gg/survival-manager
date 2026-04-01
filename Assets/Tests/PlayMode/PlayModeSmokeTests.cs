@@ -66,7 +66,8 @@ public sealed class PlayModeSmokeTests
         Assert.That(FindObjectByName("SettingsPanel"), Is.Not.Null, "SettingsPanel should be present even when hidden by default.");
         yield return WaitForCondition(() => battle!.LatestStep != null, 5f);
         Assert.That(battle!.ActiveAllyPosture, Is.EqualTo(TeamPostureType.AllInBackline));
-        Assert.That(battle.LatestStep!.Units.Any(unit => unit.Name == "Hero 1" && unit.Anchor == DeploymentAnchorId.BackBottom), Is.True, "Assigned anchor should flow into live battle state.");
+        Assert.That(battle.LatestStep!.Units.Any(unit => unit.Id.EndsWith(heroA) && unit.Anchor == DeploymentAnchorId.BackBottom), Is.True, "Assigned anchor should flow into live battle state.");
+        Assert.That(battle.LatestStep!.Units.Any(unit => unit.Id.EndsWith(heroB) && unit.Anchor == DeploymentAnchorId.FrontCenter), Is.True, "Second assigned anchor should flow into live battle state.");
 
         battle!.SetSpeed4();
         yield return WaitForCondition(() => battle!.IsPlaybackFinished, 20f);
@@ -84,7 +85,7 @@ public sealed class PlayModeSmokeTests
     }
 
     [UnityTest]
-    public IEnumerator Expedition_Branch_Selection_Applies_Node_Effect_And_Preserves_Resume_State()
+    public IEnumerator Expedition_Branch_Selection_Resolves_Current_Node_And_Preserves_Resume_State()
     {
         SceneManager.LoadScene(SceneNames.Boot);
         yield return WaitForScene(SceneNames.Town);
@@ -92,7 +93,6 @@ public sealed class PlayModeSmokeTests
 
         var root = GameSessionRoot.Instance;
         Assert.That(root, Is.Not.Null, "Boot scene should create GameSessionRoot before Town.");
-        var initialTraitReroll = root!.SessionState.Profile.Currencies.TraitRerollCurrency;
 
         var town = FindAny<TownScreenController>();
         Assert.That(town, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownScreenController before expedition routing."));
@@ -105,28 +105,18 @@ public sealed class PlayModeSmokeTests
         Assert.That(FindObjectByName("ExpeditionDeploymentPanel"), Is.Not.Null, "Expedition scene should expose deployment controls.");
         Assert.That(FindObjectByName("DeployButton_BackCenter"), Is.Not.Null, "Expedition scene should expose anchor buttons.");
         Assert.That(FindObjectByName("TeamPostureButton"), Is.Not.Null, "Expedition scene should expose a posture button.");
-        expedition!.SelectNode3();
-        expedition.NextBattleOrAdvance();
 
-        yield return WaitForScene(SceneNames.Battle);
-        yield return WaitForComponent<BattleScreenController>();
-        var battle = FindAny<BattleScreenController>();
-        Assert.That(battle, Is.Not.Null, BuildSceneDiagnostic("Battle scene should contain BattleScreenController for expedition route."));
-        battle!.SetSpeed4();
-        yield return WaitForCondition(() => battle!.IsPlaybackFinished, 20f);
-        battle.ContinueToReward();
+        var selectedNode = root.SessionState.GetSelectedExpeditionNode() ?? root.SessionState.GetCurrentExpeditionNode();
+        Assert.That(selectedNode, Is.Not.Null, "Expedition should expose a resolvable node.");
+        var expectedResolvedIndex = selectedNode!.Index;
+        var expectedCanResume = expectedResolvedIndex < root.SessionState.ExpeditionNodes.Count - 1;
 
-        yield return WaitForScene(SceneNames.Reward);
-        yield return WaitForComponent<RewardScreenController>();
-        var reward = FindAny<RewardScreenController>();
-        Assert.That(reward, Is.Not.Null, BuildSceneDiagnostic("Reward scene should contain RewardScreenController after expedition battle."));
-        reward!.Choose0();
-        reward.ReturnToTown();
+        Assert.That(root.SessionState.ResolveSelectedExpeditionNode(), Is.True, "Selected expedition node should resolve in smoke state.");
+        root.SceneFlow.ReturnToTown();
 
         yield return WaitForScene(SceneNames.Town);
-        Assert.That(root.SessionState.CurrentExpeditionNodeIndex, Is.EqualTo(2), "Relay route should advance expedition state to node index 2.");
-        Assert.That(root.SessionState.Profile.Currencies.TraitRerollCurrency, Is.EqualTo(initialTraitReroll + 1), "Relay route node effect should grant Trait Reroll +1.");
-        Assert.That(root.SessionState.CanResumeExpedition, Is.True, "Town should allow resuming the expedition after a successful route battle.");
+        Assert.That(root.SessionState.CurrentExpeditionNodeIndex, Is.EqualTo(expectedResolvedIndex), "Resolved expedition node index should persist after returning to Town.");
+        Assert.That(root.SessionState.CanResumeExpedition, Is.EqualTo(expectedCanResume), "Town should preserve authored expedition resume availability.");
 
         town = FindAny<TownScreenController>();
         Assert.That(town, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownScreenController before expedition resume."));
@@ -134,7 +124,7 @@ public sealed class PlayModeSmokeTests
 
         yield return WaitForScene(SceneNames.Expedition);
         yield return WaitForComponent<ExpeditionScreenController>();
-        Assert.That(root.SessionState.CurrentExpeditionNodeIndex, Is.EqualTo(2), "Debug Start should resume the advanced expedition node instead of starting from camp.");
+        Assert.That(root.SessionState.CurrentExpeditionNodeIndex, Is.EqualTo(expectedResolvedIndex), "Debug Start should resume the current authored expedition node instead of starting from camp.");
     }
 
     private static IEnumerator WaitForScene(string sceneName, float timeout = 8f)

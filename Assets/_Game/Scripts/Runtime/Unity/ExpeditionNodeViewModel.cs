@@ -6,7 +6,8 @@ public enum ExpeditionNodeEffectKind
 {
     None = 0,
     Gold = 1,
-    TraitRerollCurrency = 2,
+    Echo = 2,
+    TraitRerollCurrency = Echo,
     TemporaryAugment = 3,
     PermanentAugmentSlot = 4
 }

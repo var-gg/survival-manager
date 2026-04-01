@@ -6,6 +6,7 @@ namespace SM.Persistence.Abstractions.Models;
 public sealed class CurrencyRecord
 {
     public int Gold;
+    public int Echo;
     public int TraitRerollCurrency;
     public int TraitLockToken;
     public int TraitPurgeToken;

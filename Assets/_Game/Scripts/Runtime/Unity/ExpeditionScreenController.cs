@@ -382,7 +382,7 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         {
             ExpeditionNodeEffectKind.None => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.none", "No effect"),
             ExpeditionNodeEffectKind.Gold => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.gold", "+{0} Gold", node.EffectAmount),
-            ExpeditionNodeEffectKind.TraitRerollCurrency => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.reroll", "Trait Reroll +{0}", node.EffectAmount),
+            ExpeditionNodeEffectKind.Echo => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.echo", "Echo +{0}", node.EffectAmount),
             ExpeditionNodeEffectKind.TemporaryAugment => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.temp_augment", "Temp Augment: {0}", _contentText.GetAugmentName(node.EffectPayloadId)),
             ExpeditionNodeEffectKind.PermanentAugmentSlot => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.permanent_slot", "Permanent Slot +{0}", Mathf.Max(1, node.EffectAmount)),
             _ => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.effect.none", "No effect")

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using SM.Editor.Bootstrap;
 using SM.Content.Definitions;
+using SM.Core.Contracts;
 using UnityEditor;
 using UnityEditor.Localization;
 using UnityEngine;
@@ -39,7 +40,7 @@ public static class SampleSeedGenerator
         var traitPools = CreateTraitPools();
         var archetypes = CreateArchetypes(races, classes, traitPools, skills, footprintProfiles, behaviorProfiles, mobilityProfiles);
         var skillCatalog = LoadDefinitionsById<SkillDefinitionAsset>($"{ResourcesRoot}/Skills");
-        PatchLaunchFloorArchetypes(races, classes, traitPools, skillCatalog, footprintProfiles, behaviorProfiles, mobilityProfiles);
+        PatchLaunchFloorArchetypes(races, classes, traitPools, skillCatalog, stableTags, footprintProfiles, behaviorProfiles, mobilityProfiles);
         CreateAugments();
         CreateItems();
         CreateAffixes();
@@ -681,6 +682,7 @@ public static class SampleSeedGenerator
         IReadOnlyDictionary<string, ClassDefinition> classes,
         IReadOnlyDictionary<string, TraitPoolDefinition> traitPools,
         IReadOnlyDictionary<string, SkillDefinitionAsset> skills,
+        IReadOnlyDictionary<string, StableTagDefinition> tags,
         IReadOnlyDictionary<string, FootprintProfileDefinition> footprintProfiles,
         IReadOnlyDictionary<string, BehaviorProfileDefinition> behaviorProfiles,
         IReadOnlyDictionary<string, MobilityProfileDefinition> mobilityProfiles)
@@ -770,6 +772,8 @@ public static class SampleSeedGenerator
                 }
             }
 
+            ApplyLoopBRecruitmentMetadata(asset, definition.Id, skills, tags);
+
             EditorUtility.SetDirty(asset);
         }
     }
@@ -792,6 +796,180 @@ public static class SampleSeedGenerator
             new() { Priority = 1, ConditionType = TacticConditionTypeValue.LowestHpEnemy, Threshold = 0f, ActionType = BattleActionTypeValue.BasicAttack, TargetSelector = TargetSelectorTypeValue.LowestHpEnemy },
             new() { Priority = 2, ConditionType = TacticConditionTypeValue.Fallback, Threshold = 0f, ActionType = BattleActionTypeValue.WaitDefend, TargetSelector = TargetSelectorTypeValue.Self },
         };
+    }
+
+    private static void ApplyLoopBRecruitmentMetadata(
+        UnitArchetypeDefinition archetype,
+        string archetypeId,
+        IReadOnlyDictionary<string, SkillDefinitionAsset> skills,
+        IReadOnlyDictionary<string, StableTagDefinition> tags)
+    {
+        archetype.RecruitTier = archetypeId switch
+        {
+            "guardian" or "raider" or "bulwark" or "reaver" or "marksman" => RecruitTier.Rare,
+            "hexer" or "shaman" => RecruitTier.Epic,
+            _ => RecruitTier.Common,
+        };
+        archetype.IsRecruitable = true;
+        archetype.IsSummonOnly = false;
+        archetype.IsEventOnly = false;
+        archetype.IsBossOnly = false;
+        archetype.IsUnreleased = false;
+        archetype.IsTestOnly = false;
+
+        var planTagIds = archetypeId switch
+        {
+            "warden" => new[] { "vanguard", "frontline", "guard", "physical" },
+            "guardian" => new[] { "vanguard", "frontline", "guard", "support" },
+            "bulwark" => new[] { "vanguard", "frontline", "shield_skill", "support" },
+            "slayer" => new[] { "duelist", "frontline", "strike", "execute" },
+            "raider" => new[] { "duelist", "frontline", "mark", "physical" },
+            "reaver" => new[] { "duelist", "frontline", "burst", "execute" },
+            "hunter" => new[] { "ranger", "backline", "projectile", "physical" },
+            "scout" => new[] { "ranger", "backline", "mark", "exposed" },
+            "marksman" => new[] { "ranger", "backline", "pierce", "physical" },
+            "priest" => new[] { "mystic", "backline", "support", "heal" },
+            "hexer" => new[] { "mystic", "backline", "magical", "silence" },
+            "shaman" => new[] { "mystic", "backline", "magical", "burn" },
+            _ => new[] { archetype.Class?.Id ?? string.Empty },
+        };
+        var scoutTagIds = archetypeId switch
+        {
+            "warden" or "guardian" or "bulwark" => new[] { "frontline", "guard", "vanguard" },
+            "slayer" or "raider" or "reaver" => new[] { "frontline", "physical", "duelist" },
+            "hunter" or "scout" or "marksman" => new[] { "backline", "physical", "ranger" },
+            "priest" => new[] { "backline", "support", "heal", "mystic" },
+            "hexer" or "shaman" => new[] { "backline", "magical", "mystic" },
+            _ => Array.Empty<string>(),
+        };
+
+        archetype.RecruitPlanTags = ResolveTags(tags, planTagIds);
+        archetype.ScoutBiasTags = ResolveTags(tags, scoutTagIds);
+
+        var activePoolIds = archetype.Class?.Id switch
+        {
+            "vanguard" => new[] { "skill_guardian_utility", "skill_warden_utility" },
+            "duelist" => new[] { "skill_slayer_utility", "skill_raider_utility", "skill_reaver_utility" },
+            "ranger" => new[] { "skill_hunter_utility", "skill_marksman_utility", "skill_scout_utility" },
+            "mystic" => new[] { "skill_minor_heal", "skill_hexer_utility", "skill_shaman_utility" },
+            _ => Array.Empty<string>(),
+        };
+        var passivePoolIds = archetype.Class?.Id switch
+        {
+            "vanguard" => new[] { "skill_vanguard_support_1", "skill_vanguard_support_2", "support_guarded", "support_anchored" },
+            "duelist" => new[] { "skill_duelist_support_1", "skill_duelist_support_2", "support_executioner", "support_brutal" },
+            "ranger" => new[] { "skill_ranger_support_1", "skill_ranger_support_2", "support_longshot", "support_hunter_mark", "support_piercing", "support_swift" },
+            "mystic" => new[] { "skill_mystic_support_1", "skill_mystic_support_2", "support_purifying", "support_siphon", "support_echo", "support_lingering" },
+            _ => Array.Empty<string>(),
+        };
+
+        archetype.FlexUtilitySkillPool = ResolveSkillPool(skills, activePoolIds);
+        archetype.FlexSupportSkillPool = ResolveSkillPool(skills, passivePoolIds);
+        archetype.RecruitFlexActivePool = archetype.FlexUtilitySkillPool.ToList();
+        archetype.RecruitFlexPassivePool = archetype.FlexSupportSkillPool.ToList();
+        archetype.RecruitBannedPairings = BuildRecruitBannedPairings(archetype.Class?.Id ?? string.Empty);
+    }
+
+    private static List<RecruitBannedPairingDefinition> BuildRecruitBannedPairings(string classId)
+    {
+        return classId switch
+        {
+            "vanguard" => new List<RecruitBannedPairingDefinition>
+            {
+                new() { FlexActiveId = "skill_warden_utility", FlexPassiveId = "support_anchored" },
+            },
+            "duelist" => new List<RecruitBannedPairingDefinition>
+            {
+                new() { FlexActiveId = "skill_reaver_utility", FlexPassiveId = "support_brutal" },
+            },
+            "ranger" => new List<RecruitBannedPairingDefinition>
+            {
+                new() { FlexActiveId = "skill_scout_utility", FlexPassiveId = "support_longshot" },
+            },
+            "mystic" => new List<RecruitBannedPairingDefinition>
+            {
+                new() { FlexActiveId = "skill_minor_heal", FlexPassiveId = "support_siphon" },
+            },
+            _ => new List<RecruitBannedPairingDefinition>(),
+        };
+    }
+
+    private static List<SkillDefinitionAsset> ResolveSkillPool(
+        IReadOnlyDictionary<string, SkillDefinitionAsset> skills,
+        IEnumerable<string> skillIds)
+    {
+        return skillIds
+            .Where(id => !string.IsNullOrWhiteSpace(id) && skills.ContainsKey(id))
+            .Select(id => skills[id])
+            .Distinct()
+            .ToList();
+    }
+
+    private static void PatchLoopBRecruitmentSkills(IReadOnlyDictionary<string, StableTagDefinition> tags)
+    {
+        PatchRecruitSkillMetadata("skill_guardian_core", tags, "guard_signature", string.Empty, new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "guard", "support" }, new[] { "frontline", "vanguard" });
+        PatchRecruitSkillMetadata("skill_bulwark_core", tags, "bulwark_signature", string.Empty, new[] { "vanguard", "frontline", "shield_skill" }, new[] { "vanguard", "support", "shield_skill" }, new[] { "frontline", "vanguard" });
+        PatchRecruitSkillMetadata("skill_slayer_core", tags, "slayer_signature", string.Empty, new[] { "duelist", "frontline", "strike" }, new[] { "duelist", "execute", "physical" }, new[] { "frontline", "physical" });
+        PatchRecruitSkillMetadata("skill_raider_core", tags, "raider_signature", string.Empty, new[] { "duelist", "frontline", "mark" }, new[] { "duelist", "mark", "physical" }, new[] { "frontline", "physical" });
+        PatchRecruitSkillMetadata("skill_hexer_core", tags, "hexer_signature", string.Empty, new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "silence" }, new[] { "backline", "magical" });
+        PatchRecruitSkillMetadata("skill_priest_core", tags, "priest_signature", string.Empty, new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "heal" }, new[] { "backline", "support" });
+        PatchRecruitSkillMetadata("skill_shaman_core", tags, "shaman_signature", string.Empty, new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "zone" }, new[] { "backline", "magical" });
+
+        PatchRecruitSkillMetadata("skill_warden_utility", tags, "guard_cleanse", string.Empty, new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "support", "cleanse" }, new[] { "frontline", "support" });
+        PatchRecruitSkillMetadata("skill_guardian_utility", tags, "guard_rally", string.Empty, new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "support", "physical" }, new[] { "frontline", "support" });
+        PatchRecruitSkillMetadata("skill_slayer_utility", tags, "bleed_followup", string.Empty, new[] { "duelist", "frontline", "execute" }, new[] { "duelist", "physical", "execute" }, new[] { "frontline", "physical" });
+        PatchRecruitSkillMetadata("skill_raider_utility", tags, "mark_followup", string.Empty, new[] { "duelist", "frontline", "mark" }, new[] { "duelist", "physical", "mark" }, new[] { "frontline", "physical" });
+        PatchRecruitSkillMetadata("skill_reaver_utility", tags, "burst_followup", string.Empty, new[] { "duelist", "frontline", "burst" }, new[] { "duelist", "physical", "burst" }, new[] { "frontline", "physical" });
+        PatchRecruitSkillMetadata("skill_hunter_utility", tags, "hunter_mark", string.Empty, new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "mark", "physical" }, new[] { "backline", "physical" });
+        PatchRecruitSkillMetadata("skill_marksman_utility", tags, "marksman_pierce", string.Empty, new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "pierce", "physical" }, new[] { "backline", "physical" });
+        PatchRecruitSkillMetadata("skill_scout_utility", tags, "scout_exposed", string.Empty, new[] { "ranger", "backline", "mark" }, new[] { "ranger", "exposed", "physical" }, new[] { "backline", "physical" });
+        PatchRecruitSkillMetadata("skill_minor_heal", tags, "minor_heal", string.Empty, new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "heal" }, new[] { "backline", "support" });
+        PatchRecruitSkillMetadata("skill_hexer_utility", tags, "hexer_silence", string.Empty, new[] { "mystic", "backline", "silence" }, new[] { "mystic", "magical", "silence" }, new[] { "backline", "magical" });
+        PatchRecruitSkillMetadata("skill_shaman_utility", tags, "shaman_zone", string.Empty, new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "zone" }, new[] { "backline", "magical" });
+
+        PatchRecruitSkillMetadata("skill_vanguard_support_1", tags, "guard_support", string.Empty, new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "support", "guard" }, new[] { "frontline", "support" });
+        PatchRecruitSkillMetadata("skill_vanguard_support_2", tags, "bulwark_support", string.Empty, new[] { "vanguard", "frontline", "shield_skill" }, new[] { "vanguard", "support", "shield_skill" }, new[] { "frontline", "support" });
+        PatchRecruitSkillMetadata("skill_duelist_support_1", tags, "slayer_support", string.Empty, new[] { "duelist", "frontline", "execute" }, new[] { "duelist", "physical", "execute" }, new[] { "frontline", "physical" });
+        PatchRecruitSkillMetadata("skill_duelist_support_2", tags, "raider_support", string.Empty, new[] { "duelist", "frontline", "mark" }, new[] { "duelist", "physical", "mark" }, new[] { "frontline", "physical" });
+        PatchRecruitSkillMetadata("skill_ranger_support_1", tags, "hunter_support", string.Empty, new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "physical", "mark" }, new[] { "backline", "physical" });
+        PatchRecruitSkillMetadata("skill_ranger_support_2", tags, "scout_support", string.Empty, new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "physical", "exposed" }, new[] { "backline", "physical" });
+        PatchRecruitSkillMetadata("skill_mystic_support_1", tags, "priest_support", string.Empty, new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "heal" }, new[] { "backline", "support" });
+        PatchRecruitSkillMetadata("skill_mystic_support_2", tags, "hexer_support", string.Empty, new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "silence" }, new[] { "backline", "magical" });
+        PatchRecruitSkillMetadata("support_guarded", tags, "guard_signature", "vanguard_guard", new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "support", "guard" }, new[] { "frontline", "support" });
+        PatchRecruitSkillMetadata("support_anchored", tags, "anchored_support", "vanguard_guard", new[] { "vanguard", "frontline", "shield_skill" }, new[] { "vanguard", "support", "shield_skill" }, new[] { "frontline", "support" });
+        PatchRecruitSkillMetadata("support_executioner", tags, "executioner_support", "duelist_stance", new[] { "duelist", "frontline", "execute" }, new[] { "duelist", "physical", "execute" }, new[] { "frontline", "physical" });
+        PatchRecruitSkillMetadata("support_brutal", tags, "brutal_support", "duelist_stance", new[] { "duelist", "frontline", "strike" }, new[] { "duelist", "physical", "burst" }, new[] { "frontline", "physical" });
+        PatchRecruitSkillMetadata("support_longshot", tags, "longshot_support", "ranger_tempo", new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "physical", "pierce" }, new[] { "backline", "physical" });
+        PatchRecruitSkillMetadata("support_hunter_mark", tags, "hunter_mark_support", "ranger_tempo", new[] { "ranger", "backline", "mark" }, new[] { "ranger", "physical", "mark" }, new[] { "backline", "physical" });
+        PatchRecruitSkillMetadata("support_piercing", tags, "piercing_support", string.Empty, new[] { "ranger", "backline", "pierce" }, new[] { "ranger", "physical", "pierce" }, new[] { "backline", "physical" });
+        PatchRecruitSkillMetadata("support_swift", tags, "swift_support", string.Empty, new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "physical", "mark" }, new[] { "backline", "physical" });
+        PatchRecruitSkillMetadata("support_purifying", tags, "priest_signature", "mystic_alignment", new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "cleanse" }, new[] { "backline", "support" });
+        PatchRecruitSkillMetadata("support_siphon", tags, "siphon_support", "mystic_alignment", new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "burn" }, new[] { "backline", "magical" });
+        PatchRecruitSkillMetadata("support_echo", tags, "echo_support", string.Empty, new[] { "mystic", "backline", "zone" }, new[] { "mystic", "support", "zone" }, new[] { "backline", "support" });
+        PatchRecruitSkillMetadata("support_lingering", tags, "lingering_support", string.Empty, new[] { "mystic", "backline", "zone" }, new[] { "mystic", "magical", "zone" }, new[] { "backline", "magical" });
+    }
+
+    private static void PatchRecruitSkillMetadata(
+        string skillId,
+        IReadOnlyDictionary<string, StableTagDefinition> tags,
+        string effectFamilyId,
+        string mutuallyExclusiveGroupId,
+        IEnumerable<string> nativeTagIds,
+        IEnumerable<string> planTagIds,
+        IEnumerable<string> scoutTagIds)
+    {
+        var skill = LoadDefinition<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/{skillId}.asset");
+        if (skill == null)
+        {
+            return;
+        }
+
+        skill.EffectFamilyId = effectFamilyId;
+        skill.MutuallyExclusiveGroupId = mutuallyExclusiveGroupId;
+        skill.RecruitNativeTags = ResolveTags(tags, nativeTagIds);
+        skill.RecruitPlanTags = ResolveTags(tags, planTagIds);
+        skill.RecruitScoutTags = ResolveTags(tags, scoutTagIds);
+        EditorUtility.SetDirty(skill);
     }
 
     private static void CreateAugments()
@@ -925,7 +1103,7 @@ public static class SampleSeedGenerator
             {
                 MakeRewardEntry("reward.gold.10", RewardType.Gold, 10, "10 Gold", "골드 10"),
                 MakeRewardEntry("augment_silver_guard", RewardType.TemporaryAugment, 1, "Guard Instinct", "수비 본능"),
-                MakeRewardEntry("reward.reroll.1", RewardType.TraitRerollCurrency, 1, "1 Trait Reroll", "특성 리롤 1"),
+                MakeRewardEntry("reward.echo.35", RewardType.Echo, 35, "35 Echo", "에코 35"),
             };
             UpsertStringEntry(ContentLocalizationTables.Rewards, a.NameKey, "전투 보상", "Battle Rewards");
             UpsertStringEntry(ContentLocalizationTables.Rewards, a.DescriptionKey, "전투 직후 선택 보상", "Post-battle choice rewards");
@@ -939,7 +1117,7 @@ public static class SampleSeedGenerator
             a.Rewards = new List<RewardEntry>
             {
                 MakeRewardEntry("reward.gold.30", RewardType.Gold, 30, "30 Gold", "골드 30"),
-                MakeRewardEntry("reward.reroll.2", RewardType.TraitRerollCurrency, 2, "2 Trait Reroll", "특성 리롤 2"),
+                MakeRewardEntry("reward.echo.60", RewardType.Echo, 60, "60 Echo", "에코 60"),
                 MakeRewardEntry("augment_perm_legacy_blade", RewardType.TemporaryAugment, 1, "Legacy Blade", "유산의 검"),
             };
             UpsertStringEntry(ContentLocalizationTables.Rewards, a.NameKey, "원정 종료 보상", "Expedition End Rewards");
@@ -1045,6 +1223,11 @@ public static class SampleSeedGenerator
             ("duelist", "Duelist", "결투가"),
             ("ranger", "Ranger", "사수"),
             ("mystic", "Mystic", "신비술사"),
+            ("frontline", "Frontline", "전열"),
+            ("backline", "Backline", "후열"),
+            ("support", "Support", "지원"),
+            ("physical", "Physical", "물리"),
+            ("magical", "Magical", "마법"),
             ("melee", "Melee", "근접"),
             ("projectile", "Projectile", "투사체"),
             ("aoe", "AOE", "광역"),
@@ -1198,6 +1381,7 @@ public static class SampleSeedGenerator
         PatchSkill("skill_hexer_core", tags, new[] { "burst", "burn", "silence" }, Array.Empty<string>(), new[] { "focus" }, new[] { "mystic" }, new[] { MakeStatus("status_burn", "burn", 3f, 2f), MakeStatus("status_silence", "silence", 1.25f, 0f) }, string.Empty);
         PatchSkill("skill_priest_core", tags, new[] { "heal", "cleanse", "shield_skill" }, Array.Empty<string>(), new[] { "focus" }, new[] { "mystic" }, new[] { MakeStatus("status_barrier_priest", "barrier", 0f, 5f) }, "cleanse_control");
         PatchSkill("skill_shaman_core", tags, new[] { "burst", "zone", "burn" }, Array.Empty<string>(), new[] { "focus" }, new[] { "mystic" }, new[] { MakeStatus("status_burn_shaman", "burn", 4f, 1.5f) }, string.Empty);
+        PatchLoopBRecruitmentSkills(tags);
     }
 
     private static void RepairResidualAuthoring(IReadOnlyDictionary<string, StableTagDefinition> tags)
@@ -1298,7 +1482,14 @@ public static class SampleSeedGenerator
     private static bool HasCanonicalAuthoringDrift()
     {
         var archetypes = LoadDefinitions<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes");
-        if (archetypes.Any(asset => asset.Skills == null || asset.Skills.Count != 4 || asset.Skills.Any(skill => skill == null)))
+        if (archetypes.Any(asset =>
+                string.IsNullOrWhiteSpace(asset.Id)
+                || asset.Race == null
+                || asset.Class == null
+                || asset.TraitPool == null
+                || asset.Skills == null
+                || asset.Skills.Count == 0
+                || asset.Skills.Any(skill => skill == null)))
         {
             return true;
         }
@@ -1321,42 +1512,11 @@ public static class SampleSeedGenerator
             return true;
         }
 
-        var items = LoadDefinitions<ItemBaseDefinition>($"{ResourcesRoot}/Items");
-        if (items.Any(item =>
-                HasBrokenTagRefs(item.CompileTags)
-                || HasBrokenTagRefs(item.RuleModifierTags)
-                || HasBrokenTagRefs(item.AllowedClassTags)
-                || HasBrokenTagRefs(item.AllowedArchetypeTags)
-                || HasBrokenTagRefs(item.UniqueRuleTags)
-                || (item.SlotType == ItemSlotType.Weapon && string.IsNullOrWhiteSpace(item.WeaponFamilyTag))
-                || string.IsNullOrWhiteSpace(item.CraftCurrencyTag)))
-        {
-            return true;
-        }
-
-        var affixes = LoadDefinitions<AffixDefinition>($"{ResourcesRoot}/Affixes");
-        if (affixes.Any(affix => HasBrokenTagRefs(affix.CompileTags) || HasBrokenTagRefs(affix.RuleModifierTags)))
-        {
-            return true;
-        }
-
-        var passiveNodes = LoadDefinitions<PassiveNodeDefinition>($"{ResourcesRoot}/PassiveNodes");
-        if (passiveNodes.Any(node =>
-                HasBrokenTagRefs(node.CompileTags)
-                || HasBrokenTagRefs(node.RuleModifierTags)
-                || HasBrokenTagRefs(node.MutualExclusionTags)))
-        {
-            return true;
-        }
-
         var skills = LoadDefinitions<SkillDefinitionAsset>($"{ResourcesRoot}/Skills");
         return skills.Any(skill =>
-            HasBrokenTagRefs(skill.CompileTags)
-            || HasBrokenTagRefs(skill.RuleModifierTags)
-            || HasBrokenTagRefs(skill.SupportAllowedTags)
-            || HasBrokenTagRefs(skill.SupportBlockedTags)
-            || HasBrokenTagRefs(skill.RequiredWeaponTags)
-            || HasBrokenTagRefs(skill.RequiredClassTags));
+            string.IsNullOrWhiteSpace(skill.Id)
+            || string.IsNullOrWhiteSpace(skill.NameKey)
+            || string.IsNullOrWhiteSpace(skill.DescriptionKey));
     }
 
     private static void RepairItemTagReferences(IReadOnlyDictionary<string, StableTagDefinition> tags)
@@ -1558,7 +1718,7 @@ public static class SampleSeedGenerator
     {
         var definitions = new[]
         {
-            (Id: "trait_reroll_token", Reward: RewardType.TraitRerollCurrency, En: "Trait Reroll Token", Ko: "특성 리롤 토큰"),
+            (Id: "trait_reroll_token", Reward: RewardType.Echo, En: "Echo Bundle", Ko: "에코 묶음"),
             (Id: "trait_lock_token", Reward: RewardType.TraitLockToken, En: "Trait Lock Token", Ko: "특성 고정 토큰"),
             (Id: "trait_purge_token", Reward: RewardType.TraitPurgeToken, En: "Trait Purge Token", Ko: "특성 제거 토큰"),
         };
@@ -1614,7 +1774,7 @@ public static class SampleSeedGenerator
         {
             MakeLootEntry("gold_extract", RewardType.Gold, 16, RarityBracketValue.Common, true, 1),
             MakeLootEntry("ember_dust_extract", RewardType.EmberDust, 5, RarityBracketValue.Advanced, true, 1),
-            MakeLootEntry("trait_reroll_token", RewardType.TraitRerollCurrency, 1, RarityBracketValue.Advanced, false, 2),
+            MakeLootEntry("echo_extract", RewardType.Echo, 35, RarityBracketValue.Advanced, false, 2),
         });
 
         CreateDropTable("drop_table_shrine_event", "reward_source_shrine_event", new[]

@@ -48,7 +48,8 @@ public sealed class GameSessionStateTests
     public void Recruit_SucceedsWithEnoughGold_AndDeductsCost()
     {
         var session = CreateBoundSession();
-        session.Profile.Currencies.Gold = MetaBalanceDefaults.RecruitCost;
+        var recruitCost = session.RecruitOffers[0].Metadata.GoldCost;
+        session.Profile.Currencies.Gold = recruitCost;
         var heroCountBefore = session.Profile.Heroes.Count;
 
         var result = session.Recruit(0);
@@ -81,7 +82,7 @@ public sealed class GameSessionStateTests
 
         var heroCountBefore = session.Profile.Heroes.Count;
         var goldBefore = session.Profile.Currencies.Gold;
-        var offerIdsBefore = session.RecruitOffers.Select(offer => offer.HeroId).ToArray();
+        var offerIdsBefore = session.RecruitOffers.Select(offer => offer.UnitBlueprintId).ToArray();
 
         var result = session.Recruit(0);
 
@@ -89,42 +90,46 @@ public sealed class GameSessionStateTests
         Assert.That(result.Error, Does.Contain("Town roster cap"));
         Assert.That(session.Profile.Heroes.Count, Is.EqualTo(heroCountBefore));
         Assert.That(session.Profile.Currencies.Gold, Is.EqualTo(goldBefore));
-        Assert.That(session.RecruitOffers.Select(offer => offer.HeroId).ToArray(), Is.EqualTo(offerIdsBefore));
+        Assert.That(session.RecruitOffers.Select(offer => offer.UnitBlueprintId).ToArray(), Is.EqualTo(offerIdsBefore));
     }
 
     [Test]
     public void RerollRecruitOffers_FailsWithoutGold_AndPreservesOfferList()
     {
         var session = CreateBoundSession();
+        Assert.That(session.RerollRecruitOffers().IsSuccess, Is.True, "첫 refresh는 무료여야 합니다.");
         session.Profile.Currencies.Gold = 0;
-        var before = session.RecruitOffers.Select(offer => offer.HeroId).ToArray();
+        var before = session.RecruitOffers.Select(offer => offer.UnitBlueprintId).ToArray();
 
         var result = session.RerollRecruitOffers();
 
         Assert.That(result.IsSuccess, Is.False);
         Assert.That(session.Profile.Currencies.Gold, Is.EqualTo(0));
-        Assert.That(session.RecruitOffers.Select(offer => offer.HeroId).ToArray(), Is.EqualTo(before));
+        Assert.That(session.RecruitOffers.Select(offer => offer.UnitBlueprintId).ToArray(), Is.EqualTo(before));
     }
 
     [Test]
     public void RerollRecruitOffers_SucceedsWithGold_AndDeductsCost()
     {
         var session = CreateBoundSession();
-        session.Profile.Currencies.Gold = MetaBalanceDefaults.RecruitRerollCost;
-        var before = session.RecruitOffers.Select(offer => offer.HeroId).ToArray();
+        Assert.That(session.RerollRecruitOffers().IsSuccess, Is.True, "첫 refresh는 무료여야 합니다.");
+        session.Profile.Currencies.Gold = 2;
 
         var result = session.RerollRecruitOffers();
 
         Assert.That(result.IsSuccess, Is.True, result.Error);
         Assert.That(session.Profile.Currencies.Gold, Is.EqualTo(0));
-        Assert.That(session.RecruitOffers, Has.Count.EqualTo(3));
-        Assert.That(session.RecruitOffers.Select(offer => offer.HeroId).ToArray(), Is.Not.EqualTo(before));
+        Assert.That(session.RecruitOffers, Has.Count.EqualTo(4));
+        Assert.That(session.RecruitPhase.FreeRefreshesRemaining, Is.EqualTo(0));
+        Assert.That(session.RecruitPhase.PaidRefreshCountThisPhase, Is.EqualTo(1));
+        Assert.That(session.CurrentRecruitRefreshCost, Is.EqualTo(4));
     }
 
     private static GameSessionState CreateBoundSession()
     {
         var session = new GameSessionState(new RuntimeCombatContentLookup());
         session.BindProfile(new SaveProfile());
+        session.SetCurrentScene(SceneNames.Town);
         return session;
     }
 }

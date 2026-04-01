@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SM.Meta.Model;
 
 namespace SM.Persistence.Abstractions.Models;
 
@@ -14,6 +15,8 @@ public sealed class ActiveRunRecord
     public List<string> TemporaryAugmentIds = new();
     public List<string> PendingRewardIds = new();
     public List<string> BattleDeployHeroIds = new();
+    public RecruitPhaseState RecruitPhase = new();
+    public RecruitPityState RecruitPity = new();
     public string CompileVersion = string.Empty;
     public string CompileHash = string.Empty;
     public string LastBattleMatchId = string.Empty;

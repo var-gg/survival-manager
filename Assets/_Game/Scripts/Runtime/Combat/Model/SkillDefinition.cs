@@ -115,7 +115,8 @@ public sealed record BattlePassiveSpec(
     ActionSlotKind SlotKind = ActionSlotKind.SignaturePassive,
     ActivationModel ActivationModel = ActivationModel.Passive,
     IReadOnlyList<EffectDescriptor>? EffectDescriptors = null,
-    bool AllowMirroredOwnedSummonKill = false);
+    bool AllowMirroredOwnedSummonKill = false,
+    string EffectFamilyId = "");
 
 public sealed record BattleMobilitySpec(
     string Id,
@@ -162,7 +163,12 @@ public record BattleSkillSpec(
     TargetRule? TargetRuleData = null,
     IReadOnlyList<EffectDescriptor>? EffectDescriptors = null,
     SummonProfile? SummonProfile = null,
-    float InterruptRefundScalar = 0.5f)
+    float InterruptRefundScalar = 0.5f,
+    string EffectFamilyId = "",
+    string MutuallyExclusiveGroupId = "",
+    IReadOnlyList<string>? RecruitNativeTags = null,
+    IReadOnlyList<string>? RecruitPlanTags = null,
+    IReadOnlyList<string>? RecruitScoutTags = null)
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
 

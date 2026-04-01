@@ -5,9 +5,9 @@
 - 최종수정일: 2026-03-31
 - 소스오브트루스: `docs/02_design/combat/hero-traits.md`
 - 관련문서:
-  - `docs/02_design/meta/recruitment-and-reroll.md`
+  - `docs/02_design/meta/recruitment-contract.md`
   - `docs/02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
-  - `docs/02_design/meta/crafting-currencies-and-sinks.md`
+  - `docs/02_design/meta/economy-protection-contract.md`
 
 ## 목적
 

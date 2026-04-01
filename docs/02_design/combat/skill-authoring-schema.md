@@ -11,7 +11,7 @@
   - `docs/02_design/combat/summon-ownership-and-deployables.md`
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/02_design/combat/skill-catalog-v1.md`
-  - `docs/02_design/meta/skill-acquisition-and-retrain.md`
+  - `docs/02_design/meta/retrain-contract.md`
   - `docs/03_architecture/content-authoring-and-balance-data.md`
 
 ## 목적

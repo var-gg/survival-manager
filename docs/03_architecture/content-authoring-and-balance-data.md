@@ -13,7 +13,7 @@
   - `docs/02_design/combat/targeting-and-ai-vocabulary.md`
   - `docs/02_design/combat/skill-authoring-schema.md`
   - `docs/02_design/meta/affix-authoring-schema.md`
-  - `docs/02_design/meta/skill-acquisition-and-retrain.md`
+  - `docs/02_design/meta/retrain-contract.md`
   - `docs/02_design/meta/synergy-and-augment-taxonomy.md`
 
 ## 목적

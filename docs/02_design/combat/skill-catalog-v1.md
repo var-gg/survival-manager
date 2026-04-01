@@ -6,7 +6,7 @@
 - 소스오브트루스: `docs/02_design/combat/skill-catalog-v1.md`
 - 관련문서:
   - `docs/02_design/combat/skill-authoring-schema.md`
-  - `docs/02_design/meta/skill-acquisition-and-retrain.md`
+  - `docs/02_design/meta/retrain-contract.md`
   - `docs/03_architecture/content-seed-assets.md`
 
 ## 목적

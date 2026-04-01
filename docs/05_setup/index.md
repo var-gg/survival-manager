@@ -29,6 +29,7 @@
 - `mcp-safety-rules.md`: MCP read/write 안전 규칙
 - `postgres-setup.md`: local Postgres 개발 설정
 - `quick-battle-smoke.md`: Town Quick Battle smoke 경로
+- `recruitment-and-retrain-harness.md`: Loop B recruit/retrain/duplicate/dismiss sandbox 사용법
 - `scene-installer.md`: first playable scene rebuild installer 기준
 - `scene-repair-bootstrap.md`: first playable scene repair/bootstrap 운영 기준
 - `unity-bootstrap.md`: Unity 부트스트랩 절차

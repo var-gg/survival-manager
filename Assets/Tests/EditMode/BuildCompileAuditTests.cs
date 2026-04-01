@@ -392,8 +392,10 @@ public sealed class BuildCompileAuditTests
             var yaml = File.ReadAllText(assetPath).Replace("ClassId: mystic", "ArchetypeId: mystic");
             File.WriteAllText(assetPath, yaml);
             AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
 
-            var reloaded = AssetDatabase.LoadAssetAtPath<SM.Content.Definitions.PassiveBoardDefinition>(assetPath);
+            var reloaded = AssetDatabase.LoadAssetAtPath<SM.Content.Definitions.PassiveBoardDefinition>(assetPath)
+                ?? AssetDatabase.LoadAllAssetsAtPath(assetPath).OfType<SM.Content.Definitions.PassiveBoardDefinition>().FirstOrDefault();
             Assert.That(reloaded, Is.Not.Null);
             Assert.That(reloaded!.ClassId, Is.EqualTo("mystic"));
         }

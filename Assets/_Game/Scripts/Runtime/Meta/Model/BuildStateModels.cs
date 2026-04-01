@@ -56,6 +56,8 @@ public sealed record RunOverlayState(
     IReadOnlyList<string> PendingRewardIds,
     string CompileVersion,
     string LastCompileHash,
+    RecruitPhaseState? RecruitPhase = null,
+    RecruitPityState? RecruitPity = null,
     string ChapterId = "",
     string SiteId = "",
     int SiteNodeIndex = 0,

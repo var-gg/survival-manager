@@ -237,6 +237,11 @@ public static class TacticEvaluator
             return null;
         }
 
+        if (actor.TargetSwitchLockRemaining > 0f)
+        {
+            return currentTarget;
+        }
+
         if (targetRule != null)
         {
             var maxAcquireRange = targetRule.MaxAcquireRange > 0f ? targetRule.MaxAcquireRange : actor.AttackRange;
@@ -246,7 +251,7 @@ public static class TacticEvaluator
             }
         }
 
-        return !actor.NeedsReevaluation || actor.TargetSwitchLockRemaining > 0f
+        return !actor.NeedsReevaluation
             ? currentTarget
             : null;
     }

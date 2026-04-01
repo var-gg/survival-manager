@@ -70,16 +70,17 @@ public static class FirstPlayableSceneInstaller
 
         var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Town Operator UI");
         var roster = EnsureText(canvas.transform, "RosterText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(180f, 10f), new Vector2(300f, 400f), TextAnchor.UpperLeft);
-        var recruit = EnsureText(canvas.transform, "RecruitText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 165f), new Vector2(400f, 44f), TextAnchor.MiddleCenter, 18, "Recruit 후보 3개");
-        var recruitCardsRoot = EnsurePanel(canvas.transform, "RecruitCardsRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(450f, 360f), new Color(0.13f, 0.17f, 0.21f, 0.9f)).rectTransform;
+        var recruit = EnsureText(canvas.transform, "RecruitText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 165f), new Vector2(520f, 44f), TextAnchor.MiddleCenter, 18, "Recruit pack 4 slots / OnPlan / Protected");
+        var recruitCardsRoot = EnsurePanel(canvas.transform, "RecruitCardsRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(600f, 360f), new Color(0.13f, 0.17f, 0.21f, 0.9f)).rectTransform;
         var squad = EnsureText(canvas.transform, "SquadText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-160f, 120f), new Vector2(260f, 180f), TextAnchor.UpperLeft);
         var deploy = EnsureText(canvas.transform, "DeployPreviewText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-160f, -95f), new Vector2(260f, 150f), TextAnchor.UpperLeft);
         var currency = EnsureText(canvas.transform, "CurrencyText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 30f), new Vector2(840f, 30f), TextAnchor.MiddleCenter);
         var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(840f, 30f), TextAnchor.MiddleCenter);
 
-        var recruitCard1 = EnsurePanel(recruitCardsRoot, "RecruitCard1", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-140f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
-        var recruitCard2 = EnsurePanel(recruitCardsRoot, "RecruitCard2", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
-        var recruitCard3 = EnsurePanel(recruitCardsRoot, "RecruitCard3", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(140f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+        var recruitCard1 = EnsurePanel(recruitCardsRoot, "RecruitCard1", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-210f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+        var recruitCard2 = EnsurePanel(recruitCardsRoot, "RecruitCard2", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-70f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+        var recruitCard3 = EnsurePanel(recruitCardsRoot, "RecruitCard3", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(70f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+        var recruitCard4 = EnsurePanel(recruitCardsRoot, "RecruitCard4", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(210f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
 
         EnsureText(recruitCard1, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(110f, 40f), TextAnchor.MiddleCenter, 16, "Recruit 1");
         EnsureText(recruitCard1, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(110f, 120f), TextAnchor.UpperCenter, 14, "Body");
@@ -93,7 +94,11 @@ public static class FirstPlayableSceneInstaller
         EnsureText(recruitCard3, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(110f, 120f), TextAnchor.UpperCenter, 14, "Body");
         EnsureButton(recruitCard3, "RecruitButton", "Recruit 3", new Vector2(0.5f, 0f), new Vector2(0f, 26f), controller.RecruitOffer2);
 
-        EnsureButton(canvas.transform, "RerollButton", "Reroll", new Vector2(0.5f, 0f), new Vector2(-240f, 115f), controller.RerollOffers);
+        EnsureText(recruitCard4, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(110f, 40f), TextAnchor.MiddleCenter, 16, "Recruit 4");
+        EnsureText(recruitCard4, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(110f, 120f), TextAnchor.UpperCenter, 14, "Body");
+        EnsureButton(recruitCard4, "RecruitButton", "Recruit 4", new Vector2(0.5f, 0f), new Vector2(0f, 26f), controller.RecruitOffer3);
+
+        EnsureButton(canvas.transform, "RerollButton", "Refresh", new Vector2(0.5f, 0f), new Vector2(-240f, 115f), controller.RerollOffers);
         EnsureButton(canvas.transform, "SaveButton", "Save", new Vector2(0.5f, 0f), new Vector2(-120f, 115f), controller.SaveProfile);
         EnsureButton(canvas.transform, "LoadButton", "Load", new Vector2(0.5f, 0f), new Vector2(0f, 115f), controller.LoadProfile);
         EnsureButton(canvas.transform, "DebugStartButton", "Debug Start", new Vector2(0.5f, 0f), new Vector2(120f, 115f), controller.DebugStartExpedition);

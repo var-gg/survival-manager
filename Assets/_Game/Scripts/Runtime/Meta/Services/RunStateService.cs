@@ -18,7 +18,9 @@ public static class RunStateService
             Array.Empty<string>(),
             Array.Empty<string>(),
             LoadoutCompiler.CurrentCompileVersion,
-            string.Empty);
+            string.Empty,
+            new RecruitPhaseState(),
+            new RecruitPityState());
 
         return new ActiveRunState(
             Guid.NewGuid().ToString("N"),

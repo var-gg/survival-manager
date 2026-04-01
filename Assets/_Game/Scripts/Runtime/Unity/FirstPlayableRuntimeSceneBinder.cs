@@ -120,6 +120,7 @@ public static class FirstPlayableRuntimeSceneBinder
         BindButton(scene, "RecruitButton", controller.RecruitOffer0, "RecruitCard1");
         BindButton(scene, "RecruitButton", controller.RecruitOffer1, "RecruitCard2");
         BindButton(scene, "RecruitButton", controller.RecruitOffer2, "RecruitCard3");
+        BindButton(scene, "RecruitButton", controller.RecruitOffer3, "RecruitCard4");
     }
 
     private static void EnsureExpedition(Scene scene)

@@ -10,6 +10,11 @@ public sealed class PassiveDefinition
     public string Id = string.Empty;
     public string NameKey = string.Empty;
     public string DescriptionKey = string.Empty;
+    public string EffectFamilyId = string.Empty;
+    public string MutuallyExclusiveGroupId = string.Empty;
+    public List<StableTagDefinition> RecruitNativeTags = new();
+    public List<StableTagDefinition> RecruitPlanTags = new();
+    public List<StableTagDefinition> RecruitScoutTags = new();
     public ActivationModel ActivationModel = ActivationModel.Passive;
     public ActionLane Lane = ActionLane.Primary;
     public ActionLockRule LockRule = ActionLockRule.None;

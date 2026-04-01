@@ -28,6 +28,10 @@ public sealed record BattleEncounterPlan(
     IReadOnlyList<BattleParticipantSpec> EnemyParticipants,
     TeamPostureType EnemyPosture);
 
+public sealed record RecruitBannedPairingTemplate(
+    string FlexActiveId,
+    string FlexPassiveId);
+
 public sealed record CombatArchetypeTemplate(
     string Id,
     string DisplayName,
@@ -45,6 +49,13 @@ public sealed record CombatArchetypeTemplate(
     float ProtectRadius = 0f,
     ManaEnvelope? Mana = null,
     IReadOnlyList<CombatRuleModifierPackage>? RulePackages = null,
+    RecruitTier RecruitTier = RecruitTier.Common,
+    bool IsRecruitable = true,
+    IReadOnlyList<string>? RecruitPlanTags = null,
+    IReadOnlyList<string>? ScoutBiasTags = null,
+    IReadOnlyList<BattleSkillSpec>? RecruitFlexActivePool = null,
+    IReadOnlyList<BattleSkillSpec>? RecruitFlexPassivePool = null,
+    IReadOnlyList<RecruitBannedPairingTemplate>? RecruitBannedPairings = null,
     BattleBasicAttackSpec? BasicAttack = null,
     BattleSkillSpec? SignatureActive = null,
     BattleSkillSpec? FlexActive = null,

@@ -43,6 +43,8 @@
 - `content-seed-assets.md`: sample seed asset과 Markdown catalog/live subset 기준
 - `combat-content-mapping.md`: spatial combat authored data와 runtime 매핑
 - `encounter-authoring-and-runtime-resolution.md`: chapter/site/encounter resolve와 debug fallback 경계
+- `recruit-offer-schema.md`: recruit preview, pack metadata, pity/scout state schema
+- `unit-economy-schema.md`: wallet, retrain state, duplicate conversion, dismiss footprint schema
 - `skill-tag-catalog-and-compatibility-resolution.md`: stable tag catalog와 compile/validation 계약
 - `localization-runtime-and-content-pipeline.md`: localization runtime, content key, UI refresh 경계
 
@@ -54,7 +56,6 @@
 - `status-runtime-stack-and-cleanse-rules.md`: status stack / refresh / ownership runtime 규칙
 - `editor-sandbox-tooling.md`: Unity combat sandbox/editor tooling 경계
 - `loadout-compiler-and-battle-snapshot.md`: build -> compile -> battle snapshot 경계
-- `drop-resolution-and-ledger-pipeline.md`: automatic drop resolve와 reward ledger 계약
 - `sim-sweep-and-balance-kpis.md`: deterministic sweep, KPI, artifact, review/fail 규칙
 - `replay-persistence-and-run-audit.md`: active run / replay / ledger persistence 기준
 
@@ -62,7 +63,6 @@
 
 - `arena-snapshot-matchmaking-and-season-contract.md`: async arena snapshot, local matchmaking, season contract
 - `persistence-strategy.md`: persistence adapter 경계
-- `persistence-schema.md`: 저장 대상과 비대상
 - `testing-strategy.md`: 저비용 검증 우선 테스트 전략
 - `asset-intake-boundary.md`: `Assets/ThirdParty/**` intake boundary
 

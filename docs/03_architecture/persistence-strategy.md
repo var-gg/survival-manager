@@ -5,7 +5,8 @@
 - 최종수정일: 2026-03-29
 - 소스오브트루스: `docs/03_architecture/persistence-strategy.md`
 - 관련문서:
-  - `docs/03_architecture/persistence-schema.md`
+  - `docs/03_architecture/unit-economy-schema.md`
+  - `docs/03_architecture/recruit-offer-schema.md`
   - `docs/03_architecture/dependency-direction.md`
   - `docs/04_decisions/adr-0009-persistence-boundary.md`
   - `docs/04_decisions/adr-0010-local-postgres-policy.md`

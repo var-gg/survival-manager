@@ -1085,6 +1085,7 @@ public static class ContentDefinitionValidator
         }
 
         LoopAContractValidator.ValidateArchetype(archetype, assetPath, issues);
+        LoopBContractValidator.ValidateArchetype(archetype, assetPath, issues);
     }
 
     private static void ValidateSkill(SkillDefinitionAsset skill, string assetPath, ICollection<ContentValidationIssue> issues)

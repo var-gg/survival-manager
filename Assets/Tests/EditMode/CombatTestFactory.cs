@@ -125,7 +125,13 @@ internal static class CombatTestFactory
             Lane: ActionLane.Primary,
             LockRule: ActionLockRule.HardCommit,
             BaseCooldownSeconds: 1.5f,
-            TargetRuleData: new TargetRule());
+            TargetRuleData: new TargetRule
+            {
+                Domain = TargetDomain.EnemyUnit,
+                PrimarySelector = TargetSelector.LowestCurrentHpEnemy,
+                FallbackPolicy = TargetFallbackPolicy.NearestReachableEnemy,
+                Filters = TargetFilterFlags.ExcludeUntargetable,
+            });
         return new BattleUnitLoadout(
             id,
             id,

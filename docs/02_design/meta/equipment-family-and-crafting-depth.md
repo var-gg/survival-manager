@@ -6,7 +6,7 @@
 - 소스오브트루스: `docs/02_design/meta/equipment-family-and-crafting-depth.md`
 - 관련문서:
   - `docs/02_design/meta/item-and-affix-system.md`
-  - `docs/02_design/meta/crafting-currencies-and-sinks.md`
+  - `docs/02_design/meta/economy-protection-contract.md`
   - `docs/02_design/combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`
   - `docs/02_design/systems/skills-items-and-passive-boards.md`
 

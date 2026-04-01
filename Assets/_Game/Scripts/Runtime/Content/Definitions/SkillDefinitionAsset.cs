@@ -48,6 +48,11 @@ public sealed class SkillDefinitionAsset : ScriptableObject
     public string VfxHookId = string.Empty;
     public string SfxHookId = string.Empty;
     public SkillLearnSourceValue LearnSource = SkillLearnSourceValue.LegacyDerived;
+    public string EffectFamilyId = string.Empty;
+    public string MutuallyExclusiveGroupId = string.Empty;
+    public List<StableTagDefinition> RecruitNativeTags = new();
+    public List<StableTagDefinition> RecruitPlanTags = new();
+    public List<StableTagDefinition> RecruitScoutTags = new();
     public TargetRule TargetRuleData = new();
     public SummonProfile SummonProfile;
     public List<EffectDescriptor> Effects = new();

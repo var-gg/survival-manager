@@ -81,9 +81,11 @@
 - skill authoring schema: `02_design/combat/skill-authoring-schema.md`
 - skill catalog v1: `02_design/combat/skill-catalog-v1.md`
 - affix authoring schema: `02_design/meta/affix-authoring-schema.md`
-- skill acquisition and retrain: `02_design/meta/skill-acquisition-and-retrain.md`
+- recruitment contract: `02_design/meta/recruitment-contract.md`
+- retrain contract: `02_design/meta/retrain-contract.md`
+- economy protection contract: `02_design/meta/economy-protection-contract.md`
+- duplicate handling contract: `02_design/meta/duplicate-handling-contract.md`
 - synergy and augment taxonomy: `02_design/meta/synergy-and-augment-taxonomy.md`
-- reward protection and acquisition loop: `02_design/meta/reward-protection-and-acquisition-loop.md`
 - affix pool v1: `02_design/meta/affix-pool-v1.md`
 - augment catalog v1: `02_design/meta/augment-catalog-v1.md`
 - squad blueprint와 빌드 소유권: `02_design/systems/squad-blueprint-and-build-ownership.md`
@@ -91,9 +93,11 @@
 - battle harness/debug contract: `03_architecture/combat-harness-and-debug-contract.md`
 - 조우 resolve 구조: `03_architecture/encounter-authoring-and-runtime-resolution.md`
 - status runtime stack: `03_architecture/status-runtime-stack-and-cleanse-rules.md`
-- 드롭/ledger pipeline: `03_architecture/drop-resolution-and-ledger-pipeline.md`
+- recruit offer schema: `03_architecture/recruit-offer-schema.md`
+- unit economy schema: `03_architecture/unit-economy-schema.md`
 - skill tag catalog: `03_architecture/skill-tag-catalog-and-compatibility-resolution.md`
 - arena snapshot 계약: `03_architecture/arena-snapshot-matchmaking-and-season-contract.md`
 - replay persistence와 run audit: `03_architecture/replay-persistence-and-run-audit.md`
+- recruitment/retrain harness: `05_setup/recruitment-and-retrain-harness.md`
 - ADR-0014: `04_decisions/adr-0014-grid-deployment-continuous-combat.md`
 - ADR-0015: `04_decisions/adr-0015-build-compile-audit-pipeline.md`

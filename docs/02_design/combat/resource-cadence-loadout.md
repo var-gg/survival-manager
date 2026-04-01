@@ -7,7 +7,7 @@
 - 관련문서:
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/02_design/combat/skill-authoring-schema.md`
-  - `docs/02_design/meta/skill-acquisition-and-retrain.md`
+  - `docs/02_design/meta/retrain-contract.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
 
 ## 목적

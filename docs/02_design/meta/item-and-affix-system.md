@@ -9,7 +9,7 @@
   - `docs/02_design/meta/affix-pool-v1.md`
   - `docs/02_design/meta/item-passive-augment-budget.md`
   - `docs/02_design/meta/equipment-family-and-crafting-depth.md`
-  - `docs/02_design/meta/crafting-currencies-and-sinks.md`
+  - `docs/02_design/meta/economy-protection-contract.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
 
 ## 목적

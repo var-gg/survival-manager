@@ -6,7 +6,8 @@
 - 소스오브트루스: `docs/03_architecture/replay-persistence-and-run-audit.md`
 - 관련문서:
   - `docs/03_architecture/persistence-strategy.md`
-  - `docs/03_architecture/persistence-schema.md`
+  - `docs/03_architecture/unit-economy-schema.md`
+  - `docs/03_architecture/recruit-offer-schema.md`
   - `docs/04_decisions/adr-0015-build-compile-audit-pipeline.md`
 
 ## 목적

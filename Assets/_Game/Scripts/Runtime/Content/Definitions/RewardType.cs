@@ -4,7 +4,8 @@ public enum RewardType
 {
     Gold = 0,
     TemporaryAugment = 1,
-    TraitRerollCurrency = 2,
+    Echo = 2,
+    TraitRerollCurrency = Echo,
     Item = 3,
     PermanentAugmentSlot = 4,
     TraitLockToken = 5,

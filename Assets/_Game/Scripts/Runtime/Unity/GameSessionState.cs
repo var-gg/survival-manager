@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Contracts;
 using SM.Core.Results;
 using SM.Meta.Model;
 using SM.Meta.Services;
@@ -26,12 +27,15 @@ public sealed class GameSessionState
     private readonly LoadoutCompiler _loadoutCompiler = new();
     private readonly List<string> _expeditionSquadHeroIds = new();
     private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
-    private readonly List<RecruitOffer> _recruitOffers = new();
+    private readonly List<RecruitUnitPreview> _recruitOffers = new();
     private readonly List<ExpeditionNodeViewModel> _expeditionNodes = new();
     private readonly List<RewardChoiceViewModel> _pendingRewardChoices = new();
     private readonly HashSet<string> _resolvedExpeditionNodeIds = new(StringComparer.Ordinal);
     private LootBundleResult? _lastAutomaticLootBundle;
     private int _recruitOfferGeneration;
+    private RecruitPhaseState _recruitPhaseState = new();
+    private RecruitPityState _recruitPityState = new();
+    private DuplicateConversionResult? _lastDuplicateConversion;
 
     public SaveProfile Profile { get; private set; } = new();
     public ActiveRunState? ActiveRun { get; private set; }
@@ -58,11 +62,22 @@ public sealed class GameSessionState
         .Cast<string>()
         .ToList();
     public IReadOnlyDictionary<DeploymentAnchorId, string?> DeploymentAssignments => _deploymentAssignments;
-    public IReadOnlyList<RecruitOffer> RecruitOffers => _recruitOffers;
+    public IReadOnlyList<RecruitUnitPreview> RecruitOffers => _recruitOffers;
     public IReadOnlyList<ExpeditionNodeViewModel> ExpeditionNodes => _expeditionNodes;
     public IReadOnlyList<RewardChoiceViewModel> PendingRewardChoices => _pendingRewardChoices;
     public LootBundleResult? LastAutomaticLootBundle => _lastAutomaticLootBundle;
     public bool CanResumeExpedition => HasActiveExpeditionRun && !IsQuickBattleSmokeActive && CurrentExpeditionNodeIndex < _expeditionNodes.Count - 1;
+    public RecruitPhaseState RecruitPhase => _recruitPhaseState.Clone();
+    public RecruitPityState RecruitPity => _recruitPityState.Clone();
+    public DuplicateConversionResult? LastDuplicateConversion => _lastDuplicateConversion;
+    public EconomyWallet Wallet => new()
+    {
+        Gold = Profile.Currencies.Gold,
+        Echo = Profile.Currencies.Echo,
+    };
+    public int CurrentRecruitRefreshCost => RefreshCostService.GetRefreshCost(_recruitPhaseState);
+    public bool CanUseScout => !_recruitPhaseState.ScoutUsedThisPhase;
+    public TeamPlanProfile CurrentTeamPlan => BuildTeamPlanProfile();
 
     public GameSessionState(RuntimeCombatContentLookup combatContentLookup)
     {
@@ -119,11 +134,13 @@ public sealed class GameSessionState
         LastExpeditionEffectMessage = SessionTextToken.Empty;
         LastRewardApplicationSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
+        _lastDuplicateConversion = null;
         SelectedTeamPosture = TeamPostureType.StandardAdvance;
         SelectedTeamTacticId = string.Empty;
         _recruitOfferGeneration = 0;
         _resolvedExpeditionNodeIds.Clear();
         ResetDeploymentAssignments();
+        RestoreRecruitStates();
 
         Roster = new RosterState(ToHeroRecords(Profile));
         EnsureRecruitOffers();
@@ -275,32 +292,50 @@ public sealed class GameSessionState
     public void SetCurrentScene(string sceneName)
     {
         CurrentSceneName = sceneName;
+        if (string.Equals(sceneName, SceneNames.Town, StringComparison.Ordinal))
+        {
+            ResetRecruitPhaseForTownEntry();
+        }
     }
 
     public Result RerollRecruitOffers()
     {
-        if (Profile.Currencies.Gold < MetaBalanceDefaults.RecruitRerollCost)
+        if (!IsTownEconomyPhase())
         {
-            return Result.Fail($"Gold가 부족합니다. 리롤에는 {MetaBalanceDefaults.RecruitRerollCost} Gold가 필요합니다.");
+            return Result.Fail("Refresh는 Town에서만 사용할 수 있습니다.");
         }
 
-        Profile.Currencies.Gold -= MetaBalanceDefaults.RecruitRerollCost;
+        var refreshCost = RefreshCostService.GetRefreshCost(_recruitPhaseState);
+        if (refreshCost > 0 && Profile.Currencies.Gold < refreshCost)
+        {
+            return Result.Fail($"Gold가 부족합니다. refresh에는 {refreshCost} Gold가 필요합니다.");
+        }
+
+        Profile.Currencies.Gold -= refreshCost;
+        _recruitPhaseState = RefreshCostService.ConsumeRefresh(_recruitPhaseState);
         _recruitOfferGeneration += 1;
         _recruitOffers.Clear();
         EnsureRecruitOffers();
+        SyncRecruitState();
         return Result.Success();
     }
 
     public Result Recruit(int offerIndex)
     {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("Recruit는 Town에서만 사용할 수 있습니다.");
+        }
+
         if (offerIndex < 0 || offerIndex >= _recruitOffers.Count)
         {
             return Result.Fail("유효하지 않은 영입 후보입니다.");
         }
 
-        if (Profile.Currencies.Gold < MetaBalanceDefaults.RecruitCost)
+        var offer = _recruitOffers[offerIndex];
+        if (Profile.Currencies.Gold < offer.Metadata.GoldCost)
         {
-            return Result.Fail($"Gold가 부족합니다. 영입에는 {MetaBalanceDefaults.RecruitCost} Gold가 필요합니다.");
+            return Result.Fail($"Gold가 부족합니다. 영입에는 {offer.Metadata.GoldCost} Gold가 필요합니다.");
         }
 
         if (Profile.Heroes.Count >= MetaBalanceDefaults.TownRosterCap)
@@ -308,24 +343,155 @@ public sealed class GameSessionState
             return Result.Fail($"Town roster cap {MetaBalanceDefaults.TownRosterCap}에 도달했습니다.");
         }
 
-        var offer = _recruitOffers[offerIndex];
-        Profile.Currencies.Gold -= MetaBalanceDefaults.RecruitCost;
-        Profile.Heroes.Add(new HeroInstanceRecord
+        if (!TryGrantRecruitPreview(offer, RecruitOfferSource.RecruitPhase, out _, out var error))
         {
-            HeroId = offer.HeroId,
-            Name = offer.Name,
-            ArchetypeId = offer.ArchetypeId,
-            RaceId = offer.RaceId,
-            ClassId = offer.ClassId,
-            PositiveTraitId = offer.PositiveTraitId,
-            NegativeTraitId = offer.NegativeTraitId,
-            EquippedItemIds = new List<string>()
-        });
+            return Result.Fail(error);
+        }
 
-        Roster = new RosterState(ToHeroRecords(Profile));
+        Profile.Currencies.Gold -= offer.Metadata.GoldCost;
         _recruitOffers.RemoveAt(offerIndex);
-        EnsureRecruitOffers();
+        SyncRecruitState();
         return Result.Success();
+    }
+
+    public Result UseScout(ScoutDirective directive)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("Scout는 Town에서만 사용할 수 있습니다.");
+        }
+
+        directive ??= new ScoutDirective();
+        if (directive.IsNone)
+        {
+            return Result.Fail("Scout directive가 필요합니다.");
+        }
+
+        if (_recruitPhaseState.ScoutUsedThisPhase)
+        {
+            return Result.Fail("이번 recruit phase에서는 이미 scout를 사용했습니다.");
+        }
+
+        if (Profile.Currencies.Echo < RecruitmentBalanceCatalog.ScoutEchoCost)
+        {
+            return Result.Fail($"Echo가 부족합니다. scout에는 {RecruitmentBalanceCatalog.ScoutEchoCost} Echo가 필요합니다.");
+        }
+
+        Profile.Currencies.Echo -= RecruitmentBalanceCatalog.ScoutEchoCost;
+        _recruitPhaseState.ScoutUsedThisPhase = true;
+        _recruitPhaseState.PendingScoutDirective = directive.Clone();
+        SyncRecruitState();
+        return Result.Success();
+    }
+
+    public Result RetrainHero(string heroId, RetrainOperationKind operation)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("Retrain은 Town에서만 사용할 수 있습니다.");
+        }
+
+        if (!TryGetHero(heroId, out var hero))
+        {
+            return Result.Fail("유닛을 찾을 수 없습니다.");
+        }
+
+        if (!_combatContentLookup.Snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var archetype))
+        {
+            return Result.Fail($"Archetype '{hero.ArchetypeId}'를 찾을 수 없습니다.");
+        }
+
+        var currentFlexActiveId = ResolveHeroFlexActiveId(hero, archetype);
+        var currentFlexPassiveId = ResolveHeroFlexPassiveId(hero, archetype);
+        var retrainState = hero.RetrainState?.Clone() ?? new UnitRetrainState();
+        var cost = RecruitmentBalanceCatalog.DefaultRetrainCosts.GetTotalCost(operation, retrainState);
+        if (Profile.Currencies.Echo < cost)
+        {
+            return Result.Fail($"Echo가 부족합니다. retrain에는 {cost} Echo가 필요합니다.");
+        }
+
+        var result = RetrainService.Retrain(
+            archetype,
+            currentFlexActiveId,
+            currentFlexPassiveId,
+            operation,
+            retrainState,
+            BuildTeamPlanProfile(),
+            RecruitmentBalanceCatalog.DefaultRetrainCosts,
+            BuildStableSeed(heroId, retrainState.RetrainCount + (int)operation + _recruitOfferGeneration));
+
+        Profile.Currencies.Echo -= result.EchoCost;
+        hero.FlexActiveId = result.FlexActiveId;
+        hero.FlexPassiveId = result.FlexPassiveId;
+        hero.RetrainState = result.RetrainState;
+        hero.EconomyFootprint ??= new UnitEconomyFootprint();
+        hero.EconomyFootprint.RetrainEchoPaid += result.EchoCost;
+        Roster = new RosterState(ToHeroRecords(Profile));
+        SyncHeroBuildState(hero);
+        SyncActiveRunIfPresent();
+        return Result.Success();
+    }
+
+    public Result DismissHero(string heroId)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("Dismiss는 Town에서만 사용할 수 있습니다.");
+        }
+
+        if (Profile.Heroes.Count <= 1)
+        {
+            return Result.Fail("마지막 roster unit은 dismiss할 수 없습니다.");
+        }
+
+        if (!TryGetHero(heroId, out var hero))
+        {
+            return Result.Fail("유닛을 찾을 수 없습니다.");
+        }
+
+        var refund = DismissService.CalculateRefund(hero.EconomyFootprint ?? new UnitEconomyFootprint());
+        Profile.Currencies.Gold += refund.GoldRefund;
+        Profile.Currencies.Echo += refund.EchoRefund;
+        UnequipHeroItems(hero.HeroId);
+        RemoveHeroFromRoster(hero.HeroId);
+        Roster = new RosterState(ToHeroRecords(Profile));
+        _recruitOffers.RemoveAll(offer => string.Equals(offer.UnitBlueprintId, hero.ArchetypeId, StringComparison.Ordinal));
+        EnsureRecruitOffers();
+        SyncRecruitState();
+        SyncActiveRunIfPresent();
+        return Result.Success();
+    }
+
+    public Result GrantHeroDirect(string archetypeId, RecruitOfferSource source = RecruitOfferSource.DirectGrant)
+    {
+        if (!_combatContentLookup.Snapshot.Archetypes.TryGetValue(archetypeId, out var template))
+        {
+            return Result.Fail($"Archetype '{archetypeId}'를 찾을 수 없습니다.");
+        }
+
+        var preview = RecruitPreviewBuilder.Roll(
+            template,
+            BuildTeamPlanProfile(),
+            null,
+            FlexRollBiasMode.NativeBiased,
+            BuildStableSeed(archetypeId, Profile.Heroes.Count + _recruitOfferGeneration));
+        var directPreview = new RecruitUnitPreview
+        {
+            UnitBlueprintId = archetypeId,
+            UnitInstanceSeed = $"grant:{source}:{archetypeId}:{Profile.Heroes.Count}",
+            FlexActiveId = preview.FlexActiveId,
+            FlexPassiveId = preview.FlexPassiveId,
+            Metadata = new RecruitOfferMetadata
+            {
+                SlotType = RecruitOfferSlotType.StandardA,
+                Tier = template.RecruitTier,
+                GoldCost = RecruitmentBalanceCatalog.DefaultRecruitTierCosts.GetCost(template.RecruitTier),
+            }
+        };
+
+        return TryGrantRecruitPreview(directPreview, source, out _, out var error)
+            ? Result.Success()
+            : Result.Fail(error);
     }
 
     public bool ToggleExpeditionHero(string heroId)
@@ -780,8 +946,8 @@ public sealed class GameSessionState
             case RewardChoiceKind.TemporaryAugment:
                 ApplyLedgerBackedReward(new RewardOption(choice.PayloadId, SM.Content.Definitions.RewardType.TemporaryAugment, 1, BuildRewardChoiceSummaryKey(choice)), BuildRewardChoiceSummaryToken(choice));
                 break;
-            case RewardChoiceKind.TraitRerollCurrency:
-                ApplyLedgerBackedReward(new RewardOption(choice.PayloadId, SM.Content.Definitions.RewardType.TraitRerollCurrency, choice.TraitRerollAmount, BuildRewardChoiceSummaryKey(choice)), BuildRewardChoiceSummaryToken(choice));
+            case RewardChoiceKind.Echo:
+                ApplyLedgerBackedReward(new RewardOption(choice.PayloadId, SM.Content.Definitions.RewardType.Echo, choice.EchoAmount, BuildRewardChoiceSummaryKey(choice)), BuildRewardChoiceSummaryToken(choice));
                 break;
             case RewardChoiceKind.PermanentAugmentSlot:
                 GrantPermanentAugmentSlots(choice.PermanentSlotAmount, choice.PayloadId);
@@ -820,10 +986,187 @@ public sealed class GameSessionState
 
     private void EnsureRecruitOffers()
     {
-        while (_recruitOffers.Count < 3)
+        if (_recruitOffers.Count > 0)
         {
-            _recruitOffers.Add(CreateRecruitOffer(_recruitOfferGeneration + Profile.Heroes.Count + _recruitOffers.Count));
+            return;
         }
+
+        var snapshot = _combatContentLookup.Snapshot;
+        var result = RecruitPackGenerator.GeneratePack(
+            snapshot.Archetypes,
+            snapshot,
+            ToHeroRecords(Profile).ToList(),
+            ActiveRun?.Overlay.TemporaryAugmentIds ?? Array.Empty<string>(),
+            ToPermanentAugmentLoadout(Profile, string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId) ? "blueprint.default" : Profile.ActiveBlueprintId).EquippedAugmentIds,
+            _recruitPityState.Clone(),
+            _recruitPhaseState.Clone(),
+            BuildStableSeed("recruit-pack", _recruitOfferGeneration + Profile.Heroes.Count));
+        _recruitOffers.Clear();
+        _recruitOffers.AddRange(result.Offers);
+        _recruitPityState = result.UpdatedPity;
+        _recruitPhaseState = result.UpdatedPhase;
+        SyncRecruitState();
+    }
+
+    private void ResetRecruitPhaseForTownEntry()
+    {
+        _recruitPhaseState = new RecruitPhaseState();
+        _recruitOfferGeneration = 0;
+        _recruitOffers.Clear();
+        EnsureRecruitOffers();
+        SyncRecruitState();
+    }
+
+    private TeamPlanProfile BuildTeamPlanProfile()
+    {
+        var snapshot = _combatContentLookup.Snapshot;
+        var permanentAugments = ToPermanentAugmentLoadout(
+                Profile,
+                string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId) ? "blueprint.default" : Profile.ActiveBlueprintId)
+            .EquippedAugmentIds;
+        return TeamPlanEvaluator.Evaluate(
+            ToHeroRecords(Profile).ToList(),
+            snapshot.Archetypes,
+            snapshot,
+            ActiveRun?.Overlay.TemporaryAugmentIds ?? Array.Empty<string>(),
+            permanentAugments);
+    }
+
+    private bool IsTownEconomyPhase()
+    {
+        return string.Equals(CurrentSceneName, SceneNames.Town, StringComparison.Ordinal);
+    }
+
+    private bool TryGrantRecruitPreview(
+        RecruitUnitPreview preview,
+        RecruitOfferSource source,
+        out DuplicateConversionResult? duplicateResult,
+        out string error)
+    {
+        duplicateResult = null;
+        error = string.Empty;
+        if (!_combatContentLookup.TryGetArchetype(preview.UnitBlueprintId, out var archetype))
+        {
+            error = $"Archetype '{preview.UnitBlueprintId}'를 찾을 수 없습니다.";
+            return false;
+        }
+
+        if (DuplicateResolver.TryResolveDuplicate(
+                Profile.Heroes.Any(hero => string.Equals(hero.ArchetypeId, preview.UnitBlueprintId, StringComparison.Ordinal)),
+                preview.Metadata.Tier,
+                RecruitmentBalanceCatalog.DefaultDuplicateEchoValues,
+                out var duplicate))
+        {
+            Profile.Currencies.Echo += duplicate.EchoGranted;
+            duplicateResult = duplicate;
+            _lastDuplicateConversion = duplicate;
+            SyncRecruitState();
+            return true;
+        }
+
+        var heroId = $"hero-{Guid.NewGuid():N}";
+        Profile.Heroes.Add(new HeroInstanceRecord
+        {
+            HeroId = heroId,
+            Name = ResolveArchetypeDisplayName(archetype),
+            ArchetypeId = preview.UnitBlueprintId,
+            RaceId = archetype.Race.Id,
+            ClassId = archetype.Class.Id,
+            PositiveTraitId = _combatContentLookup.NormalizePositiveTraitId(preview.UnitBlueprintId, string.Empty, Profile.Heroes.Count),
+            NegativeTraitId = _combatContentLookup.NormalizeNegativeTraitId(preview.UnitBlueprintId, string.Empty, Profile.Heroes.Count + 1),
+            FlexActiveId = preview.FlexActiveId,
+            FlexPassiveId = preview.FlexPassiveId,
+            RecruitTier = preview.Metadata.Tier,
+            RecruitSource = source,
+            RetrainState = new UnitRetrainState(),
+            EconomyFootprint = new UnitEconomyFootprint
+            {
+                RecruitGoldPaid = source == RecruitOfferSource.RecruitPhase ? preview.Metadata.GoldCost : 0,
+            },
+            EquippedItemIds = new List<string>(),
+        });
+
+        Roster = new RosterState(ToHeroRecords(Profile));
+        EnsureProfileBuildState();
+        _lastDuplicateConversion = null;
+        SyncActiveRunIfPresent();
+        return true;
+    }
+
+    private bool TryGetHero(string heroId, out HeroInstanceRecord hero)
+    {
+        hero = Profile.Heroes.FirstOrDefault(entry => entry.HeroId == heroId)!;
+        return hero != null;
+    }
+
+    private static int BuildStableSeed(string value, int salt)
+    {
+        return Math.Abs(HashCode.Combine(value, salt));
+    }
+
+    private static string ResolveHeroFlexActiveId(HeroInstanceRecord hero, CombatArchetypeTemplate archetype)
+    {
+        return string.IsNullOrWhiteSpace(hero.FlexActiveId)
+            ? archetype.FlexActive?.Id ?? string.Empty
+            : hero.FlexActiveId;
+    }
+
+    private static string ResolveHeroFlexPassiveId(HeroInstanceRecord hero, CombatArchetypeTemplate archetype)
+    {
+        return string.IsNullOrWhiteSpace(hero.FlexPassiveId)
+            ? archetype.FlexPassive?.Id ?? string.Empty
+            : hero.FlexPassiveId;
+    }
+
+    private void SyncHeroBuildState(HeroInstanceRecord hero)
+    {
+        var loadout = Profile.HeroLoadouts.FirstOrDefault(record => record.HeroId == hero.HeroId);
+        if (loadout == null)
+        {
+            Profile.HeroLoadouts.Add(new HeroLoadoutRecord
+            {
+                HeroId = hero.HeroId,
+                EquippedItemInstanceIds = hero.EquippedItemIds.ToList(),
+            });
+        }
+        else
+        {
+            loadout.EquippedItemInstanceIds = hero.EquippedItemIds.ToList();
+        }
+    }
+
+    private void UnequipHeroItems(string heroId)
+    {
+        foreach (var inventoryItem in Profile.Inventory.Where(item => string.Equals(item.EquippedHeroId, heroId, StringComparison.Ordinal)))
+        {
+            inventoryItem.EquippedHeroId = string.Empty;
+        }
+
+        var hero = Profile.Heroes.FirstOrDefault(entry => entry.HeroId == heroId);
+        if (hero != null)
+        {
+            hero.EquippedItemIds = new List<string>();
+        }
+    }
+
+    private void RemoveHeroFromRoster(string heroId)
+    {
+        var removedLoadout = Profile.HeroLoadouts.FirstOrDefault(record => string.Equals(record.HeroId, heroId, StringComparison.Ordinal));
+        if (removedLoadout != null)
+        {
+            var removedSkillIds = removedLoadout.EquippedSkillInstanceIds
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .ToHashSet(StringComparer.Ordinal);
+            Profile.SkillInstances.RemoveAll(record => removedSkillIds.Contains(record.SkillInstanceId));
+        }
+
+        Profile.Heroes.RemoveAll(hero => string.Equals(hero.HeroId, heroId, StringComparison.Ordinal));
+        Profile.HeroLoadouts.RemoveAll(record => string.Equals(record.HeroId, heroId, StringComparison.Ordinal));
+        Profile.HeroProgressions.RemoveAll(record => string.Equals(record.HeroId, heroId, StringComparison.Ordinal));
+        Profile.PassiveSelections.RemoveAll(record => string.Equals(record.HeroId, heroId, StringComparison.Ordinal));
+        _expeditionSquadHeroIds.RemoveAll(id => string.Equals(id, heroId, StringComparison.Ordinal));
+        ClearDeploymentForHero(heroId);
+        EnsureBattleDeployReady();
     }
 
     private void EnsureDefaultSquad()
@@ -1006,7 +1349,7 @@ public sealed class GameSessionState
             "ui.expedition.route.relay.reward",
             "ui.expedition.route.relay.desc",
             true,
-            ExpeditionNodeEffectKind.TraitRerollCurrency,
+            ExpeditionNodeEffectKind.Echo,
             1,
             string.Empty,
             new[] { 3 }));
@@ -1064,7 +1407,7 @@ public sealed class GameSessionState
             return new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.fallback_stash.title", "ui.reward.choice.fallback_stash.desc", 3, 0, 0, "reward.gold.fallback.3"),
-                new RewardChoiceViewModel(RewardChoiceKind.TraitRerollCurrency, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, "reward.reroll.fallback.1"),
+                new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, "reward.echo.fallback.1"),
                 new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.guard_spark.title", "ui.reward.choice.guard_spark.desc", 0, 0, 0, ResolveRewardAugmentId(0))
             };
         }
@@ -1090,7 +1433,7 @@ public sealed class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.war_chest.title", "ui.reward.choice.war_chest.desc", 8, 0, 0, "reward.gold.ambush.8"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.hook_spear.title", "ui.reward.choice.hook_spear.desc", 0, 0, 0, ResolveRewardItemId(1)),
-                new RewardChoiceViewModel(RewardChoiceKind.TraitRerollCurrency, "ui.reward.choice.scout_intel.title", "ui.reward.choice.scout_intel.desc", 0, 1, 0, "reward.reroll.ambush.1")
+                new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.scout_intel.title", "ui.reward.choice.scout_intel.desc", 0, 1, 0, "reward.echo.ambush.1")
             },
             "relay-route" => new[]
             {
@@ -1102,7 +1445,7 @@ public sealed class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.PermanentAugmentSlot, "ui.reward.choice.permanent_socket.title", "ui.reward.choice.permanent_socket.desc", 0, 0, 1, "perm-slot-shrine"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.sigil_core.title", "ui.reward.choice.sigil_core.desc", 0, 0, 0, ResolveRewardItemId(3)),
-                new RewardChoiceViewModel(RewardChoiceKind.TraitRerollCurrency, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 2, 0, "reward.reroll.shrine.2")
+                new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 2, 0, "reward.echo.shrine.2")
             },
             _ => new[]
             {
@@ -1119,7 +1462,7 @@ public sealed class GameSessionState
         {
             ExpeditionNodeEffectKind.None => new SessionTextToken(GameLocalizationTables.UIExpedition, "ui.expedition.effect.none", "No effect"),
             ExpeditionNodeEffectKind.Gold => ApplyGoldNodeEffect(node),
-            ExpeditionNodeEffectKind.TraitRerollCurrency => ApplyTraitRerollNodeEffect(node),
+            ExpeditionNodeEffectKind.Echo => ApplyEchoNodeEffect(node),
             ExpeditionNodeEffectKind.TemporaryAugment => ApplyTemporaryAugmentNodeEffect(node),
             ExpeditionNodeEffectKind.PermanentAugmentSlot => ApplyPermanentSlotNodeEffect(node),
             _ => new SessionTextToken(GameLocalizationTables.UIExpedition, "ui.expedition.effect.none", "No effect")
@@ -1136,13 +1479,13 @@ public sealed class GameSessionState
             SessionTextArg.Number(node.EffectAmount));
     }
 
-    private SessionTextToken ApplyTraitRerollNodeEffect(ExpeditionNodeViewModel node)
+    private SessionTextToken ApplyEchoNodeEffect(ExpeditionNodeViewModel node)
     {
-        Profile.Currencies.TraitRerollCurrency += node.EffectAmount;
+        Profile.Currencies.Echo += node.EffectAmount;
         return new SessionTextToken(
             GameLocalizationTables.UIExpedition,
-            "ui.expedition.effect.reroll",
-            "Trait Reroll +{0}",
+            "ui.expedition.effect.echo",
+            "Echo +{0}",
             SessionTextArg.Number(node.EffectAmount));
     }
 
@@ -1354,19 +1697,19 @@ public sealed class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.field_kit.title", "ui.reward.choice.field_kit.desc", 0, 0, 0, ResolveRewardItemId(1)),
                 new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.anchor_beat.title", "ui.reward.choice.anchor_beat.desc", 0, 0, 0, ResolveRewardAugmentId(1)),
-                new RewardChoiceViewModel(RewardChoiceKind.TraitRerollCurrency, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, $"reward.{sourceId}.reroll")
+                new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, $"reward.{sourceId}.echo")
             },
             RewardSourceKindValue.Boss => new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.PermanentAugmentSlot, "ui.reward.choice.permanent_socket.title", "ui.reward.choice.permanent_socket.desc", 0, 0, 1, $"perm-slot.{sourceId}"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.sigil_core.title", "ui.reward.choice.sigil_core.desc", 0, 0, 0, ResolveRewardItemId(2)),
-                new RewardChoiceViewModel(RewardChoiceKind.TraitRerollCurrency, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 2, 0, $"reward.{sourceId}.reroll")
+                new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 2, 0, $"reward.{sourceId}.echo")
             },
             RewardSourceKindValue.ExtractEndRun => new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.war_chest.title", "ui.reward.choice.war_chest.desc", 10, 0, 0, $"reward.{sourceId}.gold"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.field_kit.title", "ui.reward.choice.field_kit.desc", 0, 0, 0, ResolveRewardItemId(3)),
-                new RewardChoiceViewModel(RewardChoiceKind.TraitRerollCurrency, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 1, 0, $"reward.{sourceId}.reroll")
+                new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 1, 0, $"reward.{sourceId}.echo")
             },
             _ => new[]
             {
@@ -1413,9 +1756,9 @@ public sealed class GameSessionState
                 Profile.Currencies.Gold += entry.Amount;
                 summaryParts.Add($"gold +{entry.Amount}");
                 break;
-            case SM.Content.Definitions.RewardType.TraitRerollCurrency:
-                Profile.Currencies.TraitRerollCurrency += entry.Amount;
-                summaryParts.Add($"trait_reroll +{entry.Amount}");
+            case SM.Content.Definitions.RewardType.Echo:
+                Profile.Currencies.Echo += entry.Amount;
+                summaryParts.Add($"echo +{entry.Amount}");
                 break;
             case SM.Content.Definitions.RewardType.TraitLockToken:
                 Profile.Currencies.TraitLockToken += entry.Amount;
@@ -1560,7 +1903,7 @@ public sealed class GameSessionState
     private void SeedDemoProfile()
     {
         Profile.DisplayName = "Demo Player";
-        Profile.Currencies = new CurrencyRecord { Gold = 10, TraitRerollCurrency = 1 };
+        Profile.Currencies = new CurrencyRecord { Gold = 12, Echo = 45 };
         Profile.UnlockedPermanentAugmentIds = new List<string> { "perm-slot-1" };
         Profile.Inventory = new List<InventoryItemRecord>();
         Profile.Heroes.Clear();
@@ -1592,12 +1935,18 @@ public sealed class GameSessionState
             Profile.Heroes.Add(new HeroInstanceRecord
             {
                 HeroId = heroId,
-                Name = $"Hero {i + 1}",
+                Name = archetype != null ? ResolveArchetypeDisplayName(archetype) : $"Hero {i + 1}",
                 ArchetypeId = archetypeId,
                 RaceId = archetype?.Race.Id ?? string.Empty,
                 ClassId = archetype?.Class.Id ?? string.Empty,
                 PositiveTraitId = _combatContentLookup.NormalizePositiveTraitId(archetypeId, string.Empty, i),
                 NegativeTraitId = _combatContentLookup.NormalizeNegativeTraitId(archetypeId, string.Empty, i + 1),
+                FlexActiveId = archetype?.Loadout?.FlexActive?.Id ?? string.Empty,
+                FlexPassiveId = archetype?.Loadout?.FlexPassive?.Id ?? string.Empty,
+                RecruitTier = archetype?.RecruitTier ?? RecruitTier.Common,
+                RecruitSource = RecruitOfferSource.DirectGrant,
+                RetrainState = new UnitRetrainState(),
+                EconomyFootprint = new UnitEconomyFootprint(),
                 EquippedItemIds = equippedItems
             });
         }
@@ -1641,11 +1990,20 @@ public sealed class GameSessionState
         {
             var hero = Profile.Heroes[i];
             hero.EquippedItemIds ??= new List<string>();
+            hero.RetrainState ??= new UnitRetrainState();
+            hero.EconomyFootprint ??= new UnitEconomyFootprint();
             hero.ArchetypeId = _combatContentLookup.NormalizeArchetypeId(hero.ArchetypeId, hero.RaceId, hero.ClassId, i);
             if (_combatContentLookup.TryGetArchetype(hero.ArchetypeId, out var archetype))
             {
                 hero.RaceId = archetype.Race.Id;
                 hero.ClassId = archetype.Class.Id;
+                hero.FlexActiveId = string.IsNullOrWhiteSpace(hero.FlexActiveId)
+                    ? archetype.Loadout?.FlexActive?.Id ?? string.Empty
+                    : hero.FlexActiveId;
+                hero.FlexPassiveId = string.IsNullOrWhiteSpace(hero.FlexPassiveId)
+                    ? archetype.Loadout?.FlexPassive?.Id ?? string.Empty
+                    : hero.FlexPassiveId;
+                hero.RecruitTier = archetype.RecruitTier;
             }
 
             hero.PositiveTraitId = _combatContentLookup.NormalizePositiveTraitId(hero.ArchetypeId, hero.PositiveTraitId, i);
@@ -1719,24 +2077,24 @@ public sealed class GameSessionState
         }
     }
 
-    private RecruitOffer CreateRecruitOffer(int offerSeed)
-    {
-        var archetypeId = _combatContentLookup.NormalizeArchetypeId(string.Empty, string.Empty, string.Empty, offerSeed);
-        _combatContentLookup.TryGetArchetype(archetypeId, out var archetype);
-        var offerIndex = offerSeed + 1;
-        return new RecruitOffer(
-            $"offer-hero-{offerIndex}",
-            $"Recruit {offerIndex}",
-            archetypeId,
-            archetype?.Race.Id ?? string.Empty,
-            archetype?.Class.Id ?? string.Empty,
-            _combatContentLookup.NormalizePositiveTraitId(archetypeId, string.Empty, offerSeed),
-            _combatContentLookup.NormalizeNegativeTraitId(archetypeId, string.Empty, offerSeed + 1));
-    }
-
     private string ResolveRewardItemId(int index)
     {
         return _combatContentLookup.NormalizeItemBaseId(string.Empty, index);
+    }
+
+    private static string ResolveArchetypeDisplayName(UnitArchetypeDefinition archetype)
+    {
+        if (!string.IsNullOrWhiteSpace(archetype.LegacyDisplayName))
+        {
+            return archetype.LegacyDisplayName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(archetype.NameKey))
+        {
+            return archetype.NameKey;
+        }
+
+        return archetype.Id;
     }
 
     private string ResolveRewardAugmentId(int index)
@@ -1755,7 +2113,13 @@ public sealed class GameSessionState
                 hero.RaceId,
                 hero.ClassId,
                 hero.PositiveTraitId,
-                hero.NegativeTraitId);
+                hero.NegativeTraitId,
+                hero.FlexActiveId,
+                hero.FlexPassiveId,
+                hero.RecruitTier,
+                hero.RecruitSource,
+                hero.RetrainState?.Clone() ?? new UnitRetrainState(),
+                hero.EconomyFootprint?.Clone() ?? new UnitEconomyFootprint());
         }
     }
 
@@ -1800,6 +2164,10 @@ public sealed class GameSessionState
 
     private void NormalizeBuildStateRecords()
     {
+        Profile.ActiveRun ??= new ActiveRunRecord();
+        Profile.ActiveRun.RecruitPhase ??= new RecruitPhaseState();
+        Profile.ActiveRun.RecruitPity ??= new RecruitPityState();
+
         foreach (var loadout in Profile.HeroLoadouts)
         {
             loadout.EquippedItemInstanceIds ??= new List<string>();
@@ -1839,6 +2207,7 @@ public sealed class GameSessionState
 
     private void RestoreActiveRunFromProfile()
     {
+        RestoreRecruitStates();
         if (Profile.ActiveRun == null || string.IsNullOrWhiteSpace(Profile.ActiveRun.RunId))
         {
             ActiveRun = null;
@@ -1856,6 +2225,8 @@ public sealed class GameSessionState
                 Profile.ActiveRun.PendingRewardIds,
                 Profile.ActiveRun.CompileVersion,
                 Profile.ActiveRun.CompileHash,
+                Profile.ActiveRun.RecruitPhase?.Clone() ?? new RecruitPhaseState(),
+                Profile.ActiveRun.RecruitPity?.Clone() ?? new RecruitPityState(),
                 Profile.ActiveRun.ChapterId,
                 Profile.ActiveRun.SiteId,
                 Profile.ActiveRun.SiteNodeIndex,
@@ -1894,7 +2265,9 @@ public sealed class GameSessionState
     {
         if (ActiveRun == null)
         {
-            Profile.ActiveRun = new ActiveRunRecord();
+            Profile.ActiveRun ??= new ActiveRunRecord();
+            Profile.ActiveRun.RecruitPhase = _recruitPhaseState.Clone();
+            Profile.ActiveRun.RecruitPity = _recruitPityState.Clone();
             return;
         }
 
@@ -1908,6 +2281,8 @@ public sealed class GameSessionState
             TemporaryAugmentIds = ActiveRun.Overlay.TemporaryAugmentIds.ToList(),
             PendingRewardIds = ActiveRun.Overlay.PendingRewardIds.ToList(),
             BattleDeployHeroIds = ActiveRun.BattleDeployHeroIds.ToList(),
+            RecruitPhase = _recruitPhaseState.Clone(),
+            RecruitPity = _recruitPityState.Clone(),
             CompileVersion = ActiveRun.Overlay.CompileVersion,
             CompileHash = ActiveRun.Overlay.LastCompileHash,
             LastBattleMatchId = ActiveRun.LastBattleMatchId ?? string.Empty,
@@ -1921,6 +2296,29 @@ public sealed class GameSessionState
             StoryCleared = ActiveRun.StoryCleared,
             EndlessUnlocked = ActiveRun.EndlessUnlocked,
         };
+    }
+
+    private void RestoreRecruitStates()
+    {
+        _recruitPhaseState = Profile.ActiveRun?.RecruitPhase?.Clone() ?? new RecruitPhaseState();
+        _recruitPityState = Profile.ActiveRun?.RecruitPity?.Clone() ?? new RecruitPityState();
+    }
+
+    private void SyncRecruitState()
+    {
+        if (ActiveRun != null)
+        {
+            ActiveRun = ActiveRun with
+            {
+                Overlay = ActiveRun.Overlay with
+                {
+                    RecruitPhase = _recruitPhaseState.Clone(),
+                    RecruitPity = _recruitPityState.Clone(),
+                }
+            };
+        }
+
+        SyncActiveRunRecord();
     }
 
     private SquadBlueprintState CaptureBlueprintState()
@@ -2059,6 +2457,7 @@ public sealed class GameSessionState
 
         var currencyState = new CurrencyState(
             Profile.Currencies.Gold,
+            Profile.Currencies.Echo,
             Profile.Currencies.TraitRerollCurrency,
             Profile.Currencies.TraitLockToken,
             Profile.Currencies.TraitPurgeToken,
@@ -2067,6 +2466,7 @@ public sealed class GameSessionState
             Profile.Currencies.BossSigil);
         var result = RewardLedgerService.ApplyReward(currencyState, ActiveRun!, option);
         Profile.Currencies.Gold = currencyState.Gold;
+        Profile.Currencies.Echo = currencyState.Echo;
         Profile.Currencies.TraitRerollCurrency = currencyState.TraitRerollCurrency;
         Profile.Currencies.TraitLockToken = currencyState.TraitLockToken;
         Profile.Currencies.TraitPurgeToken = currencyState.TraitPurgeToken;
@@ -2141,7 +2541,7 @@ public sealed class GameSessionState
             RewardChoiceKind.Gold => "ui.reward.kind.gold",
             RewardChoiceKind.Item => "ui.reward.kind.item",
             RewardChoiceKind.TemporaryAugment => "ui.reward.kind.temp_augment",
-            RewardChoiceKind.TraitRerollCurrency => "ui.reward.kind.reroll",
+            RewardChoiceKind.Echo => "ui.reward.kind.echo",
             RewardChoiceKind.PermanentAugmentSlot => "ui.reward.kind.permanent_slot",
             _ => "ui.common.none"
         };
@@ -2166,11 +2566,11 @@ public sealed class GameSessionState
                 "ui.reward.kind.temp_augment",
                 "Temp / {0}",
                 SessionTextArg.AugmentName(choice.PayloadId)),
-            RewardChoiceKind.TraitRerollCurrency => new SessionTextToken(
+            RewardChoiceKind.Echo => new SessionTextToken(
                 GameLocalizationTables.UIReward,
-                "ui.reward.kind.reroll",
-                "Trait Reroll +{0}",
-                SessionTextArg.Number(choice.TraitRerollAmount)),
+                "ui.reward.kind.echo",
+                "Echo +{0}",
+                SessionTextArg.Number(choice.EchoAmount)),
             RewardChoiceKind.PermanentAugmentSlot => new SessionTextToken(
                 GameLocalizationTables.UIReward,
                 "ui.reward.kind.permanent_slot",
@@ -2180,12 +2580,3 @@ public sealed class GameSessionState
         };
     }
 }
-
-public sealed record RecruitOffer(
-    string HeroId,
-    string Name,
-    string ArchetypeId,
-    string RaceId,
-    string ClassId,
-    string PositiveTraitId,
-    string NegativeTraitId);

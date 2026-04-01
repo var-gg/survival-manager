@@ -135,8 +135,8 @@ public sealed class RewardScreenController : MonoBehaviour
             $"{session.LastBattleSummary.Resolve(_localization, _contentText)}\n" +
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.auto_loot", "Auto Loot: {0}", session.LastAutomaticLootBundle == null ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None") : LootResolutionService.FormatSummary(session.LastAutomaticLootBundle))}\n" +
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.gold", "Gold: {0}", session.Profile.Currencies.Gold)}\n" +
-            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.reroll", "Trait Reroll: {0}", session.Profile.Currencies.TraitRerollCurrency)}\n" +
-            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.crafting", "Craft Mats: Ember {0} / Echo {1} / Sigil {2}", session.Profile.Currencies.EmberDust, session.Profile.Currencies.EchoCrystal, session.Profile.Currencies.BossSigil)}\n" +
+            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.echo", "Echo: {0}", session.Profile.Currencies.Echo)}\n" +
+            $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.crafting", "Craft Mats: Ember {0} / Echo Crystal {1} / Sigil {2}", session.Profile.Currencies.EmberDust, session.Profile.Currencies.EchoCrystal, session.Profile.Currencies.BossSigil)}\n" +
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.slots", "Perm Slots: {0}", session.PermanentAugmentSlotCount)}\n" +
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.inventory", "Inventory: {0}", session.Profile.Inventory.Count)}\n" +
             $"{Localize(GameLocalizationTables.UIReward, "ui.reward.summary.temp_augments", "Temp Augments: {0}", session.Expedition.TemporaryAugmentIds.Count)}";
@@ -193,7 +193,7 @@ public sealed class RewardScreenController : MonoBehaviour
             RewardChoiceKind.Gold => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.gold", "Gold +{0}", choice.GoldAmount),
             RewardChoiceKind.Item => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.item", "Item / {0}", _contentText.GetItemName(choice.PayloadId)),
             RewardChoiceKind.TemporaryAugment => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.temp_augment", "Temp / {0}", _contentText.GetAugmentName(choice.PayloadId)),
-            RewardChoiceKind.TraitRerollCurrency => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.reroll", "Trait Reroll +{0}", choice.TraitRerollAmount),
+            RewardChoiceKind.Echo => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.echo", "Echo +{0}", choice.EchoAmount),
             RewardChoiceKind.PermanentAugmentSlot => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.permanent_slot", "Permanent Slot +{0}", choice.PermanentSlotAmount),
             _ => choice.Kind.ToString()
         };
@@ -211,7 +211,7 @@ public sealed class RewardScreenController : MonoBehaviour
             RewardChoiceKind.Gold => new Color(0.48f, 0.36f, 0.16f, 0.96f),
             RewardChoiceKind.Item => new Color(0.20f, 0.28f, 0.42f, 0.96f),
             RewardChoiceKind.TemporaryAugment => new Color(0.18f, 0.34f, 0.24f, 0.96f),
-            RewardChoiceKind.TraitRerollCurrency => new Color(0.28f, 0.22f, 0.44f, 0.96f),
+            RewardChoiceKind.Echo => new Color(0.28f, 0.22f, 0.44f, 0.96f),
             RewardChoiceKind.PermanentAugmentSlot => new Color(0.40f, 0.24f, 0.14f, 0.96f),
             _ => new Color(0.18f, 0.21f, 0.30f, 0.96f)
         };

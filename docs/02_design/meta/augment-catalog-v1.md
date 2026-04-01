@@ -7,7 +7,7 @@
 - 관련문서:
   - `docs/02_design/meta/augment-system.md`
   - `docs/02_design/meta/synergy-and-augment-taxonomy.md`
-  - `docs/02_design/meta/reward-protection-and-acquisition-loop.md`
+  - `docs/02_design/meta/economy-protection-contract.md`
 
 ## 목적
 

@@ -3,6 +3,7 @@ namespace SM.Meta.Model;
 public sealed class CurrencyState
 {
     public int Gold { get; private set; }
+    public int Echo { get; private set; }
     public int TraitRerollCurrency { get; private set; }
     public int TraitLockToken { get; private set; }
     public int TraitPurgeToken { get; private set; }
@@ -12,6 +13,7 @@ public sealed class CurrencyState
 
     public CurrencyState(
         int gold = 0,
+        int echo = 0,
         int traitRerollCurrency = 0,
         int traitLockToken = 0,
         int traitPurgeToken = 0,
@@ -20,6 +22,7 @@ public sealed class CurrencyState
         int bossSigil = 0)
     {
         Gold = gold;
+        Echo = echo;
         TraitRerollCurrency = traitRerollCurrency;
         TraitLockToken = traitLockToken;
         TraitPurgeToken = traitPurgeToken;
@@ -29,6 +32,7 @@ public sealed class CurrencyState
     }
 
     public void AddGold(int amount) => Gold += amount;
+    public void AddEcho(int amount) => Echo += amount;
     public void AddTraitRerollCurrency(int amount) => TraitRerollCurrency += amount;
     public void AddTraitLockToken(int amount) => TraitLockToken += amount;
     public void AddTraitPurgeToken(int amount) => TraitPurgeToken += amount;

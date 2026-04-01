@@ -30,8 +30,8 @@ public static class RewardLedgerService
             case RewardType.TemporaryAugment:
                 run = RunStateService.ApplyTemporaryAugment(run, option.Id);
                 break;
-            case RewardType.TraitRerollCurrency:
-                currencyState.AddTraitRerollCurrency(option.Amount);
+            case RewardType.Echo:
+                currencyState.AddEcho(option.Amount);
                 break;
         }
 

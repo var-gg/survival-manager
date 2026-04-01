@@ -52,6 +52,122 @@ public sealed class RuntimeCombatContentLookup
         "augment_gold_mending"
     };
 
+    private static readonly IReadOnlyDictionary<string, RecruitTier> LoopBRecruitTierFallbacks = new Dictionary<string, RecruitTier>(StringComparer.Ordinal)
+    {
+        ["guardian"] = RecruitTier.Rare,
+        ["raider"] = RecruitTier.Rare,
+        ["bulwark"] = RecruitTier.Rare,
+        ["reaver"] = RecruitTier.Rare,
+        ["marksman"] = RecruitTier.Rare,
+        ["hexer"] = RecruitTier.Epic,
+        ["shaman"] = RecruitTier.Epic,
+    };
+
+    private static readonly IReadOnlyDictionary<string, string[]> LoopBRecruitPlanTagFallbacks = new Dictionary<string, string[]>(StringComparer.Ordinal)
+    {
+        ["warden"] = new[] { "vanguard", "frontline", "guard", "physical" },
+        ["guardian"] = new[] { "vanguard", "frontline", "guard", "support" },
+        ["bulwark"] = new[] { "vanguard", "frontline", "shield_skill", "support" },
+        ["slayer"] = new[] { "duelist", "frontline", "strike", "execute" },
+        ["raider"] = new[] { "duelist", "frontline", "mark", "physical" },
+        ["reaver"] = new[] { "duelist", "frontline", "burst", "execute" },
+        ["hunter"] = new[] { "ranger", "backline", "projectile", "physical" },
+        ["scout"] = new[] { "ranger", "backline", "mark", "exposed" },
+        ["marksman"] = new[] { "ranger", "backline", "pierce", "physical" },
+        ["priest"] = new[] { "mystic", "backline", "support", "heal" },
+        ["hexer"] = new[] { "mystic", "backline", "magical", "silence" },
+        ["shaman"] = new[] { "mystic", "backline", "magical", "burn" },
+    };
+
+    private static readonly IReadOnlyDictionary<string, string[]> LoopBScoutBiasTagFallbacks = new Dictionary<string, string[]>(StringComparer.Ordinal)
+    {
+        ["warden"] = new[] { "frontline", "guard", "vanguard" },
+        ["guardian"] = new[] { "frontline", "guard", "vanguard" },
+        ["bulwark"] = new[] { "frontline", "guard", "vanguard" },
+        ["slayer"] = new[] { "frontline", "physical", "duelist" },
+        ["raider"] = new[] { "frontline", "physical", "duelist" },
+        ["reaver"] = new[] { "frontline", "physical", "duelist" },
+        ["hunter"] = new[] { "backline", "physical", "ranger" },
+        ["scout"] = new[] { "backline", "physical", "ranger" },
+        ["marksman"] = new[] { "backline", "physical", "ranger" },
+        ["priest"] = new[] { "backline", "support", "heal", "mystic" },
+        ["hexer"] = new[] { "backline", "magical", "mystic" },
+        ["shaman"] = new[] { "backline", "magical", "mystic" },
+    };
+
+    private static readonly IReadOnlyDictionary<string, string[]> LoopBFlexActivePoolFallbacks = new Dictionary<string, string[]>(StringComparer.Ordinal)
+    {
+        ["vanguard"] = new[] { "skill_guardian_utility", "skill_warden_utility" },
+        ["duelist"] = new[] { "skill_slayer_utility", "skill_raider_utility", "skill_reaver_utility" },
+        ["ranger"] = new[] { "skill_hunter_utility", "skill_marksman_utility", "skill_scout_utility" },
+        ["mystic"] = new[] { "skill_minor_heal", "skill_hexer_utility", "skill_shaman_utility" },
+    };
+
+    private static readonly IReadOnlyDictionary<string, string[]> LoopBFlexPassivePoolFallbacks = new Dictionary<string, string[]>(StringComparer.Ordinal)
+    {
+        ["vanguard"] = new[] { "skill_vanguard_support_1", "skill_vanguard_support_2", "support_guarded", "support_anchored" },
+        ["duelist"] = new[] { "skill_duelist_support_1", "skill_duelist_support_2", "support_executioner", "support_brutal" },
+        ["ranger"] = new[] { "skill_ranger_support_1", "skill_ranger_support_2", "support_longshot", "support_hunter_mark", "support_piercing", "support_swift" },
+        ["mystic"] = new[] { "skill_mystic_support_1", "skill_mystic_support_2", "support_purifying", "support_siphon", "support_echo", "support_lingering" },
+    };
+
+    private static readonly IReadOnlyDictionary<string, RecruitBannedPairingTemplate[]> LoopBRecruitBannedPairingFallbacks = new Dictionary<string, RecruitBannedPairingTemplate[]>(StringComparer.Ordinal)
+    {
+        ["vanguard"] = new[] { new RecruitBannedPairingTemplate("skill_warden_utility", "support_anchored") },
+        ["duelist"] = new[] { new RecruitBannedPairingTemplate("skill_reaver_utility", "support_brutal") },
+        ["ranger"] = new[] { new RecruitBannedPairingTemplate("skill_scout_utility", "support_longshot") },
+        ["mystic"] = new[] { new RecruitBannedPairingTemplate("skill_minor_heal", "support_siphon") },
+    };
+
+    private static readonly IReadOnlyDictionary<string, RecruitSkillFallback> LoopBRecruitSkillFallbacks = new Dictionary<string, RecruitSkillFallback>(StringComparer.Ordinal)
+    {
+        ["skill_guardian_core"] = new("guard_signature", string.Empty, new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "guard", "support" }, new[] { "frontline", "vanguard" }),
+        ["skill_bulwark_core"] = new("bulwark_signature", string.Empty, new[] { "vanguard", "frontline", "shield_skill" }, new[] { "vanguard", "support", "shield_skill" }, new[] { "frontline", "vanguard" }),
+        ["skill_slayer_core"] = new("slayer_signature", string.Empty, new[] { "duelist", "frontline", "strike" }, new[] { "duelist", "execute", "physical" }, new[] { "frontline", "physical" }),
+        ["skill_raider_core"] = new("raider_signature", string.Empty, new[] { "duelist", "frontline", "mark" }, new[] { "duelist", "mark", "physical" }, new[] { "frontline", "physical" }),
+        ["skill_hexer_core"] = new("hexer_signature", string.Empty, new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "silence" }, new[] { "backline", "magical" }),
+        ["skill_priest_core"] = new("priest_signature", string.Empty, new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "heal" }, new[] { "backline", "support" }),
+        ["skill_shaman_core"] = new("shaman_signature", string.Empty, new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "zone" }, new[] { "backline", "magical" }),
+        ["skill_warden_utility"] = new("guard_cleanse", string.Empty, new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "support", "cleanse" }, new[] { "frontline", "support" }),
+        ["skill_guardian_utility"] = new("guard_rally", string.Empty, new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "support", "physical" }, new[] { "frontline", "support" }),
+        ["skill_slayer_utility"] = new("bleed_followup", string.Empty, new[] { "duelist", "frontline", "execute" }, new[] { "duelist", "physical", "execute" }, new[] { "frontline", "physical" }),
+        ["skill_raider_utility"] = new("mark_followup", string.Empty, new[] { "duelist", "frontline", "mark" }, new[] { "duelist", "physical", "mark" }, new[] { "frontline", "physical" }),
+        ["skill_reaver_utility"] = new("burst_followup", string.Empty, new[] { "duelist", "frontline", "burst" }, new[] { "duelist", "physical", "burst" }, new[] { "frontline", "physical" }),
+        ["skill_hunter_utility"] = new("hunter_mark", string.Empty, new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "mark", "physical" }, new[] { "backline", "physical" }),
+        ["skill_marksman_utility"] = new("marksman_pierce", string.Empty, new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "pierce", "physical" }, new[] { "backline", "physical" }),
+        ["skill_scout_utility"] = new("scout_exposed", string.Empty, new[] { "ranger", "backline", "mark" }, new[] { "ranger", "exposed", "physical" }, new[] { "backline", "physical" }),
+        ["skill_minor_heal"] = new("minor_heal", string.Empty, new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "heal" }, new[] { "backline", "support" }),
+        ["skill_hexer_utility"] = new("hexer_silence", string.Empty, new[] { "mystic", "backline", "silence" }, new[] { "mystic", "magical", "silence" }, new[] { "backline", "magical" }),
+        ["skill_shaman_utility"] = new("shaman_zone", string.Empty, new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "zone" }, new[] { "backline", "magical" }),
+        ["skill_vanguard_support_1"] = new("guard_support", string.Empty, new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "support", "guard" }, new[] { "frontline", "support" }),
+        ["skill_vanguard_support_2"] = new("bulwark_support", string.Empty, new[] { "vanguard", "frontline", "shield_skill" }, new[] { "vanguard", "support", "shield_skill" }, new[] { "frontline", "support" }),
+        ["skill_duelist_support_1"] = new("slayer_support", string.Empty, new[] { "duelist", "frontline", "execute" }, new[] { "duelist", "physical", "execute" }, new[] { "frontline", "physical" }),
+        ["skill_duelist_support_2"] = new("raider_support", string.Empty, new[] { "duelist", "frontline", "mark" }, new[] { "duelist", "physical", "mark" }, new[] { "frontline", "physical" }),
+        ["skill_ranger_support_1"] = new("hunter_support", string.Empty, new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "physical", "mark" }, new[] { "backline", "physical" }),
+        ["skill_ranger_support_2"] = new("scout_support", string.Empty, new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "physical", "exposed" }, new[] { "backline", "physical" }),
+        ["skill_mystic_support_1"] = new("priest_support", string.Empty, new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "heal" }, new[] { "backline", "support" }),
+        ["skill_mystic_support_2"] = new("hexer_support", string.Empty, new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "silence" }, new[] { "backline", "magical" }),
+        ["support_guarded"] = new("guard_signature", "vanguard_guard", new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "support", "guard" }, new[] { "frontline", "support" }),
+        ["support_anchored"] = new("anchored_support", "vanguard_guard", new[] { "vanguard", "frontline", "shield_skill" }, new[] { "vanguard", "support", "shield_skill" }, new[] { "frontline", "support" }),
+        ["support_executioner"] = new("executioner_support", "duelist_stance", new[] { "duelist", "frontline", "execute" }, new[] { "duelist", "physical", "execute" }, new[] { "frontline", "physical" }),
+        ["support_brutal"] = new("brutal_support", "duelist_stance", new[] { "duelist", "frontline", "strike" }, new[] { "duelist", "physical", "burst" }, new[] { "frontline", "physical" }),
+        ["support_longshot"] = new("longshot_support", "ranger_tempo", new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "physical", "pierce" }, new[] { "backline", "physical" }),
+        ["support_hunter_mark"] = new("hunter_mark_support", "ranger_tempo", new[] { "ranger", "backline", "mark" }, new[] { "ranger", "physical", "mark" }, new[] { "backline", "physical" }),
+        ["support_piercing"] = new("piercing_support", string.Empty, new[] { "ranger", "backline", "pierce" }, new[] { "ranger", "physical", "pierce" }, new[] { "backline", "physical" }),
+        ["support_swift"] = new("swift_support", string.Empty, new[] { "ranger", "backline", "projectile" }, new[] { "ranger", "physical", "mark" }, new[] { "backline", "physical" }),
+        ["support_purifying"] = new("priest_signature", "mystic_alignment", new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "cleanse" }, new[] { "backline", "support" }),
+        ["support_siphon"] = new("siphon_support", "mystic_alignment", new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "burn" }, new[] { "backline", "magical" }),
+        ["support_echo"] = new("echo_support", string.Empty, new[] { "mystic", "backline", "zone" }, new[] { "mystic", "support", "zone" }, new[] { "backline", "support" }),
+        ["support_lingering"] = new("lingering_support", string.Empty, new[] { "mystic", "backline", "zone" }, new[] { "mystic", "magical", "zone" }, new[] { "backline", "magical" }),
+    };
+
+    private sealed record RecruitSkillFallback(
+        string EffectFamilyId,
+        string MutuallyExclusiveGroupId,
+        string[] NativeTags,
+        string[] PlanTags,
+        string[] ScoutTags);
+
     private readonly Dictionary<string, UnitArchetypeDefinition> _archetypeDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, TraitPoolDefinition> _traitPools = new(StringComparer.Ordinal);
     private readonly Dictionary<string, RaceDefinition> _raceDefinitions = new(StringComparer.Ordinal);
@@ -822,6 +938,26 @@ public sealed class RuntimeCombatContentLookup
             .Select(BuildSkillSpec)
             .ToList();
         var loopALoadout = ResolveLoopALoadout(definition, resolvedSkills, compiledSkills);
+        var recruitFlexActivePool = ResolveRecruitSkillPool(
+                definition.Class?.Id,
+                ResolveRecruitPool(
+                definition.RecruitFlexActivePool,
+                definition.FlexUtilitySkillPool,
+                definition.Loadout?.FlexActive ?? resolvedSkills.FirstOrDefault(skill => NormalizeSkillSlot(skill) == SkillSlotKindValue.UtilityActive)),
+                LoopBFlexActivePoolFallbacks)
+            .Select(BuildSkillSpec)
+            .Where(skill => skill.EffectiveSlotKind == ActionSlotKind.FlexActive)
+            .ToList();
+        var recruitFlexPassivePool = ResolveRecruitSkillPool(
+                definition.Class?.Id,
+                ResolveRecruitPool(
+                definition.RecruitFlexPassivePool,
+                definition.FlexSupportSkillPool,
+                resolvedSkills.FirstOrDefault(skill => NormalizeSkillSlot(skill) == SkillSlotKindValue.Support)),
+                LoopBFlexPassivePoolFallbacks)
+            .Select(BuildSkillSpec)
+            .Where(skill => skill.EffectiveSlotKind == ActionSlotKind.FlexPassive)
+            .ToList();
         return new CombatArchetypeTemplate(
             definition.Id,
             ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
@@ -851,6 +987,13 @@ public sealed class RuntimeCombatContentLookup
                 definition.BaseManaGainOnAttack,
                 definition.BaseManaGainOnHit),
             null,
+            ResolveRecruitTier(definition),
+            definition.IsRecruitable && !definition.IsSummonOnly && !definition.IsEventOnly && !definition.IsBossOnly && !definition.IsUnreleased && !definition.IsTestOnly,
+            ResolveRecruitPlanTags(definition),
+            ResolveScoutBiasTags(definition),
+            recruitFlexActivePool,
+            recruitFlexPassivePool,
+            ResolveRecruitBannedPairings(definition),
             loopALoadout.BasicAttack,
             loopALoadout.SignatureActive,
             loopALoadout.FlexActive,
@@ -1107,6 +1250,25 @@ public sealed class RuntimeCombatContentLookup
 
     private static BattleSkillSpec BuildSkillSpec(SkillDefinitionAsset skill)
     {
+        var fallback = ResolveRecruitSkillFallback(skill);
+        IReadOnlyList<string> recruitNativeTags = ExtractTagIds(skill.RecruitNativeTags);
+        if (recruitNativeTags.Count == 0)
+        {
+            recruitNativeTags = fallback.NativeTags;
+        }
+
+        IReadOnlyList<string> recruitPlanTags = ExtractTagIds(skill.RecruitPlanTags);
+        if (recruitPlanTags.Count == 0)
+        {
+            recruitPlanTags = fallback.PlanTags;
+        }
+
+        IReadOnlyList<string> recruitScoutTags = ExtractTagIds(skill.RecruitScoutTags);
+        if (recruitScoutTags.Count == 0)
+        {
+            recruitScoutTags = fallback.ScoutTags;
+        }
+
         return new BattleSkillSpec(
             skill.Id,
             ResolveLegacyName(skill.NameKey, skill.LegacyDisplayName, skill.Id),
@@ -1169,7 +1331,12 @@ public sealed class RuntimeCombatContentLookup
             CloneTargetRule(skill.TargetRuleData),
             CloneEffects(skill.Effects),
             CloneSummonProfile(skill.SummonProfile),
-            Mathf.Clamp01(skill.InterruptRefundScalar));
+            Mathf.Clamp01(skill.InterruptRefundScalar),
+            string.IsNullOrWhiteSpace(skill.EffectFamilyId) ? fallback.EffectFamilyId : skill.EffectFamilyId,
+            string.IsNullOrWhiteSpace(skill.MutuallyExclusiveGroupId) ? fallback.MutuallyExclusiveGroupId : skill.MutuallyExclusiveGroupId,
+            recruitNativeTags,
+            recruitPlanTags,
+            recruitScoutTags);
     }
 
     private static (BattleBasicAttackSpec BasicAttack, BattleSkillSpec? SignatureActive, BattleSkillSpec? FlexActive, BattlePassiveSpec SignaturePassive, BattlePassiveSpec FlexPassive, BattleMobilitySpec? MobilityReaction) ResolveLoopALoadout(
@@ -1265,7 +1432,195 @@ public sealed class RuntimeCombatContentLookup
             slotKind,
             authored?.ActivationModel ?? ActivationModel.Passive,
             authored != null ? CloneEffects(authored.Effects) : fallbackSkill?.EffectDescriptors ?? Array.Empty<EffectDescriptor>(),
-            authored?.AllowMirroredOwnedSummonKill ?? false);
+            authored?.AllowMirroredOwnedSummonKill ?? false,
+            authored?.EffectFamilyId ?? fallbackSkill?.EffectFamilyId ?? string.Empty);
+    }
+
+    private static IReadOnlyList<SkillDefinitionAsset> ResolveRecruitPool(
+        IReadOnlyList<SkillDefinitionAsset> primary,
+        IReadOnlyList<SkillDefinitionAsset> legacyFallback,
+        SkillDefinitionAsset? finalFallback)
+    {
+        var resolved = Enumerate(primary)
+            .Where(skill => skill != null)
+            .ToList();
+        if (resolved.Count > 0)
+        {
+            return resolved;
+        }
+
+        resolved = Enumerate(legacyFallback)
+            .Where(skill => skill != null)
+            .ToList();
+        if (resolved.Count > 0)
+        {
+            return resolved;
+        }
+
+        if (finalFallback != null)
+        {
+            resolved.Add(finalFallback);
+        }
+
+        return resolved;
+    }
+
+    private IReadOnlyList<SkillDefinitionAsset> ResolveRecruitSkillPool(
+        string? classId,
+        IReadOnlyList<SkillDefinitionAsset> authoredPool,
+        IReadOnlyDictionary<string, string[]> fallbackMap)
+    {
+        if (!string.IsNullOrWhiteSpace(classId)
+            && fallbackMap.TryGetValue(classId, out var fallbackIds))
+        {
+            var fallbackPool = ResolveSkillAssets(fallbackIds);
+            if (fallbackPool.Count > authoredPool.Count)
+            {
+                return fallbackPool;
+            }
+        }
+
+        return authoredPool;
+    }
+
+    private IReadOnlyList<SkillDefinitionAsset> ResolveSkillAssets(IEnumerable<string> skillIds)
+    {
+        return skillIds
+            .Where(id => !string.IsNullOrWhiteSpace(id) && _skillDefinitions.ContainsKey(id))
+            .Select(id => _skillDefinitions[id])
+            .Distinct()
+            .ToList();
+    }
+
+    private static RecruitTier ResolveRecruitTier(UnitArchetypeDefinition definition)
+    {
+        return LoopBRecruitTierFallbacks.TryGetValue(definition.Id, out var tier)
+            ? tier
+            : definition.RecruitTier;
+    }
+
+    private static IReadOnlyList<string> ResolveRecruitPlanTags(UnitArchetypeDefinition definition)
+    {
+        var tags = ExtractTagIds(definition.RecruitPlanTags);
+        return tags.Count > 0
+            ? tags
+            : LoopBRecruitPlanTagFallbacks.TryGetValue(definition.Id, out var fallback)
+                ? fallback
+                : InferArchetypeRecruitTags(definition);
+    }
+
+    private static IReadOnlyList<string> ResolveScoutBiasTags(UnitArchetypeDefinition definition)
+    {
+        var tags = ExtractTagIds(definition.ScoutBiasTags);
+        return tags.Count > 0
+            ? tags
+            : LoopBScoutBiasTagFallbacks.TryGetValue(definition.Id, out var fallback)
+                ? fallback
+                : InferArchetypeRecruitTags(definition);
+    }
+
+    private static IReadOnlyList<RecruitBannedPairingTemplate> ResolveRecruitBannedPairings(UnitArchetypeDefinition definition)
+    {
+        var authored = Enumerate(definition.RecruitBannedPairings)
+            .Where(pairing => pairing != null && !string.IsNullOrWhiteSpace(pairing.FlexActiveId) && !string.IsNullOrWhiteSpace(pairing.FlexPassiveId))
+            .Select(pairing => new RecruitBannedPairingTemplate(pairing.FlexActiveId, pairing.FlexPassiveId))
+            .ToList();
+        if (authored.Count > 0)
+        {
+            return authored;
+        }
+
+        return !string.IsNullOrWhiteSpace(definition.Class?.Id)
+               && LoopBRecruitBannedPairingFallbacks.TryGetValue(definition.Class.Id, out var fallback)
+            ? fallback
+            : Array.Empty<RecruitBannedPairingTemplate>();
+    }
+
+    private static RecruitSkillFallback ResolveRecruitSkillFallback(SkillDefinitionAsset skill)
+    {
+        if (LoopBRecruitSkillFallbacks.TryGetValue(skill.Id, out var fallback))
+        {
+            return fallback;
+        }
+
+        var inferred = InferSkillRecruitTags(skill);
+        return new RecruitSkillFallback(skill.Id, string.Empty, inferred, inferred, inferred);
+    }
+
+    private static string[] InferArchetypeRecruitTags(UnitArchetypeDefinition definition)
+    {
+        var tags = new HashSet<string>(StringComparer.Ordinal);
+        if (!string.IsNullOrWhiteSpace(definition.Class?.Id))
+        {
+            tags.Add(definition.Class.Id);
+        }
+
+        if (!string.IsNullOrWhiteSpace(definition.Race?.Id))
+        {
+            tags.Add(definition.Race.Id);
+        }
+
+        switch (definition.Class?.Id)
+        {
+            case "vanguard":
+            case "duelist":
+                tags.Add("frontline");
+                break;
+            case "ranger":
+            case "mystic":
+                tags.Add("backline");
+                break;
+        }
+
+        if (definition.BaseMagPower > definition.BasePhysPower)
+        {
+            tags.Add("magical");
+        }
+        else if (definition.BasePhysPower > 0f)
+        {
+            tags.Add("physical");
+        }
+
+        if (definition.BaseHealPower > 0f || string.Equals(definition.RoleTag, "support", StringComparison.Ordinal))
+        {
+            tags.Add("support");
+        }
+
+        return tags.Where(tag => !string.IsNullOrWhiteSpace(tag)).ToArray();
+    }
+
+    private static string[] InferSkillRecruitTags(SkillDefinitionAsset skill)
+    {
+        var tags = new HashSet<string>(StringComparer.Ordinal);
+        var classTags = ExtractTagIds(skill.RequiredClassTags);
+        foreach (var classTag in classTags)
+        {
+            tags.Add(classTag);
+            if (string.Equals(classTag, "vanguard", StringComparison.Ordinal) || string.Equals(classTag, "duelist", StringComparison.Ordinal))
+            {
+                tags.Add("frontline");
+            }
+            else if (string.Equals(classTag, "ranger", StringComparison.Ordinal) || string.Equals(classTag, "mystic", StringComparison.Ordinal))
+            {
+                tags.Add("backline");
+            }
+        }
+
+        if (skill.DamageType == DamageTypeValue.Healing || skill.Kind == SkillKindValue.Heal)
+        {
+            tags.Add("support");
+            tags.Add("heal");
+        }
+        else if (skill.DamageType == DamageTypeValue.Magical)
+        {
+            tags.Add("magical");
+        }
+        else if (skill.DamageType == DamageTypeValue.Physical || skill.DamageType == DamageTypeValue.True)
+        {
+            tags.Add("physical");
+        }
+
+        return tags.Where(tag => !string.IsNullOrWhiteSpace(tag)).ToArray();
     }
 
     private static BattleMobilitySpec BuildMobilitySpec(UnitArchetypeDefinition definition, MobilityDefinition authored)

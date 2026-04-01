@@ -5,7 +5,8 @@ public enum RewardChoiceKind
     Gold = 0,
     Item = 1,
     TemporaryAugment = 2,
-    TraitRerollCurrency = 3,
+    Echo = 3,
+    TraitRerollCurrency = Echo,
     PermanentAugmentSlot = 4
 }
 
@@ -14,6 +15,9 @@ public sealed record RewardChoiceViewModel(
     string TitleKey,
     string DescriptionKey,
     int GoldAmount,
-    int TraitRerollAmount,
+    int EchoAmount,
     int PermanentSlotAmount,
-    string PayloadId);
+    string PayloadId)
+{
+    public int TraitRerollAmount => EchoAmount;
+}

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using SM.Core.Contracts;
+using SM.Meta.Model;
 
 namespace SM.Persistence.Abstractions.Models;
 
@@ -13,5 +15,11 @@ public sealed class HeroInstanceRecord
     public string ClassId = string.Empty;
     public string PositiveTraitId = string.Empty;
     public string NegativeTraitId = string.Empty;
+    public string FlexActiveId = string.Empty;
+    public string FlexPassiveId = string.Empty;
+    public RecruitTier RecruitTier = RecruitTier.Common;
+    public RecruitOfferSource RecruitSource = RecruitOfferSource.RecruitPhase;
+    public UnitRetrainState RetrainState = new();
+    public UnitEconomyFootprint EconomyFootprint = new();
     public List<string> EquippedItemIds = new();
 }

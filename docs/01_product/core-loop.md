@@ -43,9 +43,9 @@
 ### 보상 층
 
 - 전투 보상: gold / item / temporary augment
-- expedition 종료 보상: permanent augment 관련 진척, trait reroll 재화, gold
+- expedition 종료 보상: permanent augment 관련 진척, Echo, gold
 
-trait reroll 재화는 소모성 잡화가 아니라, permanent augment와 동급 가치의 희소 재화로 본다.
+Echo는 소모성 잡화가 아니라, recruit/retrain RNG 복구를 담당하는 run economy의 핵심 재화로 본다.
 
 ## 장기 핵심 루프 방향
 

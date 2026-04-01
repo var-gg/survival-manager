@@ -35,7 +35,7 @@
 - gold reward amount
 - item reward frequency
 - temporary augment strength
-- trait reroll reward amount
+- Echo reward amount
 - permanent slot reward amount
 - expedition node effect amount
 - quick battle smoke 기본 deploy 체감

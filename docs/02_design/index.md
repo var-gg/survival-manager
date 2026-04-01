@@ -53,28 +53,26 @@
 
 - `meta/town-and-expedition-loop.md`: Town -> chapter/site -> Battle -> Reward 루프 기준
 - `meta/campaign-chapter-and-expedition-sites.md`: story chapter, site, endless unlock 기준
-- `meta/recruitment-and-reroll.md`: 리크루트와 리롤 문법
-- `meta/reward-economy.md`: dual reward channel 기준
-- `meta/reward-protection-and-acquisition-loop.md`: RNG protection과 acquisition recovery 기준
+- `meta/recruitment-contract.md`: 4-slot recruit pack, on-plan/protected, refresh, scout 기준
+- `meta/retrain-contract.md`: flex-only retrain, cost curve, previous-result exclusion, pity 기준
+- `meta/economy-protection-contract.md`: Gold/Echo split, no-dead-reward, dismiss refund 기준
+- `meta/duplicate-handling-contract.md`: duplicate 판정, Echo conversion, recruit pool exclusion 기준
 - `meta/drop-table-rarity-bracket-and-source-matrix.md`: automatic drop/source/rarity floor
 - `meta/item-and-affix-system.md`: 아이템과 affix 구조
 - `meta/affix-authoring-schema.md`: affix schema와 authority / budget / line-density 기준
 - `meta/affix-pool-v1.md`: affix catalog와 live subset
 - `meta/equipment-family-and-crafting-depth.md`: weapon family floor와 deep crafting 경계
-- `meta/crafting-currencies-and-sinks.md`: crafting currency와 operation 기준
 - `meta/item-passive-augment-budget.md`: 출시 기준 item/passive/augment 예산 허브
 - `meta/passive-board-node-catalog.md`: launch floor passive board node 카탈로그
 - `meta/augment-system.md`: augment 문법
 - `meta/augment-synergy-operating-model.md`: augment offer와 synergy 운영 기준
 - `meta/augment-catalog-v1.md`: augment catalog와 live subset
 - `meta/permanent-augment-progression.md`: 영구 강화 진행
-- `meta/crafting-and-reroll-economy.md`: 제작과 리롤 비용 구조
 - `meta/pvp-boundary.md`: PVP 경계
 - `meta/pvp-ruleset-and-arena-loop.md`: async arena ruleset과 season cadence
 - `meta/synergy-breakpoints-and-soft-counters.md`: 출시 기준 breakpoint와 soft counter
 - `meta/synergy-family-catalog.md`: 7 family exact 2/3/4 payload 카탈로그
 - `meta/synergy-and-augment-taxonomy.md`: synergy / augment 역할 경계와 authority
-- `meta/skill-acquisition-and-retrain.md`: fixed signature + flex + retrain 정책
 
 ## systems 문서
 
@@ -88,5 +86,4 @@
 - `deck/roster-archetype-launch-scope.md`: 출시 기준 roster와 archetype package
 - `progression/explanation-progression-premise.md`: progression premise 설명 문서
 - `ui/battle-observer-ui.md`: 전투 관전자 UI 기준
-- `ui/mvp-debug-ui.md`: MVP debug UI 기준
 - `ui/localization-policy.md`: 플레이어 노출 텍스트와 localization table 정책

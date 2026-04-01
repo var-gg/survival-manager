@@ -18,8 +18,8 @@ public static class RewardService
             case RewardType.TemporaryAugment:
                 expeditionState.AddTemporaryAugment(selected.Id);
                 break;
-            case RewardType.TraitRerollCurrency:
-                currencyState.AddTraitRerollCurrency(selected.Amount);
+            case RewardType.Echo:
+                currencyState.AddEcho(selected.Amount);
                 break;
         }
     }

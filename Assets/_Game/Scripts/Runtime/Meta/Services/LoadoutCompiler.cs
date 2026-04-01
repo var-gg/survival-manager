@@ -14,7 +14,7 @@ namespace SM.Meta.Services;
 
 public sealed class LoadoutCompiler
 {
-    public const string CurrentCompileVersion = "loop-a-contract-closure.v1";
+    public const string CurrentCompileVersion = "loop-b-recruitment-economy-closure.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -161,7 +161,7 @@ public sealed class LoadoutCompiler
                 }
             }
 
-            var resolvedSkills = ResolveSkills(archetype, loadout, itemInstances, skillInstances, content);
+            var resolvedSkills = ResolveSkills(hero, archetype, loadout, itemInstances, skillInstances, content);
             foreach (var selection in resolvedSkills)
             {
                 var skill = selection.Skill;
@@ -229,8 +229,8 @@ public sealed class LoadoutCompiler
                 archetype.BasicAttack,
                 ResolveLoopASkill(resolvedSkills, ActionSlotKind.SignatureActive, archetype.SignatureActive),
                 ResolveLoopASkill(resolvedSkills, ActionSlotKind.FlexActive, archetype.FlexActive),
-                archetype.SignaturePassive,
-                archetype.FlexPassive,
+                ResolveLoopAPassive(resolvedSkills, ActionSlotKind.SignaturePassive, archetype.SignaturePassive),
+                ResolveLoopAPassive(resolvedSkills, ActionSlotKind.FlexPassive, archetype.FlexPassive),
                 archetype.MobilityReaction,
                 archetype.Energy,
                 archetype.EntityKind,
@@ -321,6 +321,7 @@ public sealed class LoadoutCompiler
     }
 
     private static IReadOnlyList<ResolvedSkillSelection> ResolveSkills(
+        HeroRecord hero,
         CombatArchetypeTemplate archetype,
         HeroLoadoutState? loadout,
         IReadOnlyDictionary<string, ItemInstanceState> itemInstances,
@@ -328,6 +329,8 @@ public sealed class LoadoutCompiler
         CombatContentSnapshot content)
     {
         var equipped = new List<ResolvedSkillSelection>();
+        AddHeroFlexSelection(equipped, hero.FlexActiveId, ActionSlotKind.FlexActive, "hero_flex_active", content);
+        AddHeroFlexSelection(equipped, hero.FlexPassiveId, ActionSlotKind.FlexPassive, "hero_flex_passive", content);
         var hasEquippedLoadout = false;
         if (loadout != null)
         {
@@ -422,6 +425,29 @@ public sealed class LoadoutCompiler
             ?? fallback;
     }
 
+    private static BattlePassiveSpec? ResolveLoopAPassive(
+        IReadOnlyList<ResolvedSkillSelection> resolved,
+        ActionSlotKind slotKind,
+        BattlePassiveSpec? fallback)
+    {
+        var selected = resolved
+            .Select(selection => selection.Skill)
+            .FirstOrDefault(skill => skill.EffectiveSlotKind == slotKind);
+        if (selected == null)
+        {
+            return fallback;
+        }
+
+        return new BattlePassiveSpec(
+            selected.Id,
+            selected.Name,
+            slotKind,
+            ActivationModel.Passive,
+            selected.EffectDescriptors,
+            false,
+            selected.EffectFamilyId);
+    }
+
     private static List<ResolvedSkillSelection> EnsureCanonicalSkillContract(
         IReadOnlyList<ResolvedSkillSelection> current,
         CombatArchetypeTemplate archetype,
@@ -502,10 +528,36 @@ public sealed class LoadoutCompiler
     {
         return selection.SourceKind switch
         {
-            "loadout_skill" => 0,
-            "item_granted_skill" => 1,
-            _ => 2,
+            "hero_flex_active" => 0,
+            "hero_flex_passive" => 0,
+            "loadout_skill" => 1,
+            "item_granted_skill" => 2,
+            _ => 3,
         };
+    }
+
+    private static void AddHeroFlexSelection(
+        ICollection<ResolvedSkillSelection> selections,
+        string skillId,
+        ActionSlotKind slotKind,
+        string sourceKind,
+        CombatContentSnapshot content)
+    {
+        if (string.IsNullOrWhiteSpace(skillId) || !content.SkillCatalog.TryGetValue(skillId, out var skill))
+        {
+            return;
+        }
+
+        var normalizedSlot = CompiledSkillSlots.FromActionSlotKind(slotKind);
+        selections.Add(new ResolvedSkillSelection(
+            skill with
+            {
+                SlotKind = normalizedSlot,
+                ResolvedSlotKind = slotKind,
+            },
+            sourceKind,
+            skillId,
+            normalizedSlot));
     }
 
     private static int GetCompiledSkillSlotOrder(BattleSkillSpec skill)
