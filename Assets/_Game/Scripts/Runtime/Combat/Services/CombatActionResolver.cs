@@ -38,9 +38,20 @@ public static class CombatActionResolver
                     state.RegisterDamage(actor, target);
                     target.TakeDamage(attackResult.Value);
                     target.GainEnergyFromDirectHitTaken();
+                    BattleTelemetryRecorder.RecordImpact(
+                        state,
+                        TelemetryEventKind.DamageApplied,
+                        actor,
+                        target,
+                        BattleActionType.BasicAttack,
+                        null,
+                        attackResult.Value,
+                        attackResult.MitigationValue,
+                        attackResult.Note);
                 }
 
                 actor.StartRecovery();
+                BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.BasicAttack, null, attackResult.Value);
                 events.Add(BuildEvent(
                     state,
                     actor,
@@ -52,7 +63,7 @@ public static class CombatActionResolver
                     attackResult.Note));
                 if (!target.IsAlive)
                 {
-                    events.AddRange(ResolveKillAndAssist(state, actor, target, BattleActionType.BasicAttack));
+                    events.AddRange(ResolveKillAndAssist(state, actor, target, BattleActionType.BasicAttack, null));
                     actor.ClearTarget(applySwitchDelay: true);
                 }
                 break;
@@ -70,6 +81,15 @@ public static class CombatActionResolver
                     var heal = HitResolutionService.ResolveSupportValue(actor, skill);
                     target.Heal(heal);
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
+                    BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.ActiveSkill, skill, heal);
+                    BattleTelemetryRecorder.RecordImpact(
+                        state,
+                        TelemetryEventKind.HealingApplied,
+                        actor,
+                        target,
+                        BattleActionType.ActiveSkill,
+                        skill,
+                        heal);
                     events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillHeal, target, heal));
                     StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
                 }
@@ -78,6 +98,15 @@ public static class CombatActionResolver
                     var barrier = HitResolutionService.ResolveSupportValue(actor, skill);
                     target.AddBarrier(barrier);
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
+                    BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.ActiveSkill, skill, barrier);
+                    BattleTelemetryRecorder.RecordImpact(
+                        state,
+                        TelemetryEventKind.BarrierApplied,
+                        actor,
+                        target,
+                        BattleActionType.ActiveSkill,
+                        skill,
+                        barrier);
                     events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillHeal, target, barrier));
                     StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
                 }
@@ -91,9 +120,20 @@ public static class CombatActionResolver
                         state.RegisterDamage(actor, target);
                         target.TakeDamage(skillResult.Value);
                         target.GainEnergyFromDirectHitTaken();
+                        BattleTelemetryRecorder.RecordImpact(
+                            state,
+                            TelemetryEventKind.DamageApplied,
+                            actor,
+                            target,
+                            BattleActionType.ActiveSkill,
+                            skill,
+                            skillResult.Value,
+                            skillResult.MitigationValue,
+                            skillResult.Note);
                     }
 
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
+                    BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.ActiveSkill, skill, skillResult.Value);
                     events.Add(BuildEvent(
                         state,
                         actor,
@@ -106,7 +146,7 @@ public static class CombatActionResolver
                     StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
                     if (!target.IsAlive)
                     {
-                        events.AddRange(ResolveKillAndAssist(state, actor, target, BattleActionType.ActiveSkill));
+                        events.AddRange(ResolveKillAndAssist(state, actor, target, BattleActionType.ActiveSkill, skill));
                         actor.ClearTarget(applySwitchDelay: true);
                     }
                 }
@@ -147,7 +187,7 @@ public static class CombatActionResolver
             note);
     }
 
-    private static IReadOnlyList<BattleEvent> ResolveKillAndAssist(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleActionType actionType)
+    private static IReadOnlyList<BattleEvent> ResolveKillAndAssist(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleActionType actionType, BattleSkillSpec? skill)
     {
         var events = new List<BattleEvent>();
         var killPayload = BuildKillPayload(actor, target);
@@ -183,6 +223,7 @@ public static class CombatActionResolver
             0f,
             killPayload.IsMirroredFromOwnedSummon ? "mirrored_kill" : "kill",
             killPayload));
+        BattleTelemetryRecorder.RecordKill(state, actor, target, actionType, skill, killPayload);
 
         return events;
     }

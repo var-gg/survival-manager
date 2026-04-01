@@ -17,7 +17,8 @@ public sealed class BattleState
         TeamPostureType allyPosture,
         TeamPostureType enemyPosture,
         float fixedStepSeconds,
-        int seed)
+        int seed,
+        TelemetryContext? telemetryContext = null)
     {
         Allies = allies;
         Enemies = enemies;
@@ -25,6 +26,7 @@ public sealed class BattleState
         EnemyPosture = enemyPosture;
         FixedStepSeconds = fixedStepSeconds;
         Seed = seed;
+        TelemetryContext = telemetryContext;
     }
 
     public IReadOnlyList<UnitSnapshot> Allies { get; }
@@ -33,8 +35,10 @@ public sealed class BattleState
     public TeamPostureType EnemyPosture { get; }
     public float FixedStepSeconds { get; }
     public int Seed { get; }
+    public TelemetryContext? TelemetryContext { get; }
     public int StepIndex { get; private set; }
     public float ElapsedSeconds { get; private set; }
+    public List<TelemetryEventRecord> TelemetryEvents { get; } = new();
 
     public IEnumerable<UnitSnapshot> AllUnits => Allies.Concat(Enemies);
     public IEnumerable<UnitSnapshot> LivingAllies => Allies.Where(x => x.IsAlive);
@@ -52,6 +56,14 @@ public sealed class BattleState
     }
 
     public UnitSnapshot? FindUnit(EntityId? id) => id is { } value ? FindUnitById(value.Value) : null;
+
+    public void AddTelemetry(TelemetryEventRecord record)
+    {
+        if (record != null)
+        {
+            TelemetryEvents.Add(record);
+        }
+    }
 
     public void RegisterDamage(UnitSnapshot attacker, UnitSnapshot victim)
     {

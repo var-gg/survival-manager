@@ -2,13 +2,14 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-02
 - 소스오브트루스: `docs/03_architecture/unity-agent-harness-contract.md`
 - 관련문서:
   - `docs/03_architecture/unity-editor-iteration-and-asset-authoring.md`
   - `docs/03_architecture/assembly-boundaries-and-persistence-ownership.md`
   - `docs/03_architecture/validation-and-acceptance-oracles.md`
   - `docs/03_architecture/unity-mcp-tooling-contract.md`
+  - `docs/05_setup/unity-long-running-workloads.md`
   - `docs/00_governance/task-execution-pattern.md`
   - `tasks/004_launch_floor_catalog_closure/status.md`
 
@@ -56,6 +57,14 @@
 - compile green은 phase gate일 뿐 최종 acceptance가 아니다.
 - done은 validator, targeted test, runtime path oracle, evidence 기록까지 포함한다.
 
+### 4. 장시간 callback workload는 기본 lane에 넣지 않는다
+
+- `EditMode test`, `MenuItem`, 단일 editor callback은 짧고 설명 가능한 작업만 태운다.
+- multi-scenario seed sweep, artifact generation, balance/readability full pass처럼 시간이 길고 shardable한 작업은
+  manual artifact lane이나 custom CLI tool로 분리한다.
+- default `test-edit`에 multi-minute balance smoke를 넣지 않는다.
+- 장시간 workload를 기본 lane에 태운 뒤 CLI/MCP가 `busy`처럼 보이는 상태를 tooling 고장으로 오판하지 않는다.
+
 ## authoritative boundary 규칙
 
 - 모든 `spec.md`는 authoritative boundary를 먼저 적는다.
@@ -100,6 +109,7 @@ compile만 통과하고 validator나 runtime path가 비어 있으면 task는 do
 - compile blocker를 고친 뒤 바로 asset generator를 돌리고, 실패하면 다시 compile로 돌아가는 혼합 루프
 - validator 없이 sample content부터 대량 생성한 뒤 나중에 drift를 발견하는 순서
 - Play Mode인지 확인하지 않고 generator, reserialize, menu execution을 호출하는 것
+- shardable한 deterministic suite를 `EditMode test` 또는 `MenuItem` 하나에 몰아넣는 것
 - asmdef cycle이나 persistence ownership 문제를 구현 절반 이후에야 발견하는 것
 - low-level tool 조합으로 editor state machine을 직접 운전하는 것
 

@@ -15,6 +15,7 @@ public sealed class BattleSimulator
     {
         State = state;
         _maxSteps = Math.Max(1, maxSteps);
+        BattleTelemetryRecorder.RecordBattleStarted(State);
         CurrentStep = BattleReadModelBuilder.BuildStep(
             State,
             Array.Empty<BattleEvent>(),
@@ -99,7 +100,11 @@ public sealed class BattleSimulator
                 continue;
             }
 
+            var reasonCode = BattleTelemetryRecorder.ResolveDecisionReason(actor, evaluated);
+            actor.SetPendingDecisionReason(reasonCode);
+            var previousTarget = State.FindUnit(actor.CurrentTargetId);
             actor.SetCurrentTarget(evaluated.Target.Id);
+            BattleTelemetryRecorder.RecordTargetEvent(State, actor, previousTarget, evaluated.Target, reasonCode);
             actor.SetEngagementSlot(evaluated.SlotAssignment);
 
             var inRangeBand = MovementResolver.IsWithinRangeBand(actor, evaluated.Target, evaluated.DesiredRangeBand, actor.Behavior.RangeHysteresis);
@@ -116,6 +121,7 @@ public sealed class BattleSimulator
 
                 if (actor.CooldownRemaining <= 0f)
                 {
+                    BattleTelemetryRecorder.RecordActionStarted(State, actor, evaluated);
                     actor.BeginWindup(evaluated.ActionType, evaluated.Target.Id, evaluated.Skill?.Id);
                 }
                 else
@@ -125,6 +131,11 @@ public sealed class BattleSimulator
             }
             else
             {
+                if (evaluated.Mobility != null)
+                {
+                    BattleTelemetryRecorder.RecordMobility(State, actor, evaluated.Target, evaluated.Mobility);
+                }
+
                 MovementResolver.MoveForIntent(State, actor, evaluated);
             }
         }
@@ -158,7 +169,8 @@ public sealed class BattleSimulator
             State.StepIndex,
             State.ElapsedSeconds,
             _events.ToList(),
-            CurrentStep.Units);
+            CurrentStep.Units,
+            State.TelemetryEvents.ToList());
     }
 
     private bool TryAdvanceSpawn(UnitSnapshot actor)
@@ -263,20 +275,28 @@ public sealed class BattleSimulator
 
         IsFinished = true;
         State.DespawnNonRosterEntities();
+        foreach (var unit in State.AllUnits.Where(unit => !unit.IsAlive))
+        {
+            BattleTelemetryRecorder.RecordDespawn(State, unit);
+        }
+
         if (State.LivingAllies.Any() && !State.LivingEnemies.Any())
         {
             Winner = TeamSide.Ally;
+            BattleTelemetryRecorder.RecordBattleEnded(State, Winner.Value, State.StepIndex >= _maxSteps);
             return;
         }
 
         if (State.LivingEnemies.Any() && !State.LivingAllies.Any())
         {
             Winner = TeamSide.Enemy;
+            BattleTelemetryRecorder.RecordBattleEnded(State, Winner.Value, State.StepIndex >= _maxSteps);
             return;
         }
 
         var allyHealth = State.LivingAllies.Sum(unit => unit.CurrentHealth);
         var enemyHealth = State.LivingEnemies.Sum(unit => unit.CurrentHealth);
         Winner = allyHealth >= enemyHealth ? TeamSide.Ally : TeamSide.Enemy;
+        BattleTelemetryRecorder.RecordBattleEnded(State, Winner.Value, State.StepIndex >= _maxSteps);
     }
 }

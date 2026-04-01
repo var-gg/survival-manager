@@ -26,3 +26,4 @@
 - `operator-first-playable-checklist.md`: 첫 전투 수동 검증 체크리스트
 - `mcp-usage-checklist.md`: MCP 세션 전후 운영 체크리스트
 - `scene-integrity-contract.md`: first playable scene 최소 무결성 계약
+- `loop-d-closure-note.md`: Loop D prune/move-out-of-v1/watchlist 메모

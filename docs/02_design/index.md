@@ -79,6 +79,7 @@
 ## systems 문서
 
 - `systems/launch-content-scope-and-balance.md`: 출시 기준 콘텐츠 수량과 Loop A loadout 문법 허브
+- `systems/first-playable-slice.md`: Loop D first playable subset cap, quota, pool filtering
 - `systems/launch-floor-content-matrix.md`: 12 core archetype launch floor matrix
 - `systems/squad-blueprint-and-build-ownership.md`: squad blueprint와 빌드 소유권 기준
 - `systems/skills-items-and-passive-boards.md`: 스킬, 아이템, 패시브 보드 빌드 구조

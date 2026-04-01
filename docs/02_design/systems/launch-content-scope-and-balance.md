@@ -88,3 +88,9 @@
 - counter-system은 8-lane threat/answer topology를 쓴다.
 - forbidden list는 warning이 아니라 fatal validator policy다.
 - recruit economy와 loot rarity는 Loop C에서 다시 열지 않는다.
+
+## Loop D first playable seam
+
+- V1 first playable은 전체 launch floor와 별개로 별도 slice cap을 가진다.
+- 실제 recruit/flex/augment/affix pool은 first playable slice를 기준으로 필터링된다.
+- slice 밖 content는 삭제하지 않아도 되지만 `MoveOutOfV1` 또는 `ParkingLot`으로 분리한다.

@@ -26,6 +26,19 @@
   - `Logs/balance-sweep/balance-sweep-report.json`
   - `Logs/balance-sweep/balance-sweep-summary.csv`
 
+## Loop D deterministic suite 범위
+
+- slice/balance runner: `SM.Editor.Validation.FirstPlayableBalanceRunner`
+- entrypoint: `ValidationBatchEntryPoint.RunLoopDReadabilityAndBalance()`
+- generated artifact:
+  - `Logs/loop-d-balance/purekit_report.json`
+  - `Logs/loop-d-balance/systemic_slice_report.json`
+  - `Logs/loop-d-balance/runlite_report.json`
+  - `Logs/loop-d-balance/content_health_cards.csv`
+  - `Logs/loop-d-balance/prune_ledger_v1.json`
+  - `Logs/loop-d-balance/readability_watchlist.json`
+  - `Logs/loop-d-balance/first_playable_slice.md`
+
 ## deterministic input 계약
 
 ### content snapshot
@@ -90,3 +103,5 @@
 
 - smoke runner는 outlier를 flag로 남기고 artifact에 기록한다.
 - branch CI는 determinism/validation fail만 즉시 차단하고, balance outlier는 artifact review를 요구한다.
+- Loop D는 readability fatal, required telemetry event 누락, broken content의 slice 잔류도
+  즉시 fail로 본다.

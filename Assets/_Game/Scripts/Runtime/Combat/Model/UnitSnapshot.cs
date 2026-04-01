@@ -77,6 +77,7 @@ public sealed class UnitSnapshot
     public ActionSlotKind? PendingSlotKind { get; private set; }
     public TargetSelector CurrentTargetSelector { get; private set; } = TargetSelector.CurrentTarget;
     public TargetFallbackPolicy CurrentFallbackPolicy { get; private set; } = TargetFallbackPolicy.KeepCurrentIfStillValid;
+    public DecisionReasonCode PendingDecisionReason { get; private set; } = DecisionReasonCode.DefaultCadence;
     public bool IsAlive => CurrentHealth > 0f;
     public bool IsDefending { get; private set; }
     public bool NeedsReevaluation => PendingReevaluationReason != ReevaluationReason.None || ReevaluationRemaining <= 0f;
@@ -216,6 +217,11 @@ public sealed class UnitSnapshot
         CurrentFallbackPolicy = fallbackPolicy;
     }
 
+    public void SetPendingDecisionReason(DecisionReasonCode reasonCode)
+    {
+        PendingDecisionReason = reasonCode;
+    }
+
     public void StartRetargetLock(float durationSeconds)
     {
         TargetSwitchLockRemaining = Math.Max(TargetSwitchLockRemaining, Math.Max(0f, durationSeconds));
@@ -232,6 +238,7 @@ public sealed class UnitSnapshot
         PendingLane = ActionLane.Primary;
         PendingLockRule = ActionLockRule.None;
         PendingSlotKind = null;
+        PendingDecisionReason = DecisionReasonCode.DefaultCadence;
         ActionTimerRemaining = 0f;
         ActionTimerTotal = 0f;
         EngagementSlot = null;
@@ -280,6 +287,7 @@ public sealed class UnitSnapshot
     {
         ActionTimerRemaining = 0f;
         ActionTimerTotal = 0f;
+        PendingDecisionReason = DecisionReasonCode.DefaultCadence;
     }
 
     public void StartRecovery(float? cooldownSeconds = null)

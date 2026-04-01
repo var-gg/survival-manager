@@ -30,6 +30,7 @@ public sealed class GameSessionState
     private readonly List<RecruitUnitPreview> _recruitOffers = new();
     private readonly List<ExpeditionNodeViewModel> _expeditionNodes = new();
     private readonly List<RewardChoiceViewModel> _pendingRewardChoices = new();
+    private readonly List<TelemetryEventRecord> _runtimeTelemetryEvents = new();
     private readonly HashSet<string> _resolvedExpeditionNodeIds = new(StringComparer.Ordinal);
     private LootBundleResult? _lastAutomaticLootBundle;
     private int _recruitOfferGeneration;
@@ -65,6 +66,7 @@ public sealed class GameSessionState
     public IReadOnlyList<RecruitUnitPreview> RecruitOffers => _recruitOffers;
     public IReadOnlyList<ExpeditionNodeViewModel> ExpeditionNodes => _expeditionNodes;
     public IReadOnlyList<RewardChoiceViewModel> PendingRewardChoices => _pendingRewardChoices;
+    public IReadOnlyList<TelemetryEventRecord> RuntimeTelemetryEvents => _runtimeTelemetryEvents;
     public LootBundleResult? LastAutomaticLootBundle => _lastAutomaticLootBundle;
     public bool CanResumeExpedition => HasActiveExpeditionRun && !IsQuickBattleSmokeActive && CurrentExpeditionNodeIndex < _expeditionNodes.Count - 1;
     public RecruitPhaseState RecruitPhase => _recruitPhaseState.Clone();
@@ -139,6 +141,7 @@ public sealed class GameSessionState
         SelectedTeamTacticId = string.Empty;
         _recruitOfferGeneration = 0;
         _resolvedExpeditionNodeIds.Clear();
+        _runtimeTelemetryEvents.Clear();
         ResetDeploymentAssignments();
         RestoreRecruitStates();
 
@@ -165,6 +168,7 @@ public sealed class GameSessionState
         LastExpeditionEffectMessage = SessionTextToken.Empty;
         LastRewardApplicationSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
+        _runtimeTelemetryEvents.Clear();
         _resolvedExpeditionNodeIds.Clear();
         EnsureBattleDeployReady();
         EnsureCampaignSelection();
@@ -185,6 +189,7 @@ public sealed class GameSessionState
         LastExpeditionEffectMessage = SessionTextToken.Empty;
         LastRewardApplicationSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
+        _runtimeTelemetryEvents.Clear();
         EnsureDefaultSquad();
         EnsureBattleDeployReady();
         EnsureRewardChoices(reset: true);
@@ -316,6 +321,10 @@ public sealed class GameSessionState
         _recruitOfferGeneration += 1;
         _recruitOffers.Clear();
         EnsureRecruitOffers();
+        AppendRuntimeTelemetry(MetaTelemetryRecorder.CreateRecruitRefreshed(
+            ResolveTelemetryRunId(),
+            refreshCost,
+            _recruitPhaseState.PaidRefreshCountThisPhase));
         SyncRecruitState();
         return Result.Success();
     }
@@ -350,6 +359,10 @@ public sealed class GameSessionState
 
         Profile.Currencies.Gold -= offer.Metadata.GoldCost;
         _recruitOffers.RemoveAt(offerIndex);
+        AppendRuntimeTelemetry(MetaTelemetryRecorder.CreateRecruitPurchased(
+            ResolveTelemetryRunId(),
+            offer,
+            offerIndex));
         SyncRecruitState();
         return Result.Success();
     }
@@ -380,6 +393,10 @@ public sealed class GameSessionState
         Profile.Currencies.Echo -= RecruitmentBalanceCatalog.ScoutEchoCost;
         _recruitPhaseState.ScoutUsedThisPhase = true;
         _recruitPhaseState.PendingScoutDirective = directive.Clone();
+        AppendRuntimeTelemetry(MetaTelemetryRecorder.CreateScoutUsed(
+            ResolveTelemetryRunId(),
+            directive,
+            RecruitmentBalanceCatalog.ScoutEchoCost));
         SyncRecruitState();
         return Result.Success();
     }
@@ -428,6 +445,12 @@ public sealed class GameSessionState
         hero.EconomyFootprint.RetrainEchoPaid += result.EchoCost;
         Roster = new RosterState(ToHeroRecords(Profile));
         SyncHeroBuildState(hero);
+        AppendRuntimeTelemetry(MetaTelemetryRecorder.CreateRetrainPerformed(
+            ResolveTelemetryRunId(),
+            hero.HeroId,
+            hero.ArchetypeId,
+            operation,
+            result));
         SyncActiveRunIfPresent();
         return Result.Success();
     }
@@ -779,10 +802,25 @@ public sealed class GameSessionState
             CompileVersion = replay.Input.CompileVersion,
             CompileHash = replay.Input.CompileHash,
             InputDigest = $"{replay.Input.TeamPosture}|{replay.Input.Allies.Count}|{replay.Input.Enemies.Count}",
+            BattleSummaryDigest = replay.BattleSummary == null
+                ? string.Empty
+                : $"{replay.BattleSummary.WinnerSideIndex}|{replay.BattleSummary.BattleDurationSeconds:0.###}|{replay.BattleSummary.UnexplainedDamageRatio:0.###}|{replay.BattleSummary.MajorEventCollisionRate:0.###}",
+            ReadabilityDigest = replay.Readability == null
+                ? string.Empty
+                : $"{replay.Readability.UnexplainedDamageRatio:0.###}|{replay.Readability.UnexplainedHealingRatio:0.###}|{string.Join(",", replay.Readability.Violations.Select(violation => violation.ToString()))}",
             EventStream = replay.EventStream.Select(@event =>
                 $"{@event.StepIndex}|{@event.ActorId.Value}|{@event.ActionType}|{@event.LogCode}|{@event.TargetId?.Value}|{@event.Value:0.###}|{@event.EventKind}|{@event.PayloadId}|{@event.SecondaryValue:0.###}|{@event.Note}").ToList(),
             KeyframeDigests = replay.Keyframes.Select(frame =>
                 $"{frame.StepIndex}|{frame.TimeSeconds:0.###}|{frame.StateHash}").ToList(),
+            TelemetryEvents = replay.TelemetryEvents?
+                .Select(record => $"{record.Domain}|{record.EventKind}|{record.TimeSeconds:0.###}|{record.Explain?.SourceContentId}|{record.Explain?.SourceDisplayName}|{record.StringValueA}|{record.ValueA:0.###}|{record.IntValueA}")
+                .ToList()
+                ?? new List<string>(),
+            ArtifactPaths = new List<string>
+            {
+                replay.BattleSummary != null ? "Logs/loop-d-balance" : string.Empty,
+                replay.Readability != null ? "Logs/loop-d-balance/readability_watchlist.json" : string.Empty,
+            }.Where(path => !string.IsNullOrWhiteSpace(path)).ToList(),
         });
 
         if (ActiveRun != null)
@@ -1005,6 +1043,11 @@ public sealed class GameSessionState
         _recruitOffers.AddRange(result.Offers);
         _recruitPityState = result.UpdatedPity;
         _recruitPhaseState = result.UpdatedPhase;
+        AppendRuntimeTelemetry(MetaTelemetryRecorder.CreateRecruitPackGenerated(
+            ResolveTelemetryRunId(),
+            BuildStableSeed("recruit-pack", _recruitOfferGeneration + Profile.Heroes.Count),
+            result.Offers.Count,
+            _recruitPhaseState));
         SyncRecruitState();
     }
 
@@ -1060,6 +1103,10 @@ public sealed class GameSessionState
             Profile.Currencies.Echo += duplicate.EchoGranted;
             duplicateResult = duplicate;
             _lastDuplicateConversion = duplicate;
+            AppendRuntimeTelemetry(MetaTelemetryRecorder.CreateDuplicateConverted(
+                ResolveTelemetryRunId(),
+                preview,
+                duplicate));
             SyncRecruitState();
             return true;
         }
@@ -1102,6 +1149,29 @@ public sealed class GameSessionState
     private static int BuildStableSeed(string value, int salt)
     {
         return Math.Abs(HashCode.Combine(value, salt));
+    }
+
+    public void ClearRuntimeTelemetry()
+    {
+        _runtimeTelemetryEvents.Clear();
+    }
+
+    private void AppendRuntimeTelemetry(TelemetryEventRecord record)
+    {
+        if (record == null)
+        {
+            return;
+        }
+
+        record.TimeSeconds = _runtimeTelemetryEvents.Count;
+        _runtimeTelemetryEvents.Add(record);
+    }
+
+    private string ResolveTelemetryRunId()
+    {
+        return ActiveRun?.RunId
+               ?? Profile.ActiveRun?.RunId
+               ?? (IsQuickBattleSmokeActive ? "quick-battle" : GetExpeditionRunId());
     }
 
     private static string ResolveHeroFlexActiveId(HeroInstanceRecord hero, CombatArchetypeTemplate archetype)

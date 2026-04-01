@@ -53,6 +53,10 @@
 - `combat-runtime-architecture.md`: live simulation 전투 런타임 책임 분리
 - `combat-state-and-event-model.md`: 상태, status stack, typed event, 결과 모델 정의
 - `combat-harness-and-debug-contract.md`: battle harness, 8-lane coverage, acceptance 시나리오 기준
+- `telemetry-contract.md`: runtime telemetry taxonomy와 ExplainStamp source-of-truth
+- `readability-gate-contract.md`: readability threshold, aggregation, fail semantics
+- `first-playable-balance-targets.md`: PureKit / SystemicSlice / RunLite deterministic suite
+- `pruning-playbook.md`: content health grade, prune rule, move-out-of-v1 기준
 - `status-runtime-stack-and-cleanse-rules.md`: status stack / refresh / ownership runtime 규칙
 - `editor-sandbox-tooling.md`: Unity combat sandbox/editor tooling 경계
 - `loadout-compiler-and-battle-snapshot.md`: build -> compile -> battle snapshot 경계

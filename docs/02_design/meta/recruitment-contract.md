@@ -139,3 +139,9 @@ recruitment의 canonical rarity는 계속 `RecruitTier`다.
 
 `ContentRarity`, budget final score, derived delta, forbidden drift는
 `RecruitmentSandboxWindow` 같은 dev inspect에서만 노출한다.
+
+## Loop D slice-aware pool boundary
+
+- recruit live pool은 first playable slice 밖 unit을 노출하지 않는다.
+- flex skill recruit pool도 first playable slice 밖 skill을 노출하지 않는다.
+- move-out-of-v1 content는 recruit pack과 debug quick-pick의 기본 후보군에 남기지 않는다.

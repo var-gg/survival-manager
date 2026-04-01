@@ -2,12 +2,13 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-02
 - 소스오브트루스: `docs/03_architecture/validation-and-acceptance-oracles.md`
 - 관련문서:
   - `docs/03_architecture/content-authoring-and-balance-data.md`
   - `docs/03_architecture/testing-strategy.md`
   - `docs/03_architecture/unity-agent-harness-contract.md`
+  - `docs/05_setup/unity-long-running-workloads.md`
   - `tasks/_templates/status.md`
 
 ## 목적
@@ -64,3 +65,12 @@ evidence가 없으면 구두 보고만으로 task를 닫지 않는다.
 - broad smoke보다 targeted oracle을 우선한다.
 - runtime smoke가 아직 비싸면 validator와 targeted tests를 먼저 닫고, smoke를 별도 phase gate로 분리한다.
 - child phase 문서마다 별도의 acceptance matrix를 갖는 것을 기본으로 한다.
+
+## 장시간 oracle 분리 규칙
+
+- targeted EditMode/PlayMode test는 경계 검증용으로 짧게 유지한다.
+- multi-minute deterministic balance sweep, large artifact generation, 반복 scenario smoke는 일반 `test-edit`
+  기본 경로에 섞지 않는다.
+- 이런 oracle은 shardable manual lane 또는 custom CLI tool로 분리하고, task `status.md`에 evidence 경로를 남긴다.
+- long-running suite를 default test lane에 넣어 Unity Test Runner callback을 장시간 점유하게 만들면,
+  transport busy와 테스트 실패를 구분하기 어려워지므로 acceptance oracle로 보지 않는다.

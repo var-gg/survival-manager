@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-02
 - 소스오브트루스: `docs/05_setup/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -34,5 +34,6 @@
 - `scene-repair-bootstrap.md`: first playable scene repair/bootstrap 운영 기준
 - `unity-bootstrap.md`: Unity 부트스트랩 절차
 - `unity-cli.md`: Unity CLI optional fast lane와 reconnect recovery
+- `unity-long-running-workloads.md`: 장시간 test/menu/balance workload를 shard/manual lane으로 분리하는 런북
 - `unity-install.md`: Unity 설치 기준
 - `unity-mcp.md`: Unity MCP 운영 가이드

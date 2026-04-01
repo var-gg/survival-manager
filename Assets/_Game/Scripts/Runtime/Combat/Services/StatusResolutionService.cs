@@ -23,6 +23,7 @@ public static class StatusResolutionService
             foreach (var statusId in removedStatuses)
             {
                 stepEvents.Add(BuildStatusEvent(state, unit, unit, BattleEventKind.StatusRemoved, statusId));
+                BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusRemoved, unit, unit, statusId, 0f);
                 if (IsHardControl(statusId))
                 {
                     unit.ApplyControlResistWindow(ControlResistWindowSeconds, ControlResistMultiplier);
@@ -130,6 +131,7 @@ public static class StatusResolutionService
         }
 
         stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.StatusApplied, spec.StatusId, spec.Magnitude));
+        BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusApplied, actor, target, spec.StatusId, spec.Magnitude);
     }
 
     private static void ApplyCleanse(BattleState state, UnitSnapshot actor, UnitSnapshot target, string cleanseProfileId, List<BattleEvent> stepEvents)
@@ -155,6 +157,7 @@ public static class StatusResolutionService
             {
                 target.ApplyControlResistWindow(ControlResistWindowSeconds, ControlResistMultiplier);
                 stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.ControlResistApplied, "unstoppable", ControlResistMultiplier));
+                BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusApplied, actor, target, "unstoppable", ControlResistMultiplier);
             }
         }
     }
@@ -168,6 +171,7 @@ public static class StatusResolutionService
 
         var damage = Math.Max(1f, unit.GetStatusMagnitude(statusId));
         unit.TakeDamage(damage);
+        BattleTelemetryRecorder.RecordStatusTick(state, unit, statusId, damage);
         stepEvents.Add(new BattleEvent(
             state.StepIndex,
             state.ElapsedSeconds,

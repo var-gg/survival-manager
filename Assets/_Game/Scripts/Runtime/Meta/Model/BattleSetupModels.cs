@@ -241,7 +241,8 @@ public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, RewardSourceTemplate>? RewardSources = null,
     IReadOnlyDictionary<string, DropTableTemplate>? DropTables = null,
     IReadOnlyDictionary<string, LootBundleTemplate>? LootBundles = null,
-    IReadOnlyDictionary<string, TraitTokenTemplate>? TraitTokens = null);
+    IReadOnlyDictionary<string, TraitTokenTemplate>? TraitTokens = null,
+    FirstPlayableSliceDefinition? FirstPlayableSlice = null);
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,

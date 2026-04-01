@@ -1,9 +1,10 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'bootstrap', 'seed-content', 'test-edit', 'test-play', 'report-town', 'report-battle', 'smoke-observer', 'exec')]
+    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'bootstrap', 'seed-content', 'test-edit', 'test-play', 'report-town', 'report-battle', 'smoke-observer', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
     [string]$Verb,
     [int]$Lines = 30,
     [string]$Filter = 'error,warning,log',
+    [string]$TestFilter,
     [string]$Code,
     [switch]$Dangerous
 )
@@ -326,8 +327,13 @@ function Invoke-UnityCliTest {
         [Parameter(Mandatory = $true)]
         [string[]]$Arguments,
         [Parameter(Mandatory = $true)]
-        [string]$ReadyContext
+        [string]$ReadyContext,
+        [string]$TestFilter
     )
+
+    if (-not [string]::IsNullOrWhiteSpace($TestFilter)) {
+        $Arguments = @($Arguments + @('--filter', $TestFilter))
+    }
 
     $resultsPath = Get-UnityTestResultsPath
     $previousWriteTimeUtc = Get-FileLastWriteTimeUtcOrMinValue -Path $resultsPath
@@ -396,10 +402,10 @@ try {
             Invoke-UnityCli @('menu', 'SM/Seed/Generate Sample Content') -WaitForReady -ReadyContext 'sample content generation' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds -ReadyRetries $unityCliLongReadyPollRetries
         }
         'test-edit' {
-            Invoke-UnityCliTest @('test') -ReadyContext 'edit mode test dispatch'
+            Invoke-UnityCliTest @('test') -ReadyContext 'edit mode test dispatch' -TestFilter $TestFilter
         }
         'test-play' {
-            Invoke-UnityCliTest @('test', '--mode', 'PlayMode') -ReadyContext 'play mode test dispatch'
+            Invoke-UnityCliTest @('test', '--mode', 'PlayMode') -ReadyContext 'play mode test dispatch' -TestFilter $TestFilter
         }
         'report-town' {
             Invoke-UnityCli @('observer_contract_report', '--scene', 'town')
@@ -414,6 +420,24 @@ try {
             Invoke-Step -Name 'report-town' -Action { Invoke-UnityCli @('observer_contract_report', '--scene', 'town') }
             Invoke-Step -Name 'report-battle' -Action { Invoke-UnityCli @('observer_contract_report', '--scene', 'battle') }
             Invoke-Step -Name 'console' -Action { Invoke-UnityCli @('console', '--lines', $Lines, '--type', $Filter) }
+        }
+        'loopd-slice' {
+            Invoke-UnityCli @('loop_d_balance_report', '--mode', 'slice')
+        }
+        'loopd-purekit' {
+            Invoke-UnityCli @('loop_d_balance_report', '--mode', 'purekit', '--smoke', 'true', '--fail_on_error', 'true')
+        }
+        'loopd-systemic' {
+            Invoke-UnityCli @('loop_d_balance_report', '--mode', 'systemic', '--smoke', 'true', '--fail_on_error', 'true')
+        }
+        'loopd-runlite' {
+            Invoke-UnityCli @('loop_d_balance_report', '--mode', 'runlite', '--smoke', 'true', '--fail_on_error', 'true')
+        }
+        'loopd-smoke' {
+            Invoke-UnityCli @('loop_d_balance_report', '--mode', 'smoke', '--fail_on_error', 'true')
+        }
+        'loopd-full' {
+            Invoke-UnityCli @('loop_d_balance_report', '--mode', 'full', '--fail_on_error', 'true')
         }
         'exec' {
             if (-not $Dangerous) {

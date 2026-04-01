@@ -14,7 +14,7 @@ namespace SM.Meta.Services;
 
 public sealed class LoadoutCompiler
 {
-    public const string CurrentCompileVersion = "loop-c-content-governance-closure.v1";
+    public const string CurrentCompileVersion = "loop-d-telemetry-pruning-readability-balance.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -279,7 +279,8 @@ public sealed class LoadoutCompiler
                 .ToList(),
             teamTags,
             compileProvenance,
-            counterCoverage);
+            counterCoverage,
+            content.FirstPlayableSlice?.UnitBlueprintIds);
     }
 
     private static void AddNumericPackage(

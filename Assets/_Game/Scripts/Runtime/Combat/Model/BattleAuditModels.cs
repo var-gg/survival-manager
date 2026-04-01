@@ -19,7 +19,8 @@ public sealed record BattleLoadoutSnapshot(
     IReadOnlyList<string> BattleDeployHeroIds,
     IReadOnlyList<string> TeamTags,
     IReadOnlyList<CompileProvenanceEntry>? Provenance = null,
-    TeamCounterCoverageReport? TeamCounterCoverage = null);
+    TeamCounterCoverageReport? TeamCounterCoverage = null,
+    IReadOnlyList<string>? FirstPlayableUnitBlueprintIds = null);
 
 public sealed record BattleReplayHeader(
     string MatchId,
@@ -53,4 +54,8 @@ public sealed record BattleReplayBundle(
     BattleReplayHeader Header,
     BattleInputSnapshot Input,
     IReadOnlyList<BattleEvent> EventStream,
-    IReadOnlyList<BattleKeyframeDigest> Keyframes);
+    IReadOnlyList<BattleKeyframeDigest> Keyframes,
+    TelemetryContext? TelemetryContext = null,
+    IReadOnlyList<TelemetryEventRecord>? TelemetryEvents = null,
+    BattleSummaryReport? BattleSummary = null,
+    ReadabilityReport? Readability = null);

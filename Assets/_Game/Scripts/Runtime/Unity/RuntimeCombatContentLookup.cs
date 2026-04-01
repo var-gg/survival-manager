@@ -192,6 +192,7 @@ public sealed class RuntimeCombatContentLookup
     private readonly Dictionary<string, DropTableDefinition> _dropTableDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, LootBundleDefinition> _lootBundleDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, TraitTokenDefinition> _traitTokenDefinitions = new(StringComparer.Ordinal);
+    private FirstPlayableSliceDefinition? _firstPlayableSlice;
     private CombatContentSnapshot? _snapshot;
     private bool _loaded;
 
@@ -255,6 +256,14 @@ public sealed class RuntimeCombatContentLookup
     public IReadOnlyList<string> GetCanonicalAffixIds()
     {
         EnsureLoaded();
+        if (_firstPlayableSlice?.AffixIds.Count > 0)
+        {
+            return _firstPlayableSlice.AffixIds
+                .Where(id => _affixDefinitions.ContainsKey(id))
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+        }
+
         return _affixDefinitions.Keys.OrderBy(id => id, StringComparer.Ordinal).ToList();
     }
 
@@ -266,7 +275,36 @@ public sealed class RuntimeCombatContentLookup
             .Where(augment => !augment.IsPermanent && !ordered.Contains(augment.Id))
             .OrderBy(augment => augment.Id, StringComparer.Ordinal)
             .Select(augment => augment.Id));
+        if (_firstPlayableSlice?.AugmentIds.Count > 0)
+        {
+            return ordered
+                .Where(id => _firstPlayableSlice.AugmentIds.Contains(id, StringComparer.Ordinal))
+                .ToList();
+        }
+
         return ordered;
+    }
+
+    public IReadOnlyList<string> GetCanonicalSynergyFamilyIds()
+    {
+        EnsureLoaded();
+        if (_firstPlayableSlice?.SynergyFamilyIds.Count > 0)
+        {
+            return _firstPlayableSlice.SynergyFamilyIds
+                .Where(id => _synergyDefinitions.ContainsKey(id))
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+        }
+
+        return _synergyDefinitions.Keys
+            .OrderBy(id => id, StringComparer.Ordinal)
+            .ToList();
+    }
+
+    public FirstPlayableSliceDefinition? GetFirstPlayableSlice()
+    {
+        EnsureLoaded();
+        return _firstPlayableSlice;
     }
 
     public bool TryGetArchetype(string archetypeId, out UnitArchetypeDefinition archetype)
@@ -525,6 +563,7 @@ public sealed class RuntimeCombatContentLookup
         var dropTables = LoadDefinitions<DropTableDefinition>("_Game/Content/Definitions/DropTables", "Assets/Resources/_Game/Content/Definitions/DropTables");
         var lootBundles = LoadDefinitions<LootBundleDefinition>("_Game/Content/Definitions/LootBundles", "Assets/Resources/_Game/Content/Definitions/LootBundles");
         var traitTokens = LoadDefinitions<TraitTokenDefinition>("_Game/Content/Definitions/TraitTokens", "Assets/Resources/_Game/Content/Definitions/TraitTokens");
+        var firstPlayableSliceAssets = LoadDefinitions<FirstPlayableSliceDefinitionAsset>("_Game/Content/Definitions/FirstPlayable", "Assets/Resources/_Game/Content/Definitions/FirstPlayable");
 
         var requiresFileFallback =
             archetypes.Length == 0 ||
@@ -828,6 +867,11 @@ public sealed class RuntimeCombatContentLookup
             _traitTokenDefinitions[traitToken.Id] = traitToken;
         }
 
+        _firstPlayableSlice = NormalizeFirstPlayableSlice(
+            firstPlayableSliceAssets
+                .FirstOrDefault(asset => asset != null)?
+                .ToRuntime());
+
         var archetypeTemplates = BuildSection("archetype templates", () =>
             _archetypeDefinitions.Values.ToDictionary(definition => definition.Id, BuildArchetypeTemplate, StringComparer.Ordinal));
         var traitPackages = BuildSection("trait packages", () =>
@@ -912,7 +956,8 @@ public sealed class RuntimeCombatContentLookup
             rewardSourceCatalog,
             dropTableCatalog,
             lootBundleCatalog,
-            traitTokenCatalog);
+            traitTokenCatalog,
+            _firstPlayableSlice);
     }
 
     private static T[] LoadDefinitions<T>(string resourcesPath, string editorFolderPath) where T : UnityEngine.Object
@@ -995,12 +1040,13 @@ public sealed class RuntimeCombatContentLookup
         var loopALoadout = ResolveLoopALoadout(definition, resolvedSkills, compiledSkills);
         var recruitFlexActivePool = ResolveRecruitSkillPool(
                 definition.Class?.Id,
-                ResolveRecruitPool(
+            ResolveRecruitPool(
                 definition.RecruitFlexActivePool,
                 definition.FlexUtilitySkillPool,
                 definition.Loadout?.FlexActive ?? resolvedSkills.FirstOrDefault(skill => NormalizeSkillSlot(skill) == SkillSlotKindValue.UtilityActive)),
                 LoopBFlexActivePoolFallbacks)
             .Select(BuildSkillSpec)
+            .Where(skill => _firstPlayableSlice == null || _firstPlayableSlice.Contains(ContentKind.FlexActive, skill.Id))
             .Where(skill => skill.EffectiveSlotKind == ActionSlotKind.FlexActive)
             .ToList();
         var recruitFlexPassivePool = ResolveRecruitSkillPool(
@@ -1011,6 +1057,7 @@ public sealed class RuntimeCombatContentLookup
                 resolvedSkills.FirstOrDefault(skill => NormalizeSkillSlot(skill) == SkillSlotKindValue.Support)),
                 LoopBFlexPassivePoolFallbacks)
             .Select(BuildSkillSpec)
+            .Where(skill => _firstPlayableSlice == null || _firstPlayableSlice.Contains(ContentKind.FlexPassive, skill.Id))
             .Where(skill => skill.EffectiveSlotKind == ActionSlotKind.FlexPassive)
             .ToList();
         return new CombatArchetypeTemplate(
@@ -1043,7 +1090,13 @@ public sealed class RuntimeCombatContentLookup
                 definition.BaseManaGainOnHit),
             null,
             ResolveRecruitTier(definition),
-            definition.IsRecruitable && !definition.IsSummonOnly && !definition.IsEventOnly && !definition.IsBossOnly && !definition.IsUnreleased && !definition.IsTestOnly,
+            definition.IsRecruitable
+            && !definition.IsSummonOnly
+            && !definition.IsEventOnly
+            && !definition.IsBossOnly
+            && !definition.IsUnreleased
+            && !definition.IsTestOnly
+            && (_firstPlayableSlice == null || _firstPlayableSlice.Contains(ContentKind.UnitBlueprint, definition.Id)),
             ResolveRecruitPlanTags(definition),
             ResolveScoutBiasTags(definition),
             recruitFlexActivePool,
@@ -1062,6 +1115,239 @@ public sealed class RuntimeCombatContentLookup
             null,
             null,
             BuildGovernanceSummary(definition.BudgetCard));
+    }
+
+    private FirstPlayableSliceDefinition? NormalizeFirstPlayableSlice(FirstPlayableSliceDefinition? authored)
+    {
+        if (authored == null
+            && _archetypeDefinitions.Count == 0
+            && _skillDefinitions.Count == 0
+            && _affixDefinitions.Count == 0
+            && _augmentDefinitions.Count == 0
+            && _synergyDefinitions.Count == 0)
+        {
+            return null;
+        }
+
+        var slice = authored ?? new FirstPlayableSliceDefinition();
+        var selectedUnits = SelectUnitBlueprintIds(slice);
+        var selectedSignatures = SelectSignatureSkillIds(selectedUnits, slice.SignatureActiveIds, slice.SignaturePassiveIds, slice);
+        var selectedFlex = SelectFlexSkillIds(selectedUnits, slice.FlexActiveIds, slice.FlexPassiveIds, slice);
+        var selectedAffixes = NormalizeIds(
+            slice.AffixIds,
+            _affixDefinitions.Keys.OrderBy(id => id, StringComparer.Ordinal),
+            slice.AffixCap);
+        var selectedAugments = NormalizeIds(
+            slice.AugmentIds,
+            _augmentDefinitions.Values
+                .Where(definition => !definition.IsPermanent && !string.IsNullOrWhiteSpace(definition.Id))
+                .Select(definition => definition.Id)
+                .OrderBy(id => id, StringComparer.Ordinal),
+            slice.AugmentCap);
+        var selectedSynergies = NormalizeIds(
+            slice.SynergyFamilyIds,
+            _synergyDefinitions.Keys.OrderBy(id => id, StringComparer.Ordinal),
+            slice.SynergyFamilyCap);
+
+        var parkingLot = new HashSet<string>(slice.ParkingLotContentIds.Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.Ordinal);
+        AddParkingLot(parkingLot, _skillDefinitions.Keys, selectedSignatures.SignatureActiveIds);
+        AddParkingLot(parkingLot, _skillDefinitions.Keys, selectedSignatures.SignaturePassiveIds);
+        AddParkingLot(parkingLot, _skillDefinitions.Keys, selectedFlex.FlexActiveIds);
+        AddParkingLot(parkingLot, _skillDefinitions.Keys, selectedFlex.FlexPassiveIds);
+        AddParkingLot(parkingLot, _augmentDefinitions.Keys.Where(id => !string.IsNullOrWhiteSpace(id)), selectedAugments);
+        AddParkingLot(parkingLot, _synergyDefinitions.Keys.Where(id => !string.IsNullOrWhiteSpace(id)), selectedSynergies);
+
+        return new FirstPlayableSliceDefinition
+        {
+            UnitBlueprintCap = slice.UnitBlueprintCap,
+            SignatureActiveCap = slice.SignatureActiveCap,
+            SignaturePassiveCap = slice.SignaturePassiveCap,
+            FlexActiveCap = slice.FlexActiveCap,
+            FlexPassiveCap = slice.FlexPassiveCap,
+            AffixCap = slice.AffixCap,
+            SynergyFamilyCap = slice.SynergyFamilyCap,
+            AugmentCap = slice.AugmentCap,
+            RequireAllThreatPatternsCovered = slice.RequireAllThreatPatternsCovered,
+            RequireAllCounterToolsCovered = slice.RequireAllCounterToolsCovered,
+            CoverageQuotas = (slice.CoverageQuotas ?? Array.Empty<SliceCoverageQuota>())
+                .Select(quota => new SliceCoverageQuota
+                {
+                    Kind = quota.Kind,
+                    MinimumCount = quota.MinimumCount,
+                })
+                .ToList(),
+            UnitBlueprintIds = selectedUnits,
+            SignatureActiveIds = selectedSignatures.SignatureActiveIds,
+            SignaturePassiveIds = selectedSignatures.SignaturePassiveIds,
+            FlexActiveIds = selectedFlex.FlexActiveIds,
+            FlexPassiveIds = selectedFlex.FlexPassiveIds,
+            AffixIds = selectedAffixes,
+            SynergyFamilyIds = selectedSynergies,
+            AugmentIds = selectedAugments,
+            ParkingLotContentIds = parkingLot
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList(),
+        };
+    }
+
+    private IReadOnlyList<string> SelectUnitBlueprintIds(FirstPlayableSliceDefinition slice)
+    {
+        var canonical = GetCanonicalArchetypeIds();
+        return NormalizeIds(
+            slice.UnitBlueprintIds,
+            canonical,
+            slice.UnitBlueprintCap);
+    }
+
+    private (IReadOnlyList<string> SignatureActiveIds, IReadOnlyList<string> SignaturePassiveIds) SelectSignatureSkillIds(
+        IReadOnlyList<string> selectedUnits,
+        IReadOnlyList<string> authoredSignatureActives,
+        IReadOnlyList<string> authoredSignaturePassives,
+        FirstPlayableSliceDefinition slice)
+    {
+        var signatureActiveCandidates = new List<string>();
+        var signaturePassiveCandidates = new List<string>();
+
+        foreach (var unitId in selectedUnits)
+        {
+            if (!_archetypeDefinitions.TryGetValue(unitId, out var definition))
+            {
+                continue;
+            }
+
+            var resolvedSkills = ResolveArchetypeSkills(definition);
+            var compiledSkills = resolvedSkills
+                .Select(BuildSkillSpec)
+                .ToList();
+            var loadout = ResolveLoopALoadout(definition, resolvedSkills, compiledSkills);
+            if (!string.IsNullOrWhiteSpace(loadout.SignatureActive?.Id))
+            {
+                signatureActiveCandidates.Add(loadout.SignatureActive.Id);
+            }
+
+            if (!string.IsNullOrWhiteSpace(loadout.SignaturePassive?.Id))
+            {
+                signaturePassiveCandidates.Add(loadout.SignaturePassive.Id);
+            }
+        }
+
+        signatureActiveCandidates.AddRange(_skillDefinitions.Values
+            .Select(BuildSkillSpec)
+            .Where(skill => skill.EffectiveSlotKind == ActionSlotKind.SignatureActive)
+            .Select(skill => skill.Id));
+        signaturePassiveCandidates.AddRange(_skillDefinitions.Values
+            .Select(BuildSkillSpec)
+            .Where(skill => skill.EffectiveSlotKind == ActionSlotKind.SignaturePassive)
+            .Select(skill => skill.Id));
+
+        return (
+            NormalizeIds(authoredSignatureActives, signatureActiveCandidates, slice.SignatureActiveCap),
+            NormalizeIds(authoredSignaturePassives, signaturePassiveCandidates, slice.SignaturePassiveCap));
+    }
+
+    private (IReadOnlyList<string> FlexActiveIds, IReadOnlyList<string> FlexPassiveIds) SelectFlexSkillIds(
+        IReadOnlyList<string> selectedUnits,
+        IReadOnlyList<string> authoredFlexActives,
+        IReadOnlyList<string> authoredFlexPassives,
+        FirstPlayableSliceDefinition slice)
+    {
+        var flexActiveCandidates = new List<string>();
+        var flexPassiveCandidates = new List<string>();
+
+        foreach (var unitId in selectedUnits)
+        {
+            if (!_archetypeDefinitions.TryGetValue(unitId, out var definition))
+            {
+                continue;
+            }
+
+            var activePool = ResolveRecruitSkillPool(
+                definition.Class?.Id,
+                ResolveRecruitPool(
+                    definition.RecruitFlexActivePool,
+                    definition.FlexUtilitySkillPool,
+                    definition.Loadout?.FlexActive ?? ResolveArchetypeSkills(definition)
+                        .FirstOrDefault(skill => NormalizeSkillSlot(skill) == SkillSlotKindValue.UtilityActive)),
+                LoopBFlexActivePoolFallbacks);
+            flexActiveCandidates.AddRange(activePool.Select(skill => skill.Id));
+
+            var passivePool = ResolveRecruitSkillPool(
+                definition.Class?.Id,
+                ResolveRecruitPool(
+                    definition.RecruitFlexPassivePool,
+                    definition.FlexSupportSkillPool,
+                    ResolveArchetypeSkills(definition)
+                        .FirstOrDefault(skill => NormalizeSkillSlot(skill) == SkillSlotKindValue.Support)),
+                LoopBFlexPassivePoolFallbacks);
+            flexPassiveCandidates.AddRange(passivePool.Select(skill => skill.Id));
+        }
+
+        flexActiveCandidates.AddRange(_skillDefinitions.Values
+            .Select(BuildSkillSpec)
+            .Where(skill => skill.EffectiveSlotKind == ActionSlotKind.FlexActive)
+            .Select(skill => skill.Id));
+        flexPassiveCandidates.AddRange(_skillDefinitions.Values
+            .Select(BuildSkillSpec)
+            .Where(skill => skill.EffectiveSlotKind == ActionSlotKind.FlexPassive)
+            .Select(skill => skill.Id));
+
+        return (
+            NormalizeIds(authoredFlexActives, flexActiveCandidates, slice.FlexActiveCap),
+            NormalizeIds(authoredFlexPassives, flexPassiveCandidates, slice.FlexPassiveCap));
+    }
+
+    private static IReadOnlyList<string> NormalizeIds(
+        IReadOnlyList<string>? authoredIds,
+        IEnumerable<string> candidates,
+        int cap)
+    {
+        var resolved = new List<string>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+
+        void AddRange(IEnumerable<string> ids)
+        {
+            foreach (var id in ids)
+            {
+                if (string.IsNullOrWhiteSpace(id) || !seen.Add(id))
+                {
+                    continue;
+                }
+
+                resolved.Add(id);
+                if (cap > 0 && resolved.Count >= cap)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (authoredIds != null)
+        {
+            AddRange(authoredIds);
+        }
+
+        if (cap <= 0 || resolved.Count < cap)
+        {
+            AddRange(candidates);
+        }
+
+        return cap > 0
+            ? resolved.Take(cap).ToList()
+            : resolved;
+    }
+
+    private static void AddParkingLot(HashSet<string> parkingLot, IEnumerable<string> allIds, IEnumerable<string> selectedIds)
+    {
+        var selected = selectedIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToHashSet(StringComparer.Ordinal);
+        foreach (var id in allIds.Where(id => !string.IsNullOrWhiteSpace(id)))
+        {
+            if (!selected.Contains(id))
+            {
+                parkingLot.Add(id);
+            }
+        }
     }
 
     private static FootprintProfile BuildFootprintProfile(UnitArchetypeDefinition definition)

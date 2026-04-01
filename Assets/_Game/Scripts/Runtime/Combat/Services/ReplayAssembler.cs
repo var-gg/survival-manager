@@ -45,8 +45,45 @@ public static class ReplayAssembler
             result.Winner,
             finalStateHash);
 
+        var telemetryContext = new TelemetryContext
+        {
+            BuildCommit = playerSnapshot.CompileHash,
+            BalanceSnapshotId = playerSnapshot.SnapshotId,
+            Seed = seed,
+            BattleId = header.MatchId,
+            DeterministicHarness = false,
+        };
+        var telemetryEvents = (result.TelemetryEvents ?? Array.Empty<TelemetryEventRecord>()).ToList();
+        var readability = BattleTelemetryAnalysisService.BuildReadabilityReport(
+            telemetryEvents,
+            playerSnapshot.Allies.Count + enemySnapshot.Count);
+        foreach (var violation in readability.Violations ?? Array.Empty<ReadabilityViolationKind>())
+        {
+            telemetryEvents.Add(new TelemetryEventRecord
+            {
+                Domain = TelemetryDomain.Readability,
+                EventKind = TelemetryEventKind.ReadabilityViolationRaised,
+                TimeSeconds = result.DurationSeconds,
+                Actor = new TelemetryEntityRef(),
+                Target = new TelemetryEntityRef(),
+                Explain = new ExplainStamp
+                {
+                    SourceKind = ExplainedSourceKind.SystemRule,
+                    SourceContentId = "loop_d_readability_gate",
+                    SourceDisplayName = "Readability Gate",
+                    ReasonCode = DecisionReasonCode.DefaultCadence,
+                    Salience = SalienceClass.Major,
+                },
+                StringValueA = violation.ToString(),
+            });
+        }
+        var battleSummary = BattleTelemetryAnalysisService.BuildBattleSummary(
+            result,
+            telemetryEvents,
+            telemetryContext,
+            readability);
         var keyframes = BuildKeyframes(result);
-        return new BattleReplayBundle(header, input, result.Events, keyframes);
+        return new BattleReplayBundle(header, input, result.Events, keyframes, telemetryContext, telemetryEvents, battleSummary, readability);
     }
 
     private static IReadOnlyList<BattleKeyframeDigest> BuildKeyframes(BattleResult result)

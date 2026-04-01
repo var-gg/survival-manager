@@ -1,11 +1,12 @@
 # Unity CLI 로컬 Fast Lane 가이드
 
 - 상태: active
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-04-02
 - 소유자: repository
 - 소스오브트루스: `docs/05_setup/unity-cli.md`
 - 관련문서:
   - `docs/05_setup/unity-mcp.md`
+  - `docs/05_setup/unity-long-running-workloads.md`
   - `docs/04_decisions/adr-0008-editor-bridge-policy.md`
   - `docs/04_decisions/adr-0011-mcp-adoption-policy.md`
   - `docs/04_decisions/adr-0013-unity-cli-hybrid-lane.md`
@@ -85,10 +86,17 @@ pwsh -File tools/unity-bridge.ps1 report-battle
 pwsh -File tools/unity-bridge.ps1 smoke-observer
 pwsh -File tools/unity-bridge.ps1 test-edit
 pwsh -File tools/unity-bridge.ps1 test-play
+pwsh -File tools/unity-bridge.ps1 loopd-slice
+pwsh -File tools/unity-bridge.ps1 loopd-purekit
+pwsh -File tools/unity-bridge.ps1 loopd-systemic
+pwsh -File tools/unity-bridge.ps1 loopd-runlite
+pwsh -File tools/unity-bridge.ps1 loopd-smoke
+pwsh -File tools/unity-bridge.ps1 loopd-full
 ```
 
 `console` verb는 wrapper 입력을 `-Filter`로 받지만 실제 `unity-cli`에는 `--type`으로 전달한다.
 현재 `unity-cli v0.3.5` help 기준 콘솔 필터 flag는 `--type`이다.
+`test-edit`, `test-play`는 `-TestFilter`를 추가로 받아 특정 namespace/class/test만 좁혀서 실행할 수 있다.
 
 wrapper로 충분하지 않을 때만 direct command를 쓴다.
 이 경우 `--project .` 대신 절대 경로를 정규화해서 넘긴다.
@@ -142,6 +150,11 @@ connector heartbeat가 잠시 끊긴 것처럼 보일 수 있다.
 - `missing_reference_scan`: first playable scenes와 project-owned prefabs의 missing script를 스캔한다.
 
 이 도구들은 `Assets/_Game/Scripts/Editor/UnityCliTools/**` 아래에 둔다.
+
+Loop D처럼 장시간이지만 shardable한 validation은 test runner 대신 custom tool lane으로 분리한다.
+현재 기본 도구는 다음을 포함한다.
+
+- `loop_d_balance_report`: first playable slice, PureKit, Systemic, RunLite, full smoke를 shard 단위로 실행한다.
 
 ## CLI Lane Vs MCP Lane
 
@@ -204,7 +217,7 @@ test 기본 검증 순서는 아래와 같다.
 2. `pwsh -File tools/unity-bridge.ps1 compile`
 3. canonical content readiness가 의심되면 `pwsh -File tools/unity-bridge.ps1 seed-content`
 4. 필요 시 `pwsh -File tools/unity-bridge.ps1 status`
-5. `pwsh -File tools/unity-bridge.ps1 test-edit` 또는 `test-play`
+5. `pwsh -File tools/unity-bridge.ps1 test-edit -TestFilter <Namespace.Class>` 또는 `test-play -TestFilter <Namespace.Class>`
 6. 필요 시 `pwsh -File tools/unity-bridge.ps1 console`
 7. 그래도 불명확하면 test artifact 또는 targeted MCP
 
@@ -232,12 +245,26 @@ pwsh -File tools/unity-bridge.ps1 console -Lines 200 -Filter error,warning,log
 full test도 같은 원칙을 따른다.
 
 - `test-edit`, `test-play`는 병렬로 던지지 않는다.
+- default `test-edit`에는 multi-minute balance smoke를 넣지 않는다.
+- 장시간 deterministic suite는 `loopd-*` shard verb처럼 manual artifact lane으로 분리한다.
 - sample content regenerate가 필요하면 먼저 `seed-content`를 별도 lane으로 실행하고 test lane 안에서 암묵 repair를 기대하지 않는다.
 - `test-*`는 observer bootstrap/report 직후의 같은 직렬 파이프라인에 습관적으로 붙이지 않는다.
 - wrapper를 쓴다면 test 실행 직후의 connector recovery는 wrapper가 먼저 처리한다.
 - wrapper를 쓴다면 `run_tests sent`만 보고 성공으로 간주하지 않고 결과 artifact까지 회수한다.
 - bare `unity-cli`를 직접 쓴다면 connector가 끊긴 직후 즉시 재실행하지 말고 `status`가 돌아올 때까지 기다린다.
 - latest confirmed pass artifact가 이미 있으면, 새 run 증빙 회수 실패와 테스트 실패를 같은 의미로 취급하지 않는다.
+
+Loop D나 유사한 장시간 suite는 아래처럼 쪼갠다.
+
+```powershell
+pwsh -File tools/unity-bridge.ps1 loopd-slice
+pwsh -File tools/unity-bridge.ps1 loopd-purekit
+pwsh -File tools/unity-bridge.ps1 loopd-systemic
+pwsh -File tools/unity-bridge.ps1 loopd-runlite
+```
+
+이 lane은 `test-edit` 기본 경로를 대체하지 않는다.
+목적은 Unity Test Runner callback에 장시간 workload를 몰아넣지 않는 것이다.
 
 ## Rollback / Uninstall
 

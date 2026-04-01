@@ -195,3 +195,10 @@ synergy `2 / 4` 구조 검사는 `CounterTopologyValidationPass`가 아니라
 - `Logs/content-validation/content_budget_audit.md`
 - `Logs/content-validation/counter_coverage_matrix.md`
 - `Logs/content-validation/v1_forbidden_feature_report.md`
+
+## Loop D runtime analytics boundary
+
+- authoritative combat/economy/recruit analytics source는 runtime telemetry event다.
+- `BattleReplayBundle`은 telemetry, readability, battle summary를 함께 담는다.
+- first playable pool gating은 runtime `FirstPlayableSliceDefinition`을 기준으로 한다.
+- prune/health decision은 Loop C governance metadata와 Loop D telemetry artifact를 함께 사용한다.

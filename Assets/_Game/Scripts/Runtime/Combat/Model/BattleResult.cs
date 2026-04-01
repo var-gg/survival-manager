@@ -7,4 +7,5 @@ public sealed record BattleResult(
     int StepCount,
     float DurationSeconds,
     IReadOnlyList<BattleEvent> Events,
-    IReadOnlyList<BattleUnitReadModel> FinalUnits);
+    IReadOnlyList<BattleUnitReadModel> FinalUnits,
+    IReadOnlyList<TelemetryEventRecord>? TelemetryEvents = null);

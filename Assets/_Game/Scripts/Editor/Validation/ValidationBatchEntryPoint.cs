@@ -34,4 +34,15 @@ public static class ValidationBatchEntryPoint
             throw new Exception("Balance sweep detected a determinism failure. Inspect Logs/balance-sweep artifacts.");
         }
     }
+
+    public static void RunLoopDReadabilityAndBalance(bool smokeMode = false)
+    {
+        var report = FirstPlayableBalanceRunner.RunAndWriteReport(smokeMode);
+        Debug.Log($"[ValidationBatch] Loop D balance reports written: {report.ReportDirectory}");
+
+        if (report.Failures.Count > 0)
+        {
+            throw new Exception($"Loop D balance gate failed with {report.Failures.Count} issue(s): {string.Join(", ", report.Failures)}");
+        }
+    }
 }

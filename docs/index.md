@@ -45,8 +45,11 @@
 - asmdef / persistence ownership 규칙: `03_architecture/assembly-boundaries-and-persistence-ownership.md`
 - validator / acceptance oracle 규칙: `03_architecture/validation-and-acceptance-oracles.md`
 - Unity MCP capability 계약: `03_architecture/unity-mcp-tooling-contract.md`
+- Unity 장시간 workload 런북: `05_setup/unity-long-running-workloads.md`
 - 현재 retrofit parent task: `../tasks/004_launch_floor_catalog_closure/status.md`
 - Loop C governance task: `../tasks/011_loop_c_content_governance_closure/status.md`
+- Loop D telemetry/balance task: `../tasks/012_loop_d_telemetry_pruning_readability_balance_closure/status.md`
+- Unity tooling stability task: `../tasks/013_unity_long_running_workload_lane/status.md`
 
 ## localization 빠른 링크
 
@@ -64,6 +67,7 @@
 - summon ownership/deployables: `02_design/combat/summon-ownership-and-deployables.md`
 - v1 exclusions: `02_design/combat/v1-exclusions.md`
 - launch floor archetype matrix: `02_design/systems/launch-floor-content-matrix.md`
+- first playable slice: `02_design/systems/first-playable-slice.md`
 - roster와 archetype: `02_design/deck/roster-archetype-launch-scope.md`
 - chapter/site 진행: `02_design/meta/campaign-chapter-and-expedition-sites.md`
 - 조우 카탈로그: `02_design/combat/encounter-catalog-and-scaling.md`
@@ -97,6 +101,10 @@
 - squad blueprint와 빌드 소유권: `02_design/systems/squad-blueprint-and-build-ownership.md`
 - 전투 런타임 아키텍처: `03_architecture/combat-runtime-architecture.md`
 - battle harness/debug contract: `03_architecture/combat-harness-and-debug-contract.md`
+- telemetry contract: `03_architecture/telemetry-contract.md`
+- readability gate contract: `03_architecture/readability-gate-contract.md`
+- first playable balance targets: `03_architecture/first-playable-balance-targets.md`
+- pruning playbook: `03_architecture/pruning-playbook.md`
 - 조우 resolve 구조: `03_architecture/encounter-authoring-and-runtime-resolution.md`
 - status runtime stack: `03_architecture/status-runtime-stack-and-cleanse-rules.md`
 - recruit offer schema: `03_architecture/recruit-offer-schema.md`
@@ -105,5 +113,6 @@
 - arena snapshot 계약: `03_architecture/arena-snapshot-matchmaking-and-season-contract.md`
 - replay persistence와 run audit: `03_architecture/replay-persistence-and-run-audit.md`
 - recruitment/retrain harness: `05_setup/recruitment-and-retrain-harness.md`
+- Loop D closure note: `06_production/loop-d-closure-note.md`
 - ADR-0014: `04_decisions/adr-0014-grid-deployment-continuous-combat.md`
 - ADR-0015: `04_decisions/adr-0015-build-compile-audit-pipeline.md`

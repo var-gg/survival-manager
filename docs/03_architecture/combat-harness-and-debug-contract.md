@@ -2,11 +2,12 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-04-02
 - 소스오브트루스: `docs/03_architecture/combat-harness-and-debug-contract.md`
 - 관련문서:
   - `docs/03_architecture/editor-sandbox-tooling.md`
   - `docs/03_architecture/validation-and-acceptance-oracles.md`
+  - `docs/05_setup/unity-long-running-workloads.md`
   - `docs/02_design/combat/battle-presentation-contract.md`
   - `docs/02_design/combat/combat-spatial-contract.md`
   - `docs/02_design/combat/targeting-and-ai-vocabulary.md`
@@ -85,3 +86,23 @@ combat harness와 sandbox는 아래 governance view를 제공해야 한다.
 - `SustainBallScenario`
 - `DiveBacklineScenario`
 - `SwarmFloodScenario`
+
+## Loop D telemetry/readability overlay
+
+combat sandbox와 battle debug view는 Loop D에서 아래를 추가로 보여줘야 한다.
+
+- current 1초 salience weight
+- 최근 5초 major/critical timeline
+- unexplained event 누적치
+- top damage source / top decision reason
+- decisive moments summary
+- current readability violation 목록
+
+readability gate는 참고 리포트가 아니라 dev/harness/CI fail 조건이다.
+
+## Loop D 실행 lane
+
+- Loop D slice/readability/balance artifact는 기본 `test-edit`나 장시간 menu callback에 넣지 않는다.
+- 기본 evidence 회수 순서는 `loopd-slice -> loopd-purekit -> loopd-systemic -> loopd-runlite`다.
+- full smoke가 정말 필요할 때만 `pwsh -File tools/unity-bridge.ps1 loopd-smoke`를 사용한다.
+- `LoopDTelemetryAndBalanceTests`의 장시간 smoke는 manual lane 전용이며, default EditMode suite 통과 기준이 아니다.

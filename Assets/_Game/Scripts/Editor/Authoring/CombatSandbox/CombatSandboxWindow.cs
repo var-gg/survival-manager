@@ -80,6 +80,8 @@ public sealed class CombatSandboxWindow : EditorWindow
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastMetricsSummary), 72f));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastCounterCoverageSummary), 120f));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastGovernanceSummary), 120f));
+            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastReadabilitySummary), 120f));
+            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastExplanationSummary), 120f));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastValidationMessage), 72f));
         }));
 
@@ -150,6 +152,8 @@ public sealed class CombatSandboxWindow : EditorWindow
                 result.PlayerSnapshot.TeamCounterCoverage,
                 CounterCoverageAggregationService.AggregateFromLoadouts(result.EnemyLoadout));
             _state.LastGovernanceSummary = BuildGovernanceSummary(result.PlayerSnapshot, _state.InspectUnitId);
+            _state.LastReadabilitySummary = BuildReadabilitySummary(result.LastReplay.Readability);
+            _state.LastExplanationSummary = BuildExplanationSummary(result.LastReplay.BattleSummary);
             _state.LastValidationMessage =
                 $"config={effectiveRequest.RequestedConfigId}\nprovenance={result.Provenance.Count}\nteam_tags={string.Join(", ", result.PlayerSnapshot.TeamTags)}";
         }
@@ -215,6 +219,35 @@ public sealed class CombatSandboxWindow : EditorWindow
         builder.AppendLine($"threats=[{string.Join(", ", unit.Governance.DeclaredThreatPatterns)}]");
         builder.AppendLine($"counters=[{string.Join(", ", unit.Governance.DeclaredCounterTools.Select(tool => $"{tool.Tool}:{tool.Strength}"))}]");
         builder.AppendLine($"flags={unit.Governance.DeclaredFeatureFlags}");
+        return builder.ToString().TrimEnd();
+    }
+
+    private static string BuildReadabilitySummary(ReadabilityReport? report)
+    {
+        if (report == null)
+        {
+            return "Readability report unavailable.";
+        }
+
+        var builder = new StringBuilder();
+        builder.AppendLine($"salience_p95={report.SalienceWeightPer1sP95:0.###}");
+        builder.AppendLine($"unexplained_damage={report.UnexplainedDamageRatio:0.###}");
+        builder.AppendLine($"target_switch_p95={report.TargetSwitchesPer10sP95:0.###}");
+        builder.AppendLine($"violations=[{string.Join(", ", report.Violations ?? Array.Empty<ReadabilityViolationKind>())}]");
+        return builder.ToString().TrimEnd();
+    }
+
+    private static string BuildExplanationSummary(BattleSummaryReport? report)
+    {
+        if (report == null)
+        {
+            return "Battle summary unavailable.";
+        }
+
+        var builder = new StringBuilder();
+        builder.AppendLine($"top_damage=[{string.Join(", ", report.TopDamageSources ?? Array.Empty<string>())}]");
+        builder.AppendLine($"top_reasons=[{string.Join(", ", report.TopDecisionReasons ?? Array.Empty<string>())}]");
+        builder.AppendLine($"decisive=[{string.Join(", ", report.DecisiveMoments ?? Array.Empty<string>())}]");
         return builder.ToString().TrimEnd();
     }
 }
