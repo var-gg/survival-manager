@@ -57,11 +57,6 @@ public static class MovementResolver
         }
 
         var distance = ComputeEdgeDistance(actor, target);
-        if (!actor.CanUseMobility(distance))
-        {
-            return null;
-        }
-
         var toTarget = (target.Position - actor.Position).Normalized;
         if (toTarget.SqrLength <= 0.0001f)
         {
@@ -80,18 +75,34 @@ public static class MovementResolver
                     return null;
                 }
 
+                var pressureTriggerMax = Math.Max(
+                    Math.Max(mobility.TriggerMinDistance, mobility.TriggerMaxDistance),
+                    rangeBand.ClampedMin - Math.Max(0.1f, actor.Behavior.RangeHysteresis * 0.5f));
+                if (!actor.CanUseMobility(distance, pressureTriggerMax))
+                {
+                    return null;
+                }
+
                 var away = actor.Position - target.Position;
                 var awayDirection = away.SqrLength <= 0.0001f
                     ? (actor.Side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f))
                     : away.Normalized;
                 var lateral = new CombatVector2(-awayDirection.Y, awayDirection.X) * mobility.LateralBias;
                 var escapeDirection = (awayDirection + lateral).Normalized;
-                var escapeDestination = actor.Position + (escapeDirection * mobility.Distance);
+                var requiredTravel = Math.Max(
+                    mobility.Distance,
+                    (rangeBand.ClampedMin - distance) + Math.Max(0.35f, actor.Behavior.RangeHysteresis + 0.15f));
+                var escapeDestination = actor.Position + (escapeDirection * requiredTravel);
                 return new MobilityDecision(mobility, escapeDestination);
 
             case MobilityPurpose.Engage:
             case MobilityPurpose.Chase:
                 if (distance <= rangeBand.ClampedMax + actor.Behavior.RangeHysteresis)
+                {
+                    return null;
+                }
+
+                if (!actor.CanUseMobility(distance))
                 {
                     return null;
                 }

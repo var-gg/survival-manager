@@ -290,6 +290,13 @@ public sealed class ContentValidationWorkflowTests
             asset.VisualPriority = -1;
         }));
 
+        var traitPool = CreateTempAsset<TraitPoolDefinition>("traitpool_temp_schema.asset", asset =>
+        {
+            asset.Id = "traitpool_temp_schema";
+            asset.ArchetypeId = "temp_schema";
+        });
+        assets.Add(traitPool);
+
         assets.Add(CreateTempAsset<UnitArchetypeDefinition>("archetype_temp_schema.asset", asset =>
         {
             asset.Id = "archetype_temp_schema";
@@ -297,7 +304,7 @@ public sealed class ContentValidationWorkflowTests
             asset.ScopeKind = ArchetypeScopeValue.Core;
             asset.Race = AssetDatabase.LoadAssetAtPath<RaceDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Races/race_human.asset");
             asset.Class = AssetDatabase.LoadAssetAtPath<ClassDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Classes/class_vanguard.asset");
-            asset.TraitPool = LoadAnyAsset<TraitPoolDefinition>($"{SampleSeedGenerator.ResourcesRoot}/Traits");
+            asset.TraitPool = traitPool;
             asset.RoleFamilyTag = "vanguard";
             asset.PrimaryWeaponFamilyTag = "shield";
             asset.TacticPreset = new List<TacticPresetEntry>
@@ -411,10 +418,18 @@ public sealed class ContentValidationWorkflowTests
 
     private static T LoadAnyAsset<T>(string folder) where T : UnityEngine.Object
     {
-        var guid = AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { folder }).FirstOrDefault();
-        Assert.That(guid, Is.Not.Null.And.Not.Empty, $"Missing canonical asset under {folder} for {typeof(T).Name}.");
-        var path = AssetDatabase.GUIDToAssetPath(guid);
-        var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+        var path = AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { folder })
+            .Select(AssetDatabase.GUIDToAssetPath)
+            .FirstOrDefault(candidate => AssetDatabase.LoadAssetAtPath<T>(candidate) != null);
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            path = AssetDatabase.FindAssets(string.Empty, new[] { folder })
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .FirstOrDefault(candidate => AssetDatabase.LoadAssetAtPath<T>(candidate) != null);
+        }
+
+        Assert.That(path, Is.Not.Null.And.Not.Empty, $"Missing canonical asset under {folder} for {typeof(T).Name}.");
+        var asset = AssetDatabase.LoadAssetAtPath<T>(path!);
         Assert.That(asset, Is.Not.Null, $"Failed to load canonical asset at {path}.");
         return asset!;
     }

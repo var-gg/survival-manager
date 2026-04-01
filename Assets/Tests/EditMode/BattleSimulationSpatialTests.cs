@@ -41,7 +41,8 @@ public sealed class BattleSimulationSpatialTests
         Assert.That(attackStep, Is.Not.Null);
         var allyView = attackStep.Units.First(unit => unit.Id.Contains("ally_melee"));
         var enemyView = attackStep.Units.First(unit => unit.Id.Contains("enemy_melee"));
-        Assert.That(allyView.Position.DistanceTo(enemyView.Position), Is.LessThanOrEqualTo(1.45f));
+        var edgeDistance = allyView.Position.DistanceTo(enemyView.Position) - allyView.NavigationRadius - enemyView.NavigationRadius;
+        Assert.That(edgeDistance, Is.LessThanOrEqualTo(1.15f));
         Assert.That(allyView.Position.X, Is.GreaterThan(-5.8f));
     }
 
@@ -226,21 +227,27 @@ public sealed class BattleSimulationSpatialTests
         var simulator = new BattleSimulator(state, 160);
 
         var sawClosePressure = false;
+        var sawMobilityCommit = false;
         var sawRecoveredDistance = false;
         while (!simulator.IsFinished)
         {
             var step = simulator.Step();
             var ally = step.Units.First(unit => unit.Id.Contains("ally_mobile_ranger"));
             var enemyUnit = step.Units.First(unit => unit.Id.Contains("enemy_pursuer"));
-            var distance = ally.Position.DistanceTo(enemyUnit.Position);
-            if (distance < 2f)
+            var edgeDistance = ally.Position.DistanceTo(enemyUnit.Position) - ally.NavigationRadius - enemyUnit.NavigationRadius;
+            if (edgeDistance < 2f)
             {
                 sawClosePressure = true;
             }
 
+            if (state.Allies[0].MobilityCooldownRemaining > 0f)
+            {
+                sawMobilityCommit = true;
+            }
+
             if (sawClosePressure
-                && distance > 2.6f
-                && ally.ActionState is CombatActionState.BreakContact or CombatActionState.Reposition)
+                && sawMobilityCommit
+                && edgeDistance > 2.6f)
             {
                 sawRecoveredDistance = true;
                 break;
@@ -248,6 +255,7 @@ public sealed class BattleSimulationSpatialTests
         }
 
         Assert.That(sawClosePressure, Is.True);
+        Assert.That(sawMobilityCommit, Is.True);
         Assert.That(sawRecoveredDistance, Is.True);
     }
 

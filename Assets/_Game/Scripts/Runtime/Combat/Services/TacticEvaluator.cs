@@ -90,6 +90,14 @@ public static class TacticEvaluator
             return actor;
         }
 
+        if (rule.TargetSelector != TargetSelectorType.LowestHpAlly
+            && stableTarget == null
+            && actor.CurrentTargetId == null
+            && actor.TargetSwitchLockRemaining > 0f)
+        {
+            return null;
+        }
+
         if (stableTarget != null
             && stableTarget.IsAlive
             && stableTarget.Side != actor.Side
@@ -135,10 +143,10 @@ public static class TacticEvaluator
             return new FloatRange(Math.Max(0.75f, authored.ClampedMin), Math.Max(0.95f, reach));
         }
 
-        if (skill?.Kind is SkillKind.Heal or SkillKind.Shield or SkillKind.Buff or SkillKind.Utility)
+        if (skill?.Kind is SkillKind.Heal or SkillKind.Shield or SkillKind.Buff)
         {
-            min = Math.Max(0.8f, desiredMax - 0.9f);
-            max = desiredMax;
+            max = Math.Max(1.4f, desiredMax - 0.8f);
+            min = Math.Max(0.8f, max - 0.8f);
         }
 
         if (max <= 0f)

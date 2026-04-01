@@ -396,12 +396,14 @@ public sealed class UnitSnapshot
         }
     }
 
-    public bool CanUseMobility(float distanceToThreat)
+    public bool CanUseMobility(float distanceToThreat, float? overrideMaxDistance = null)
     {
+        var tolerance = Math.Max(0.1f, Behavior.RangeHysteresis * 1.5f);
+        var triggerMaxDistance = overrideMaxDistance ?? Math.Max(Mobility?.TriggerMinDistance ?? 0f, Mobility?.TriggerMaxDistance ?? 0f);
         return Mobility is { IsEnabled: true } mobility
                && MobilityCooldownRemaining <= 0f
-               && distanceToThreat >= mobility.TriggerMinDistance
-               && distanceToThreat <= Math.Max(mobility.TriggerMinDistance, mobility.TriggerMaxDistance);
+               && distanceToThreat >= Math.Max(0f, mobility.TriggerMinDistance - tolerance)
+               && distanceToThreat <= triggerMaxDistance + tolerance;
     }
 
     public void StartMobilityCooldown()

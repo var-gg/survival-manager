@@ -8,7 +8,8 @@ public static class EngagementSlotService
 {
     public static bool RequiresSlotting(UnitSnapshot actor, FloatRange rangeBand)
     {
-        return actor.CombatReach <= 1.6f || rangeBand.ClampedMax <= Math.Max(1.6f, actor.CombatReach + 0.2f);
+        return actor.CombatReach <= 1.6f
+               && rangeBand.ClampedMax <= Math.Max(1.8f, actor.CombatReach + 0.25f);
     }
 
     public static EngagementSlotAssignment? Resolve(BattleState state, UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
@@ -35,9 +36,12 @@ public static class EngagementSlotService
         }
 
         var slotCount = Math.Max(1, target.Footprint.EngagementSlotCount);
+        var desiredEdgeDistance = Math.Max(
+            MathF.Max(rangeBand.ClampedMin, actor.CombatReach),
+            0.85f);
         var ringRadius = Math.Max(
-            target.Footprint.EngagementSlotRadius,
-            target.NavigationRadius + actor.NavigationRadius + 0.25f);
+            target.Footprint.EngagementSlotRadius + actor.NavigationRadius,
+            target.NavigationRadius + actor.NavigationRadius + desiredEdgeDistance);
         var isOverflow = actorIndex >= slotCount;
         var ringOffset = actorIndex / slotCount;
         var slotIndex = actorIndex % slotCount;

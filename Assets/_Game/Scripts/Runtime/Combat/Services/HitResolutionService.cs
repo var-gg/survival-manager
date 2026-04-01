@@ -77,7 +77,7 @@ public static class HitResolutionService
             : 1f;
         var powerAfterCrit = basePower * critMultiplier;
 
-        var blocked = target.CanAttemptBlock && Roll(state, actor, target, $"{actionType}:block") < Math.Clamp(target.Behavior.BlockChance, 0f, 0.75f);
+        var blocked = target.CanAttemptBlock && Roll(state, actor, target, $"{actionType}:block") < Math.Clamp(target.Behavior.BlockChance, 0f, 1f);
         if (blocked)
         {
             target.TriggerBlockCooldown();
@@ -99,7 +99,7 @@ public static class HitResolutionService
             return false;
         }
 
-        return Roll(state, actor, target, $"{actionType}:dodge") < Math.Clamp(target.Behavior.DodgeChance, 0f, 0.65f);
+        return Roll(state, actor, target, $"{actionType}:dodge") < Math.Clamp(target.Behavior.DodgeChance, 0f, 1f);
     }
 
     private static float Roll(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)

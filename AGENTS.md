@@ -44,6 +44,9 @@
 - 구현 변경 시 관련 인덱스와 기준 문서를 함께 갱신한다.
 - 플레이어블 vertical slice 검증을 막지 않는 방향으로 설계/구현/운영 문서를 정리한다.
 - 기본은 file-first다.
+- 기본 git 운영은 `main` 직행이다.
+- 신규 개발 단계에서는 과도한 작업 브랜치 분기, 운영 조직처럼 쪼개진 브랜치 운용을 기본값으로 삼지 않는다.
+- 작업한 내용은 그때그때 적절한 한글 commit message로 정리하고 `main`으로 push하는 것을 기본 정책으로 본다.
 - Unity 확인, compile, smoke, aggregate report는 `pwsh -File tools/unity-bridge.ps1 <verb>`를 먼저 사용한다.
 - scene/prefab/component/package 구조 편집이나 typed guardrail이 중요한 경우에만 MCP를 사용한다.
 - trivial inspect 때문에 MCP tool catalog를 먼저 훑지 않는다.
