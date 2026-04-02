@@ -134,6 +134,105 @@ public sealed class TownScreenController : MonoBehaviour
         Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.team_posture", "Team posture: {0}", _root.SessionState.SelectedTeamPosture));
     }
 
+    // ──────────────────────────────────────────────
+    // Town build-management surface
+    // ──────────────────────────────────────────────
+
+    public void DismissFirstHero()
+    {
+        if (!EnsureReady()) return;
+        var heroId = _root.SessionState.Profile.Heroes.Count > 1
+            ? _root.SessionState.Profile.Heroes.Last().HeroId
+            : null;
+        if (heroId == null)
+        {
+            Refresh("Dismiss할 유닛이 없습니다.");
+            return;
+        }
+
+        var result = _root.SessionState.DismissHero(heroId);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.dismiss_success", "Hero dismissed.")
+            : result.Error ?? "Dismiss failed.");
+    }
+
+    public void RetrainFirstHero()
+    {
+        if (!EnsureReady()) return;
+        var heroId = _root.SessionState.Profile.Heroes.FirstOrDefault()?.HeroId;
+        if (heroId == null)
+        {
+            Refresh("Retrain할 유닛이 없습니다.");
+            return;
+        }
+
+        var result = _root.SessionState.RetrainHero(heroId, SM.Core.Contracts.RetrainOperationKind.RerollFlexActive);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.retrain_success", "Hero retrained.")
+            : result.Error ?? "Retrain failed.");
+    }
+
+    public void RefitFirstItem()
+    {
+        if (!EnsureReady()) return;
+        var item = _root.SessionState.Profile.Inventory.FirstOrDefault(
+            i => i.AffixIds != null && i.AffixIds.Count > 0);
+        if (item == null)
+        {
+            Refresh("Refit할 아이템이 없습니다.");
+            return;
+        }
+
+        var result = _root.SessionState.RefitItem(item.ItemInstanceId, 0);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.refit_success", "Item refit complete.")
+            : result.Error ?? "Refit failed.");
+    }
+
+    public void EquipPermanentAugmentDebug()
+    {
+        if (!EnsureReady()) return;
+        var slice = _root.CombatContentLookup.GetFirstPlayableSlice();
+        var augmentId = slice?.PermanentAugmentIds.FirstOrDefault(
+            id => !(_root.SessionState.Profile.PermanentAugmentLoadouts
+                .SelectMany(r => r.EquippedAugmentIds)
+                .Contains(id, StringComparer.Ordinal)));
+        if (string.IsNullOrWhiteSpace(augmentId))
+        {
+            Refresh("장착할 영구 증강이 없습니다.");
+            return;
+        }
+
+        var result = _root.SessionState.EquipPermanentAugment(augmentId);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.perm_augment_equipped", "Permanent augment equipped: {0}", augmentId)
+            : result.Error ?? "Equip failed.");
+    }
+
+    public void SelectBoardDebug()
+    {
+        if (!EnsureReady()) return;
+        var heroId = _root.SessionState.Profile.Heroes.FirstOrDefault()?.HeroId;
+        if (heroId == null)
+        {
+            Refresh("보드 선택할 유닛이 없습니다.");
+            return;
+        }
+
+        var slice = _root.CombatContentLookup.GetFirstPlayableSlice();
+        var boardId = slice?.PassiveBoardIds.FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(boardId))
+        {
+            Refresh("선택할 패시브 보드가 없습니다.");
+            return;
+        }
+
+        var result = _root.SessionState.SelectPassiveBoard(heroId, boardId);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.board_selected", "Passive board selected: {0}", boardId)
+            : result.Error ?? "Board selection failed.");
+    }
+
     private void Recruit(int index)
     {
         if (!EnsureReady()) return;

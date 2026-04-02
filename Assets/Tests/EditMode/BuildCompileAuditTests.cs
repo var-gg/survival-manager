@@ -15,6 +15,7 @@ using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class BuildCompileAuditTests
 {
     [Test]

@@ -11,6 +11,7 @@ using SM.Unity;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class BattleSetupBuilderTests
 {
     [Test]

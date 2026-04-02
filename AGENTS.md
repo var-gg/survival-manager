@@ -51,6 +51,24 @@
 - scene/prefab/component/package 구조 편집이나 typed guardrail이 중요한 경우에만 MCP를 사용한다.
 - trivial inspect 때문에 MCP tool catalog를 먼저 훑지 않는다.
 
+## 테스트 하네스 규칙
+
+- 상세 가이드: `docs/TESTING.md`
+- 테스트는 `[Category("FastUnit")]` 또는 `[Category("BatchOnly")]`로 분류한다.
+- `FastUnit` 테스트는 `FakeCombatContentLookup`을 사용하고, `new RuntimeCombatContentLookup()`를 직접 호출하지 않는다.
+- `BatchOnly` 테스트는 batchmode에서만 실행한다 (GUI 에디터에서 freeze 위험).
+- `GameSessionState`/`ContentTextResolver`는 `ICombatContentLookup` 인터페이스에 의존한다.
+- batchmode 실행: `pwsh -File tools/unity-bridge.ps1 test-batch-fast` (FastUnit만) 또는 `test-batch-edit` (전체).
+- preflight lint: `pwsh -File tools/test-harness-lint.ps1` — 커밋 전 필수.
+- `-quit`는 `-runTests`와 결합하면 안 된다.
+
+## Unity 에디터 자동화 안정성
+
+- compile 후 5초 대기 후 다음 명령을 실행한다.
+- 에디터 freeze 감지 시: `tools/focus-unity.ps1`로 포커스 시도 → 실패 시 강제 종료 → 재실행 → `tools/wait-unity-ready.ps1`로 복구 확인.
+- 강제 복구 예산: 최대 2회. 초과 시 현재 루프를 멈추고 사용자에게 보고한다.
+- `RuntimeCombatContentLookup`을 테스트에서 직접 생성하면 `Resources.LoadAll`이 트리거되어 GUI 에디터가 freeze될 수 있다. `FakeCombatContentLookup`을 사용한다.
+
 ## 문서 하네스 규칙
 
 - `docs/**`, `prompts/**`, `.agents/skills/**`, `tasks/**`, `tools/docs*.ps1`, `tools/smoke-check.ps1`, `.github/workflows/**`를 건드리는 작업이면 먼저 `$docs-maintainer`를 사용한다.

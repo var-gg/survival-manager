@@ -7,4 +7,6 @@ public static class MetaBalanceDefaults
     public const int TownRosterCap = 12;
     public const int RecruitCost = 3;
     public const int RecruitRerollCost = 1;
+    public const int RefitEchoCost = 15;
+    public const int MaxPermanentAugmentSlots = 4;
 }

@@ -29,6 +29,19 @@ public enum CombatActionState
 }
 public enum TeamPostureType { HoldLine = 0, StandardAdvance = 1, ProtectCarry = 2, CollapseWeakSide = 3, AllInBackline = 4 }
 
+public enum RoleVariantTag
+{
+    Unassigned = 0,
+    Anchor = 1,
+    Peeler = 2,
+    Diver = 3,
+    Executioner = 4,
+    Harrier = 5,
+    Sniper = 6,
+    Battery = 7,
+    Controller = 8,
+}
+
 public static class DeploymentAnchorIdExtensions
 {
     public static bool IsFrontRow(this DeploymentAnchorId anchor)

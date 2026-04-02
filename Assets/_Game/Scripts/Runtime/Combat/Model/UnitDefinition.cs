@@ -60,6 +60,7 @@ public record BattleUnitLoadout(
     IReadOnlyList<CombatModifierPackage>? TeamPackages = null,
     IReadOnlyList<string>? CompileTags = null,
     string RoleTag = "auto",
+    RoleVariantTag RoleVariant = RoleVariantTag.Unassigned,
     FootprintProfile? Footprint = null,
     BehaviorProfile? Behavior = null,
     MobilityActionProfile? Mobility = null,

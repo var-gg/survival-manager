@@ -20,8 +20,7 @@ New-Item -ItemType Directory -Force -Path (Split-Path $LogFile -Parent) | Out-Nu
   -runTests \
   -testPlatform EditMode \
   -testResults $ResultsFile \
-  -logFile $LogFile \
-  -quit
+  -logFile $LogFile
 
 if ($LASTEXITCODE -ne 0) {
     throw "Unity EditMode tests failed with exit code $LASTEXITCODE"

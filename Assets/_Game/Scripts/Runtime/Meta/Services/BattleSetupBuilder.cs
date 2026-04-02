@@ -79,6 +79,7 @@ public static class BattleSetupBuilder
             null,
             null,
             string.IsNullOrWhiteSpace(participant.RoleTag) || participant.RoleTag == "auto" ? archetype.RoleTag : participant.RoleTag,
+            RoleVariantTag.Unassigned,
             archetype.Footprint,
             archetype.Behavior,
             archetype.Mobility,

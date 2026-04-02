@@ -23,7 +23,7 @@ public sealed class GameSessionState
         DeploymentAnchorId.BackBottom
     };
 
-    private readonly RuntimeCombatContentLookup _combatContentLookup;
+    private readonly ICombatContentLookup _combatContentLookup;
     private readonly LoadoutCompiler _loadoutCompiler = new();
     private readonly List<string> _expeditionSquadHeroIds = new();
     private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
@@ -81,7 +81,7 @@ public sealed class GameSessionState
     public bool CanUseScout => !_recruitPhaseState.ScoutUsedThisPhase;
     public TeamPlanProfile CurrentTeamPlan => BuildTeamPlanProfile();
 
-    public GameSessionState(RuntimeCombatContentLookup combatContentLookup)
+    public GameSessionState(ICombatContentLookup combatContentLookup)
     {
         _combatContentLookup = combatContentLookup;
     }
@@ -515,6 +515,253 @@ public sealed class GameSessionState
         return TryGrantRecruitPreview(directPreview, source, out _, out var error)
             ? Result.Success()
             : Result.Fail(error);
+    }
+
+    public Result EquipItem(string heroId, string itemInstanceId)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("장비 장착은 Town에서만 가능합니다.");
+        }
+
+        if (!TryGetHero(heroId, out var hero))
+        {
+            return Result.Fail("유닛을 찾을 수 없습니다.");
+        }
+
+        var item = Profile.Inventory.FirstOrDefault(
+            i => string.Equals(i.ItemInstanceId, itemInstanceId, StringComparison.Ordinal));
+        if (item == null)
+        {
+            return Result.Fail($"아이템 '{itemInstanceId}'을 찾을 수 없습니다.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.EquippedHeroId)
+            && !string.Equals(item.EquippedHeroId, heroId, StringComparison.Ordinal))
+        {
+            return Result.Fail("이미 다른 유닛에 장착된 아이템입니다.");
+        }
+
+        item.EquippedHeroId = heroId;
+        if (!hero.EquippedItemIds.Contains(itemInstanceId))
+        {
+            hero.EquippedItemIds.Add(itemInstanceId);
+        }
+
+        SyncHeroBuildState(hero);
+        return Result.Success();
+    }
+
+    public Result UnequipItem(string heroId, string itemInstanceId)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("장비 해제는 Town에서만 가능합니다.");
+        }
+
+        if (!TryGetHero(heroId, out var hero))
+        {
+            return Result.Fail("유닛을 찾을 수 없습니다.");
+        }
+
+        var item = Profile.Inventory.FirstOrDefault(
+            i => string.Equals(i.ItemInstanceId, itemInstanceId, StringComparison.Ordinal));
+        if (item == null)
+        {
+            return Result.Fail($"아이템 '{itemInstanceId}'을 찾을 수 없습니다.");
+        }
+
+        item.EquippedHeroId = string.Empty;
+        hero.EquippedItemIds.RemoveAll(id => string.Equals(id, itemInstanceId, StringComparison.Ordinal));
+        SyncHeroBuildState(hero);
+        return Result.Success();
+    }
+
+    public Result RefitItem(string itemInstanceId, int affixSlotIndex)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("Refit은 Town에서만 가능합니다.");
+        }
+
+        var item = Profile.Inventory.FirstOrDefault(
+            i => string.Equals(i.ItemInstanceId, itemInstanceId, StringComparison.Ordinal));
+        if (item == null)
+        {
+            return Result.Fail($"아이템 '{itemInstanceId}'을 찾을 수 없습니다.");
+        }
+
+        var echoCost = MetaBalanceDefaults.RefitEchoCost;
+        if (Profile.Currencies.Echo < echoCost)
+        {
+            return Result.Fail($"Echo가 부족합니다. Refit에는 {echoCost} Echo가 필요합니다.");
+        }
+
+        var slice = _combatContentLookup.GetFirstPlayableSlice();
+        var availableAffixes = slice?.AffixIds ?? Array.Empty<string>();
+        var seed = BuildStableSeed(itemInstanceId, affixSlotIndex + Profile.Currencies.Echo);
+        var result = RefitService.Refit(item.AffixIds, affixSlotIndex, availableAffixes, seed);
+        if (result == null)
+        {
+            return Result.Fail("Refit 후보 affix가 없습니다.");
+        }
+
+        Profile.Currencies.Echo -= result.EchoCost;
+        item.AffixIds[affixSlotIndex] = result.NewAffixId;
+
+        if (!string.IsNullOrWhiteSpace(item.EquippedHeroId) && TryGetHero(item.EquippedHeroId, out var equipHero))
+        {
+            SyncHeroBuildState(equipHero);
+        }
+
+        return Result.Success();
+    }
+
+    public Result EquipPermanentAugment(string augmentId)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("영구 증강 장착은 Town에서만 가능합니다.");
+        }
+
+        if (string.IsNullOrWhiteSpace(augmentId))
+        {
+            return Result.Fail("augment ID가 비어 있습니다.");
+        }
+
+        if (!Profile.UnlockedPermanentAugmentIds.Contains(augmentId))
+        {
+            Profile.UnlockedPermanentAugmentIds.Add(augmentId);
+        }
+
+        var blueprintId = string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId)
+            ? "blueprint.default"
+            : Profile.ActiveBlueprintId;
+        var record = Profile.PermanentAugmentLoadouts.FirstOrDefault(
+            r => string.Equals(r.BlueprintId, blueprintId, StringComparison.Ordinal));
+        if (record == null)
+        {
+            record = new PermanentAugmentLoadoutRecord { BlueprintId = blueprintId };
+            Profile.PermanentAugmentLoadouts.Add(record);
+        }
+
+        if (record.EquippedAugmentIds.Count >= MetaBalanceDefaults.MaxPermanentAugmentSlots)
+        {
+            return Result.Fail($"영구 증강 슬롯이 가득 찼습니다 ({MetaBalanceDefaults.MaxPermanentAugmentSlots}/{MetaBalanceDefaults.MaxPermanentAugmentSlots}).");
+        }
+
+        if (record.EquippedAugmentIds.Contains(augmentId, StringComparer.Ordinal))
+        {
+            return Result.Fail("이미 장착된 영구 증강입니다.");
+        }
+
+        record.EquippedAugmentIds.Add(augmentId);
+        PermanentAugmentSlotCount = Math.Max(PermanentAugmentSlotCount, record.EquippedAugmentIds.Count);
+        SyncActiveRunIfPresent();
+        return Result.Success();
+    }
+
+    public Result UnequipPermanentAugment(string augmentId)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("영구 증강 해제는 Town에서만 가능합니다.");
+        }
+
+        var blueprintId = string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId)
+            ? "blueprint.default"
+            : Profile.ActiveBlueprintId;
+        var record = Profile.PermanentAugmentLoadouts.FirstOrDefault(
+            r => string.Equals(r.BlueprintId, blueprintId, StringComparison.Ordinal));
+        if (record == null)
+        {
+            return Result.Fail("영구 증강 로드아웃이 없습니다.");
+        }
+
+        var removed = record.EquippedAugmentIds.RemoveAll(
+            id => string.Equals(id, augmentId, StringComparison.Ordinal));
+        if (removed == 0)
+        {
+            return Result.Fail($"영구 증강 '{augmentId}'이(가) 장착되어 있지 않습니다.");
+        }
+
+        SyncActiveRunIfPresent();
+        return Result.Success();
+    }
+
+    public Result SelectPassiveBoard(string heroId, string boardId)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("패시브 보드 선택은 Town에서만 가능합니다.");
+        }
+
+        if (!TryGetHero(heroId, out _))
+        {
+            return Result.Fail("유닛을 찾을 수 없습니다.");
+        }
+
+        var loadout = Profile.HeroLoadouts.FirstOrDefault(
+            r => string.Equals(r.HeroId, heroId, StringComparison.Ordinal));
+        if (loadout == null)
+        {
+            loadout = new HeroLoadoutRecord { HeroId = heroId };
+            Profile.HeroLoadouts.Add(loadout);
+        }
+
+        loadout.PassiveBoardId = boardId;
+        loadout.SelectedPassiveNodeIds ??= new List<string>();
+
+        var selection = Profile.PassiveSelections.FirstOrDefault(
+            s => string.Equals(s.HeroId, heroId, StringComparison.Ordinal));
+        if (selection == null)
+        {
+            selection = new PassiveSelectionRecord { HeroId = heroId };
+            Profile.PassiveSelections.Add(selection);
+        }
+
+        selection.BoardId = boardId;
+        selection.SelectedNodeIds ??= new List<string>();
+        return Result.Success();
+    }
+
+    public Result TogglePassiveNode(string heroId, string nodeId)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("패시브 노드 선택은 Town에서만 가능합니다.");
+        }
+
+        if (!TryGetHero(heroId, out _))
+        {
+            return Result.Fail("유닛을 찾을 수 없습니다.");
+        }
+
+        var loadout = Profile.HeroLoadouts.FirstOrDefault(
+            r => string.Equals(r.HeroId, heroId, StringComparison.Ordinal));
+        if (loadout == null || string.IsNullOrWhiteSpace(loadout.PassiveBoardId))
+        {
+            return Result.Fail("유닛의 로드아웃이 없습니다. 먼저 패시브 보드를 선택하세요.");
+        }
+
+        loadout.SelectedPassiveNodeIds ??= new List<string>();
+        if (loadout.SelectedPassiveNodeIds.Contains(nodeId, StringComparer.Ordinal))
+        {
+            loadout.SelectedPassiveNodeIds.RemoveAll(id => string.Equals(id, nodeId, StringComparison.Ordinal));
+        }
+        else
+        {
+            loadout.SelectedPassiveNodeIds.Add(nodeId);
+        }
+
+        var selection = Profile.PassiveSelections.FirstOrDefault(
+            s => string.Equals(s.HeroId, heroId, StringComparison.Ordinal));
+        if (selection != null)
+        {
+            selection.SelectedNodeIds = loadout.SelectedPassiveNodeIds.ToList();
+        }
+
+        return Result.Success();
     }
 
     public bool ToggleExpeditionHero(string heroId)
@@ -1030,6 +1277,11 @@ public sealed class GameSessionState
         }
 
         var snapshot = _combatContentLookup.Snapshot;
+        if (snapshot.Archetypes.Count == 0)
+        {
+            return;
+        }
+
         var result = RecruitPackGenerator.GeneratePack(
             snapshot.Archetypes,
             snapshot,

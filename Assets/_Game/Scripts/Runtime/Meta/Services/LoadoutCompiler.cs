@@ -202,6 +202,9 @@ public sealed class LoadoutCompiler
                 "role_instruction",
                 BuildRoleInstructionDetails(roleInstruction)));
 
+            var roleVariant = ResolveRoleVariant(archetype, roleInstruction);
+            artifacts.CompileTags.Add($"role_variant:{roleVariant}");
+
             compiled.Add(new BattleUnitLoadout(
                 hero.Id,
                 hero.Name,
@@ -218,6 +221,7 @@ public sealed class LoadoutCompiler
                 null,
                 artifacts.CompileTags.OrderBy(tag => tag, StringComparer.Ordinal).ToList(),
                 roleInstruction.RoleTag,
+                roleVariant,
                 archetype.Footprint,
                 archetype.Behavior,
                 archetype.Mobility,
@@ -243,6 +247,7 @@ public sealed class LoadoutCompiler
 
         var teamTags = compiled
             .SelectMany(unit => unit.CompileTags ?? Array.Empty<string>())
+            .Append($"team_posture:{teamTactic.Posture}")
             .Distinct(StringComparer.Ordinal)
             .OrderBy(tag => tag, StringComparer.Ordinal)
             .ToList();
@@ -625,6 +630,33 @@ public sealed class LoadoutCompiler
             _ => anchor.IsFrontRow() ? "frontline" : "backline",
         };
         return new SlotRoleInstruction(anchor, fallbackRoleTag);
+    }
+
+    private static RoleVariantTag ResolveRoleVariant(
+        CombatArchetypeTemplate archetype,
+        SlotRoleInstruction roleInstruction)
+    {
+        var isFrontRow = roleInstruction.Anchor.IsFrontRow();
+        var hasHeal = archetype.Skills.Any(skill => skill.HealCoeff > 0f);
+        var hasControl = archetype.Skills.Any(skill =>
+            skill.Kind is SkillKind.Debuff or SkillKind.Utility);
+        var hasSummon = archetype.Skills.Any(skill => skill.SummonProfile != null);
+        var rangeDiscipline = archetype.Behavior?.RangeDiscipline ?? RangeDiscipline.HoldBand;
+
+        return archetype.ClassId switch
+        {
+            "vanguard" when roleInstruction.ProtectCarryBias > 0.3f => RoleVariantTag.Peeler,
+            "vanguard" => RoleVariantTag.Anchor,
+            "duelist" when rangeDiscipline == RangeDiscipline.Collapse && isFrontRow => RoleVariantTag.Executioner,
+            "duelist" => RoleVariantTag.Diver,
+            "ranger" when rangeDiscipline is RangeDiscipline.KiteBackward or RangeDiscipline.SideStepHold => RoleVariantTag.Sniper,
+            "ranger" => RoleVariantTag.Harrier,
+            "mystic" when hasHeal => RoleVariantTag.Controller,
+            "mystic" when hasControl || hasSummon => RoleVariantTag.Controller,
+            "mystic" => RoleVariantTag.Battery,
+            _ when isFrontRow => RoleVariantTag.Anchor,
+            _ => RoleVariantTag.Sniper,
+        };
     }
 
     private static string ComputeCompileHash(

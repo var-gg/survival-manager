@@ -14,7 +14,7 @@ using UnityEditor;
 
 namespace SM.Unity;
 
-public sealed class RuntimeCombatContentLookup
+public sealed class RuntimeCombatContentLookup : ICombatContentLookup
 {
     private static readonly string[] CanonicalArchetypeOrder =
     {
@@ -1137,14 +1137,14 @@ public sealed class RuntimeCombatContentLookup
             slice.AffixIds,
             _affixDefinitions.Keys.OrderBy(id => id, StringComparer.Ordinal),
             slice.AffixCap);
-        var selectedTemporaryAugments = NormalizeIds(
+        var selectedTempAugments = NormalizeIds(
             slice.TemporaryAugmentIds,
             _augmentDefinitions.Values
                 .Where(definition => !definition.IsPermanent && !string.IsNullOrWhiteSpace(definition.Id))
                 .Select(definition => definition.Id)
                 .OrderBy(id => id, StringComparer.Ordinal),
             slice.TemporaryAugmentCap);
-        var selectedPermanentAugments = NormalizeIds(
+        var selectedPermAugments = NormalizeIds(
             slice.PermanentAugmentIds,
             _augmentDefinitions.Values
                 .Where(definition => definition.IsPermanent && !string.IsNullOrWhiteSpace(definition.Id))
@@ -1161,7 +1161,8 @@ public sealed class RuntimeCombatContentLookup
         AddParkingLot(parkingLot, _skillDefinitions.Keys, selectedSignatures.SignaturePassiveIds);
         AddParkingLot(parkingLot, _skillDefinitions.Keys, selectedFlex.FlexActiveIds);
         AddParkingLot(parkingLot, _skillDefinitions.Keys, selectedFlex.FlexPassiveIds);
-        AddParkingLot(parkingLot, _augmentDefinitions.Keys.Where(id => !string.IsNullOrWhiteSpace(id)), selectedTemporaryAugments.Concat(selectedPermanentAugments).ToList());
+        AddParkingLot(parkingLot, _augmentDefinitions.Keys.Where(id => !string.IsNullOrWhiteSpace(id)), selectedTempAugments);
+        AddParkingLot(parkingLot, _augmentDefinitions.Keys.Where(id => !string.IsNullOrWhiteSpace(id)), selectedPermAugments);
         AddParkingLot(parkingLot, _synergyDefinitions.Keys.Where(id => !string.IsNullOrWhiteSpace(id)), selectedSynergies);
 
         return new FirstPlayableSliceDefinition
@@ -1175,7 +1176,6 @@ public sealed class RuntimeCombatContentLookup
             SynergyFamilyCap = slice.SynergyFamilyCap,
             TemporaryAugmentCap = slice.TemporaryAugmentCap,
             PermanentAugmentCap = slice.PermanentAugmentCap,
-            PassiveBoardCap = slice.PassiveBoardCap,
             RequireAllThreatPatternsCovered = slice.RequireAllThreatPatternsCovered,
             RequireAllCounterToolsCovered = slice.RequireAllCounterToolsCovered,
             CoverageQuotas = (slice.CoverageQuotas ?? Array.Empty<SliceCoverageQuota>())
@@ -1192,8 +1192,8 @@ public sealed class RuntimeCombatContentLookup
             FlexPassiveIds = selectedFlex.FlexPassiveIds,
             AffixIds = selectedAffixes,
             SynergyFamilyIds = selectedSynergies,
-            TemporaryAugmentIds = selectedTemporaryAugments,
-            PermanentAugmentIds = selectedPermanentAugments,
+            TemporaryAugmentIds = selectedTempAugments,
+            PermanentAugmentIds = selectedPermAugments,
             ParkingLotContentIds = parkingLot
                 .OrderBy(id => id, StringComparer.Ordinal)
                 .ToList(),

@@ -5,9 +5,9 @@ namespace SM.Unity;
 public sealed class ContentTextResolver
 {
     private readonly GameLocalizationController _localization;
-    private readonly RuntimeCombatContentLookup _lookup;
+    private readonly ICombatContentLookup _lookup;
 
-    public ContentTextResolver(GameLocalizationController localization, RuntimeCombatContentLookup lookup)
+    public ContentTextResolver(GameLocalizationController localization, ICombatContentLookup lookup)
     {
         _localization = localization;
         _lookup = lookup;
