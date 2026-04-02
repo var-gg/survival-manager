@@ -1,17 +1,34 @@
 # 문서 체계 인덱스
 
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-04-02
+- 소스오브트루스: `docs/index.md`
+- 관련문서:
+  - `AGENTS.md`
+  - `docs/00_governance/docs-governance.md`
+  - `docs/00_governance/docs-harness.md`
+  - `docs/00_governance/source-of-truth-matrix.md`
+
+## 목적
+
 이 디렉터리는 `survival-manager`의 공식 문서 체계를 담는다.
 현재 저장소 phase는 `prototype`이며, 문서는 실제 구현 상태와 운영 기준을 반영해야 한다.
 
 ## 문서 계층
 
-- `00_governance/`: 문서 운영 원칙, 용어, 명명 규칙
+- `00_governance/`: 문서 운영 원칙, 용어, 명명 규칙, 검수 체크리스트
 - `01_product/`: 제품 목표, 범위, 사용자 가치
 - `02_design/`: 게임/UX/시스템 디자인 문서
-- `03_architecture/`: 기술 구조와 경계 정의
+- `03_architecture/`: 기술 구조, 코딩 경계, 의존 방향, Unity 특화 제약
 - `04_decisions/`: ADR과 주요 기술/운영 결정
 - `05_setup/`: 개발 환경 및 초기 설정 절차
 - `06_production/`: 플레이테스트/운영 기준 문서
+- `07_release/`: 릴리스 기준, 체크리스트, 변경 요약 문서
+
+## 기본 시작 컨텍스트
+
+- `AGENTS.md` -> `docs/index.md` -> 관련 폴더 `index.md` -> 현재 task 상태 문서
 
 ## 운영 원칙
 
@@ -20,99 +37,15 @@
 - 구조 변경 시 관련 인덱스와 링크를 함께 갱신한다.
 - 지속 문서는 한국어로 유지한다.
 - 파일명, 코드, API 식별자는 영어를 유지한다.
-- 기본 시작 컨텍스트는 `AGENTS.md` -> `docs/index.md` -> 관련 폴더 `index.md` -> 현재 task 상태 문서 순서를 따른다.
 - active index는 active/draft 문서만 노출하고 deprecated 문서는 중앙 registry로 관리한다.
 
 ## 시작점
 
-- 문서 거버넌스: `00_governance/docs-governance.md`
-- 문서 하네스와 lifecycle: `00_governance/docs-harness.md`
-- source-of-truth matrix: `00_governance/source-of-truth-matrix.md`
-- docs eval 초안: `00_governance/docs-evals.md`
-- task 실행 패턴: `00_governance/task-execution-pattern.md`
-- 구현 검수 체크리스트: `00_governance/implementation-review-checklist.md`
+- 거버넌스 인덱스: `00_governance/index.md`
 - 제품 인덱스: `01_product/index.md`
 - 디자인 인덱스: `02_design/index.md`
 - 아키텍처 인덱스: `03_architecture/index.md`
 - 의사결정 인덱스: `04_decisions/index.md`
 - 설정 인덱스: `05_setup/index.md`
 - 운영 인덱스: `06_production/index.md`
-
-## Unity 에이전트 하네스 빠른 링크
-
-- 하네스 상위 계약: `03_architecture/unity-agent-harness-contract.md`
-- Editor iteration / asset authoring 규칙: `03_architecture/unity-editor-iteration-and-asset-authoring.md`
-- asmdef / persistence ownership 규칙: `03_architecture/assembly-boundaries-and-persistence-ownership.md`
-- validator / acceptance oracle 규칙: `03_architecture/validation-and-acceptance-oracles.md`
-- Unity MCP capability 계약: `03_architecture/unity-mcp-tooling-contract.md`
-- Unity 장시간 workload 런북: `05_setup/unity-long-running-workloads.md`
-- 현재 retrofit parent task: `../tasks/004_launch_floor_catalog_closure/status.md`
-- Loop C governance task: `../tasks/011_loop_c_content_governance_closure/status.md`
-- Loop D telemetry/balance task: `../tasks/012_loop_d_telemetry_pruning_readability_balance_closure/status.md`
-- Unity tooling stability task: `../tasks/013_unity_long_running_workload_lane/status.md`
-
-## localization 빠른 링크
-
-- 정책: `02_design/ui/localization-policy.md`
-- 구조: `03_architecture/localization-runtime-and-content-pipeline.md`
-- 결정: `04_decisions/adr-0016-localization-boundary.md`
-- 운영 절차: `05_setup/localization-workflow.md`
-
-## 현재 전투 기준 빠른 링크
-
-- 출시 기준 허브: `02_design/systems/launch-content-scope-and-balance.md`
-- authority matrix: `02_design/combat/authority-matrix.md`
-- resource cadence/loadout: `02_design/combat/resource-cadence-loadout.md`
-- targeting and AI vocabulary: `02_design/combat/targeting-and-ai-vocabulary.md`
-- summon ownership/deployables: `02_design/combat/summon-ownership-and-deployables.md`
-- v1 exclusions: `02_design/combat/v1-exclusions.md`
-- launch floor archetype matrix: `02_design/systems/launch-floor-content-matrix.md`
-- first playable slice: `02_design/systems/first-playable-slice.md`
-- roster와 archetype: `02_design/deck/roster-archetype-launch-scope.md`
-- chapter/site 진행: `02_design/meta/campaign-chapter-and-expedition-sites.md`
-- 조우 카탈로그: `02_design/combat/encounter-catalog-and-scaling.md`
-- 상태이상 taxonomy: `02_design/combat/status-effects-cc-and-cleanse-taxonomy.md`
-- 스킬 키워드와 flex passive restriction: `02_design/combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`
-- 드롭/source matrix: `02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
-- 장비/제작 깊이: `02_design/meta/equipment-family-and-crafting-depth.md`
-- PVP arena ruleset: `02_design/meta/pvp-ruleset-and-arena-loop.md`
-- skill taxonomy와 데미지 모델: `02_design/combat/skill-taxonomy-and-damage-model.md`
-- battle presentation contract: `02_design/combat/battle-presentation-contract.md`
-- combat spatial contract: `02_design/combat/combat-spatial-contract.md`
-- combat behavior contract: `02_design/combat/combat-behavior-contract.md`
-- mobility contract: `02_design/combat/mobility-contract.md`
-- combat mechanics glossary: `02_design/combat/combat-mechanics-glossary.md`
-- counter-system topology: `02_design/combat/counter-system-topology.md`
-- status / keyword / proc rulebook: `02_design/combat/status-keyword-and-proc-rulebook.md`
-- skill authoring schema: `02_design/combat/skill-authoring-schema.md`
-- unit blueprint schema: `02_design/combat/unit-blueprint-schema.md`
-- skill catalog v1: `02_design/combat/skill-catalog-v1.md`
-- affix authoring schema: `02_design/meta/affix-authoring-schema.md`
-- content budgeting contract: `02_design/systems/content-budgeting-contract.md`
-- rarity ladder contract: `02_design/systems/rarity-ladder-contract.md`
-- v1 forbidden list: `02_design/systems/v1-forbidden-list.md`
-- recruitment contract: `02_design/meta/recruitment-contract.md`
-- retrain contract: `02_design/meta/retrain-contract.md`
-- economy protection contract: `02_design/meta/economy-protection-contract.md`
-- duplicate handling contract: `02_design/meta/duplicate-handling-contract.md`
-- synergy and augment taxonomy: `02_design/meta/synergy-and-augment-taxonomy.md`
-- affix pool v1: `02_design/meta/affix-pool-v1.md`
-- augment catalog v1: `02_design/meta/augment-catalog-v1.md`
-- squad blueprint와 빌드 소유권: `02_design/systems/squad-blueprint-and-build-ownership.md`
-- 전투 런타임 아키텍처: `03_architecture/combat-runtime-architecture.md`
-- battle harness/debug contract: `03_architecture/combat-harness-and-debug-contract.md`
-- telemetry contract: `03_architecture/telemetry-contract.md`
-- readability gate contract: `03_architecture/readability-gate-contract.md`
-- first playable balance targets: `03_architecture/first-playable-balance-targets.md`
-- pruning playbook: `03_architecture/pruning-playbook.md`
-- 조우 resolve 구조: `03_architecture/encounter-authoring-and-runtime-resolution.md`
-- status runtime stack: `03_architecture/status-runtime-stack-and-cleanse-rules.md`
-- recruit offer schema: `03_architecture/recruit-offer-schema.md`
-- unit economy schema: `03_architecture/unit-economy-schema.md`
-- skill tag catalog: `03_architecture/skill-tag-catalog-and-compatibility-resolution.md`
-- arena snapshot 계약: `03_architecture/arena-snapshot-matchmaking-and-season-contract.md`
-- replay persistence와 run audit: `03_architecture/replay-persistence-and-run-audit.md`
-- recruitment/retrain harness: `05_setup/recruitment-and-retrain-harness.md`
-- Loop D closure note: `06_production/loop-d-closure-note.md`
-- ADR-0014: `04_decisions/adr-0014-grid-deployment-continuous-combat.md`
-- ADR-0015: `04_decisions/adr-0015-build-compile-audit-pipeline.md`
+- 릴리스 인덱스: `07_release/index.md`

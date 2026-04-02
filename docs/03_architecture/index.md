@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-02
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -14,12 +14,26 @@
 
 이 폴더는 기술 구조, 코딩 경계, 의존 방향, Unity 특화 제약을 정의한다.
 
+## 코드 구조 거버넌스 문서
+
+- `coding-principles.md`: 파일 책임, 분리 신호, interface/abstract class 도입 기준
+- `dependency-direction.md`: asmdef/context/layer 의존 허용·금지 규칙
+- `unity-boundaries.md`: `MonoBehaviour`, `ScriptableObject`, scene 책임 경계
+- `validation-and-acceptance-oracles.md`: feature closure, acceptance matrix, evidence 기록 기준
+- `testing-strategy.md`: 저비용 검증 표면 추가 순서만 다루는 보조 draft
+
+## 코드 구조 작업 시작 컨텍스트
+
+- 구조 변경 작업은 `AGENTS.md` -> `docs/index.md` -> `docs/03_architecture/index.md` -> `coding-principles.md` -> `dependency-direction.md` -> `docs/00_governance/implementation-review-checklist.md` 순서로 시작한다.
+- `MonoBehaviour`, `ScriptableObject`, scene 책임이 걸리면 `unity-boundaries.md`를 추가로 연다.
+- asmdef/persistence ownership까지 걸리면 `assembly-boundaries-and-persistence-ownership.md`를 추가로 연다.
+
 ## Unity agent harness 문서
 
 - `unity-agent-harness-contract.md`: Unity repo에서 task를 어떻게 shape하고 닫는지에 대한 상위 운영 계약
 - `unity-editor-iteration-and-asset-authoring.md`: code-only / asset batch / validator / smoke 순서와 Editor state 규칙
 - `assembly-boundaries-and-persistence-ownership.md`: `SM.Meta`, `SM.Unity`, `SM.Persistence.Abstractions` 경계와 asmdef 사전 점검 규칙
-- `validation-and-acceptance-oracles.md`: validator-first, acceptance matrix, evidence 기록 규칙
+- `validation-and-acceptance-oracles.md`: feature closure, acceptance matrix, evidence 기록 기준
 - `unity-mcp-tooling-contract.md`: low-level loop를 high-level capability contract로 대체하는 기준
 
 ## 핵심 구조 문서
@@ -67,7 +81,7 @@
 
 - `arena-snapshot-matchmaking-and-season-contract.md`: async arena snapshot, local matchmaking, season contract
 - `persistence-strategy.md`: persistence adapter 경계
-- `testing-strategy.md`: 저비용 검증 우선 테스트 전략
+- `testing-strategy.md`: 저비용 검증 표면 추가 순서만 다루는 보조 draft
 - `asset-intake-boundary.md`: `Assets/ThirdParty/**` intake boundary
 
 ## 운영 메모

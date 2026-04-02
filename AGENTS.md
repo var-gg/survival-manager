@@ -59,3 +59,13 @@
 - `status: deprecated` 문서와 index의 deprecated pointer는 active source로 쓰지 않는다. replacement, ADR, registry를 우선한다.
 - 문서를 수정했으면 같은 작업 단위에서 관련 `index.md`, 관련문서 링크, task `status.md`, 검증 스크립트를 같이 갱신한다.
 - `docs/**`와 human-facing task/status 보고는 한국어 본문과 한국어 메타데이터를 유지한다. 파일명, 코드, 명령어, API 식별자는 영어를 유지한다.
+
+## 코드 구조 하네스 규칙
+
+- `Assets/_Game/**`, `Assets/Tests/**`, `Assets/**/*.asmdef`, `Assets/_Game/Scripts/Editor/**`를 건드리는 작업이면 먼저 `$code-structure-guard`를 사용한다.
+- 새 asmdef, 새 public abstraction, validator/report writer/loader/pass 추가, 큰 파일 확장, `Manager`/`Helper`/`Util`/`Common` 이름 도입, `static` mutable state 추가, `MonoBehaviour` 책임 확대, content/runtime/persistence truth 혼합이 보이면 구현 전에 구조 검토를 먼저 통과시킨다.
+- 코드 구조 변경의 기본 시작 컨텍스트는 `AGENTS.md` -> `docs/index.md` -> `docs/03_architecture/index.md` -> `docs/03_architecture/coding-principles.md` -> `docs/03_architecture/dependency-direction.md` -> `docs/00_governance/implementation-review-checklist.md` -> 현재 task `status.md` 순서를 따른다.
+- `MonoBehaviour`, `ScriptableObject`, scene 책임이 걸린 변경이면 `docs/03_architecture/unity-boundaries.md`를 추가로 연다.
+- asmdef 경계, persistence ownership, runtime source-of-truth가 걸린 변경이면 `docs/03_architecture/assembly-boundaries-and-persistence-ownership.md`를 추가로 연다.
+- 코드 변경이 문서 구조나 기준 문서까지 건드리면 `$code-structure-guard`로 구조 리뷰를 먼저 수행하고, 문서 갱신 단계에서 `$docs-maintainer`를 이어서 사용한다.
+- 구조 변경인데 관련 `docs/03_architecture/**`, `docs/00_governance/**`, ADR 갱신이 빠져 있으면 완료로 보지 않는다.
