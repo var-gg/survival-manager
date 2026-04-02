@@ -242,7 +242,7 @@ public static class BalanceSweepRunner
             Scenarios = scenarioReports,
         };
 
-        return WriteReport(report);
+        return BalanceSweepReportWriter.Write(report, GetDefaultReportDirectory());
     }
 
     private static BalanceSweepScenarioReport BuildScenarioReport(
@@ -335,24 +335,6 @@ public static class BalanceSweepRunner
             DamageTakenDistribution = damageTakenDistribution,
             Flags = flags,
         };
-    }
-
-    private static BalanceSweepReport WriteReport(BalanceSweepReport report)
-    {
-        var reportDirectory = GetDefaultReportDirectory();
-        Directory.CreateDirectory(reportDirectory);
-
-        var jsonPath = Path.Combine(reportDirectory, JsonReportFileName);
-        var csvPath = Path.Combine(reportDirectory, CsvReportFileName);
-        var withPaths = report with
-        {
-            JsonReportPath = jsonPath,
-            CsvReportPath = csvPath,
-        };
-
-        File.WriteAllText(jsonPath, JsonConvert.SerializeObject(withPaths, Formatting.Indented));
-        File.WriteAllText(csvPath, BuildCsvSummary(withPaths));
-        return withPaths;
     }
 
     private static BattleRunDigest RunBattle(
@@ -461,33 +443,4 @@ public static class BalanceSweepRunner
         return deadCount / (float)temporaryAugments.Count;
     }
 
-    private static string BuildCsvSummary(BalanceSweepReport report)
-    {
-        var builder = new StringBuilder();
-        builder.AppendLine("scenario_id,team_tactic_id,compile_hash_deterministic,final_state_deterministic,win_rate,avg_battle_duration_seconds,avg_first_cast_seconds,time_to_first_meaningful_action_seconds,avg_reposition_count,avg_target_access_time_seconds,avg_frontline_survival_time_seconds,temporary_augment_dead_offer_ratio,validation_errors,validation_warnings,flags");
-        foreach (var scenario in report.Scenarios)
-        {
-            builder.Append(scenario.ScenarioId).Append(',')
-                .Append(scenario.TeamTacticId).Append(',')
-                .Append(scenario.CompileHashDeterministic ? "true" : "false").Append(',')
-                .Append(scenario.FinalStateDeterministic ? "true" : "false").Append(',')
-                .Append(scenario.WinRate.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
-                .Append(scenario.AverageBattleDurationSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
-                .Append(scenario.AverageFirstCastSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
-                .Append(scenario.TimeToFirstMeaningfulActionSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
-                .Append(scenario.AverageRepositionCount.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
-                .Append(scenario.AverageTargetAccessTimeSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
-                .Append(scenario.AverageFrontlineSurvivalTimeSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
-                .Append(scenario.TemporaryAugmentDeadOfferRatio.ToString("0.###", CultureInfo.InvariantCulture)).Append(',')
-                .Append(scenario.ValidationErrorCount).Append(',')
-                .Append(scenario.ValidationWarningCount).Append(',')
-                .Append('"').Append(string.Join("|", scenario.Flags)).Append('"')
-                .AppendLine();
-        }
-
-        builder.AppendLine();
-        builder.AppendLine($"global_synergy_tier_uplift_win_rate,{report.SynergyTierUpliftWinRate.ToString("0.###", CultureInfo.InvariantCulture)}");
-        builder.AppendLine($"global_synergy_tier_uplift_duration_delta_seconds,{report.SynergyTierUpliftDurationDeltaSeconds.ToString("0.###", CultureInfo.InvariantCulture)}");
-        return builder.ToString();
-    }
 }

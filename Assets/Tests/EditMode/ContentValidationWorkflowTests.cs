@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using NUnit.Framework;
 using SM.Content.Definitions;
 using SM.Editor.SeedData;
@@ -132,9 +131,6 @@ public sealed class ContentValidationWorkflowTests
     [Test]
     public void ContentDefinitionValidator_ReportsLaunchFloorThresholdGaps()
     {
-        var method = typeof(ContentDefinitionValidator).GetMethod("BuildLaunchScopeGapList", BindingFlags.NonPublic | BindingFlags.Static);
-        Assert.That(method, Is.Not.Null);
-
         var lowCounts = new LaunchScopeCountReport
         {
             ArchetypeCount = 0,
@@ -150,9 +146,8 @@ public sealed class ContentValidationWorkflowTests
             SynergyFamilyCount = 0,
         };
 
-        var gaps = method!.Invoke(null, new object[] { lowCounts, ContentDefinitionValidator.PaidLaunchFloor }) as List<string>;
+        var gaps = LaunchScopeGapEvaluator.BuildGapList(lowCounts, ContentDefinitionValidator.PaidLaunchFloor);
 
-        Assert.That(gaps, Is.Not.Null);
         Assert.That(gaps, Contains.Item("archetypes 0/12"));
         Assert.That(gaps, Contains.Item("skills 0/40"));
         Assert.That(gaps, Contains.Item("equippables 0/36"));
@@ -340,9 +335,6 @@ public sealed class ContentValidationWorkflowTests
     [Test]
     public void BalanceSweepRunner_CsvSummary_ContainsExtendedMetricColumns()
     {
-        var method = typeof(BalanceSweepRunner).GetMethod("BuildCsvSummary", BindingFlags.NonPublic | BindingFlags.Static);
-        Assert.That(method, Is.Not.Null);
-
         var report = new BalanceSweepReport
         {
             Scenarios = new[]
@@ -364,7 +356,7 @@ public sealed class ContentValidationWorkflowTests
             }
         };
 
-        var csv = method!.Invoke(null, new object[] { report }) as string;
+        var csv = BalanceSweepCsvWriter.BuildCsvSummary(report);
         Assert.That(csv, Does.Contain("time_to_first_meaningful_action_seconds"));
         Assert.That(csv, Does.Contain("avg_reposition_count"));
         Assert.That(csv, Does.Contain("avg_target_access_time_seconds"));
@@ -383,9 +375,11 @@ public sealed class ContentValidationWorkflowTests
 
     private static void SetHiddenStringField(UnityEngine.Object asset, string fieldName, string value)
     {
-        var field = asset.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.That(field, Is.Not.Null, $"Missing hidden field '{fieldName}' on {asset.GetType().Name}.");
-        field!.SetValue(asset, value);
+        var serializedObject = new SerializedObject(asset);
+        var property = serializedObject.FindProperty(fieldName);
+        Assert.That(property, Is.Not.Null, $"Missing hidden field '{fieldName}' on {asset.GetType().Name}.");
+        property!.stringValue = value;
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(asset);
     }
 

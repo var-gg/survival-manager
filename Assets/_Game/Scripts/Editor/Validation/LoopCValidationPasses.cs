@@ -20,9 +20,9 @@ internal sealed record LoopCDerivedSanityPreview(int Score, IReadOnlyList<string
 
 public static class LoopCContentGovernanceValidator
 {
-    public static LoopCValidationSummary Validate(IReadOnlyList<ScriptableObject> assets, ICollection<ContentValidationIssue> issues)
+    public static LoopCValidationSummary Validate(ValidationAssetCatalog catalog, ICollection<ContentValidationIssue> issues)
     {
-        var subjects = CollectSubjects(assets);
+        var subjects = CollectSubjects(catalog);
         var budgetAudit = new List<LoopCContentBudgetAuditEntry>();
         var counterMatrix = new List<LoopCCounterCoverageMatrixEntry>();
         var forbiddenEntries = new List<LoopCForbiddenFeatureEntry>();
@@ -31,7 +31,7 @@ public static class LoopCContentGovernanceValidator
         BudgetIdentityValidationPass.Run(subjects, issues);
         RarityComplexityValidationPass.Run(subjects, issues);
         CounterTopologyValidationPass.Run(subjects, issues, counterMatrix);
-        SynergyStructureValidationPass.Run(assets, subjects, issues);
+        SynergyStructureValidationPass.Run(catalog, subjects, issues);
         V1ForbiddenFeatureValidationPass.Run(subjects, issues, forbiddenEntries);
 
         return new LoopCValidationSummary
@@ -51,9 +51,9 @@ public static class LoopCContentGovernanceValidator
         };
     }
 
-    internal static IReadOnlyList<LoopCGovernanceSubject> GetSubjects(IReadOnlyList<ScriptableObject> assets)
+    internal static IReadOnlyList<LoopCGovernanceSubject> GetSubjects(ValidationAssetCatalog catalog)
     {
-        return CollectSubjects(assets);
+        return CollectSubjects(catalog);
     }
 
     internal static ContentValidationIssue CreateIssue(ContentValidationSeverity severity, string code, string message, LoopCGovernanceSubject subject)
@@ -76,12 +76,12 @@ public static class LoopCContentGovernanceValidator
         return budgetCard.DeclaredFeatureFlags == ContentFeatureFlag.None ? "None" : budgetCard.DeclaredFeatureFlags.ToString();
     }
 
-    private static IReadOnlyList<LoopCGovernanceSubject> CollectSubjects(IEnumerable<ScriptableObject> assets)
+    private static IReadOnlyList<LoopCGovernanceSubject> CollectSubjects(ValidationAssetCatalog catalog)
     {
         var subjects = new List<LoopCGovernanceSubject>();
-        foreach (var asset in assets.Where(asset => asset != null))
+        foreach (var asset in catalog.Assets.Where(asset => asset != null))
         {
-            var assetPath = ContentDefinitionValidator.ResolveAssetPath(asset);
+            var assetPath = catalog.GetPath(asset);
             switch (asset)
             {
                 case UnitArchetypeDefinition archetype:
@@ -552,13 +552,13 @@ internal static class CounterTopologyValidationPass
 internal static class SynergyStructureValidationPass
 {
     public static void Run(
-        IReadOnlyList<ScriptableObject> assets,
+        ValidationAssetCatalog catalog,
         IReadOnlyList<LoopCGovernanceSubject> subjects,
         ICollection<ContentValidationIssue> issues)
     {
-        foreach (var synergy in assets.OfType<SynergyDefinition>())
+        foreach (var synergy in catalog.OfType<SynergyDefinition>())
         {
-            var assetPath = ContentDefinitionValidator.ResolveAssetPath(synergy);
+            var assetPath = catalog.GetPath(synergy);
             var thresholds = synergy.Tiers
                 .Where(tier => tier != null)
                 .Select(tier => tier.Threshold)
