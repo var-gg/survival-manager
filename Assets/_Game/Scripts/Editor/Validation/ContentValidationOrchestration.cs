@@ -148,7 +148,7 @@ internal sealed class DefinitionSchemaValidationPass : IValidationPass
 
             var canonicalId = rule.GetCanonicalId(descriptor.Asset);
             builder.RegisterCanonicalId(rule.Kind, canonicalId, descriptor.AssetPath);
-            ContentDefinitionSchemaRules.ValidateCanonicalId(canonicalId, descriptor.AssetPath, $"{rule.Kind}.Id", builder.Issues);
+            ContentDefinitionSchemaRuleSupport.ValidateCanonicalId(canonicalId, descriptor.AssetPath, $"{rule.Kind}.Id", builder.Issues);
             rule.Validate(descriptor, catalog, builder.Issues);
         }
     }
@@ -195,17 +195,31 @@ internal sealed class LaunchScopeValidationPass : IValidationPass
 
 internal sealed class CatalogConsistencyValidationPass : IValidationPass
 {
+    private readonly CatalogValidationRuleRegistry _registry;
+
+    public CatalogConsistencyValidationPass(CatalogValidationRuleRegistry registry)
+    {
+        _registry = registry;
+    }
+
     public void Execute(ValidationAssetCatalog catalog, ValidationReportBuilder builder)
     {
-        ContentDefinitionCatalogRules.ValidateLaunchFloorCatalogs(catalog, builder.Issues);
+        _registry.Validate(catalog, builder.Issues);
     }
 }
 
 internal sealed class LoopCGovernanceValidationPass : IValidationPass
 {
+    private readonly LoopCGovernanceOrchestrator _orchestrator;
+
+    public LoopCGovernanceValidationPass(LoopCGovernanceOrchestrator orchestrator)
+    {
+        _orchestrator = orchestrator;
+    }
+
     public void Execute(ValidationAssetCatalog catalog, ValidationReportBuilder builder)
     {
-        builder.LoopC = LoopCContentGovernanceValidator.Validate(catalog, builder.Issues);
+        builder.LoopC = _orchestrator.Validate(catalog, builder.Issues);
     }
 }
 
@@ -224,14 +238,14 @@ internal sealed class ValidationPassRegistry
 internal sealed class ContentValidationOrchestrator
 {
     private readonly IAssetLoader _assetLoader;
-    private readonly ValidationAssetSelectionPolicy _selectionPolicy;
+    private readonly IValidationAssetSelectionPolicy _selectionPolicy;
     private readonly ValidationPassRegistry _passRegistry;
     private readonly ValidationReportAssembler _assembler;
     private readonly IUnityAssetGateway _gateway;
 
     public ContentValidationOrchestrator(
         IAssetLoader assetLoader,
-        ValidationAssetSelectionPolicy selectionPolicy,
+        IValidationAssetSelectionPolicy selectionPolicy,
         ValidationPassRegistry passRegistry,
         ValidationReportAssembler assembler,
         IUnityAssetGateway gateway)
@@ -291,41 +305,93 @@ internal sealed class ContentValidationOrchestrator
     }
 }
 
+internal sealed class ValidationServiceBundle
+{
+    public ValidationServiceBundle(
+        ContentValidationOrchestrator validator,
+        IReportWriter reportWriter,
+        IUnityAssetGateway unityGateway,
+        IValidationReportPathProvider reportPaths)
+    {
+        Validator = validator;
+        ReportWriter = reportWriter;
+        UnityGateway = unityGateway;
+        ReportPaths = reportPaths;
+    }
+
+    internal ContentValidationOrchestrator Validator { get; }
+    internal IReportWriter ReportWriter { get; }
+    internal IUnityAssetGateway UnityGateway { get; }
+    internal IValidationReportPathProvider ReportPaths { get; }
+}
+
+internal static class ContentValidationRuntimeFactory
+{
+    internal static ValidationServiceBundle CreateDefault()
+    {
+        var unityGateway = new UnityAssetGateway();
+        var identityResolver = new DefaultValidationAssetIdentityResolver();
+        var completenessScorer = new DefaultValidationAssetCompletenessScorer(identityResolver);
+        var selectionPolicy = new ValidationAssetSelectionPolicy(
+            new DefaultValidationAssetSkipPolicy(),
+            new DefaultValidationAssetDeduper(completenessScorer, identityResolver));
+
+        var schemaRegistry = DefinitionSchemaRuleRegistry.CreateDefault();
+        var catalogRegistry = CatalogValidationRuleRegistry.CreateDefault();
+        var localizationInspector = new DescriptorDrivenLocalizationInspector(
+            new CompositeLocalizationShapeProvider(
+                new DefaultLocalizationShapeProvider(),
+                new ReflectionFallbackLocalizationShapeProvider()),
+            new UnityLocalizationEntryLookup());
+
+        var assetLoader = new CompositeAssetLoader(
+            new ResourcesAssetLoader(unityGateway),
+            new AssetDatabaseTypedAssetLoader(unityGateway, ValidationKnownDefinitionTypes.All, ValidationAssetPipelineDefaults.Root),
+            new AssetDatabaseGenericAssetLoader(unityGateway, ValidationAssetPipelineDefaults.Root),
+            new FileSystemAssetLoader(unityGateway, ValidationAssetPipelineDefaults.Root),
+            new FallbackDefinitionFileLoader(unityGateway));
+
+        var loopCGovernance = LoopCGovernanceOrchestrator.CreateDefault();
+        var passRegistry = new ValidationPassRegistry(new IValidationPass[]
+        {
+            new LocalizationValidationPass(localizationInspector),
+            new DefinitionSchemaValidationPass(schemaRegistry),
+            new PassiveBoardShapeValidationPass(),
+            new LaunchScopeValidationPass(),
+            new CatalogConsistencyValidationPass(catalogRegistry),
+            new LoopCGovernanceValidationPass(loopCGovernance),
+        });
+
+        var assembler = new ValidationReportAssembler();
+        var validator = new ContentValidationOrchestrator(
+            assetLoader,
+            selectionPolicy,
+            passRegistry,
+            assembler,
+            unityGateway);
+
+        var reportPaths = new ContentValidationReportPathProvider(unityGateway);
+        var reportWriter = new CompositeReportWriter(
+            reportPaths,
+            new IValidationArtifactRenderer[]
+            {
+                new JsonValidationReportRenderer(),
+                new MarkdownValidationSummaryRenderer(),
+                new LoopCArtifactRenderer(),
+            },
+            new FileArtifactSink());
+
+        return new ValidationServiceBundle(validator, reportWriter, unityGateway, reportPaths);
+    }
+}
+
 internal static class ContentValidationCompositionRoot
 {
-    private static readonly Lazy<IUnityAssetGateway> UnityAssetGatewayInstance = new(() => new UnityAssetGateway());
-    private static readonly Lazy<ValidationAssetSelectionPolicy> SelectionPolicyInstance = new(() => new ValidationAssetSelectionPolicy());
-    private static readonly Lazy<DefinitionSchemaRuleRegistry> RuleRegistryInstance = new(DefinitionSchemaRuleRegistry.CreateDefault);
-    private static readonly Lazy<ILocalizationInspector> LocalizationInspectorInstance = new(() => new ReflectionLocalizationInspector());
-    private static readonly Lazy<IAssetLoader> AssetLoaderInstance = new(() => new CompositeAssetLoader(
-        new ResourcesAssetLoader(UnityAssetGatewayInstance.Value),
-        new AssetDatabaseTypedAssetLoader(UnityAssetGatewayInstance.Value, ValidationKnownDefinitionTypes.All, ValidationAssetPipelineDefaults.Root),
-        new AssetDatabaseGenericAssetLoader(UnityAssetGatewayInstance.Value, ValidationAssetPipelineDefaults.Root),
-        new FileSystemAssetLoader(UnityAssetGatewayInstance.Value, ValidationAssetPipelineDefaults.Root),
-        new FallbackDefinitionFileLoader(UnityAssetGatewayInstance.Value)));
-    private static readonly Lazy<ValidationPassRegistry> PassRegistryInstance = new(() => new ValidationPassRegistry(new IValidationPass[]
-    {
-        new LocalizationValidationPass(LocalizationInspectorInstance.Value),
-        new DefinitionSchemaValidationPass(RuleRegistryInstance.Value),
-        new PassiveBoardShapeValidationPass(),
-        new LaunchScopeValidationPass(),
-        new CatalogConsistencyValidationPass(),
-        new LoopCGovernanceValidationPass(),
-    }));
-    private static readonly Lazy<ValidationReportAssembler> ReportAssemblerInstance = new(() => new ValidationReportAssembler());
-    private static readonly Lazy<ContentValidationOrchestrator> OrchestratorInstance = new(() => new ContentValidationOrchestrator(
-        AssetLoaderInstance.Value,
-        SelectionPolicyInstance.Value,
-        PassRegistryInstance.Value,
-        ReportAssemblerInstance.Value,
-        UnityAssetGatewayInstance.Value));
-    private static readonly Lazy<IReportWriter> ReportWriterInstance = new(() => new CompositeReportWriter(
-        UnityAssetGatewayInstance.Value,
-        new JsonReportWriter(),
-        new MarkdownSummaryWriter(),
-        new LoopCArtifactWriter()));
+    private static readonly Lazy<ValidationServiceBundle> BundleInstance = new(ContentValidationRuntimeFactory.CreateDefault);
 
-    internal static ContentValidationOrchestrator Validator => OrchestratorInstance.Value;
-    internal static IReportWriter ReportWriter => ReportWriterInstance.Value;
-    internal static IUnityAssetGateway UnityGateway => UnityAssetGatewayInstance.Value;
+    internal static ValidationServiceBundle Services => BundleInstance.Value;
+    internal static ContentValidationOrchestrator Validator => Services.Validator;
+    internal static IReportWriter ReportWriter => Services.ReportWriter;
+    internal static IUnityAssetGateway UnityGateway => Services.UnityGateway;
+    internal static IValidationReportPathProvider ReportPaths => Services.ReportPaths;
 }

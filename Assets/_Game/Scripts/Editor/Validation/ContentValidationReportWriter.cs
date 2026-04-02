@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,78 +12,146 @@ internal interface IReportWriter
     ContentValidationReport Write(ContentValidationReport report);
 }
 
+internal interface IValidationReportPathProvider
+{
+    string GetDefaultReportDirectory();
+    ValidationReportOutputPaths BuildOutputPaths();
+}
+
+internal sealed record ValidationReportOutputPaths(
+    string ReportDirectory,
+    string JsonReportPath,
+    string MarkdownSummaryPath,
+    string ContentBudgetAuditJsonPath,
+    string ContentBudgetAuditMarkdownPath,
+    string CounterCoverageMatrixMarkdownPath,
+    string ForbiddenFeatureReportMarkdownPath);
+
+internal sealed record ValidationArtifact(string FilePath, string Contents);
+
+internal interface IValidationArtifactRenderer
+{
+    IReadOnlyList<ValidationArtifact> Render(ContentValidationReport report);
+}
+
+internal interface IArtifactSink
+{
+    void Write(IReadOnlyList<ValidationArtifact> artifacts);
+}
+
 internal static class ContentValidationReportPaths
 {
     internal static string GetDefaultReportDirectory(IUnityAssetGateway gateway)
     {
-        return Path.GetFullPath(Path.Combine(gateway.GetProjectRoot(), ContentValidationPolicyCatalog.ReportFolderName));
+        return new ContentValidationReportPathProvider(gateway).GetDefaultReportDirectory();
+    }
+}
+
+internal sealed class ContentValidationReportPathProvider : IValidationReportPathProvider
+{
+    private readonly IUnityAssetGateway _gateway;
+
+    public ContentValidationReportPathProvider(IUnityAssetGateway gateway)
+    {
+        _gateway = gateway;
+    }
+
+    public string GetDefaultReportDirectory()
+    {
+        return Path.GetFullPath(Path.Combine(_gateway.GetProjectRoot(), ContentValidationPolicyCatalog.ReportFolderName));
+    }
+
+    public ValidationReportOutputPaths BuildOutputPaths()
+    {
+        var reportDirectory = GetDefaultReportDirectory();
+        return new ValidationReportOutputPaths(
+            reportDirectory,
+            Path.Combine(reportDirectory, ContentValidationPolicyCatalog.JsonReportFileName),
+            Path.Combine(reportDirectory, ContentValidationPolicyCatalog.MarkdownSummaryFileName),
+            Path.Combine(reportDirectory, ContentValidationPolicyCatalog.BudgetAuditJsonFileName),
+            Path.Combine(reportDirectory, ContentValidationPolicyCatalog.BudgetAuditMarkdownFileName),
+            Path.Combine(reportDirectory, ContentValidationPolicyCatalog.CounterCoverageMatrixMarkdownFileName),
+            Path.Combine(reportDirectory, ContentValidationPolicyCatalog.ForbiddenFeatureReportMarkdownFileName));
+    }
+}
+
+internal sealed class FileArtifactSink : IArtifactSink
+{
+    public void Write(IReadOnlyList<ValidationArtifact> artifacts)
+    {
+        foreach (var artifact in artifacts)
+        {
+            var directory = Path.GetDirectoryName(artifact.FilePath);
+            if (!string.IsNullOrWhiteSpace(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(artifact.FilePath, artifact.Contents);
+        }
     }
 }
 
 internal sealed class CompositeReportWriter : IReportWriter
 {
-    private readonly IUnityAssetGateway _gateway;
-    private readonly JsonReportWriter _jsonWriter;
-    private readonly MarkdownSummaryWriter _markdownWriter;
-    private readonly LoopCArtifactWriter _loopCWriter;
+    private readonly IValidationReportPathProvider _pathProvider;
+    private readonly IReadOnlyList<IValidationArtifactRenderer> _renderers;
+    private readonly IArtifactSink _sink;
 
     public CompositeReportWriter(
-        IUnityAssetGateway gateway,
-        JsonReportWriter jsonWriter,
-        MarkdownSummaryWriter markdownWriter,
-        LoopCArtifactWriter loopCWriter)
+        IValidationReportPathProvider pathProvider,
+        IReadOnlyList<IValidationArtifactRenderer> renderers,
+        IArtifactSink sink)
     {
-        _gateway = gateway;
-        _jsonWriter = jsonWriter;
-        _markdownWriter = markdownWriter;
-        _loopCWriter = loopCWriter;
+        _pathProvider = pathProvider;
+        _renderers = renderers;
+        _sink = sink;
     }
 
     public ContentValidationReport Write(ContentValidationReport report)
     {
-        var reportDirectory = ContentValidationReportPaths.GetDefaultReportDirectory(_gateway);
-        Directory.CreateDirectory(reportDirectory);
-
-        var jsonPath = Path.Combine(reportDirectory, ContentValidationPolicyCatalog.JsonReportFileName);
-        var markdownPath = Path.Combine(reportDirectory, ContentValidationPolicyCatalog.MarkdownSummaryFileName);
-        var budgetAuditJsonPath = Path.Combine(reportDirectory, ContentValidationPolicyCatalog.BudgetAuditJsonFileName);
-        var budgetAuditMarkdownPath = Path.Combine(reportDirectory, ContentValidationPolicyCatalog.BudgetAuditMarkdownFileName);
-        var counterCoverageMatrixMarkdownPath = Path.Combine(reportDirectory, ContentValidationPolicyCatalog.CounterCoverageMatrixMarkdownFileName);
-        var forbiddenFeatureReportMarkdownPath = Path.Combine(reportDirectory, ContentValidationPolicyCatalog.ForbiddenFeatureReportMarkdownFileName);
-
+        var paths = _pathProvider.BuildOutputPaths();
         var withPaths = report with
         {
-            JsonReportPath = jsonPath,
-            MarkdownSummaryPath = markdownPath,
-            ContentBudgetAuditJsonPath = budgetAuditJsonPath,
-            ContentBudgetAuditMarkdownPath = budgetAuditMarkdownPath,
-            CounterCoverageMatrixMarkdownPath = counterCoverageMatrixMarkdownPath,
-            ForbiddenFeatureReportMarkdownPath = forbiddenFeatureReportMarkdownPath,
+            JsonReportPath = paths.JsonReportPath,
+            MarkdownSummaryPath = paths.MarkdownSummaryPath,
+            ContentBudgetAuditJsonPath = paths.ContentBudgetAuditJsonPath,
+            ContentBudgetAuditMarkdownPath = paths.ContentBudgetAuditMarkdownPath,
+            CounterCoverageMatrixMarkdownPath = paths.CounterCoverageMatrixMarkdownPath,
+            ForbiddenFeatureReportMarkdownPath = paths.ForbiddenFeatureReportMarkdownPath,
         };
 
-        _jsonWriter.Write(withPaths);
-        _markdownWriter.Write(withPaths);
-        _loopCWriter.Write(withPaths);
+        var artifacts = _renderers
+            .SelectMany(renderer => renderer.Render(withPaths))
+            .ToList();
+
+        _sink.Write(artifacts);
         return withPaths;
     }
 }
 
-internal sealed class JsonReportWriter
+internal sealed class JsonValidationReportRenderer : IValidationArtifactRenderer
 {
-    internal void Write(ContentValidationReport report)
+    public IReadOnlyList<ValidationArtifact> Render(ContentValidationReport report)
     {
-        File.WriteAllText(report.JsonReportPath, JsonConvert.SerializeObject(report, Formatting.Indented));
+        return new[]
+        {
+            new ValidationArtifact(report.JsonReportPath, JsonConvert.SerializeObject(report, Formatting.Indented)),
+        };
     }
 }
 
-internal sealed class MarkdownSummaryWriter
+internal sealed class MarkdownValidationSummaryRenderer : IValidationArtifactRenderer
 {
-    internal void Write(ContentValidationReport report)
+    public IReadOnlyList<ValidationArtifact> Render(ContentValidationReport report)
     {
-        File.WriteAllText(report.MarkdownSummaryPath, BuildMarkdownSummary(report));
+        return new[]
+        {
+            new ValidationArtifact(report.MarkdownSummaryPath, BuildMarkdownSummary(report)),
+        };
     }
 
-    private static string BuildMarkdownSummary(ContentValidationReport report)
+    internal string BuildMarkdownSummary(ContentValidationReport report)
     {
         var builder = new StringBuilder();
         builder.AppendLine("# Content Validation Summary");
@@ -168,17 +238,20 @@ internal sealed class MarkdownSummaryWriter
     }
 }
 
-internal sealed class LoopCArtifactWriter
+internal sealed class LoopCArtifactRenderer : IValidationArtifactRenderer
 {
-    internal void Write(ContentValidationReport report)
+    public IReadOnlyList<ValidationArtifact> Render(ContentValidationReport report)
     {
-        File.WriteAllText(report.ContentBudgetAuditJsonPath, JsonConvert.SerializeObject(report.LoopC.BudgetAudit, Formatting.Indented));
-        File.WriteAllText(report.ContentBudgetAuditMarkdownPath, BuildLoopCBudgetAuditMarkdown(report));
-        File.WriteAllText(report.CounterCoverageMatrixMarkdownPath, BuildCounterCoverageMatrixMarkdown(report));
-        File.WriteAllText(report.ForbiddenFeatureReportMarkdownPath, BuildForbiddenFeatureReportMarkdown(report));
+        return new[]
+        {
+            new ValidationArtifact(report.ContentBudgetAuditJsonPath, JsonConvert.SerializeObject(report.LoopC.BudgetAudit, Formatting.Indented)),
+            new ValidationArtifact(report.ContentBudgetAuditMarkdownPath, BuildLoopCBudgetAuditMarkdown(report)),
+            new ValidationArtifact(report.CounterCoverageMatrixMarkdownPath, BuildCounterCoverageMatrixMarkdown(report)),
+            new ValidationArtifact(report.ForbiddenFeatureReportMarkdownPath, BuildForbiddenFeatureReportMarkdown(report)),
+        };
     }
 
-    private static string BuildLoopCBudgetAuditMarkdown(ContentValidationReport report)
+    internal string BuildLoopCBudgetAuditMarkdown(ContentValidationReport report)
     {
         var builder = new StringBuilder();
         builder.AppendLine("# Content Budget Audit");
@@ -193,7 +266,7 @@ internal sealed class LoopCArtifactWriter
         return builder.ToString();
     }
 
-    private static string BuildCounterCoverageMatrixMarkdown(ContentValidationReport report)
+    internal string BuildCounterCoverageMatrixMarkdown(ContentValidationReport report)
     {
         var builder = new StringBuilder();
         builder.AppendLine("# Counter Coverage Matrix");
@@ -208,7 +281,7 @@ internal sealed class LoopCArtifactWriter
         return builder.ToString();
     }
 
-    private static string BuildForbiddenFeatureReportMarkdown(ContentValidationReport report)
+    internal string BuildForbiddenFeatureReportMarkdown(ContentValidationReport report)
     {
         var builder = new StringBuilder();
         builder.AppendLine("# V1 Forbidden Feature Report");

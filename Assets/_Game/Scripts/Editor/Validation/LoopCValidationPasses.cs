@@ -18,65 +18,77 @@ internal sealed record LoopCGovernanceSubject(
 
 internal sealed record LoopCDerivedSanityPreview(int Score, IReadOnlyList<string> Warnings);
 
-public static class LoopCContentGovernanceValidator
+internal interface ILoopCGovernanceSubjectExtractor
 {
-    public static LoopCValidationSummary Validate(ValidationAssetCatalog catalog, ICollection<ContentValidationIssue> issues)
+    IReadOnlyList<LoopCGovernanceSubject> Extract(ValidationAssetCatalog catalog);
+}
+
+internal interface ILoopCGovernanceRule
+{
+    void Execute(LoopCGovernanceContext context);
+}
+
+internal sealed class LoopCValidationBuilder
+{
+    private readonly List<LoopCContentBudgetAuditEntry> _budgetAudit = new();
+    private readonly List<LoopCCounterCoverageMatrixEntry> _counterCoverageMatrix = new();
+    private readonly List<LoopCForbiddenFeatureEntry> _forbiddenFeatureEntries = new();
+
+    internal ICollection<LoopCContentBudgetAuditEntry> BudgetAudit => _budgetAudit;
+    internal ICollection<LoopCCounterCoverageMatrixEntry> CounterCoverageMatrix => _counterCoverageMatrix;
+    internal ICollection<LoopCForbiddenFeatureEntry> ForbiddenFeatureEntries => _forbiddenFeatureEntries;
+
+    internal LoopCValidationSummary BuildSummary()
     {
-        var subjects = CollectSubjects(catalog);
-        var budgetAudit = new List<LoopCContentBudgetAuditEntry>();
-        var counterMatrix = new List<LoopCCounterCoverageMatrixEntry>();
-        var forbiddenEntries = new List<LoopCForbiddenFeatureEntry>();
-
-        BudgetWindowValidationPass.Run(subjects, issues, budgetAudit);
-        BudgetIdentityValidationPass.Run(subjects, issues);
-        RarityComplexityValidationPass.Run(subjects, issues);
-        CounterTopologyValidationPass.Run(subjects, issues, counterMatrix);
-        SynergyStructureValidationPass.Run(catalog, subjects, issues);
-        V1ForbiddenFeatureValidationPass.Run(subjects, issues, forbiddenEntries);
-
         return new LoopCValidationSummary
         {
-            BudgetAudit = budgetAudit
+            BudgetAudit = _budgetAudit
                 .OrderBy(entry => entry.ContentKind, StringComparer.Ordinal)
                 .ThenBy(entry => entry.ContentId, StringComparer.Ordinal)
                 .ToList(),
-            CounterCoverageMatrix = counterMatrix
+            CounterCoverageMatrix = _counterCoverageMatrix
                 .OrderBy(entry => entry.ContentKind, StringComparer.Ordinal)
                 .ThenBy(entry => entry.ContentId, StringComparer.Ordinal)
                 .ToList(),
-            ForbiddenFeatureEntries = forbiddenEntries
+            ForbiddenFeatureEntries = _forbiddenFeatureEntries
                 .OrderBy(entry => entry.ContentKind, StringComparer.Ordinal)
                 .ThenBy(entry => entry.ContentId, StringComparer.Ordinal)
                 .ToList(),
         };
     }
+}
 
-    internal static IReadOnlyList<LoopCGovernanceSubject> GetSubjects(ValidationAssetCatalog catalog)
+internal sealed class LoopCGovernanceContext
+{
+    public LoopCGovernanceContext(
+        ValidationAssetCatalog catalog,
+        IReadOnlyList<LoopCGovernanceSubject> subjects,
+        ICollection<ContentValidationIssue> issues,
+        LoopCValidationBuilder builder)
     {
-        return CollectSubjects(catalog);
+        Catalog = catalog;
+        Subjects = subjects;
+        Issues = issues;
+        Builder = builder;
     }
 
-    internal static ContentValidationIssue CreateIssue(ContentValidationSeverity severity, string code, string message, LoopCGovernanceSubject subject)
-    {
-        return new ContentValidationIssue(severity, code, message, subject.AssetPath, subject.Scope);
-    }
+    internal ValidationAssetCatalog Catalog { get; }
+    internal IReadOnlyList<LoopCGovernanceSubject> Subjects { get; }
+    internal ICollection<ContentValidationIssue> Issues { get; }
+    internal LoopCValidationBuilder Builder { get; }
+}
 
-    internal static string FormatThreats(BudgetCard budgetCard)
+internal sealed class LoopCDerivedSanityPreviewCalculator
+{
+    internal LoopCDerivedSanityPreview Build(object source, BudgetCard budgetCard)
     {
-        return string.Join(", ", budgetCard.DeclaredThreatPatterns?.Select(pattern => pattern.ToString()) ?? Array.Empty<string>());
+        return LoopCDerivedSanityPreviewService.Build(source, budgetCard);
     }
+}
 
-    internal static string FormatCounters(BudgetCard budgetCard)
-    {
-        return string.Join(", ", budgetCard.DeclaredCounterTools?.Select(tool => $"{tool.Tool}:{tool.Strength}") ?? Array.Empty<string>());
-    }
-
-    internal static string FormatFeatureFlags(BudgetCard budgetCard)
-    {
-        return budgetCard.DeclaredFeatureFlags == ContentFeatureFlag.None ? "None" : budgetCard.DeclaredFeatureFlags.ToString();
-    }
-
-    private static IReadOnlyList<LoopCGovernanceSubject> CollectSubjects(ValidationAssetCatalog catalog)
+internal sealed class DefaultLoopCGovernanceSubjectExtractor : ILoopCGovernanceSubjectExtractor
+{
+    public IReadOnlyList<LoopCGovernanceSubject> Extract(ValidationAssetCatalog catalog)
     {
         var subjects = new List<LoopCGovernanceSubject>();
         foreach (var asset in catalog.Assets.Where(asset => asset != null))
@@ -176,6 +188,132 @@ public static class LoopCContentGovernanceValidator
                || (definition.BudgetCard?.Vector?.DrawbackCredit ?? 0) > 0
                || (definition.BudgetCard?.DeclaredThreatPatterns?.Length ?? 0) > 0
                || (definition.BudgetCard?.DeclaredCounterTools?.Length ?? 0) > 0;
+    }
+}
+
+internal sealed class BudgetWindowGovernanceRule : ILoopCGovernanceRule
+{
+    public void Execute(LoopCGovernanceContext context)
+    {
+        BudgetWindowValidationPass.Run(context.Subjects, context.Issues, context.Builder.BudgetAudit);
+    }
+}
+
+internal sealed class BudgetIdentityGovernanceRule : ILoopCGovernanceRule
+{
+    public void Execute(LoopCGovernanceContext context)
+    {
+        BudgetIdentityValidationPass.Run(context.Subjects, context.Issues);
+    }
+}
+
+internal sealed class RarityComplexityGovernanceRule : ILoopCGovernanceRule
+{
+    public void Execute(LoopCGovernanceContext context)
+    {
+        RarityComplexityValidationPass.Run(context.Subjects, context.Issues);
+    }
+}
+
+internal sealed class CounterTopologyGovernanceRule : ILoopCGovernanceRule
+{
+    public void Execute(LoopCGovernanceContext context)
+    {
+        CounterTopologyValidationPass.Run(context.Subjects, context.Issues, context.Builder.CounterCoverageMatrix);
+    }
+}
+
+internal sealed class SynergyStructureGovernanceRule : ILoopCGovernanceRule
+{
+    public void Execute(LoopCGovernanceContext context)
+    {
+        SynergyStructureValidationPass.Run(context.Catalog, context.Subjects, context.Issues);
+    }
+}
+
+internal sealed class ForbiddenFeatureGovernanceRule : ILoopCGovernanceRule
+{
+    public void Execute(LoopCGovernanceContext context)
+    {
+        V1ForbiddenFeatureValidationPass.Run(context.Subjects, context.Issues, context.Builder.ForbiddenFeatureEntries);
+    }
+}
+
+internal sealed class LoopCGovernanceOrchestrator
+{
+    private readonly ILoopCGovernanceSubjectExtractor _subjectExtractor;
+    private readonly IReadOnlyList<ILoopCGovernanceRule> _rules;
+
+    public LoopCGovernanceOrchestrator(
+        ILoopCGovernanceSubjectExtractor subjectExtractor,
+        IReadOnlyList<ILoopCGovernanceRule> rules)
+    {
+        _subjectExtractor = subjectExtractor;
+        _rules = rules;
+    }
+
+    internal IReadOnlyList<LoopCGovernanceSubject> ExtractSubjects(ValidationAssetCatalog catalog)
+    {
+        return _subjectExtractor.Extract(catalog);
+    }
+
+    internal LoopCValidationSummary Validate(ValidationAssetCatalog catalog, ICollection<ContentValidationIssue> issues)
+    {
+        var context = new LoopCGovernanceContext(catalog, _subjectExtractor.Extract(catalog), issues, new LoopCValidationBuilder());
+        foreach (var rule in _rules)
+        {
+            rule.Execute(context);
+        }
+
+        return context.Builder.BuildSummary();
+    }
+
+    internal static LoopCGovernanceOrchestrator CreateDefault()
+    {
+        return new LoopCGovernanceOrchestrator(
+            new DefaultLoopCGovernanceSubjectExtractor(),
+            new ILoopCGovernanceRule[]
+            {
+                new BudgetWindowGovernanceRule(),
+                new BudgetIdentityGovernanceRule(),
+                new RarityComplexityGovernanceRule(),
+                new CounterTopologyGovernanceRule(),
+                new SynergyStructureGovernanceRule(),
+                new ForbiddenFeatureGovernanceRule(),
+            });
+    }
+}
+
+internal static class LoopCContentGovernanceValidator
+{
+    internal static LoopCValidationSummary Validate(ValidationAssetCatalog catalog, ICollection<ContentValidationIssue> issues)
+    {
+        return LoopCGovernanceOrchestrator.CreateDefault().Validate(catalog, issues);
+    }
+
+    internal static IReadOnlyList<LoopCGovernanceSubject> GetSubjects(ValidationAssetCatalog catalog)
+    {
+        return LoopCGovernanceOrchestrator.CreateDefault().ExtractSubjects(catalog);
+    }
+
+    internal static ContentValidationIssue CreateIssue(ContentValidationSeverity severity, string code, string message, LoopCGovernanceSubject subject)
+    {
+        return new ContentValidationIssue(severity, code, message, subject.AssetPath, subject.Scope);
+    }
+
+    internal static string FormatThreats(BudgetCard budgetCard)
+    {
+        return string.Join(", ", budgetCard.DeclaredThreatPatterns?.Select(pattern => pattern.ToString()) ?? Array.Empty<string>());
+    }
+
+    internal static string FormatCounters(BudgetCard budgetCard)
+    {
+        return string.Join(", ", budgetCard.DeclaredCounterTools?.Select(tool => $"{tool.Tool}:{tool.Strength}") ?? Array.Empty<string>());
+    }
+
+    internal static string FormatFeatureFlags(BudgetCard budgetCard)
+    {
+        return budgetCard.DeclaredFeatureFlags == ContentFeatureFlag.None ? "None" : budgetCard.DeclaredFeatureFlags.ToString();
     }
 }
 

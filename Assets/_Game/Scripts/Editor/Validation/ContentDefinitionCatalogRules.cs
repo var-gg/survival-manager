@@ -5,64 +5,120 @@ using SM.Content.Definitions;
 
 namespace SM.Editor.Validation;
 
+internal interface ICatalogValidationRule
+{
+    void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues);
+}
+
+internal sealed class CatalogValidationContext
+{
+    public CatalogValidationContext(ValidationAssetCatalog catalog)
+    {
+        Catalog = catalog;
+        Chapters = catalog.OfType<CampaignChapterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        Sites = catalog.OfType<ExpeditionSiteDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        Encounters = catalog.OfType<EncounterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        Squads = catalog.OfType<EnemySquadTemplateDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        Overlays = catalog.OfType<BossOverlayDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        Statuses = catalog.OfType<StatusFamilyDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        CleanseProfiles = catalog.OfType<CleanseProfileDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        ControlRules = catalog.OfType<ControlDiminishingRuleDefinition>().ToList();
+        RewardSources = catalog.OfType<RewardSourceDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        DropTables = catalog.OfType<DropTableDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        LootBundles = catalog.OfType<LootBundleDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        TraitTokens = catalog.OfType<TraitTokenDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        Skills = catalog.OfType<SkillDefinitionAsset>().ToList();
+        Items = catalog.OfType<ItemBaseDefinition>().ToList();
+        Synergies = catalog.OfType<SynergyDefinition>().ToList();
+        ArchetypeIds = catalog.OfType<UnitArchetypeDefinition>().Select(asset => asset.Id).ToHashSet(StringComparer.Ordinal);
+    }
+
+    internal ValidationAssetCatalog Catalog { get; }
+    internal IReadOnlyDictionary<string, CampaignChapterDefinition> Chapters { get; }
+    internal IReadOnlyDictionary<string, ExpeditionSiteDefinition> Sites { get; }
+    internal IReadOnlyDictionary<string, EncounterDefinition> Encounters { get; }
+    internal IReadOnlyDictionary<string, EnemySquadTemplateDefinition> Squads { get; }
+    internal IReadOnlyDictionary<string, BossOverlayDefinition> Overlays { get; }
+    internal IReadOnlyDictionary<string, StatusFamilyDefinition> Statuses { get; }
+    internal IReadOnlyDictionary<string, CleanseProfileDefinition> CleanseProfiles { get; }
+    internal IReadOnlyList<ControlDiminishingRuleDefinition> ControlRules { get; }
+    internal IReadOnlyDictionary<string, RewardSourceDefinition> RewardSources { get; }
+    internal IReadOnlyDictionary<string, DropTableDefinition> DropTables { get; }
+    internal IReadOnlyDictionary<string, LootBundleDefinition> LootBundles { get; }
+    internal IReadOnlyDictionary<string, TraitTokenDefinition> TraitTokens { get; }
+    internal IReadOnlyList<SkillDefinitionAsset> Skills { get; }
+    internal IReadOnlyList<ItemBaseDefinition> Items { get; }
+    internal IReadOnlyList<SynergyDefinition> Synergies { get; }
+    internal IReadOnlyCollection<string> ArchetypeIds { get; }
+
+    internal string GetPath(UnityEngine.Object asset)
+    {
+        return Catalog.GetPath(asset);
+    }
+}
+
+internal sealed class CatalogValidationRuleRegistry
+{
+    private readonly IReadOnlyList<ICatalogValidationRule> _rules;
+
+    public CatalogValidationRuleRegistry(IReadOnlyList<ICatalogValidationRule> rules)
+    {
+        _rules = rules;
+    }
+
+    internal void Validate(ValidationAssetCatalog catalog, ICollection<ContentValidationIssue> issues)
+    {
+        var context = new CatalogValidationContext(catalog);
+        foreach (var rule in _rules)
+        {
+            rule.Validate(context, issues);
+        }
+    }
+
+    internal static CatalogValidationRuleRegistry CreateDefault()
+    {
+        return new CatalogValidationRuleRegistry(new ICatalogValidationRule[]
+        {
+            new CampaignCatalogValidator(),
+            new StatusCatalogValidator(),
+            new RewardCatalogValidator(),
+            new SkillCatalogValidator(),
+            new ItemCatalogValidator(),
+            new FactionIsolationValidator(),
+        });
+    }
+}
+
 internal static class ContentDefinitionCatalogRules
 {
     internal static void ValidateLaunchFloorCatalogs(ValidationAssetCatalog catalog, ICollection<ContentValidationIssue> issues)
     {
-        var chapters = catalog.OfType<CampaignChapterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var sites = catalog.OfType<ExpeditionSiteDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var encounters = catalog.OfType<EncounterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var squads = catalog.OfType<EnemySquadTemplateDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var overlays = catalog.OfType<BossOverlayDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var statuses = catalog.OfType<StatusFamilyDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var cleanseProfiles = catalog.OfType<CleanseProfileDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var controlRules = catalog.OfType<ControlDiminishingRuleDefinition>().ToList();
-        var rewardSources = catalog.OfType<RewardSourceDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var dropTables = catalog.OfType<DropTableDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var lootBundles = catalog.OfType<LootBundleDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var traitTokens = catalog.OfType<TraitTokenDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
-        var skills = catalog.OfType<SkillDefinitionAsset>().ToList();
-        var items = catalog.OfType<ItemBaseDefinition>().ToList();
-        var synergies = catalog.OfType<SynergyDefinition>().ToList();
-        var archetypeIds = catalog.OfType<UnitArchetypeDefinition>().Select(asset => asset.Id).ToHashSet(StringComparer.Ordinal);
-
-        ValidateCampaignCatalog(catalog, chapters, sites, encounters, squads, overlays, rewardSources, archetypeIds, issues);
-        ValidateStatusCatalog(catalog, statuses, cleanseProfiles, controlRules, skills, issues);
-        ValidateRewardCatalog(catalog, rewardSources, dropTables, lootBundles, traitTokens, issues);
-        ValidateSkillCatalog(catalog, skills, statuses.Keys.ToHashSet(StringComparer.Ordinal), cleanseProfiles.Keys.ToHashSet(StringComparer.Ordinal), issues);
-        ValidateItemCatalog(catalog, items, issues);
-        ValidateFactionIsolation(catalog, sites.Values, encounters.Values, squads.Values, synergies, issues);
+        CatalogValidationRuleRegistry.CreateDefault().Validate(catalog, issues);
     }
+}
 
-    private static void ValidateCampaignCatalog(
-        ValidationAssetCatalog catalog,
-        IReadOnlyDictionary<string, CampaignChapterDefinition> chapters,
-        IReadOnlyDictionary<string, ExpeditionSiteDefinition> sites,
-        IReadOnlyDictionary<string, EncounterDefinition> encounters,
-        IReadOnlyDictionary<string, EnemySquadTemplateDefinition> squads,
-        IReadOnlyDictionary<string, BossOverlayDefinition> overlays,
-        IReadOnlyDictionary<string, RewardSourceDefinition> rewardSources,
-        IReadOnlyCollection<string> archetypeIds,
-        ICollection<ContentValidationIssue> issues)
+internal sealed class CampaignCatalogValidator : ICatalogValidationRule
+{
+    public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
     {
-        if (chapters.Count != 3)
+        if (context.Chapters.Count != 3)
         {
-            ContentValidationIssueFactory.AddError(issues, "campaign.chapter_count", $"Story chapters must be locked to 3. Found {chapters.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "campaign.chapter_count", $"Story chapters must be locked to 3. Found {context.Chapters.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        if (sites.Count != 6)
+        if (context.Sites.Count != 6)
         {
-            ContentValidationIssueFactory.AddError(issues, "campaign.site_count", $"Expedition sites must be locked to 6. Found {sites.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "campaign.site_count", $"Expedition sites must be locked to 6. Found {context.Sites.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        if (encounters.Count != 24)
+        if (context.Encounters.Count != 24)
         {
-            ContentValidationIssueFactory.AddError(issues, "campaign.encounter_count", $"Encounter catalog must be locked to 24 battle encounters. Found {encounters.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "campaign.encounter_count", $"Encounter catalog must be locked to 24 battle encounters. Found {context.Encounters.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        foreach (var chapter in chapters.Values)
+        foreach (var chapter in context.Chapters.Values)
         {
-            var assetPath = catalog.GetPath(chapter);
+            var assetPath = context.GetPath(chapter);
             if (chapter.SiteIds.Distinct(StringComparer.Ordinal).Count() != 2)
             {
                 ContentValidationIssueFactory.AddError(issues, "campaign.chapter_site_count", "Campaign chapter must own exactly 2 expedition sites.", assetPath);
@@ -70,17 +126,17 @@ internal static class ContentDefinitionCatalogRules
 
             foreach (var siteId in chapter.SiteIds)
             {
-                if (!sites.ContainsKey(siteId))
+                if (!context.Sites.ContainsKey(siteId))
                 {
                     ContentValidationIssueFactory.AddError(issues, "campaign.chapter_site_ref", $"Campaign chapter references missing site '{siteId}'.", assetPath);
                 }
             }
         }
 
-        foreach (var site in sites.Values)
+        foreach (var site in context.Sites.Values)
         {
-            var assetPath = catalog.GetPath(site);
-            if (!chapters.ContainsKey(site.ChapterId))
+            var assetPath = context.GetPath(site);
+            if (!context.Chapters.ContainsKey(site.ChapterId))
             {
                 ContentValidationIssueFactory.AddError(issues, "campaign.site_chapter_ref", $"Expedition site references missing chapter '{site.ChapterId}'.", assetPath);
             }
@@ -90,34 +146,34 @@ internal static class ContentDefinitionCatalogRules
                 ContentValidationIssueFactory.AddError(issues, "campaign.site_encounter_count", "Expedition site must own exactly 4 battle encounters (2 skirmish / 1 elite / 1 boss).", assetPath);
             }
 
-            if (string.IsNullOrWhiteSpace(site.ExtractRewardSourceId) || !rewardSources.ContainsKey(site.ExtractRewardSourceId))
+            if (string.IsNullOrWhiteSpace(site.ExtractRewardSourceId) || !context.RewardSources.ContainsKey(site.ExtractRewardSourceId))
             {
                 ContentValidationIssueFactory.AddError(issues, "campaign.site_extract_source", "Expedition site is missing a valid extract reward source.", assetPath);
             }
 
             foreach (var encounterId in site.EncounterIds)
             {
-                if (!encounters.ContainsKey(encounterId))
+                if (!context.Encounters.ContainsKey(encounterId))
                 {
                     ContentValidationIssueFactory.AddError(issues, "campaign.site_encounter_ref", $"Expedition site references missing encounter '{encounterId}'.", assetPath);
                 }
             }
         }
 
-        foreach (var encounter in encounters.Values)
+        foreach (var encounter in context.Encounters.Values)
         {
-            var assetPath = catalog.GetPath(encounter);
-            if (!sites.ContainsKey(encounter.SiteId))
+            var assetPath = context.GetPath(encounter);
+            if (!context.Sites.ContainsKey(encounter.SiteId))
             {
                 ContentValidationIssueFactory.AddError(issues, "encounter.site_ref", $"Encounter references missing site '{encounter.SiteId}'.", assetPath);
             }
 
-            if (!squads.ContainsKey(encounter.EnemySquadTemplateId))
+            if (!context.Squads.ContainsKey(encounter.EnemySquadTemplateId))
             {
                 ContentValidationIssueFactory.AddError(issues, "encounter.squad_ref", $"Encounter references missing enemy squad '{encounter.EnemySquadTemplateId}'.", assetPath);
             }
 
-            if (string.IsNullOrWhiteSpace(encounter.RewardSourceId) || !rewardSources.ContainsKey(encounter.RewardSourceId))
+            if (string.IsNullOrWhiteSpace(encounter.RewardSourceId) || !context.RewardSources.ContainsKey(encounter.RewardSourceId))
             {
                 ContentValidationIssueFactory.AddError(issues, "encounter.reward_source_ref", "Encounter is missing a valid reward source.", assetPath);
             }
@@ -144,7 +200,7 @@ internal static class ContentDefinitionCatalogRules
 
             if (encounter.Kind == EncounterKindValue.Boss)
             {
-                if (string.IsNullOrWhiteSpace(encounter.BossOverlayId) || !overlays.ContainsKey(encounter.BossOverlayId))
+                if (string.IsNullOrWhiteSpace(encounter.BossOverlayId) || !context.Overlays.ContainsKey(encounter.BossOverlayId))
                 {
                     ContentValidationIssueFactory.AddError(issues, "encounter.boss_overlay_ref", "Boss encounter must reference a valid boss overlay.", assetPath);
                 }
@@ -155,9 +211,9 @@ internal static class ContentDefinitionCatalogRules
             }
         }
 
-        foreach (var squad in squads.Values)
+        foreach (var squad in context.Squads.Values)
         {
-            var assetPath = catalog.GetPath(squad);
+            var assetPath = context.GetPath(squad);
             if (string.IsNullOrWhiteSpace(squad.FactionId))
             {
                 ContentValidationIssueFactory.AddError(issues, "enemy_squad.faction_id", "Enemy squad must keep a faction/allegiance id.", assetPath);
@@ -178,50 +234,47 @@ internal static class ContentDefinitionCatalogRules
 
             foreach (var member in squad.Members)
             {
-                if (!archetypeIds.Contains(member.ArchetypeId))
+                if (!context.ArchetypeIds.Contains(member.ArchetypeId))
                 {
                     ContentValidationIssueFactory.AddError(issues, "enemy_squad.member_archetype_ref", $"Enemy squad member references missing archetype '{member.ArchetypeId}'.", assetPath);
                 }
             }
         }
     }
+}
 
-    private static void ValidateStatusCatalog(
-        ValidationAssetCatalog catalog,
-        IReadOnlyDictionary<string, StatusFamilyDefinition> statuses,
-        IReadOnlyDictionary<string, CleanseProfileDefinition> cleanseProfiles,
-        IReadOnlyList<ControlDiminishingRuleDefinition> controlRules,
-        IReadOnlyList<SkillDefinitionAsset> skills,
-        ICollection<ContentValidationIssue> issues)
+internal sealed class StatusCatalogValidator : ICatalogValidationRule
+{
+    public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
     {
-        var statusIds = statuses.Keys.ToHashSet(StringComparer.Ordinal);
+        var statusIds = context.Statuses.Keys.ToHashSet(StringComparer.Ordinal);
         if (!ContentValidationPolicyCatalog.RequiredLaunchStatusIds.SetEquals(statusIds))
         {
             ContentValidationIssueFactory.AddError(issues, "status.catalog_floor", $"Launch-floor status catalog must match [{string.Join(", ", ContentValidationPolicyCatalog.RequiredLaunchStatusIds.OrderBy(id => id, StringComparer.Ordinal))}].", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        if (!ContentValidationPolicyCatalog.RequiredCleanseProfileIds.SetEquals(cleanseProfiles.Keys))
+        if (!ContentValidationPolicyCatalog.RequiredCleanseProfileIds.SetEquals(context.CleanseProfiles.Keys))
         {
             ContentValidationIssueFactory.AddError(issues, "status.cleanse_floor", $"Cleanse profile catalog must match [{string.Join(", ", ContentValidationPolicyCatalog.RequiredCleanseProfileIds.OrderBy(id => id, StringComparer.Ordinal))}].", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        if (controlRules.Count != 1)
+        if (context.ControlRules.Count != 1)
         {
-            ContentValidationIssueFactory.AddError(issues, "status.dr_rule_count", $"Launch-floor control diminishing rules must be locked to 1. Found {controlRules.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "status.dr_rule_count", $"Launch-floor control diminishing rules must be locked to 1. Found {context.ControlRules.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
         else
         {
-            var rule = controlRules[0];
-            var assetPath = catalog.GetPath(rule);
+            var rule = context.ControlRules[0];
+            var assetPath = context.GetPath(rule);
             if (Math.Abs(rule.WindowSeconds - 1.5f) > 0.001f || Math.Abs(rule.ControlResistMultiplier - 0.5f) > 0.001f)
             {
                 ContentValidationIssueFactory.AddError(issues, "status.dr_values", "Launch-floor DR must stay at 1.5s window and 50% control resist.", assetPath);
             }
         }
 
-        foreach (var profile in cleanseProfiles.Values)
+        foreach (var profile in context.CleanseProfiles.Values)
         {
-            var assetPath = catalog.GetPath(profile);
+            var assetPath = context.GetPath(profile);
             foreach (var statusId in profile.RemovesStatusIds)
             {
                 if (!statusIds.Contains(statusId))
@@ -231,9 +284,9 @@ internal static class ContentDefinitionCatalogRules
             }
         }
 
-        foreach (var skill in skills)
+        foreach (var skill in context.Skills)
         {
-            var assetPath = catalog.GetPath(skill);
+            var assetPath = context.GetPath(skill);
             foreach (var status in skill.AppliedStatuses.Where(status => status != null))
             {
                 if (!statusIds.Contains(status.StatusId))
@@ -242,41 +295,38 @@ internal static class ContentDefinitionCatalogRules
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(skill.CleanseProfileId) && !cleanseProfiles.ContainsKey(skill.CleanseProfileId))
+            if (!string.IsNullOrWhiteSpace(skill.CleanseProfileId) && !context.CleanseProfiles.ContainsKey(skill.CleanseProfileId))
             {
                 ContentValidationIssueFactory.AddError(issues, "status.skill_cleanse_ref", $"Skill '{skill.Id}' references missing cleanse profile '{skill.CleanseProfileId}'.", assetPath);
             }
         }
     }
+}
 
-    private static void ValidateRewardCatalog(
-        ValidationAssetCatalog catalog,
-        IReadOnlyDictionary<string, RewardSourceDefinition> rewardSources,
-        IReadOnlyDictionary<string, DropTableDefinition> dropTables,
-        IReadOnlyDictionary<string, LootBundleDefinition> lootBundles,
-        IReadOnlyDictionary<string, TraitTokenDefinition> traitTokens,
-        ICollection<ContentValidationIssue> issues)
+internal sealed class RewardCatalogValidator : ICatalogValidationRule
+{
+    public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
     {
-        if (rewardSources.Count != 6)
+        if (context.RewardSources.Count != 6)
         {
-            ContentValidationIssueFactory.AddError(issues, "reward.source_count", $"Launch-floor reward sources must be locked to 6. Found {rewardSources.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "reward.source_count", $"Launch-floor reward sources must be locked to 6. Found {context.RewardSources.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        if (dropTables.Count != 6)
+        if (context.DropTables.Count != 6)
         {
-            ContentValidationIssueFactory.AddError(issues, "reward.drop_table_count", $"Launch-floor drop tables must be locked to 6. Found {dropTables.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "reward.drop_table_count", $"Launch-floor drop tables must be locked to 6. Found {context.DropTables.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        if (!ContentValidationPolicyCatalog.RequiredTraitTokenIds.SetEquals(traitTokens.Keys))
+        if (!ContentValidationPolicyCatalog.RequiredTraitTokenIds.SetEquals(context.TraitTokens.Keys))
         {
             ContentValidationIssueFactory.AddError(issues, "reward.trait_token_floor", $"Trait token catalog must match [{string.Join(", ", ContentValidationPolicyCatalog.RequiredTraitTokenIds.OrderBy(id => id, StringComparer.Ordinal))}].", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
         var mappedSourceIds = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var rewardSource in rewardSources.Values)
+        foreach (var rewardSource in context.RewardSources.Values)
         {
-            var assetPath = catalog.GetPath(rewardSource);
-            if (string.IsNullOrWhiteSpace(rewardSource.DropTableId) || !dropTables.ContainsKey(rewardSource.DropTableId))
+            var assetPath = context.GetPath(rewardSource);
+            if (string.IsNullOrWhiteSpace(rewardSource.DropTableId) || !context.DropTables.ContainsKey(rewardSource.DropTableId))
             {
                 ContentValidationIssueFactory.AddError(issues, "reward.source_drop_table_ref", $"Reward source '{rewardSource.Id}' references missing drop table '{rewardSource.DropTableId}'.", assetPath);
                 continue;
@@ -287,7 +337,7 @@ internal static class ContentDefinitionCatalogRules
                 ContentValidationIssueFactory.AddError(issues, "reward.duplicate_source_tag_mapping", $"Drop table '{rewardSource.DropTableId}' is mapped by more than one reward source.", assetPath);
             }
 
-            var dropTable = dropTables[rewardSource.DropTableId];
+            var dropTable = context.DropTables[rewardSource.DropTableId];
             var unreachableBands = rewardSource.AllowedRarityBrackets
                 .Where(bracket => dropTable.Entries.All(entry => entry.RarityBracket != bracket))
                 .ToList();
@@ -305,32 +355,32 @@ internal static class ContentDefinitionCatalogRules
             }
         }
 
-        foreach (var lootBundle in lootBundles.Values)
+        foreach (var lootBundle in context.LootBundles.Values)
         {
-            var assetPath = catalog.GetPath(lootBundle);
-            if (string.IsNullOrWhiteSpace(lootBundle.RewardSourceId) || !rewardSources.ContainsKey(lootBundle.RewardSourceId))
+            var assetPath = context.GetPath(lootBundle);
+            if (string.IsNullOrWhiteSpace(lootBundle.RewardSourceId) || !context.RewardSources.ContainsKey(lootBundle.RewardSourceId))
             {
                 ContentValidationIssueFactory.AddError(issues, "reward.loot_bundle_source_ref", $"Loot bundle '{lootBundle.Id}' references missing reward source '{lootBundle.RewardSourceId}'.", assetPath);
             }
         }
     }
+}
 
-    private static void ValidateSkillCatalog(
-        ValidationAssetCatalog catalog,
-        IReadOnlyList<SkillDefinitionAsset> skills,
-        IReadOnlyCollection<string> statusIds,
-        IReadOnlyCollection<string> cleanseProfileIds,
-        ICollection<ContentValidationIssue> issues)
+internal sealed class SkillCatalogValidator : ICatalogValidationRule
+{
+    public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
     {
-        var supportModifierSkills = skills.Where(skill => skill.Id.StartsWith("support_", StringComparison.Ordinal)).ToList();
+        var statusIds = context.Statuses.Keys.ToHashSet(StringComparer.Ordinal);
+        var cleanseProfileIds = context.CleanseProfiles.Keys.ToHashSet(StringComparer.Ordinal);
+        var supportModifierSkills = context.Skills.Where(skill => skill.Id.StartsWith("support_", StringComparison.Ordinal)).ToList();
         if (supportModifierSkills.Count != 12)
         {
             ContentValidationIssueFactory.AddError(issues, "skill.support_modifier_floor", $"Support modifier floor must stay at 12. Found {supportModifierSkills.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        foreach (var skill in skills)
+        foreach (var skill in context.Skills)
         {
-            var assetPath = catalog.GetPath(skill);
+            var assetPath = context.GetPath(skill);
             var compileTagIds = skill.CompileTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToHashSet(StringComparer.Ordinal);
             var allowedTagIds = skill.SupportAllowedTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToHashSet(StringComparer.Ordinal);
             var blockedTagIds = skill.SupportBlockedTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToHashSet(StringComparer.Ordinal);
@@ -404,12 +454,15 @@ internal static class ContentDefinitionCatalogRules
             }
         }
     }
+}
 
-    private static void ValidateItemCatalog(ValidationAssetCatalog catalog, IReadOnlyList<ItemBaseDefinition> items, ICollection<ContentValidationIssue> issues)
+internal sealed class ItemCatalogValidator : ICatalogValidationRule
+{
+    public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
     {
-        foreach (var item in items)
+        foreach (var item in context.Items)
         {
-            var assetPath = catalog.GetPath(item);
+            var assetPath = context.GetPath(item);
             var weaponFamilyId = NormalizeWeaponFamilyId(item);
             if (item.SlotType == ItemSlotType.Weapon && !ContentValidationPolicyCatalog.AllowedWeaponFamilyIds.Contains(weaponFamilyId))
             {
@@ -436,30 +489,6 @@ internal static class ContentDefinitionCatalogRules
             if (!operations.Contains(CraftOperationKindValue.Salvage))
             {
                 ContentValidationIssueFactory.AddError(issues, "item.salvage_missing", $"Item '{item.Id}' must support salvage in the launch-floor crafting contract.", assetPath);
-            }
-        }
-    }
-
-    private static void ValidateFactionIsolation(
-        ValidationAssetCatalog catalog,
-        IEnumerable<ExpeditionSiteDefinition> sites,
-        IEnumerable<EncounterDefinition> encounters,
-        IEnumerable<EnemySquadTemplateDefinition> squads,
-        IEnumerable<SynergyDefinition> synergies,
-        ICollection<ContentValidationIssue> issues)
-    {
-        var factionIds = sites.Select(site => site.FactionId)
-            .Concat(encounters.Select(encounter => encounter.FactionId))
-            .Concat(squads.Select(squad => squad.FactionId))
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .ToHashSet(StringComparer.Ordinal);
-
-        foreach (var synergy in synergies)
-        {
-            var assetPath = catalog.GetPath(synergy);
-            if (factionIds.Contains(synergy.CountedTagId))
-            {
-                ContentValidationIssueFactory.AddError(issues, "faction.synergy_leak", $"Faction id '{synergy.CountedTagId}' must not leak into synergy counted tags.", assetPath);
             }
         }
     }
@@ -530,5 +559,26 @@ internal static class ContentDefinitionCatalogRules
         }
 
         return operations;
+    }
+}
+
+internal sealed class FactionIsolationValidator : ICatalogValidationRule
+{
+    public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
+    {
+        var factionIds = context.Sites.Values.Select(site => site.FactionId)
+            .Concat(context.Encounters.Values.Select(encounter => encounter.FactionId))
+            .Concat(context.Squads.Values.Select(squad => squad.FactionId))
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToHashSet(StringComparer.Ordinal);
+
+        foreach (var synergy in context.Synergies)
+        {
+            var assetPath = context.GetPath(synergy);
+            if (factionIds.Contains(synergy.CountedTagId))
+            {
+                ContentValidationIssueFactory.AddError(issues, "faction.synergy_leak", $"Faction id '{synergy.CountedTagId}' must not leak into synergy counted tags.", assetPath);
+            }
+        }
     }
 }

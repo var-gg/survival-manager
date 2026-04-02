@@ -363,6 +363,16 @@ public sealed class ContentValidationWorkflowTests
         Assert.That(csv, Does.Contain("avg_frontline_survival_time_seconds"));
     }
 
+    [Test]
+    public void ContentValidationRuntimeFactory_CreatesDefaultServices()
+    {
+        var services = ContentValidationRuntimeFactory.CreateDefault();
+
+        Assert.That(services.Validator, Is.Not.Null);
+        Assert.That(services.ReportWriter, Is.Not.Null);
+        Assert.That(services.ReportPaths.GetDefaultReportDirectory(), Does.Contain("Logs/content-validation"));
+    }
+
     private static T CreateTempAsset<T>(string fileName, Action<T> configure) where T : ScriptableObject
     {
         var path = $"{TempRoot}/{fileName}";

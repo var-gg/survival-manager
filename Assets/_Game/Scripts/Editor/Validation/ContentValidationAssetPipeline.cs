@@ -162,6 +162,7 @@ internal sealed class UnityAssetGateway : IUnityAssetGateway
 
     public IReadOnlyList<ValidationAssetDescriptor> LoadDiskAssets(string root)
     {
+        var projectRoot = GetProjectRoot().Replace('\\', '/');
         var diskRoot = Path.Combine(GetProjectRoot(), root.Replace('/', Path.DirectorySeparatorChar));
         if (!Directory.Exists(diskRoot))
         {
@@ -170,8 +171,8 @@ internal sealed class UnityAssetGateway : IUnityAssetGateway
 
         return Directory.EnumerateFiles(diskRoot, "*.asset", SearchOption.AllDirectories)
             .Select(path => path.Replace('\\', '/'))
-            .Select(path => path.StartsWith(GetProjectRoot().Replace('\\', '/') + "/", StringComparison.Ordinal)
-                ? path[(GetProjectRoot().Replace('\\', '/').Length + 1)..]
+            .Select(path => path.StartsWith(projectRoot + "/", StringComparison.Ordinal)
+                ? path[(projectRoot.Length + 1)..]
                 : path)
             .Select(path => (Asset: LoadDefinitionAssetAtPath(path), Path: path))
             .Where(candidate => candidate.Asset != null)
@@ -347,105 +348,38 @@ internal sealed class CompositeAssetLoader : IAssetLoader
     }
 }
 
-internal sealed class ValidationAssetSelectionPolicy
+internal interface IValidationAssetSelectionPolicy
 {
-    public IReadOnlyList<ValidationAssetDescriptor> Select(IReadOnlyList<ValidationAssetDescriptor> candidates)
+    IReadOnlyList<ValidationAssetDescriptor> Select(IReadOnlyList<ValidationAssetDescriptor> candidates);
+}
+
+internal interface IValidationAssetSkipPolicy
+{
+    bool ShouldSkip(ValidationAssetDescriptor descriptor);
+}
+
+internal sealed class DefaultValidationAssetSkipPolicy : IValidationAssetSkipPolicy
+{
+    public bool ShouldSkip(ValidationAssetDescriptor descriptor)
     {
-        var assetsByPath = new Dictionary<string, ValidationAssetDescriptor>(StringComparer.Ordinal);
-        var pathScores = new Dictionary<string, int>(StringComparer.Ordinal);
-        var looseAssets = new List<ValidationAssetDescriptor>();
-
-        foreach (var descriptor in candidates)
-        {
-            if (ShouldSkipLoadedAsset(descriptor.Asset, descriptor.AssetPath))
-            {
-                continue;
-            }
-
-            if (string.IsNullOrWhiteSpace(descriptor.AssetPath))
-            {
-                if (looseAssets.All(existing => existing.Asset != descriptor.Asset))
-                {
-                    looseAssets.Add(descriptor);
-                }
-
-                continue;
-            }
-
-            var score = GetAssetCompletenessScore(descriptor.Asset);
-            if (!assetsByPath.TryGetValue(descriptor.AssetPath, out _)
-                || !pathScores.TryGetValue(descriptor.AssetPath, out var existingScore)
-                || score >= existingScore)
-            {
-                assetsByPath[descriptor.AssetPath] = descriptor;
-                pathScores[descriptor.AssetPath] = score;
-            }
-        }
-
-        return assetsByPath.Values
-            .Concat(looseAssets)
-            .ToList();
-    }
-
-    internal bool ShouldSkipLoadedAsset(ScriptableObject asset, string path)
-    {
-        if (asset is SynergyTierDefinition tier)
+        if (descriptor.Asset is SynergyTierDefinition tier)
         {
             return tier.Threshold == 3
-                   || path.EndsWith("_3.asset", StringComparison.OrdinalIgnoreCase);
+                   || descriptor.AssetPath.EndsWith("_3.asset", StringComparison.OrdinalIgnoreCase);
         }
 
         return false;
     }
+}
 
-    internal int GetAssetCompletenessScore(ScriptableObject asset)
-    {
-        var score = 0;
-        switch (asset)
-        {
-            case UnitArchetypeDefinition archetype:
-                score += string.IsNullOrWhiteSpace(archetype.Id) ? 0 : 10;
-                score += archetype.Race != null ? 5 : 0;
-                score += archetype.Class != null ? 5 : 0;
-                score += archetype.TraitPool != null ? 5 : 0;
-                score += archetype.Skills?.Count ?? 0;
-                score += archetype.TacticPreset?.Count ?? 0;
-                score += archetype.BudgetCard?.Vector?.FinalScore ?? 0;
-                break;
-            case SkillDefinitionAsset skill:
-                score += string.IsNullOrWhiteSpace(skill.Id) ? 0 : 10;
-                score += skill.BudgetCard?.Vector?.FinalScore ?? 0;
-                score += skill.CompileTags?.Count ?? 0;
-                break;
-            case AugmentDefinition augment:
-                score += string.IsNullOrWhiteSpace(augment.Id) ? 0 : 10;
-                score += augment.BudgetCard?.Vector?.FinalScore ?? 0;
-                score += augment.Modifiers?.Count ?? 0;
-                break;
-            case SynergyTierDefinition tier:
-                score += string.IsNullOrWhiteSpace(tier.Id) ? 0 : 10;
-                score += tier.BudgetCard?.Vector?.FinalScore ?? 0;
-                score += tier.Threshold;
-                break;
-            case StatusFamilyDefinition status:
-                score += string.IsNullOrWhiteSpace(status.Id) ? 0 : 10;
-                score += status.BudgetCard?.Vector?.FinalScore ?? 0;
-                score += status.DefaultStackCap;
-                break;
-            case CleanseProfileDefinition cleanse:
-                score += string.IsNullOrWhiteSpace(cleanse.Id) ? 0 : 10;
-                score += cleanse.RemovesStatusIds?.Count ?? 0;
-                score += cleanse.GrantsUnstoppable ? 2 : 0;
-                break;
-            default:
-                score += string.IsNullOrWhiteSpace(GetCanonicalId(asset)) ? 0 : 10;
-                break;
-        }
+internal interface IValidationAssetIdentityResolver
+{
+    string ResolveCanonicalId(ScriptableObject asset);
+}
 
-        return score;
-    }
-
-    private static string GetCanonicalId(ScriptableObject asset)
+internal sealed class DefaultValidationAssetIdentityResolver : IValidationAssetIdentityResolver
+{
+    public string ResolveCanonicalId(ScriptableObject asset)
     {
         return asset switch
         {
@@ -481,6 +415,225 @@ internal sealed class ValidationAssetSelectionPolicy
             TraitTokenDefinition traitToken => traitToken.Id,
             _ => string.Empty,
         };
+    }
+}
+
+internal interface IValidationAssetCompletenessScorer
+{
+    int Score(ScriptableObject asset);
+}
+
+internal sealed class DefaultValidationAssetCompletenessScorer : IValidationAssetCompletenessScorer
+{
+    private readonly IValidationAssetIdentityResolver _identityResolver;
+    private readonly IReadOnlyDictionary<Type, Func<ScriptableObject, int>> _typedScorers;
+
+    public DefaultValidationAssetCompletenessScorer(IValidationAssetIdentityResolver identityResolver)
+    {
+        _identityResolver = identityResolver;
+        _typedScorers = new Dictionary<Type, Func<ScriptableObject, int>>
+        {
+            [typeof(UnitArchetypeDefinition)] = asset => ScoreArchetype((UnitArchetypeDefinition)asset),
+            [typeof(SkillDefinitionAsset)] = asset => ScoreSkill((SkillDefinitionAsset)asset),
+            [typeof(AugmentDefinition)] = asset => ScoreAugment((AugmentDefinition)asset),
+            [typeof(SynergyTierDefinition)] = asset => ScoreSynergyTier((SynergyTierDefinition)asset),
+            [typeof(StatusFamilyDefinition)] = asset => ScoreStatusFamily((StatusFamilyDefinition)asset),
+            [typeof(CleanseProfileDefinition)] = asset => ScoreCleanseProfile((CleanseProfileDefinition)asset),
+        };
+    }
+
+    public int Score(ScriptableObject asset)
+    {
+        if (asset == null)
+        {
+            return 0;
+        }
+
+        return _typedScorers.TryGetValue(asset.GetType(), out var scorer)
+            ? scorer(asset)
+            : ScoreFallback(asset);
+    }
+
+    private int ScoreFallback(ScriptableObject asset)
+    {
+        return string.IsNullOrWhiteSpace(_identityResolver.ResolveCanonicalId(asset)) ? 0 : 10;
+    }
+
+    private static int ScoreArchetype(UnitArchetypeDefinition archetype)
+    {
+        var score = string.IsNullOrWhiteSpace(archetype.Id) ? 0 : 10;
+        score += archetype.Race != null ? 5 : 0;
+        score += archetype.Class != null ? 5 : 0;
+        score += archetype.TraitPool != null ? 5 : 0;
+        score += archetype.Skills?.Count ?? 0;
+        score += archetype.TacticPreset?.Count ?? 0;
+        score += archetype.BudgetCard?.Vector?.FinalScore ?? 0;
+        return score;
+    }
+
+    private static int ScoreSkill(SkillDefinitionAsset skill)
+    {
+        var score = string.IsNullOrWhiteSpace(skill.Id) ? 0 : 10;
+        score += skill.BudgetCard?.Vector?.FinalScore ?? 0;
+        score += skill.CompileTags?.Count ?? 0;
+        return score;
+    }
+
+    private static int ScoreAugment(AugmentDefinition augment)
+    {
+        var score = string.IsNullOrWhiteSpace(augment.Id) ? 0 : 10;
+        score += augment.BudgetCard?.Vector?.FinalScore ?? 0;
+        score += augment.Modifiers?.Count ?? 0;
+        return score;
+    }
+
+    private static int ScoreSynergyTier(SynergyTierDefinition tier)
+    {
+        var score = string.IsNullOrWhiteSpace(tier.Id) ? 0 : 10;
+        score += tier.BudgetCard?.Vector?.FinalScore ?? 0;
+        score += tier.Threshold;
+        return score;
+    }
+
+    private static int ScoreStatusFamily(StatusFamilyDefinition status)
+    {
+        var score = string.IsNullOrWhiteSpace(status.Id) ? 0 : 10;
+        score += status.BudgetCard?.Vector?.FinalScore ?? 0;
+        score += status.DefaultStackCap;
+        return score;
+    }
+
+    private static int ScoreCleanseProfile(CleanseProfileDefinition cleanse)
+    {
+        var score = string.IsNullOrWhiteSpace(cleanse.Id) ? 0 : 10;
+        score += cleanse.RemovesStatusIds?.Count ?? 0;
+        score += cleanse.GrantsUnstoppable ? 2 : 0;
+        return score;
+    }
+}
+
+internal interface IValidationAssetDeduper
+{
+    IReadOnlyList<ValidationAssetDescriptor> Deduplicate(IReadOnlyList<ValidationAssetDescriptor> descriptors);
+}
+
+internal sealed class DefaultValidationAssetDeduper : IValidationAssetDeduper
+{
+    private readonly IValidationAssetCompletenessScorer _scorer;
+    private readonly IValidationAssetIdentityResolver _identityResolver;
+
+    public DefaultValidationAssetDeduper(
+        IValidationAssetCompletenessScorer scorer,
+        IValidationAssetIdentityResolver identityResolver)
+    {
+        _scorer = scorer;
+        _identityResolver = identityResolver;
+    }
+
+    public IReadOnlyList<ValidationAssetDescriptor> Deduplicate(IReadOnlyList<ValidationAssetDescriptor> descriptors)
+    {
+        var assetsByPath = new Dictionary<string, ValidationAssetDescriptor>(StringComparer.Ordinal);
+        var looseAssetsByIdentity = new Dictionary<string, ValidationAssetDescriptor>(StringComparer.Ordinal);
+        var looseAssetsByInstanceId = new Dictionary<int, ValidationAssetDescriptor>();
+
+        foreach (var descriptor in descriptors)
+        {
+            if (!string.IsNullOrWhiteSpace(descriptor.AssetPath))
+            {
+                PromoteBestCandidate(assetsByPath, descriptor.AssetPath, descriptor);
+                continue;
+            }
+
+            var canonicalId = _identityResolver.ResolveCanonicalId(descriptor.Asset);
+            if (!string.IsNullOrWhiteSpace(canonicalId))
+            {
+                PromoteBestCandidate(looseAssetsByIdentity, BuildLooseIdentityKey(descriptor.AssetType, canonicalId), descriptor);
+                continue;
+            }
+
+            PromoteBestInstance(looseAssetsByInstanceId, descriptor);
+        }
+
+        return assetsByPath.Values
+            .Concat(looseAssetsByIdentity.Values)
+            .Concat(looseAssetsByInstanceId.Values)
+            .ToList();
+    }
+
+    private static string BuildLooseIdentityKey(Type assetType, string canonicalId)
+    {
+        return $"{assetType.FullName}:{canonicalId}";
+    }
+
+    private void PromoteBestCandidate(
+        IDictionary<string, ValidationAssetDescriptor> selected,
+        string key,
+        ValidationAssetDescriptor candidate)
+    {
+        if (!selected.TryGetValue(key, out var existing) || IsBetterCandidate(candidate, existing))
+        {
+            selected[key] = candidate;
+        }
+    }
+
+    private void PromoteBestInstance(
+        IDictionary<int, ValidationAssetDescriptor> selected,
+        ValidationAssetDescriptor candidate)
+    {
+        var instanceId = candidate.Asset.GetInstanceID();
+        if (!selected.TryGetValue(instanceId, out var existing) || IsBetterCandidate(candidate, existing))
+        {
+            selected[instanceId] = candidate;
+        }
+    }
+
+    private bool IsBetterCandidate(ValidationAssetDescriptor candidate, ValidationAssetDescriptor existing)
+    {
+        var candidateScore = _scorer.Score(candidate.Asset);
+        var existingScore = _scorer.Score(existing.Asset);
+        if (candidateScore != existingScore)
+        {
+            return candidateScore > existingScore;
+        }
+
+        if (candidate.SourceKind != existing.SourceKind)
+        {
+            return candidate.SourceKind > existing.SourceKind;
+        }
+
+        return candidate.Asset.GetInstanceID() >= existing.Asset.GetInstanceID();
+    }
+}
+
+internal sealed class ValidationAssetSelectionPolicy : IValidationAssetSelectionPolicy
+{
+    private readonly IValidationAssetSkipPolicy _skipPolicy;
+    private readonly IValidationAssetDeduper _deduper;
+
+    public ValidationAssetSelectionPolicy()
+        : this(
+            new DefaultValidationAssetSkipPolicy(),
+            new DefaultValidationAssetDeduper(
+                new DefaultValidationAssetCompletenessScorer(new DefaultValidationAssetIdentityResolver()),
+                new DefaultValidationAssetIdentityResolver()))
+    {
+    }
+
+    public ValidationAssetSelectionPolicy(
+        IValidationAssetSkipPolicy skipPolicy,
+        IValidationAssetDeduper deduper)
+    {
+        _skipPolicy = skipPolicy;
+        _deduper = deduper;
+    }
+
+    public IReadOnlyList<ValidationAssetDescriptor> Select(IReadOnlyList<ValidationAssetDescriptor> candidates)
+    {
+        var filtered = candidates
+            .Where(descriptor => descriptor.Asset != null && !_skipPolicy.ShouldSkip(descriptor))
+            .ToList();
+
+        return _deduper.Deduplicate(filtered);
     }
 }
 

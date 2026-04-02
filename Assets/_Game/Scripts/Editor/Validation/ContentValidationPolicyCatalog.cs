@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using SM.Core.Stats;
 
 namespace SM.Editor.Validation;
+
+internal sealed record ClassRoleFamilyMapping(string CanonicalClassId, string PlayerFacingRoleFamily);
 
 internal static class ContentValidationPolicyCatalog
 {
@@ -21,9 +24,45 @@ internal static class ContentValidationPolicyCatalog
     internal static readonly Regex CanonicalIdPattern = new(
         "^[a-z0-9]+([._][a-z0-9]+)*$",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    internal static readonly HashSet<string> CanonicalClassIds = new(StringComparer.Ordinal) { "vanguard", "duelist", "ranger", "mystic" };
-    internal static readonly HashSet<string> AllowedWeaponFamilyIds = new(StringComparer.Ordinal) { "shield", "blade", "bow", "focus", "greatblade", "polearm" };
-    internal static readonly HashSet<string> AllowedCraftCurrencyIds = new(StringComparer.Ordinal) { "gold", "ember_dust", "echo_crystal", "boss_sigil" };
+
+    internal static readonly IReadOnlyDictionary<string, ClassRoleFamilyMapping> ClassRoleFamilyMappings =
+        new Dictionary<string, ClassRoleFamilyMapping>(StringComparer.Ordinal)
+        {
+            ["vanguard"] = new("vanguard", "vanguard"),
+            ["duelist"] = new("duelist", "striker"),
+            ["ranger"] = new("ranger", "ranger"),
+            ["mystic"] = new("mystic", "mystic"),
+        };
+
+    private static readonly IReadOnlyDictionary<string, ClassRoleFamilyMapping> RoleFamilyMappingsByPlayerFacingTag =
+        ClassRoleFamilyMappings.Values.ToDictionary(mapping => mapping.PlayerFacingRoleFamily, StringComparer.Ordinal);
+
+    internal static readonly HashSet<string> CanonicalClassIds =
+        ClassRoleFamilyMappings.Keys.ToHashSet(StringComparer.Ordinal);
+
+    internal static readonly HashSet<string> AllowedRoleFamilyTags =
+        ClassRoleFamilyMappings.Values
+            .Select(mapping => mapping.PlayerFacingRoleFamily)
+            .ToHashSet(StringComparer.Ordinal);
+
+    internal static readonly HashSet<string> AllowedWeaponFamilyIds = new(StringComparer.Ordinal)
+    {
+        "shield",
+        "blade",
+        "bow",
+        "focus",
+        "greatblade",
+        "polearm",
+    };
+
+    internal static readonly HashSet<string> AllowedCraftCurrencyIds = new(StringComparer.Ordinal)
+    {
+        "gold",
+        "ember_dust",
+        "echo_crystal",
+        "boss_sigil",
+    };
+
     internal static readonly HashSet<string> RequiredLaunchStatusIds = new(StringComparer.Ordinal)
     {
         "stun", "root", "silence", "slow",
@@ -31,20 +70,31 @@ internal static class ContentValidationPolicyCatalog
         "marked", "exposed",
         "barrier", "guarded", "unstoppable",
     };
+
     internal static readonly HashSet<string> RequiredCleanseProfileIds = new(StringComparer.Ordinal)
     {
         "cleanse_basic",
         "cleanse_control",
         "break_and_unstoppable",
     };
+
     internal static readonly HashSet<string> RequiredTraitTokenIds = new(StringComparer.Ordinal)
     {
         "trait_reroll_token",
         "trait_lock_token",
         "trait_purge_token",
     };
-    internal static readonly HashSet<string> AllowedRoleFamilyTags = new(StringComparer.Ordinal) { "vanguard", "striker", "ranger", "mystic" };
-    internal static readonly HashSet<string> AllowedRoleInstructionTags = new(StringComparer.Ordinal) { "anchor", "bruiser", "carry", "support", "frontline", "backline" };
+
+    internal static readonly HashSet<string> AllowedRoleInstructionTags = new(StringComparer.Ordinal)
+    {
+        "anchor",
+        "bruiser",
+        "carry",
+        "support",
+        "frontline",
+        "backline",
+    };
+
     internal static readonly HashSet<int> RequiredSynergyThresholds = new() { 2, 4 };
 
     internal static LaunchScopeThreshold CurrentMvpMinimum { get; } = new()
@@ -85,6 +135,35 @@ internal static class ContentValidationPolicyCatalog
         PermanentAugmentCount = 12,
         SynergyFamilyCount = 7,
     };
+
+    internal static bool TryGetRoleFamilyMapping(string canonicalClassId, out ClassRoleFamilyMapping mapping)
+    {
+        return ClassRoleFamilyMappings.TryGetValue(canonicalClassId, out mapping!);
+    }
+
+    internal static bool TryGetRoleFamilyForCanonicalClassId(string canonicalClassId, out string roleFamilyTag)
+    {
+        if (TryGetRoleFamilyMapping(canonicalClassId, out var mapping))
+        {
+            roleFamilyTag = mapping.PlayerFacingRoleFamily;
+            return true;
+        }
+
+        roleFamilyTag = string.Empty;
+        return false;
+    }
+
+    internal static bool TryGetCanonicalClassIdForRoleFamily(string roleFamilyTag, out string canonicalClassId)
+    {
+        if (RoleFamilyMappingsByPlayerFacingTag.TryGetValue(roleFamilyTag, out var mapping))
+        {
+            canonicalClassId = mapping.CanonicalClassId;
+            return true;
+        }
+
+        canonicalClassId = string.Empty;
+        return false;
+    }
 
     internal static StatIdValidationStatus GetStatIdStatus(string statId)
     {

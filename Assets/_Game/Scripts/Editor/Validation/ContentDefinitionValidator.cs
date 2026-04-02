@@ -79,7 +79,7 @@ public static class ContentDefinitionValidator
 
     public static string GetDefaultReportDirectory()
     {
-        return ContentValidationReportPaths.GetDefaultReportDirectory(ContentValidationCompositionRoot.UnityGateway);
+        return ContentValidationCompositionRoot.ReportPaths.GetDefaultReportDirectory();
     }
 
     [MenuItem("SM/Validation/Validate Content Definitions")]

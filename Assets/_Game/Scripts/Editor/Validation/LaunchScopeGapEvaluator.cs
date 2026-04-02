@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
+using UnityEngine;
 
 namespace SM.Editor.Validation;
 
