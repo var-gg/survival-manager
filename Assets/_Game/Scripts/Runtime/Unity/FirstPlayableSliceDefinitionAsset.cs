@@ -14,8 +14,10 @@ public sealed class FirstPlayableSliceDefinitionAsset : ScriptableObject
     public int FlexActiveCap = 8;
     public int FlexPassiveCap = 8;
     public int AffixCap = 24;
-    public int SynergyFamilyCap = 8;
-    public int AugmentCap = 16;
+    public int SynergyFamilyCap = 7;
+    public int TemporaryAugmentCap = 12;
+    public int PermanentAugmentCap = 4;
+    public int PassiveBoardCap = 4;
 
     public bool RequireAllThreatPatternsCovered = true;
     public bool RequireAllCounterToolsCovered = true;
@@ -28,8 +30,17 @@ public sealed class FirstPlayableSliceDefinitionAsset : ScriptableObject
     public System.Collections.Generic.List<string> FlexPassiveIds = new();
     public System.Collections.Generic.List<string> AffixIds = new();
     public System.Collections.Generic.List<string> SynergyFamilyIds = new();
-    public System.Collections.Generic.List<string> AugmentIds = new();
+    public System.Collections.Generic.List<string> TemporaryAugmentIds = new();
+    public System.Collections.Generic.List<string> PermanentAugmentIds = new();
+    public System.Collections.Generic.List<string> PassiveBoardIds = new();
     public System.Collections.Generic.List<string> ParkingLotContentIds = new();
+    public System.Collections.Generic.List<SynergyGrammarEntry> SynergyGrammar = new();
+    public System.Collections.Generic.List<ClassLabelMapping> ClassLabelMappings = new();
+
+    // Migration convenience
+    public int AugmentCap => TemporaryAugmentCap + PermanentAugmentCap;
+    public System.Collections.Generic.List<string> AugmentIds =>
+        TemporaryAugmentIds.Concat(PermanentAugmentIds).ToList();
 
     public FirstPlayableSliceDefinition ToRuntime()
     {
@@ -42,7 +53,9 @@ public sealed class FirstPlayableSliceDefinitionAsset : ScriptableObject
             FlexPassiveCap = FlexPassiveCap,
             AffixCap = AffixCap,
             SynergyFamilyCap = SynergyFamilyCap,
-            AugmentCap = AugmentCap,
+            TemporaryAugmentCap = TemporaryAugmentCap,
+            PermanentAugmentCap = PermanentAugmentCap,
+            PassiveBoardCap = PassiveBoardCap,
             RequireAllThreatPatternsCovered = RequireAllThreatPatternsCovered,
             RequireAllCounterToolsCovered = RequireAllCounterToolsCovered,
             CoverageQuotas = CoverageQuotas
@@ -59,8 +72,26 @@ public sealed class FirstPlayableSliceDefinitionAsset : ScriptableObject
             FlexPassiveIds = FlexPassiveIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(System.StringComparer.Ordinal).ToList(),
             AffixIds = AffixIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(System.StringComparer.Ordinal).ToList(),
             SynergyFamilyIds = SynergyFamilyIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(System.StringComparer.Ordinal).ToList(),
-            AugmentIds = AugmentIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(System.StringComparer.Ordinal).ToList(),
+            TemporaryAugmentIds = TemporaryAugmentIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(System.StringComparer.Ordinal).ToList(),
+            PermanentAugmentIds = PermanentAugmentIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(System.StringComparer.Ordinal).ToList(),
+            PassiveBoardIds = PassiveBoardIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(System.StringComparer.Ordinal).ToList(),
             ParkingLotContentIds = ParkingLotContentIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(System.StringComparer.Ordinal).ToList(),
+            SynergyGrammar = SynergyGrammar
+                .Select(e => new SynergyGrammarEntry
+                {
+                    FamilyId = e.FamilyId,
+                    FamilyType = e.FamilyType,
+                    MinorThreshold = e.MinorThreshold,
+                    MajorThreshold = e.MajorThreshold,
+                })
+                .ToList(),
+            ClassLabelMappings = ClassLabelMappings
+                .Select(m => new ClassLabelMapping
+                {
+                    CanonicalId = m.CanonicalId,
+                    PlayerFacingLabel = m.PlayerFacingLabel,
+                })
+                .ToList(),
         };
     }
 }

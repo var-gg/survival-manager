@@ -289,7 +289,9 @@ public enum ContentKind
     FlexPassive = 4,
     Affix = 5,
     SynergyFamily = 6,
-    Augment = 7,
+    TemporaryAugment = 7,
+    PermanentAugment = 8,
+    PassiveBoard = 9,
 }
 
 public enum ContentHealthGrade

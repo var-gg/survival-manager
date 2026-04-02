@@ -158,7 +158,7 @@ public static class LoopDContentHealthAnalysisService
             return ContentKind.SynergyFamily;
         }
 
-        return ContentKind.Augment;
+        return ContentKind.TemporaryAugment;
     }
 
     private static bool Match(string left, string right)

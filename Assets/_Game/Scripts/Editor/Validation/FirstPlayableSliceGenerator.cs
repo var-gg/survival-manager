@@ -78,7 +78,9 @@ public static class FirstPlayableSliceGenerator
         target.FlexPassiveCap = source.FlexPassiveCap;
         target.AffixCap = source.AffixCap;
         target.SynergyFamilyCap = source.SynergyFamilyCap;
-        target.AugmentCap = source.AugmentCap;
+        target.TemporaryAugmentCap = source.TemporaryAugmentCap;
+        target.PermanentAugmentCap = source.PermanentAugmentCap;
+        target.PassiveBoardCap = source.PassiveBoardCap;
         target.RequireAllThreatPatternsCovered = source.RequireAllThreatPatternsCovered;
         target.RequireAllCounterToolsCovered = source.RequireAllCounterToolsCovered;
         target.UnitBlueprintIds = source.UnitBlueprintIds.ToList();
@@ -88,8 +90,26 @@ public static class FirstPlayableSliceGenerator
         target.FlexPassiveIds = source.FlexPassiveIds.ToList();
         target.AffixIds = source.AffixIds.ToList();
         target.SynergyFamilyIds = source.SynergyFamilyIds.ToList();
-        target.AugmentIds = source.AugmentIds.ToList();
+        target.TemporaryAugmentIds = source.TemporaryAugmentIds.ToList();
+        target.PermanentAugmentIds = source.PermanentAugmentIds.ToList();
+        target.PassiveBoardIds = source.PassiveBoardIds.ToList();
         target.ParkingLotContentIds = source.ParkingLotContentIds.ToList();
+        target.SynergyGrammar = source.SynergyGrammar
+            .Select(e => new SynergyGrammarEntry
+            {
+                FamilyId = e.FamilyId,
+                FamilyType = e.FamilyType,
+                MinorThreshold = e.MinorThreshold,
+                MajorThreshold = e.MajorThreshold,
+            })
+            .ToList();
+        target.ClassLabelMappings = source.ClassLabelMappings
+            .Select(m => new ClassLabelMapping
+            {
+                CanonicalId = m.CanonicalId,
+                PlayerFacingLabel = m.PlayerFacingLabel,
+            })
+            .ToList();
         target.CoverageQuotas = source.CoverageQuotas
             .Select(quota => new SliceCoverageQuota
             {
@@ -143,7 +163,9 @@ public static class FirstPlayableSliceGenerator
         builder.AppendLine($"- flexPassives: `{slice.FlexPassiveIds.Count}/{slice.FlexPassiveCap}`");
         builder.AppendLine($"- affixes: `{slice.AffixIds.Count}/{slice.AffixCap}`");
         builder.AppendLine($"- synergyFamilies: `{slice.SynergyFamilyIds.Count}/{slice.SynergyFamilyCap}`");
-        builder.AppendLine($"- augments: `{slice.AugmentIds.Count}/{slice.AugmentCap}`");
+        builder.AppendLine($"- temporaryAugments: `{slice.TemporaryAugmentIds.Count}/{slice.TemporaryAugmentCap}`");
+        builder.AppendLine($"- permanentAugments: `{slice.PermanentAugmentIds.Count}/{slice.PermanentAugmentCap}`");
+        builder.AppendLine($"- passiveBoards: `{slice.PassiveBoardIds.Count}/{slice.PassiveBoardCap}`");
         builder.AppendLine($"- parkingLotContent: `{slice.ParkingLotContentIds.Count}`");
         builder.AppendLine();
         AppendList(builder, "UnitBlueprintIds", slice.UnitBlueprintIds);
@@ -153,7 +175,9 @@ public static class FirstPlayableSliceGenerator
         AppendList(builder, "FlexPassiveIds", slice.FlexPassiveIds);
         AppendList(builder, "AffixIds", slice.AffixIds);
         AppendList(builder, "SynergyFamilyIds", slice.SynergyFamilyIds);
-        AppendList(builder, "AugmentIds", slice.AugmentIds);
+        AppendList(builder, "TemporaryAugmentIds", slice.TemporaryAugmentIds);
+        AppendList(builder, "PermanentAugmentIds", slice.PermanentAugmentIds);
+        AppendList(builder, "PassiveBoardIds", slice.PassiveBoardIds);
         AppendList(builder, "ParkingLotContentIds", slice.ParkingLotContentIds);
         return builder.ToString();
     }
