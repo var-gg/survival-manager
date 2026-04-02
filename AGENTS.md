@@ -54,13 +54,33 @@
 ## 테스트 하네스 규칙
 
 - 상세 가이드: `docs/TESTING.md`
+
+### 에이전트 기본 테스트 명령 (필수)
+
+**모든 에이전트는 코드 변경 후 아래 명령을 기본으로 실행한다:**
+
+```powershell
+pwsh -File tools/unity-bridge.ps1 test-batch-fast   # FastUnit 57개, ~0.15초
+```
+
+- 이 명령은 Unity 에디터 없이 독립 실행된다.
+- freeze 위험이 없고, GUI 모드에서도 안전하다.
+- **이 명령이 기본이다.** 전체 EditMode(`test-batch-edit`)는 필요할 때만 실행한다.
+
+### 에이전트 검증 순서
+
+1. `test-batch-fast` — FastUnit 테스트 (기본, 항상 실행)
+2. `tools/test-harness-lint.ps1` — preflight lint 3종 (커밋 전 필수)
+3. `test-batch-edit` — 전체 EditMode 포함 BatchOnly (선택, 에셋 변경 시)
+
+### 테스트 카테고리 분류
+
 - 테스트는 `[Category("FastUnit")]` 또는 `[Category("BatchOnly")]`로 분류한다.
 - `FastUnit` 테스트는 `FakeCombatContentLookup`을 사용하고, `new RuntimeCombatContentLookup()`를 직접 호출하지 않는다.
 - `BatchOnly` 테스트는 batchmode에서만 실행한다 (GUI 에디터에서 freeze 위험).
 - `GameSessionState`/`ContentTextResolver`는 `ICombatContentLookup` 인터페이스에 의존한다.
-- batchmode 실행: `pwsh -File tools/unity-bridge.ps1 test-batch-fast` (FastUnit만) 또는 `test-batch-edit` (전체).
-- preflight lint: `pwsh -File tools/test-harness-lint.ps1` — 커밋 전 필수.
 - `-quit`는 `-runTests`와 결합하면 안 된다.
+- 두 batchmode 명령을 동시에 실행하면 프로젝트 잠금 충돌이 발생한다. 순차 실행한다.
 
 ## Unity 에디터 자동화 안정성
 

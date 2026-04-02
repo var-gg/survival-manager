@@ -101,7 +101,19 @@ pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
 
 ## 에이전트 테스트 실행 순서
 
-1. `compile` 후 5초 대기.
-2. `test-batch-fast`로 FastUnit 테스트 먼저 실행 (빠름, freeze 없음).
-3. 필요 시 `test-batch-edit -TestCategory "BatchOnly"`로 전체 테스트 실행.
-4. `test-harness-lint.ps1`로 lint 검증.
+**`test-batch-fast`가 기본이다.** 모든 에이전트는 코드 변경 후 이 명령을 항상 실행한다.
+
+```powershell
+# 1. 기본 (항상 실행) — 57개 FastUnit, ~0.15초, freeze 없음
+pwsh -File tools/unity-bridge.ps1 test-batch-fast
+
+# 2. 커밋 전 lint (항상 실행)
+pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
+
+# 3. 선택 — 에셋/콘텐츠 변경 시에만
+pwsh -File tools/unity-bridge.ps1 test-batch-edit
+```
+
+주의:
+- `test-batch-fast`와 `test-batch-edit`를 동시에 실행하면 프로젝트 잠금 충돌. 순차 실행한다.
+- `test-batch-edit`는 전체 에셋 로딩으로 **10분+, 3GB+ 메모리**가 소모된다. 일상 작업에서는 `test-batch-fast`만 실행한다.
