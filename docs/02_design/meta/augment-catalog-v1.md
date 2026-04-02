@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-04-02
 - 소스오브트루스: `docs/02_design/meta/augment-catalog-v1.md`
 - 관련문서:
   - `docs/02_design/meta/augment-system.md`
@@ -17,51 +17,79 @@
 
 - schema capacity: `80`
 - v1 catalog target: `30`
-- current live subset target: `8~12`
+- first playable live subset: temporary `12` + permanent `4` = `16`
 
-## neutral combat 12
+## first playable temporary augments (12)
 
-1. `Frontline Doctrine`
-2. `Kiting Manual`
-3. `Rapid Recovery`
-4. `Shock Entry`
-5. `Last Breath`
-6. `Precision Burst`
-7. `Thick Skin`
-8. `Battlefield Momentum`
-9. `Controlled Aggression`
-10. `Arc Dampener`
-11. `Sharpened Steel`
-12. `Prepared Ground`
+### NeutralCombat (3) — live
 
-## economy / roster 6
+1. `Frontline Doctrine` ★
+2. `Kiting Manual` ★
+3. `Battlefield Momentum` ★
 
-1. `Black Market`
-2. `Efficient Training`
-3. `Salvager`
-4. `Veteran Banner`
-5. `Backup Crew`
-6. `Lucky Find`
+### EconomyRoster (3) — live
 
-## synergy-linked 8
+4. `Efficient Training` ★
+5. `Backup Crew` ★
+6. `Salvager` ★
 
-1. `Banner of Vanguard`
-2. `Hunter's Routine`
-3. `Arcane Loop`
-4. `Blood Trail`
-5. `Grim Harvest`
-6. `Wall of Iron`
-7. `Duel Protocol`
-8. `Forged Allies`
+### SynergyLinked (3) — live
 
-## wildcard / risk 4
+7. `Banner of Vanguard` ★
+8. `Duel Protocol` ★
+9. `Arcane Loop` ★
 
-1. `Blood Price`
-2. `Glass Arsenal`
-3. `Unstable Portals`
-4. `Oath of Attrition`
+### WildcardRisk (3) — live
+
+10. `Blood Price` ★
+11. `Glass Arsenal` ★
+12. `Oath of Attrition` ★
+
+`★` = first playable live subset.
+
+## first playable permanent augments (4) — live
+
+permanent augment는 team posture 강화형으로 고정한다.
+
+1. `Citadel Doctrine` → HoldLine ★
+2. `Guardian Detail` → ProtectCarry ★
+3. `Breakthrough Orders` → CollapseWeakSide ★
+4. `Night Hunt Mandate` → AllInBackline ★
+
+## v1 catalog reserve (v1 target 30까지의 나머지)
+
+### NeutralCombat reserve
+
+- `Rapid Recovery`
+- `Shock Entry`
+- `Last Breath`
+- `Precision Burst`
+- `Thick Skin`
+- `Controlled Aggression`
+- `Arc Dampener`
+- `Sharpened Steel`
+- `Prepared Ground`
+
+### EconomyRoster reserve
+
+- `Black Market`
+- `Veteran Banner`
+- `Lucky Find`
+
+### SynergyLinked reserve
+
+- `Hunter's Routine`
+- `Blood Trail`
+- `Grim Harvest`
+- `Wall of Iron`
+- `Forged Allies`
+
+### WildcardRisk reserve
+
+- `Unstable Portals`
 
 ## live subset rule
 
-- launch floor에서는 every bucket에서 최소 1개씩은 live subset에 둔다.
+- first playable에서는 every bucket에서 3개씩 live subset에 둔다.
 - `NeutralCombat`과 `EconomyRoster`가 전부 빠지면 recovery lever가 사라지므로 금지한다.
+- permanent augment는 4개 team posture type을 모두 커버한다.

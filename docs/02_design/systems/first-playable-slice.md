@@ -15,14 +15,29 @@ Loop D에서 실제로 밸런스하고 검증하는 V1 playable subset을 cap과
 
 ## exact cap
 
-- `UnitBlueprint = 12`
+- `UnitBlueprint = 12` (core archetypes, specialist는 parked)
 - `SignatureActive = 12`
 - `SignaturePassive = 12`
 - `FlexActive = 8`
 - `FlexPassive = 8`
 - `Affix = 24`
-- `SynergyFamily = 8`
-- `Augment = 16`
+- `SynergyFamily = 7` (race 3 + class 4)
+- `TemporaryAugment = 12`
+- `PermanentAugment = 4`
+- `PassiveBoard = 4` (class board)
+
+## synergy grammar
+
+- race families (Human / Undead / Beastkin): `2 / 4`
+- class families (Vanguard / Striker / Ranger / Mystic): `2 / 3`
+- class 4-piece는 current live subset에서 제거한다.
+- race 3-piece는 current live subset에서 제거한다.
+- 도달 불가능한 breakpoint는 current live subset에서 허용하지 않는다.
+
+## first playable recruit set
+
+first playable은 12 core grid를 완성한 상태로 테스트한다.
+8 archetype 체계로는 race/class 문법을 제대로 읽을 수 없다.
 
 ## coverage quota
 
@@ -69,3 +84,6 @@ debug/dev menu도 same filter를 따르되, `ParkingLotContentIds`는 별도 ins
 - 현재 authored count 기준으로 unit 12, affix 24는 cap과 같다.
 - slice pressure는 skill, augment, synergy family에 집중된다.
 - current skill 분류의 canonical source는 authored `LockedSignature*`가 아니라 compiled slot이다.
+- synergy family는 7로 고정. schema capacity는 넓어도 live subset은 7이다.
+- augment는 temporary 12 + permanent 4 = 16으로 고정.
+- class synergy는 `2 / 3` grammar로 동작하며, class 4-piece는 live subset에 없다.

@@ -24,12 +24,13 @@
 - town-held roster cap: 12
 - races: 3
 - classes: 4
-- recruit archetypes: 8
-- temporary augments: 9
-  - silver: 3
-  - gold: 3
-  - platinum: 3
-- permanent augment slots: 1
+- recruit archetypes: 12
+- synergy families: 7 (race 3 + class 4)
+- synergy grammar: race `2 / 4`, class `2 / 3`
+- temporary augments: 12
+- permanent augments: 4
+- permanent augment equip slot: 1
+- passive boards: 4
 - equipment slots per character: 3
   - weapon
   - armor

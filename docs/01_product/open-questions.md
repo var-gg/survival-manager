@@ -22,9 +22,10 @@
 - town-held roster cap: 12
 - races: 3
 - classes: 4
-- recruit archetypes: 8
-- temporary augments: silver/gold/platinum 합계 9개
-- permanent augment slots: 1
+- recruit archetypes: 12
+- temporary augments: 12 (NeutralCombat 3, EconomyRoster 3, SynergyLinked 3, WildcardRisk 3)
+- permanent augments: 4
+- permanent augment equip slot: 1
 - equipment slots: 3
 - 권장 identity 기반: Human / Beastkin / Undead + Vanguard / Duelist / Ranger / Mystic
 - MVP 비목표: PVP, advanced crafting, seasonal balancing tool, live backend, large-scale asset integration

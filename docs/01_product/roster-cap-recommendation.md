@@ -17,7 +17,7 @@
 - town-held roster cap: 12
 - races: 3
 - classes: 4
-- recruit archetypes: 8
+- recruit archetypes: 12
 
 ## 왜 4 / 8 / 12인가
 

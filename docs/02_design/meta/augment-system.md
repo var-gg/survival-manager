@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-04-02
 - 소스오브트루스: `docs/02_design/meta/augment-system.md`
 - 관련문서:
   - `docs/02_design/meta/synergy-and-augment-taxonomy.md`
@@ -19,18 +19,32 @@ bucket taxonomy와 offer protection은 별도 문서가 소유하고, 이 문서
 
 ### temporary augment
 
-MVP는 9개의 temporary augment를 둔다.
+first playable은 12개의 temporary augment를 둔다.
 
-- silver 3
-- gold 3
-- platinum 3
+- NeutralCombat 3 (Frontline Doctrine, Kiting Manual, Battlefield Momentum)
+- EconomyRoster 3 (Efficient Training, Backup Crew, Salvager)
+- SynergyLinked 3 (Banner of Vanguard, Duel Protocol, Arcane Loop)
+- WildcardRisk 3 (Blood Price, Glass Arsenal, Oath of Attrition)
 
-temporary augment는 run 중에만 적용되는 강화다.
+temporary augment는 run 중에만 적용되는 강화이며, run overlay가 소유한다.
+compiled battle snapshot에는 반영되지 않고 run overlay로만 적용된다.
 
 ### permanent augment
 
-MVP는 permanent augment slot 1개를 둔다.
-permanent augment는 다음 run들에도 유지되는 장기 강화다.
+first playable은 4개의 permanent augment를 둔다.
+
+- Citadel Doctrine (HoldLine)
+- Guardian Detail (ProtectCarry)
+- Breakthrough Orders (CollapseWeakSide)
+- Night Hunt Mandate (AllInBackline)
+
+permanent augment의 목적은 long-tail progression이 아니라 **blueprint identity lock**이다.
+
+- unlock ownership: profile-wide
+- equip ownership: squad blueprint
+- equip slots in play: 1
+- data model capacity: 3 유지 가능
+- permanent augment는 compiled battle snapshot에 반영된다.
 
 ### 최초 선택 해금 문법
 
@@ -62,14 +76,25 @@ augment는 아래 두 방향을 모두 허용한다.
 
 작은 stat buff만 가진 augment를 양산하지 않는다.
 
-## MVP 구현 범위
+## first playable 구현 범위
 
 - temporary augment 3-choice 보상
-- permanent augment slot 1개
+- permanent augment equip slot 1
 - temporary augment 최초 선택 -> related permanent candidate unlock 문법
+- unlock은 run 종료 시 또는 milestone 시점에 permanent candidate가 제시
+- permanent augment equip/unequip은 Town build-management에서 수행
 - 일부 augment의 synergy 강화형 / off-synergy 보정형 방향 정의
 
-## 장기 규칙
+## permanent augment lifecycle
+
+1. run 중 temporary augment를 first pick하면 관련 permanent path가 해금된다.
+2. run 종료 시 또는 milestone 시점에 permanent candidate가 제시된다.
+3. 해금된 permanent augment는 profile-wide로 유지된다.
+4. squad blueprint에서 permanent augment 1개를 장착한다.
+5. 장착된 permanent augment는 compiled battle snapshot에 반영된다.
+6. temporary augment는 run overlay만 소유하고 compile에 반영되지 않는다.
+
+## 장기 규칙 (parked)
 
 - permanent augment 다중 슬롯
 - branch형 permanent tree
@@ -84,6 +109,7 @@ augment는 아래 두 방향을 모두 허용한다.
 
 ## launch 기준 연결
 
+- first playable은 temporary 12 / permanent 4다.
 - paid launch floor는 temporary 18 / permanent 9다.
 - paid launch safe target은 temporary 24 / permanent 12다.
 - source별 power budget은 `docs/02_design/meta/item-passive-augment-budget.md`를 따른다.

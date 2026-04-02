@@ -73,9 +73,11 @@
 
 ## Loop C addendum
 
-- synergy breakpoint는 `2 / 4`만 허용한다.
-- `2-piece`는 direction, `4-piece`는 payoff다.
-- `3-piece`는 Loop C source-of-truth에서 제거한다.
+- race synergy breakpoint는 `2 / 4`다.
+- class synergy breakpoint는 `2 / 3`이다.
+- race: `2-piece`는 direction, `4-piece`는 payoff.
+- class: `2-piece`는 direction, `3-piece`는 payoff.
+- race 3-piece, class 4-piece는 current live subset에서 제거한다.
 - augment는 `ContentRarity + IsPermanent`를 함께 가진다.
 - permanent augment라도 rarity는 `Common / Rare / Epic`만 쓴다.
 - augment는 topology 밖 새 counter lane을 만들지 않는다.

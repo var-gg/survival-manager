@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-04-02
 - 소스오브트루스: `docs/02_design/systems/launch-content-scope-and-balance.md`
 - 관련문서:
   - `docs/01_product/vision.md`
@@ -25,14 +25,14 @@
 | --- | --- | --- | --- |
 | races | 3 | 3 | 3 |
 | classes | 4 | 4 | 4 |
-| recruit archetypes | 8 | 12 | 16 |
+| recruit archetypes | 12 | 12 | 16 |
 | core archetypes | n/a | 12 | 12 |
 | specialist archetypes | n/a | 0 | 4 |
 | skills | MVP 문서 비소유 | 40 | 40~48 |
 | equippables | MVP 문서 비소유 | 36 | 42~54 |
 | passive boards | MVP 문서 비소유 | 4 | 4 |
 | passive nodes | MVP 문서 비소유 | 72 | 96 전후 |
-| temporary augments | 9 | 18 | 24 |
+| temporary augments | 12 | 18 | 24 |
 | permanent augments | MVP 문서 비소유 | 9 | 12 |
 | permanent augment equip slots | 1 | 1~2 | 데이터 모델 3, 운용 1~3 |
 | equipment slots | 3 | 3 | 3 |
@@ -53,7 +53,7 @@
 
 - paid launch safe target = `16 archetypes / 40~48 skills / 42~54 equippables / 96 passive nodes / 24 temporary augments / 12 permanent augments`
 - skill loadout = `6-slot topology + 2 visible active`
-- synergy family = `3 races + 4 classes`, each `2 / 4` breakpoints
+- synergy family = `3 races + 4 classes`, race `2 / 4`, class `2 / 3`
 - baseline counter swing = 평균 `10~15%`
 
 ## 세부 문서 소유권
