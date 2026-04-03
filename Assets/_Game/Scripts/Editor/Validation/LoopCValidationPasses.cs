@@ -410,7 +410,7 @@ internal static class BudgetWindowValidationPass
         switch (source)
         {
             case UnitArchetypeDefinition:
-                if (!budgetCard.Rarity.HasValue || !LoopCContentGovernance.UnitBudgetTargets.TryGetValue(budgetCard.Rarity.Value, out var unitTarget))
+                if (!LoopCContentGovernance.UnitBudgetTargets.TryGetValue(budgetCard.Rarity, out var unitTarget))
                 {
                     return false;
                 }
@@ -419,7 +419,7 @@ internal static class BudgetWindowValidationPass
                 tolerance = unitTarget.Tolerance;
                 return true;
             case AffixDefinition:
-                if (!budgetCard.Rarity.HasValue || !LoopCContentGovernance.AffixBudgetTargets.TryGetValue(budgetCard.Rarity.Value, out var affixTarget))
+                if (!LoopCContentGovernance.AffixBudgetTargets.TryGetValue(budgetCard.Rarity, out var affixTarget))
                 {
                     return false;
                 }
@@ -428,7 +428,7 @@ internal static class BudgetWindowValidationPass
                 tolerance = affixTarget.Tolerance;
                 return true;
             case AugmentDefinition:
-                if (!budgetCard.Rarity.HasValue || !LoopCContentGovernance.AugmentBudgetTargets.TryGetValue(budgetCard.Rarity.Value, out var augmentTarget))
+                if (!LoopCContentGovernance.AugmentBudgetTargets.TryGetValue(budgetCard.Rarity, out var augmentTarget))
                 {
                     return false;
                 }
@@ -443,7 +443,7 @@ internal static class BudgetWindowValidationPass
                 tolerance = bandTarget.Tolerance;
                 return true;
             default:
-                if (!budgetCard.PowerBand.HasValue || !LoopCContentGovernance.PowerBandTargets.TryGetValue(budgetCard.PowerBand.Value, out var genericTarget))
+                if (!LoopCContentGovernance.PowerBandTargets.TryGetValue(budgetCard.PowerBand, out var genericTarget))
                 {
                     return false;
                 }
@@ -462,7 +462,7 @@ internal static class BudgetIdentityValidationPass
         foreach (var subject in subjects.Where(subject => subject.Source is UnitArchetypeDefinition))
         {
             var budgetCard = subject.BudgetCard;
-            if (!budgetCard.RoleProfile.HasValue)
+            if (budgetCard.RoleProfile == CombatRoleBudgetProfile.None)
             {
                 issues.Add(LoopCContentGovernanceValidator.CreateIssue(ContentValidationSeverity.Error, "loop_c.role_profile_missing", "Unit budget card must declare one CombatRoleBudgetProfile.", subject));
                 continue;
@@ -486,7 +486,7 @@ internal static class BudgetIdentityValidationPass
             }
 
             var positiveTotal = Math.Max(1, vector.PositiveTotal);
-            var roleProfile = LoopCContentGovernance.RoleProfiles[budgetCard.RoleProfile.Value];
+            var roleProfile = LoopCContentGovernance.RoleProfiles[budgetCard.RoleProfile];
             var primaryTotal = roleProfile.PrimaryAxes.Sum(axis => vector.GetAxisValue(axis));
             var primaryAndSecondaryTotal = primaryTotal + vector.GetAxisValue(roleProfile.SecondaryAxis);
             if (primaryTotal < Math.Ceiling(positiveTotal * 0.35f))
@@ -535,7 +535,7 @@ internal static class RarityComplexityValidationPass
         foreach (var subject in subjects)
         {
             var budgetCard = subject.BudgetCard;
-            if (!budgetCard.Rarity.HasValue || !LoopCContentGovernance.RarityComplexityCaps.TryGetValue(budgetCard.Rarity.Value, out var caps))
+            if (!LoopCContentGovernance.RarityComplexityCaps.TryGetValue(budgetCard.Rarity, out var caps))
             {
                 issues.Add(LoopCContentGovernanceValidator.CreateIssue(ContentValidationSeverity.Error, "loop_c.rarity_missing", "ContentRarity is required on BudgetCard for Loop C governed content.", subject));
                 continue;
@@ -561,7 +561,7 @@ internal static class RarityComplexityValidationPass
             switch (subject.Source)
             {
                 case UnitArchetypeDefinition:
-                    ValidateUnitCaps(subject, issues, budgetCard.Rarity.Value, declaredThreatCount, declaredCounterCount);
+                    ValidateUnitCaps(subject, issues, budgetCard.Rarity, declaredThreatCount, declaredCounterCount);
                     break;
                 case AffixDefinition:
                     if (budgetCard.Rarity == ContentRarity.Common && declaredCounterCount > 0)
@@ -859,7 +859,7 @@ internal static class LoopCDerivedSanityPreviewService
 
     private static int BuildUnitScore(UnitArchetypeDefinition unit, BudgetCard budgetCard)
     {
-        var target = budgetCard.Rarity.HasValue && LoopCContentGovernance.UnitBudgetTargets.TryGetValue(budgetCard.Rarity.Value, out var window)
+        var target = LoopCContentGovernance.UnitBudgetTargets.TryGetValue(budgetCard.Rarity, out var window)
             ? window.Target
             : 100;
         var statScore =
@@ -928,7 +928,7 @@ internal static class LoopCDerivedSanityPreviewService
 
     private static int BuildAffixScore(AffixDefinition affix, BudgetCard budgetCard)
     {
-        var target = budgetCard.Rarity.HasValue && LoopCContentGovernance.AffixBudgetTargets.TryGetValue(budgetCard.Rarity.Value, out var window)
+        var target = LoopCContentGovernance.AffixBudgetTargets.TryGetValue(budgetCard.Rarity, out var window)
             ? window.Target
             : 6;
         var baseScore =
@@ -942,7 +942,7 @@ internal static class LoopCDerivedSanityPreviewService
 
     private static int BuildAugmentScore(AugmentDefinition augment, BudgetCard budgetCard)
     {
-        var target = budgetCard.Rarity.HasValue && LoopCContentGovernance.AugmentBudgetTargets.TryGetValue(budgetCard.Rarity.Value, out var window)
+        var target = LoopCContentGovernance.AugmentBudgetTargets.TryGetValue(budgetCard.Rarity, out var window)
             ? window.Target
             : 18;
         var baseScore =
