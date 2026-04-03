@@ -1,4 +1,5 @@
 using System.Text;
+using SM.Combat.Model;
 using SM.Content.Definitions;
 using UnityEditor;
 using UnityEngine;
@@ -21,6 +22,7 @@ public sealed class UnitArchetypeDefinitionEditor : UnityEditor.Editor
             DrawStatSummary(archetype);
             DrawSkillSlotSummary(archetype);
             DrawProfileSummary(archetype);
+            DrawCompiledEffectiveValues(archetype);
         }
     }
 
@@ -106,6 +108,43 @@ public sealed class UnitArchetypeDefinitionEditor : UnityEditor.Editor
         }
 
         EditorGUILayout.TextArea(builder.ToString().TrimEnd(), EditorStyles.helpBox);
+    }
+
+    private static void DrawCompiledEffectiveValues(UnitArchetypeDefinition archetype)
+    {
+        EditorGUILayout.LabelField("Compiled Effective Values", EditorStyles.miniBoldLabel);
+        var builder = new StringBuilder();
+
+        var classId = archetype.Class != null ? archetype.Class.Id : "";
+        var behavior = archetype.BehaviorProfile != null
+            ? BuildBehaviorFromDefinition(archetype.BehaviorProfile)
+            : null;
+        var resolved = CombatProfileDefaults.ResolveBehavior(behavior, classId);
+
+        builder.AppendLine($"Formation: {resolved.FormationLine}  Discipline: {resolved.RangeDiscipline}");
+        builder.AppendLine($"Range: {resolved.PreferredRangeMin:0.##}–{resolved.PreferredRangeMax:0.##}  Approach: {resolved.ApproachBuffer:0.##}  Retreat: {resolved.RetreatBuffer:0.##}");
+        builder.AppendLine($"Guard Radius: {resolved.FrontlineGuardRadius:0.#}  Leash: {resolved.ChaseLeashMeters:0.#}");
+        builder.AppendLine($"Opportunism: {resolved.Opportunism:0.##}  Discipline: {resolved.Discipline:0.##}");
+        builder.AppendLine($"Dodge: {resolved.DodgeChance:P0}  Block: {resolved.BlockChance:P0} ({resolved.BlockMitigation:P0} mit)  Stability: {resolved.Stability:0.##}");
+
+        if (behavior != null)
+            builder.Append("Source: authored profile");
+        else
+            builder.Append($"Source: class default ({(string.IsNullOrEmpty(classId) ? "generic" : classId)})");
+
+        EditorGUILayout.TextArea(builder.ToString(), EditorStyles.helpBox);
+    }
+
+    private static BehaviorProfile BuildBehaviorFromDefinition(BehaviorProfileDefinition def)
+    {
+        return new BehaviorProfile(
+            def.ReevaluationInterval, def.RangeHysteresis, def.RetreatBias,
+            def.MaintainRangeBias, def.Opportunism, def.Discipline,
+            def.DodgeChance, def.BlockChance, def.BlockMitigation, def.Stability,
+            def.BlockCooldownSeconds, def.FormationLine, def.RangeDiscipline,
+            def.PreferredRangeMin, def.PreferredRangeMax,
+            def.ApproachBuffer, def.RetreatBuffer, def.ChaseLeashMeters,
+            def.RetreatAtHpPercent, def.FrontlineGuardRadius);
     }
 
     private static void AppendIfNonDefault(StringBuilder builder, string label, float value, float defaultValue)

@@ -30,7 +30,9 @@ public sealed class BattleScreenController : MonoBehaviour
     [SerializeField] private BattleSettingsPanelController settingsPanelController = null!;
 
     private readonly List<BattleEvent> _recentLogs = new();
+    private readonly List<string> _decisiveTimeline = new();
     private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
+    private string _selectedUnitId = string.Empty;
     private GameSessionRoot _root = null!;
     private GameLocalizationController _localization = null!;
     private BattleSimulator? _simulator;
@@ -82,6 +84,21 @@ public sealed class BattleScreenController : MonoBehaviour
             _presentationOptions.ToggleDebugOverlay();
         }
 
+        if (Input.GetKeyDown(KeyCode.F4) && _isPaused && !_battleFinished)
+        {
+            StepOnce();
+        }
+
+        if (Input.GetKeyDown(KeyCode.F5) && _simulator != null)
+        {
+            RestartSameSeed();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Tab) && _currentStep != null)
+        {
+            CycleSelectedUnit();
+        }
+
         if (_simulator == null || _currentStep == null || _previousStep == null)
         {
             return;
@@ -101,11 +118,75 @@ public sealed class BattleScreenController : MonoBehaviour
         var alpha = _battleFinished ? 1f : Mathf.Clamp01(_stepAccumulator / fixedStep);
         presentationController.SetBlend(_previousStep, _currentStep, alpha);
         progressFill.fillAmount = Mathf.Clamp01((float)_currentStep.StepIndex / MaxBattleSteps);
+
+        if (_presentationOptions.ShowDebugOverlay)
+        {
+            DrawDebugTargetLines(_currentStep);
+        }
+    }
+
+    private static void DrawDebugTargetLines(BattleSimulationStep step)
+    {
+        foreach (var unit in step.Units)
+        {
+            if (!unit.IsAlive || string.IsNullOrEmpty(unit.TargetId)) continue;
+            var target = step.Units.FirstOrDefault(u => u.Id == unit.TargetId);
+            if (target == null) continue;
+
+            var from = new Vector3(unit.Position.X, 0.15f, unit.Position.Y);
+            var to = new Vector3(target.Position.X, 0.15f, target.Position.Y);
+            var color = unit.Side == TeamSide.Ally ? Color.cyan : new Color(1f, 0.5f, 0.2f);
+            Debug.DrawLine(from, to, color);
+        }
     }
 
     public void SetSpeed1() => SetSpeed(1f);
     public void SetSpeed2() => SetSpeed(2f);
     public void SetSpeed4() => SetSpeed(4f);
+
+    private void StepOnce()
+    {
+        if (_simulator == null || _currentStep == null || _battleFinished) return;
+        AdvanceSimulation();
+        var fixedStep = Mathf.Max(0.0001f, _simulator.State.FixedStepSeconds);
+        presentationController.SetBlend(_currentStep, _currentStep, 1f);
+        progressFill.fillAmount = Mathf.Clamp01((float)_currentStep.StepIndex / MaxBattleSteps);
+    }
+
+    private void RestartSameSeed()
+    {
+        if (_compiledSnapshot == null || _resolvedEncounterContext == null) return;
+        var encounter = _resolvedEncounterContext;
+        var newState = BattleFactory.Create(
+            _compiledSnapshot.Allies,
+            encounter.Enemies,
+            _compiledSnapshot.TeamTactic.Posture,
+            encounter.EnemyPosture,
+            BattleSimulator.DefaultFixedStepSeconds,
+            seed: encounter.Context.BattleSeed);
+        _simulator = new BattleSimulator(newState, MaxBattleSteps);
+        _previousStep = _simulator.CurrentStep;
+        _currentStep = _simulator.CurrentStep;
+        _battleFinished = false;
+        _isPaused = false;
+        _stepAccumulator = 0f;
+        _totalEventCount = 0;
+        _decisiveTimeline.Clear();
+        _selectedUnitId = string.Empty;
+        presentationController.Initialize(_currentStep);
+        presentationController.SetPaused(false);
+        RefreshHud(_currentStep);
+        RefreshSpeedText();
+    }
+
+    private void CycleSelectedUnit()
+    {
+        if (_currentStep == null) return;
+        var alive = _currentStep.Units.Where(u => u.IsAlive).OrderBy(u => u.Side).ThenBy(u => u.Id).ToList();
+        if (alive.Count == 0) return;
+        var currentIndex = alive.FindIndex(u => u.Id == _selectedUnitId);
+        _selectedUnitId = alive[(currentIndex + 1) % alive.Count].Id;
+    }
 
     public void TogglePause()
     {
@@ -302,6 +383,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _previousStep = _currentStep;
         _currentStep = _simulator.Step();
         _totalEventCount += _currentStep.Events.Count;
+        TrackDecisiveEvents(_currentStep);
         presentationController.PushStep(_previousStep, _currentStep);
         RefreshHud(_currentStep);
 
@@ -524,13 +606,16 @@ public sealed class BattleScreenController : MonoBehaviour
         var enemyAlive = step.Units.Count(u => u.Side == TeamSide.Enemy && u.IsAlive);
         var speedLabel = _isPaused ? "PAUSED" : $"x{_playbackSpeed:0}";
 
-        var headerRect = new Rect(4, 4, 600, 20);
+        var pauseHint = _isPaused ? " | <color=#ff6>F4=Step  F5=Restart</color>" : " | <color=#aaa>F5=Restart</color>";
+        var headerRect = new Rect(4, 4, 780, 20);
         GUI.Box(headerRect, GUIContent.none, bgStyle);
-        GUI.Label(headerRect, $"  Step: {step.StepIndex}/{MaxBattleSteps} | Time: {step.TimeSeconds:0.0}s | {speedLabel} | Allies: {allyAlive}/{allyCount} | Enemies: {enemyAlive}/{enemyCount}", style);
+        GUI.Label(headerRect, $"  Step: {step.StepIndex}/{MaxBattleSteps} | Time: {step.TimeSeconds:0.0}s | {speedLabel} | Allies: {allyAlive}/{allyCount} | Enemies: {enemyAlive}/{enemyCount}{pauseHint}", style);
 
         var y = 28f;
         foreach (var unit in step.Units.OrderBy(u => u.Side).ThenBy(u => u.Id))
         {
+            var isSelected = unit.Id == _selectedUnitId;
+            var marker = isSelected ? "<color=#ff0>></color> " : "  ";
             var sideTag = unit.Side == TeamSide.Ally ? "<color=#6cc>ally</color>" : "<color=#f93>enemy</color>";
             var hpPct = unit.MaxHealth > 0 ? unit.CurrentHealth / unit.MaxHealth * 100f : 0f;
             var targetLabel = !string.IsNullOrEmpty(unit.TargetName) ? $"-> {unit.TargetName}" : "";
@@ -540,11 +625,70 @@ public sealed class BattleScreenController : MonoBehaviour
             var selectorLabel = !string.IsNullOrEmpty(unit.CurrentSelector) ? $" sel:{unit.CurrentSelector}" : "";
             var guardLabel = unit.FrontlineGuardRadius > 0.01f ? $" guard:{unit.FrontlineGuardRadius:0.#}" : "";
 
-            var line = $"  [{sideTag}] {unit.Name} HP:{unit.CurrentHealth:0}/{unit.MaxHealth:0}({hpPct:0}%) {targetLabel} [{actionLabel}]{cdLabel}{lockLabel}{selectorLabel}{guardLabel}";
-            var lineRect = new Rect(4, y, 720, 16);
+            var line = $"{marker}[{sideTag}] {unit.Name} HP:{unit.CurrentHealth:0}/{unit.MaxHealth:0}({hpPct:0}%) {targetLabel} [{actionLabel}]{cdLabel}{lockLabel}{selectorLabel}{guardLabel}";
+            var lineRect = new Rect(4, y, 780, 16);
             GUI.Box(lineRect, GUIContent.none, bgStyle);
             GUI.Label(lineRect, line, style);
             y += 16f;
+        }
+
+        DrawSelectedUnitPanel(step, bgStyle, style, y);
+        DrawDecisiveTimeline(bgStyle, style);
+    }
+
+    private void DrawSelectedUnitPanel(BattleSimulationStep step, GUIStyle bgStyle, GUIStyle style, float startY)
+    {
+        if (string.IsNullOrEmpty(_selectedUnitId)) return;
+        var unit = step.Units.FirstOrDefault(u => u.Id == _selectedUnitId);
+        if (unit == null) return;
+
+        var panelY = startY + 8f;
+        var panelRect = new Rect(4, panelY, 400, 96);
+        GUI.Box(panelRect, GUIContent.none, bgStyle);
+
+        var lines = new[]
+        {
+            $"  <color=#ff0>Selected: {unit.Name}</color> ({unit.Side} {unit.EntityKind})",
+            $"  HP: {unit.CurrentHealth:0}/{unit.MaxHealth:0} | Energy: {unit.CurrentEnergy:0}/{unit.MaxEnergy:0} | Barrier: {unit.Barrier:0}",
+            $"  Pos: ({unit.Position.X:0.0}, {unit.Position.Y:0.0}) | Target: {unit.TargetName ?? "none"}",
+            $"  Selector: {unit.CurrentSelector} | Fallback: {unit.CurrentFallback}",
+            $"  Lock: {unit.RetargetLockRemaining:0.0}s | Guard: {unit.FrontlineGuardRadius:0.#} | Cluster: {unit.ClusterRadius:0.#}",
+            $"  Class: {unit.ClassId} | Race: {unit.RaceId} | Anchor: {unit.Anchor}"
+        };
+
+        for (var i = 0; i < lines.Length; i++)
+        {
+            GUI.Label(new Rect(4, panelY + i * 16f, 400, 16), lines[i], style);
+        }
+    }
+
+    private void DrawDecisiveTimeline(GUIStyle bgStyle, GUIStyle style)
+    {
+        if (_decisiveTimeline.Count == 0) return;
+        var startX = Screen.width - 320f;
+        var visible = _decisiveTimeline.Count > 8 ? _decisiveTimeline.Skip(_decisiveTimeline.Count - 8).ToList() : _decisiveTimeline;
+        var panelRect = new Rect(startX, 4, 316, 16 + visible.Count * 14f);
+        GUI.Box(panelRect, GUIContent.none, bgStyle);
+        GUI.Label(new Rect(startX, 4, 316, 16), "  <color=#ff6>Decisive Timeline</color>", style);
+        var smallStyle = new GUIStyle(style) { fontSize = 10 };
+        for (var i = 0; i < visible.Count; i++)
+        {
+            GUI.Label(new Rect(startX, 20 + i * 14f, 316, 14), $"  {visible[i]}", smallStyle);
+        }
+    }
+
+    private void TrackDecisiveEvents(BattleSimulationStep step)
+    {
+        foreach (var evt in step.Events)
+        {
+            if (evt.EventKind == BattleEventKind.Kill)
+            {
+                _decisiveTimeline.Add($"<color=#f66>{step.TimeSeconds:0.0}s</color> Kill: {evt.ActorName} -> {evt.TargetName}");
+            }
+            else if (evt.ActionType == BattleActionType.ActiveSkill && evt.Value > 0)
+            {
+                _decisiveTimeline.Add($"<color=#6cf>{step.TimeSeconds:0.0}s</color> Skill: {evt.ActorName} ({evt.Value:0})");
+            }
         }
     }
 
