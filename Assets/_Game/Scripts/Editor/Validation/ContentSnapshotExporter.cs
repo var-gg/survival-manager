@@ -34,4 +34,14 @@ public static class ContentSnapshotExporter
 
     [MenuItem("SM/Content/Export Content Snapshot", true)]
     private static bool CanExport() => !EditorApplication.isCompiling;
+
+    [MenuItem("SM/Content/Export Individual Assets")]
+    public static void ExportIndividualAssets()
+    {
+        IndividualAssetExporter.ExportAll();
+        AssetDatabase.Refresh();
+    }
+
+    [MenuItem("SM/Content/Export Individual Assets", true)]
+    private static bool CanExportIndividual() => !EditorApplication.isCompiling;
 }

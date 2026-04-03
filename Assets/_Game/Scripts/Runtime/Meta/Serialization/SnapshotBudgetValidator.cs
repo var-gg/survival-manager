@@ -52,6 +52,38 @@ public static class SnapshotBudgetValidator
         }
     }
 
+    public static IReadOnlyList<BudgetViolation> ValidateSingleArchetype(string id, CombatArchetypeTemplate template)
+    {
+        var violations = new List<BudgetViolation>();
+        if (template.Governance == null) return violations;
+        if (!Enum.TryParse<ContentRarity>(template.Governance.Rarity, out var rarity)) return violations;
+        if (!LoopCContentGovernance.UnitBudgetTargets.TryGetValue(rarity, out var budget)) return violations;
+
+        var score = template.Governance.BudgetFinalScore;
+        if (Math.Abs(score - budget.Target) > budget.Tolerance)
+        {
+            violations.Add(new BudgetViolation(id, "Archetype", score, budget.Target, budget.Tolerance));
+        }
+
+        return violations;
+    }
+
+    public static IReadOnlyList<BudgetViolation> ValidateSingleAugment(string id, AugmentCatalogEntry entry)
+    {
+        var violations = new List<BudgetViolation>();
+        if (entry.Governance == null) return violations;
+        if (!Enum.TryParse<ContentRarity>(entry.Governance.Rarity, out var rarity)) return violations;
+        if (!LoopCContentGovernance.AugmentBudgetTargets.TryGetValue(rarity, out var budget)) return violations;
+
+        var score = entry.Governance.BudgetFinalScore;
+        if (Math.Abs(score - budget.Target) > budget.Tolerance)
+        {
+            violations.Add(new BudgetViolation(id, "Augment", score, budget.Target, budget.Tolerance));
+        }
+
+        return violations;
+    }
+
     private static void ValidateAugments(CombatContentSnapshot snapshot, List<BudgetViolation> violations)
     {
         if (snapshot.AugmentCatalog == null) return;
