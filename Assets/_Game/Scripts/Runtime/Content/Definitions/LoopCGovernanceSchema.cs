@@ -49,6 +49,7 @@ public enum BudgetAxis
 
 public enum CombatRoleBudgetProfile
 {
+    None = -1,
     Vanguard = 0,
     Bruiser = 1,
     Duelist = 2,
@@ -221,7 +222,7 @@ public sealed class BudgetCard
     public BudgetDomain Domain = BudgetDomain.UnitBlueprint;
     public ContentRarity Rarity = ContentRarity.Common;
     public PowerBand PowerBand = global::SM.Content.Definitions.PowerBand.Standard;
-    public CombatRoleBudgetProfile RoleProfile;
+    public CombatRoleBudgetProfile RoleProfile = CombatRoleBudgetProfile.None;
     public BudgetVector Vector = new();
     public int KeywordCount;
     public int ConditionClauseCount;

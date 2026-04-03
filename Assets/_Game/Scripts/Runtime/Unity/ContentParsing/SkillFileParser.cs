@@ -141,7 +141,7 @@ internal static class SkillFileParser
                 _ => MakeBudgetVector(target / 3, target / 3, 0, 0, Math.Max(1, target / 6), 0, counters.Length > 0 ? 1 : 0, Math.Max(1, target - (target / 3 + target / 3 + Math.Max(1, target / 6) + (counters.Length > 0 ? 1 : 0)))),
             };
             AdjustBudgetFinalScore(vector, target);
-            definition.BudgetCard = BuildBudgetCard(BudgetDomain.Skill, ContentRarity.Common, band, null, vector, 2, 1, 0, Array.Empty<ThreatPattern>(), counters);
+            definition.BudgetCard = BuildBudgetCard(BudgetDomain.Skill, ContentRarity.Common, band, CombatRoleBudgetProfile.None, vector, 2, 1, 0, Array.Empty<ThreatPattern>(), counters);
         }
         else if (definition.BudgetCard.Rarity == ContentRarity.Common)
         {

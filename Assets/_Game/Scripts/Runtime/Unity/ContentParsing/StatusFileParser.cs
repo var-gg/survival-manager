@@ -216,7 +216,7 @@ internal static class StatusFileParser
             _ => MakeBudgetVector(0, 0, 0, 0, 0, 0, 0, 0),
         };
         AdjustBudgetFinalScore(vector, LoopCContentGovernance.PowerBandTargets[band].Target);
-        definition.BudgetCard = BuildBudgetCard(BudgetDomain.Status, ContentRarity.Common, band, null, vector, isMinor ? 2 : 1, 0, 0, threats, counters);
+        definition.BudgetCard = BuildBudgetCard(BudgetDomain.Status, ContentRarity.Common, band, CombatRoleBudgetProfile.None, vector, isMinor ? 2 : 1, 0, 0, threats, counters);
     }
 
     internal static void ApplyCleanseProfileFallbacks(CleanseProfileDefinition definition)

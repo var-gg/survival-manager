@@ -187,7 +187,7 @@ internal static class CatalogFileParser
             ? MakeBudgetVector(6, 2, 4, 2, 0, 2, 0, 2)
             : MakeBudgetVector(3, 1, 3, 1, 0, 2, 0, 2);
         AdjustBudgetFinalScore(vector, target);
-        definition.BudgetCard = BuildBudgetCard(BudgetDomain.SynergyBreakpoint, ContentRarity.Common, definition.Threshold == 4 ? PowerBand.Major : PowerBand.Standard, null, vector, 2, 1, 0, Array.Empty<ThreatPattern>(), Array.Empty<CounterToolContribution>());
+        definition.BudgetCard = BuildBudgetCard(BudgetDomain.SynergyBreakpoint, ContentRarity.Common, definition.Threshold == 4 ? PowerBand.Major : PowerBand.Standard, CombatRoleBudgetProfile.None, vector, 2, 1, 0, Array.Empty<ThreatPattern>(), Array.Empty<CounterToolContribution>());
     }
 
     internal static void ApplySynergyFallbacks(SynergyDefinition definition)
