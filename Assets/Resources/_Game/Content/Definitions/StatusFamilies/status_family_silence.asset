@@ -12,28 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: status_family_silence
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatusFamilyDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: silence
+  NameKey: content.status.silence.name
+  DescriptionKey: content.status.silence.desc
   Group: 0
-  IsHardControl: 0
-  UsesControlDiminishing: 0
+  IsHardControl: 1
+  UsesControlDiminishing: 1
   AffectedByTenacity: 1
-  TenacityScale: 1
+  TenacityScale: 0.5
   BudgetCard:
     Domain: 7
+    Rarity: 0
+    PowerBand: 1
+    RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
       Durability: 0
-      Control: 0
+      Control: 6
       Mobility: 0
       Support: 0
       CounterCoverage: 0
-      Reliability: 0
+      Reliability: 2
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
+    KeywordCount: 2
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
@@ -49,6 +52,7 @@ MonoBehaviour:
   IsAiRelevant: 1
   VisualPriority: 0
   Effects: []
-  CompileTags: []
+  CompileTags:
+  - silence
   legacyDisplayName: 
   legacyDescription: 

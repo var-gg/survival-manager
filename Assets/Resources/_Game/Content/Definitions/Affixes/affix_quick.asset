@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: affix_quick
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AffixDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: affix_quick
+  NameKey: content.affix.affix_quick.name
+  DescriptionKey: content.affix.affix_quick.desc
   Category: 4
   Tier: 1
   AffixFamily: 0
   EffectType: 0
   ValueMin: 0
   ValueMax: 0
-  AllowedSlotTypes: 
+  AllowedSlotTypes: 0200000001000000
   CompileTags: []
   RuleModifierTags: []
   RequiredTags: []
@@ -32,18 +32,21 @@ MonoBehaviour:
   BudgetScore: 0
   BudgetCard:
     Domain: 4
+    Rarity: 0
+    PowerBand: 2
+    RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
-      Durability: 0
+      Durability: 1
       Control: 0
-      Mobility: 0
-      Support: 0
+      Mobility: 1
+      Support: 3
       CounterCoverage: 0
-      Reliability: 0
+      Reliability: 1
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
+    KeywordCount: 1
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
@@ -52,6 +55,9 @@ MonoBehaviour:
   TextTemplateKey: 
   AuthorityLayer: 2
   Effects: []
-  Modifiers: []
+  Modifiers:
+  - StatId: attack_speed
+    Op: 0
+    Value: 1
   legacyDisplayName: 
   legacyDescription: 

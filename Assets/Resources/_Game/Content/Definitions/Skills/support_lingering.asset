@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: support_lingering
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: support_lingering
+  NameKey: content.skill.support_lingering.name
+  DescriptionKey: content.skill.support_lingering.desc
   TemplateType: 0
-  Kind: 0
-  SlotKind: 0
+  Kind: 5
+  SlotKind: 3
   DamageType: 0
-  Delivery: 0
-  TargetRule: 0
+  Delivery: 4
+  TargetRule: 5
   Power: 0
-  Range: 1
+  Range: 0
   RangeMin: 0
   RangeMax: -1
   Radius: 0
@@ -40,19 +40,22 @@ MonoBehaviour:
   AuthorityLayer: 1
   BudgetCard:
     Domain: 1
+    Rarity: 0
+    PowerBand: 1
+    RoleProfile: -1
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
+      SustainedDamage: 2
+      BurstDamage: 2
       Durability: 0
       Control: 0
-      Mobility: 0
+      Mobility: 1
       Support: 0
       CounterCoverage: 0
-      Reliability: 0
+      Reliability: 3
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
-    ConditionClauseCount: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
@@ -80,11 +83,19 @@ MonoBehaviour:
   VfxHookId: 
   SfxHookId: 
   LearnSource: 0
-  EffectFamilyId: 
+  EffectFamilyId: lingering_support
   MutuallyExclusiveGroupId: 
-  RecruitNativeTags: []
-  RecruitPlanTags: []
-  RecruitScoutTags: []
+  RecruitNativeTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 23a43fe9e3d8a514c947f33e62d21c93, type: 2}
+  RecruitPlanTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: 754f0c18dd0a18e4781970042cb79b6a, type: 2}
+  - {fileID: 11400000, guid: 23a43fe9e3d8a514c947f33e62d21c93, type: 2}
+  RecruitScoutTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 754f0c18dd0a18e4781970042cb79b6a, type: 2}
   TargetRuleData:
     Domain: 2
     PrimarySelector: 1
@@ -116,9 +127,16 @@ MonoBehaviour:
       InheritDodge: 0
       InheritBlock: 0
   Effects: []
-  CompileTags: []
-  RuleModifierTags: []
-  SupportAllowedTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 23a43fe9e3d8a514c947f33e62d21c93, type: 2}
+  - {fileID: 11400000, guid: 3030e667d0a65bc4ea69fd43caf30ad9, type: 2}
+  - {fileID: 11400000, guid: 3c20914261aea6e41ab98542472ae4a5, type: 2}
+  RuleModifierTags:
+  - {fileID: 11400000, guid: 3c20914261aea6e41ab98542472ae4a5, type: 2}
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 23a43fe9e3d8a514c947f33e62d21c93, type: 2}
+  - {fileID: 11400000, guid: 3030e667d0a65bc4ea69fd43caf30ad9, type: 2}
+  - {fileID: 11400000, guid: 3c20914261aea6e41ab98542472ae4a5, type: 2}
   SupportBlockedTags: []
   RequiredWeaponTags: []
   RequiredClassTags: []

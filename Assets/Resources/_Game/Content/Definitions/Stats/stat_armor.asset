@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_armor
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: armor
+  NameKey: content.stat.armor.name
+  DescriptionKey: content.stat.armor.desc
   legacyDisplayName: 
   legacyDescription: 

@@ -12,32 +12,37 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: status_family_exposed
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatusFamilyDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Group: 0
+  Id: exposed
+  NameKey: content.status.exposed.name
+  DescriptionKey: content.status.exposed.desc
+  Group: 2
   IsHardControl: 0
   UsesControlDiminishing: 0
-  AffectedByTenacity: 1
-  TenacityScale: 1
+  AffectedByTenacity: 0
+  TenacityScale: 0
   BudgetCard:
     Domain: 7
+    Rarity: 0
+    PowerBand: 0
+    RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
       Durability: 0
-      Control: 0
+      Control: 1
       Mobility: 0
-      Support: 0
-      CounterCoverage: 0
+      Support: 1
+      CounterCoverage: 3
       Reliability: 0
       Economy: 0
-      DrawbackCredit: 0
-    KeywordCount: 0
+      DrawbackCredit: 1
+    KeywordCount: 1
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
-    DeclaredCounterTools: []
+    DeclaredCounterTools:
+    - Tool: 1
+      Strength: 2
     DeclaredFeatureFlags: 0
   IsRuleModifierOnly: 0
   AuthorityLayer: 5
@@ -49,6 +54,7 @@ MonoBehaviour:
   IsAiRelevant: 1
   VisualPriority: 0
   Effects: []
-  CompileTags: []
+  CompileTags:
+  - exposed
   legacyDisplayName: 
   legacyDescription: 

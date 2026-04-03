@@ -12,14 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_cinder_watch
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ExpeditionSiteDefinition
-  Id: 
-  ChapterId: 
-  NameKey: 
-  DescriptionKey: 
-  SiteOrder: 0
-  FactionId: 
-  EncounterIds: []
-  ExtractRewardSourceId: 
+  Id: site_cinder_watch
+  ChapterId: chapter_ashen_frontier
+  NameKey: content.campaign.site.site_cinder_watch.name
+  DescriptionKey: content.campaign.site.site_cinder_watch.desc
+  SiteOrder: 2
+  FactionId: faction_cinder_watch
+  EncounterIds:
+  - site_cinder_watch_skirmish_1
+  - site_cinder_watch_skirmish_2
+  - site_cinder_watch_elite_1
+  - site_cinder_watch_boss_1
+  ExtractRewardSourceId: reward_source_extract
   ThreatTier: 1
   legacyDisplayName: 
   legacyDescription: 

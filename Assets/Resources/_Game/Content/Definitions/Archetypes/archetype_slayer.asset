@@ -12,38 +12,62 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: archetype_slayer
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
-  Id: 
-  NameKey: 
+  Id: slayer
+  NameKey: content.archetype.slayer.name
   ScopeKind: 0
-  Race: {fileID: 0}
-  Class: {fileID: 0}
-  TraitPool: {fileID: 0}
-  Skills: []
-  TacticPreset: []
-  DefaultAnchor: 1
+  Race: {fileID: 11400000, guid: 732863225f9204842af76a32f0d75924, type: 2}
+  Class: {fileID: 11400000, guid: ae9c9da2287c8624e818c771bc678450, type: 2}
+  TraitPool: {fileID: 11400000, guid: e1df1a3c0d143f646b840a968d9fca3b, type: 2}
+  Skills:
+  - {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
+  TacticPreset:
+  - Priority: 0
+    ConditionType: 4
+    Threshold: 1.5
+    ActionType: 1
+    TargetSelector: 5
+    Skill: {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
+  - Priority: 1
+    ConditionType: 3
+    Threshold: 0
+    ActionType: 0
+    TargetSelector: 3
+    Skill: {fileID: 0}
+  - Priority: 2
+    ConditionType: 5
+    Threshold: 0
+    ActionType: 2
+    TargetSelector: 0
+    Skill: {fileID: 0}
+  DefaultAnchor: 2
   PreferredTeamPosture: 1
-  RoleTag: auto
-  RoleFamilyTag: 
-  PrimaryWeaponFamilyTag: 
+  RoleTag: bruiser
+  RoleFamilyTag: striker
+  PrimaryWeaponFamilyTag: blade
   RecruitTier: 0
   BudgetCard:
     Domain: 0
+    Rarity: 0
+    PowerBand: 2
+    RoleProfile: 2
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
-      Durability: 0
-      Control: 0
-      Mobility: 0
-      Support: 0
-      CounterCoverage: 0
-      Reliability: 0
+      SustainedDamage: 16
+      BurstDamage: 28
+      Durability: 10
+      Control: 4
+      Mobility: 22
+      Support: 2
+      CounterCoverage: 6
+      Reliability: 12
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
-    ConditionClauseCount: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
     RuleExceptionCount: 0
-    DeclaredThreatPatterns: 
-    DeclaredCounterTools: []
+    DeclaredThreatPatterns: 06000000
+    DeclaredCounterTools:
+    - Tool: 0
+      Strength: 2
     DeclaredFeatureFlags: 0
   IsRecruitable: 1
   IsSummonOnly: 0
@@ -51,18 +75,31 @@ MonoBehaviour:
   IsBossOnly: 0
   IsUnreleased: 0
   IsTestOnly: 0
-  RecruitPlanTags: []
-  ScoutBiasTags: []
+  RecruitPlanTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
+  ScoutBiasTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   SupportModifierBiasTags: []
   LockedAttackProfileId: 
   LockedAttackProfileTag: 
   LockedSignatureActiveSkill: {fileID: 0}
   LockedSignaturePassiveSkill: {fileID: 0}
   FlexUtilitySkillPool: []
-  FlexSupportSkillPool: []
+  FlexSupportSkillPool:
+  - {fileID: 11400000, guid: 8556d04ce07bc7c43a626bb572997878, type: 2}
+  - {fileID: 11400000, guid: f3efdc15db88f144bb2436566e1be83c, type: 2}
   RecruitFlexActivePool: []
-  RecruitFlexPassivePool: []
-  RecruitBannedPairings: []
+  RecruitFlexPassivePool:
+  - {fileID: 11400000, guid: 8556d04ce07bc7c43a626bb572997878, type: 2}
+  - {fileID: 11400000, guid: f3efdc15db88f144bb2436566e1be83c, type: 2}
+  RecruitBannedPairings:
+  - FlexActiveId: skill_reaver_utility
+    FlexPassiveId: support_brutal
   Loadout:
     BasicAttack:
       Id: basic_attack
@@ -89,7 +126,7 @@ MonoBehaviour:
         AllowMirroredOwnedSummonKill: 0
         AllowsPersistentSummonChain: 0
         LoadoutTopologyDelta: 0
-    SignatureActive: {fileID: 0}
+    SignatureActive: {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
     FlexActive: {fileID: 0}
     SignaturePassive:
       Id: 
@@ -99,6 +136,9 @@ MonoBehaviour:
       MutuallyExclusiveGroupId: 
       BudgetCard:
         Domain: 2
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -132,6 +172,9 @@ MonoBehaviour:
       MutuallyExclusiveGroupId: 
       BudgetCard:
         Domain: 2
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -163,6 +206,9 @@ MonoBehaviour:
       DescriptionKey: 
       BudgetCard:
         Domain: 3
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -197,23 +243,23 @@ MonoBehaviour:
         RetargetLockMode: 3
       Profile: {fileID: 0}
       Effects: []
-  FootprintProfile: {fileID: 0}
-  BehaviorProfile: {fileID: 0}
-  MobilityProfile: {fileID: 0}
+  FootprintProfile: {fileID: 11400000, guid: b2f2e5e70bb089549926606757e3fefe, type: 2}
+  BehaviorProfile: {fileID: 11400000, guid: a9001cce918d9364690dacba52621490, type: 2}
+  MobilityProfile: {fileID: 11400000, guid: 3702f6e1e94b61e47824a966a1a6e776, type: 2}
   BaseMaxHealth: 20
   BaseArmor: 2
   BaseResist: 0
   BaseBarrierPower: 0
   BaseTenacity: 0
-  BasePhysPower: 5
+  BasePhysPower: 7
   BaseMagPower: 0
-  BaseAttackSpeed: 3
-  BaseAttack: 5
+  BaseAttackSpeed: 4
+  BaseAttack: 7
   BaseDefense: 2
-  BaseSpeed: 3
+  BaseSpeed: 4
   BaseHealPower: 0
-  BaseMoveSpeed: 1.7
-  BaseAttackRange: 1.5
+  BaseMoveSpeed: 2.05
+  BaseAttackRange: 1.3
   BaseMaxEnergy: 100
   BaseStartingEnergy: 10
   BaseSkillHaste: 0
@@ -225,7 +271,7 @@ MonoBehaviour:
   BaseCritMultiplier: 0
   BasePhysPen: 0
   BaseMagPen: 0
-  BaseAggroRadius: 7
+  BaseAggroRadius: 7.2
   BasePreferredDistance: 0
   BaseProtectRadius: 0
   BaseAttackWindup: 0.22
@@ -233,7 +279,7 @@ MonoBehaviour:
   BaseProjectileSpeed: 0
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
-  BaseAttackCooldown: 0.95
-  BaseLeashDistance: 5
-  BaseTargetSwitchDelay: 0.35
+  BaseAttackCooldown: 0.85
+  BaseLeashDistance: 5.2
+  BaseTargetSwitchDelay: 0.4
   legacyDisplayName: 

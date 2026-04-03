@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_silence
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: 
-  NameKey: 
+  Id: silence
+  NameKey: content.tag.silence.name
   legacyDisplayName: 

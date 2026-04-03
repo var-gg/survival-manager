@@ -12,14 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_twisted_den
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ExpeditionSiteDefinition
-  Id: 
-  ChapterId: 
-  NameKey: 
-  DescriptionKey: 
-  SiteOrder: 0
-  FactionId: 
-  EncounterIds: []
-  ExtractRewardSourceId: 
-  ThreatTier: 1
+  Id: site_twisted_den
+  ChapterId: chapter_warren_depths
+  NameKey: content.campaign.site.site_twisted_den.name
+  DescriptionKey: content.campaign.site.site_twisted_den.desc
+  SiteOrder: 2
+  FactionId: faction_twisted_den
+  EncounterIds:
+  - site_twisted_den_skirmish_1
+  - site_twisted_den_skirmish_2
+  - site_twisted_den_elite_1
+  - site_twisted_den_boss_1
+  ExtractRewardSourceId: reward_source_extract
+  ThreatTier: 2
   legacyDisplayName: 
   legacyDescription: 

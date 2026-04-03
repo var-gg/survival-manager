@@ -12,14 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_ruined_crypt
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ExpeditionSiteDefinition
-  Id: 
-  ChapterId: 
-  NameKey: 
-  DescriptionKey: 
-  SiteOrder: 0
-  FactionId: 
-  EncounterIds: []
-  ExtractRewardSourceId: 
-  ThreatTier: 1
+  Id: site_ruined_crypt
+  ChapterId: chapter_ruined_crypts
+  NameKey: content.campaign.site.site_ruined_crypt.name
+  DescriptionKey: content.campaign.site.site_ruined_crypt.desc
+  SiteOrder: 1
+  FactionId: faction_bone_host
+  EncounterIds:
+  - site_ruined_crypt_skirmish_1
+  - site_ruined_crypt_skirmish_2
+  - site_ruined_crypt_elite_1
+  - site_ruined_crypt_boss_1
+  ExtractRewardSourceId: reward_source_extract
+  ThreatTier: 3
   legacyDisplayName: 
   legacyDescription: 

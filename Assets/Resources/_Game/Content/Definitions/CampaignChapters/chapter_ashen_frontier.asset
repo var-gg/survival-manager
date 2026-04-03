@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: chapter_ashen_frontier
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CampaignChapterDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  StoryOrder: 0
-  SiteIds: []
+  Id: chapter_ashen_frontier
+  NameKey: content.campaign.chapter.chapter_ashen_frontier.name
+  DescriptionKey: content.campaign.chapter.chapter_ashen_frontier.desc
+  StoryOrder: 1
+  SiteIds:
+  - site_ashen_gate
+  - site_cinder_watch
   UnlocksEndlessOnClear: 0
   legacyDisplayName: 
   legacyDescription: 

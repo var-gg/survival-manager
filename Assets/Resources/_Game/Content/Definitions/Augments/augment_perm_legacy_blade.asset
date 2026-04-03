@@ -19,6 +19,9 @@ MonoBehaviour:
   IsPermanent: 1
   BudgetCard:
     Domain: 6
+    Rarity: 2
+    PowerBand: 5
+    RoleProfile: -1
     Vector:
       SustainedDamage: 11
       BurstDamage: 11

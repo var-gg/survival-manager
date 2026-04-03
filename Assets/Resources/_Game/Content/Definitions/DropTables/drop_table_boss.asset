@@ -12,10 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: drop_table_boss
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:DropTableDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  RewardSourceId: 
-  Entries: []
+  Id: drop_table_boss
+  NameKey: content.drop_table.drop_table_boss.name
+  DescriptionKey: content.drop_table.drop_table_boss.desc
+  RewardSourceId: reward_source_boss
+  Entries:
+  - Id: boss_sigil_drop
+    RewardType: 8
+    Amount: 1
+    RarityBracket: 3
+    Weight: 1
+    IsGuaranteed: 1
+  - Id: echo_crystal_boss
+    RewardType: 7
+    Amount: 2
+    RarityBracket: 2
+    Weight: 1
+    IsGuaranteed: 1
+  - Id: item_prayer_bead
+    RewardType: 2
+    Amount: 1
+    RarityBracket: 3
+    Weight: 2
+    IsGuaranteed: 0
+  - Id: skill_minor_heal
+    RewardType: 9
+    Amount: 1
+    RarityBracket: 3
+    Weight: 2
+    IsGuaranteed: 0
   legacyDisplayName: 
   legacyDescription: 

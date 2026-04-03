@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: trait_purge_token
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TraitTokenDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  RewardType: 2
+  Id: trait_purge_token
+  NameKey: content.trait_token.trait_purge_token.name
+  DescriptionKey: content.trait_token.trait_purge_token.desc
+  RewardType: 6
   legacyDisplayName: 
   legacyDescription: 

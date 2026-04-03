@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: support_purifying
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: support_purifying
+  NameKey: content.skill.support_purifying.name
+  DescriptionKey: content.skill.support_purifying.desc
   TemplateType: 0
-  Kind: 0
-  SlotKind: 0
+  Kind: 5
+  SlotKind: 3
   DamageType: 0
-  Delivery: 0
-  TargetRule: 0
+  Delivery: 4
+  TargetRule: 5
   Power: 0
-  Range: 1
+  Range: 0
   RangeMin: 0
   RangeMax: -1
   Radius: 0
@@ -40,22 +40,27 @@ MonoBehaviour:
   AuthorityLayer: 1
   BudgetCard:
     Domain: 1
+    Rarity: 0
+    PowerBand: 1
+    RoleProfile: -1
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
+      SustainedDamage: 2
+      BurstDamage: 2
       Durability: 0
       Control: 0
-      Mobility: 0
+      Mobility: 1
       Support: 0
-      CounterCoverage: 0
-      Reliability: 0
+      CounterCoverage: 1
+      Reliability: 2
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
-    ConditionClauseCount: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
-    DeclaredCounterTools: []
+    DeclaredCounterTools:
+    - Tool: 4
+      Strength: 1
     DeclaredFeatureFlags: 0
   ManaCost: 0
   ResourceCost: -1
@@ -80,11 +85,19 @@ MonoBehaviour:
   VfxHookId: 
   SfxHookId: 
   LearnSource: 0
-  EffectFamilyId: 
-  MutuallyExclusiveGroupId: 
-  RecruitNativeTags: []
-  RecruitPlanTags: []
-  RecruitScoutTags: []
+  EffectFamilyId: priest_signature
+  MutuallyExclusiveGroupId: mystic_alignment
+  RecruitNativeTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  RecruitPlanTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  - {fileID: 11400000, guid: 6474ff9f130f96c40bf0483e6a3206ed, type: 2}
+  RecruitScoutTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
   TargetRuleData:
     Domain: 2
     PrimarySelector: 1
@@ -116,12 +129,24 @@ MonoBehaviour:
       InheritDodge: 0
       InheritBlock: 0
   Effects: []
-  CompileTags: []
-  RuleModifierTags: []
-  SupportAllowedTags: []
-  SupportBlockedTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  - {fileID: 11400000, guid: 21302356fb3b0f144838934d6387e5a4, type: 2}
+  - {fileID: 11400000, guid: 6474ff9f130f96c40bf0483e6a3206ed, type: 2}
+  - {fileID: 11400000, guid: 8166619448199fa42a59830977fddb17, type: 2}
+  RuleModifierTags:
+  - {fileID: 11400000, guid: 8166619448199fa42a59830977fddb17, type: 2}
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  - {fileID: 11400000, guid: 21302356fb3b0f144838934d6387e5a4, type: 2}
+  - {fileID: 11400000, guid: 6474ff9f130f96c40bf0483e6a3206ed, type: 2}
+  - {fileID: 11400000, guid: 8166619448199fa42a59830977fddb17, type: 2}
+  SupportBlockedTags:
+  - {fileID: 11400000, guid: 3086f8cde41918f4189a3562a391a724, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
   RequiredWeaponTags: []
-  RequiredClassTags: []
+  RequiredClassTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   AppliedStatuses: []
   CleanseProfileId: 
   legacyDisplayName: 

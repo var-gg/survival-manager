@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_blade
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: 
-  NameKey: 
+  Id: blade
+  NameKey: content.tag.blade.name
   legacyDisplayName: 

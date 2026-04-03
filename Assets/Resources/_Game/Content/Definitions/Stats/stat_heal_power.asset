@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_heal_power
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: heal_power
+  NameKey: content.stat.heal_power.name
+  DescriptionKey: content.stat.heal_power.desc
   legacyDisplayName: 
   legacyDescription: 

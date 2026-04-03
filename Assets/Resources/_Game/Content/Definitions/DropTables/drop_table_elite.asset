@@ -12,10 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: drop_table_elite
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:DropTableDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  RewardSourceId: 
-  Entries: []
+  Id: drop_table_elite
+  NameKey: content.drop_table.drop_table_elite.name
+  DescriptionKey: content.drop_table.drop_table_elite.desc
+  RewardSourceId: reward_source_elite
+  Entries:
+  - Id: gold_elite
+    RewardType: 0
+    Amount: 12
+    RarityBracket: 1
+    Weight: 1
+    IsGuaranteed: 1
+  - Id: ember_dust_elite
+    RewardType: 6
+    Amount: 4
+    RarityBracket: 1
+    Weight: 1
+    IsGuaranteed: 1
+  - Id: item_bone_blade
+    RewardType: 2
+    Amount: 1
+    RarityBracket: 2
+    Weight: 3
+    IsGuaranteed: 0
+  - Id: skill_precision_shot
+    RewardType: 9
+    Amount: 1
+    RarityBracket: 2
+    Weight: 2
+    IsGuaranteed: 0
   legacyDisplayName: 
   legacyDescription: 

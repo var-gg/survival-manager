@@ -12,10 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: drop_table_salvage
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:DropTableDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  RewardSourceId: 
-  Entries: []
+  Id: drop_table_salvage
+  NameKey: content.drop_table.drop_table_salvage.name
+  DescriptionKey: content.drop_table.drop_table_salvage.desc
+  RewardSourceId: reward_source_salvage
+  Entries:
+  - Id: ember_dust_salvage
+    RewardType: 6
+    Amount: 3
+    RarityBracket: 0
+    Weight: 1
+    IsGuaranteed: 1
+  - Id: echo_crystal_salvage
+    RewardType: 7
+    Amount: 1
+    RarityBracket: 1
+    Weight: 2
+    IsGuaranteed: 0
   legacyDisplayName: 
   legacyDescription: 

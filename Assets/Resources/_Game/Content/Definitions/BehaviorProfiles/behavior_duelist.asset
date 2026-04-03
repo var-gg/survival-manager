@@ -14,20 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:BehaviorProfileDefinition
   FormationLine: 0
   RangeDiscipline: 1
-  ReevaluationInterval: 0.25
-  RangeHysteresis: 0.25
+  ReevaluationInterval: 0.3
+  RangeHysteresis: 0.22
   PreferredRangeMin: 0
   PreferredRangeMax: 0
   ApproachBuffer: 0.4
   RetreatBuffer: 0.25
   ChaseLeashMeters: 5
   RetreatAtHpPercent: 0
-  RetreatBias: 0.15
-  MaintainRangeBias: 0.15
-  Opportunism: 0.5
-  Discipline: 0.5
-  DodgeChance: 0
-  BlockChance: 0
-  BlockMitigation: 0.25
-  Stability: 0.5
-  BlockCooldownSeconds: 1.2
+  RetreatBias: 0.22
+  MaintainRangeBias: 0.24
+  Opportunism: 0.72
+  Discipline: 0.58
+  DodgeChance: 0.08
+  BlockChance: 0.12
+  BlockMitigation: 0.18
+  Stability: 0.62
+  BlockCooldownSeconds: 1.15
+  FrontlineGuardRadius: 2.5

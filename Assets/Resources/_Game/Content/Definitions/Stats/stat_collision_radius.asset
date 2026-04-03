@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_collision_radius
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: collision_radius
+  NameKey: content.stat.collision_radius.name
+  DescriptionKey: content.stat.collision_radius.desc
   legacyDisplayName: 
   legacyDescription: 

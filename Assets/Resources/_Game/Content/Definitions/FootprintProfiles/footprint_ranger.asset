@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: footprint_ranger
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:FootprintProfileDefinition
-  NavigationRadius: 0.45
-  SeparationRadius: 0.65
-  CombatReach: 1.2
-  PreferredRangeMin: 0.95
-  PreferredRangeMax: 1.25
-  EngagementSlotCount: 4
-  EngagementSlotRadius: 1.25
-  BodySizeCategory: 1
-  HeadAnchorHeight: 2.05
+  NavigationRadius: 0.34
+  SeparationRadius: 0.74
+  CombatReach: 3.2
+  PreferredRangeMin: 2.55
+  PreferredRangeMax: 3.35
+  EngagementSlotCount: 3
+  EngagementSlotRadius: 2.2
+  BodySizeCategory: 0
+  HeadAnchorHeight: 1.92

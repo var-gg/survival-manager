@@ -12,14 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_forgotten_warren
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ExpeditionSiteDefinition
-  Id: 
-  ChapterId: 
-  NameKey: 
-  DescriptionKey: 
-  SiteOrder: 0
-  FactionId: 
-  EncounterIds: []
-  ExtractRewardSourceId: 
-  ThreatTier: 1
+  Id: site_forgotten_warren
+  ChapterId: chapter_warren_depths
+  NameKey: content.campaign.site.site_forgotten_warren.name
+  DescriptionKey: content.campaign.site.site_forgotten_warren.desc
+  SiteOrder: 1
+  FactionId: faction_warren_pack
+  EncounterIds:
+  - site_forgotten_warren_skirmish_1
+  - site_forgotten_warren_skirmish_2
+  - site_forgotten_warren_elite_1
+  - site_forgotten_warren_boss_1
+  ExtractRewardSourceId: reward_source_extract
+  ThreatTier: 2
   legacyDisplayName: 
   legacyDescription: 

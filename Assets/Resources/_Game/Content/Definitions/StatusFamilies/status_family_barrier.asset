@@ -12,31 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: status_family_barrier
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatusFamilyDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Group: 0
+  Id: barrier
+  NameKey: content.status.barrier.name
+  DescriptionKey: content.status.barrier.desc
+  Group: 3
   IsHardControl: 0
   UsesControlDiminishing: 0
-  AffectedByTenacity: 1
-  TenacityScale: 1
+  AffectedByTenacity: 0
+  TenacityScale: 0
   BudgetCard:
     Domain: 7
+    Rarity: 0
+    PowerBand: 0
+    RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
-      Durability: 0
+      Durability: 2
       Control: 0
       Mobility: 0
-      Support: 0
+      Support: 2
       CounterCoverage: 0
       Reliability: 0
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
+    KeywordCount: 1
     ConditionClauseCount: 0
     RuleExceptionCount: 0
-    DeclaredThreatPatterns: 
+    DeclaredThreatPatterns: 05000000
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
   IsRuleModifierOnly: 0
@@ -49,6 +52,7 @@ MonoBehaviour:
   IsAiRelevant: 1
   VisualPriority: 0
   Effects: []
-  CompileTags: []
+  CompileTags:
+  - barrier
   legacyDisplayName: 
   legacyDescription: 

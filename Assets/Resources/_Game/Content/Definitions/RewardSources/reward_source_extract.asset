@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: reward_source_extract
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RewardSourceDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Kind: 0
-  DropTableId: 
+  Id: reward_source_extract
+  NameKey: content.reward_source.reward_source_extract.name
+  DescriptionKey: content.reward_source.reward_source_extract.desc
+  Kind: 4
+  DropTableId: drop_table_extract
   UsesRewardCards: 1
-  AllowedRarityBrackets: 
+  AllowedRarityBrackets: 0000000001000000
   legacyDisplayName: 
   legacyDescription: 

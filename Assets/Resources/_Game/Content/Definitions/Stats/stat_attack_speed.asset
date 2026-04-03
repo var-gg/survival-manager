@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_attack_speed
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: attack_speed
+  NameKey: content.stat.attack_speed.name
+  DescriptionKey: content.stat.attack_speed.desc
   legacyDisplayName: 
   legacyDescription: 

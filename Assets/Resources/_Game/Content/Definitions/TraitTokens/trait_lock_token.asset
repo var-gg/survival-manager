@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: trait_lock_token
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TraitTokenDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  RewardType: 2
+  Id: trait_lock_token
+  NameKey: content.trait_token.trait_lock_token.name
+  DescriptionKey: content.trait_token.trait_lock_token.desc
+  RewardType: 5
   legacyDisplayName: 
   legacyDescription: 

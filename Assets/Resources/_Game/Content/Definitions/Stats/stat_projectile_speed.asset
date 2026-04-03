@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_projectile_speed
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: projectile_speed
+  NameKey: content.stat.projectile_speed.name
+  DescriptionKey: content.stat.projectile_speed.desc
   legacyDisplayName: 
   legacyDescription: 

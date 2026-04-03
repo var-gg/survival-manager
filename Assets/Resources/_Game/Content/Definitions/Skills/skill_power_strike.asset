@@ -12,23 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: skill_power_strike
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: skill_power_strike
+  NameKey: content.skill.skill_power_strike.name
+  DescriptionKey: content.skill.skill_power_strike.desc
   TemplateType: 0
   Kind: 0
   SlotKind: 0
   DamageType: 0
   Delivery: 0
-  TargetRule: 0
-  Power: 0
+  TargetRule: 2
+  Power: 3
   Range: 1
   RangeMin: 0
   RangeMax: -1
   Radius: 0
   Width: 0
   ArcDegrees: 0
-  PowerFlat: 0
+  PowerFlat: 3
   PhysCoeff: 1
   MagCoeff: 0
   HealCoeff: 0
@@ -40,19 +40,22 @@ MonoBehaviour:
   AuthorityLayer: 1
   BudgetCard:
     Domain: 1
+    Rarity: 0
+    PowerBand: 2
+    RoleProfile: -1
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
+      SustainedDamage: 4
+      BurstDamage: 4
       Durability: 0
       Control: 0
-      Mobility: 0
+      Mobility: 2
       Support: 0
       CounterCoverage: 0
-      Reliability: 0
+      Reliability: 2
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
-    ConditionClauseCount: 0
+    KeywordCount: 3
+    ConditionClauseCount: 2
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []

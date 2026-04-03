@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: class_ranger
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ClassDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: ranger
+  NameKey: content.class.ranger.name
+  DescriptionKey: content.class.ranger.desc
   legacyDisplayName: 
   legacyDescription: 

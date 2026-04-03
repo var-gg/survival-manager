@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: race_beastkin
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RaceDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: beastkin
+  NameKey: content.race.beastkin.name
+  DescriptionKey: content.race.beastkin.desc
   legacyDisplayName: 
   legacyDescription: 

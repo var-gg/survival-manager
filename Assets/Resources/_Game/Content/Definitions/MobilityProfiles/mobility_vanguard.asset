@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: mobility_vanguard
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:MobilityProfileDefinition
-  Style: 0
-  Purpose: 0
-  Distance: 0
-  Cooldown: 0
+  Style: 1
+  Purpose: 1
+  Distance: 0.9
+  Cooldown: 5
   CastTime: 0
-  Recovery: 0
-  TriggerMinDistance: 0
-  TriggerMaxDistance: 0
+  Recovery: 0.18
+  TriggerMinDistance: 1.4
+  TriggerMaxDistance: 2.8
   LateralBias: 0

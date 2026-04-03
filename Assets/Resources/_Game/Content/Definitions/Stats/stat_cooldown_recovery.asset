@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_cooldown_recovery
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: cooldown_recovery
+  NameKey: content.stat.cooldown_recovery.name
+  DescriptionKey: content.stat.cooldown_recovery.desc
   legacyDisplayName: 
   legacyDescription: 

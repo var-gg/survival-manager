@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_backline
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: 
-  NameKey: 
+  Id: backline
+  NameKey: content.tag.backline.name
   legacyDisplayName: 

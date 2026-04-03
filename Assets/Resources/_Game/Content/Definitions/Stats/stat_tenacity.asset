@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_tenacity
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: tenacity
+  NameKey: content.stat.tenacity.name
+  DescriptionKey: content.stat.tenacity.desc
   legacyDisplayName: 
   legacyDescription: 

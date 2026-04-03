@@ -12,14 +12,52 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_ashen_gate_skirmish_2_squad
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EnemySquadTemplateDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  FactionId: 
+  Id: site_ashen_gate_skirmish_2_squad
+  NameKey: content.enemy_squad.site_ashen_gate_skirmish_2_squad.name
+  DescriptionKey: content.enemy_squad.site_ashen_gate_skirmish_2_squad.desc
+  FactionId: faction_ashen_vanguard
   EnemyPosture: 1
   ThreatTier: 1
   ThreatCost: 1
-  RewardDropTags: []
-  Members: []
+  RewardDropTags:
+  - faction_ashen_vanguard
+  - tier1
+  Members:
+  - Id: site_ashen_gate_skirmish_2_squad_1
+    NameKey: 
+    ArchetypeId: guardian
+    Anchor: 0
+    Role: 0
+    PositiveTraitId: 
+    NegativeTraitId: 
+    RuleModifierTags: []
+    legacyDisplayName: 
+  - Id: site_ashen_gate_skirmish_2_squad_2
+    NameKey: 
+    ArchetypeId: scout
+    Anchor: 2
+    Role: 0
+    PositiveTraitId: 
+    NegativeTraitId: 
+    RuleModifierTags: []
+    legacyDisplayName: 
+  - Id: site_ashen_gate_skirmish_2_squad_3
+    NameKey: 
+    ArchetypeId: hexer
+    Anchor: 3
+    Role: 0
+    PositiveTraitId: 
+    NegativeTraitId: 
+    RuleModifierTags: []
+    legacyDisplayName: 
+  - Id: site_ashen_gate_skirmish_2_squad_4
+    NameKey: 
+    ArchetypeId: hunter
+    Anchor: 5
+    Role: 0
+    PositiveTraitId: 
+    NegativeTraitId: 
+    RuleModifierTags: []
+    legacyDisplayName: 
   legacyDisplayName: 
   legacyDescription: 

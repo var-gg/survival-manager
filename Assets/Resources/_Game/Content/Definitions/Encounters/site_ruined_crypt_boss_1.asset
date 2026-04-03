@@ -12,19 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_ruined_crypt_boss_1
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EncounterDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Kind: 0
-  SiteId: 
-  EnemySquadTemplateId: 
-  BossOverlayId: 
-  RewardSourceId: 
-  FactionId: 
-  ThreatTier: 1
-  ThreatCost: 1
-  ThreatSkulls: 1
-  DifficultyBand: 
-  RewardDropTags: []
+  Id: site_ruined_crypt_boss_1
+  NameKey: content.encounter.site_ruined_crypt_boss_1.name
+  DescriptionKey: content.encounter.site_ruined_crypt_boss_1.desc
+  Kind: 2
+  SiteId: site_ruined_crypt
+  EnemySquadTemplateId: site_ruined_crypt_boss_1_squad
+  BossOverlayId: boss_overlay_ruined_crypt
+  RewardSourceId: reward_source_boss
+  FactionId: faction_bone_host
+  ThreatTier: 3
+  ThreatCost: 3
+  ThreatSkulls: 3
+  DifficultyBand: site_boss
+  RewardDropTags:
+  - reward_source_boss
+  - faction_bone_host
+  - boss
   legacyDisplayName: 
   legacyDescription: 

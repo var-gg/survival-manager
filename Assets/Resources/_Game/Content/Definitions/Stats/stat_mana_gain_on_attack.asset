@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_mana_gain_on_attack
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: mana_gain_on_attack
+  NameKey: content.stat.mana_gain_on_attack.name
+  DescriptionKey: content.stat.mana_gain_on_attack.desc
   legacyDisplayName: 
   legacyDescription: 

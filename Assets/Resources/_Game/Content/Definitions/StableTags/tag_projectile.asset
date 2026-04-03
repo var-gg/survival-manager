@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: tag_projectile
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StableTagDefinition
-  Id: 
-  NameKey: 
+  Id: projectile
+  NameKey: content.tag.projectile.name
   legacyDisplayName: 

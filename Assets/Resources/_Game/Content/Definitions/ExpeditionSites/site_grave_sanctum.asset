@@ -12,14 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_grave_sanctum
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ExpeditionSiteDefinition
-  Id: 
-  ChapterId: 
-  NameKey: 
-  DescriptionKey: 
-  SiteOrder: 0
-  FactionId: 
-  EncounterIds: []
-  ExtractRewardSourceId: 
-  ThreatTier: 1
+  Id: site_grave_sanctum
+  ChapterId: chapter_ruined_crypts
+  NameKey: content.campaign.site.site_grave_sanctum.name
+  DescriptionKey: content.campaign.site.site_grave_sanctum.desc
+  SiteOrder: 2
+  FactionId: faction_grave_sanctum
+  EncounterIds:
+  - site_grave_sanctum_skirmish_1
+  - site_grave_sanctum_skirmish_2
+  - site_grave_sanctum_elite_1
+  - site_grave_sanctum_boss_1
+  ExtractRewardSourceId: reward_source_extract
+  ThreatTier: 3
   legacyDisplayName: 
   legacyDescription: 

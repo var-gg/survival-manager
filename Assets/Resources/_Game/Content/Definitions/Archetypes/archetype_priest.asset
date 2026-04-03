@@ -12,38 +12,62 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: archetype_priest
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
-  Id: 
-  NameKey: 
+  Id: priest
+  NameKey: content.archetype.priest.name
   ScopeKind: 0
-  Race: {fileID: 0}
-  Class: {fileID: 0}
-  TraitPool: {fileID: 0}
-  Skills: []
-  TacticPreset: []
-  DefaultAnchor: 1
-  PreferredTeamPosture: 1
-  RoleTag: auto
-  RoleFamilyTag: 
-  PrimaryWeaponFamilyTag: 
+  Race: {fileID: 11400000, guid: 732863225f9204842af76a32f0d75924, type: 2}
+  Class: {fileID: 11400000, guid: 303ce1202540bc442896129adc2f364a, type: 2}
+  TraitPool: {fileID: 11400000, guid: 4fa7462e1258bd24f9d88081ee3b6878, type: 2}
+  Skills:
+  - {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
+  TacticPreset:
+  - Priority: 0
+    ConditionType: 1
+    Threshold: 0.6
+    ActionType: 1
+    TargetSelector: 1
+    Skill: {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
+  - Priority: 1
+    ConditionType: 4
+    Threshold: 1.5
+    ActionType: 0
+    TargetSelector: 5
+    Skill: {fileID: 0}
+  - Priority: 2
+    ConditionType: 5
+    Threshold: 0
+    ActionType: 2
+    TargetSelector: 0
+    Skill: {fileID: 0}
+  DefaultAnchor: 4
+  PreferredTeamPosture: 2
+  RoleTag: support
+  RoleFamilyTag: mystic
+  PrimaryWeaponFamilyTag: focus
   RecruitTier: 0
   BudgetCard:
     Domain: 0
+    Rarity: 0
+    PowerBand: 2
+    RoleProfile: 5
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
-      Durability: 0
-      Control: 0
-      Mobility: 0
-      Support: 0
-      CounterCoverage: 0
-      Reliability: 0
+      SustainedDamage: 6
+      BurstDamage: 6
+      Durability: 18
+      Control: 8
+      Mobility: 6
+      Support: 32
+      CounterCoverage: 6
+      Reliability: 18
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
-    ConditionClauseCount: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
     RuleExceptionCount: 0
-    DeclaredThreatPatterns: 
-    DeclaredCounterTools: []
+    DeclaredThreatPatterns: 05000000
+    DeclaredCounterTools:
+    - Tool: 4
+      Strength: 2
     DeclaredFeatureFlags: 0
   IsRecruitable: 1
   IsSummonOnly: 0
@@ -51,18 +75,38 @@ MonoBehaviour:
   IsBossOnly: 0
   IsUnreleased: 0
   IsTestOnly: 0
-  RecruitPlanTags: []
-  ScoutBiasTags: []
+  RecruitPlanTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  ScoutBiasTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   SupportModifierBiasTags: []
   LockedAttackProfileId: 
   LockedAttackProfileTag: 
   LockedSignatureActiveSkill: {fileID: 0}
   LockedSignaturePassiveSkill: {fileID: 0}
-  FlexUtilitySkillPool: []
-  FlexSupportSkillPool: []
-  RecruitFlexActivePool: []
-  RecruitFlexPassivePool: []
-  RecruitBannedPairings: []
+  FlexUtilitySkillPool:
+  - {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
+  FlexSupportSkillPool:
+  - {fileID: 11400000, guid: 095cb9ca5abae634192373206abbf2e0, type: 2}
+  - {fileID: 11400000, guid: e0fc0307a8185f1459e6f7aed0fc85fe, type: 2}
+  - {fileID: 11400000, guid: 4ecd2cc5b604c6b46995f67debd2e986, type: 2}
+  - {fileID: 11400000, guid: 65300c7336ada1f4daea15e352c6c27d, type: 2}
+  RecruitFlexActivePool:
+  - {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
+  RecruitFlexPassivePool:
+  - {fileID: 11400000, guid: 095cb9ca5abae634192373206abbf2e0, type: 2}
+  - {fileID: 11400000, guid: e0fc0307a8185f1459e6f7aed0fc85fe, type: 2}
+  - {fileID: 11400000, guid: 4ecd2cc5b604c6b46995f67debd2e986, type: 2}
+  - {fileID: 11400000, guid: 65300c7336ada1f4daea15e352c6c27d, type: 2}
+  RecruitBannedPairings:
+  - FlexActiveId: skill_minor_heal
+    FlexPassiveId: support_siphon
   Loadout:
     BasicAttack:
       Id: basic_attack
@@ -90,7 +134,7 @@ MonoBehaviour:
         AllowsPersistentSummonChain: 0
         LoadoutTopologyDelta: 0
     SignatureActive: {fileID: 0}
-    FlexActive: {fileID: 0}
+    FlexActive: {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
     SignaturePassive:
       Id: 
       NameKey: 
@@ -99,6 +143,9 @@ MonoBehaviour:
       MutuallyExclusiveGroupId: 
       BudgetCard:
         Domain: 2
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -132,6 +179,9 @@ MonoBehaviour:
       MutuallyExclusiveGroupId: 
       BudgetCard:
         Domain: 2
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -163,6 +213,9 @@ MonoBehaviour:
       DescriptionKey: 
       BudgetCard:
         Domain: 3
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -197,23 +250,23 @@ MonoBehaviour:
         RetargetLockMode: 3
       Profile: {fileID: 0}
       Effects: []
-  FootprintProfile: {fileID: 0}
-  BehaviorProfile: {fileID: 0}
-  MobilityProfile: {fileID: 0}
-  BaseMaxHealth: 20
+  FootprintProfile: {fileID: 11400000, guid: a4440be1dcd4a5f4fa739e807da0f2ed, type: 2}
+  BehaviorProfile: {fileID: 11400000, guid: fb9fc401a4d91e242b0fe3a2654c3488, type: 2}
+  MobilityProfile: {fileID: 11400000, guid: 7c6ff8e645a78474a8cc9e6813ae9e56, type: 2}
+  BaseMaxHealth: 18
   BaseArmor: 2
   BaseResist: 0
   BaseBarrierPower: 0
   BaseTenacity: 0
-  BasePhysPower: 5
+  BasePhysPower: 3
   BaseMagPower: 0
-  BaseAttackSpeed: 3
-  BaseAttack: 5
+  BaseAttackSpeed: 4
+  BaseAttack: 3
   BaseDefense: 2
-  BaseSpeed: 3
-  BaseHealPower: 0
+  BaseSpeed: 4
+  BaseHealPower: 5
   BaseMoveSpeed: 1.7
-  BaseAttackRange: 1.5
+  BaseAttackRange: 2.8
   BaseMaxEnergy: 100
   BaseStartingEnergy: 10
   BaseSkillHaste: 0
@@ -225,7 +278,7 @@ MonoBehaviour:
   BaseCritMultiplier: 0
   BasePhysPen: 0
   BaseMagPen: 0
-  BaseAggroRadius: 7
+  BaseAggroRadius: 7.2
   BasePreferredDistance: 0
   BaseProtectRadius: 0
   BaseAttackWindup: 0.22
@@ -233,7 +286,7 @@ MonoBehaviour:
   BaseProjectileSpeed: 0
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
-  BaseAttackCooldown: 0.95
-  BaseLeashDistance: 5
-  BaseTargetSwitchDelay: 0.35
+  BaseAttackCooldown: 1
+  BaseLeashDistance: 4.8
+  BaseTargetSwitchDelay: 0.4
   legacyDisplayName: 

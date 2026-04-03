@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: reward_source_shrine_event
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RewardSourceDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Kind: 0
-  DropTableId: 
+  Id: reward_source_shrine_event
+  NameKey: content.reward_source.reward_source_shrine_event.name
+  DescriptionKey: content.reward_source.reward_source_shrine_event.desc
+  Kind: 3
+  DropTableId: drop_table_shrine_event
   UsesRewardCards: 1
-  AllowedRarityBrackets: 
+  AllowedRarityBrackets: 0100000002000000
   legacyDisplayName: 
   legacyDescription: 

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: class_mystic
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ClassDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: mystic
+  NameKey: content.class.mystic.name
+  DescriptionKey: content.class.mystic.desc
   legacyDisplayName: 
   legacyDescription: 

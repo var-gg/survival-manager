@@ -12,14 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: boss_overlay_forgotten_warren
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:BossOverlayDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  PhaseTrigger: 0
+  Id: boss_overlay_forgotten_warren
+  NameKey: content.boss_overlay.boss_overlay_forgotten_warren.name
+  DescriptionKey: content.boss_overlay.boss_overlay_forgotten_warren.desc
+  PhaseTrigger: 1
   ThreatCost: 1
-  SignatureAuraTag: 
-  SignatureUtilityTag: 
-  RewardDropTags: []
-  AppliedStatuses: []
+  SignatureAuraTag: boss_aura_curse
+  SignatureUtilityTag: boss_utility_revive
+  RewardDropTags:
+  - boss
+  - boss_overlay_forgotten_warren
+  AppliedStatuses:
+  - Id: boss_overlay_forgotten_warren_guarded
+    StatusId: guarded
+    DurationSeconds: 999
+    Magnitude: 0
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
+    Effects: []
   legacyDisplayName: 
   legacyDescription: 

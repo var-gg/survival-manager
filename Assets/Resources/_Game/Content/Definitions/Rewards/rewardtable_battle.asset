@@ -12,8 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: rewardtable_battle
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RewardTableDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Rewards: []
+  Id: rewardtable_battle
+  NameKey: content.reward_table.rewardtable_battle.name
+  DescriptionKey: content.reward_table.rewardtable_battle.desc
+  Rewards:
+  - Id: reward.gold.10
+    RewardType: 0
+    Amount: 10
+    LabelKey: content.reward.reward.gold.10.label
+    legacyLabel: 
+  - Id: augment_silver_guard
+    RewardType: 1
+    Amount: 1
+    LabelKey: content.reward.augment_silver_guard.label
+    legacyLabel: 
+  - Id: reward.echo.35
+    RewardType: 2
+    Amount: 35
+    LabelKey: content.reward.reward.echo.35.label
+    legacyLabel: 
   legacyDisplayName: 

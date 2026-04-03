@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_resist
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: resist
+  NameKey: content.stat.resist.name
+  DescriptionKey: content.stat.resist.desc
   legacyDisplayName: 
   legacyDescription: 

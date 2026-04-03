@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: mobility_mystic
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:MobilityProfileDefinition
-  Style: 0
-  Purpose: 0
-  Distance: 0
-  Cooldown: 0
+  Style: 3
+  Purpose: 2
+  Distance: 1.85
+  Cooldown: 4.4
   CastTime: 0
-  Recovery: 0
+  Recovery: 0.3
   TriggerMinDistance: 0
-  TriggerMaxDistance: 0
-  LateralBias: 0
+  TriggerMaxDistance: 1.35
+  LateralBias: 0.35

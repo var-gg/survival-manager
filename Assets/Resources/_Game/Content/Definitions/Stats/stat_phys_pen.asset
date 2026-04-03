@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_phys_pen
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: phys_pen
+  NameKey: content.stat.phys_pen.name
+  DescriptionKey: content.stat.phys_pen.desc
   legacyDisplayName: 
   legacyDescription: 

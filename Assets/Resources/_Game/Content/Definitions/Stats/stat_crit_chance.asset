@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: stat_crit_chance
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: crit_chance
+  NameKey: content.stat.crit_chance.name
+  DescriptionKey: content.stat.crit_chance.desc
   legacyDisplayName: 
   legacyDescription: 

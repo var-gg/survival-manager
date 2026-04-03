@@ -12,24 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: item_lucky_charm
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ItemBaseDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  SlotType: 0
+  Id: item_lucky_charm
+  NameKey: content.item.item_lucky_charm.name
+  DescriptionKey: content.item.item_lucky_charm.desc
+  SlotType: 2
   IdentityKind: 0
-  ItemFamilyTag: 
+  ItemFamilyTag: accessory
   WeaponFamilyTag: 
   RarityTier: 0
-  AffixPoolTag: 
-  CraftCategory: 
-  BudgetBand: 
-  CraftCurrencyTag: 
+  AffixPoolTag: pool_accessory
+  CraftCategory: accessory
+  BudgetBand: personal_power_8
+  CraftCurrencyTag: ember_dust
   GrantedSkills: []
   CompileTags: []
   RuleModifierTags: []
   AllowedClassTags: []
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 
-  BaseModifiers: []
+  AllowedCraftOperations: 00000000010000000200000004000000
+  BaseModifiers:
+  - StatId: attack_speed
+    Op: 0
+    Value: 1
   legacyDisplayName: 

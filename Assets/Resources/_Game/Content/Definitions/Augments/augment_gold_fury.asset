@@ -12,32 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: augment_gold_fury
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Rarity: 0
+  Id: augment_gold_fury
+  NameKey: content.augment.augment_gold_fury.name
+  DescriptionKey: content.augment.augment_gold_fury.desc
+  Rarity: 1
   IsPermanent: 0
   BudgetCard:
     Domain: 6
+    Rarity: 1
+    PowerBand: 4
+    RoleProfile: -1
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
+      SustainedDamage: 8
+      BurstDamage: 8
       Durability: 0
       Control: 0
       Mobility: 0
       Support: 0
       CounterCoverage: 0
-      Reliability: 0
+      Reliability: 10
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
-    ConditionClauseCount: 0
+    KeywordCount: 3
+    ConditionClauseCount: 2
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
   Category: 0
-  FamilyId: 
+  FamilyId: rare
   Tier: 1
   OfferWeight: 1
   OfferBucket: 0
@@ -54,6 +57,9 @@ MonoBehaviour:
   AuthorityLayer: 4
   RosterSlotDelta: 0
   Effects: []
-  Modifiers: []
+  Modifiers:
+  - StatId: phys_power
+    Op: 0
+    Value: 2
   legacyDisplayName: 
   legacyDescription: 

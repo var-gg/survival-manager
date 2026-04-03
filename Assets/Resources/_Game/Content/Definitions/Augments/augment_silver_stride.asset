@@ -12,32 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: augment_silver_stride
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
+  Id: augment_silver_stride
+  NameKey: content.augment.augment_silver_stride.name
+  DescriptionKey: content.augment.augment_silver_stride.desc
   Rarity: 0
   IsPermanent: 0
   BudgetCard:
     Domain: 6
+    Rarity: 0
+    PowerBand: 3
+    RoleProfile: -1
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
+      SustainedDamage: 6
+      BurstDamage: 3
       Durability: 0
       Control: 0
-      Mobility: 0
+      Mobility: 3
       Support: 0
       CounterCoverage: 0
-      Reliability: 0
+      Reliability: 6
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
-    ConditionClauseCount: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
   Category: 0
-  FamilyId: 
+  FamilyId: common
   Tier: 1
   OfferWeight: 1
   OfferBucket: 0
@@ -54,6 +57,9 @@ MonoBehaviour:
   AuthorityLayer: 4
   RosterSlotDelta: 0
   Effects: []
-  Modifiers: []
+  Modifiers:
+  - StatId: attack_speed
+    Op: 0
+    Value: 1
   legacyDisplayName: 
   legacyDescription: 

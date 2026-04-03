@@ -12,19 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: site_grave_sanctum_boss_1
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EncounterDefinition
-  Id: 
-  NameKey: 
-  DescriptionKey: 
-  Kind: 0
-  SiteId: 
-  EnemySquadTemplateId: 
-  BossOverlayId: 
-  RewardSourceId: 
-  FactionId: 
-  ThreatTier: 1
-  ThreatCost: 1
-  ThreatSkulls: 1
-  DifficultyBand: 
-  RewardDropTags: []
+  Id: site_grave_sanctum_boss_1
+  NameKey: content.encounter.site_grave_sanctum_boss_1.name
+  DescriptionKey: content.encounter.site_grave_sanctum_boss_1.desc
+  Kind: 2
+  SiteId: site_grave_sanctum
+  EnemySquadTemplateId: site_grave_sanctum_boss_1_squad
+  BossOverlayId: boss_overlay_grave_sanctum
+  RewardSourceId: reward_source_boss
+  FactionId: faction_grave_sanctum
+  ThreatTier: 3
+  ThreatCost: 3
+  ThreatSkulls: 3
+  DifficultyBand: site_boss
+  RewardDropTags:
+  - reward_source_boss
+  - faction_grave_sanctum
+  - boss
   legacyDisplayName: 
   legacyDescription: 

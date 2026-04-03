@@ -12,7 +12,61 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: traitpool_hunter
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TraitPoolDefinition
-  Id: 
-  ArchetypeId: 
-  PositiveTraits: []
-  NegativeTraits: []
+  Id: traitpool_hunter
+  ArchetypeId: hunter
+  PositiveTraits:
+  - Id: hunter_positive_brave
+    NameKey: content.trait.hunter.hunter_positive_brave.name
+    DescriptionKey: content.trait.hunter.hunter_positive_brave.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 0
+      Value: 2
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: hunter_positive_sturdy
+    NameKey: content.trait.hunter.hunter_positive_sturdy.name
+    DescriptionKey: content.trait.hunter.hunter_positive_sturdy.desc
+    Modifiers:
+    - StatId: armor
+      Op: 0
+      Value: 1
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: hunter_positive_swift
+    NameKey: content.trait.hunter.hunter_positive_swift.name
+    DescriptionKey: content.trait.hunter.hunter_positive_swift.desc
+    Modifiers:
+    - StatId: attack_speed
+      Op: 0
+      Value: 1
+    legacyDisplayName: 
+    legacyDescription: 
+  NegativeTraits:
+  - Id: hunter_negative_frail
+    NameKey: content.trait.hunter.hunter_negative_frail.name
+    DescriptionKey: content.trait.hunter.hunter_negative_frail.desc
+    Modifiers:
+    - StatId: max_health
+      Op: 0
+      Value: -3
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: hunter_negative_clumsy
+    NameKey: content.trait.hunter.hunter_negative_clumsy.name
+    DescriptionKey: content.trait.hunter.hunter_negative_clumsy.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 0
+      Value: -1
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: hunter_negative_slow
+    NameKey: content.trait.hunter.hunter_negative_slow.name
+    DescriptionKey: content.trait.hunter.hunter_negative_slow.desc
+    Modifiers:
+    - StatId: attack_speed
+      Op: 0
+      Value: -1
+    legacyDisplayName: 
+    legacyDescription: 
