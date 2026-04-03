@@ -23,7 +23,7 @@ public sealed class GameSessionState
         DeploymentAnchorId.BackBottom
     };
 
-    private readonly RuntimeCombatContentLookup _combatContentLookup;
+    private readonly ICombatContentLookup _combatContentLookup;
     private readonly LoadoutCompiler _loadoutCompiler = new();
     private readonly List<string> _expeditionSquadHeroIds = new();
     private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
@@ -81,7 +81,7 @@ public sealed class GameSessionState
     public bool CanUseScout => !_recruitPhaseState.ScoutUsedThisPhase;
     public TeamPlanProfile CurrentTeamPlan => BuildTeamPlanProfile();
 
-    public GameSessionState(RuntimeCombatContentLookup combatContentLookup)
+    public GameSessionState(ICombatContentLookup combatContentLookup)
     {
         _combatContentLookup = combatContentLookup;
     }

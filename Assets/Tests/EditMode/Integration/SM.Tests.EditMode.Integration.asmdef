@@ -1,0 +1,38 @@
+{
+  "name": "SM.Tests.EditMode.Integration",
+  "rootNamespace": "SM.Tests.EditMode.Integration",
+  "references": [
+    "SM.Core",
+    "SM.Content",
+    "SM.Combat",
+    "SM.Meta",
+    "SM.Persistence.Abstractions",
+    "SM.Persistence.Json",
+    "SM.Unity",
+    "SM.Editor",
+    "SM.Tests.EditMode",
+    "Unity.Localization",
+    "Unity.Localization.Editor",
+    "Unity.ResourceManager"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [
+    {
+      "name": "com.unity.test-framework",
+      "expression": "",
+      "define": "UNITY_INCLUDE_TESTS"
+    }
+  ],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

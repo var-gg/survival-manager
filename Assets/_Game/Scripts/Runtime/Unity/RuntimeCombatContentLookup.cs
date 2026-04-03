@@ -14,7 +14,7 @@ using UnityEditor;
 
 namespace SM.Unity;
 
-public sealed class RuntimeCombatContentLookup
+public sealed class RuntimeCombatContentLookup : ICombatContentLookup
 {
     private static readonly string[] CanonicalArchetypeOrder =
     {

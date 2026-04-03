@@ -1,10 +1,11 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'bootstrap', 'seed-content', 'test-edit', 'test-play', 'report-town', 'report-battle', 'smoke-observer', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
+    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'bootstrap', 'seed-content', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
     [string]$Verb,
     [int]$Lines = 30,
     [string]$Filter = 'error,warning,log',
     [string]$TestFilter,
+    [string]$TestCategory,
     [string]$Code,
     [switch]$Dangerous
 )
@@ -378,6 +379,95 @@ function Invoke-UnityCliTest {
     }
 }
 
+function Resolve-UnityEditorPath {
+    # ProjectVersion.txt에서 에디터 버전을 읽어 Hub 설치 경로를 찾는다.
+    $versionFile = Join-Path $projectRoot 'ProjectSettings\ProjectVersion.txt'
+    if (Test-Path $versionFile) {
+        $content = Get-Content $versionFile -Raw
+        if ($content -match 'm_EditorVersion:\s*(\S+)') {
+            $version = $Matches[1]
+            $hubPath = Join-Path $env:ProgramFiles "Unity\Hub\Editor\$version\Editor\Unity.exe"
+            if (Test-Path $hubPath) {
+                return $hubPath
+            }
+        }
+    }
+
+    # 폴백: Hub 경로에서 가장 최근 버전 탐색
+    $hubRoot = Join-Path $env:ProgramFiles 'Unity\Hub\Editor'
+    if (Test-Path $hubRoot) {
+        $latest = Get-ChildItem $hubRoot -Directory | Sort-Object Name -Descending | Select-Object -First 1
+        if ($null -ne $latest) {
+            $path = Join-Path $latest.FullName 'Editor\Unity.exe'
+            if (Test-Path $path) {
+                return $path
+            }
+        }
+    }
+
+    throw "Unity Editor executable not found. Check Unity Hub installation."
+}
+
+function Invoke-UnityBatchmodeTest {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$TestPlatform,
+        [string]$TestFilter,
+        [string]$TestCategory,
+        [switch]$RunSynchronously
+    )
+
+    $unityExe = Resolve-UnityEditorPath
+    $resultsPath = Join-Path $projectRoot 'TestResults-Batch.xml'
+
+    $arguments = @(
+        '-batchmode',
+        '-nographics',
+        '-projectPath', $projectRoot,
+        '-runTests',
+        '-testPlatform', $TestPlatform,
+        '-testResults', $resultsPath
+    )
+
+    # CRITICAL: -quit는 -runTests와 결합하면 안 된다 (테스트 완료 전 종료될 수 있음)
+
+    if ($RunSynchronously -and $TestPlatform -eq 'EditMode') {
+        # -runSynchronously는 EditMode 전용. [UnityTest]/[UnitySetUp]/[UnityTearDown] 필터링됨.
+        $arguments += '-runSynchronously'
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($TestFilter)) {
+        $arguments += @('-testFilter', $TestFilter)
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($TestCategory)) {
+        $arguments += @('-testCategory', $TestCategory)
+    }
+
+    Write-Host "== batchmode test: $TestPlatform =="
+    Write-Host "Unity: $unityExe"
+    Write-Host "Args: $($arguments -join ' ')"
+
+    $process = Start-Process -FilePath $unityExe -ArgumentList $arguments -PassThru -Wait -NoNewWindow
+    $exitCode = $process.ExitCode
+
+    if (Test-Path $resultsPath) {
+        $summary = Get-UnityTestSummary -Path $resultsPath
+        Write-UnityTestSummary -Summary $summary
+
+        if ($summary.failed -gt 0) {
+            throw "Batchmode test completed with $($summary.failed) failed tests."
+        }
+    }
+    else {
+        if ($exitCode -ne 0) {
+            throw "Unity batchmode test exited with code $exitCode and no results file was produced."
+        }
+    }
+
+    Write-Host "Batchmode test completed (exit code $exitCode)."
+}
+
 try {
     switch ($Verb) {
         'status' {
@@ -406,6 +496,16 @@ try {
         }
         'test-play' {
             Invoke-UnityCliTest @('test', '--mode', 'PlayMode') -ReadyContext 'play mode test dispatch' -TestFilter $TestFilter
+        }
+        'test-batch-edit' {
+            # batchmode EditMode 테스트: GUI 없이 독립 프로세스로 실행.
+            # -runSynchronously 사용 ([UnityTest] 제외, 순수 NUnit [Test]만 실행).
+            Invoke-UnityBatchmodeTest -TestPlatform 'EditMode' -TestFilter $TestFilter -TestCategory $TestCategory -RunSynchronously
+        }
+        'test-batch-fast' {
+            # FastUnit 카테고리만 batchmode로 실행 (Resources.LoadAll 없는 테스트).
+            $effectiveCategory = if (-not [string]::IsNullOrWhiteSpace($TestCategory)) { $TestCategory } else { 'FastUnit' }
+            Invoke-UnityBatchmodeTest -TestPlatform 'EditMode' -TestFilter $TestFilter -TestCategory $effectiveCategory -RunSynchronously
         }
         'report-town' {
             Invoke-UnityCli @('observer_contract_report', '--scene', 'town')

@@ -16,6 +16,7 @@ using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class LoopBContractClosureTests
 {
     private const string TempRoot = "Assets/Resources/_Game/Content/Definitions/__LoopBContractTemp";
