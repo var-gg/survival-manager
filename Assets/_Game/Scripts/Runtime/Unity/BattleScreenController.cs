@@ -79,6 +79,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void Update()
     {
+#if ENABLE_LEGACY_INPUT_MANAGER
         if (Input.GetKeyDown(KeyCode.F3))
         {
             _presentationOptions.ToggleDebugOverlay();
@@ -98,6 +99,7 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             CycleSelectedUnit();
         }
+#endif
 
         if (_simulator == null || _currentStep == null || _previousStep == null)
         {
