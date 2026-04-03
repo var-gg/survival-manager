@@ -1628,7 +1628,7 @@ public static class SampleSeedGenerator
             BudgetDomain.Skill,
             ContentRarity.Common,
             band,
-            null,
+            CombatRoleBudgetProfile.None,
             vector,
             keywordCount: band == PowerBand.Minor ? 2 : 3,
             conditionClauseCount: band == PowerBand.Minor ? 1 : 2,

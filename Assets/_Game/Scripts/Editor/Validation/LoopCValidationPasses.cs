@@ -978,7 +978,7 @@ internal static class LoopCDerivedSanityPreviewService
 
     private static int ResolveGenericPowerBandTarget(BudgetCard budgetCard, PowerBand fallback)
     {
-        var band = budgetCard.PowerBand ?? fallback;
+        var band = budgetCard.PowerBand;
         return LoopCContentGovernance.PowerBandTargets.TryGetValue(band, out var window) ? window.Target : LoopCContentGovernance.PowerBandTargets[fallback].Target;
     }
 
