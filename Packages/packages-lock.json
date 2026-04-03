@@ -1,14 +1,13 @@
 {
   "dependencies": {
     "com.coplaydev.unity-mcp": {
-      "version": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#beta",
+      "version": "file:com.coplaydev.unity-mcp",
       "depth": 0,
-      "source": "git",
+      "source": "embedded",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.0.2",
         "com.unity.test-framework": "1.1.31"
-      },
-      "hash": "6907badefdea468892329ccee89402d7a989ae62"
+      }
     },
     "com.unity.addressables": {
       "version": "2.9.1",
