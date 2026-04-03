@@ -219,9 +219,9 @@ public sealed class CounterToolContribution
 public sealed class BudgetCard
 {
     public BudgetDomain Domain = BudgetDomain.UnitBlueprint;
-    public ContentRarity? Rarity = ContentRarity.Common;
-    public PowerBand? PowerBand = global::SM.Content.Definitions.PowerBand.Standard;
-    public CombatRoleBudgetProfile? RoleProfile;
+    public ContentRarity Rarity = ContentRarity.Common;
+    public PowerBand PowerBand = global::SM.Content.Definitions.PowerBand.Standard;
+    public CombatRoleBudgetProfile RoleProfile;
     public BudgetVector Vector = new();
     public int KeywordCount;
     public int ConditionClauseCount;

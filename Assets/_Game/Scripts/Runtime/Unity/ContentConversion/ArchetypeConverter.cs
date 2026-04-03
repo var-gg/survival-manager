@@ -478,9 +478,9 @@ internal sealed class ArchetypeConverter
 
     private static RecruitTier ResolveRecruitTier(UnitArchetypeDefinition definition)
     {
-        if (definition.BudgetCard?.Rarity is { } rarity)
+        if (definition.BudgetCard != null)
         {
-            return LoopCContentGovernance.ToRecruitTier(rarity);
+            return LoopCContentGovernance.ToRecruitTier(definition.BudgetCard.Rarity);
         }
 
         return LoopBRecruitTierFallbacks.TryGetValue(definition.Id, out var tier)
