@@ -39,6 +39,10 @@
 - 파일명, 코드, API 식별자는 영어를 유지한다.
 - active index는 active/draft 문서만 노출하고 deprecated 문서는 중앙 registry로 관리한다.
 
+## 루트 참조 문서
+
+- `TESTING.md`: 테스트 하네스 가이드 (어셈블리, 카테고리, CLI, lint 정책)
+
 ## 시작점
 
 - 거버넌스 인덱스: `00_governance/index.md`
