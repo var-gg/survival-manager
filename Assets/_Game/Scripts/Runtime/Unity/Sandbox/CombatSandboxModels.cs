@@ -8,7 +8,8 @@ public sealed record CombatSandboxRunRequest(
     IReadOnlyList<BattleUnitLoadout> EnemyLoadout,
     int Seed,
     int BatchCount,
-    string RequestedConfigId);
+    string RequestedConfigId,
+    BattlefieldLayout? Layout = null);
 
 public sealed record CombatSandboxMetrics(
     float WinRate,

@@ -82,6 +82,7 @@ public sealed class CombatSandboxWindow : EditorWindow
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastGovernanceSummary), 120f));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastReadabilitySummary), 120f));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastExplanationSummary), 120f));
+            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastProvenanceSummary), 120f));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastValidationMessage), 72f));
         }));
 
@@ -154,6 +155,7 @@ public sealed class CombatSandboxWindow : EditorWindow
             _state.LastGovernanceSummary = BuildGovernanceSummary(result.PlayerSnapshot, _state.InspectUnitId);
             _state.LastReadabilitySummary = BuildReadabilitySummary(result.LastReplay.Readability);
             _state.LastExplanationSummary = BuildExplanationSummary(result.LastReplay.BattleSummary);
+            _state.LastProvenanceSummary = BuildProvenanceSummary(result.Provenance);
             _state.LastValidationMessage =
                 $"config={effectiveRequest.RequestedConfigId}\nprovenance={result.Provenance.Count}\nteam_tags={string.Join(", ", result.PlayerSnapshot.TeamTags)}";
         }
@@ -248,6 +250,37 @@ public sealed class CombatSandboxWindow : EditorWindow
         builder.AppendLine($"top_damage=[{string.Join(", ", report.TopDamageSources ?? Array.Empty<string>())}]");
         builder.AppendLine($"top_reasons=[{string.Join(", ", report.TopDecisionReasons ?? Array.Empty<string>())}]");
         builder.AppendLine($"decisive=[{string.Join(", ", report.DecisiveMoments ?? Array.Empty<string>())}]");
+        return builder.ToString().TrimEnd();
+    }
+
+    private static string BuildProvenanceSummary(System.Collections.Generic.IReadOnlyList<CompileProvenanceEntry> provenance)
+    {
+        if (provenance == null || provenance.Count == 0)
+        {
+            return "Provenance unavailable.";
+        }
+
+        var builder = new StringBuilder();
+        var grouped = provenance
+            .GroupBy(entry => entry.SubjectId)
+            .OrderBy(group => group.Key);
+
+        foreach (var group in grouped)
+        {
+            builder.AppendLine($"[{group.Key}]");
+            foreach (var entry in group)
+            {
+                builder.AppendLine($"  {entry.ArtifactKind} source={entry.SourceId}");
+                if (entry.Details != null && entry.Details.Count > 0)
+                {
+                    foreach (var detail in entry.Details)
+                    {
+                        builder.AppendLine($"    {detail}");
+                    }
+                }
+            }
+        }
+
         return builder.ToString().TrimEnd();
     }
 }

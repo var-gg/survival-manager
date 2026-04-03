@@ -33,10 +33,12 @@ public sealed class CombatSandboxConfig : ScriptableObject
     public TeamPostureType AllyPosture = TeamPostureType.StandardAdvance;
     public string TeamTacticId = string.Empty;
     public TeamPostureType EnemyPosture = TeamPostureType.StandardAdvance;
+    // TODO: BattleSetupBuilder에 enemy team tactic content lookup 경로 추가 후 연결
     public string EnemyTeamTacticId = string.Empty;
     public int Seed = 17;
     public int BatchCount = 1;
     public List<CombatSandboxAllySlot> AllySlots = new();
     public List<CombatSandboxEnemySlot> EnemySlots = new();
+    // TODO: sandbox GameSessionState에 expedition overlay 경로 추가 후 ally 임시 증강에 연결
     public List<string> TemporaryAugmentIds = new();
 }
