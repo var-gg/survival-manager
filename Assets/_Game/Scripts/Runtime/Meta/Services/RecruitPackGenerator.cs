@@ -146,6 +146,13 @@ public static class RecruitPackGenerator
             .ToList();
         if (available.Count == 0)
         {
+            var anyRemaining = evaluations.FirstOrDefault(entry => !selectedIds.Contains(entry.Template.Id));
+            if (anyRemaining != default)
+            {
+                selectedIds.Add(anyRemaining.Template.Id);
+                return (anyRemaining.Template, anyRemaining.Evaluation, false);
+            }
+
             throw new InvalidOperationException($"Protected slot tier floor '{floor}' could not be satisfied.");
         }
 
