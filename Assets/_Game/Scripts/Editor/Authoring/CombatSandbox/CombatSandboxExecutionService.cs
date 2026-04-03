@@ -4,13 +4,14 @@ using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity;
+using SM.Combat.Model;
 using SM.Unity.Sandbox;
 
 namespace SM.Editor.Authoring.CombatSandbox;
 
 public static class CombatSandboxExecutionService
 {
-    public static CombatSandboxRunRequest BuildRequest(CombatSandboxState state)
+    public static CombatSandboxRunRequest BuildRequest(CombatSandboxState state, BattlefieldLayout? sceneLayout = null)
     {
         var lookup = new RuntimeCombatContentLookup();
         var session = new GameSessionState(lookup);
@@ -54,7 +55,8 @@ public static class CombatSandboxExecutionService
             buildResult.Enemies,
             seed == 0 ? 17 : seed,
             Math.Max(1, batchCount),
-            state.Config != null && !string.IsNullOrWhiteSpace(state.Config.Id) ? state.Config.Id : "sandbox.transient");
+            state.Config != null && !string.IsNullOrWhiteSpace(state.Config.Id) ? state.Config.Id : "sandbox.transient",
+            sceneLayout);
     }
 
     private static BattleEncounterPlan BuildEncounter(CombatSandboxConfig config)

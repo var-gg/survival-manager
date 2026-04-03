@@ -8,8 +8,6 @@ namespace SM.Combat.Services;
 
 public static class TargetScoringService
 {
-    private const float DefaultBacklineExposeRadius = 2.5f;
-
     public static UnitSnapshot? SelectTarget(
         BattleState state,
         UnitSnapshot actor,
@@ -101,7 +99,7 @@ public static class TargetScoringService
         var frontlineGuard = state.GetTeam(target.Side)
             .Where(unit => unit.IsAlive && unit.Behavior.FormationLine == FormationLine.Frontline && unit.Id != target.Id)
             .DefaultIfEmpty()
-            .Max(unit => unit == null ? 0f : Math.Max(0f, DefaultBacklineExposeRadius - unit.Position.DistanceTo(target.Position)));
+            .Max(unit => unit == null ? 0f : Math.Max(0f, unit.Behavior.FrontlineGuardRadius - unit.Position.DistanceTo(target.Position)));
         var anchorPenalty = target.Behavior.FormationLine == FormationLine.Backline ? 1.5f : 0f;
         return nearestAllyDistance + anchorPenalty - frontlineGuard;
     }
@@ -253,6 +251,6 @@ public static class TargetScoringService
 
         return !state.GetTeam(target.Side)
             .Where(unit => unit.IsAlive && unit.Id != target.Id && unit.Behavior.FormationLine == FormationLine.Frontline)
-            .Any(frontliner => frontliner.Position.DistanceTo(target.Position) <= DefaultBacklineExposeRadius);
+            .Any(frontliner => frontliner.Position.DistanceTo(target.Position) <= frontliner.Behavior.FrontlineGuardRadius);
     }
 }

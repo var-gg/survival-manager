@@ -84,6 +84,7 @@ public sealed class CombatSandboxWindow : EditorWindow
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastExplanationSummary), 120f));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastProvenanceSummary), 120f));
             section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastValidationMessage), 72f));
+            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LayoutSourceLabel)));
         }));
 
         rootVisualElement.Bind(_serializedState);
@@ -142,9 +143,12 @@ public sealed class CombatSandboxWindow : EditorWindow
 
         try
         {
-            var request = CombatSandboxExecutionService.BuildRequest(_state);
+            var sceneController = FindAnyObjectByType<CombatSandboxSceneController>();
+            var sceneLayout = sceneController != null ? sceneController.ExportSceneLayout() : null;
+            var request = CombatSandboxExecutionService.BuildRequest(_state, sceneLayout);
             var effectiveRequest = runAsBatch ? request : request with { BatchCount = 1 };
             var result = CombatSandboxSceneController.Execute(effectiveRequest);
+            _state.LayoutSourceLabel = sceneLayout != null ? "Scene" : "Default";
             _state.LastCompileHash = result.PlayerSnapshot.CompileHash;
             _state.LastReplayHash = result.ReplayHash;
             _state.LastMetricsSummary =
