@@ -1882,7 +1882,7 @@ public static class SampleSeedGenerator
         BudgetDomain domain,
         ContentRarity rarity,
         PowerBand powerBand,
-        CombatRoleBudgetProfile? roleProfile,
+        CombatRoleBudgetProfile roleProfile,
         BudgetVector vector,
         int keywordCount,
         int conditionClauseCount,

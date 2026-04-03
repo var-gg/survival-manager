@@ -19,9 +19,9 @@ internal static class ContentConversionShared
         }
 
         return new ContentGovernanceSummary(
-            budgetCard.Rarity?.ToString() ?? ContentRarity.Common.ToString(),
-            budgetCard.PowerBand?.ToString() ?? string.Empty,
-            budgetCard.RoleProfile?.ToString() ?? string.Empty,
+            budgetCard.Rarity.ToString(),
+            budgetCard.PowerBand.ToString(),
+            budgetCard.RoleProfile.ToString(),
             budgetCard.Vector?.FinalScore ?? 0,
             budgetCard.DeclaredThreatPatterns?.Select(pattern => pattern.ToString()).ToList() ?? new List<string>(),
             budgetCard.DeclaredCounterTools?.Select(tool => new CompiledCounterToolContribution(tool.Tool.ToString(), (int)tool.Strength)).ToList()
