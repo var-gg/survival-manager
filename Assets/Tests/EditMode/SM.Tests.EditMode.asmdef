@@ -10,6 +10,7 @@
     "SM.Persistence.Json",
     "SM.Unity",
     "SM.Editor",
+    "SM.Meta.Serialization",
     "Unity.Localization",
     "Unity.Localization.Editor",
     "Unity.ResourceManager"
