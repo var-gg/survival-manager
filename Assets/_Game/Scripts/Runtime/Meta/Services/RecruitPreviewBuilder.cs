@@ -81,7 +81,9 @@ public static class RecruitPreviewBuilder
                 return new FlexRollResult(activePool[0].Id, passivePool[0].Id);
             }
 
-            throw new InvalidOperationException($"Recruit preview cannot be generated for '{template.Id}'.");
+            return new FlexRollResult(
+                activePool.Count > 0 ? activePool[0].Id : string.Empty,
+                passivePool.Count > 0 ? passivePool[0].Id : string.Empty);
         }
 
         var random = new Random(seed);
