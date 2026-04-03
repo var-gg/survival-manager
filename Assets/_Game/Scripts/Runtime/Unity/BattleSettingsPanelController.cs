@@ -69,6 +69,13 @@ public sealed class BattleSettingsPanelController : MonoBehaviour
         Apply("TeamSummary", Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.team_summary_label", "Team Summary"));
     }
 
+    public void ToggleDebugOverlay()
+    {
+        if (!EnsureReady()) return;
+        _options.ToggleDebugOverlay();
+        Apply("DebugOverlay", Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.debug_overlay_label", "Debug Overlay"));
+    }
+
     private void Apply(string settingId, string label)
     {
         _applyCallback?.Invoke(_options);
@@ -82,6 +89,7 @@ public sealed class BattleSettingsPanelController : MonoBehaviour
         {
             "OverheadUi" => _options.ShowOverheadUi,
             "DamageText" => _options.ShowDamageText,
+            "DebugOverlay" => _options.ShowDebugOverlay,
             _ => _options.ShowTeamHpSummary
         };
         return isOn

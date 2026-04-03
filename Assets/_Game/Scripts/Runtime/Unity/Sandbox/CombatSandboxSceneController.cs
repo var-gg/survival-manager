@@ -19,6 +19,7 @@ public sealed class CombatSandboxSceneController : MonoBehaviour
     [SerializeField] private float engagementSlotRadiusPreview = 1.25f;
     [SerializeField] private int engagementSlotCountPreview = 4;
     [SerializeField] private float headAnchorHeightPreview = 2f;
+    [SerializeField] private float frontlineGuardRadiusPreview = 2.5f;
 
     public CombatSandboxConfig SandboxConfig => sandboxConfig;
     public Transform[] AllyAnchorHandles => allyAnchorHandles ?? Array.Empty<Transform>();
@@ -31,6 +32,7 @@ public sealed class CombatSandboxSceneController : MonoBehaviour
     public float EngagementSlotRadiusPreview => Mathf.Max(0.25f, engagementSlotRadiusPreview);
     public int EngagementSlotCountPreview => Mathf.Max(1, engagementSlotCountPreview);
     public float HeadAnchorHeightPreview => Mathf.Max(0.5f, headAnchorHeightPreview);
+    public float FrontlineGuardRadiusPreview => Mathf.Max(0.5f, frontlineGuardRadiusPreview);
 
     public static CombatSandboxRunResult Execute(CombatSandboxRunRequest request)
     {

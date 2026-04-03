@@ -46,8 +46,12 @@ public static class CombatRangeGizmos
             Handles.DrawWireDisc(handle.position, Vector3.up, controller.PreferredRangeMinPreview);
             Handles.DrawWireDisc(handle.position, Vector3.up, controller.PreferredRangeMaxPreview);
 
+            Handles.color = new Color(0.2f, 0.75f, 0.65f, primaryColor.a * 0.6f);
+            Handles.DrawWireDisc(handle.position, Vector3.up, controller.FrontlineGuardRadiusPreview);
+
             DrawHeadAnchor(handle.position, controller.HeadAnchorHeightPreview, accentColor);
             DrawSlotRing(handle.position, controller.EngagementSlotRadiusPreview, controller.EngagementSlotCountPreview, accentColor);
+            DrawEntityKindLabel(handle.position, controller.HeadAnchorHeightPreview, primaryColor);
         }
     }
 
@@ -57,6 +61,18 @@ public static class CombatRangeGizmos
         var head = basePosition + Vector3.up * height;
         Handles.DrawLine(basePosition, head);
         Handles.SphereHandleCap(0, head, Quaternion.identity, 0.08f, EventType.Repaint);
+    }
+
+    private static void DrawEntityKindLabel(Vector3 basePosition, float headHeight, Color color)
+    {
+        var labelPosition = basePosition + Vector3.up * (headHeight + 0.2f);
+        var style = new GUIStyle(GUI.skin.label)
+        {
+            normal = { textColor = color },
+            fontSize = 10,
+            alignment = TextAnchor.MiddleCenter
+        };
+        Handles.Label(labelPosition, "Unit", style);
     }
 
     private static void DrawSlotRing(Vector3 center, float radius, int slotCount, Color color)

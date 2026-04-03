@@ -77,6 +77,11 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F3))
+        {
+            _presentationOptions.ToggleDebugOverlay();
+        }
+
         if (_simulator == null || _currentStep == null || _previousStep == null)
         {
             return;
@@ -497,6 +502,57 @@ public sealed class BattleScreenController : MonoBehaviour
             : args.Length == 0
                 ? fallback
                 : string.Format(fallback, args);
+    }
+
+    private void OnGUI()
+    {
+        if (!_presentationOptions.ShowDebugOverlay || _currentStep == null)
+        {
+            return;
+        }
+
+        var style = new GUIStyle(GUI.skin.label) { fontSize = 11, richText = true };
+        var bgTex = new Texture2D(1, 1);
+        bgTex.SetPixel(0, 0, new Color(0f, 0f, 0f, 0.75f));
+        bgTex.Apply();
+        var bgStyle = new GUIStyle { normal = { background = bgTex } };
+
+        var step = _currentStep;
+        var allyCount = step.Units.Count(u => u.Side == TeamSide.Ally);
+        var allyAlive = step.Units.Count(u => u.Side == TeamSide.Ally && u.IsAlive);
+        var enemyCount = step.Units.Count(u => u.Side == TeamSide.Enemy);
+        var enemyAlive = step.Units.Count(u => u.Side == TeamSide.Enemy && u.IsAlive);
+        var speedLabel = _isPaused ? "PAUSED" : $"x{_playbackSpeed:0}";
+
+        var headerRect = new Rect(4, 4, 600, 20);
+        GUI.Box(headerRect, GUIContent.none, bgStyle);
+        GUI.Label(headerRect, $"  Step: {step.StepIndex}/{MaxBattleSteps} | Time: {step.TimeSeconds:0.0}s | {speedLabel} | Allies: {allyAlive}/{allyCount} | Enemies: {enemyAlive}/{enemyCount}", style);
+
+        var y = 28f;
+        foreach (var unit in step.Units.OrderBy(u => u.Side).ThenBy(u => u.Id))
+        {
+            var sideTag = unit.Side == TeamSide.Ally ? "<color=#6cc>ally</color>" : "<color=#f93>enemy</color>";
+            var hpPct = unit.MaxHealth > 0 ? unit.CurrentHealth / unit.MaxHealth * 100f : 0f;
+            var targetLabel = !string.IsNullOrEmpty(unit.TargetName) ? $"-> {unit.TargetName}" : "";
+            var actionLabel = FormatActionState(unit);
+            var lockLabel = unit.RetargetLockRemaining > 0.01f ? $" lock:{unit.RetargetLockRemaining:0.0}s" : "";
+            var cdLabel = unit.CooldownRemaining > 0.01f ? $" cd:{unit.CooldownRemaining:0.0}s" : "";
+            var selectorLabel = !string.IsNullOrEmpty(unit.CurrentSelector) ? $" sel:{unit.CurrentSelector}" : "";
+
+            var line = $"  [{sideTag}] {unit.Name} HP:{unit.CurrentHealth:0}/{unit.MaxHealth:0}({hpPct:0}%) {targetLabel} [{actionLabel}]{cdLabel}{lockLabel}{selectorLabel}";
+            var lineRect = new Rect(4, y, 720, 16);
+            GUI.Box(lineRect, GUIContent.none, bgStyle);
+            GUI.Label(lineRect, line, style);
+            y += 16f;
+        }
+    }
+
+    private static string FormatActionState(BattleUnitReadModel unit)
+    {
+        if (!unit.IsAlive) return "Dead";
+        if (unit.WindupProgress > 0.01f)
+            return $"{unit.ActionState} {Mathf.RoundToInt(unit.WindupProgress * 100f)}%";
+        return unit.ActionState.ToString();
     }
 
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
