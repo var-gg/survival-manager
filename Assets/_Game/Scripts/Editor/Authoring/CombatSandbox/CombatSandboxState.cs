@@ -18,4 +18,5 @@ public sealed class CombatSandboxState : ScriptableObject
     [TextArea] public string LastExplanationSummary = string.Empty;
     [TextArea] public string LastProvenanceSummary = string.Empty;
     [TextArea] public string LastValidationMessage = string.Empty;
+    public string LayoutSourceLabel = string.Empty;
 }

@@ -25,4 +25,5 @@ public sealed class BehaviorProfileDefinition : ScriptableObject
     public float BlockMitigation = 0.25f;
     public float Stability = 0.5f;
     public float BlockCooldownSeconds = 1.2f;
+    public float FrontlineGuardRadius = 2.5f;
 }

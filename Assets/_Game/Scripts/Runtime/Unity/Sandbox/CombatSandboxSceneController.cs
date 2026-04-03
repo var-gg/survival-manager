@@ -33,6 +33,26 @@ public sealed class CombatSandboxSceneController : MonoBehaviour
     public int EngagementSlotCountPreview => Mathf.Max(1, engagementSlotCountPreview);
     public float HeadAnchorHeightPreview => Mathf.Max(0.5f, headAnchorHeightPreview);
     public float FrontlineGuardRadiusPreview => Mathf.Max(0.5f, frontlineGuardRadiusPreview);
+    [SerializeField] private float spawnOffsetX = 1.25f;
+
+    public BattlefieldLayout ExportSceneLayout()
+    {
+        var handles = AllyAnchorHandles;
+        if (handles.Length < 6)
+            return BattlefieldLayout.Default;
+
+        var frontX = (Mathf.Abs(handles[0].position.x)
+                    + Mathf.Abs(handles[1].position.x)
+                    + Mathf.Abs(handles[2].position.x)) / 3f;
+        var backX = (Mathf.Abs(handles[3].position.x)
+                   + Mathf.Abs(handles[4].position.x)
+                   + Mathf.Abs(handles[5].position.x)) / 3f;
+        var topY = (handles[0].position.z + handles[3].position.z) / 2f;
+        var centerY = (handles[1].position.z + handles[4].position.z) / 2f;
+        var bottomY = (handles[2].position.z + handles[5].position.z) / 2f;
+
+        return new BattlefieldLayout(frontX, backX, topY, centerY, bottomY, Mathf.Max(0.25f, spawnOffsetX));
+    }
 
     public static CombatSandboxRunResult Execute(CombatSandboxRunRequest request)
     {

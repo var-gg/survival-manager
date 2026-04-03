@@ -52,7 +52,7 @@ public static class BattleReadModelBuilder
                     unit.CurrentTargetSelector.ToString(),
                     unit.CurrentFallbackPolicy.ToString(),
                     unit.RetargetLockRemaining,
-                    2.5f,
+                    unit.Behavior.FrontlineGuardRadius,
                     unit.Definition.EffectiveSignatureActive?.TargetRuleData?.ClusterRadius
                         ?? unit.Definition.EffectiveFlexActive?.TargetRuleData?.ClusterRadius
                         ?? unit.Definition.EffectiveBasicAttack.TargetRuleData?.ClusterRadius
