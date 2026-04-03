@@ -267,11 +267,15 @@ public sealed class CombatSandboxWindow : EditorWindow
         var builder = new StringBuilder();
         var grouped = provenance
             .GroupBy(entry => entry.SubjectId)
-            .OrderBy(group => group.Key);
+            .OrderBy(group => group.Key)
+            .ToList();
+
+        builder.AppendLine($"--- {grouped.Count} subjects, {provenance.Count} entries ---");
 
         foreach (var group in grouped)
         {
-            builder.AppendLine($"[{group.Key}]");
+            var artifacts = group.GroupBy(e => e.ArtifactKind).Select(g => $"{g.Key}({g.Count()})");
+            builder.AppendLine($"[{group.Key}] {string.Join(" ", artifacts)}");
             foreach (var entry in group)
             {
                 builder.AppendLine($"  {entry.ArtifactKind} source={entry.SourceId}");

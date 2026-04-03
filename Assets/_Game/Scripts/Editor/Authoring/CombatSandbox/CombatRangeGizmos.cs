@@ -49,6 +49,9 @@ public static class CombatRangeGizmos
             Handles.color = new Color(0.2f, 0.75f, 0.65f, primaryColor.a * 0.6f);
             Handles.DrawWireDisc(handle.position, Vector3.up, controller.FrontlineGuardRadiusPreview);
 
+            Handles.color = new Color(0.85f, 0.45f, 0.85f, primaryColor.a * 0.45f);
+            Handles.DrawWireDisc(handle.position, Vector3.up, controller.ClusterRadiusPreview);
+
             DrawHeadAnchor(handle.position, controller.HeadAnchorHeightPreview, accentColor);
             DrawSlotRing(handle.position, controller.EngagementSlotRadiusPreview, controller.EngagementSlotCountPreview, accentColor);
             DrawEntityKindLabel(handle.position, controller.HeadAnchorHeightPreview, primaryColor);
