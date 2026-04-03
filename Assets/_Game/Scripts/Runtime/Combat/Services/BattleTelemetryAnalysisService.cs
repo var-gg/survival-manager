@@ -155,7 +155,7 @@ public static class BattleTelemetryAnalysisService
             WinnerSideIndex = (int)result.Winner,
             TimeToFirstDamageSeconds = firstDamage,
             TimeToFirstMajorActionSeconds = firstMajor,
-            TimeoutOccurred = result.StepCount >= 300,
+            TimeoutOccurred = result.StepCount >= BattleSimulator.DefaultMaxSteps,
             UnexplainedDamageRatio = readability.UnexplainedDamageRatio,
             UnexplainedHealingRatio = readability.UnexplainedHealingRatio,
             OffscreenMajorEventRatio = readability.OffscreenMajorEventRatio,

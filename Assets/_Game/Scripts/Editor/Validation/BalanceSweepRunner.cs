@@ -349,7 +349,7 @@ public static class BalanceSweepRunner
             enemyLoadout.FirstOrDefault()?.TeamTactic?.Posture ?? TeamPostureType.StandardAdvance,
             BattleSimulator.DefaultFixedStepSeconds,
             seed);
-        var simulator = new BattleSimulator(state, 300);
+        var simulator = new BattleSimulator(state, BattleSimulator.DefaultMaxSteps);
         var tracker = new SweepMetricTracker(state);
         while (!simulator.IsFinished)
         {

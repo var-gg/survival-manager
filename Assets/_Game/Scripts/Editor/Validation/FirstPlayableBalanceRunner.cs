@@ -459,7 +459,7 @@ public static class FirstPlayableBalanceRunner
                 input.EnemyLoadout.FirstOrDefault()?.TeamTactic?.Posture ?? TeamPostureType.StandardAdvance,
                 BattleSimulator.DefaultFixedStepSeconds,
                 seed);
-            var result = BattleResolver.Run(state, 300);
+            var result = BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps);
             var replay = ReplayAssembler.Assemble(input.PlayerSnapshot, input.EnemyLoadout, result, seed, $"seed:{seed}", $"seed:{seed}");
             yield return new LoopDBattleDigest(input.ScenarioId, result, replay);
         }
@@ -548,7 +548,7 @@ public static class FirstPlayableBalanceRunner
             WinRate = digests.Count == 0 ? 0f : digests.Count(digest => digest.Result.Winner == TeamSide.Ally) / (float)digests.Count,
             BattleDurationP50 = Percentile(durations, 0.5f),
             BattleDurationP90 = Percentile(durations, 0.9f),
-            TimeoutRate = digests.Count == 0 ? 0f : digests.Count(digest => digest.Result.StepCount >= 300) / (float)digests.Count,
+            TimeoutRate = digests.Count == 0 ? 0f : digests.Count(digest => digest.Result.StepCount >= BattleSimulator.DefaultMaxSteps) / (float)digests.Count,
             TimeToFirstDamageP50 = Percentile(timeToFirstDamage, 0.5f),
             TimeToFirstMajorActionP50 = Percentile(timeToFirstMajor, 0.5f),
             DeadBeforeFirstMajorActionRate = deadBeforeMajor.Count == 0 ? 0f : deadBeforeMajor.Average(),
@@ -658,7 +658,7 @@ public static class FirstPlayableBalanceRunner
             {
                 Debug.Log($"[LoopD] RunLite seed {seed} phase {phase} battle");
                 var state = BattleFactory.Create(snapshot.Allies, encounter.Enemies, snapshot.TeamTactic.Posture, encounter.EnemyPosture, BattleSimulator.DefaultFixedStepSeconds, seed + phase);
-                var result = BattleResolver.Run(state, 300);
+                var result = BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps);
                 var replay = ReplayAssembler.Assemble(snapshot, encounter.Enemies, result, seed + phase, $"runlite:{seed}:{phase}", $"runlite:{seed}:{phase}");
                 session.RecordBattleAudit(replay);
                 session.MarkBattleResolved(result.Winner == TeamSide.Ally, result.StepCount, result.Events.Count);

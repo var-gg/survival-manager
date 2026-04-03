@@ -52,7 +52,7 @@ public sealed class CombatSandboxSceneController : MonoBehaviour
                 request.EnemyLoadout.FirstOrDefault()?.TeamTactic?.Posture ?? TeamPostureType.StandardAdvance,
                 BattleSimulator.DefaultFixedStepSeconds,
                 seed);
-            lastResult = BattleResolver.Run(state, 300);
+            lastResult = BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps);
             if (lastResult.Winner == TeamSide.Ally)
             {
                 wins++;

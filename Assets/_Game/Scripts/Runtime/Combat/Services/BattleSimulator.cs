@@ -8,10 +8,11 @@ namespace SM.Combat.Services;
 public sealed class BattleSimulator
 {
     public const float DefaultFixedStepSeconds = 0.1f;
+    public const int DefaultMaxSteps = 300;
     private readonly List<BattleEvent> _events = new();
     private readonly int _maxSteps;
 
-    public BattleSimulator(BattleState state, int maxSteps = 300)
+    public BattleSimulator(BattleState state, int maxSteps = DefaultMaxSteps)
     {
         State = state;
         _maxSteps = Math.Max(1, maxSteps);

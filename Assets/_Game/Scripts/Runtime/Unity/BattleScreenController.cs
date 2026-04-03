@@ -14,7 +14,7 @@ namespace SM.Unity;
 public sealed class BattleScreenController : MonoBehaviour
 {
     private const int MaxRecentLogLines = 8;
-    private const int MaxBattleSteps = 320;
+    private const int MaxBattleSteps = BattleSimulator.DefaultMaxSteps;
 
     [SerializeField] private Text titleText = null!;
     [SerializeField] private Text allyHpText = null!;
