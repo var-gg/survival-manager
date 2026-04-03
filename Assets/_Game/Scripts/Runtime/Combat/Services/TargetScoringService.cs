@@ -49,6 +49,16 @@ public static class TargetScoringService
         var candidates = GetCandidates(state, actor, rule).ToList();
         if (candidates.Count == 0)
         {
+            if (rule.Filters.HasFlag(TargetFilterFlags.InRange)
+                && rule.FallbackPolicy is TargetFallbackPolicy.NearestReachableEnemy or TargetFallbackPolicy.LowestCurrentHpEnemy)
+            {
+                var relaxedCandidates = GetCandidates(state, actor, rule, skipRangeFilter: true).ToList();
+                if (relaxedCandidates.Count > 0)
+                {
+                    return ResolveFallback(state, actor, rule, relaxedCandidates);
+                }
+            }
+
             return ResolveFallback(state, actor, rule, Array.Empty<UnitSnapshot>());
         }
 
@@ -117,7 +127,7 @@ public static class TargetScoringService
         return (target.CurrentHealth + target.Barrier + Math.Max(target.Armor, target.Resist)) * Math.Max(0.25f, target.GetIncomingDamageMultiplier());
     }
 
-    private static IEnumerable<UnitSnapshot> GetCandidates(BattleState state, UnitSnapshot actor, TargetRule rule)
+    private static IEnumerable<UnitSnapshot> GetCandidates(BattleState state, UnitSnapshot actor, TargetRule rule, bool skipRangeFilter = false)
     {
         IEnumerable<UnitSnapshot> baseCandidates = rule.Domain switch
         {
@@ -127,10 +137,10 @@ public static class TargetScoringService
             _ => Array.Empty<UnitSnapshot>(),
         };
 
-        return baseCandidates.Where(target => IsValidCandidate(state, actor, target, rule));
+        return baseCandidates.Where(target => IsValidCandidate(state, actor, target, rule, skipRangeFilter));
     }
 
-    private static bool IsValidCandidate(BattleState state, UnitSnapshot actor, UnitSnapshot? target, TargetRule rule)
+    private static bool IsValidCandidate(BattleState state, UnitSnapshot actor, UnitSnapshot? target, TargetRule rule, bool skipRangeFilter = false)
     {
         if (target == null || !target.IsAlive)
         {
@@ -172,7 +182,7 @@ public static class TargetScoringService
             return false;
         }
 
-        if (rule.Filters.HasFlag(TargetFilterFlags.InRange))
+        if (!skipRangeFilter && rule.Filters.HasFlag(TargetFilterFlags.InRange))
         {
             var acquireRange = ResolveAcquireRange(actor, rule);
             if (MovementResolver.ComputeEdgeDistance(actor, target) > acquireRange)

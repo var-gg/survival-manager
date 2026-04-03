@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
+using SM.Core.Contracts;
 
 namespace SM.Tests.EditMode;
 
@@ -333,6 +335,114 @@ public sealed class BattleSimulationSpatialTests
         }
 
         Assert.That(sawSecurePosition, Is.True);
+    }
+
+    [Test]
+    public void LoopA_1v1_Produces_Sustained_Combat_Events()
+    {
+        var inRangeRule = new TargetRule();
+        var flexWithInRange = new BattleSkillSpec(
+            "flex_strike", "Flex Strike", SkillKind.Strike, 2f, 1.2f,
+            SlotKind: CompiledSkillSlots.UtilityActive,
+            ResolvedSlotKind: ActionSlotKind.FlexActive,
+            ActivationModel: ActivationModel.Cooldown,
+            Lane: ActionLane.Primary,
+            LockRule: ActionLockRule.HardCommit,
+            BaseCooldownSeconds: 1.5f,
+            TargetRuleData: inRangeRule);
+        var ally = CombatTestFactory.CreateLoopAUnit(
+            "ally_fighter",
+            classId: "vanguard",
+            anchor: DeploymentAnchorId.FrontCenter,
+            hp: 60f,
+            physPower: 5f,
+            attackRange: 1.2f,
+            flexActive: flexWithInRange,
+            basicAttackTargetRule: inRangeRule);
+        var enemy = CombatTestFactory.CreateLoopAUnit(
+            "enemy_fighter",
+            race: "undead",
+            classId: "vanguard",
+            anchor: DeploymentAnchorId.FrontCenter,
+            hp: 60f,
+            physPower: 5f,
+            attackRange: 1.2f,
+            flexActive: flexWithInRange with { Id = "enemy_flex_strike" },
+            basicAttackTargetRule: inRangeRule);
+
+        var state = CombatTestFactory.CreateBattleState(new[] { ally }, new[] { enemy });
+        var simulator = new BattleSimulator(state, 200);
+
+        var earlyEvents = 0;
+        var midEvents = 0;
+        var lateEvents = 0;
+        var stepDetails = new List<string>();
+
+        while (!simulator.IsFinished)
+        {
+            var step = simulator.Step();
+            var stepIndex = step.StepIndex;
+
+            if (step.Events.Count > 0)
+            {
+                if (stepIndex <= 20) earlyEvents += step.Events.Count;
+                else if (stepIndex <= 80) midEvents += step.Events.Count;
+                else lateEvents += step.Events.Count;
+            }
+
+            if (stepIndex <= 50 || stepIndex % 20 == 0)
+            {
+                var allyUnit = step.Units.FirstOrDefault(u => u.Side == TeamSide.Ally);
+                var enemyUnit = step.Units.FirstOrDefault(u => u.Side == TeamSide.Enemy);
+                if (allyUnit != null && enemyUnit != null)
+                {
+                    var dist = allyUnit.Position.DistanceTo(enemyUnit.Position);
+                    stepDetails.Add($"S{stepIndex}: ally={allyUnit.ActionState} enemy={enemyUnit.ActionState} dist={dist:F2} events={step.Events.Count} allyCD={allyUnit.CooldownRemaining:F2}");
+                }
+            }
+        }
+
+        var details = string.Join("\n", stepDetails);
+        Assert.That(earlyEvents, Is.GreaterThan(0), $"No early events:\n{details}");
+        Assert.That(midEvents, Is.GreaterThan(0), $"No mid events (steps 21-80) — units froze after initial exchange:\n{details}");
+    }
+
+    [Test]
+    public void LoopA_4v4_Battle_Produces_Events_Throughout()
+    {
+        var allies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("ally_front_a", classId: "vanguard", anchor: DeploymentAnchorId.FrontTop, hp: 40f, physPower: 5f, attackRange: 1.2f),
+            CombatTestFactory.CreateLoopAUnit("ally_front_b", classId: "duelist", anchor: DeploymentAnchorId.FrontBottom, hp: 30f, physPower: 7f, attackRange: 1.2f),
+            CombatTestFactory.CreateLoopAUnit("ally_back_a", classId: "ranger", anchor: DeploymentAnchorId.BackTop, hp: 25f, physPower: 6f, attackRange: 3.2f,
+                behavior: new BehaviorProfile(0.25f, 0.1f, 0.1f, 0.1f, 0.5f, 0.5f, 0f, 0f, 0f, 0.5f, 1f, FormationLine.Backline, RangeDiscipline.HoldBand, 2f, 3.2f, 0.4f, 0.25f, 6f, 0f)),
+            CombatTestFactory.CreateLoopAUnit("ally_back_b", classId: "mystic", anchor: DeploymentAnchorId.BackBottom, hp: 22f, physPower: 4f, attackRange: 3.0f,
+                behavior: new BehaviorProfile(0.25f, 0.1f, 0.1f, 0.1f, 0.5f, 0.5f, 0f, 0f, 0f, 0.5f, 1f, FormationLine.Backline, RangeDiscipline.HoldBand, 1.8f, 3f, 0.4f, 0.25f, 6f, 0f)),
+        };
+        var enemies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("enemy_front_a", race: "undead", classId: "vanguard", anchor: DeploymentAnchorId.FrontTop, hp: 40f, physPower: 5f, attackRange: 1.2f),
+            CombatTestFactory.CreateLoopAUnit("enemy_front_b", race: "undead", classId: "duelist", anchor: DeploymentAnchorId.FrontBottom, hp: 30f, physPower: 7f, attackRange: 1.2f),
+            CombatTestFactory.CreateLoopAUnit("enemy_back_a", race: "undead", classId: "ranger", anchor: DeploymentAnchorId.BackTop, hp: 25f, physPower: 6f, attackRange: 3.2f,
+                behavior: new BehaviorProfile(0.25f, 0.1f, 0.1f, 0.1f, 0.5f, 0.5f, 0f, 0f, 0f, 0.5f, 1f, FormationLine.Backline, RangeDiscipline.HoldBand, 2f, 3.2f, 0.4f, 0.25f, 6f, 0f)),
+            CombatTestFactory.CreateLoopAUnit("enemy_back_b", race: "undead", classId: "mystic", anchor: DeploymentAnchorId.BackBottom, hp: 22f, physPower: 4f, attackRange: 3.0f,
+                behavior: new BehaviorProfile(0.25f, 0.1f, 0.1f, 0.1f, 0.5f, 0.5f, 0f, 0f, 0f, 0.5f, 1f, FormationLine.Backline, RangeDiscipline.HoldBand, 1.8f, 3f, 0.4f, 0.25f, 6f, 0f)),
+        };
+
+        var state = CombatTestFactory.CreateBattleState(allies, enemies);
+        var simulator = new BattleSimulator(state, 200);
+
+        var lastEventStep = 0;
+        while (!simulator.IsFinished)
+        {
+            var step = simulator.Step();
+            if (step.Events.Count > 0)
+            {
+                lastEventStep = step.StepIndex;
+            }
+        }
+
+        Assert.That(lastEventStep, Is.GreaterThan(30), "Events stopped too early — units likely froze after initial attacks");
     }
 
     private static float FindMinDistance(System.Collections.Generic.IReadOnlyList<BattleUnitReadModel> units)
