@@ -440,6 +440,7 @@ public sealed class BattleScreenController : MonoBehaviour
             _battleStartedAtUtc,
             System.DateTime.UtcNow.ToString("O"));
         _root.SessionState.RecordBattleAudit(replay);
+        BattleDebugLogWriter.Write(replay);
         _root.SessionState.MarkBattleResolved(
             winner == TeamSide.Ally,
             _currentStep.StepIndex,
