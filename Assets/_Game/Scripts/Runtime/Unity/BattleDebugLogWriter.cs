@@ -271,7 +271,7 @@ public static class BattleDebugLogWriter
         sb.AppendLine($"    \"actionBreakdown\": {{ {string.Join(", ", actionCounts)} }},");
 
         var perUnit = events
-            .Where(e => e.LogCode is BattleLogCode.DealDamage or BattleLogCode.CriticalHit)
+            .Where(e => e.LogCode is BattleLogCode.BasicAttackDamage or BattleLogCode.ActiveSkillDamage)
             .GroupBy(e => e.ActorId.Value)
             .OrderByDescending(g => g.Sum(e => e.Value))
             .Select(g => $"\"{Escape(g.Key)}\": {g.Sum(e => e.Value):0.#}");
