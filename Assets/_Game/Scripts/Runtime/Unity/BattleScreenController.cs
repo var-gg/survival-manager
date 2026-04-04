@@ -181,6 +181,23 @@ public sealed class BattleScreenController : MonoBehaviour
         RefreshSpeedText();
     }
 
+    public void RebattleNewSeed()
+    {
+        if (!EnsureReady()) return;
+        _root.SessionState.ReloadQuickBattleConfig();
+        _root.SessionState.PrepareQuickBattleSmoke();
+        _root.SaveProfile();
+        RunBattle();
+    }
+
+    public void ReturnToTownDirect()
+    {
+        if (!EnsureReady()) return;
+        _root.SessionState.ReturnToTownAfterReward();
+        _root.SaveProfile();
+        _root.SceneFlow.ReturnToTown();
+    }
+
     private void CycleSelectedUnit()
     {
         if (_currentStep == null) return;

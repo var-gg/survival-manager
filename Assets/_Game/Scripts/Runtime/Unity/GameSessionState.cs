@@ -8,6 +8,7 @@ using SM.Core.Results;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
+using SM.Unity.Sandbox;
 
 namespace SM.Unity;
 
@@ -49,6 +50,7 @@ public sealed class GameSessionState
     public int? SelectedExpeditionNodeIndex { get; private set; }
     public bool LastBattleVictory { get; private set; }
     public bool IsQuickBattleSmokeActive { get; private set; }
+    public CombatSandboxConfig? QuickBattleConfig { get; private set; }
     public bool HasActiveExpeditionRun { get; private set; }
     public SessionTextToken LastBattleSummary { get; private set; } = SessionTextToken.Empty;
     public SessionTextToken LastExpeditionEffectMessage { get; private set; } = SessionTextToken.Empty;
@@ -190,12 +192,23 @@ public sealed class GameSessionState
         LastRewardApplicationSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
         _runtimeTelemetryEvents.Clear();
+        QuickBattleConfig = LoadQuickBattleConfig();
         EnsureDefaultSquad();
         EnsureBattleDeployReady();
         EnsureRewardChoices(reset: true);
         ActiveRun = RunStateService.StartRun("quick-battle", CaptureBlueprintState(), true);
         SyncActiveRunRecord();
         SyncExpeditionState();
+    }
+
+    public void ReloadQuickBattleConfig()
+    {
+        QuickBattleConfig = LoadQuickBattleConfig();
+    }
+
+    private static CombatSandboxConfig? LoadQuickBattleConfig()
+    {
+        return UnityEngine.Resources.Load<CombatSandboxConfig>("_Game/Content/Definitions/QuickBattle/quick_battle_default");
     }
 
     public void AdvanceExpeditionNode()
@@ -1012,7 +1025,7 @@ public sealed class GameSessionState
             }
         }
 
-        var debugPlan = BattleEncounterPlans.CreateObserverSmokePlan();
+        var debugPlan = BuildQuickBattleEncounterPlan();
         var buildResult = BattleSetupBuilder.Build(Array.Empty<BattleParticipantSpec>(), debugPlan, snapshot);
         if (!buildResult.IsSuccess)
         {
@@ -1025,6 +1038,30 @@ public sealed class GameSessionState
         SyncActiveRunRecord();
         context = new ResolvedEncounterContext(debugContext, debugPlan.EnemyPosture, buildResult.Enemies);
         return true;
+    }
+
+    private BattleEncounterPlan BuildQuickBattleEncounterPlan()
+    {
+        var config = QuickBattleConfig;
+        if (config == null || config.EnemySlots.Count == 0)
+        {
+            return BattleEncounterPlans.CreateObserverSmokePlan();
+        }
+
+        return new BattleEncounterPlan(
+            config.EnemySlots.Select(slot => new BattleParticipantSpec(
+                string.IsNullOrWhiteSpace(slot.ParticipantId) ? $"enemy.{slot.ArchetypeId}.{slot.Anchor}" : slot.ParticipantId,
+                string.IsNullOrWhiteSpace(slot.DisplayName) ? slot.ArchetypeId : slot.DisplayName,
+                slot.ArchetypeId,
+                slot.Anchor,
+                slot.PositiveTraitId,
+                slot.NegativeTraitId,
+                Array.Empty<BattleEquippedItemSpec>(),
+                slot.TemporaryAugmentIds,
+                config.EnemyPosture,
+                string.IsNullOrWhiteSpace(slot.RoleTag) ? "auto" : slot.RoleTag))
+            .ToList(),
+            config.EnemyPosture);
     }
 
     public void RecordBattleAudit(BattleReplayBundle replay)

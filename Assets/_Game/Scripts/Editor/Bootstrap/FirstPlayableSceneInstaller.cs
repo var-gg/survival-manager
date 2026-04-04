@@ -236,6 +236,8 @@ public static class FirstPlayableSceneInstaller
         EnsureButton(canvas.transform, "Speed4Button", "x4", new Vector2(0.5f, 0f), ScaledOffset(120f, 25f), controller.SetSpeed4);
         EnsureButton(canvas.transform, "PauseButton", "Pause", new Vector2(0.5f, 0f), ScaledOffset(240f, 25f), controller.TogglePause);
         EnsureButton(canvas.transform, "ContinueButton", "Continue", new Vector2(1f, 0f), ScaledOffset(-90f, 25f), controller.ContinueToReward);
+        EnsureButton(canvas.transform, "RebattleButton", "Re-battle", new Vector2(1f, 0f), ScaledOffset(-90f, 75f), controller.RebattleNewSeed);
+        EnsureButton(canvas.transform, "ReturnTownButton", "Return Town", new Vector2(1f, 0f), ScaledOffset(-90f, 125f), controller.ReturnToTownDirect);
 
         Bind(controller, new Dictionary<string, Object>
         {
@@ -361,7 +363,7 @@ public static class FirstPlayableSceneInstaller
         ValidateScene("Boot", new[] { "GameBootstrap", "BootCanvas", "Main Camera" });
         ValidateScene("Town", new[] { "TownCanvas", "EventSystem", "TownScreenController", "RecruitCardsRoot", "QuickBattleButton" }, typeof(TownScreenController));
         ValidateScene("Expedition", new[] { "ExpeditionCanvas", "EventSystem", "ExpeditionScreenController", "NodeTrackRoot", "SelectButton" }, typeof(ExpeditionScreenController));
-        ValidateScene("Battle", new[] { "BattleCanvas", "EventSystem", "BattleScreenController", "BattlePresentationRoot", "BattleStageRoot", "ActorOverlayRoot", "PauseButton", "SettingsButton", "SettingsPanel", "ProgressTrack", "ProgressFill", "StatusText" }, typeof(BattleScreenController));
+        ValidateScene("Battle", new[] { "BattleCanvas", "EventSystem", "BattleScreenController", "BattlePresentationRoot", "BattleStageRoot", "ActorOverlayRoot", "PauseButton", "SettingsButton", "SettingsPanel", "ProgressTrack", "ProgressFill", "StatusText", "RebattleButton", "ReturnTownButton" }, typeof(BattleScreenController));
         ValidateScene("Reward", new[] { "RewardCanvas", "EventSystem", "RewardScreenController", "RewardCardsRoot" }, typeof(RewardScreenController));
     }
 

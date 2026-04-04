@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-04-04
 - 소스오브트루스: `docs/03_architecture/unity-scene-flow.md`
 - 관련문서:
   - `docs/03_architecture/unity-boundaries.md`
@@ -56,3 +56,19 @@
 10. Battle 결과 생성
 11. Reward 선택
 12. Town 복귀 및 저장
+
+## Quick Battle 바이패스 플로우
+
+`SM/Quick Battle` 메뉴는 위 흐름에서 Town을 건너뛰고 Boot → Battle로 직행한다.
+
+1. `FirstPlayableBootstrap.QuickBattleOneClick()` 실행
+2. 기존 setup 6단계 + QuickBattleConfig 에셋 보장
+3. `EditorPrefs`에 `SM.QuickBattleRequested` 플래그 설정
+4. `EditorApplication.EnterPlaymode()` 자동 진입
+5. `GameBootstrap.RunBootstrapRoutine()`에서 플래그 소비
+6. `PrepareQuickBattleSmoke()` + `GoToBattle()` (Town 스킵)
+7. Battle 씬에서 Re-battle / Return Town 가능
+
+## GameSessionRoot.EnsureInstance 패턴
+
+모든 ScreenController는 `GameSessionRoot.Instance!` 대신 `GameSessionRoot.EnsureInstance()`를 사용한다. Boot 씬을 거치지 않고 임의 씬에서 직접 Play해도 GameSessionRoot가 자동 생성되어 최소 초기화를 수행한다.

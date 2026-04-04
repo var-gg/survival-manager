@@ -2,7 +2,7 @@
 
 - 상태: draft
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-04
 - 소스오브트루스: `docs/03_architecture/testing-strategy.md`
 - 관련문서:
   - `docs/03_architecture/validation-and-acceptance-oracles.md`
@@ -43,3 +43,16 @@
 - save/load 계약, asmdef 경계, content catalog 무결성 변화에는 validator 또는 targeted EditMode test를 먼저 붙인다.
 - broad PlayMode보다 focused integration을 우선한다.
 - long-running smoke는 마지막 phase gate로 둔다.
+
+## 현재 targeted EditMode test 목록 (2026-04-04)
+
+| 파일 | 커버리지 |
+|---|---|
+| `CombatActionResolverTests` | 기본공격/스킬/힐/쉴드/킬/어시스트/디펜드 액션 해소 |
+| `MovementResolverTests` | 거리 계산, 레인지 밴드, 포스처별 홈 위치, 충돌 방지, 루트 이동불가 |
+| `EngagementSlotServiceTests` | 슬롯 배치, 다수 공격자 분산, 오버플로우, 원거리 null 반환 |
+| `CombatContractsTests` | hit resolution 순서 (dodge → crit → block → armor) |
+| `BattleResolutionTests` | 전투 종료/이벤트 생성, 시드 결정론, 앵커별 접촉 시점 |
+| `BattleSimulationSpatialTests` | 근접 접근, 원거리 유지, 힐러 경로, 슬롯 분리 |
+| `StatusResolutionServiceTests` | 상태이상 지속/해제, 강인/정화, 제어 저항 윈도우 |
+| `LoopAContractClosureTests` | 에너지 시그니처, 타겟 락, 소환수 킬 미러링 |

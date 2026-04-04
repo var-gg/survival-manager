@@ -52,7 +52,13 @@ public sealed class GameBootstrap : MonoBehaviour
         root.BindProfile();
         root.ClearBlockingError();
 
-        if (autoEnterTown)
+        if (ConsumeQuickBattleRequest())
+        {
+            root.SessionState.PrepareQuickBattleSmoke();
+            root.SaveProfile();
+            root.SceneFlow.GoToBattle();
+        }
+        else if (autoEnterTown)
         {
             root.SceneFlow.GoToTown();
         }
@@ -69,6 +75,22 @@ public sealed class GameBootstrap : MonoBehaviour
 
         var go = new GameObject("GameSessionRoot");
         return go.AddComponent<GameSessionRoot>();
+    }
+
+    private static bool ConsumeQuickBattleRequest()
+    {
+#if UNITY_EDITOR
+        if (!EditorPrefs.GetBool("SM.QuickBattleRequested", false))
+        {
+            return false;
+        }
+
+        EditorPrefs.DeleteKey("SM.QuickBattleRequested");
+        Debug.Log("[GameBootstrap] Quick Battle 요청 감지. Town을 건너뛰고 Battle로 직행합니다.");
+        return true;
+#else
+        return false;
+#endif
     }
 
     private static bool HasSeedContent()

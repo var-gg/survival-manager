@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-04
 - 소스오브트루스: `docs/03_architecture/combat-runtime-architecture.md`
 - 관련문서:
   - `docs/03_architecture/unity-boundaries.md`
@@ -22,7 +22,7 @@
 - `SM.Combat`
   - `BattleFactory`: definition과 posture, anchor를 받아 초기 `BattleState`를 만든다.
   - `BattleSimulator`: fixed-step loop를 돌리는 domain orchestrator다.
-  - `TacticEvaluator`: rule chain을 평가해 action intent를 만든다.
+  - `TacticEvaluator`: rule chain을 평가해 action intent를 만든다. LoopA 평가는 `TryMobility` → `TryActiveSkill(signature)` → `TryActiveSkill(flex)` → `TryBasicAttack` 순서로 분해되어 있다.
   - `TargetScoringService`: spatial target score를 계산한다.
   - `MovementResolver`: home position, slotting, range band, reposition, spacing을 계산한다.
   - `EngagementSlotService`: target occupancy와 slot ring을 계산한다.
@@ -59,3 +59,11 @@
 - 적 roster와 encounter는 아직 stub 비중이 높고, `BattleSetupBuilder` 경로는 migration-only다.
 - prototype의 live battle definition 일부는 content asset 대신 runtime hero record에서 조립된다.
 - follow-up TODO: encounter asset authoring을 닫으면 enemy build도 authored catalog 기준으로 옮긴다.
+
+## 주요 상수 및 API 가시성 (2026-04-04)
+
+- `HitResolutionService.ArmorScalingK = 10f`: 방어력 damage reduction 공식 상수 `reduction = mitigation / (mitigation + K)`.
+- `UnitSnapshot`: 에너지 상수 `EnergyPerBasicAttack(12)`, `EnergyPerKill(15)`, `EnergyPerAssist(8)`, `EnergyPerDirectHit(6)`, `SignatureCastThreshold(100)`.
+- `CombatActionResolver.BuildEvent()`: `internal` (SM.Combat asmdef 내부 전용).
+- `TargetScoringService.ComputeExposureScore()`: `internal` (TacticEvaluator 전용).
+- `BattleState.TelemetryEvents`: `IReadOnlyList<>` 반환, 내부 `_telemetryEvents`로 변경 보호.

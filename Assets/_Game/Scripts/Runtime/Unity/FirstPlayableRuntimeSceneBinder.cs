@@ -202,6 +202,8 @@ public static class FirstPlayableRuntimeSceneBinder
         BindButton(scene, "Speed4Button", controller.SetSpeed4);
         BindButton(scene, "PauseButton", controller.TogglePause);
         BindButton(scene, "ContinueButton", controller.ContinueToReward);
+        BindButton(scene, "RebattleButton", controller.RebattleNewSeed);
+        BindButton(scene, "ReturnTownButton", controller.ReturnToTownDirect);
         BindButton(scene, "SettingsButton", settingsController.TogglePanel);
         BindButton(scene, "ToggleWorldHpButton", settingsController.ToggleWorldActorHp);
         BindButton(scene, "ToggleOverlayHpButton", settingsController.ToggleOverlayActorHp);
@@ -272,6 +274,8 @@ public static class FirstPlayableRuntimeSceneBinder
                 EnsureLocalizedText(scene, "SettingsButton", "Label", GameLocalizationTables.UICommon, "ui.common.settings");
                 EnsureLocalizedText(scene, "PauseButton", "Label", GameLocalizationTables.UICommon, "ui.common.pause");
                 EnsureLocalizedText(scene, "ContinueButton", "Label", GameLocalizationTables.UICommon, "ui.common.continue");
+                EnsureLocalizedText(scene, "RebattleButton", "Label", GameLocalizationTables.UIBattle, "ui.battle.action.rebattle");
+                EnsureLocalizedText(scene, "ReturnTownButton", "Label", GameLocalizationTables.UICommon, "ui.common.return_town");
                 break;
             case SceneNames.Reward:
                 EnsureLocalizedText(scene, "ReturnTownButton", "Label", GameLocalizationTables.UICommon, "ui.common.return_town");
