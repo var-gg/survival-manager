@@ -279,7 +279,7 @@ MonoBehaviour:
   BaseProjectileSpeed: 0
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
-  BaseAttackCooldown: 1
+  BaseAttackCooldown: 0.7
   BaseLeashDistance: 5.2
   BaseTargetSwitchDelay: 0.4
   legacyDisplayName: 
