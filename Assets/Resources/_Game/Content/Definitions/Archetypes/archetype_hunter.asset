@@ -284,6 +284,6 @@ MonoBehaviour:
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
   BaseAttackCooldown: 0.4
-  BaseLeashDistance: 4.6
+  BaseLeashDistance: 8
   BaseTargetSwitchDelay: 0.3
   legacyDisplayName: 
