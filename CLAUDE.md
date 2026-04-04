@@ -52,6 +52,23 @@ Unity 에디터는 메인 프로젝트 경로(`A:\projects\game\survival-manager
 
 ## Unity 도구 사용
 
+### 필수: 에디터 포그라운드 전환
+
+**unity-bridge.ps1, unity-cli, MCP 등 Unity 에디터와 통신하는 모든 명령 실행 전에 반드시 `focus-unity.ps1`을 먼저 실행한다.**
+사용자가 컴퓨터를 사용하면 에디터가 백그라운드로 밀리고, OS가 메시지 펌프 우선순위를 낮춰 에디터가 freeze되거나 커넥터가 응답하지 않는다.
+
+```powershell
+pwsh -File tools/focus-unity.ps1            # 반드시 먼저 실행
+```
+
+### MCP 서버 복구
+
+MCP 서버가 죽어있으면 ("No Session" 또는 MCP 도구 응답 없음) 아래 명령으로 복구한다:
+
+```powershell
+C:\Users\curioustore\.local\bin\uvx.exe --prerelease explicit --from "mcpforunityserver>=0.0.0a0" mcp-for-unity --transport http --http-url http://127.0.0.1:43157 --project-scoped-tools
+```
+
 ### unity-bridge.ps1 (기본 경로)
 
 Unity 확인, compile, smoke, report는 wrapper를 먼저 사용한다.

@@ -71,17 +71,14 @@ public sealed class BattleCameraController : MonoBehaviour
     {
         if (_camera == null || !_inputEnabled) return;
 
-#if ENABLE_LEGACY_INPUT_MANAGER
         HandleMouseDrag();
         HandleMouseZoom();
         HandleKeyboardPan();
         HandleEdgeScroll();
-#endif
 
         ApplySmoothedMovement();
     }
 
-#if ENABLE_LEGACY_INPUT_MANAGER
     private void HandleMouseDrag()
     {
         var rightDown = Input.GetMouseButtonDown(1);
@@ -202,7 +199,6 @@ public sealed class BattleCameraController : MonoBehaviour
             ClampTargetPosition();
         }
     }
-#endif
 
     private void ApplySmoothedMovement()
     {

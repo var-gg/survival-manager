@@ -68,12 +68,15 @@ public sealed class BattleScreenController : MonoBehaviour
         _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Battle);
 
+        Debug.Log($"[BattleScreenController] cameraController={(cameraController != null ? cameraController.name : "NULL")}, scrubberView={(scrubberView != null ? scrubberView.name : "NULL")}");
         if (cameraController != null)
         {
             cameraController.Initialize(DefaultCameraPosition, DefaultCameraRotation);
+            Debug.Log($"[BattleScreenController] Camera initialized: Camera.main={(Camera.main != null ? Camera.main.name : "NULL")}");
         }
         else
         {
+            Debug.LogWarning("[BattleScreenController] cameraController is null, using fallback static camera");
             SetupCameraFallback();
         }
 
@@ -90,7 +93,6 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void Update()
     {
-#if ENABLE_LEGACY_INPUT_MANAGER
         if (Input.GetKeyDown(KeyCode.F3))
         {
             _presentationOptions.ToggleDebugOverlay();
@@ -111,7 +113,6 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             CycleSelectedUnit();
         }
-#endif
 
         if (_timeline == null) return;
 

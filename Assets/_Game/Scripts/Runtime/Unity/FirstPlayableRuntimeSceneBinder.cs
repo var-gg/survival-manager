@@ -185,9 +185,15 @@ public static class FirstPlayableRuntimeSceneBinder
         {
             cameraGo = new GameObject("BattleCameraRoot");
             SceneManager.MoveGameObjectToScene(cameraGo, scene);
+            Debug.Log("[Binder] Created BattleCameraRoot dynamically");
+        }
+        else
+        {
+            Debug.Log("[Binder] Found existing BattleCameraRoot in scene");
         }
 
         var cameraCtrl = EnsureComponent<BattleCameraController>(cameraGo);
+        Debug.Log($"[Binder] BattleCameraController: {(cameraCtrl != null ? "OK" : "NULL")} on {cameraGo.name}");
 
         var progressFillImage = GetComponentFromNamedObject<Image>(scene, "ProgressFill");
         BattleTimelineScrubberView? scrubber = null;
