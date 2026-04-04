@@ -189,6 +189,16 @@ public static class FirstPlayableRuntimeSceneBinder
 
         var cameraCtrl = EnsureComponent<BattleCameraController>(cameraGo);
 
+        var progressFillImage = GetComponentFromNamedObject<Image>(scene, "ProgressFill");
+        BattleTimelineScrubberView? scrubber = null;
+        if (progressFillImage != null)
+        {
+            var trackGo = progressFillImage.transform.parent != null
+                ? progressFillImage.transform.parent.gameObject
+                : progressFillImage.gameObject;
+            scrubber = EnsureComponent<BattleTimelineScrubberView>(trackGo);
+        }
+
         var controller = EnsureComponent<BattleScreenController>(controllerGo);
         Bind(controller, new Dictionary<string, Object?>
         {
@@ -199,12 +209,13 @@ public static class FirstPlayableRuntimeSceneBinder
             ["resultText"] = GetComponentFromNamedObject<Text>(scene, "ResultText"),
             ["speedText"] = GetComponentFromNamedObject<Text>(scene, "SpeedText"),
             ["statusText"] = GetComponentFromNamedObject<Text>(scene, "StatusText"),
-            ["progressFill"] = GetComponentFromNamedObject<Image>(scene, "ProgressFill"),
+            ["progressFill"] = progressFillImage,
             ["allySummaryPanel"] = GetComponentFromNamedObject<Image>(scene, "LeftPanel"),
             ["enemySummaryPanel"] = GetComponentFromNamedObject<Image>(scene, "RightPanel"),
             ["presentationController"] = presentation,
             ["settingsPanelController"] = settingsController,
             ["cameraController"] = cameraCtrl,
+            ["scrubberView"] = scrubber,
         });
 
         BindButton(scene, "Speed1Button", controller.SetSpeed1);

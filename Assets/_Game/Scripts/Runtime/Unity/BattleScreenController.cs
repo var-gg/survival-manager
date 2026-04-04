@@ -29,6 +29,7 @@ public sealed class BattleScreenController : MonoBehaviour
     [SerializeField] private BattlePresentationController presentationController = null!;
     [SerializeField] private BattleSettingsPanelController settingsPanelController = null!;
     [SerializeField] private BattleCameraController cameraController = null!;
+    [SerializeField] private BattleTimelineScrubberView scrubberView = null!;
 
     private readonly List<BattleEvent> _recentLogs = new();
     private readonly List<string> _decisiveTimeline = new();
@@ -133,7 +134,7 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         presentationController.SetBlend(previousStep, currentStep, alpha);
-        progressFill.fillAmount = _timeline.NormalizedProgress;
+        UpdateProgressFill(_timeline.NormalizedProgress);
 
         if (_presentationOptions.ShowDebugOverlay)
         {
@@ -179,7 +180,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
         presentationController.PushStep(prev, curr);
         presentationController.SetBlend(prev, curr, 1f);
-        progressFill.fillAmount = _timeline.NormalizedProgress;
+        UpdateProgressFill(_timeline.NormalizedProgress);
         RefreshHud(curr);
     }
 
@@ -363,6 +364,18 @@ public sealed class BattleScreenController : MonoBehaviour
             : Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.active", "Speed x{0:0}", playbackSpeed);
     }
 
+    private void UpdateProgressFill(float normalized)
+    {
+        if (scrubberView != null)
+        {
+            scrubberView.SetFillAmount(normalized);
+        }
+        else if (progressFill != null)
+        {
+            progressFill.fillAmount = normalized;
+        }
+    }
+
     private static void SetupCameraFallback()
     {
         var cam = Camera.main;
@@ -379,7 +392,7 @@ public sealed class BattleScreenController : MonoBehaviour
         resultText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.result.in_progress", "Battle in progress");
         statusText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.status.initializing", "Initializing live simulation");
         logText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.log.preparing", "Preparing battle log");
-        progressFill.fillAmount = 0f;
+        UpdateProgressFill(0f);
         _battleFinishedHandled = false;
         _totalEventCount = 0;
         _recentLogs.Clear();
@@ -436,6 +449,13 @@ public sealed class BattleScreenController : MonoBehaviour
         presentationController.SetPaused(false);
         settingsPanelController.Initialize(_presentationOptions, ApplyPresentationOptions);
         ApplyPresentationOptions(_presentationOptions);
+
+        if (scrubberView != null)
+        {
+            scrubberView.Initialize(progressFill, progressFill.rectTransform.parent as RectTransform ?? progressFill.rectTransform, HandleScrubberSeek);
+            scrubberView.SetInteractable(_policy.CanSeek(false));
+        }
+
         RefreshHud(_simulator.CurrentStep);
         RefreshSpeedText();
 
@@ -454,7 +474,12 @@ public sealed class BattleScreenController : MonoBehaviour
 
         _battleFinishedHandled = true;
         _timeline.MarkFinished();
-        progressFill.fillAmount = 1f;
+        UpdateProgressFill(1f);
+
+        if (scrubberView != null)
+        {
+            scrubberView.SetInteractable(_policy.CanSeek(true));
+        }
 
         var currentStep = _timeline.CurrentStep!;
         resultText.text = currentStep.Winner == TeamSide.Ally
