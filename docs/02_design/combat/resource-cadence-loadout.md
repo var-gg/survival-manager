@@ -63,16 +63,28 @@
 
 ## action lane와 arbitration
 
-우선순위는 항상 아래 순서를 따른다.
+### ground state 원칙
 
-1. `HardCC` 확인
-2. `MobilityReaction` trigger 확인
-3. `SignatureActive` 가능 여부 확인
-4. `FlexActive` 가능 여부 확인
-5. `BasicAttack`
-6. 없으면 range discipline 이동
+`BasicAttack`은 "가장 낮은 우선순위 행동"이 아니라 **기본 전투 상태(ground state)**다.
+스킬은 ground state를 중단(interrupt)하는 것이지, ground state와 우선순위를 경쟁하는 것이 아니다.
 
-lane 규칙은 아래와 같다.
+이 구분이 중요한 이유: ground state가 에너지 축적의 유일한 통상 경로(`BasicAttackResolved → +12 energy`)이므로,
+ground state가 차단되면 에너지 기반 스킬(`SignatureActive`)이 영원히 발동할 수 없다.
+
+### 평가 순서
+
+1. `HardCC` 확인 — stunned면 모든 행동 불가
+2. `MobilityReaction` trigger 확인 — reaction lane, primary lane과 독립
+3. `SignatureActive` (에너지 충족) — ground state를 중단(interrupt)
+4. `FlexActive` (쿨다운 충족, **전투형만**) — `Strike`/`Debuff` Kind의 Flex는 ground state를 중단
+5. `BasicAttack` — **ground state**, 에너지 생성기, 기본 전투 행동
+6. `FlexActive` (비전투형) — 기본공격 불가 시 유틸리티 폴백 (`Heal`/`Shield`/`Buff`/`Utility` Kind)
+7. 없으면 range discipline 이동
+
+전투형 Flex 판정 기준: `SkillKind`가 `Strike` 또는 `Debuff`인 스킬은 직접 데미지를 적용하므로 ground state를 중단할 가치가 있다.
+비전투형 Flex(`Heal`, `Shield`, `Buff`, `Utility`)는 기본공격 타겟이 없을 때만 폴백으로 사용한다.
+
+### lane 규칙
 
 - `Primary`: `BasicAttack`, `SignatureActive`, `FlexActive`
 - `Reaction`: `MobilityReaction`

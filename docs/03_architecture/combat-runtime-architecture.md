@@ -22,7 +22,7 @@
 - `SM.Combat`
   - `BattleFactory`: definition과 posture, anchor를 받아 초기 `BattleState`를 만든다.
   - `BattleSimulator`: fixed-step loop를 돌리는 domain orchestrator다.
-  - `TacticEvaluator`: rule chain을 평가해 action intent를 만든다. LoopA 평가는 `TryMobility` → `TryActiveSkill(signature)` → `TryActiveSkill(flex)` → `TryBasicAttack` 순서로 분해되어 있다.
+  - `TacticEvaluator`: rule chain을 평가해 action intent를 만든다. LoopA 평가는 ground state + interrupt 모델을 따른다: `TryMobility` → `TrySignature(interrupt)` → `TryCombatFlex(interrupt)` → `BasicAttack(ground state)` → `TryUtilityFlex(fallback)`. 전투형 Flex(`Strike`/`Debuff`)만 ground state를 중단하고, 비전투형 Flex는 기본공격 불가 시 폴백이다.
   - `TargetScoringService`: spatial target score를 계산한다.
   - `MovementResolver`: home position, slotting, range band, reposition, spacing을 계산한다.
   - `EngagementSlotService`: target occupancy와 slot ring을 계산한다.

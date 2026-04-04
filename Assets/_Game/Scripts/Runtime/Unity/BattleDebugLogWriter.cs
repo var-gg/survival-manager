@@ -14,12 +14,12 @@ public static class BattleDebugLogWriter
     private const string LogDirectory = "Logs";
     private const string LogFileName = "last_battle_replay.json";
 
-    public static void Write(BattleReplayBundle replay)
+    public static void Write(BattleReplayBundle replay, IReadOnlyList<BattleUnitReadModel>? finalUnitStates = null)
     {
         try
         {
             var path = ResolvePath();
-            var json = BuildJson(replay);
+            var json = BuildJson(replay, finalUnitStates);
             File.WriteAllText(path, json, Encoding.UTF8);
             Debug.Log($"[BattleDebugLog] Written to {path} ({json.Length:N0} chars)");
         }
@@ -40,7 +40,7 @@ public static class BattleDebugLogWriter
         return Path.GetFullPath(Path.Combine(dir, LogFileName));
     }
 
-    private static string BuildJson(BattleReplayBundle replay)
+    private static string BuildJson(BattleReplayBundle replay, IReadOnlyList<BattleUnitReadModel>? finalUnitStates)
     {
         var sb = new StringBuilder(8192);
         sb.AppendLine("{");
@@ -54,7 +54,7 @@ public static class BattleDebugLogWriter
         WriteEvents(sb, replay.EventStream);
         sb.AppendLine(",");
 
-        WriteFinalUnits(sb, replay);
+        WriteFinalUnits(sb, replay, finalUnitStates);
         sb.AppendLine(",");
 
         WriteStats(sb, replay);
@@ -169,23 +169,39 @@ public static class BattleDebugLogWriter
         sb.Append("  ]");
     }
 
-    private static void WriteFinalUnits(StringBuilder sb, BattleReplayBundle replay)
+    private static void WriteFinalUnits(StringBuilder sb, BattleReplayBundle replay, IReadOnlyList<BattleUnitReadModel>? finalUnitStates)
     {
-        var finalUnits = replay.EventStream.Count > 0
-            ? ExtractFinalUnitsFromEvents(replay)
-            : Array.Empty<FinalUnitEntry>();
-
         sb.AppendLine("  \"finalUnits\": [");
-        for (var i = 0; i < finalUnits.Length; i++)
+        if (finalUnitStates is { Count: > 0 })
         {
-            var u = finalUnits[i];
-            sb.Append($"    {{ \"id\": \"{Escape(u.Id)}\", \"side\": \"{u.Side}\", \"alive\": {(u.Alive ? "true" : "false")} }}");
-            if (i < finalUnits.Length - 1)
+            for (var i = 0; i < finalUnitStates.Count; i++)
             {
-                sb.Append(',');
-            }
+                var u = finalUnitStates[i];
+                sb.Append($"    {{ \"id\": \"{Escape(u.Id)}\", \"name\": \"{Escape(u.Name)}\", \"side\": \"{u.Side}\", \"alive\": {(u.IsAlive ? "true" : "false")}, \"hp\": {u.CurrentHealth:0.#}, \"maxHp\": {u.MaxHealth:0.#}, \"barrier\": {u.Barrier:0.#} }}");
+                if (i < finalUnitStates.Count - 1)
+                {
+                    sb.Append(',');
+                }
 
-            sb.AppendLine();
+                sb.AppendLine();
+            }
+        }
+        else
+        {
+            var fallback = replay.EventStream.Count > 0
+                ? ExtractFinalUnitsFromEvents(replay)
+                : Array.Empty<FinalUnitEntry>();
+            for (var i = 0; i < fallback.Length; i++)
+            {
+                var u = fallback[i];
+                sb.Append($"    {{ \"id\": \"{Escape(u.Id)}\", \"side\": \"{u.Side}\", \"alive\": {(u.Alive ? "true" : "false")} }}");
+                if (i < fallback.Length - 1)
+                {
+                    sb.Append(',');
+                }
+
+                sb.AppendLine();
+            }
         }
 
         sb.Append("  ]");
@@ -203,11 +219,9 @@ public static class BattleDebugLogWriter
         var firstDamageStep = -1;
         var firstKillStep = -1;
 
-        var allyIds = new HashSet<string>(replay.Input.Allies.Select(u => u.Id));
-
         foreach (var evt in events)
         {
-            var isAllyActor = allyIds.Contains(evt.ActorId.Value);
+            var isAllyActor = evt.ActorId.Value.StartsWith("ally_");
             if (evt.LogCode is BattleLogCode.BasicAttackDamage or BattleLogCode.ActiveSkillDamage)
             {
                 if (isAllyActor)

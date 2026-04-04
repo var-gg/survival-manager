@@ -118,7 +118,8 @@ public sealed class BattleSimulator
             var inRangeBand = MovementResolver.IsWithinRangeBand(actor, evaluated.Target, evaluated.DesiredRangeBand, actor.Behavior.RangeHysteresis);
             var slotReady = !evaluated.RequiresEngagementSlot
                             || evaluated.SlotAssignment == null
-                            || actor.Position.DistanceTo(evaluated.SlotAssignment.Position) <= Math.Max(SlotArrivalThreshold, actor.SeparationRadius * SlotArrivalRadiusScale);
+                            || actor.Position.DistanceTo(evaluated.SlotAssignment.Position) <= Math.Max(SlotArrivalThreshold, actor.SeparationRadius * SlotArrivalRadiusScale)
+                            || (inRangeBand && MovementResolver.IsInActionRange(actor, evaluated.Target, actor.AttackRange + ActionRangeTolerance));
             if (inRangeBand && slotReady && evaluated.Mobility == null)
             {
                 if (evaluated.ActionType == BattleActionType.BasicAttack && !StatusResolutionService.CanUseBasicAttack(actor))

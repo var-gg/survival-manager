@@ -12,6 +12,8 @@ public static class EngagementSlotService
     private const float SlotSpreadDegrees = 160f;
     private const float MinDesiredEdgeDistance = 0.85f;
     private const float MinOverflowRadiusScale = 0.45f;
+    private const float ArenaHalfWidth = 8f;
+    private const float ArenaHalfHeight = 3.2f;
 
     public static bool RequiresSlotting(UnitSnapshot actor, FloatRange rangeBand)
     {
@@ -60,6 +62,9 @@ public static class EngagementSlotService
         var angleRadians = angleDegrees * (MathF.PI / 180f);
         var radius = ringRadius + (ringOffset * Math.Max(MinOverflowRadiusScale, actor.SeparationRadius));
         var position = target.Position + new CombatVector2(MathF.Cos(angleRadians), MathF.Sin(angleRadians)) * radius;
+        position = new CombatVector2(
+            Math.Clamp(position.X, -ArenaHalfWidth, ArenaHalfWidth),
+            Math.Clamp(position.Y, -ArenaHalfHeight, ArenaHalfHeight));
         return new EngagementSlotAssignment(target.Id, slotIndex, position, isOverflow);
     }
 }

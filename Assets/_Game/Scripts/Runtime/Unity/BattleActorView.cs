@@ -176,7 +176,8 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_hpFill != null)
         {
-            _hpFill.fillAmount = healthRatio;
+            var fillRect = _hpFill.GetComponent<RectTransform>();
+            fillRect.anchorMax = new Vector2(healthRatio, 1f);
             _hpFill.color = healthColor;
         }
 
@@ -351,9 +352,6 @@ public sealed class BattleActorView : MonoBehaviour
         fillRect.offsetMax = Vector2.zero;
 
         _hpFill = fillGo.AddComponent<Image>();
-        _hpFill.type = Image.Type.Filled;
-        _hpFill.fillMethod = Image.FillMethod.Horizontal;
-        _hpFill.fillOrigin = 0;
         _hpFill.raycastTarget = false;
 
         var floatingGo = new GameObject("FloatingText", typeof(RectTransform));
@@ -623,22 +621,8 @@ public sealed class BattleActorView : MonoBehaviour
         }
 
         return side == TeamSide.Ally
-            ? ResolveAllyHealthColor(ratio)
-            : ResolveEnemyHealthColor(ratio);
-    }
-
-    private static Color ResolveAllyHealthColor(float ratio)
-    {
-        if (ratio <= 0.25f) return new Color(0.96f, 0.28f, 0.24f, 1f);
-        if (ratio <= 0.55f) return new Color(0.96f, 0.74f, 0.24f, 1f);
-        return new Color(0.34f, 0.90f, 0.42f, 1f);
-    }
-
-    private static Color ResolveEnemyHealthColor(float ratio)
-    {
-        if (ratio <= 0.25f) return new Color(1.00f, 0.30f, 0.20f, 1f);
-        if (ratio <= 0.55f) return new Color(0.92f, 0.52f, 0.18f, 1f);
-        return new Color(0.72f, 0.18f, 0.18f, 1f);
+            ? new Color(0.30f, 0.82f, 0.38f, 1f)
+            : new Color(0.82f, 0.22f, 0.22f, 1f);
     }
 
     private static Color ResolveBaseColor(BattleUnitReadModel actor)

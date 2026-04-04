@@ -46,12 +46,14 @@ public static class TacticEvaluator
         var stableTarget = ResolveStableTarget(state, actor, actor.Definition.EffectiveBasicAttack.TargetRuleData);
         var baseRangeBand = ResolveLoopARangeBand(actor, null, BattleActionType.BasicAttack);
 
+        // Mobility interrupt
         var mobilityResult = TryMobility(state, actor, stableTarget, baseRangeBand, fallbackRule, reevaluationReason);
         if (mobilityResult != null)
         {
             return mobilityResult;
         }
 
+        // Signature interrupt — energy-gated, highest skill priority
         var signatureResult = TryActiveSkill(state, actor, actor.Definition.EffectiveSignatureActive, stableTarget, fallbackRule, reevaluationReason,
             skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CanSpendSignatureCastEnergy());
         if (signatureResult != null)
@@ -59,14 +61,43 @@ public static class TacticEvaluator
             return signatureResult;
         }
 
-        var flexResult = TryActiveSkill(state, actor, actor.Definition.EffectiveFlexActive, stableTarget, fallbackRule, reevaluationReason,
-            skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CooldownRemaining <= 0f);
-        if (flexResult != null)
+        // Combat-relevant flex interrupt — Strike/Debuff flex interrupts the ground state
+        var flex = actor.Definition.EffectiveFlexActive;
+        if (flex != null && IsCombatRelevantFlex(flex))
         {
-            return flexResult;
+            var combatFlexResult = TryActiveSkill(state, actor, flex, stableTarget, fallbackRule, reevaluationReason,
+                skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CooldownRemaining <= 0f);
+            if (combatFlexResult != null)
+            {
+                return combatFlexResult;
+            }
         }
 
-        return TryBasicAttack(state, actor, stableTarget, baseRangeBand, fallbackRule, reevaluationReason);
+        // Ground state: BasicAttack — default combat action, generates energy
+        var basicResult = TryBasicAttack(state, actor, stableTarget, baseRangeBand, fallbackRule, reevaluationReason);
+        if (basicResult.ActionType != BattleActionType.WaitDefend)
+        {
+            return basicResult;
+        }
+
+        // Non-combat flex fallback — Heal/Shield/Buff/Utility when no basic attack target
+        if (flex != null && !IsCombatRelevantFlex(flex))
+        {
+            var utilityFlexResult = TryActiveSkill(state, actor, flex, stableTarget, fallbackRule, reevaluationReason,
+                skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CooldownRemaining <= 0f);
+            if (utilityFlexResult != null)
+            {
+                return utilityFlexResult;
+            }
+        }
+
+        // Defend/Reposition
+        return basicResult;
+    }
+
+    private static bool IsCombatRelevantFlex(BattleSkillSpec skill)
+    {
+        return skill.Kind is SkillKind.Strike or SkillKind.Debuff;
     }
 
     private static EvaluatedAction? TryMobility(
