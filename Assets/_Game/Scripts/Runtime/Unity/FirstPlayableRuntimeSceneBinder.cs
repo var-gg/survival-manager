@@ -181,11 +181,13 @@ public static class FirstPlayableRuntimeSceneBinder
         });
 
         var cameraGo = FindGameObject(scene, "BattleCameraRoot");
-        BattleCameraController? cameraCtrl = null;
-        if (cameraGo != null)
+        if (cameraGo == null)
         {
-            cameraCtrl = EnsureComponent<BattleCameraController>(cameraGo);
+            cameraGo = new GameObject("BattleCameraRoot");
+            SceneManager.MoveGameObjectToScene(cameraGo, scene);
         }
+
+        var cameraCtrl = EnsureComponent<BattleCameraController>(cameraGo);
 
         var controller = EnsureComponent<BattleScreenController>(controllerGo);
         Bind(controller, new Dictionary<string, Object?>
