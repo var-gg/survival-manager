@@ -14,6 +14,12 @@ public sealed record HitResolutionResult(
 
 public static class HitResolutionService
 {
+    /// <summary>Scaling constant for armor/resist damage reduction: reduction = mitigation / (mitigation + K).</summary>
+    private const float ArmorScalingK = 10f;
+
+    /// <summary>Maximum fraction of damage that block mitigation can absorb.</summary>
+    private const float MaxBlockMitigationFraction = 0.9f;
+
     public static HitResolutionResult ResolveBasicAttack(BattleState state, UnitSnapshot actor, UnitSnapshot target)
     {
         return ResolveDamage(
@@ -81,12 +87,11 @@ public static class HitResolutionService
         if (blocked)
         {
             target.TriggerBlockCooldown();
-            powerAfterCrit *= 1f - Math.Clamp(target.Behavior.BlockMitigation, 0f, 0.9f);
+            powerAfterCrit *= 1f - Math.Clamp(target.Behavior.BlockMitigation, 0f, MaxBlockMitigationFraction);
         }
 
         var mitigation = damageType == DamageType.Magical ? target.Resist : target.Armor;
-        const float armorScaling = 10f;
-        var reductionFactor = 1f - (mitigation / (mitigation + armorScaling));
+        var reductionFactor = 1f - (mitigation / (mitigation + ArmorScalingK));
         var resolved = Math.Max(1f, powerAfterCrit * reductionFactor * target.GetIncomingDamageMultiplier());
         var note = blocked
             ? critical ? "crit+block" : "block"

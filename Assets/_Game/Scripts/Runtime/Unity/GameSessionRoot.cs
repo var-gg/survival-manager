@@ -87,4 +87,22 @@ public sealed class GameSessionRoot : MonoBehaviour
     {
         LastBlockingError = null;
     }
+
+    /// <summary>
+    /// Returns existing Instance or creates a minimal emergency root.
+    /// Use when a scene is played directly without going through Boot.
+    /// </summary>
+    public static GameSessionRoot EnsureInstance()
+    {
+        if (Instance != null)
+        {
+            return Instance;
+        }
+
+        Debug.LogWarning("[GameSessionRoot] Boot 씬을 거치지 않고 직접 실행됨. 최소 초기화를 수행합니다.");
+        var go = new GameObject("GameSessionRoot");
+        var root = go.AddComponent<GameSessionRoot>();
+        root.BindProfile();
+        return root;
+    }
 }

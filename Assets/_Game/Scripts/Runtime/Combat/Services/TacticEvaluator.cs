@@ -19,6 +19,11 @@ public sealed record EvaluatedAction(
 
 public static class TacticEvaluator
 {
+    private const float MeleeSlotRangeMin = 0.75f;
+    private const float MeleeSlotRangeMax = 0.95f;
+    private const float SupportMaxRangeFloor = 1.4f;
+    private const float SupportRangeShrink = 0.8f;
+
     public static EvaluatedAction Evaluate(BattleState state, UnitSnapshot actor)
     {
         var reevaluationReason = actor.PendingReevaluationReason != ReevaluationReason.None
@@ -41,106 +46,98 @@ public static class TacticEvaluator
         var stableTarget = ResolveStableTarget(state, actor, actor.Definition.EffectiveBasicAttack.TargetRuleData);
         var baseRangeBand = ResolveLoopARangeBand(actor, null, BattleActionType.BasicAttack);
 
-        if (actor.EffectiveMobilityReaction is { } mobilityReaction
-            && !actor.IsStunned
-            && !actor.IsRooted
-            && actor.MobilityCooldownRemaining <= 0f)
+        var mobilityResult = TryMobility(state, actor, stableTarget, baseRangeBand, fallbackRule, reevaluationReason);
+        if (mobilityResult != null)
         {
-            var mobilityTarget = stableTarget ?? TargetScoringService.SelectTarget(state, actor, mobilityReaction.TargetRuleData);
-            var mobilityDecision = mobilityTarget == null ? null : MovementResolver.BuildMobilityDecision(actor, mobilityTarget, baseRangeBand);
-            if (mobilityDecision != null)
-            {
-                return new EvaluatedAction(
-                    BattleActionType.BasicAttack,
-                    mobilityTarget,
-                    null,
-                    fallbackRule,
-                    baseRangeBand,
-                    ResolvePhase(actor, mobilityTarget, baseRangeBand, null, mobilityDecision),
-                    reevaluationReason,
-                    false,
-                    null,
-                    mobilityDecision);
-            }
+            return mobilityResult;
         }
 
-        if (actor.Definition.EffectiveSignatureActive is { } signature
-            && StatusResolutionService.CanUseSkillSlot(actor, signature)
-            && actor.CanSpendSignatureCastEnergy())
+        var signatureResult = TryActiveSkill(state, actor, actor.Definition.EffectiveSignatureActive, stableTarget, fallbackRule, reevaluationReason,
+            skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CanSpendSignatureCastEnergy());
+        if (signatureResult != null)
         {
-            var target = ResolveStableTarget(state, actor, signature.TargetRuleData) ?? TargetScoringService.SelectTarget(state, actor, signature.TargetRuleData);
-            if (target != null)
-            {
-                var rangeBand = ResolveLoopARangeBand(actor, signature, BattleActionType.ActiveSkill);
-                var requiresSlot = target.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, rangeBand);
-                var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, target, rangeBand) : null;
-                return new EvaluatedAction(
-                    BattleActionType.ActiveSkill,
-                    target,
-                    signature,
-                    fallbackRule,
-                    rangeBand,
-                    ResolvePhase(actor, target, rangeBand, slotAssignment, null),
-                    reevaluationReason,
-                    requiresSlot,
-                    slotAssignment,
-                    null);
-            }
+            return signatureResult;
         }
 
-        if (actor.Definition.EffectiveFlexActive is { } flex
-            && StatusResolutionService.CanUseSkillSlot(actor, flex)
-            && actor.CooldownRemaining <= 0f)
+        var flexResult = TryActiveSkill(state, actor, actor.Definition.EffectiveFlexActive, stableTarget, fallbackRule, reevaluationReason,
+            skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CooldownRemaining <= 0f);
+        if (flexResult != null)
         {
-            var target = ResolveStableTarget(state, actor, flex.TargetRuleData) ?? TargetScoringService.SelectTarget(state, actor, flex.TargetRuleData);
-            if (target != null)
-            {
-                var rangeBand = ResolveLoopARangeBand(actor, flex, BattleActionType.ActiveSkill);
-                var requiresSlot = target.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, rangeBand);
-                var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, target, rangeBand) : null;
-                return new EvaluatedAction(
-                    BattleActionType.ActiveSkill,
-                    target,
-                    flex,
-                    fallbackRule,
-                    rangeBand,
-                    ResolvePhase(actor, target, rangeBand, slotAssignment, null),
-                    reevaluationReason,
-                    requiresSlot,
-                    slotAssignment,
-                    null);
-            }
+            return flexResult;
         }
 
-        var basicTarget = stableTarget ?? TargetScoringService.SelectTarget(state, actor, actor.Definition.EffectiveBasicAttack.TargetRuleData);
+        return TryBasicAttack(state, actor, stableTarget, baseRangeBand, fallbackRule, reevaluationReason);
+    }
+
+    private static EvaluatedAction? TryMobility(
+        BattleState state, UnitSnapshot actor, UnitSnapshot? stableTarget,
+        FloatRange baseRangeBand, TacticRule fallbackRule, ReevaluationReason reevaluationReason)
+    {
+        if (actor.EffectiveMobilityReaction is not { } mobilityReaction
+            || actor.IsStunned || actor.IsRooted || actor.MobilityCooldownRemaining > 0f)
+        {
+            return null;
+        }
+
+        var mobilityTarget = stableTarget ?? TargetScoringService.SelectTarget(state, actor, mobilityReaction.TargetRuleData);
+        var mobilityDecision = mobilityTarget == null ? null : MovementResolver.BuildMobilityDecision(actor, mobilityTarget, baseRangeBand);
+        if (mobilityDecision == null)
+        {
+            return null;
+        }
+
+        return new EvaluatedAction(
+            BattleActionType.BasicAttack, mobilityTarget, null, fallbackRule, baseRangeBand,
+            ResolvePhase(actor, mobilityTarget, baseRangeBand, null, mobilityDecision),
+            reevaluationReason, false, null, mobilityDecision);
+    }
+
+    private static EvaluatedAction? TryActiveSkill(
+        BattleState state, UnitSnapshot actor, BattleSkillSpec? skill, UnitSnapshot? stableTarget,
+        TacticRule fallbackRule, ReevaluationReason reevaluationReason,
+        Func<BattleSkillSpec, bool> readyCheck)
+    {
+        if (skill == null || !readyCheck(skill))
+        {
+            return null;
+        }
+
+        var target = ResolveStableTarget(state, actor, skill.TargetRuleData)
+                     ?? TargetScoringService.SelectTarget(state, actor, skill.TargetRuleData);
+        if (target == null)
+        {
+            return null;
+        }
+
+        var rangeBand = ResolveLoopARangeBand(actor, skill, BattleActionType.ActiveSkill);
+        var requiresSlot = target.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, rangeBand);
+        var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, target, rangeBand) : null;
+        return new EvaluatedAction(
+            BattleActionType.ActiveSkill, target, skill, fallbackRule, rangeBand,
+            ResolvePhase(actor, target, rangeBand, slotAssignment, null),
+            reevaluationReason, requiresSlot, slotAssignment, null);
+    }
+
+    private static EvaluatedAction TryBasicAttack(
+        BattleState state, UnitSnapshot actor, UnitSnapshot? stableTarget,
+        FloatRange baseRangeBand, TacticRule fallbackRule, ReevaluationReason reevaluationReason)
+    {
+        var basicTarget = stableTarget
+                          ?? TargetScoringService.SelectTarget(state, actor, actor.Definition.EffectiveBasicAttack.TargetRuleData);
         if (basicTarget != null)
         {
             var requiresSlot = basicTarget.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, baseRangeBand);
             var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, basicTarget, baseRangeBand) : null;
             return new EvaluatedAction(
-                BattleActionType.BasicAttack,
-                basicTarget,
-                null,
-                fallbackRule,
-                baseRangeBand,
+                BattleActionType.BasicAttack, basicTarget, null, fallbackRule, baseRangeBand,
                 ResolvePhase(actor, basicTarget, baseRangeBand, slotAssignment, null),
-                reevaluationReason,
-                requiresSlot,
-                slotAssignment,
-                null);
+                reevaluationReason, requiresSlot, slotAssignment, null);
         }
 
         return new EvaluatedAction(
-            BattleActionType.WaitDefend,
-            actor,
-            null,
-            fallbackRule,
-            new FloatRange(0f, 0f),
-            CombatActionState.Reposition,
-            reevaluationReason,
-            false,
-            null,
-            null);
+            BattleActionType.WaitDefend, actor, null, fallbackRule,
+            new FloatRange(0f, 0f), CombatActionState.Reposition,
+            reevaluationReason, false, null, null);
     }
 
     private static EvaluatedAction EvaluateLegacy(BattleState state, UnitSnapshot actor, ReevaluationReason reevaluationReason)
@@ -286,13 +283,13 @@ public static class TacticEvaluator
         if (EngagementSlotService.RequiresSlotting(actor, authored))
         {
             var reach = Math.Min(desiredMax, Math.Max(actor.CombatReach, authored.ClampedMax));
-            return new FloatRange(Math.Max(0.75f, authored.ClampedMin), Math.Max(0.95f, reach));
+            return new FloatRange(Math.Max(MeleeSlotRangeMin, authored.ClampedMin), Math.Max(MeleeSlotRangeMax, reach));
         }
 
         if (skill?.Kind is SkillKind.Heal or SkillKind.Shield or SkillKind.Buff)
         {
-            max = Math.Max(1.4f, desiredMax - 0.8f);
-            min = Math.Max(0.8f, max - 0.8f);
+            max = Math.Max(SupportMaxRangeFloor, desiredMax - SupportRangeShrink);
+            min = Math.Max(SupportRangeShrink, max - SupportRangeShrink);
         }
 
         if (max <= 0f)

@@ -9,6 +9,13 @@ public sealed class BattleSimulator
 {
     public const float DefaultFixedStepSeconds = 0.1f;
     public const int DefaultMaxSteps = 300;
+
+    private const float SpawnArrivalThreshold = 0.05f;
+    private const float SlotArrivalThreshold = 0.15f;
+    private const float SlotArrivalRadiusScale = 0.4f;
+    private const float HomeArrivalThreshold = 0.12f;
+    private const float ActionRangeTolerance = 0.35f;
+
     private readonly List<BattleEvent> _events = new();
     private readonly int _maxSteps;
 
@@ -111,7 +118,7 @@ public sealed class BattleSimulator
             var inRangeBand = MovementResolver.IsWithinRangeBand(actor, evaluated.Target, evaluated.DesiredRangeBand, actor.Behavior.RangeHysteresis);
             var slotReady = !evaluated.RequiresEngagementSlot
                             || evaluated.SlotAssignment == null
-                            || actor.Position.DistanceTo(evaluated.SlotAssignment.Position) <= Math.Max(0.15f, actor.SeparationRadius * 0.4f);
+                            || actor.Position.DistanceTo(evaluated.SlotAssignment.Position) <= Math.Max(SlotArrivalThreshold, actor.SeparationRadius * SlotArrivalRadiusScale);
             if (inRangeBand && slotReady && evaluated.Mobility == null)
             {
                 if (evaluated.ActionType == BattleActionType.BasicAttack && !StatusResolutionService.CanUseBasicAttack(actor))
@@ -182,7 +189,7 @@ public sealed class BattleSimulator
         }
 
         var home = MovementResolver.ResolveHomePosition(State, actor);
-        if (actor.Position.DistanceTo(home) <= 0.05f)
+        if (actor.Position.DistanceTo(home) <= SpawnArrivalThreshold)
         {
             actor.SetPosition(home);
             actor.SetActionState(CombatActionState.AcquireTarget);
@@ -207,7 +214,7 @@ public sealed class BattleSimulator
         }
 
         var desiredRange = actor.ResolveActionRange(actor.PendingSkillId);
-        if (!MovementResolver.IsInActionRange(actor, target, desiredRange + 0.35f))
+        if (!MovementResolver.IsInActionRange(actor, target, desiredRange + ActionRangeTolerance))
         {
             actor.ClearTarget(applySwitchDelay: true);
             actor.SetActionState(CombatActionState.AcquireTarget);
@@ -226,7 +233,7 @@ public sealed class BattleSimulator
     private void HandleDefendOrReposition(UnitSnapshot actor, List<BattleEvent> stepEvents)
     {
         var home = MovementResolver.ResolveHomePosition(State, actor);
-        if (actor.Position.DistanceTo(home) <= 0.12f)
+        if (actor.Position.DistanceTo(home) <= HomeArrivalThreshold)
         {
             if (!actor.IsDefending)
             {

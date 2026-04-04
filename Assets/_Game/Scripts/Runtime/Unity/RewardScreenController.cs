@@ -18,7 +18,7 @@ public sealed class RewardScreenController : MonoBehaviour
 
     private void Start()
     {
-        _root = GameSessionRoot.Instance!;
+        _root = GameSessionRoot.EnsureInstance();
         if (_root == null)
         {
             SetStatus("GameSessionRoot가 없습니다.");
@@ -79,7 +79,7 @@ public sealed class RewardScreenController : MonoBehaviour
             return true;
         }
 
-        _root = GameSessionRoot.Instance!;
+        _root = GameSessionRoot.EnsureInstance();
         if (_root == null)
         {
             SetStatus("GameSessionRoot가 없습니다.");

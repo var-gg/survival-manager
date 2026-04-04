@@ -55,7 +55,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void Start()
     {
-        _root = GameSessionRoot.Instance!;
+        _root = GameSessionRoot.EnsureInstance();
         if (_root == null)
         {
             SetResult("GameSessionRoot가 없습니다.");
@@ -221,7 +221,7 @@ public sealed class BattleScreenController : MonoBehaviour
             return true;
         }
 
-        _root = GameSessionRoot.Instance!;
+        _root = GameSessionRoot.EnsureInstance();
         if (_root == null)
         {
             SetResult("GameSessionRoot가 없습니다.");

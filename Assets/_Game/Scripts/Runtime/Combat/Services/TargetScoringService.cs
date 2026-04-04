@@ -98,7 +98,7 @@ public static class TargetScoringService
             : ResolveFallback(state, actor, rule, candidates);
     }
 
-    public static float ComputeExposureScore(BattleState state, UnitSnapshot target)
+    internal static float ComputeExposureScore(BattleState state, UnitSnapshot target)
     {
         var allies = state.GetTeam(target.Side)
             .Where(unit => unit.IsAlive && unit.Id != target.Id)

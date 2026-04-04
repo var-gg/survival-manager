@@ -9,6 +9,14 @@ namespace SM.Combat.Model;
 
 public sealed class UnitSnapshot
 {
+    private const float SignatureCastThreshold = 100f;
+    private const float EnergyPerBasicAttack = 12f;
+    private const float EnergyPerDirectHit = 6f;
+    private const float EnergyPerKill = 15f;
+    private const float EnergyPerAssist = 8f;
+    private const float DirectHitEnergyIcdSeconds = 0.35f;
+    private const float InterruptedSignatureRefund = 50f;
+
     private readonly List<AppliedStatusState> _statuses = new();
     private bool _pendingSignatureEnergySpent;
 
@@ -521,12 +529,12 @@ public sealed class UnitSnapshot
 
     public bool CanSpendSignatureCastEnergy()
     {
-        return CurrentEnergy >= 100f;
+        return CurrentEnergy >= SignatureCastThreshold;
     }
 
     public void GainEnergyFromBasicAttackResolved()
     {
-        GainEnergy(12f);
+        GainEnergy(EnergyPerBasicAttack);
     }
 
     public void GainEnergyFromDirectHitTaken()
@@ -536,18 +544,18 @@ public sealed class UnitSnapshot
             return;
         }
 
-        GainEnergy(6f);
-        DirectHitEnergyIcdRemaining = 0.35f;
+        GainEnergy(EnergyPerDirectHit);
+        DirectHitEnergyIcdRemaining = DirectHitEnergyIcdSeconds;
     }
 
     public void GainEnergyFromKill()
     {
-        GainEnergy(15f);
+        GainEnergy(EnergyPerKill);
     }
 
     public void GainEnergyFromAssist()
     {
-        GainEnergy(8f);
+        GainEnergy(EnergyPerAssist);
     }
 
     public void RequestReevaluation(ReevaluationReason reason)
@@ -627,7 +635,7 @@ public sealed class UnitSnapshot
             return;
         }
 
-        CurrentEnergy = Math.Clamp(CurrentEnergy - 100f, 0f, MaxEnergy);
+        CurrentEnergy = Math.Clamp(CurrentEnergy - SignatureCastThreshold, 0f, MaxEnergy);
         _pendingSignatureEnergySpent = true;
     }
 
@@ -638,7 +646,7 @@ public sealed class UnitSnapshot
             return;
         }
 
-        GainEnergy(50f);
+        GainEnergy(InterruptedSignatureRefund);
         _pendingSignatureEnergySpent = false;
     }
 

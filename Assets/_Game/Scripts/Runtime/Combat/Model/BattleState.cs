@@ -38,7 +38,8 @@ public sealed class BattleState
     public TelemetryContext? TelemetryContext { get; }
     public int StepIndex { get; private set; }
     public float ElapsedSeconds { get; private set; }
-    public List<TelemetryEventRecord> TelemetryEvents { get; } = new();
+    private readonly List<TelemetryEventRecord> _telemetryEvents = new();
+    public IReadOnlyList<TelemetryEventRecord> TelemetryEvents => _telemetryEvents;
 
     public IEnumerable<UnitSnapshot> AllUnits => Allies.Concat(Enemies);
     public IEnumerable<UnitSnapshot> LivingAllies => Allies.Where(x => x.IsAlive);
@@ -61,7 +62,7 @@ public sealed class BattleState
     {
         if (record != null)
         {
-            TelemetryEvents.Add(record);
+            _telemetryEvents.Add(record);
         }
     }
 

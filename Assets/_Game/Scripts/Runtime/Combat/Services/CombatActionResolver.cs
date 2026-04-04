@@ -161,7 +161,7 @@ public static class CombatActionResolver
         return events;
     }
 
-    public static BattleEvent BuildEvent(
+    internal static BattleEvent BuildEvent(
         BattleState state,
         UnitSnapshot actor,
         BattleActionType actionType,

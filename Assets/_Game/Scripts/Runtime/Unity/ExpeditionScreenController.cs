@@ -24,7 +24,7 @@ public sealed class ExpeditionScreenController : MonoBehaviour
 
     private void Start()
     {
-        _root = GameSessionRoot.Instance!;
+        _root = GameSessionRoot.EnsureInstance();
         if (_root == null)
         {
             SetStatus("GameSessionRoot가 없습니다.");
@@ -151,7 +151,7 @@ public sealed class ExpeditionScreenController : MonoBehaviour
             return true;
         }
 
-        _root = GameSessionRoot.Instance!;
+        _root = GameSessionRoot.EnsureInstance();
         if (_root == null)
         {
             SetStatus("GameSessionRoot가 없습니다.");
