@@ -9,4 +9,5 @@ public static class GameLocalizationTables
     public const string UIReward = "UI_Reward";
     public const string CombatLog = "Combat_Log";
     public const string SystemMessages = "System_Messages";
+    public const string ContentArchetype = "Content_Archetypes";
 }

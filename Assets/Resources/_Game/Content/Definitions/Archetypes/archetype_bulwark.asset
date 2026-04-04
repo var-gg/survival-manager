@@ -236,7 +236,7 @@ MonoBehaviour:
   FootprintProfile: {fileID: 11400000, guid: b07c3ef2049972e4ab998768a91f4e02, type: 2}
   BehaviorProfile: {fileID: 11400000, guid: 07c1e9da8c03c204e9851ccbb5f54987, type: 2}
   MobilityProfile: {fileID: 11400000, guid: 0d01521760a55c841835084a49d9fb8e, type: 2}
-  BaseMaxHealth: 25
+  BaseMaxHealth: 105
   BaseArmor: 4.2
   BaseResist: 0.8
   BaseBarrierPower: 0

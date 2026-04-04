@@ -37,7 +37,12 @@ public static class FirstPlayableBootstrap
             FirstPlayableSceneInstaller.RepairFirstPlayableScenes();
 
             Debug.Log("[QuickBattle] Step 5/7: Ensure Quick Battle config");
-            EnsureQuickBattleConfig();
+            var quickBattleConfig = EnsureQuickBattleConfig();
+            if (quickBattleConfig != null)
+            {
+                Selection.activeObject = quickBattleConfig;
+                EditorGUIUtility.PingObject(quickBattleConfig);
+            }
 
             Debug.Log("[QuickBattle] Step 6/7: Reset local demo save/profile");
             ResetLocalDemoState();
@@ -97,11 +102,12 @@ public static class FirstPlayableBootstrap
         PrepareObserverPlayable();
     }
 
-    private static void EnsureQuickBattleConfig()
+    private static SM.Unity.Sandbox.CombatSandboxConfig? EnsureQuickBattleConfig()
     {
-        if (AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(QuickBattleConfigAssetPath) != null)
+        var existing = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(QuickBattleConfigAssetPath);
+        if (existing != null)
         {
-            return;
+            return existing;
         }
 
         if (!AssetDatabase.IsValidFolder(QuickBattleConfigFolder))
@@ -124,6 +130,7 @@ public static class FirstPlayableBootstrap
         AssetDatabase.CreateAsset(config, QuickBattleConfigAssetPath);
         AssetDatabase.SaveAssets();
         Debug.Log($"[QuickBattle] 디폴트 config 생성: {QuickBattleConfigAssetPath}");
+        return config;
     }
 
     private static void ResetLocalDemoState()

@@ -560,17 +560,29 @@ public sealed class BattleScreenController : MonoBehaviour
         RefreshLogText();
     }
 
-    private static string BuildHpText(string title, IEnumerable<BattleUnitReadModel> units)
+    private string BuildHpText(string title, IEnumerable<BattleUnitReadModel> units)
     {
         var sb = new StringBuilder();
         sb.AppendLine(title);
         foreach (var unit in units)
         {
             var marker = unit.IsAlive ? "-" : "x";
-            sb.AppendLine($"{marker} {unit.Name}: {unit.CurrentHealth:0}/{unit.MaxHealth:0}");
+            var displayName = ResolveUnitDisplayName(unit.Name);
+            sb.AppendLine($"{marker} {displayName}: {unit.CurrentHealth:0}/{unit.MaxHealth:0}");
         }
 
         return sb.ToString();
+    }
+
+    private string ResolveUnitDisplayName(string name)
+    {
+        if (string.IsNullOrEmpty(name) || !name.StartsWith("content."))
+        {
+            return name;
+        }
+
+        var resolved = Localize(GameLocalizationTables.ContentArchetype, name, name);
+        return resolved != name ? resolved : name.Replace("content.archetype.", "").Replace(".name", "");
     }
 
     private void RefreshLogText()

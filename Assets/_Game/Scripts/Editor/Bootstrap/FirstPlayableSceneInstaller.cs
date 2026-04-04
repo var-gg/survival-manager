@@ -205,8 +205,8 @@ public static class FirstPlayableSceneInstaller
         actorOverlayRoot.offsetMin = Vector2.zero;
         actorOverlayRoot.offsetMax = Vector2.zero;
 
-        var leftPanel = EnsurePanel(canvas.transform, "LeftPanel", new Vector2(0f, 0f), new Vector2(0f, 0f), ScaledOffset(150f, 170f), ScaledSize(240f, 165f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
-        var rightPanel = EnsurePanel(canvas.transform, "RightPanel", new Vector2(1f, 0f), new Vector2(1f, 0f), ScaledOffset(-150f, 170f), ScaledSize(240f, 165f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        var leftPanel = EnsurePanel(canvas.transform, "LeftPanel", new Vector2(0f, 0f), new Vector2(0f, 0f), ScaledOffset(150f, 185f), ScaledSize(260f, 200f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        var rightPanel = EnsurePanel(canvas.transform, "RightPanel", new Vector2(1f, 0f), new Vector2(1f, 0f), ScaledOffset(-150f, 185f), ScaledSize(260f, 200f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
         EnsurePanel(canvas.transform, "LogPanel", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -120f), ScaledSize(540f, 150f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
         var settingsPanel = EnsurePanel(canvas.transform, "SettingsPanel", new Vector2(1f, 1f), new Vector2(1f, 1f), ScaledOffset(-130f, -118f), ScaledSize(230f, 172f), new Color(0.10f, 0.13f, 0.18f, 0.96f)).rectTransform;
         var progressTrack = EnsurePanel(canvas.transform, "ProgressTrack", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 145f), ScaledSize(360f, 18f), new Color(0.08f, 0.08f, 0.08f, 0.9f));
@@ -217,8 +217,8 @@ public static class FirstPlayableSceneInstaller
         progressFill.fillAmount = 0f;
 
         var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -20f), ScaledSize(700f, 40f), TextAnchor.MiddleCenter, ScaledFont(24), "Battle Observer UI");
-        var allyHp = EnsureText(canvas.transform, "AllyHpText", new Vector2(0f, 0f), new Vector2(0f, 0f), ScaledOffset(150f, 170f), ScaledSize(200f, 140f), TextAnchor.UpperLeft, ScaledFont(18));
-        var enemyHp = EnsureText(canvas.transform, "EnemyHpText", new Vector2(1f, 0f), new Vector2(1f, 0f), ScaledOffset(-150f, 170f), ScaledSize(200f, 140f), TextAnchor.UpperLeft, ScaledFont(18));
+        var allyHp = EnsureText(canvas.transform, "AllyHpText", new Vector2(0f, 0f), new Vector2(0f, 0f), ScaledOffset(150f, 185f), ScaledSize(220f, 180f), TextAnchor.UpperLeft, ScaledFont(18));
+        var enemyHp = EnsureText(canvas.transform, "EnemyHpText", new Vector2(1f, 0f), new Vector2(1f, 0f), ScaledOffset(-150f, 185f), ScaledSize(220f, 180f), TextAnchor.UpperLeft, ScaledFont(18));
         var log = EnsureText(canvas.transform, "LogText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -120f), ScaledSize(500f, 120f), TextAnchor.UpperLeft, ScaledFont(14));
         var result = EnsureText(canvas.transform, "ResultText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 110f), ScaledSize(320f, 30f), TextAnchor.MiddleCenter, ScaledFont(18));
         var speed = EnsureText(canvas.transform, "SpeedText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 75f), ScaledSize(320f, 30f), TextAnchor.MiddleCenter, ScaledFont(18));

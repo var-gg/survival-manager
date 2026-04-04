@@ -55,10 +55,10 @@ public sealed class GlobalLocalizationOverlayView : MonoBehaviour
     private void Build()
     {
         rootRect = GetComponent<RectTransform>();
-        rootRect.anchorMin = new Vector2(1f, 1f);
-        rootRect.anchorMax = new Vector2(1f, 1f);
-        rootRect.pivot = new Vector2(1f, 1f);
-        rootRect.anchoredPosition = new Vector2(-20f, -20f);
+        rootRect.anchorMin = new Vector2(0f, 1f);
+        rootRect.anchorMax = new Vector2(0f, 1f);
+        rootRect.pivot = new Vector2(0f, 1f);
+        rootRect.anchoredPosition = new Vector2(20f, -20f);
         rootRect.sizeDelta = new Vector2(168f, 106f);
 
         var background = GetComponent<Image>();

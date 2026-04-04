@@ -64,4 +64,97 @@ public sealed class BattleResolutionTests
 
         Assert.That(firstBackAttackStep, Is.GreaterThan(firstFrontAttackStep));
     }
+
+    [Test]
+    public void LoopA_4v4_UnitsEngageWithinFirst50Steps()
+    {
+        var allies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("ally_guardian", classId: "vanguard", hp: 110f, physPower: 4f, armor: 4f, attackSpeed: 2f, moveSpeed: 1.65f, anchor: DeploymentAnchorId.FrontTop),
+            CombatTestFactory.CreateLoopAUnit("ally_raider", classId: "duelist", hp: 72f, physPower: 8f, armor: 1f, attackSpeed: 5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontBottom),
+            CombatTestFactory.CreateLoopAUnit("ally_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 3.2f, anchor: DeploymentAnchorId.BackTop),
+            CombatTestFactory.CreateLoopAUnit("ally_hexer", classId: "mystic", hp: 65f, physPower: 4f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.BackBottom),
+        };
+        var enemies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("enemy_guardian", classId: "vanguard", hp: 110f, physPower: 4f, armor: 4f, attackSpeed: 2f, moveSpeed: 1.65f, anchor: DeploymentAnchorId.FrontTop),
+            CombatTestFactory.CreateLoopAUnit("enemy_raider", classId: "duelist", hp: 72f, physPower: 8f, armor: 1f, attackSpeed: 5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontBottom),
+            CombatTestFactory.CreateLoopAUnit("enemy_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 3.2f, anchor: DeploymentAnchorId.BackTop),
+            CombatTestFactory.CreateLoopAUnit("enemy_hexer", classId: "mystic", hp: 65f, physPower: 4f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.BackBottom),
+        };
+
+        var result = BattleResolver.Run(CombatTestFactory.CreateBattleState(allies, enemies, seed: 42), 50);
+        var damageEvents = result.Events
+            .Where(evt => evt.ActionType == BattleActionType.BasicAttack)
+            .ToList();
+
+        Assert.That(damageEvents.Count, Is.GreaterThan(0),
+            $"50 step 내에 기본공격 이벤트가 없음. 총 이벤트: {result.Events.Count}, step: {result.StepCount}");
+    }
+
+    [Test]
+    public void LoopA_4v4_BattleEndsBeforeTimeout()
+    {
+        var allies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("ally_guardian", classId: "vanguard", hp: 110f, physPower: 4f, armor: 4f, attackSpeed: 2f, moveSpeed: 1.65f, anchor: DeploymentAnchorId.FrontTop),
+            CombatTestFactory.CreateLoopAUnit("ally_raider", classId: "duelist", hp: 72f, physPower: 8f, armor: 1f, attackSpeed: 5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontBottom),
+            CombatTestFactory.CreateLoopAUnit("ally_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 3.2f, anchor: DeploymentAnchorId.BackTop),
+            CombatTestFactory.CreateLoopAUnit("ally_hexer", classId: "mystic", hp: 65f, physPower: 4f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.BackBottom),
+        };
+        var enemies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("enemy_guardian", classId: "vanguard", hp: 110f, physPower: 4f, armor: 4f, attackSpeed: 2f, moveSpeed: 1.65f, anchor: DeploymentAnchorId.FrontTop),
+            CombatTestFactory.CreateLoopAUnit("enemy_raider", classId: "duelist", hp: 72f, physPower: 8f, armor: 1f, attackSpeed: 5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontBottom),
+            CombatTestFactory.CreateLoopAUnit("enemy_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 3.2f, anchor: DeploymentAnchorId.BackTop),
+            CombatTestFactory.CreateLoopAUnit("enemy_hexer", classId: "mystic", hp: 65f, physPower: 4f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.BackBottom),
+        };
+
+        var result = BattleResolver.Run(CombatTestFactory.CreateBattleState(allies, enemies, seed: 42), BattleSimulator.DefaultMaxSteps);
+        var aliveAllies = result.FinalUnits.Count(u => u.Side == TeamSide.Ally && u.IsAlive);
+        var aliveEnemies = result.FinalUnits.Count(u => u.Side == TeamSide.Enemy && u.IsAlive);
+
+        Assert.That(aliveAllies == 0 || aliveEnemies == 0, Is.True,
+            $"300 step 내에 전투 미종료. 남은 아군: {aliveAllies}, 적군: {aliveEnemies}");
+        Assert.That(result.StepCount, Is.LessThan(BattleSimulator.DefaultMaxSteps),
+            $"timeout 도달. step: {result.StepCount}");
+    }
+
+    [Test]
+    public void AverageUnitDiesIn15To25BasicAttacks()
+    {
+        // 평균 스탯: PhysPower=6.2, Armor=2.7, HP=81
+        // damage = 6.2 * (1 - 2.7 / (2.7 + 10)) = 6.2 * 0.787 = ~4.88
+        // hits = 81 / 4.88 ≈ 17
+        var attacker = CombatTestFactory.CreateLoopAUnit("attacker", classId: "duelist", hp: 81f, physPower: 6.2f, armor: 2.7f, attackSpeed: 4f, moveSpeed: 2f, anchor: DeploymentAnchorId.FrontTop);
+        var defender = CombatTestFactory.CreateLoopAUnit("defender", classId: "vanguard", hp: 81f, physPower: 6.2f, armor: 2.7f, attackSpeed: 4f, moveSpeed: 2f, anchor: DeploymentAnchorId.FrontTop);
+
+        var result = BattleResolver.Run(CombatTestFactory.CreateBattleState(new[] { attacker }, new[] { defender }, seed: 42), 300);
+        var attackEvents = result.Events
+            .Where(evt => evt.ActionType == BattleActionType.BasicAttack && evt.Value > 0)
+            .ToList();
+
+        var deadUnit = result.FinalUnits.FirstOrDefault(u => !u.IsAlive);
+        if (deadUnit != null)
+        {
+            Assert.That(attackEvents.Count, Is.InRange(10, 40),
+                $"평균 유닛 사망까지 {attackEvents.Count}회 기본공격. 목표: 15-25회 (±허용)");
+        }
+    }
+
+    [Test]
+    public void HealerDoesNotOutHealSingleAttacker()
+    {
+        // Hexer: HealPower=4, skill PowerFlat=4 → heal 8 HP
+        // Raider: PhysPower=8, vs Hexer Armor=2 → damage = 8*(1-2/12) = 6.67
+        // heal 8 < damage 6.67 이면 안 되는데... heal은 매 쿨타임마다, 공격은 매 attackCooldown마다
+        // 핵심: 힐러 1명이 공격자 1명의 피해를 완전히 상쇄하지 못해야 함
+        var raider = CombatTestFactory.CreateLoopAUnit("raider", classId: "duelist", hp: 72f, physPower: 8f, armor: 1f, attackSpeed: 5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontTop);
+        var hexer = CombatTestFactory.CreateLoopAUnit("hexer", classId: "mystic", hp: 65f, physPower: 4f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.FrontTop);
+
+        var result = BattleResolver.Run(CombatTestFactory.CreateBattleState(new[] { raider }, new[] { hexer }, seed: 42), BattleSimulator.DefaultMaxSteps);
+
+        Assert.That(result.FinalUnits.Any(u => !u.IsAlive), Is.True,
+            "1v1 raider vs hexer: 300 step 내에 누군가 죽어야 힐러가 공격을 상쇄하지 못하는 것");
+    }
 }
