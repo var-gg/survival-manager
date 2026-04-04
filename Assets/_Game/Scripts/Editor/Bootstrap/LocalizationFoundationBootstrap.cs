@@ -278,7 +278,7 @@ public static class LocalizationFoundationBootstrap
         ["combat.log.generic"] = ("S{0} {1} {2}", "S{0} {1} {2}", true),
     };
 
-    [MenuItem("SM/Bootstrap/Ensure Localization Foundation")]
+    [MenuItem("SM/Setup/Ensure Localization Foundation")]
     public static void EnsureFoundationMenu()
     {
         EnsureFoundationAssets();
@@ -419,10 +419,7 @@ public static class LocalizationFoundationBootstrap
                     continue;
                 }
 
-                if (tableName is GameLocalizationTables.UICommon or GameLocalizationTables.CombatLog or GameLocalizationTables.SystemMessages)
-                {
-                    SyncSharedEntries(tableName, locale.Identifier.Code, table);
-                }
+                SyncSharedEntries(tableName, locale.Identifier.Code, table);
 
                 LocalizationEditorSettings.SetPreloadTableFlag(table, tableName is GameLocalizationTables.UICommon or GameLocalizationTables.UITown or GameLocalizationTables.UIExpedition or GameLocalizationTables.UIBattle or GameLocalizationTables.UIReward or GameLocalizationTables.CombatLog or GameLocalizationTables.SystemMessages);
                 EditorUtility.SetDirty(table);

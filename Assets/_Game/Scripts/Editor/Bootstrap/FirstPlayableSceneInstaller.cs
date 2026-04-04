@@ -18,8 +18,13 @@ public static class FirstPlayableSceneInstaller
 {
     private const string ScenesRoot = "Assets/_Game/Scenes";
     private static readonly string[] OrderedSceneNames = { "Boot", "Town", "Expedition", "Battle", "Reward" };
+    private const float UiScale = 1.5f;
 
-    [MenuItem("SM/Bootstrap/Repair First Playable Scenes")]
+    private static int ScaledFont(int baseSize) => Mathf.RoundToInt(baseSize * UiScale);
+    private static Vector2 ScaledSize(float w, float h) => new(w * UiScale, h * UiScale);
+    private static Vector2 ScaledOffset(float x, float y) => new(x * UiScale, y * UiScale);
+
+    [MenuItem("SM/Setup/Repair First Playable Scenes")]
     public static void RepairFirstPlayableScenes()
     {
         RebuildBoot();
@@ -47,9 +52,9 @@ public static class FirstPlayableSceneInstaller
         var canvas = EnsureCanvasRoot("BootCanvas");
         var bootstrapGo = ResetRootObject("GameBootstrap");
         EnsureComponent<GameBootstrap>(bootstrapGo);
-        EnsureText(canvas.transform, "BootTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(720f, 44f), TextAnchor.MiddleCenter, 24, "Observer Playable Boot");
-        EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 18, "GameBootstrap가 sample content를 확인한 뒤 Town으로 자동 진입한다.");
-        EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -48f), new Vector2(760f, 60f), TextAnchor.MiddleCenter, 16, "block25 기준 scene repair/bootstrap 검증용 최소 UI");
+        EnsureText(canvas.transform, "BootTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -48f), ScaledSize(720f, 44f), TextAnchor.MiddleCenter, ScaledFont(24), "Observer Playable Boot");
+        EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 20f), ScaledSize(760f, 80f), TextAnchor.MiddleCenter, ScaledFont(18), "GameBootstrap가 sample content를 확인한 뒤 Town으로 자동 진입한다.");
+        EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, -48f), ScaledSize(760f, 60f), TextAnchor.MiddleCenter, ScaledFont(16), "block25 기준 scene repair/bootstrap 검증용 최소 UI");
         Save(scene);
     }
 
@@ -64,45 +69,45 @@ public static class FirstPlayableSceneInstaller
         var controllerGo = ResetUiChild(canvas.transform, "TownScreenController");
         var controller = EnsureComponent<TownScreenController>(controllerGo);
 
-        EnsurePanel(canvas.transform, "RosterPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(180f, 10f), new Vector2(340f, 440f), new Color(0.12f, 0.15f, 0.22f, 0.92f));
-        EnsurePanel(canvas.transform, "SquadPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-160f, 120f), new Vector2(300f, 220f), new Color(0.14f, 0.15f, 0.26f, 0.92f));
-        EnsurePanel(canvas.transform, "DeployPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-160f, -95f), new Vector2(300f, 190f), new Color(0.14f, 0.15f, 0.26f, 0.92f));
+        EnsurePanel(canvas.transform, "RosterPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), ScaledOffset(180f, 10f), ScaledSize(340f, 440f), new Color(0.12f, 0.15f, 0.22f, 0.92f));
+        EnsurePanel(canvas.transform, "SquadPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), ScaledOffset(-160f, 120f), ScaledSize(300f, 220f), new Color(0.14f, 0.15f, 0.26f, 0.92f));
+        EnsurePanel(canvas.transform, "DeployPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), ScaledOffset(-160f, -95f), ScaledSize(300f, 190f), new Color(0.14f, 0.15f, 0.26f, 0.92f));
 
-        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Town Operator UI");
-        var roster = EnsureText(canvas.transform, "RosterText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(180f, 10f), new Vector2(300f, 400f), TextAnchor.UpperLeft);
-        var recruit = EnsureText(canvas.transform, "RecruitText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 165f), new Vector2(520f, 44f), TextAnchor.MiddleCenter, 18, "Recruit pack 4 slots / OnPlan / Protected");
-        var recruitCardsRoot = EnsurePanel(canvas.transform, "RecruitCardsRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(600f, 360f), new Color(0.13f, 0.17f, 0.21f, 0.9f)).rectTransform;
-        var squad = EnsureText(canvas.transform, "SquadText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-160f, 120f), new Vector2(260f, 180f), TextAnchor.UpperLeft);
-        var deploy = EnsureText(canvas.transform, "DeployPreviewText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-160f, -95f), new Vector2(260f, 150f), TextAnchor.UpperLeft);
-        var currency = EnsureText(canvas.transform, "CurrencyText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 30f), new Vector2(840f, 30f), TextAnchor.MiddleCenter);
-        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(840f, 30f), TextAnchor.MiddleCenter);
+        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -20f), ScaledSize(700f, 40f), TextAnchor.MiddleCenter, ScaledFont(24), "Town Operator UI");
+        var roster = EnsureText(canvas.transform, "RosterText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), ScaledOffset(180f, 10f), ScaledSize(300f, 400f), TextAnchor.UpperLeft, ScaledFont(18));
+        var recruit = EnsureText(canvas.transform, "RecruitText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 165f), ScaledSize(520f, 44f), TextAnchor.MiddleCenter, ScaledFont(18), "Recruit pack 4 slots / OnPlan / Protected");
+        var recruitCardsRoot = EnsurePanel(canvas.transform, "RecruitCardsRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 20f), ScaledSize(600f, 360f), new Color(0.13f, 0.17f, 0.21f, 0.9f)).rectTransform;
+        var squad = EnsureText(canvas.transform, "SquadText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), ScaledOffset(-160f, 120f), ScaledSize(260f, 180f), TextAnchor.UpperLeft, ScaledFont(18));
+        var deploy = EnsureText(canvas.transform, "DeployPreviewText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), ScaledOffset(-160f, -95f), ScaledSize(260f, 150f), TextAnchor.UpperLeft, ScaledFont(18));
+        var currency = EnsureText(canvas.transform, "CurrencyText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 30f), ScaledSize(840f, 30f), TextAnchor.MiddleCenter, ScaledFont(18));
+        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 70f), ScaledSize(840f, 30f), TextAnchor.MiddleCenter, ScaledFont(18));
 
-        var recruitCard1 = EnsurePanel(recruitCardsRoot, "RecruitCard1", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-210f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
-        var recruitCard2 = EnsurePanel(recruitCardsRoot, "RecruitCard2", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-70f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
-        var recruitCard3 = EnsurePanel(recruitCardsRoot, "RecruitCard3", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(70f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
-        var recruitCard4 = EnsurePanel(recruitCardsRoot, "RecruitCard4", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(210f, -160f), new Vector2(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+        var recruitCard1 = EnsurePanel(recruitCardsRoot, "RecruitCard1", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(-210f, -160f), ScaledSize(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+        var recruitCard2 = EnsurePanel(recruitCardsRoot, "RecruitCard2", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(-70f, -160f), ScaledSize(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+        var recruitCard3 = EnsurePanel(recruitCardsRoot, "RecruitCard3", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(70f, -160f), ScaledSize(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
+        var recruitCard4 = EnsurePanel(recruitCardsRoot, "RecruitCard4", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(210f, -160f), ScaledSize(124f, 250f), new Color(0.19f, 0.21f, 0.29f, 0.96f)).rectTransform;
 
-        EnsureText(recruitCard1, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(110f, 40f), TextAnchor.MiddleCenter, 16, "Recruit 1");
-        EnsureText(recruitCard1, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(110f, 120f), TextAnchor.UpperCenter, 14, "Body");
-        EnsureButton(recruitCard1, "RecruitButton", "Recruit 1", new Vector2(0.5f, 0f), new Vector2(0f, 26f), controller.RecruitOffer0);
+        EnsureText(recruitCard1, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -24f), ScaledSize(110f, 40f), TextAnchor.MiddleCenter, ScaledFont(16), "Recruit 1");
+        EnsureText(recruitCard1, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 18f), ScaledSize(110f, 120f), TextAnchor.UpperCenter, ScaledFont(14), "Body");
+        EnsureButton(recruitCard1, "RecruitButton", "Recruit 1", new Vector2(0.5f, 0f), ScaledOffset(0f, 26f), controller.RecruitOffer0);
 
-        EnsureText(recruitCard2, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(110f, 40f), TextAnchor.MiddleCenter, 16, "Recruit 2");
-        EnsureText(recruitCard2, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(110f, 120f), TextAnchor.UpperCenter, 14, "Body");
-        EnsureButton(recruitCard2, "RecruitButton", "Recruit 2", new Vector2(0.5f, 0f), new Vector2(0f, 26f), controller.RecruitOffer1);
+        EnsureText(recruitCard2, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -24f), ScaledSize(110f, 40f), TextAnchor.MiddleCenter, ScaledFont(16), "Recruit 2");
+        EnsureText(recruitCard2, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 18f), ScaledSize(110f, 120f), TextAnchor.UpperCenter, ScaledFont(14), "Body");
+        EnsureButton(recruitCard2, "RecruitButton", "Recruit 2", new Vector2(0.5f, 0f), ScaledOffset(0f, 26f), controller.RecruitOffer1);
 
-        EnsureText(recruitCard3, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(110f, 40f), TextAnchor.MiddleCenter, 16, "Recruit 3");
-        EnsureText(recruitCard3, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(110f, 120f), TextAnchor.UpperCenter, 14, "Body");
-        EnsureButton(recruitCard3, "RecruitButton", "Recruit 3", new Vector2(0.5f, 0f), new Vector2(0f, 26f), controller.RecruitOffer2);
+        EnsureText(recruitCard3, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -24f), ScaledSize(110f, 40f), TextAnchor.MiddleCenter, ScaledFont(16), "Recruit 3");
+        EnsureText(recruitCard3, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 18f), ScaledSize(110f, 120f), TextAnchor.UpperCenter, ScaledFont(14), "Body");
+        EnsureButton(recruitCard3, "RecruitButton", "Recruit 3", new Vector2(0.5f, 0f), ScaledOffset(0f, 26f), controller.RecruitOffer2);
 
-        EnsureText(recruitCard4, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(110f, 40f), TextAnchor.MiddleCenter, 16, "Recruit 4");
-        EnsureText(recruitCard4, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(110f, 120f), TextAnchor.UpperCenter, 14, "Body");
-        EnsureButton(recruitCard4, "RecruitButton", "Recruit 4", new Vector2(0.5f, 0f), new Vector2(0f, 26f), controller.RecruitOffer3);
+        EnsureText(recruitCard4, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -24f), ScaledSize(110f, 40f), TextAnchor.MiddleCenter, ScaledFont(16), "Recruit 4");
+        EnsureText(recruitCard4, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 18f), ScaledSize(110f, 120f), TextAnchor.UpperCenter, ScaledFont(14), "Body");
+        EnsureButton(recruitCard4, "RecruitButton", "Recruit 4", new Vector2(0.5f, 0f), ScaledOffset(0f, 26f), controller.RecruitOffer3);
 
-        EnsureButton(canvas.transform, "RerollButton", "Refresh", new Vector2(0.5f, 0f), new Vector2(-240f, 115f), controller.RerollOffers);
-        EnsureButton(canvas.transform, "SaveButton", "Save", new Vector2(0.5f, 0f), new Vector2(-120f, 115f), controller.SaveProfile);
-        EnsureButton(canvas.transform, "LoadButton", "Load", new Vector2(0.5f, 0f), new Vector2(0f, 115f), controller.LoadProfile);
-        EnsureButton(canvas.transform, "DebugStartButton", "Debug Start", new Vector2(0.5f, 0f), new Vector2(120f, 115f), controller.DebugStartExpedition);
-        EnsureButton(canvas.transform, "QuickBattleButton", "Quick Battle", new Vector2(0.5f, 0f), new Vector2(240f, 115f), controller.QuickBattle);
+        EnsureButton(canvas.transform, "RerollButton", "Refresh", new Vector2(0.5f, 0f), ScaledOffset(-240f, 115f), controller.RerollOffers);
+        EnsureButton(canvas.transform, "SaveButton", "Save", new Vector2(0.5f, 0f), ScaledOffset(-120f, 115f), controller.SaveProfile);
+        EnsureButton(canvas.transform, "LoadButton", "Load", new Vector2(0.5f, 0f), ScaledOffset(0f, 115f), controller.LoadProfile);
+        EnsureButton(canvas.transform, "DebugStartButton", "Debug Start", new Vector2(0.5f, 0f), ScaledOffset(120f, 115f), controller.DebugStartExpedition);
+        EnsureButton(canvas.transform, "QuickBattleButton", "Quick Battle", new Vector2(0.5f, 0f), ScaledOffset(240f, 115f), controller.QuickBattle);
 
         Bind(controller, new Dictionary<string, Object>
         {
@@ -130,24 +135,24 @@ public static class FirstPlayableSceneInstaller
         var controllerGo = ResetUiChild(canvas.transform, "ExpeditionScreenController");
         var controller = EnsureComponent<ExpeditionScreenController>(controllerGo);
 
-        EnsurePanel(canvas.transform, "MapPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(170f, 0f), new Vector2(300f, 380f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
-        var nodeTrackRoot = EnsurePanel(canvas.transform, "NodeTrackRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 115f), new Vector2(440f, 120f), new Color(0.12f, 0.16f, 0.23f, 0.92f)).rectTransform;
-        EnsurePanel(canvas.transform, "SquadPanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -75f), new Vector2(360f, 220f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
-        EnsurePanel(canvas.transform, "RewardPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 0f), new Vector2(260f, 380f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
+        EnsurePanel(canvas.transform, "MapPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), ScaledOffset(170f, 0f), ScaledSize(300f, 380f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
+        var nodeTrackRoot = EnsurePanel(canvas.transform, "NodeTrackRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 115f), ScaledSize(440f, 120f), new Color(0.12f, 0.16f, 0.23f, 0.92f)).rectTransform;
+        EnsurePanel(canvas.transform, "SquadPanel", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, -75f), ScaledSize(360f, 220f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
+        EnsurePanel(canvas.transform, "RewardPanel", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), ScaledOffset(-150f, 0f), ScaledSize(260f, 380f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
 
-        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Expedition Operator UI");
-        var map = EnsureText(canvas.transform, "MapText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(170f, 0f), new Vector2(260f, 330f), TextAnchor.UpperLeft);
-        var position = EnsureText(canvas.transform, "PositionText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -80f), new Vector2(420f, 30f), TextAnchor.MiddleCenter);
-        var reward = EnsureText(canvas.transform, "RewardText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 0f), new Vector2(220f, 330f), TextAnchor.UpperLeft);
-        var squad = EnsureText(canvas.transform, "SquadText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -75f), new Vector2(320f, 180f), TextAnchor.UpperLeft);
-        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(840f, 30f), TextAnchor.MiddleCenter);
+        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -20f), ScaledSize(700f, 40f), TextAnchor.MiddleCenter, ScaledFont(24), "Expedition Operator UI");
+        var map = EnsureText(canvas.transform, "MapText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), ScaledOffset(170f, 0f), ScaledSize(260f, 330f), TextAnchor.UpperLeft, ScaledFont(18));
+        var position = EnsureText(canvas.transform, "PositionText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -80f), ScaledSize(420f, 30f), TextAnchor.MiddleCenter, ScaledFont(18));
+        var reward = EnsureText(canvas.transform, "RewardText", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), ScaledOffset(-150f, 0f), ScaledSize(220f, 330f), TextAnchor.UpperLeft, ScaledFont(18));
+        var squad = EnsureText(canvas.transform, "SquadText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, -75f), ScaledSize(320f, 180f), TextAnchor.UpperLeft, ScaledFont(18));
+        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 70f), ScaledSize(840f, 30f), TextAnchor.MiddleCenter, ScaledFont(18));
 
         for (var i = 0; i < 5; i++)
         {
-            var nodeBox = EnsurePanel(nodeTrackRoot, $"NodeBox{i + 1}", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-176f + (i * 88f), 0f), new Vector2(78f, 108f), new Color(0.18f, 0.22f, 0.34f, 0.95f)).rectTransform;
-            EnsureText(nodeBox, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(70f, 32f), TextAnchor.MiddleCenter, 13, $"Node {i + 1}");
-            EnsureText(nodeBox, "RewardText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 2f), new Vector2(70f, 42f), TextAnchor.MiddleCenter, 11, "Reward");
-            var selectButton = EnsureButton(nodeBox, "SelectButton", "Route", new Vector2(0.5f, 0f), new Vector2(0f, 18f), i switch
+            var nodeBox = EnsurePanel(nodeTrackRoot, $"NodeBox{i + 1}", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(-176f + (i * 88f), 0f), ScaledSize(78f, 108f), new Color(0.18f, 0.22f, 0.34f, 0.95f)).rectTransform;
+            EnsureText(nodeBox, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -24f), ScaledSize(70f, 32f), TextAnchor.MiddleCenter, ScaledFont(13), $"Node {i + 1}");
+            EnsureText(nodeBox, "RewardText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 2f), ScaledSize(70f, 42f), TextAnchor.MiddleCenter, ScaledFont(11), "Reward");
+            var selectButton = EnsureButton(nodeBox, "SelectButton", "Route", new Vector2(0.5f, 0f), ScaledOffset(0f, 18f), i switch
             {
                 0 => controller.SelectNode1,
                 1 => controller.SelectNode2,
@@ -155,16 +160,16 @@ public static class FirstPlayableSceneInstaller
                 3 => controller.SelectNode4,
                 _ => controller.SelectNode5
             });
-            selectButton.GetComponent<RectTransform>().sizeDelta = new Vector2(62f, 24f);
+            selectButton.GetComponent<RectTransform>().sizeDelta = ScaledSize(62f, 24f);
             var selectLabel = selectButton.transform.Find("Label")?.GetComponent<Text>();
             if (selectLabel != null)
             {
-                selectLabel.fontSize = 12;
+                selectLabel.fontSize = ScaledFont(12);
             }
         }
 
-        EnsureButton(canvas.transform, "NextBattleButton", "Next Battle", new Vector2(0.5f, 0f), new Vector2(-80f, 25f), controller.NextBattleOrAdvance);
-        EnsureButton(canvas.transform, "ReturnTownButton", "Return Town", new Vector2(0.5f, 0f), new Vector2(80f, 25f), controller.ReturnToTown);
+        EnsureButton(canvas.transform, "NextBattleButton", "Next Battle", new Vector2(0.5f, 0f), ScaledOffset(-80f, 25f), controller.NextBattleOrAdvance);
+        EnsureButton(canvas.transform, "ReturnTownButton", "Return Town", new Vector2(0.5f, 0f), ScaledOffset(80f, 25f), controller.ReturnToTown);
 
         Bind(controller, new Dictionary<string, Object>
         {
@@ -200,37 +205,37 @@ public static class FirstPlayableSceneInstaller
         actorOverlayRoot.offsetMin = Vector2.zero;
         actorOverlayRoot.offsetMax = Vector2.zero;
 
-        var leftPanel = EnsurePanel(canvas.transform, "LeftPanel", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(150f, 170f), new Vector2(240f, 165f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
-        var rightPanel = EnsurePanel(canvas.transform, "RightPanel", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-150f, 170f), new Vector2(240f, 165f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
-        EnsurePanel(canvas.transform, "LogPanel", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -120f), new Vector2(540f, 150f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
-        var settingsPanel = EnsurePanel(canvas.transform, "SettingsPanel", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-130f, -118f), new Vector2(230f, 172f), new Color(0.10f, 0.13f, 0.18f, 0.96f)).rectTransform;
-        var progressTrack = EnsurePanel(canvas.transform, "ProgressTrack", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 145f), new Vector2(360f, 18f), new Color(0.08f, 0.08f, 0.08f, 0.9f));
-        var progressFill = EnsurePanel(progressTrack.transform, "ProgressFill", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(348f, 10f), new Color(0.85f, 0.58f, 0.22f, 0.95f));
+        var leftPanel = EnsurePanel(canvas.transform, "LeftPanel", new Vector2(0f, 0f), new Vector2(0f, 0f), ScaledOffset(150f, 170f), ScaledSize(240f, 165f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        var rightPanel = EnsurePanel(canvas.transform, "RightPanel", new Vector2(1f, 0f), new Vector2(1f, 0f), ScaledOffset(-150f, 170f), ScaledSize(240f, 165f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        EnsurePanel(canvas.transform, "LogPanel", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -120f), ScaledSize(540f, 150f), new Color(0.12f, 0.16f, 0.22f, 0.92f));
+        var settingsPanel = EnsurePanel(canvas.transform, "SettingsPanel", new Vector2(1f, 1f), new Vector2(1f, 1f), ScaledOffset(-130f, -118f), ScaledSize(230f, 172f), new Color(0.10f, 0.13f, 0.18f, 0.96f)).rectTransform;
+        var progressTrack = EnsurePanel(canvas.transform, "ProgressTrack", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 145f), ScaledSize(360f, 18f), new Color(0.08f, 0.08f, 0.08f, 0.9f));
+        var progressFill = EnsurePanel(progressTrack.transform, "ProgressFill", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, ScaledSize(348f, 10f), new Color(0.85f, 0.58f, 0.22f, 0.95f));
         progressFill.type = Image.Type.Filled;
         progressFill.fillMethod = Image.FillMethod.Horizontal;
         progressFill.fillOrigin = 0;
         progressFill.fillAmount = 0f;
 
-        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Battle Observer UI");
-        var allyHp = EnsureText(canvas.transform, "AllyHpText", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(150f, 170f), new Vector2(200f, 140f), TextAnchor.UpperLeft);
-        var enemyHp = EnsureText(canvas.transform, "EnemyHpText", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-150f, 170f), new Vector2(200f, 140f), TextAnchor.UpperLeft);
-        var log = EnsureText(canvas.transform, "LogText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -120f), new Vector2(500f, 120f), TextAnchor.UpperLeft, 14);
-        var result = EnsureText(canvas.transform, "ResultText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 110f), new Vector2(320f, 30f), TextAnchor.MiddleCenter);
-        var speed = EnsureText(canvas.transform, "SpeedText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 75f), new Vector2(320f, 30f), TextAnchor.MiddleCenter);
-        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 180f), new Vector2(640f, 30f), TextAnchor.MiddleCenter);
-        EnsureText(settingsPanel, "SettingsTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(200f, 24f), TextAnchor.MiddleCenter, 16, "Battle View Settings");
-        var worldHpButton = EnsureButton(settingsPanel, "ToggleWorldHpButton", "Actor HP ON", new Vector2(0.5f, 1f), new Vector2(0f, -55f), settingsController.ToggleWorldActorHp);
-        var overlayHpButton = EnsureButton(settingsPanel, "ToggleOverlayHpButton", "Overlay HP OFF", new Vector2(0.5f, 1f), new Vector2(0f, -94f), settingsController.ToggleOverlayActorHp);
-        var teamSummaryButton = EnsureButton(settingsPanel, "ToggleTeamSummaryButton", "Team Summary OFF", new Vector2(0.5f, 1f), new Vector2(0f, -133f), settingsController.ToggleTeamSummary);
-        var settingsStatus = EnsureText(settingsPanel, "SettingsStatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(200f, 32f), TextAnchor.MiddleCenter, 13, "전투 표시 옵션");
-        var settingsButton = EnsureButton(canvas.transform, "SettingsButton", "Settings", new Vector2(1f, 1f), new Vector2(-88f, -26f), settingsController.TogglePanel);
-        settingsButton.GetComponent<RectTransform>().sizeDelta = new Vector2(100f, 32f);
+        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -20f), ScaledSize(700f, 40f), TextAnchor.MiddleCenter, ScaledFont(24), "Battle Observer UI");
+        var allyHp = EnsureText(canvas.transform, "AllyHpText", new Vector2(0f, 0f), new Vector2(0f, 0f), ScaledOffset(150f, 170f), ScaledSize(200f, 140f), TextAnchor.UpperLeft, ScaledFont(18));
+        var enemyHp = EnsureText(canvas.transform, "EnemyHpText", new Vector2(1f, 0f), new Vector2(1f, 0f), ScaledOffset(-150f, 170f), ScaledSize(200f, 140f), TextAnchor.UpperLeft, ScaledFont(18));
+        var log = EnsureText(canvas.transform, "LogText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -120f), ScaledSize(500f, 120f), TextAnchor.UpperLeft, ScaledFont(14));
+        var result = EnsureText(canvas.transform, "ResultText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 110f), ScaledSize(320f, 30f), TextAnchor.MiddleCenter, ScaledFont(18));
+        var speed = EnsureText(canvas.transform, "SpeedText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 75f), ScaledSize(320f, 30f), TextAnchor.MiddleCenter, ScaledFont(18));
+        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 180f), ScaledSize(640f, 30f), TextAnchor.MiddleCenter, ScaledFont(18));
+        EnsureText(settingsPanel, "SettingsTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -20f), ScaledSize(200f, 24f), TextAnchor.MiddleCenter, ScaledFont(16), "Battle View Settings");
+        var worldHpButton = EnsureButton(settingsPanel, "ToggleWorldHpButton", "Actor HP ON", new Vector2(0.5f, 1f), ScaledOffset(0f, -55f), settingsController.ToggleWorldActorHp);
+        var overlayHpButton = EnsureButton(settingsPanel, "ToggleOverlayHpButton", "Overlay HP OFF", new Vector2(0.5f, 1f), ScaledOffset(0f, -94f), settingsController.ToggleOverlayActorHp);
+        var teamSummaryButton = EnsureButton(settingsPanel, "ToggleTeamSummaryButton", "Team Summary OFF", new Vector2(0.5f, 1f), ScaledOffset(0f, -133f), settingsController.ToggleTeamSummary);
+        var settingsStatus = EnsureText(settingsPanel, "SettingsStatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 20f), ScaledSize(200f, 32f), TextAnchor.MiddleCenter, ScaledFont(13), "전투 표시 옵션");
+        var settingsButton = EnsureButton(canvas.transform, "SettingsButton", "Settings", new Vector2(1f, 1f), ScaledOffset(-88f, -26f), settingsController.TogglePanel);
+        settingsButton.GetComponent<RectTransform>().sizeDelta = ScaledSize(100f, 32f);
 
-        EnsureButton(canvas.transform, "Speed1Button", "x1", new Vector2(0.5f, 0f), new Vector2(-120f, 25f), controller.SetSpeed1);
-        EnsureButton(canvas.transform, "Speed2Button", "x2", new Vector2(0.5f, 0f), new Vector2(0f, 25f), controller.SetSpeed2);
-        EnsureButton(canvas.transform, "Speed4Button", "x4", new Vector2(0.5f, 0f), new Vector2(120f, 25f), controller.SetSpeed4);
-        EnsureButton(canvas.transform, "PauseButton", "Pause", new Vector2(0.5f, 0f), new Vector2(240f, 25f), controller.TogglePause);
-        EnsureButton(canvas.transform, "ContinueButton", "Continue", new Vector2(1f, 0f), new Vector2(-90f, 25f), controller.ContinueToReward);
+        EnsureButton(canvas.transform, "Speed1Button", "x1", new Vector2(0.5f, 0f), ScaledOffset(-120f, 25f), controller.SetSpeed1);
+        EnsureButton(canvas.transform, "Speed2Button", "x2", new Vector2(0.5f, 0f), ScaledOffset(0f, 25f), controller.SetSpeed2);
+        EnsureButton(canvas.transform, "Speed4Button", "x4", new Vector2(0.5f, 0f), ScaledOffset(120f, 25f), controller.SetSpeed4);
+        EnsureButton(canvas.transform, "PauseButton", "Pause", new Vector2(0.5f, 0f), ScaledOffset(240f, 25f), controller.TogglePause);
+        EnsureButton(canvas.transform, "ContinueButton", "Continue", new Vector2(1f, 0f), ScaledOffset(-90f, 25f), controller.ContinueToReward);
 
         Bind(controller, new Dictionary<string, Object>
         {
@@ -277,34 +282,34 @@ public static class FirstPlayableSceneInstaller
         var controllerGo = ResetUiChild(canvas.transform, "RewardScreenController");
         var controller = EnsureComponent<RewardScreenController>(controllerGo);
 
-        EnsurePanel(canvas.transform, "SummaryPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(180f, 40f), new Vector2(320f, 320f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
-        var rewardCardsRoot = EnsurePanel(canvas.transform, "RewardCardsRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(120f, 20f), new Vector2(520f, 340f), new Color(0.12f, 0.16f, 0.23f, 0.92f)).rectTransform;
+        EnsurePanel(canvas.transform, "SummaryPanel", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), ScaledOffset(180f, 40f), ScaledSize(320f, 320f), new Color(0.12f, 0.16f, 0.23f, 0.92f));
+        var rewardCardsRoot = EnsurePanel(canvas.transform, "RewardCardsRoot", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(120f, 20f), ScaledSize(520f, 340f), new Color(0.12f, 0.16f, 0.23f, 0.92f)).rectTransform;
 
-        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(700f, 40f), TextAnchor.MiddleCenter, 24, "Reward Operator UI");
-        var summary = EnsureText(canvas.transform, "SummaryText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(180f, 40f), new Vector2(280f, 280f), TextAnchor.UpperLeft);
-        var choices = EnsureText(canvas.transform, "ChoicesText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(120f, -80f), new Vector2(420f, 30f), TextAnchor.MiddleCenter, 18, "3지선다 보상 카드");
-        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(840f, 30f), TextAnchor.MiddleCenter);
+        var title = EnsureText(canvas.transform, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -20f), ScaledSize(700f, 40f), TextAnchor.MiddleCenter, ScaledFont(24), "Reward Operator UI");
+        var summary = EnsureText(canvas.transform, "SummaryText", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), ScaledOffset(180f, 40f), ScaledSize(280f, 280f), TextAnchor.UpperLeft, ScaledFont(18));
+        var choices = EnsureText(canvas.transform, "ChoicesText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(120f, -80f), ScaledSize(420f, 30f), TextAnchor.MiddleCenter, ScaledFont(18), "3지선다 보상 카드");
+        var status = EnsureText(canvas.transform, "StatusText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 70f), ScaledSize(840f, 30f), TextAnchor.MiddleCenter, ScaledFont(18));
 
-        var choice1 = EnsurePanel(rewardCardsRoot, "ChoiceCard1", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-160f, -10f), new Vector2(140f, 240f), new Color(0.18f, 0.21f, 0.30f, 0.96f)).rectTransform;
-        var choice2 = EnsurePanel(rewardCardsRoot, "ChoiceCard2", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -10f), new Vector2(140f, 240f), new Color(0.18f, 0.21f, 0.30f, 0.96f)).rectTransform;
-        var choice3 = EnsurePanel(rewardCardsRoot, "ChoiceCard3", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(160f, -10f), new Vector2(140f, 240f), new Color(0.18f, 0.21f, 0.30f, 0.96f)).rectTransform;
+        var choice1 = EnsurePanel(rewardCardsRoot, "ChoiceCard1", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(-160f, -10f), ScaledSize(140f, 240f), new Color(0.18f, 0.21f, 0.30f, 0.96f)).rectTransform;
+        var choice2 = EnsurePanel(rewardCardsRoot, "ChoiceCard2", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, -10f), ScaledSize(140f, 240f), new Color(0.18f, 0.21f, 0.30f, 0.96f)).rectTransform;
+        var choice3 = EnsurePanel(rewardCardsRoot, "ChoiceCard3", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(160f, -10f), ScaledSize(140f, 240f), new Color(0.18f, 0.21f, 0.30f, 0.96f)).rectTransform;
 
-        EnsureText(choice1, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(120f, 34f), TextAnchor.MiddleCenter, 16, "Choice 1");
-        EnsureText(choice1, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 28f), new Vector2(120f, 88f), TextAnchor.MiddleCenter, 14, "Body");
-        EnsureText(choice1, "KindText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 72f), new Vector2(120f, 26f), TextAnchor.MiddleCenter, 13, "Kind");
-        EnsureButton(choice1, "ChooseButton", "Pick 1", new Vector2(0.5f, 0f), new Vector2(0f, 24f), controller.Choose0);
+        EnsureText(choice1, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -24f), ScaledSize(120f, 34f), TextAnchor.MiddleCenter, ScaledFont(16), "Choice 1");
+        EnsureText(choice1, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 28f), ScaledSize(120f, 88f), TextAnchor.MiddleCenter, ScaledFont(14), "Body");
+        EnsureText(choice1, "KindText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 72f), ScaledSize(120f, 26f), TextAnchor.MiddleCenter, ScaledFont(13), "Kind");
+        EnsureButton(choice1, "ChooseButton", "Pick 1", new Vector2(0.5f, 0f), ScaledOffset(0f, 24f), controller.Choose0);
 
-        EnsureText(choice2, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(120f, 34f), TextAnchor.MiddleCenter, 16, "Choice 2");
-        EnsureText(choice2, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 28f), new Vector2(120f, 88f), TextAnchor.MiddleCenter, 14, "Body");
-        EnsureText(choice2, "KindText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 72f), new Vector2(120f, 26f), TextAnchor.MiddleCenter, 13, "Kind");
-        EnsureButton(choice2, "ChooseButton", "Pick 2", new Vector2(0.5f, 0f), new Vector2(0f, 24f), controller.Choose1);
+        EnsureText(choice2, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -24f), ScaledSize(120f, 34f), TextAnchor.MiddleCenter, ScaledFont(16), "Choice 2");
+        EnsureText(choice2, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 28f), ScaledSize(120f, 88f), TextAnchor.MiddleCenter, ScaledFont(14), "Body");
+        EnsureText(choice2, "KindText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 72f), ScaledSize(120f, 26f), TextAnchor.MiddleCenter, ScaledFont(13), "Kind");
+        EnsureButton(choice2, "ChooseButton", "Pick 2", new Vector2(0.5f, 0f), ScaledOffset(0f, 24f), controller.Choose1);
 
-        EnsureText(choice3, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(120f, 34f), TextAnchor.MiddleCenter, 16, "Choice 3");
-        EnsureText(choice3, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 28f), new Vector2(120f, 88f), TextAnchor.MiddleCenter, 14, "Body");
-        EnsureText(choice3, "KindText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 72f), new Vector2(120f, 26f), TextAnchor.MiddleCenter, 13, "Kind");
-        EnsureButton(choice3, "ChooseButton", "Pick 3", new Vector2(0.5f, 0f), new Vector2(0f, 24f), controller.Choose2);
+        EnsureText(choice3, "TitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ScaledOffset(0f, -24f), ScaledSize(120f, 34f), TextAnchor.MiddleCenter, ScaledFont(16), "Choice 3");
+        EnsureText(choice3, "BodyText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), ScaledOffset(0f, 28f), ScaledSize(120f, 88f), TextAnchor.MiddleCenter, ScaledFont(14), "Body");
+        EnsureText(choice3, "KindText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), ScaledOffset(0f, 72f), ScaledSize(120f, 26f), TextAnchor.MiddleCenter, ScaledFont(13), "Kind");
+        EnsureButton(choice3, "ChooseButton", "Pick 3", new Vector2(0.5f, 0f), ScaledOffset(0f, 24f), controller.Choose2);
 
-        EnsureButton(canvas.transform, "ReturnTownButton", "Return Town", new Vector2(1f, 0f), new Vector2(-90f, 25f), controller.ReturnToTown);
+        EnsureButton(canvas.transform, "ReturnTownButton", "Return Town", new Vector2(1f, 0f), ScaledOffset(-90f, 25f), controller.ReturnToTown);
 
         Bind(controller, new Dictionary<string, Object>
         {
@@ -627,7 +632,7 @@ public static class FirstPlayableSceneInstaller
         rect.anchorMax = anchor;
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = anchoredPosition;
-        rect.sizeDelta = new Vector2(110f, 36f);
+        rect.sizeDelta = ScaledSize(110f, 36f);
 
         var image = EnsureComponent<Image>(go);
         image.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
@@ -643,7 +648,7 @@ public static class FirstPlayableSceneInstaller
         labelRect.offsetMax = Vector2.zero;
         var labelText = EnsureComponent<Text>(labelGo);
         labelText.font = LocalizationFoundationBootstrap.GetSharedUiFont();
-        labelText.fontSize = 16;
+        labelText.fontSize = ScaledFont(16);
         labelText.alignment = TextAnchor.MiddleCenter;
         labelText.color = Color.white;
         labelText.text = label;

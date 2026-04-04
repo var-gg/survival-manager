@@ -10,7 +10,7 @@ public static class FirstPlayableBootstrap
 {
     private const string BootScenePath = "Assets/_Game/Scenes/Boot.unity";
 
-    [MenuItem("SM/Bootstrap/Prepare Observer Playable")]
+    [MenuItem("SM/Quick Battle")]
     public static void PrepareObserverPlayableMenu()
     {
         PrepareObserverPlayable();

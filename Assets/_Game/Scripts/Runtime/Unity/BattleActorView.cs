@@ -155,7 +155,7 @@ public sealed class BattleActorView : MonoBehaviour
     {
         var restColor = ResolveRestColor(actor);
         var healthRatio = actor.MaxHealth <= 0f ? 0f : Mathf.Clamp01(displayedHealth / actor.MaxHealth);
-        var healthColor = ResolveHealthColor(healthRatio, actor.IsAlive);
+        var healthColor = ResolveHealthColor(healthRatio, actor.IsAlive, actor.Side);
 
         if (_renderer != null)
         {
@@ -291,10 +291,10 @@ public sealed class BattleActorView : MonoBehaviour
         infoGo.transform.SetParent(transform, false);
         _worldInfoRoot = infoGo.transform;
 
-        _worldNameShadowText = CreateWorldText(_worldInfoRoot, "NameShadowText", font, new Vector3(0.02f, -0.02f, 0.03f), new Color(0.04f, 0.04f, 0.04f, 0.92f), 38, 0.06f);
-        _worldNameText = CreateWorldText(_worldInfoRoot, "NameText", font, Vector3.zero, Color.white, 38, 0.06f);
-        _worldStateShadowText = CreateWorldText(_worldInfoRoot, "StateShadowText", font, new Vector3(0.02f, -0.02f, 0.03f), new Color(0.04f, 0.04f, 0.04f, 0.92f), 26, 0.05f);
-        _worldStateText = CreateWorldText(_worldInfoRoot, "StateText", font, Vector3.zero, Color.white, 26, 0.05f);
+        _worldNameShadowText = CreateWorldText(_worldInfoRoot, "NameShadowText", font, new Vector3(0.02f, -0.02f, 0.03f), new Color(0.04f, 0.04f, 0.04f, 0.92f), 57, 0.09f);
+        _worldNameText = CreateWorldText(_worldInfoRoot, "NameText", font, Vector3.zero, Color.white, 57, 0.09f);
+        _worldStateShadowText = CreateWorldText(_worldInfoRoot, "StateShadowText", font, new Vector3(0.02f, -0.02f, 0.03f), new Color(0.04f, 0.04f, 0.04f, 0.92f), 39, 0.075f);
+        _worldStateText = CreateWorldText(_worldInfoRoot, "StateText", font, Vector3.zero, Color.white, 39, 0.075f);
         _worldStateText.transform.localPosition = new Vector3(0f, -0.24f, 0f);
         _worldStateShadowText.transform.localPosition = new Vector3(0.02f, -0.26f, 0.03f);
 
@@ -321,12 +321,12 @@ public sealed class BattleActorView : MonoBehaviour
         overlayGo.transform.SetParent(_overlayParent, false);
 
         _overlayRoot = overlayGo.GetComponent<RectTransform>();
-        _overlayRoot.sizeDelta = new Vector2(154f, 78f);
+        _overlayRoot.sizeDelta = new Vector2(231f, 117f);
         _overlayBackground = overlayGo.GetComponent<Image>();
         _overlayBackground.raycastTarget = false;
 
-        _nameText = CreateOverlayText(_overlayRoot, "NameText", font, new Vector2(0f, -4f), new Vector2(146f, 34f), 14, TextAnchor.MiddleCenter);
-        _stateText = CreateOverlayText(_overlayRoot, "StateText", font, new Vector2(0f, -34f), new Vector2(146f, 22f), 12, TextAnchor.MiddleCenter);
+        _nameText = CreateOverlayText(_overlayRoot, "NameText", font, new Vector2(0f, -6f), new Vector2(219f, 51f), 21, TextAnchor.MiddleCenter);
+        _stateText = CreateOverlayText(_overlayRoot, "StateText", font, new Vector2(0f, -51f), new Vector2(219f, 33f), 18, TextAnchor.MiddleCenter);
 
         var barBackGo = new GameObject("HpBarBack", typeof(RectTransform));
         barBackGo.transform.SetParent(_overlayRoot, false);
@@ -335,8 +335,8 @@ public sealed class BattleActorView : MonoBehaviour
         barBackRect.anchorMin = new Vector2(0.5f, 0f);
         barBackRect.anchorMax = new Vector2(0.5f, 0f);
         barBackRect.pivot = new Vector2(0.5f, 0f);
-        barBackRect.anchoredPosition = new Vector2(0f, 4f);
-        barBackRect.sizeDelta = new Vector2(118f, 12f);
+        barBackRect.anchoredPosition = new Vector2(0f, 6f);
+        barBackRect.sizeDelta = new Vector2(177f, 18f);
 
         var barBackImage = barBackGo.AddComponent<Image>();
         barBackImage.color = new Color(0.04f, 0.04f, 0.04f, 0.92f);
@@ -362,12 +362,12 @@ public sealed class BattleActorView : MonoBehaviour
         floatingRect.anchorMin = new Vector2(0.5f, 0.5f);
         floatingRect.anchorMax = new Vector2(0.5f, 0.5f);
         floatingRect.pivot = new Vector2(0.5f, 0.5f);
-        floatingRect.anchoredPosition = new Vector2(0f, 8f);
-        floatingRect.sizeDelta = new Vector2(156f, 34f);
+        floatingRect.anchoredPosition = new Vector2(0f, 12f);
+        floatingRect.sizeDelta = new Vector2(234f, 51f);
 
         _floatingText = floatingGo.AddComponent<Text>();
         _floatingText.font = font;
-        _floatingText.fontSize = 24;
+        _floatingText.fontSize = 36;
         _floatingText.alignment = TextAnchor.MiddleCenter;
         _floatingText.color = Color.clear;
         AddOutline(_floatingText, new Color(0f, 0f, 0f, 0.92f));
@@ -615,24 +615,30 @@ public sealed class BattleActorView : MonoBehaviour
         }
     }
 
-    private static Color ResolveHealthColor(float ratio, bool isAlive)
+    private static Color ResolveHealthColor(float ratio, bool isAlive, TeamSide side)
     {
         if (!isAlive)
         {
             return new Color(0.42f, 0.42f, 0.42f, 1f);
         }
 
-        if (ratio <= 0.25f)
-        {
-            return new Color(0.96f, 0.28f, 0.24f, 1f);
-        }
+        return side == TeamSide.Ally
+            ? ResolveAllyHealthColor(ratio)
+            : ResolveEnemyHealthColor(ratio);
+    }
 
-        if (ratio <= 0.55f)
-        {
-            return new Color(0.96f, 0.74f, 0.24f, 1f);
-        }
-
+    private static Color ResolveAllyHealthColor(float ratio)
+    {
+        if (ratio <= 0.25f) return new Color(0.96f, 0.28f, 0.24f, 1f);
+        if (ratio <= 0.55f) return new Color(0.96f, 0.74f, 0.24f, 1f);
         return new Color(0.34f, 0.90f, 0.42f, 1f);
+    }
+
+    private static Color ResolveEnemyHealthColor(float ratio)
+    {
+        if (ratio <= 0.25f) return new Color(1.00f, 0.30f, 0.20f, 1f);
+        if (ratio <= 0.55f) return new Color(0.92f, 0.52f, 0.18f, 1f);
+        return new Color(0.72f, 0.18f, 0.18f, 1f);
     }
 
     private static Color ResolveBaseColor(BattleUnitReadModel actor)

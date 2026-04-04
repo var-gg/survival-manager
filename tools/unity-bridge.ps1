@@ -486,7 +486,7 @@ try {
             Invoke-UnityCli @('console', '--lines', $Lines, '--type', $Filter)
         }
         'bootstrap' {
-            Invoke-UnityCli @('menu', 'SM/Bootstrap/Prepare Observer Playable') -WaitForReady -ReadyContext 'bootstrap menu dispatch' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds
+            Invoke-UnityCli @('menu', 'SM/Quick Battle') -WaitForReady -ReadyContext 'bootstrap menu dispatch' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds
         }
         'seed-content' {
             Invoke-UnityCli @('menu', 'SM/Seed/Generate Sample Content') -WaitForReady -ReadyContext 'sample content generation' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds -ReadyRetries $unityCliLongReadyPollRetries
@@ -516,7 +516,7 @@ try {
         'smoke-observer' {
             Invoke-Step -Name 'compile' -Action { Invoke-UnityCli @('editor', 'refresh', '--compile') -WaitForReady -ReadyContext 'compile' }
             Invoke-Step -Name 'clear-console' -Action { Invoke-UnityCli @('console', '--clear') }
-            Invoke-Step -Name 'bootstrap' -Action { Invoke-UnityCli @('menu', 'SM/Bootstrap/Prepare Observer Playable') -WaitForReady -ReadyContext 'bootstrap menu dispatch' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds }
+            Invoke-Step -Name 'bootstrap' -Action { Invoke-UnityCli @('menu', 'SM/Quick Battle') -WaitForReady -ReadyContext 'bootstrap menu dispatch' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds }
             Invoke-Step -Name 'report-town' -Action { Invoke-UnityCli @('observer_contract_report', '--scene', 'town') }
             Invoke-Step -Name 'report-battle' -Action { Invoke-UnityCli @('observer_contract_report', '--scene', 'battle') }
             Invoke-Step -Name 'console' -Action { Invoke-UnityCli @('console', '--lines', $Lines, '--type', $Filter) }

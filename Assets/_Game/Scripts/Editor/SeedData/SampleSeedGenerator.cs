@@ -17,7 +17,7 @@ public static class SampleSeedGenerator
     public const string ResourcesRoot = "Assets/Resources/_Game/Content/Definitions";
     public const string LegacyRoot = "Assets/_Game/Content/Definitions";
 
-    [MenuItem("SM/Seed/Generate Sample Content")]
+    [MenuItem("SM/Setup/Generate Sample Content")]
     public static void Generate()
     {
         EnsureFolders();
@@ -61,7 +61,7 @@ public static class SampleSeedGenerator
         Debug.Log($"SM sample content generated under Resources. Root={ResourcesRoot}, Stats={stats.Count}, Races={races.Count}, Classes={classes.Count}, Skills={skills.Count}, Archetypes={archetypes.Count}");
     }
 
-    [MenuItem("SM/Seed/Migrate Legacy Sample Content")]
+    [MenuItem("SM/Setup/Migrate Legacy Sample Content")]
     public static void MigrateLegacySampleContent()
     {
         EnsureFolders();
@@ -81,7 +81,7 @@ public static class SampleSeedGenerator
         Generate();
     }
 
-    [MenuItem("SM/Seed/Migrate Legacy Sample Content", true)]
+    [MenuItem("SM/Setup/Migrate Legacy Sample Content", true)]
     public static bool ValidateMigrateLegacySampleContent()
     {
         return !EditorApplication.isPlayingOrWillChangePlaymode;
@@ -112,7 +112,7 @@ public static class SampleSeedGenerator
         var consumerLabel = string.IsNullOrWhiteSpace(consumer) ? "current caller" : consumer;
         throw new InvalidOperationException(
             $"SM canonical sample content is not preflight-ready for {consumerLabel}. {issue} " +
-            "Run 'pwsh -File tools/unity-bridge.ps1 seed-content' or Unity menu 'SM/Seed/Generate Sample Content' before running this path.");
+            "Run 'pwsh -File tools/unity-bridge.ps1 seed-content' or Unity menu 'SM/Setup/Generate Sample Content' before running this path.");
     }
 
     public static bool TryGetCanonicalSampleContentReadinessIssue(out string issue)
