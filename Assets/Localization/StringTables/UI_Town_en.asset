@@ -16,8 +16,184 @@ MonoBehaviour:
     m_Code: en
   m_SharedData: {fileID: 11400000, guid: b98a6930fcf60554480f5ef4e8cddec8, type: 2}
   m_Metadata:
-    m_Items: []
-  m_TableData: []
+    m_Items:
+    - rid: 162163771961769987
+  m_TableData:
+  - m_Id: 1864477405339648
+    m_Localized: Town Operator UI
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477501808640
+    m_Localized: 'Gold: {0} | Echo: {1} | Perm Slots: {2}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197248
+    m_Localized: Roster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197249
+    m_Localized: '[Expedition]'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197250
+    m_Localized: '[Reserve]'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197251
+    m_Localized: Recruit Offers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197252
+    m_Localized: 'Current offers: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197253
+    m_Localized: 'Recruit cost: {0} Gold'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197254
+    m_Localized: 'Reroll cost: {0} Gold'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197255
+    m_Localized: 'Town roster: {0}/{1}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197256
+    m_Localized: Empty Slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197257
+    m_Localized: No recruit offer is available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197258
+    m_Localized: Expedition Squad ({0}/8)
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197259
+    m_Localized: Deploy Preview ({0}/4)
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197260
+    m_Localized: 'Team Posture: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197261
+    m_Localized: Quick battle smoke is ready.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197262
+    m_Localized: Quick battle does not consume expedition progress.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197263
+    m_Localized: 'Resume Expedition: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197264
+    m_Localized: 'Last Reward: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197265
+    m_Localized: 'Last Node Effect: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197266
+    m_Localized: Route selection required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197267
+    m_Localized: Recruit, save, resume the expedition, or run a quick battle.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197268
+    m_Localized: Recruit, save, start an expedition, or run a quick battle.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197269
+    m_Localized: Profile reloaded.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197270
+    m_Localized: Profile saved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197271
+    m_Localized: Recruited offer {0}. (-{1} Gold)
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197272
+    m_Localized: Recruit offers rerolled. (-{0} Gold)
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197273
+    m_Localized: 'Team posture: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197274
+    m_Localized: '{0} deployment updated.'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 1864477510197275
+    m_Localized: Failed to recruit the selected offer.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197276
+    m_Localized: Failed to reroll recruit offers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197277
+    m_Localized: Recruit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197278
+    m_Localized: Reroll
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197279
+    m_Localized: Start Expedition
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864477510197280
+    m_Localized: Quick Battle
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 162163771961769987
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 1864477501808640
+        - id: 1864477510197252
+        - id: 1864477510197253
+        - id: 1864477510197254
+        - id: 1864477510197255
+        - id: 1864477510197258
+        - id: 1864477510197259
+        - id: 1864477510197260
+        - id: 1864477510197263
+        - id: 1864477510197264
+        - id: 1864477510197265
+        - id: 1864477510197271
+        - id: 1864477510197272
+        - id: 1864477510197273
+        - id: 1864477510197274

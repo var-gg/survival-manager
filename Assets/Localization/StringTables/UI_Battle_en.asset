@@ -89,7 +89,7 @@ MonoBehaviour:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000017
-    m_Localized: Step {0} | {1} action {2}% -> {3}{4}
+    m_Localized: Step {0} | {1} windup {2}% -> {3}{4}
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364

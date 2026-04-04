@@ -89,7 +89,7 @@ MonoBehaviour:
       m_Items:
       - rid: 1798213439901401363
   - m_Id: 901000017
-    m_Localized: "Step {0} | {1} \uD589\uB3D9 {2}% -> {3}{4}"
+    m_Localized: "Step {0} | {1} \uC900\uBE44 {2}% -> {3}{4}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401363

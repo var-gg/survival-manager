@@ -16,8 +16,283 @@ MonoBehaviour:
     m_Code: en
   m_SharedData: {fileID: 11400000, guid: 9a5455106c419f24dbbb2440711e4efe, type: 2}
   m_Metadata:
-    m_Items: []
-  m_TableData: []
+    m_Items:
+    - rid: 162163771961769992
+  m_TableData:
+  - m_Id: 1864474683236352
+    m_Localized: Reward Operator UI
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179392
+    m_Localized: 'Battle Result: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179393
+    m_Localized: 'Gold: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179394
+    m_Localized: 'Echo: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179395
+    m_Localized: 'Echo: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179396
+    m_Localized: 'Perm Slots: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179397
+    m_Localized: 'Inventory: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179398
+    m_Localized: 'Temp Augments: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179399
+    m_Localized: '{0} / {1} steps / {2} events'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179400
+    m_Localized: '{0} / {1} steps / {2} events
+
+      Route: {3}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179401
+    m_Localized: '{0} / {1} steps / {2} events
+
+      Route: {3}
+
+      Node Effect:
+      {4}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179402
+    m_Localized: Victory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179403
+    m_Localized: Defeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179404
+    m_Localized: Choose one reward card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179405
+    m_Localized: Pick one card and return to town.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179406
+    m_Localized: Reward applied.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179407
+    m_Localized: '{0} applied.'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179408
+    m_Localized: Failed to apply the selected reward.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179409
+    m_Localized: Choose
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179410
+    m_Localized: Empty Card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179411
+    m_Localized: No reward choice is available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179412
+    m_Localized: Gold +{0}
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179413
+    m_Localized: Item / {0}
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179414
+    m_Localized: Temp / {0}
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179415
+    m_Localized: Echo +{0}
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179416
+    m_Localized: Echo +{0}
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179417
+    m_Localized: Permanent Slot +{0}
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 1864474725179418
+    m_Localized: Gold Cache
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179419
+    m_Localized: Take an immediate gold payout.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179420
+    m_Localized: Iron Blade Supply
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179421
+    m_Localized: Gain a baseline weapon item.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179422
+    m_Localized: Aggro Spark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179423
+    m_Localized: Gain an aggressive temporary augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179424
+    m_Localized: War Chest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179425
+    m_Localized: Large gold reward for the ambush route.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179426
+    m_Localized: Hook Spear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179427
+    m_Localized: Gain a frontline skirmish item.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179428
+    m_Localized: Scout Intel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179429
+    m_Localized: Gain extra Echo for recruit and retrain recovery.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179430
+    m_Localized: Field Kit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179431
+    m_Localized: Gain a steady defensive item.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179432
+    m_Localized: Anchor Beat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179433
+    m_Localized: Gain a frontline stabilizing augment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179434
+    m_Localized: Relay Pouch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179435
+    m_Localized: Gain a medium gold payout.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179436
+    m_Localized: Permanent Socket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179437
+    m_Localized: Increase permanent augment slots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179438
+    m_Localized: Sigil Core
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179439
+    m_Localized: Gain a late-run utility item.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179440
+    m_Localized: Doctrine Cache
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179441
+    m_Localized: Gain a larger Echo payout.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179442
+    m_Localized: Fallback Stash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179443
+    m_Localized: Collect a minimum fallback payout after defeat.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179444
+    m_Localized: Tactical Notes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474725179445
+    m_Localized: Gain Echo for tactical correction.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474729373696
+    m_Localized: Guard Spark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1864474729373697
+    m_Localized: Gain a stabilizing temporary augment.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 162163771961769992
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 1864474725179392
+        - id: 1864474725179393
+        - id: 1864474725179394
+        - id: 1864474725179395
+        - id: 1864474725179396
+        - id: 1864474725179397
+        - id: 1864474725179398
+        - id: 1864474725179399
+        - id: 1864474725179400
+        - id: 1864474725179401
+        - id: 1864474725179407
+        - id: 1864474725179412
+        - id: 1864474725179413
+        - id: 1864474725179414
+        - id: 1864474725179415
+        - id: 1864474725179416
+        - id: 1864474725179417
