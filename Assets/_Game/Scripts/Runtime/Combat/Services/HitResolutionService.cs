@@ -85,7 +85,9 @@ public static class HitResolutionService
         }
 
         var mitigation = damageType == DamageType.Magical ? target.Resist : target.Armor;
-        var resolved = Math.Max(1f, (powerAfterCrit - mitigation) * target.GetIncomingDamageMultiplier());
+        const float armorScaling = 10f;
+        var reductionFactor = 1f - (mitigation / (mitigation + armorScaling));
+        var resolved = Math.Max(1f, powerAfterCrit * reductionFactor * target.GetIncomingDamageMultiplier());
         var note = blocked
             ? critical ? "crit+block" : "block"
             : critical ? "crit" : string.Empty;
