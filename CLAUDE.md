@@ -42,6 +42,14 @@
 - 커밋 메시지는 한글로 적절히 정리한다.
 - 작업 완료 후 push 여부는 사용자에게 확인한다.
 
+## 워크트리와 Unity 제약
+
+**워크트리에서는 Unity 에디터를 사용할 수 없다.**
+Unity 에디터는 메인 프로젝트 경로(`A:\projects\game\survival-manager`)에서만 실행된다.
+워크트리에서 `unity-bridge.ps1 compile`, `test-edit`, `test-play` 등을 실행하면 "no Unity instance found" 오류가 발생한다.
+컴파일/테스트 검증이 필요하면 **변경 사항을 main에 머지한 후** 메인 프로젝트에서 실행한다.
+워크트리에서 실행 가능한 검증: `test-harness-lint.ps1`, `docs-policy-check.ps1`, `docs-check.ps1`.
+
 ## Unity 도구 사용
 
 ### unity-bridge.ps1 (기본 경로)

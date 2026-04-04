@@ -28,6 +28,7 @@ public sealed class BattleScreenController : MonoBehaviour
     [SerializeField] private Image enemySummaryPanel = null!;
     [SerializeField] private BattlePresentationController presentationController = null!;
     [SerializeField] private BattleSettingsPanelController settingsPanelController = null!;
+    [SerializeField] private BattleCameraController cameraController = null!;
 
     private readonly List<BattleEvent> _recentLogs = new();
     private readonly List<string> _decisiveTimeline = new();
@@ -40,18 +41,18 @@ public sealed class BattleScreenController : MonoBehaviour
     private IReadOnlyList<BattleUnitLoadout> _enemyLoadouts = Array.Empty<BattleUnitLoadout>();
     private ResolvedEncounterContext? _resolvedEncounterContext;
     private string _battleStartedAtUtc = string.Empty;
-    private BattleSimulationStep? _previousStep;
-    private BattleSimulationStep? _currentStep;
-    private float _playbackSpeed = 1f;
-    private float _stepAccumulator;
-    private bool _isPaused;
-    private bool _battleFinished;
     private int _totalEventCount;
 
-    public bool IsPlaybackFinished => _battleFinished;
-    public bool IsBattleFinished => _battleFinished;
-    public BattleSimulationStep? LatestStep => _currentStep;
+    private BattleTimelineController? _timeline;
+    private BattlePlaybackPolicy _policy = new(BattlePlaybackMode.QuickBattle);
+
+    public bool IsPlaybackFinished => _timeline?.IsFinished ?? false;
+    public bool IsBattleFinished => _timeline?.IsFinished ?? false;
+    public BattleSimulationStep? LatestStep => _timeline?.CurrentStep;
     public TeamPostureType? ActiveAllyPosture => _simulator?.State.AllyPosture;
+
+    private static readonly Vector3 DefaultCameraPosition = new(0.4f, 7.8f, -9.1f);
+    private static readonly Quaternion DefaultCameraRotation = Quaternion.Euler(33f, -12f, 0f);
 
     private void Start()
     {
@@ -65,7 +66,16 @@ public sealed class BattleScreenController : MonoBehaviour
         _localization = _root.Localization;
         _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Battle);
-        SetupCamera();
+
+        if (cameraController != null)
+        {
+            cameraController.Initialize(DefaultCameraPosition, DefaultCameraRotation);
+        }
+        else
+        {
+            SetupCameraFallback();
+        }
+
         RunBattle();
     }
 
@@ -85,9 +95,10 @@ public sealed class BattleScreenController : MonoBehaviour
             _presentationOptions.ToggleDebugOverlay();
         }
 
-        if (Input.GetKeyDown(KeyCode.F4) && _isPaused && !_battleFinished)
+        if (Input.GetKeyDown(KeyCode.F4) && _timeline is { IsPaused: true } && !IsBattleFinished)
         {
-            StepOnce();
+            _timeline.StepOnce();
+            RefreshAfterSeek();
         }
 
         if (Input.GetKeyDown(KeyCode.F5) && _simulator != null)
@@ -95,37 +106,42 @@ public sealed class BattleScreenController : MonoBehaviour
             RestartSameSeed();
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab) && _currentStep != null)
+        if (Input.GetKeyDown(KeyCode.Tab) && _timeline?.CurrentStep != null)
         {
             CycleSelectedUnit();
         }
 #endif
 
-        if (_simulator == null || _currentStep == null || _previousStep == null)
-        {
-            return;
-        }
+        if (_timeline == null) return;
 
-        if (!_battleFinished && !_isPaused)
+        var stepped = _timeline.TryAdvance(Time.deltaTime,
+            out var previousStep, out var currentStep, out var alpha);
+
+        if (previousStep == null || currentStep == null) return;
+
+        if (stepped)
         {
-            _stepAccumulator += Time.deltaTime * _playbackSpeed;
-            while (_stepAccumulator >= _simulator.State.FixedStepSeconds && !_battleFinished)
+            _totalEventCount += currentStep.Events.Count;
+            TrackDecisiveEvents(currentStep);
+            presentationController.PushStep(previousStep, currentStep);
+            RefreshHud(currentStep);
+
+            if (currentStep.IsFinished && !_battleFinishedHandled)
             {
-                _stepAccumulator -= _simulator.State.FixedStepSeconds;
-                AdvanceSimulation();
+                FinishBattle();
             }
         }
 
-        var fixedStep = Mathf.Max(0.0001f, _simulator.State.FixedStepSeconds);
-        var alpha = _battleFinished ? 1f : Mathf.Clamp01(_stepAccumulator / fixedStep);
-        presentationController.SetBlend(_previousStep, _currentStep, alpha);
-        progressFill.fillAmount = Mathf.Clamp01((float)_currentStep.StepIndex / MaxBattleSteps);
+        presentationController.SetBlend(previousStep, currentStep, alpha);
+        progressFill.fillAmount = _timeline.NormalizedProgress;
 
         if (_presentationOptions.ShowDebugOverlay)
         {
-            DrawDebugTargetLines(_currentStep);
+            DrawDebugTargetLines(currentStep);
         }
     }
+
+    private bool _battleFinishedHandled;
 
     private static void DrawDebugTargetLines(BattleSimulationStep step)
     {
@@ -146,13 +162,25 @@ public sealed class BattleScreenController : MonoBehaviour
     public void SetSpeed2() => SetSpeed(2f);
     public void SetSpeed4() => SetSpeed(4f);
 
-    private void StepOnce()
+    public void HandleScrubberSeek(float normalized)
     {
-        if (_simulator == null || _currentStep == null || _battleFinished) return;
-        AdvanceSimulation();
-        var fixedStep = Mathf.Max(0.0001f, _simulator.State.FixedStepSeconds);
-        presentationController.SetBlend(_currentStep, _currentStep, 1f);
-        progressFill.fillAmount = Mathf.Clamp01((float)_currentStep.StepIndex / MaxBattleSteps);
+        if (_timeline == null || !_policy.CanSeek(_timeline.IsFinished)) return;
+        var targetStep = Mathf.RoundToInt(normalized * MaxBattleSteps);
+        _timeline.SeekToStep(targetStep);
+        RefreshAfterSeek();
+    }
+
+    private void RefreshAfterSeek()
+    {
+        if (_timeline == null) return;
+        var prev = _timeline.PreviousStep;
+        var curr = _timeline.CurrentStep;
+        if (prev == null || curr == null) return;
+
+        presentationController.PushStep(prev, curr);
+        presentationController.SetBlend(prev, curr, 1f);
+        progressFill.fillAmount = _timeline.NormalizedProgress;
+        RefreshHud(curr);
     }
 
     private void RestartSameSeed()
@@ -167,18 +195,21 @@ public sealed class BattleScreenController : MonoBehaviour
             BattleSimulator.DefaultFixedStepSeconds,
             seed: encounter.Context.BattleSeed);
         _simulator = new BattleSimulator(newState, MaxBattleSteps);
-        _previousStep = _simulator.CurrentStep;
-        _currentStep = _simulator.CurrentStep;
-        _battleFinished = false;
-        _isPaused = false;
-        _stepAccumulator = 0f;
+
+        _timeline!.Reset(_simulator, _simulator.CurrentStep, MaxBattleSteps);
+        _battleFinishedHandled = false;
         _totalEventCount = 0;
         _decisiveTimeline.Clear();
         _selectedUnitId = string.Empty;
-        presentationController.Initialize(_currentStep);
+        presentationController.Initialize(_simulator.CurrentStep);
         presentationController.SetPaused(false);
-        RefreshHud(_currentStep);
+        RefreshHud(_simulator.CurrentStep);
         RefreshSpeedText();
+
+        if (cameraController != null)
+        {
+            cameraController.ResetToDefault();
+        }
     }
 
     public void RebattleNewSeed()
@@ -188,6 +219,11 @@ public sealed class BattleScreenController : MonoBehaviour
         _root.SessionState.PrepareQuickBattleSmoke();
         _root.SaveProfile();
         RunBattle();
+
+        if (cameraController != null)
+        {
+            cameraController.ResetToDefault();
+        }
     }
 
     public void ReturnToTownDirect()
@@ -195,13 +231,20 @@ public sealed class BattleScreenController : MonoBehaviour
         if (!EnsureReady()) return;
         _root.SessionState.ReturnToTownAfterReward();
         _root.SaveProfile();
+
+        if (cameraController != null)
+        {
+            cameraController.SetInputEnabled(false);
+        }
+
         _root.SceneFlow.ReturnToTown();
     }
 
     private void CycleSelectedUnit()
     {
-        if (_currentStep == null) return;
-        var alive = _currentStep.Units.Where(u => u.IsAlive).OrderBy(u => u.Side).ThenBy(u => u.Id).ToList();
+        var currentStep = _timeline?.CurrentStep;
+        if (currentStep == null) return;
+        var alive = currentStep.Units.Where(u => u.IsAlive).OrderBy(u => u.Side).ThenBy(u => u.Id).ToList();
         if (alive.Count == 0) return;
         var currentIndex = alive.FindIndex(u => u.Id == _selectedUnitId);
         _selectedUnitId = alive[(currentIndex + 1) % alive.Count].Id;
@@ -209,11 +252,13 @@ public sealed class BattleScreenController : MonoBehaviour
 
     public void TogglePause()
     {
-        if (!EnsureReady()) return;
-        _isPaused = !_isPaused;
-        presentationController.SetPaused(_isPaused);
+        if (!EnsureReady() || _timeline == null) return;
+        if (!_policy.CanPause(_timeline.IsFinished)) return;
+
+        _timeline.TogglePause();
+        presentationController.SetPaused(_timeline.IsPaused);
         RefreshSpeedText();
-        statusText.text = _isPaused
+        statusText.text = _timeline.IsPaused
             ? Localize(GameLocalizationTables.UIBattle, "ui.battle.status.paused", "Battle paused")
             : Localize(GameLocalizationTables.UIBattle, "ui.battle.status.resumed", "Battle resumed");
     }
@@ -221,10 +266,15 @@ public sealed class BattleScreenController : MonoBehaviour
     public void ContinueToReward()
     {
         if (!EnsureReady()) return;
-        if (!_battleFinished)
+        if (!IsBattleFinished)
         {
             SetResult("전투가 아직 끝나지 않았습니다.");
             return;
+        }
+
+        if (cameraController != null)
+        {
+            cameraController.SetInputEnabled(false);
         }
 
         _root.SceneFlow.GoToReward();
@@ -299,27 +349,26 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void SetSpeed(float speed)
     {
-        _playbackSpeed = speed;
+        if (_timeline == null || !_policy.CanControlSpeed(_timeline.IsFinished)) return;
+        _timeline.SetSpeed(speed);
         RefreshSpeedText();
     }
 
     private void RefreshSpeedText()
     {
-        speedText.text = _isPaused
-            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.paused", "Speed x{0:0} | Paused", _playbackSpeed)
-            : Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.active", "Speed x{0:0}", _playbackSpeed);
+        var isPaused = _timeline?.IsPaused ?? false;
+        var playbackSpeed = _timeline?.PlaybackSpeed ?? 1f;
+        speedText.text = isPaused
+            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.paused", "Speed x{0:0} | Paused", playbackSpeed)
+            : Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.active", "Speed x{0:0}", playbackSpeed);
     }
 
-    private void SetupCamera()
+    private static void SetupCameraFallback()
     {
         var cam = Camera.main;
-        if (cam == null)
-        {
-            return;
-        }
-
-        cam.transform.position = new Vector3(0.4f, 7.8f, -9.1f);
-        cam.transform.rotation = Quaternion.Euler(33f, -12f, 0f);
+        if (cam == null) return;
+        cam.transform.position = DefaultCameraPosition;
+        cam.transform.rotation = DefaultCameraRotation;
     }
 
     private void RunBattle()
@@ -331,12 +380,9 @@ public sealed class BattleScreenController : MonoBehaviour
         statusText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.status.initializing", "Initializing live simulation");
         logText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.log.preparing", "Preparing battle log");
         progressFill.fillAmount = 0f;
-        _battleFinished = false;
-        _isPaused = false;
-        _stepAccumulator = 0f;
+        _battleFinishedHandled = false;
         _totalEventCount = 0;
         _recentLogs.Clear();
-        SetSpeed(1f);
 
         BattleLoadoutSnapshot allySnapshot;
         try
@@ -381,56 +427,46 @@ public sealed class BattleScreenController : MonoBehaviour
         new EncounterResolutionService(snapshot).ApplyBattleBootstrap(simulationState, encounter);
 
         _simulator = new BattleSimulator(simulationState, MaxBattleSteps);
-        _previousStep = _simulator.CurrentStep;
-        _currentStep = _simulator.CurrentStep;
+        _policy = new BattlePlaybackPolicy(BattlePlaybackMode.QuickBattle);
+        _timeline = new BattleTimelineController();
+        _timeline.Initialize(_simulator, _simulator.CurrentStep, MaxBattleSteps);
 
-        presentationController.Initialize(_currentStep);
+        presentationController.Initialize(_simulator.CurrentStep);
         presentationController.ApplyOptions(_presentationOptions);
         presentationController.SetPaused(false);
         settingsPanelController.Initialize(_presentationOptions, ApplyPresentationOptions);
         ApplyPresentationOptions(_presentationOptions);
-        RefreshHud(_currentStep);
-    }
+        RefreshHud(_simulator.CurrentStep);
+        RefreshSpeedText();
 
-    private void AdvanceSimulation()
-    {
-        if (_simulator == null || _currentStep == null)
+        if (cameraController != null)
         {
-            return;
-        }
-
-        _previousStep = _currentStep;
-        _currentStep = _simulator.Step();
-        _totalEventCount += _currentStep.Events.Count;
-        TrackDecisiveEvents(_currentStep);
-        presentationController.PushStep(_previousStep, _currentStep);
-        RefreshHud(_currentStep);
-
-        if (_currentStep.IsFinished)
-        {
-            FinishBattle();
+            cameraController.SetInputEnabled(true);
         }
     }
 
     private void FinishBattle()
     {
-        if (_simulator == null || _currentStep == null || _battleFinished || _compiledSnapshot == null)
+        if (_simulator == null || _timeline == null || _battleFinishedHandled || _compiledSnapshot == null)
         {
             return;
         }
 
-        _battleFinished = true;
+        _battleFinishedHandled = true;
+        _timeline.MarkFinished();
         progressFill.fillAmount = 1f;
-        resultText.text = _currentStep.Winner == TeamSide.Ally
+
+        var currentStep = _timeline.CurrentStep!;
+        resultText.text = currentStep.Winner == TeamSide.Ally
             ? Localize(GameLocalizationTables.UIBattle, "ui.battle.result.victory", "Victory")
             : Localize(GameLocalizationTables.UIBattle, "ui.battle.result.defeat", "Defeat");
         statusText.text = Localize(
             GameLocalizationTables.UIBattle,
             "ui.battle.status.finished",
             "Battle finished | {0} steps | {1} events",
-            _currentStep.StepIndex,
+            currentStep.StepIndex,
             _totalEventCount);
-        var winner = _currentStep.Winner ?? TeamSide.Ally;
+        var winner = currentStep.Winner ?? TeamSide.Ally;
         var result = _simulator.RunToEnd();
         var replay = ReplayAssembler.Assemble(
             _compiledSnapshot,
@@ -440,10 +476,10 @@ public sealed class BattleScreenController : MonoBehaviour
             _battleStartedAtUtc,
             System.DateTime.UtcNow.ToString("O"));
         _root.SessionState.RecordBattleAudit(replay);
-        BattleDebugLogWriter.Write(replay, _currentStep.Units);
+        BattleDebugLogWriter.Write(replay, currentStep.Units);
         _root.SessionState.MarkBattleResolved(
             winner == TeamSide.Ally,
-            _currentStep.StepIndex,
+            currentStep.StepIndex,
             _totalEventCount);
     }
 
@@ -496,7 +532,8 @@ public sealed class BattleScreenController : MonoBehaviour
     private void RefreshStatus(BattleSimulationStep step)
     {
         RefreshSpeedText();
-        var pauseLabel = _isPaused
+        var isPaused = _timeline?.IsPaused ?? false;
+        var pauseLabel = isPaused
             ? Localize(GameLocalizationTables.UIBattle, "ui.battle.status.pause_suffix", " | Paused")
             : string.Empty;
         if (step.IsFinished)
@@ -620,7 +657,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!_presentationOptions.ShowDebugOverlay || _currentStep == null)
+        if (!_presentationOptions.ShowDebugOverlay || _timeline?.CurrentStep == null)
         {
             return;
         }
@@ -631,14 +668,15 @@ public sealed class BattleScreenController : MonoBehaviour
         bgTex.Apply();
         var bgStyle = new GUIStyle { normal = { background = bgTex } };
 
-        var step = _currentStep;
+        var step = _timeline.CurrentStep;
         var allyCount = step.Units.Count(u => u.Side == TeamSide.Ally);
         var allyAlive = step.Units.Count(u => u.Side == TeamSide.Ally && u.IsAlive);
         var enemyCount = step.Units.Count(u => u.Side == TeamSide.Enemy);
         var enemyAlive = step.Units.Count(u => u.Side == TeamSide.Enemy && u.IsAlive);
-        var speedLabel = _isPaused ? "PAUSED" : $"x{_playbackSpeed:0}";
+        var isPaused = _timeline.IsPaused;
+        var speedLabel = isPaused ? "PAUSED" : $"x{_timeline.PlaybackSpeed:0}";
 
-        var pauseHint = _isPaused ? " | <color=#ff6>F4=Step  F5=Restart</color>" : " | <color=#aaa>F5=Restart</color>";
+        var pauseHint = isPaused ? " | <color=#ff6>F4=Step  F5=Restart</color>" : " | <color=#aaa>F5=Restart</color>";
         var headerRect = new Rect(4, 4, 780, 20);
         GUI.Box(headerRect, GUIContent.none, bgStyle);
         GUI.Label(headerRect, $"  Step: {step.StepIndex}/{MaxBattleSteps} | Time: {step.TimeSeconds:0.0}s | {speedLabel} | Allies: {allyAlive}/{allyCount} | Enemies: {enemyAlive}/{enemyCount}{pauseHint}", style);
@@ -734,20 +772,21 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
     {
-        if (_currentStep == null)
+        var currentStep = _timeline?.CurrentStep;
+        if (currentStep == null)
         {
             return;
         }
 
         titleText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.title", "Battle Observer UI");
-        RefreshHp(_currentStep.Units);
-        RefreshStatus(_currentStep);
+        RefreshHp(currentStep.Units);
+        RefreshStatus(currentStep);
         RefreshLogText();
         RefreshSpeedText();
 
-        if (_battleFinished)
+        if (IsBattleFinished)
         {
-            resultText.text = _currentStep.Winner == TeamSide.Ally
+            resultText.text = currentStep.Winner == TeamSide.Ally
                 ? Localize(GameLocalizationTables.UIBattle, "ui.battle.result.victory", "Victory")
                 : Localize(GameLocalizationTables.UIBattle, "ui.battle.result.defeat", "Defeat");
         }

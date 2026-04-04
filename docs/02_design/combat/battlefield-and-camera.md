@@ -2,12 +2,13 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-05
 - 소스오브트루스: `docs/02_design/combat/battlefield-and-camera.md`
 - 관련문서:
   - `docs/02_design/combat/deployment-and-anchors.md`
   - `docs/02_design/combat/realtime-simulation-model.md`
   - `docs/02_design/combat/combat-readability.md`
+  - `docs/02_design/combat/battle-playback-contract.md`
   - `docs/03_architecture/combat-runtime-architecture.md`
   - `docs/02_design/ui/battle-observer-ui.md`
 
@@ -38,6 +39,38 @@
 - 전투 중 카메라는 유닛 하나를 과하게 따라가지 않는다.
 - 현재 Battle scene prototype은 고정 카메라에 가까운 slanted view를 사용한다.
 
+## 카메라 제어
+
+- `BattleCameraController`가 카메라 공간 이동을 전담한다.
+- 카메라 회전은 고정(`Euler(33, -12, 0)`)이며 변경하지 않는다.
+
+### 입력 매핑
+
+| 입력 | 동작 |
+|------|------|
+| 우클릭 드래그 / 중버튼 드래그 | 카메라 패닝 |
+| 휠 스크롤 | 줌 인/아웃 |
+| WASD / 방향키 | 키보드 패닝 |
+| 화면 가장자리 커서 (20px) | edge scrolling |
+
+### 바운드
+
+- `BattlefieldLayout.Default` 기준으로 양 팀 BackRow + margin까지만 허용한다.
+- X: [-8, 8], Z: [-4, 4] (배치 좌표 + 약 3유닛 여유)
+- 줌 높이: [4, 12] (기본 7.8)
+- 바운드를 벗어나는 이동은 clamp한다.
+
+### 줌
+
+- 줌 시 커서 방향으로 약간 이동한다 (zoom-to-cursor).
+- `SmoothDamp`로 부드러운 전환을 유지한다.
+
+### 유닛 클릭 선택 (미래)
+
+- 좌클릭은 유닛 선택용으로 예약한다.
+- `BattleCameraController.IsDragging`으로 클릭/드래그를 구분한다.
+- 카메라 컨트롤러가 `Camera` 참조를 노출하여 레이캐스트를 가능하게 한다.
+
 ## 비목표
 
 - TFT식 board-locked hex 전장
@@ -47,6 +80,7 @@
 
 ## 현재 구현 메모
 
-- Battle scene은 capsule actor와 단순한 카메라 세팅을 유지한다.
+- Battle scene은 capsule actor를 사용한다.
+- 카메라는 `BattleCameraController`가 초기화하고, 없으면 fallback으로 직접 설정한다.
 - 읽기 쉬움이 깨지지 않는 선에서만 위치 보간과 간단한 충돌 회피를 사용한다.
 - 전장 가독성 예산은 `docs/02_design/combat/combat-readability.md`를 따른다.

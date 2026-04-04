@@ -50,6 +50,7 @@
 - `combat/combat-mechanics-glossary.md`: crit/dodge/block/energy/summon 용어집
 - `combat/hero-traits.md`: recruit trait/quirk와 token 정책
 - `combat/synergy-system.md`: race/class synergy 설계
+- `combat/battle-playback-contract.md`: 플레이백 정책, seek, 스크러버, 리플레이 계약
 
 ## meta 문서
 

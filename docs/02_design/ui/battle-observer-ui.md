@@ -1,7 +1,7 @@
 # Battle Observer UI
 
 - 상태: active
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-05
 - 단계: prototype
 
 ## source-of-truth note
@@ -20,9 +20,28 @@
 - overhead UI / damage text / 팀 HP summary는 settings panel에서 ON/OFF
 - 최근 로그 8줄
 - tick / current action / speed / pause 상태 텍스트
-- progress bar
+- 타임라인 스크러버 (드래그 가능한 progress bar)
 - settings 버튼 + battle view settings panel
 - continue 버튼
+
+## 타임라인 플레이백
+
+- `BattleTimelineController`가 시뮬레이션 스텝을 전수 녹화한다 (최대 300개).
+- 스크러버 드래그로 임의 시점 탐색이 가능하다.
+- 뒤로 탐색은 녹화된 스텝 인덱싱으로 즉시 수행한다.
+- 앞으로 탐색은 시뮬레이터를 추가 진행하여 스텝을 채운다.
+- 전투 종료 후 리플레이: 스크러버로 시작점에서 재생. 새 전투(rebattle)와는 별개 기능이다.
+
+### 플레이백 모드
+
+| 모드 | pause | seek | speed | replay |
+|------|-------|------|-------|--------|
+| QuickBattle | 상시 | 상시 | 상시 | 상시 |
+| InGame | 종료 후 | 종료 후 | 종료 후 | 종료 후 |
+
+- `BattlePlaybackPolicy`가 모드별 제어 가능 여부를 판단한다.
+- QuickBattle: 전투 중에도 모든 플레이백 조작 가능.
+- InGame: 전투 완료 후에만 모든 조작 해금.
 
 ## 행동 피드백
 

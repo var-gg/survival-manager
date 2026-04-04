@@ -180,6 +180,13 @@ public static class FirstPlayableRuntimeSceneBinder
             ["statusText"] = GetComponentFromNamedObject<Text>(scene, "SettingsStatusText"),
         });
 
+        var cameraGo = FindGameObject(scene, "BattleCameraRoot");
+        BattleCameraController? cameraCtrl = null;
+        if (cameraGo != null)
+        {
+            cameraCtrl = EnsureComponent<BattleCameraController>(cameraGo);
+        }
+
         var controller = EnsureComponent<BattleScreenController>(controllerGo);
         Bind(controller, new Dictionary<string, Object?>
         {
@@ -195,6 +202,7 @@ public static class FirstPlayableRuntimeSceneBinder
             ["enemySummaryPanel"] = GetComponentFromNamedObject<Image>(scene, "RightPanel"),
             ["presentationController"] = presentation,
             ["settingsPanelController"] = settingsController,
+            ["cameraController"] = cameraCtrl,
         });
 
         BindButton(scene, "Speed1Button", controller.SetSpeed1);
