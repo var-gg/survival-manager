@@ -363,22 +363,35 @@ public static class FirstPlayableRuntimeSceneBinder
             go.AddComponent<EventSystem>();
         }
 
-        // InputSystemUIInputModule's action references can silently break,
-        // causing UI clicks to not register even though raycasts succeed.
-        // StandaloneInputModule uses Legacy Input for UI events — reliable in Both mode.
+        // InputSystemUIInputModule needs its action asset explicitly enabled
+        // to process pointer events. Without this, raycasts succeed but clicks
+        // never reach Button.onClick.
         var inputSystemUiType = Type.GetType("UnityEngine.InputSystem.UI.InputSystemUIInputModule, Unity.InputSystem");
         if (inputSystemUiType != null)
         {
-            var inputSystemModule = go.GetComponent(inputSystemUiType);
-            if (inputSystemModule != null)
+            var module = go.GetComponent(inputSystemUiType);
+            if (module != null)
             {
-                Object.Destroy(inputSystemModule);
+                var assetProp = inputSystemUiType.GetProperty("actionsAsset");
+                var asset = assetProp?.GetValue(module);
+                var enableMethod = asset?.GetType().GetMethod("Enable");
+                enableMethod?.Invoke(asset, null);
+            }
+            else
+            {
+                // Fallback: no InputSystemUIInputModule, use StandaloneInputModule
+                if (go.GetComponent<StandaloneInputModule>() == null)
+                {
+                    go.AddComponent<StandaloneInputModule>();
+                }
             }
         }
-
-        if (go.GetComponent<StandaloneInputModule>() == null)
+        else
         {
-            go.AddComponent<StandaloneInputModule>();
+            if (go.GetComponent<StandaloneInputModule>() == null)
+            {
+                go.AddComponent<StandaloneInputModule>();
+            }
         }
     }
 
