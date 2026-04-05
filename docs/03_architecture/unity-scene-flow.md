@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-04
+- 최종수정일: 2026-04-06
 - 소스오브트루스: `docs/03_architecture/unity-scene-flow.md`
 - 관련문서:
   - `docs/03_architecture/unity-boundaries.md`
@@ -20,6 +20,7 @@
 - `MonoBehaviour`와 scene script는 orchestration과 표시만 담당한다.
 - Boot scene이 시작점이며 composition root 역할을 맡는다.
 - scene asset은 수동 편집 결과보다 installer 기반 재현 가능 구성을 우선한다.
+- play scene UI는 scene object tree보다 `RuntimePanelHost + UXML asset`을 기준으로 본다.
 
 ## 현재 adapter 구성
 
@@ -27,6 +28,7 @@
 - `GameSessionRoot`
 - `GameSessionState`
 - `SceneFlowController`
+- `RuntimePanelHost`
 - `PersistenceEntryPoint`
 - `TownScreenController`
 - `ExpeditionScreenController`
@@ -39,8 +41,27 @@
 ## bootstrap 책임
 
 - `FirstPlayableSceneInstaller`는 playable scene asset 복구와 build settings 보정을 담당한다.
+- `FirstPlayableSceneInstaller`는 Boot를 제외한 play scene에서 `*RuntimeRoot`, `*RuntimePanelHost`, `*ScreenController`, Battle overlay root를 보장한다.
 - `FirstPlayableBootstrap`는 sample content 보장, validation, scene repair, demo save reset, Boot open을 순서대로 orchestration 한다.
 - operator가 first playable을 보려면 `SM/Bootstrap/Prepare Observer Playable`를 먼저 실행하는 흐름을 기본값으로 둔다.
+
+## scene별 UI runtime 계약
+
+- `Town` / `Expedition` / `Reward`
+  - `*RuntimeRoot`
+  - `*RuntimePanelHost`
+  - `*ScreenController`
+- `Battle`
+  - `BattleRuntimeRoot`
+  - `BattleRuntimePanelHost`
+  - `BattleScreenController`
+  - `BattlePresentationRoot`
+  - `BattleStageRoot`
+  - `ActorOverlayCanvas`
+  - `ActorOverlayRoot`
+  - `BattleCameraRoot`
+
+major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / toast / HUD shell만 runtime panel 안에서 처리한다.
 
 ## 현재 시작 흐름
 

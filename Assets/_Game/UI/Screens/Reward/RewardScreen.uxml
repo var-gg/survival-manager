@@ -1,0 +1,54 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="RewardScreenRoot" class="screen">
+        <ui:VisualElement class="screen__topbar">
+            <ui:Label name="TitleLabel" class="screen__title" text="Reward" />
+            <ui:VisualElement class="screen__locale">
+                <ui:Label name="LocaleStatusLabel" class="screen__locale-status" text="Locale" />
+                <ui:Button name="LocaleKoButton" class="ui-button" text="KO" />
+                <ui:Button name="LocaleEnButton" class="ui-button" text="EN" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="screen__body">
+            <ui:VisualElement class="screen__column">
+                <ui:VisualElement class="panel">
+                    <ui:Label class="panel__title" text="Summary" />
+                    <ui:Label name="SummaryLabel" class="panel__text" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="screen__column" style="flex-grow: 1.5;">
+                <ui:VisualElement class="panel">
+                    <ui:Label name="ChoicesHeaderLabel" class="panel__title" text="Choices" />
+                    <ui:VisualElement class="card-row">
+                        <ui:VisualElement class="card" name="ChoiceCard1">
+                            <ui:Label name="ChoiceCard1TitleLabel" class="card__title" />
+                            <ui:Label name="ChoiceCard1BodyLabel" class="card__body" />
+                            <ui:Label name="ChoiceCard1KindLabel" class="panel__text panel__text--muted" />
+                            <ui:Button name="ChoiceCard1Button" class="ui-button ui-button--accent" text="Choose" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="card" name="ChoiceCard2">
+                            <ui:Label name="ChoiceCard2TitleLabel" class="card__title" />
+                            <ui:Label name="ChoiceCard2BodyLabel" class="card__body" />
+                            <ui:Label name="ChoiceCard2KindLabel" class="panel__text panel__text--muted" />
+                            <ui:Button name="ChoiceCard2Button" class="ui-button ui-button--accent" text="Choose" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="card" name="ChoiceCard3">
+                            <ui:Label name="ChoiceCard3TitleLabel" class="card__title" />
+                            <ui:Label name="ChoiceCard3BodyLabel" class="card__body" />
+                            <ui:Label name="ChoiceCard3KindLabel" class="panel__text panel__text--muted" />
+                            <ui:Button name="ChoiceCard3Button" class="ui-button ui-button--accent" text="Choose" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel panel--dense status-bar">
+            <ui:VisualElement class="action-row">
+                <ui:Button name="ReturnTownButton" class="ui-button" text="Return Town" />
+            </ui:VisualElement>
+            <ui:Label name="StatusLabel" class="panel__text panel__text--muted" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

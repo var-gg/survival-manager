@@ -1,7 +1,7 @@
 # Scene Repair Bootstrap
 
 - 상태: active
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-04-06
 - 단계: prototype
 
 ## 공식 메뉴
@@ -12,10 +12,10 @@
 ## 현재 repair 범위
 
 - `Boot`: `GameBootstrap`, `Main Camera`, `BootCanvas`
-- `Town`: `TownCanvas`, `EventSystem`, `TownScreenController`, `RecruitCardsRoot`, `QuickBattleButton`
-- `Expedition`: `ExpeditionCanvas`, `EventSystem`, `ExpeditionScreenController`, `NodeTrackRoot`
-- `Battle`: `BattleCanvas`, `EventSystem`, `BattleScreenController`, `BattlePresentationRoot`, `BattleStageRoot`, `ActorOverlayRoot`, `PauseButton`, `ProgressFill`
-- `Reward`: `RewardCanvas`, `EventSystem`, `RewardScreenController`, `RewardCardsRoot`
+- `Town`: `TownRuntimeRoot`, `TownRuntimePanelHost`, `TownScreenController`, `EventSystem`
+- `Expedition`: `ExpeditionRuntimeRoot`, `ExpeditionRuntimePanelHost`, `ExpeditionScreenController`, `EventSystem`
+- `Battle`: `BattleRuntimeRoot`, `BattleRuntimePanelHost`, `BattleScreenController`, `BattlePresentationRoot`, `BattleStageRoot`, `ActorOverlayCanvas`, `ActorOverlayRoot`, `BattleCameraRoot`, `EventSystem`
+- `Reward`: `RewardRuntimeRoot`, `RewardRuntimePanelHost`, `RewardScreenController`, `EventSystem`
 
 ## 운영 절차
 
@@ -27,6 +27,7 @@
 ## 메모
 
 - scene repair는 반복 실행 시 create보다 repair/update를 우선한다.
-- scene scaffold와 UI object 이름은 scene installer가 source of truth다.
-- `Town` / `Battle` custom controller는 현재 Unity scene serialization quirks 때문에 scene open/load 시 `FirstPlayableRuntimeSceneBinder`와 editor binder가 live rebind를 수행한다.
-- Battle presentation root와 operator UI root 이름 계약은 scene asset에 저장된다.
+- scene scaffold와 runtime root 이름은 scene installer가 source of truth다.
+- play scene 화면 tree는 scene YAML이 아니라 `Assets/_Game/UI/Screens/**`의 UXML asset이 source of truth다.
+- `FirstPlayableRuntimeSceneBinder`는 runtime에서 `RuntimePanelHost`, `EventSystem`, battle overlay binding을 self-heal한다.
+- 임시 panel hide/show는 host GameObject enable/disable가 아니라 runtime panel root의 `display` 토글을 기본으로 쓴다.

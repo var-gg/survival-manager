@@ -1,10 +1,18 @@
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using SM.Editor.Bootstrap;
 using SM.Editor.SeedData;
 using SM.Content.Definitions;
+using SM.Unity;
+using SM.Unity.UI;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace SM.Tests.EditMode;
 
@@ -35,80 +43,108 @@ public sealed class SceneIntegrityTests
     [TestCase("Assets/_Game/Scenes/Expedition.unity")]
     [TestCase("Assets/_Game/Scenes/Battle.unity")]
     [TestCase("Assets/_Game/Scenes/Reward.unity")]
-    public void PlayableSceneAssets_Exist(string scenePath)
+    [TestCase("Assets/_Game/UI/Screens/Town/TownScreen.uxml")]
+    [TestCase("Assets/_Game/UI/Screens/Town/TownScreen.uss")]
+    [TestCase("Assets/_Game/UI/Screens/Expedition/ExpeditionScreen.uxml")]
+    [TestCase("Assets/_Game/UI/Screens/Expedition/ExpeditionScreen.uss")]
+    [TestCase("Assets/_Game/UI/Screens/Battle/BattleScreen.uxml")]
+    [TestCase("Assets/_Game/UI/Screens/Battle/BattleScreen.uss")]
+    [TestCase("Assets/_Game/UI/Screens/Reward/RewardScreen.uxml")]
+    [TestCase("Assets/_Game/UI/Screens/Reward/RewardScreen.uss")]
+    public void PlayableSceneAndScreenAssets_Exist(string assetPath)
     {
-        Assert.That(File.Exists(scenePath), Is.True, $"Playable scene asset is missing: {scenePath}");
+        Assert.That(File.Exists(assetPath), Is.True, $"Playable asset is missing: {assetPath}");
     }
 
     [Test]
     public void BootScene_Saves_GameBootstrap_Camera_And_Canvas()
     {
-        AssertSceneContains("Boot", "m_Name: GameBootstrap", "SM.Unity::SM.Unity.GameBootstrap", "m_Name: BootCanvas", "m_Name: Main Camera");
+        var scene = OpenScene("Boot");
+        AssertComponent<GameBootstrap>(scene, "GameBootstrap");
+        AssertComponent<Canvas>(scene, "BootCanvas");
+        AssertComponent<Camera>(scene, "Main Camera");
     }
 
     [Test]
-    public void TownScene_Saves_Controller_QuickBattle_And_RecruitCards()
+    public void TownScene_Saves_RuntimePanelHost_And_Controller()
     {
-        AssertSceneContains(
-            "Town",
-            "m_Name: TownScreenController",
-            "SM.Unity::SM.Unity.TownScreenController",
-            "m_Name: TownCanvas",
-            "m_Name: EventSystem",
-            "Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule",
-            "m_Name: RecruitCardsRoot",
-            "m_Name: QuickBattleButton");
-        AssertSceneDoesNotContain("Town", "StandaloneInputModule", "UiRaycastDebugger");
+        var scene = OpenScene("Town");
+        AssertComponent<RuntimePanelHost>(scene, "TownRuntimePanelHost");
+        AssertComponent<UIDocument>(scene, "TownRuntimePanelHost");
+        AssertComponent<TownScreenController>(scene, "TownScreenController");
+        AssertInputSystemEventSystem(scene);
+        AssertSceneDoesNotContainComponent<StandaloneInputModule>(scene);
     }
 
     [Test]
-    public void BattleScene_Saves_Replay_Presentation_And_Controls()
+    public void ExpeditionScene_Saves_RuntimePanelHost_And_Controller()
     {
-        AssertSceneContains(
-            "Battle",
-            "m_Name: BattleScreenController",
-            "SM.Unity::SM.Unity.BattleScreenController",
-            "m_Name: BattlePresentationRoot",
-            "SM.Unity::SM.Unity.BattlePresentationController",
-            "m_Name: BattleStageRoot",
-            "m_Name: ActorOverlayRoot",
-            "m_Name: PauseButton",
-            "m_Name: SettingsButton",
-            "m_Name: SettingsPanel",
-            "m_Name: ProgressFill",
-            "m_Name: BattleCanvas",
-            "m_Name: EventSystem",
-            "Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule");
-        AssertSceneDoesNotContain("Battle", "StandaloneInputModule", "UiRaycastDebugger");
+        var scene = OpenScene("Expedition");
+        AssertComponent<RuntimePanelHost>(scene, "ExpeditionRuntimePanelHost");
+        AssertComponent<UIDocument>(scene, "ExpeditionRuntimePanelHost");
+        AssertComponent<ExpeditionScreenController>(scene, "ExpeditionScreenController");
+        AssertInputSystemEventSystem(scene);
+        AssertSceneDoesNotContainComponent<StandaloneInputModule>(scene);
+    }
+
+    [TestCase("Town", "TownRuntimePanelHost")]
+    [TestCase("Expedition", "ExpeditionRuntimePanelHost")]
+    public void EditModeSceneBinding_DoesNotCreate_GameSessionRoot(string sceneName, string hostObjectName)
+    {
+        var scene = OpenScene(sceneName);
+
+        Assert.That(FindGameObject(scene, "GameSessionRoot"), Is.Null, $"Unexpected GameSessionRoot already exists in {scene.path}");
+
+        FirstPlayableRuntimeSceneBinder.EnsureSceneBindings(scene);
+
+        AssertComponent<RuntimePanelHost>(scene, hostObjectName);
+        Assert.That(FindGameObject(scene, "GameSessionRoot"), Is.Null, $"Edit-mode scene binding should not create GameSessionRoot in {scene.path}");
     }
 
     [Test]
-    public void RewardScene_Saves_Controller_And_RewardCards()
+    public void BattleScene_Saves_RuntimePanelHost_Presentation_And_ActorOverlay()
     {
-        AssertSceneContains(
-            "Reward",
-            "m_Name: RewardScreenController",
-            "SM.Unity::SM.Unity.RewardScreenController",
-            "m_Name: RewardCardsRoot",
-            "m_Name: RewardCanvas",
-            "m_Name: EventSystem",
-            "Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule");
-        AssertSceneDoesNotContain("Reward", "StandaloneInputModule", "UiRaycastDebugger");
+        var scene = OpenScene("Battle");
+        AssertComponent<RuntimePanelHost>(scene, "BattleRuntimePanelHost");
+        AssertComponent<UIDocument>(scene, "BattleRuntimePanelHost");
+        AssertComponent<BattleScreenController>(scene, "BattleScreenController");
+        AssertComponent<BattlePresentationController>(scene, "BattlePresentationRoot");
+        AssertComponent<BattleCameraController>(scene, "BattleCameraRoot");
+        AssertComponent<Canvas>(scene, "ActorOverlayCanvas");
+        AssertGameObject(scene, "BattleStageRoot");
+        AssertGameObject(scene, "ActorOverlayRoot");
+        AssertInputSystemEventSystem(scene);
+        AssertSceneDoesNotContainComponent<StandaloneInputModule>(scene);
     }
 
     [Test]
-    public void ExpeditionScene_Saves_Node_Selection_Buttons()
+    public void RewardScene_Saves_RuntimePanelHost_And_Controller()
     {
-        AssertSceneContains(
-            "Expedition",
-            "m_Name: ExpeditionScreenController",
-            "SM.Unity::SM.Unity.ExpeditionScreenController",
-            "m_Name: NodeTrackRoot",
-            "m_Name: NodeBox1",
-            "m_Name: SelectButton",
-            "m_Name: NextBattleButton",
-            "Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule");
-        AssertSceneDoesNotContain("Expedition", "StandaloneInputModule", "UiRaycastDebugger");
+        var scene = OpenScene("Reward");
+        AssertComponent<RuntimePanelHost>(scene, "RewardRuntimePanelHost");
+        AssertComponent<UIDocument>(scene, "RewardRuntimePanelHost");
+        AssertComponent<RewardScreenController>(scene, "RewardScreenController");
+        AssertInputSystemEventSystem(scene);
+        AssertSceneDoesNotContainComponent<StandaloneInputModule>(scene);
+    }
+
+    [Test]
+    public void TownScreenUxml_Declares_QuickBattle_And_Deployment_Controls()
+    {
+        var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/TownScreen.uxml");
+        Assert.That(uxml, Does.Contain("QuickBattleButton"));
+        Assert.That(uxml, Does.Contain("DeployButton_FrontTop"));
+        Assert.That(uxml, Does.Contain("TeamPostureButton"));
+    }
+
+    [Test]
+    public void BattleScreenUxml_Declares_Settings_And_Scrubber_Controls()
+    {
+        var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Battle/BattleScreen.uxml");
+        Assert.That(uxml, Does.Contain("SettingsButton"));
+        Assert.That(uxml, Does.Contain("SettingsPanel"));
+        Assert.That(uxml, Does.Contain("ProgressFill"));
+        Assert.That(uxml, Does.Contain("PauseButton"));
     }
 
     private static void AssertAssetContains(string assetPath, params string[] fragments)
@@ -142,27 +178,54 @@ public sealed class SceneIntegrityTests
         return Path.ChangeExtension(relativePath, null)!.Replace('\\', '/');
     }
 
-    private static void AssertSceneContains(string sceneName, params string[] fragments)
+    private static Scene OpenScene(string sceneName)
     {
-        var scenePath = $"Assets/_Game/Scenes/{sceneName}.unity";
-        Assert.That(File.Exists(scenePath), Is.True, $"Playable scene asset is missing: {scenePath}");
-
-        var text = File.ReadAllText(scenePath);
-        foreach (var fragment in fragments)
-        {
-            Assert.That(text, Does.Contain(fragment), $"Observer playable scene contract missing '{fragment}' in {scenePath}");
-        }
+        var path = $"Assets/_Game/Scenes/{sceneName}.unity";
+        Assert.That(File.Exists(path), Is.True, $"Playable scene asset is missing: {path}");
+        return EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
     }
 
-    private static void AssertSceneDoesNotContain(string sceneName, params string[] fragments)
+    private static GameObject AssertGameObject(Scene scene, string objectName)
     {
-        var scenePath = $"Assets/_Game/Scenes/{sceneName}.unity";
-        Assert.That(File.Exists(scenePath), Is.True, $"Playable scene asset is missing: {scenePath}");
+        var go = FindGameObject(scene, objectName);
+        Assert.That(go, Is.Not.Null, $"Missing '{objectName}' in {scene.path}");
+        return go!;
+    }
 
-        var text = File.ReadAllText(scenePath);
-        foreach (var fragment in fragments)
+    private static T AssertComponent<T>(Scene scene, string objectName) where T : Component
+    {
+        var go = AssertGameObject(scene, objectName);
+        var component = go.GetComponent<T>();
+        Assert.That(component, Is.Not.Null, $"Missing component '{typeof(T).Name}' on '{objectName}' in {scene.path}");
+        return component!;
+    }
+
+    private static void AssertInputSystemEventSystem(Scene scene)
+    {
+        var eventSystem = AssertComponent<EventSystem>(scene, "EventSystem");
+        var inputModule = eventSystem.GetComponent("InputSystemUIInputModule");
+        Assert.That(inputModule, Is.Not.Null, $"Missing component 'InputSystemUIInputModule' on 'EventSystem' in {scene.path}");
+    }
+
+    private static void AssertSceneDoesNotContainComponent<T>(Scene scene) where T : Component
+    {
+        var found = scene.GetRootGameObjects()
+            .SelectMany(root => root.GetComponentsInChildren<T>(true))
+            .FirstOrDefault();
+        Assert.That(found, Is.Null, $"Scene should not contain '{typeof(T).Name}' in {scene.path}");
+    }
+
+    private static GameObject? FindGameObject(Scene scene, string name)
+    {
+        foreach (var root in scene.GetRootGameObjects())
         {
-            Assert.That(text, Does.Not.Contain(fragment), $"Observer playable scene contract should not contain '{fragment}' in {scenePath}");
+            var match = root.GetComponentsInChildren<Transform>(true).FirstOrDefault(x => x.name == name);
+            if (match != null)
+            {
+                return match.gameObject;
+            }
         }
+
+        return null;
     }
 }

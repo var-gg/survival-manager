@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-04-06
 - 소스오브트루스: `docs/03_architecture/unity-project-layout.md`
 - 관련문서:
   - `docs/03_architecture/technical-overview.md`
@@ -32,6 +32,15 @@ Assets/Resources/
     Content/
       Definitions/
 Assets/_Game/
+  UI/
+    Foundation/
+      PanelSettings/
+      Styles/
+    Screens/
+      Town/
+      Expedition/
+      Battle/
+      Reward/
   Scenes/
     Boot.unity
     Town.unity
@@ -49,6 +58,7 @@ Assets/_Game/
         Json/
         Postgres/
       Unity/
+        UI/
     Editor/
       Bootstrap/
       SeedData/
@@ -73,9 +83,16 @@ Assets/Tests/
 - `Assets/_Game/Scripts/Runtime/Persistence/Json` -> `SM.Persistence.Json`
 - `Assets/_Game/Scripts/Runtime/Persistence/Postgres` -> `SM.Persistence.Postgres`
 - `Assets/_Game/Scripts/Runtime/Unity` -> `SM.Unity`
+- `Assets/_Game/Scripts/Runtime/Unity/UI` -> `SM.Unity` 내부 UI runtime 하위 경계
 - `Assets/_Game/Scripts/Editor` -> `SM.Editor`
 - `Assets/Tests/EditMode` -> `SM.Tests.EditMode`
 - `Assets/Tests/PlayMode` -> `SM.Tests.PlayMode`
+
+## UI asset ownership
+
+- `Assets/_Game/UI/Foundation/**`: shared token, shared theme, shared `PanelSettings`
+- `Assets/_Game/UI/Screens/**`: scene별 UXML / USS / named element contract
+- scene YAML은 최소 runtime root와 serialized host reference만 보존하고, 실제 화면 tree는 UXML asset이 source of truth다.
 
 ## namespace 방향
 

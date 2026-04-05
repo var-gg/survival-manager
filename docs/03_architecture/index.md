@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-06
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -45,6 +45,7 @@
 - `unity-boundaries.md`: `MonoBehaviour`, `ScriptableObject`, scene 책임 규칙
 - `unity-project-layout.md`: 실제 폴더와 asmdef 배치
 - `unity-scene-flow.md`: Boot 중심 scene flow 규칙
+- `ui-runtime-architecture.md`: `RuntimePanelHost`, UITK asset-first packaging, battle shell 경계
 
 ## 데이터와 콘텐츠 문서
 

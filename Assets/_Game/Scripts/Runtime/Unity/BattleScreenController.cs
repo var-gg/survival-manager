@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Meta.Model;
 using SM.Meta.Services;
+using SM.Unity.UI;
+using SM.Unity.UI.Battle;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 namespace SM.Unity;
 
@@ -17,27 +17,15 @@ public sealed class BattleScreenController : MonoBehaviour
     private const int MaxRecentLogLines = 8;
     private const int MaxBattleSteps = BattleSimulator.DefaultMaxSteps;
 
-    [SerializeField] private Text titleText = null!;
-    [SerializeField] private Text allyHpText = null!;
-    [SerializeField] private Text enemyHpText = null!;
-    [SerializeField] private Text logText = null!;
-    [SerializeField] private Text resultText = null!;
-    [SerializeField] private Text speedText = null!;
-    [SerializeField] private Text statusText = null!;
-    [SerializeField] private Text pauseButtonLabel = null!;
-    [SerializeField] private Image progressFill = null!;
-    [SerializeField] private Image allySummaryPanel = null!;
-    [SerializeField] private Image enemySummaryPanel = null!;
+    [SerializeField] private RuntimePanelHost panelHost = null!;
     [SerializeField] private BattlePresentationController presentationController = null!;
-    [SerializeField] private BattleSettingsPanelController settingsPanelController = null!;
     [SerializeField] private BattleCameraController cameraController = null!;
-
-    private BattleTimelineScrubberView? _scrubberView;
 
     private readonly List<BattleEvent> _recentLogs = new();
     private readonly List<string> _decisiveTimeline = new();
     private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
     private string _selectedUnitId = string.Empty;
+    private string _settingsStatusText = string.Empty;
     private GameSessionRoot _root = null!;
     private GameLocalizationController _localization = null!;
     private BattleSimulator? _simulator;
@@ -46,11 +34,15 @@ public sealed class BattleScreenController : MonoBehaviour
     private ResolvedEncounterContext? _resolvedEncounterContext;
     private string _battleStartedAtUtc = string.Empty;
     private int _totalEventCount;
+    private int _boundRootBuildCount = -1;
+    private bool _battleFinishedHandled;
+    private bool _settingsVisible;
 
     private BattleTimelineController? _timeline;
     private BattlePlaybackPolicy _policy = new(BattlePlaybackMode.QuickBattle);
+    private BattleScreenPresenter? _presenter;
+    private BattleScreenView? _view;
 
-    // --- New Input System actions for keyboard shortcuts ---
     private InputAction _toggleDebugAction = null!;
     private InputAction _stepOnceAction = null!;
     private InputAction _restartAction = null!;
@@ -67,14 +59,11 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void Start()
     {
-        _root = GameSessionRoot.EnsureInstance();
-        if (_root == null)
+        if (!EnsureReady() || !EnsureViewReady())
         {
-            SetResult("GameSessionRoot가 없습니다.");
             return;
         }
 
-        _localization = _root.Localization;
         _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Battle);
 
@@ -89,6 +78,7 @@ public sealed class BattleScreenController : MonoBehaviour
             SetupCameraFallback();
         }
 
+        RenderLoadingState();
         RunBattle();
     }
 
@@ -106,12 +96,21 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         HandleKeyboardShortcuts();
 
-        if (_timeline == null) return;
+        if (_timeline == null)
+        {
+            return;
+        }
 
-        var stepped = _timeline.TryAdvance(Time.deltaTime,
-            out var previousStep, out var currentStep, out var alpha);
+        var stepped = _timeline.TryAdvance(
+            Time.deltaTime,
+            out var previousStep,
+            out var currentStep,
+            out var alpha);
 
-        if (previousStep == null || currentStep == null) return;
+        if (previousStep == null || currentStep == null)
+        {
+            return;
+        }
 
         if (stepped)
         {
@@ -127,7 +126,7 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         presentationController.SetBlend(previousStep, currentStep, alpha);
-        UpdateProgressBar(_timeline.NormalizedProgress);
+        _view?.SetProgress(_timeline.NormalizedProgress);
 
         if (_presentationOptions.ShowDebugOverlay)
         {
@@ -135,15 +134,156 @@ public sealed class BattleScreenController : MonoBehaviour
         }
     }
 
-    private bool _battleFinishedHandled;
+    public void SelectKorean() => _localization.TrySetLocale("ko");
+    public void SelectEnglish() => _localization.TrySetLocale("en");
+    public void SetSpeed1() => SetSpeed(1f);
+    public void SetSpeed2() => SetSpeed(2f);
+    public void SetSpeed4() => SetSpeed(4f);
+
+    public void HandleScrubberSeek(float normalized)
+    {
+        if (_timeline == null || !_policy.CanSeek(_timeline.IsFinished))
+        {
+            return;
+        }
+
+        var targetStep = Mathf.RoundToInt(normalized * MaxBattleSteps);
+        _timeline.SeekToStep(targetStep);
+        RefreshAfterSeek();
+    }
+
+    public void RebattleNewSeed()
+    {
+        if (!EnsureReady())
+        {
+            return;
+        }
+
+        _root.SessionState.ReloadQuickBattleConfig();
+        _root.SessionState.PrepareQuickBattleSmoke();
+        _root.SaveProfile();
+        RenderLoadingState();
+        RunBattle();
+
+        if (cameraController != null)
+        {
+            cameraController.ResetToDefault();
+        }
+    }
+
+    public void ReturnToTownDirect()
+    {
+        if (!EnsureReady())
+        {
+            return;
+        }
+
+        _root.SessionState.ReturnToTownAfterReward();
+        _root.SaveProfile();
+
+        if (cameraController != null)
+        {
+            cameraController.SetInputEnabled(false);
+        }
+
+        _root.SceneFlow.ReturnToTown();
+    }
+
+    public void TogglePause()
+    {
+        if (!EnsureReady() || _timeline == null || !_policy.CanPause(_timeline.IsFinished))
+        {
+            return;
+        }
+
+        _timeline.TogglePause();
+        RenderCurrentState();
+    }
+
+    public void ContinueToReward()
+    {
+        if (!EnsureReady())
+        {
+            return;
+        }
+
+        if (!IsBattleFinished)
+        {
+            RenderErrorState("전투가 아직 끝나지 않았습니다.");
+            return;
+        }
+
+        if (cameraController != null)
+        {
+            cameraController.SetInputEnabled(false);
+        }
+
+        _root.SceneFlow.GoToReward();
+    }
+
+    public void ToggleSettingsPanel()
+    {
+        _settingsVisible = !_settingsVisible;
+        _settingsStatusText = _settingsVisible
+            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.title", "Battle View Settings")
+            : Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.closed", "Settings panel closed");
+        RenderCurrentState();
+    }
+
+    public void ToggleOverheadUi()
+    {
+        _presentationOptions.ToggleOverheadUi();
+        ApplyPresentationOptions(
+            GameLocalizationTables.UIBattle,
+            "ui.battle.settings.overhead_ui_label",
+            "Overhead UI",
+            _presentationOptions.ShowOverheadUi);
+    }
+
+    public void ToggleDamageText()
+    {
+        _presentationOptions.ToggleDamageText();
+        ApplyPresentationOptions(
+            GameLocalizationTables.UIBattle,
+            "ui.battle.settings.damage_text_label",
+            "Damage Text",
+            _presentationOptions.ShowDamageText);
+    }
+
+    public void ToggleTeamSummary()
+    {
+        _presentationOptions.ToggleTeamHpSummary();
+        ApplyPresentationOptions(
+            GameLocalizationTables.UIBattle,
+            "ui.battle.settings.team_summary_label",
+            "Team Summary",
+            _presentationOptions.ShowTeamHpSummary);
+    }
+
+    public void ToggleDebugOverlay()
+    {
+        _presentationOptions.ToggleDebugOverlay();
+        ApplyPresentationOptions(
+            GameLocalizationTables.UIBattle,
+            "ui.battle.settings.debug_overlay_label",
+            "Debug Overlay",
+            _presentationOptions.ShowDebugOverlay);
+    }
 
     private static void DrawDebugTargetLines(BattleSimulationStep step)
     {
         foreach (var unit in step.Units)
         {
-            if (!unit.IsAlive || string.IsNullOrEmpty(unit.TargetId)) continue;
+            if (!unit.IsAlive || string.IsNullOrEmpty(unit.TargetId))
+            {
+                continue;
+            }
+
             var target = step.Units.FirstOrDefault(u => u.Id == unit.TargetId);
-            if (target == null) continue;
+            if (target == null)
+            {
+                continue;
+            }
 
             var from = new Vector3(unit.Position.X, 0.15f, unit.Position.Y);
             var to = new Vector3(target.Position.X, 0.15f, target.Position.Y);
@@ -152,39 +292,33 @@ public sealed class BattleScreenController : MonoBehaviour
         }
     }
 
-    public void SetSpeed1() => SetSpeed(1f);
-    public void SetSpeed2() => SetSpeed(2f);
-    public void SetSpeed4() => SetSpeed(4f);
-
-    public void SetScrubberView(BattleTimelineScrubberView scrubber)
-    {
-        _scrubberView = scrubber;
-    }
-
-    public void HandleScrubberSeek(float normalized)
-    {
-        if (_timeline == null || !_policy.CanSeek(_timeline.IsFinished)) return;
-        var targetStep = Mathf.RoundToInt(normalized * MaxBattleSteps);
-        _timeline.SeekToStep(targetStep);
-        RefreshAfterSeek();
-    }
-
     private void RefreshAfterSeek()
     {
-        if (_timeline == null) return;
-        var prev = _timeline.PreviousStep;
-        var curr = _timeline.CurrentStep;
-        if (prev == null || curr == null) return;
+        if (_timeline == null)
+        {
+            return;
+        }
 
-        presentationController.PushStep(prev, curr);
-        presentationController.SetBlend(prev, curr, 1f);
-        UpdateProgressBar(_timeline.NormalizedProgress);
-        RefreshHud(curr);
+        var previousStep = _timeline.PreviousStep;
+        var currentStep = _timeline.CurrentStep;
+        if (previousStep == null || currentStep == null)
+        {
+            return;
+        }
+
+        presentationController.PushStep(previousStep, currentStep);
+        presentationController.SetBlend(previousStep, currentStep, 1f);
+        _view?.SetProgress(_timeline.NormalizedProgress);
+        RefreshHud(currentStep);
     }
 
     private void RestartSameSeed()
     {
-        if (_compiledSnapshot == null || _resolvedEncounterContext == null) return;
+        if (_compiledSnapshot == null || _resolvedEncounterContext == null)
+        {
+            return;
+        }
+
         var encounter = _resolvedEncounterContext;
         var newState = BattleFactory.Create(
             _compiledSnapshot.Allies,
@@ -198,82 +332,40 @@ public sealed class BattleScreenController : MonoBehaviour
         _timeline!.Reset(_simulator, _simulator.CurrentStep, MaxBattleSteps);
         _battleFinishedHandled = false;
         _totalEventCount = 0;
+        _recentLogs.Clear();
         _decisiveTimeline.Clear();
         _selectedUnitId = string.Empty;
+        _settingsStatusText = string.Empty;
         presentationController.Initialize(_simulator.CurrentStep);
-        RefreshHud(_simulator.CurrentStep);
+        presentationController.ApplyOptions(_presentationOptions);
+        RenderCurrentState(_simulator.CurrentStep);
 
         if (cameraController != null)
         {
             cameraController.ResetToDefault();
         }
-    }
-
-    public void RebattleNewSeed()
-    {
-        if (!EnsureReady()) return;
-        _root.SessionState.ReloadQuickBattleConfig();
-        _root.SessionState.PrepareQuickBattleSmoke();
-        _root.SaveProfile();
-        RunBattle();
-
-        if (cameraController != null)
-        {
-            cameraController.ResetToDefault();
-        }
-    }
-
-    public void ReturnToTownDirect()
-    {
-        if (!EnsureReady()) return;
-        _root.SessionState.ReturnToTownAfterReward();
-        _root.SaveProfile();
-
-        if (cameraController != null)
-        {
-            cameraController.SetInputEnabled(false);
-        }
-
-        _root.SceneFlow.ReturnToTown();
     }
 
     private void CycleSelectedUnit()
     {
         var currentStep = _timeline?.CurrentStep;
-        if (currentStep == null) return;
-        var alive = currentStep.Units.Where(u => u.IsAlive).OrderBy(u => u.Side).ThenBy(u => u.Id).ToList();
-        if (alive.Count == 0) return;
-        var currentIndex = alive.FindIndex(u => u.Id == _selectedUnitId);
-        _selectedUnitId = alive[(currentIndex + 1) % alive.Count].Id;
-    }
-
-    public void TogglePause()
-    {
-        if (!EnsureReady() || _timeline == null) return;
-        if (!_policy.CanPause(_timeline.IsFinished)) return;
-
-        _timeline.TogglePause();
-        RefreshPlaybackUi();
-        statusText.text = _timeline.IsPaused
-            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.status.paused", "Battle paused")
-            : Localize(GameLocalizationTables.UIBattle, "ui.battle.status.resumed", "Battle resumed");
-    }
-
-    public void ContinueToReward()
-    {
-        if (!EnsureReady()) return;
-        if (!IsBattleFinished)
+        if (currentStep == null)
         {
-            SetResult("전투가 아직 끝나지 않았습니다.");
             return;
         }
 
-        if (cameraController != null)
+        var alive = currentStep.Units
+            .Where(u => u.IsAlive)
+            .OrderBy(u => u.Side)
+            .ThenBy(u => u.Id)
+            .ToList();
+        if (alive.Count == 0)
         {
-            cameraController.SetInputEnabled(false);
+            return;
         }
 
-        _root.SceneFlow.GoToReward();
+        var currentIndex = alive.FindIndex(u => u.Id == _selectedUnitId);
+        _selectedUnitId = alive[(currentIndex + 1) % alive.Count].Id;
     }
 
     private bool EnsureReady()
@@ -287,109 +379,123 @@ public sealed class BattleScreenController : MonoBehaviour
         _root = GameSessionRoot.EnsureInstance();
         if (_root == null)
         {
-            SetResult("GameSessionRoot가 없습니다.");
+            Debug.LogError("[BattleScreenController] GameSessionRoot가 없습니다.");
             return false;
         }
 
+        _localization = _root.Localization;
+        return true;
+    }
+
+    private bool EnsureViewReady()
+    {
+        if (!EnsureReady() || panelHost == null)
+        {
+            return false;
+        }
+
+        panelHost.EnsureReady();
+        if (_view != null && _presenter != null && _boundRootBuildCount == panelHost.RootBuildCount)
+        {
+            return true;
+        }
+
+        _view = new BattleScreenView(panelHost.Root);
+        _view.Bind(new BattleScreenActions(
+            SelectKorean,
+            SelectEnglish,
+            SetSpeed1,
+            SetSpeed2,
+            SetSpeed4,
+            TogglePause,
+            ContinueToReward,
+            RebattleNewSeed,
+            ReturnToTownDirect,
+            ToggleSettingsPanel,
+            ToggleOverheadUi,
+            ToggleDamageText,
+            ToggleTeamSummary,
+            ToggleDebugOverlay,
+            HandleScrubberSeek));
+        _presenter = new BattleScreenPresenter(_localization, _root.SessionState, _presentationOptions);
+        _boundRootBuildCount = panelHost.RootBuildCount;
         return true;
     }
 
     private void ValidateReferences()
     {
-        AssertText(titleText, nameof(titleText));
-        AssertText(allyHpText, nameof(allyHpText));
-        AssertText(enemyHpText, nameof(enemyHpText));
-        AssertText(logText, nameof(logText));
-        AssertText(resultText, nameof(resultText));
-        AssertText(speedText, nameof(speedText));
-        AssertText(statusText, nameof(statusText));
-        AssertText(pauseButtonLabel, nameof(pauseButtonLabel));
-        AssertImage(progressFill, nameof(progressFill));
-        AssertImage(allySummaryPanel, nameof(allySummaryPanel));
-        AssertImage(enemySummaryPanel, nameof(enemySummaryPanel));
+        if (panelHost == null)
+        {
+            Debug.LogError("[BattleScreenController] Missing RuntimePanelHost reference: panelHost");
+        }
+
         if (presentationController == null)
         {
             Debug.LogError("[BattleScreenController] Missing BattlePresentationController reference: presentationController");
         }
-
-        if (settingsPanelController == null)
-        {
-            Debug.LogError("[BattleScreenController] Missing BattleSettingsPanelController reference: settingsPanelController");
-        }
     }
 
-    private static void AssertText(Text text, string fieldName)
+    private void RenderLoadingState()
     {
-        if (text == null)
+        if (!EnsureViewReady())
         {
-            Debug.LogError($"[BattleScreenController] Missing Text reference: {fieldName}");
+            return;
         }
+
+        _view!.Render(_presenter!.BuildLoadingState());
+        _view.SetScrubberInteractable(false);
     }
 
-    private static void AssertImage(Image image, string fieldName)
+    private void RenderErrorState(string message)
     {
-        if (image == null)
+        if (EnsureViewReady())
         {
-            Debug.LogError($"[BattleScreenController] Missing Image reference: {fieldName}");
-        }
-    }
-
-    private void SetResult(string message)
-    {
-        if (resultText != null)
-        {
-            resultText.text = message;
+            _view!.Render(_presenter!.BuildErrorState(message));
+            _view.SetScrubberInteractable(false);
         }
 
         Debug.LogError($"[BattleScreenController] {message}");
     }
 
-    private void SetSpeed(float speed)
+    private void RenderCurrentState(BattleSimulationStep? step = null)
     {
-        if (_timeline == null || !_policy.CanControlSpeed(_timeline.IsFinished)) return;
-        _timeline.SetSpeed(speed);
-        RefreshPlaybackUi();
-    }
-
-    private void RefreshSpeedText()
-    {
-        var isPaused = _timeline?.IsPaused ?? false;
-        var playbackSpeed = _timeline?.PlaybackSpeed ?? 1f;
-        speedText.text = isPaused
-            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.paused", "Speed x{0:0} | Paused", playbackSpeed)
-            : Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.active", "Speed x{0:0}", playbackSpeed);
-    }
-
-    private void RefreshPauseButtonLabel()
-    {
-        if (pauseButtonLabel == null)
+        if (!EnsureViewReady())
         {
             return;
         }
 
-        var isPaused = _timeline?.IsPaused ?? false;
-        pauseButtonLabel.text = isPaused
-            ? Localize(GameLocalizationTables.UICommon, "ui.common.resume", "Resume")
-            : Localize(GameLocalizationTables.UICommon, "ui.common.pause", "Pause");
+        var currentStep = step ?? _timeline?.CurrentStep;
+        if (currentStep == null)
+        {
+            _view!.Render(_presenter!.BuildLoadingState());
+            _view.SetScrubberInteractable(false);
+            return;
+        }
+
+        var isFinished = _timeline?.IsFinished ?? currentStep.IsFinished;
+        var state = _presenter!.BuildState(
+            currentStep,
+            _recentLogs,
+            _totalEventCount,
+            _timeline?.IsPaused ?? false,
+            _timeline?.PlaybackSpeed ?? 1f,
+            isFinished,
+            _settingsVisible,
+            _timeline?.NormalizedProgress ?? 0f,
+            _settingsStatusText);
+        _view!.Render(state);
+        _view.SetScrubberInteractable(_timeline != null && _policy.CanSeek(_timeline.IsFinished));
     }
 
-    private void RefreshPlaybackUi()
+    private void SetSpeed(float speed)
     {
-        presentationController.SetPaused(_timeline?.IsPaused ?? false);
-        RefreshSpeedText();
-        RefreshPauseButtonLabel();
-    }
+        if (_timeline == null || !_policy.CanControlSpeed(_timeline.IsFinished))
+        {
+            return;
+        }
 
-    private void UpdateProgressBar(float normalized)
-    {
-        if (_scrubberView != null)
-        {
-            _scrubberView.SetFillAmount(normalized);
-        }
-        else
-        {
-            progressFill.fillAmount = normalized;
-        }
+        _timeline.SetSpeed(speed);
+        RenderCurrentState();
     }
 
     private void CreateInputActions()
@@ -421,6 +527,8 @@ public sealed class BattleScreenController : MonoBehaviour
         if (_toggleDebugAction.WasPressedThisFrame())
         {
             _presentationOptions.ToggleDebugOverlay();
+            presentationController.ApplyOptions(_presentationOptions);
+            RenderCurrentState();
         }
 
         if (_stepOnceAction.WasPressedThisFrame() && _timeline is { IsPaused: true } && !IsBattleFinished)
@@ -448,57 +556,64 @@ public sealed class BattleScreenController : MonoBehaviour
     private static void SetupCameraFallback()
     {
         var cam = Camera.main;
-        if (cam == null) return;
+        if (cam == null)
+        {
+            return;
+        }
+
         cam.transform.position = DefaultCameraPosition;
         cam.transform.rotation = DefaultCameraRotation;
     }
 
     private void RunBattle()
     {
-        if (!EnsureReady()) return;
+        if (!EnsureReady() || !EnsureViewReady())
+        {
+            return;
+        }
 
-        titleText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.title", "Battle Observer UI");
-        resultText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.result.in_progress", "Battle in progress");
-        statusText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.status.initializing", "Initializing live simulation");
-        logText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.log.preparing", "Preparing battle log");
-        UpdateProgressBar(0f);
         _battleFinishedHandled = false;
         _totalEventCount = 0;
+        _selectedUnitId = string.Empty;
+        _settingsVisible = false;
+        _settingsStatusText = string.Empty;
         _recentLogs.Clear();
+        _decisiveTimeline.Clear();
 
         BattleLoadoutSnapshot allySnapshot;
         try
         {
             allySnapshot = _root.SessionState.BuildBattleLoadoutSnapshot();
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
-            SetResult(ex.Message);
+            RenderErrorState(ex.Message);
             return;
         }
 
         if (allySnapshot.Allies.Count == 0)
         {
-            SetResult(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.no_allies", "No allied unit is ready for battle."));
+            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.no_allies", "No allied unit is ready for battle."));
             return;
         }
 
         if (!_root.CombatContentLookup.TryGetCombatSnapshot(out var snapshot, out var lookupError))
         {
-            SetResult(lookupError);
+            RenderErrorState(lookupError);
             return;
         }
 
         if (!_root.SessionState.TryResolveCurrentEncounter(out var encounter, out var encounterError))
         {
-            SetResult(encounterError);
+            RenderErrorState(encounterError);
             return;
         }
 
         _compiledSnapshot = allySnapshot;
         _resolvedEncounterContext = encounter;
         _enemyLoadouts = encounter.Enemies;
-        _battleStartedAtUtc = System.DateTime.UtcNow.ToString("O");
+        _battleStartedAtUtc = DateTime.UtcNow.ToString("O");
+
         var simulationState = BattleFactory.Create(
             allySnapshot.Allies,
             encounter.Enemies,
@@ -515,9 +630,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
         presentationController.Initialize(_simulator.CurrentStep);
         presentationController.ApplyOptions(_presentationOptions);
-        settingsPanelController.Initialize(_presentationOptions, ApplyPresentationOptions);
-        ApplyPresentationOptions(_presentationOptions);
-        RefreshHud(_simulator.CurrentStep);
+        RenderCurrentState(_simulator.CurrentStep);
 
         if (cameraController != null)
         {
@@ -534,18 +647,8 @@ public sealed class BattleScreenController : MonoBehaviour
 
         _battleFinishedHandled = true;
         _timeline.MarkFinished();
-        UpdateProgressBar(1f);
 
         var currentStep = _timeline.CurrentStep!;
-        resultText.text = currentStep.Winner == TeamSide.Ally
-            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.result.victory", "Victory")
-            : Localize(GameLocalizationTables.UIBattle, "ui.battle.result.defeat", "Defeat");
-        statusText.text = Localize(
-            GameLocalizationTables.UIBattle,
-            "ui.battle.status.finished",
-            "Battle finished | {0} steps | {1} events",
-            currentStep.StepIndex,
-            _totalEventCount);
         var winner = currentStep.Winner ?? TeamSide.Ally;
         var result = _simulator.RunToEnd();
         var replay = ReplayAssembler.Assemble(
@@ -554,117 +657,40 @@ public sealed class BattleScreenController : MonoBehaviour
             result,
             _resolvedEncounterContext?.Context.BattleSeed ?? 0,
             _battleStartedAtUtc,
-            System.DateTime.UtcNow.ToString("O"));
+            DateTime.UtcNow.ToString("O"));
         _root.SessionState.RecordBattleAudit(replay);
         BattleDebugLogWriter.Write(replay, currentStep.Units);
         _root.SessionState.MarkBattleResolved(
             winner == TeamSide.Ally,
             currentStep.StepIndex,
             _totalEventCount);
+        RenderCurrentState(currentStep);
+        _view?.SetProgress(1f);
     }
 
-    private void ApplyPresentationOptions(BattlePresentationOptions options)
+    private void ApplyPresentationOptions(string table, string key, string fallback, bool isOn)
     {
-        presentationController.ApplyOptions(options);
-
-        var showTeamSummary = options.ShowTeamHpSummary;
-        if (allySummaryPanel != null)
-        {
-            allySummaryPanel.gameObject.SetActive(showTeamSummary);
-        }
-
-        if (enemySummaryPanel != null)
-        {
-            enemySummaryPanel.gameObject.SetActive(showTeamSummary);
-        }
-
-        if (allyHpText != null)
-        {
-            allyHpText.gameObject.SetActive(showTeamSummary);
-        }
-
-        if (enemyHpText != null)
-        {
-            enemyHpText.gameObject.SetActive(showTeamSummary);
-        }
+        presentationController.ApplyOptions(_presentationOptions);
+        _settingsVisible = true;
+        _settingsStatusText = Localize(
+            GameLocalizationTables.UIBattle,
+            "ui.battle.settings.state_changed",
+            "{0}: {1}",
+            Localize(table, key, fallback),
+            isOn
+                ? Localize(GameLocalizationTables.UICommon, "ui.common.on", "ON")
+                : Localize(GameLocalizationTables.UICommon, "ui.common.off", "OFF"));
+        RenderCurrentState();
     }
 
     private void RefreshHud(BattleSimulationStep step)
     {
-        RefreshHp(step.Units);
-        RefreshStatus(step);
         foreach (var eventData in step.Events)
         {
             PushLog(eventData);
         }
-    }
 
-    private void RefreshHp(IReadOnlyList<BattleUnitReadModel> actors)
-    {
-        allyHpText.text = BuildHpText(
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.hp.allies", "Allied HP"),
-            actors.Where(actor => actor.Side == TeamSide.Ally));
-        enemyHpText.text = BuildHpText(
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.hp.enemies", "Enemy HP"),
-            actors.Where(actor => actor.Side == TeamSide.Enemy));
-    }
-
-    private void RefreshStatus(BattleSimulationStep step)
-    {
-        RefreshPlaybackUi();
-        var isPaused = _timeline?.IsPaused ?? false;
-        var pauseLabel = isPaused
-            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.status.pause_suffix", " | Paused")
-            : string.Empty;
-        if (step.IsFinished)
-        {
-            statusText.text = Localize(
-                GameLocalizationTables.UIBattle,
-                "ui.battle.status.resolved",
-                "Step {0} | Result resolved{1}",
-                step.StepIndex,
-                pauseLabel);
-            return;
-        }
-
-        var lastEvent = step.Events.LastOrDefault();
-        if (lastEvent != null)
-        {
-            statusText.text = Localize(
-                GameLocalizationTables.UIBattle,
-                "ui.battle.status.last_event",
-                "Step {0} | {1} -> {2} | {3} {4:0}{5}",
-                step.StepIndex,
-                lastEvent.ActorName,
-                lastEvent.TargetName ?? "-",
-                lastEvent.ActionType,
-                lastEvent.Value,
-                pauseLabel);
-            return;
-        }
-
-        var windingUp = step.Units.FirstOrDefault(unit => unit.ActionState == CombatActionState.Windup);
-        if (windingUp != null)
-        {
-            statusText.text = Localize(
-                GameLocalizationTables.UIBattle,
-                "ui.battle.status.windup",
-                "Step {0} | {1} windup {2}% -> {3}{4}",
-                step.StepIndex,
-                windingUp.Name,
-                Mathf.RoundToInt(windingUp.WindupProgress * 100f),
-                windingUp.TargetName ?? "-",
-                pauseLabel);
-            return;
-        }
-
-        statusText.text = Localize(
-            GameLocalizationTables.UIBattle,
-            "ui.battle.status.posture",
-            "Step {0} | posture {1}{2}",
-            step.StepIndex,
-            _root.SessionState.SelectedTeamPosture,
-            pauseLabel);
+        RenderCurrentState(step);
     }
 
     private void PushLog(BattleEvent eventData)
@@ -674,56 +700,6 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             _recentLogs.RemoveAt(0);
         }
-
-        RefreshLogText();
-    }
-
-    private string BuildHpText(string title, IEnumerable<BattleUnitReadModel> units)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine(title);
-        foreach (var unit in units)
-        {
-            var marker = unit.IsAlive ? "-" : "x";
-            var displayName = ResolveUnitDisplayName(unit.Name);
-            sb.AppendLine($"{marker} {displayName}: {unit.CurrentHealth:0}/{unit.MaxHealth:0}");
-        }
-
-        return sb.ToString();
-    }
-
-    private string ResolveUnitDisplayName(string name)
-    {
-        if (string.IsNullOrEmpty(name) || !name.StartsWith("content."))
-        {
-            return name;
-        }
-
-        var resolved = Localize(GameLocalizationTables.ContentArchetype, name, name);
-        return resolved != name ? resolved : name.Replace("content.archetype.", "").Replace(".name", "");
-    }
-
-    private void RefreshLogText()
-    {
-        logText.text = string.Join("\n", _recentLogs.Select(BuildLogLine));
-    }
-
-    private string BuildLogLine(BattleEvent eventData)
-    {
-        var source = string.IsNullOrWhiteSpace(eventData.ActorName) ? "?" : eventData.ActorName;
-        var target = string.IsNullOrWhiteSpace(eventData.TargetName) ? "?" : eventData.TargetName;
-        return eventData.LogCode switch
-        {
-            BattleLogCode.BasicAttackDamage => Localize(GameLocalizationTables.CombatLog, "combat.log.damage", "S{0} {1} dealt {3:0} damage to {2}", eventData.StepIndex, source, target, eventData.Value),
-            BattleLogCode.ActiveSkillHeal => Localize(GameLocalizationTables.CombatLog, "combat.log.heal", "S{0} {1} healed {2} for {3:0}", eventData.StepIndex, source, target, eventData.Value),
-            BattleLogCode.ActiveSkillDamage => Localize(GameLocalizationTables.CombatLog, "combat.log.skill", "S{0} {1} used a skill on {2} for {3:0}", eventData.StepIndex, source, target, eventData.Value),
-            BattleLogCode.WaitDefend => Localize(GameLocalizationTables.CombatLog, "combat.log.guard", "S{0} {1} took a guard stance", eventData.StepIndex, source),
-            BattleLogCode.Generic when eventData.EventKind == BattleEventKind.StatusApplied => Localize(GameLocalizationTables.CombatLog, "combat.log.status_applied", "S{0} {1} applied {2} to {3}", eventData.StepIndex, source, eventData.PayloadId, target),
-            BattleLogCode.Generic when eventData.EventKind == BattleEventKind.StatusRemoved => Localize(GameLocalizationTables.CombatLog, "combat.log.status_removed", "S{0} {1} removed {2}", eventData.StepIndex, target, eventData.PayloadId),
-            BattleLogCode.Generic when eventData.EventKind == BattleEventKind.CleanseTriggered => Localize(GameLocalizationTables.CombatLog, "combat.log.cleanse", "S{0} {1} cleansed {2} on {3}", eventData.StepIndex, source, eventData.PayloadId, target),
-            BattleLogCode.Generic when eventData.EventKind == BattleEventKind.ControlResistApplied => Localize(GameLocalizationTables.CombatLog, "combat.log.control_resist", "S{0} {1} gained control resist", eventData.StepIndex, target),
-            _ => Localize(GameLocalizationTables.CombatLog, "combat.log.generic", "S{0} {1} {2}", eventData.StepIndex, source, eventData.ActionType)
-        };
     }
 
     private string Localize(string table, string key, string fallback, params object[] args)
@@ -768,12 +744,12 @@ public sealed class BattleScreenController : MonoBehaviour
             var marker = isSelected ? "<color=#ff0>></color> " : "  ";
             var sideTag = unit.Side == TeamSide.Ally ? "<color=#6cc>ally</color>" : "<color=#f93>enemy</color>";
             var hpPct = unit.MaxHealth > 0 ? unit.CurrentHealth / unit.MaxHealth * 100f : 0f;
-            var targetLabel = !string.IsNullOrEmpty(unit.TargetName) ? $"-> {unit.TargetName}" : "";
+            var targetLabel = !string.IsNullOrEmpty(unit.TargetName) ? $"-> {unit.TargetName}" : string.Empty;
             var actionLabel = FormatActionState(unit);
-            var lockLabel = unit.RetargetLockRemaining > 0.01f ? $" lock:{unit.RetargetLockRemaining:0.0}s" : "";
-            var cdLabel = unit.CooldownRemaining > 0.01f ? $" cd:{unit.CooldownRemaining:0.0}s" : "";
-            var selectorLabel = !string.IsNullOrEmpty(unit.CurrentSelector) ? $" sel:{unit.CurrentSelector}" : "";
-            var guardLabel = unit.FrontlineGuardRadius > 0.01f ? $" guard:{unit.FrontlineGuardRadius:0.#}" : "";
+            var lockLabel = unit.RetargetLockRemaining > 0.01f ? $" lock:{unit.RetargetLockRemaining:0.0}s" : string.Empty;
+            var cdLabel = unit.CooldownRemaining > 0.01f ? $" cd:{unit.CooldownRemaining:0.0}s" : string.Empty;
+            var selectorLabel = !string.IsNullOrEmpty(unit.CurrentSelector) ? $" sel:{unit.CurrentSelector}" : string.Empty;
+            var guardLabel = unit.FrontlineGuardRadius > 0.01f ? $" guard:{unit.FrontlineGuardRadius:0.#}" : string.Empty;
 
             var line = $"{marker}[{sideTag}] {unit.Name} HP:{unit.CurrentHealth:0}/{unit.MaxHealth:0}({hpPct:0}%) {targetLabel} [{actionLabel}]{cdLabel}{lockLabel}{selectorLabel}{guardLabel}";
             var lineRect = new Rect(4, y, 780, 16);
@@ -788,9 +764,16 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void DrawSelectedUnitPanel(BattleSimulationStep step, GUIStyle bgStyle, GUIStyle style, float startY)
     {
-        if (string.IsNullOrEmpty(_selectedUnitId)) return;
+        if (string.IsNullOrEmpty(_selectedUnitId))
+        {
+            return;
+        }
+
         var unit = step.Units.FirstOrDefault(u => u.Id == _selectedUnitId);
-        if (unit == null) return;
+        if (unit == null)
+        {
+            return;
+        }
 
         var panelY = startY + 8f;
         var panelRect = new Rect(4, panelY, 400, 96);
@@ -814,9 +797,15 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void DrawDecisiveTimeline(GUIStyle bgStyle, GUIStyle style)
     {
-        if (_decisiveTimeline.Count == 0) return;
+        if (_decisiveTimeline.Count == 0)
+        {
+            return;
+        }
+
         var startX = Screen.width - 320f;
-        var visible = _decisiveTimeline.Count > 8 ? _decisiveTimeline.Skip(_decisiveTimeline.Count - 8).ToList() : _decisiveTimeline;
+        var visible = _decisiveTimeline.Count > 8
+            ? _decisiveTimeline.Skip(_decisiveTimeline.Count - 8).ToList()
+            : _decisiveTimeline;
         var panelRect = new Rect(startX, 4, 316, 16 + visible.Count * 14f);
         GUI.Box(panelRect, GUIContent.none, bgStyle);
         GUI.Label(new Rect(startX, 4, 316, 16), "  <color=#ff6>Decisive Timeline</color>", style);
@@ -844,34 +833,19 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private static string FormatActionState(BattleUnitReadModel unit)
     {
-        if (!unit.IsAlive) return "Dead";
-        if (unit.WindupProgress > 0.01f)
-            return $"{unit.ActionState} {Mathf.RoundToInt(unit.WindupProgress * 100f)}%";
-        return unit.ActionState.ToString();
+        if (!unit.IsAlive)
+        {
+            return "Dead";
+        }
+
+        return unit.WindupProgress > 0.01f
+            ? $"{unit.ActionState} {Mathf.RoundToInt(unit.WindupProgress * 100f)}%"
+            : unit.ActionState.ToString();
     }
 
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
     {
-        var currentStep = _timeline?.CurrentStep;
-        if (currentStep == null)
-        {
-            return;
-        }
-
-        titleText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.title", "Battle Observer UI");
-        RefreshHp(currentStep.Units);
-        RefreshStatus(currentStep);
-        RefreshLogText();
-
-        if (IsBattleFinished)
-        {
-            resultText.text = currentStep.Winner == TeamSide.Ally
-                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.result.victory", "Victory")
-                : Localize(GameLocalizationTables.UIBattle, "ui.battle.result.defeat", "Defeat");
-        }
-        else
-        {
-            resultText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.result.in_progress", "Battle in progress");
-        }
+        _settingsStatusText = string.Empty;
+        RenderCurrentState();
     }
 }

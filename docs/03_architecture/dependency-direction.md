@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-04-06
 - 소스오브트루스: `docs/03_architecture/dependency-direction.md`
 - 관련문서:
   - `docs/03_architecture/coding-principles.md`
@@ -67,6 +67,14 @@
 - 런타임 composition root는 `Assets/_Game/Scenes/Boot.unity`와 `SM.Unity.GameBootstrap`이다.
 - editor tooling composition root는 `SM.Editor.Bootstrap.*`다.
 - composition root 밖에서는 concrete adapter를 새로 생성하지 말고 주입된 포트를 사용한다.
+
+## UI runtime boundary
+
+- `Assets/_Game/UI/**`의 `UXML` / `USS` / `PanelSettings` 자산은 `SM.Unity`만 소비한다.
+- `SM.Unity.UI.*` namespace는 별도 asmdef가 아니라 `SM.Unity` 내부 하위 경계다.
+- `RuntimePanelHost`가 UI backend seam을 소유하며, controller / presenter / view state는 `UIDocument`에 직접 결합하지 않는다.
+- `SM.Meta`, `SM.Combat`, `SM.Persistence.*`는 `UnityEngine.UIElements`, `UXML`, `USS` asset path를 직접 참조하지 않는다.
+- Battle actor-follow overlay처럼 GameObject 기반 presentation이 남아 있는 경우에도 gameplay truth와 screen shell contract를 섞지 않는다.
 
 ## 테스트 어셈블리 예외 규칙
 

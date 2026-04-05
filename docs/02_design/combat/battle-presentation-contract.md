@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-06
 - 소스오브트루스: `docs/02_design/combat/battle-presentation-contract.md`
 - 관련문서:
   - `docs/02_design/combat/combat-readability.md`
@@ -41,7 +41,7 @@ prototype 전투에서 아트 유무와 무관하게 읽히는 머리 위 정보
 
 - `ui.battle.*` missing key는 화면에 raw key로 노출하지 않는다.
 - dev/editor에서는 console warning으로만 남기고, 화면에는 fallback label을 쓴다.
-- `UguiTextLocalizerBinder`와 runtime controller는 동일한 fallback 원칙을 따른다.
+- `RuntimePanelHost` 기반 battle shell presenter와 actor overlay runtime은 동일한 fallback 원칙을 따른다.
 
 ## pooling 규칙
 

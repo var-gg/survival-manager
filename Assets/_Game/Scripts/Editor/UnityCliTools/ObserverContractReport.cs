@@ -16,6 +16,8 @@ public static class ObserverContractReport
 {
     private const string TownScenePath = "Assets/_Game/Scenes/Town.unity";
     private const string BattleScenePath = "Assets/_Game/Scenes/Battle.unity";
+    private const string TownScreenUxmlPath = "Assets/_Game/UI/Screens/Town/TownScreen.uxml";
+    private const string BattleScreenUxmlPath = "Assets/_Game/UI/Screens/Battle/BattleScreen.uxml";
 
     public sealed class Parameters
     {
@@ -47,6 +49,7 @@ public static class ObserverContractReport
     private static object BuildTownReport()
     {
         var sceneText = ReadSceneText(TownScenePath);
+        var uxmlText = ReadSceneText(TownScreenUxmlPath);
         return new
         {
             scene = "Town",
@@ -55,10 +58,13 @@ public static class ObserverContractReport
             controllers = new
             {
                 TownScreenController = ContainsAny(sceneText, "SM.Unity.TownScreenController", "TownScreenController, SM.Unity"),
+                RuntimePanelHost = ContainsAny(sceneText, "SM.Unity.UI.RuntimePanelHost", "RuntimePanelHost, SM.Unity"),
             },
-            QuickBattleButton = ContainsName(sceneText, "QuickBattleButton"),
-            RecruitCardsRoot = ContainsName(sceneText, "RecruitCardsRoot"),
-            StatusText = ContainsName(sceneText, "StatusText"),
+            TownRuntimeRoot = ContainsName(sceneText, "TownRuntimeRoot"),
+            TownRuntimePanelHost = ContainsName(sceneText, "TownRuntimePanelHost"),
+            UxmlQuickBattleButton = uxmlText.Contains("QuickBattleButton", StringComparison.Ordinal),
+            UxmlDeployButtonFrontTop = uxmlText.Contains("DeployButton_FrontTop", StringComparison.Ordinal),
+            UxmlStatusLabel = uxmlText.Contains("StatusLabel", StringComparison.Ordinal),
             consoleErrors = GetConsoleSummary(),
         };
     }
@@ -66,6 +72,7 @@ public static class ObserverContractReport
     private static object BuildBattleReport()
     {
         var sceneText = ReadSceneText(BattleScenePath);
+        var uxmlText = ReadSceneText(BattleScreenUxmlPath);
         return new
         {
             scene = "Battle",
@@ -75,12 +82,18 @@ public static class ObserverContractReport
             {
                 BattleScreenController = ContainsAny(sceneText, "SM.Unity.BattleScreenController", "BattleScreenController, SM.Unity"),
                 BattlePresentationController = ContainsAny(sceneText, "SM.Unity.BattlePresentationController", "BattlePresentationController, SM.Unity"),
+                RuntimePanelHost = ContainsAny(sceneText, "SM.Unity.UI.RuntimePanelHost", "RuntimePanelHost, SM.Unity"),
             },
+            BattleRuntimeRoot = ContainsName(sceneText, "BattleRuntimeRoot"),
+            BattleRuntimePanelHost = ContainsName(sceneText, "BattleRuntimePanelHost"),
             BattlePresentationRoot = ContainsName(sceneText, "BattlePresentationRoot"),
             BattleStageRoot = ContainsName(sceneText, "BattleStageRoot"),
-            PauseButton = ContainsName(sceneText, "PauseButton"),
-            ProgressFill = ContainsName(sceneText, "ProgressFill"),
-            StatusText = ContainsName(sceneText, "StatusText"),
+            ActorOverlayCanvas = ContainsName(sceneText, "ActorOverlayCanvas"),
+            ActorOverlayRoot = ContainsName(sceneText, "ActorOverlayRoot"),
+            UxmlPauseButton = uxmlText.Contains("PauseButton", StringComparison.Ordinal),
+            UxmlSettingsButton = uxmlText.Contains("SettingsButton", StringComparison.Ordinal),
+            UxmlSettingsPanel = uxmlText.Contains("SettingsPanel", StringComparison.Ordinal),
+            UxmlProgressFill = uxmlText.Contains("ProgressFill", StringComparison.Ordinal),
             consoleErrors = GetConsoleSummary(),
         };
     }

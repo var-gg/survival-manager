@@ -1,7 +1,7 @@
 # Battle Observer UI
 
 - 상태: active
-- 최종수정일: 2026-04-05
+- 최종수정일: 2026-04-06
 - 단계: prototype
 
 ## source-of-truth note
@@ -14,13 +14,14 @@
 
 ## 현재 표현 범위
 
+- battle shell은 `RuntimePanelHost + UITK` 기준으로 렌더
 - 좌측 아군 4슬롯, 우측 적 4슬롯 고정 배치
 - capsule primitive actor
 - actor 머리 위 screen-space overhead UI
 - overhead UI / damage text / 팀 HP summary는 settings panel에서 ON/OFF
 - 최근 로그 8줄
 - tick / current action / speed / pause 상태 텍스트
-- 타임라인 스크러버 (드래그 가능한 progress bar)
+- 타임라인 스크러버 (UITK progress track)
 - settings 버튼 + battle view settings panel
 - continue 버튼
 
@@ -34,10 +35,8 @@
 
 ### 플레이백 모드
 
-| 모드 | pause | seek | speed | replay |
-|------|-------|------|-------|--------|
-| QuickBattle | 상시 | 상시 | 상시 | 상시 |
-| InGame | 종료 후 | 종료 후 | 종료 후 | 종료 후 |
+- `QuickBattle`: `pause`, `seek`, `speed`, `replay`를 모두 상시 허용한다.
+- `InGame`: 전투 종료 후에만 `pause`, `seek`, `speed`, `replay`를 허용한다.
 
 - `BattlePlaybackPolicy`가 모드별 제어 가능 여부를 판단한다.
 - QuickBattle: 전투 중에도 모든 플레이백 조작 가능.
@@ -61,6 +60,8 @@
 
 ## 운영 메모
 
-- scene installer가 `BattlePresentationRoot`, `BattleStageRoot`, `ActorOverlayRoot`, `PauseButton`, `SettingsButton`, `SettingsPanel`, `ProgressFill`을 만든다.
+- scene installer가 `BattleRuntimeRoot`, `BattleRuntimePanelHost`, `BattlePresentationRoot`, `BattleStageRoot`, `ActorOverlayCanvas`, `ActorOverlayRoot`, `BattleCameraRoot`를 만든다.
+- `PauseButton`, `SettingsButton`, `SettingsPanel`, `ProgressFill` 같은 화면 요소 이름 계약은 `BattleScreen.uxml`에 저장된다.
+- actor-follow overhead UI와 floating text는 1차에서 기존 `BattleActorView` 경로를 유지한다.
 - Quick Battle smoke는 Expedition 진행도를 건드리지 않고 Battle observer만 빠르게 확인한다.
 - observer readability는 polished animation보다 상태 추적 가능성을 우선한다.

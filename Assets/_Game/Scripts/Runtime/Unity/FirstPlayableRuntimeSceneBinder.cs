@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SM.Unity.UI;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -65,8 +63,14 @@ public static class FirstPlayableRuntimeSceneBinder
         }
 
         EnsureSharedUiFont(scene);
-        EnsureStaticLocalizedText(scene);
-        EnsureLocalizationOverlay(scene);
+
+        foreach (var host in scene.GetRootGameObjects()
+                     .SelectMany(root => root.GetComponentsInChildren<RuntimePanelHost>(true)))
+        {
+            host.EnsureReady();
+            host.RefreshPanel();
+        }
+
         UiGraphicRaycastPolicy.ApplyToScene(scene);
     }
 
@@ -92,229 +96,81 @@ public static class FirstPlayableRuntimeSceneBinder
 
     private static void EnsureTown(Scene scene)
     {
-        var controllerGo = FindGameObject(scene, "TownScreenController");
-        if (controllerGo == null)
-        {
-            return;
-        }
-
+        var runtimeRoot = EnsureRootObject(scene, "TownRuntimeRoot");
+        var host = EnsureRuntimePanelHost(scene, SceneNames.Town, runtimeRoot.transform);
+        var controllerGo = EnsureChild(runtimeRoot.transform, "TownScreenController");
         var controller = EnsureComponent<TownScreenController>(controllerGo);
-        Bind(controller, new Dictionary<string, Object?>
+        Bind(controller, new System.Collections.Generic.Dictionary<string, Object?>
         {
-            ["titleText"] = GetComponentFromNamedObject<Text>(scene, "TitleText"),
-            ["rosterText"] = GetComponentFromNamedObject<Text>(scene, "RosterText"),
-            ["recruitText"] = GetComponentFromNamedObject<Text>(scene, "RecruitText"),
-            ["recruitCardsRoot"] = GetComponentFromNamedObject<RectTransform>(scene, "RecruitCardsRoot"),
-            ["squadText"] = GetComponentFromNamedObject<Text>(scene, "SquadText"),
-            ["deployPreviewText"] = GetComponentFromNamedObject<Text>(scene, "DeployPreviewText"),
-            ["currencyText"] = GetComponentFromNamedObject<Text>(scene, "CurrencyText"),
-            ["statusText"] = GetComponentFromNamedObject<Text>(scene, "StatusText"),
+            ["panelHost"] = host,
         });
         controller.EnsureRuntimeControls();
-
-        BindButton(scene, "RerollButton", controller.RerollOffers);
-        BindButton(scene, "SaveButton", controller.SaveProfile);
-        BindButton(scene, "LoadButton", controller.LoadProfile);
-        BindButton(scene, "DebugStartButton", controller.DebugStartExpedition);
-        BindButton(scene, "QuickBattleButton", controller.QuickBattle);
-        BindButton(scene, "RecruitButton", controller.RecruitOffer0, "RecruitCard1");
-        BindButton(scene, "RecruitButton", controller.RecruitOffer1, "RecruitCard2");
-        BindButton(scene, "RecruitButton", controller.RecruitOffer2, "RecruitCard3");
-        BindButton(scene, "RecruitButton", controller.RecruitOffer3, "RecruitCard4");
     }
 
     private static void EnsureExpedition(Scene scene)
     {
-        var controllerGo = FindGameObject(scene, "ExpeditionScreenController");
-        if (controllerGo == null)
-        {
-            return;
-        }
-
+        var runtimeRoot = EnsureRootObject(scene, "ExpeditionRuntimeRoot");
+        var host = EnsureRuntimePanelHost(scene, SceneNames.Expedition, runtimeRoot.transform);
+        var controllerGo = EnsureChild(runtimeRoot.transform, "ExpeditionScreenController");
         var controller = EnsureComponent<ExpeditionScreenController>(controllerGo);
-        Bind(controller, new Dictionary<string, Object?>
+        Bind(controller, new System.Collections.Generic.Dictionary<string, Object?>
         {
-            ["titleText"] = GetComponentFromNamedObject<Text>(scene, "TitleText"),
-            ["mapText"] = GetComponentFromNamedObject<Text>(scene, "MapText"),
-            ["nodeTrackRoot"] = GetComponentFromNamedObject<RectTransform>(scene, "NodeTrackRoot"),
-            ["positionText"] = GetComponentFromNamedObject<Text>(scene, "PositionText"),
-            ["rewardText"] = GetComponentFromNamedObject<Text>(scene, "RewardText"),
-            ["squadText"] = GetComponentFromNamedObject<Text>(scene, "SquadText"),
-            ["statusText"] = GetComponentFromNamedObject<Text>(scene, "StatusText"),
+            ["panelHost"] = host,
         });
         controller.EnsureRuntimeControls();
-
-        BindButton(scene, "NextBattleButton", controller.NextBattleOrAdvance);
-        BindButton(scene, "ReturnTownButton", controller.ReturnToTown);
-        BindButton(scene, "SelectButton", controller.SelectNode1, "NodeBox1");
-        BindButton(scene, "SelectButton", controller.SelectNode2, "NodeBox2");
-        BindButton(scene, "SelectButton", controller.SelectNode3, "NodeBox3");
-        BindButton(scene, "SelectButton", controller.SelectNode4, "NodeBox4");
-        BindButton(scene, "SelectButton", controller.SelectNode5, "NodeBox5");
     }
 
     private static void EnsureBattle(Scene scene)
     {
-        var presentationGo = FindGameObject(scene, "BattlePresentationRoot");
-        var controllerGo = FindGameObject(scene, "BattleScreenController");
-        var settingsGo = FindGameObject(scene, "BattleSettingsController");
-        if (presentationGo == null || controllerGo == null || settingsGo == null)
-        {
-            return;
-        }
+        EnsureMainCamera(scene, new Vector3(0f, 8f, -8f), Quaternion.Euler(35f, 0f, 0f));
 
+        var runtimeRoot = EnsureRootObject(scene, "BattleRuntimeRoot");
+        var host = EnsureRuntimePanelHost(scene, SceneNames.Battle, runtimeRoot.transform);
+        var stageRoot = EnsureChild(runtimeRoot.transform, "BattleStageRoot");
+        var presentationGo = EnsureChild(runtimeRoot.transform, "BattlePresentationRoot");
         var presentation = EnsureComponent<BattlePresentationController>(presentationGo);
-        Bind(presentation, new Dictionary<string, Object?>
+
+        var overlayCanvasGo = EnsureUiChild(runtimeRoot.transform, "ActorOverlayCanvas");
+        var overlayCanvas = EnsureCanvas(overlayCanvasGo, sortingOrder: 0, withRaycaster: false);
+        var overlayRootGo = EnsureUiChild(overlayCanvas.transform, "ActorOverlayRoot");
+        var overlayRoot = overlayRootGo.GetComponent<RectTransform>();
+        overlayRoot.anchorMin = Vector2.zero;
+        overlayRoot.anchorMax = Vector2.one;
+        overlayRoot.offsetMin = Vector2.zero;
+        overlayRoot.offsetMax = Vector2.zero;
+        var overlayImage = EnsureComponent<UnityEngine.UI.Image>(overlayRootGo);
+        overlayImage.color = new Color(0f, 0f, 0f, 0f);
+        overlayImage.raycastTarget = false;
+
+        Bind(presentation, new System.Collections.Generic.Dictionary<string, Object?>
         {
-            ["battleStageRoot"] = GetComponentFromNamedObject<Transform>(scene, "BattleStageRoot"),
-            ["actorOverlayRoot"] = GetComponentFromNamedObject<RectTransform>(scene, "ActorOverlayRoot"),
+            ["battleStageRoot"] = stageRoot.transform,
+            ["actorOverlayRoot"] = overlayRoot,
         });
 
-        // ActorOverlayRoot is a full-screen transparent panel for actor HP bars.
-        // Its Image must not block raycasts, otherwise all buttons beneath it become unclickable.
-        var overlayImage = FindGameObject(scene, "ActorOverlayRoot")?.GetComponent<Image>();
-        if (overlayImage != null)
-        {
-            overlayImage.raycastTarget = false;
-        }
+        var cameraRoot = EnsureChild(runtimeRoot.transform, "BattleCameraRoot");
+        var cameraController = EnsureComponent<BattleCameraController>(cameraRoot);
 
-        var settingsController = EnsureComponent<BattleSettingsPanelController>(settingsGo);
-        Bind(settingsController, new Dictionary<string, Object?>
-        {
-            ["panelRoot"] = GetComponentFromNamedObject<RectTransform>(scene, "SettingsPanel"),
-            ["worldHpButtonLabel"] = FindChildGameObject(scene, "ToggleWorldHpButton", "Label")?.GetComponent<Text>(),
-            ["overlayHpButtonLabel"] = FindChildGameObject(scene, "ToggleOverlayHpButton", "Label")?.GetComponent<Text>(),
-            ["teamSummaryButtonLabel"] = FindChildGameObject(scene, "ToggleTeamSummaryButton", "Label")?.GetComponent<Text>(),
-            ["statusText"] = GetComponentFromNamedObject<Text>(scene, "SettingsStatusText"),
-        });
-
-        var cameraGo = FindGameObject(scene, "BattleCameraRoot");
-        if (cameraGo == null)
-        {
-            cameraGo = new GameObject("BattleCameraRoot");
-            SceneManager.MoveGameObjectToScene(cameraGo, scene);
-        }
-
-        var cameraCtrl = EnsureComponent<BattleCameraController>(cameraGo);
-
+        var controllerGo = EnsureChild(runtimeRoot.transform, "BattleScreenController");
         var controller = EnsureComponent<BattleScreenController>(controllerGo);
-        Bind(controller, new Dictionary<string, Object?>
+        Bind(controller, new System.Collections.Generic.Dictionary<string, Object?>
         {
-            ["titleText"] = GetComponentFromNamedObject<Text>(scene, "TitleText"),
-            ["allyHpText"] = GetComponentFromNamedObject<Text>(scene, "AllyHpText"),
-            ["enemyHpText"] = GetComponentFromNamedObject<Text>(scene, "EnemyHpText"),
-            ["logText"] = GetComponentFromNamedObject<Text>(scene, "LogText"),
-            ["resultText"] = GetComponentFromNamedObject<Text>(scene, "ResultText"),
-            ["speedText"] = GetComponentFromNamedObject<Text>(scene, "SpeedText"),
-            ["statusText"] = GetComponentFromNamedObject<Text>(scene, "StatusText"),
-            ["pauseButtonLabel"] = FindChildGameObject(scene, "PauseButton", "Label")?.GetComponent<Text>(),
-            ["progressFill"] = GetComponentFromNamedObject<Image>(scene, "ProgressFill"),
-            ["allySummaryPanel"] = GetComponentFromNamedObject<Image>(scene, "LeftPanel"),
-            ["enemySummaryPanel"] = GetComponentFromNamedObject<Image>(scene, "RightPanel"),
+            ["panelHost"] = host,
             ["presentationController"] = presentation,
-            ["settingsPanelController"] = settingsController,
-            ["cameraController"] = cameraCtrl,
+            ["cameraController"] = cameraController,
         });
-
-        BindButton(scene, "Speed1Button", controller.SetSpeed1);
-        BindButton(scene, "Speed2Button", controller.SetSpeed2);
-        BindButton(scene, "Speed4Button", controller.SetSpeed4);
-        BindButton(scene, "PauseButton", controller.TogglePause);
-        BindButton(scene, "ContinueButton", controller.ContinueToReward);
-        BindButton(scene, "RebattleButton", controller.RebattleNewSeed);
-        BindButton(scene, "ReturnTownButton", controller.ReturnToTownDirect);
-        BindButton(scene, "SettingsButton", settingsController.TogglePanel);
-        BindButton(scene, "ToggleWorldHpButton", settingsController.ToggleWorldActorHp);
-        BindButton(scene, "ToggleOverlayHpButton", settingsController.ToggleOverlayActorHp);
-        BindButton(scene, "ToggleTeamSummaryButton", settingsController.ToggleTeamSummary);
-
-        // Scrubber: attach to ProgressTrack (parent of ProgressFill)
-        var progressFillGo = FindGameObject(scene, "ProgressFill");
-        if (progressFillGo != null && progressFillGo.transform.parent != null)
-        {
-            var trackGo = progressFillGo.transform.parent.gameObject;
-            var scrubber = EnsureComponent<BattleTimelineScrubberView>(trackGo);
-            var fillImage = progressFillGo.GetComponent<Image>();
-            var trackRect = trackGo.GetComponent<RectTransform>();
-            if (fillImage != null && trackRect != null)
-            {
-                scrubber.Initialize(fillImage, trackRect, controller.HandleScrubberSeek);
-                controller.SetScrubberView(scrubber);
-            }
-        }
-
     }
 
     private static void EnsureReward(Scene scene)
     {
-        var controllerGo = FindGameObject(scene, "RewardScreenController");
-        if (controllerGo == null)
-        {
-            return;
-        }
-
+        var runtimeRoot = EnsureRootObject(scene, "RewardRuntimeRoot");
+        var host = EnsureRuntimePanelHost(scene, SceneNames.Reward, runtimeRoot.transform);
+        var controllerGo = EnsureChild(runtimeRoot.transform, "RewardScreenController");
         var controller = EnsureComponent<RewardScreenController>(controllerGo);
-        Bind(controller, new Dictionary<string, Object?>
+        Bind(controller, new System.Collections.Generic.Dictionary<string, Object?>
         {
-            ["titleText"] = GetComponentFromNamedObject<Text>(scene, "TitleText"),
-            ["summaryText"] = GetComponentFromNamedObject<Text>(scene, "SummaryText"),
-            ["choicesText"] = GetComponentFromNamedObject<Text>(scene, "ChoicesText"),
-            ["rewardCardsRoot"] = GetComponentFromNamedObject<RectTransform>(scene, "RewardCardsRoot"),
-            ["statusText"] = GetComponentFromNamedObject<Text>(scene, "StatusText"),
+            ["panelHost"] = host,
         });
-
-        BindButton(scene, "ChooseButton", controller.Choose0, "ChoiceCard1");
-        BindButton(scene, "ChooseButton", controller.Choose1, "ChoiceCard2");
-        BindButton(scene, "ChooseButton", controller.Choose2, "ChoiceCard3");
-        BindButton(scene, "ReturnTownButton", controller.ReturnToTown);
-    }
-
-    private static void EnsureLocalizationOverlay(Scene scene)
-    {
-        if (!Application.isPlaying || GameSessionRoot.Instance?.Localization == null)
-        {
-            return;
-        }
-
-        var canvas = scene.GetRootGameObjects()
-            .Select(root => root.GetComponentInChildren<Canvas>(true))
-            .FirstOrDefault(candidate => candidate != null);
-        if (canvas == null)
-        {
-            return;
-        }
-
-        GlobalLocalizationOverlayView.EnsureAttached(
-            canvas.GetComponent<RectTransform>(),
-            GameSessionRoot.Instance.Localization);
-    }
-
-    private static void EnsureStaticLocalizedText(Scene scene)
-    {
-        switch (scene.name)
-        {
-            case SceneNames.Town:
-                EnsureLocalizedText(scene, "RerollButton", "Label", GameLocalizationTables.UITown, "ui.town.action.reroll");
-                EnsureLocalizedText(scene, "SaveButton", "Label", GameLocalizationTables.UICommon, "ui.common.save");
-                EnsureLocalizedText(scene, "LoadButton", "Label", GameLocalizationTables.UICommon, "ui.common.load");
-                EnsureLocalizedText(scene, "DebugStartButton", "Label", GameLocalizationTables.UITown, "ui.town.action.debug_start");
-                EnsureLocalizedText(scene, "QuickBattleButton", "Label", GameLocalizationTables.UITown, "ui.town.action.quick_battle");
-                break;
-            case SceneNames.Expedition:
-                EnsureLocalizedText(scene, "NextBattleButton", "Label", GameLocalizationTables.UIExpedition, "ui.expedition.action.next_battle");
-                EnsureLocalizedText(scene, "ReturnTownButton", "Label", GameLocalizationTables.UICommon, "ui.common.return_town");
-                break;
-            case SceneNames.Battle:
-                EnsureLocalizedText(scene, "SettingsTitleText", null, GameLocalizationTables.UIBattle, "ui.battle.settings.title");
-                EnsureLocalizedText(scene, "SettingsButton", "Label", GameLocalizationTables.UICommon, "ui.common.settings");
-                EnsureLocalizedText(scene, "ContinueButton", "Label", GameLocalizationTables.UICommon, "ui.common.continue");
-                EnsureLocalizedText(scene, "RebattleButton", "Label", GameLocalizationTables.UIBattle, "ui.battle.action.rebattle");
-                EnsureLocalizedText(scene, "ReturnTownButton", "Label", GameLocalizationTables.UICommon, "ui.common.return_town");
-                break;
-            case SceneNames.Reward:
-                EnsureLocalizedText(scene, "ReturnTownButton", "Label", GameLocalizationTables.UICommon, "ui.common.return_town");
-                break;
-        }
     }
 
     private static void EnsureSharedUiFont(Scene scene)
@@ -325,26 +181,41 @@ public static class FirstPlayableRuntimeSceneBinder
         }
     }
 
-    private static void EnsureLocalizedText(Scene scene, string objectName, string? childName, string table, string entryKey)
-    {
-        var go = string.IsNullOrWhiteSpace(childName)
-            ? FindGameObject(scene, objectName)
-            : FindChildGameObject(scene, objectName, childName);
-        if (go == null)
-        {
-            return;
-        }
-
-        var binder = EnsureComponent<UguiTextLocalizerBinder>(go);
-        binder.Configure(table, entryKey);
-    }
-
     private static void EnsureEventSystem(Scene scene)
     {
         UiEventSystemConfigurator.EnsureSceneEventSystem(scene);
     }
 
-    private static void Bind(Component target, IReadOnlyDictionary<string, Object?> refs)
+    private static RuntimePanelHost EnsureRuntimePanelHost(Scene scene, string sceneName, Transform parent)
+    {
+        if (!RuntimePanelAssetRegistry.TryGetScreenDescriptor(sceneName, out var descriptor))
+        {
+            throw new System.InvalidOperationException($"Missing runtime panel descriptor for scene '{sceneName}'.");
+        }
+
+        var hostGo = EnsureChild(parent, descriptor.HostObjectName);
+        EnsureComponent<UnityEngine.UIElements.UIDocument>(hostGo);
+        var host = EnsureComponent<RuntimePanelHost>(hostGo);
+
+#if UNITY_EDITOR
+        RuntimePanelAssetRegistry.ConfigureHost(host, sceneName);
+#endif
+
+        host.EnsureReady();
+        return host;
+    }
+
+    private static void EnsureMainCamera(Scene scene, Vector3 position, Quaternion rotation)
+    {
+        var go = EnsureRootObject(scene, "Main Camera");
+        var camera = EnsureComponent<Camera>(go);
+        go.tag = "MainCamera";
+        go.transform.position = position;
+        go.transform.rotation = rotation;
+        camera.clearFlags = CameraClearFlags.Skybox;
+    }
+
+    private static void Bind(Component target, System.Collections.Generic.Dictionary<string, Object?> refs)
     {
         foreach (var pair in refs)
         {
@@ -363,23 +234,65 @@ public static class FirstPlayableRuntimeSceneBinder
         }
     }
 
-    private static void BindButton(Scene scene, string buttonName, UnityAction action, string? parentName = null)
+    private static GameObject EnsureRootObject(Scene scene, string name)
     {
-        var buttonGo = parentName == null
-            ? FindGameObject(scene, buttonName)
-            : FindChildGameObject(scene, parentName, buttonName);
-        if (buttonGo == null)
+        var existing = scene.GetRootGameObjects().FirstOrDefault(root => root.name == name);
+        if (existing != null)
         {
-            return;
+            return existing;
         }
 
-        var button = buttonGo.GetComponent<Button>();
-        if (button == null)
+        var created = new GameObject(name);
+        SceneManager.MoveGameObjectToScene(created, scene);
+        return created;
+    }
+
+    private static GameObject EnsureChild(Transform parent, string name)
+    {
+        var existing = parent.Cast<Transform>().FirstOrDefault(child => child.name == name);
+        if (existing != null)
         {
-            return;
+            return existing.gameObject;
         }
 
-        UiButtonBindingConfigurator.BindExclusive(button, action);
+        var created = new GameObject(name);
+        created.transform.SetParent(parent, false);
+        return created;
+    }
+
+    private static GameObject EnsureUiChild(Transform parent, string name)
+    {
+        var existing = parent.Cast<Transform>().FirstOrDefault(child => child.name == name);
+        if (existing != null)
+        {
+            return existing.gameObject;
+        }
+
+        var created = new GameObject(name, typeof(RectTransform));
+        created.transform.SetParent(parent, false);
+        return created;
+    }
+
+    private static Canvas EnsureCanvas(GameObject go, int sortingOrder, bool withRaycaster)
+    {
+        var canvas = EnsureComponent<Canvas>(go);
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = sortingOrder;
+        EnsureComponent<UnityEngine.UI.CanvasScaler>(go);
+        if (withRaycaster)
+        {
+            EnsureComponent<UnityEngine.UI.GraphicRaycaster>(go);
+        }
+        else
+        {
+            var raycaster = go.GetComponent<UnityEngine.UI.GraphicRaycaster>();
+            if (raycaster != null)
+            {
+                DestroyObject(raycaster);
+            }
+        }
+
+        return canvas;
     }
 
     private static GameObject? FindGameObject(Scene scene, string name)
@@ -396,23 +309,6 @@ public static class FirstPlayableRuntimeSceneBinder
         return null;
     }
 
-    private static GameObject? FindChildGameObject(Scene scene, string parentName, string childName)
-    {
-        var parent = FindGameObject(scene, parentName);
-        if (parent == null)
-        {
-            return null;
-        }
-
-        var child = parent.transform.Find(childName);
-        return child != null ? child.gameObject : null;
-    }
-
-    private static T? GetComponentFromNamedObject<T>(Scene scene, string objectName) where T : Component
-    {
-        return FindGameObject(scene, objectName)?.GetComponent<T>();
-    }
-
     private static T EnsureComponent<T>(GameObject go) where T : Component
     {
         var existing = go.GetComponent<T>();
@@ -422,5 +318,21 @@ public static class FirstPlayableRuntimeSceneBinder
         }
 
         return go.AddComponent<T>();
+    }
+
+    private static void DestroyObject(Object target)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        if (Application.isPlaying)
+        {
+            Object.Destroy(target);
+            return;
+        }
+
+        Object.DestroyImmediate(target);
     }
 }

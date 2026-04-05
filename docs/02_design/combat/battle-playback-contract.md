@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-05
+- 최종수정일: 2026-04-06
 - 소스오브트루스: `docs/02_design/combat/battle-playback-contract.md`
 - 관련문서:
   - `docs/02_design/combat/battlefield-and-camera.md`
@@ -26,10 +26,8 @@ QuickBattle과 InGame 모드를 우아하게 분리하는 것이 목표다.
 
 ### Seek 메커니즘
 
-| 방향 | 로직 |
-|------|------|
-| 뒤로 (target ≤ furthestIndex) | `_recordedSteps[target]` 직접 인덱싱. 즉시. |
-| 앞으로 (target > furthestIndex) | `_simulator.Step()` 루프로 빈 구간을 채운다. |
+- 뒤로 탐색 (`target ≤ furthestIndex`): `_recordedSteps[target]`를 직접 인덱싱한다. 즉시 반영된다.
+- 앞으로 탐색 (`target > furthestIndex`): `_simulator.Step()` 루프로 빈 구간을 채운다.
 
 - 탐색 후 `(steps[i-1], steps[i])` 쌍이 presentation에 전달된다.
 - 뒤로 탐색해도 시뮬레이터 상태는 변하지 않는다 (녹화된 read model만 재사용).
@@ -48,22 +46,20 @@ QuickBattle과 InGame 모드를 우아하게 분리하는 것이 목표다.
 
 ## BattlePlaybackPolicy
 
-| 메서드 | QuickBattle | InGame |
-|--------|------------|--------|
-| CanPause | always | isFinished |
-| CanSeek | always | isFinished |
-| CanControlSpeed | always | isFinished |
-| CanReplay | always | isFinished |
+- `CanPause`: `QuickBattle`에서는 `always`, `InGame`에서는 `isFinished`
+- `CanSeek`: `QuickBattle`에서는 `always`, `InGame`에서는 `isFinished`
+- `CanControlSpeed`: `QuickBattle`에서는 `always`, `InGame`에서는 `isFinished`
+- `CanReplay`: `QuickBattle`에서는 `always`, `InGame`에서는 `isFinished`
 
 - InGame 모드에서 전투 진행 중에는 모든 플레이백 조작이 비활성화된다.
 - 전투 종료 후 리플레이 모드에서 전체 기능이 해금된다.
 
-## BattleTimelineScrubberView
+## BattleScreenView scrubber
 
-- `IPointerDownHandler`, `IDragHandler`, `IPointerUpHandler` 구현.
-- 기존 `progressFill` Image 위에 상호작용 레이어를 추가한다.
-- 드래그 포인터 위치 → normalized 0..1 → `BattleScreenController.HandleScrubberSeek()`.
-- `SetInteractable(bool)`: policy에 따라 드래그 가능/불가 전환.
+- battle shell의 scrubber는 `BattleScreenView` 내부 UITK pointer callback으로 구현한다.
+- `ProgressTrack`의 포인터 위치를 normalized 0..1로 변환해 `BattleScreenController.HandleScrubberSeek()`에 전달한다.
+- interactable 정책은 `BattleScreenView.SetScrubberInteractable(bool)`로 제어한다.
+- drag 중에는 fill width를 임시 반영하고, drag 외 구간은 presenter state progress를 따른다.
 
 ## 불변 규칙
 

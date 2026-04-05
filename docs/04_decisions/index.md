@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-06
 - 소스오브트루스: `docs/04_decisions/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -32,6 +32,7 @@
 - `adr-0016-localization-boundary.md`: localization 경계와 공식 패키지 채택
 - `adr-0017-docs-context-harness.md`: 문서 컨텍스트 하네스와 tombstone registry 채택
 - `adr-0018-loop-c-content-governance.md`: BudgetCard/ContentRarity/8-lane/fatal forbidden policy 채택
+- `adr-0019-runtime-panel-host-ui-toolkit-first.md`: RuntimePanelHost, UITK asset-first, battle shell only 채택
 
 ## 운영 메모
 

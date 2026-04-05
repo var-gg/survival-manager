@@ -1,0 +1,346 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using SM.Combat.Model;
+using SM.Meta.Model;
+
+namespace SM.Unity.UI.Town;
+
+public sealed class TownScreenPresenter
+{
+    private readonly GameSessionRoot _root;
+    private readonly GameLocalizationController _localization;
+    private readonly ContentTextResolver _contentText;
+    private readonly TownScreenView _view;
+
+    public TownScreenPresenter(
+        GameSessionRoot root,
+        GameLocalizationController localization,
+        ContentTextResolver contentText,
+        TownScreenView view)
+    {
+        _root = root;
+        _localization = localization;
+        _contentText = contentText;
+        _view = view;
+    }
+
+    public void Initialize()
+    {
+        _view.Bind(this);
+        Refresh();
+    }
+
+    public void SelectKorean() => _localization.TrySetLocale("ko");
+    public void SelectEnglish() => _localization.TrySetLocale("en");
+    public void RecruitOffer0() => Recruit(0);
+    public void RecruitOffer1() => Recruit(1);
+    public void RecruitOffer2() => Recruit(2);
+    public void RecruitOffer3() => Recruit(3);
+
+    public void RerollOffers()
+    {
+        var refreshCost = _root.SessionState.CurrentRecruitRefreshCost;
+        var result = _root.SessionState.RerollRecruitOffers();
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.reroll_success", "Recruit offers rerolled. (-{0} Gold)", refreshCost)
+            : result.Error ?? Localize(GameLocalizationTables.UITown, "ui.town.error.reroll_failed", "Failed to reroll recruit offers."));
+    }
+
+    public void SaveProfile()
+    {
+        _root.SaveProfile();
+        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.profile_saved", "Profile saved."));
+    }
+
+    public void LoadProfile()
+    {
+        _root.BindProfile();
+        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.profile_loaded", "Profile reloaded."));
+    }
+
+    public void DebugStartExpedition()
+    {
+        if (_root.SessionState.CanResumeExpedition)
+        {
+            _root.SceneFlow.GoToExpedition();
+            return;
+        }
+
+        _root.SessionState.BeginNewExpedition();
+        _root.SaveProfile();
+        _root.SceneFlow.GoToExpedition();
+    }
+
+    public void QuickBattle()
+    {
+        _root.SessionState.PrepareQuickBattleSmoke();
+        _root.SaveProfile();
+        _root.SceneFlow.GoToBattle();
+    }
+
+    public void CycleFrontTop() => CycleAnchor(DeploymentAnchorId.FrontTop);
+    public void CycleFrontCenter() => CycleAnchor(DeploymentAnchorId.FrontCenter);
+    public void CycleFrontBottom() => CycleAnchor(DeploymentAnchorId.FrontBottom);
+    public void CycleBackTop() => CycleAnchor(DeploymentAnchorId.BackTop);
+    public void CycleBackCenter() => CycleAnchor(DeploymentAnchorId.BackCenter);
+    public void CycleBackBottom() => CycleAnchor(DeploymentAnchorId.BackBottom);
+
+    public void CycleTeamPosture()
+    {
+        _root.SessionState.CycleTeamPosture();
+        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.team_posture", "Team posture: {0}", _root.SessionState.SelectedTeamPosture));
+    }
+
+    public void Refresh(string message = "")
+    {
+        var session = _root.SessionState;
+        session.EnsureBattleDeployReady();
+        _view.Render(BuildState(session, message));
+    }
+
+    private void Recruit(int index)
+    {
+        var offerCost = index >= 0 && index < _root.SessionState.RecruitOffers.Count
+            ? _root.SessionState.RecruitOffers[index].Metadata.GoldCost
+            : 0;
+        var result = _root.SessionState.Recruit(index);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.recruit_success", "Recruited offer {0}. (-{1} Gold)", index + 1, offerCost)
+            : result.Error ?? Localize(GameLocalizationTables.UITown, "ui.town.error.recruit_failed", "Failed to recruit the selected offer."));
+    }
+
+    private void CycleAnchor(DeploymentAnchorId anchor)
+    {
+        _root.SessionState.CycleDeploymentAssignment(anchor);
+        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.anchor_cycled", "{0} deployment updated.", LocalizeAnchor(anchor)));
+    }
+
+    private TownScreenViewState BuildState(GameSessionState session, string message)
+    {
+        return new TownScreenViewState(
+            Localize(GameLocalizationTables.UITown, "ui.town.title", "Town Operator UI"),
+            BuildLocaleStatus(),
+            GetLocaleButtonLabel("ko", "한국어"),
+            GetLocaleButtonLabel("en", "English"),
+            Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.currency.summary",
+                "Gold: {0} | Echo: {1} | Perm Slots: {2}",
+                session.Profile.Currencies.Gold,
+                session.Profile.Currencies.Echo,
+                session.PermanentAugmentSlotCount),
+            BuildRosterText(session),
+            BuildRecruitSummary(session),
+            BuildRecruitCards(session),
+            BuildSquadText(session),
+            BuildDeployPreviewText(session),
+            BuildDeployButtons(session),
+            Localize(GameLocalizationTables.UICommon, "ui.common.posture", "Posture") + "\n" + session.SelectedTeamPosture,
+            string.IsNullOrWhiteSpace(message)
+                ? session.CanResumeExpedition
+                    ? Localize(GameLocalizationTables.UITown, "ui.town.status.default.resume", "Recruit, save, resume the expedition, or run a quick battle.")
+                    : Localize(GameLocalizationTables.UITown, "ui.town.status.default.start", "Recruit, save, start an expedition, or run a quick battle.")
+                : message,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.reroll", "Reroll"),
+            Localize(GameLocalizationTables.UICommon, "ui.common.save", "Save"),
+            Localize(GameLocalizationTables.UICommon, "ui.common.load", "Load"),
+            Localize(GameLocalizationTables.UITown, "ui.town.action.debug_start", "Start Expedition"),
+            Localize(GameLocalizationTables.UITown, "ui.town.action.quick_battle", "Quick Battle"));
+    }
+
+    private IReadOnlyList<TownRecruitCardViewState> BuildRecruitCards(GameSessionState session)
+    {
+        var cards = new List<TownRecruitCardViewState>(4);
+        for (var i = 0; i < 4; i++)
+        {
+            var offer = i < session.RecruitOffers.Count ? session.RecruitOffers[i] : null;
+            cards.Add(new TownRecruitCardViewState(
+                offer == null ? Localize(GameLocalizationTables.UITown, "ui.town.recruit.empty", "Empty Slot") : _contentText.GetArchetypeName(offer.UnitBlueprintId),
+                BuildRecruitCardBody(offer),
+                Localize(GameLocalizationTables.UITown, "ui.town.action.recruit", "Recruit"),
+                offer != null));
+        }
+
+        return cards;
+    }
+
+    private IReadOnlyList<TownDeployButtonViewState> BuildDeployButtons(GameSessionState session)
+    {
+        return session.EnumerateDeploymentAssignments()
+            .Select(entry =>
+            {
+                var hero = session.Profile.Heroes.FirstOrDefault(x => x.HeroId == entry.HeroId);
+                var heroName = hero?.Name ?? Localize(GameLocalizationTables.UICommon, "ui.common.empty", "Empty");
+                return new TownDeployButtonViewState(entry.Anchor, $"{LocalizeAnchor(entry.Anchor)}\n{heroName}");
+            })
+            .ToArray();
+    }
+
+    private string BuildLocaleStatus()
+    {
+        var locale = _localization.CurrentLocale;
+        if (locale == null)
+        {
+            return "-";
+        }
+
+        return $"{Localize(GameLocalizationTables.UICommon, "ui.common.current_language", "Current")}: {_localization.GetLocaleButtonLabel(locale)}";
+    }
+
+    private string GetLocaleButtonLabel(string localeCode, string fallback)
+    {
+        var locale = UnityEngine.Localization.Settings.LocalizationSettings.AvailableLocales?.GetLocale(localeCode);
+        if (locale != null)
+        {
+            return _localization.GetLocaleButtonLabel(locale);
+        }
+
+        return fallback;
+    }
+
+    private string BuildRosterText(GameSessionState session)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.roster.header", "Roster"));
+        foreach (var hero in session.Profile.Heroes)
+        {
+            var inSquad = session.ExpeditionSquadHeroIds.Contains(hero.HeroId)
+                ? Localize(GameLocalizationTables.UITown, "ui.town.roster.tag.expedition", "[Expedition]")
+                : Localize(GameLocalizationTables.UITown, "ui.town.roster.tag.reserve", "[Reserve]");
+            sb.AppendLine($"- {inSquad} {hero.Name} / {_contentText.GetRaceName(hero.RaceId)} / {_contentText.GetClassName(hero.ClassId)}");
+        }
+
+        return sb.ToString();
+    }
+
+    private string BuildRecruitSummary(GameSessionState session)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.header", "Recruit Offers"));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.current_count", "Current offers: {0}", session.RecruitOffers.Count));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.reroll_cost", "Reroll cost: {0} Gold", session.CurrentRecruitRefreshCost));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.roster_count", "Town roster: {0}/{1}", session.Profile.Heroes.Count, SM.Meta.Model.MetaBalanceDefaults.TownRosterCap));
+        return sb.ToString();
+    }
+
+    private string BuildSquadText(GameSessionState session)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.squad.header", "Expedition Squad ({0}/8)", session.ExpeditionSquadHeroIds.Count));
+        foreach (var heroId in session.ExpeditionSquadHeroIds)
+        {
+            var hero = session.Profile.Heroes.FirstOrDefault(x => x.HeroId == heroId);
+            if (hero != null)
+            {
+                sb.AppendLine($"- {hero.Name}");
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private string BuildDeployPreviewText(GameSessionState session)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.header", "Deploy Preview ({0}/4)", session.BattleDeployHeroIds.Count));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.posture", "Team Posture: {0}", session.SelectedTeamPosture));
+        foreach (var (anchor, heroId) in session.EnumerateDeploymentAssignments())
+        {
+            var hero = session.Profile.Heroes.FirstOrDefault(x => x.HeroId == heroId);
+            var heroName = hero?.Name ?? Localize(GameLocalizationTables.UICommon, "ui.common.empty", "Empty");
+            sb.AppendLine($"- {LocalizeAnchor(anchor)}: {heroName}");
+        }
+
+        sb.AppendLine();
+        if (session.IsQuickBattleSmokeActive)
+        {
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.quick_battle_ready", "Quick battle smoke is ready."));
+        }
+        else if (session.CanResumeExpedition)
+        {
+            var nextNode = session.GetSelectedExpeditionNode();
+            var routeLabel = nextNode == null
+                ? Localize(GameLocalizationTables.UITown, "ui.town.deploy.route_needed", "Route selection required")
+                : $"{Localize(GameLocalizationTables.UIExpedition, nextNode.LabelKey, nextNode.Id)} -> {Localize(GameLocalizationTables.UIExpedition, nextNode.PlannedRewardKey, nextNode.Id)}";
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.resume", "Resume Expedition: {0}", routeLabel));
+        }
+        else
+        {
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.quick_battle_safe", "Quick battle does not consume expedition progress."));
+        }
+
+        if (session.LastRewardApplicationSummary.HasValue)
+        {
+            sb.AppendLine(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.deploy.last_reward",
+                "Last Reward: {0}",
+                session.LastRewardApplicationSummary.Resolve(_localization, _contentText)));
+        }
+
+        if (session.LastExpeditionEffectMessage.HasValue)
+        {
+            sb.AppendLine(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.deploy.last_effect",
+                "Last Node Effect: {0}",
+                session.LastExpeditionEffectMessage.Resolve(_localization, _contentText)));
+        }
+
+        return sb.ToString();
+    }
+
+    private string BuildRecruitCardBody(RecruitUnitPreview? offer)
+    {
+        if (offer == null)
+        {
+            return Localize(GameLocalizationTables.UITown, "ui.town.recruit.none", "No recruit offer is available.");
+        }
+
+        _root.CombatContentLookup.TryGetArchetype(offer.UnitBlueprintId, out var archetype);
+        CombatArchetypeTemplate? template = null;
+        if (_root.CombatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+        {
+            snapshot.Archetypes.TryGetValue(offer.UnitBlueprintId, out template);
+        }
+
+        var slotBadge = offer.Metadata.SlotType switch
+        {
+            SM.Core.Contracts.RecruitOfferSlotType.OnPlan => "[OnPlan]",
+            SM.Core.Contracts.RecruitOfferSlotType.Protected => offer.Metadata.BiasedByScout ? "[Protected][Scout]" : "[Protected]",
+            _ => offer.Metadata.BiasedByScout ? "[Scout]" : $"[{offer.Metadata.SlotType}]",
+        };
+        var formation = archetype?.BehaviorProfile?.FormationLine.ToString() ?? "Unknown";
+        var roleFantasy = string.IsNullOrWhiteSpace(archetype?.RoleTag)
+            ? formation
+            : $"{archetype.RoleTag} / {formation}";
+        var keyTags = template?.RecruitPlanTags?
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            .Take(3)
+            .ToArray() ?? Array.Empty<string>();
+        var counterHints = template?.Governance?.DeclaredCounterTools?
+            .Select(tool => tool.Tool)
+            .Where(tool => !string.IsNullOrWhiteSpace(tool))
+            .Take(2)
+            .ToArray() ?? Array.Empty<string>();
+
+        return string.Join(
+            "\n",
+            $"{slotBadge} {offer.Metadata.Tier} / {offer.Metadata.PlanFit} / {offer.Metadata.GoldCost} Gold",
+            $"{_contentText.GetRaceName(archetype?.Race.Id ?? string.Empty)} / {_contentText.GetClassName(archetype?.Class.Id ?? string.Empty)} / {roleFantasy}",
+            $"Tags: {(keyTags.Length == 0 ? "None" : string.Join(", ", keyTags))}",
+            $"Counter: {(counterHints.Length == 0 ? "None" : string.Join(", ", counterHints))}");
+    }
+
+    private string LocalizeAnchor(DeploymentAnchorId anchor)
+    {
+        return Localize(GameLocalizationTables.UICommon, anchor.ToLocalizationKey(), anchor.ToDisplayName());
+    }
+
+    private string Localize(string table, string key, string fallback, params object[] args)
+    {
+        return _localization.LocalizeOrFallback(table, key, fallback, args);
+    }
+}

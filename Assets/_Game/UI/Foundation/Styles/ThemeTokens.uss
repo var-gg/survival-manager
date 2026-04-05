@@ -1,0 +1,24 @@
+:root {
+    --color-bg: rgb(11, 15, 24);
+    --color-surface: rgb(20, 27, 40);
+    --color-surface-alt: rgb(28, 36, 52);
+    --color-panel-border: rgba(255, 255, 255, 0.08);
+    --color-text: rgb(233, 239, 247);
+    --color-text-muted: rgb(163, 177, 196);
+    --color-accent: rgb(217, 144, 61);
+    --color-accent-2: rgb(92, 162, 219);
+    --color-good: rgb(77, 176, 105);
+    --color-danger: rgb(193, 83, 71);
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --radius-s: 6px;
+    --radius-m: 10px;
+    --radius-l: 14px;
+    --font-size-s: 12px;
+    --font-size-m: 14px;
+    --font-size-l: 18px;
+    --font-size-xl: 24px;
+}

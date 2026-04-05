@@ -3,9 +3,11 @@ using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Unity;
+using SM.Unity.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityEngine.UIElements;
 
 namespace SM.Tests.PlayMode;
 
@@ -36,12 +38,14 @@ public sealed class PlayModeSmokeTests
         yield return WaitForComponent<TownScreenController>();
 
         var town = FindAny<TownScreenController>();
+        var townHost = FindPanelHost("TownRuntimePanelHost");
         Assert.That(town, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownScreenController after scene settle."));
-        var root = GameSessionRoot.Instance!;
-        Assert.That(FindObjectByName("TownDeploymentPanel"), Is.Not.Null, "Town should expose a runtime deployment panel.");
-        Assert.That(FindObjectByName("DeployButton_FrontTop"), Is.Not.Null, "Town should expose deployment anchor buttons.");
-        Assert.That(FindObjectByName("TeamPostureButton"), Is.Not.Null, "Town should expose a team posture button.");
+        Assert.That(townHost, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownRuntimePanelHost after scene settle."));
+        Assert.That(townHost!.Root.Q<Button>("DeployButton_FrontTop"), Is.Not.Null, "Town should expose deployment anchor buttons in the runtime panel.");
+        Assert.That(townHost.Root.Q<Button>("TeamPostureButton"), Is.Not.Null, "Town should expose a team posture button in the runtime panel.");
+        Assert.That(townHost.Root.Q<Button>("QuickBattleButton"), Is.Not.Null, "Town should expose a quick battle button in the runtime panel.");
 
+        var root = GameSessionRoot.Instance!;
         var heroA = root.SessionState.ExpeditionSquadHeroIds[0];
         var heroB = root.SessionState.ExpeditionSquadHeroIds[1];
         Assert.That(root.SessionState.AssignHeroToAnchor(DeploymentAnchorId.BackBottom, heroA), Is.True);
@@ -58,25 +62,30 @@ public sealed class PlayModeSmokeTests
         yield return WaitForComponent<BattlePresentationController>();
         var battle = FindAny<BattleScreenController>();
         var presentation = FindAny<BattlePresentationController>();
+        var battleHost = FindPanelHost("BattleRuntimePanelHost");
         Assert.That(battle, Is.Not.Null, BuildSceneDiagnostic("Battle scene should contain BattleScreenController after Quick Battle."));
         Assert.That(presentation, Is.Not.Null, BuildSceneDiagnostic("Battle scene should contain BattlePresentationController."));
+        Assert.That(battleHost, Is.Not.Null, BuildSceneDiagnostic("Battle scene should contain BattleRuntimePanelHost."));
         Assert.That(GameObject.Find("BattlePresentationRoot"), Is.Not.Null, "BattlePresentationRoot should be present.");
         Assert.That(GameObject.Find("ActorOverlayRoot"), Is.Not.Null, "ActorOverlayRoot should be present.");
-        Assert.That(FindObjectByName("SettingsButton"), Is.Not.Null, "SettingsButton should be present.");
-        Assert.That(FindObjectByName("SettingsPanel"), Is.Not.Null, "SettingsPanel should be present even when hidden by default.");
+        Assert.That(battleHost!.Root.Q<Button>("SettingsButton"), Is.Not.Null, "SettingsButton should be present in the runtime panel.");
+        Assert.That(battleHost.Root.Q<VisualElement>("SettingsPanel"), Is.Not.Null, "SettingsPanel should be present even when hidden by default.");
         yield return WaitForCondition(() => battle!.LatestStep != null, 5f);
         Assert.That(battle!.ActiveAllyPosture, Is.EqualTo(TeamPostureType.AllInBackline));
         Assert.That(battle.LatestStep!.Units.Any(unit => unit.Id.EndsWith(heroA) && unit.Anchor == DeploymentAnchorId.BackBottom), Is.True, "Assigned anchor should flow into live battle state.");
         Assert.That(battle.LatestStep!.Units.Any(unit => unit.Id.EndsWith(heroB) && unit.Anchor == DeploymentAnchorId.FrontCenter), Is.True, "Second assigned anchor should flow into live battle state.");
 
-        battle!.SetSpeed4();
-        yield return WaitForCondition(() => battle!.IsPlaybackFinished, 20f);
-        battle!.ContinueToReward();
+        battle.SetSpeed4();
+        yield return WaitForCondition(() => battle.IsPlaybackFinished, 20f);
+        battle.ContinueToReward();
 
         yield return WaitForScene(SceneNames.Reward);
         yield return WaitForComponent<RewardScreenController>();
         var reward = FindAny<RewardScreenController>();
+        var rewardHost = FindPanelHost("RewardRuntimePanelHost");
         Assert.That(reward, Is.Not.Null, BuildSceneDiagnostic("Reward scene should contain RewardScreenController."));
+        Assert.That(rewardHost, Is.Not.Null, BuildSceneDiagnostic("Reward scene should contain RewardRuntimePanelHost."));
+        Assert.That(rewardHost!.Root.Q<Button>("ChoiceCard1Button"), Is.Not.Null, "Reward runtime panel should expose reward choices.");
         reward!.Choose0();
         reward.ReturnToTown();
 
@@ -101,12 +110,13 @@ public sealed class PlayModeSmokeTests
         yield return WaitForScene(SceneNames.Expedition);
         yield return WaitForComponent<ExpeditionScreenController>();
         var expedition = FindAny<ExpeditionScreenController>();
+        var expeditionHost = FindPanelHost("ExpeditionRuntimePanelHost");
         Assert.That(expedition, Is.Not.Null, BuildSceneDiagnostic("Expedition scene should contain ExpeditionScreenController."));
-        Assert.That(FindObjectByName("ExpeditionDeploymentPanel"), Is.Not.Null, "Expedition scene should expose deployment controls.");
-        Assert.That(FindObjectByName("DeployButton_BackCenter"), Is.Not.Null, "Expedition scene should expose anchor buttons.");
-        Assert.That(FindObjectByName("TeamPostureButton"), Is.Not.Null, "Expedition scene should expose a posture button.");
+        Assert.That(expeditionHost, Is.Not.Null, BuildSceneDiagnostic("Expedition scene should contain ExpeditionRuntimePanelHost."));
+        Assert.That(expeditionHost!.Root.Q<Button>("DeployButton_BackCenter"), Is.Not.Null, "Expedition scene should expose anchor buttons in the runtime panel.");
+        Assert.That(expeditionHost.Root.Q<Button>("TeamPostureButton"), Is.Not.Null, "Expedition scene should expose a posture button in the runtime panel.");
 
-        var selectedNode = root.SessionState.GetSelectedExpeditionNode() ?? root.SessionState.GetCurrentExpeditionNode();
+        var selectedNode = root!.SessionState.GetSelectedExpeditionNode() ?? root.SessionState.GetCurrentExpeditionNode();
         Assert.That(selectedNode, Is.Not.Null, "Expedition should expose a resolvable node.");
         var expectedResolvedIndex = selectedNode!.Index;
         var expectedCanResume = expectedResolvedIndex < root.SessionState.ExpeditionNodes.Count - 1;
@@ -174,30 +184,23 @@ public sealed class PlayModeSmokeTests
             component.gameObject.scene.IsValid());
     }
 
-    private static GameObject? FindObjectByName(string objectName)
+    private static RuntimePanelHost? FindPanelHost(string objectName)
     {
-        var active = GameObject.Find(objectName);
-        if (active != null)
-        {
-            return active;
-        }
-
-        return Resources.FindObjectsOfTypeAll<Transform>()
-            .FirstOrDefault(transform => transform.name == objectName && transform.gameObject.scene.IsValid())
-            ?.gameObject;
+        return Resources.FindObjectsOfTypeAll<RuntimePanelHost>()
+            .FirstOrDefault(host => host.gameObject.scene.IsValid() && host.gameObject.name == objectName);
     }
 
     private static string BuildSceneDiagnostic(string prefix)
     {
         var scene = SceneManager.GetActiveScene();
         var rootNames = string.Join(", ", scene.GetRootGameObjects().Select(x => x.name));
-        var townControllerObjects = string.Join(", ", scene
+        var controllerObjects = string.Join(", ", scene
             .GetRootGameObjects()
             .SelectMany(root => root.GetComponentsInChildren<Transform>(true))
             .Where(transform => transform.name.Contains("Controller"))
             .Select(transform => transform.name)
             .Distinct());
 
-        return $"{prefix} ActiveScene={scene.name}; Roots=[{rootNames}]; ControllerObjects=[{townControllerObjects}]";
+        return $"{prefix} ActiveScene={scene.name}; Roots=[{rootNames}]; ControllerObjects=[{controllerObjects}]";
     }
 }

@@ -1,44 +1,30 @@
 using System;
 using System.Linq;
-using System.Text;
-using SM.Combat.Model;
-using SM.Meta.Model;
+using SM.Unity.UI;
+using SM.Unity.UI.Town;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace SM.Unity;
 
 public sealed class TownScreenController : MonoBehaviour
 {
-    [SerializeField] private Text titleText = null!;
-    [SerializeField] private Text rosterText = null!;
-    [SerializeField] private Text recruitText = null!;
-    [SerializeField] private RectTransform recruitCardsRoot = null!;
-    [SerializeField] private Text squadText = null!;
-    [SerializeField] private Text deployPreviewText = null!;
-    [SerializeField] private Text currencyText = null!;
-    [SerializeField] private Text statusText = null!;
+    [SerializeField] private RuntimePanelHost panelHost = null!;
 
     private GameSessionRoot _root = null!;
     private GameLocalizationController _localization = null!;
     private ContentTextResolver _contentText = null!;
-    private DeploymentSetupPanelView? _deploymentPanel;
+    private TownScreenPresenter? _presenter;
 
     private void Start()
     {
-        _root = GameSessionRoot.EnsureInstance();
-        if (_root == null)
+        if (!EnsureViewReady())
         {
-            SetStatus("GameSessionRoot가 없습니다.");
             return;
         }
 
-        _localization = _root.Localization;
-        _contentText = new ContentTextResolver(_localization, _root.CombatContentLookup);
         _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Town);
-        EnsureRuntimeControls();
-        Refresh();
+        _presenter!.Initialize();
     }
 
     private void OnDestroy()
@@ -49,149 +35,108 @@ public sealed class TownScreenController : MonoBehaviour
         }
     }
 
-    public void RecruitOffer0() => Recruit(0);
-    public void RecruitOffer1() => Recruit(1);
-    public void RecruitOffer2() => Recruit(2);
-    public void RecruitOffer3() => Recruit(3);
-
-    public void RerollOffers()
-    {
-        if (!EnsureReady()) return;
-        var refreshCost = _root.SessionState.CurrentRecruitRefreshCost;
-        var result = _root.SessionState.RerollRecruitOffers();
-        Refresh(result.IsSuccess
-            ? Localize(GameLocalizationTables.UITown, "ui.town.status.reroll_success", "Recruit offers rerolled. (-{0} Gold)", refreshCost)
-            : result.Error ?? Localize(GameLocalizationTables.UITown, "ui.town.error.reroll_failed", "Failed to reroll recruit offers."));
-    }
-
-    public void SaveProfile()
-    {
-        if (!EnsureReady()) return;
-        _root.SaveProfile();
-        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.profile_saved", "Profile saved."));
-    }
-
-    public void LoadProfile()
-    {
-        if (!EnsureReady()) return;
-        _root.BindProfile();
-        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.profile_loaded", "Profile reloaded."));
-    }
-
-    public void DebugStartExpedition()
-    {
-        if (!EnsureReady()) return;
-        if (_root.SessionState.CanResumeExpedition)
-        {
-            _root.SceneFlow.GoToExpedition();
-            return;
-        }
-
-        _root.SessionState.BeginNewExpedition();
-        _root.SaveProfile();
-        _root.SceneFlow.GoToExpedition();
-    }
-
-    public void QuickBattle()
-    {
-        if (!EnsureReady()) return;
-        _root.SessionState.PrepareQuickBattleSmoke();
-        _root.SaveProfile();
-        _root.SceneFlow.GoToBattle();
-    }
+    public void RecruitOffer0() => _presenter?.RecruitOffer0();
+    public void RecruitOffer1() => _presenter?.RecruitOffer1();
+    public void RecruitOffer2() => _presenter?.RecruitOffer2();
+    public void RecruitOffer3() => _presenter?.RecruitOffer3();
+    public void RerollOffers() => _presenter?.RerollOffers();
+    public void SaveProfile() => _presenter?.SaveProfile();
+    public void LoadProfile() => _presenter?.LoadProfile();
+    public void DebugStartExpedition() => _presenter?.DebugStartExpedition();
+    public void QuickBattle() => _presenter?.QuickBattle();
 
     public void EnsureRuntimeControls()
     {
-        if (_deploymentPanel != null || statusText == null)
+        if (panelHost != null)
+        {
+            panelHost.EnsureReady();
+        }
+
+        if (!Application.isPlaying)
         {
             return;
         }
 
-        var parent = statusText.transform.parent as RectTransform;
-        if (parent == null)
-        {
-            return;
-        }
-
-        _deploymentPanel = DeploymentSetupPanelView.Create(
-            "TownDeploymentPanel",
-            parent,
-            anchor => CycleAnchor(anchor),
-            CycleTeamPosture);
+        EnsureViewReady();
     }
 
-    public void CycleFrontTop() => CycleAnchor(DeploymentAnchorId.FrontTop);
-    public void CycleFrontCenter() => CycleAnchor(DeploymentAnchorId.FrontCenter);
-    public void CycleFrontBottom() => CycleAnchor(DeploymentAnchorId.FrontBottom);
-    public void CycleBackTop() => CycleAnchor(DeploymentAnchorId.BackTop);
-    public void CycleBackCenter() => CycleAnchor(DeploymentAnchorId.BackCenter);
-    public void CycleBackBottom() => CycleAnchor(DeploymentAnchorId.BackBottom);
-
-    public void CycleTeamPosture()
-    {
-        if (!EnsureReady()) return;
-        _root.SessionState.CycleTeamPosture();
-        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.team_posture", "Team posture: {0}", _root.SessionState.SelectedTeamPosture));
-    }
-
-    // ──────────────────────────────────────────────
-    // Town build-management surface
-    // ──────────────────────────────────────────────
+    public void CycleFrontTop() => _presenter?.CycleFrontTop();
+    public void CycleFrontCenter() => _presenter?.CycleFrontCenter();
+    public void CycleFrontBottom() => _presenter?.CycleFrontBottom();
+    public void CycleBackTop() => _presenter?.CycleBackTop();
+    public void CycleBackCenter() => _presenter?.CycleBackCenter();
+    public void CycleBackBottom() => _presenter?.CycleBackBottom();
+    public void CycleTeamPosture() => _presenter?.CycleTeamPosture();
 
     public void DismissFirstHero()
     {
-        if (!EnsureReady()) return;
+        if (!EnsureSessionReady())
+        {
+            return;
+        }
+
         var heroId = _root.SessionState.Profile.Heroes.Count > 1
             ? _root.SessionState.Profile.Heroes.Last().HeroId
             : null;
         if (heroId == null)
         {
-            Refresh("Dismiss할 유닛이 없습니다.");
+            _presenter?.Refresh("Dismiss할 유닛이 없습니다.");
             return;
         }
 
         var result = _root.SessionState.DismissHero(heroId);
-        Refresh(result.IsSuccess
+        _presenter?.Refresh(result.IsSuccess
             ? Localize(GameLocalizationTables.UITown, "ui.town.status.dismiss_success", "Hero dismissed.")
             : result.Error ?? "Dismiss failed.");
     }
 
     public void RetrainFirstHero()
     {
-        if (!EnsureReady()) return;
+        if (!EnsureSessionReady())
+        {
+            return;
+        }
+
         var heroId = _root.SessionState.Profile.Heroes.FirstOrDefault()?.HeroId;
         if (heroId == null)
         {
-            Refresh("Retrain할 유닛이 없습니다.");
+            _presenter?.Refresh("Retrain할 유닛이 없습니다.");
             return;
         }
 
         var result = _root.SessionState.RetrainHero(heroId, SM.Core.Contracts.RetrainOperationKind.RerollFlexActive);
-        Refresh(result.IsSuccess
+        _presenter?.Refresh(result.IsSuccess
             ? Localize(GameLocalizationTables.UITown, "ui.town.status.retrain_success", "Hero retrained.")
             : result.Error ?? "Retrain failed.");
     }
 
     public void RefitFirstItem()
     {
-        if (!EnsureReady()) return;
-        var item = _root.SessionState.Profile.Inventory.FirstOrDefault(
-            i => i.AffixIds != null && i.AffixIds.Count > 0);
+        if (!EnsureSessionReady())
+        {
+            return;
+        }
+
+        var item = _root.SessionState.Profile.Inventory.FirstOrDefault(i => i.AffixIds != null && i.AffixIds.Count > 0);
         if (item == null)
         {
-            Refresh("Refit할 아이템이 없습니다.");
+            _presenter?.Refresh("Refit할 아이템이 없습니다.");
             return;
         }
 
         var result = _root.SessionState.RefitItem(item.ItemInstanceId, 0);
-        Refresh(result.IsSuccess
+        _presenter?.Refresh(result.IsSuccess
             ? Localize(GameLocalizationTables.UITown, "ui.town.status.refit_success", "Item refit complete.")
             : result.Error ?? "Refit failed.");
     }
 
     public void EquipPermanentAugmentDebug()
     {
-        if (!EnsureReady()) return;
+        if (!EnsureSessionReady())
+        {
+            return;
+        }
+
         var slice = _root.CombatContentLookup.GetFirstPlayableSlice();
         var augmentId = slice?.PermanentAugmentIds.FirstOrDefault(
             id => !(_root.SessionState.Profile.PermanentAugmentLoadouts
@@ -199,23 +144,27 @@ public sealed class TownScreenController : MonoBehaviour
                 .Contains(id, StringComparer.Ordinal)));
         if (string.IsNullOrWhiteSpace(augmentId))
         {
-            Refresh("장착할 영구 증강이 없습니다.");
+            _presenter?.Refresh("장착할 영구 증강이 없습니다.");
             return;
         }
 
         var result = _root.SessionState.EquipPermanentAugment(augmentId);
-        Refresh(result.IsSuccess
+        _presenter?.Refresh(result.IsSuccess
             ? Localize(GameLocalizationTables.UITown, "ui.town.status.perm_augment_equipped", "Permanent augment equipped: {0}", augmentId)
             : result.Error ?? "Equip failed.");
     }
 
     public void SelectBoardDebug()
     {
-        if (!EnsureReady()) return;
+        if (!EnsureSessionReady())
+        {
+            return;
+        }
+
         var heroId = _root.SessionState.Profile.Heroes.FirstOrDefault()?.HeroId;
         if (heroId == null)
         {
-            Refresh("보드 선택할 유닛이 없습니다.");
+            _presenter?.Refresh("보드 선택할 유닛이 없습니다.");
             return;
         }
 
@@ -223,41 +172,43 @@ public sealed class TownScreenController : MonoBehaviour
         var boardId = slice?.PassiveBoardIds.FirstOrDefault();
         if (string.IsNullOrWhiteSpace(boardId))
         {
-            Refresh("선택할 패시브 보드가 없습니다.");
+            _presenter?.Refresh("선택할 패시브 보드가 없습니다.");
             return;
         }
 
         var result = _root.SessionState.SelectPassiveBoard(heroId, boardId);
-        Refresh(result.IsSuccess
+        _presenter?.Refresh(result.IsSuccess
             ? Localize(GameLocalizationTables.UITown, "ui.town.status.board_selected", "Passive board selected: {0}", boardId)
             : result.Error ?? "Board selection failed.");
     }
 
-    private void Recruit(int index)
+    private bool EnsureViewReady()
     {
-        if (!EnsureReady()) return;
-
-        var offerCost = index >= 0 && index < _root.SessionState.RecruitOffers.Count
-            ? _root.SessionState.RecruitOffers[index].Metadata.GoldCost
-            : 0;
-        var result = _root.SessionState.Recruit(index);
-        if (result.IsSuccess)
+        if (!EnsureSessionReady())
         {
-            Refresh(Localize(
-                GameLocalizationTables.UITown,
-                "ui.town.status.recruit_success",
-                "Recruited offer {0}. (-{1} Gold)",
-                index + 1,
-                offerCost));
-            return;
+            return false;
         }
 
-        Refresh(result.Error ?? Localize(GameLocalizationTables.UITown, "ui.town.error.recruit_failed", "Failed to recruit the selected offer."));
+        if (panelHost == null)
+        {
+            Debug.LogError("[TownScreenController] Missing RuntimePanelHost reference.");
+            return false;
+        }
+
+        if (_presenter != null)
+        {
+            panelHost.EnsureReady();
+            return true;
+        }
+
+        panelHost.EnsureReady();
+        var view = new TownScreenView(panelHost.Root);
+        _presenter = new TownScreenPresenter(_root, _localization, _contentText, view);
+        return true;
     }
 
-    private bool EnsureReady()
+    private bool EnsureSessionReady()
     {
-        ValidateReferences();
         if (_root != null)
         {
             return true;
@@ -266,268 +217,13 @@ public sealed class TownScreenController : MonoBehaviour
         _root = GameSessionRoot.EnsureInstance();
         if (_root == null)
         {
-            SetStatus("GameSessionRoot가 없습니다.");
+            Debug.LogError("[TownScreenController] GameSessionRoot가 없습니다.");
             return false;
         }
 
+        _localization = _root.Localization;
+        _contentText = new ContentTextResolver(_localization, _root.CombatContentLookup);
         return true;
-    }
-
-    private void ValidateReferences()
-    {
-        AssertText(titleText, nameof(titleText));
-        AssertText(rosterText, nameof(rosterText));
-        AssertText(recruitText, nameof(recruitText));
-        AssertRect(recruitCardsRoot, nameof(recruitCardsRoot));
-        AssertText(squadText, nameof(squadText));
-        AssertText(deployPreviewText, nameof(deployPreviewText));
-        AssertText(currencyText, nameof(currencyText));
-        AssertText(statusText, nameof(statusText));
-    }
-
-    private static void AssertText(Text text, string fieldName)
-    {
-        if (text == null)
-        {
-            Debug.LogError($"[TownScreenController] Missing Text reference: {fieldName}");
-        }
-    }
-
-    private static void AssertRect(RectTransform rectTransform, string fieldName)
-    {
-        if (rectTransform == null)
-        {
-            Debug.LogError($"[TownScreenController] Missing RectTransform reference: {fieldName}");
-        }
-    }
-
-    private void Refresh(string message = "")
-    {
-        if (!EnsureReady()) return;
-
-        var session = _root.SessionState;
-        session.EnsureBattleDeployReady();
-
-        titleText.text = Localize(GameLocalizationTables.UITown, "ui.town.title", "Town Operator UI");
-        currencyText.text = Localize(
-            GameLocalizationTables.UITown,
-            "ui.town.currency.summary",
-            "Gold: {0} | Echo: {1} | Perm Slots: {2}",
-            session.Profile.Currencies.Gold,
-            session.Profile.Currencies.Echo,
-            session.PermanentAugmentSlotCount);
-        rosterText.text = BuildRosterText(session);
-        recruitText.text = BuildRecruitSummary(session);
-        squadText.text = BuildSquadText(session);
-        deployPreviewText.text = BuildDeployPreviewText(session);
-        RefreshRecruitCards(session);
-        _deploymentPanel?.Refresh(session);
-        statusText.text = string.IsNullOrWhiteSpace(message)
-            ? session.CanResumeExpedition
-                ? Localize(GameLocalizationTables.UITown, "ui.town.status.default.resume", "Recruit, save, resume the expedition, or run a quick battle.")
-                : Localize(GameLocalizationTables.UITown, "ui.town.status.default.start", "Recruit, save, start an expedition, or run a quick battle.")
-            : message;
-    }
-
-    private void RefreshRecruitCards(GameSessionState session)
-    {
-        for (var i = 0; i < 4; i++)
-        {
-            var card = recruitCardsRoot.Find($"RecruitCard{i + 1}");
-            if (card == null)
-            {
-                continue;
-            }
-
-            var offer = i < session.RecruitOffers.Count ? session.RecruitOffers[i] : null;
-            SetCardText(card, "TitleText", offer == null ? Localize(GameLocalizationTables.UITown, "ui.town.recruit.empty", "Empty Slot") : _contentText.GetArchetypeName(offer.UnitBlueprintId));
-            SetCardText(card, "BodyText", BuildRecruitCardBody(offer));
-            SetCardText(card, "RecruitButton/Label", Localize(GameLocalizationTables.UITown, "ui.town.action.recruit", "Recruit"));
-        }
-    }
-
-    private void SetStatus(string message)
-    {
-        if (statusText != null)
-        {
-            statusText.text = message;
-        }
-
-        Debug.LogError($"[TownScreenController] {message}");
-    }
-
-    private static void SetCardText(Transform cardRoot, string childName, string value)
-    {
-        var child = cardRoot.Find(childName);
-        if (child == null)
-        {
-            return;
-        }
-
-        var text = child.GetComponent<Text>();
-        if (text != null)
-        {
-            text.text = value;
-        }
-    }
-
-    private string BuildRosterText(GameSessionState session)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.roster.header", "Roster"));
-        foreach (var hero in session.Profile.Heroes)
-        {
-            var inSquad = session.ExpeditionSquadHeroIds.Contains(hero.HeroId)
-                ? Localize(GameLocalizationTables.UITown, "ui.town.roster.tag.expedition", "[Expedition]")
-                : Localize(GameLocalizationTables.UITown, "ui.town.roster.tag.reserve", "[Reserve]");
-            sb.AppendLine($"- {inSquad} {hero.Name} / {_contentText.GetRaceName(hero.RaceId)} / {_contentText.GetClassName(hero.ClassId)}");
-        }
-
-        return sb.ToString();
-    }
-
-    private string BuildRecruitSummary(GameSessionState session)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.header", "Recruit Offers"));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.current_count", "Current offers: {0}", session.RecruitOffers.Count));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.refresh_cost", "Refresh cost: {0} Gold", session.CurrentRecruitRefreshCost));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.free_refresh", "Free refreshes: {0}", session.RecruitPhase.FreeRefreshesRemaining));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.pity.rare", "Rare pity: {0}/3", session.RecruitPity.PacksSinceRarePlusSeen));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.pity.epic", "Epic pity: {0}/8", session.RecruitPity.PacksSinceEpicSeen));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.recruit.scout", "Scout: {0}", session.CanUseScout ? "Available" : "Used"));
-        sb.Append(Localize(GameLocalizationTables.UITown, "ui.town.recruit.roster_count", "Town roster: {0}/{1}", session.Profile.Heroes.Count, SM.Meta.Model.MetaBalanceDefaults.TownRosterCap));
-        return sb.ToString();
-    }
-
-    private string BuildSquadText(GameSessionState session)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.squad.header", "Expedition Squad ({0}/8)", session.ExpeditionSquadHeroIds.Count));
-        foreach (var heroId in session.ExpeditionSquadHeroIds)
-        {
-            var hero = session.Profile.Heroes.FirstOrDefault(x => x.HeroId == heroId);
-            if (hero != null)
-            {
-                sb.AppendLine($"- {hero.Name}");
-            }
-        }
-
-        return sb.ToString();
-    }
-
-    private string BuildDeployPreviewText(GameSessionState session)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.header", "Deploy Preview ({0}/4)", session.BattleDeployHeroIds.Count));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.posture", "Team Posture: {0}", session.SelectedTeamPosture));
-        foreach (var (anchor, heroId) in session.EnumerateDeploymentAssignments())
-        {
-            var hero = session.Profile.Heroes.FirstOrDefault(x => x.HeroId == heroId);
-            var heroName = hero?.Name ?? Localize(GameLocalizationTables.UICommon, "ui.common.empty", "Empty");
-            sb.AppendLine($"- {LocalizeAnchor(anchor)}: {heroName}");
-        }
-
-        sb.AppendLine();
-        if (session.IsQuickBattleSmokeActive)
-        {
-            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.quick_battle_ready", "Quick battle smoke is ready."));
-        }
-        else if (session.CanResumeExpedition)
-        {
-            var nextNode = session.GetSelectedExpeditionNode();
-            var routeLabel = nextNode == null
-                ? Localize(GameLocalizationTables.UITown, "ui.town.deploy.route_needed", "Route selection required")
-                : $"{ResolveExpeditionNodeLabel(nextNode)} -> {ResolveExpeditionNodeReward(nextNode)}";
-            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.resume", "Resume Expedition: {0}", routeLabel));
-        }
-        else
-        {
-            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.quick_battle_safe", "Quick battle does not consume expedition progress."));
-        }
-
-        if (session.LastRewardApplicationSummary.HasValue)
-        {
-            sb.AppendLine(Localize(
-                GameLocalizationTables.UITown,
-                "ui.town.deploy.last_reward",
-                "Last Reward: {0}",
-                session.LastRewardApplicationSummary.Resolve(_localization, _contentText)));
-        }
-
-        if (session.LastExpeditionEffectMessage.HasValue)
-        {
-            sb.AppendLine(Localize(
-                GameLocalizationTables.UITown,
-                "ui.town.deploy.last_effect",
-                "Last Node Effect: {0}",
-                session.LastExpeditionEffectMessage.Resolve(_localization, _contentText)));
-        }
-
-        return sb.ToString();
-    }
-
-    private void CycleAnchor(DeploymentAnchorId anchor)
-    {
-        if (!EnsureReady()) return;
-        _root.SessionState.CycleDeploymentAssignment(anchor);
-        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.anchor_cycled", "{0} deployment updated.", LocalizeAnchor(anchor)));
-    }
-
-    private string BuildRecruitCardBody(RecruitUnitPreview? offer)
-    {
-        if (offer == null)
-        {
-            return Localize(GameLocalizationTables.UITown, "ui.town.recruit.none", "No recruit offer is available.");
-        }
-
-        _root.CombatContentLookup.TryGetArchetype(offer.UnitBlueprintId, out var archetype);
-        CombatArchetypeTemplate? template = null;
-        if (_root.CombatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
-        {
-            snapshot.Archetypes.TryGetValue(offer.UnitBlueprintId, out template);
-        }
-        var slotBadge = offer.Metadata.SlotType switch
-        {
-            SM.Core.Contracts.RecruitOfferSlotType.OnPlan => "[OnPlan]",
-            SM.Core.Contracts.RecruitOfferSlotType.Protected => offer.Metadata.BiasedByScout ? "[Protected][Scout]" : "[Protected]",
-            _ => offer.Metadata.BiasedByScout ? "[Scout]" : $"[{offer.Metadata.SlotType}]",
-        };
-        var formation = archetype?.BehaviorProfile?.FormationLine.ToString() ?? "Unknown";
-        var roleFantasy = string.IsNullOrWhiteSpace(archetype?.RoleTag)
-            ? formation
-            : $"{archetype.RoleTag} / {formation}";
-        var keyTags = template?.RecruitPlanTags?
-            .Where(tag => !string.IsNullOrWhiteSpace(tag))
-            .Take(3)
-            .ToArray() ?? Array.Empty<string>();
-        var counterHints = template?.Governance?.DeclaredCounterTools?
-            .Select(tool => tool.Tool)
-            .Where(tool => !string.IsNullOrWhiteSpace(tool))
-            .Take(2)
-            .ToArray() ?? Array.Empty<string>();
-
-        return string.Join(
-            "\n",
-            $"{slotBadge} {offer.Metadata.Tier} / {offer.Metadata.PlanFit} / {offer.Metadata.GoldCost} Gold",
-            $"{_contentText.GetRaceName(archetype?.Race.Id ?? string.Empty)} / {_contentText.GetClassName(archetype?.Class.Id ?? string.Empty)} / {roleFantasy}",
-            $"Tags: {(keyTags.Length == 0 ? "None" : string.Join(", ", keyTags))}",
-            $"Counter: {(counterHints.Length == 0 ? "None" : string.Join(", ", counterHints))}");
-    }
-
-    private string ResolveExpeditionNodeLabel(ExpeditionNodeViewModel node)
-    {
-        return Localize(GameLocalizationTables.UIExpedition, node.LabelKey, node.Id);
-    }
-
-    private string ResolveExpeditionNodeReward(ExpeditionNodeViewModel node)
-    {
-        return Localize(GameLocalizationTables.UIExpedition, node.PlannedRewardKey, node.Id);
-    }
-
-    private string LocalizeAnchor(DeploymentAnchorId anchor)
-    {
-        return Localize(GameLocalizationTables.UICommon, anchor.ToLocalizationKey(), anchor.ToDisplayName());
     }
 
     private string Localize(string table, string key, string fallback, params object[] args)
@@ -541,6 +237,6 @@ public sealed class TownScreenController : MonoBehaviour
 
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
     {
-        Refresh();
+        _presenter?.Refresh();
     }
 }

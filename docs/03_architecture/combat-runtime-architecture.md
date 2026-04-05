@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-05
+- 최종수정일: 2026-04-06
 - 소스오브트루스: `docs/03_architecture/combat-runtime-architecture.md`
 - 관련문서:
   - `docs/03_architecture/unity-boundaries.md`
@@ -31,13 +31,14 @@
   - `BattleReadModelBuilder`: domain state를 step read model로 변환한다.
 - `SM.Unity`
   - `GameSessionState`: 배치 assignment와 team posture를 session에 유지한다.
+  - `RuntimePanelHost`: battle shell의 runtime panel seam을 소유한다. 현재 backend는 `UIDocument`다.
   - `BattleScreenController`: simulator, timeline, camera를 연결하고 scene flow와 HUD를 오케스트레이션한다.
+  - `BattleScreenPresenter` + `BattleScreenView`: battle shell의 UITK view state와 input binding을 담당한다.
   - `BattleTimelineController`: 시뮬레이션 스텝 전수 녹화, 임의 seek(뒤로/앞으로), play/pause/speed 제어를 담당한다. 순수 C# 클래스다.
   - `BattlePlaybackPolicy`: QuickBattle(상시 조작) / InGame(종료 후 조작) 모드별 플레이백 권한을 판단한다.
   - `BattleCameraController`: 마우스 드래그 패닝, 휠 줌, edge scrolling, 키보드 패닝. 바운드 clamp. 미래 유닛 선택 seam 제공.
-  - `BattleTimelineScrubberView`: 드래그 가능한 progress bar. 사용자 seek 입력을 normalized 값으로 전달한다.
   - `BattlePresentationController`: 이전 step과 현재 step을 받아 actor view를 갱신한다.
-  - `BattleActorView`: 위치 보간, head anchor, overhead UI, pulse 같은 presentation만 담당한다.
+  - `BattleActorView`: 위치 보간, head anchor, overhead UI, floating text, pulse 같은 actor-follow presentation만 담당한다.
   - `UiEventSystemConfigurator` + `UiInputSystemModuleConfigurator`: first playable scene의 `EventSystem`을 `InputSystemUIInputModule` 기준으로 정규화하고, `InputSystem_Actions.inputactions`의 `UI` action map을 canonical binding으로 강제한다.
 
 ## 런타임 흐름
@@ -49,7 +50,7 @@
 5. `BattleReadModelBuilder`가 `BattleSimulationStep`을 만든다.
 6. `BattleTimelineController`가 매 스텝을 녹화하고, seek/play/pause/speed를 관리한다.
 7. `BattleCameraController`가 사용자 입력에 따라 카메라 위치를 갱신한다.
-8. Unity는 이전 step과 현재 step을 보간해서 scene에 반영한다.
+8. `RuntimePanelHost` 아래의 battle shell은 presenter state로 갱신되고, actor-follow overhead는 기존 overlay path로 유지된다.
 9. battle 완료 시 session과 Reward scene flow에 결과만 넘긴다. 스크러버로 리플레이가 가능하다.
 
 ## 경계 규칙
