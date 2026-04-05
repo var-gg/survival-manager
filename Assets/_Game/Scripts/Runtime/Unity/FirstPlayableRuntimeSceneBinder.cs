@@ -155,6 +155,13 @@ public static class FirstPlayableRuntimeSceneBinder
 
     private static void EnsureBattle(Scene scene)
     {
+        // TODO: remove after UI click debugging is complete
+        var debugGo = FindGameObject(scene, "EventSystem");
+        if (debugGo != null)
+        {
+            EnsureComponent<UiRaycastDebugger>(debugGo);
+        }
+
         var presentationGo = FindGameObject(scene, "BattlePresentationRoot");
         var controllerGo = FindGameObject(scene, "BattleScreenController");
         var settingsGo = FindGameObject(scene, "BattleSettingsController");
@@ -170,6 +177,14 @@ public static class FirstPlayableRuntimeSceneBinder
             ["actorOverlayRoot"] = GetComponentFromNamedObject<RectTransform>(scene, "ActorOverlayRoot"),
         });
 
+        // ActorOverlayRoot is a full-screen transparent panel for actor HP bars.
+        // Its Image must not block raycasts, otherwise all buttons beneath it become unclickable.
+        var overlayImage = FindGameObject(scene, "ActorOverlayRoot")?.GetComponent<Image>();
+        if (overlayImage != null)
+        {
+            overlayImage.raycastTarget = false;
+        }
+
         var settingsController = EnsureComponent<BattleSettingsPanelController>(settingsGo);
         Bind(settingsController, new Dictionary<string, Object?>
         {
@@ -181,11 +196,13 @@ public static class FirstPlayableRuntimeSceneBinder
         });
 
         var cameraGo = FindGameObject(scene, "BattleCameraRoot");
-        BattleCameraController? cameraCtrl = null;
-        if (cameraGo != null)
+        if (cameraGo == null)
         {
-            cameraCtrl = EnsureComponent<BattleCameraController>(cameraGo);
+            cameraGo = new GameObject("BattleCameraRoot");
+            SceneManager.MoveGameObjectToScene(cameraGo, scene);
         }
+
+        var cameraCtrl = EnsureComponent<BattleCameraController>(cameraGo);
 
         var controller = EnsureComponent<BattleScreenController>(controllerGo);
         Bind(controller, new Dictionary<string, Object?>
@@ -216,6 +233,21 @@ public static class FirstPlayableRuntimeSceneBinder
         BindButton(scene, "ToggleWorldHpButton", settingsController.ToggleWorldActorHp);
         BindButton(scene, "ToggleOverlayHpButton", settingsController.ToggleOverlayActorHp);
         BindButton(scene, "ToggleTeamSummaryButton", settingsController.ToggleTeamSummary);
+
+        // Scrubber: attach to ProgressTrack (parent of ProgressFill)
+        var progressFillGo = FindGameObject(scene, "ProgressFill");
+        if (progressFillGo != null && progressFillGo.transform.parent != null)
+        {
+            var trackGo = progressFillGo.transform.parent.gameObject;
+            var scrubber = EnsureComponent<BattleTimelineScrubberView>(trackGo);
+            var fillImage = progressFillGo.GetComponent<Image>();
+            var trackRect = trackGo.GetComponent<RectTransform>();
+            if (fillImage != null && trackRect != null)
+            {
+                scrubber.Initialize(fillImage, trackRect, controller.HandleScrubberSeek);
+                controller.SetScrubberView(scrubber);
+            }
+        }
     }
 
     private static void EnsureReward(Scene scene)

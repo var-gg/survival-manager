@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace SM.Unity;
 
@@ -13,8 +15,11 @@ public sealed class BattleCameraController : MonoBehaviour
     private const float MinZoomHeight = 4f;
     private const float MaxZoomHeight = 12f;
 
-    private static readonly Vector2 PanBoundsX = new(-8f, 8f);
-    private static readonly Vector2 PanBoundsZ = new(-4f, 4f);
+    // Ground-plane bounds for the camera look-at point
+    private const float GroundBoundsMinX = -8f;
+    private const float GroundBoundsMaxX = 8f;
+    private const float GroundBoundsMinZ = -4f;
+    private const float GroundBoundsMaxZ = 4f;
 
     private Camera _camera = null!;
     private Vector3 _defaultPosition;
@@ -26,6 +31,16 @@ public sealed class BattleCameraController : MonoBehaviour
     private Vector3 _dragOrigin;
     private bool _isDragging;
     private bool _inputEnabled;
+
+    // Camera-to-ground offset for proper bounds clamping
+    private Vector3 _cameraToGroundOffset;
+
+    // --- New Input System actions (created programmatically) ---
+    private InputAction _pointerPositionAction = null!;
+    private InputAction _rightClickAction = null!;
+    private InputAction _middleClickAction = null!;
+    private InputAction _scrollAction = null!;
+    private InputAction _movePanAction = null!;
 
     public Camera Camera => _camera;
     public bool IsDragging => _isDragging;
@@ -42,11 +57,16 @@ public sealed class BattleCameraController : MonoBehaviour
         _isDragging = false;
         _inputEnabled = true;
 
+        _cameraToGroundOffset = ComputeCameraToGroundOffset(defaultPosition, fixedRotation);
+
         if (_camera != null)
         {
             _camera.transform.position = defaultPosition;
             _camera.transform.rotation = fixedRotation;
         }
+
+        CreateInputActions();
+        EnableInputActions(true);
     }
 
     public void ResetToDefault()
@@ -56,6 +76,7 @@ public sealed class BattleCameraController : MonoBehaviour
         _velocity = Vector3.zero;
         _zoomVelocity = 0f;
         _isDragging = false;
+        _cameraToGroundOffset = ComputeCameraToGroundOffset(_defaultPosition, _fixedRotation);
     }
 
     public void SetInputEnabled(bool enabled)
@@ -65,37 +86,102 @@ public sealed class BattleCameraController : MonoBehaviour
         {
             _isDragging = false;
         }
+
+        EnableInputActions(enabled);
+    }
+
+    private void OnDestroy()
+    {
+        DisposeInputActions();
+    }
+
+    private void CreateInputActions()
+    {
+        _pointerPositionAction = new InputAction("PointerPosition", InputActionType.Value, "<Mouse>/position");
+        _rightClickAction = new InputAction("RightClick", InputActionType.Button, "<Mouse>/rightButton");
+        _middleClickAction = new InputAction("MiddleClick", InputActionType.Button, "<Mouse>/middleButton");
+        _scrollAction = new InputAction("Scroll", InputActionType.Value, "<Mouse>/scroll/y");
+
+        // WASD + Arrow keys composite for camera panning
+        _movePanAction = new InputAction("MovePan", InputActionType.Value);
+        _movePanAction.AddCompositeBinding("2DVector")
+            .With("Up", "<Keyboard>/w")
+            .With("Down", "<Keyboard>/s")
+            .With("Left", "<Keyboard>/a")
+            .With("Right", "<Keyboard>/d");
+        _movePanAction.AddCompositeBinding("2DVector")
+            .With("Up", "<Keyboard>/upArrow")
+            .With("Down", "<Keyboard>/downArrow")
+            .With("Left", "<Keyboard>/leftArrow")
+            .With("Right", "<Keyboard>/rightArrow");
+    }
+
+    private void EnableInputActions(bool enable)
+    {
+        if (_pointerPositionAction == null) return;
+
+        if (enable)
+        {
+            _pointerPositionAction.Enable();
+            _rightClickAction.Enable();
+            _middleClickAction.Enable();
+            _scrollAction.Enable();
+            _movePanAction.Enable();
+        }
+        else
+        {
+            _pointerPositionAction.Disable();
+            _rightClickAction.Disable();
+            _middleClickAction.Disable();
+            _scrollAction.Disable();
+            _movePanAction.Disable();
+        }
+    }
+
+    private void DisposeInputActions()
+    {
+        _pointerPositionAction?.Dispose();
+        _rightClickAction?.Dispose();
+        _middleClickAction?.Dispose();
+        _scrollAction?.Dispose();
+        _movePanAction?.Dispose();
     }
 
     private void LateUpdate()
     {
         if (_camera == null || !_inputEnabled) return;
 
-#if ENABLE_LEGACY_INPUT_MANAGER
         HandleMouseDrag();
         HandleMouseZoom();
         HandleKeyboardPan();
         HandleEdgeScroll();
-#endif
 
         ApplySmoothedMovement();
     }
 
-#if ENABLE_LEGACY_INPUT_MANAGER
     private void HandleMouseDrag()
     {
-        var rightDown = Input.GetMouseButtonDown(1);
-        var middleDown = Input.GetMouseButtonDown(2);
-        var rightHeld = Input.GetMouseButton(1);
-        var middleHeld = Input.GetMouseButton(2);
-        var rightUp = Input.GetMouseButtonUp(1);
-        var middleUp = Input.GetMouseButtonUp(2);
+        var rightPressed = _rightClickAction.WasPressedThisFrame();
+        var middlePressed = _middleClickAction.WasPressedThisFrame();
+        var rightHeld = _rightClickAction.IsPressed();
+        var middleHeld = _middleClickAction.IsPressed();
+        var rightReleased = _rightClickAction.WasReleasedThisFrame();
+        var middleReleased = _middleClickAction.WasReleasedThisFrame();
 
-        if ((rightDown || middleDown) && !_isDragging)
+        if ((rightPressed || middlePressed) && !_isDragging)
         {
-            var groundPoint = ScreenToGroundPlane(Input.mousePosition);
+            // Don't start camera drag if pointer is over a UI element
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
+            var mousePos = _pointerPositionAction.ReadValue<Vector2>();
+            var groundPoint = ScreenToGroundPlane(mousePos);
             if (groundPoint.HasValue)
             {
+                // Snap camera to target to prevent SmoothDamp oscillation during drag
+                SnapCameraToTarget();
                 _dragOrigin = groundPoint.Value;
                 _isDragging = true;
             }
@@ -103,16 +189,19 @@ public sealed class BattleCameraController : MonoBehaviour
 
         if (_isDragging && (rightHeld || middleHeld))
         {
-            var currentPoint = ScreenToGroundPlane(Input.mousePosition);
+            var mousePos = _pointerPositionAction.ReadValue<Vector2>();
+            var currentPoint = ScreenToGroundPlane(mousePos);
             if (currentPoint.HasValue)
             {
                 var delta = _dragOrigin - currentPoint.Value;
                 _targetPosition += delta;
                 ClampTargetPosition();
+                // Snap immediately during drag for responsive feel
+                SnapCameraToTarget();
             }
         }
 
-        if ((rightUp || middleUp) && _isDragging)
+        if ((rightReleased || middleReleased) && _isDragging)
         {
             if (!rightHeld && !middleHeld)
             {
@@ -123,51 +212,55 @@ public sealed class BattleCameraController : MonoBehaviour
 
     private void HandleMouseZoom()
     {
-        var scrollDelta = Input.mouseScrollDelta.y;
+        var scrollDelta = _scrollAction.ReadValue<float>();
         if (Mathf.Abs(scrollDelta) < 0.01f) return;
 
-        _targetZoomHeight -= scrollDelta * ZoomStep;
+        // Normalize scroll delta (New Input System reports larger values)
+        var normalizedScroll = Mathf.Sign(scrollDelta);
+
+        var prevHeight = _targetZoomHeight;
+        _targetZoomHeight -= normalizedScroll * ZoomStep;
         _targetZoomHeight = Mathf.Clamp(_targetZoomHeight, MinZoomHeight, MaxZoomHeight);
 
+        if (Mathf.Abs(_targetZoomHeight - prevHeight) < 0.001f) return;
+
+        // Snap camera to prevent SmoothDamp oscillation during zoom
+        SnapCameraToTarget();
+
         // Zoom toward cursor: shift XZ target slightly toward mouse world position
-        var cursorGround = ScreenToGroundPlane(Input.mousePosition);
+        var mousePos = _pointerPositionAction.ReadValue<Vector2>();
+        var cursorGround = ScreenToGroundPlane(mousePos);
         if (cursorGround.HasValue)
         {
             var directionToCursor = cursorGround.Value - _targetPosition;
             directionToCursor.y = 0f;
-            var zoomInfluence = scrollDelta > 0 ? 0.1f : -0.05f;
+            var zoomInfluence = normalizedScroll > 0 ? 0.1f : -0.05f;
             _targetPosition += directionToCursor * zoomInfluence;
+
+            // Recompute ground offset after zoom height change
+            var futurePos = new Vector3(_targetPosition.x, _targetZoomHeight, _targetPosition.z);
+            _cameraToGroundOffset = ComputeCameraToGroundOffset(futurePos, _fixedRotation);
             ClampTargetPosition();
+            SnapCameraToTarget();
         }
     }
 
     private void HandleKeyboardPan()
     {
-        var moveDir = Vector3.zero;
+        var moveInput = _movePanAction.ReadValue<Vector2>();
+        if (moveInput.sqrMagnitude < 0.01f) return;
 
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-            moveDir.z += 1f;
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-            moveDir.z -= 1f;
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-            moveDir.x -= 1f;
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-            moveDir.x += 1f;
+        // Transform movement direction relative to camera facing (projected on XZ)
+        var camForward = _camera.transform.forward;
+        camForward.y = 0f;
+        camForward.Normalize();
+        var camRight = _camera.transform.right;
+        camRight.y = 0f;
+        camRight.Normalize();
 
-        if (moveDir.sqrMagnitude > 0.01f)
-        {
-            // Transform movement direction relative to camera facing (projected on XZ)
-            var camForward = _camera.transform.forward;
-            camForward.y = 0f;
-            camForward.Normalize();
-            var camRight = _camera.transform.right;
-            camRight.y = 0f;
-            camRight.Normalize();
-
-            var worldDir = camForward * moveDir.z + camRight * moveDir.x;
-            _targetPosition += worldDir.normalized * (PanSpeedKeyboard * Time.deltaTime);
-            ClampTargetPosition();
-        }
+        var worldDir = camForward * moveInput.y + camRight * moveInput.x;
+        _targetPosition += worldDir.normalized * (PanSpeedKeyboard * Time.deltaTime);
+        ClampTargetPosition();
     }
 
     private void HandleEdgeScroll()
@@ -175,7 +268,7 @@ public sealed class BattleCameraController : MonoBehaviour
         if (_isDragging) return;
         if (!Application.isFocused) return;
 
-        var mousePos = Input.mousePosition;
+        var mousePos = _pointerPositionAction.ReadValue<Vector2>();
         var moveDir = Vector3.zero;
 
         if (mousePos.x <= EdgeScrollMargin)
@@ -202,7 +295,6 @@ public sealed class BattleCameraController : MonoBehaviour
             ClampTargetPosition();
         }
     }
-#endif
 
     private void ApplySmoothedMovement()
     {
@@ -213,15 +305,27 @@ public sealed class BattleCameraController : MonoBehaviour
         _camera.transform.rotation = _fixedRotation;
     }
 
-    private void ClampTargetPosition()
+    private void SnapCameraToTarget()
     {
-        _targetPosition.x = Mathf.Clamp(_targetPosition.x, PanBoundsX.x, PanBoundsX.y);
-        _targetPosition.z = Mathf.Clamp(_targetPosition.z, PanBoundsZ.x, PanBoundsZ.y);
+        _camera.transform.position = new Vector3(_targetPosition.x, _targetZoomHeight, _targetPosition.z);
+        _velocity = Vector3.zero;
+        _zoomVelocity = 0f;
     }
 
-    private Vector3? ScreenToGroundPlane(Vector3 screenPoint)
+    private void ClampTargetPosition()
     {
-        var ray = _camera.ScreenPointToRay(screenPoint);
+        // Clamp the ground look-at point (not the camera position) to battlefield bounds
+        var groundX = _targetPosition.x + _cameraToGroundOffset.x;
+        var groundZ = _targetPosition.z + _cameraToGroundOffset.z;
+        groundX = Mathf.Clamp(groundX, GroundBoundsMinX, GroundBoundsMaxX);
+        groundZ = Mathf.Clamp(groundZ, GroundBoundsMinZ, GroundBoundsMaxZ);
+        _targetPosition.x = groundX - _cameraToGroundOffset.x;
+        _targetPosition.z = groundZ - _cameraToGroundOffset.z;
+    }
+
+    private Vector3? ScreenToGroundPlane(Vector2 screenPoint)
+    {
+        var ray = _camera.ScreenPointToRay(new Vector3(screenPoint.x, screenPoint.y, 0f));
         var groundPlane = new Plane(Vector3.up, Vector3.zero);
         if (groundPlane.Raycast(ray, out var distance))
         {
@@ -229,5 +333,18 @@ public sealed class BattleCameraController : MonoBehaviour
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Computes the XZ offset from camera position to where its forward ray hits the Y=0 ground plane.
+    /// Used to clamp the look-at point (not the camera) within battlefield bounds.
+    /// </summary>
+    private static Vector3 ComputeCameraToGroundOffset(Vector3 cameraPos, Quaternion rotation)
+    {
+        var forward = rotation * Vector3.forward;
+        if (Mathf.Abs(forward.y) < 0.001f) return Vector3.zero;
+        var t = -cameraPos.y / forward.y;
+        var groundHit = cameraPos + t * forward;
+        return new Vector3(groundHit.x - cameraPos.x, 0f, groundHit.z - cameraPos.z);
     }
 }
