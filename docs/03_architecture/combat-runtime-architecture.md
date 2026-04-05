@@ -38,6 +38,7 @@
   - `BattleTimelineScrubberView`: 드래그 가능한 progress bar. 사용자 seek 입력을 normalized 값으로 전달한다.
   - `BattlePresentationController`: 이전 step과 현재 step을 받아 actor view를 갱신한다.
   - `BattleActorView`: 위치 보간, head anchor, overhead UI, pulse 같은 presentation만 담당한다.
+  - `UiEventSystemConfigurator` + `UiInputSystemModuleConfigurator`: first playable scene의 `EventSystem`을 `InputSystemUIInputModule` 기준으로 정규화하고, `InputSystem_Actions.inputactions`의 `UI` action map을 canonical binding으로 강제한다.
 
 ## 런타임 흐름
 
@@ -57,6 +58,7 @@
 - Unity는 position interpolation과 feedback만 담당한다.
 - `MonoBehaviour`는 전투 truth를 저장하거나 재판정하지 않는다.
 - NavMesh, physics collision, scene object state는 battle truth source가 아니다.
+- Battle observer UI 입력은 runtime 수동 `onClick.Invoke()`나 `StandaloneInputModule` fallback에 의존하지 않는다. scene/runtime 모두 `InputSystemUIInputModule` + canonical `UI` action map 바인딩을 사용한다.
 
 ## 현재 단순화
 

@@ -162,6 +162,7 @@ public sealed class DeploymentSetupPanelView
         text.fontSize = fontSize;
         text.alignment = alignment;
         text.color = new Color(0.94f, 0.96f, 1f, 1f);
+        text.raycastTarget = false;
 
         var outline = go.AddComponent<Outline>();
         outline.effectColor = new Color(0f, 0f, 0f, 0.85f);

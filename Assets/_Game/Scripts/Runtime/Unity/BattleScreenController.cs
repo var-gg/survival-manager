@@ -24,6 +24,7 @@ public sealed class BattleScreenController : MonoBehaviour
     [SerializeField] private Text resultText = null!;
     [SerializeField] private Text speedText = null!;
     [SerializeField] private Text statusText = null!;
+    [SerializeField] private Text pauseButtonLabel = null!;
     [SerializeField] private Image progressFill = null!;
     [SerializeField] private Image allySummaryPanel = null!;
     [SerializeField] private Image enemySummaryPanel = null!;
@@ -200,9 +201,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _decisiveTimeline.Clear();
         _selectedUnitId = string.Empty;
         presentationController.Initialize(_simulator.CurrentStep);
-        presentationController.SetPaused(false);
         RefreshHud(_simulator.CurrentStep);
-        RefreshSpeedText();
 
         if (cameraController != null)
         {
@@ -254,8 +253,7 @@ public sealed class BattleScreenController : MonoBehaviour
         if (!_policy.CanPause(_timeline.IsFinished)) return;
 
         _timeline.TogglePause();
-        presentationController.SetPaused(_timeline.IsPaused);
-        RefreshSpeedText();
+        RefreshPlaybackUi();
         statusText.text = _timeline.IsPaused
             ? Localize(GameLocalizationTables.UIBattle, "ui.battle.status.paused", "Battle paused")
             : Localize(GameLocalizationTables.UIBattle, "ui.battle.status.resumed", "Battle resumed");
@@ -305,6 +303,7 @@ public sealed class BattleScreenController : MonoBehaviour
         AssertText(resultText, nameof(resultText));
         AssertText(speedText, nameof(speedText));
         AssertText(statusText, nameof(statusText));
+        AssertText(pauseButtonLabel, nameof(pauseButtonLabel));
         AssertImage(progressFill, nameof(progressFill));
         AssertImage(allySummaryPanel, nameof(allySummaryPanel));
         AssertImage(enemySummaryPanel, nameof(enemySummaryPanel));
@@ -349,7 +348,7 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         if (_timeline == null || !_policy.CanControlSpeed(_timeline.IsFinished)) return;
         _timeline.SetSpeed(speed);
-        RefreshSpeedText();
+        RefreshPlaybackUi();
     }
 
     private void RefreshSpeedText()
@@ -359,6 +358,26 @@ public sealed class BattleScreenController : MonoBehaviour
         speedText.text = isPaused
             ? Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.paused", "Speed x{0:0} | Paused", playbackSpeed)
             : Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.active", "Speed x{0:0}", playbackSpeed);
+    }
+
+    private void RefreshPauseButtonLabel()
+    {
+        if (pauseButtonLabel == null)
+        {
+            return;
+        }
+
+        var isPaused = _timeline?.IsPaused ?? false;
+        pauseButtonLabel.text = isPaused
+            ? Localize(GameLocalizationTables.UICommon, "ui.common.resume", "Resume")
+            : Localize(GameLocalizationTables.UICommon, "ui.common.pause", "Pause");
+    }
+
+    private void RefreshPlaybackUi()
+    {
+        presentationController.SetPaused(_timeline?.IsPaused ?? false);
+        RefreshSpeedText();
+        RefreshPauseButtonLabel();
     }
 
     private void UpdateProgressBar(float normalized)
@@ -496,11 +515,9 @@ public sealed class BattleScreenController : MonoBehaviour
 
         presentationController.Initialize(_simulator.CurrentStep);
         presentationController.ApplyOptions(_presentationOptions);
-        presentationController.SetPaused(false);
         settingsPanelController.Initialize(_presentationOptions, ApplyPresentationOptions);
         ApplyPresentationOptions(_presentationOptions);
         RefreshHud(_simulator.CurrentStep);
-        RefreshSpeedText();
 
         if (cameraController != null)
         {
@@ -594,7 +611,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void RefreshStatus(BattleSimulationStep step)
     {
-        RefreshSpeedText();
+        RefreshPlaybackUi();
         var isPaused = _timeline?.IsPaused ?? false;
         var pauseLabel = isPaused
             ? Localize(GameLocalizationTables.UIBattle, "ui.battle.status.pause_suffix", " | Paused")
@@ -845,7 +862,6 @@ public sealed class BattleScreenController : MonoBehaviour
         RefreshHp(currentStep.Units);
         RefreshStatus(currentStep);
         RefreshLogText();
-        RefreshSpeedText();
 
         if (IsBattleFinished)
         {

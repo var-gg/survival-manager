@@ -131,6 +131,10 @@ MonoBehaviour:
     m_Key: ui.common.anchor.unknown
     m_Metadata:
       m_Items: []
+  - m_Id: 2299638613794816
+    m_Key: ui.common.resume
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

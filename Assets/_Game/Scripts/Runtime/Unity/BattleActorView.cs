@@ -369,6 +369,8 @@ public sealed class BattleActorView : MonoBehaviour
         _floatingText.alignment = TextAnchor.MiddleCenter;
         _floatingText.color = Color.clear;
         AddOutline(_floatingText, new Color(0f, 0f, 0f, 0.92f));
+
+        UiGraphicRaycastPolicy.ApplyToHierarchy(_overlayRoot);
     }
 
     private IEnumerator ImpactRoutine(float duration)

@@ -126,6 +126,7 @@ public sealed class GlobalLocalizationOverlayView : MonoBehaviour
         text.fontSize = fontSize;
         text.alignment = alignment;
         text.color = Color.white;
+        text.raycastTarget = false;
         GameFontCatalog.ApplyFont(text);
         return text;
     }

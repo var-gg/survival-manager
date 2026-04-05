@@ -64,6 +64,7 @@ public static class LocalizationFoundationBootstrap
         ["ui.common.return_town"] = ("Town 복귀", "Return Town", false),
         ["ui.common.settings"] = ("설정", "Settings", false),
         ["ui.common.pause"] = ("일시정지", "Pause", false),
+        ["ui.common.resume"] = ("재개", "Resume", false),
         ["ui.common.continue"] = ("계속", "Continue", false),
         ["ui.common.on"] = ("ON", "ON", false),
         ["ui.common.off"] = ("OFF", "OFF", false),

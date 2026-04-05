@@ -55,8 +55,10 @@ public sealed class SceneIntegrityTests
             "SM.Unity::SM.Unity.TownScreenController",
             "m_Name: TownCanvas",
             "m_Name: EventSystem",
+            "Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule",
             "m_Name: RecruitCardsRoot",
             "m_Name: QuickBattleButton");
+        AssertSceneDoesNotContain("Town", "StandaloneInputModule", "UiRaycastDebugger");
     }
 
     [Test]
@@ -75,7 +77,9 @@ public sealed class SceneIntegrityTests
             "m_Name: SettingsPanel",
             "m_Name: ProgressFill",
             "m_Name: BattleCanvas",
-            "m_Name: EventSystem");
+            "m_Name: EventSystem",
+            "Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule");
+        AssertSceneDoesNotContain("Battle", "StandaloneInputModule", "UiRaycastDebugger");
     }
 
     [Test]
@@ -87,7 +91,9 @@ public sealed class SceneIntegrityTests
             "SM.Unity::SM.Unity.RewardScreenController",
             "m_Name: RewardCardsRoot",
             "m_Name: RewardCanvas",
-            "m_Name: EventSystem");
+            "m_Name: EventSystem",
+            "Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule");
+        AssertSceneDoesNotContain("Reward", "StandaloneInputModule", "UiRaycastDebugger");
     }
 
     [Test]
@@ -100,7 +106,9 @@ public sealed class SceneIntegrityTests
             "m_Name: NodeTrackRoot",
             "m_Name: NodeBox1",
             "m_Name: SelectButton",
-            "m_Name: NextBattleButton");
+            "m_Name: NextBattleButton",
+            "Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule");
+        AssertSceneDoesNotContain("Expedition", "StandaloneInputModule", "UiRaycastDebugger");
     }
 
     private static void AssertAssetContains(string assetPath, params string[] fragments)
@@ -143,6 +151,18 @@ public sealed class SceneIntegrityTests
         foreach (var fragment in fragments)
         {
             Assert.That(text, Does.Contain(fragment), $"Observer playable scene contract missing '{fragment}' in {scenePath}");
+        }
+    }
+
+    private static void AssertSceneDoesNotContain(string sceneName, params string[] fragments)
+    {
+        var scenePath = $"Assets/_Game/Scenes/{sceneName}.unity";
+        Assert.That(File.Exists(scenePath), Is.True, $"Playable scene asset is missing: {scenePath}");
+
+        var text = File.ReadAllText(scenePath);
+        foreach (var fragment in fragments)
+        {
+            Assert.That(text, Does.Not.Contain(fragment), $"Observer playable scene contract should not contain '{fragment}' in {scenePath}");
         }
     }
 }

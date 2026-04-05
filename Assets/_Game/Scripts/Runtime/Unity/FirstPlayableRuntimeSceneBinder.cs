@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -68,6 +67,7 @@ public static class FirstPlayableRuntimeSceneBinder
         EnsureSharedUiFont(scene);
         EnsureStaticLocalizedText(scene);
         EnsureLocalizationOverlay(scene);
+        UiGraphicRaycastPolicy.ApplyToScene(scene);
     }
 
     private static void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -207,6 +207,7 @@ public static class FirstPlayableRuntimeSceneBinder
             ["resultText"] = GetComponentFromNamedObject<Text>(scene, "ResultText"),
             ["speedText"] = GetComponentFromNamedObject<Text>(scene, "SpeedText"),
             ["statusText"] = GetComponentFromNamedObject<Text>(scene, "StatusText"),
+            ["pauseButtonLabel"] = FindChildGameObject(scene, "PauseButton", "Label")?.GetComponent<Text>(),
             ["progressFill"] = GetComponentFromNamedObject<Image>(scene, "ProgressFill"),
             ["allySummaryPanel"] = GetComponentFromNamedObject<Image>(scene, "LeftPanel"),
             ["enemySummaryPanel"] = GetComponentFromNamedObject<Image>(scene, "RightPanel"),
@@ -242,12 +243,6 @@ public static class FirstPlayableRuntimeSceneBinder
             }
         }
 
-        // TODO: remove after UI click debugging is complete
-        var newEventSystemGo = FindGameObject(scene, "EventSystem");
-        if (newEventSystemGo != null)
-        {
-            EnsureComponent<UiRaycastDebugger>(newEventSystemGo);
-        }
     }
 
     private static void EnsureReward(Scene scene)
@@ -312,7 +307,6 @@ public static class FirstPlayableRuntimeSceneBinder
             case SceneNames.Battle:
                 EnsureLocalizedText(scene, "SettingsTitleText", null, GameLocalizationTables.UIBattle, "ui.battle.settings.title");
                 EnsureLocalizedText(scene, "SettingsButton", "Label", GameLocalizationTables.UICommon, "ui.common.settings");
-                EnsureLocalizedText(scene, "PauseButton", "Label", GameLocalizationTables.UICommon, "ui.common.pause");
                 EnsureLocalizedText(scene, "ContinueButton", "Label", GameLocalizationTables.UICommon, "ui.common.continue");
                 EnsureLocalizedText(scene, "RebattleButton", "Label", GameLocalizationTables.UIBattle, "ui.battle.action.rebattle");
                 EnsureLocalizedText(scene, "ReturnTownButton", "Label", GameLocalizationTables.UICommon, "ui.common.return_town");
@@ -347,30 +341,7 @@ public static class FirstPlayableRuntimeSceneBinder
 
     private static void EnsureEventSystem(Scene scene)
     {
-        var existing = scene.GetRootGameObjects()
-            .SelectMany(root => root.GetComponentsInChildren<EventSystem>(true))
-            .FirstOrDefault();
-
-        GameObject go;
-        if (existing != null)
-        {
-            go = existing.gameObject;
-        }
-        else
-        {
-            go = new GameObject("EventSystem");
-            SceneManager.MoveGameObjectToScene(go, scene);
-            go.AddComponent<EventSystem>();
-        }
-
-        // Destroy the scene's EventSystem entirely and rebuild from scratch.
-        // The scene's InputSystemUIInputModule has broken action references that
-        // prevent click events from reaching buttons.
-        Object.DestroyImmediate(existing.gameObject);
-        go = new GameObject("EventSystem");
-        SceneManager.MoveGameObjectToScene(go, scene);
-        go.AddComponent<EventSystem>();
-        go.AddComponent<StandaloneInputModule>();
+        UiEventSystemConfigurator.EnsureSceneEventSystem(scene);
     }
 
     private static void Bind(Component target, IReadOnlyDictionary<string, Object?> refs)
@@ -408,8 +379,7 @@ public static class FirstPlayableRuntimeSceneBinder
             return;
         }
 
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(action);
+        UiButtonBindingConfigurator.BindExclusive(button, action);
     }
 
     private static GameObject? FindGameObject(Scene scene, string name)

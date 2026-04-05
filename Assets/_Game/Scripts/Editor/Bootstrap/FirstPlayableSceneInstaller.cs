@@ -7,7 +7,6 @@ using UnityEditor;
 using UnityEditor.Events;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -236,7 +235,7 @@ public static class FirstPlayableSceneInstaller
         EnsureButton(canvas.transform, "Speed1Button", "x1", new Vector2(0.5f, 0f), ScaledOffset(-120f, 25f), controller.SetSpeed1);
         EnsureButton(canvas.transform, "Speed2Button", "x2", new Vector2(0.5f, 0f), ScaledOffset(0f, 25f), controller.SetSpeed2);
         EnsureButton(canvas.transform, "Speed4Button", "x4", new Vector2(0.5f, 0f), ScaledOffset(120f, 25f), controller.SetSpeed4);
-        EnsureButton(canvas.transform, "PauseButton", "Pause", new Vector2(0.5f, 0f), ScaledOffset(240f, 25f), controller.TogglePause);
+        var pauseButton = EnsureButton(canvas.transform, "PauseButton", "Pause", new Vector2(0.5f, 0f), ScaledOffset(240f, 25f), controller.TogglePause);
         EnsureButton(canvas.transform, "ContinueButton", "Continue", new Vector2(1f, 0f), ScaledOffset(-90f, 25f), controller.ContinueToReward);
         EnsureButton(canvas.transform, "RebattleButton", "Re-battle", new Vector2(1f, 0f), ScaledOffset(-90f, 75f), controller.RebattleNewSeed);
         EnsureButton(canvas.transform, "ReturnTownButton", "Return Town", new Vector2(1f, 0f), ScaledOffset(-90f, 125f), controller.ReturnToTownDirect);
@@ -250,6 +249,7 @@ public static class FirstPlayableSceneInstaller
             ["resultText"] = result,
             ["speedText"] = speed,
             ["statusText"] = status,
+            ["pauseButtonLabel"] = pauseButton.transform.Find("Label")?.GetComponent<Text>(),
             ["progressFill"] = progressFill,
             ["allySummaryPanel"] = leftPanel,
             ["enemySummaryPanel"] = rightPanel,
@@ -343,6 +343,7 @@ public static class FirstPlayableSceneInstaller
 
     private static void Save(Scene scene)
     {
+        UiGraphicRaycastPolicy.ApplyToScene(scene);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
     }
@@ -541,42 +542,7 @@ public static class FirstPlayableSceneInstaller
 
     private static void EnsureEventSystem()
     {
-        var existing = Object.FindObjectsOfType<EventSystem>();
-        var inputSystemUiType = System.Type.GetType("UnityEngine.InputSystem.UI.InputSystemUIInputModule, Unity.InputSystem");
-        if (existing.Length == 0)
-        {
-            var go = new GameObject("EventSystem");
-            go.AddComponent<EventSystem>();
-            if (inputSystemUiType != null)
-            {
-                EnsureComponent(go, inputSystemUiType);
-            }
-            else
-            {
-                go.AddComponent<StandaloneInputModule>();
-            }
-            return;
-        }
-
-        for (var i = 1; i < existing.Length; i++)
-        {
-            Object.DestroyImmediate(existing[i].gameObject);
-        }
-
-        existing[0].name = "EventSystem";
-        if (inputSystemUiType != null)
-        {
-            var standalone = existing[0].gameObject.GetComponent<StandaloneInputModule>();
-            if (standalone != null)
-            {
-                Object.DestroyImmediate(standalone);
-            }
-
-            EnsureComponent(existing[0].gameObject, inputSystemUiType);
-            return;
-        }
-
-        EnsureComponent<StandaloneInputModule>(existing[0].gameObject);
+        UiEventSystemConfigurator.EnsureSceneEventSystem(SceneManager.GetActiveScene());
     }
 
     private static Camera EnsureCamera(string name, bool tagMain, Vector3 position, Quaternion rotation)
@@ -655,6 +621,7 @@ public static class FirstPlayableSceneInstaller
         labelText.fontSize = ScaledFont(16);
         labelText.alignment = TextAnchor.MiddleCenter;
         labelText.color = Color.white;
+        labelText.raycastTarget = false;
         labelText.text = label;
         return button;
     }
