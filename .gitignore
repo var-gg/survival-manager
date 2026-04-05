@@ -35,3 +35,14 @@ Thumbs.db
 *.tmp
 *.bak
 *.log
+
+# Local agent / Unity transient artifacts
+.claude/
+Saves/
+TestResults-Batch.xml
+Assets/_Recovery/
+Assets/_Recovery.meta
+Assets/UI Toolkit/
+Assets/UI Toolkit.meta
+Assets/Tests/EditMode/Temp/
+Assets/Tests/EditMode/Temp.meta
