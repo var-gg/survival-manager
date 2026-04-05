@@ -8,13 +8,15 @@ public sealed class BattleCameraController : MonoBehaviour
     private const float EdgeScrollSpeed = 10f;
     private const float EdgeScrollMargin = 20f;
     private const float SmoothTime = 0.08f;
-    private const float ZoomSmoothTime = 0.12f;
     private const float ZoomStep = 1.5f;
     private const float MinZoomHeight = 4f;
     private const float MaxZoomHeight = 12f;
 
-    private static readonly Vector2 PanBoundsX = new(-8f, 8f);
-    private static readonly Vector2 PanBoundsZ = new(-4f, 4f);
+    // Ground-plane bounds: battlefield X=[-4.9, 4.9], Z=[-1.8, 1.8] + margin
+    private const float GroundBoundsMinX = -8f;
+    private const float GroundBoundsMaxX = 8f;
+    private const float GroundBoundsMinZ = -5f;
+    private const float GroundBoundsMaxZ = 5f;
 
     private Camera _camera = null!;
     private Vector3 _defaultPosition;
@@ -26,6 +28,12 @@ public sealed class BattleCameraController : MonoBehaviour
     private Vector3 _dragOrigin;
     private bool _isDragging;
     private bool _inputEnabled;
+
+    /// <summary>
+    /// XZ offset from camera position to the ground point it looks at.
+    /// Constant for a fixed rotation. Computed once during Initialize.
+    /// </summary>
+    private Vector3 _cameraToGroundOffset;
 
     public Camera Camera => _camera;
     public bool IsDragging => _isDragging;
@@ -41,6 +49,8 @@ public sealed class BattleCameraController : MonoBehaviour
         _zoomVelocity = 0f;
         _isDragging = false;
         _inputEnabled = true;
+
+        _cameraToGroundOffset = ComputeCameraToGroundOffset(defaultPosition, fixedRotation);
 
         if (_camera != null)
         {
@@ -95,6 +105,8 @@ public sealed class BattleCameraController : MonoBehaviour
             {
                 _dragOrigin = groundPoint.Value;
                 _isDragging = true;
+                // Snap camera to target so ray math stays consistent
+                SnapCameraToTarget();
             }
         }
 
@@ -106,6 +118,8 @@ public sealed class BattleCameraController : MonoBehaviour
                 var delta = _dragOrigin - currentPoint.Value;
                 _targetPosition += delta;
                 ClampTargetPosition();
+                // Apply immediately so next frame's ray is from the correct position
+                SnapCameraToTarget();
             }
         }
 
@@ -126,7 +140,7 @@ public sealed class BattleCameraController : MonoBehaviour
         _targetZoomHeight -= scrollDelta * ZoomStep;
         _targetZoomHeight = Mathf.Clamp(_targetZoomHeight, MinZoomHeight, MaxZoomHeight);
 
-        // Zoom toward cursor: shift XZ target slightly toward mouse world position
+        // Zoom toward cursor
         var cursorGround = ScreenToGroundPlane(Input.mousePosition);
         if (cursorGround.HasValue)
         {
@@ -136,6 +150,9 @@ public sealed class BattleCameraController : MonoBehaviour
             _targetPosition += directionToCursor * zoomInfluence;
             ClampTargetPosition();
         }
+
+        // Snap so next scroll frame's ray is from the updated height
+        SnapCameraToTarget();
     }
 
     private void HandleKeyboardPan()
@@ -153,7 +170,6 @@ public sealed class BattleCameraController : MonoBehaviour
 
         if (moveDir.sqrMagnitude > 0.01f)
         {
-            // Transform movement direction relative to camera facing (projected on XZ)
             var camForward = _camera.transform.forward;
             camForward.y = 0f;
             camForward.Normalize();
@@ -202,6 +218,12 @@ public sealed class BattleCameraController : MonoBehaviour
 
     private void ApplySmoothedMovement()
     {
+        if (_isDragging)
+        {
+            // During drag, camera is already snapped — skip smoothing
+            return;
+        }
+
         var currentPos = _camera.transform.position;
         var desiredPos = new Vector3(_targetPosition.x, _targetZoomHeight, _targetPosition.z);
         var smoothed = Vector3.SmoothDamp(currentPos, desiredPos, ref _velocity, SmoothTime);
@@ -209,10 +231,47 @@ public sealed class BattleCameraController : MonoBehaviour
         _camera.transform.rotation = _fixedRotation;
     }
 
+    private void SnapCameraToTarget()
+    {
+        _camera.transform.position = new Vector3(_targetPosition.x, _targetZoomHeight, _targetPosition.z);
+        _velocity = Vector3.zero;
+    }
+
+    /// <summary>
+    /// Clamp so that the ground point the camera looks at stays within battlefield bounds.
+    /// </summary>
     private void ClampTargetPosition()
     {
-        _targetPosition.x = Mathf.Clamp(_targetPosition.x, PanBoundsX.x, PanBoundsX.y);
-        _targetPosition.z = Mathf.Clamp(_targetPosition.z, PanBoundsZ.x, PanBoundsZ.y);
+        // Where the camera would look at on the ground with the current _targetPosition
+        var groundX = _targetPosition.x + _cameraToGroundOffset.x;
+        var groundZ = _targetPosition.z + _cameraToGroundOffset.z;
+
+        // Clamp the ground look-at point to battlefield bounds
+        groundX = Mathf.Clamp(groundX, GroundBoundsMinX, GroundBoundsMaxX);
+        groundZ = Mathf.Clamp(groundZ, GroundBoundsMinZ, GroundBoundsMaxZ);
+
+        // Translate back to camera position
+        _targetPosition.x = groundX - _cameraToGroundOffset.x;
+        _targetPosition.z = groundZ - _cameraToGroundOffset.z;
+    }
+
+    /// <summary>
+    /// Compute the XZ offset from a camera position to where it hits the Y=0 ground plane.
+    /// For a fixed rotation this is constant regardless of camera position.
+    /// </summary>
+    private static Vector3 ComputeCameraToGroundOffset(Vector3 cameraPos, Quaternion rotation)
+    {
+        var forward = rotation * Vector3.forward;
+        if (Mathf.Abs(forward.y) < 0.001f)
+        {
+            return Vector3.zero;
+        }
+
+        // Ray from camera along forward direction: P = cameraPos + t * forward
+        // Solve for Y=0: cameraPos.y + t * forward.y = 0
+        var t = -cameraPos.y / forward.y;
+        var groundHit = cameraPos + t * forward;
+        return new Vector3(groundHit.x - cameraPos.x, 0f, groundHit.z - cameraPos.z);
     }
 
     private Vector3? ScreenToGroundPlane(Vector3 screenPoint)
