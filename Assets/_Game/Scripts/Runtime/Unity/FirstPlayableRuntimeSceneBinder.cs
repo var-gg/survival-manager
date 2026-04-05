@@ -155,13 +155,6 @@ public static class FirstPlayableRuntimeSceneBinder
 
     private static void EnsureBattle(Scene scene)
     {
-        // TODO: remove after UI click debugging is complete
-        var debugGo = FindGameObject(scene, "EventSystem");
-        if (debugGo != null)
-        {
-            EnsureComponent<UiRaycastDebugger>(debugGo);
-        }
-
         var presentationGo = FindGameObject(scene, "BattlePresentationRoot");
         var controllerGo = FindGameObject(scene, "BattleScreenController");
         var settingsGo = FindGameObject(scene, "BattleSettingsController");
@@ -247,6 +240,13 @@ public static class FirstPlayableRuntimeSceneBinder
                 scrubber.Initialize(fillImage, trackRect, controller.HandleScrubberSeek);
                 controller.SetScrubberView(scrubber);
             }
+        }
+
+        // TODO: remove after UI click debugging is complete
+        var newEventSystemGo = FindGameObject(scene, "EventSystem");
+        if (newEventSystemGo != null)
+        {
+            EnsureComponent<UiRaycastDebugger>(newEventSystemGo);
         }
     }
 
@@ -363,36 +363,14 @@ public static class FirstPlayableRuntimeSceneBinder
             go.AddComponent<EventSystem>();
         }
 
-        // InputSystemUIInputModule needs its action asset explicitly enabled
-        // to process pointer events. Without this, raycasts succeed but clicks
-        // never reach Button.onClick.
-        var inputSystemUiType = Type.GetType("UnityEngine.InputSystem.UI.InputSystemUIInputModule, Unity.InputSystem");
-        if (inputSystemUiType != null)
-        {
-            var module = go.GetComponent(inputSystemUiType);
-            if (module != null)
-            {
-                var assetProp = inputSystemUiType.GetProperty("actionsAsset");
-                var asset = assetProp?.GetValue(module);
-                var enableMethod = asset?.GetType().GetMethod("Enable");
-                enableMethod?.Invoke(asset, null);
-            }
-            else
-            {
-                // Fallback: no InputSystemUIInputModule, use StandaloneInputModule
-                if (go.GetComponent<StandaloneInputModule>() == null)
-                {
-                    go.AddComponent<StandaloneInputModule>();
-                }
-            }
-        }
-        else
-        {
-            if (go.GetComponent<StandaloneInputModule>() == null)
-            {
-                go.AddComponent<StandaloneInputModule>();
-            }
-        }
+        // Destroy the scene's EventSystem entirely and rebuild from scratch.
+        // The scene's InputSystemUIInputModule has broken action references that
+        // prevent click events from reaching buttons.
+        Object.DestroyImmediate(existing.gameObject);
+        go = new GameObject("EventSystem");
+        SceneManager.MoveGameObjectToScene(go, scene);
+        go.AddComponent<EventSystem>();
+        go.AddComponent<StandaloneInputModule>();
     }
 
     private static void Bind(Component target, IReadOnlyDictionary<string, Object?> refs)
