@@ -350,21 +350,33 @@ public static class FirstPlayableRuntimeSceneBinder
         var existing = scene.GetRootGameObjects()
             .SelectMany(root => root.GetComponentsInChildren<EventSystem>(true))
             .FirstOrDefault();
+
+        GameObject go;
         if (existing != null)
         {
-            return;
+            go = existing.gameObject;
+        }
+        else
+        {
+            go = new GameObject("EventSystem");
+            SceneManager.MoveGameObjectToScene(go, scene);
+            go.AddComponent<EventSystem>();
         }
 
-        var go = new GameObject("EventSystem");
-        SceneManager.MoveGameObjectToScene(go, scene);
-        go.AddComponent<EventSystem>();
-
+        // InputSystemUIInputModule's action references can silently break,
+        // causing UI clicks to not register even though raycasts succeed.
+        // StandaloneInputModule uses Legacy Input for UI events — reliable in Both mode.
         var inputSystemUiType = Type.GetType("UnityEngine.InputSystem.UI.InputSystemUIInputModule, Unity.InputSystem");
         if (inputSystemUiType != null)
         {
-            go.AddComponent(inputSystemUiType);
+            var inputSystemModule = go.GetComponent(inputSystemUiType);
+            if (inputSystemModule != null)
+            {
+                Object.Destroy(inputSystemModule);
+            }
         }
-        else
+
+        if (go.GetComponent<StandaloneInputModule>() == null)
         {
             go.AddComponent<StandaloneInputModule>();
         }
