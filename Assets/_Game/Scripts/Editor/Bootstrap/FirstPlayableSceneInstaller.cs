@@ -201,7 +201,9 @@ public static class FirstPlayableSceneInstaller
         var settingsControllerGo = ResetUiChild(canvas.transform, "BattleSettingsController");
         var settingsController = EnsureComponent<BattleSettingsPanelController>(settingsControllerGo);
 
-        var actorOverlayRoot = EnsurePanel(presentationGo.transform, "ActorOverlayRoot", new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0f)).rectTransform;
+        var actorOverlayImage = EnsurePanel(presentationGo.transform, "ActorOverlayRoot", new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0f));
+        actorOverlayImage.raycastTarget = false;
+        var actorOverlayRoot = actorOverlayImage.rectTransform;
         actorOverlayRoot.offsetMin = Vector2.zero;
         actorOverlayRoot.offsetMax = Vector2.zero;
 

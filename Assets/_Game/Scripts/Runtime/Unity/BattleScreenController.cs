@@ -7,6 +7,7 @@ using SM.Combat.Services;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace SM.Unity;
@@ -29,7 +30,8 @@ public sealed class BattleScreenController : MonoBehaviour
     [SerializeField] private BattlePresentationController presentationController = null!;
     [SerializeField] private BattleSettingsPanelController settingsPanelController = null!;
     [SerializeField] private BattleCameraController cameraController = null!;
-    [SerializeField] private BattleTimelineScrubberView scrubberView = null!;
+
+    private BattleTimelineScrubberView? _scrubberView;
 
     private readonly List<BattleEvent> _recentLogs = new();
     private readonly List<string> _decisiveTimeline = new();
@@ -46,6 +48,13 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private BattleTimelineController? _timeline;
     private BattlePlaybackPolicy _policy = new(BattlePlaybackMode.QuickBattle);
+
+    // --- New Input System actions for keyboard shortcuts ---
+    private InputAction _toggleDebugAction = null!;
+    private InputAction _stepOnceAction = null!;
+    private InputAction _restartAction = null!;
+    private InputAction _cycleUnitAction = null!;
+    private InputAction _togglePauseAction = null!;
 
     public bool IsPlaybackFinished => _timeline?.IsFinished ?? false;
     public bool IsBattleFinished => _timeline?.IsFinished ?? false;
@@ -68,6 +77,8 @@ public sealed class BattleScreenController : MonoBehaviour
         _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Battle);
 
+        CreateInputActions();
+
         if (cameraController != null)
         {
             cameraController.Initialize(DefaultCameraPosition, DefaultCameraRotation);
@@ -86,30 +97,13 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             _localization.LocaleChanged -= HandleLocaleChanged;
         }
+
+        DisposeInputActions();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F3))
-        {
-            _presentationOptions.ToggleDebugOverlay();
-        }
-
-        if (Input.GetKeyDown(KeyCode.F4) && _timeline is { IsPaused: true } && !IsBattleFinished)
-        {
-            _timeline.StepOnce();
-            RefreshAfterSeek();
-        }
-
-        if (Input.GetKeyDown(KeyCode.F5) && _simulator != null)
-        {
-            RestartSameSeed();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Tab) && _timeline?.CurrentStep != null)
-        {
-            CycleSelectedUnit();
-        }
+        HandleKeyboardShortcuts();
 
         if (_timeline == null) return;
 
@@ -132,7 +126,7 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         presentationController.SetBlend(previousStep, currentStep, alpha);
-        UpdateProgressFill(_timeline.NormalizedProgress);
+        UpdateProgressBar(_timeline.NormalizedProgress);
 
         if (_presentationOptions.ShowDebugOverlay)
         {
@@ -161,6 +155,11 @@ public sealed class BattleScreenController : MonoBehaviour
     public void SetSpeed2() => SetSpeed(2f);
     public void SetSpeed4() => SetSpeed(4f);
 
+    public void SetScrubberView(BattleTimelineScrubberView scrubber)
+    {
+        _scrubberView = scrubber;
+    }
+
     public void HandleScrubberSeek(float normalized)
     {
         if (_timeline == null || !_policy.CanSeek(_timeline.IsFinished)) return;
@@ -178,7 +177,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
         presentationController.PushStep(prev, curr);
         presentationController.SetBlend(prev, curr, 1f);
-        UpdateProgressFill(_timeline.NormalizedProgress);
+        UpdateProgressBar(_timeline.NormalizedProgress);
         RefreshHud(curr);
     }
 
@@ -362,15 +361,68 @@ public sealed class BattleScreenController : MonoBehaviour
             : Localize(GameLocalizationTables.UIBattle, "ui.battle.speed.active", "Speed x{0:0}", playbackSpeed);
     }
 
-    private void UpdateProgressFill(float normalized)
+    private void UpdateProgressBar(float normalized)
     {
-        if (scrubberView != null)
+        if (_scrubberView != null)
         {
-            scrubberView.SetFillAmount(normalized);
+            _scrubberView.SetFillAmount(normalized);
         }
-        else if (progressFill != null)
+        else
         {
             progressFill.fillAmount = normalized;
+        }
+    }
+
+    private void CreateInputActions()
+    {
+        _toggleDebugAction = new InputAction("ToggleDebug", InputActionType.Button, "<Keyboard>/f3");
+        _stepOnceAction = new InputAction("StepOnce", InputActionType.Button, "<Keyboard>/f4");
+        _restartAction = new InputAction("Restart", InputActionType.Button, "<Keyboard>/f5");
+        _cycleUnitAction = new InputAction("CycleUnit", InputActionType.Button, "<Keyboard>/tab");
+        _togglePauseAction = new InputAction("TogglePause", InputActionType.Button, "<Keyboard>/space");
+
+        _toggleDebugAction.Enable();
+        _stepOnceAction.Enable();
+        _restartAction.Enable();
+        _cycleUnitAction.Enable();
+        _togglePauseAction.Enable();
+    }
+
+    private void DisposeInputActions()
+    {
+        _toggleDebugAction?.Dispose();
+        _stepOnceAction?.Dispose();
+        _restartAction?.Dispose();
+        _cycleUnitAction?.Dispose();
+        _togglePauseAction?.Dispose();
+    }
+
+    private void HandleKeyboardShortcuts()
+    {
+        if (_toggleDebugAction.WasPressedThisFrame())
+        {
+            _presentationOptions.ToggleDebugOverlay();
+        }
+
+        if (_stepOnceAction.WasPressedThisFrame() && _timeline is { IsPaused: true } && !IsBattleFinished)
+        {
+            _timeline.StepOnce();
+            RefreshAfterSeek();
+        }
+
+        if (_restartAction.WasPressedThisFrame() && _simulator != null)
+        {
+            RestartSameSeed();
+        }
+
+        if (_cycleUnitAction.WasPressedThisFrame() && _timeline?.CurrentStep != null)
+        {
+            CycleSelectedUnit();
+        }
+
+        if (_togglePauseAction.WasPressedThisFrame())
+        {
+            TogglePause();
         }
     }
 
@@ -390,7 +442,7 @@ public sealed class BattleScreenController : MonoBehaviour
         resultText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.result.in_progress", "Battle in progress");
         statusText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.status.initializing", "Initializing live simulation");
         logText.text = Localize(GameLocalizationTables.UIBattle, "ui.battle.log.preparing", "Preparing battle log");
-        UpdateProgressFill(0f);
+        UpdateProgressBar(0f);
         _battleFinishedHandled = false;
         _totalEventCount = 0;
         _recentLogs.Clear();
@@ -447,13 +499,6 @@ public sealed class BattleScreenController : MonoBehaviour
         presentationController.SetPaused(false);
         settingsPanelController.Initialize(_presentationOptions, ApplyPresentationOptions);
         ApplyPresentationOptions(_presentationOptions);
-
-        if (scrubberView != null)
-        {
-            scrubberView.Initialize(progressFill, progressFill.rectTransform.parent as RectTransform ?? progressFill.rectTransform, HandleScrubberSeek);
-            scrubberView.SetInteractable(_policy.CanSeek(false));
-        }
-
         RefreshHud(_simulator.CurrentStep);
         RefreshSpeedText();
 
@@ -472,12 +517,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
         _battleFinishedHandled = true;
         _timeline.MarkFinished();
-        UpdateProgressFill(1f);
-
-        if (scrubberView != null)
-        {
-            scrubberView.SetInteractable(_policy.CanSeek(true));
-        }
+        UpdateProgressBar(1f);
 
         var currentStep = _timeline.CurrentStep!;
         resultText.text = currentStep.Winner == TeamSide.Ally
