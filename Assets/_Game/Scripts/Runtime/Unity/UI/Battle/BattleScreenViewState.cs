@@ -27,4 +27,5 @@ public sealed record BattleShellViewState(
     float ProgressNormalized,
     bool ShowTeamSummary,
     bool CanContinue,
-    BattleSettingsViewState Settings);
+    BattleSettingsViewState Settings,
+    BattleSelectedUnitViewState? SelectedUnit = null);

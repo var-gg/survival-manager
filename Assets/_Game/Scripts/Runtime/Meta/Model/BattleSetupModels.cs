@@ -22,7 +22,9 @@ public sealed record BattleParticipantSpec(
     IReadOnlyList<string> TemporaryAugmentIds,
     TeamPostureType TeamPosture = TeamPostureType.StandardAdvance,
     string RoleTag = "auto",
-    string OpeningIntent = "opening:standard");
+    string OpeningIntent = "opening:standard",
+    string CharacterId = "",
+    string RoleInstructionId = "");
 
 public sealed record BattleEncounterPlan(
     IReadOnlyList<BattleParticipantSpec> EnemyParticipants,
@@ -75,6 +77,13 @@ public sealed record TeamTacticTemplate(
 public sealed record RoleInstructionTemplate(
     string Id,
     SlotRoleInstruction Instruction);
+
+public sealed record CharacterTemplate(
+    string Id,
+    string RaceId,
+    string ClassId,
+    string DefaultArchetypeId,
+    string DefaultRoleInstructionId);
 
 public sealed record PassiveNodeTemplate(
     string Id,
@@ -242,7 +251,8 @@ public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, DropTableTemplate>? DropTables = null,
     IReadOnlyDictionary<string, LootBundleTemplate>? LootBundles = null,
     IReadOnlyDictionary<string, TraitTokenTemplate>? TraitTokens = null,
-    FirstPlayableSliceDefinition? FirstPlayableSlice = null);
+    FirstPlayableSliceDefinition? FirstPlayableSlice = null,
+    IReadOnlyDictionary<string, CharacterTemplate>? Characters = null);
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,

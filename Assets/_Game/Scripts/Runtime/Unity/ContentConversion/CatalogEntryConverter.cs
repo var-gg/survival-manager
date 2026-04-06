@@ -40,6 +40,16 @@ internal static class CatalogEntryConverter
                 definition.RetreatBias));
     }
 
+    internal static CharacterTemplate BuildCharacterTemplate(CharacterDefinition definition)
+    {
+        return new CharacterTemplate(
+            definition.Id,
+            definition.Race != null ? definition.Race.Id : string.Empty,
+            definition.Class != null ? definition.Class.Id : string.Empty,
+            definition.DefaultArchetype != null ? definition.DefaultArchetype.Id : string.Empty,
+            definition.DefaultRoleInstruction != null ? definition.DefaultRoleInstruction.Id : string.Empty);
+    }
+
     internal static PassiveNodeTemplate BuildPassiveNodeTemplate(PassiveNodeDefinition definition)
     {
         return new PassiveNodeTemplate(

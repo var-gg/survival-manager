@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Content_Characters_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: ed32f6075d2a4ae5bd9f76bce0162583, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 1702100001000
+    m_Localized: Warden
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001001
+    m_Localized: Base character identity for Warden
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001002
+    m_Localized: Guardian
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001003
+    m_Localized: Base character identity for Guardian
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001004
+    m_Localized: Bulwark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001005
+    m_Localized: Base character identity for Bulwark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001006
+    m_Localized: Slayer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001007
+    m_Localized: Base character identity for Slayer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001008
+    m_Localized: Raider
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001009
+    m_Localized: Base character identity for Raider
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001010
+    m_Localized: Reaver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001011
+    m_Localized: Base character identity for Reaver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001012
+    m_Localized: Hunter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001013
+    m_Localized: Base character identity for Hunter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001014
+    m_Localized: Scout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001015
+    m_Localized: Base character identity for Scout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001016
+    m_Localized: Marksman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001017
+    m_Localized: Base character identity for Marksman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001018
+    m_Localized: Priest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001019
+    m_Localized: Base character identity for Priest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001020
+    m_Localized: Hexer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001021
+    m_Localized: Base character identity for Hexer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001022
+    m_Localized: Shaman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001023
+    m_Localized: Base character identity for Shaman
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

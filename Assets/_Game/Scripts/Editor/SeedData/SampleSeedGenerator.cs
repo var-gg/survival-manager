@@ -41,6 +41,10 @@ public static class SampleSeedGenerator
         var archetypes = CreateArchetypes(races, classes, traitPools, skills, footprintProfiles, behaviorProfiles, mobilityProfiles);
         var skillCatalog = LoadDefinitionsById<SkillDefinitionAsset>($"{ResourcesRoot}/Skills");
         PatchLaunchFloorArchetypes(races, classes, traitPools, skillCatalog, stableTags, footprintProfiles, behaviorProfiles, mobilityProfiles);
+        var patchedArchetypes = LoadDefinitionsById<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes");
+        var roleInstructions = LoadDefinitionsById<RoleInstructionDefinition>($"{ResourcesRoot}/RoleInstructions");
+        EnsureRoleGlossaryLocalization(roleInstructions);
+        var characters = CreateCharacters(patchedArchetypes, roleInstructions);
         CreateAugments();
         CreateItems();
         CreateAffixes();
@@ -58,7 +62,7 @@ public static class SampleSeedGenerator
         ReimportCanonicalAssets();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
-        Debug.Log($"SM sample content generated under Resources. Root={ResourcesRoot}, Stats={stats.Count}, Races={races.Count}, Classes={classes.Count}, Skills={skills.Count}, Archetypes={archetypes.Count}");
+        Debug.Log($"SM sample content generated under Resources. Root={ResourcesRoot}, Stats={stats.Count}, Races={races.Count}, Classes={classes.Count}, Skills={skills.Count}, Archetypes={patchedArchetypes.Count}, Characters={characters.Count}");
     }
 
     [MenuItem("SM/Setup/Migrate Legacy Sample Content")]
@@ -152,6 +156,7 @@ public static class SampleSeedGenerator
         CheckMinimum(failures, "Stats/stat_max_health.asset", HasCanonicalAsset<StatDefinition>($"{ResourcesRoot}/Stats/stat_max_health.asset", stat => stat.Id, "max_health"));
         CheckMinimum(failures, "Races/race_human.asset", HasCanonicalAsset<RaceDefinition>($"{ResourcesRoot}/Races/race_human.asset", race => race.Id, "human"));
         CheckMinimum(failures, "Classes/class_vanguard.asset", HasCanonicalAsset<ClassDefinition>($"{ResourcesRoot}/Classes/class_vanguard.asset", @class => @class.Id, "vanguard"));
+        CheckMinimum(failures, "Characters/character_warden.asset", HasCanonicalAsset<CharacterDefinition>($"{ResourcesRoot}/Characters/character_warden.asset", character => character.Id, "warden"));
         CheckMinimum(failures, "FootprintProfiles/footprint_vanguard.asset", HasCanonicalAsset<FootprintProfileDefinition>($"{ResourcesRoot}/FootprintProfiles/footprint_vanguard.asset", profile => profile.EngagementSlotCount > 0));
         CheckMinimum(failures, "BehaviorProfiles/behavior_vanguard.asset", HasCanonicalAsset<BehaviorProfileDefinition>($"{ResourcesRoot}/BehaviorProfiles/behavior_vanguard.asset", profile => profile.ReevaluationInterval > 0f));
         CheckMinimum(failures, "MobilityProfiles/mobility_ranger.asset", HasCanonicalAsset<MobilityProfileDefinition>($"{ResourcesRoot}/MobilityProfiles/mobility_ranger.asset", profile => profile.Distance > 0f));
@@ -188,6 +193,7 @@ public static class SampleSeedGenerator
             $"{ResourcesRoot}/Stats",
             $"{ResourcesRoot}/Races",
             $"{ResourcesRoot}/Classes",
+            $"{ResourcesRoot}/Characters",
             $"{ResourcesRoot}/FootprintProfiles",
             $"{ResourcesRoot}/BehaviorProfiles",
             $"{ResourcesRoot}/MobilityProfiles",
@@ -817,6 +823,84 @@ public static class SampleSeedGenerator
             a.TacticPreset = BuildTacticPreset(@class.Id, skill);
             UpsertStringEntry(ContentLocalizationTables.Archetypes, a.NameKey, ResolveArchetypeKoName(id), name);
         });
+    }
+
+    private static Dictionary<string, CharacterDefinition> CreateCharacters(
+        IReadOnlyDictionary<string, UnitArchetypeDefinition> archetypes,
+        IReadOnlyDictionary<string, RoleInstructionDefinition> roleInstructions)
+    {
+        var result = new Dictionary<string, CharacterDefinition>(StringComparer.Ordinal);
+
+        foreach (var archetypeId in new[] { "warden", "guardian", "bulwark", "slayer", "raider", "reaver", "hunter", "scout", "marksman", "priest", "hexer", "shaman" })
+        {
+            if (!archetypes.TryGetValue(archetypeId, out var archetype))
+            {
+                continue;
+            }
+
+            var defaultRoleInstructionId = ResolveDefaultRoleInstructionId(archetype.Class != null ? archetype.Class.Id : string.Empty, (DeploymentAnchorId)(int)archetype.DefaultAnchor);
+            roleInstructions.TryGetValue(defaultRoleInstructionId, out var roleInstruction);
+
+            var asset = CreateAsset<CharacterDefinition>($"{ResourcesRoot}/Characters/character_{archetypeId}.asset", character =>
+            {
+                character.Id = archetypeId;
+                character.NameKey = ContentLocalizationTables.BuildCharacterNameKey(archetypeId);
+                character.DescriptionKey = ContentLocalizationTables.BuildCharacterDescriptionKey(archetypeId);
+                character.Race = archetype.Race;
+                character.Class = archetype.Class;
+                character.DefaultArchetype = archetype;
+                character.DefaultRoleInstruction = roleInstruction;
+                UpsertStringEntry(ContentLocalizationTables.Characters, character.NameKey, ResolveCharacterKoName(archetypeId), ResolveCharacterEnName(archetypeId));
+                UpsertStringEntry(ContentLocalizationTables.Characters, character.DescriptionKey, $"{ResolveCharacterKoName(archetypeId)} 기본 캐릭터", $"{ResolveCharacterEnName(archetypeId)} character identity");
+            });
+
+            result[archetypeId] = asset;
+        }
+
+        return result;
+    }
+
+    private static void EnsureRoleGlossaryLocalization(IReadOnlyDictionary<string, RoleInstructionDefinition> roleInstructions)
+    {
+        var entries = new (string Id, string Ko, string En)[]
+        {
+            ("anchor", "전열 고정", "Anchor"),
+            ("bruiser", "난전", "Bruiser"),
+            ("carry", "화력", "Carry"),
+            ("support", "지원", "Support"),
+            ("frontline", "전열", "Frontline"),
+            ("backline", "후열", "Backline"),
+            ("striker", "타격", "Striker"),
+        };
+
+        foreach (var entry in entries)
+        {
+            var key = ContentLocalizationTables.BuildRoleNameKey(entry.Id);
+            UpsertStringEntry(ContentLocalizationTables.Roles, key, entry.Ko, entry.En);
+        }
+
+        foreach (var roleInstruction in roleInstructions.Values)
+        {
+            roleInstruction.NameKey = ContentLocalizationTables.BuildRoleNameKey(roleInstruction.Id);
+            UpsertStringEntry(
+                ContentLocalizationTables.Roles,
+                roleInstruction.NameKey,
+                RoleGlossary.GetLocalizedRoleTagFallback(roleInstruction.RoleTag, "ko"),
+                RoleGlossary.GetLocalizedRoleTagFallback(roleInstruction.RoleTag, "en"));
+            EditorUtility.SetDirty(roleInstruction);
+        }
+    }
+
+    private static string ResolveDefaultRoleInstructionId(string classId, DeploymentAnchorId anchor)
+    {
+        return classId switch
+        {
+            "vanguard" => "anchor",
+            "duelist" => "bruiser",
+            "ranger" => "carry",
+            "mystic" => "support",
+            _ => anchor.IsFrontRow() ? "frontline" : "backline",
+        };
     }
 
     private static void PatchLaunchFloorArchetypes(
@@ -3131,12 +3215,41 @@ public static class SampleSeedGenerator
         {
             "warden" => "감시자",
             "guardian" => "수호자",
+            "bulwark" => "방벽수",
             "slayer" => "학살자",
             "raider" => "약탈자",
+            "reaver" => "절단자",
             "hunter" => "사냥꾼",
             "scout" => "정찰병",
+            "marksman" => "명사수",
             "priest" => "사제",
             "hexer" => "주술사",
+            "shaman" => "주술승",
+            _ => id
+        };
+    }
+
+    private static string ResolveCharacterKoName(string id)
+    {
+        return ResolveArchetypeKoName(id);
+    }
+
+    private static string ResolveCharacterEnName(string id)
+    {
+        return id switch
+        {
+            "warden" => "Warden",
+            "guardian" => "Guardian",
+            "bulwark" => "Bulwark",
+            "slayer" => "Slayer",
+            "raider" => "Raider",
+            "reaver" => "Reaver",
+            "hunter" => "Hunter",
+            "scout" => "Scout",
+            "marksman" => "Marksman",
+            "priest" => "Priest",
+            "hexer" => "Hexer",
+            "shaman" => "Shaman",
             _ => id
         };
     }

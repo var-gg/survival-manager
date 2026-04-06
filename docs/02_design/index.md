@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-06
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -74,6 +74,7 @@
 - `meta/pvp-boundary.md`: PVP 경계
 - `meta/pvp-ruleset-and-arena-loop.md`: async arena ruleset과 season cadence
 - `meta/session-realm-and-official-online-boundary.md`: `OfflineLocal` / `OnlineAuthoritative` session realm과 공식 온라인 경계
+- `meta/character-race-class-role-archetype-taxonomy.md`: `Character / Race / Class / Role / Archetype` taxonomy와 launch floor identity layer
 - `meta/synergy-breakpoints-and-soft-counters.md`: 출시 기준 2/4 breakpoint와 soft counter
 - `meta/synergy-family-catalog.md`: 7 family 2/4 payload 카탈로그
 - `meta/synergy-and-augment-taxonomy.md`: synergy / augment 역할 경계, 2/4 threshold, rarity

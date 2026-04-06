@@ -60,6 +60,16 @@
     width: 260px;
 }
 
+.battle-screen .battle-shell__selected-unit {
+    margin-bottom: 12px;
+    min-height: 184px;
+}
+
+.battle-screen .battle-shell__selected-body {
+    white-space: normal;
+    unity-text-align: upper-left;
+}
+
 .battle-screen .panel {
     background-color: rgba(20, 27, 40, 0.74);
 }

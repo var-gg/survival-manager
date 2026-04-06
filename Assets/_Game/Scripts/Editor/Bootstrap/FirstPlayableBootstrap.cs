@@ -19,6 +19,21 @@ public static class FirstPlayableBootstrap
     private const string QuickBattleInspectorRestoreKey = "SM.QuickBattleRestoreInspector";
     private const string QuickBattleConfigFolder = "Assets/Resources/_Game/Content/Definitions/QuickBattle";
     private const string QuickBattleConfigAssetPath = "Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset";
+    private static readonly (string HeroId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultQuickBattleAllySlots =
+    {
+        ("hero-1", SM.Combat.Model.DeploymentAnchorId.FrontCenter),
+        ("hero-3", SM.Combat.Model.DeploymentAnchorId.FrontBottom),
+        ("hero-5", SM.Combat.Model.DeploymentAnchorId.BackTop),
+        ("hero-7", SM.Combat.Model.DeploymentAnchorId.BackBottom),
+    };
+
+    private static readonly (string ParticipantId, string DisplayName, string CharacterId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultQuickBattleEnemySlots =
+    {
+        ("enemy_guardian", "Enemy Guardian", "guardian", SM.Combat.Model.DeploymentAnchorId.FrontTop),
+        ("enemy_raider", "Enemy Raider", "raider", SM.Combat.Model.DeploymentAnchorId.FrontBottom),
+        ("enemy_hunter", "Enemy Hunter", "hunter", SM.Combat.Model.DeploymentAnchorId.BackTop),
+        ("enemy_hexer", "Enemy Hexer", "hexer", SM.Combat.Model.DeploymentAnchorId.BackBottom),
+    };
 
     static FirstPlayableBootstrap()
     {
@@ -128,6 +143,7 @@ public static class FirstPlayableBootstrap
         var existing = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(QuickBattleConfigAssetPath);
         if (existing != null)
         {
+            RepairQuickBattleConfig(existing);
             return existing;
         }
 
@@ -138,20 +154,103 @@ public static class FirstPlayableBootstrap
         }
 
         var config = ScriptableObject.CreateInstance<SM.Unity.Sandbox.CombatSandboxConfig>();
-        config.Id = "quick_battle_default";
-        config.DisplayName = "Quick Battle Default";
-        config.Seed = 42;
-        config.EnemySlots = new System.Collections.Generic.List<SM.Unity.Sandbox.CombatSandboxEnemySlot>
-        {
-            new() { ParticipantId = "enemy_guardian", DisplayName = "Enemy Guardian", ArchetypeId = "guardian", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontTop },
-            new() { ParticipantId = "enemy_raider", DisplayName = "Enemy Raider", ArchetypeId = "raider", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontBottom },
-            new() { ParticipantId = "enemy_hunter", DisplayName = "Enemy Hunter", ArchetypeId = "hunter", Anchor = SM.Combat.Model.DeploymentAnchorId.BackTop },
-            new() { ParticipantId = "enemy_hexer", DisplayName = "Enemy Hexer", ArchetypeId = "hexer", Anchor = SM.Combat.Model.DeploymentAnchorId.BackBottom },
-        };
+        ApplyDefaultQuickBattleConfig(config);
         AssetDatabase.CreateAsset(config, QuickBattleConfigAssetPath);
         AssetDatabase.SaveAssets();
         Debug.Log($"[QuickBattle] 디폴트 config 생성: {QuickBattleConfigAssetPath}");
         return config;
+    }
+
+    private static void RepairQuickBattleConfig(SM.Unity.Sandbox.CombatSandboxConfig config)
+    {
+        var dirty = false;
+
+        if (string.IsNullOrWhiteSpace(config.Id))
+        {
+            config.Id = "quick_battle_default";
+            dirty = true;
+        }
+
+        if (string.IsNullOrWhiteSpace(config.DisplayName))
+        {
+            config.DisplayName = "Quick Battle Default";
+            dirty = true;
+        }
+
+        if (config.Seed == 0)
+        {
+            config.Seed = 42;
+            dirty = true;
+        }
+
+        if (!HasConfiguredAllySlots(config))
+        {
+            config.AllySlots = BuildDefaultQuickBattleAllySlots();
+            dirty = true;
+        }
+
+        if (!HasConfiguredEnemySlots(config))
+        {
+            config.EnemySlots = BuildDefaultQuickBattleEnemySlots();
+            dirty = true;
+        }
+
+        if (!dirty)
+        {
+            return;
+        }
+
+        EditorUtility.SetDirty(config);
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[QuickBattle] 디폴트 config 보정: {QuickBattleConfigAssetPath}");
+    }
+
+    private static void ApplyDefaultQuickBattleConfig(SM.Unity.Sandbox.CombatSandboxConfig config)
+    {
+        config.Id = "quick_battle_default";
+        config.DisplayName = "Quick Battle Default";
+        config.Seed = 42;
+        config.AllySlots = BuildDefaultQuickBattleAllySlots();
+        config.EnemySlots = BuildDefaultQuickBattleEnemySlots();
+    }
+
+    private static bool HasConfiguredAllySlots(SM.Unity.Sandbox.CombatSandboxConfig config)
+    {
+        return config.AllySlots != null
+               && config.AllySlots.Any(slot => slot != null && !string.IsNullOrWhiteSpace(slot.HeroId));
+    }
+
+    private static bool HasConfiguredEnemySlots(SM.Unity.Sandbox.CombatSandboxConfig config)
+    {
+        return config.EnemySlots != null
+               && config.EnemySlots.Any(slot => slot != null && (!string.IsNullOrWhiteSpace(slot.CharacterId) || !string.IsNullOrWhiteSpace(slot.ArchetypeIdOverride)));
+    }
+
+    private static System.Collections.Generic.List<SM.Unity.Sandbox.CombatSandboxAllySlot> BuildDefaultQuickBattleAllySlots()
+    {
+        return DefaultQuickBattleAllySlots
+            .Select(slot => new SM.Unity.Sandbox.CombatSandboxAllySlot
+            {
+                HeroId = slot.HeroId,
+                Anchor = slot.Anchor,
+                RoleInstructionIdOverride = string.Empty,
+            })
+            .ToList();
+    }
+
+    private static System.Collections.Generic.List<SM.Unity.Sandbox.CombatSandboxEnemySlot> BuildDefaultQuickBattleEnemySlots()
+    {
+        return DefaultQuickBattleEnemySlots
+            .Select(slot => new SM.Unity.Sandbox.CombatSandboxEnemySlot
+            {
+                ParticipantId = slot.ParticipantId,
+                DisplayName = slot.DisplayName,
+                CharacterId = slot.CharacterId,
+                ArchetypeIdOverride = string.Empty,
+                Anchor = slot.Anchor,
+                RoleInstructionId = string.Empty,
+            })
+            .ToList();
     }
 
     private static void ResetLocalDemoState()

@@ -33,9 +33,11 @@ public interface ICombatContentLookup
     bool TryGetItemDefinition(string itemId, out ItemBaseDefinition item);
     bool TryGetRaceDefinition(string raceId, out RaceDefinition race);
     bool TryGetClassDefinition(string classId, out ClassDefinition @class);
+    bool TryGetCharacterDefinition(string characterId, out CharacterDefinition character);
     bool TryGetAugmentDefinition(string augmentId, out AugmentDefinition augment);
     bool TryGetSkillDefinition(string skillId, out SkillDefinitionAsset skill);
     bool TryGetAffixDefinition(string affixId, out AffixDefinition affix);
+    bool TryGetRoleInstructionDefinition(string roleInstructionId, out RoleInstructionDefinition roleInstruction);
     bool TryGetCampaignChapterDefinition(string chapterId, out CampaignChapterDefinition chapter);
     bool TryGetExpeditionSiteDefinition(string siteId, out ExpeditionSiteDefinition site);
     bool TryGetEncounterDefinition(string encounterId, out EncounterDefinition encounter);

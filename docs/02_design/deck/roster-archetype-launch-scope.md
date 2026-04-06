@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/deck/roster-archetype-launch-scope.md`
 - 관련문서:
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
@@ -48,6 +48,12 @@
 - 규칙 파괴형, 하이브리드, exception slot
 - 기본 12종을 덮어쓰지 않고 recombination 축을 늘리는 archetype
 - scope tag는 `specialist`
+
+## character layer
+
+- launch floor의 `12 core archetypes`는 이번 단계에서 `12 core characters`와 1:1로 대응한다.
+- `Character`는 story/identity layer이고, `Archetype`는 전투 패키지다.
+- 같은 race/class 조합 안에서도 이후 패스에서 다른 캐릭터를 추가할 수 있어야 하므로, archetype만으로 캐릭터를 대체하지 않는다.
 
 ## class role family
 

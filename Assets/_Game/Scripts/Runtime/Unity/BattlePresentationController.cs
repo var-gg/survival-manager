@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Unity.UI.Battle;
 using UnityEngine;
 
 namespace SM.Unity;
@@ -13,6 +14,7 @@ public sealed class BattlePresentationController : MonoBehaviour
     private readonly Dictionary<string, BattleActorView> _actorViews = new();
     private Camera _camera = null!;
     private BattlePresentationOptions _options = BattlePresentationOptions.CreateDefault();
+    private BattleUnitMetadataFormatter? _metadataFormatter;
 
     public bool IsPaused { get; private set; }
 
@@ -42,7 +44,7 @@ public sealed class BattlePresentationController : MonoBehaviour
             var actorGo = new GameObject(actor.Name);
             actorGo.transform.SetParent(battleStageRoot, false);
             var view = actorGo.AddComponent<BattleActorView>();
-            view.Initialize(actor, actorOverlayRoot, _camera, this);
+            view.Initialize(actor, actorOverlayRoot, _camera, this, _metadataFormatter);
             view.ApplyOptions(_options);
             _actorViews[actor.Id] = view;
         }
@@ -62,6 +64,16 @@ public sealed class BattlePresentationController : MonoBehaviour
         foreach (var view in _actorViews.Values)
         {
             view.ApplyOptions(_options);
+        }
+    }
+
+    public void ConfigureMetadataFormatter(BattleUnitMetadataFormatter formatter)
+    {
+        _metadataFormatter = formatter;
+
+        foreach (var view in _actorViews.Values)
+        {
+            view.SetMetadataFormatter(formatter);
         }
     }
 

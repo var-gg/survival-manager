@@ -79,7 +79,10 @@ public record BattleUnitLoadout(
     CombatEntityKind EntityKind = CombatEntityKind.RosterUnit,
     OwnershipLink? Ownership = null,
     SummonProfile? SummonProfile = null,
-    ContentGovernanceSummary? Governance = null)
+    ContentGovernanceSummary? Governance = null,
+    string ArchetypeId = "",
+    string CharacterId = "",
+    string RoleInstructionId = "")
 {
     public IReadOnlyList<TacticRule> Tactics => RuleChains.SelectMany(chain => chain.Rules).ToList();
 

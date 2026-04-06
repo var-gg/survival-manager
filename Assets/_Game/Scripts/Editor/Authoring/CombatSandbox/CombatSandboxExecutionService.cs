@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
+using SM.Combat.Model;
+using SM.Content.Definitions;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity;
-using SM.Combat.Model;
 using SM.Unity.Sandbox;
 
 namespace SM.Editor.Authoring.CombatSandbox;
@@ -41,7 +42,7 @@ public static class CombatSandboxExecutionService
             throw new InvalidOperationException(error);
         }
 
-        var encounter = BuildEncounter(state.Config);
+        var encounter = BuildEncounter(lookup, state.Config);
         var buildResult = BattleSetupBuilder.Build(Array.Empty<BattleParticipantSpec>(), encounter, content);
         if (!buildResult.IsSuccess)
         {
@@ -59,7 +60,7 @@ public static class CombatSandboxExecutionService
             sceneLayout);
     }
 
-    private static BattleEncounterPlan BuildEncounter(CombatSandboxConfig config)
+    private static BattleEncounterPlan BuildEncounter(ICombatContentLookup lookup, CombatSandboxConfig? config)
     {
         if (config == null || config.EnemySlots.Count == 0)
         {
@@ -68,17 +69,90 @@ public static class CombatSandboxExecutionService
 
         return new BattleEncounterPlan(
             config.EnemySlots.Select(slot => new BattleParticipantSpec(
-                string.IsNullOrWhiteSpace(slot.ParticipantId) ? $"enemy.{slot.ArchetypeId}.{slot.Anchor}" : slot.ParticipantId,
-                string.IsNullOrWhiteSpace(slot.DisplayName) ? slot.ArchetypeId : slot.DisplayName,
-                slot.ArchetypeId,
+                string.IsNullOrWhiteSpace(slot.ParticipantId) ? $"enemy.{ResolveSandboxArchetypeId(lookup, slot)}.{slot.Anchor}" : slot.ParticipantId,
+                string.IsNullOrWhiteSpace(slot.DisplayName) ? ResolveSandboxCharacterId(slot) : slot.DisplayName,
+                ResolveSandboxArchetypeId(lookup, slot),
                 slot.Anchor,
                 slot.PositiveTraitId,
                 slot.NegativeTraitId,
                 Array.Empty<BattleEquippedItemSpec>(),
                 slot.TemporaryAugmentIds,
                 config.EnemyPosture,
-                string.IsNullOrWhiteSpace(slot.RoleTag) ? "auto" : slot.RoleTag))
+                ResolveSandboxRoleTag(lookup, slot),
+                "opening:standard",
+                ResolveSandboxCharacterId(slot),
+                ResolveSandboxRoleInstructionId(lookup, slot)))
             .ToList(),
             config.EnemyPosture);
+    }
+
+    private static string ResolveSandboxCharacterId(CombatSandboxEnemySlot slot)
+    {
+        if (!string.IsNullOrWhiteSpace(slot.CharacterId))
+        {
+            return slot.CharacterId;
+        }
+
+        return slot.ArchetypeIdOverride ?? string.Empty;
+    }
+
+    private static string ResolveSandboxArchetypeId(ICombatContentLookup lookup, CombatSandboxEnemySlot slot)
+    {
+        if (!string.IsNullOrWhiteSpace(slot.ArchetypeIdOverride))
+        {
+            return slot.ArchetypeIdOverride;
+        }
+
+        if (lookup.TryGetCharacterDefinition(ResolveSandboxCharacterId(slot), out var character)
+            && character.DefaultArchetype != null)
+        {
+            return character.DefaultArchetype.Id;
+        }
+
+        return ResolveSandboxCharacterId(slot);
+    }
+
+    private static string ResolveSandboxRoleInstructionId(ICombatContentLookup lookup, CombatSandboxEnemySlot slot)
+    {
+        if (!string.IsNullOrWhiteSpace(slot.RoleInstructionId))
+        {
+            return slot.RoleInstructionId;
+        }
+
+        if (lookup.TryGetCharacterDefinition(ResolveSandboxCharacterId(slot), out var character)
+            && character.DefaultRoleInstruction != null)
+        {
+            return character.DefaultRoleInstruction.Id;
+        }
+
+        if (lookup.TryGetArchetype(ResolveSandboxArchetypeId(lookup, slot), out var archetype))
+        {
+            return archetype.Class.Id switch
+            {
+                "vanguard" => "anchor",
+                "duelist" => "bruiser",
+                "ranger" => "carry",
+                "mystic" => "support",
+                _ => slot.Anchor.IsFrontRow() ? "frontline" : "backline",
+            };
+        }
+
+        return string.Empty;
+    }
+
+    private static string ResolveSandboxRoleTag(ICombatContentLookup lookup, CombatSandboxEnemySlot slot)
+    {
+        if (!string.IsNullOrWhiteSpace(slot.RoleTag) && !string.Equals(slot.RoleTag, "auto", StringComparison.Ordinal))
+        {
+            return slot.RoleTag;
+        }
+
+        var roleInstructionId = ResolveSandboxRoleInstructionId(lookup, slot);
+        if (lookup.TryGetRoleInstructionDefinition(roleInstructionId, out var roleInstruction))
+        {
+            return roleInstruction.RoleTag;
+        }
+
+        return slot.Anchor.IsFrontRow() ? "frontline" : "backline";
     }
 }

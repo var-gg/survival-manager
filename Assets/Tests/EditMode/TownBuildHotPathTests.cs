@@ -6,6 +6,8 @@ using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
 using SM.Unity;
+using SM.Unity.Sandbox;
+using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
@@ -193,6 +195,33 @@ public sealed class TownBuildHotPathTests
         var selection = session.Profile.PassiveSelections.First(s => s.HeroId == hero.HeroId);
         Assert.That(selection.SelectedNodeIds, Does.Contain("node_a"));
         Assert.That(selection.SelectedNodeIds, Does.Contain("node_b"));
+    }
+
+    [Test]
+    public void PrepareQuickBattleSmoke_UsesConfiguredAllySlots_WhenPresent()
+    {
+        var session = CreateBoundSession();
+        var config = ScriptableObject.CreateInstance<CombatSandboxConfig>();
+        try
+        {
+            config.AllySlots = new List<CombatSandboxAllySlot>
+            {
+                new() { HeroId = "hero-2", Anchor = DeploymentAnchorId.BackBottom },
+                new() { HeroId = "hero-1", Anchor = DeploymentAnchorId.FrontTop },
+            };
+
+            session.PrepareQuickBattleSmoke(config);
+
+            Assert.That(session.GetAssignedHeroId(DeploymentAnchorId.FrontTop), Is.EqualTo("hero-1"));
+            Assert.That(session.GetAssignedHeroId(DeploymentAnchorId.BackBottom), Is.EqualTo("hero-2"));
+            Assert.That(session.BattleDeployHeroIds, Is.EqualTo(new[] { "hero-1", "hero-2" }));
+            Assert.That(session.GetAssignedHeroId(DeploymentAnchorId.FrontCenter), Is.Null);
+            Assert.That(session.GetAssignedHeroId(DeploymentAnchorId.BackCenter), Is.Null);
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(config);
+        }
     }
 
     // ── helpers ──

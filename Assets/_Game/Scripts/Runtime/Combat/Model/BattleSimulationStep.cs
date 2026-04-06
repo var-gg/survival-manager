@@ -38,7 +38,11 @@ public sealed record BattleUnitReadModel(
     string CurrentFallback = "",
     float RetargetLockRemaining = 0f,
     float FrontlineGuardRadius = 2.5f,
-    float ClusterRadius = 2.5f);
+    float ClusterRadius = 2.5f,
+    string ArchetypeId = "",
+    string CharacterId = "",
+    string RoleInstructionId = "",
+    string RoleTag = "");
 
 public sealed record BattleSimulationStep(
     int StepIndex,

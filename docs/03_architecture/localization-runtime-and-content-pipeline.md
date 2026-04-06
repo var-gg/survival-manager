@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/03_architecture/localization-runtime-and-content-pipeline.md`
 - 관련문서:
   - `docs/03_architecture/dependency-direction.md`
@@ -34,6 +34,7 @@
 ## content authoring 계약
 
 - definition asset은 raw prose 대신 `NameKey`, `DescriptionKey`, `LabelKey`, `RewardSummaryKey`를 가진다.
+- `CharacterDefinition`도 같은 규칙을 따르고 `Content_Characters` table을 사용한다.
 - key naming은 lower-case dot 표기만 허용한다.
 - committed asset이 runtime truth이고, bootstrap/generator는 누락 복구만 담당한다.
 - validator는 duplicate id, duplicate key, missing locale entry, legacy prose 잔존을 함께 검사한다.
@@ -73,6 +74,7 @@
 - `BattleEvent.Note` 같은 localized prose는 금지한다.
 - combat runtime은 `BattleLogCode`와 numeric payload만 저장한다.
 - `BattleScreenController`가 `Combat_Log` Smart String으로 최근 로그를 렌더링한다.
+- battle unit axis text는 `BattleUnitMetadataFormatter`가 `ContentTextResolver`를 통해 조립한다.
 - locale change 후 `_recentLogs`를 다시 문자열로 변환해도 event truth는 바뀌지 않는다.
 
 ## Addressables와 preload

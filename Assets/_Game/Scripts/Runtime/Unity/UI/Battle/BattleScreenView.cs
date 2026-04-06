@@ -51,6 +51,9 @@ public sealed class BattleScreenView
     private readonly Button _toggleTeamSummaryButton;
     private readonly Button _toggleDebugOverlayButton;
     private readonly Label _settingsStatusLabel;
+    private readonly VisualElement _selectedUnitPanel;
+    private readonly Label _selectedUnitHeaderLabel;
+    private readonly Label _selectedUnitBodyLabel;
 
     private Action<float>? _seekRequested;
     private bool _isDragging;
@@ -90,8 +93,11 @@ public sealed class BattleScreenView
         _toggleTeamSummaryButton = Require<Button>(root, "ToggleTeamSummaryButton");
         _toggleDebugOverlayButton = Require<Button>(root, "ToggleDebugOverlayButton");
         _settingsStatusLabel = Require<Label>(root, "SettingsStatusLabel");
+        _selectedUnitPanel = Require<VisualElement>(root, "SelectedUnitPanel");
+        _selectedUnitHeaderLabel = Require<Label>(root, "SelectedUnitHeaderLabel");
+        _selectedUnitBodyLabel = Require<Label>(root, "SelectedUnitBodyLabel");
 
-        SetNonBlocking(_titleLabel, _localeStatusLabel, _allySummaryPanel, _enemySummaryPanel, _allyHpLabel, _enemyHpLabel, _logLabel, _resultLabel, _speedLabel, _statusLabel, _settingsPanel, _settingsStatusLabel);
+        SetNonBlocking(_titleLabel, _localeStatusLabel, _allySummaryPanel, _enemySummaryPanel, _allyHpLabel, _enemyHpLabel, _logLabel, _resultLabel, _speedLabel, _statusLabel, _settingsPanel, _settingsStatusLabel, _selectedUnitPanel, _selectedUnitHeaderLabel, _selectedUnitBodyLabel);
         SetBlocking(_localeKoButton, _localeEnButton, _speed1Button, _speed2Button, _speed4Button, _pauseButton, _continueButton, _rebattleButton, _returnTownButton, _settingsButton, _progressTrack, _toggleOverheadButton, _toggleDamageTextButton, _toggleTeamSummaryButton, _toggleDebugOverlayButton);
     }
 
@@ -144,6 +150,10 @@ public sealed class BattleScreenView
         _toggleTeamSummaryButton.text = state.Settings.TeamSummaryLabel;
         _toggleDebugOverlayButton.text = state.Settings.DebugOverlayLabel;
         _settingsStatusLabel.text = state.Settings.StatusText;
+        var selectedUnit = state.SelectedUnit ?? BattleSelectedUnitViewState.Hidden;
+        _selectedUnitPanel.style.display = selectedUnit.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
+        _selectedUnitHeaderLabel.text = selectedUnit.Header;
+        _selectedUnitBodyLabel.text = selectedUnit.Body;
 
         if (!_isDragging)
         {

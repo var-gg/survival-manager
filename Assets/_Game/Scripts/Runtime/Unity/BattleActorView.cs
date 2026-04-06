@@ -1,5 +1,6 @@
 using System.Collections;
 using SM.Combat.Model;
+using SM.Unity.UI.Battle;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,22 +38,34 @@ public sealed class BattleActorView : MonoBehaviour
     private Coroutine? _floatingRoutine;
     private Coroutine? _impactRoutine;
     private Coroutine? _accentRoutine;
+    private BattleUnitMetadataFormatter? _metadataFormatter;
 
     public void Initialize(
         BattleUnitReadModel actor,
         RectTransform overlayParent,
         Camera camera,
-        BattlePresentationController owner)
+        BattlePresentationController owner,
+        BattleUnitMetadataFormatter? metadataFormatter)
     {
         _overlayParent = overlayParent;
         _camera = camera;
         _owner = owner;
+        _metadataFormatter = metadataFormatter;
         transform.position = ToWorldPosition(actor.Position);
 
         CreateVisualRoot(actor);
         CreateHeadAnchor(actor);
         CreateOverlay(actor);
         ApplyBlend(actor, actor, 1f);
+    }
+
+    public void SetMetadataFormatter(BattleUnitMetadataFormatter formatter)
+    {
+        _metadataFormatter = formatter;
+        if (_currentState != null)
+        {
+            ApplyDisplay(_currentState, _currentState.CurrentHealth);
+        }
     }
 
     public void ApplyOptions(BattlePresentationOptions options)
@@ -156,6 +169,8 @@ public sealed class BattleActorView : MonoBehaviour
         var restColor = ResolveRestColor(actor);
         var healthRatio = actor.MaxHealth <= 0f ? 0f : Mathf.Clamp01(displayedHealth / actor.MaxHealth);
         var healthColor = ResolveHealthColor(healthRatio, actor.IsAlive, actor.Side);
+        var metadata = _metadataFormatter?.BuildOverhead(actor)
+                      ?? new BattleUnitOverheadText(actor.Name, BuildStatusLine(actor));
 
         if (_renderer != null)
         {
@@ -190,26 +205,25 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_nameText != null)
         {
-            _nameText.text = actor.Name;
+            _nameText.text = metadata.Header;
             _nameText.color = actor.IsAlive ? Color.white : new Color(0.72f, 0.72f, 0.72f, 1f);
         }
 
-        var statusLine = BuildStatusLine(actor);
         if (_stateText != null)
         {
-            _stateText.text = statusLine;
+            _stateText.text = metadata.Subtitle;
             _stateText.color = actor.IsAlive ? new Color(0.88f, 0.92f, 1f, 1f) : new Color(0.68f, 0.68f, 0.68f, 1f);
         }
 
         if (_worldNameText != null && _worldNameShadowText != null)
         {
-            _worldNameText.text = actor.Name;
-            _worldNameShadowText.text = actor.Name;
+            _worldNameText.text = metadata.Header;
+            _worldNameShadowText.text = metadata.Header;
         }
 
         if (_worldStateText != null && _worldStateShadowText != null)
         {
-            _worldStateText.text = $"HP {Mathf.CeilToInt(displayedHealth)}/{Mathf.CeilToInt(actor.MaxHealth)}\n{statusLine}";
+            _worldStateText.text = metadata.Subtitle;
             _worldStateShadowText.text = _worldStateText.text;
         }
 

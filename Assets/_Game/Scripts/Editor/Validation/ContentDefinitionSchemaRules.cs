@@ -56,6 +56,54 @@ internal sealed class ClassDefinitionSchemaRule : DefinitionSchemaRule<ClassDefi
     }
 }
 
+internal sealed class CharacterDefinitionSchemaRule : DefinitionSchemaRule<CharacterDefinition>
+{
+    public CharacterDefinitionSchemaRule()
+        : base(nameof(CharacterDefinition))
+    {
+    }
+
+    protected override string GetCanonicalId(CharacterDefinition asset)
+    {
+        return asset.Id;
+    }
+
+    protected override void ValidateAsset(
+        CharacterDefinition definition,
+        string assetPath,
+        ValidationAssetCatalog catalog,
+        ICollection<ContentValidationIssue> issues)
+    {
+        if (!string.IsNullOrWhiteSpace(definition.LegacyDisplayName))
+        {
+            if (ContentLocalizationPolicy.TreatsLegacyTextAsError)
+            {
+                ContentValidationIssueFactory.AddError(issues, "localization.legacy_text", "Legacy localized prose remains in CharacterDefinition.LegacyDisplayName.", assetPath, "CharacterDefinition.LegacyDisplayName");
+            }
+            else
+            {
+                ContentValidationIssueFactory.AddWarning(issues, "localization.legacy_text", "Legacy localized prose remains in CharacterDefinition.LegacyDisplayName.", assetPath, "CharacterDefinition.LegacyDisplayName");
+            }
+        }
+
+        if (definition.Race == null || definition.Class == null || definition.DefaultArchetype == null || definition.DefaultRoleInstruction == null)
+        {
+            ContentValidationIssueFactory.AddError(issues, "character.references", "Character is missing race/class/default archetype/default role references.", assetPath);
+            return;
+        }
+
+        if (!string.Equals(definition.DefaultArchetype.Race?.Id, definition.Race.Id, StringComparison.Ordinal))
+        {
+            ContentValidationIssueFactory.AddError(issues, "character.race_mismatch", "Character race must match the default archetype race.", assetPath);
+        }
+
+        if (!string.Equals(definition.DefaultArchetype.Class?.Id, definition.Class.Id, StringComparison.Ordinal))
+        {
+            ContentValidationIssueFactory.AddError(issues, "character.class_mismatch", "Character class must match the default archetype class.", assetPath);
+        }
+    }
+}
+
 internal sealed class TraitPoolSchemaRule : DefinitionSchemaRule<TraitPoolDefinition>
 {
     public TraitPoolSchemaRule()
@@ -785,6 +833,7 @@ internal sealed class DefinitionSchemaRuleRegistry
             new DefinitionIdentityOnlyRule<StatDefinition>(nameof(StatDefinition), asset => asset.Id),
             new DefinitionIdentityOnlyRule<RaceDefinition>(nameof(RaceDefinition), asset => asset.Id),
             new ClassDefinitionSchemaRule(),
+            new CharacterDefinitionSchemaRule(),
             new TraitPoolSchemaRule(),
             new ArchetypeSchemaRule(),
             new SkillSchemaRule(),

@@ -11,6 +11,7 @@ public static class ContentLocalizationTables
     public const string Synergies = "Content_Synergies";
     public const string Races = "Content_Races";
     public const string Classes = "Content_Classes";
+    public const string Characters = "Content_Characters";
     public const string Traits = "Content_Traits";
     public const string Archetypes = "Content_Archetypes";
     public const string Passives = "Content_Passives";
@@ -39,6 +40,8 @@ public static class ContentLocalizationTables
     public static string BuildRaceDescriptionKey(string id) => $"content.race.{NormalizeId(id)}.desc";
     public static string BuildClassNameKey(string id) => $"content.class.{NormalizeId(id)}.name";
     public static string BuildClassDescriptionKey(string id) => $"content.class.{NormalizeId(id)}.desc";
+    public static string BuildCharacterNameKey(string id) => $"content.character.{NormalizeId(id)}.name";
+    public static string BuildCharacterDescriptionKey(string id) => $"content.character.{NormalizeId(id)}.desc";
     public static string BuildTraitNameKey(string archetypeId, string id) => $"content.trait.{NormalizeId(archetypeId)}.{NormalizeId(id)}.name";
     public static string BuildTraitDescriptionKey(string archetypeId, string id) => $"content.trait.{NormalizeId(archetypeId)}.{NormalizeId(id)}.desc";
     public static string BuildArchetypeNameKey(string id) => $"content.archetype.{NormalizeId(id)}.name";
@@ -122,6 +125,11 @@ public static class ContentLocalizationTables
         if (definitionType == typeof(ClassDefinition))
         {
             return Classes;
+        }
+
+        if (definitionType == typeof(CharacterDefinition))
+        {
+            return Characters;
         }
 
         if (definitionType == typeof(TraitEntry))

@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Content_Characters Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: Content_Characters
+  m_TableCollectionNameGuidString: ed32f6075d2a4ae5bd9f76bce0162583
+  m_Entries:
+  - m_Id: 1702100001000
+    m_Key: content.character.warden.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001001
+    m_Key: content.character.warden.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001002
+    m_Key: content.character.guardian.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001003
+    m_Key: content.character.guardian.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001004
+    m_Key: content.character.bulwark.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001005
+    m_Key: content.character.bulwark.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001006
+    m_Key: content.character.slayer.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001007
+    m_Key: content.character.slayer.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001008
+    m_Key: content.character.raider.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001009
+    m_Key: content.character.raider.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001010
+    m_Key: content.character.reaver.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001011
+    m_Key: content.character.reaver.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001012
+    m_Key: content.character.hunter.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001013
+    m_Key: content.character.hunter.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001014
+    m_Key: content.character.scout.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001015
+    m_Key: content.character.scout.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001016
+    m_Key: content.character.marksman.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001017
+    m_Key: content.character.marksman.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001018
+    m_Key: content.character.priest.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001019
+    m_Key: content.character.priest.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001020
+    m_Key: content.character.hexer.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001021
+    m_Key: content.character.hexer.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001022
+    m_Key: content.character.shaman.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1702100001023
+    m_Key: content.character.shaman.description
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1798213439901401348
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401348
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1776000000000

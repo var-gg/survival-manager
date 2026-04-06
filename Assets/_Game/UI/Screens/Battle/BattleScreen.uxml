@@ -43,6 +43,10 @@
             </ui:VisualElement>
 
             <ui:VisualElement class="battle-shell__side">
+                <ui:VisualElement class="panel battle-shell__selected-unit" name="SelectedUnitPanel">
+                    <ui:Label name="SelectedUnitHeaderLabel" class="panel__title" text="Selected Unit" />
+                    <ui:Label name="SelectedUnitBodyLabel" class="panel__text battle-shell__selected-body" />
+                </ui:VisualElement>
                 <ui:VisualElement class="panel" name="EnemySummaryPanel">
                     <ui:Label class="panel__title" text="Enemies" />
                     <ui:Label name="EnemyHpLabel" class="panel__text" />

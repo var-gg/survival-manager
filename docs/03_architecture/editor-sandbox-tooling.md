@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-03
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/03_architecture/editor-sandbox-tooling.md`
 - 관련문서:
   - `docs/03_architecture/content-authoring-model.md`
@@ -69,6 +69,17 @@
 | `MobilityProfileDefinitionEditor` | 모빌리티 | 이동 프로필, trigger range, total commit |
 
 인스펙터는 raw authoring 값과 compiled effective 값을 같은 화면에 보여준다. compiled 값은 `CombatProfileDefaults.ResolveBehavior` 기반.
+
+이번 슬라이스부터 Quick Battle과 source asset inspector는 locale-aware preview를 같이 보여준다.
+
+- `CombatSandboxConfigEditor`
+  - ally/enemy slot별 `Character / Archetype / Race / Class / Role / RoleFamily / Anchor` preview
+- `CharacterDefinitionEditor`
+  - identity layer preview
+- `RoleInstructionDefinitionEditor`
+  - 역할 label과 anchor preview
+- `UnitArchetypeDefinitionEditor`
+  - localized taxonomy preview
 
 ### 축 2: Sandbox Window
 

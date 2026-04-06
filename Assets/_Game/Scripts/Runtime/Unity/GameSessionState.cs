@@ -184,6 +184,11 @@ public sealed class GameSessionState
 
     public void PrepareQuickBattleSmoke()
     {
+        PrepareQuickBattleSmoke(LoadQuickBattleConfig());
+    }
+
+    internal void PrepareQuickBattleSmoke(CombatSandboxConfig? quickBattleConfig)
+    {
         IsQuickBattleSmokeActive = true;
         HasActiveExpeditionRun = false;
         LastBattleVictory = false;
@@ -192,8 +197,7 @@ public sealed class GameSessionState
         LastRewardApplicationSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
         _runtimeTelemetryEvents.Clear();
-        QuickBattleConfig = LoadQuickBattleConfig();
-        EnsureDefaultSquad();
+        QuickBattleConfig = quickBattleConfig;
         EnsureBattleDeployReady();
         EnsureRewardChoices(reset: true);
         ActiveRun = RunStateService.StartRun("quick-battle", CaptureBlueprintState(), true);
@@ -804,7 +808,65 @@ public sealed class GameSessionState
     public void EnsureBattleDeployReady()
     {
         EnsureDefaultSquad();
+        if (IsQuickBattleSmokeActive && QuickBattleConfig != null && QuickBattleConfig.AllySlots.Count > 0)
+        {
+            ApplyQuickBattleAllySlotOverrides(QuickBattleConfig);
+            return;
+        }
+
         EnsureDefaultDeploymentAssignments();
+    }
+
+    internal void ApplyQuickBattleAllySlotOverrides(CombatSandboxConfig config)
+    {
+        EnsureDefaultSquad();
+        EnsureAssignmentMapInitialized();
+
+        var availableHeroIds = Profile.Heroes
+            .Where(hero => !string.IsNullOrWhiteSpace(hero.HeroId))
+            .Select(hero => hero.HeroId)
+            .ToHashSet(StringComparer.Ordinal);
+        var configuredHeroIds = config.AllySlots
+            .Where(slot => slot != null && !string.IsNullOrWhiteSpace(slot.HeroId))
+            .Select(slot => slot.HeroId)
+            .Where(availableHeroIds.Contains)
+            .Distinct(StringComparer.Ordinal)
+            .Take(MetaBalanceDefaults.ExpeditionSquadCap)
+            .ToList();
+
+        if (configuredHeroIds.Count == 0)
+        {
+            EnsureDefaultDeploymentAssignments();
+            return;
+        }
+
+        _expeditionSquadHeroIds.Clear();
+        _expeditionSquadHeroIds.AddRange(configuredHeroIds);
+
+        foreach (var anchor in DeploymentAnchorOrder)
+        {
+            _deploymentAssignments[anchor] = null;
+        }
+
+        var occupiedAnchors = new HashSet<DeploymentAnchorId>();
+        var assignedHeroes = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var slot in config.AllySlots)
+        {
+            if (slot == null || string.IsNullOrWhiteSpace(slot.HeroId) || !availableHeroIds.Contains(slot.HeroId))
+            {
+                continue;
+            }
+
+            if (!assignedHeroes.Add(slot.HeroId) || !occupiedAnchors.Add(slot.Anchor))
+            {
+                continue;
+            }
+
+            _deploymentAssignments[slot.Anchor] = slot.HeroId;
+        }
+
+        CaptureBlueprintState();
+        SyncActiveRunIfPresent();
     }
 
     public void PromoteToBattleDeploy(string heroId)
@@ -951,7 +1013,9 @@ public sealed class GameSessionState
                     temporaryAugments,
                     SelectedTeamPosture,
                     ResolveRoleTag(hero.ClassId, entry.Anchor),
-                    "opening:standard");
+                    "opening:standard",
+                    hero.CharacterId,
+                    ResolveBlueprintRoleInstructionId(hero.HeroId, hero.ClassId, entry.Anchor));
             })
             .ToList();
     }
@@ -1050,16 +1114,19 @@ public sealed class GameSessionState
 
         return new BattleEncounterPlan(
             config.EnemySlots.Select(slot => new BattleParticipantSpec(
-                string.IsNullOrWhiteSpace(slot.ParticipantId) ? $"enemy.{slot.ArchetypeId}.{slot.Anchor}" : slot.ParticipantId,
-                string.IsNullOrWhiteSpace(slot.DisplayName) ? slot.ArchetypeId : slot.DisplayName,
-                slot.ArchetypeId,
+                string.IsNullOrWhiteSpace(slot.ParticipantId) ? $"enemy.{ResolveSandboxArchetypeId(slot)}.{slot.Anchor}" : slot.ParticipantId,
+                string.IsNullOrWhiteSpace(slot.DisplayName) ? ResolveSandboxCharacterId(slot) : slot.DisplayName,
+                ResolveSandboxArchetypeId(slot),
                 slot.Anchor,
                 slot.PositiveTraitId,
                 slot.NegativeTraitId,
                 Array.Empty<BattleEquippedItemSpec>(),
                 slot.TemporaryAugmentIds,
                 config.EnemyPosture,
-                string.IsNullOrWhiteSpace(slot.RoleTag) ? "auto" : slot.RoleTag))
+                ResolveSandboxRoleTag(slot),
+                "opening:standard",
+                ResolveSandboxCharacterId(slot),
+                ResolveSandboxRoleInstructionId(slot)))
             .ToList(),
             config.EnemyPosture);
     }
@@ -2365,6 +2432,20 @@ public sealed class GameSessionState
                 hero.RecruitTier = archetype.RecruitTier;
             }
 
+            hero.CharacterId = NormalizeCharacterId(hero.CharacterId, hero.ArchetypeId);
+            if (_combatContentLookup.TryGetCharacterDefinition(hero.CharacterId, out var character))
+            {
+                if (character.Race != null)
+                {
+                    hero.RaceId = character.Race.Id;
+                }
+
+                if (character.Class != null)
+                {
+                    hero.ClassId = character.Class.Id;
+                }
+            }
+
             hero.PositiveTraitId = _combatContentLookup.NormalizePositiveTraitId(hero.ArchetypeId, hero.PositiveTraitId, i);
             hero.NegativeTraitId = _combatContentLookup.NormalizeNegativeTraitId(hero.ArchetypeId, hero.NegativeTraitId, i + 1);
             hero.EquippedItemIds = hero.EquippedItemIds
@@ -2478,7 +2559,8 @@ public sealed class GameSessionState
                 hero.RecruitTier,
                 hero.RecruitSource,
                 hero.RetrainState?.Clone() ?? new UnitRetrainState(),
-                hero.EconomyFootprint?.Clone() ?? new UnitEconomyFootprint());
+                hero.EconomyFootprint?.Clone() ?? new UnitEconomyFootprint(),
+                hero.CharacterId);
         }
     }
 
@@ -2693,7 +2775,7 @@ public sealed class GameSessionState
                 .Where(entry => !string.IsNullOrWhiteSpace(entry.HeroId))
                 .ToDictionary(entry => entry.Anchor, entry => entry.HeroId!, EqualityComparer<DeploymentAnchorId>.Default),
             _expeditionSquadHeroIds.ToList(),
-            Profile.Heroes.ToDictionary(hero => hero.HeroId, hero => ResolveRoleTag(hero.ClassId, ResolvePreferredAnchor(hero.HeroId)), StringComparer.Ordinal));
+            Profile.Heroes.ToDictionary(hero => hero.HeroId, hero => ResolveBlueprintRoleInstructionId(hero.HeroId, hero.ClassId, ResolvePreferredAnchor(hero.HeroId)), StringComparer.Ordinal));
 
         var record = Profile.SquadBlueprints.FirstOrDefault(existing => existing.BlueprintId == blueprint.BlueprintId);
         if (record == null)
@@ -2868,6 +2950,122 @@ public sealed class GameSessionState
     }
 
     private static string ResolveRoleTag(string classId, DeploymentAnchorId anchor)
+    {
+        return classId switch
+        {
+            "vanguard" => "anchor",
+            "duelist" => "bruiser",
+            "ranger" => "carry",
+            "mystic" => "support",
+            _ => anchor.IsFrontRow() ? "frontline" : "backline",
+        };
+    }
+
+    private string NormalizeCharacterId(string characterId, string archetypeId)
+    {
+        if (!string.IsNullOrWhiteSpace(characterId))
+        {
+            return characterId;
+        }
+
+        return string.IsNullOrWhiteSpace(archetypeId) ? string.Empty : archetypeId;
+    }
+
+    private string ResolveBlueprintRoleInstructionId(string heroId, string classId, DeploymentAnchorId anchor)
+    {
+        if (IsQuickBattleSmokeActive && QuickBattleConfig != null)
+        {
+            var overrideId = QuickBattleConfig.AllySlots
+                .Where(slot => slot != null && string.Equals(slot.HeroId, heroId, StringComparison.Ordinal))
+                .Select(slot => slot.RoleInstructionIdOverride)
+                .FirstOrDefault(roleId => !string.IsNullOrWhiteSpace(roleId));
+            if (!string.IsNullOrWhiteSpace(overrideId))
+            {
+                return overrideId;
+            }
+        }
+
+        return ResolveDefaultRoleInstructionId(classId, anchor);
+    }
+
+    private string ResolveSandboxCharacterId(CombatSandboxEnemySlot slot)
+    {
+        if (!string.IsNullOrWhiteSpace(slot.CharacterId))
+        {
+            return slot.CharacterId;
+        }
+
+        if (!string.IsNullOrWhiteSpace(slot.ArchetypeIdOverride))
+        {
+            return slot.ArchetypeIdOverride;
+        }
+
+        return string.Empty;
+    }
+
+    private string ResolveSandboxArchetypeId(CombatSandboxEnemySlot slot)
+    {
+        if (!string.IsNullOrWhiteSpace(slot.ArchetypeIdOverride))
+        {
+            return slot.ArchetypeIdOverride;
+        }
+
+        var characterId = ResolveSandboxCharacterId(slot);
+        if (_combatContentLookup.TryGetCharacterDefinition(characterId, out var character)
+            && character.DefaultArchetype != null)
+        {
+            return character.DefaultArchetype.Id;
+        }
+
+        return characterId;
+    }
+
+    private string ResolveSandboxRoleInstructionId(CombatSandboxEnemySlot slot)
+    {
+        if (!string.IsNullOrWhiteSpace(slot.RoleInstructionId))
+        {
+            return slot.RoleInstructionId;
+        }
+
+        var characterId = ResolveSandboxCharacterId(slot);
+        if (_combatContentLookup.TryGetCharacterDefinition(characterId, out var character)
+            && character.DefaultRoleInstruction != null)
+        {
+            return character.DefaultRoleInstruction.Id;
+        }
+
+        var resolvedArchetypeId = ResolveSandboxArchetypeId(slot);
+        if (_combatContentLookup.TryGetArchetype(resolvedArchetypeId, out var archetype))
+        {
+            return ResolveDefaultRoleInstructionId(archetype.Class.Id, slot.Anchor);
+        }
+
+        return string.Empty;
+    }
+
+    private string ResolveSandboxRoleTag(CombatSandboxEnemySlot slot)
+    {
+        if (!string.IsNullOrWhiteSpace(slot.RoleTag) && !string.Equals(slot.RoleTag, "auto", StringComparison.Ordinal))
+        {
+            return slot.RoleTag;
+        }
+
+        var roleInstructionId = ResolveSandboxRoleInstructionId(slot);
+        if (_combatContentLookup.TryGetRoleInstructionDefinition(roleInstructionId, out var roleInstruction))
+        {
+            return roleInstruction.RoleTag;
+        }
+
+        var resolvedArchetypeId = ResolveSandboxArchetypeId(slot);
+        if (_combatContentLookup.TryGetArchetype(resolvedArchetypeId, out var archetype))
+        {
+            return ResolveRoleTag(archetype.Class.Id, slot.Anchor);
+        }
+
+        return slot.Anchor.IsFrontRow() ? "frontline" : "backline";
+    }
+
+    private static string ResolveDefaultRoleInstructionId(string classId, DeploymentAnchorId anchor)
     {
         return classId switch
         {

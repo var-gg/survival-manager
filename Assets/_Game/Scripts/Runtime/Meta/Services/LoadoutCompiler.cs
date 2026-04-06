@@ -30,6 +30,10 @@ public sealed class LoadoutCompiler
         string SourceId,
         string RawSlotKind);
 
+    private sealed record ResolvedRoleInstructionSelection(
+        string Id,
+        SlotRoleInstruction Instruction);
+
     public BattleLoadoutSnapshot Compile(
         IReadOnlyList<HeroRecord> heroes,
         IReadOnlyDictionary<string, HeroLoadoutState> heroLoadouts,
@@ -193,12 +197,13 @@ public sealed class LoadoutCompiler
                 }
             }
 
-            var roleInstruction = ResolveRoleInstruction(assignment.Key, hero, blueprint, content);
+            var roleSelection = ResolveRoleInstruction(assignment.Key, hero, blueprint, content);
+            var roleInstruction = roleSelection.Instruction;
             artifacts.CompileTags.Add(roleInstruction.RoleTag);
             artifacts.Provenance.Add(new CompileProvenanceEntry(
                 hero.Id,
                 ModifierSource.Other,
-                roleInstruction.RoleTag,
+                roleSelection.Id,
                 "role_instruction",
                 BuildRoleInstructionDetails(roleInstruction)));
 
@@ -240,7 +245,10 @@ public sealed class LoadoutCompiler
                 archetype.EntityKind,
                 archetype.Ownership,
                 archetype.SummonProfile,
-                archetype.Governance));
+                archetype.Governance,
+                archetype.Id,
+                hero.CharacterId,
+                roleSelection.Id));
 
             compileProvenance.AddRange(artifacts.Provenance);
         }
@@ -609,7 +617,7 @@ public sealed class LoadoutCompiler
             blueprint.TeamPosture);
     }
 
-    private static SlotRoleInstruction ResolveRoleInstruction(
+    private static ResolvedRoleInstructionSelection ResolveRoleInstruction(
         DeploymentAnchorId anchor,
         HeroRecord hero,
         SquadBlueprintState blueprint,
@@ -618,7 +626,7 @@ public sealed class LoadoutCompiler
         if (blueprint.HeroRoleIds.TryGetValue(hero.Id, out var roleId)
             && content.RoleInstructions.TryGetValue(roleId, out var role))
         {
-            return role.Instruction with { Anchor = anchor };
+            return new ResolvedRoleInstructionSelection(roleId, role.Instruction with { Anchor = anchor });
         }
 
         var fallbackRoleTag = hero.ClassId switch
@@ -629,7 +637,7 @@ public sealed class LoadoutCompiler
             "mystic" => "support",
             _ => anchor.IsFrontRow() ? "frontline" : "backline",
         };
-        return new SlotRoleInstruction(anchor, fallbackRoleTag);
+        return new ResolvedRoleInstructionSelection(fallbackRoleTag, new SlotRoleInstruction(anchor, fallbackRoleTag));
     }
 
     private static RoleVariantTag ResolveRoleVariant(
@@ -689,7 +697,10 @@ public sealed class LoadoutCompiler
         foreach (var unit in units.OrderBy(unit => unit.Id, StringComparer.Ordinal))
         {
             sb.Append(unit.Id).Append(':')
+                .Append(unit.ArchetypeId).Append(':')
+                .Append(unit.CharacterId).Append(':')
                 .Append(unit.PreferredAnchor).Append(':')
+                .Append(unit.RoleInstructionId).Append(':')
                 .Append(unit.RoleTag).Append(':')
                 .Append(unit.RoleInstruction?.ProtectCarryBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
                 .Append(unit.RoleInstruction?.BacklinePressureBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')

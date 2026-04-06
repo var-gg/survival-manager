@@ -16,6 +16,7 @@ internal sealed class SnapshotAssembler
     private readonly IReadOnlyDictionary<string, AffixDefinition> _affixDefinitions;
     private readonly IReadOnlyDictionary<string, AugmentDefinition> _augmentDefinitions;
     private readonly IReadOnlyDictionary<string, SkillDefinitionAsset> _skillDefinitions;
+    private readonly IReadOnlyDictionary<string, CharacterDefinition> _characterDefinitions;
     private readonly IReadOnlyDictionary<string, TeamTacticDefinition> _teamTacticDefinitions;
     private readonly IReadOnlyDictionary<string, RoleInstructionDefinition> _roleInstructionDefinitions;
     private readonly IReadOnlyDictionary<string, PassiveNodeDefinition> _passiveNodeDefinitions;
@@ -42,6 +43,7 @@ internal sealed class SnapshotAssembler
         _affixDefinitions = registry.AffixDefinitions;
         _augmentDefinitions = registry.AugmentDefinitions;
         _skillDefinitions = registry.SkillDefinitions;
+        _characterDefinitions = registry.CharacterDefinitions;
         _teamTacticDefinitions = registry.TeamTacticDefinitions;
         _roleInstructionDefinitions = registry.RoleInstructionDefinitions;
         _passiveNodeDefinitions = registry.PassiveNodeDefinitions;
@@ -84,6 +86,8 @@ internal sealed class SnapshotAssembler
             _teamTacticDefinitions.Values.ToDictionary(definition => definition.Id, definition => CatalogEntryConverter.BuildTeamTacticTemplate(definition), StringComparer.Ordinal));
         var roleInstructionCatalog = BuildSection("role instructions", () =>
             _roleInstructionDefinitions.Values.ToDictionary(definition => definition.Id, definition => CatalogEntryConverter.BuildRoleInstructionTemplate(definition), StringComparer.Ordinal));
+        var characterCatalog = BuildSection("characters", () =>
+            _characterDefinitions.Values.ToDictionary(definition => definition.Id, definition => CatalogEntryConverter.BuildCharacterTemplate(definition), StringComparer.Ordinal));
         var passiveNodeCatalog = BuildSection("passive nodes", () =>
             _passiveNodeDefinitions.Values.ToDictionary(definition => definition.Id, definition => CatalogEntryConverter.BuildPassiveNodeTemplate(definition), StringComparer.Ordinal));
         var augmentCatalog = BuildSection("augment catalog", () =>
@@ -150,6 +154,7 @@ internal sealed class SnapshotAssembler
             dropTableCatalog,
             lootBundleCatalog,
             traitTokenCatalog,
-            _firstPlayableSlice);
+            _firstPlayableSlice,
+            characterCatalog);
     }
 }

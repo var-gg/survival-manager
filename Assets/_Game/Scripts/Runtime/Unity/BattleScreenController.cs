@@ -32,6 +32,7 @@ public sealed class BattleScreenController : MonoBehaviour
     private string _settingsStatusText = string.Empty;
     private GameSessionRoot _root = null!;
     private GameLocalizationController _localization = null!;
+    private BattleUnitMetadataFormatter _metadataFormatter = null!;
     private BattleSimulator? _simulator;
     private BattleLoadoutSnapshot? _compiledSnapshot;
     private IReadOnlyList<BattleUnitLoadout> _enemyLoadouts = Array.Empty<BattleUnitLoadout>();
@@ -396,6 +397,7 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         _localization = _root.Localization;
+        _metadataFormatter ??= new BattleUnitMetadataFormatter(_localization, _root.CombatContentLookup);
         return true;
     }
 
@@ -447,6 +449,7 @@ public sealed class BattleScreenController : MonoBehaviour
             ToggleDebugOverlay,
             HandleScrubberSeek));
         _presenter = new BattleScreenPresenter(_localization, _root.SessionState, _presentationOptions);
+        presentationController.ConfigureMetadataFormatter(_metadataFormatter);
         _boundRootBuildCount = panelHost.RootBuildCount;
 
         if (cameraController != null)
@@ -508,6 +511,8 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         var isFinished = _timeline?.IsFinished ?? currentStep.IsFinished;
+        EnsureSelectedUnit(currentStep);
+        var selectedUnit = currentStep.Units.FirstOrDefault(unit => unit.Id == _selectedUnitId);
         var state = _presenter!.BuildState(
             currentStep,
             _recentLogs,
@@ -517,7 +522,8 @@ public sealed class BattleScreenController : MonoBehaviour
             isFinished,
             _settingsVisible,
             _timeline?.NormalizedProgress ?? 0f,
-            _settingsStatusText);
+            _settingsStatusText,
+            _metadataFormatter.BuildSelectedUnitPanel(selectedUnit));
         _view!.Render(state);
         _view.SetScrubberInteractable(_timeline != null && _policy.CanSeek(_timeline.IsFinished));
     }
@@ -881,6 +887,25 @@ public sealed class BattleScreenController : MonoBehaviour
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
     {
         _settingsStatusText = string.Empty;
+        if (_timeline?.CurrentStep is { } currentStep)
+        {
+            presentationController.SetBlend(currentStep, currentStep, 1f);
+        }
+
         RenderCurrentState();
+    }
+
+    private void EnsureSelectedUnit(BattleSimulationStep step)
+    {
+        if (step.Units.Any(unit => unit.Id == _selectedUnitId))
+        {
+            return;
+        }
+
+        _selectedUnitId = step.Units
+            .OrderBy(unit => unit.Side)
+            .ThenBy(unit => unit.Id)
+            .Select(unit => unit.Id)
+            .FirstOrDefault() ?? string.Empty;
     }
 }

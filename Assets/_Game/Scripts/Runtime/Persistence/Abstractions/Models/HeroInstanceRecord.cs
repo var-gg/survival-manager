@@ -10,6 +10,7 @@ public sealed class HeroInstanceRecord
 {
     public string HeroId = string.Empty;
     public string Name = string.Empty;
+    public string CharacterId = string.Empty;
     public string ArchetypeId = string.Empty;
     public string RaceId = string.Empty;
     public string ClassId = string.Empty;

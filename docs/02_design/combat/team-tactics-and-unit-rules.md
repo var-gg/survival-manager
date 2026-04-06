@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/combat/team-tactics-and-unit-rules.md`
 - 관련문서:
   - `docs/02_design/combat/deployment-and-anchors.md`
@@ -78,3 +78,10 @@
 - canonical class id는 `vanguard / duelist / ranger / mystic`를 유지한다.
 - 문서상 역할 family 설명에서는 `Vanguard / Striker / Ranger / Mystic`를 사용한다.
 - `duelist`는 runtime/content canonical id이고, `Striker`는 전술/상성 설명용 라벨이다.
+
+## 역할 축 분리
+
+- `Class`는 성장과 보드, 시너지 owner다.
+- `RoleFamily`는 class에서 파생되는 설명용 라벨이다.
+- 실제 전술 운용은 `RoleInstructionDefinition`이 맡는다.
+- 따라서 유니콘 오버로드식 전술 편집은 class 고정값이 아니라 `character/archetype 기본값 + role override` 위에 얹는다.

@@ -56,7 +56,11 @@ public static class BattleReadModelBuilder
                     unit.Definition.EffectiveSignatureActive?.TargetRuleData?.ClusterRadius
                         ?? unit.Definition.EffectiveFlexActive?.TargetRuleData?.ClusterRadius
                         ?? unit.Definition.EffectiveBasicAttack.TargetRuleData?.ClusterRadius
-                        ?? 2.5f);
+                        ?? 2.5f,
+                    unit.Definition.ArchetypeId,
+                    unit.Definition.CharacterId,
+                    unit.Definition.RoleInstructionId,
+                    unit.Definition.RoleTag);
             })
             .ToList();
 

@@ -33,7 +33,8 @@ public sealed class BattleScreenPresenter
             progressNormalized: 0f,
             isPaused: false,
             isBattleFinished: false,
-            showSettings: false);
+            showSettings: false,
+            selectedUnit: BattleSelectedUnitViewState.Hidden);
     }
 
     public BattleShellViewState BuildErrorState(string message)
@@ -49,7 +50,8 @@ public sealed class BattleScreenPresenter
             isPaused: false,
             isBattleFinished: false,
             showSettings: false,
-            settingsStatusText: message);
+            settingsStatusText: message,
+            selectedUnit: BattleSelectedUnitViewState.Hidden);
     }
 
     public BattleShellViewState BuildState(
@@ -61,7 +63,8 @@ public sealed class BattleScreenPresenter
         bool isBattleFinished,
         bool showSettings,
         float progressNormalized,
-        string settingsStatusText)
+        string settingsStatusText,
+        BattleSelectedUnitViewState? selectedUnit = null)
     {
         return CreateState(
             BuildHpText(Localize(GameLocalizationTables.UIBattle, "ui.battle.hp.allies", "Allied HP"), step.Units.Where(actor => actor.Side == TeamSide.Ally)),
@@ -80,7 +83,8 @@ public sealed class BattleScreenPresenter
             isPaused,
             isBattleFinished,
             showSettings,
-            settingsStatusText);
+            settingsStatusText,
+            selectedUnit ?? BattleSelectedUnitViewState.Hidden);
     }
 
     private BattleShellViewState CreateState(
@@ -94,7 +98,8 @@ public sealed class BattleScreenPresenter
         bool isPaused,
         bool isBattleFinished,
         bool showSettings,
-        string? settingsStatusText = null)
+        string? settingsStatusText = null,
+        BattleSelectedUnitViewState? selectedUnit = null)
     {
         return new BattleShellViewState(
             Localize(GameLocalizationTables.UIBattle, "ui.battle.title", "Battle Observer UI"),
@@ -125,7 +130,8 @@ public sealed class BattleScreenPresenter
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.debug_overlay", "Debug Overlay {0}", BuildStateLabel(_options.ShowDebugOverlay)),
                 string.IsNullOrWhiteSpace(settingsStatusText)
                     ? Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.title", "Battle View Settings")
-                    : settingsStatusText));
+                    : settingsStatusText),
+            selectedUnit ?? BattleSelectedUnitViewState.Hidden);
     }
 
     private string BuildLocaleStatus()

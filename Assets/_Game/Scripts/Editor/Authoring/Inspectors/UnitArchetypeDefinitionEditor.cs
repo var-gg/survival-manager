@@ -19,11 +19,32 @@ public sealed class UnitArchetypeDefinitionEditor : UnityEditor.Editor
 
         using (new EditorGUI.DisabledScope(true))
         {
+            DrawIdentitySummary(archetype);
             DrawStatSummary(archetype);
             DrawSkillSlotSummary(archetype);
             DrawProfileSummary(archetype);
             DrawCompiledEffectiveValues(archetype);
         }
+    }
+
+    private static void DrawIdentitySummary(UnitArchetypeDefinition archetype)
+    {
+        EditorGUILayout.LabelField("Localized Taxonomy", EditorStyles.miniBoldLabel);
+
+        var characterName = EditorLocalizedTextResolver.GetCharacterName(null, archetype.Id);
+        var archetypeName = EditorLocalizedTextResolver.GetArchetypeName(archetype, archetype.Id);
+        var raceName = EditorLocalizedTextResolver.GetRaceName(archetype.Race, archetype.Race != null ? archetype.Race.Id : string.Empty);
+        var className = EditorLocalizedTextResolver.GetClassName(archetype.Class, archetype.Class != null ? archetype.Class.Id : string.Empty);
+        var roleFamily = EditorLocalizedTextResolver.GetRoleFamilyName(archetype.Class);
+
+        var builder = new StringBuilder();
+        builder.AppendLine($"{EditorLocalizedTextResolver.LocalizeUi("ui.battle.axis.character", "캐릭터", "Character")}: {characterName} [{archetype.Id}]");
+        builder.AppendLine($"{EditorLocalizedTextResolver.LocalizeUi("ui.battle.axis.archetype", "전투 원형", "Archetype")}: {archetypeName} [{archetype.Id}]");
+        builder.AppendLine($"{EditorLocalizedTextResolver.LocalizeUi("ui.battle.axis.race", "종족", "Race")}: {raceName}");
+        builder.AppendLine($"{EditorLocalizedTextResolver.LocalizeUi("ui.battle.axis.class", "직업", "Class")}: {className}");
+        builder.AppendLine($"{EditorLocalizedTextResolver.LocalizeUi("ui.battle.axis.role", "역할", "Role")}: {EditorLocalizedTextResolver.GetRoleName(null, archetype.RoleTag, archetype.RoleTag)}");
+        builder.Append($"{EditorLocalizedTextResolver.LocalizeUi("ui.battle.axis.role_family", "역할군", "Role Family")}: {roleFamily}");
+        EditorGUILayout.TextArea(builder.ToString(), EditorStyles.helpBox);
     }
 
     private static void DrawStatSummary(UnitArchetypeDefinition archetype)

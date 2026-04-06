@@ -31,6 +31,11 @@ public static class IndividualAssetExporter
                 var converter = new ArchetypeConverter(reg.SkillDefinitions, reg.FirstPlayableSlice);
                 return converter.BuildArchetypeTemplate(def);
             }),
+            [typeof(CharacterDefinition)] = ("Characters", (asset, _) =>
+            {
+                var def = (CharacterDefinition)asset;
+                return string.IsNullOrWhiteSpace(def.Id) ? null : (object)CatalogEntryConverter.BuildCharacterTemplate(def);
+            }),
             [typeof(SkillDefinitionAsset)] = ("Skills", (asset, _) =>
             {
                 var def = (SkillDefinitionAsset)asset;
@@ -156,6 +161,7 @@ public static class IndividualAssetExporter
         var snapshot = assembler.Assemble();
 
         ExportDictionary(outputRoot, "Archetypes", snapshot.Archetypes);
+        if (snapshot.Characters != null) ExportDictionary(outputRoot, "Characters", snapshot.Characters);
         ExportDictionary(outputRoot, "Skills", snapshot.SkillCatalog);
         ExportDictionary(outputRoot, "Items", snapshot.ItemPackages);
         ExportDictionary(outputRoot, "Affixes", snapshot.AffixPackages);

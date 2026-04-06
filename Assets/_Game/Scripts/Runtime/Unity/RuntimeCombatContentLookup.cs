@@ -149,6 +149,12 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
         return _registry.ClassDefinitions.TryGetValue(classId, out @class!);
     }
 
+    public bool TryGetCharacterDefinition(string characterId, out CharacterDefinition character)
+    {
+        EnsureLoaded();
+        return _registry.CharacterDefinitions.TryGetValue(characterId, out character!);
+    }
+
     public bool TryGetAugmentDefinition(string augmentId, out AugmentDefinition augment)
     {
         EnsureLoaded();
@@ -165,6 +171,12 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
     {
         EnsureLoaded();
         return _registry.AffixDefinitions.TryGetValue(affixId, out affix!);
+    }
+
+    public bool TryGetRoleInstructionDefinition(string roleInstructionId, out RoleInstructionDefinition roleInstruction)
+    {
+        EnsureLoaded();
+        return _registry.RoleInstructionDefinitions.TryGetValue(roleInstructionId, out roleInstruction!);
     }
 
     public bool TryGetCampaignChapterDefinition(string chapterId, out CampaignChapterDefinition chapter)

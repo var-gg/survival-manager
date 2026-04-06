@@ -60,6 +60,14 @@ public static class BattleSetupBuilder
             return false;
         }
 
+        var roleInstructionId = ResolveRoleInstructionId(participant, content);
+        var resolvedRoleInstruction = ResolveRoleInstruction(participant, content, roleInstructionId);
+        var resolvedRoleTag = !string.IsNullOrWhiteSpace(resolvedRoleInstruction.RoleTag)
+            ? resolvedRoleInstruction.RoleTag
+            : string.IsNullOrWhiteSpace(participant.RoleTag) || participant.RoleTag == "auto"
+                ? archetype.RoleTag
+                : participant.RoleTag;
+
         definition = new BattleUnitLoadout(
             participant.ParticipantId,
             participant.DisplayName,
@@ -73,12 +81,12 @@ public static class BattleSetupBuilder
                 $"posture:{participant.TeamPosture}",
                 participant.TeamPosture.ToString(),
                 participant.TeamPosture),
-            new SlotRoleInstruction(participant.Anchor, participant.RoleTag),
+            resolvedRoleInstruction,
             participant.OpeningIntent,
             packages,
             null,
             null,
-            string.IsNullOrWhiteSpace(participant.RoleTag) || participant.RoleTag == "auto" ? archetype.RoleTag : participant.RoleTag,
+            resolvedRoleTag,
             RoleVariantTag.Unassigned,
             archetype.Footprint,
             archetype.Behavior,
@@ -98,9 +106,41 @@ public static class BattleSetupBuilder
             archetype.EntityKind,
             archetype.Ownership,
             archetype.SummonProfile,
-            archetype.Governance);
+            archetype.Governance,
+            archetype.Id,
+            string.IsNullOrWhiteSpace(participant.CharacterId) ? archetype.Id : participant.CharacterId,
+            roleInstructionId);
         error = string.Empty;
         return true;
+    }
+
+    private static string ResolveRoleInstructionId(BattleParticipantSpec participant, CombatContentSnapshot content)
+    {
+        if (!string.IsNullOrWhiteSpace(participant.RoleInstructionId))
+        {
+            return participant.RoleInstructionId;
+        }
+
+        if (!string.IsNullOrWhiteSpace(participant.CharacterId)
+            && content.Characters != null
+            && content.Characters.TryGetValue(participant.CharacterId, out var character)
+            && !string.IsNullOrWhiteSpace(character.DefaultRoleInstructionId))
+        {
+            return character.DefaultRoleInstructionId;
+        }
+
+        return string.Empty;
+    }
+
+    private static SlotRoleInstruction ResolveRoleInstruction(BattleParticipantSpec participant, CombatContentSnapshot content, string roleInstructionId)
+    {
+        if (!string.IsNullOrWhiteSpace(roleInstructionId)
+            && content.RoleInstructions.TryGetValue(roleInstructionId, out var role))
+        {
+            return role.Instruction with { Anchor = participant.Anchor };
+        }
+
+        return new SlotRoleInstruction(participant.Anchor, participant.RoleTag);
     }
 
     private static bool TryAddTraitPackage(

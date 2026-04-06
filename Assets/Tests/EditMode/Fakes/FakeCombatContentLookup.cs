@@ -17,13 +17,61 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
     private readonly CombatContentSnapshot _snapshot;
     private readonly FirstPlayableSliceDefinition? _firstPlayableSlice;
     private readonly Dictionary<string, UnitArchetypeDefinition> _archetypes = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, RaceDefinition> _races = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, ClassDefinition> _classes = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, CharacterDefinition> _characters = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, RoleInstructionDefinition> _roleInstructions = new(StringComparer.Ordinal);
 
     public FakeCombatContentLookup(
         CombatContentSnapshot? snapshot = null,
-        FirstPlayableSliceDefinition? firstPlayableSlice = null)
+        FirstPlayableSliceDefinition? firstPlayableSlice = null,
+        IReadOnlyDictionary<string, UnitArchetypeDefinition>? archetypes = null,
+        IReadOnlyDictionary<string, RaceDefinition>? races = null,
+        IReadOnlyDictionary<string, ClassDefinition>? classes = null,
+        IReadOnlyDictionary<string, CharacterDefinition>? characters = null,
+        IReadOnlyDictionary<string, RoleInstructionDefinition>? roleInstructions = null)
     {
         _snapshot = snapshot ?? CreateEmptySnapshot();
         _firstPlayableSlice = firstPlayableSlice;
+        if (archetypes != null)
+        {
+            foreach (var (id, archetype) in archetypes)
+            {
+                _archetypes[id] = archetype;
+            }
+        }
+
+        if (races != null)
+        {
+            foreach (var (id, race) in races)
+            {
+                _races[id] = race;
+            }
+        }
+
+        if (classes != null)
+        {
+            foreach (var (id, @class) in classes)
+            {
+                _classes[id] = @class;
+            }
+        }
+
+        if (characters != null)
+        {
+            foreach (var (id, character) in characters)
+            {
+                _characters[id] = character;
+            }
+        }
+
+        if (roleInstructions != null)
+        {
+            foreach (var (id, roleInstruction) in roleInstructions)
+            {
+                _roleInstructions[id] = roleInstruction;
+            }
+        }
     }
 
     // ── Snapshot ──
@@ -53,8 +101,7 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
 
     public bool TryGetArchetype(string archetypeId, out UnitArchetypeDefinition archetype)
     {
-        archetype = null!;
-        return false;
+        return _archetypes.TryGetValue(archetypeId, out archetype!);
     }
 
     public bool TryGetItemDefinition(string itemId, out ItemBaseDefinition item)
@@ -65,14 +112,17 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
 
     public bool TryGetRaceDefinition(string raceId, out RaceDefinition race)
     {
-        race = null!;
-        return false;
+        return _races.TryGetValue(raceId, out race!);
     }
 
     public bool TryGetClassDefinition(string classId, out ClassDefinition @class)
     {
-        @class = null!;
-        return false;
+        return _classes.TryGetValue(classId, out @class!);
+    }
+
+    public bool TryGetCharacterDefinition(string characterId, out CharacterDefinition character)
+    {
+        return _characters.TryGetValue(characterId, out character!);
     }
 
     public bool TryGetAugmentDefinition(string augmentId, out AugmentDefinition augment)
@@ -91,6 +141,11 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
     {
         affix = null!;
         return false;
+    }
+
+    public bool TryGetRoleInstructionDefinition(string roleInstructionId, out RoleInstructionDefinition roleInstruction)
+    {
+        return _roleInstructions.TryGetValue(roleInstructionId, out roleInstruction!);
     }
 
     public bool TryGetCampaignChapterDefinition(string chapterId, out CampaignChapterDefinition chapter)

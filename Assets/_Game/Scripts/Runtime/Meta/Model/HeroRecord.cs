@@ -15,7 +15,8 @@ public sealed record HeroRecord(
     RecruitTier RecruitTier = RecruitTier.Common,
     RecruitOfferSource RecruitSource = RecruitOfferSource.RecruitPhase,
     UnitRetrainState? RetrainState = null,
-    UnitEconomyFootprint? EconomyFootprint = null)
+    UnitEconomyFootprint? EconomyFootprint = null,
+    string CharacterId = "")
 {
     public UnitRetrainState EffectiveRetrainState => RetrainState ?? new UnitRetrainState();
 

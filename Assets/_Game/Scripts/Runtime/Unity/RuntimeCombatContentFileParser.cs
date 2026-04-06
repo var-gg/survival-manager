@@ -15,6 +15,7 @@ public sealed record RuntimeCombatParsedContent(
     IReadOnlyList<StatDefinition> Stats,
     IReadOnlyList<RaceDefinition> Races,
     IReadOnlyList<ClassDefinition> Classes,
+    IReadOnlyList<CharacterDefinition> Characters,
     IReadOnlyList<TraitPoolDefinition> TraitPools,
     IReadOnlyList<UnitArchetypeDefinition> Archetypes,
     IReadOnlyList<SkillDefinitionAsset> Skills,
@@ -48,6 +49,7 @@ public sealed record RuntimeCombatParsedContent(
         Stats.Cast<ScriptableObject>()
             .Concat(Races)
             .Concat(Classes)
+            .Concat(Characters)
             .Concat(TraitPools)
             .Concat(Archetypes)
             .Concat(Skills)
@@ -112,6 +114,12 @@ public static class RuntimeCombatContentFileParser
             var expeditions = CampaignFileParser.LoadExpeditions(guidToPath);
             var rewardTables = RewardFileParser.LoadRewardTables();
             var archetypes = ArchetypeFileParser.LoadArchetypes(guidToPath, races, classes, traitPools, skills);
+            var characters = CharacterFileParser.LoadCharacters(
+                guidToPath,
+                races,
+                classes,
+                archetypes.ToDictionary(definition => definition.Id, definition => definition, StringComparer.Ordinal),
+                roleInstructions);
             var campaignChapters = CampaignFileParser.LoadCampaignChapters();
             var expeditionSites = CampaignFileParser.LoadExpeditionSites();
             var encounters = CampaignFileParser.LoadEncounters();
@@ -128,6 +136,7 @@ public static class RuntimeCombatContentFileParser
                 stats.Values,
                 races.Values,
                 classes.Values,
+                characters.Values,
                 traitPools.Values,
                 archetypes,
                 skills.Values,
@@ -160,6 +169,7 @@ public static class RuntimeCombatContentFileParser
                 stats.Values.ToList(),
                 races.Values.ToList(),
                 classes.Values.ToList(),
+                characters.Values.ToList(),
                 traitPools.Values.ToList(),
                 archetypes,
                 skills.Values.ToList(),
@@ -241,6 +251,7 @@ public static class RuntimeCombatContentFileParser
             StatDefinition => "Stats",
             RaceDefinition => "Races",
             ClassDefinition => "Classes",
+            CharacterDefinition => "Characters",
             TraitPoolDefinition => "Traits",
             UnitArchetypeDefinition => "Archetypes",
             SkillDefinitionAsset => "Skills",

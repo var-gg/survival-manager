@@ -62,6 +62,50 @@ public sealed class ContentTextResolver
             : classId;
     }
 
+    public string GetCharacterName(string characterId, string fallbackArchetypeId = "")
+    {
+        if (_lookup.TryGetCharacterDefinition(characterId, out var character))
+        {
+            var fallback = !string.IsNullOrWhiteSpace(character.LegacyDisplayName)
+                ? character.LegacyDisplayName
+                : !string.IsNullOrWhiteSpace(fallbackArchetypeId)
+                    ? GetArchetypeName(fallbackArchetypeId)
+                    : characterId;
+            return Localize(ContentLocalizationTables.Characters, character.NameKey, fallback, characterId);
+        }
+
+        return !string.IsNullOrWhiteSpace(fallbackArchetypeId)
+            ? GetArchetypeName(fallbackArchetypeId)
+            : characterId;
+    }
+
+    public string GetRoleName(string roleInstructionId, string fallbackRoleTag = "")
+    {
+        if (_lookup.TryGetRoleInstructionDefinition(roleInstructionId, out var roleInstruction))
+        {
+            var localeCode = _localization.CurrentLocale?.Identifier.Code;
+            var fallback = !string.IsNullOrWhiteSpace(roleInstruction.LegacyDisplayName)
+                ? roleInstruction.LegacyDisplayName
+                : RoleGlossary.GetLocalizedRoleTagFallback(roleInstruction.RoleTag, localeCode);
+            return Localize(ContentLocalizationTables.Roles, roleInstruction.NameKey, fallback, roleInstructionId);
+        }
+
+        var roleTag = string.IsNullOrWhiteSpace(fallbackRoleTag) ? roleInstructionId : fallbackRoleTag;
+        return RoleGlossary.GetLocalizedRoleTagFallback(roleTag, _localization.CurrentLocale?.Identifier.Code);
+    }
+
+    public string GetRoleFamilyName(string classId)
+    {
+        var roleFamilyTag = RoleGlossary.GetRoleFamilyTagOrDefault(classId);
+        if (string.Equals(roleFamilyTag, classId, System.StringComparison.Ordinal))
+        {
+            return GetClassName(classId);
+        }
+
+        var fallback = RoleGlossary.GetLocalizedRoleFamilyFallback(roleFamilyTag, _localization.CurrentLocale?.Identifier.Code);
+        return Localize(ContentLocalizationTables.Roles, ContentLocalizationTables.BuildRoleNameKey(roleFamilyTag), fallback, roleFamilyTag);
+    }
+
     public string GetTraitName(string archetypeId, string traitId)
     {
         return _lookup.TryGetTraitEntry(archetypeId, traitId, out var trait)
