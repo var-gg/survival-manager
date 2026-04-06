@@ -1,3 +1,4 @@
+using SM.Unity;
 using SM.Editor.SeedData;
 using SM.Editor.Validation;
 using UnityEditor;
@@ -5,16 +6,25 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using System.IO;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 namespace SM.Editor.Bootstrap;
 
+[InitializeOnLoad]
 public static class FirstPlayableBootstrap
 {
     private const string BootScenePath = "Assets/_Game/Scenes/Boot.unity";
     private const string BattleScenePath = "Assets/_Game/Scenes/Battle.unity";
     internal const string QuickBattleRequestedKey = "SM.QuickBattleRequested";
+    private const string QuickBattleInspectorRestoreKey = "SM.QuickBattleRestoreInspector";
     private const string QuickBattleConfigFolder = "Assets/Resources/_Game/Content/Definitions/QuickBattle";
     private const string QuickBattleConfigAssetPath = "Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset";
+
+    static FirstPlayableBootstrap()
+    {
+        EditorApplication.playModeStateChanged -= HandlePlayModeStateChanged;
+        EditorApplication.playModeStateChanged += HandlePlayModeStateChanged;
+    }
 
     [MenuItem("SM/Quick Battle")]
     public static void QuickBattleOneClick()
@@ -43,6 +53,7 @@ public static class FirstPlayableBootstrap
             var quickBattleConfig = EnsureQuickBattleConfig();
             if (quickBattleConfig != null)
             {
+                EditorPrefs.SetBool(QuickBattleInspectorRestoreKey, true);
                 Selection.activeObject = quickBattleConfig;
                 EditorGUIUtility.PingObject(quickBattleConfig);
             }
@@ -52,12 +63,19 @@ public static class FirstPlayableBootstrap
 
             Debug.Log("[QuickBattle] Step 7/7: Open Battle scene → Enter Play Mode");
             EditorSceneManager.OpenScene(BattleScenePath, OpenSceneMode.Single);
+            if (quickBattleConfig != null)
+            {
+                Selection.activeObject = quickBattleConfig;
+                EditorGUIUtility.PingObject(quickBattleConfig);
+            }
+
             EditorPrefs.SetBool(QuickBattleRequestedKey, true);
             EditorApplication.EnterPlaymode();
         }
         catch (System.Exception ex)
         {
             EditorPrefs.DeleteKey(QuickBattleRequestedKey);
+            EditorPrefs.DeleteKey(QuickBattleInspectorRestoreKey);
             Debug.LogError($"[QuickBattle] Failed: {ex.Message}\n{ex}");
             throw;
         }
@@ -156,6 +174,40 @@ public static class FirstPlayableBootstrap
         {
             Debug.LogWarning($"[ObserverPlayable] Local demo save reset skipped: {ex.Message}");
         }
+    }
+
+    private static void HandlePlayModeStateChanged(PlayModeStateChange state)
+    {
+        if (state != PlayModeStateChange.EnteredPlayMode)
+        {
+            return;
+        }
+
+        if (!EditorPrefs.GetBool(QuickBattleInspectorRestoreKey, false))
+        {
+            return;
+        }
+
+        EditorApplication.delayCall += RestoreQuickBattleInspectorSelection;
+    }
+
+    private static void RestoreQuickBattleInspectorSelection()
+    {
+        EditorPrefs.DeleteKey(QuickBattleInspectorRestoreKey);
+
+        if (!Application.isPlaying || SceneManager.GetActiveScene().name != SceneNames.Battle)
+        {
+            return;
+        }
+
+        var battleController = Object.FindFirstObjectByType<BattleScreenController>();
+        if (battleController == null)
+        {
+            return;
+        }
+
+        Selection.activeGameObject = battleController.gameObject;
+        EditorGUIUtility.PingObject(battleController.gameObject);
     }
 
     private static void ValidateContentDefinitionsForPrototypeEntry(string flowLabel)
