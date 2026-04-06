@@ -200,14 +200,20 @@ public static class FirstPlayableBootstrap
             return;
         }
 
-        var battleController = Object.FindFirstObjectByType<BattleScreenController>();
-        if (battleController == null)
+        var quickBattleConfig = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(QuickBattleConfigAssetPath);
+        if (quickBattleConfig != null)
         {
+            Selection.activeObject = quickBattleConfig;
+            EditorGUIUtility.PingObject(quickBattleConfig);
             return;
         }
 
-        Selection.activeGameObject = battleController.gameObject;
-        EditorGUIUtility.PingObject(battleController.gameObject);
+        var battleController = Object.FindFirstObjectByType<BattleScreenController>();
+        if (battleController != null)
+        {
+            Selection.activeGameObject = battleController.gameObject;
+            EditorGUIUtility.PingObject(battleController.gameObject);
+        }
     }
 
     private static void ValidateContentDefinitionsForPrototypeEntry(string flowLabel)
