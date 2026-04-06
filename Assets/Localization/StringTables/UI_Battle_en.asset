@@ -169,6 +169,38 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
+  - m_Id: 2688396089614336
+    m_Localized: Character
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396177694720
+    m_Localized: Archetype
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396177694721
+    m_Localized: Race
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396177694722
+    m_Localized: Class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396181889024
+    m_Localized: Role
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396181889025
+    m_Localized: Role Family
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396181889026
+    m_Localized: Anchor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396181889027
+    m_Localized: Selected Unit
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

@@ -151,6 +151,38 @@ MonoBehaviour:
     m_Key: ui.battle.settings.team_summary
     m_Metadata:
       m_Items: []
+  - m_Id: 2688396089614336
+    m_Key: ui.battle.axis.character
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396177694720
+    m_Key: ui.battle.axis.archetype
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396177694721
+    m_Key: ui.battle.axis.race
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396177694722
+    m_Key: ui.battle.axis.class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396181889024
+    m_Key: ui.battle.axis.role
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396181889025
+    m_Key: ui.battle.axis.role_family
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396181889026
+    m_Key: ui.battle.axis.anchor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2688396181889027
+    m_Key: ui.battle.selected.header
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

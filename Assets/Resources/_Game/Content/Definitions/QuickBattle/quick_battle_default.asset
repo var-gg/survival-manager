@@ -36,42 +36,42 @@ MonoBehaviour:
   EnemySlots:
   - ParticipantId: enemy_guardian
     DisplayName: Enemy Guardian
-    CharacterId: guardian
-    ArchetypeIdOverride: 
+    CharacterId: 
+    ArchetypeIdOverride: guardian
     Anchor: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    RoleInstructionId: anchor
+    RoleInstructionId: 
     RoleTag: auto
     TemporaryAugmentIds: []
   - ParticipantId: enemy_raider
     DisplayName: Enemy Raider
-    CharacterId: raider
-    ArchetypeIdOverride: 
+    CharacterId: 
+    ArchetypeIdOverride: raider
     Anchor: 2
     PositiveTraitId: 
     NegativeTraitId: 
-    RoleInstructionId: bruiser
+    RoleInstructionId: 
     RoleTag: auto
     TemporaryAugmentIds: []
   - ParticipantId: enemy_hunter
     DisplayName: Enemy Hunter
-    CharacterId: hunter
-    ArchetypeIdOverride: 
+    CharacterId: 
+    ArchetypeIdOverride: hunter
     Anchor: 3
     PositiveTraitId: 
     NegativeTraitId: 
-    RoleInstructionId: carry
+    RoleInstructionId: 
     RoleTag: auto
     TemporaryAugmentIds: []
   - ParticipantId: enemy_hexer
     DisplayName: Enemy Hexer
-    CharacterId: hexer
-    ArchetypeIdOverride: 
+    CharacterId: 
+    ArchetypeIdOverride: hexer
     Anchor: 5
     PositiveTraitId: 
     NegativeTraitId: 
-    RoleInstructionId: support
+    RoleInstructionId: 
     RoleTag: auto
     TemporaryAugmentIds: []
   TemporaryAugmentIds: []

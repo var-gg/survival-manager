@@ -1,0 +1,234 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: first_playable_slice
+  m_EditorClassIdentifier: SM.Unity:SM.Unity:FirstPlayableSliceDefinitionAsset
+  UnitBlueprintCap: 12
+  SignatureActiveCap: 12
+  SignaturePassiveCap: 12
+  FlexActiveCap: 8
+  FlexPassiveCap: 8
+  AffixCap: 24
+  SynergyFamilyCap: 7
+  TemporaryAugmentCap: 12
+  PermanentAugmentCap: 4
+  PassiveBoardCap: 4
+  RequireAllThreatPatternsCovered: 1
+  RequireAllCounterToolsCovered: 1
+  CoverageQuotas:
+  - Kind: 0
+    MinimumCount: 2
+  - Kind: 1
+    MinimumCount: 2
+  - Kind: 2
+    MinimumCount: 2
+  - Kind: 3
+    MinimumCount: 2
+  - Kind: 4
+    MinimumCount: 2
+  - Kind: 5
+    MinimumCount: 1
+  - Kind: 6
+    MinimumCount: 1
+  - Kind: 7
+    MinimumCount: 1
+  - Kind: 8
+    MinimumCount: 1
+  - Kind: 9
+    MinimumCount: 1
+  UnitBlueprintIds:
+  - warden
+  - guardian
+  - slayer
+  - raider
+  - hunter
+  - scout
+  - priest
+  - hexer
+  - bulwark
+  - reaver
+  - marksman
+  - shaman
+  SignatureActiveIds:
+  - skill_power_strike
+  - skill_precision_shot
+  - skill_priest_core
+  - skill_hexer_core
+  - skill_bulwark_core
+  - skill_reaver_core
+  - skill_marksman_core
+  - skill_shaman_core
+  - skill_guardian_core
+  - skill_raider_core
+  - skill_scout_core
+  - skill_slayer_core
+  SignaturePassiveIds:
+  - skill_vanguard_passive_1
+  - skill_duelist_passive_1
+  - skill_ranger_passive_1
+  - skill_mystic_passive_1
+  - skill_duelist_passive_2
+  - skill_mystic_passive_2
+  - skill_ranger_passive_2
+  - skill_vanguard_passive_2
+  FlexActiveIds:
+  - skill_guardian_utility
+  - skill_warden_utility
+  - skill_slayer_utility
+  - skill_raider_utility
+  - skill_reaver_utility
+  - skill_hunter_utility
+  - skill_marksman_utility
+  - skill_scout_utility
+  FlexPassiveIds:
+  - skill_vanguard_support_1
+  - skill_vanguard_support_2
+  - support_guarded
+  - support_anchored
+  - skill_duelist_support_1
+  - skill_duelist_support_2
+  - support_executioner
+  - support_brutal
+  AffixIds:
+  - affix_blessed
+  - affix_bracing
+  - affix_channeling
+  - affix_farshot
+  - affix_fierce
+  - affix_guarded
+  - affix_hallowed
+  - affix_hasty
+  - affix_heavy
+  - affix_ironclad
+  - affix_lucid
+  - affix_mender
+  - affix_packborn
+  - affix_precise
+  - affix_quick
+  - affix_ravenous
+  - affix_relentless
+  - affix_resolute
+  - affix_sharp
+  - affix_spined
+  - affix_sturdy
+  - affix_vital
+  - affix_watchful
+  - affix_wraithbound
+  SynergyFamilyIds:
+  - synergy_beastkin
+  - synergy_duelist
+  - synergy_human
+  - synergy_mystic
+  - synergy_ranger
+  - synergy_undead
+  - synergy_vanguard
+  TemporaryAugmentIds:
+  - augment_gold_barrage
+  - augment_gold_bastion
+  - augment_gold_fury
+  - augment_gold_mending
+  - augment_gold_pack
+  - augment_gold_pact
+  - augment_platinum_catacomb
+  - augment_platinum_hinterland
+  - augment_platinum_overrun
+  - augment_platinum_reckoning
+  - augment_platinum_surge
+  - augment_platinum_wall
+  PermanentAugmentIds:
+  - augment_perm_legacy_blade
+  - augment_perm_legacy_bone
+  - augment_perm_legacy_chalice
+  - augment_perm_legacy_fang
+  PassiveBoardIds: []
+  ParkingLotContentIds:
+  - augment_gold_barrage
+  - augment_gold_bastion
+  - augment_gold_fury
+  - augment_gold_mending
+  - augment_gold_pack
+  - augment_gold_pact
+  - augment_perm_legacy_blade
+  - augment_perm_legacy_bone
+  - augment_perm_legacy_chalice
+  - augment_perm_legacy_fang
+  - augment_perm_legacy_grace
+  - augment_perm_legacy_hide
+  - augment_perm_legacy_oath
+  - augment_perm_legacy_scope
+  - augment_perm_legacy_signal
+  - augment_platinum_catacomb
+  - augment_platinum_hinterland
+  - augment_platinum_overrun
+  - augment_platinum_reckoning
+  - augment_platinum_surge
+  - augment_platinum_wall
+  - augment_silver_focus
+  - augment_silver_guard
+  - augment_silver_hex
+  - augment_silver_hunt
+  - augment_silver_stride
+  - augment_silver_ward
+  - skill_bulwark_core
+  - skill_bulwark_utility
+  - skill_duelist_passive_1
+  - skill_duelist_passive_2
+  - skill_duelist_support_1
+  - skill_duelist_support_2
+  - skill_guardian_core
+  - skill_guardian_utility
+  - skill_hexer_core
+  - skill_hexer_utility
+  - skill_hunter_utility
+  - skill_marksman_core
+  - skill_marksman_utility
+  - skill_minor_heal
+  - skill_mystic_passive_1
+  - skill_mystic_passive_2
+  - skill_mystic_support_1
+  - skill_mystic_support_2
+  - skill_power_strike
+  - skill_precision_shot
+  - skill_priest_core
+  - skill_raider_core
+  - skill_raider_utility
+  - skill_ranger_passive_1
+  - skill_ranger_passive_2
+  - skill_ranger_support_1
+  - skill_ranger_support_2
+  - skill_reaver_core
+  - skill_reaver_utility
+  - skill_scout_core
+  - skill_scout_utility
+  - skill_shaman_core
+  - skill_shaman_utility
+  - skill_slayer_core
+  - skill_slayer_utility
+  - skill_vanguard_passive_1
+  - skill_vanguard_passive_2
+  - skill_vanguard_support_1
+  - skill_vanguard_support_2
+  - skill_warden_utility
+  - support_anchored
+  - support_brutal
+  - support_echo
+  - support_executioner
+  - support_guarded
+  - support_hunter_mark
+  - support_lingering
+  - support_longshot
+  - support_piercing
+  - support_purifying
+  - support_siphon
+  - support_swift
+  SynergyGrammar: []
+  ClassLabelMappings: []
