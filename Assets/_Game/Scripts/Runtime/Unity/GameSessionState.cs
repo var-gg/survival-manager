@@ -2766,14 +2766,16 @@ public sealed class GameSessionState
     {
         EnsureAssignmentMapInitialized();
 
+        var deploymentAssignments = DeploymentAnchorOrder
+            .Where(anchor => _deploymentAssignments.TryGetValue(anchor, out var heroId) && !string.IsNullOrWhiteSpace(heroId))
+            .ToDictionary(anchor => anchor, anchor => _deploymentAssignments[anchor]!, EqualityComparer<DeploymentAnchorId>.Default);
+
         var blueprint = new SquadBlueprintState(
             string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId) ? "blueprint.default" : Profile.ActiveBlueprintId,
             "Default Build",
             SelectedTeamPosture,
             SelectedTeamTacticId,
-            EnumerateDeploymentAssignments()
-                .Where(entry => !string.IsNullOrWhiteSpace(entry.HeroId))
-                .ToDictionary(entry => entry.Anchor, entry => entry.HeroId!, EqualityComparer<DeploymentAnchorId>.Default),
+            deploymentAssignments,
             _expeditionSquadHeroIds.ToList(),
             Profile.Heroes.ToDictionary(hero => hero.HeroId, hero => ResolveBlueprintRoleInstructionId(hero.HeroId, hero.ClassId, ResolvePreferredAnchor(hero.HeroId)), StringComparer.Ordinal));
 

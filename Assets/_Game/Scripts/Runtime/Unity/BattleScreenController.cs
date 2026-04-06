@@ -47,6 +47,7 @@ public sealed class BattleScreenController : MonoBehaviour
     private BattlePlaybackPolicy _policy = new(BattlePlaybackMode.QuickBattle);
     private BattleScreenPresenter? _presenter;
     private BattleScreenView? _view;
+    private bool _inputActionsInitialized;
 
     private InputAction _toggleDebugAction = null!;
     private InputAction _stepOnceAction = null!;
@@ -552,10 +553,12 @@ public sealed class BattleScreenController : MonoBehaviour
         _restartAction.Enable();
         _cycleUnitAction.Enable();
         _togglePauseAction.Enable();
+        _inputActionsInitialized = true;
     }
 
     private void DisposeInputActions()
     {
+        _inputActionsInitialized = false;
         _toggleDebugAction?.Dispose();
         _stepOnceAction?.Dispose();
         _restartAction?.Dispose();
@@ -565,6 +568,11 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void HandleKeyboardShortcuts()
     {
+        if (!_inputActionsInitialized)
+        {
+            return;
+        }
+
         if (_toggleDebugAction.WasPressedThisFrame())
         {
             _presentationOptions.ToggleDebugOverlay();
