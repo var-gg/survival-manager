@@ -55,9 +55,13 @@ public sealed class BattleScreenView
     private Action<float>? _seekRequested;
     private bool _isDragging;
     private bool _scrubberInteractable = true;
+    private int _blockingPointerDepth;
+
+    public bool IsPointerOverBlockingUi => _blockingPointerDepth > 0;
 
     public BattleScreenView(VisualElement root)
     {
+        root.pickingMode = PickingMode.Ignore;
         _titleLabel = Require<Label>(root, "TitleLabel");
         _localeStatusLabel = Require<Label>(root, "LocaleStatusLabel");
         _localeKoButton = Require<Button>(root, "LocaleKoButton");
@@ -86,6 +90,9 @@ public sealed class BattleScreenView
         _toggleTeamSummaryButton = Require<Button>(root, "ToggleTeamSummaryButton");
         _toggleDebugOverlayButton = Require<Button>(root, "ToggleDebugOverlayButton");
         _settingsStatusLabel = Require<Label>(root, "SettingsStatusLabel");
+
+        SetNonBlocking(_titleLabel, _localeStatusLabel, _allySummaryPanel, _enemySummaryPanel, _allyHpLabel, _enemyHpLabel, _logLabel, _resultLabel, _speedLabel, _statusLabel, _settingsPanel, _settingsStatusLabel);
+        SetBlocking(_localeKoButton, _localeEnButton, _speed1Button, _speed2Button, _speed4Button, _pauseButton, _continueButton, _rebattleButton, _returnTownButton, _settingsButton, _progressTrack, _toggleOverheadButton, _toggleDamageTextButton, _toggleTeamSummaryButton, _toggleDebugOverlayButton);
     }
 
     public void Bind(BattleScreenActions actions)
@@ -203,6 +210,24 @@ public sealed class BattleScreenView
         var normalized = Mathf.Clamp01((pointerPosition.x - rect.xMin) / rect.width);
         _progressFill.style.width = Length.Percent(normalized * 100f);
         _seekRequested?.Invoke(normalized);
+    }
+
+    private void SetNonBlocking(params VisualElement[] elements)
+    {
+        foreach (var element in elements)
+        {
+            element.pickingMode = PickingMode.Ignore;
+        }
+    }
+
+    private void SetBlocking(params VisualElement[] elements)
+    {
+        foreach (var element in elements)
+        {
+            element.pickingMode = PickingMode.Position;
+            element.RegisterCallback<PointerEnterEvent>(_ => _blockingPointerDepth++);
+            element.RegisterCallback<PointerLeaveEvent>(_ => _blockingPointerDepth = Math.Max(0, _blockingPointerDepth - 1));
+        }
     }
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement

@@ -83,6 +83,7 @@ public sealed class BattleScreenController : MonoBehaviour
         if (cameraController != null)
         {
             cameraController.Initialize(DefaultCameraPosition, DefaultCameraRotation);
+            cameraController.SetUiBlockPredicate(() => _view?.IsPointerOverBlockingUi ?? false);
         }
         else
         {
@@ -447,6 +448,12 @@ public sealed class BattleScreenController : MonoBehaviour
             HandleScrubberSeek));
         _presenter = new BattleScreenPresenter(_localization, _root.SessionState, _presentationOptions);
         _boundRootBuildCount = panelHost.RootBuildCount;
+
+        if (cameraController != null)
+        {
+            cameraController.SetUiBlockPredicate(() => _view.IsPointerOverBlockingUi);
+        }
+
         return true;
     }
 

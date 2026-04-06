@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -34,6 +35,7 @@ public sealed class BattleCameraController : MonoBehaviour
 
     // Camera-to-ground offset for proper bounds clamping
     private Vector3 _cameraToGroundOffset;
+    private Func<bool>? _uiBlockPredicate;
 
     // --- New Input System actions (created programmatically) ---
     private InputAction _pointerPositionAction = null!;
@@ -88,6 +90,11 @@ public sealed class BattleCameraController : MonoBehaviour
         }
 
         EnableInputActions(enabled);
+    }
+
+    public void SetUiBlockPredicate(Func<bool>? uiBlockPredicate)
+    {
+        _uiBlockPredicate = uiBlockPredicate;
     }
 
     private void OnDestroy()
@@ -170,8 +177,7 @@ public sealed class BattleCameraController : MonoBehaviour
 
         if ((rightPressed || middlePressed) && !_isDragging)
         {
-            // Don't start camera drag if pointer is over a UI element
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            if (IsPointerBlockedByUi())
             {
                 return;
             }
@@ -208,6 +214,16 @@ public sealed class BattleCameraController : MonoBehaviour
                 _isDragging = false;
             }
         }
+    }
+
+    private bool IsPointerBlockedByUi()
+    {
+        if (_uiBlockPredicate != null)
+        {
+            return _uiBlockPredicate.Invoke();
+        }
+
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
     private void HandleMouseZoom()

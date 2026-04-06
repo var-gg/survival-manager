@@ -1,13 +1,21 @@
 .battle-screen {
     background-color: rgba(0, 0, 0, 0);
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .battle-screen .screen__topbar {
-    align-self: stretch;
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    align-self: auto;
+    justify-content: flex-end;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     background-color: rgba(11, 15, 24, 0.42);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -21,6 +29,35 @@
     border-right-color: rgba(255, 255, 255, 0.08);
     border-top-color: rgba(255, 255, 255, 0.08);
     border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.battle-screen .screen__title {
+    display: none;
+}
+
+.battle-screen .screen__locale-status {
+    display: none;
+}
+
+.battle-screen .screen__locale > Button {
+    min-width: 84px;
+}
+
+.battle-screen .battle-shell__main {
+    position: absolute;
+    top: 68px;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    justify-content: center;
+}
+
+.battle-screen .battle-shell__center {
+    width: 480px;
+}
+
+.battle-screen .battle-shell__side {
+    width: 260px;
 }
 
 .battle-screen .panel {

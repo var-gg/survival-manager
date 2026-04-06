@@ -185,11 +185,6 @@ public sealed class RuntimePanelHost : MonoBehaviour
 
     private PanelSettings ResolvePanelSettings()
     {
-        if (Application.isPlaying)
-        {
-            return s_runtimeFallbackPanelSettings ??= CreateRuntimeFallbackPanelSettings();
-        }
-
         if (panelSettings != null)
         {
             return panelSettings;
