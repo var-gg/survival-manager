@@ -185,6 +185,11 @@ public sealed class RuntimePanelHost : MonoBehaviour
 
     private PanelSettings ResolvePanelSettings()
     {
+        if (Application.isPlaying)
+        {
+            return s_runtimeFallbackPanelSettings ??= CreateRuntimeFallbackPanelSettings();
+        }
+
         if (panelSettings != null)
         {
             return panelSettings;
@@ -236,6 +241,9 @@ public sealed class RuntimePanelHost : MonoBehaviour
     {
         var fallback = ScriptableObject.CreateInstance<PanelSettings>();
         fallback.name = "RuntimePanelHostFallbackSettings";
+        fallback.scaleMode = PanelScaleMode.ScaleWithScreenSize;
+        fallback.referenceResolution = new Vector2Int(1200, 800);
+        fallback.clearColor = false;
         return fallback;
     }
 }

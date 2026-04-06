@@ -9,6 +9,9 @@ using SM.Unity.UI;
 using SM.Unity.UI.Battle;
 using UnityEngine;
 using UnityEngine.InputSystem;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace SM.Unity;
 
@@ -16,6 +19,7 @@ public sealed class BattleScreenController : MonoBehaviour
 {
     private const int MaxRecentLogLines = 8;
     private const int MaxBattleSteps = BattleSimulator.DefaultMaxSteps;
+    private const string QuickBattleRequestedEditorPrefKey = "SM.QuickBattleRequested";
 
     [SerializeField] private RuntimePanelHost panelHost = null!;
     [SerializeField] private BattlePresentationController presentationController = null!;
@@ -59,7 +63,14 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void Start()
     {
-        if (!EnsureReady() || !EnsureViewReady())
+        if (!EnsureReady())
+        {
+            return;
+        }
+
+        BootstrapQuickBattleDirectEntryIfRequested();
+
+        if (!EnsureViewReady())
         {
             return;
         }
@@ -385,6 +396,23 @@ public sealed class BattleScreenController : MonoBehaviour
 
         _localization = _root.Localization;
         return true;
+    }
+
+    private void BootstrapQuickBattleDirectEntryIfRequested()
+    {
+#if UNITY_EDITOR
+        if (!EditorPrefs.GetBool(QuickBattleRequestedEditorPrefKey, false))
+        {
+            return;
+        }
+
+        EditorPrefs.DeleteKey(QuickBattleRequestedEditorPrefKey);
+        _root.EnsureOfflineLocalSession();
+        _root.SessionState.ReloadQuickBattleConfig();
+        _root.SessionState.PrepareQuickBattleSmoke();
+        _root.SaveProfile();
+        Debug.Log("[BattleScreenController] Quick Battle bootstrap 요청을 소비하고 Battle smoke를 초기화했습니다.");
+#endif
     }
 
     private bool EnsureViewReady()

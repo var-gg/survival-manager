@@ -11,6 +11,7 @@ namespace SM.Editor.Bootstrap;
 public static class FirstPlayableBootstrap
 {
     private const string BootScenePath = "Assets/_Game/Scenes/Boot.unity";
+    private const string BattleScenePath = "Assets/_Game/Scenes/Battle.unity";
     internal const string QuickBattleRequestedKey = "SM.QuickBattleRequested";
     private const string QuickBattleConfigFolder = "Assets/Resources/_Game/Content/Definitions/QuickBattle";
     private const string QuickBattleConfigAssetPath = "Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset";
@@ -49,8 +50,8 @@ public static class FirstPlayableBootstrap
             Debug.Log("[QuickBattle] Step 6/7: Reset local demo save/profile");
             ResetLocalDemoState();
 
-            Debug.Log("[QuickBattle] Step 7/7: Open Boot scene → Enter Play Mode");
-            EditorSceneManager.OpenScene(BootScenePath, OpenSceneMode.Single);
+            Debug.Log("[QuickBattle] Step 7/7: Open Battle scene → Enter Play Mode");
+            EditorSceneManager.OpenScene(BattleScenePath, OpenSceneMode.Single);
             EditorPrefs.SetBool(QuickBattleRequestedKey, true);
             EditorApplication.EnterPlaymode();
         }
