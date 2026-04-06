@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
+using SM.Meta.Model;
 using SM.Unity;
 using SM.Unity.UI;
 using UnityEngine;
@@ -31,11 +32,7 @@ public sealed class PlayModeSmokeTests
     [UnityTest]
     public IEnumerator Boot_To_QuickBattle_Smoke_Loop_Reaches_Battle_And_Returns_To_Town()
     {
-        SceneManager.LoadScene(SceneNames.Boot);
-        yield return WaitForScene(SceneNames.Town);
-        Assert.That(GameSessionRoot.Instance, Is.Not.Null, "Boot scene should create GameSessionRoot before Town.");
-
-        yield return WaitForComponent<TownScreenController>();
+        yield return EnterOfflineTownFromBoot();
 
         var town = FindAny<TownScreenController>();
         var townHost = FindPanelHost("TownRuntimePanelHost");
@@ -96,9 +93,7 @@ public sealed class PlayModeSmokeTests
     [UnityTest]
     public IEnumerator Expedition_Branch_Selection_Resolves_Current_Node_And_Preserves_Resume_State()
     {
-        SceneManager.LoadScene(SceneNames.Boot);
-        yield return WaitForScene(SceneNames.Town);
-        yield return WaitForComponent<TownScreenController>();
+        yield return EnterOfflineTownFromBoot();
 
         var root = GameSessionRoot.Instance;
         Assert.That(root, Is.Not.Null, "Boot scene should create GameSessionRoot before Town.");
@@ -135,6 +130,20 @@ public sealed class PlayModeSmokeTests
         yield return WaitForScene(SceneNames.Expedition);
         yield return WaitForComponent<ExpeditionScreenController>();
         Assert.That(root.SessionState.CurrentExpeditionNodeIndex, Is.EqualTo(expectedResolvedIndex), "Debug Start should resume the current authored expedition node instead of starting from camp.");
+    }
+
+    private static IEnumerator EnterOfflineTownFromBoot()
+    {
+        SceneManager.LoadScene(SceneNames.Boot);
+        yield return WaitForScene(SceneNames.Boot);
+        yield return WaitForCondition(() => GameSessionRoot.Instance != null, 8f);
+
+        var root = GameSessionRoot.Instance!;
+        Assert.That(root.StartRealm(SessionRealm.OfflineLocal, out var error), Is.True, error);
+        root.SceneFlow.GoToTown();
+
+        yield return WaitForScene(SceneNames.Town);
+        yield return WaitForComponent<TownScreenController>();
     }
 
     private static IEnumerator WaitForScene(string sceneName, float timeout = 8f)

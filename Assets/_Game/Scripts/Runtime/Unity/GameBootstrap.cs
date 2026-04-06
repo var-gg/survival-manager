@@ -14,7 +14,6 @@ public sealed class GameBootstrap : MonoBehaviour
     private const string EditorDefinitionsStatsPath = "Assets/Resources/_Game/Content/Definitions/Stats";
 #endif
 
-    [SerializeField] private bool autoEnterTown = true;
     private bool _hasRun;
     private Coroutine? _bootstrapRoutine;
 
@@ -45,22 +44,23 @@ public sealed class GameBootstrap : MonoBehaviour
         if (!HasSeedContent())
         {
             HandleMissingSampleContent(root);
+            RefreshBootScreen();
             _bootstrapRoutine = null;
             yield break;
         }
 
-        root.BindProfile();
         root.ClearBlockingError();
 
-        if (ConsumeQuickBattleRequest())
+        if (SessionRealmAutoStartPolicy.ShouldForceOfflineLocalForQuickBattle(ConsumeQuickBattleRequest()))
         {
+            root.EnsureOfflineLocalSession();
             root.SessionState.PrepareQuickBattleSmoke();
             root.SaveProfile();
             root.SceneFlow.GoToBattle();
         }
-        else if (autoEnterTown)
+        else
         {
-            root.SceneFlow.GoToTown();
+            RefreshBootScreen();
         }
 
         _bootstrapRoutine = null;
@@ -120,5 +120,10 @@ public sealed class GameBootstrap : MonoBehaviour
         const string fallback = "필수 샘플 콘텐츠 canonical root가 비어 있어 시작할 수 없습니다. Resources content contract를 확인하세요.";
         root.SetBlockingError(GameLocalizationTables.SystemMessages, "system.bootstrap.missing_sample_content.player", fallback);
 #endif
+    }
+
+    private static void RefreshBootScreen()
+    {
+        FindAnyObjectByType<BootScreenController>()?.Refresh();
     }
 }

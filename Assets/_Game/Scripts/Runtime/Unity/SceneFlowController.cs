@@ -15,6 +15,7 @@ public sealed class SceneFlowController
         _sessionState = sessionState;
     }
 
+    public void GoToBoot() => Load(SceneNames.Boot);
     public void GoToTown() => Load(SceneNames.Town);
     public void GoToExpedition() => Load(SceneNames.Expedition);
     public void GoToBattle() => Load(SceneNames.Battle);

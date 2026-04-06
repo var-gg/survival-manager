@@ -57,12 +57,19 @@ public sealed class SceneIntegrityTests
     }
 
     [Test]
-    public void BootScene_Saves_GameBootstrap_Camera_And_Canvas()
+    public void BootScene_Saves_Realm_Controller_Buttons_And_Canvas()
     {
         var scene = OpenScene("Boot");
+        FirstPlayableRuntimeSceneBinder.EnsureSceneBindings(scene);
         AssertComponent<GameBootstrap>(scene, "GameBootstrap");
+        AssertComponent<BootScreenController>(scene, "BootScreenController");
         AssertComponent<Canvas>(scene, "BootCanvas");
+        AssertGameObject(scene, "BootTitleText");
+        AssertGameObject(scene, "BootStatusText");
+        AssertGameObject(scene, "OfflineLocalButton");
+        AssertGameObject(scene, "OnlineAuthoritativeButton");
         AssertComponent<Camera>(scene, "Main Camera");
+        AssertInputSystemEventSystem(scene);
     }
 
     [Test]
@@ -129,9 +136,13 @@ public sealed class SceneIntegrityTests
     }
 
     [Test]
-    public void TownScreenUxml_Declares_QuickBattle_And_Deployment_Controls()
+    public void TownScreenUxml_Declares_Session_Arena_And_Deployment_Controls()
     {
         var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/TownScreen.uxml");
+        Assert.That(uxml, Does.Contain("RealmSummaryLabel"));
+        Assert.That(uxml, Does.Contain("CapabilitySummaryLabel"));
+        Assert.That(uxml, Does.Contain("SessionMenuButton"));
+        Assert.That(uxml, Does.Contain("ArenaButton"));
         Assert.That(uxml, Does.Contain("QuickBattleButton"));
         Assert.That(uxml, Does.Contain("DeployButton_FrontTop"));
         Assert.That(uxml, Does.Contain("TeamPostureButton"));

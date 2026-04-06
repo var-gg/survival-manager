@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using SM.Meta.Model;
 using SM.Meta.Services;
 
 namespace SM.Unity.UI.Reward;
@@ -66,16 +67,21 @@ public sealed class RewardScreenPresenter
 
     private RewardScreenViewState BuildState(GameSessionState session, string message)
     {
+        var profile = _root.ProfileQueries.GetProfileView(_root.ActiveProfileId);
+        var defaultStatus = !_root.CurrentCapabilities.CanClaimOfficialRewards
+            ? Localize(GameLocalizationTables.UIReward, "ui.reward.status.local_only", "현재 보상은 OfflineLocal 진행에만 반영되며 공식 보상으로 업로드되지 않습니다.")
+            : Localize(GameLocalizationTables.UIReward, "ui.reward.status.default", "Pick one card and return to town.");
         return new RewardScreenViewState(
             Localize(GameLocalizationTables.UIReward, "ui.reward.title", "Reward Operator UI"),
             BuildLocaleStatus(),
             GetLocaleButtonLabel("ko", "한국어"),
             GetLocaleButtonLabel("en", "English"),
+            BuildRealmStatus(profile),
             BuildSummaryText(session),
             Localize(GameLocalizationTables.UIReward, "ui.reward.choices.header", "Choose one reward card"),
             BuildChoiceCards(session),
             string.IsNullOrWhiteSpace(message)
-                ? Localize(GameLocalizationTables.UIReward, "ui.reward.status.default", "Pick one card and return to town.")
+                ? defaultStatus
                 : message,
             Localize(GameLocalizationTables.UICommon, "ui.common.return_town", "Return Town"));
     }
@@ -113,12 +119,25 @@ public sealed class RewardScreenPresenter
             "ui.reward.summary.auto_loot",
             "Auto Loot: {0}",
             session.LastAutomaticLootBundle == null ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None") : LootResolutionService.FormatSummary(session.LastAutomaticLootBundle)));
-        sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.gold", "Gold: {0}", session.Profile.Currencies.Gold));
-        sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.echo", "Echo: {0}", session.Profile.Currencies.Echo));
-        sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.slots", "Perm Slots: {0}", session.PermanentAugmentSlotCount));
-        sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.inventory", "Inventory: {0}", session.Profile.Inventory.Count));
+        var profile = _root.ProfileQueries.GetProfileView(_root.ActiveProfileId);
+        sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.gold", "Gold: {0}", profile.Gold));
+        sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.echo", "Echo: {0}", profile.Echo));
+        sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.slots", "Perm Slots: {0}", profile.PermanentAugmentSlotCount));
+        sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.inventory", "Inventory: {0}", profile.InventoryCount));
         sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.temp_augments", "Temp Augments: {0}", session.Expedition.TemporaryAugmentIds.Count));
         return sb.ToString();
+    }
+
+    private string BuildRealmStatus(ProfileView profile)
+    {
+        return Localize(
+            GameLocalizationTables.UIReward,
+            "ui.reward.realm.status",
+            "Realm: {0} / Official rewards: {1}",
+            profile.Realm,
+            _root.CurrentCapabilities.CanClaimOfficialRewards
+                ? Localize(GameLocalizationTables.UICommon, "ui.common.enabled", "Enabled")
+                : Localize(GameLocalizationTables.UICommon, "ui.common.disabled", "Disabled"));
     }
 
     private string BuildLocaleStatus()

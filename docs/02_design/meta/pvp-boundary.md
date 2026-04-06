@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-06
 - 소스오브트루스: `docs/02_design/meta/pvp-boundary.md`
 - 관련문서:
   - `docs/02_design/meta/pvp-ruleset-and-arena-loop.md`
@@ -16,6 +16,8 @@
 
 - PVP는 비-MVP다.
 - 이번 패스는 live service가 아니라 local/offline arena scaffold까지만 연다.
+- 공식 PvP 진입 자체는 `OnlineAuthoritative` realm에서만 허용한다.
+- `OfflineLocal`에서는 PvP 버튼을 비활성화하고 Boot에서 realm을 다시 선택하게 한다.
 - PVP가 나중에 도입되더라도 run 중 temporary augment는 적용하지 않는다.
 - PVP에는 permanent augment만 적용한다.
 - offense / defense는 async snapshot 모델을 따른다.

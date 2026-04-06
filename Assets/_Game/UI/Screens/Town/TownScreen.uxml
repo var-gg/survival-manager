@@ -12,6 +12,12 @@
         <ui:VisualElement class="screen__body">
             <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel">
+                    <ui:Label class="panel__title" text="Session" />
+                    <ui:Label name="RealmSummaryLabel" class="panel__text" />
+                    <ui:Label name="CapabilitySummaryLabel" class="panel__text" />
+                    <ui:Label name="ArenaStatusLabel" class="panel__text panel__text--muted" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel">
                     <ui:Label class="panel__title" text="Roster" />
                     <ui:Label name="RosterLabel" class="panel__text" />
                 </ui:VisualElement>
@@ -76,6 +82,8 @@
                 <ui:Button name="RerollButton" class="ui-button" text="Reroll" />
                 <ui:Button name="SaveButton" class="ui-button" text="Save" />
                 <ui:Button name="LoadButton" class="ui-button" text="Load" />
+                <ui:Button name="SessionMenuButton" class="ui-button" text="Session Menu" />
+                <ui:Button name="ArenaButton" class="ui-button" text="Arena / PvP" />
                 <ui:Button name="DebugStartButton" class="ui-button" text="Start Expedition" />
                 <ui:Button name="QuickBattleButton" class="ui-button ui-button--accent" text="Quick Battle" />
             </ui:VisualElement>

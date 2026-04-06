@@ -41,7 +41,7 @@
 ## bootstrap 책임
 
 - `FirstPlayableSceneInstaller`는 playable scene asset 복구와 build settings 보정을 담당한다.
-- `FirstPlayableSceneInstaller`는 Boot를 제외한 play scene에서 `*RuntimeRoot`, `*RuntimePanelHost`, `*ScreenController`, Battle overlay root를 보장한다.
+- `FirstPlayableSceneInstaller`는 Boot에서 realm 선택용 uGUI canvas를, 그 외 play scene에서는 `*RuntimeRoot`, `*RuntimePanelHost`, `*ScreenController`, Battle overlay root를 보장한다.
 - `FirstPlayableBootstrap`는 sample content 보장, validation, scene repair, demo save reset, Boot open을 순서대로 orchestration 한다.
 - operator가 first playable을 보려면 `SM/Setup/Prepare Observer Playable`를 먼저 실행하는 흐름을 기본값으로 둔다.
 
@@ -69,14 +69,21 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 2. sample content 보장 및 validation
 3. first playable scene repair + build settings 보정
 4. Boot scene open
-5. Play 후 `GameBootstrap`가 `GameSessionRoot` 보장
-6. sample content 확인
-7. profile load/create
+5. Play 후 `GameBootstrap`가 `GameSessionRoot`와 content/localization preflight를 보장
+6. Boot에서 session realm 선택 대기
+7. `OfflineLocal` 선택 시 profile load/create
 8. Town 이동
 9. Expedition 진입
 10. Battle 결과 생성
 11. Reward 선택
-12. Town 복귀 및 저장
+12. Town 복귀 및 local save
+
+## realm 전환 규칙
+
+- Boot가 session realm 진입점이다.
+- Session Menu를 통해 Boot로 돌아갈 수 있지만 진행 중인 런에서는 막는다.
+- Quick Battle과 direct-scene play는 tooling 안정성을 위해 `OfflineLocal`을 auto-start한다.
+- `OnlineAuthoritative`는 현재 slice에서 비활성화 상태로만 노출한다.
 
 ## Quick Battle 바이패스 플로우
 
@@ -92,4 +99,4 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 
 ## GameSessionRoot.EnsureInstance 패턴
 
-모든 ScreenController는 `GameSessionRoot.Instance!` 대신 `GameSessionRoot.EnsureInstance()`를 사용한다. Boot 씬을 거치지 않고 임의 씬에서 직접 Play해도 GameSessionRoot가 자동 생성되어 최소 초기화를 수행한다.
+모든 ScreenController는 `GameSessionRoot.Instance!` 대신 `GameSessionRoot.EnsureInstance()`를 사용한다. Boot가 아닌 씬을 직접 Play하면 `OfflineLocal` session까지 자동으로 시작해 기존 tooling을 깨지 않게 유지한다.

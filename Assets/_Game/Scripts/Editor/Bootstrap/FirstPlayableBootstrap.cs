@@ -90,7 +90,7 @@ public static class FirstPlayableBootstrap
             Debug.Log("[ObserverPlayable] Step 6/6: Open Boot scene");
             EditorSceneManager.OpenScene(BootScenePath, OpenSceneMode.Single);
 
-            Debug.Log("[ObserverPlayable] Success. 이제 Boot scene에서 Play를 누르면 Boot -> Town 흐름을 확인할 수 있다.");
+            Debug.Log("[ObserverPlayable] Success. 이제 Boot scene에서 Play를 누르면 Session Realm 선택 화면이 열리고, OfflineLocal 선택 후 Town 흐름을 확인할 수 있다.");
         }
         catch (System.Exception ex)
         {

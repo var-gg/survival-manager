@@ -11,10 +11,15 @@ public sealed class PersistenceEntryPoint
     public ISaveRepository Repository { get; }
 
     public PersistenceEntryPoint()
+        : this(null, null)
     {
-        Config = PersistenceConfig.FromEnvironment();
+    }
+
+    public PersistenceEntryPoint(PersistenceConfig? config, ISaveRepository? repository)
+    {
+        Config = config ?? PersistenceConfig.FromEnvironment();
         Config.LocalSaveDirectory = ResolveSaveDirectory(Config.LocalSaveDirectory);
-        Repository = SM.Persistence.Json.PersistenceFacade.CreateDefault(Config);
+        Repository = repository ?? SM.Persistence.Json.PersistenceFacade.CreateDefault(Config);
     }
 
     private static string ResolveSaveDirectory(string configuredPath)

@@ -14,6 +14,7 @@ public sealed record RewardScreenViewState(
     string LocaleStatus,
     string LocaleKoLabel,
     string LocaleEnLabel,
+    string RealmStatusText,
     string SummaryText,
     string ChoicesHeaderText,
     IReadOnlyList<RewardChoiceCardViewState> Choices,

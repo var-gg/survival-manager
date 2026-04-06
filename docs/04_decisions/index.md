@@ -33,6 +33,7 @@
 - `adr-0017-docs-context-harness.md`: 문서 컨텍스트 하네스와 tombstone registry 채택
 - `adr-0018-loop-c-content-governance.md`: BudgetCard/ContentRarity/8-lane/fatal forbidden policy 채택
 - `adr-0019-runtime-panel-host-ui-toolkit-first.md`: RuntimePanelHost, UITK asset-first, battle shell only 채택
+- `adr-0020-session-realm-authority-boundary.md`: session realm authority boundary와 offline-first port seam 채택
 
 ## 운영 메모
 

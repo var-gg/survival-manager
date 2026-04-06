@@ -82,6 +82,7 @@
 
 - `arena-snapshot-matchmaking-and-season-contract.md`: async arena snapshot, local matchmaking, season contract
 - `persistence-strategy.md`: persistence adapter 경계
+- `session-realm-authority-and-offline-online-ports.md`: session realm, authority seam, offline-first port 구조
 - `testing-strategy.md`: 저비용 검증 표면 추가 순서만 다루는 보조 draft
 - `asset-intake-boundary.md`: `Assets/ThirdParty/**` intake boundary
 

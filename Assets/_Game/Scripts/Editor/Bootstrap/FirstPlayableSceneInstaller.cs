@@ -48,14 +48,29 @@ public static class FirstPlayableSceneInstaller
         var scene = CreateFreshScene("Boot");
         EnsureRootObject("SceneMarker_Boot");
         EnsureCamera("Main Camera", true, new Vector3(0f, 0f, -10f), Quaternion.identity);
+        EnsureEventSystem();
 
-        var canvas = EnsureCanvasRoot("BootCanvas", sortingOrder: 0, withRaycaster: false);
+        var canvas = EnsureCanvasRoot("BootCanvas", sortingOrder: 0, withRaycaster: true);
         var bootstrapGo = EnsureRootObject("GameBootstrap");
         EnsureComponent<GameBootstrap>(bootstrapGo);
+        var controllerGo = EnsureRootObject("BootScreenController");
+        var controller = EnsureComponent<BootScreenController>(controllerGo);
 
-        EnsureText(canvas.transform, "BootTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(720f, 44f), TextAnchor.MiddleCenter, 24, "Observer Playable Boot");
-        EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 18, "GameBootstrap가 sample content를 확인한 뒤 Town으로 자동 진입한다.");
-        EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -48f), new Vector2(760f, 60f), TextAnchor.MiddleCenter, 16, "RuntimePanelHost 전환 이후에도 bootstrap 계약을 검증하는 최소 화면");
+        var title = EnsureText(canvas.transform, "BootTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(720f, 44f), TextAnchor.MiddleCenter, 24, "Session Realm");
+        var status = EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 36f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 18, "OfflineLocal 또는 OnlineAuthoritative 세션 영역을 선택하세요.");
+        var hint = EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -44f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 16, "공식 온라인 세션은 후속 패스에서 개방됩니다.");
+        var offlineButton = EnsureButton(canvas.transform, "OfflineLocalButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-126f, -144f), new Vector2(220f, 44f), "OfflineLocal");
+        var onlineButton = EnsureButton(canvas.transform, "OnlineAuthoritativeButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(126f, -144f), new Vector2(220f, 44f), "OnlineAuthoritative");
+        onlineButton.interactable = false;
+
+        Bind(controller, new Dictionary<string, Object>
+        {
+            ["titleText"] = title,
+            ["statusText"] = status,
+            ["hintText"] = hint,
+            ["offlineLocalButton"] = offlineButton,
+            ["onlineAuthoritativeButton"] = onlineButton,
+        });
         Save(scene);
     }
 
@@ -188,11 +203,12 @@ public static class FirstPlayableSceneInstaller
     {
         ValidateScene(
             "Boot",
-            new[] { "SceneMarker_Boot", "GameBootstrap", "BootCanvas", "Main Camera" },
+            new[] { "SceneMarker_Boot", "GameBootstrap", "BootScreenController", "BootCanvas", "BootTitleText", "BootStatusText", "BootHintText", "OfflineLocalButton", "OnlineAuthoritativeButton", "Main Camera", "EventSystem" },
             new Dictionary<string, System.Type[]>
             {
                 ["GameBootstrap"] = new[] { typeof(GameBootstrap) },
                 ["BootCanvas"] = new[] { typeof(Canvas) },
+                ["BootScreenController"] = new[] { typeof(BootScreenController) },
             });
 
         ValidateScene(
@@ -379,6 +395,26 @@ public static class FirstPlayableSceneInstaller
         text.color = Color.white;
         text.text = initialText;
         return text;
+    }
+
+    private static Button EnsureButton(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta, string label)
+    {
+        var go = CreateUiChild(parent, name);
+        var rect = go.GetComponent<RectTransform>();
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = anchoredPosition;
+        rect.sizeDelta = sizeDelta;
+
+        var image = EnsureComponent<Image>(go);
+        image.color = new Color(0.16f, 0.24f, 0.32f, 0.94f);
+        var button = EnsureComponent<Button>(go);
+        var labelText = EnsureText(go.transform, $"{name}Text", new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, TextAnchor.MiddleCenter, 18, label);
+        labelText.resizeTextForBestFit = true;
+        labelText.resizeTextMinSize = 12;
+        labelText.resizeTextMaxSize = 18;
+        return button;
     }
 
     private static void Bind(Object target, IReadOnlyDictionary<string, Object> refs)

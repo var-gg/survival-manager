@@ -11,6 +11,7 @@ public sealed class RewardScreenView
     private readonly Label _localeStatusLabel;
     private readonly Button _localeKoButton;
     private readonly Button _localeEnButton;
+    private readonly Label _realmStatusLabel;
     private readonly Label _summaryLabel;
     private readonly Label _choicesHeaderLabel;
     private readonly Label _statusLabel;
@@ -23,6 +24,7 @@ public sealed class RewardScreenView
         _localeStatusLabel = Require<Label>(root, "LocaleStatusLabel");
         _localeKoButton = Require<Button>(root, "LocaleKoButton");
         _localeEnButton = Require<Button>(root, "LocaleEnButton");
+        _realmStatusLabel = Require<Label>(root, "RealmStatusLabel");
         _summaryLabel = Require<Label>(root, "SummaryLabel");
         _choicesHeaderLabel = Require<Label>(root, "ChoicesHeaderLabel");
         _statusLabel = Require<Label>(root, "StatusLabel");
@@ -52,6 +54,7 @@ public sealed class RewardScreenView
         _localeStatusLabel.text = state.LocaleStatus;
         _localeKoButton.text = state.LocaleKoLabel;
         _localeEnButton.text = state.LocaleEnLabel;
+        _realmStatusLabel.text = state.RealmStatusText;
         _summaryLabel.text = state.SummaryText;
         _choicesHeaderLabel.text = state.ChoicesHeaderText;
         _statusLabel.text = state.StatusText;

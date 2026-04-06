@@ -87,7 +87,35 @@ public static class FirstPlayableRuntimeSceneBinder
             return;
         }
 
+        EnsureMainCamera(scene, new Vector3(0f, 0f, -10f), Quaternion.identity);
+        var canvasGo = FindGameObject(scene, "BootCanvas");
+        if (canvasGo == null)
+        {
+            canvasGo = new GameObject("BootCanvas", typeof(RectTransform));
+            SceneManager.MoveGameObjectToScene(canvasGo, scene);
+        }
+
+        var canvas = EnsureCanvas(canvasGo, sortingOrder: 0, withRaycaster: true);
+        ConfigureStretchRect(canvasGo.GetComponent<RectTransform>());
+        var title = EnsureText(canvas.transform, "BootTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(720f, 44f), 24, "Session Realm");
+        var status = EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 36f), new Vector2(760f, 80f), 18, "OfflineLocal 또는 OnlineAuthoritative 세션 영역을 선택하세요.");
+        var hint = EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -44f), new Vector2(760f, 80f), 16, "공식 온라인 세션은 후속 패스에서 개방됩니다.");
+        var offlineButton = EnsureButton(canvas.transform, "OfflineLocalButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-126f, -144f), new Vector2(220f, 44f), "OfflineLocal");
+        var onlineButton = EnsureButton(canvas.transform, "OnlineAuthoritativeButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(126f, -144f), new Vector2(220f, 44f), "OnlineAuthoritative");
+        onlineButton.interactable = false;
+
         var bootstrap = EnsureComponent<GameBootstrap>(bootstrapGo);
+        var controllerGo = EnsureRootObject(scene, "BootScreenController");
+        var controller = EnsureComponent<BootScreenController>(controllerGo);
+        Bind(controller, new System.Collections.Generic.Dictionary<string, Object?>
+        {
+            ["titleText"] = title,
+            ["statusText"] = status,
+            ["hintText"] = hint,
+            ["offlineLocalButton"] = offlineButton,
+            ["onlineAuthoritativeButton"] = onlineButton,
+        });
+
         if (Application.isPlaying)
         {
             bootstrap.RunBootstrap();
@@ -293,6 +321,57 @@ public static class FirstPlayableRuntimeSceneBinder
         }
 
         return canvas;
+    }
+
+    private static Text EnsureText(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta, int fontSize, string textValue)
+    {
+        var go = EnsureUiChild(parent, name);
+        var rect = go.GetComponent<RectTransform>();
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = anchoredPosition;
+        rect.sizeDelta = sizeDelta;
+
+        var text = EnsureComponent<Text>(go);
+        text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        text.fontSize = fontSize;
+        text.alignment = TextAnchor.MiddleCenter;
+        text.horizontalOverflow = HorizontalWrapMode.Wrap;
+        text.verticalOverflow = VerticalWrapMode.Overflow;
+        text.color = Color.white;
+        text.raycastTarget = false;
+        text.text = textValue;
+        return text;
+    }
+
+    private static Button EnsureButton(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta, string label)
+    {
+        var go = EnsureUiChild(parent, name);
+        var rect = go.GetComponent<RectTransform>();
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = anchoredPosition;
+        rect.sizeDelta = sizeDelta;
+
+        var image = EnsureComponent<Image>(go);
+        image.color = new Color(0.16f, 0.24f, 0.32f, 0.94f);
+        var button = EnsureComponent<Button>(go);
+        var labelText = EnsureText(go.transform, $"{name}Text", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, 18, label);
+        labelText.resizeTextForBestFit = true;
+        labelText.resizeTextMinSize = 12;
+        labelText.resizeTextMaxSize = 18;
+        return button;
+    }
+
+    private static void ConfigureStretchRect(RectTransform rect)
+    {
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+        rect.pivot = new Vector2(0.5f, 0.5f);
     }
 
     private static GameObject? FindGameObject(Scene scene, string name)
