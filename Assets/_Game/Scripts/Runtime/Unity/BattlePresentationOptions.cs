@@ -16,7 +16,7 @@ public sealed class BattlePresentationOptions
         {
             ShowOverheadUi = true,
             ShowDamageText = true,
-            ShowTeamHpSummary = false,
+            ShowTeamHpSummary = true,
             ShowDebugOverlay = false
         };
     }
