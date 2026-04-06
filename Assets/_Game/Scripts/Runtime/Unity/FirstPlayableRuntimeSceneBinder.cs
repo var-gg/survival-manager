@@ -334,7 +334,7 @@ public static class FirstPlayableRuntimeSceneBinder
         rect.sizeDelta = sizeDelta;
 
         var text = EnsureComponent<Text>(go);
-        text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        text.font = GameFontCatalog.LoadSharedUiFont();
         text.fontSize = fontSize;
         text.alignment = TextAnchor.MiddleCenter;
         text.horizontalOverflow = HorizontalWrapMode.Wrap;
