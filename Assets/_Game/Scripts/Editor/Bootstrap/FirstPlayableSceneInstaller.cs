@@ -397,7 +397,7 @@ public static class FirstPlayableSceneInstaller
         return text;
     }
 
-    private static Button EnsureButton(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta, string label)
+    private static UnityEngine.UI.Button EnsureButton(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta, string label)
     {
         var go = CreateUiChild(parent, name);
         var rect = go.GetComponent<RectTransform>();
@@ -409,7 +409,7 @@ public static class FirstPlayableSceneInstaller
 
         var image = EnsureComponent<Image>(go);
         image.color = new Color(0.16f, 0.24f, 0.32f, 0.94f);
-        var button = EnsureComponent<Button>(go);
+        var button = EnsureComponent<UnityEngine.UI.Button>(go);
         var labelText = EnsureText(go.transform, $"{name}Text", new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, TextAnchor.MiddleCenter, 18, label);
         labelText.resizeTextForBestFit = true;
         labelText.resizeTextMinSize = 12;

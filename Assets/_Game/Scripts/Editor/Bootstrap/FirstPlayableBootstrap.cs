@@ -30,7 +30,7 @@ public static class FirstPlayableBootstrap
             LocalizationFoundationBootstrap.EnsureFoundationAssets();
 
             Debug.Log("[QuickBattle] Step 2/7: Ensure minimum canonical content");
-            SampleSeedGenerator.EnsureCanonicalSampleContent();
+            EnsureCanonicalSampleContentForPrototypeEntry("QuickBattle");
 
             Debug.Log("[QuickBattle] Step 3/7: Write content validation report (non-blocking)");
             ValidateContentDefinitionsForPrototypeEntry("QuickBattle");
@@ -76,7 +76,7 @@ public static class FirstPlayableBootstrap
             LocalizationFoundationBootstrap.EnsureFoundationAssets();
 
             Debug.Log("[ObserverPlayable] Step 2/6: Ensure minimum canonical content without rewriting committed authoring");
-            SampleSeedGenerator.EnsureCanonicalSampleContent();
+            EnsureCanonicalSampleContentForPrototypeEntry("ObserverPlayable");
 
             Debug.Log("[ObserverPlayable] Step 3/6: Write content validation report (non-blocking)");
             ValidateContentDefinitionsForPrototypeEntry("ObserverPlayable");
@@ -179,6 +179,25 @@ public static class FirstPlayableBootstrap
         }
 
         Debug.Log($"[{flowLabel}] Content validation passed. Report: {report.JsonReportPath}");
+    }
+
+    private static void EnsureCanonicalSampleContentForPrototypeEntry(string flowLabel)
+    {
+        try
+        {
+            SampleSeedGenerator.EnsureCanonicalSampleContent();
+        }
+        catch (System.Exception ex) when (IsNonBlockingContentValidationFailure(ex))
+        {
+            Debug.LogWarning(
+                $"[{flowLabel}] Canonical sample content ensure reported validation errors but prototype entry continues. " +
+                $"Strict gating is still available via SM/Validation/Validate Content Definitions. {ex.Message}");
+        }
+    }
+
+    private static bool IsNonBlockingContentValidationFailure(System.Exception ex)
+    {
+        return ex.Message.Contains("SM content validation failed", System.StringComparison.Ordinal);
     }
 
     private static string[] EnumerateLocalDemoSavePaths()
