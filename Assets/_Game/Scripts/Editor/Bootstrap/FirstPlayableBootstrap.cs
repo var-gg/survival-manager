@@ -3,6 +3,8 @@ using SM.Editor.Validation;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using System.IO;
+using System.Linq;
 
 namespace SM.Editor.Bootstrap;
 
@@ -30,8 +32,8 @@ public static class FirstPlayableBootstrap
             Debug.Log("[QuickBattle] Step 2/7: Ensure minimum canonical content");
             SampleSeedGenerator.EnsureCanonicalSampleContent();
 
-            Debug.Log("[QuickBattle] Step 3/7: Validate content definitions");
-            ContentDefinitionValidator.Validate();
+            Debug.Log("[QuickBattle] Step 3/7: Write content validation report (non-blocking)");
+            ValidateContentDefinitionsForPrototypeEntry("QuickBattle");
 
             Debug.Log("[QuickBattle] Step 4/7: Repair first playable scenes");
             FirstPlayableSceneInstaller.RepairFirstPlayableScenes();
@@ -76,8 +78,8 @@ public static class FirstPlayableBootstrap
             Debug.Log("[ObserverPlayable] Step 2/6: Ensure minimum canonical content without rewriting committed authoring");
             SampleSeedGenerator.EnsureCanonicalSampleContent();
 
-            Debug.Log("[ObserverPlayable] Step 3/6: Validate content definitions");
-            ContentDefinitionValidator.Validate();
+            Debug.Log("[ObserverPlayable] Step 3/6: Write content validation report (non-blocking)");
+            ValidateContentDefinitionsForPrototypeEntry("ObserverPlayable");
 
             Debug.Log("[ObserverPlayable] Step 4/6: Repair first playable scenes");
             FirstPlayableSceneInstaller.RepairFirstPlayableScenes();
@@ -139,10 +141,53 @@ public static class FirstPlayableBootstrap
         {
             PlayerPrefs.DeleteKey("SM.SaveSlot.default");
             PlayerPrefs.Save();
+
+            foreach (var savePath in EnumerateLocalDemoSavePaths())
+            {
+                if (File.Exists(savePath))
+                {
+                    File.Delete(savePath);
+                    Debug.Log($"[ObserverPlayable] Local demo save removed: {savePath}");
+                }
+            }
         }
         catch (System.Exception ex)
         {
             Debug.LogWarning($"[ObserverPlayable] Local demo save reset skipped: {ex.Message}");
         }
+    }
+
+    private static void ValidateContentDefinitionsForPrototypeEntry(string flowLabel)
+    {
+        var report = ContentDefinitionValidator.ValidateAndWriteReport();
+        var errorCount = report.Issues.Count(issue => issue.Severity == ContentValidationSeverity.Error);
+        var warningCount = report.Issues.Count(issue => issue.Severity == ContentValidationSeverity.Warning);
+
+        if (errorCount > 0)
+        {
+            Debug.LogWarning(
+                $"[{flowLabel}] Content validation reported {errorCount} error(s) and {warningCount} warning(s). " +
+                $"Prototype entry continues. Strict gating is still available via SM/Validation/Validate Content Definitions. " +
+                $"Report: {report.JsonReportPath}");
+            return;
+        }
+
+        if (warningCount > 0)
+        {
+            Debug.LogWarning($"[{flowLabel}] Content validation reported {warningCount} warning(s). Report: {report.JsonReportPath}");
+            return;
+        }
+
+        Debug.Log($"[{flowLabel}] Content validation passed. Report: {report.JsonReportPath}");
+    }
+
+    private static string[] EnumerateLocalDemoSavePaths()
+    {
+        var profileId = System.Environment.GetEnvironmentVariable("SM_PROFILE_ID") ?? "default";
+        var configuredSaveDirectory = System.Environment.GetEnvironmentVariable("SM_SAVE_DIR") ?? "Saves";
+        var saveDirectory = Path.IsPathRooted(configuredSaveDirectory)
+            ? configuredSaveDirectory
+            : Path.Combine(Directory.GetCurrentDirectory(), configuredSaveDirectory);
+        return new[] { Path.Combine(saveDirectory, $"{profileId}.json") };
     }
 }

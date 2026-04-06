@@ -147,6 +147,13 @@ public sealed class SceneIntegrityTests
         Assert.That(uxml, Does.Contain("PauseButton"));
     }
 
+    [Test]
+    public void RuntimePanelTheme_DoesNotUse_Unsupported_Gap_Property()
+    {
+        var uss = File.ReadAllText("Assets/_Game/UI/Foundation/Styles/RuntimePanelTheme.uss");
+        Assert.That(uss, Does.Not.Contain("gap:"), "Runtime UITK theme should avoid 'gap' because Unity runtime on this project emits Unknown style property warnings.");
+    }
+
     private static void AssertAssetContains(string assetPath, params string[] fragments)
     {
         Assert.That(File.Exists(assetPath), Is.True, $"Canonical sample asset is missing: {assetPath}");

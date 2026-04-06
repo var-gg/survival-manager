@@ -2,7 +2,7 @@
 
 ## 반드시 먼저 실행할 메뉴 1개
 
-- `SM/Bootstrap/Prepare Observer Playable`
+- `SM/Setup/Prepare Observer Playable`
 
 - 상태: active
 - 최종수정일: 2026-03-29
@@ -11,7 +11,7 @@
 ## 첫 전투까지 클릭 순서
 
 1. Unity 열기
-2. `SM/Bootstrap/Prepare Observer Playable`
+2. `SM/Setup/Prepare Observer Playable`
 3. `Boot.unity` Play
 4. Town에서 `Quick Battle`
 5. Battle replay 종료 후 `Continue`

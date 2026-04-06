@@ -8,7 +8,7 @@
 
 1. Unity editor `6000.4.0f1`로 프로젝트를 연다.
 2. 패키지 import / reload가 끝날 때까지 기다린다.
-3. `SM/Bootstrap/Prepare Observer Playable`를 실행한다.
+3. `SM/Setup/Prepare Observer Playable`를 실행한다.
 4. `Boot.unity`가 열렸는지 확인한다.
 5. Play 한다.
 

@@ -7,7 +7,7 @@
 ## 공식 메뉴
 
 - `SM/Bootstrap/Repair First Playable Scenes`
-- `SM/Bootstrap/Prepare Observer Playable`
+- `SM/Setup/Prepare Observer Playable`
 
 ## 현재 repair 범위
 
@@ -20,7 +20,7 @@
 ## 운영 절차
 
 1. Unity 열기
-2. `SM/Bootstrap/Prepare Observer Playable`
+2. `SM/Setup/Prepare Observer Playable`
 3. `Boot.unity` 자동 오픈 확인
 4. Play
 

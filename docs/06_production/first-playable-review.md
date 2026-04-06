@@ -6,7 +6,7 @@
 
 ## 먼저 실행할 메뉴
 
-- `SM/Bootstrap/Prepare Observer Playable`
+- `SM/Setup/Prepare Observer Playable`
 
 ## 한 줄 요약
 

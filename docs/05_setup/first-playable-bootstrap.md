@@ -2,7 +2,7 @@
 
 ## 반드시 먼저 실행할 메뉴 1개
 
-- `SM/Bootstrap/Prepare Observer Playable`
+- `SM/Setup/Prepare Observer Playable`
 
 - 상태: active
 - 최종수정일: 2026-03-31
@@ -15,15 +15,15 @@ first playable 준비를 한 번의 명령으로 끝낸다.
 ## 사용자가 실제로 해야 할 일
 
 1. Unity 열기
-2. `SM/Bootstrap/Prepare Observer Playable`
+2. `SM/Setup/Prepare Observer Playable`
 3. `Boot.unity` Play
 
 ## clean clone 최초 실행 절차
 
 1. Unity `6000.4.0f1`로 프로젝트를 연다.
 2. 스크립트 컴파일 완료를 기다린다.
-3. `SM/Bootstrap/Prepare Observer Playable` 실행
-4. localization foundation / minimum bootstrap content / validation / scene rebuild / build settings 보정 수행
+3. `SM/Setup/Prepare Observer Playable` 실행
+4. localization foundation / minimum bootstrap content / validation report 작성 / scene rebuild / build settings 보정 수행
 5. `Boot.unity` 자동 오픈 확인
 6. Play 클릭
 7. Town 진입 확인
@@ -32,7 +32,7 @@ first playable 준비를 한 번의 명령으로 끝낸다.
 
 ## 메뉴 실행 경로
 
-- `SM/Bootstrap/Prepare Observer Playable`
+- `SM/Setup/Prepare Observer Playable`
 
 ## 선택형 Unity CLI executeMethod
 
@@ -47,7 +47,8 @@ Unity.exe -batchmode -projectPath "A:\projects\game\survival-manager" -executeMe
 ## 성공 시 기대 결과
 
 - minimum bootstrap content 보장
-- content validation 통과
+- content validation report 작성
+- validation error가 있어도 prototype entry는 계속 진행한다
 - first playable scenes rebuild/repair 완료
 - build settings 보정 완료
 - `Boot.unity` 오픈
@@ -56,4 +57,5 @@ Unity.exe -batchmode -projectPath "A:\projects\game\survival-manager" -executeMe
 ## 실패 시 확인
 
 - Console에서 `[ObserverPlayable]` prefix 로그 확인
+- validation issue는 `SM/Validation/Validate Content Definitions`로 strict 확인
 - 실패 지점이 애매하면 메뉴를 한 번 더 실행하지 말고 compile error / missing package부터 확인

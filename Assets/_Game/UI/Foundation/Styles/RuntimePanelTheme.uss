@@ -24,7 +24,10 @@
 .screen__locale {
     flex-direction: row;
     align-items: center;
-    gap: var(--space-2);
+}
+
+.screen__locale > Button {
+    margin-left: var(--space-2);
 }
 
 .screen__locale-status {
@@ -36,12 +39,18 @@
 .screen__body {
     flex-grow: 1;
     flex-direction: row;
-    gap: var(--space-4);
+}
+
+.screen__body > * {
+    margin-right: var(--space-4);
 }
 
 .screen__column {
     flex-grow: 1;
-    gap: var(--space-3);
+}
+
+.screen__column > * {
+    margin-bottom: var(--space-3);
 }
 
 .panel {
@@ -90,7 +99,11 @@
 .action-row {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--space-2);
+}
+
+.action-row > Button {
+    margin-right: var(--space-2);
+    margin-bottom: var(--space-2);
 }
 
 .ui-button {
@@ -128,7 +141,10 @@
 
 .card-row {
     flex-direction: row;
-    gap: var(--space-3);
+}
+
+.card-row > * {
+    margin-right: var(--space-3);
 }
 
 .card {
@@ -151,7 +167,10 @@
     padding-right: var(--space-3);
     padding-top: var(--space-3);
     padding-bottom: var(--space-3);
-    gap: var(--space-2);
+}
+
+.card > * {
+    margin-bottom: var(--space-2);
 }
 
 .card__title {
@@ -176,7 +195,11 @@
 .deploy-grid {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--space-2);
+}
+
+.deploy-grid > Button {
+    margin-right: var(--space-2);
+    margin-bottom: var(--space-2);
 }
 
 .deploy-button {
@@ -226,23 +249,35 @@
     top: 68px;
     right: 24px;
     width: 260px;
-    gap: var(--space-2);
+}
+
+.battle-settings > * {
+    margin-bottom: var(--space-2);
 }
 
 .battle-shell__main {
     flex-grow: 1;
     flex-direction: row;
-    gap: var(--space-4);
+}
+
+.battle-shell__main > * {
+    margin-right: var(--space-4);
 }
 
 .battle-shell__center {
     flex-grow: 1;
-    gap: var(--space-3);
+}
+
+.battle-shell__center > * {
+    margin-bottom: var(--space-3);
 }
 
 .battle-shell__side {
     width: 300px;
-    gap: var(--space-3);
+}
+
+.battle-shell__side > * {
+    margin-bottom: var(--space-3);
 }
 
 .battle-shell__status {

@@ -6,13 +6,13 @@
 
 ## 먼저 실행할 메뉴
 
-- `SM/Bootstrap/Prepare Observer Playable`
+- `SM/Setup/Prepare Observer Playable`
 - 필요 시 `SM/Bootstrap/Ensure Localization Foundation`
 
 ## 빠른 실행 절차
 
 1. Unity editor `6000.4.0f1`로 프로젝트를 연다.
-2. `SM/Bootstrap/Prepare Observer Playable`를 실행한다.
+2. `SM/Setup/Prepare Observer Playable`를 실행한다.
 3. `Boot.unity`가 자동으로 열렸는지 확인한다.
 4. Play 한다.
 5. 화면 우측 상단 language overlay에서 `ko`/`en` 전환이 되는지 확인한다.
@@ -37,7 +37,7 @@
 
 - canonical sample content root: `Assets/Resources/_Game/Content/Definitions/**`
 - scene repair source of truth: `SM/Bootstrap/Repair First Playable Scenes`
-- one-shot bootstrap: `SM/Bootstrap/Prepare Observer Playable`
+- one-shot bootstrap: `SM/Setup/Prepare Observer Playable`
 - localization foundation source of truth: `SM/Bootstrap/Ensure Localization Foundation`
 
 ## 참고 문서

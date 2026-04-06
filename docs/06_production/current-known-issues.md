@@ -6,7 +6,7 @@
 
 ## 먼저 실행할 메뉴
 
-- `SM/Bootstrap/Prepare Observer Playable`
+- `SM/Setup/Prepare Observer Playable`
 
 ## 이슈
 
@@ -18,7 +18,7 @@
 
 ## 우회 절차
 
-- scene/UI 참조가 꼬였으면 `SM/Bootstrap/Prepare Observer Playable`를 다시 실행한다.
+- scene/UI 참조가 꼬였으면 `SM/Setup/Prepare Observer Playable`를 다시 실행한다.
 - sample content가 비정상적이면 `SM/Seed/Generate Sample Content`를 다시 실행한다.
 - Town에서 가장 빠르게 전투 확인이 필요하면 `Quick Battle`을 사용한다.
 - 원정 진행을 이어서 확인하려면 Town에서 `Debug Start`를 다시 눌러 Expedition scene으로 복귀한다.
