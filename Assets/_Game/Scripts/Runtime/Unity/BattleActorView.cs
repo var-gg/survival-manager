@@ -263,6 +263,7 @@ public sealed class BattleActorView : MonoBehaviour
         shadow.transform.localScale = new Vector3(0.58f, 0.03f, 0.58f);
         RemoveCollider(shadow);
         _shadowRenderer = shadow.GetComponent<Renderer>();
+        _shadowRenderer.sharedMaterial = BattlePresentationMaterialFactory.Create(new Color(0f, 0f, 0f, 0.28f));
 
         var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         body.name = "Body";
@@ -274,7 +275,7 @@ public sealed class BattleActorView : MonoBehaviour
         RemoveCollider(body);
         _renderer = body.GetComponent<Renderer>();
         _baseColor = ResolveBaseColor(actor);
-        _renderer.material.color = _baseColor;
+        _renderer.sharedMaterial = BattlePresentationMaterialFactory.Create(_baseColor);
     }
 
     private void CreateHeadAnchor(BattleUnitReadModel actor)

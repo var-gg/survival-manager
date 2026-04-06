@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:VisualElement name="BattleScreenRoot" class="screen">
+    <ui:VisualElement name="BattleScreenRoot" class="screen battle-screen">
         <ui:VisualElement class="screen__topbar">
             <ui:Label name="TitleLabel" class="screen__title" text="Battle" />
             <ui:VisualElement class="screen__locale">

@@ -35,6 +35,7 @@ public sealed class BattlePresentationController : MonoBehaviour
         _camera = Camera.main!;
         IsPaused = false;
         Clear();
+        CreateStageDecor();
 
         foreach (var actor in initialStep.Units)
         {
@@ -143,5 +144,65 @@ public sealed class BattlePresentationController : MonoBehaviour
                 Destroy(actorOverlayRoot.GetChild(i).gameObject);
             }
         }
+    }
+
+    private void CreateStageDecor()
+    {
+        if (battleStageRoot == null)
+        {
+            return;
+        }
+
+        var decorRoot = new GameObject("StageDecor");
+        decorRoot.transform.SetParent(battleStageRoot, false);
+
+        CreateStageBlock(
+            decorRoot.transform,
+            "ArenaFloor",
+            new Vector3(0f, -1.12f, 0f),
+            new Vector3(18f, 0.16f, 9.2f),
+            new Color(0.18f, 0.14f, 0.11f, 1f));
+        CreateStageBlock(
+            decorRoot.transform,
+            "ArenaInnerFloor",
+            new Vector3(0f, -1.04f, 0f),
+            new Vector3(14.2f, 0.04f, 6.8f),
+            new Color(0.25f, 0.21f, 0.17f, 1f));
+        CreateStageBlock(
+            decorRoot.transform,
+            "CenterLine",
+            new Vector3(0f, -0.99f, 0f),
+            new Vector3(0.12f, 0.01f, 6.2f),
+            new Color(0.85f, 0.68f, 0.34f, 1f));
+        CreateStageBlock(
+            decorRoot.transform,
+            "AllyZone",
+            new Vector3(-3.35f, -0.985f, 0f),
+            new Vector3(4.1f, 0.01f, 5.8f),
+            new Color(0.15f, 0.30f, 0.47f, 1f));
+        CreateStageBlock(
+            decorRoot.transform,
+            "EnemyZone",
+            new Vector3(3.35f, -0.985f, 0f),
+            new Vector3(4.1f, 0.01f, 5.8f),
+            new Color(0.42f, 0.17f, 0.15f, 1f));
+    }
+
+    private static void CreateStageBlock(Transform parent, string name, Vector3 localPosition, Vector3 localScale, Color color)
+    {
+        var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        block.name = name;
+        block.transform.SetParent(parent, false);
+        block.transform.localPosition = localPosition;
+        block.transform.localScale = localScale;
+
+        var collider = block.GetComponent<Collider>();
+        if (collider != null)
+        {
+            Destroy(collider);
+        }
+
+        var renderer = block.GetComponent<Renderer>();
+        renderer.sharedMaterial = BattlePresentationMaterialFactory.Create(color);
     }
 }
