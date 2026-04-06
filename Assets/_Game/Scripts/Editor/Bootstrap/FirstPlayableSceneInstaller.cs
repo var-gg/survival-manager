@@ -407,7 +407,7 @@ public static class FirstPlayableSceneInstaller
         rect.anchoredPosition = anchoredPosition;
         rect.sizeDelta = sizeDelta;
 
-        var image = EnsureComponent<Image>(go);
+        var image = EnsureComponent<UnityEngine.UI.Image>(go);
         image.color = new Color(0.16f, 0.24f, 0.32f, 0.94f);
         var button = EnsureComponent<UnityEngine.UI.Button>(go);
         var labelText = EnsureText(go.transform, $"{name}Text", new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero, TextAnchor.MiddleCenter, 18, label);
