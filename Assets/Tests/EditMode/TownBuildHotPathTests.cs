@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using SM.Combat.Model;
 using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
