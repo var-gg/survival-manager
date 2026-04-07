@@ -18,6 +18,5 @@ MonoBehaviour:
   CountedTagId: beastkin
   Tiers:
   - {fileID: 11400000, guid: ea06e9f2c6320724680fe9904015cf28, type: 2}
-  - {fileID: 11400000, guid: ecbfdfb53d4666a47b6798da49778357, type: 2}
   - {fileID: 11400000, guid: 5477a287bca2f15499cb31cfb4449239, type: 2}
   legacyDisplayName: 

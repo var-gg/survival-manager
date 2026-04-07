@@ -316,7 +316,7 @@ public static class LoopCContentGovernance
     public const int UnitDerivedDeltaThreshold = 8;
     public const int StandardDerivedDeltaThreshold = 3;
     public const int AugmentDerivedDeltaThreshold = 4;
-    public static readonly int[] AllowedSynergyThresholds = { 2, 4 };
+    public static readonly int[] AllowedSynergyThresholds = { 2, 3, 4 };
 
     public static readonly IReadOnlyDictionary<PowerBand, BudgetTarget> PowerBandTargets = new Dictionary<PowerBand, BudgetTarget>
     {

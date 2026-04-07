@@ -92,12 +92,16 @@ MonoBehaviour:
   FlexSupportSkillPool:
   - {fileID: 11400000, guid: c6b69d993a0f7784aba596f64453ae2e, type: 2}
   - {fileID: 11400000, guid: 0305e0c3579d4f447b14848e5cb53ece, type: 2}
+  - {fileID: 11400000, guid: 65300c7336ada1f4daea15e352c6c27d, type: 2}
+  - {fileID: 11400000, guid: 4ecd2cc5b604c6b46995f67debd2e986, type: 2}
   RecruitFlexActivePool:
   - {fileID: 11400000, guid: d33f586ea1fa04847808cfc697d92505, type: 2}
   - {fileID: 11400000, guid: fc6bd916959c0b04995bc0d9d8ba3770, type: 2}
   RecruitFlexPassivePool:
   - {fileID: 11400000, guid: c6b69d993a0f7784aba596f64453ae2e, type: 2}
   - {fileID: 11400000, guid: 0305e0c3579d4f447b14848e5cb53ece, type: 2}
+  - {fileID: 11400000, guid: 65300c7336ada1f4daea15e352c6c27d, type: 2}
+  - {fileID: 11400000, guid: 4ecd2cc5b604c6b46995f67debd2e986, type: 2}
   RecruitBannedPairings:
   - FlexActiveId: skill_minor_heal
     FlexPassiveId: support_siphon

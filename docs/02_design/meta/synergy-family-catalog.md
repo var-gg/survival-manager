@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/meta/synergy-family-catalog.md`
 - 관련문서:
   - `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
@@ -36,6 +36,8 @@ schema capacity 상의 추가 family 후보는 `synergy-and-augment-taxonomy.md`
   - 예: class 3-piece면 `2 + 3` package를 전부 얻는다.
 - 같은 family는 동일 threshold package를 한 번만 적용한다.
 - soft counter 기준은 `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`를 따른다.
+- runtime live definition은 race `2 / 4`, class `2 / 3` tier만 참조한다.
+- parked tier asset은 디스크에 남길 수 있지만 live reference는 금지한다.
 
 ## family 카탈로그
 

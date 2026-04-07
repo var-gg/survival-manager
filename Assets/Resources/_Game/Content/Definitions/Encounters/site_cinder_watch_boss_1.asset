@@ -29,5 +29,7 @@ MonoBehaviour:
   - reward_source_boss
   - faction_cinder_watch
   - boss
+  - encounter_family_weakside_dive
+  - answer_lane_reach_anti_carry
   legacyDisplayName: 
   legacyDescription: 

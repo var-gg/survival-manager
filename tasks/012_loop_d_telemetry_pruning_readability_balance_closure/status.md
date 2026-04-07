@@ -5,7 +5,7 @@
 - 작업명: Loop D Telemetry / Pruning / Readability Gate / First Playable Balance Closure
 - 담당: Codex
 - 상태: 진행 중
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-07
 
 ## Current state
 
@@ -13,6 +13,15 @@
   코드 뼈대는 들어갔다.
 - runtime battle/meta 경로에서 combat/recruit/retrain/duplicate telemetry를 기록한다.
 - first playable slice는 runtime asset + `ParkingLotContentIds` 구조로 분리되도록 맞췄다.
+- current authored floor closure 패스에서 아래를 추가 반영했다.
+  - `first_playable_slice.asset`에 passive board 4개, signature passive cap `8`,
+    flex active `12`, flex passive `20`, live synergy grammar를 잠금
+  - encounter 24개에 `encounter_family_*`와 `answer_lane_*` machine-readable tag를 부여
+  - site 6개의 4-beat pressure sequence와 primary answer lane을 자산/문서로 고정
+  - boss overlay 6개에 `overlay_ask_*`를 부여하고 site capstone ask를 분리
+  - skirmish / elite / boss drop table에 `RequiredContextTags = SiteId + answer_lane`
+    routed reward entry를 추가
+  - `FirstPlayableAuthoring*` validator와 build/reward/encounter coverage 규칙을 추가
 - 아직 final handoff는 아니다. smoke/full runner artifact와 test/script evidence를 다시
   회수해야 한다.
 
@@ -20,13 +29,13 @@
 
 | 항목 | 요구 | 현재 상태 | 근거 / 다음 확인 |
 | --- | --- | --- | --- |
-| compile | Loop D 코드 추가 후 compile green | 진행 중 | Unity 재기동 후 재확인 |
-| slice asset | first playable slice asset + markdown 생성 | 부분 | `FirstPlayableSliceGenerator` 재실행 필요 |
+| compile | Loop D 코드 추가 후 compile green | 진행 중 | Unity stale editor/connector 복구 후 재확인 |
+| slice asset | first playable slice asset + markdown 생성 | 부분 | asset는 갱신, generated markdown은 재실행 필요 |
 | telemetry | battle/meta telemetry event 기록 | 완료 | runtime emit point 추가 |
 | readability gate | report 생성 + fail semantics | 부분 | smoke runner artifact 재실행 필요 |
 | prune ledger | CSV/JSON 산출 | 부분 | runner artifact 재실행 필요 |
-| tests | Loop D EditMode oracle 추가 | 완료 | `LoopDTelemetryAndBalanceTests` 추가 |
-| docs/index | task packet + docs/index sync | 진행 중 | 같은 작업 단위에서 마감 필요 |
+| tests | Loop D / content validator test 갱신 | 부분 | batch verification이 project lock으로 final green 미확정 |
+| docs/index | task packet + docs/index sync | 부분 | design docs는 갱신, docs script evidence 재실행 필요 |
 
 ## Evidence
 
@@ -42,10 +51,23 @@
   - `Assets/_Game/Scripts/Runtime/Unity/GameSessionState.cs`
 - 관련 테스트:
   - `Assets/Tests/EditMode/LoopDTelemetryAndBalanceTests.cs`
+  - `Assets/Tests/EditMode/LoopCContentGovernanceTests.cs`
+  - `Assets/Tests/EditMode/ValidationAssetSelectionPolicyTests.cs`
+- 이번 패스 주요 자산/문서:
+  - `Assets/Resources/_Game/Content/Definitions/FirstPlayable/first_playable_slice.asset`
+  - `Assets/Resources/_Game/Content/Definitions/Encounters/*.asset`
+  - `Assets/Resources/_Game/Content/Definitions/EnemySquads/*.asset`
+  - `Assets/Resources/_Game/Content/Definitions/BossOverlays/*.asset`
+  - `Assets/Resources/_Game/Content/Definitions/DropTables/drop_table_skirmish.asset`
+  - `Assets/Resources/_Game/Content/Definitions/DropTables/drop_table_elite.asset`
+  - `Assets/Resources/_Game/Content/Definitions/DropTables/drop_table_boss.asset`
+  - `docs/02_design/systems/launch-encounter-variety-and-answer-lane-matrix.md`
 
 ## Remaining blockers
 
-- Unity hard-hang 이후 재기동 상태에서 smoke runner artifact를 다시 생성해야 한다.
+- stale Unity editor/connector 때문에 `unity-bridge status`가 ready로 올라오지 않았다.
+  `test-batch-fast`는 project lock 메시지와 함께 종료돼 최종 증거로 채택하지 않았다.
+- Unity 재기동 후 smoke runner artifact를 다시 생성해야 한다.
 - `test-edit`, `test-play`, docs/smoke script evidence를 최종 회수해야 한다.
 - `loop-d-closure-note.md`에는 실제 generated artifact 수치를 다시 적재해야 한다.
 - long-running runner는 `tasks/013_unity_long_running_workload_lane/status.md` 기준으로 shard/manual lane에서 다시 회수한다.
@@ -58,7 +80,7 @@
 
 ## Loop budget consumed
 
-- compile-fix: 3
+- compile-fix: 4
 - editor hard-restart: 1
 - smoke runner retry: 1
 

@@ -17,14 +17,15 @@ MonoBehaviour:
   DescriptionKey: content.boss_overlay.boss_overlay_ruined_crypt.desc
   PhaseTrigger: 1
   ThreatCost: 1
-  SignatureAuraTag: boss_aura_curse
-  SignatureUtilityTag: boss_utility_revive
+  SignatureAuraTag: boss_aura_sustain
+  SignatureUtilityTag: boss_utility_wall
   RewardDropTags:
   - boss
   - boss_overlay_ruined_crypt
+  - overlay_ask_defensive_boon
   AppliedStatuses:
-  - Id: boss_overlay_ruined_crypt_guarded
-    StatusId: guarded
+  - Id: boss_overlay_ruined_crypt_barrier
+    StatusId: barrier
     DurationSeconds: 999
     Magnitude: 0
     MaxStacks: 1

@@ -95,7 +95,7 @@ internal static class ContentValidationPolicyCatalog
         "backline",
     };
 
-    internal static readonly HashSet<int> RequiredSynergyThresholds = new() { 2, 4 };
+    internal static readonly HashSet<int> AllowedSynergyTierThresholds = new() { 2, 3, 4 };
 
     internal static LaunchScopeThreshold CurrentMvpMinimum { get; } = new()
     {

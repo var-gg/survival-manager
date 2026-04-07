@@ -24,7 +24,7 @@ public sealed class ValidationAssetSelectionPolicyTests
     }
 
     [Test]
-    public void Select_SkipsTier3SynergyAndKeepsHighestCompletenessCandidate()
+    public void Select_KeepsTier3SynergyAndKeepsHighestCompletenessCandidate()
     {
         var policy = new ValidationAssetSelectionPolicy();
         var sharedPath = "Assets/Resources/_Game/Content/Definitions/test_skill.asset";
@@ -48,9 +48,9 @@ public sealed class ValidationAssetSelectionPolicyTests
             new ValidationAssetDescriptor(tierThree, "Assets/Resources/_Game/Content/Definitions/test_synergy_3.asset", ValidationAssetSourceKind.AssetDatabaseTyped, tierThree.GetType()),
         });
 
-        Assert.That(selected.Count, Is.EqualTo(1));
+        Assert.That(selected.Count, Is.EqualTo(2));
         Assert.That(selected[0].Asset, Is.SameAs(completeSkill));
-        Assert.That(selected.All(descriptor => descriptor.Asset is not SynergyTierDefinition), Is.True);
+        Assert.That(selected.Any(descriptor => descriptor.Asset is SynergyTierDefinition), Is.True);
     }
 
     [Test]

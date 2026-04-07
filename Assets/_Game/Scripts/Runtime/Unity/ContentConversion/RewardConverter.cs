@@ -58,6 +58,10 @@ internal static class RewardConverter
             Math.Max(1, definition.Amount),
             definition.RarityBracket,
             Math.Max(1, definition.Weight),
-            definition.IsGuaranteed);
+            definition.IsGuaranteed,
+            Enumerate(definition.RequiredContextTags)
+                .Where(tag => !string.IsNullOrWhiteSpace(tag))
+                .Distinct(StringComparer.Ordinal)
+                .ToList());
     }
 }

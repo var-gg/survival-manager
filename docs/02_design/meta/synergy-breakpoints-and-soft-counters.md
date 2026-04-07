@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
 - 관련문서:
   - `docs/02_design/deck/roster-archetype-launch-scope.md`
@@ -41,6 +41,7 @@ race families와 class families는 서로 다른 breakpoint grammar를 쓴다.
 - class 4-piece는 current live subset에서 제거한다. duplicate 금지 + class당 3명이므로 도달 불가능하다.
 
 도달 불가능한 breakpoint는 current live subset에서 허용하지 않는다.
+live runtime asset은 parked breakpoint asset을 참조하지 않는다.
 
 exact 수치 payload와 stacking rule은 `docs/02_design/meta/synergy-family-catalog.md`가 소유한다.
 

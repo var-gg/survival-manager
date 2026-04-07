@@ -17,6 +17,11 @@ public sealed class LootResolutionService
 
     public bool TryResolveBundle(string sourceId, int seed, out LootBundleResult bundle, out string error)
     {
+        return TryResolveBundle(sourceId, seed, Array.Empty<string>(), out bundle, out error);
+    }
+
+    public bool TryResolveBundle(string sourceId, int seed, IReadOnlyList<string> contextTags, out LootBundleResult bundle, out string error)
+    {
         bundle = null!;
         error = string.Empty;
 
@@ -30,10 +35,12 @@ public sealed class LootResolutionService
         if (_content.DropTables is { } dropTables && dropTables.TryGetValue(source.DropTableId, out var dropTable))
         {
             entries.AddRange(dropTable.Entries
+                .Where(entry => MatchesContext(entry, contextTags))
                 .Where(entry => entry.IsGuaranteed)
                 .Select(entry => new LootEntry(entry.Id, entry.RewardType, entry.Amount, entry.RarityBracket)));
 
             var weightedEntries = dropTable.Entries
+                .Where(entry => MatchesContext(entry, contextTags))
                 .Where(entry => !entry.IsGuaranteed)
                 .ToList();
             if (weightedEntries.Count > 0)
@@ -51,7 +58,9 @@ public sealed class LootResolutionService
             foreach (var template in lootBundles.Values.Where(definition =>
                          string.Equals(definition.RewardSourceId, sourceId, StringComparison.Ordinal)))
             {
-                entries.AddRange(template.Entries.Select(entry => new LootEntry(entry.Id, entry.RewardType, entry.Amount, entry.RarityBracket)));
+                entries.AddRange(template.Entries
+                    .Where(entry => MatchesContext(entry, contextTags))
+                    .Select(entry => new LootEntry(entry.Id, entry.RewardType, entry.Amount, entry.RarityBracket)));
             }
         }
 
@@ -79,6 +88,26 @@ public sealed class LootResolutionService
         }
 
         return string.Join(", ", bundle.Entries.Select(entry => $"{entry.Id} x{entry.Amount}"));
+    }
+
+    private static bool MatchesContext(LootBundleEntryTemplate entry, IReadOnlyList<string> contextTags)
+    {
+        if (entry.RequiredContextTags == null || entry.RequiredContextTags.Count == 0)
+        {
+            return true;
+        }
+
+        if (contextTags == null || contextTags.Count == 0)
+        {
+            return false;
+        }
+
+        var available = contextTags
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            .ToHashSet(StringComparer.Ordinal);
+        return entry.RequiredContextTags
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            .All(available.Contains);
     }
 
     private static LootBundleEntryTemplate? SelectWeightedEntry(IReadOnlyList<LootBundleEntryTemplate> entries, int seed)

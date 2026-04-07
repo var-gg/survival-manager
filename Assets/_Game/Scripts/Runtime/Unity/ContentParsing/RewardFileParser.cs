@@ -145,6 +145,10 @@ internal static class RewardFileParser
                 {
                     entry.IsGuaranteed = ParseBool(trimmed["IsGuaranteed:".Length..].Trim());
                 }
+                else if (trimmed.StartsWith("RequiredContextTags:", StringComparison.Ordinal))
+                {
+                    entry.RequiredContextTags = ParseNestedStringList(lines, ref index);
+                }
             }
 
             result.Add(entry);
@@ -244,5 +248,27 @@ internal static class RewardFileParser
     internal static void ApplyLootBundleFallbacks(LootBundleDefinition definition)
     {
         definition.RewardSourceId = Coalesce(definition.RewardSourceId, "reward_source_extract");
+    }
+
+    private static List<string> ParseNestedStringList(IReadOnlyList<string> lines, ref int index)
+    {
+        var values = new List<string>();
+        var parentIndent = GetIndent(lines[index]);
+        while (index + 1 < lines.Count)
+        {
+            var nextIndex = index + 1;
+            var nextLine = lines[nextIndex];
+            var nextTrimmed = nextLine.Trim();
+            var nextIndent = GetIndent(nextLine);
+            if (nextIndent <= parentIndent || !nextTrimmed.StartsWith("- ", StringComparison.Ordinal))
+            {
+                break;
+            }
+
+            values.Add(nextTrimmed[2..].Trim());
+            index = nextIndex;
+        }
+
+        return values;
     }
 }

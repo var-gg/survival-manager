@@ -210,7 +210,8 @@ public sealed record LootBundleEntryTemplate(
     int Amount,
     RarityBracketValue RarityBracket,
     int Weight,
-    bool IsGuaranteed);
+    bool IsGuaranteed,
+    IReadOnlyList<string> RequiredContextTags);
 
 public sealed record DropTableTemplate(
     string Id,

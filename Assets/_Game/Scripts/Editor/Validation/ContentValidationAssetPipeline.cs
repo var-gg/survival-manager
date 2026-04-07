@@ -362,12 +362,6 @@ internal sealed class DefaultValidationAssetSkipPolicy : IValidationAssetSkipPol
 {
     public bool ShouldSkip(ValidationAssetDescriptor descriptor)
     {
-        if (descriptor.Asset is SynergyTierDefinition tier)
-        {
-            return tier.Threshold == 3
-                   || descriptor.AssetPath.EndsWith("_3.asset", StringComparison.OrdinalIgnoreCase);
-        }
-
         return false;
     }
 }

@@ -92,6 +92,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c0141da1013d60a4ca6d88111715baef, type: 2}
   - {fileID: 11400000, guid: 79907c95ca267f14f8b4644831834361, type: 2}
   - {fileID: 11400000, guid: 52ad983a86fdaa4408b2c9d688cb4b00, type: 2}
+  - {fileID: 11400000, guid: 0d501200015205d4d83b10ffc7410cba, type: 2}
+  - {fileID: 11400000, guid: e0f267fcc08c15145baae728a4c7d264, type: 2}
   RecruitFlexActivePool:
   - {fileID: 11400000, guid: dd86a56c52828af40b28489fe94661a4, type: 2}
   - {fileID: 11400000, guid: 69c477993ea28ef468d3e94c76aa4d74, type: 2}
@@ -100,6 +102,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c0141da1013d60a4ca6d88111715baef, type: 2}
   - {fileID: 11400000, guid: 79907c95ca267f14f8b4644831834361, type: 2}
   - {fileID: 11400000, guid: 52ad983a86fdaa4408b2c9d688cb4b00, type: 2}
+  - {fileID: 11400000, guid: 0d501200015205d4d83b10ffc7410cba, type: 2}
+  - {fileID: 11400000, guid: e0f267fcc08c15145baae728a4c7d264, type: 2}
   RecruitBannedPairings:
   - FlexActiveId: skill_scout_utility
     FlexPassiveId: support_longshot

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
 - 관련문서:
   - `docs/02_design/meta/economy-protection-contract.md`
@@ -56,6 +56,21 @@ launch floor에서는 ARPG식 5~6단계 rarity ladder를 열지 않는다.
 - boss는 `elite`와 `boss`를 연다.
 - extract는 base drop table과 bonus bundle을 함께 계산할 수 있다.
 - salvage는 material recovery 소스로만 사용한다.
+- skirmish / elite / boss drop table은 `RequiredContextTags = SiteId + answer_lane_*`로
+  site별 routed entry를 가진다.
+- generic source matrix는 유지하되, live subset에서는 `무슨 source인가`와 함께
+  `무슨 질문의 답인가`를 같이 기록한다.
+
+## live answer-lane routing
+
+| site id | skirmish routed reward | elite routed reward | boss routed reward |
+| --- | --- | --- | --- |
+| `site_ashen_gate` | `support_guarded` | `support_anchored` | `support_guarded` |
+| `site_cinder_watch` | `support_longshot` | `support_hunter_mark` | `support_piercing` |
+| `site_forgotten_warren` | `support_echo` | `support_lingering` | `support_siphon` |
+| `site_twisted_den` | `support_purifying` | `support_swift` | `support_purifying` |
+| `site_ruined_crypt` | `support_executioner` | `support_piercing` | `support_brutal` |
+| `site_grave_sanctum` | `support_siphon` | `support_echo` | `support_hunter_mark` |
 
 ## automatic loot 예시
 

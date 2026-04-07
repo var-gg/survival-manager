@@ -29,5 +29,7 @@ MonoBehaviour:
   - reward_source_boss
   - faction_twisted_den
   - boss
+  - encounter_family_weakside_dive
+  - answer_lane_peel_cleanse
   legacyDisplayName: 
   legacyDescription: 

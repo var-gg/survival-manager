@@ -91,6 +91,11 @@ internal sealed class DefaultLoopCGovernanceSubjectExtractor : ILoopCGovernanceS
     public IReadOnlyList<LoopCGovernanceSubject> Extract(ValidationAssetCatalog catalog)
     {
         var subjects = new List<LoopCGovernanceSubject>();
+        var referencedSynergyTierIds = catalog.OfType<SynergyDefinition>()
+            .SelectMany(definition => definition.Tiers ?? Array.Empty<SynergyTierDefinition>())
+            .Where(tier => tier != null && !string.IsNullOrWhiteSpace(tier.Id))
+            .Select(tier => tier.Id)
+            .ToHashSet(StringComparer.Ordinal);
         foreach (var asset in catalog.Assets.Where(asset => asset != null))
         {
             var assetPath = catalog.GetPath(asset);
@@ -141,7 +146,7 @@ internal sealed class DefaultLoopCGovernanceSubjectExtractor : ILoopCGovernanceS
                 case AugmentDefinition augment:
                     subjects.Add(new LoopCGovernanceSubject(augment.Id, nameof(AugmentDefinition), assetPath, nameof(AugmentDefinition), augment, augment.BudgetCard));
                     break;
-                case SynergyTierDefinition tier:
+                case SynergyTierDefinition tier when referencedSynergyTierIds.Contains(tier.Id):
                     subjects.Add(new LoopCGovernanceSubject(tier.Id, nameof(SynergyTierDefinition), assetPath, nameof(SynergyTierDefinition), tier, tier.BudgetCard));
                     break;
                 case StatusFamilyDefinition status:
@@ -437,7 +442,7 @@ internal static class BudgetWindowValidationPass
                 tolerance = augmentTarget.Tolerance;
                 return true;
             case SynergyTierDefinition tier:
-                var band = tier.Threshold == 4 ? PowerBand.Major : PowerBand.Standard;
+                var band = tier.Threshold == 2 ? PowerBand.Standard : PowerBand.Major;
                 var bandTarget = LoopCContentGovernance.PowerBandTargets[band];
                 target = bandTarget.Target;
                 tolerance = bandTarget.Tolerance;
@@ -697,18 +702,21 @@ internal static class SynergyStructureValidationPass
         foreach (var synergy in catalog.OfType<SynergyDefinition>())
         {
             var assetPath = catalog.GetPath(synergy);
+            var expectedThresholds = FirstPlayableAuthoringContract.GetExpectedSynergyThresholds(synergy)
+                .OrderBy(value => value)
+                .ToArray();
             var thresholds = synergy.Tiers
                 .Where(tier => tier != null)
                 .Select(tier => tier.Threshold)
                 .OrderBy(value => value)
                 .ToArray();
-            if (thresholds.Length != LoopCContentGovernance.AllowedSynergyThresholds.Length
-                || !thresholds.SequenceEqual(LoopCContentGovernance.AllowedSynergyThresholds))
+            if (thresholds.Length != expectedThresholds.Length
+                || !thresholds.SequenceEqual(expectedThresholds))
             {
                 issues.Add(new ContentValidationIssue(
                     ContentValidationSeverity.Error,
                     "loop_c.synergy_thresholds",
-                    $"Synergy '{synergy.Id}' must use thresholds [{string.Join(", ", LoopCContentGovernance.AllowedSynergyThresholds)}].",
+                    $"Synergy '{synergy.Id}' must use thresholds [{string.Join(", ", expectedThresholds)}].",
                     assetPath,
                     nameof(SynergyDefinition.Tiers)));
             }
@@ -722,7 +730,7 @@ internal static class SynergyStructureValidationPass
                 issues.Add(LoopCContentGovernanceValidator.CreateIssue(ContentValidationSeverity.Error, "loop_c.synergy_threshold_value", $"Synergy threshold '{tier.Threshold}' is forbidden in V1.", subject));
             }
 
-            var expectedBand = tier.Threshold == 4 ? PowerBand.Major : PowerBand.Standard;
+            var expectedBand = tier.Threshold == 2 ? PowerBand.Standard : PowerBand.Major;
             if (subject.BudgetCard.PowerBand != expectedBand)
             {
                 issues.Add(LoopCContentGovernanceValidator.CreateIssue(ContentValidationSeverity.Error, "loop_c.synergy_power_band", $"Synergy threshold {tier.Threshold} must use power band '{expectedBand}'.", subject));
@@ -956,7 +964,7 @@ internal static class LoopCDerivedSanityPreviewService
 
     private static int BuildSynergyScore(SynergyTierDefinition tier, BudgetCard budgetCard)
     {
-        var target = ResolveGenericPowerBandTarget(budgetCard, tier.Threshold == 4 ? PowerBand.Major : PowerBand.Standard);
+        var target = ResolveGenericPowerBandTarget(budgetCard, tier.Threshold == 2 ? PowerBand.Standard : PowerBand.Major);
         var baseScore =
             tier.Modifiers.Count * 1.75f +
             BuildEffectDescriptorScore(tier.Effects, null) +

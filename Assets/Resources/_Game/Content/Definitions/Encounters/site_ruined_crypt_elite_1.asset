@@ -29,5 +29,7 @@ MonoBehaviour:
   - reward_source_elite
   - faction_bone_host
   - elite
+  - encounter_family_mark_execute
+  - answer_lane_anti_sustain_finish
   legacyDisplayName: 
   legacyDescription: 

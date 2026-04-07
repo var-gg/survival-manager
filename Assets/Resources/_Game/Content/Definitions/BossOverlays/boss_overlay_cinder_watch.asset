@@ -17,14 +17,15 @@ MonoBehaviour:
   DescriptionKey: content.boss_overlay.boss_overlay_cinder_watch.desc
   PhaseTrigger: 1
   ThreatCost: 1
-  SignatureAuraTag: boss_aura_curse
-  SignatureUtilityTag: boss_utility_revive
+  SignatureAuraTag: boss_aura_hunt
+  SignatureUtilityTag: boss_utility_mark
   RewardDropTags:
   - boss
   - boss_overlay_cinder_watch
+  - overlay_ask_tactical_mark
   AppliedStatuses:
-  - Id: boss_overlay_cinder_watch_guarded
-    StatusId: guarded
+  - Id: boss_overlay_cinder_watch_marked
+    StatusId: marked
     DurationSeconds: 999
     Magnitude: 0
     MaxStacks: 1

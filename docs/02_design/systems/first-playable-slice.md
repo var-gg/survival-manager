@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/systems/first-playable-slice.md`
 - 관련문서:
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
@@ -17,9 +17,9 @@ Loop D에서 실제로 밸런스하고 검증하는 V1 playable subset을 cap과
 
 - `UnitBlueprint = 12` (core archetypes, specialist는 parked)
 - `SignatureActive = 12`
-- `SignaturePassive = 12`
-- `FlexActive = 8`
-- `FlexPassive = 8`
+- `SignaturePassive = 8`
+- `FlexActive = 12`
+- `FlexPassive = 20`
 - `Affix = 24`
 - `SynergyFamily = 7` (race 3 + class 4)
 - `TemporaryAugment = 12`
@@ -33,6 +33,22 @@ Loop D에서 실제로 밸런스하고 검증하는 V1 playable subset을 cap과
 - class 4-piece는 current live subset에서 제거한다.
 - race 3-piece는 current live subset에서 제거한다.
 - 도달 불가능한 breakpoint는 current live subset에서 허용하지 않는다.
+
+## live closure notes
+
+- `PassiveBoardIds`는 `board_vanguard / board_duelist / board_ranger / board_mystic` 4개를 exact set으로 가진다.
+- `ClassLabelMappings`는 canonical class id를 `vanguard / duelist / ranger / mystic`로 유지하고,
+  player-facing label은 `vanguard / striker / ranger / mystic`으로 매핑한다.
+- `FlexActiveIds`는 12 core archetype의 utility active를 전부 포함한다.
+- `FlexPassiveIds`는 `8 class flex passive + 12 support modifier`를 포함한다.
+  - class flex passive: `skill_vanguard_support_1/2`, `skill_duelist_support_1/2`,
+    `skill_ranger_support_1/2`, `skill_mystic_support_1/2`
+  - support modifier: `support_guarded`, `support_anchored`, `support_purifying`,
+    `support_swift`, `support_executioner`, `support_brutal`, `support_longshot`,
+    `support_hunter_mark`, `support_piercing`, `support_echo`, `support_lingering`,
+    `support_siphon`
+- `ParkingLotContentIds`는 live subset에서 빠진 augment reserve만 보관한다.
+  battle reward나 recruit/flex pool을 통해 live subset 우회 경로로 쓰지 않는다.
 
 ## first playable recruit set
 

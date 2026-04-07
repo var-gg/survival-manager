@@ -91,6 +91,8 @@ MonoBehaviour:
   FlexSupportSkillPool:
   - {fileID: 11400000, guid: f1fa154f7810df948bdae0514c3f8df3, type: 2}
   - {fileID: 11400000, guid: 3ae7482bc3e559f4ab4087ade6ddb17f, type: 2}
+  - {fileID: 11400000, guid: e97d18ab83713184b8fe4491b44bf808, type: 2}
+  - {fileID: 11400000, guid: f3efdc15db88f144bb2436566e1be83c, type: 2}
   RecruitFlexActivePool:
   - {fileID: 11400000, guid: d16677b3364fd9a408c86f044f9a7b24, type: 2}
   - {fileID: 11400000, guid: 24f7c6de92fa6ac4986d2534cf33e31d, type: 2}
@@ -98,6 +100,8 @@ MonoBehaviour:
   RecruitFlexPassivePool:
   - {fileID: 11400000, guid: f1fa154f7810df948bdae0514c3f8df3, type: 2}
   - {fileID: 11400000, guid: 3ae7482bc3e559f4ab4087ade6ddb17f, type: 2}
+  - {fileID: 11400000, guid: e97d18ab83713184b8fe4491b44bf808, type: 2}
+  - {fileID: 11400000, guid: f3efdc15db88f144bb2436566e1be83c, type: 2}
   RecruitBannedPairings:
   - FlexActiveId: skill_reaver_utility
     FlexPassiveId: support_brutal

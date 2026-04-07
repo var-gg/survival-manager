@@ -25,7 +25,7 @@ MonoBehaviour:
   Members:
   - Id: site_forgotten_warren_boss_1_squad_captain
     NameKey: 
-    ArchetypeId: reaver
+    ArchetypeId: shaman
     Anchor: 1
     Role: 1
     PositiveTraitId: 
@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_forgotten_warren_boss_1_squad_escort_1
     NameKey: 
-    ArchetypeId: scout
+    ArchetypeId: hexer
     Anchor: 3
     Role: 2
     PositiveTraitId: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_forgotten_warren_boss_1_squad_escort_2
     NameKey: 
-    ArchetypeId: shaman
+    ArchetypeId: reaver
     Anchor: 5
     Role: 2
     PositiveTraitId: 

@@ -29,5 +29,7 @@ MonoBehaviour:
   - reward_source_boss
   - faction_grave_sanctum
   - boss
+  - encounter_family_control_cleanse
+  - answer_lane_hybrid_boss_prep
   legacyDisplayName: 
   legacyDescription: 

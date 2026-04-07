@@ -18,28 +18,86 @@ MonoBehaviour:
   RewardSourceId: reward_source_boss
   Entries:
   - Id: boss_sigil_drop
-    RewardType: 8
+    RewardType: 9
     Amount: 1
     RarityBracket: 3
     Weight: 1
     IsGuaranteed: 1
+    RequiredContextTags: []
   - Id: echo_crystal_boss
-    RewardType: 7
+    RewardType: 8
     Amount: 2
     RarityBracket: 2
     Weight: 1
     IsGuaranteed: 1
+    RequiredContextTags: []
   - Id: item_prayer_bead
-    RewardType: 2
+    RewardType: 3
     Amount: 1
     RarityBracket: 3
     Weight: 2
     IsGuaranteed: 0
+    RequiredContextTags: []
   - Id: skill_minor_heal
-    RewardType: 9
+    RewardType: 10
     Amount: 1
     RarityBracket: 3
     Weight: 2
     IsGuaranteed: 0
+    RequiredContextTags: []
+  - Id: support_guarded
+    RewardType: 10
+    Amount: 1
+    RarityBracket: 3
+    Weight: 1
+    IsGuaranteed: 1
+    RequiredContextTags:
+    - site_ashen_gate
+    - answer_lane_guard_anchor
+  - Id: support_piercing
+    RewardType: 10
+    Amount: 1
+    RarityBracket: 3
+    Weight: 1
+    IsGuaranteed: 1
+    RequiredContextTags:
+    - site_cinder_watch
+    - answer_lane_reach_anti_carry
+  - Id: support_siphon
+    RewardType: 10
+    Amount: 1
+    RarityBracket: 3
+    Weight: 1
+    IsGuaranteed: 1
+    RequiredContextTags:
+    - site_forgotten_warren
+    - answer_lane_anti_swarm_persistence
+  - Id: support_purifying
+    RewardType: 10
+    Amount: 1
+    RarityBracket: 3
+    Weight: 1
+    IsGuaranteed: 1
+    RequiredContextTags:
+    - site_twisted_den
+    - answer_lane_peel_cleanse
+  - Id: support_brutal
+    RewardType: 10
+    Amount: 1
+    RarityBracket: 3
+    Weight: 1
+    IsGuaranteed: 1
+    RequiredContextTags:
+    - site_ruined_crypt
+    - answer_lane_anti_sustain_finish
+  - Id: support_hunter_mark
+    RewardType: 10
+    Amount: 1
+    RarityBracket: 3
+    Weight: 1
+    IsGuaranteed: 1
+    RequiredContextTags:
+    - site_grave_sanctum
+    - answer_lane_hybrid_boss_prep
   legacyDisplayName: 
   legacyDescription: 

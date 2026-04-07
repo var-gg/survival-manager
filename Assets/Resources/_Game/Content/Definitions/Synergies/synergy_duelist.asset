@@ -19,5 +19,4 @@ MonoBehaviour:
   Tiers:
   - {fileID: 11400000, guid: f2c5d70a82dc0434fb4f63b8a57f52d7, type: 2}
   - {fileID: 11400000, guid: 7130225a2f4443f439110f86be06843d, type: 2}
-  - {fileID: 11400000, guid: 9c993c4d4c113284394094b442f8b65e, type: 2}
   legacyDisplayName: 

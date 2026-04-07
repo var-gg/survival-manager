@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ashen_gate_skirmish_1_squad_2
     NameKey: 
-    ArchetypeId: hunter
+    ArchetypeId: guardian
     Anchor: 2
     Role: 0
     PositiveTraitId: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ashen_gate_skirmish_1_squad_3
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: priest
     Anchor: 3
     Role: 0
     PositiveTraitId: 
@@ -52,7 +52,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ashen_gate_skirmish_1_squad_4
     NameKey: 
-    ArchetypeId: raider
+    ArchetypeId: hunter
     Anchor: 5
     Role: 0
     PositiveTraitId: 

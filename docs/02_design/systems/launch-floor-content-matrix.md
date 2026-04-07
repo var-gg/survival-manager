@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/systems/launch-floor-content-matrix.md`
 - 관련문서:
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
@@ -31,6 +31,18 @@
 - `3 races x 4 classes`이므로 race당 4명, class당 3명이다.
 - race synergy: `2 / 4` — race 올인(같은 race 4명)으로 4-piece 도달 가능.
 - class synergy: `2 / 3` — class 올인(같은 class 3명)으로 3-piece 도달 가능. class 4-piece는 duplicate 금지 + class당 3명이므로 도달 불가능하다.
+
+## runtime flex surface
+
+- `FlexActive` live slice는 12 core archetype utility active를 전부 포함한다.
+- `FlexPassive` live slice는 baseline class flex passive 8개와 support modifier 12개를 함께 포함한다.
+- class flex passive는 archetype 기본 package를 설명하고, support modifier는 build lane과 reward routing surface를 소유한다.
+
+## build lane closure 메모
+
+- class별 3-lane floor와 archetype별 baseline/alt lane은
+  `docs/02_design/systems/launch-encounter-variety-and-answer-lane-matrix.md`가 소유한다.
+- 이 문서는 12 core roster 자체와 race/class 조합 closure만 잠근다.
 
 ## core archetype 매트릭스
 

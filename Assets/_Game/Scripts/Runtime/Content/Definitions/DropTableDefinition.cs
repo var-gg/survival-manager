@@ -21,6 +21,7 @@ public sealed class LootBundleEntryDefinition
     public RarityBracketValue RarityBracket = RarityBracketValue.Common;
     public int Weight = 1;
     public bool IsGuaranteed;
+    public List<string> RequiredContextTags = new();
 }
 
 [CreateAssetMenu(menuName = "SM/Definitions/Drop Table Definition", fileName = "drop_table_")]

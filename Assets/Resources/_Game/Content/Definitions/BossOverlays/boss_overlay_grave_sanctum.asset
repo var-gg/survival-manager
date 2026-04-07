@@ -17,14 +17,15 @@ MonoBehaviour:
   DescriptionKey: content.boss_overlay.boss_overlay_grave_sanctum.desc
   PhaseTrigger: 1
   ThreatCost: 1
-  SignatureAuraTag: boss_aura_curse
-  SignatureUtilityTag: boss_utility_revive
+  SignatureAuraTag: boss_aura_execute
+  SignatureUtilityTag: boss_utility_focus_fire
   RewardDropTags:
   - boss
   - boss_overlay_grave_sanctum
+  - overlay_ask_mark_execute
   AppliedStatuses:
-  - Id: boss_overlay_grave_sanctum_guarded
-    StatusId: guarded
+  - Id: boss_overlay_grave_sanctum_marked
+    StatusId: marked
     DurationSeconds: 999
     Magnitude: 0
     MaxStacks: 1

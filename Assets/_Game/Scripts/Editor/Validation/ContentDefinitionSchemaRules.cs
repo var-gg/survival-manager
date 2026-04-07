@@ -714,9 +714,10 @@ internal sealed class SynergySchemaRule : DefinitionSchemaRule<SynergyDefinition
             .Select(tier => tier.Threshold)
             .OrderBy(value => value)
             .ToList();
-        if (!ContentValidationPolicyCatalog.RequiredSynergyThresholds.SetEquals(thresholds))
+        if (!FirstPlayableAuthoringContract.GetExpectedSynergyThresholds(synergy).OrderBy(value => value).SequenceEqual(thresholds))
         {
-            ContentValidationIssueFactory.AddError(issues, "synergy.thresholds", "Synergy must define exact 2/4 breakpoint tiers.", assetPath);
+            var expected = string.Join(", ", FirstPlayableAuthoringContract.GetExpectedSynergyThresholds(synergy));
+            ContentValidationIssueFactory.AddError(issues, "synergy.thresholds", $"Synergy must define exact [{expected}] breakpoint tiers.", assetPath);
         }
 
         LoopAContractValidator.ValidateSynergy(synergy, assetPath, issues);
@@ -742,9 +743,9 @@ internal sealed class SynergyTierSchemaRule : DefinitionSchemaRule<SynergyTierDe
         ICollection<ContentValidationIssue> issues)
     {
         ContentDefinitionSchemaRuleSupport.ValidateModifiers(issues, tier.Modifiers, assetPath, "SynergyTierDefinition.Modifiers");
-        if (!ContentValidationPolicyCatalog.RequiredSynergyThresholds.Contains(tier.Threshold))
+        if (!ContentValidationPolicyCatalog.AllowedSynergyTierThresholds.Contains(tier.Threshold))
         {
-            ContentValidationIssueFactory.AddError(issues, "synergy_tier.threshold", "Synergy tier threshold must be one of 2 or 4.", assetPath);
+            ContentValidationIssueFactory.AddError(issues, "synergy_tier.threshold", "Synergy tier threshold must be one of 2, 3, or 4.", assetPath);
         }
     }
 }

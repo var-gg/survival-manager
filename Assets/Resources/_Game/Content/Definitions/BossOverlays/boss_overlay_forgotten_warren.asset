@@ -17,14 +17,15 @@ MonoBehaviour:
   DescriptionKey: content.boss_overlay.boss_overlay_forgotten_warren.desc
   PhaseTrigger: 1
   ThreatCost: 1
-  SignatureAuraTag: boss_aura_curse
-  SignatureUtilityTag: boss_utility_revive
+  SignatureAuraTag: boss_aura_attrition
+  SignatureUtilityTag: boss_utility_summon
   RewardDropTags:
   - boss
   - boss_overlay_forgotten_warren
+  - overlay_ask_attrition_vulnerability
   AppliedStatuses:
-  - Id: boss_overlay_forgotten_warren_guarded
-    StatusId: guarded
+  - Id: boss_overlay_forgotten_warren_exposed
+    StatusId: exposed
     DurationSeconds: 999
     Magnitude: 0
     MaxStacks: 1

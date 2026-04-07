@@ -18,6 +18,5 @@ MonoBehaviour:
   CountedTagId: human
   Tiers:
   - {fileID: 11400000, guid: 3ecc3a13f7f467f45b696a4c1c18ba28, type: 2}
-  - {fileID: 11400000, guid: 9dc88b711a90faf4c8435917fbdb9b0d, type: 2}
   - {fileID: 11400000, guid: ecf79b811b8daf646a366e3d894d08ca, type: 2}
   legacyDisplayName: 

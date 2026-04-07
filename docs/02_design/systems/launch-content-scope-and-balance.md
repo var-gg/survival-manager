@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/systems/launch-content-scope-and-balance.md`
 - 관련문서:
   - `docs/01_product/vision.md`
@@ -37,7 +37,7 @@
 | permanent augment equip slots | 1 | 1~2 | 데이터 모델 3, 운용 1~3 |
 | equipment slots | 3 | 3 | 3 |
 | synergy families | 7 | 7 | 7 |
-| synergy breakpoints | MVP 문서 참조 | 2 / 4 | 2 / 4 |
+| synergy breakpoints | MVP 문서 참조 | race `2 / 4`, class `2 / 3` | race `2 / 4`, class `2 / 3` |
 
 ## 현재 패스에서 고정하는 핵심
 
@@ -48,6 +48,16 @@
 - 가시적 active는 `SignatureActive`, `FlexActive` 두 개만 사용한다.
 - synergy는 `3 race + 4 class`의 총 7 family를 유지한다.
 - counter 설계는 hard counter가 아니라 soft counter를 목표로 한다.
+
+## current pre-art closure 기준
+
+- 이번 패스의 핵심 gap은 raw count 부족이 아니라 authored floor closure다.
+- `12 core archetype / 6 site / 24 encounter / 6 boss overlay / 6 reward source` count는 유지한다.
+- 추가 생성보다 아래 순서를 우선한다.
+  1. live subset truth 정리
+  2. 24 encounter를 8 authored family로 재배치
+  3. site별 primary answer lane을 reward routing과 validator로 잠금
+- balance tuning은 truth cleanup과 matrix closure 뒤에만 진행한다.
 
 ## 출시 기준 한 줄 요약
 

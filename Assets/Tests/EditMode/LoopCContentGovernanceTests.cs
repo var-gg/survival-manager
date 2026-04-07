@@ -30,7 +30,7 @@ public sealed class LoopCContentGovernanceTests
         CollectBudgetCardMissing<AugmentDefinition>(missing, asset => asset.BudgetCard, asset => asset.Id);
         CollectBudgetCardMissing<StatusFamilyDefinition>(missing, asset => asset.BudgetCard, asset => asset.Id);
 
-        foreach (var tier in LoadAssets<SynergyTierDefinition>().Where(asset => asset != null && asset.Threshold != 3))
+        foreach (var tier in LoadAssets<SynergyTierDefinition>())
         {
             if (tier.BudgetCard == null || tier.BudgetCard.Vector == null)
             {

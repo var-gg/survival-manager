@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ashen_gate_boss_1_squad_escort_1
     NameKey: 
-    ArchetypeId: hunter
+    ArchetypeId: warden
     Anchor: 3
     Role: 2
     PositiveTraitId: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ashen_gate_boss_1_squad_escort_2
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: priest
     Anchor: 5
     Role: 2
     PositiveTraitId: 

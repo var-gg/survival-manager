@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
+using SM.Unity;
 
 namespace SM.Editor.Validation;
 
@@ -20,6 +21,8 @@ internal sealed class CatalogValidationContext
         Encounters = catalog.OfType<EncounterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Squads = catalog.OfType<EnemySquadTemplateDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Overlays = catalog.OfType<BossOverlayDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        Archetypes = catalog.OfType<UnitArchetypeDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        PassiveBoards = catalog.OfType<PassiveBoardDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Statuses = catalog.OfType<StatusFamilyDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         CleanseProfiles = catalog.OfType<CleanseProfileDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         ControlRules = catalog.OfType<ControlDiminishingRuleDefinition>().ToList();
@@ -30,7 +33,8 @@ internal sealed class CatalogValidationContext
         Skills = catalog.OfType<SkillDefinitionAsset>().ToList();
         Items = catalog.OfType<ItemBaseDefinition>().ToList();
         Synergies = catalog.OfType<SynergyDefinition>().ToList();
-        ArchetypeIds = catalog.OfType<UnitArchetypeDefinition>().Select(asset => asset.Id).ToHashSet(StringComparer.Ordinal);
+        ArchetypeIds = Archetypes.Keys.ToHashSet(StringComparer.Ordinal);
+        FirstPlayableSliceAsset = catalog.OfType<FirstPlayableSliceDefinitionAsset>().FirstOrDefault();
     }
 
     internal ValidationAssetCatalog Catalog { get; }
@@ -39,6 +43,8 @@ internal sealed class CatalogValidationContext
     internal IReadOnlyDictionary<string, EncounterDefinition> Encounters { get; }
     internal IReadOnlyDictionary<string, EnemySquadTemplateDefinition> Squads { get; }
     internal IReadOnlyDictionary<string, BossOverlayDefinition> Overlays { get; }
+    internal IReadOnlyDictionary<string, UnitArchetypeDefinition> Archetypes { get; }
+    internal IReadOnlyDictionary<string, PassiveBoardDefinition> PassiveBoards { get; }
     internal IReadOnlyDictionary<string, StatusFamilyDefinition> Statuses { get; }
     internal IReadOnlyDictionary<string, CleanseProfileDefinition> CleanseProfiles { get; }
     internal IReadOnlyList<ControlDiminishingRuleDefinition> ControlRules { get; }
@@ -50,6 +56,7 @@ internal sealed class CatalogValidationContext
     internal IReadOnlyList<ItemBaseDefinition> Items { get; }
     internal IReadOnlyList<SynergyDefinition> Synergies { get; }
     internal IReadOnlyCollection<string> ArchetypeIds { get; }
+    internal FirstPlayableSliceDefinitionAsset? FirstPlayableSliceAsset { get; }
 
     internal string GetPath(UnityEngine.Object asset)
     {
@@ -80,8 +87,11 @@ internal sealed class CatalogValidationRuleRegistry
         return new CatalogValidationRuleRegistry(new ICatalogValidationRule[]
         {
             new CampaignCatalogValidator(),
+            new FirstPlayableSliceCatalogValidator(),
+            new EncounterAuthoringCatalogValidator(),
             new StatusCatalogValidator(),
             new RewardCatalogValidator(),
+            new BuildLaneCoverageCatalogValidator(),
             new SkillCatalogValidator(),
             new ItemCatalogValidator(),
             new FactionIsolationValidator(),

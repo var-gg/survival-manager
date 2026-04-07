@@ -18,6 +18,5 @@ MonoBehaviour:
   CountedTagId: undead
   Tiers:
   - {fileID: 11400000, guid: 47b68cbb07aa35543b6f825630642c87, type: 2}
-  - {fileID: 11400000, guid: 11efc51ceba55ee4c8425a8d02b720f5, type: 2}
   - {fileID: 11400000, guid: 085d41f84fee4374bb5807eae2e4c0d0, type: 2}
   legacyDisplayName: 

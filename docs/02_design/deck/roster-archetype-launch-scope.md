@@ -99,3 +99,20 @@
 - `docs/02_design/systems/launch-floor-content-matrix.md`에 적힌 12개 id와 race/class 조합이 그대로 닫혀 있어야 한다.
 - paid launch safe target을 주장하려면 `specialist` archetype 4개가 추가되어야 한다.
 - 각 archetype은 `ScopeKind`, `RoleFamilyTag`, `PrimaryWeaponFamilyTag`를 authored field로 가져야 한다.
+
+## build lane closure 규칙
+
+- 각 class는 `3 build lane`을 가진다.
+  - `vanguard`: `hold_guard / anti_dive_peel / attrition_hold`
+  - `duelist`: `burst_execute / sticky_flank / sustain_break`
+  - `ranger`: `longshot_focus / mobile_kite / armor_break_focus`
+  - `mystic`: `sustain_cleanse / control_attrition / persistent_pressure`
+- 각 archetype은 baseline lane 1개와 alt lane 1개를 가진다.
+- lane variance는 새 class/race/site 추가가 아니라 support modifier, reward routing, affix/augment bias로 만든다.
+
+## enemy usage closure 규칙
+
+- 12 core archetype은 player roster와 enemy squad 양쪽에서 모두 사용한다.
+- 각 archetype은 enemy squad에 최소 2회, elite/boss composition에는 최소 1회 등장하는 것을 floor로 본다.
+- 이 규칙의 runtime source-of-truth는 `EnemySquads/*.asset`과
+  `docs/02_design/systems/launch-encounter-variety-and-answer-lane-matrix.md`다.
