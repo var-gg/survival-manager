@@ -314,7 +314,7 @@ public sealed class RecruitmentSandboxWindow : EditorWindow
 
     private void ResetRuntimeSession()
     {
-        _lookup = new RuntimeCombatContentLookup();
+        _lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         _session = new GameSessionState(_lookup);
         _session.BindProfile(new SaveProfile());
         _session.SetCurrentScene(SceneNames.Town);

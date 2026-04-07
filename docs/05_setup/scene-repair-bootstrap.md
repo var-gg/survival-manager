@@ -1,12 +1,12 @@
 # Scene Repair Bootstrap
 
 - 상태: active
-- 최종수정일: 2026-04-06
+- 최종수정일: 2026-04-07
 - 단계: prototype
 
 ## 공식 메뉴
 
-- `SM/Bootstrap/Repair First Playable Scenes`
+- `SM/Setup/Repair First Playable Scenes`
 - `SM/Setup/Prepare Observer Playable`
 
 ## 현재 repair 범위

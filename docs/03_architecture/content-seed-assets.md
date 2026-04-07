@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/03_architecture/content-seed-assets.md`
 - 관련문서:
   - `docs/03_architecture/content-loading-contract.md`
@@ -19,9 +19,9 @@ runtime truth는 committed asset이며, full catalog source-of-truth는 Markdown
 
 ## 자산 생성 위치
 
-- 기본 bootstrap 메뉴: `SM/Bootstrap/Ensure Sample Content`
-- repair 메뉴: `SM/Seed/Generate Sample Content`
-- legacy migration 메뉴: `SM/Seed/Migrate Legacy Sample Content`
+- 기본 bootstrap 메뉴: `SM/Setup/Ensure Sample Content`
+- repair 메뉴: `SM/Setup/Generate Sample Content`
+- legacy migration 메뉴: `SM/Setup/Migrate Legacy Sample Content`
 - 생성 경로: `Assets/Resources/_Game/Content/Definitions/**`
 - 검증 메뉴: `SM/Validation/Validate Content Definitions`
 

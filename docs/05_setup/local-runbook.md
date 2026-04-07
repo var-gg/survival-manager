@@ -1,13 +1,13 @@
 # 로컬 실행 런북
 
 - 상태: active
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-07
 - 단계: prototype
 
 ## 먼저 실행할 메뉴
 
 - `SM/Setup/Prepare Observer Playable`
-- 필요 시 `SM/Bootstrap/Ensure Localization Foundation`
+- 필요 시 `SM/Setup/Ensure Localization Foundation`
 
 ## 빠른 실행 절차
 
@@ -36,9 +36,11 @@
 ## 현재 계약 경로
 
 - canonical sample content root: `Assets/Resources/_Game/Content/Definitions/**`
-- scene repair source of truth: `SM/Bootstrap/Repair First Playable Scenes`
+- scene repair source of truth: `SM/Setup/Repair First Playable Scenes`
 - one-shot bootstrap: `SM/Setup/Prepare Observer Playable`
-- localization foundation source of truth: `SM/Bootstrap/Ensure Localization Foundation`
+- localization foundation source of truth: `SM/Setup/Ensure Localization Foundation`
+- default playable content load path: `Resources.LoadAll(...)` only
+- editor sweep / file fallback: explicit diagnostic lane only
 
 ## 참고 문서
 

@@ -14,7 +14,7 @@ public static class CombatSandboxExecutionService
 {
     public static CombatSandboxRunRequest BuildRequest(CombatSandboxState state, BattlefieldLayout? sceneLayout = null)
     {
-        var lookup = new RuntimeCombatContentLookup();
+        var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         var session = new GameSessionState(lookup);
         session.BindProfile(new SaveProfile());
 

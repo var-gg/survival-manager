@@ -13,7 +13,7 @@ public static class ContentSnapshotExporter
     [MenuItem("SM/Content/Export Content Snapshot")]
     public static void ExportSnapshot()
     {
-        var lookup = new RuntimeCombatContentLookup();
+        var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         if (!lookup.TryGetCombatSnapshot(out var snapshot, out var error))
         {
             Debug.LogError($"[ContentSnapshotExporter] Failed to build snapshot: {error}");

@@ -138,7 +138,7 @@ public static class FirstPlayableBalanceRunner
     public static LoopDRunLiteReport RunRunLiteAndWriteArtifacts(bool smokeMode = false)
     {
         GenerateSliceArtifacts();
-        var lookup = new RuntimeCombatContentLookup();
+        var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         var report = RunRunLiteSuite(lookup, smokeMode);
         WriteJsonReport(RunLiteReportFileName, report);
         return report;
@@ -149,7 +149,7 @@ public static class FirstPlayableBalanceRunner
         Debug.Log($"[LoopD] RunAndWriteReport start smoke={smokeMode}");
         var sliceResult = GenerateSliceArtifacts();
         Debug.Log("[LoopD] Slice generation complete");
-        var lookup = new RuntimeCombatContentLookup();
+        var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         var snapshot = ResolveSnapshot(lookup);
 
         Debug.Log("[LoopD] PureKit suite start");
@@ -202,7 +202,7 @@ public static class FirstPlayableBalanceRunner
 
     private static CombatContentSnapshot ResolveSnapshot(RuntimeCombatContentLookup? lookup = null)
     {
-        lookup ??= new RuntimeCombatContentLookup();
+        lookup ??= new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         if (!lookup.TryGetCombatSnapshot(out var snapshot, out var error))
         {
             throw new InvalidOperationException(error);

@@ -57,11 +57,9 @@ public static class FirstPlayableSceneInstaller
         var controller = EnsureComponent<BootScreenController>(controllerGo);
 
         var title = EnsureText(canvas.transform, "BootTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(720f, 44f), TextAnchor.MiddleCenter, 24, "Session Realm");
-        var status = EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 36f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 18, "OfflineLocal 또는 OnlineAuthoritative 세션 영역을 선택하세요.");
-        var hint = EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -44f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 16, "공식 온라인 세션은 후속 패스에서 개방됩니다.");
-        var offlineButton = EnsureButton(canvas.transform, "OfflineLocalButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-126f, -144f), new Vector2(220f, 44f), "OfflineLocal");
-        var onlineButton = EnsureButton(canvas.transform, "OnlineAuthoritativeButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(126f, -144f), new Vector2(220f, 44f), "OnlineAuthoritative");
-        onlineButton.interactable = false;
+        var status = EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 36f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 18, "OfflineLocal 세션으로 Town 흐름을 시작하세요.");
+        var hint = EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -44f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 16, "현재 playable slice는 OfflineLocal만 지원합니다.");
+        var offlineButton = EnsureButton(canvas.transform, "OfflineLocalButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -144f), new Vector2(220f, 44f), "OfflineLocal");
 
         Bind(controller, new Dictionary<string, Object>
         {
@@ -69,7 +67,6 @@ public static class FirstPlayableSceneInstaller
             ["statusText"] = status,
             ["hintText"] = hint,
             ["offlineLocalButton"] = offlineButton,
-            ["onlineAuthoritativeButton"] = onlineButton,
         });
         Save(scene);
     }
@@ -203,7 +200,7 @@ public static class FirstPlayableSceneInstaller
     {
         ValidateScene(
             "Boot",
-            new[] { "SceneMarker_Boot", "GameBootstrap", "BootScreenController", "BootCanvas", "BootTitleText", "BootStatusText", "BootHintText", "OfflineLocalButton", "OnlineAuthoritativeButton", "Main Camera", "EventSystem" },
+            new[] { "SceneMarker_Boot", "GameBootstrap", "BootScreenController", "BootCanvas", "BootTitleText", "BootStatusText", "BootHintText", "OfflineLocalButton", "Main Camera", "EventSystem" },
             new Dictionary<string, System.Type[]>
             {
                 ["GameBootstrap"] = new[] { typeof(GameBootstrap) },

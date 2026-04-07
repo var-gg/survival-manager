@@ -43,7 +43,6 @@ public sealed class TownScreenController : MonoBehaviour
     public void SaveProfile() => _presenter?.SaveProfile();
     public void LoadProfile() => _presenter?.LoadProfile();
     public void SessionMenu() => _presenter?.SessionMenu();
-    public void OpenArena() => _presenter?.OpenArena();
     public void DebugStartExpedition() => _presenter?.DebugStartExpedition();
     public void QuickBattle() => _presenter?.QuickBattle();
 

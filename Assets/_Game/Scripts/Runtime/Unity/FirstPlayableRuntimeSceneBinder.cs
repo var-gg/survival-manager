@@ -2,6 +2,7 @@ using System.Linq;
 using System.Reflection;
 using SM.Unity.UI;
 using UnityEngine;
+using Unity.Profiling;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -10,6 +11,8 @@ namespace SM.Unity;
 
 public static class FirstPlayableRuntimeSceneBinder
 {
+    private static readonly ProfilerMarker RefreshLocalizedBindingsMarker = new("SM.FirstPlayableRuntimeSceneBinder.RefreshLocalizedBindings");
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void RegisterSceneLoadHook()
     {
@@ -62,16 +65,26 @@ public static class FirstPlayableRuntimeSceneBinder
             return;
         }
 
-        EnsureSharedUiFont(scene);
-
-        foreach (var host in scene.GetRootGameObjects()
-                     .SelectMany(root => root.GetComponentsInChildren<RuntimePanelHost>(true)))
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        using (RefreshLocalizedBindingsMarker.Auto())
         {
-            host.EnsureReady();
-            host.RefreshPanel();
+            EnsureSharedUiFont(scene);
+
+            foreach (var host in scene.GetRootGameObjects()
+                         .SelectMany(root => root.GetComponentsInChildren<RuntimePanelHost>(true)))
+            {
+                host.EnsureReady();
+                host.RefreshPanel();
+            }
+
+            UiGraphicRaycastPolicy.ApplyToScene(scene);
         }
 
-        UiGraphicRaycastPolicy.ApplyToScene(scene);
+        stopwatch.Stop();
+        RuntimeInstrumentation.LogDuration(
+            nameof(FirstPlayableRuntimeSceneBinder) + ".RefreshLocalizedBindings",
+            stopwatch.Elapsed,
+            $"scene={scene.name}");
     }
 
     private static void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -98,11 +111,14 @@ public static class FirstPlayableRuntimeSceneBinder
         var canvas = EnsureCanvas(canvasGo, sortingOrder: 0, withRaycaster: true);
         ConfigureStretchRect(canvasGo.GetComponent<RectTransform>());
         var title = EnsureText(canvas.transform, "BootTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(720f, 44f), 24, "Session Realm");
-        var status = EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 36f), new Vector2(760f, 80f), 18, "OfflineLocal 또는 OnlineAuthoritative 세션 영역을 선택하세요.");
-        var hint = EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -44f), new Vector2(760f, 80f), 16, "공식 온라인 세션은 후속 패스에서 개방됩니다.");
-        var offlineButton = EnsureButton(canvas.transform, "OfflineLocalButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-126f, -144f), new Vector2(220f, 44f), "OfflineLocal");
-        var onlineButton = EnsureButton(canvas.transform, "OnlineAuthoritativeButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(126f, -144f), new Vector2(220f, 44f), "OnlineAuthoritative");
-        onlineButton.interactable = false;
+        var status = EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 36f), new Vector2(760f, 80f), 18, "OfflineLocal 세션으로 Town 흐름을 시작하세요.");
+        var hint = EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -44f), new Vector2(760f, 80f), 16, "현재 playable slice는 OfflineLocal만 지원합니다.");
+        var offlineButton = EnsureButton(canvas.transform, "OfflineLocalButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -144f), new Vector2(220f, 44f), "OfflineLocal");
+        var onlineButton = FindGameObject(scene, "OnlineAuthoritativeButton");
+        if (onlineButton != null)
+        {
+            DestroyObject(onlineButton);
+        }
 
         var bootstrap = EnsureComponent<GameBootstrap>(bootstrapGo);
         var controllerGo = EnsureRootObject(scene, "BootScreenController");
@@ -113,7 +129,6 @@ public static class FirstPlayableRuntimeSceneBinder
             ["statusText"] = status,
             ["hintText"] = hint,
             ["offlineLocalButton"] = offlineButton,
-            ["onlineAuthoritativeButton"] = onlineButton,
         });
 
         if (Application.isPlaying)

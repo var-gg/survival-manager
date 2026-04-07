@@ -1,7 +1,7 @@
 # Scene Installer
 
 - 상태: draft
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-04-07
 - 단계: prototype
 
 ## 목적
@@ -10,7 +10,7 @@ marker-only 씬을 수동 drag&drop으로 고치지 않고, editor automation으
 
 ## 메뉴
 
-- `SM/Bootstrap/Rebuild First Playable Scenes`
+- `SM/Setup/Repair First Playable Scenes`
 
 ## 보장 범위
 
@@ -38,8 +38,8 @@ marker-only 씬을 수동 drag&drop으로 고치지 않고, editor automation으
 
 ## 권장 순서
 
-1. `SM/Bootstrap/Ensure Sample Content`
-2. `SM/Bootstrap/Rebuild First Playable Scenes`
+1. `SM/Setup/Ensure Sample Content`
+2. `SM/Setup/Repair First Playable Scenes`
 3. 필요 시 `SM/Validation/Validate Content Definitions`
 4. `Boot.unity` 열기
 5. Play

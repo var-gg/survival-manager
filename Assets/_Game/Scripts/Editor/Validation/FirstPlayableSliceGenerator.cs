@@ -27,7 +27,7 @@ public static class FirstPlayableSliceGenerator
     {
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
 
-        var lookup = new RuntimeCombatContentLookup();
+        var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         if (!lookup.TryGetCombatSnapshot(out var snapshot, out var error))
         {
             throw new InvalidOperationException(error);

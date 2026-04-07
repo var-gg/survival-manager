@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-06
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/03_architecture/unity-scene-flow.md`
 - 관련문서:
   - `docs/03_architecture/unity-boundaries.md`
@@ -83,19 +83,20 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 - Boot가 session realm 진입점이다.
 - Session Menu를 통해 Boot로 돌아갈 수 있지만 진행 중인 런에서는 막는다.
 - Quick Battle과 direct-scene play는 tooling 안정성을 위해 `OfflineLocal`을 auto-start한다.
-- `OnlineAuthoritative`는 현재 slice에서 비활성화 상태로만 노출한다.
+- `OnlineAuthoritative` 개념은 future seam으로 남기되, 현재 playable UI에서는 노출하지 않는다.
 
 ## Quick Battle 바이패스 플로우
 
-`SM/Quick Battle` 메뉴는 위 흐름에서 Town을 건너뛰고 Boot → Battle로 직행한다.
+`SM/Quick Battle` 메뉴는 위 흐름에서 Boot/Town을 우회하고 Battle 씬을 직접 연 뒤 Play로 진입한다.
 
 1. `FirstPlayableBootstrap.QuickBattleOneClick()` 실행
 2. 기존 setup 6단계 + QuickBattleConfig 에셋 보장
 3. `EditorPrefs`에 `SM.QuickBattleRequested` 플래그 설정
-4. `EditorApplication.EnterPlaymode()` 자동 진입
-5. `GameBootstrap.RunBootstrapRoutine()`에서 플래그 소비
-6. `PrepareQuickBattleSmoke()` + `GoToBattle()` (Town 스킵)
-7. Battle 씬에서 Re-battle / Return Town 가능
+4. Battle 씬 open
+5. `EditorApplication.EnterPlaymode()` 자동 진입
+6. `BattleScreenController` direct-entry bootstrap이 플래그 소비
+7. `PrepareQuickBattleSmoke()` + Battle smoke 시작
+8. Battle 씬에서 Re-battle / Return Town 가능
 
 ## GameSessionRoot.EnsureInstance 패턴
 

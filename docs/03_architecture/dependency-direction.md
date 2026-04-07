@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-06
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/03_architecture/dependency-direction.md`
 - 관련문서:
   - `docs/03_architecture/coding-principles.md`
@@ -95,5 +95,5 @@
 ### 바른 대안
 
 - 전투 결과는 `SM.Combat`의 순수 결과 타입으로 끝내고 저장 변환은 persistence adapter에서 한다.
-- 런타임 composition root에서 `PersistenceFacade`나 동등 포트를 조립한다.
+- 런타임 composition root에서 `PersistenceEntryPoint` 또는 implementation factory를 조립한다.
 - 공통 결과 계약이 필요하면 `SM.Core` 또는 `SM.Persistence.Abstractions`로 내린다.

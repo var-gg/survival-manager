@@ -120,7 +120,7 @@ main 브랜치에서 바로 연결 검증하지 않는다.
 
 ### 3. menu item 목록/실행
 
-- `SM/Bootstrap/*` 관련 menu item 확인
+- `SM/Setup/*` 관련 menu item 확인
 - 승인된 단일 menu 실행
 - 실행 결과 console 재확인
 

@@ -10,7 +10,6 @@ public sealed class BootScreenController : MonoBehaviour
     [SerializeField] private Text statusText = null!;
     [SerializeField] private Text hintText = null!;
     [SerializeField] private Button offlineLocalButton = null!;
-    [SerializeField] private Button onlineAuthoritativeButton = null!;
 
     private GameSessionRoot _root = null!;
 
@@ -35,9 +34,7 @@ public sealed class BootScreenController : MonoBehaviour
         }
 
         SetButtonLabel(offlineLocalButton, "OfflineLocal");
-        SetButtonLabel(onlineAuthoritativeButton, "OnlineAuthoritative");
         offlineLocalButton.interactable = !_root.HasBlockingError;
-        onlineAuthoritativeButton.interactable = false;
 
         titleText.text = Localize(
             GameLocalizationTables.UICommon,
@@ -77,18 +74,16 @@ public sealed class BootScreenController : MonoBehaviour
 
         return Localize(
             GameLocalizationTables.UICommon,
-            "ui.common.session_realm.select",
-            "OfflineLocal 또는 OnlineAuthoritative 세션 영역을 선택하세요.");
+            "ui.common.session_realm.offline_only",
+            "OfflineLocal 세션으로 Town 흐름을 시작하세요.");
     }
 
     private string BuildHintText()
     {
-        _root.CanStartRealm(SessionRealm.OnlineAuthoritative, out var onlineReason);
         return Localize(
             GameLocalizationTables.UICommon,
-            "ui.common.session_realm.hint",
-            "{0}\n런 중 authority 전환은 허용되지 않습니다.",
-            onlineReason);
+            "ui.common.session_realm.offline_hint",
+            "현재 playable slice는 OfflineLocal만 지원합니다.\n런 중 세션 전환은 허용되지 않습니다.");
     }
 
     private string Localize(string table, string key, string fallback, params object[] args)

@@ -339,7 +339,7 @@ public static class BalanceSweepScenarioFactory
 #if UNITY_EDITOR
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
 #endif
-        var lookup = new RuntimeCombatContentLookup();
+        var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         if (!lookup.TryGetCombatSnapshot(out var content, out var error))
         {
             throw new InvalidOperationException(error);
@@ -356,7 +356,7 @@ public static class BalanceSweepScenarioFactory
 #if UNITY_EDITOR
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
 #endif
-        var lookup = new RuntimeCombatContentLookup();
+        var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         if (!lookup.TryGetCombatSnapshot(out var content, out var error))
         {
             throw new InvalidOperationException(error);

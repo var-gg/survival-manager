@@ -7,7 +7,8 @@ namespace SM.Unity;
 /// <summary>
 /// RuntimeCombatContentLookup의 소비측 추상화.
 /// GameSessionState, ContentTextResolver 등 핵심 로직은 이 인터페이스에만 의존한다.
-/// production 구현(RuntimeCombatContentLookup)만 Resources.LoadAll을 사용하고,
+/// production 구현(RuntimeCombatContentLookup)은 기본적으로 Resources runtime path만 사용하고,
+/// editor recovery fallback은 명시적으로 opt-in한 진단 경로에서만 허용한다.
 /// 테스트에서는 FakeCombatContentLookup으로 교체하여 Unity asset-pipeline 호출을 피한다.
 /// </summary>
 public interface ICombatContentLookup

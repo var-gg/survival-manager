@@ -68,9 +68,7 @@ public sealed class RewardScreenPresenter
     private RewardScreenViewState BuildState(GameSessionState session, string message)
     {
         var profile = _root.ProfileQueries.GetProfileView(_root.ActiveProfileId);
-        var defaultStatus = !_root.CurrentCapabilities.CanClaimOfficialRewards
-            ? Localize(GameLocalizationTables.UIReward, "ui.reward.status.local_only", "현재 보상은 OfflineLocal 진행에만 반영되며 공식 보상으로 업로드되지 않습니다.")
-            : Localize(GameLocalizationTables.UIReward, "ui.reward.status.default", "Pick one card and return to town.");
+        var defaultStatus = Localize(GameLocalizationTables.UIReward, "ui.reward.status.default", "Pick one card and return to town.");
         return new RewardScreenViewState(
             Localize(GameLocalizationTables.UIReward, "ui.reward.title", "Reward Operator UI"),
             BuildLocaleStatus(),
@@ -131,13 +129,10 @@ public sealed class RewardScreenPresenter
     private string BuildRealmStatus(ProfileView profile)
     {
         return Localize(
-            GameLocalizationTables.UIReward,
-            "ui.reward.realm.status",
-            "Realm: {0} / Official rewards: {1}",
-            profile.Realm,
-            _root.CurrentCapabilities.CanClaimOfficialRewards
-                ? Localize(GameLocalizationTables.UICommon, "ui.common.enabled", "Enabled")
-                : Localize(GameLocalizationTables.UICommon, "ui.common.disabled", "Disabled"));
+            GameLocalizationTables.UICommon,
+            "ui.common.session_realm.current",
+            "Current realm: {0}",
+            profile.Realm);
     }
 
     private string BuildLocaleStatus()

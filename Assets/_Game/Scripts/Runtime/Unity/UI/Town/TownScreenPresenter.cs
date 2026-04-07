@@ -74,12 +74,6 @@ public sealed class TownScreenPresenter
         _root.ReturnToSessionMenu();
     }
 
-    public void OpenArena()
-    {
-        var arena = _root.ArenaQueries.GetArenaDashboard(ResolvePlayerId());
-        Refresh(arena.AvailabilityMessage);
-    }
-
     public void DebugStartExpedition()
     {
         if (_root.SessionState.CanResumeExpedition)
@@ -142,7 +136,6 @@ public sealed class TownScreenPresenter
         var playerId = ResolvePlayerId();
         var profile = _root.ProfileQueries.GetProfileView(playerId);
         var loadout = _root.ProfileQueries.GetLoadoutView(playerId);
-        var arena = _root.ArenaQueries.GetArenaDashboard(playerId);
 
         return new TownScreenViewState(
             Localize(GameLocalizationTables.UITown, "ui.town.title", "Town Operator UI"),
@@ -150,8 +143,6 @@ public sealed class TownScreenPresenter
             GetLocaleButtonLabel("ko", "한국어"),
             GetLocaleButtonLabel("en", "English"),
             BuildRealmSummary(profile),
-            BuildCapabilitySummary(_root.CurrentCapabilities),
-            arena.AvailabilityMessage,
             Localize(
                 GameLocalizationTables.UITown,
                 "ui.town.currency.summary",
@@ -176,8 +167,6 @@ public sealed class TownScreenPresenter
             Localize(GameLocalizationTables.UICommon, "ui.common.load", "Load"),
             Localize(GameLocalizationTables.UICommon, "ui.common.session_menu", "Session Menu"),
             !IsSessionMenuBlocked(session),
-            Localize(GameLocalizationTables.UITown, "ui.town.action.arena", "Arena / PvP"),
-            arena.CanUsePvp,
             Localize(GameLocalizationTables.UITown, "ui.town.action.debug_start", "Start Expedition"),
             Localize(GameLocalizationTables.UITown, "ui.town.action.quick_battle", "Quick Battle"));
     }
@@ -327,23 +316,10 @@ public sealed class TownScreenPresenter
     private string BuildRealmSummary(ProfileView profile)
     {
         return Localize(
-            GameLocalizationTables.UITown,
-            "ui.town.realm.summary",
-            "Realm: {0}\nOfficial progression: {1}",
-            profile.Realm,
-            profile.IsOfficialProgression
-                ? Localize(GameLocalizationTables.UICommon, "ui.common.enabled", "Enabled")
-                : Localize(GameLocalizationTables.UICommon, "ui.common.disabled", "Disabled"));
-    }
-
-    private string BuildCapabilitySummary(SessionCapabilities capabilities)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.realm.capabilities", "Capabilities"));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.realm.capability.pvp", "PvP: {0}", capabilities.CanUsePvp ? "Online" : "Locked"));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.realm.capability.reward", "Official rewards: {0}", capabilities.CanClaimOfficialRewards ? "Enabled" : "Local-only"));
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.realm.capability.upload", "Authoritative upload: {0}", capabilities.CanUploadAuthoritativeProgress ? "Enabled" : "Disabled"));
-        return sb.ToString();
+            GameLocalizationTables.UICommon,
+            "ui.common.session_realm.current",
+            "Current realm: {0}",
+            profile.Realm);
     }
 
     private string BuildRecruitCardBody(RecruitUnitPreview? offer)

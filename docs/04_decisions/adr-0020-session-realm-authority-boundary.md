@@ -21,7 +21,7 @@
 - `OfflineLocal`과 `OnlineAuthoritative`를 서로 다른 session realm으로 취급한다.
 - `OfflineLocal`은 local save truth와 비공식 progression을 가진다.
 - `OnlineAuthoritative`는 server truth와 공식 progression/reward/PvP/rating을 가진다.
-- 현재 slice에서는 `OfflineLocal`만 실제 동작하고, `OnlineAuthoritative`는 타입/문서/UI에만 반영하며 Boot에서 비활성화 상태로 노출한다.
+- 현재 slice에서는 `OfflineLocal`만 실제 동작하고, `OnlineAuthoritative`는 타입/문서에만 남기며 current playable UI에는 노출하지 않는다.
 - realm/capability/query/command 계약은 `SM.Meta`에 두고, offline adapter와 bootstrap orchestration은 `SM.Unity`에 둔다.
 - `ISaveRepository` full save는 `OfflineLocalSessionAdapter` 안으로만 가둔다.
 - official mutation 확장 seam은 repository-first가 아니라 command/query-first로 연다.
@@ -32,13 +32,13 @@
 
 - future server/mock adapter를 추가해도 현재 local vertical slice를 깨지 않는다.
 - Boot에서 realm 선택을 강제해 mid-run authority drift를 막는다.
-- Town/Reward UI가 local-only/official capability를 명시할 수 있다.
+- future official/local 경계를 타입과 문서에서 유지한 채 current playable UI를 더 단순하게 유지할 수 있다.
 - `SaveProfile`를 future authoritative contract로 오해하지 않게 된다.
 
 ### 비용
 
 - `SM.Meta`에 public port/DTO 수가 늘어난다.
-- current slice에서는 online 버튼이 비활성화 상태라 UX상 일부 기능이 아직 닫혀 보인다.
+- current playable UI에서 online capability를 직접 체험할 수는 없고, future seam이 문서/타입에만 남는다.
 - direct-scene tooling path를 유지하기 위해 auto-start policy를 별도 seam으로 관리해야 한다.
 
 ### 후속

@@ -18,13 +18,9 @@ public sealed class GameSessionRoot : MonoBehaviour
     public bool HasBlockingError => !string.IsNullOrWhiteSpace(LastBlockingError);
     public bool HasActiveSession => Sessions.HasActiveSession;
     public SessionRealm? CurrentRealm => Sessions.CurrentRealm;
-    public SessionCapabilities CurrentCapabilities => Sessions.CurrentCapabilities;
     public string ActiveProfileId => Sessions.ActiveProfileId;
     public IProfileQueryService ProfileQueries => Sessions;
     public IProfileCommandService ProfileCommands => Sessions;
-    public IArenaQueryService ArenaQueries => Sessions;
-    public IArenaCommandService ArenaCommands => Sessions;
-    public IBattleAuthority BattleAuthority => Sessions;
 
     private void Awake()
     {
@@ -85,11 +81,6 @@ public sealed class GameSessionRoot : MonoBehaviour
     public bool StartRealm(SessionRealm realm, out string error)
     {
         return Sessions.StartRealm(realm, out error);
-    }
-
-    public bool CanStartRealm(SessionRealm realm, out string reason)
-    {
-        return Sessions.CanStartRealm(realm, out reason);
     }
 
     public void EnsureOfflineLocalSession()

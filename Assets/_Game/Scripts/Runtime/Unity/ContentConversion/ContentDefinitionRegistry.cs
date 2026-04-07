@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using SM.Combat.Model;
@@ -7,6 +8,7 @@ using SM.Content.Definitions;
 using SM.Core.Contracts;
 using SM.Meta.Model;
 using UnityEngine;
+using Unity.Profiling;
 using static SM.Unity.ContentConversion.ContentConversionShared;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,6 +18,10 @@ namespace SM.Unity.ContentConversion;
 
 internal sealed class ContentDefinitionRegistry
 {
+    private static readonly ProfilerMarker LoadContentMarker = new("SM.ContentDefinitionRegistry.LoadContent");
+    private static readonly ProfilerMarker EditorSweepMarker = new("SM.ContentDefinitionRegistry.LoadDefinitions.EditorSweep");
+    private static readonly ProfilerMarker FileFallbackMarker = new("SM.ContentDefinitionRegistry.LoadContent.FileFallback");
+
     private readonly Dictionary<string, UnitArchetypeDefinition> _archetypeDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, TraitPoolDefinition> _traitPools = new(StringComparer.Ordinal);
     private readonly Dictionary<string, RaceDefinition> _raceDefinitions = new(StringComparer.Ordinal);
@@ -41,8 +47,14 @@ internal sealed class ContentDefinitionRegistry
     private readonly Dictionary<string, DropTableDefinition> _dropTableDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, LootBundleDefinition> _lootBundleDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, TraitTokenDefinition> _traitTokenDefinitions = new(StringComparer.Ordinal);
+    private readonly bool _allowEditorRecoveryFallback;
     private FirstPlayableSliceDefinition? _firstPlayableSlice;
     private bool _loaded;
+
+    internal ContentDefinitionRegistry(bool allowEditorRecoveryFallback = false)
+    {
+        _allowEditorRecoveryFallback = allowEditorRecoveryFallback;
+    }
 
     internal IReadOnlyDictionary<string, UnitArchetypeDefinition> ArchetypeDefinitions => _archetypeDefinitions;
     internal IReadOnlyDictionary<string, TraitPoolDefinition> TraitPools => _traitPools;
@@ -70,6 +82,7 @@ internal sealed class ContentDefinitionRegistry
     internal IReadOnlyDictionary<string, LootBundleDefinition> LootBundleDefinitions => _lootBundleDefinitions;
     internal IReadOnlyDictionary<string, TraitTokenDefinition> TraitTokenDefinitions => _traitTokenDefinitions;
     internal FirstPlayableSliceDefinition? FirstPlayableSlice => _firstPlayableSlice;
+    internal bool AllowsEditorRecoveryFallback => _allowEditorRecoveryFallback;
 
     internal void EnsureLoaded()
     {
@@ -84,153 +97,180 @@ internal sealed class ContentDefinitionRegistry
 
     private void LoadContent()
     {
-#if UNITY_EDITOR
-        RequireEditorCanonicalSampleContentReady();
-#endif
-        var archetypes = LoadDefinitions<UnitArchetypeDefinition>("_Game/Content/Definitions/Archetypes", "Assets/Resources/_Game/Content/Definitions/Archetypes");
-        var traitPools = LoadDefinitions<TraitPoolDefinition>("_Game/Content/Definitions/Traits", "Assets/Resources/_Game/Content/Definitions/Traits");
-        var races = LoadDefinitions<RaceDefinition>("_Game/Content/Definitions/Races", "Assets/Resources/_Game/Content/Definitions/Races");
-        var classes = LoadDefinitions<ClassDefinition>("_Game/Content/Definitions/Classes", "Assets/Resources/_Game/Content/Definitions/Classes");
-        var characters = LoadDefinitions<CharacterDefinition>("_Game/Content/Definitions/Characters", "Assets/Resources/_Game/Content/Definitions/Characters");
-        var items = LoadDefinitions<ItemBaseDefinition>("_Game/Content/Definitions/Items", "Assets/Resources/_Game/Content/Definitions/Items");
-        var affixes = LoadDefinitions<AffixDefinition>("_Game/Content/Definitions/Affixes", "Assets/Resources/_Game/Content/Definitions/Affixes");
-        var augments = LoadDefinitions<AugmentDefinition>("_Game/Content/Definitions/Augments", "Assets/Resources/_Game/Content/Definitions/Augments");
-        var skills = LoadDefinitions<SkillDefinitionAsset>("_Game/Content/Definitions/Skills", "Assets/Resources/_Game/Content/Definitions/Skills");
-        var teamTactics = LoadDefinitions<TeamTacticDefinition>("_Game/Content/Definitions/TeamTactics", "Assets/Resources/_Game/Content/Definitions/TeamTactics");
-        var roleInstructions = LoadDefinitions<RoleInstructionDefinition>("_Game/Content/Definitions/RoleInstructions", "Assets/Resources/_Game/Content/Definitions/RoleInstructions");
-        var passiveNodes = LoadDefinitions<PassiveNodeDefinition>("_Game/Content/Definitions/PassiveNodes", "Assets/Resources/_Game/Content/Definitions/PassiveNodes");
-        var synergies = LoadDefinitions<SynergyDefinition>("_Game/Content/Definitions/Synergies", "Assets/Resources/_Game/Content/Definitions/Synergies");
-        var campaignChapters = LoadDefinitions<CampaignChapterDefinition>("_Game/Content/Definitions/CampaignChapters", "Assets/Resources/_Game/Content/Definitions/CampaignChapters");
-        var expeditionSites = LoadDefinitions<ExpeditionSiteDefinition>("_Game/Content/Definitions/ExpeditionSites", "Assets/Resources/_Game/Content/Definitions/ExpeditionSites");
-        var encounters = LoadDefinitions<EncounterDefinition>("_Game/Content/Definitions/Encounters", "Assets/Resources/_Game/Content/Definitions/Encounters");
-        var enemySquads = LoadDefinitions<EnemySquadTemplateDefinition>("_Game/Content/Definitions/EnemySquads", "Assets/Resources/_Game/Content/Definitions/EnemySquads");
-        var bossOverlays = LoadDefinitions<BossOverlayDefinition>("_Game/Content/Definitions/BossOverlays", "Assets/Resources/_Game/Content/Definitions/BossOverlays");
-        var statusFamilies = LoadDefinitions<StatusFamilyDefinition>("_Game/Content/Definitions/StatusFamilies", "Assets/Resources/_Game/Content/Definitions/StatusFamilies");
-        var cleanseProfiles = LoadDefinitions<CleanseProfileDefinition>("_Game/Content/Definitions/CleanseProfiles", "Assets/Resources/_Game/Content/Definitions/CleanseProfiles");
-        var controlDiminishingRules = LoadDefinitions<ControlDiminishingRuleDefinition>("_Game/Content/Definitions/ControlDiminishingRules", "Assets/Resources/_Game/Content/Definitions/ControlDiminishingRules");
-        var rewardSources = LoadDefinitions<RewardSourceDefinition>("_Game/Content/Definitions/RewardSources", "Assets/Resources/_Game/Content/Definitions/RewardSources");
-        var dropTables = LoadDefinitions<DropTableDefinition>("_Game/Content/Definitions/DropTables", "Assets/Resources/_Game/Content/Definitions/DropTables");
-        var lootBundles = LoadDefinitions<LootBundleDefinition>("_Game/Content/Definitions/LootBundles", "Assets/Resources/_Game/Content/Definitions/LootBundles");
-        var traitTokens = LoadDefinitions<TraitTokenDefinition>("_Game/Content/Definitions/TraitTokens", "Assets/Resources/_Game/Content/Definitions/TraitTokens");
-        var firstPlayableSliceAssets = LoadDefinitions<FirstPlayableSliceDefinitionAsset>("_Game/Content/Definitions/FirstPlayable", "Assets/Resources/_Game/Content/Definitions/FirstPlayable");
-
-        var requiresFileFallback =
-            characters.Length == 0 ||
-            archetypes.Length == 0 ||
-            skills.Length == 0 ||
-            campaignChapters.Length == 0 ||
-            expeditionSites.Length == 0 ||
-            encounters.Length == 0 ||
-            enemySquads.Length == 0 ||
-            bossOverlays.Length == 0 ||
-            rewardSources.Length == 0 ||
-            dropTables.Length == 0 ||
-            lootBundles.Length == 0;
-
-        if (requiresFileFallback)
+        var stopwatch = Stopwatch.StartNew();
+        using (LoadContentMarker.Auto())
         {
-            if (!RuntimeCombatContentFileParser.TryLoad(out var parsed, out var parseError))
+#if UNITY_EDITOR
+            RequireEditorCanonicalSampleContentReady();
+#endif
+            var archetypes = LoadDefinitions<UnitArchetypeDefinition>("_Game/Content/Definitions/Archetypes", "Assets/Resources/_Game/Content/Definitions/Archetypes");
+            var traitPools = LoadDefinitions<TraitPoolDefinition>("_Game/Content/Definitions/Traits", "Assets/Resources/_Game/Content/Definitions/Traits");
+            var races = LoadDefinitions<RaceDefinition>("_Game/Content/Definitions/Races", "Assets/Resources/_Game/Content/Definitions/Races");
+            var classes = LoadDefinitions<ClassDefinition>("_Game/Content/Definitions/Classes", "Assets/Resources/_Game/Content/Definitions/Classes");
+            var characters = LoadDefinitions<CharacterDefinition>("_Game/Content/Definitions/Characters", "Assets/Resources/_Game/Content/Definitions/Characters");
+            var items = LoadDefinitions<ItemBaseDefinition>("_Game/Content/Definitions/Items", "Assets/Resources/_Game/Content/Definitions/Items");
+            var affixes = LoadDefinitions<AffixDefinition>("_Game/Content/Definitions/Affixes", "Assets/Resources/_Game/Content/Definitions/Affixes");
+            var augments = LoadDefinitions<AugmentDefinition>("_Game/Content/Definitions/Augments", "Assets/Resources/_Game/Content/Definitions/Augments");
+            var skills = LoadDefinitions<SkillDefinitionAsset>("_Game/Content/Definitions/Skills", "Assets/Resources/_Game/Content/Definitions/Skills");
+            var teamTactics = LoadDefinitions<TeamTacticDefinition>("_Game/Content/Definitions/TeamTactics", "Assets/Resources/_Game/Content/Definitions/TeamTactics");
+            var roleInstructions = LoadDefinitions<RoleInstructionDefinition>("_Game/Content/Definitions/RoleInstructions", "Assets/Resources/_Game/Content/Definitions/RoleInstructions");
+            var passiveNodes = LoadDefinitions<PassiveNodeDefinition>("_Game/Content/Definitions/PassiveNodes", "Assets/Resources/_Game/Content/Definitions/PassiveNodes");
+            var synergies = LoadDefinitions<SynergyDefinition>("_Game/Content/Definitions/Synergies", "Assets/Resources/_Game/Content/Definitions/Synergies");
+            var campaignChapters = LoadDefinitions<CampaignChapterDefinition>("_Game/Content/Definitions/CampaignChapters", "Assets/Resources/_Game/Content/Definitions/CampaignChapters");
+            var expeditionSites = LoadDefinitions<ExpeditionSiteDefinition>("_Game/Content/Definitions/ExpeditionSites", "Assets/Resources/_Game/Content/Definitions/ExpeditionSites");
+            var encounters = LoadDefinitions<EncounterDefinition>("_Game/Content/Definitions/Encounters", "Assets/Resources/_Game/Content/Definitions/Encounters");
+            var enemySquads = LoadDefinitions<EnemySquadTemplateDefinition>("_Game/Content/Definitions/EnemySquads", "Assets/Resources/_Game/Content/Definitions/EnemySquads");
+            var bossOverlays = LoadDefinitions<BossOverlayDefinition>("_Game/Content/Definitions/BossOverlays", "Assets/Resources/_Game/Content/Definitions/BossOverlays");
+            var statusFamilies = LoadDefinitions<StatusFamilyDefinition>("_Game/Content/Definitions/StatusFamilies", "Assets/Resources/_Game/Content/Definitions/StatusFamilies");
+            var cleanseProfiles = LoadDefinitions<CleanseProfileDefinition>("_Game/Content/Definitions/CleanseProfiles", "Assets/Resources/_Game/Content/Definitions/CleanseProfiles");
+            var controlDiminishingRules = LoadDefinitions<ControlDiminishingRuleDefinition>("_Game/Content/Definitions/ControlDiminishingRules", "Assets/Resources/_Game/Content/Definitions/ControlDiminishingRules");
+            var rewardSources = LoadDefinitions<RewardSourceDefinition>("_Game/Content/Definitions/RewardSources", "Assets/Resources/_Game/Content/Definitions/RewardSources");
+            var dropTables = LoadDefinitions<DropTableDefinition>("_Game/Content/Definitions/DropTables", "Assets/Resources/_Game/Content/Definitions/DropTables");
+            var lootBundles = LoadDefinitions<LootBundleDefinition>("_Game/Content/Definitions/LootBundles", "Assets/Resources/_Game/Content/Definitions/LootBundles");
+            var traitTokens = LoadDefinitions<TraitTokenDefinition>("_Game/Content/Definitions/TraitTokens", "Assets/Resources/_Game/Content/Definitions/TraitTokens");
+            var firstPlayableSliceAssets = LoadDefinitions<FirstPlayableSliceDefinitionAsset>("_Game/Content/Definitions/FirstPlayable", "Assets/Resources/_Game/Content/Definitions/FirstPlayable");
+
+            var requiresFileFallback =
+                characters.Length == 0 ||
+                archetypes.Length == 0 ||
+                skills.Length == 0 ||
+                campaignChapters.Length == 0 ||
+                expeditionSites.Length == 0 ||
+                encounters.Length == 0 ||
+                enemySquads.Length == 0 ||
+                bossOverlays.Length == 0 ||
+                rewardSources.Length == 0 ||
+                dropTables.Length == 0 ||
+                lootBundles.Length == 0;
+
+            if (requiresFileFallback)
             {
-                throw new InvalidOperationException($"전투 archetype 정의를 Resources에서 찾을 수 없습니다. {parseError}");
+                if (!_allowEditorRecoveryFallback)
+                {
+                    throw new InvalidOperationException(
+                        "SM canonical content가 Resources runtime path에서 누락되었습니다. " +
+                        "먼저 `SM/Setup/Ensure Sample Content`를 실행하고, 필요하면 `SM/Setup/Generate Sample Content`로 복구한 뒤 다시 시도하세요.");
+                }
+
+                RuntimeCombatParsedContent parsed;
+                var fallbackStopwatch = Stopwatch.StartNew();
+                using (FileFallbackMarker.Auto())
+                {
+                    if (!RuntimeCombatContentFileParser.TryLoad(out parsed, out var parseError))
+                    {
+                        throw new InvalidOperationException($"전투 archetype 정의를 Resources에서 찾을 수 없습니다. {parseError}");
+                    }
+                }
+
+                fallbackStopwatch.Stop();
+                RuntimeInstrumentation.LogDuration(
+                    "ContentDefinitionRegistry.FileFallback",
+                    fallbackStopwatch.Elapsed);
+
+                if (traitPools.Length == 0) traitPools = parsed.TraitPools.ToArray();
+                if (races.Length == 0) races = parsed.Races.ToArray();
+                if (classes.Length == 0) classes = parsed.Classes.ToArray();
+                if (characters.Length == 0) characters = parsed.Characters.ToArray();
+                if (archetypes.Length == 0) archetypes = parsed.Archetypes.ToArray();
+                if (skills.Length == 0) skills = parsed.Skills.ToArray();
+                if (items.Length == 0) items = parsed.Items.ToArray();
+                if (affixes.Length == 0) affixes = parsed.Affixes.ToArray();
+                if (augments.Length == 0) augments = parsed.Augments.ToArray();
+                if (teamTactics.Length == 0) teamTactics = parsed.TeamTactics.ToArray();
+                if (roleInstructions.Length == 0) roleInstructions = parsed.RoleInstructions.ToArray();
+                if (passiveNodes.Length == 0) passiveNodes = parsed.PassiveNodes.ToArray();
+                if (synergies.Length == 0) synergies = parsed.Synergies.ToArray();
+                if (campaignChapters.Length == 0) campaignChapters = parsed.CampaignChapters.ToArray();
+                if (expeditionSites.Length == 0) expeditionSites = parsed.ExpeditionSites.ToArray();
+                if (encounters.Length == 0) encounters = parsed.Encounters.ToArray();
+                if (enemySquads.Length == 0) enemySquads = parsed.EnemySquads.ToArray();
+                if (bossOverlays.Length == 0) bossOverlays = parsed.BossOverlays.ToArray();
+                if (statusFamilies.Length == 0) statusFamilies = parsed.StatusFamilies.ToArray();
+                if (cleanseProfiles.Length == 0) cleanseProfiles = parsed.CleanseProfiles.ToArray();
+                if (controlDiminishingRules.Length == 0) controlDiminishingRules = parsed.ControlDiminishingRules.ToArray();
+                if (rewardSources.Length == 0) rewardSources = parsed.RewardSources.ToArray();
+                if (dropTables.Length == 0) dropTables = parsed.DropTables.ToArray();
+                if (lootBundles.Length == 0) lootBundles = parsed.LootBundles.ToArray();
+                if (traitTokens.Length == 0) traitTokens = parsed.TraitTokens.ToArray();
             }
 
-            if (traitPools.Length == 0) traitPools = parsed.TraitPools.ToArray();
-            if (races.Length == 0) races = parsed.Races.ToArray();
-            if (classes.Length == 0) classes = parsed.Classes.ToArray();
-            if (characters.Length == 0) characters = parsed.Characters.ToArray();
-            if (archetypes.Length == 0) archetypes = parsed.Archetypes.ToArray();
-            if (skills.Length == 0) skills = parsed.Skills.ToArray();
-            if (items.Length == 0) items = parsed.Items.ToArray();
-            if (affixes.Length == 0) affixes = parsed.Affixes.ToArray();
-            if (augments.Length == 0) augments = parsed.Augments.ToArray();
-            if (teamTactics.Length == 0) teamTactics = parsed.TeamTactics.ToArray();
-            if (roleInstructions.Length == 0) roleInstructions = parsed.RoleInstructions.ToArray();
-            if (passiveNodes.Length == 0) passiveNodes = parsed.PassiveNodes.ToArray();
-            if (synergies.Length == 0) synergies = parsed.Synergies.ToArray();
-            if (campaignChapters.Length == 0) campaignChapters = parsed.CampaignChapters.ToArray();
-            if (expeditionSites.Length == 0) expeditionSites = parsed.ExpeditionSites.ToArray();
-            if (encounters.Length == 0) encounters = parsed.Encounters.ToArray();
-            if (enemySquads.Length == 0) enemySquads = parsed.EnemySquads.ToArray();
-            if (bossOverlays.Length == 0) bossOverlays = parsed.BossOverlays.ToArray();
-            if (statusFamilies.Length == 0) statusFamilies = parsed.StatusFamilies.ToArray();
-            if (cleanseProfiles.Length == 0) cleanseProfiles = parsed.CleanseProfiles.ToArray();
-            if (controlDiminishingRules.Length == 0) controlDiminishingRules = parsed.ControlDiminishingRules.ToArray();
-            if (rewardSources.Length == 0) rewardSources = parsed.RewardSources.ToArray();
-            if (dropTables.Length == 0) dropTables = parsed.DropTables.ToArray();
-            if (lootBundles.Length == 0) lootBundles = parsed.LootBundles.ToArray();
-            if (traitTokens.Length == 0) traitTokens = parsed.TraitTokens.ToArray();
+            ClearAll();
+
+            foreach (var race in races.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _raceDefinitions[race.Id] = race;
+            foreach (var @class in classes.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _classDefinitions[@class.Id] = @class;
+            foreach (var character in characters.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _characterDefinitions[character.Id] = character;
+            foreach (var archetype in archetypes.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _archetypeDefinitions[archetype.Id] = archetype;
+
+            foreach (var traitPool in traitPools.Where(definition => definition != null))
+            {
+                var archetypeId = ResolveTraitPoolArchetypeId(traitPool);
+                if (!string.IsNullOrWhiteSpace(archetypeId))
+                    _traitPools[archetypeId] = traitPool;
+            }
+
+            foreach (var archetype in archetypes.Where(definition => definition != null && definition.TraitPool != null))
+            {
+                var archetypeId = ResolveTraitPoolArchetypeId(archetype.TraitPool);
+                if (!string.IsNullOrWhiteSpace(archetypeId))
+                    _traitPools[archetypeId] = archetype.TraitPool;
+            }
+
+            foreach (var item in items.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _itemDefinitions[item.Id] = item;
+            foreach (var affix in affixes.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _affixDefinitions[affix.Id] = affix;
+            foreach (var augment in augments.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _augmentDefinitions[augment.Id] = augment;
+            foreach (var skill in skills.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _skillDefinitions[skill.Id] = skill;
+            foreach (var teamTactic in teamTactics.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _teamTacticDefinitions[teamTactic.Id] = teamTactic;
+            foreach (var roleInstruction in roleInstructions.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _roleInstructionDefinitions[roleInstruction.Id] = roleInstruction;
+            foreach (var passiveNode in passiveNodes.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _passiveNodeDefinitions[passiveNode.Id] = passiveNode;
+            foreach (var synergy in synergies.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _synergyDefinitions[synergy.Id] = synergy;
+            foreach (var chapter in campaignChapters.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _campaignChapterDefinitions[chapter.Id] = chapter;
+            foreach (var site in expeditionSites.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _expeditionSiteDefinitions[site.Id] = site;
+            foreach (var encounter in encounters.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _encounterDefinitions[encounter.Id] = encounter;
+            foreach (var squad in enemySquads.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _enemySquadDefinitions[squad.Id] = squad;
+            foreach (var bossOverlay in bossOverlays.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _bossOverlayDefinitions[bossOverlay.Id] = bossOverlay;
+            foreach (var statusFamily in statusFamilies.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _statusFamilyDefinitions[statusFamily.Id] = statusFamily;
+            foreach (var cleanseProfile in cleanseProfiles.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _cleanseProfileDefinitions[cleanseProfile.Id] = cleanseProfile;
+            foreach (var controlDiminishing in controlDiminishingRules.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _controlDiminishingDefinitions[controlDiminishing.Id] = controlDiminishing;
+            foreach (var rewardSource in rewardSources.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _rewardSourceDefinitions[rewardSource.Id] = rewardSource;
+            foreach (var dropTable in dropTables.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _dropTableDefinitions[dropTable.Id] = dropTable;
+            foreach (var lootBundle in lootBundles.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _lootBundleDefinitions[lootBundle.Id] = lootBundle;
+            foreach (var traitToken in traitTokens.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _traitTokenDefinitions[traitToken.Id] = traitToken;
+
+            _firstPlayableSlice = NormalizeFirstPlayableSlice(
+                firstPlayableSliceAssets
+                    .FirstOrDefault(asset => asset != null)?
+                    .ToRuntime());
         }
 
-        ClearAll();
-
-        foreach (var race in races.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _raceDefinitions[race.Id] = race;
-        foreach (var @class in classes.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _classDefinitions[@class.Id] = @class;
-        foreach (var character in characters.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _characterDefinitions[character.Id] = character;
-        foreach (var archetype in archetypes.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _archetypeDefinitions[archetype.Id] = archetype;
-
-        foreach (var traitPool in traitPools.Where(definition => definition != null))
-        {
-            var archetypeId = ResolveTraitPoolArchetypeId(traitPool);
-            if (!string.IsNullOrWhiteSpace(archetypeId))
-                _traitPools[archetypeId] = traitPool;
-        }
-
-        foreach (var archetype in archetypes.Where(definition => definition != null && definition.TraitPool != null))
-        {
-            var archetypeId = ResolveTraitPoolArchetypeId(archetype.TraitPool);
-            if (!string.IsNullOrWhiteSpace(archetypeId))
-                _traitPools[archetypeId] = archetype.TraitPool;
-        }
-
-        foreach (var item in items.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _itemDefinitions[item.Id] = item;
-        foreach (var affix in affixes.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _affixDefinitions[affix.Id] = affix;
-        foreach (var augment in augments.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _augmentDefinitions[augment.Id] = augment;
-        foreach (var skill in skills.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _skillDefinitions[skill.Id] = skill;
-        foreach (var teamTactic in teamTactics.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _teamTacticDefinitions[teamTactic.Id] = teamTactic;
-        foreach (var roleInstruction in roleInstructions.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _roleInstructionDefinitions[roleInstruction.Id] = roleInstruction;
-        foreach (var passiveNode in passiveNodes.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _passiveNodeDefinitions[passiveNode.Id] = passiveNode;
-        foreach (var synergy in synergies.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _synergyDefinitions[synergy.Id] = synergy;
-        foreach (var chapter in campaignChapters.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _campaignChapterDefinitions[chapter.Id] = chapter;
-        foreach (var site in expeditionSites.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _expeditionSiteDefinitions[site.Id] = site;
-        foreach (var encounter in encounters.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _encounterDefinitions[encounter.Id] = encounter;
-        foreach (var squad in enemySquads.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _enemySquadDefinitions[squad.Id] = squad;
-        foreach (var bossOverlay in bossOverlays.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _bossOverlayDefinitions[bossOverlay.Id] = bossOverlay;
-        foreach (var statusFamily in statusFamilies.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _statusFamilyDefinitions[statusFamily.Id] = statusFamily;
-        foreach (var cleanseProfile in cleanseProfiles.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _cleanseProfileDefinitions[cleanseProfile.Id] = cleanseProfile;
-        foreach (var controlDiminishing in controlDiminishingRules.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _controlDiminishingDefinitions[controlDiminishing.Id] = controlDiminishing;
-        foreach (var rewardSource in rewardSources.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _rewardSourceDefinitions[rewardSource.Id] = rewardSource;
-        foreach (var dropTable in dropTables.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _dropTableDefinitions[dropTable.Id] = dropTable;
-        foreach (var lootBundle in lootBundles.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _lootBundleDefinitions[lootBundle.Id] = lootBundle;
-        foreach (var traitToken in traitTokens.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
-            _traitTokenDefinitions[traitToken.Id] = traitToken;
-
-        _firstPlayableSlice = NormalizeFirstPlayableSlice(
-            firstPlayableSliceAssets
-                .FirstOrDefault(asset => asset != null)?
-                .ToRuntime());
+        stopwatch.Stop();
+        RuntimeInstrumentation.LogDuration(
+            "ContentDefinitionRegistry.LoadContent",
+            stopwatch.Elapsed,
+            $"allowEditorRecoveryFallback={_allowEditorRecoveryFallback}");
     }
 
     private void ClearAll()
@@ -461,7 +501,7 @@ internal sealed class ContentDefinitionRegistry
         }
     }
 
-    internal static T[] LoadDefinitions<T>(string resourcesPath, string editorFolderPath) where T : UnityEngine.Object
+    internal T[] LoadDefinitions<T>(string resourcesPath, string editorFolderPath) where T : UnityEngine.Object
     {
         var results = new List<T>();
 #if UNITY_EDITOR
@@ -482,32 +522,43 @@ internal sealed class ContentDefinitionRegistry
         }
 
 #if UNITY_EDITOR
-        if (!AssetDatabase.IsValidFolder(editorFolderPath))
+        if (!_allowEditorRecoveryFallback || !AssetDatabase.IsValidFolder(editorFolderPath))
         {
             return results.ToArray();
         }
 
-        foreach (var path in AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { editorFolderPath })
-                     .Select(AssetDatabase.GUIDToAssetPath)
-                     .Where(path => !string.IsNullOrWhiteSpace(path) && seenPaths.Add(path)))
+        var resourcesCount = results.Count;
+        var sweepStopwatch = Stopwatch.StartNew();
+        using (EditorSweepMarker.Auto())
         {
-            var asset = LoadEditorAssetAtPath<T>(path);
-            if (asset != null)
+            foreach (var path in AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { editorFolderPath })
+                         .Select(AssetDatabase.GUIDToAssetPath)
+                         .Where(path => !string.IsNullOrWhiteSpace(path) && seenPaths.Add(path)))
             {
-                results.Add(asset);
+                var asset = LoadEditorAssetAtPath<T>(path);
+                if (asset != null)
+                {
+                    results.Add(asset);
+                }
+            }
+
+            foreach (var path in AssetDatabase.FindAssets(string.Empty, new[] { editorFolderPath })
+                         .Select(AssetDatabase.GUIDToAssetPath)
+                         .Where(path => path.EndsWith(".asset", StringComparison.OrdinalIgnoreCase) && seenPaths.Add(path)))
+            {
+                var asset = LoadEditorAssetAtPath<T>(path);
+                if (asset != null)
+                {
+                    results.Add(asset);
+                }
             }
         }
 
-        foreach (var path in AssetDatabase.FindAssets(string.Empty, new[] { editorFolderPath })
-                     .Select(AssetDatabase.GUIDToAssetPath)
-                     .Where(path => path.EndsWith(".asset", StringComparison.OrdinalIgnoreCase) && seenPaths.Add(path)))
-        {
-            var asset = LoadEditorAssetAtPath<T>(path);
-            if (asset != null)
-            {
-                results.Add(asset);
-            }
-        }
+        sweepStopwatch.Stop();
+        RuntimeInstrumentation.LogDuration(
+            $"ContentDefinitionRegistry.LoadDefinitions<{typeof(T).Name}>.EditorSweep",
+            sweepStopwatch.Elapsed,
+            $"resources={resourcesCount}; recovered={results.Count - resourcesCount}");
 
         return results.ToArray();
 #else
@@ -562,7 +613,7 @@ internal sealed class ContentDefinitionRegistry
 
         throw new InvalidOperationException(
             "SM canonical sample content is not preflight-ready for ContentDefinitionRegistry. " +
-            "Run 'pwsh -File tools/unity-bridge.ps1 seed-content' or Unity menu 'SM/Seed/Generate Sample Content' before using editor-side runtime lookup.");
+            "Run 'pwsh -File tools/unity-bridge.ps1 seed-content' or Unity menu 'SM/Setup/Generate Sample Content' before using editor-side runtime lookup.");
     }
 #endif
 }

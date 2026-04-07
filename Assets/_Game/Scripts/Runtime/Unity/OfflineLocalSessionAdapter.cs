@@ -3,6 +3,7 @@ using System.Linq;
 using SM.Core.Results;
 using SM.Meta.Model;
 using SM.Meta.Services;
+using Unity.Profiling;
 
 namespace SM.Unity;
 
@@ -13,6 +14,8 @@ public sealed class OfflineLocalSessionAdapter :
     IArenaCommandService,
     IBattleAuthority
 {
+    private static readonly ProfilerMarker LoadOrCreateProfileMarker = new("SM.OfflineLocalSessionAdapter.LoadOrCreateProfile");
+
     private readonly GameSessionState _sessionState;
     private readonly PersistenceEntryPoint _persistence;
 
@@ -30,8 +33,18 @@ public sealed class OfflineLocalSessionAdapter :
 
     public void LoadOrCreateProfile()
     {
-        var profile = _persistence.Repository.LoadOrCreate(_persistence.Config.ProfileId);
-        _sessionState.BindProfile(profile);
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        using (LoadOrCreateProfileMarker.Auto())
+        {
+            var profile = _persistence.Repository.LoadOrCreate(_persistence.Config.ProfileId);
+            _sessionState.BindProfile(profile);
+        }
+
+        stopwatch.Stop();
+        RuntimeInstrumentation.LogDuration(
+            nameof(OfflineLocalSessionAdapter) + ".LoadOrCreateProfile",
+            stopwatch.Elapsed,
+            $"profileId={_persistence.Config.ProfileId}");
     }
 
     public void SaveProfile()

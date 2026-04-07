@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/05_setup/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -27,8 +27,8 @@
 - `localization-workflow.md`: localization foundation, key 추가, locale 검증 절차
 - `mcp-adoption-plan.md`: MCP 도입 평가 순서와 운영 범위
 - `mcp-safety-rules.md`: MCP read/write 안전 규칙
-- `postgres-setup.md`: local Postgres 개발 설정
-- `quick-battle-smoke.md`: Town Quick Battle smoke 경로
+- `postgres-setup.md`: experimental local Postgres 개발 설정
+- `quick-battle-smoke.md`: one-click Battle 직행 smoke 경로
 - `recruitment-and-retrain-harness.md`: Loop B + Loop C recruit/retrain sandbox와 governance inspect
 - `scene-installer.md`: first playable scene rebuild installer 기준
 - `scene-repair-bootstrap.md`: first playable scene repair/bootstrap 운영 기준

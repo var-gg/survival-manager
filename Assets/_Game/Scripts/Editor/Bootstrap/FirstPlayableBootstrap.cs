@@ -52,20 +52,12 @@ public static class FirstPlayableBootstrap
 
         try
         {
-            Debug.Log("[QuickBattle] Step 1/7: Ensure localization foundation");
-            LocalizationFoundationBootstrap.EnsureFoundationAssets();
-
-            Debug.Log("[QuickBattle] Step 2/7: Ensure minimum canonical content");
-            EnsureCanonicalSampleContentForPrototypeEntry("QuickBattle");
-
-            Debug.Log("[QuickBattle] Step 3/7: Write content validation report (non-blocking)");
-            ValidateContentDefinitionsForPrototypeEntry("QuickBattle");
-
-            Debug.Log("[QuickBattle] Step 4/7: Repair first playable scenes");
-            FirstPlayableSceneInstaller.RepairFirstPlayableScenes();
-
-            Debug.Log("[QuickBattle] Step 5/7: Ensure Quick Battle config");
-            var quickBattleConfig = EnsureQuickBattleConfig();
+            using var flow = RuntimeInstrumentation.BeginFlow("QuickBattle");
+            flow.Step("Ensure localization foundation", LocalizationFoundationBootstrap.EnsureFoundationAssets);
+            flow.Step("Ensure minimum canonical content", () => EnsureCanonicalSampleContentForPrototypeEntry("QuickBattle"));
+            flow.Step("Write content validation report (non-blocking)", () => ValidateContentDefinitionsForPrototypeEntry("QuickBattle"));
+            flow.Step("Repair first playable scenes", FirstPlayableSceneInstaller.RepairFirstPlayableScenes);
+            var quickBattleConfig = flow.Step("Ensure Quick Battle config", EnsureQuickBattleConfig);
             if (quickBattleConfig != null)
             {
                 EditorPrefs.SetBool(QuickBattleInspectorRestoreKey, true);
@@ -73,11 +65,8 @@ public static class FirstPlayableBootstrap
                 EditorGUIUtility.PingObject(quickBattleConfig);
             }
 
-            Debug.Log("[QuickBattle] Step 6/7: Reset local demo save/profile");
-            ResetLocalDemoState();
-
-            Debug.Log("[QuickBattle] Step 7/7: Open Battle scene → Enter Play Mode");
-            EditorSceneManager.OpenScene(BattleScenePath, OpenSceneMode.Single);
+            flow.Step("Reset local demo save/profile", ResetLocalDemoState);
+            flow.Step("Open Battle scene", () => EditorSceneManager.OpenScene(BattleScenePath, OpenSceneMode.Single));
             if (quickBattleConfig != null)
             {
                 Selection.activeObject = quickBattleConfig;
@@ -85,7 +74,7 @@ public static class FirstPlayableBootstrap
             }
 
             EditorPrefs.SetBool(QuickBattleRequestedKey, true);
-            EditorApplication.EnterPlaymode();
+            flow.Step("Enter Play Mode", EditorApplication.EnterPlaymode);
         }
         catch (System.Exception ex)
         {
@@ -106,25 +95,15 @@ public static class FirstPlayableBootstrap
     {
         try
         {
-            Debug.Log("[ObserverPlayable] Step 1/6: Ensure localization foundation");
-            LocalizationFoundationBootstrap.EnsureFoundationAssets();
+            using var flow = RuntimeInstrumentation.BeginFlow("PrepareObserverPlayable");
+            flow.Step("Ensure localization foundation", LocalizationFoundationBootstrap.EnsureFoundationAssets);
+            flow.Step("Ensure minimum canonical content without rewriting committed authoring", () => EnsureCanonicalSampleContentForPrototypeEntry("ObserverPlayable"));
+            flow.Step("Write content validation report (non-blocking)", () => ValidateContentDefinitionsForPrototypeEntry("ObserverPlayable"));
+            flow.Step("Repair first playable scenes", FirstPlayableSceneInstaller.RepairFirstPlayableScenes);
+            flow.Step("Reset local demo save/profile if present", ResetLocalDemoState);
+            flow.Step("Open Boot scene", () => EditorSceneManager.OpenScene(BootScenePath, OpenSceneMode.Single));
 
-            Debug.Log("[ObserverPlayable] Step 2/6: Ensure minimum canonical content without rewriting committed authoring");
-            EnsureCanonicalSampleContentForPrototypeEntry("ObserverPlayable");
-
-            Debug.Log("[ObserverPlayable] Step 3/6: Write content validation report (non-blocking)");
-            ValidateContentDefinitionsForPrototypeEntry("ObserverPlayable");
-
-            Debug.Log("[ObserverPlayable] Step 4/6: Repair first playable scenes");
-            FirstPlayableSceneInstaller.RepairFirstPlayableScenes();
-
-            Debug.Log("[ObserverPlayable] Step 5/6: Reset local demo save/profile if present");
-            ResetLocalDemoState();
-
-            Debug.Log("[ObserverPlayable] Step 6/6: Open Boot scene");
-            EditorSceneManager.OpenScene(BootScenePath, OpenSceneMode.Single);
-
-            Debug.Log("[ObserverPlayable] Success. 이제 Boot scene에서 Play를 누르면 Session Realm 선택 화면이 열리고, OfflineLocal 선택 후 Town 흐름을 확인할 수 있다.");
+            Debug.Log("[ObserverPlayable] Success. 이제 Boot scene에서 Play를 누르면 OfflineLocal 버튼으로 Town 흐름을 확인할 수 있다.");
         }
         catch (System.Exception ex)
         {

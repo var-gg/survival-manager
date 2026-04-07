@@ -2,12 +2,12 @@
 
 ## 반드시 먼저 실행할 메뉴 1개
 
-- `SM/Bootstrap/Prepare Observer Playable`
+- `SM/Setup/Prepare Observer Playable`
 
 ## 지금 바로 first playable 보는 3단계
 
 1. Unity `6000.4.0f1`로 프로젝트를 연다.
-2. 메뉴에서 `SM/Bootstrap/Prepare Observer Playable`를 실행한다.
+2. 메뉴에서 `SM/Setup/Prepare Observer Playable`를 실행한다.
 3. `Boot.unity`가 열리면 Play를 누른다.
 
 ## 첫 전투까지 가장 빠른 클릭 순서

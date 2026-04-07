@@ -1,21 +1,22 @@
 # Postgres 설정
 
 - 상태: draft
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-07
 - 단계: prototype
 
 ## 목적
 
 이 문서는 `survival-manager`의 로컬 개발용 Postgres 설정을 설명한다.
-MVP는 Postgres를 쓸 수 없더라도 플레이 가능해야 한다.
+current playable surface는 Postgres를 노출하지 않으며, MVP는 Postgres를 쓸 수 없더라도 플레이 가능해야 한다.
 
 ## 정책 요약
 
-- Postgres는 gameplay requirement가 아니라 local development adapter다.
+- Postgres는 gameplay requirement가 아니라 experimental local development adapter다.
 - direct client -> production DB 경로는 가정하지 않는다.
 - DB가 없을 때도 JSON fallback으로 게임이 돌아가야 한다.
 - content definition은 DB record가 아니라 Unity asset으로 유지한다.
 - per-frame combat state는 DB에 저장하지 않는다.
+- 현재 `PersistenceEntryPoint` 기본 runtime wiring은 JSON repository다.
 
 ## Schema 이름
 
@@ -47,10 +48,12 @@ Postgres schema는 아래를 사용한다.
 
 ## MVP 런타임 동작
 
-Postgres가 설정되어 있고 사용 가능하면 local-dev adapter를 사용할 수 있다.
-Postgres가 없거나, 접근할 수 없거나, 현재 build에서 지원되지 않으면 runtime은 JSON save로 fallback해야 한다.
+현재 playable/runtime 기본 경로는 JSON save다.
+Postgres 경로는 local experimental adapter로만 취급하며, 없거나 실패해도 runtime은 JSON save로 계속 동작해야 한다.
 
 ## 권장 로컬 흐름
+
+실제 runtime/UI 확인보다 adapter 실험이 목적일 때만 아래를 따른다.
 
 1. local Postgres를 시작한다.
 2. schema/bootstrap SQL을 적용한다.

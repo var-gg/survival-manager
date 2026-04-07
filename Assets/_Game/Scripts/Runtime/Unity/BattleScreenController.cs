@@ -54,6 +54,10 @@ public sealed class BattleScreenController : MonoBehaviour
     private InputAction _restartAction = null!;
     private InputAction _cycleUnitAction = null!;
     private InputAction _togglePauseAction = null!;
+    private GUIStyle? _debugOverlayStyle;
+    private GUIStyle? _debugOverlayBackgroundStyle;
+    private GUIStyle? _debugOverlaySmallStyle;
+    private Texture2D? _debugOverlayBackgroundTexture;
 
     public bool IsPlaybackFinished => _timeline?.IsFinished ?? false;
     public bool IsBattleFinished => _timeline?.IsFinished ?? false;
@@ -103,6 +107,7 @@ public sealed class BattleScreenController : MonoBehaviour
             _localization.LocaleChanged -= HandleLocaleChanged;
         }
 
+        ReleaseDebugOverlayResources();
         DisposeInputActions();
     }
 
@@ -767,11 +772,9 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
-        var style = new GUIStyle(GUI.skin.label) { fontSize = 11, richText = true };
-        var bgTex = new Texture2D(1, 1);
-        bgTex.SetPixel(0, 0, new Color(0f, 0f, 0f, 0.75f));
-        bgTex.Apply();
-        var bgStyle = new GUIStyle { normal = { background = bgTex } };
+        EnsureDebugOverlayStyles();
+        var style = _debugOverlayStyle!;
+        var bgStyle = _debugOverlayBackgroundStyle!;
 
         var step = _timeline.CurrentStep;
         var allyCount = step.Units.Count(u => u.Side == TeamSide.Ally);
@@ -858,7 +861,7 @@ public sealed class BattleScreenController : MonoBehaviour
         var panelRect = new Rect(startX, 4, 316, 16 + visible.Count * 14f);
         GUI.Box(panelRect, GUIContent.none, bgStyle);
         GUI.Label(new Rect(startX, 4, 316, 16), "  <color=#ff6>Decisive Timeline</color>", style);
-        var smallStyle = new GUIStyle(style) { fontSize = 10 };
+        var smallStyle = _debugOverlaySmallStyle!;
         for (var i = 0; i < visible.Count; i++)
         {
             GUI.Label(new Rect(startX, 20 + i * 14f, 316, 14), $"  {visible[i]}", smallStyle);
@@ -915,5 +918,52 @@ public sealed class BattleScreenController : MonoBehaviour
             .ThenBy(unit => unit.Id)
             .Select(unit => unit.Id)
             .FirstOrDefault() ?? string.Empty;
+    }
+
+    private void EnsureDebugOverlayStyles()
+    {
+        if (_debugOverlayStyle != null && _debugOverlayBackgroundStyle != null && _debugOverlaySmallStyle != null)
+        {
+            return;
+        }
+
+        _debugOverlayStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = 11,
+            richText = true
+        };
+
+        _debugOverlayBackgroundTexture ??= new Texture2D(1, 1);
+        _debugOverlayBackgroundTexture.SetPixel(0, 0, new Color(0f, 0f, 0f, 0.75f));
+        _debugOverlayBackgroundTexture.Apply();
+
+        _debugOverlayBackgroundStyle = new GUIStyle
+        {
+            normal = { background = _debugOverlayBackgroundTexture }
+        };
+        _debugOverlaySmallStyle = new GUIStyle(_debugOverlayStyle) { fontSize = 10 };
+    }
+
+    private void ReleaseDebugOverlayResources()
+    {
+        _debugOverlayStyle = null;
+        _debugOverlayBackgroundStyle = null;
+        _debugOverlaySmallStyle = null;
+
+        if (_debugOverlayBackgroundTexture == null)
+        {
+            return;
+        }
+
+        if (Application.isPlaying)
+        {
+            Destroy(_debugOverlayBackgroundTexture);
+        }
+        else
+        {
+            DestroyImmediate(_debugOverlayBackgroundTexture);
+        }
+
+        _debugOverlayBackgroundTexture = null;
     }
 }

@@ -112,7 +112,7 @@ public sealed class GameBootstrap : MonoBehaviour
     private static void HandleMissingSampleContent(GameSessionRoot root)
     {
 #if UNITY_EDITOR
-        const string fallback = "샘플 콘텐츠 canonical root가 비어 있습니다. 먼저 SM/Bootstrap/Ensure Sample Content를 실행하고, 복구가 안 되면 SM/Seed/Generate Sample Content를 repair 용도로 실행한 뒤 다시 Play 하세요. 계약 경로: Assets/Resources/_Game/Content/Definitions/**";
+        const string fallback = "샘플 콘텐츠 canonical root가 비어 있습니다. 먼저 SM/Setup/Ensure Sample Content를 실행하고, 복구가 안 되면 SM/Setup/Generate Sample Content를 repair 용도로 실행한 뒤 다시 Play 하세요. 계약 경로: Assets/Resources/_Game/Content/Definitions/**";
         root.SetBlockingError(GameLocalizationTables.SystemMessages, "system.bootstrap.missing_sample_content.editor", fallback);
         Debug.LogWarning(root.LastBlockingError);
         EditorApplication.isPaused = true;

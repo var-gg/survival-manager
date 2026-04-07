@@ -489,7 +489,7 @@ try {
             Invoke-UnityCli @('menu', 'SM/Quick Battle') -WaitForReady -ReadyContext 'bootstrap menu dispatch' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds
         }
         'seed-content' {
-            Invoke-UnityCli @('menu', 'SM/Seed/Generate Sample Content') -WaitForReady -ReadyContext 'sample content generation' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds -ReadyRetries $unityCliLongReadyPollRetries
+            Invoke-UnityCli @('menu', 'SM/Setup/Generate Sample Content') -WaitForReady -ReadyContext 'sample content generation' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds -ReadyRetries $unityCliLongReadyPollRetries
         }
         'test-edit' {
             Invoke-UnityCliTest @('test') -ReadyContext 'edit mode test dispatch' -TestFilter $TestFilter

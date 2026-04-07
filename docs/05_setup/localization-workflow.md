@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/05_setup/localization-workflow.md`
 - 관련문서:
   - `docs/02_design/ui/localization-policy.md`
@@ -16,7 +16,7 @@
 ## foundation 재생성
 
 1. Unity editor `6000.4.0f1`로 프로젝트를 연다.
-2. `SM/Bootstrap/Ensure Localization Foundation`를 실행한다.
+2. `SM/Setup/Ensure Localization Foundation`를 실행한다.
 3. `Assets/Localization/Localization Settings.asset`이 존재하는지 확인한다.
 4. `Assets/Localization/Locales/ko.asset`, `Assets/Localization/Locales/en.asset`, pseudo locale asset이 있는지 확인한다.
 5. `Assets/Localization/StringTables/**`와 `Assets/Resources/_Game/Fonts/GameFontCatalog.asset`이 생성됐는지 확인한다.
@@ -24,8 +24,8 @@
 ## committed content 확인과 bootstrap repair
 
 1. runtime truth는 committed asset `Assets/Resources/_Game/Content/Definitions/**`다.
-2. 누락 복구만 필요하면 `SM/Bootstrap/Ensure Sample Content`를 실행한다.
-3. committed floor authoring이 실제로 깨졌을 때만 `SM/Seed/Generate Sample Content`를 repair 용도로 사용한다.
+2. 누락 복구만 필요하면 `SM/Setup/Ensure Sample Content`를 실행한다.
+3. committed floor authoring이 실제로 깨졌을 때만 `SM/Setup/Generate Sample Content`를 repair 용도로 사용한다.
 4. `SM/Validation/Validate Content Definitions`를 실행한다.
 5. console과 report에서 missing key, duplicate key, legacy prose error가 없어야 한다.
 

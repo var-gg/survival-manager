@@ -19,8 +19,6 @@ public sealed record TownScreenViewState(
     string LocaleKoLabel,
     string LocaleEnLabel,
     string RealmSummaryText,
-    string CapabilitySummaryText,
-    string ArenaStatusText,
     string CurrencySummary,
     string RosterText,
     string RecruitSummaryText,
@@ -35,7 +33,5 @@ public sealed record TownScreenViewState(
     string LoadLabel,
     string SessionMenuLabel,
     bool CanOpenSessionMenu,
-    string ArenaButtonLabel,
-    bool CanOpenArena,
     string DebugStartLabel,
     string QuickBattleLabel);

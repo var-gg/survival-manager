@@ -5,13 +5,23 @@ using SM.Content.Definitions;
 using SM.Meta.Model;
 using SM.Unity.ContentConversion;
 using UnityEngine;
+using Unity.Profiling;
 
 namespace SM.Unity;
 
 public sealed class RuntimeCombatContentLookup : ICombatContentLookup
 {
-    private readonly ContentDefinitionRegistry _registry = new();
+    private static readonly ProfilerMarker EnsureLoadedMarker = new("SM.RuntimeCombatContentLookup.EnsureLoaded");
+
+    private readonly ContentDefinitionRegistry _registry;
     private CombatContentSnapshot? _snapshot;
+
+    public RuntimeCombatContentLookup(bool allowEditorRecoveryFallback = false)
+    {
+        _registry = new ContentDefinitionRegistry(allowEditorRecoveryFallback);
+    }
+
+    internal bool AllowsEditorRecoveryFallback => _registry.AllowsEditorRecoveryFallback;
 
     public CombatContentSnapshot Snapshot
     {
@@ -360,7 +370,16 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
             return;
         }
 
-        _registry.EnsureLoaded();
-        _snapshot = new SnapshotAssembler(_registry).Assemble();
+        using (EnsureLoadedMarker.Auto())
+        {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            _registry.EnsureLoaded();
+            _snapshot = new SnapshotAssembler(_registry).Assemble();
+            stopwatch.Stop();
+            RuntimeInstrumentation.LogDuration(
+                nameof(RuntimeCombatContentLookup) + ".EnsureLoaded",
+                stopwatch.Elapsed,
+                $"allowEditorRecoveryFallback={AllowsEditorRecoveryFallback}");
+        }
     }
 }

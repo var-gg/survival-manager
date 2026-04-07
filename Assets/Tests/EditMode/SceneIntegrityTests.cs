@@ -67,7 +67,6 @@ public sealed class SceneIntegrityTests
         AssertGameObject(scene, "BootTitleText");
         AssertGameObject(scene, "BootStatusText");
         AssertGameObject(scene, "OfflineLocalButton");
-        AssertGameObject(scene, "OnlineAuthoritativeButton");
         AssertComponent<Camera>(scene, "Main Camera");
         AssertInputSystemEventSystem(scene);
     }
@@ -136,13 +135,11 @@ public sealed class SceneIntegrityTests
     }
 
     [Test]
-    public void TownScreenUxml_Declares_Session_Arena_And_Deployment_Controls()
+    public void TownScreenUxml_Declares_Session_And_Deployment_Controls()
     {
         var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/TownScreen.uxml");
         Assert.That(uxml, Does.Contain("RealmSummaryLabel"));
-        Assert.That(uxml, Does.Contain("CapabilitySummaryLabel"));
         Assert.That(uxml, Does.Contain("SessionMenuButton"));
-        Assert.That(uxml, Does.Contain("ArenaButton"));
         Assert.That(uxml, Does.Contain("QuickBattleButton"));
         Assert.That(uxml, Does.Contain("DeployButton_FrontTop"));
         Assert.That(uxml, Does.Contain("TeamPostureButton"));

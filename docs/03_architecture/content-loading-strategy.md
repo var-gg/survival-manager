@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/03_architecture/content-loading-strategy.md`
 - 관련문서:
   - `docs/03_architecture/content-loading-contract.md`
@@ -18,10 +18,11 @@
 ## 현재 채택 전략
 
 - canonical root는 `Assets/Resources/_Game/Content/Definitions/**`로 고정한다.
-- runtime은 `Resources.LoadAll("_Game/Content/Definitions/Stats")`만 본다.
+- default playable runtime은 `Resources.LoadAll("_Game/Content/Definitions/Stats")`만 본다.
 - committed asset을 runtime truth로 유지한다.
-- 기본 복구 메뉴는 `SM/Bootstrap/Ensure Sample Content`다.
-- `SM/Seed/Generate Sample Content`는 repair/bootstrap 전용이다.
+- editor sweep / raw file fallback은 explicit diagnostic lane으로만 연다.
+- 기본 복구 메뉴는 `SM/Setup/Ensure Sample Content`다.
+- `SM/Setup/Generate Sample Content`는 repair/bootstrap 전용이다.
 
 ## 이 전략을 택한 이유
 
@@ -40,8 +41,8 @@
 
 - committed asset: runtime/content truth
 - `SampleSeedGenerator`: bootstrap repair helper
-- `SM/Seed/Migrate Legacy Sample Content`: legacy path 이동 시도
-- `SM/Bootstrap/Ensure Sample Content`: minimum bootstrap repair
+- `SM/Setup/Migrate Legacy Sample Content`: legacy path 이동 시도
+- `SM/Setup/Ensure Sample Content`: minimum bootstrap repair
 - `GameBootstrap`: canonical root missing 시 부팅 차단
 - `SceneIntegrityTests`: block24 repository integrity 확인
 

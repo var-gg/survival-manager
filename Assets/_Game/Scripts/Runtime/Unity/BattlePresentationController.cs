@@ -1,20 +1,26 @@
 using System.Collections.Generic;
-using System.Linq;
 using SM.Combat.Model;
 using SM.Unity.UI.Battle;
 using UnityEngine;
+using Unity.Profiling;
 
 namespace SM.Unity;
 
 public sealed class BattlePresentationController : MonoBehaviour
 {
+    private static readonly ProfilerMarker SetBlendMarker = new("SM.BattlePresentationController.SetBlend");
+
     [SerializeField] private Transform battleStageRoot = null!;
     [SerializeField] private RectTransform actorOverlayRoot = null!;
 
     private readonly Dictionary<string, BattleActorView> _actorViews = new();
+    private readonly Dictionary<string, BattleUnitReadModel> _cachedFromUnitsById = new();
+    private readonly Dictionary<string, BattleUnitReadModel> _cachedToUnitsById = new();
     private Camera _camera = null!;
     private BattlePresentationOptions _options = BattlePresentationOptions.CreateDefault();
     private BattleUnitMetadataFormatter? _metadataFormatter;
+    private BattleSimulationStep? _cachedFromStep;
+    private BattleSimulationStep? _cachedToStep;
 
     public bool IsPaused { get; private set; }
 
@@ -85,13 +91,14 @@ public sealed class BattlePresentationController : MonoBehaviour
 
     public void SetBlend(BattleSimulationStep fromStep, BattleSimulationStep toStep, float alpha)
     {
+        using var _ = SetBlendMarker.Auto();
         if (_actorViews.Count == 0)
         {
             return;
         }
 
-        var fromById = fromStep.Units.ToDictionary(unit => unit.Id);
-        var toById = toStep.Units.ToDictionary(unit => unit.Id);
+        var fromById = ResolveUnitIndex(fromStep, ref _cachedFromStep, _cachedFromUnitsById);
+        var toById = ResolveUnitIndex(toStep, ref _cachedToStep, _cachedToUnitsById);
         foreach (var (id, view) in _actorViews)
         {
             if (!toById.TryGetValue(id, out var toState))
@@ -140,6 +147,10 @@ public sealed class BattlePresentationController : MonoBehaviour
     private void Clear()
     {
         _actorViews.Clear();
+        _cachedFromUnitsById.Clear();
+        _cachedToUnitsById.Clear();
+        _cachedFromStep = null;
+        _cachedToStep = null;
 
         if (battleStageRoot != null)
         {
@@ -216,5 +227,25 @@ public sealed class BattlePresentationController : MonoBehaviour
 
         var renderer = block.GetComponent<Renderer>();
         renderer.sharedMaterial = BattlePresentationMaterialFactory.Create(color);
+    }
+
+    private static IReadOnlyDictionary<string, BattleUnitReadModel> ResolveUnitIndex(
+        BattleSimulationStep step,
+        ref BattleSimulationStep? cachedStep,
+        Dictionary<string, BattleUnitReadModel> cache)
+    {
+        if (ReferenceEquals(cachedStep, step))
+        {
+            return cache;
+        }
+
+        cache.Clear();
+        foreach (var unit in step.Units)
+        {
+            cache[unit.Id] = unit;
+        }
+
+        cachedStep = step;
+        return cache;
     }
 }

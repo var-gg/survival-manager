@@ -9,11 +9,14 @@ using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity.Sandbox;
+using Unity.Profiling;
 
 namespace SM.Unity;
 
 public sealed class GameSessionState
 {
+    private static readonly ProfilerMarker BindProfileMarker = new("SM.GameSessionState.BindProfile");
+
     private static readonly DeploymentAnchorId[] DeploymentAnchorOrder =
     {
         DeploymentAnchorId.FrontTop,
@@ -90,73 +93,83 @@ public sealed class GameSessionState
 
     public void BindProfile(SaveProfile profile)
     {
-        Profile = profile;
-        Profile.Heroes ??= new List<HeroInstanceRecord>();
-
-        if (Profile.Heroes.Count == 0)
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        using (BindProfileMarker.Auto())
         {
-            SeedDemoProfile();
+            Profile = profile;
+            Profile.Heroes ??= new List<HeroInstanceRecord>();
+
+            if (Profile.Heroes.Count == 0)
+            {
+                SeedDemoProfile();
+            }
+
+            Profile.Currencies ??= new CurrencyRecord();
+            Profile.Inventory ??= new List<InventoryItemRecord>();
+            Profile.UnlockedPermanentAugmentIds ??= new List<string>();
+            Profile.CampaignProgress ??= new CampaignProgressRecord();
+            Profile.HeroLoadouts ??= new List<HeroLoadoutRecord>();
+            Profile.HeroProgressions ??= new List<HeroProgressionRecord>();
+            Profile.SkillInstances ??= new List<SkillInstanceRecord>();
+            Profile.PassiveSelections ??= new List<PassiveSelectionRecord>();
+            Profile.PermanentAugmentLoadouts ??= new List<PermanentAugmentLoadoutRecord>();
+            Profile.SquadBlueprints ??= new List<SquadBlueprintRecord>();
+            Profile.ActiveRun ??= new ActiveRunRecord();
+            Profile.MatchHeaders ??= new List<MatchRecordHeader>();
+            Profile.MatchBlobs ??= new List<MatchRecordBlob>();
+            Profile.InventoryLedger ??= new List<InventoryLedgerEntryRecord>();
+            Profile.RewardLedger ??= new List<RewardLedgerEntryRecord>();
+            Profile.SuspicionFlags ??= new List<SuspicionFlagRecord>();
+            Profile.RunSummaries ??= new List<RunSummaryRecord>();
+            Profile.ArenaDefenseSnapshots ??= new List<ArenaDefenseSnapshotRecord>();
+            Profile.ArenaBlueprintSlots ??= new List<ArenaBlueprintSlotRecord>();
+            Profile.ArenaMatchRecords ??= new List<ArenaMatchRecordRecord>();
+            Profile.ArenaSeasons ??= new List<ArenaSeasonStateRecord>();
+            Profile.ArenaRewardLedger ??= new List<ArenaRewardLedgerEntryRecord>();
+            NormalizeProfileContentIds();
+            EnsureProfileBuildState();
+
+            if (string.IsNullOrWhiteSpace(Profile.DisplayName))
+            {
+                Profile.DisplayName = "Player";
+            }
+
+            PermanentAugmentSlotCount = Math.Max(1, Profile.UnlockedPermanentAugmentIds.Count);
+            CurrentExpeditionNodeIndex = 0;
+            SelectedExpeditionNodeIndex = null;
+            LastBattleVictory = false;
+            IsQuickBattleSmokeActive = false;
+            HasActiveExpeditionRun = false;
+            LastBattleSummary = SessionTextToken.Empty;
+            LastExpeditionEffectMessage = SessionTextToken.Empty;
+            LastRewardApplicationSummary = SessionTextToken.Empty;
+            _lastAutomaticLootBundle = null;
+            _lastDuplicateConversion = null;
+            SelectedTeamPosture = TeamPostureType.StandardAdvance;
+            SelectedTeamTacticId = string.Empty;
+            _recruitOfferGeneration = 0;
+            _resolvedExpeditionNodeIds.Clear();
+            _runtimeTelemetryEvents.Clear();
+            ResetDeploymentAssignments();
+            RestoreRecruitStates();
+
+            Roster = new RosterState(ToHeroRecords(Profile));
+            EnsureRecruitOffers();
+            EnsureDefaultSquad();
+            EnsureBattleDeployReady();
+            EnsureCampaignSelection();
+            EnsureExpeditionNodes(reset: true);
+            AutoSelectNextExpeditionNode();
+            EnsureRewardChoices(reset: true);
+            RestoreActiveRunFromProfile();
+            SyncExpeditionState();
         }
 
-        Profile.Currencies ??= new CurrencyRecord();
-        Profile.Inventory ??= new List<InventoryItemRecord>();
-        Profile.UnlockedPermanentAugmentIds ??= new List<string>();
-        Profile.CampaignProgress ??= new CampaignProgressRecord();
-        Profile.HeroLoadouts ??= new List<HeroLoadoutRecord>();
-        Profile.HeroProgressions ??= new List<HeroProgressionRecord>();
-        Profile.SkillInstances ??= new List<SkillInstanceRecord>();
-        Profile.PassiveSelections ??= new List<PassiveSelectionRecord>();
-        Profile.PermanentAugmentLoadouts ??= new List<PermanentAugmentLoadoutRecord>();
-        Profile.SquadBlueprints ??= new List<SquadBlueprintRecord>();
-        Profile.ActiveRun ??= new ActiveRunRecord();
-        Profile.MatchHeaders ??= new List<MatchRecordHeader>();
-        Profile.MatchBlobs ??= new List<MatchRecordBlob>();
-        Profile.InventoryLedger ??= new List<InventoryLedgerEntryRecord>();
-        Profile.RewardLedger ??= new List<RewardLedgerEntryRecord>();
-        Profile.SuspicionFlags ??= new List<SuspicionFlagRecord>();
-        Profile.RunSummaries ??= new List<RunSummaryRecord>();
-        Profile.ArenaDefenseSnapshots ??= new List<ArenaDefenseSnapshotRecord>();
-        Profile.ArenaBlueprintSlots ??= new List<ArenaBlueprintSlotRecord>();
-        Profile.ArenaMatchRecords ??= new List<ArenaMatchRecordRecord>();
-        Profile.ArenaSeasons ??= new List<ArenaSeasonStateRecord>();
-        Profile.ArenaRewardLedger ??= new List<ArenaRewardLedgerEntryRecord>();
-        NormalizeProfileContentIds();
-        EnsureProfileBuildState();
-
-        if (string.IsNullOrWhiteSpace(Profile.DisplayName))
-        {
-            Profile.DisplayName = "Player";
-        }
-
-        PermanentAugmentSlotCount = Math.Max(1, Profile.UnlockedPermanentAugmentIds.Count);
-        CurrentExpeditionNodeIndex = 0;
-        SelectedExpeditionNodeIndex = null;
-        LastBattleVictory = false;
-        IsQuickBattleSmokeActive = false;
-        HasActiveExpeditionRun = false;
-        LastBattleSummary = SessionTextToken.Empty;
-        LastExpeditionEffectMessage = SessionTextToken.Empty;
-        LastRewardApplicationSummary = SessionTextToken.Empty;
-        _lastAutomaticLootBundle = null;
-        _lastDuplicateConversion = null;
-        SelectedTeamPosture = TeamPostureType.StandardAdvance;
-        SelectedTeamTacticId = string.Empty;
-        _recruitOfferGeneration = 0;
-        _resolvedExpeditionNodeIds.Clear();
-        _runtimeTelemetryEvents.Clear();
-        ResetDeploymentAssignments();
-        RestoreRecruitStates();
-
-        Roster = new RosterState(ToHeroRecords(Profile));
-        EnsureRecruitOffers();
-        EnsureDefaultSquad();
-        EnsureBattleDeployReady();
-        EnsureCampaignSelection();
-        EnsureExpeditionNodes(reset: true);
-        AutoSelectNextExpeditionNode();
-        EnsureRewardChoices(reset: true);
-        RestoreActiveRunFromProfile();
-        SyncExpeditionState();
+        stopwatch.Stop();
+        RuntimeInstrumentation.LogDuration(
+            nameof(GameSessionState) + ".BindProfile",
+            stopwatch.Elapsed,
+            $"heroes={Profile.Heroes.Count}; inventory={Profile.Inventory.Count}");
     }
 
     public void BeginNewExpedition()

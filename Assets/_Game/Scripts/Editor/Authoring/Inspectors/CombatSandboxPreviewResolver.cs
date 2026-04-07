@@ -56,7 +56,7 @@ internal static class CombatSandboxPreviewResolver
     {
         public PreviewContext()
         {
-            Lookup = new RuntimeCombatContentLookup();
+            Lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
             Session = new GameSessionState(Lookup);
             Session.BindProfile(new SaveProfile());
         }

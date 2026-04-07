@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/03_architecture/content-loading-contract.md`
 - 관련문서:
   - `docs/03_architecture/content-loading-strategy.md`
@@ -26,10 +26,12 @@
 ## editor contract
 
 - committed `ScriptableObject` asset이 canonical root의 source of truth다.
-- `SM/Bootstrap/Ensure Sample Content`와 `SM/Seed/Generate Sample Content`는 explicit preflight/write lane이다.
+- `SM/Setup/Ensure Sample Content`와 `SM/Setup/Generate Sample Content`는 explicit preflight/write lane이다.
 - runtime lookup, EditMode test, content bootstrap helper는 canonical root가 준비되지 않았을 때 asset rewrite를 하지 않는다.
 - canonical root가 미준비이거나 drift 상태면 caller를 fail-fast시키고 explicit preflight command를 안내한다.
-- `SM/Seed/Migrate Legacy Sample Content`는 legacy root가 있을 때만 `AssetDatabase.MoveAsset` 기반 이동을 시도한다.
+- default playable/runtime read path는 `Resources.LoadAll(...)`만 정상 경로로 취급한다.
+- editor sweep과 file fallback은 explicit diagnostic lane에서만 opt-in 한다.
+- `SM/Setup/Migrate Legacy Sample Content`는 legacy root가 있을 때만 `AssetDatabase.MoveAsset` 기반 이동을 시도한다.
 - legacy 이동이 없거나 실패하면 canonical root 재생성으로 fallback 한다.
 
 ## legacy path 취급
@@ -42,8 +44,8 @@
 
 - `GameBootstrap`은 `Resources` 경로만 기준으로 본다.
 - boot 시 canonical root가 비어 있으면 플레이를 막고 정확한 recovery menu를 안내한다.
-- 1차 recovery action은 `SM/Bootstrap/Ensure Sample Content`다.
-- committed floor authoring이 깨졌거나 launch-floor coverage가 모자라면 `SM/Seed/Generate Sample Content`를 명시적으로 실행해 repair한다.
+- 1차 recovery action은 `SM/Setup/Ensure Sample Content`다.
+- committed floor authoring이 깨졌거나 launch-floor coverage가 모자라면 `SM/Setup/Generate Sample Content`를 명시적으로 실행해 repair한다.
 - runtime/editor read path는 recovery를 위해 canonical asset을 암묵적으로 regenerate하지 않는다.
 
 ## block24 임시 bridge

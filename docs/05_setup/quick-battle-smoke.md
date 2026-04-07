@@ -1,7 +1,7 @@
 # Quick Battle Smoke
 
 - 상태: active
-- 최종수정일: 2026-04-04
+- 최종수정일: 2026-04-07
 - 단계: prototype
 
 ## 목적
@@ -20,13 +20,16 @@
 - 씬 복구
 - Quick Battle config 에셋 확인/생성
 - 로컬 세이브 초기화
-- Boot 씬 열기 + **자동 Play 진입**
-- Boot → Battle 씬 직행 (Town 스킵)
+- Battle 씬 열기
+- **자동 Play 진입**
+- `OfflineLocal` 세션 자동 준비 후 Battle smoke 초기화
+
+즉 Quick Battle actual path는 `Open Battle scene -> Enter Play Mode`이며, Boot/Town은 우회한다.
 
 ## 전투 중 컨트롤
 
 | 버튼 | 동작 |
-|---|---|
+| --- | --- |
 | x1 / x2 / x4 | 시뮬레이션 속도 조절 |
 | Pause | 일시정지/재개 |
 | F5 (키보드) | 같은 시드로 리플레이 (결정론적 동일 결과) |
@@ -47,7 +50,7 @@
 
 **적용 방식**: 인스펙터에서 변경 후 `Re-battle` 클릭 시 config가 다시 로드되어 새 전투에 반영된다. 전투 중 라이브 변경은 지원하지 않는다.
 
-## 기존 전체 플로우 (Observer Playable)
+## 전체 플로우 비교 (Observer Playable)
 
 `SM/Setup/Prepare Observer Playable` 메뉴로 Boot → Town → Battle → Reward 전체 플로우를 확인할 수 있다.
 
