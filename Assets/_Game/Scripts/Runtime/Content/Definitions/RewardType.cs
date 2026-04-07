@@ -7,6 +7,7 @@ public enum RewardType
     Echo = 2,
     TraitRerollCurrency = Echo,
     Item = 3,
+    // Deprecated in the normal playable lane. Kept for legacy content compatibility only.
     PermanentAugmentSlot = 4,
     TraitLockToken = 5,
     TraitPurgeToken = 6,

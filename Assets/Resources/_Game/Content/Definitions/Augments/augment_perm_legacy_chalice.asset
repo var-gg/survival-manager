@@ -18,7 +18,7 @@ MonoBehaviour:
   Rarity: 3
   IsPermanent: 1
   Category: 0
-  FamilyId: legacy_chalice
+  FamilyId: ward_line
   Tier: 1
   OfferWeight: 1
   SuppressIfPermanentEquipped: 0

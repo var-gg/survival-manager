@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
+using SM.Content.Definitions;
 using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
@@ -17,7 +18,7 @@ public sealed class TownBuildHotPathTests
 {
     // FakeCombatContentLookup은 Resources.LoadAll을 호출하지 않으므로
     // GUI 모드에서도 에디터 freeze 없이 빠르게 실행된다.
-    private static readonly FakeCombatContentLookup SharedLookup = new();
+    private static readonly FakeCombatContentLookup SharedLookup = CreateSharedLookup();
 
     // ──────────────────────────────────────────────
     // EquipItem / UnequipItem
@@ -252,6 +253,51 @@ public sealed class TownBuildHotPathTests
         session.BindProfile(profile);
         session.SetCurrentScene(SceneNames.Town);
         return session;
+    }
+
+    private static FakeCombatContentLookup CreateSharedLookup()
+    {
+        var board = CreatePassiveBoard(
+            "board_vanguard",
+            "test_class",
+            CreatePassiveNode("node_1", "board_vanguard", 0),
+            CreatePassiveNode("node_a", "board_vanguard", 1),
+            CreatePassiveNode("node_b", "board_vanguard", 2));
+        var passiveBoards = new Dictionary<string, PassiveBoardDefinition>
+        {
+            [board.Id] = board,
+        };
+        var passiveNodes = board.Nodes.ToDictionary(node => node.Id, node => node, StringComparer.Ordinal);
+        var firstPlayableSlice = new FirstPlayableSliceDefinition
+        {
+            AffixIds = new List<string> { "affix_a", "affix_b", "affix_c", "affix_d" }.AsReadOnly(),
+            PassiveBoardIds = new List<string> { board.Id }.AsReadOnly(),
+        };
+
+        return new FakeCombatContentLookup(
+            firstPlayableSlice: firstPlayableSlice,
+            passiveBoards: passiveBoards,
+            passiveNodes: passiveNodes);
+    }
+
+    private static PassiveBoardDefinition CreatePassiveBoard(string id, string classId, params PassiveNodeDefinition[] nodes)
+    {
+        var board = ScriptableObject.CreateInstance<PassiveBoardDefinition>();
+        board.Id = id;
+        board.ClassId = classId;
+        board.NameKey = id;
+        board.Nodes = nodes.ToList();
+        return board;
+    }
+
+    private static PassiveNodeDefinition CreatePassiveNode(string id, string boardId, int depth)
+    {
+        var node = ScriptableObject.CreateInstance<PassiveNodeDefinition>();
+        node.Id = id;
+        node.BoardId = boardId;
+        node.BoardDepth = depth;
+        node.NameKey = id;
+        return node;
     }
 
     private static InventoryItemRecord AddInventoryItem(

@@ -6,6 +6,7 @@ public sealed record RewardChoiceCardViewState(
     string Title,
     string Body,
     string KindText,
+    string ContextText,
     string ActionLabel,
     bool IsEnabled);
 
@@ -14,7 +15,8 @@ public sealed record RewardScreenViewState(
     string LocaleStatus,
     string LocaleKoLabel,
     string LocaleEnLabel,
-    string SummaryText,
+    string RunDeltaText,
+    string BuildContextText,
     string ChoicesHeaderText,
     IReadOnlyList<RewardChoiceCardViewState> Choices,
     string StatusText,

@@ -18,10 +18,15 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
     private readonly CombatContentSnapshot _snapshot;
     private readonly FirstPlayableSliceDefinition? _firstPlayableSlice;
     private readonly Dictionary<string, UnitArchetypeDefinition> _archetypes = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, ItemBaseDefinition> _items = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, AffixDefinition> _affixes = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, AugmentDefinition> _augments = new(StringComparer.Ordinal);
     private readonly Dictionary<string, RaceDefinition> _races = new(StringComparer.Ordinal);
     private readonly Dictionary<string, ClassDefinition> _classes = new(StringComparer.Ordinal);
     private readonly Dictionary<string, CharacterDefinition> _characters = new(StringComparer.Ordinal);
     private readonly Dictionary<string, RoleInstructionDefinition> _roleInstructions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, PassiveBoardDefinition> _passiveBoards = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, PassiveNodeDefinition> _passiveNodes = new(StringComparer.Ordinal);
     private readonly Dictionary<string, CampaignChapterDefinition> _campaignChapters = new(StringComparer.Ordinal);
     private readonly Dictionary<string, ExpeditionSiteDefinition> _expeditionSites = new(StringComparer.Ordinal);
     private readonly Dictionary<string, EncounterDefinition> _encounters = new(StringComparer.Ordinal);
@@ -31,10 +36,15 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
         CombatContentSnapshot? snapshot = null,
         FirstPlayableSliceDefinition? firstPlayableSlice = null,
         IReadOnlyDictionary<string, UnitArchetypeDefinition>? archetypes = null,
+        IReadOnlyDictionary<string, ItemBaseDefinition>? items = null,
+        IReadOnlyDictionary<string, AffixDefinition>? affixes = null,
+        IReadOnlyDictionary<string, AugmentDefinition>? augments = null,
         IReadOnlyDictionary<string, RaceDefinition>? races = null,
         IReadOnlyDictionary<string, ClassDefinition>? classes = null,
         IReadOnlyDictionary<string, CharacterDefinition>? characters = null,
         IReadOnlyDictionary<string, RoleInstructionDefinition>? roleInstructions = null,
+        IReadOnlyDictionary<string, PassiveBoardDefinition>? passiveBoards = null,
+        IReadOnlyDictionary<string, PassiveNodeDefinition>? passiveNodes = null,
         IReadOnlyDictionary<string, CampaignChapterDefinition>? campaignChapters = null,
         IReadOnlyDictionary<string, ExpeditionSiteDefinition>? expeditionSites = null,
         IReadOnlyDictionary<string, EncounterDefinition>? encounters = null,
@@ -47,6 +57,30 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
             foreach (var (id, archetype) in archetypes)
             {
                 _archetypes[id] = archetype;
+            }
+        }
+
+        if (items != null)
+        {
+            foreach (var (id, item) in items)
+            {
+                _items[id] = item;
+            }
+        }
+
+        if (affixes != null)
+        {
+            foreach (var (id, affix) in affixes)
+            {
+                _affixes[id] = affix;
+            }
+        }
+
+        if (augments != null)
+        {
+            foreach (var (id, augment) in augments)
+            {
+                _augments[id] = augment;
             }
         }
 
@@ -79,6 +113,22 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
             foreach (var (id, roleInstruction) in roleInstructions)
             {
                 _roleInstructions[id] = roleInstruction;
+            }
+        }
+
+        if (passiveBoards != null)
+        {
+            foreach (var (id, passiveBoard) in passiveBoards)
+            {
+                _passiveBoards[id] = passiveBoard;
+            }
+        }
+
+        if (passiveNodes != null)
+        {
+            foreach (var (id, passiveNode) in passiveNodes)
+            {
+                _passiveNodes[id] = passiveNode;
             }
         }
 
@@ -134,9 +184,19 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
     // ── Canonical ID lists ──
 
     public IReadOnlyList<string> GetCanonicalArchetypeIds() => Array.Empty<string>();
-    public IReadOnlyList<string> GetCanonicalItemIds() => Array.Empty<string>();
-    public IReadOnlyList<string> GetCanonicalAffixIds() => Array.Empty<string>();
-    public IReadOnlyList<string> GetCanonicalTemporaryAugmentIds() => Array.Empty<string>();
+    public IReadOnlyList<string> GetCanonicalItemIds() => _items.Keys.OrderBy(id => id, StringComparer.Ordinal).ToArray();
+    public IReadOnlyList<string> GetCanonicalAffixIds() => _firstPlayableSlice?.AffixIds?.Count > 0
+        ? _firstPlayableSlice.AffixIds.ToArray()
+        : _affixes.Keys.OrderBy(id => id, StringComparer.Ordinal).ToArray();
+    public IReadOnlyList<string> GetCanonicalTemporaryAugmentIds() => _firstPlayableSlice?.TemporaryAugmentIds?.Count > 0
+        ? _firstPlayableSlice.TemporaryAugmentIds.ToArray()
+        : _augments.Values.Where(augment => !augment.IsPermanent).OrderBy(augment => augment.Id, StringComparer.Ordinal).Select(augment => augment.Id).ToArray();
+    public IReadOnlyList<string> GetCanonicalPermanentAugmentIds() => _firstPlayableSlice?.PermanentAugmentIds?.Count > 0
+        ? _firstPlayableSlice.PermanentAugmentIds.ToArray()
+        : _augments.Values.Where(augment => augment.IsPermanent).OrderBy(augment => augment.Id, StringComparer.Ordinal).Select(augment => augment.Id).ToArray();
+    public IReadOnlyList<string> GetCanonicalPassiveBoardIds() => _firstPlayableSlice?.PassiveBoardIds?.Count > 0
+        ? _firstPlayableSlice.PassiveBoardIds.ToArray()
+        : _passiveBoards.Keys.OrderBy(id => id, StringComparer.Ordinal).ToArray();
     public IReadOnlyList<string> GetCanonicalSynergyFamilyIds() => Array.Empty<string>();
 
     // ── Single-definition lookup ──
@@ -150,8 +210,7 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
 
     public bool TryGetItemDefinition(string itemId, out ItemBaseDefinition item)
     {
-        item = null!;
-        return false;
+        return _items.TryGetValue(itemId, out item!);
     }
 
     public bool TryGetRaceDefinition(string raceId, out RaceDefinition race)
@@ -171,8 +230,7 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
 
     public bool TryGetAugmentDefinition(string augmentId, out AugmentDefinition augment)
     {
-        augment = null!;
-        return false;
+        return _augments.TryGetValue(augmentId, out augment!);
     }
 
     public bool TryGetSkillDefinition(string skillId, out SkillDefinitionAsset skill)
@@ -183,8 +241,17 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
 
     public bool TryGetAffixDefinition(string affixId, out AffixDefinition affix)
     {
-        affix = null!;
-        return false;
+        return _affixes.TryGetValue(affixId, out affix!);
+    }
+
+    public bool TryGetPassiveBoardDefinition(string boardId, out PassiveBoardDefinition board)
+    {
+        return _passiveBoards.TryGetValue(boardId, out board!);
+    }
+
+    public bool TryGetPassiveNodeDefinition(string nodeId, out PassiveNodeDefinition node)
+    {
+        return _passiveNodes.TryGetValue(nodeId, out node!);
     }
 
     public bool TryGetRoleInstructionDefinition(string roleInstructionId, out RoleInstructionDefinition roleInstruction)

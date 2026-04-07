@@ -16,7 +16,7 @@ public sealed class FirstPlayableSliceDefinition
     public int AffixCap = 24;
     public int SynergyFamilyCap = 7;
     public int TemporaryAugmentCap = 12;
-    public int PermanentAugmentCap = 4;
+    public int PermanentAugmentCap = 1;
     public int PassiveBoardCap = 4;
 
     public bool RequireAllThreatPatternsCovered = true;

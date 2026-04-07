@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SM.Combat.Model;
+using SM.Content.Definitions;
 using SM.Meta.Model;
+using SM.Meta.Services;
+using SM.Persistence.Abstractions.Models;
+using SM.Unity.UI;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town;
@@ -14,6 +18,11 @@ public sealed class TownScreenPresenter
     private readonly GameLocalizationController _localization;
     private readonly ContentTextResolver _contentText;
     private readonly TownScreenView _view;
+    private readonly BuildIdentityFormatter _buildFormatter;
+    private int _selectedHeroIndex;
+    private int _selectedItemIndex;
+    private int _selectedPassiveNodeIndex;
+    private int _selectedPermanentIndex;
 
     public TownScreenPresenter(
         GameSessionRoot root,
@@ -25,6 +34,7 @@ public sealed class TownScreenPresenter
         _localization = localization;
         _contentText = contentText;
         _view = view;
+        _buildFormatter = new BuildIdentityFormatter(contentText);
     }
 
     public void Initialize()
@@ -129,6 +139,161 @@ public sealed class TownScreenPresenter
         Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.team_posture", "Team posture: {0}", _root.SessionState.SelectedTeamPosture));
     }
 
+    public void CycleHero()
+    {
+        var heroes = _root.SessionState.Profile.Heroes;
+        if (heroes.Count == 0)
+        {
+            Refresh("선택할 유닛이 없습니다.");
+            return;
+        }
+
+        _selectedHeroIndex = WrapIndex(_selectedHeroIndex + 1, heroes.Count);
+        _selectedPassiveNodeIndex = 0;
+        Refresh();
+    }
+
+    public void CycleItem()
+    {
+        var items = GetSelectableItems();
+        if (items.Count == 0)
+        {
+            Refresh("선택할 아이템이 없습니다.");
+            return;
+        }
+
+        _selectedItemIndex = WrapIndex(_selectedItemIndex + 1, items.Count);
+        Refresh();
+    }
+
+    public void UseScout()
+    {
+        var directive = ResolveScoutDirective();
+        var result = _root.SessionState.UseScout(directive);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.scout_used", "Scout used: {0}", directive.Kind)
+            : result.Error ?? Localize(GameLocalizationTables.UITown, "ui.town.error.scout_failed", "Scout failed."));
+    }
+
+    public void RetrainFlexActive() => RetrainSelectedHero(SM.Core.Contracts.RetrainOperationKind.RerollFlexActive);
+    public void RetrainFlexPassive() => RetrainSelectedHero(SM.Core.Contracts.RetrainOperationKind.RerollFlexPassive);
+    public void FullRetrain() => RetrainSelectedHero(SM.Core.Contracts.RetrainOperationKind.FullRetrain);
+
+    public void DismissSelectedHero()
+    {
+        var hero = GetSelectedHero();
+        if (hero == null)
+        {
+            Refresh("Dismiss할 유닛이 없습니다.");
+            return;
+        }
+
+        var result = _root.SessionState.DismissHero(hero.HeroId);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.dismiss_success", "Hero dismissed.")
+            : result.Error ?? "Dismiss failed.");
+    }
+
+    public void RefitSelectedItem()
+    {
+        var item = GetSelectedItem();
+        if (item == null)
+        {
+            Refresh("Refit할 아이템이 없습니다.");
+            return;
+        }
+
+        var result = _root.SessionState.RefitItem(item.ItemInstanceId, 0);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.refit_success", "Item refit complete.")
+            : result.Error ?? "Refit failed.");
+    }
+
+    public void CycleBoard()
+    {
+        var hero = GetSelectedHero();
+        if (hero == null)
+        {
+            Refresh("패시브 보드를 바꿀 유닛이 없습니다.");
+            return;
+        }
+
+        var boardIds = GetAvailableBoardIds();
+        if (boardIds.Count == 0)
+        {
+            Refresh("선택 가능한 패시브 보드가 없습니다.");
+            return;
+        }
+
+        var currentBoardId = _root.SessionState.Profile.HeroLoadouts
+            .FirstOrDefault(record => string.Equals(record.HeroId, hero.HeroId, StringComparison.Ordinal))
+            ?.PassiveBoardId ?? string.Empty;
+        var currentIndex = boardIds.FindIndex(id => string.Equals(id, currentBoardId, StringComparison.Ordinal));
+        var nextBoardId = boardIds[WrapIndex(currentIndex + 1, boardIds.Count)];
+        var result = _root.SessionState.SelectPassiveBoard(hero.HeroId, nextBoardId);
+        _selectedPassiveNodeIndex = 0;
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.board_selected", "Passive board selected: {0}", _contentText.GetPassiveBoardName(nextBoardId))
+            : result.Error ?? "Board selection failed.");
+    }
+
+    public void CyclePassiveNode()
+    {
+        var nodes = GetCurrentPassiveNodes();
+        if (nodes.Count == 0)
+        {
+            Refresh("순환할 패시브 노드가 없습니다.");
+            return;
+        }
+
+        _selectedPassiveNodeIndex = WrapIndex(_selectedPassiveNodeIndex + 1, nodes.Count);
+        Refresh();
+    }
+
+    public void TogglePassiveNode()
+    {
+        var hero = GetSelectedHero();
+        var node = GetSelectedPassiveNode();
+        if (hero == null || node == null)
+        {
+            Refresh("토글할 패시브 노드가 없습니다.");
+            return;
+        }
+
+        var result = _root.SessionState.TogglePassiveNode(hero.HeroId, node.Id);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.node_toggled", "Passive node toggled: {0}", _contentText.GetPassiveNodeName(node.Id))
+            : result.Error ?? "Passive node toggle failed.");
+    }
+
+    public void CyclePermanentCandidate()
+    {
+        var permanentIds = GetUnlockedPermanentAugmentIds();
+        if (permanentIds.Count == 0)
+        {
+            Refresh("순환할 영구 증강 후보가 없습니다.");
+            return;
+        }
+
+        _selectedPermanentIndex = WrapIndex(_selectedPermanentIndex + 1, permanentIds.Count);
+        Refresh();
+    }
+
+    public void EquipSelectedPermanentAugment()
+    {
+        var augmentId = GetSelectedPermanentAugmentId();
+        if (string.IsNullOrWhiteSpace(augmentId))
+        {
+            Refresh("장착할 영구 증강 후보가 없습니다.");
+            return;
+        }
+
+        var result = _root.SessionState.EquipPermanentAugment(augmentId);
+        Refresh(result.IsSuccess
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.perm_augment_equipped", "Permanent augment equipped: {0}", _contentText.GetAugmentName(augmentId))
+            : result.Error ?? "Equip failed.");
+    }
+
     public void Refresh(string message = "")
     {
         var session = _root.SessionState;
@@ -155,6 +320,7 @@ public sealed class TownScreenPresenter
 
     private TownScreenViewState BuildState(GameSessionState session, string message)
     {
+        NormalizeUiSelections(session);
         var playerId = ResolvePlayerId();
         var profile = _root.ProfileQueries.GetProfileView(playerId);
         var loadout = _root.ProfileQueries.GetLoadoutView(playerId);
@@ -162,6 +328,32 @@ public sealed class TownScreenPresenter
         var siteIds = GetOrderedSiteIds(session.SelectedCampaignChapterId);
         var canCycleChapter = session.CanChangeCampaignSelection && chapterIds.Count > 1;
         var canCycleSite = session.CanChangeCampaignSelection && siteIds.Count > 1;
+        var selectedHero = GetSelectedHero();
+        var selectedItem = GetSelectedItem();
+        var selectedNode = GetSelectedPassiveNode();
+        var selectedPermanentId = GetSelectedPermanentAugmentId();
+        var retrainActiveCost = selectedHero == null
+            ? 0
+            : RecruitmentBalanceCatalog.DefaultRetrainCosts.GetTotalCost(SM.Core.Contracts.RetrainOperationKind.RerollFlexActive, selectedHero.RetrainState);
+        var retrainPassiveCost = selectedHero == null
+            ? 0
+            : RecruitmentBalanceCatalog.DefaultRetrainCosts.GetTotalCost(SM.Core.Contracts.RetrainOperationKind.RerollFlexPassive, selectedHero.RetrainState);
+        var fullRetrainCost = selectedHero == null
+            ? 0
+            : RecruitmentBalanceCatalog.DefaultRetrainCosts.GetTotalCost(SM.Core.Contracts.RetrainOperationKind.FullRetrain, selectedHero.RetrainState);
+        var dismissRefund = selectedHero == null
+            ? new DismissRefundResult(0, 0)
+            : DismissService.CalculateRefund(selectedHero.EconomyFootprint);
+        var canScout = session.CanUseScout && session.Profile.Currencies.Echo >= RecruitmentBalanceCatalog.ScoutEchoCost;
+        var canRetrainActive = selectedHero != null && session.Profile.Currencies.Echo >= retrainActiveCost;
+        var canRetrainPassive = selectedHero != null && session.Profile.Currencies.Echo >= retrainPassiveCost;
+        var canFullRetrain = selectedHero != null && session.Profile.Currencies.Echo >= fullRetrainCost;
+        var canRefit = selectedItem != null && session.Profile.Currencies.Echo >= MetaBalanceDefaults.RefitEchoCost;
+        var canEquipPermanent = !string.IsNullOrWhiteSpace(selectedPermanentId)
+                                && !string.Equals(selectedPermanentId, GetEquippedPermanentAugmentId(session), StringComparison.Ordinal);
+        var statusText = string.IsNullOrWhiteSpace(message)
+            ? BuildDefaultStatus(session)
+            : message;
 
         return new TownScreenViewState(
             Localize(GameLocalizationTables.UITown, "ui.town.title", "Town Operator UI"),
@@ -177,27 +369,42 @@ public sealed class TownScreenPresenter
             canCycleSite,
             Localize(GameLocalizationTables.UITown, "ui.town.action.next_site", "Next Site"),
             canCycleSite,
-            Localize(
-                GameLocalizationTables.UITown,
-                "ui.town.currency.summary",
-                "Gold: {0} | Echo: {1} | Perm Slots: {2}",
-                profile.Gold,
-                profile.Echo,
-                profile.PermanentAugmentSlotCount),
-            BuildRosterText(profile),
+            BuildEconomyRailText(session, profile),
+            BuildRosterText(profile, selectedHero?.HeroId ?? string.Empty),
+            _buildFormatter.BuildBlueprintSummary(session),
             BuildRecruitSummary(session, profile),
             BuildRecruitCards(session),
-            BuildSquadText(profile, loadout),
+            BuildSelectedHeroSummary(session, selectedHero, selectedItem, selectedNode?.Id ?? string.Empty, retrainActiveCost, retrainPassiveCost, fullRetrainCost, dismissRefund),
             BuildDeployPreviewText(session, profile, loadout),
             BuildDeployButtons(profile, loadout),
             Localize(GameLocalizationTables.UICommon, "ui.common.posture", "Posture") + "\n" + session.SelectedTeamPosture,
-            string.IsNullOrWhiteSpace(message)
-                ? session.HasPendingRewardSettlement
-                    ? Localize(GameLocalizationTables.UITown, "ui.town.status.default.reward", "Reward settlement is pending. Finish the settlement or return to Town.")
-                    : session.CanResumeExpedition
-                        ? Localize(GameLocalizationTables.UITown, "ui.town.status.default.resume", "Recruit, save, and resume the expedition.")
-                        : Localize(GameLocalizationTables.UITown, "ui.town.status.default.start", "Recruit, save, choose a chapter/site, and start the expedition.")
-                : message,
+            BuildCycleHeroLabel(selectedHero),
+            session.Profile.Heroes.Count > 0,
+            BuildCycleItemLabel(selectedItem),
+            GetSelectableItems().Count > 0,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.scout", "Scout") + $" (-{RecruitmentBalanceCatalog.ScoutEchoCost} Echo)",
+            canScout,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.retrain_active", "Retrain Flex Active") + $" (-{retrainActiveCost} Echo)",
+            canRetrainActive,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.retrain_passive", "Retrain Flex Passive") + $" (-{retrainPassiveCost} Echo)",
+            canRetrainPassive,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.full_retrain", "Full Retrain") + $" (-{fullRetrainCost} Echo)",
+            canFullRetrain,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.dismiss", "Dismiss") + $" (+{dismissRefund.GoldRefund} Gold / +{dismissRefund.EchoRefund} Echo)",
+            selectedHero != null,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.refit", "Refit Selected Item") + $" (-{MetaBalanceDefaults.RefitEchoCost} Echo)",
+            canRefit,
+            BuildCycleBoardLabel(selectedHero),
+            selectedHero != null && GetAvailableBoardIds().Count > 0,
+            BuildCycleNodeLabel(selectedNode),
+            GetCurrentPassiveNodes().Count > 0,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.toggle_node", "Toggle Node"),
+            selectedNode != null,
+            BuildCyclePermanentLabel(selectedPermanentId),
+            GetUnlockedPermanentAugmentIds().Count > 0,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.equip_permanent", "Equip Permanent"),
+            canEquipPermanent,
+            statusText,
             Localize(GameLocalizationTables.UITown, "ui.town.action.reroll", "Reroll"),
             Localize(GameLocalizationTables.UICommon, "ui.common.save", "Save"),
             Localize(GameLocalizationTables.UICommon, "ui.common.load", "Load"),
@@ -366,7 +573,227 @@ public sealed class TownScreenPresenter
         return fallback;
     }
 
-    private string BuildRosterText(ProfileView profile)
+    private void NormalizeUiSelections(GameSessionState session)
+    {
+        _selectedHeroIndex = session.Profile.Heroes.Count == 0
+            ? 0
+            : WrapIndex(_selectedHeroIndex, session.Profile.Heroes.Count);
+
+        var selectableItems = GetSelectableItems();
+        _selectedItemIndex = selectableItems.Count == 0
+            ? 0
+            : WrapIndex(_selectedItemIndex, selectableItems.Count);
+
+        var passiveNodes = GetCurrentPassiveNodes();
+        _selectedPassiveNodeIndex = passiveNodes.Count == 0
+            ? 0
+            : WrapIndex(_selectedPassiveNodeIndex, passiveNodes.Count);
+
+        var permanentIds = GetUnlockedPermanentAugmentIds();
+        _selectedPermanentIndex = permanentIds.Count == 0
+            ? 0
+            : WrapIndex(_selectedPermanentIndex, permanentIds.Count);
+    }
+
+    private HeroInstanceRecord? GetSelectedHero()
+    {
+        var heroes = _root.SessionState.Profile.Heroes;
+        return heroes.Count == 0 ? null : heroes[WrapIndex(_selectedHeroIndex, heroes.Count)];
+    }
+
+    private IReadOnlyList<InventoryItemRecord> GetSelectableItems()
+    {
+        if (_root.SessionState.Profile.Inventory.Count == 0)
+        {
+            return Array.Empty<InventoryItemRecord>();
+        }
+
+        var selectedHero = GetSelectedHero();
+        var orderedItems = _root.SessionState.Profile.Inventory
+            .OrderBy(item => item.ItemBaseId, StringComparer.Ordinal)
+            .ThenBy(item => item.ItemInstanceId, StringComparer.Ordinal)
+            .ToList();
+        if (selectedHero == null)
+        {
+            return orderedItems;
+        }
+
+        var equippedIds = new HashSet<string>(
+            selectedHero.EquippedItemIds.Where(id => !string.IsNullOrWhiteSpace(id)),
+            StringComparer.Ordinal);
+        return orderedItems
+            .OrderByDescending(item => equippedIds.Contains(item.ItemInstanceId))
+            .ThenBy(item => item.ItemBaseId, StringComparer.Ordinal)
+            .ThenBy(item => item.ItemInstanceId, StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private InventoryItemRecord? GetSelectedItem()
+    {
+        var items = GetSelectableItems();
+        return items.Count == 0 ? null : items[WrapIndex(_selectedItemIndex, items.Count)];
+    }
+
+    private IReadOnlyList<string> GetAvailableBoardIds()
+    {
+        var boardIds = _root.CombatContentLookup.GetCanonicalPassiveBoardIds()
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+        var selectedHero = GetSelectedHero();
+        if (selectedHero == null || boardIds.Count == 0)
+        {
+            return boardIds;
+        }
+
+        var classMatched = boardIds
+            .Where(boardId => !_root.CombatContentLookup.TryGetPassiveBoardDefinition(boardId, out var board)
+                              || string.IsNullOrWhiteSpace(board.ClassId)
+                              || string.Equals(board.ClassId, selectedHero.ClassId, StringComparison.Ordinal))
+            .ToList();
+        return classMatched.Count > 0 ? classMatched : boardIds;
+    }
+
+    private IReadOnlyList<PassiveNodeDefinition> GetCurrentPassiveNodes()
+    {
+        var selectedHero = GetSelectedHero();
+        if (selectedHero == null)
+        {
+            return Array.Empty<PassiveNodeDefinition>();
+        }
+
+        var loadout = _root.SessionState.Profile.HeroLoadouts.FirstOrDefault(record =>
+            string.Equals(record.HeroId, selectedHero.HeroId, StringComparison.Ordinal));
+        if (loadout == null
+            || string.IsNullOrWhiteSpace(loadout.PassiveBoardId)
+            || !_root.CombatContentLookup.TryGetPassiveBoardDefinition(loadout.PassiveBoardId, out var board))
+        {
+            return Array.Empty<PassiveNodeDefinition>();
+        }
+
+        return board.Nodes
+            .Where(node => node != null
+                           && !string.IsNullOrWhiteSpace(node.Id)
+                           && string.Equals(node.BoardId, board.Id, StringComparison.Ordinal))
+            .OrderBy(node => node.BoardDepth)
+            .ThenBy(node => node.Id, StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private PassiveNodeDefinition? GetSelectedPassiveNode()
+    {
+        var nodes = GetCurrentPassiveNodes();
+        return nodes.Count == 0 ? null : nodes[WrapIndex(_selectedPassiveNodeIndex, nodes.Count)];
+    }
+
+    private IReadOnlyList<string> GetUnlockedPermanentAugmentIds()
+    {
+        var unlockedIds = new List<string>();
+        foreach (var augmentId in _root.SessionState.Profile.UnlockedPermanentAugmentIds)
+        {
+            if (string.IsNullOrWhiteSpace(augmentId)
+                || unlockedIds.Contains(augmentId, StringComparer.Ordinal)
+                || !_root.CombatContentLookup.TryGetAugmentDefinition(augmentId, out var augment)
+                || !augment.IsPermanent)
+            {
+                continue;
+            }
+
+            unlockedIds.Add(augmentId);
+        }
+
+        return unlockedIds;
+    }
+
+    private string GetSelectedPermanentAugmentId()
+    {
+        var augmentIds = GetUnlockedPermanentAugmentIds();
+        return augmentIds.Count == 0 ? string.Empty : augmentIds[WrapIndex(_selectedPermanentIndex, augmentIds.Count)];
+    }
+
+    private string GetEquippedPermanentAugmentId(GameSessionState session)
+    {
+        return session.Profile.PermanentAugmentLoadouts
+            .FirstOrDefault(record => string.Equals(record.BlueprintId, session.Profile.ActiveBlueprintId, StringComparison.Ordinal))
+            ?.EquippedAugmentIds.FirstOrDefault() ?? string.Empty;
+    }
+
+    private ScoutDirective ResolveScoutDirective()
+    {
+        var teamPlan = _root.SessionState.CurrentTeamPlan;
+        if (teamPlan.NeedsFrontline)
+        {
+            return new ScoutDirective { Kind = SM.Core.Contracts.ScoutDirectiveKind.Frontline };
+        }
+
+        if (teamPlan.NeedsSupport)
+        {
+            return new ScoutDirective { Kind = SM.Core.Contracts.ScoutDirectiveKind.Support };
+        }
+
+        if (teamPlan.NeedsBackline)
+        {
+            return new ScoutDirective { Kind = SM.Core.Contracts.ScoutDirectiveKind.Backline };
+        }
+
+        if (teamPlan.PrefersMagical)
+        {
+            return new ScoutDirective { Kind = SM.Core.Contracts.ScoutDirectiveKind.Magical };
+        }
+
+        if (teamPlan.PrefersPhysical)
+        {
+            return new ScoutDirective { Kind = SM.Core.Contracts.ScoutDirectiveKind.Physical };
+        }
+
+        return _root.SessionState.SelectedTeamPosture switch
+        {
+            TeamPostureType.HoldLine => new ScoutDirective { Kind = SM.Core.Contracts.ScoutDirectiveKind.Frontline },
+            TeamPostureType.ProtectCarry => new ScoutDirective { Kind = SM.Core.Contracts.ScoutDirectiveKind.Support },
+            TeamPostureType.AllInBackline => new ScoutDirective { Kind = SM.Core.Contracts.ScoutDirectiveKind.Backline },
+            _ => new ScoutDirective { Kind = SM.Core.Contracts.ScoutDirectiveKind.Physical },
+        };
+    }
+
+    private void RetrainSelectedHero(SM.Core.Contracts.RetrainOperationKind operation)
+    {
+        var selectedHero = GetSelectedHero();
+        if (selectedHero == null)
+        {
+            Refresh("재훈련할 유닛이 없습니다.");
+            return;
+        }
+
+        var result = _root.SessionState.RetrainHero(selectedHero.HeroId, operation);
+        var successMessage = operation switch
+        {
+            SM.Core.Contracts.RetrainOperationKind.RerollFlexActive => Localize(GameLocalizationTables.UITown, "ui.town.status.retrain_active", "Flex active retrained."),
+            SM.Core.Contracts.RetrainOperationKind.RerollFlexPassive => Localize(GameLocalizationTables.UITown, "ui.town.status.retrain_passive", "Flex passive retrained."),
+            _ => Localize(GameLocalizationTables.UITown, "ui.town.status.retrain_full", "Full retrain complete."),
+        };
+        Refresh(result.IsSuccess
+            ? successMessage
+            : result.Error ?? "Retrain failed.");
+    }
+
+    private string BuildEconomyRailText(GameSessionState session, ProfileView profile)
+    {
+        var recruitPhase = session.RecruitPhase;
+        var recruitPity = session.RecruitPity;
+        var scoutDirective = ResolveScoutDirective();
+        var builder = new StringBuilder();
+        builder.AppendLine("Economy Rail");
+        builder.AppendLine($"Gold: {profile.Gold}");
+        builder.AppendLine($"Echo: {profile.Echo}");
+        builder.AppendLine($"Free Refresh: {(recruitPhase.FreeRefreshesRemaining > 0 ? "Available" : "Used")}");
+        builder.AppendLine($"Next Refresh Cost: {session.CurrentRecruitRefreshCost}");
+        builder.AppendLine($"Scout: {(session.CanUseScout ? "Available" : "Used")} / {scoutDirective.Kind}");
+        builder.AppendLine($"Rare Pity: {recruitPity.PacksSinceRarePlusSeen}");
+        builder.AppendLine($"Epic Pity: {recruitPity.PacksSinceEpicSeen}");
+        return builder.ToString();
+    }
+
+    private string BuildRosterText(ProfileView profile, string selectedHeroId)
     {
         var sb = new StringBuilder();
         sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.roster.header", "Roster"));
@@ -375,7 +802,8 @@ public sealed class TownScreenPresenter
             var inSquad = hero.IsInExpeditionSquad
                 ? Localize(GameLocalizationTables.UITown, "ui.town.roster.tag.expedition", "[Expedition]")
                 : Localize(GameLocalizationTables.UITown, "ui.town.roster.tag.reserve", "[Reserve]");
-            sb.AppendLine($"- {inSquad} {hero.DisplayName} / {_contentText.GetRaceName(hero.RaceId)} / {_contentText.GetClassName(hero.ClassId)}");
+            var selectionMarker = string.Equals(hero.HeroId, selectedHeroId, StringComparison.Ordinal) ? ">" : "-";
+            sb.AppendLine($"{selectionMarker} {inSquad} {hero.DisplayName} / {_contentText.GetRaceName(hero.RaceId)} / {_contentText.GetClassName(hero.ClassId)}");
         }
 
         return sb.ToString();
@@ -455,6 +883,15 @@ public sealed class TownScreenPresenter
                 session.LastExpeditionEffectMessage.Resolve(_localization, _contentText)));
         }
 
+        if (session.LastPermanentUnlockSummary.HasValue)
+        {
+            sb.AppendLine(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.deploy.last_permanent_unlock",
+                "Permanent Progress: {0}",
+                session.LastPermanentUnlockSummary.Resolve(_localization, _contentText)));
+        }
+
         return sb.ToString();
     }
 
@@ -505,9 +942,118 @@ public sealed class TownScreenPresenter
         return _root.ActiveProfileId;
     }
 
+    private string BuildSelectedHeroSummary(
+        GameSessionState session,
+        HeroInstanceRecord? selectedHero,
+        InventoryItemRecord? selectedItem,
+        string selectedNodeId,
+        int retrainActiveCost,
+        int retrainPassiveCost,
+        int fullRetrainCost,
+        DismissRefundResult dismissRefund)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine(_buildFormatter.BuildSelectedHeroSummary(session, selectedHero, selectedItem, selectedNodeId));
+        if (selectedHero == null)
+        {
+            return builder.ToString().TrimEnd();
+        }
+
+        if (selectedItem != null)
+        {
+            builder.AppendLine($"Refit Preview: {MetaBalanceDefaults.RefitEchoCost} Echo");
+        }
+
+        builder.AppendLine($"Retrain Active: {retrainActiveCost} Echo");
+        builder.AppendLine($"Retrain Passive: {retrainPassiveCost} Echo");
+        builder.AppendLine($"Full Retrain: {fullRetrainCost} Echo");
+        builder.AppendLine($"Dismiss Refund: +{dismissRefund.GoldRefund} Gold / +{dismissRefund.EchoRefund} Echo");
+
+        var loadout = session.Profile.HeroLoadouts.FirstOrDefault(record =>
+            string.Equals(record.HeroId, selectedHero.HeroId, StringComparison.Ordinal));
+        if (loadout != null)
+        {
+            builder.AppendLine($"Passive Nodes: {loadout.SelectedPassiveNodeIds.Count}/{PassiveBoardSelectionValidator.MaxActiveNodeCount}");
+        }
+
+        return builder.ToString().TrimEnd();
+    }
+
+    private string BuildCycleHeroLabel(HeroInstanceRecord? selectedHero)
+        => selectedHero == null
+            ? "Cycle Hero"
+            : $"Cycle Hero\n{selectedHero.Name}";
+
+    private string BuildCycleItemLabel(InventoryItemRecord? selectedItem)
+        => selectedItem == null
+            ? "Cycle Item"
+            : $"Cycle Item\n{_contentText.GetItemName(selectedItem.ItemBaseId)}";
+
+    private string BuildCycleBoardLabel(HeroInstanceRecord? selectedHero)
+    {
+        if (selectedHero == null)
+        {
+            return "Cycle Board";
+        }
+
+        var loadout = _root.SessionState.Profile.HeroLoadouts.FirstOrDefault(record =>
+            string.Equals(record.HeroId, selectedHero.HeroId, StringComparison.Ordinal));
+        var boardName = string.IsNullOrWhiteSpace(loadout?.PassiveBoardId)
+            ? "None"
+            : _contentText.GetPassiveBoardName(loadout.PassiveBoardId);
+        return $"Cycle Board\n{boardName}";
+    }
+
+    private string BuildCycleNodeLabel(PassiveNodeDefinition? selectedNode)
+        => selectedNode == null
+            ? "Cycle Node"
+            : $"Cycle Node\n{_contentText.GetPassiveNodeName(selectedNode.Id)}";
+
+    private string BuildCyclePermanentLabel(string selectedPermanentId)
+    {
+        if (string.IsNullOrWhiteSpace(selectedPermanentId))
+        {
+            return "Cycle Permanent";
+        }
+
+        var equippedPermanentId = GetEquippedPermanentAugmentId(_root.SessionState);
+        var equippedBadge = string.Equals(selectedPermanentId, equippedPermanentId, StringComparison.Ordinal)
+            ? " [Equipped]"
+            : string.Empty;
+        return $"Cycle Permanent\n{_contentText.GetAugmentName(selectedPermanentId)}{equippedBadge}";
+    }
+
+    private string BuildDefaultStatus(GameSessionState session)
+    {
+        if (session.LastPermanentUnlockSummary.HasValue)
+        {
+            return session.LastPermanentUnlockSummary.Resolve(_localization, _contentText);
+        }
+
+        if (session.HasPendingRewardSettlement)
+        {
+            return Localize(GameLocalizationTables.UITown, "ui.town.status.default.reward", "Reward settlement is pending. Finish the settlement or return to Town.");
+        }
+
+        return session.CanResumeExpedition
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.default.resume", "Recruit, save, and resume the expedition.")
+            : Localize(GameLocalizationTables.UITown, "ui.town.status.default.start", "Recruit, save, choose a chapter/site, and start the expedition.");
+    }
+
     private static bool IsReturnToStartBlocked(GameSessionState session)
     {
         return session.HasActiveExpeditionRun || session.IsQuickBattleSmokeActive;
+    }
+
+    private static int WrapIndex(int index, int count)
+    {
+        if (count <= 0)
+        {
+            return 0;
+        }
+
+        var wrapped = index % count;
+        return wrapped < 0 ? wrapped + count : wrapped;
     }
 
     private string LocalizeAnchor(DeploymentAnchorId anchor)

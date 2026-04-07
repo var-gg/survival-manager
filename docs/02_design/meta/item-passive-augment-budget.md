@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/meta/item-passive-augment-budget.md`
 - 관련문서:
   - `docs/02_design/meta/item-and-affix-system.md`
@@ -49,12 +49,16 @@
 - launch floor board당 기준 구조는 `small 12 / notable 5 / keystone 1`
 - safe target board당 확장 구조는 `small 14 / notable 8 / keystone 2`
 - passive node는 숫자 증폭보다 role specialization과 rule change를 우선한다.
+- V1 runtime selection은 hero당 `최대 5개 active`, `keystone 최대 1`, `prerequisite 필수`, `mutual exclusion 필수`를 적용한다.
+- passive board swap과 node toggle은 Town only / free로 유지한다.
 
 ## augment 구조
 
 - temporary augment는 `silver / gold / platinum or prismatic` 3층으로 본다.
-- permanent augment는 long-tail progression보다 build identity 고정 수단으로 시작한다.
+- permanent augment는 long-tail progression보다 `1-slot build identity thesis` 고정 수단으로 시작한다.
 - temporary는 run 안의 변화, permanent는 run 밖의 준비를 담당한다.
+- first temp pick은 same-family permanent candidate unlock trigger로 사용한다.
+- permanent candidate unlock은 누적되지만 equip은 blueprint당 1개만 허용한다.
 
 ## 권장 파워 예산
 
@@ -101,3 +105,4 @@ boundary rule:
 - item/drop rarity는 loot/economy/UI 체계로 남긴다.
 - `ContentRarity`는 affix/augment/passive governance용이다.
 - item `Unique` identity는 곧 combat `Legendary` rarity를 뜻하지 않는다.
+- permanent augment power budget은 strong thesis를 허용하되 multi-slot stacking을 전제하지 않는다.

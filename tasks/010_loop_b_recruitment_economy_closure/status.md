@@ -5,7 +5,7 @@
 - 작업명: Loop B Recruitment / Retrain / Economy Closure
 - 담당: Codex
 - 상태: 완료
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-04-07
 
 ## Current state
 
@@ -13,6 +13,12 @@
 - recruit offer는 `4-slot pack + on-plan/protected/scout/pity` contract로 런타임과 테스트에서 강제된다.
 - retrain은 flex-only, current/previous exclusion, native coherence, retrain pity를 보장한다.
 - editor-side `Recruitment Sandbox`와 Loop B source-of-truth 문서가 추가됐다.
+- 2026-04-07 follow-up으로 buildcraft closure를 merge했다.
+- permanent augment는 `unlock many, equip one` 1-slot thesis로 정규화됐다.
+- temp augment 첫 선택은 same-family permanent candidate unlock으로 연결된다.
+- passive board selection은 prerequisite / exclusion / keystone / node cap validator를 통과해야 한다.
+- Town / Reward normal playable lane은 scout / retrain / refit / passive / permanent build management와 build identity summary를 노출한다.
+- legacy reward/currency residue는 normal lane에서 parked 처리됐다.
 
 ## Acceptance matrix
 
@@ -58,13 +64,16 @@
 ## Remaining blockers
 
 - `docs-check`는 `.markdownlint-cli2.jsonc` 추가와 잔여 포맷 정리 후 green이다.
-- legacy crafting currency 문서군은 Loop B pointer 정리 후에도 후속 통합 정리가 더 필요할 수 있다.
+- fresh `test-batch-fast`는 다른 Unity 인스턴스 project lock 때문에 이번 턴에서 재실행 확인을 못 했다.
+- legacy crafting currency 문서군은 normal-lane park 선언 이후에도 후속 통합 정리가 더 필요할 수 있다.
 
 ## Deferred / debug-only
 
 - craft currency 완전 제거
 - duplicate 이후 확장 progression
 - sandbox UI polish와 richer filtering
+- separate permanent inventory widget polish
+- passive unlock progression currency / XP
 
 ## Loop budget consumed
 
@@ -77,3 +86,4 @@
 
 - commit 전 untracked test temp scene과 `Saves/` 같은 개인/임시 산출물은 제외한다.
 - sample content tag asset이 빈 shell로 생기면 regenerate보다 삭제 후 canonical seed/fallback을 우선 확인한다.
+- `pwsh -File tools/unity-bridge.ps1 test-batch-fast`는 기본 검증이지만, project lock이 있으면 다른 Unity 인스턴스를 먼저 정리해야 한다.

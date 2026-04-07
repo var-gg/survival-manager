@@ -113,6 +113,40 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
         return ordered;
     }
 
+    public IReadOnlyList<string> GetCanonicalPermanentAugmentIds()
+    {
+        EnsureLoaded();
+        if (_registry.FirstPlayableSlice?.PermanentAugmentIds.Count > 0)
+        {
+            return _registry.FirstPlayableSlice.PermanentAugmentIds
+                .Where(id => _registry.AugmentDefinitions.TryGetValue(id, out var augment) && augment.IsPermanent)
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+        }
+
+        return _registry.AugmentDefinitions.Values
+            .Where(augment => augment.IsPermanent && !string.IsNullOrWhiteSpace(augment.Id))
+            .OrderBy(augment => augment.Id, StringComparer.Ordinal)
+            .Select(augment => augment.Id)
+            .ToList();
+    }
+
+    public IReadOnlyList<string> GetCanonicalPassiveBoardIds()
+    {
+        EnsureLoaded();
+        if (_registry.FirstPlayableSlice?.PassiveBoardIds.Count > 0)
+        {
+            return _registry.FirstPlayableSlice.PassiveBoardIds
+                .Where(id => _registry.PassiveBoardDefinitions.ContainsKey(id))
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+        }
+
+        return _registry.PassiveBoardDefinitions.Keys
+            .OrderBy(id => id, StringComparer.Ordinal)
+            .ToList();
+    }
+
     public IReadOnlyList<string> GetCanonicalSynergyFamilyIds()
     {
         EnsureLoaded();
@@ -181,6 +215,18 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
     {
         EnsureLoaded();
         return _registry.AffixDefinitions.TryGetValue(affixId, out affix!);
+    }
+
+    public bool TryGetPassiveBoardDefinition(string boardId, out PassiveBoardDefinition board)
+    {
+        EnsureLoaded();
+        return _registry.PassiveBoardDefinitions.TryGetValue(boardId, out board!);
+    }
+
+    public bool TryGetPassiveNodeDefinition(string nodeId, out PassiveNodeDefinition node)
+    {
+        EnsureLoaded();
+        return _registry.PassiveNodeDefinitions.TryGetValue(nodeId, out node!);
     }
 
     public bool TryGetRoleInstructionDefinition(string roleInstructionId, out RoleInstructionDefinition roleInstruction)

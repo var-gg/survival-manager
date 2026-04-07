@@ -28,6 +28,8 @@ public sealed class ActiveRunRecord
     public int BattleSeed = 0;
     public string BattleContextHash = string.Empty;
     public string RewardSourceId = string.Empty;
+    public string FirstSelectedTemporaryAugmentId = string.Empty;
+    public string PendingPermanentUnlockId = string.Empty;
     public bool StoryCleared;
     public bool EndlessUnlocked;
 }

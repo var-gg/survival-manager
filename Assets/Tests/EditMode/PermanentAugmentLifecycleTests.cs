@@ -1,158 +1,148 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using SM.Meta.Model;
+using SM.Content.Definitions;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
 using SM.Unity;
+using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
 [Category("FastUnit")]
 public sealed class PermanentAugmentLifecycleTests
 {
-    // FakeCombatContentLookup은 Resources.LoadAll을 호출하지 않으므로
-    // GUI 모드에서도 에디터 freeze 없이 빠르게 실행된다.
-    private static readonly FakeCombatContentLookup SharedLookup = new();
+    private static readonly FakeCombatContentLookup SharedLookup = CreateLookup();
 
     [Test]
-    public void EquipPermanentAugment_UnlocksAndEquips()
+    public void EquipPermanentAugment_RequiresUnlockedCandidate()
     {
         var session = CreateBoundSession();
+
+        var result = session.EquipPermanentAugment("perm_aug_001");
+
+        Assert.That(result.IsSuccess, Is.False);
+        Assert.That(result.Error, Does.Contain("해금"));
+    }
+
+    [Test]
+    public void EquipPermanentAugment_EquipsUnlockedCandidate()
+    {
+        var session = CreateBoundSession();
+        session.UnlockPermanentAugmentCandidate("perm_aug_001");
 
         var result = session.EquipPermanentAugment("perm_aug_001");
 
         Assert.That(result.IsSuccess, Is.True, result.Error);
-        Assert.That(session.Profile.UnlockedPermanentAugmentIds, Does.Contain("perm_aug_001"));
-
         var loadout = session.Profile.PermanentAugmentLoadouts
-            .FirstOrDefault(r => r.BlueprintId == session.Profile.ActiveBlueprintId);
-        Assert.That(loadout, Is.Not.Null, "PermanentAugmentLoadoutRecord가 생성되어야 함");
-        Assert.That(loadout!.EquippedAugmentIds, Does.Contain("perm_aug_001"));
+            .FirstOrDefault(record => record.BlueprintId == session.Profile.ActiveBlueprintId);
+        Assert.That(loadout, Is.Not.Null);
+        Assert.That(loadout!.EquippedAugmentIds, Is.EqualTo(new[] { "perm_aug_001" }));
     }
 
     [Test]
-    public void EquipPermanentAugment_DuplicateEquip_Fails()
+    public void EquipPermanentAugment_ReplacesExistingSelection_AndClampsToOne()
     {
         var session = CreateBoundSession();
-        session.EquipPermanentAugment("perm_aug_001");
+        session.UnlockPermanentAugmentCandidate("perm_aug_001");
+        session.UnlockPermanentAugmentCandidate("perm_aug_002");
+        Assert.That(session.EquipPermanentAugment("perm_aug_001").IsSuccess, Is.True);
 
-        var result = session.EquipPermanentAugment("perm_aug_001");
+        var result = session.EquipPermanentAugment("perm_aug_002");
 
-        Assert.That(result.IsSuccess, Is.False, "이미 장착된 영구 증강 재장착 불가");
-    }
-
-    [Test]
-    public void EquipPermanentAugment_MaxSlotsCap_Fails()
-    {
-        var session = CreateBoundSession();
-        var maxSlots = MetaBalanceDefaults.MaxPermanentAugmentSlots;
-
-        // Fill all slots
-        for (int i = 0; i < maxSlots; i++)
-        {
-            var fillResult = session.EquipPermanentAugment($"perm_aug_{i:D3}");
-            Assert.That(fillResult.IsSuccess, Is.True, fillResult.Error);
-        }
-
-        // Try one more
-        var result = session.EquipPermanentAugment("perm_aug_overflow");
-
-        Assert.That(result.IsSuccess, Is.False, $"최대 {maxSlots}개 초과 장착 불가");
+        Assert.That(result.IsSuccess, Is.True, result.Error);
+        var loadout = session.Profile.PermanentAugmentLoadouts
+            .First(record => record.BlueprintId == session.Profile.ActiveBlueprintId);
+        Assert.That(loadout.EquippedAugmentIds, Has.Count.EqualTo(1));
+        Assert.That(loadout.EquippedAugmentIds[0], Is.EqualTo("perm_aug_002"));
     }
 
     [Test]
     public void UnequipPermanentAugment_RemovesFromLoadout()
     {
         var session = CreateBoundSession();
-        session.EquipPermanentAugment("perm_aug_001");
-        session.EquipPermanentAugment("perm_aug_002");
+        session.UnlockPermanentAugmentCandidate("perm_aug_001");
+        Assert.That(session.EquipPermanentAugment("perm_aug_001").IsSuccess, Is.True);
 
         var result = session.UnequipPermanentAugment("perm_aug_001");
 
         Assert.That(result.IsSuccess, Is.True, result.Error);
-
         var loadout = session.Profile.PermanentAugmentLoadouts
-            .First(r => r.BlueprintId == session.Profile.ActiveBlueprintId);
-        Assert.That(loadout.EquippedAugmentIds, Does.Not.Contain("perm_aug_001"));
-        Assert.That(loadout.EquippedAugmentIds, Does.Contain("perm_aug_002"));
+            .First(record => record.BlueprintId == session.Profile.ActiveBlueprintId);
+        Assert.That(loadout.EquippedAugmentIds, Is.Empty);
     }
 
     [Test]
-    public void UnequipPermanentAugment_NotEquipped_Fails()
+    public void BindProfile_FiltersLegacySlotTokens_AndClampsLegacyLoadout()
     {
-        var session = CreateBoundSession();
-        session.EquipPermanentAugment("perm_aug_001");
+        var profile = CreateProfile();
+        profile.UnlockedPermanentAugmentIds.AddRange(new[] { "perm-slot-1", "perm_aug_001", "perm_aug_001" });
+        profile.PermanentAugmentLoadouts.Add(new PermanentAugmentLoadoutRecord
+        {
+            BlueprintId = profile.ActiveBlueprintId,
+            EquippedAugmentIds = new List<string> { "perm-slot-2", "perm_aug_001", "perm_aug_002" }
+        });
 
-        var result = session.UnequipPermanentAugment("perm_aug_not_equipped");
+        var session = new GameSessionState(SharedLookup);
+        session.BindProfile(profile);
+        session.SetCurrentScene(SceneNames.Town);
 
-        Assert.That(result.IsSuccess, Is.False, "장착되지 않은 증강 해제 불가");
+        Assert.That(session.Profile.UnlockedPermanentAugmentIds, Is.EqualTo(new[] { "perm_aug_001", "perm_aug_002" }));
+        var loadout = session.Profile.PermanentAugmentLoadouts.First(record => record.BlueprintId == profile.ActiveBlueprintId);
+        Assert.That(loadout.EquippedAugmentIds, Has.Count.EqualTo(1));
+        Assert.That(loadout.EquippedAugmentIds[0], Is.EqualTo("perm_aug_001"));
+        Assert.That(session.PermanentAugmentSlotCount, Is.EqualTo(1));
     }
-
-    [Test]
-    public void EquipPermanentAugment_EmptyId_Fails()
-    {
-        var session = CreateBoundSession();
-
-        var result = session.EquipPermanentAugment("");
-
-        Assert.That(result.IsSuccess, Is.False, "빈 ID로 장착 불가");
-    }
-
-    [Test]
-    public void EquipAndUnequip_Roundtrip_LeavesCleanState()
-    {
-        var session = CreateBoundSession();
-        session.EquipPermanentAugment("perm_aug_001");
-        session.UnequipPermanentAugment("perm_aug_001");
-
-        var loadout = session.Profile.PermanentAugmentLoadouts
-            .First(r => r.BlueprintId == session.Profile.ActiveBlueprintId);
-        Assert.That(loadout.EquippedAugmentIds, Is.Empty, "장착 → 해제 후 빈 상태여야 함");
-
-        // Can re-equip after unequip
-        var result = session.EquipPermanentAugment("perm_aug_001");
-        Assert.That(result.IsSuccess, Is.True, "해제 후 재장착 가능");
-    }
-
-    [Test]
-    public void UnequipPermanentAugment_NoLoadoutRecord_Fails()
-    {
-        var session = CreateBoundSession();
-        // No augment equipped yet → no loadout record exists
-
-        var result = session.UnequipPermanentAugment("perm_aug_001");
-
-        Assert.That(result.IsSuccess, Is.False, "로드아웃 레코드가 없으면 해제 불가");
-    }
-
-    // ── helpers ──
 
     private static GameSessionState CreateBoundSession()
     {
         var session = new GameSessionState(SharedLookup);
-        // Pre-populate heroes to skip SeedDemoProfile() which requires real content data.
-        var profile = new SaveProfile
+        session.BindProfile(CreateProfile());
+        session.SetCurrentScene(SceneNames.Town);
+        return session;
+    }
+
+    private static SaveProfile CreateProfile()
+    {
+        return new SaveProfile
         {
             Heroes = new List<HeroInstanceRecord>
             {
                 new()
                 {
-                    HeroId = "hero-1", Name = "Test Hero 1",
-                    ArchetypeId = "test_archetype_a", RaceId = "test_race", ClassId = "test_class",
+                    HeroId = "hero-1",
+                    Name = "Test Hero 1",
+                    ArchetypeId = "test_archetype_a",
+                    RaceId = "test_race",
+                    ClassId = "test_class",
                     EquippedItemIds = new List<string>(),
-                },
-                new()
-                {
-                    HeroId = "hero-2", Name = "Test Hero 2",
-                    ArchetypeId = "test_archetype_b", RaceId = "test_race", ClassId = "test_class",
-                    EquippedItemIds = new List<string>(),
-                },
-            },
+                }
+            }
         };
-        session.BindProfile(profile);
-        session.SetCurrentScene(SceneNames.Town);
-        return session;
+    }
+
+    private static FakeCombatContentLookup CreateLookup()
+    {
+        var firstPlayableSlice = new SM.Meta.Model.FirstPlayableSliceDefinition
+        {
+            PermanentAugmentIds = new List<string> { "perm_aug_001", "perm_aug_002" }.AsReadOnly(),
+            PermanentAugmentCap = 1,
+        };
+        var augments = new Dictionary<string, AugmentDefinition>
+        {
+            ["perm_aug_001"] = CreateAugment("perm_aug_001", "hunt_line"),
+            ["perm_aug_002"] = CreateAugment("perm_aug_002", "ward_line"),
+        };
+        return new FakeCombatContentLookup(firstPlayableSlice: firstPlayableSlice, augments: augments);
+    }
+
+    private static AugmentDefinition CreateAugment(string id, string familyId)
+    {
+        var augment = ScriptableObject.CreateInstance<AugmentDefinition>();
+        augment.Id = id;
+        augment.IsPermanent = true;
+        augment.FamilyId = familyId;
+        augment.NameKey = id;
+        return augment;
     }
 }

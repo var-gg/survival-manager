@@ -49,6 +49,19 @@ public sealed class TownScreenController : MonoBehaviour
     public void NextChapter() => _presenter?.NextChapter();
     public void PreviousSite() => _presenter?.PreviousSite();
     public void NextSite() => _presenter?.NextSite();
+    public void CycleHero() => _presenter?.CycleHero();
+    public void CycleItem() => _presenter?.CycleItem();
+    public void UseScout() => _presenter?.UseScout();
+    public void RetrainFlexActive() => _presenter?.RetrainFlexActive();
+    public void RetrainFlexPassive() => _presenter?.RetrainFlexPassive();
+    public void FullRetrain() => _presenter?.FullRetrain();
+    public void DismissSelectedHero() => _presenter?.DismissSelectedHero();
+    public void RefitSelectedItem() => _presenter?.RefitSelectedItem();
+    public void CycleBoard() => _presenter?.CycleBoard();
+    public void CyclePassiveNode() => _presenter?.CyclePassiveNode();
+    public void TogglePassiveNode() => _presenter?.TogglePassiveNode();
+    public void CyclePermanentCandidate() => _presenter?.CyclePermanentCandidate();
+    public void EquipSelectedPermanentAugment() => _presenter?.EquipSelectedPermanentAugment();
 
     public void EnsureRuntimeControls()
     {

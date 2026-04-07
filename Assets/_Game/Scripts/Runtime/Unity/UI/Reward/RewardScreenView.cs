@@ -11,11 +11,12 @@ public sealed class RewardScreenView
     private readonly Label _localeStatusLabel;
     private readonly Button _localeKoButton;
     private readonly Button _localeEnButton;
-    private readonly Label _summaryLabel;
+    private readonly Label _runDeltaLabel;
+    private readonly Label _buildContextLabel;
     private readonly Label _choicesHeaderLabel;
     private readonly Label _statusLabel;
     private readonly Button _returnTownButton;
-    private readonly IReadOnlyList<(Label title, Label body, Label kind, Button button)> _choiceCards;
+    private readonly IReadOnlyList<(Label title, Label body, Label kind, Label context, Button button)> _choiceCards;
 
     public RewardScreenView(VisualElement root)
     {
@@ -23,7 +24,8 @@ public sealed class RewardScreenView
         _localeStatusLabel = Require<Label>(root, "LocaleStatusLabel");
         _localeKoButton = Require<Button>(root, "LocaleKoButton");
         _localeEnButton = Require<Button>(root, "LocaleEnButton");
-        _summaryLabel = Require<Label>(root, "SummaryLabel");
+        _runDeltaLabel = Require<Label>(root, "RunDeltaLabel");
+        _buildContextLabel = Require<Label>(root, "BuildContextLabel");
         _choicesHeaderLabel = Require<Label>(root, "ChoicesHeaderLabel");
         _statusLabel = Require<Label>(root, "StatusLabel");
         _returnTownButton = Require<Button>(root, "ReturnTownButton");
@@ -32,6 +34,7 @@ public sealed class RewardScreenView
                 Require<Label>(root, $"ChoiceCard{index}TitleLabel"),
                 Require<Label>(root, $"ChoiceCard{index}BodyLabel"),
                 Require<Label>(root, $"ChoiceCard{index}KindLabel"),
+                Require<Label>(root, $"ChoiceCard{index}ContextLabel"),
                 Require<Button>(root, $"ChoiceCard{index}Button")))
             .ToArray();
     }
@@ -52,17 +55,19 @@ public sealed class RewardScreenView
         _localeStatusLabel.text = state.LocaleStatus;
         _localeKoButton.text = state.LocaleKoLabel;
         _localeEnButton.text = state.LocaleEnLabel;
-        _summaryLabel.text = state.SummaryText;
+        _runDeltaLabel.text = state.RunDeltaText;
+        _buildContextLabel.text = state.BuildContextText;
         _choicesHeaderLabel.text = state.ChoicesHeaderText;
         _statusLabel.text = state.StatusText;
         _returnTownButton.text = state.ReturnTownLabel;
 
         for (var i = 0; i < _choiceCards.Count; i++)
         {
-            var cardState = i < state.Choices.Count ? state.Choices[i] : new RewardChoiceCardViewState(string.Empty, string.Empty, string.Empty, string.Empty, false);
+            var cardState = i < state.Choices.Count ? state.Choices[i] : new RewardChoiceCardViewState(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, false);
             _choiceCards[i].title.text = cardState.Title;
             _choiceCards[i].body.text = cardState.Body;
             _choiceCards[i].kind.text = cardState.KindText;
+            _choiceCards[i].context.text = cardState.ContextText;
             _choiceCards[i].button.text = cardState.ActionLabel;
             _choiceCards[i].button.SetEnabled(cardState.IsEnabled);
         }

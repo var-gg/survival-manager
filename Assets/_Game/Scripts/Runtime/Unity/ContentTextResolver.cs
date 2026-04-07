@@ -34,6 +34,13 @@ public sealed class ContentTextResolver
             : augmentId;
     }
 
+    public string GetAugmentDescription(string augmentId)
+    {
+        return _lookup.TryGetAugmentDefinition(augmentId, out var augment)
+            ? Localize(ContentLocalizationTables.Augments, augment.DescriptionKey, augment.LegacyDescription, augmentId)
+            : augmentId;
+    }
+
     public string GetSkillName(string skillId)
     {
         return _lookup.TryGetSkillDefinition(skillId, out var skill)
@@ -92,6 +99,34 @@ public sealed class ContentTextResolver
 
         var roleTag = string.IsNullOrWhiteSpace(fallbackRoleTag) ? roleInstructionId : fallbackRoleTag;
         return RoleGlossary.GetLocalizedRoleTagFallback(roleTag, _localization.CurrentLocale?.Identifier.Code);
+    }
+
+    public string GetPassiveBoardName(string boardId)
+    {
+        return _lookup.TryGetPassiveBoardDefinition(boardId, out var board)
+            ? Localize(ContentLocalizationTables.Passives, board.NameKey, board.LegacyDisplayName, boardId)
+            : boardId;
+    }
+
+    public string GetPassiveBoardDescription(string boardId)
+    {
+        return _lookup.TryGetPassiveBoardDefinition(boardId, out var board)
+            ? Localize(ContentLocalizationTables.Passives, board.DescriptionKey, board.LegacyDisplayName, boardId)
+            : boardId;
+    }
+
+    public string GetPassiveNodeName(string nodeId)
+    {
+        return _lookup.TryGetPassiveNodeDefinition(nodeId, out var node)
+            ? Localize(ContentLocalizationTables.Passives, node.NameKey, node.LegacyDisplayName, nodeId)
+            : nodeId;
+    }
+
+    public string GetPassiveNodeDescription(string nodeId)
+    {
+        return _lookup.TryGetPassiveNodeDefinition(nodeId, out var node)
+            ? Localize(ContentLocalizationTables.Passives, node.DescriptionKey, node.LegacyDescription, nodeId)
+            : nodeId;
     }
 
     public string GetRoleFamilyName(string classId)

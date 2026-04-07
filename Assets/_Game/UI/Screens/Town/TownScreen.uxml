@@ -35,6 +35,10 @@
                     <ui:Label name="CurrencyLabel" class="panel__text" />
                 </ui:VisualElement>
                 <ui:VisualElement class="panel">
+                    <ui:Label class="panel__title" text="Blueprint" />
+                    <ui:Label name="BlueprintSummaryLabel" class="panel__text" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel">
                     <ui:Label class="panel__title" text="Recruit" />
                     <ui:Label name="RecruitSummaryLabel" class="panel__text" />
                     <ui:VisualElement class="card-row" name="RecruitCardsRow">
@@ -64,8 +68,8 @@
 
             <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Squad" />
-                    <ui:Label name="SquadLabel" class="panel__text" />
+                    <ui:Label class="panel__title" text="Selected Hero" />
+                    <ui:Label name="SelectedHeroLabel" class="panel__text" />
                 </ui:VisualElement>
                 <ui:VisualElement class="panel">
                     <ui:Label class="panel__title" text="Deploy" />
@@ -91,6 +95,23 @@
                 <ui:Button name="ReturnToStartButton" class="ui-button" text="Return to Start" />
                 <ui:Button name="ExpeditionButton" class="ui-button ui-button--accent" text="Start Expedition" />
                 <ui:Button name="QuickBattleButton" class="ui-button" text="Quick Battle (Smoke)" />
+            </ui:VisualElement>
+            <ui:VisualElement class="action-row">
+                <ui:Button name="CycleHeroButton" class="ui-button" text="Cycle Hero" />
+                <ui:Button name="CycleItemButton" class="ui-button" text="Cycle Item" />
+                <ui:Button name="ScoutButton" class="ui-button" text="Scout" />
+                <ui:Button name="RetrainActiveButton" class="ui-button" text="Retrain Active" />
+                <ui:Button name="RetrainPassiveButton" class="ui-button" text="Retrain Passive" />
+                <ui:Button name="FullRetrainButton" class="ui-button" text="Full Retrain" />
+                <ui:Button name="DismissButton" class="ui-button ui-button--danger" text="Dismiss" />
+            </ui:VisualElement>
+            <ui:VisualElement class="action-row">
+                <ui:Button name="RefitButton" class="ui-button" text="Refit" />
+                <ui:Button name="CycleBoardButton" class="ui-button" text="Cycle Board" />
+                <ui:Button name="CycleNodeButton" class="ui-button" text="Cycle Node" />
+                <ui:Button name="ToggleNodeButton" class="ui-button" text="Toggle Node" />
+                <ui:Button name="CyclePermanentButton" class="ui-button" text="Cycle Permanent" />
+                <ui:Button name="EquipPermanentButton" class="ui-button" text="Equip Permanent" />
             </ui:VisualElement>
             <ui:Label name="StatusLabel" class="panel__text panel__text--muted" />
         </ui:VisualElement>

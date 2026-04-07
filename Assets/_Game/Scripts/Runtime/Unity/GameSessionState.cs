@@ -59,6 +59,7 @@ public sealed class GameSessionState
     public SessionTextToken LastBattleSummary { get; private set; } = SessionTextToken.Empty;
     public SessionTextToken LastExpeditionEffectMessage { get; private set; } = SessionTextToken.Empty;
     public SessionTextToken LastRewardApplicationSummary { get; private set; } = SessionTextToken.Empty;
+    public SessionTextToken LastPermanentUnlockSummary { get; private set; } = SessionTextToken.Empty;
     public TeamPostureType SelectedTeamPosture { get; private set; } = TeamPostureType.StandardAdvance;
     public string SelectedTeamTacticId { get; private set; } = string.Empty;
     public IReadOnlyList<string> ExpeditionSquadHeroIds => _expeditionSquadHeroIds;
@@ -140,7 +141,7 @@ public sealed class GameSessionState
                 Profile.DisplayName = "Player";
             }
 
-            PermanentAugmentSlotCount = Math.Max(1, Profile.UnlockedPermanentAugmentIds.Count);
+            PermanentAugmentSlotCount = MetaBalanceDefaults.MaxPermanentAugmentSlots;
             CurrentExpeditionNodeIndex = 0;
             SelectedExpeditionNodeIndex = null;
             LastBattleVictory = false;
@@ -149,6 +150,7 @@ public sealed class GameSessionState
             LastBattleSummary = SessionTextToken.Empty;
             LastExpeditionEffectMessage = SessionTextToken.Empty;
             LastRewardApplicationSummary = SessionTextToken.Empty;
+            LastPermanentUnlockSummary = SessionTextToken.Empty;
             _lastAutomaticLootBundle = null;
             _hasPendingRewardSettlement = false;
             _lastDuplicateConversion = null;
@@ -189,6 +191,7 @@ public sealed class GameSessionState
         LastBattleSummary = SessionTextToken.Empty;
         LastExpeditionEffectMessage = SessionTextToken.Empty;
         LastRewardApplicationSummary = SessionTextToken.Empty;
+        LastPermanentUnlockSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
         _hasPendingRewardSettlement = false;
         _runtimeTelemetryEvents.Clear();
@@ -221,6 +224,7 @@ public sealed class GameSessionState
         LastBattleSummary = SessionTextToken.Empty;
         LastExpeditionEffectMessage = SessionTextToken.Empty;
         LastRewardApplicationSummary = SessionTextToken.Empty;
+        LastPermanentUnlockSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
         _hasPendingRewardSettlement = false;
         _runtimeTelemetryEvents.Clear();
@@ -321,6 +325,7 @@ public sealed class GameSessionState
         LastBattleSummary = BuildNodeSettlementSummaryToken(selected);
         LastExpeditionEffectMessage = ApplyExpeditionNodeEffect(selected);
         LastRewardApplicationSummary = SessionTextToken.Empty;
+        LastPermanentUnlockSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
         _hasPendingRewardSettlement = true;
         UpdateCampaignProgressForResolvedNode(selected);
@@ -444,6 +449,7 @@ public sealed class GameSessionState
 
     public void ReturnToTownAfterReward()
     {
+        ConsumePendingPermanentUnlock();
         FinalizeRewardSettlement();
         IsQuickBattleSmokeActive = false;
     }
@@ -771,6 +777,27 @@ public sealed class GameSessionState
         return Result.Success();
     }
 
+    public Result UnlockPermanentAugmentCandidate(string augmentId)
+    {
+        if (string.IsNullOrWhiteSpace(augmentId))
+        {
+            return Result.Fail("augment ID가 비어 있습니다.");
+        }
+
+        if (!_combatContentLookup.TryGetAugmentDefinition(augmentId, out var augment) || !augment.IsPermanent)
+        {
+            return Result.Fail("영구 증강 후보를 찾을 수 없습니다.");
+        }
+
+        if (!Profile.UnlockedPermanentAugmentIds.Contains(augmentId, StringComparer.Ordinal))
+        {
+            Profile.UnlockedPermanentAugmentIds.Add(augmentId);
+        }
+
+        NormalizePermanentAugmentState();
+        return Result.Success();
+    }
+
     public Result EquipPermanentAugment(string augmentId)
     {
         if (!IsTownEconomyPhase())
@@ -783,9 +810,14 @@ public sealed class GameSessionState
             return Result.Fail("augment ID가 비어 있습니다.");
         }
 
-        if (!Profile.UnlockedPermanentAugmentIds.Contains(augmentId))
+        if (!_combatContentLookup.TryGetAugmentDefinition(augmentId, out var augment) || !augment.IsPermanent)
         {
-            Profile.UnlockedPermanentAugmentIds.Add(augmentId);
+            return Result.Fail("영구 증강 후보를 찾을 수 없습니다.");
+        }
+
+        if (!Profile.UnlockedPermanentAugmentIds.Contains(augmentId, StringComparer.Ordinal))
+        {
+            return Result.Fail("해금되지 않은 영구 증강입니다.");
         }
 
         var blueprintId = string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId)
@@ -799,18 +831,14 @@ public sealed class GameSessionState
             Profile.PermanentAugmentLoadouts.Add(record);
         }
 
-        if (record.EquippedAugmentIds.Count >= MetaBalanceDefaults.MaxPermanentAugmentSlots)
-        {
-            return Result.Fail($"영구 증강 슬롯이 가득 찼습니다 ({MetaBalanceDefaults.MaxPermanentAugmentSlots}/{MetaBalanceDefaults.MaxPermanentAugmentSlots}).");
-        }
-
-        if (record.EquippedAugmentIds.Contains(augmentId, StringComparer.Ordinal))
+        var currentlyEquippedId = record.EquippedAugmentIds.FirstOrDefault();
+        if (string.Equals(currentlyEquippedId, augmentId, StringComparison.Ordinal))
         {
             return Result.Fail("이미 장착된 영구 증강입니다.");
         }
 
-        record.EquippedAugmentIds.Add(augmentId);
-        PermanentAugmentSlotCount = Math.Max(PermanentAugmentSlotCount, record.EquippedAugmentIds.Count);
+        record.EquippedAugmentIds = new List<string> { augmentId };
+        PermanentAugmentSlotCount = MetaBalanceDefaults.MaxPermanentAugmentSlots;
         SyncActiveRunIfPresent();
         return Result.Success();
     }
@@ -839,6 +867,11 @@ public sealed class GameSessionState
             return Result.Fail($"영구 증강 '{augmentId}'이(가) 장착되어 있지 않습니다.");
         }
 
+        record.EquippedAugmentIds = record.EquippedAugmentIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.Ordinal)
+            .Take(MetaBalanceDefaults.MaxPermanentAugmentSlots)
+            .ToList();
         SyncActiveRunIfPresent();
         return Result.Success();
     }
@@ -855,6 +888,12 @@ public sealed class GameSessionState
             return Result.Fail("유닛을 찾을 수 없습니다.");
         }
 
+        if (string.IsNullOrWhiteSpace(boardId)
+            || !_combatContentLookup.TryGetPassiveBoardDefinition(boardId, out _))
+        {
+            return Result.Fail("패시브 보드를 찾을 수 없습니다.");
+        }
+
         var loadout = Profile.HeroLoadouts.FirstOrDefault(
             r => string.Equals(r.HeroId, heroId, StringComparison.Ordinal));
         if (loadout == null)
@@ -864,7 +903,7 @@ public sealed class GameSessionState
         }
 
         loadout.PassiveBoardId = boardId;
-        loadout.SelectedPassiveNodeIds ??= new List<string>();
+        loadout.SelectedPassiveNodeIds = new List<string>();
 
         var selection = Profile.PassiveSelections.FirstOrDefault(
             s => string.Equals(s.HeroId, heroId, StringComparison.Ordinal));
@@ -875,7 +914,8 @@ public sealed class GameSessionState
         }
 
         selection.BoardId = boardId;
-        selection.SelectedNodeIds ??= new List<string>();
+        selection.SelectedNodeIds = new List<string>();
+        SyncActiveRunIfPresent();
         return Result.Success();
     }
 
@@ -898,23 +938,39 @@ public sealed class GameSessionState
             return Result.Fail("유닛의 로드아웃이 없습니다. 먼저 패시브 보드를 선택하세요.");
         }
 
-        loadout.SelectedPassiveNodeIds ??= new List<string>();
-        if (loadout.SelectedPassiveNodeIds.Contains(nodeId, StringComparer.Ordinal))
+        var nodesById = BuildPassiveBoardNodeDictionary(loadout.PassiveBoardId);
+        if (nodesById.Count == 0)
         {
-            loadout.SelectedPassiveNodeIds.RemoveAll(id => string.Equals(id, nodeId, StringComparison.Ordinal));
+            return Result.Fail("현재 패시브 보드의 노드 정의를 찾을 수 없습니다.");
         }
-        else
+
+        var result = PassiveBoardSelectionValidator.Toggle(
+            loadout.PassiveBoardId,
+            loadout.SelectedPassiveNodeIds ?? Array.Empty<string>(),
+            nodeId,
+            nodesById);
+        if (!result.IsValid)
         {
-            loadout.SelectedPassiveNodeIds.Add(nodeId);
+            return Result.Fail(result.Error);
         }
+
+        loadout.SelectedPassiveNodeIds = result.NormalizedNodeIds.ToList();
 
         var selection = Profile.PassiveSelections.FirstOrDefault(
             s => string.Equals(s.HeroId, heroId, StringComparison.Ordinal));
-        if (selection != null)
+        if (selection == null)
         {
-            selection.SelectedNodeIds = loadout.SelectedPassiveNodeIds.ToList();
+            selection = new PassiveSelectionRecord
+            {
+                HeroId = heroId,
+                BoardId = loadout.PassiveBoardId,
+            };
+            Profile.PassiveSelections.Add(selection);
         }
 
+        selection.BoardId = loadout.PassiveBoardId;
+        selection.SelectedNodeIds = loadout.SelectedPassiveNodeIds.ToList();
+        SyncActiveRunIfPresent();
         return Result.Success();
     }
 
@@ -1351,6 +1407,7 @@ public sealed class GameSessionState
         LastBattleVictory = victory;
         LastBattleSummary = SessionTextToken.Plain(summary);
         LastRewardApplicationSummary = SessionTextToken.Empty;
+        LastPermanentUnlockSummary = SessionTextToken.Empty;
         _hasPendingRewardSettlement = true;
         if (ActiveRun != null)
         {
@@ -1366,6 +1423,7 @@ public sealed class GameSessionState
         var resolvedNode = GetSelectedExpeditionNode() ?? GetCurrentExpeditionNode();
         LastBattleVictory = victory;
         LastRewardApplicationSummary = SessionTextToken.Empty;
+        LastPermanentUnlockSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
         _hasPendingRewardSettlement = true;
 
@@ -1492,21 +1550,7 @@ public sealed class GameSessionState
                 ApplyLedgerBackedReward(new RewardOption(choice.PayloadId, SM.Content.Definitions.RewardType.Echo, choice.EchoAmount, BuildRewardChoiceSummaryKey(choice)), BuildRewardChoiceSummaryToken(choice));
                 break;
             case RewardChoiceKind.PermanentAugmentSlot:
-                GrantPermanentAugmentSlots(choice.PermanentSlotAmount, choice.PayloadId);
-                Profile.RewardLedger.Add(new RewardLedgerEntryRecord
-                {
-                    EntryId = Guid.NewGuid().ToString("N"),
-                    RunId = ActiveRun?.RunId ?? string.Empty,
-                    RewardId = choice.PayloadId,
-                    RewardType = SM.Content.Definitions.RewardType.PermanentAugmentSlot.ToString(),
-                    Amount = choice.PermanentSlotAmount,
-                    CreatedAtUtc = timestamp,
-                    Summary = BuildRewardChoiceSummaryKey(choice),
-                    SourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
-                    SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId),
-                });
-                LastRewardApplicationSummary = BuildRewardChoiceSummaryToken(choice);
-                break;
+                return false;
         }
 
         Profile.RunSummaries.Add(new RunSummaryRecord
@@ -1522,8 +1566,20 @@ public sealed class GameSessionState
         });
 
         _pendingRewardChoices.Clear();
-        FinalizeRewardSettlement();
+        SyncActiveRunIfPresent();
         return true;
+    }
+
+    public string PreviewPermanentUnlockFromTemporaryAugment(string augmentId)
+    {
+        if (string.IsNullOrWhiteSpace(augmentId)
+            || ActiveRun == null
+            || !string.IsNullOrWhiteSpace(ActiveRun.Overlay.FirstSelectedTemporaryAugmentId))
+        {
+            return string.Empty;
+        }
+
+        return ResolvePendingPermanentUnlockId(augmentId);
     }
 
     private void EnsureRecruitOffers()
@@ -1941,7 +1997,7 @@ public sealed class GameSessionState
             true,
             ExpeditionNodeEffectKind.TemporaryAugment,
             0,
-            ResolveRewardAugmentId(2),
+            ResolveRewardAugmentId(2, "augment_platinum_catacomb"),
             new[] { 4 }));
         _expeditionNodes.Add(new ExpeditionNodeViewModel(
             4,
@@ -1987,7 +2043,7 @@ public sealed class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.fallback_stash.title", "ui.reward.choice.fallback_stash.desc", 3, 0, 0, "reward.gold.fallback.3"),
                 new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, "reward.echo.fallback.1"),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.guard_spark.title", "ui.reward.choice.guard_spark.desc", 0, 0, 0, ResolveRewardAugmentId(0))
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.guard_spark.title", "ui.reward.choice.guard_spark.desc", 0, 0, 0, ResolveRewardAugmentId(0, "augment_gold_pack"))
             };
         }
 
@@ -1997,7 +2053,7 @@ public sealed class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.gold_cache.title", "ui.reward.choice.gold_cache.desc", 5, 0, 0, "reward.gold.quick.5"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.iron_blade.title", "ui.reward.choice.iron_blade.desc", 0, 0, 0, ResolveRewardItemId(0)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(1))
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(1, "augment_gold_barrage"))
             };
         }
 
@@ -2017,12 +2073,12 @@ public sealed class GameSessionState
             "relay-route" => new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.field_kit.title", "ui.reward.choice.field_kit.desc", 0, 0, 0, ResolveRewardItemId(2)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.anchor_beat.title", "ui.reward.choice.anchor_beat.desc", 0, 0, 0, ResolveRewardAugmentId(2)),
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.anchor_beat.title", "ui.reward.choice.anchor_beat.desc", 0, 0, 0, ResolveRewardAugmentId(2, "augment_gold_pact")),
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.relay_pouch.title", "ui.reward.choice.relay_pouch.desc", 6, 0, 0, "reward.gold.relay.6")
             },
             "shrine-route" => new[]
             {
-                new RewardChoiceViewModel(RewardChoiceKind.PermanentAugmentSlot, "ui.reward.choice.permanent_socket.title", "ui.reward.choice.permanent_socket.desc", 0, 0, 1, "perm-slot-shrine"),
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.guard_spark.title", "ui.reward.choice.guard_spark.desc", 0, 0, 0, ResolveRewardAugmentId(3, "augment_platinum_catacomb")),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.sigil_core.title", "ui.reward.choice.sigil_core.desc", 0, 0, 0, ResolveRewardItemId(3)),
                 new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 2, 0, "reward.echo.shrine.2")
             },
@@ -2030,7 +2086,7 @@ public sealed class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.gold_cache.title", "ui.reward.choice.gold_cache.desc", 5, 0, 0, "reward.gold.default.5"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.iron_blade.title", "ui.reward.choice.iron_blade.desc", 0, 0, 0, ResolveRewardItemId(0)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(1))
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(1, "augment_gold_barrage"))
             }
         };
     }
@@ -2076,6 +2132,7 @@ public sealed class GameSessionState
             if (ActiveRun != null)
             {
                 ActiveRun = RunStateService.ApplyTemporaryAugment(ActiveRun, node.EffectPayloadId);
+                TrackPermanentAugmentProgression(node.EffectPayloadId);
                 SyncActiveRunRecord();
             }
         }
@@ -2089,38 +2146,11 @@ public sealed class GameSessionState
 
     private SessionTextToken ApplyPermanentSlotNodeEffect(ExpeditionNodeViewModel node)
     {
-        GrantPermanentAugmentSlots(Math.Max(1, node.EffectAmount), node.EffectPayloadId);
         return new SessionTextToken(
             GameLocalizationTables.UIExpedition,
             "ui.expedition.effect.permanent_slot",
-            "Permanent Slot +{0}",
+            "Legacy permanent slot effect ignored",
             SessionTextArg.Number(Math.Max(1, node.EffectAmount)));
-    }
-
-    private void GrantPermanentAugmentSlots(int amount, string payloadId)
-    {
-        for (var i = 0; i < Math.Max(1, amount); i++)
-        {
-            var baseId = string.IsNullOrWhiteSpace(payloadId) ? "perm-slot" : payloadId;
-            var nextId = $"{baseId}-{Profile.UnlockedPermanentAugmentIds.Count + 1}";
-            while (Profile.UnlockedPermanentAugmentIds.Contains(nextId))
-            {
-                nextId = $"{baseId}-{Guid.NewGuid():N}";
-            }
-
-            Profile.UnlockedPermanentAugmentIds.Add(nextId);
-        }
-
-        PermanentAugmentSlotCount = Math.Max(1, Profile.UnlockedPermanentAugmentIds.Count);
-        var blueprintId = string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId) ? "blueprint.default" : Profile.ActiveBlueprintId;
-        var record = Profile.PermanentAugmentLoadouts.FirstOrDefault(existing => existing.BlueprintId == blueprintId);
-        if (record == null)
-        {
-            record = new PermanentAugmentLoadoutRecord { BlueprintId = blueprintId };
-            Profile.PermanentAugmentLoadouts.Add(record);
-        }
-
-        record.EquippedAugmentIds = Profile.UnlockedPermanentAugmentIds.Take(Math.Min(PermanentAugmentSlotCount, 3)).ToList();
     }
 
     private void MarkNodeResolved(ExpeditionNodeViewModel node)
@@ -2155,6 +2185,7 @@ public sealed class GameSessionState
         LastBattleSummary = SessionTextToken.Empty;
         LastExpeditionEffectMessage = SessionTextToken.Empty;
         LastRewardApplicationSummary = SessionTextToken.Empty;
+        LastPermanentUnlockSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
         _hasPendingRewardSettlement = false;
         _pendingRewardChoices.Clear();
@@ -2429,17 +2460,17 @@ public sealed class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.gold_cache.title", "ui.reward.choice.gold_cache.desc", 5, 0, 0, $"reward.{sourceId}.gold"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.iron_blade.title", "ui.reward.choice.iron_blade.desc", 0, 0, 0, ResolveRewardItemId(0)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(0))
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(0, "augment_gold_barrage"))
             },
             RewardSourceKindValue.Elite => new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.field_kit.title", "ui.reward.choice.field_kit.desc", 0, 0, 0, ResolveRewardItemId(1)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.anchor_beat.title", "ui.reward.choice.anchor_beat.desc", 0, 0, 0, ResolveRewardAugmentId(1)),
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.anchor_beat.title", "ui.reward.choice.anchor_beat.desc", 0, 0, 0, ResolveRewardAugmentId(1, "augment_gold_pact")),
                 new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, $"reward.{sourceId}.echo")
             },
             RewardSourceKindValue.Boss => new[]
             {
-                new RewardChoiceViewModel(RewardChoiceKind.PermanentAugmentSlot, "ui.reward.choice.permanent_socket.title", "ui.reward.choice.permanent_socket.desc", 0, 0, 1, $"perm-slot.{sourceId}"),
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.guard_spark.title", "ui.reward.choice.guard_spark.desc", 0, 0, 0, ResolveRewardAugmentId(2, "augment_platinum_catacomb")),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.sigil_core.title", "ui.reward.choice.sigil_core.desc", 0, 0, 0, ResolveRewardItemId(2)),
                 new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 2, 0, $"reward.{sourceId}.echo")
             },
@@ -2453,7 +2484,7 @@ public sealed class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.gold_cache.title", "ui.reward.choice.gold_cache.desc", 4, 0, 0, $"reward.{sourceId}.gold"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.iron_blade.title", "ui.reward.choice.iron_blade.desc", 0, 0, 0, ResolveRewardItemId(0)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(1))
+                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(1, "augment_gold_barrage"))
             }
         };
         return true;
@@ -2469,7 +2500,12 @@ public sealed class GameSessionState
         }
 
         var lootService = new LootResolutionService(snapshot);
-        if (!lootService.TryResolveBundle(ActiveRun.Overlay.RewardSourceId, ActiveRun.Overlay.BattleSeed, out var bundle, out _))
+        if (!lootService.TryResolveBundle(
+                ActiveRun.Overlay.RewardSourceId,
+                ActiveRun.Overlay.BattleSeed,
+                ResolveCurrentRewardContextTags(snapshot),
+                out var bundle,
+                out _))
         {
             return false;
         }
@@ -2486,8 +2522,44 @@ public sealed class GameSessionState
         return true;
     }
 
+    private IReadOnlyList<string> ResolveCurrentRewardContextTags(CombatContentSnapshot snapshot)
+    {
+        if (ActiveRun == null)
+        {
+            return Array.Empty<string>();
+        }
+
+        var tags = new HashSet<string>(StringComparer.Ordinal);
+        if (!string.IsNullOrWhiteSpace(ActiveRun.Overlay.SiteId))
+        {
+            tags.Add(ActiveRun.Overlay.SiteId);
+        }
+
+        if (snapshot.Encounters is { } encounters
+            && encounters.TryGetValue(ActiveRun.Overlay.EncounterId, out var encounter))
+        {
+            foreach (var tag in encounter.RewardDropTags.Where(tag => !string.IsNullOrWhiteSpace(tag)))
+            {
+                tags.Add(tag);
+            }
+
+            if (!string.IsNullOrWhiteSpace(encounter.BossOverlayId)
+                && snapshot.BossOverlays is { } overlays
+                && overlays.TryGetValue(encounter.BossOverlayId, out var overlay))
+            {
+                foreach (var tag in overlay.RewardDropTags.Where(tag => !string.IsNullOrWhiteSpace(tag)))
+                {
+                    tags.Add(tag);
+                }
+            }
+        }
+
+        return tags.OrderBy(tag => tag, StringComparer.Ordinal).ToList();
+    }
+
     private void ApplyAutomaticLootEntry(LootEntry entry, string timestamp, ICollection<string> summaryParts)
     {
+        var applied = true;
         switch (entry.RewardType)
         {
             case SM.Content.Definitions.RewardType.Gold:
@@ -2498,25 +2570,22 @@ public sealed class GameSessionState
                 Profile.Currencies.Echo += entry.Amount;
                 summaryParts.Add($"echo +{entry.Amount}");
                 break;
-            case SM.Content.Definitions.RewardType.TraitLockToken:
-                Profile.Currencies.TraitLockToken += entry.Amount;
-                summaryParts.Add($"trait_lock_token +{entry.Amount}");
-                break;
-            case SM.Content.Definitions.RewardType.TraitPurgeToken:
-                Profile.Currencies.TraitPurgeToken += entry.Amount;
-                summaryParts.Add($"trait_purge_token +{entry.Amount}");
-                break;
-            case SM.Content.Definitions.RewardType.EmberDust:
-                Profile.Currencies.EmberDust += entry.Amount;
-                summaryParts.Add($"ember_dust +{entry.Amount}");
-                break;
-            case SM.Content.Definitions.RewardType.EchoCrystal:
-                Profile.Currencies.EchoCrystal += entry.Amount;
-                summaryParts.Add($"echo_crystal +{entry.Amount}");
-                break;
-            case SM.Content.Definitions.RewardType.BossSigil:
-                Profile.Currencies.BossSigil += entry.Amount;
-                summaryParts.Add($"boss_sigil +{entry.Amount}");
+            case SM.Content.Definitions.RewardType.TemporaryAugment:
+                for (var i = 0; i < Math.Max(1, entry.Amount); i++)
+                {
+                    if (!Expedition.TemporaryAugmentIds.Contains(entry.Id, StringComparer.Ordinal))
+                    {
+                        Expedition.AddTemporaryAugment(entry.Id);
+                    }
+
+                    if (ActiveRun != null)
+                    {
+                        ActiveRun = RunStateService.ApplyTemporaryAugment(ActiveRun, entry.Id);
+                        TrackPermanentAugmentProgression(entry.Id);
+                    }
+                }
+
+                summaryParts.Add($"{entry.Id} x{Math.Max(1, entry.Amount)}");
                 break;
             case SM.Content.Definitions.RewardType.Item:
             case SM.Content.Definitions.RewardType.SkillManual:
@@ -2549,6 +2618,14 @@ public sealed class GameSessionState
 
                 summaryParts.Add($"{entry.Id} x{entry.Amount}");
                 break;
+            default:
+                applied = false;
+                break;
+        }
+
+        if (!applied)
+        {
+            return;
         }
 
         Profile.RewardLedger.Add(new RewardLedgerEntryRecord
@@ -2642,7 +2719,7 @@ public sealed class GameSessionState
     {
         Profile.DisplayName = "Demo Player";
         Profile.Currencies = new CurrencyRecord { Gold = 12, Echo = 45 };
-        Profile.UnlockedPermanentAugmentIds = new List<string> { "perm-slot-1" };
+        Profile.UnlockedPermanentAugmentIds = new List<string>();
         Profile.Inventory = new List<InventoryItemRecord>();
         Profile.Heroes.Clear();
 
@@ -2719,6 +2796,7 @@ public sealed class GameSessionState
         NormalizeInventoryContentIds();
         NormalizeExpeditionContentIds();
         NormalizeEquippedItemReferences();
+        NormalizePermanentAugmentUnlockIds();
         NormalizeBuildStateRecords();
     }
 
@@ -2849,9 +2927,128 @@ public sealed class GameSessionState
         return archetype.Id;
     }
 
-    private string ResolveRewardAugmentId(int index)
+    private string ResolveRewardAugmentId(int index, params string[] preferredAugmentIds)
     {
+        foreach (var preferredAugmentId in preferredAugmentIds.Where(id => !string.IsNullOrWhiteSpace(id)))
+        {
+            if (_combatContentLookup.TryGetAugmentDefinition(preferredAugmentId, out var augment) && !augment.IsPermanent)
+            {
+                return preferredAugmentId;
+            }
+        }
+
         return _combatContentLookup.NormalizeTemporaryAugmentId(string.Empty, index);
+    }
+
+    private string ResolvePendingPermanentUnlockId(string temporaryAugmentId)
+    {
+        var definitions = BuildPermanentProgressionAugmentDefinitions(temporaryAugmentId);
+        var resolution = PermanentAugmentProgressionService.ResolvePendingUnlock(
+            temporaryAugmentId,
+            definitions,
+            Profile.UnlockedPermanentAugmentIds);
+        return resolution.HasUnlock ? resolution.UnlockAugmentId : string.Empty;
+    }
+
+    private IReadOnlyList<AugmentDefinition> BuildPermanentProgressionAugmentDefinitions(params string[] explicitAugmentIds)
+    {
+        var augmentIds = explicitAugmentIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Concat(_combatContentLookup.GetCanonicalTemporaryAugmentIds())
+            .Concat(_combatContentLookup.GetCanonicalPermanentAugmentIds())
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.Ordinal);
+        var definitions = new List<AugmentDefinition>();
+        foreach (var augmentId in augmentIds)
+        {
+            if (_combatContentLookup.TryGetAugmentDefinition(augmentId, out var augment))
+            {
+                definitions.Add(augment);
+            }
+        }
+
+        return definitions;
+    }
+
+    private void TrackPermanentAugmentProgression(string temporaryAugmentId)
+    {
+        if (ActiveRun == null || string.IsNullOrWhiteSpace(temporaryAugmentId))
+        {
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(ActiveRun.Overlay.FirstSelectedTemporaryAugmentId))
+        {
+            return;
+        }
+
+        ActiveRun = ActiveRun with
+        {
+            Overlay = ActiveRun.Overlay with
+            {
+                FirstSelectedTemporaryAugmentId = temporaryAugmentId,
+                PendingPermanentUnlockId = ResolvePendingPermanentUnlockId(temporaryAugmentId),
+            }
+        };
+    }
+
+    private void ConsumePendingPermanentUnlock()
+    {
+        LastPermanentUnlockSummary = SessionTextToken.Empty;
+        if (ActiveRun == null || string.IsNullOrWhiteSpace(ActiveRun.Overlay.PendingPermanentUnlockId))
+        {
+            return;
+        }
+
+        var unlockAugmentId = ActiveRun.Overlay.PendingPermanentUnlockId;
+        var unlockResult = UnlockPermanentAugmentCandidate(unlockAugmentId);
+        if (!unlockResult.IsSuccess)
+        {
+            ActiveRun = ActiveRun with
+            {
+                Overlay = ActiveRun.Overlay with
+                {
+                    PendingPermanentUnlockId = string.Empty,
+                }
+            };
+            SyncActiveRunRecord();
+            return;
+        }
+
+        LastPermanentUnlockSummary = new SessionTextToken(
+            GameLocalizationTables.UIReward,
+            "ui.reward.summary.permanent_unlock",
+            "Permanent candidate unlocked: {0}",
+            SessionTextArg.AugmentName(unlockAugmentId));
+        ActiveRun = ActiveRun with
+        {
+            Overlay = ActiveRun.Overlay with
+            {
+                PendingPermanentUnlockId = string.Empty,
+            }
+        };
+        SyncActiveRunRecord();
+    }
+
+    private IReadOnlyDictionary<string, PassiveNodeDefinition> BuildPassiveBoardNodeDictionary(string boardId)
+    {
+        if (string.IsNullOrWhiteSpace(boardId)
+            || !_combatContentLookup.TryGetPassiveBoardDefinition(boardId, out var board))
+        {
+            return new Dictionary<string, PassiveNodeDefinition>(StringComparer.Ordinal);
+        }
+
+        return board.Nodes
+            .Where(node => node != null
+                           && !string.IsNullOrWhiteSpace(node.Id)
+                           && string.Equals(node.BoardId, boardId, StringComparison.Ordinal))
+            .ToDictionary(node => node.Id, node => node, StringComparer.Ordinal);
+    }
+
+    private static bool IsLegacyPermanentSlotToken(string id)
+    {
+        return id.StartsWith("perm-slot", StringComparison.Ordinal)
+               || id.StartsWith("perm-slot.", StringComparison.Ordinal);
     }
 
     private static IEnumerable<HeroRecord> ToHeroRecords(SaveProfile profile)
@@ -2905,7 +3102,7 @@ public sealed class GameSessionState
             Profile.PermanentAugmentLoadouts.Add(new PermanentAugmentLoadoutRecord
             {
                 BlueprintId = Profile.ActiveBlueprintId,
-                EquippedAugmentIds = Profile.UnlockedPermanentAugmentIds.Take(Math.Min(1, Profile.UnlockedPermanentAugmentIds.Count)).ToList()
+                EquippedAugmentIds = new List<string>()
             });
         }
 
@@ -2956,6 +3153,81 @@ public sealed class GameSessionState
             blueprint.ExpeditionSquadHeroIds ??= new List<string>();
             blueprint.HeroRoleIds ??= new Dictionary<string, string>();
         }
+
+        NormalizePermanentAugmentState();
+        NormalizePassiveBoardStates();
+    }
+
+    private void NormalizePermanentAugmentUnlockIds()
+    {
+        Profile.UnlockedPermanentAugmentIds = Profile.UnlockedPermanentAugmentIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Where(id => !IsLegacyPermanentSlotToken(id))
+            .Where(id => !_combatContentLookup.TryGetAugmentDefinition(id, out var augment) || augment.IsPermanent)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private void NormalizePermanentAugmentState()
+    {
+        foreach (var loadout in Profile.PermanentAugmentLoadouts)
+        {
+            loadout.EquippedAugmentIds = loadout.EquippedAugmentIds
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Where(id => !IsLegacyPermanentSlotToken(id))
+                .Where(id => !_combatContentLookup.TryGetAugmentDefinition(id, out var augment) || augment.IsPermanent)
+                .Distinct(StringComparer.Ordinal)
+                .Take(MetaBalanceDefaults.MaxPermanentAugmentSlots)
+                .ToList();
+
+            foreach (var equippedAugmentId in loadout.EquippedAugmentIds)
+            {
+                if (!Profile.UnlockedPermanentAugmentIds.Contains(equippedAugmentId, StringComparer.Ordinal))
+                {
+                    Profile.UnlockedPermanentAugmentIds.Add(equippedAugmentId);
+                }
+            }
+        }
+
+        PermanentAugmentSlotCount = MetaBalanceDefaults.MaxPermanentAugmentSlots;
+    }
+
+    private void NormalizePassiveBoardStates()
+    {
+        foreach (var loadout in Profile.HeroLoadouts)
+        {
+            loadout.SelectedPassiveNodeIds ??= new List<string>();
+            if (string.IsNullOrWhiteSpace(loadout.PassiveBoardId)
+                || !_combatContentLookup.TryGetPassiveBoardDefinition(loadout.PassiveBoardId, out _))
+            {
+                loadout.PassiveBoardId = string.Empty;
+                loadout.SelectedPassiveNodeIds = new List<string>();
+                continue;
+            }
+
+            var nodesById = BuildPassiveBoardNodeDictionary(loadout.PassiveBoardId);
+            var normalized = PassiveBoardSelectionValidator.Normalize(
+                loadout.PassiveBoardId,
+                loadout.SelectedPassiveNodeIds,
+                nodesById);
+            loadout.SelectedPassiveNodeIds = normalized.NormalizedNodeIds.ToList();
+        }
+
+        foreach (var selection in Profile.PassiveSelections)
+        {
+            selection.SelectedNodeIds ??= new List<string>();
+            var loadout = Profile.HeroLoadouts.FirstOrDefault(record =>
+                string.Equals(record.HeroId, selection.HeroId, StringComparison.Ordinal));
+            if (loadout == null)
+            {
+                selection.BoardId = string.Empty;
+                selection.SelectedNodeIds = new List<string>();
+                continue;
+            }
+
+            selection.BoardId = loadout.PassiveBoardId;
+            selection.SelectedNodeIds = loadout.SelectedPassiveNodeIds.ToList();
+        }
     }
 
     private void RestoreActiveRunFromProfile()
@@ -2986,7 +3258,9 @@ public sealed class GameSessionState
                 Profile.ActiveRun.EncounterId,
                 Profile.ActiveRun.BattleSeed,
                 Profile.ActiveRun.BattleContextHash,
-                Profile.ActiveRun.RewardSourceId),
+                Profile.ActiveRun.RewardSourceId,
+                Profile.ActiveRun.FirstSelectedTemporaryAugmentId,
+                Profile.ActiveRun.PendingPermanentUnlockId),
             Profile.ActiveRun.BattleDeployHeroIds,
             Profile.ActiveRun.IsQuickBattle,
             string.IsNullOrWhiteSpace(Profile.ActiveRun.LastBattleMatchId) ? null : Profile.ActiveRun.LastBattleMatchId,
@@ -3063,6 +3337,8 @@ public sealed class GameSessionState
             BattleSeed = ActiveRun.Overlay.BattleSeed,
             BattleContextHash = ActiveRun.Overlay.BattleContextHash,
             RewardSourceId = ActiveRun.Overlay.RewardSourceId,
+            FirstSelectedTemporaryAugmentId = ActiveRun.Overlay.FirstSelectedTemporaryAugmentId,
+            PendingPermanentUnlockId = ActiveRun.Overlay.PendingPermanentUnlockId,
             StoryCleared = ActiveRun.StoryCleared,
             EndlessUnlocked = ActiveRun.EndlessUnlocked,
         };
@@ -3275,6 +3551,11 @@ public sealed class GameSessionState
         }
 
         ActiveRun = result.UpdatedRun;
+        if (option.Type == SM.Content.Definitions.RewardType.TemporaryAugment)
+        {
+            TrackPermanentAugmentProgression(option.Id);
+        }
+
         LastRewardApplicationSummary = summaryToken;
         SyncActiveRunRecord();
         SyncExpeditionState();

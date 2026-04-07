@@ -12,8 +12,12 @@
         <ui:VisualElement class="screen__body">
             <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Summary" />
-                    <ui:Label name="SummaryLabel" class="panel__text" />
+                    <ui:Label class="panel__title" text="Run Delta" />
+                    <ui:Label name="RunDeltaLabel" class="panel__text" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel">
+                    <ui:Label class="panel__title" text="Build Context" />
+                    <ui:Label name="BuildContextLabel" class="panel__text" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
@@ -25,18 +29,21 @@
                             <ui:Label name="ChoiceCard1TitleLabel" class="card__title" />
                             <ui:Label name="ChoiceCard1BodyLabel" class="card__body" />
                             <ui:Label name="ChoiceCard1KindLabel" class="panel__text panel__text--muted" />
+                            <ui:Label name="ChoiceCard1ContextLabel" class="panel__text panel__text--muted" />
                             <ui:Button name="ChoiceCard1Button" class="ui-button ui-button--accent" text="Choose" />
                         </ui:VisualElement>
                         <ui:VisualElement class="card" name="ChoiceCard2">
                             <ui:Label name="ChoiceCard2TitleLabel" class="card__title" />
                             <ui:Label name="ChoiceCard2BodyLabel" class="card__body" />
                             <ui:Label name="ChoiceCard2KindLabel" class="panel__text panel__text--muted" />
+                            <ui:Label name="ChoiceCard2ContextLabel" class="panel__text panel__text--muted" />
                             <ui:Button name="ChoiceCard2Button" class="ui-button ui-button--accent" text="Choose" />
                         </ui:VisualElement>
                         <ui:VisualElement class="card" name="ChoiceCard3">
                             <ui:Label name="ChoiceCard3TitleLabel" class="card__title" />
                             <ui:Label name="ChoiceCard3BodyLabel" class="card__body" />
                             <ui:Label name="ChoiceCard3KindLabel" class="panel__text panel__text--muted" />
+                            <ui:Label name="ChoiceCard3ContextLabel" class="panel__text panel__text--muted" />
                             <ui:Button name="ChoiceCard3Button" class="ui-button ui-button--accent" text="Choose" />
                         </ui:VisualElement>
                     </ui:VisualElement>

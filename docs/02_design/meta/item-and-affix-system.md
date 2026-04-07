@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/meta/item-and-affix-system.md`
 - 관련문서:
   - `docs/02_design/meta/affix-authoring-schema.md`
@@ -24,7 +24,8 @@ affix field schema와 catalog는 별도 문서가 소유하고, 이 문서는 it
 - `weapon / armor / accessory` 3슬롯
 - `shield / blade / bow / focus` weapon family
 - granted skill
-- `gold`, `ember_dust`, `echo_crystal`, `boss_sigil` 기반 crafting contract
+- Town equip / swap
+- `15 Echo` 고정 single-affix refit
 
 launch floor에서는 아직 하지 않는다.
 
@@ -32,6 +33,7 @@ launch floor에서는 아직 하지 않는다.
 - recipe crafting
 - socket/gem 시스템
 - set bonus
+- material crafting rail
 
 ## 역할 차별화 규칙
 
@@ -39,7 +41,8 @@ launch floor에서는 아직 하지 않는다.
 
 - trait roll
 - item
-- augment
+- passive board
+- permanent augment
 
 아이템은 이 중 장비 축을 담당한다.
 
@@ -62,11 +65,11 @@ shield 전용 별도 슬롯은 열지 않는다.
 
 ## 재련/리롤 원칙
 
-- `gold`는 broad sink로 유지한다.
-- item crafting에는 `ember_dust`, `echo_crystal`, `boss_sigil`을 사용한다.
-- 값싼 무한 reroll은 금지한다.
-- launch floor에서는 "아이템을 다듬는 느낌"만 제공한다.
-- crafting 시스템 전체를 열지는 않는다.
+- item tuning은 `Echo` rail 위의 light correction으로만 둔다.
+- refit은 `15 Echo`, single-affix reroll only다.
+- recruit / retrain / refit이 각각 외부 파워 / flex 보정 / 장비 보정 역할을 나눠 가진다.
+- launch floor normal lane에서는 `EmberDust`, `EchoCrystal`, `BossSigil` 같은 material currency를 live sink로 올리지 않는다.
+- crafting 시스템 전체는 later scope로 민다.
 
 ## 장기 규칙
 

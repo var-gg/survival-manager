@@ -58,19 +58,19 @@
 - `meta/campaign-chapter-and-expedition-sites.md`: story chapter, site, endless unlock 기준
 - `meta/recruitment-contract.md`: 4-slot recruit pack, on-plan/protected, refresh, scout 기준
 - `meta/retrain-contract.md`: flex-only retrain, cost curve, previous-result exclusion, pity 기준
-- `meta/economy-protection-contract.md`: Gold/Echo split, no-dead-reward, dismiss refund 기준
+- `meta/economy-protection-contract.md`: Gold/Echo split, refit/recovery rail, no-dead-reward, dismiss refund 기준
 - `meta/duplicate-handling-contract.md`: duplicate 판정, Echo conversion, recruit pool exclusion 기준
 - `meta/drop-table-rarity-bracket-and-source-matrix.md`: automatic drop/source/rarity floor
-- `meta/item-and-affix-system.md`: 아이템과 affix 구조
+- `meta/item-and-affix-system.md`: 아이템과 affix 구조, Echo refit, advanced crafting 경계
 - `meta/affix-authoring-schema.md`: affix schema와 authority / budget / line-density 기준
 - `meta/affix-pool-v1.md`: affix catalog와 live subset
 - `meta/equipment-family-and-crafting-depth.md`: weapon family floor와 deep crafting 경계
-- `meta/item-passive-augment-budget.md`: 출시 기준 item/passive/augment 예산 허브
+- `meta/item-passive-augment-budget.md`: 출시 기준 item/passive/augment 예산 허브와 passive/permanent V1 cap
 - `meta/passive-board-node-catalog.md`: launch floor passive board node 카탈로그
 - `meta/augment-system.md`: augment 문법
 - `meta/augment-synergy-operating-model.md`: augment offer와 synergy 운영 기준
 - `meta/augment-catalog-v1.md`: augment catalog와 live subset
-- `meta/permanent-augment-progression.md`: 영구 강화 진행
+- `meta/permanent-augment-progression.md`: `unlock many, equip one` permanent progression
 - `meta/pvp-boundary.md`: PVP 경계
 - `meta/pvp-ruleset-and-arena-loop.md`: async arena ruleset과 season cadence
 - `meta/session-realm-and-official-online-boundary.md`: `OfflineLocal` / `OnlineAuthoritative` session realm과 공식 온라인 경계
@@ -84,8 +84,9 @@
 - `systems/launch-content-scope-and-balance.md`: 출시 기준 콘텐츠 수량과 Loop A loadout 문법 허브
 - `systems/first-playable-slice.md`: Loop D first playable subset cap, quota, pool filtering
 - `systems/launch-floor-content-matrix.md`: 12 core archetype launch floor matrix
+- `systems/launch-encounter-variety-and-answer-lane-matrix.md`: 24 encounter family/site/reward routing matrix
 - `systems/squad-blueprint-and-build-ownership.md`: squad blueprint와 빌드 소유권 기준
-- `systems/skills-items-and-passive-boards.md`: 스킬, 아이템, 패시브 보드 빌드 구조
+- `systems/skills-items-and-passive-boards.md`: 스킬, 아이템, 패시브 보드, permanent thesis build 구조
 - `systems/content-budgeting-contract.md`: BudgetCard, domain window, derived sanity 계약
 - `systems/rarity-ladder-contract.md`: `Common / Rare / Epic` governance rarity 계약
 - `systems/v1-forbidden-list.md`: fatal validator forbidden policy

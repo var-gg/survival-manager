@@ -33,6 +33,7 @@ internal sealed class ContentDefinitionRegistry
     private readonly Dictionary<string, SkillDefinitionAsset> _skillDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, TeamTacticDefinition> _teamTacticDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, RoleInstructionDefinition> _roleInstructionDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, PassiveBoardDefinition> _passiveBoardDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, PassiveNodeDefinition> _passiveNodeDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, SynergyDefinition> _synergyDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, CampaignChapterDefinition> _campaignChapterDefinitions = new(StringComparer.Ordinal);
@@ -67,6 +68,7 @@ internal sealed class ContentDefinitionRegistry
     internal IReadOnlyDictionary<string, SkillDefinitionAsset> SkillDefinitions => _skillDefinitions;
     internal IReadOnlyDictionary<string, TeamTacticDefinition> TeamTacticDefinitions => _teamTacticDefinitions;
     internal IReadOnlyDictionary<string, RoleInstructionDefinition> RoleInstructionDefinitions => _roleInstructionDefinitions;
+    internal IReadOnlyDictionary<string, PassiveBoardDefinition> PassiveBoardDefinitions => _passiveBoardDefinitions;
     internal IReadOnlyDictionary<string, PassiveNodeDefinition> PassiveNodeDefinitions => _passiveNodeDefinitions;
     internal IReadOnlyDictionary<string, SynergyDefinition> SynergyDefinitions => _synergyDefinitions;
     internal IReadOnlyDictionary<string, CampaignChapterDefinition> CampaignChapterDefinitions => _campaignChapterDefinitions;
@@ -114,6 +116,7 @@ internal sealed class ContentDefinitionRegistry
             var skills = LoadDefinitions<SkillDefinitionAsset>("_Game/Content/Definitions/Skills", "Assets/Resources/_Game/Content/Definitions/Skills");
             var teamTactics = LoadDefinitions<TeamTacticDefinition>("_Game/Content/Definitions/TeamTactics", "Assets/Resources/_Game/Content/Definitions/TeamTactics");
             var roleInstructions = LoadDefinitions<RoleInstructionDefinition>("_Game/Content/Definitions/RoleInstructions", "Assets/Resources/_Game/Content/Definitions/RoleInstructions");
+            var passiveBoards = LoadDefinitions<PassiveBoardDefinition>("_Game/Content/Definitions/PassiveBoards", "Assets/Resources/_Game/Content/Definitions/PassiveBoards");
             var passiveNodes = LoadDefinitions<PassiveNodeDefinition>("_Game/Content/Definitions/PassiveNodes", "Assets/Resources/_Game/Content/Definitions/PassiveNodes");
             var synergies = LoadDefinitions<SynergyDefinition>("_Game/Content/Definitions/Synergies", "Assets/Resources/_Game/Content/Definitions/Synergies");
             var campaignChapters = LoadDefinitions<CampaignChapterDefinition>("_Game/Content/Definitions/CampaignChapters", "Assets/Resources/_Game/Content/Definitions/CampaignChapters");
@@ -178,6 +181,7 @@ internal sealed class ContentDefinitionRegistry
                 if (augments.Length == 0) augments = parsed.Augments.ToArray();
                 if (teamTactics.Length == 0) teamTactics = parsed.TeamTactics.ToArray();
                 if (roleInstructions.Length == 0) roleInstructions = parsed.RoleInstructions.ToArray();
+                if (passiveBoards.Length == 0) passiveBoards = parsed.PassiveBoards.ToArray();
                 if (passiveNodes.Length == 0) passiveNodes = parsed.PassiveNodes.ToArray();
                 if (synergies.Length == 0) synergies = parsed.Synergies.ToArray();
                 if (campaignChapters.Length == 0) campaignChapters = parsed.CampaignChapters.ToArray();
@@ -231,6 +235,8 @@ internal sealed class ContentDefinitionRegistry
                 _teamTacticDefinitions[teamTactic.Id] = teamTactic;
             foreach (var roleInstruction in roleInstructions.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
                 _roleInstructionDefinitions[roleInstruction.Id] = roleInstruction;
+            foreach (var passiveBoard in passiveBoards.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _passiveBoardDefinitions[passiveBoard.Id] = passiveBoard;
             foreach (var passiveNode in passiveNodes.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
                 _passiveNodeDefinitions[passiveNode.Id] = passiveNode;
             foreach (var synergy in synergies.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
@@ -286,6 +292,7 @@ internal sealed class ContentDefinitionRegistry
         _skillDefinitions.Clear();
         _teamTacticDefinitions.Clear();
         _roleInstructionDefinitions.Clear();
+        _passiveBoardDefinitions.Clear();
         _passiveNodeDefinitions.Clear();
         _synergyDefinitions.Clear();
         _campaignChapterDefinitions.Clear();
@@ -340,8 +347,27 @@ internal sealed class ContentDefinitionRegistry
             slice.SynergyFamilyIds,
             _synergyDefinitions.Keys.OrderBy(id => id, StringComparer.Ordinal),
             slice.SynergyFamilyCap);
+        var selectedPassiveBoards = NormalizeIds(
+            slice.PassiveBoardIds,
+            slice.PassiveBoardIds,
+            slice.PassiveBoardCap);
 
-        var parkingLot = new HashSet<string>(slice.ParkingLotContentIds.Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.Ordinal);
+        var selectedLiveIds = new HashSet<string>(StringComparer.Ordinal);
+        AddSelectedIds(selectedLiveIds, selectedUnits);
+        AddSelectedIds(selectedLiveIds, selectedSignatures.SignatureActiveIds);
+        AddSelectedIds(selectedLiveIds, selectedSignatures.SignaturePassiveIds);
+        AddSelectedIds(selectedLiveIds, selectedFlex.FlexActiveIds);
+        AddSelectedIds(selectedLiveIds, selectedFlex.FlexPassiveIds);
+        AddSelectedIds(selectedLiveIds, selectedAffixes);
+        AddSelectedIds(selectedLiveIds, selectedTempAugments);
+        AddSelectedIds(selectedLiveIds, selectedPermAugments);
+        AddSelectedIds(selectedLiveIds, selectedSynergies);
+        AddSelectedIds(selectedLiveIds, selectedPassiveBoards);
+
+        var parkingLot = new HashSet<string>(
+            slice.ParkingLotContentIds
+                .Where(id => !string.IsNullOrWhiteSpace(id) && !selectedLiveIds.Contains(id)),
+            StringComparer.Ordinal);
         AddParkingLot(parkingLot, _archetypeDefinitions.Keys, selectedUnits);
         AddParkingLot(parkingLot, _affixDefinitions.Keys, selectedAffixes);
         AddParkingLot(parkingLot, _skillDefinitions.Keys, selectedSignatures.SignatureActiveIds);
@@ -363,6 +389,7 @@ internal sealed class ContentDefinitionRegistry
             SynergyFamilyCap = slice.SynergyFamilyCap,
             TemporaryAugmentCap = slice.TemporaryAugmentCap,
             PermanentAugmentCap = slice.PermanentAugmentCap,
+            PassiveBoardCap = slice.PassiveBoardCap,
             RequireAllThreatPatternsCovered = slice.RequireAllThreatPatternsCovered,
             RequireAllCounterToolsCovered = slice.RequireAllCounterToolsCovered,
             CoverageQuotas = (slice.CoverageQuotas ?? Array.Empty<SliceCoverageQuota>())
@@ -381,6 +408,23 @@ internal sealed class ContentDefinitionRegistry
             SynergyFamilyIds = selectedSynergies,
             TemporaryAugmentIds = selectedTempAugments,
             PermanentAugmentIds = selectedPermAugments,
+            PassiveBoardIds = selectedPassiveBoards,
+            SynergyGrammar = (slice.SynergyGrammar ?? Array.Empty<SynergyGrammarEntry>())
+                .Select(entry => new SynergyGrammarEntry
+                {
+                    FamilyId = entry.FamilyId,
+                    FamilyType = entry.FamilyType,
+                    MinorThreshold = entry.MinorThreshold,
+                    MajorThreshold = entry.MajorThreshold,
+                })
+                .ToList(),
+            ClassLabelMappings = (slice.ClassLabelMappings ?? Array.Empty<ClassLabelMapping>())
+                .Select(entry => new ClassLabelMapping
+                {
+                    CanonicalId = entry.CanonicalId,
+                    PlayerFacingLabel = entry.PlayerFacingLabel,
+                })
+                .ToList(),
             ParkingLotContentIds = parkingLot
                 .OrderBy(id => id, StringComparer.Ordinal)
                 .ToList(),
@@ -498,6 +542,14 @@ internal sealed class ContentDefinitionRegistry
             {
                 parkingLot.Add(id);
             }
+        }
+    }
+
+    private static void AddSelectedIds(HashSet<string> selected, IEnumerable<string> ids)
+    {
+        foreach (var id in ids.Where(id => !string.IsNullOrWhiteSpace(id)))
+        {
+            selected.Add(id);
         }
     }
 

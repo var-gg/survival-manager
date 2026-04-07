@@ -25,6 +25,8 @@ public interface ICombatContentLookup
     IReadOnlyList<string> GetCanonicalItemIds();
     IReadOnlyList<string> GetCanonicalAffixIds();
     IReadOnlyList<string> GetCanonicalTemporaryAugmentIds();
+    IReadOnlyList<string> GetCanonicalPermanentAugmentIds();
+    IReadOnlyList<string> GetCanonicalPassiveBoardIds();
     IReadOnlyList<string> GetCanonicalSynergyFamilyIds();
 
     // ── Single-definition lookup ──
@@ -38,6 +40,8 @@ public interface ICombatContentLookup
     bool TryGetAugmentDefinition(string augmentId, out AugmentDefinition augment);
     bool TryGetSkillDefinition(string skillId, out SkillDefinitionAsset skill);
     bool TryGetAffixDefinition(string affixId, out AffixDefinition affix);
+    bool TryGetPassiveBoardDefinition(string boardId, out PassiveBoardDefinition board);
+    bool TryGetPassiveNodeDefinition(string nodeId, out PassiveNodeDefinition node);
     bool TryGetRoleInstructionDefinition(string roleInstructionId, out RoleInstructionDefinition roleInstruction);
     bool TryGetCampaignChapterDefinition(string chapterId, out CampaignChapterDefinition chapter);
     bool TryGetExpeditionSiteDefinition(string siteId, out ExpeditionSiteDefinition site);
