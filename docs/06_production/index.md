@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-08
 - 소스오브트루스: `docs/06_production/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -24,6 +24,8 @@
 - `balance-knobs.md`: 밸런스 조정 가능한 수치 목록
 - `first-playable-review.md`: 현재 playable 범위 스냅샷
 - `operator-first-playable-checklist.md`: 첫 전투 수동 검증 체크리스트
+- `pre-art-release-floor.md`: paid asset pass 직전 같은 SHA automated/manual floor와 packet 규칙
+- `runtime-hardening-contract.md`: `OfflineLocal` save/recovery/checkpoint/smoke 격리 운영 계약
 - `mcp-usage-checklist.md`: MCP 세션 전후 운영 체크리스트
 - `scene-integrity-contract.md`: first playable scene 최소 무결성 계약
 - `loop-d-closure-note.md`: Loop D prune/move-out-of-v1/watchlist 메모

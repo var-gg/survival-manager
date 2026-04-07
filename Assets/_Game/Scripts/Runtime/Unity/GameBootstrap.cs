@@ -53,9 +53,18 @@ public sealed class GameBootstrap : MonoBehaviour
 
         if (SessionRealmAutoStartPolicy.ShouldForceOfflineLocalForQuickBattle(ConsumeQuickBattleRequest()))
         {
+            root.UseDedicatedSmokeNamespace();
             root.EnsureOfflineLocalSession();
             root.SessionState.PrepareQuickBattleSmoke();
-            root.SaveProfile();
+            var checkpoint = root.SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
+            if (!checkpoint.IsSuccessful)
+            {
+                root.SetBlockingError(checkpoint.Message);
+                RefreshBootScreen();
+                _bootstrapRoutine = null;
+                yield break;
+            }
+
             root.SceneFlow.GoToBattle();
         }
         else

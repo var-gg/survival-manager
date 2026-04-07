@@ -3,6 +3,8 @@ using System.Linq;
 using SM.Core.Results;
 using SM.Meta.Model;
 using SM.Meta.Services;
+using SM.Persistence.Abstractions;
+using SM.Persistence.Abstractions.Models;
 using Unity.Profiling;
 
 namespace SM.Unity;
@@ -18,6 +20,7 @@ public sealed class OfflineLocalSessionAdapter :
 
     private readonly GameSessionState _sessionState;
     private readonly PersistenceEntryPoint _persistence;
+    private SessionPersistenceLane _lane = SessionPersistenceLane.Canonical;
 
     public OfflineLocalSessionAdapter(
         GameSessionState sessionState,
@@ -25,31 +28,196 @@ public sealed class OfflineLocalSessionAdapter :
     {
         _sessionState = sessionState;
         _persistence = persistence;
+        ApplyInstrumentationPolicy();
     }
 
-    public string ActiveProfileId => string.IsNullOrWhiteSpace(_sessionState.Profile.ProfileId)
-        ? _persistence.Config.ProfileId
-        : _sessionState.Profile.ProfileId;
+    public string ActiveProfileId => ResolveRepositoryProfileId();
+    public bool IsTransientTownSmokeActive => _lane == SessionPersistenceLane.TransientTownSmoke;
+    public bool IsDedicatedSmokeNamespace => _lane == SessionPersistenceLane.DedicatedSmokeNamespace;
 
-    public void LoadOrCreateProfile()
+    public void UseDedicatedSmokeNamespace()
+    {
+        _lane = SessionPersistenceLane.DedicatedSmokeNamespace;
+        ApplyInstrumentationPolicy();
+    }
+
+    public void BeginTransientTownSmoke()
+    {
+        _lane = SessionPersistenceLane.TransientTownSmoke;
+        ApplyInstrumentationPolicy();
+    }
+
+    public void ReturnToCanonicalLane()
+    {
+        _lane = SessionPersistenceLane.Canonical;
+        ApplyInstrumentationPolicy();
+    }
+
+    public SessionCheckpointResult LoadOrCreateProfile(SessionCheckpointKind kind = SessionCheckpointKind.StartupLoad)
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointStarted(
+            ResolveRunId(),
+            kind,
+            ActiveProfileId));
+
         using (LoadOrCreateProfileMarker.Auto())
         {
-            var profile = _persistence.Repository.LoadOrCreate(_persistence.Config.ProfileId);
-            _sessionState.BindProfile(profile);
-        }
+            if (_persistence.Repository is ISaveRepositoryDiagnostics diagnostics)
+            {
+                var loadResult = diagnostics.LoadOrCreateDetailed(
+                    ActiveProfileId,
+                    CreateRequest(kind));
+                var mapped = MapLoadResult(kind, loadResult);
+                if (!mapped.IsSuccessful)
+                {
+                    RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointFailed(
+                        ResolveRunId(),
+                        kind,
+                        ActiveProfileId,
+                        mapped.Message,
+                        mapped.QuarantinePath));
+                    return mapped;
+                }
 
-        stopwatch.Stop();
-        RuntimeInstrumentation.LogDuration(
-            nameof(OfflineLocalSessionAdapter) + ".LoadOrCreateProfile",
-            stopwatch.Elapsed,
-            $"profileId={_persistence.Config.ProfileId}");
+                if (loadResult.Profile == null)
+                {
+                    var failed = SessionCheckpointResult.Failed(kind, ActiveProfileId, "Load succeeded without profile payload.");
+                    RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointFailed(
+                        ResolveRunId(),
+                        kind,
+                        ActiveProfileId,
+                        failed.Message,
+                        failed.QuarantinePath));
+                    return failed;
+                }
+
+                _sessionState.BindProfile(loadResult.Profile);
+                if (mapped.Status == SessionCheckpointStatus.RecoveredFromBackup)
+                {
+                    _sessionState.Profile.SuspicionFlags.Add(new SuspicionFlagRecord
+                    {
+                        FlagId = Guid.NewGuid().ToString("N"),
+                        RunId = ResolveRunId(),
+                        MatchId = string.Empty,
+                        Reason = "save_recovered_from_backup",
+                        ExpectedHash = loadResult.Manifest?.PayloadHash ?? string.Empty,
+                        ObservedHash = loadResult.RecoveryPath,
+                        CreatedAtUtc = DateTime.UtcNow.ToString("O"),
+                    });
+                }
+
+                RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointSucceeded(
+                    ResolveRunId(),
+                    kind,
+                    ActiveProfileId,
+                    mapped.Status,
+                    mapped.PayloadBytes,
+                    mapped.Message));
+                stopwatch.Stop();
+                RuntimeInstrumentation.LogDuration(
+                    nameof(OfflineLocalSessionAdapter) + ".LoadOrCreateProfile",
+                    stopwatch.Elapsed,
+                    $"profileId={ActiveProfileId}; status={mapped.Status}");
+                return mapped;
+            }
+
+            var profile = _persistence.Repository.LoadOrCreate(ActiveProfileId);
+            _sessionState.BindProfile(profile);
+            var fallback = SessionCheckpointResult.Success(
+                kind,
+                ActiveProfileId,
+                "Profile loaded.",
+                payloadBytes: 0);
+            RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointSucceeded(
+                ResolveRunId(),
+                kind,
+                ActiveProfileId,
+                fallback.Status,
+                fallback.PayloadBytes,
+                fallback.Message));
+            stopwatch.Stop();
+            RuntimeInstrumentation.LogDuration(
+                nameof(OfflineLocalSessionAdapter) + ".LoadOrCreateProfile",
+                stopwatch.Elapsed,
+                $"profileId={ActiveProfileId}; status={fallback.Status}");
+            return fallback;
+        }
     }
 
-    public void SaveProfile()
+    public SessionCheckpointResult SaveProfile(SessionCheckpointKind kind = SessionCheckpointKind.ManualSave)
     {
-        _persistence.Repository.Save(_sessionState.Profile);
+        if (IsTransientTownSmokeActive)
+        {
+            var blocked = SessionCheckpointResult.Blocked(
+                kind,
+                ActiveProfileId,
+                "Transient Town smoke overlay does not write canonical save.");
+            RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointFailed(
+                ResolveRunId(),
+                kind,
+                ActiveProfileId,
+                blocked.Message,
+                blocked.QuarantinePath));
+            return blocked;
+        }
+
+        RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointStarted(
+            ResolveRunId(),
+            kind,
+            ActiveProfileId));
+
+        if (_persistence.Repository is ISaveRepositoryDiagnostics diagnostics)
+        {
+            var saveResult = diagnostics.SaveDetailed(_sessionState.Profile, CreateRequest(kind));
+            var mapped = MapSaveResult(kind, saveResult);
+            if (mapped.IsSuccessful)
+            {
+                RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointSucceeded(
+                    ResolveRunId(),
+                    kind,
+                    ActiveProfileId,
+                    mapped.Status,
+                    mapped.PayloadBytes,
+                    mapped.Message));
+            }
+            else
+            {
+                RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointFailed(
+                    ResolveRunId(),
+                    kind,
+                    ActiveProfileId,
+                    mapped.Message,
+                    mapped.QuarantinePath));
+            }
+
+            return mapped;
+        }
+
+        try
+        {
+            _persistence.Repository.Save(_sessionState.Profile);
+            var fallback = SessionCheckpointResult.Success(kind, ActiveProfileId, "Profile saved.");
+            RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointSucceeded(
+                ResolveRunId(),
+                kind,
+                ActiveProfileId,
+                fallback.Status,
+                fallback.PayloadBytes,
+                fallback.Message));
+            return fallback;
+        }
+        catch (Exception ex)
+        {
+            var failed = SessionCheckpointResult.Failed(kind, ActiveProfileId, ex.Message);
+            RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateCheckpointFailed(
+                ResolveRunId(),
+                kind,
+                ActiveProfileId,
+                failed.Message,
+                failed.QuarantinePath));
+            return failed;
+        }
     }
 
     public ProfileView GetProfileView(string playerId)
@@ -107,7 +275,6 @@ public sealed class OfflineLocalSessionAdapter :
     public ArenaDashboardView GetArenaDashboard(string playerId)
     {
         EnsureProfileMatches(playerId);
-        // Arena/authority DTOs remain as hidden future seams and are not rendered on the active UI.
         return new ArenaDashboardView(
             SessionRealm.OfflineLocal,
             false,
@@ -142,6 +309,98 @@ public sealed class OfflineLocalSessionAdapter :
 
     public AuthorityActionResult ValidateReplayEvidence(string matchId)
         => AuthorityActionResult.PreviewOnly("OfflineLocal replay는 debug/audit 참고용이며 authoritative evidence가 아닙니다.");
+
+    private SaveRepositoryRequest CreateRequest(SessionCheckpointKind kind)
+    {
+        return new SaveRepositoryRequest
+        {
+            CheckpointKind = kind.ToString(),
+            CompileHash = _sessionState.Profile.ActiveRun?.CompileHash ?? string.Empty,
+        };
+    }
+
+    private SessionCheckpointResult MapLoadResult(SessionCheckpointKind kind, SaveRepositoryLoadResult loadResult)
+    {
+        return loadResult.Status switch
+        {
+            SaveRepositoryLoadStatus.MissingCreated => SessionCheckpointResult.Success(
+                kind,
+                ActiveProfileId,
+                loadResult.Message,
+                loadResult.RecoveryPath,
+                createdNewProfile: true,
+                manifestVerified: loadResult.ManifestVerified,
+                payloadBytes: loadResult.PayloadBytes),
+            SaveRepositoryLoadStatus.LoadedPrimary => SessionCheckpointResult.Success(
+                kind,
+                ActiveProfileId,
+                loadResult.Message,
+                loadResult.RecoveryPath,
+                createdNewProfile: false,
+                manifestVerified: loadResult.ManifestVerified,
+                payloadBytes: loadResult.PayloadBytes),
+            SaveRepositoryLoadStatus.LoadedBackupRecovered => SessionCheckpointResult.Recovered(
+                kind,
+                ActiveProfileId,
+                loadResult.Message,
+                loadResult.RecoveryPath,
+                loadResult.QuarantinePath,
+                loadResult.PayloadBytes),
+            _ => SessionCheckpointResult.Failed(
+                kind,
+                ActiveProfileId,
+                loadResult.Message,
+                loadResult.RecoveryPath,
+                loadResult.QuarantinePath),
+        };
+    }
+
+    private SessionCheckpointResult MapSaveResult(SessionCheckpointKind kind, SaveRepositorySaveResult saveResult)
+    {
+        return saveResult.IsSuccessful
+            ? SessionCheckpointResult.Success(
+                kind,
+                ActiveProfileId,
+                saveResult.Message,
+                saveResult.RecoveryPath,
+                payloadBytes: saveResult.PayloadBytes,
+                manifestVerified: true)
+            : SessionCheckpointResult.Failed(
+                kind,
+                ActiveProfileId,
+                saveResult.Message,
+                saveResult.RecoveryPath,
+                saveResult.QuarantinePath);
+    }
+
+    private string ResolveRepositoryProfileId()
+    {
+        var profileId = string.IsNullOrWhiteSpace(_persistence.Config.ProfileId)
+            ? "default"
+            : _persistence.Config.ProfileId;
+        return _lane == SessionPersistenceLane.DedicatedSmokeNamespace
+            ? $"{profileId}.smoke"
+            : profileId;
+    }
+
+    private string ResolveRunId()
+    {
+        return _sessionState.ActiveRun?.RunId
+               ?? _sessionState.Profile.ActiveRun?.RunId
+               ?? ActiveProfileId;
+    }
+
+    private void RecordOperationalTelemetry(SM.Combat.Model.TelemetryEventRecord record)
+    {
+        _sessionState.RecordOperationalTelemetry(record);
+    }
+
+    private void ApplyInstrumentationPolicy()
+    {
+        RuntimeInstrumentation.SetPolicy(_lane == SessionPersistenceLane.Canonical
+            ? RuntimeInstrumentationPolicy.SummaryNormal
+            : RuntimeInstrumentationPolicy.VerboseSmoke);
+    }
 
     private void EnsureProfileMatches(string playerId)
     {

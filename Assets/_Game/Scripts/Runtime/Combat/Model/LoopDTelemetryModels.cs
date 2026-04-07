@@ -12,6 +12,7 @@ public enum TelemetryDomain
     Duplicate = 4,
     Readability = 5,
     BalanceHarness = 6,
+    Operational = 7,
 }
 
 public enum TelemetryEventKind
@@ -45,6 +46,18 @@ public enum TelemetryEventKind
     DuplicateConverted = 26,
     PruneFlagRaised = 27,
     ReadabilityViolationRaised = 28,
+    CheckpointStarted = 29,
+    CheckpointSucceeded = 30,
+    CheckpointFailed = 31,
+    CheckpointRecoveredFromBackup = 32,
+    CorruptSaveQuarantined = 33,
+    RewardSettlementResumed = 34,
+    RewardSettlementDuplicatePrevented = 35,
+    ManualReloadBlocked = 36,
+    SmokeRestoreFromDisk = 37,
+    RewardOptionsPresented = 38,
+    RewardOptionChosen = 39,
+    EconomySnapshot = 40,
 }
 
 public enum ExplainedSourceKind

@@ -460,7 +460,38 @@ public sealed class GameSessionState
         if (string.Equals(sceneName, SceneNames.Town, StringComparison.Ordinal))
         {
             ResetRecruitPhaseForTownEntry();
+            AppendRuntimeTelemetry(BuildEconomySnapshot("town_entry"));
         }
+    }
+
+    public bool CanManualProfileReload(out string reason)
+    {
+        if (!string.Equals(CurrentSceneName, SceneNames.Town, StringComparison.Ordinal))
+        {
+            reason = "프로필 재로드는 Town에서만 허용됩니다.";
+            return false;
+        }
+
+        if (HasActiveExpeditionRun)
+        {
+            reason = "진행 중인 expedition이 있어 프로필을 다시 불러올 수 없습니다.";
+            return false;
+        }
+
+        if (_hasPendingRewardSettlement)
+        {
+            reason = "보상 settlement가 남아 있어 프로필을 다시 불러올 수 없습니다.";
+            return false;
+        }
+
+        if (IsQuickBattleSmokeActive)
+        {
+            reason = "Quick Battle smoke overlay 중에는 프로필을 다시 불러올 수 없습니다.";
+            return false;
+        }
+
+        reason = string.Empty;
+        return true;
     }
 
     public Result RerollRecruitOffers()
@@ -1502,6 +1533,21 @@ public sealed class GameSessionState
         }
 
         var choice = _pendingRewardChoices[index];
+        var rewardSourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty;
+        if (HasRecordedRewardSettlement(rewardSourceId))
+        {
+            _pendingRewardChoices.Clear();
+            LastRewardApplicationSummary = new SessionTextToken(
+                GameLocalizationTables.UIReward,
+                "ui.reward.status.recovered_choice",
+                "Recovered previous reward settlement.");
+            AppendRuntimeTelemetry(RuntimeOperationalTelemetry.CreateRewardSettlementDuplicatePrevented(
+                ResolveTelemetryRunId(),
+                rewardSourceId));
+            SyncActiveRunIfPresent();
+            return true;
+        }
+
         var timestamp = DateTime.UtcNow.ToString("O");
         switch (choice.Kind)
         {
@@ -1527,7 +1573,7 @@ public sealed class GameSessionState
                     CreatedAtUtc = timestamp,
                     Summary = BuildRewardChoiceSummaryKey(choice),
                     SourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
-                    SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId),
+                    SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId, isSettlementChoice: true),
                 });
                 Profile.RewardLedger.Add(new RewardLedgerEntryRecord
                 {
@@ -1539,7 +1585,7 @@ public sealed class GameSessionState
                     CreatedAtUtc = timestamp,
                     Summary = BuildRewardChoiceSummaryKey(choice),
                     SourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
-                    SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId),
+                    SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId, isSettlementChoice: true),
                 });
                 LastRewardApplicationSummary = BuildRewardChoiceSummaryToken(choice);
                 break;
@@ -1565,6 +1611,13 @@ public sealed class GameSessionState
             SiteId = ActiveRun?.Overlay.SiteId ?? Profile.CampaignProgress.SelectedSiteId,
         });
 
+        AppendRuntimeTelemetry(RuntimeOperationalTelemetry.CreateRewardOptionChosen(
+            ResolveTelemetryRunId(),
+            rewardSourceId,
+            choice.PayloadId,
+            Profile.Currencies.Gold,
+            Profile.Currencies.Echo));
+        AppendRuntimeTelemetry(BuildEconomySnapshot("reward_choice_applied"));
         _pendingRewardChoices.Clear();
         SyncActiveRunIfPresent();
         return true;
@@ -1730,6 +1783,11 @@ public sealed class GameSessionState
 
         record.TimeSeconds = _runtimeTelemetryEvents.Count;
         _runtimeTelemetryEvents.Add(record);
+    }
+
+    internal void RecordOperationalTelemetry(TelemetryEventRecord record)
+    {
+        AppendRuntimeTelemetry(record);
     }
 
     private string ResolveTelemetryRunId()
@@ -2033,6 +2091,17 @@ public sealed class GameSessionState
         {
             _pendingRewardChoices.Add(choice);
         }
+
+        if (_pendingRewardChoices.Count > 0)
+        {
+            AppendRuntimeTelemetry(RuntimeOperationalTelemetry.CreateRewardOptionsPresented(
+                ResolveTelemetryRunId(),
+                ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
+                _pendingRewardChoices.Count,
+                Profile.Currencies.Gold,
+                Profile.Currencies.Echo));
+            AppendRuntimeTelemetry(BuildEconomySnapshot("reward_options_presented"));
+        }
     }
 
     private IEnumerable<RewardChoiceViewModel> BuildRewardChoicesForCurrentContext()
@@ -2305,6 +2374,10 @@ public sealed class GameSessionState
                     CurrentNodeIndex = CurrentExpeditionNodeIndex,
                     SiteNodeIndex = CurrentExpeditionNodeIndex,
                     PendingRewardIds = Array.Empty<string>(),
+                    RewardSourceId = string.Empty,
+                    BattleContextHash = string.Empty,
+                    FirstSelectedTemporaryAugmentId = ActiveRun.Overlay.FirstSelectedTemporaryAugmentId,
+                    PendingPermanentUnlockId = ActiveRun.Overlay.PendingPermanentUnlockId,
                 }
             };
         }
@@ -2642,7 +2715,7 @@ public sealed class GameSessionState
         });
     }
 
-    private string ResolveRewardSourceKind(string? sourceId)
+    private string ResolveRewardSourceKind(string? sourceId, bool isSettlementChoice = false)
     {
         if (string.IsNullOrWhiteSpace(sourceId)
             || !_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
@@ -2652,7 +2725,7 @@ public sealed class GameSessionState
             return string.Empty;
         }
 
-        return source.Kind.ToString();
+        return $"{source.Kind}:{(isSettlementChoice ? "reward_choice" : "automatic_loot")}";
     }
 
     private string GetExpeditionRunId()
@@ -3270,10 +3343,19 @@ public sealed class GameSessionState
         LastBattleVictory = ActiveRun.LastSettlementWasVictory;
         IsQuickBattleSmokeActive = ActiveRun.IsQuickBattle;
         HasActiveExpeditionRun = !ActiveRun.IsQuickBattle;
-        _hasPendingRewardSettlement = ActiveRun.Overlay.PendingRewardIds.Count > 0;
+        CurrentExpeditionNodeIndex = ActiveRun.Overlay.CurrentNodeIndex;
+
+        var resumedRewardSourceId = ActiveRun.Overlay.RewardSourceId;
+        if (TryResumeRecoveredRewardSettlement())
+        {
+            AppendRuntimeTelemetry(RuntimeOperationalTelemetry.CreateRewardSettlementResumed(
+                ResolveTelemetryRunId(),
+                resumedRewardSourceId));
+        }
+
+        _hasPendingRewardSettlement = ActiveRun?.Overlay.PendingRewardIds.Count > 0;
         SelectedTeamPosture = blueprint.TeamPosture;
         SelectedTeamTacticId = blueprint.TeamTacticId;
-        CurrentExpeditionNodeIndex = ActiveRun.Overlay.CurrentNodeIndex;
         RestoreResolvedProgressMarkers(includeCurrentNode: _hasPendingRewardSettlement);
         if (_hasPendingRewardSettlement)
         {
@@ -3283,6 +3365,44 @@ public sealed class GameSessionState
         {
             AutoSelectNextExpeditionNode();
         }
+    }
+
+    private bool TryResumeRecoveredRewardSettlement()
+    {
+        if (ActiveRun == null
+            || string.IsNullOrWhiteSpace(ActiveRun.Overlay.RewardSourceId)
+            || ActiveRun.Overlay.PendingRewardIds.Count > 0
+            || !HasRecordedRewardSettlement(ActiveRun.Overlay.RewardSourceId))
+        {
+            return false;
+        }
+
+        _hasPendingRewardSettlement = true;
+        LastRewardApplicationSummary = new SessionTextToken(
+            GameLocalizationTables.UIReward,
+            "ui.reward.status.recovered_choice",
+            "Recovered previous reward settlement.");
+        FinalizeRewardSettlement();
+        return true;
+    }
+
+    private bool HasRecordedRewardSettlement(string sourceId)
+    {
+        return !string.IsNullOrWhiteSpace(sourceId)
+               && Profile.RewardLedger.Any(entry =>
+                   string.Equals(entry.SourceId, sourceId, StringComparison.Ordinal)
+                   && entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
+    }
+
+    private TelemetryEventRecord BuildEconomySnapshot(string label)
+    {
+        return RuntimeOperationalTelemetry.CreateEconomySnapshot(
+            ResolveTelemetryRunId(),
+            label,
+            Profile.Currencies.Gold,
+            Profile.Currencies.Echo,
+            _pendingRewardChoices.Count,
+            !LastBattleVictory);
     }
 
     private void SyncActiveRunIfPresent()
@@ -3531,7 +3651,7 @@ public sealed class GameSessionState
             CreatedAtUtc = result.RewardEntry.CreatedAtUtc,
             Summary = result.RewardEntry.Summary,
             SourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
-            SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId),
+            SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId, isSettlementChoice: true),
         });
         if (result.InventoryEntry != null)
         {
@@ -3546,7 +3666,7 @@ public sealed class GameSessionState
                 CreatedAtUtc = result.InventoryEntry.CreatedAtUtc,
                 Summary = result.InventoryEntry.Summary,
                 SourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
-                SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId),
+                SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId, isSettlementChoice: true),
             });
         }
 

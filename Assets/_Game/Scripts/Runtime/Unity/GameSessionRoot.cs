@@ -2,6 +2,9 @@ using SM.Meta.Model;
 using SM.Meta.Services;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace SM.Unity;
 
@@ -19,6 +22,9 @@ public sealed class GameSessionRoot : MonoBehaviour
     public bool HasActiveSession => Sessions.HasActiveSession;
     public SessionRealm? CurrentRealm => Sessions.CurrentRealm;
     public string ActiveProfileId => Sessions.ActiveProfileId;
+    public SessionCheckpointResult LastCheckpointResult => Sessions.LastCheckpointResult;
+    public bool IsTransientTownSmokeActive => Sessions.IsTransientTownSmokeActive;
+    public bool IsDedicatedSmokeNamespace => Sessions.IsDedicatedSmokeNamespace;
     public IProfileQueryService ProfileQueries => Sessions;
     public IProfileCommandService ProfileCommands => Sessions;
 
@@ -68,19 +74,35 @@ public sealed class GameSessionRoot : MonoBehaviour
         }
     }
 
-    public void BindProfile()
+    public SessionCheckpointResult BindProfile(SessionCheckpointKind kind = SessionCheckpointKind.ManualLoad)
     {
-        Sessions.ReloadActiveSession();
+        var result = Sessions.ReloadActiveSession(kind);
+        HandleCheckpointResult(result, blockOnFailure: true);
+        return result;
     }
 
-    public void SaveProfile()
+    public SessionCheckpointResult SaveProfile(SessionCheckpointKind kind = SessionCheckpointKind.ManualSave)
     {
-        Sessions.SaveActiveSession();
+        var result = Sessions.SaveActiveSession(kind);
+        HandleCheckpointResult(result, blockOnFailure: false);
+        return result;
     }
 
     public bool StartRealm(SessionRealm realm, out string error)
     {
-        return Sessions.StartRealm(realm, out error);
+        var started = Sessions.StartRealm(realm, out error);
+        if (started)
+        {
+            ClearBlockingError();
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            SetBlockingError(error);
+        }
+
+        return false;
     }
 
     public void EnsureOfflineLocalSession()
@@ -88,11 +110,42 @@ public sealed class GameSessionRoot : MonoBehaviour
         Sessions.EnsureOfflineLocalSession();
     }
 
-    public void ReturnToSessionMenu()
+    public void UseDedicatedSmokeNamespace()
     {
-        SaveProfile();
+        Sessions.UseDedicatedSmokeNamespace();
+    }
+
+    public void BeginTransientTownSmoke()
+    {
+        Sessions.BeginTransientTownSmoke();
+    }
+
+    public SessionCheckpointResult RestoreCanonicalProfileAfterTransientSmoke()
+    {
+        Sessions.ReturnToCanonicalLane();
+        var result = BindProfile(SessionCheckpointKind.QuickBattleRestore);
+        if (result.IsSuccessful)
+        {
+            SessionState.RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateSmokeRestoreFromDisk(
+                ActiveProfileId,
+                ActiveProfileId,
+                "Transient Town smoke overlay discarded and canonical profile restored."));
+        }
+
+        return result;
+    }
+
+    public SessionCheckpointResult ReturnToSessionMenu()
+    {
+        var result = SaveProfile(SessionCheckpointKind.ReturnToStart);
+        if (!result.IsSuccessful)
+        {
+            return result;
+        }
+
         Sessions.EndSession();
         SceneFlow.GoToBoot();
+        return result;
     }
 
     public void SetBlockingError(string message)
@@ -111,10 +164,6 @@ public sealed class GameSessionRoot : MonoBehaviour
         LastBlockingError = null;
     }
 
-    /// <summary>
-    /// Returns the existing Instance or creates a minimal debug fallback root.
-    /// Use when a scene is played directly without going through the authored Boot flow.
-    /// </summary>
     public static GameSessionRoot EnsureInstance()
     {
         if (Instance != null)
@@ -127,9 +176,44 @@ public sealed class GameSessionRoot : MonoBehaviour
         var root = go.AddComponent<GameSessionRoot>();
         if (SessionRealmAutoStartPolicy.ShouldForceOfflineLocalForScene(SceneManager.GetActiveScene().name))
         {
+#if UNITY_EDITOR
+            if (EditorPrefs.GetBool("SM.QuickBattleRequested", false))
+            {
+                root.UseDedicatedSmokeNamespace();
+            }
+#endif
             root.EnsureOfflineLocalSession();
         }
 
         return root;
+    }
+
+    private void HandleCheckpointResult(SessionCheckpointResult result, bool blockOnFailure)
+    {
+        if (result.IsSuccessful)
+        {
+            if (blockOnFailure)
+            {
+                ClearBlockingError();
+            }
+
+            return;
+        }
+
+        if (result.Status == SessionCheckpointStatus.Blocked)
+        {
+            return;
+        }
+
+        if (blockOnFailure)
+        {
+            SetBlockingError(result.Message);
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(result.Message))
+        {
+            Debug.LogError(result.Message);
+        }
     }
 }

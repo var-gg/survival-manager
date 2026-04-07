@@ -1,6 +1,8 @@
 using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Content.Definitions;
@@ -128,6 +130,76 @@ public sealed class RunLoopContractFastTests
         }
     }
 
+    [Test]
+    public void ManualProfileReload_IsBlocked_WhileRunRewardOrSmokeIsActive()
+    {
+        var fixtures = CreateAuthoredFixtures();
+        try
+        {
+            var session = CreateBoundSession(fixtures.Lookup);
+            Assert.That(session.CanManualProfileReload(out var idleReason), Is.True, idleReason);
+
+            session.BeginNewExpedition();
+            Assert.That(session.CanManualProfileReload(out var activeRunReason), Is.False);
+            Assert.That(activeRunReason, Does.Contain("expedition"));
+
+            session = CreateBoundSession(fixtures.Lookup);
+            Assert.That(session.ResolveSelectedNodeToRewardSettlement(), Is.False, "첫 노드는 battle route이므로 바로 settlement로 가지 않아야 한다.");
+            session.PrepareSelectedBattleNodeHandoff();
+            session.MarkBattleResolved(true, 8, 4);
+            Assert.That(session.CanManualProfileReload(out var rewardReason), Is.False);
+            Assert.That(rewardReason, Does.Contain("settlement"));
+
+            session = CreateBoundSession(fixtures.Lookup);
+            session.PrepareQuickBattleSmoke();
+            Assert.That(session.CanManualProfileReload(out var smokeReason), Is.False);
+            Assert.That(smokeReason, Does.Contain("Quick Battle smoke"));
+        }
+        finally
+        {
+            fixtures.Dispose();
+        }
+    }
+
+    [Test]
+    public void BindProfile_ResumesRewardSettlementWithoutDuplicatingRewardLedger()
+    {
+        var fixtures = CreateAuthoredFixtures();
+        try
+        {
+            var session = CreateBoundSession(fixtures.Lookup);
+            session.BeginNewExpedition();
+
+            Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+            session.MarkBattleResolved(true, 12, 6);
+
+            var rewardSourceId = session.ActiveRun?.Overlay.RewardSourceId ?? string.Empty;
+            Assert.That(rewardSourceId, Is.Not.Empty);
+            Assert.That(session.PendingRewardChoices, Has.Count.EqualTo(3));
+            Assert.That(session.ApplyRewardChoice(0), Is.True);
+
+            var rewardChoiceLedgerCount = session.Profile.RewardLedger.Count(entry =>
+                string.Equals(entry.SourceId, rewardSourceId, StringComparison.Ordinal)
+                && entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
+            Assert.That(rewardChoiceLedgerCount, Is.EqualTo(1));
+
+            var reloaded = new GameSessionState(fixtures.Lookup);
+            reloaded.BindProfile(CloneProfile(session.Profile));
+            reloaded.SetCurrentScene(SceneNames.Town);
+
+            Assert.That(reloaded.HasPendingRewardSettlement, Is.False);
+            Assert.That(reloaded.CanResumeExpedition, Is.True);
+            Assert.That(reloaded.CurrentExpeditionNodeIndex, Is.EqualTo(1));
+            Assert.That(reloaded.Profile.RewardLedger.Count(entry =>
+                string.Equals(entry.SourceId, rewardSourceId, StringComparison.Ordinal)
+                && entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal)), Is.EqualTo(1));
+        }
+        finally
+        {
+            fixtures.Dispose();
+        }
+    }
+
     private static GameSessionState CreateBoundSession(ICombatContentLookup lookup)
     {
         var session = new GameSessionState(lookup);
@@ -143,6 +215,13 @@ public sealed class RunLoopContractFastTests
         });
         session.SetCurrentScene(SceneNames.Town);
         return session;
+    }
+
+    private static SaveProfile CloneProfile(SaveProfile profile)
+    {
+        return JsonConvert.DeserializeObject<SaveProfile>(
+                   JsonConvert.SerializeObject(profile, Formatting.Indented))
+               ?? new SaveProfile();
     }
 
     private static HeroInstanceRecord CreateHero(string heroId, string name, string classId, DeploymentAnchorId _)

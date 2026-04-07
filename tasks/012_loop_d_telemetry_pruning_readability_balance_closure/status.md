@@ -5,13 +5,14 @@
 - 작업명: Loop D Telemetry / Pruning / Readability Gate / First Playable Balance Closure
 - 담당: Codex
 - 상태: 진행 중
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-08
 
 ## Current state
 
 - Loop D telemetry model, readability evaluator, first playable slice generator, balance runner의
   코드 뼈대는 들어갔다.
 - runtime battle/meta 경로에서 combat/recruit/retrain/duplicate telemetry를 기록한다.
+- session/save/recovery/reward/economy를 위한 lightweight operational telemetry join scaffold가 추가됐다.
 - first playable slice는 runtime asset + `ParkingLotContentIds` 구조로 분리되도록 맞췄다.
 - current authored floor closure 패스에서 아래를 추가 반영했다.
   - `first_playable_slice.asset`에 passive board 4개, signature passive cap `8`,
@@ -31,7 +32,7 @@
 | --- | --- | --- | --- |
 | compile | Loop D 코드 추가 후 compile green | 진행 중 | Unity stale editor/connector 복구 후 재확인 |
 | slice asset | first playable slice asset + markdown 생성 | 부분 | asset는 갱신, generated markdown은 재실행 필요 |
-| telemetry | battle/meta telemetry event 기록 | 완료 | runtime emit point 추가 |
+| telemetry | battle/meta + operational telemetry event 기록 | 완료 | runtime emit point와 session/recovery/reward/economy join scaffold 추가 |
 | readability gate | report 생성 + fail semantics | 부분 | smoke runner artifact 재실행 필요 |
 | prune ledger | CSV/JSON 산출 | 부분 | runner artifact 재실행 필요 |
 | tests | Loop D / content validator test 갱신 | 부분 | batch verification이 project lock으로 final green 미확정 |
@@ -68,6 +69,7 @@
 - stale Unity editor/connector 때문에 `unity-bridge status`가 ready로 올라오지 않았다.
   `test-batch-fast`는 project lock 메시지와 함께 종료돼 최종 증거로 채택하지 않았다.
 - Unity 재기동 후 smoke runner artifact를 다시 생성해야 한다.
+- runtime hardening packet이 들어가면서 fresh operational artifact와 quick battle / normal playable evidence를 함께 다시 회수해야 한다.
 - `test-edit`, `test-play`, docs/smoke script evidence를 최종 회수해야 한다.
 - `loop-d-closure-note.md`에는 실제 generated artifact 수치를 다시 적재해야 한다.
 - long-running runner는 `tasks/013_unity_long_running_workload_lane/status.md` 기준으로 shard/manual lane에서 다시 회수한다.

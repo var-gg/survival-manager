@@ -30,6 +30,12 @@ public sealed class SessionRealmCoordinator :
         ? SessionCapabilities.ForRealm(_currentRealm.Value)
         : SessionCapabilities.None;
     public string ActiveProfileId => _offlineLocal.ActiveProfileId;
+    public SessionCheckpointResult LastCheckpointResult { get; private set; } = SessionCheckpointResult.Success(
+        SessionCheckpointKind.StartupLoad,
+        string.Empty,
+        "No checkpoint yet.");
+    public bool IsTransientTownSmokeActive => _offlineLocal.IsTransientTownSmokeActive;
+    public bool IsDedicatedSmokeNamespace => _offlineLocal.IsDedicatedSmokeNamespace;
 
     public bool CanStartRealm(SessionRealm realm, out string reason)
     {
@@ -50,16 +56,23 @@ public sealed class SessionRealmCoordinator :
             return false;
         }
 
-        if (realm == SessionRealm.OfflineLocal)
+        if (realm != SessionRealm.OfflineLocal)
         {
-            _offlineLocal.LoadOrCreateProfile();
-            _currentRealm = realm;
-            error = string.Empty;
-            return true;
+            error = "OnlineAuthoritative seam은 이번 패스 범위에 포함되지 않습니다.";
+            return false;
         }
 
-        error = "OnlineAuthoritative seam은 이번 패스 범위에 포함되지 않습니다.";
-        return false;
+        var loadResult = _offlineLocal.LoadOrCreateProfile(SessionCheckpointKind.StartupLoad);
+        LastCheckpointResult = loadResult;
+        if (!loadResult.IsSuccessful)
+        {
+            error = loadResult.Message;
+            return false;
+        }
+
+        _currentRealm = realm;
+        error = string.Empty;
+        return true;
     }
 
     public void EnsureOfflineLocalSession()
@@ -75,34 +88,54 @@ public sealed class SessionRealmCoordinator :
         }
     }
 
-    public void ReloadActiveSession()
+    public SessionCheckpointResult ReloadActiveSession(SessionCheckpointKind kind = SessionCheckpointKind.ManualLoad)
     {
         if (!_currentRealm.HasValue)
         {
             EnsureOfflineLocalSession();
-            return;
+            return LastCheckpointResult;
         }
 
         if (_currentRealm == SessionRealm.OfflineLocal)
         {
-            _offlineLocal.LoadOrCreateProfile();
-            return;
+            LastCheckpointResult = _offlineLocal.LoadOrCreateProfile(kind);
+            return LastCheckpointResult;
         }
 
         throw new NotSupportedException("OnlineAuthoritative reload seam is not implemented in this slice.");
     }
 
-    public void SaveActiveSession()
+    public SessionCheckpointResult SaveActiveSession(SessionCheckpointKind kind = SessionCheckpointKind.ManualSave)
     {
         if (_currentRealm == SessionRealm.OfflineLocal)
         {
-            _offlineLocal.SaveProfile();
+            LastCheckpointResult = _offlineLocal.SaveProfile(kind);
+            return LastCheckpointResult;
         }
+
+        LastCheckpointResult = SessionCheckpointResult.Blocked(kind, ActiveProfileId, "No active OfflineLocal session.");
+        return LastCheckpointResult;
+    }
+
+    public void UseDedicatedSmokeNamespace()
+    {
+        _offlineLocal.UseDedicatedSmokeNamespace();
+    }
+
+    public void BeginTransientTownSmoke()
+    {
+        _offlineLocal.BeginTransientTownSmoke();
+    }
+
+    public void ReturnToCanonicalLane()
+    {
+        _offlineLocal.ReturnToCanonicalLane();
     }
 
     public void EndSession()
     {
         _currentRealm = null;
+        _offlineLocal.ReturnToCanonicalLane();
     }
 
     public ProfileView GetProfileView(string playerId) => RequireOfflineLocal().GetProfileView(playerId);

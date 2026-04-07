@@ -236,15 +236,12 @@ public static class FirstPlayableBootstrap
     {
         try
         {
-            PlayerPrefs.DeleteKey("SM.SaveSlot.default");
-            PlayerPrefs.Save();
-
             foreach (var savePath in EnumerateLocalDemoSavePaths())
             {
                 if (File.Exists(savePath))
                 {
                     File.Delete(savePath);
-                    Debug.Log($"[ObserverPlayable] Local demo save removed: {savePath}");
+                    Debug.Log($"[ObserverPlayable] Quick Battle smoke save removed: {savePath}");
                 }
             }
         }
@@ -340,10 +337,19 @@ public static class FirstPlayableBootstrap
     private static string[] EnumerateLocalDemoSavePaths()
     {
         var profileId = System.Environment.GetEnvironmentVariable("SM_PROFILE_ID") ?? "default";
+        var smokeProfileId = $"{profileId}.smoke";
         var configuredSaveDirectory = System.Environment.GetEnvironmentVariable("SM_SAVE_DIR") ?? "Saves";
         var saveDirectory = Path.IsPathRooted(configuredSaveDirectory)
             ? configuredSaveDirectory
             : Path.Combine(Directory.GetCurrentDirectory(), configuredSaveDirectory);
-        return new[] { Path.Combine(saveDirectory, $"{profileId}.json") };
+        return new[]
+        {
+            Path.Combine(saveDirectory, $"{smokeProfileId}.json"),
+            Path.Combine(saveDirectory, $"{smokeProfileId}.manifest.json"),
+            Path.Combine(saveDirectory, $"{smokeProfileId}.bak.json"),
+            Path.Combine(saveDirectory, $"{smokeProfileId}.bak.manifest.json"),
+            Path.Combine(saveDirectory, $"{smokeProfileId}.tmp.json"),
+            Path.Combine(saveDirectory, $"{smokeProfileId}.tmp.manifest.json"),
+        };
     }
 }

@@ -1,7 +1,7 @@
 # Quick Battle Smoke
 
 - 상태: active
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-08
 - 단계: prototype
 
 ## 목적
@@ -14,11 +14,20 @@
 - campaign/site progression, site clear, chapter clear 검증에는 사용하지 않는다.
 - Town에서는 `Quick Battle (Smoke)` secondary CTA로만 노출한다.
 - `Re-battle`, `Return Town` direct bypass는 smoke lane에서만 허용한다.
+- smoke lane만 verbose runtime artifact와 raw timing bundle을 허용한다. normal playable lane은 checkpoint summary만 남긴다.
 
 ## 원클릭 전투 테스트
 
 1. Unity 열기
 2. `SM/Quick Battle` 메뉴 클릭
+
+CLI mirror:
+
+```powershell
+pwsh -File tools/unity-bridge.ps1 quick-battle-smoke
+```
+
+기존 `pwsh -File tools/unity-bridge.ps1 bootstrap`는 같은 경로를 가리키는 deprecated alias다.
 
 이 한 번의 메뉴 클릭으로 다음이 자동 수행된다:
 - 로컬라이제이션 기반 에셋 확인
@@ -32,6 +41,14 @@
 - `OfflineLocal` 세션 자동 준비 후 Battle smoke 초기화
 
 즉 Quick Battle actual path는 `Open Battle scene -> Enter Play Mode`이며, Boot/Town은 우회한다.
+
+## persistence 격리 규칙
+
+- `SM/Quick Battle` direct entry는 dedicated smoke namespace를 사용한다. 기본 profile이 `default`면 smoke save는 `default.smoke`에 기록된다.
+- `SM/Quick Battle` auto-clear는 canonical save가 아니라 smoke namespace artifact만 지운다.
+- Town의 `Quick Battle (Smoke)`는 canonical Town checkpoint를 먼저 만든 뒤 transient overlay로 Battle에 들어간다.
+- Town smoke 중에는 canonical save write를 금지한다.
+- Town smoke 종료 시에는 reward 적용 여부와 무관하게 disk에서 canonical profile을 다시 bind해서 overlay를 폐기한다.
 
 ## 전투 중 컨트롤
 
@@ -69,8 +86,19 @@
 6. `Return Town`
 
 이 경로는 Town UI smoke 확인용이며, `Start Expedition / Resume Expedition` acceptance를 대체하지 않는다.
+또한 smoke 종료 후에는 canonical Town 상태가 disk 기준으로 복원되어야 한다.
+
+## RC lane note
+
+- Quick Battle smoke는 RC blocking floor다.
+- 하지만 canonical newcomer lane이나 normal loop acceptance를 대체할 수는 없다.
 
 ## 기대 화면
 
 - Battle: primitive actor, HP label/bar, 로그, 속도 버튼, pause, progress, Re-battle, Return Town
 - Reward: 3지선다 카드, 요약/상태 텍스트
+
+## 참고 문서
+
+- normal playable acceptance: [docs/05_setup/local-runbook.md](./local-runbook.md)
+- runtime hardening contract: [docs/06_production/runtime-hardening-contract.md](../06_production/runtime-hardening-contract.md)
