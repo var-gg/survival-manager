@@ -78,6 +78,7 @@
 - `loadout-compiler-and-battle-snapshot.md`: build -> compile -> battle snapshot 경계
 - `sim-sweep-and-balance-kpis.md`: deterministic sweep, KPI, artifact, review/fail 규칙
 - `replay-persistence-and-run-audit.md`: active run / replay / ledger persistence 기준
+- `battle-actor-wrapper-and-asset-intake-seam.md`: battle wrapper prefab, socket surface, vendor intake seam
 
 ## 기타 운영 문서
 
@@ -86,6 +87,7 @@
 - `session-realm-authority-and-offline-online-ports.md`: session realm, authority seam, offline-first port 구조
 - `testing-strategy.md`: 저비용 검증 표면 추가 순서만 다루는 보조 draft
 - `asset-intake-boundary.md`: `Assets/ThirdParty/**` intake boundary
+- `battle-actor-wrapper-and-asset-intake-seam.md`: battle actor wrapper seam과 sandbox/validator/bootstrapping 규칙
 
 ## 운영 메모
 

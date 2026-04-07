@@ -2,13 +2,14 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-08
 - 소스오브트루스: `docs/02_design/combat/battle-presentation-contract.md`
 - 관련문서:
   - `docs/02_design/combat/combat-readability.md`
   - `docs/02_design/ui/battle-observer-ui.md`
   - `docs/03_architecture/combat-runtime-architecture.md`
   - `docs/03_architecture/localization-runtime-and-content-pipeline.md`
+  - `docs/03_architecture/battle-actor-wrapper-and-asset-intake-seam.md`
 
 ## 목적
 
@@ -17,11 +18,13 @@ prototype 전투에서 아트 유무와 무관하게 읽히는 머리 위 정보
 ## 기본 원칙
 
 - overhead UI는 `screen-space overlay/camera` 기준으로만 표시한다.
-- `HeadAnchor`는 actor root 아래의 authored 또는 runtime-generated anchor다.
+- actor는 항상 `BattleActorWrapper` prefab 인스턴스다.
+- `HeadAnchor`와 `HudAnchor`는 wrapper socket이다.
 - nameplate, health bar, floating combat text는 actor 회전, pitch, roll을 상속하지 않는다.
 - 발밑 ring, AOE telegraph, 범위 preview만 world-space를 사용한다.
 - normal playable lane은 `current actor + current target + selected unit` 중심으로만 정보를 올린다.
 - debug lane(F3)은 같은 truth를 더 많이 보여줄 뿐, 다른 계산을 만들지 않는다.
+- vendor visual은 socket만 제공하고, ring/HUD/localization truth를 소유하지 않는다.
 
 ## 표시 구성
 
@@ -72,6 +75,7 @@ prototype 전투에서 아트 유무와 무관하게 읽히는 머리 위 정보
 - seek/replay-reset 시 presentation은 snapshot만 복원한다.
 - hit flash, impact pulse, floating text, source lunge는 seek 때문에 재생되면 안 된다.
 - x2/x4 speed에서도 transient 길이는 real-time coroutine이 아니라 playback state를 따른다.
+- wrapper bridge/audio/VFX surface도 seek/replay-reset에서 fire하지 않고 clear만 수행한다.
 
 ## acceptance
 

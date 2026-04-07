@@ -1,7 +1,7 @@
 # Battle Observer UI
 
 - 상태: active
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-08
 - 단계: prototype
 
 ## source-of-truth note
@@ -16,7 +16,8 @@
 
 - battle shell은 `RuntimePanelHost + UITK` 기준으로 렌더
 - 좌측 아군 / 우측 적 observer 레이아웃
-- capsule primitive actor
+- `BattleActorWrapper` 기반 actor presentation
+- pre-art baseline은 primitive wrapper adapter를 사용
 - actor 머리 위 screen-space overhead UI
 - overhead UI / damage text / 팀 summary는 settings panel에서 ON/OFF
 - team summary는 per-unit dump가 아니라 aggregate(`alive/total | current/max HP`)다
@@ -63,10 +64,12 @@
 - 최종 HUD
 - camera cut / shake
 - 외부 VFX 패키지
+- vendor prefab 내부 world-space HUD를 source-of-truth로 쓰는 방식
 
 ## 운영 메모
 
 - scene installer가 `BattleRuntimeRoot`, `BattleRuntimePanelHost`, `BattlePresentationRoot`, `BattleStageRoot`, `ActorOverlayCanvas`, `ActorOverlayRoot`, `BattleCameraRoot`를 만든다.
+- actor wrapper는 `BattlePresentationRoot` 하위에만 spawn되고, localized overhead는 wrapper의 `HudAnchor`에 붙는다.
 - `PauseButton`, `ReplayButton`, `RebattleButton`, `SettingsPanel`, `ProgressFill` 같은 화면 요소 이름 계약은 `BattleScreen.uxml`에 저장된다.
 - selected unit은 `Tab` cycle과 좌클릭 pick 둘 다 허용한다.
 - Quick Battle smoke는 Expedition 진행도를 건드리지 않고 Battle observer만 빠르게 확인한다.

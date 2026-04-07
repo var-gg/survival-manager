@@ -38,6 +38,7 @@
   - range discipline / reevaluation cadence / mobility scaffold ->
     `SM.Combat` behavior truth + authored profile
   - battle localization -> committed `UI_Battle` / `Combat_Log` tables
+  - battle actor spawn seam -> `_Game` wrapper prefab + catalog + sandbox contract
 - 동시에 닫지 않을 축:
   - prefab/catalog spawn contract 재설계
   - stamina/equipment/morale 같은 신규 대형 시스템
@@ -51,15 +52,16 @@
 - world-space 머리 위 UI 제거와 screen-space overhead presenter 도입
 - `UI_Battle` / `Combat_Log` localization 보강과 fallback guard
 - sandbox gizmo / scenario / EditMode coverage 확장
+- `BattleActorWrapper`, `BattleActorPresentationCatalog`, primitive adapter, transient surface seam 도입
 - 관련 contract/spec/harness docs 갱신
 
 ## Out of scope
 
-- runtime prefab authoring pipeline 전환
 - melee 전용 dash/lunge full rollout
 - stamina, public mental stat, accuracy/hit-rate 추가
 - launch-floor catalog contract reopen
 - compile green만으로 task 종료 주장
+- 실제 paid asset import와 vendor-specific polish authoring
 
 ## asmdef impact
 
@@ -116,4 +118,4 @@
 - facing 기반 guard arc
 - melee engage dash/lunge runtime 소비
 - hidden behavior coefficients 일부의 public stat 승격
-- prefab-based head anchor authoring
+- vendor clip/hook preset의 실제 content tuning

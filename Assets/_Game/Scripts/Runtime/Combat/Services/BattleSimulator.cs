@@ -2,14 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
-using Unity.Profiling;
 
 namespace SM.Combat.Services;
 
 public sealed class BattleSimulator
 {
-    private static readonly ProfilerMarker StepMarker = new("SM.BattleSimulator.Step");
-
     public const float DefaultFixedStepSeconds = 0.1f;
     public const int DefaultMaxSteps = 300;
 
@@ -41,7 +38,6 @@ public sealed class BattleSimulator
 
     public BattleSimulationStep Step()
     {
-        using var _ = StepMarker.Auto();
         if (IsFinished)
         {
             return CurrentStep;

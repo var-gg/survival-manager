@@ -16,6 +16,7 @@ public sealed class BattlePresentationController : MonoBehaviour
 
     [SerializeField] private Transform battleStageRoot = null!;
     [SerializeField] private RectTransform actorOverlayRoot = null!;
+    [SerializeField] private BattleActorPresentationCatalog presentationCatalog = null!;
 
     private readonly Dictionary<string, BattleActorView> _actorViews = new();
     private readonly Dictionary<string, BattleUnitReadModel> _cachedFromUnitsById = new();
@@ -35,6 +36,11 @@ public sealed class BattlePresentationController : MonoBehaviour
     public bool IsPaused { get; private set; }
     public int LastCueCount { get; private set; }
     public int TotalCueCount { get; private set; }
+
+    public void ConfigurePresentationCatalog(BattleActorPresentationCatalog catalog)
+    {
+        presentationCatalog = catalog;
+    }
 
     private void LateUpdate()
     {
@@ -57,12 +63,20 @@ public sealed class BattlePresentationController : MonoBehaviour
         LastCueCount = 0;
         Clear();
         CreateStageDecor();
+        var runtimeCatalog = BattleActorPresentationCatalog.ResolveRuntimeCatalog(presentationCatalog);
 
         foreach (var actor in initialStep.Units)
         {
-            var actorGo = new GameObject(actor.Name);
-            actorGo.transform.SetParent(battleStageRoot, false);
-            var view = actorGo.AddComponent<BattleActorView>();
+            var wrapperPrefab = runtimeCatalog.ResolveWrapperPrefab(actor);
+            var wrapper = Instantiate(wrapperPrefab, transform);
+            wrapper.name = $"BattleActor_{actor.Id}_Wrapper";
+            wrapper.Configure(actor);
+            var view = wrapper.GetComponent<BattleActorView>();
+            if (view == null)
+            {
+                view = wrapper.gameObject.AddComponent<BattleActorView>();
+            }
+
             view.Initialize(actor, actorOverlayRoot, _camera, this, _metadataFormatter);
             view.ApplyOptions(_options);
             _actorViews[actor.Id] = view;
@@ -271,6 +285,11 @@ public sealed class BattlePresentationController : MonoBehaviour
             {
                 Destroy(battleStageRoot.GetChild(i).gameObject);
             }
+        }
+
+        for (var i = transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(transform.GetChild(i).gameObject);
         }
 
         if (actorOverlayRoot != null)

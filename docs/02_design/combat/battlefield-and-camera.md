@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-08
 - 소스오브트루스: `docs/02_design/combat/battlefield-and-camera.md`
 - 관련문서:
   - `docs/02_design/combat/deployment-and-anchors.md`
@@ -31,6 +31,8 @@
 - 앵커는 spawn 위치, home 위치, leash 기준점, 초기 배치 의미를 만든다.
 - 실제 교전 위치는 `CombatVector2` 연속 좌표를 기준으로 계산한다.
 - 배치의 의미는 남기되, 전투 표현은 "제자리에 서서 숫자만 교환하는" 모델로 되돌리지 않는다.
+- scene graph에서는 `BattleStageRoot`와 `BattlePresentationRoot`를 분리한다.
+- actor wrapper는 `BattlePresentationRoot` 하위에만 생성되고, `BattleStageRoot`는 decor/readability floor만 가진다.
 
 ## 카메라 기준
 
@@ -72,6 +74,7 @@
 - `ManualHold`: pan / zoom / drag / keyboard input 후 `3초` 동안 자동 보정을 멈춘다.
 - suggested frame는 `BattleScreenController`가 계산하고 `BattleCameraController`가 수용한다.
 - single-target follow, cinematic cut, screen shake는 금지한다.
+- wrapper의 `CameraFocusTarget`은 actor-local 안정점일 뿐, 카메라 authoritative truth가 되지 않는다.
 
 ### 유닛 클릭 선택
 

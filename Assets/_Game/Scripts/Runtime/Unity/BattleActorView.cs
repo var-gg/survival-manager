@@ -17,6 +17,11 @@ public sealed class BattleActorView : MonoBehaviour
 
     private Camera _camera = null!;
     private BattlePresentationController _owner = null!;
+    private BattleActorWrapper _wrapper = null!;
+    private BattleActorVisualAdapter _visualAdapter = null!;
+    private BattleAnimationEventBridge? _animationEventBridge;
+    private BattleActorVfxSurface? _vfxSurface;
+    private BattleActorAudioSurface? _audioSurface;
     private RectTransform _overlayParent = null!;
     private RectTransform _overlayRoot = null!;
     private Image _overlayBackground = null!;
@@ -90,8 +95,7 @@ public sealed class BattleActorView : MonoBehaviour
         _metadataFormatter = metadataFormatter;
         transform.position = ToWorldPosition(actor.Position);
 
-        CreateVisualRoot(actor);
-        CreateHeadAnchor(actor);
+        ConfigurePresentationWrapper(actor);
         CreateTelegraphRoot();
         CreateOverlay(actor);
         ApplyBlend(actor, actor, 1f);
@@ -103,6 +107,7 @@ public sealed class BattleActorView : MonoBehaviour
         if (_currentState != null)
         {
             ApplyDisplay(_currentState, _currentState.CurrentHealth);
+            RefreshVisualState();
         }
     }
 
@@ -135,6 +140,16 @@ public sealed class BattleActorView : MonoBehaviour
 
     public void ConsumeCue(BattlePresentationCue cue, Vector3? relatedWorld)
     {
+        if (cue.CueType is BattlePresentationCueType.PlaybackReset or BattlePresentationCueType.SeekSnapshotApplied)
+        {
+            ClearTransients(cue.CueType);
+            return;
+        }
+
+        _animationEventBridge?.OpenCueWindow(cue);
+        _vfxSurface?.ConsumeCue(cue, _wrapper);
+        _audioSurface?.ConsumeCue(cue, _wrapper);
+
         switch (cue.CueType)
         {
             case BattlePresentationCueType.WindupEnter:
@@ -185,10 +200,6 @@ public sealed class BattleActorView : MonoBehaviour
                 _impactCueDuration = 0.42f;
                 _impactColor = new Color(0.58f, 0.58f, 0.58f, 1f);
                 break;
-            case BattlePresentationCueType.PlaybackReset:
-            case BattlePresentationCueType.SeekSnapshotApplied:
-                ClearTransients(cue.CueType);
-                return;
         }
 
         if (relatedWorld.HasValue)
@@ -216,6 +227,9 @@ public sealed class BattleActorView : MonoBehaviour
         _accentColor = Color.clear;
         _impactColor = Color.clear;
         _floatingColor = Color.clear;
+        _animationEventBridge?.ClearTransientState(reason);
+        _vfxSurface?.ClearTransientState(reason);
+        _audioSurface?.ClearTransientState(reason);
 
         if (_floatingText != null)
         {
@@ -302,8 +316,8 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_overlayRoot != null && _overlayParent != null)
         {
-            var anchorWorldPosition = _headAnchor != null
-                ? _headAnchor.position
+            var anchorWorldPosition = _wrapper != null
+                ? _wrapper.GetSocketWorld(BattleActorSocketId.Hud)
                 : transform.position + Vector3.up * OverlayHeight;
             var viewport = _camera.WorldToViewportPoint(anchorWorldPosition);
             var isVisible = viewport.z > 0f
@@ -323,15 +337,17 @@ public sealed class BattleActorView : MonoBehaviour
 
     public Vector3 GetAnchorWorld(BattlePresentationAnchorId anchorId)
     {
-        return anchorId switch
-        {
-            BattlePresentationAnchorId.Root => transform.position,
-            BattlePresentationAnchorId.Feet => new Vector3(transform.position.x, GroundPlaneY, transform.position.z),
-            BattlePresentationAnchorId.Center => _centerAnchor != null ? _centerAnchor.position : transform.position + Vector3.up * 0.1f,
-            BattlePresentationAnchorId.Head => _headAnchor != null ? _headAnchor.position : transform.position + Vector3.up * OverlayHeight,
-            BattlePresentationAnchorId.Cast => _castAnchor != null ? _castAnchor.position : transform.position + transform.forward * 0.6f + Vector3.up * 0.2f,
-            _ => transform.position
-        };
+        return _wrapper != null
+            ? _wrapper.GetAnchorWorld(anchorId)
+            : anchorId switch
+            {
+                BattlePresentationAnchorId.Root => transform.position,
+                BattlePresentationAnchorId.Feet => new Vector3(transform.position.x, GroundPlaneY, transform.position.z),
+                BattlePresentationAnchorId.Center => transform.position + Vector3.up * 0.1f,
+                BattlePresentationAnchorId.Head => transform.position + Vector3.up * OverlayHeight,
+                BattlePresentationAnchorId.Cast => transform.position + transform.forward * 0.6f + Vector3.up * 0.2f,
+                _ => transform.position
+            };
     }
 
     public float GetScreenDistanceSquared(Vector2 screenPosition)
@@ -364,23 +380,6 @@ public sealed class BattleActorView : MonoBehaviour
         var healthColor = ResolveHealthColor(healthRatio, actor.IsAlive, actor.Side);
         var metadata = _metadataFormatter?.BuildOverhead(actor)
                       ?? new BattleUnitOverheadText(actor.Name, BattleReadabilityFormatter.BuildPlayerFacingState(actor));
-
-        if (_renderer != null)
-        {
-            _renderer.material.color = restColor;
-        }
-
-        if (_shadowRenderer != null)
-        {
-            _shadowRenderer.material.color = actor.IsAlive
-                ? new Color(0f, 0f, 0f, 0.28f)
-                : new Color(0.12f, 0.12f, 0.12f, 0.20f);
-        }
-
-        if (_visualRoot != null)
-        {
-            _visualRoot.localScale = actor.IsAlive ? Vector3.one : new Vector3(1f, 0.8f, 1f);
-        }
 
         if (_hpFill != null)
         {
@@ -437,7 +436,7 @@ public sealed class BattleActorView : MonoBehaviour
 
     private void RefreshVisualState()
     {
-        if (_currentState == null || _visualRoot == null || _renderer == null || _shadowRenderer == null)
+        if (_currentState == null || _visualAdapter == null)
         {
             return;
         }
@@ -453,17 +452,16 @@ public sealed class BattleActorView : MonoBehaviour
             restColor = Color.Lerp(restColor, _impactColor, EvaluatePulse(_impactCueTimer, _impactCueDuration));
         }
 
-        BattlePresentationMaterialFactory.ApplyColor(_renderer.material, restColor);
-        BattlePresentationMaterialFactory.ApplyColor(
-            _shadowRenderer.material,
-            _currentState.IsAlive
-                ? new Color(0f, 0f, 0f, 0.28f)
-                : new Color(0.12f, 0.12f, 0.12f, 0.20f));
-
         var pose = ResolveBodyPose();
-        _visualRoot.localPosition = pose.position;
-        _visualRoot.localScale = pose.scale;
-        _visualRoot.localRotation = pose.rotation;
+        var shadowColor = _currentState.IsAlive
+            ? new Color(0f, 0f, 0f, 0.28f)
+            : new Color(0.12f, 0.12f, 0.12f, 0.20f);
+        _visualAdapter.ApplyState(new BattleActorVisualState(
+            pose.position,
+            pose.scale,
+            pose.rotation,
+            restColor,
+            shadowColor));
 
         UpdateFocusTelegraphs();
         UpdateSelectedTelegraphs();
@@ -539,15 +537,22 @@ public sealed class BattleActorView : MonoBehaviour
 
     private void UpdateFocusTelegraphs()
     {
-        UpdateDisc(_feetRingRenderer, _isCurrentActor || _isSelected, transform.position, GroundPlaneY, _isCurrentActor
+        var feetWorld = _wrapper != null
+            ? _wrapper.GetSocketWorld(BattleActorSocketId.FeetRing)
+            : new Vector3(transform.position.x, GroundPlaneY, transform.position.z);
+        var telegraphWorld = _wrapper != null
+            ? _wrapper.GetSocketWorld(BattleActorSocketId.Telegraph)
+            : feetWorld;
+
+        UpdateDisc(_feetRingRenderer, _isCurrentActor || _isSelected, feetWorld, feetWorld.y, _isCurrentActor
             ? ResolveSemanticColor(ResolveCurrentSemantic())
             : new Color(0.42f, 0.76f, 1f, 1f), _isCurrentActor ? 1.48f : 1.30f);
 
         var windupVisible = _isCurrentActor && _currentState.ActionState == CombatActionState.ExecuteAction;
         var windupScale = Mathf.Lerp(0.45f, 1.18f, Mathf.Clamp01(_currentState.WindupProgress));
-        UpdateDisc(_windupRingRenderer, windupVisible, transform.position, GroundPlaneY + 0.01f, ResolveSemanticColor(ResolveCurrentSemantic()), windupScale);
+        UpdateDisc(_windupRingRenderer, windupVisible, telegraphWorld, telegraphWorld.y + 0.01f, ResolveSemanticColor(ResolveCurrentSemantic()), windupScale);
 
-        UpdateDisc(_targetReticleRenderer, _isCurrentTarget, transform.position, GroundPlaneY + 0.01f, new Color(1f, 0.56f, 0.28f, 1f), 1.38f);
+        UpdateDisc(_targetReticleRenderer, _isCurrentTarget, telegraphWorld, telegraphWorld.y + 0.01f, new Color(1f, 0.56f, 0.28f, 1f), 1.38f);
 
         var showFocusLine = (_isCurrentActor || _isSelected) && _focusTargetWorld.HasValue;
         _focusLineRenderer.enabled = showFocusLine;
@@ -569,6 +574,9 @@ public sealed class BattleActorView : MonoBehaviour
     private void UpdateSelectedTelegraphs()
     {
         var homeWorld = ToWorldPosition(BattleFactory.ResolveAnchorPosition(_currentState.Side, _currentState.Anchor));
+        var feetWorld = _wrapper != null
+            ? _wrapper.GetSocketWorld(BattleActorSocketId.FeetRing)
+            : new Vector3(transform.position.x, GroundPlaneY, transform.position.z);
         UpdateDisc(_homeAnchorRenderer, _isSelected, homeWorld, GroundPlaneY + 0.005f, new Color(0.86f, 0.94f, 1f, 1f), 1.06f);
 
         var shouldShowTether = _isSelected
@@ -585,11 +593,11 @@ public sealed class BattleActorView : MonoBehaviour
         var showRange = _isSelected && _currentState.PreferredRangeMax > 0.05f;
         var rangeDiameter = Mathf.Max(0.5f, _currentState.PreferredRangeMax * 2f);
         var innerDiameter = Mathf.Max(0.2f, _currentState.PreferredRangeMin * 2f);
-        UpdateDisc(_rangeOuterRenderer, showRange, transform.position, GroundPlaneY, new Color(0.40f, 0.66f, 0.92f, 1f), rangeDiameter);
-        UpdateDisc(_rangeInnerRenderer, showRange && innerDiameter > 0.21f, transform.position, GroundPlaneY + 0.002f, new Color(0.08f, 0.12f, 0.18f, 1f), innerDiameter);
+        UpdateDisc(_rangeOuterRenderer, showRange, feetWorld, feetWorld.y, new Color(0.40f, 0.66f, 0.92f, 1f), rangeDiameter);
+        UpdateDisc(_rangeInnerRenderer, showRange && innerDiameter > 0.21f, feetWorld, feetWorld.y + 0.002f, new Color(0.08f, 0.12f, 0.18f, 1f), innerDiameter);
 
         var showGuard = _isSelected && _currentState.FrontlineGuardRadius > 0.05f && (_currentState.IsDefending || _currentState.ActionState == CombatActionState.Recover);
-        UpdateDisc(_guardRadiusRenderer, showGuard, transform.position, GroundPlaneY - 0.002f, ResolveSemanticColor(BattleActionSemantic.DefendHold), _currentState.FrontlineGuardRadius * 2f);
+        UpdateDisc(_guardRadiusRenderer, showGuard, feetWorld, feetWorld.y - 0.002f, ResolveSemanticColor(BattleActionSemantic.DefendHold), _currentState.FrontlineGuardRadius * 2f);
 
         var showCluster = _isSelected && _currentState.ClusterRadius > 0.05f && _focusTargetWorld.HasValue;
         UpdateDisc(_clusterRadiusRenderer, showCluster, _focusTargetWorld ?? transform.position, GroundPlaneY - 0.004f, new Color(0.90f, 0.42f, 0.28f, 1f), _currentState.ClusterRadius * 2f);
@@ -665,50 +673,33 @@ public sealed class BattleActorView : MonoBehaviour
         return BattleReadabilityFormatter.BuildPlayerFacingState(actor);
     }
 
-    private void CreateVisualRoot(BattleUnitReadModel actor)
+    private void ConfigurePresentationWrapper(BattleUnitReadModel actor)
     {
-        var visualGo = new GameObject("VisualRoot");
-        visualGo.transform.SetParent(transform, false);
-        _visualRoot = visualGo.transform;
+        _wrapper = GetComponent<BattleActorWrapper>();
+        if (_wrapper == null)
+        {
+            _wrapper = gameObject.AddComponent<BattleActorWrapper>();
+        }
 
-        var castAnchorGo = new GameObject("CastAnchor");
-        castAnchorGo.transform.SetParent(_visualRoot, false);
-        castAnchorGo.transform.localPosition = new Vector3(0f, 0.22f, 0.72f);
-        _castAnchor = castAnchorGo.transform;
+        _wrapper.Configure(actor);
+        _headAnchor = _wrapper.GetSocketTransform(BattleActorSocketId.Head)!;
+        _centerAnchor = _wrapper.GetSocketTransform(BattleActorSocketId.Center)!;
+        _castAnchor = _wrapper.GetSocketTransform(BattleActorSocketId.Cast)!;
 
-        var shadow = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        shadow.name = "GroundShadow";
-        shadow.transform.SetParent(_visualRoot, false);
-        shadow.transform.localPosition = new Vector3(0f, -1.02f, 0f);
-        shadow.transform.localScale = new Vector3(0.58f, 0.03f, 0.58f);
-        RemoveCollider(shadow);
-        _shadowRenderer = shadow.GetComponent<Renderer>();
-        _shadowRenderer.sharedMaterial = BattlePresentationMaterialFactory.Create(new Color(0f, 0f, 0f, 0.28f));
+        _visualAdapter = GetComponent<BattleActorVisualAdapter>();
+        if (_visualAdapter == null)
+        {
+            _visualAdapter = gameObject.AddComponent<BattlePrimitiveActorVisualAdapter>();
+        }
 
-        var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        body.name = "Body";
-        body.transform.SetParent(_visualRoot, false);
-        body.transform.localPosition = Vector3.zero;
-        body.transform.localScale = actor.Anchor.IsFrontRow()
-            ? new Vector3(0.96f, 1.18f, 0.96f)
-            : new Vector3(0.90f, 1.02f, 0.90f);
-        RemoveCollider(body);
-        _renderer = body.GetComponent<Renderer>();
+        _visualAdapter.Initialize(_wrapper, actor);
+        _visualRoot = _visualAdapter.VisualRoot!;
+        _renderer = _visualAdapter.PrimaryRenderer!;
+        _shadowRenderer = _visualAdapter.ShadowRenderer!;
+        _animationEventBridge = GetComponent<BattleAnimationEventBridge>();
+        _vfxSurface = GetComponent<BattleActorVfxSurface>();
+        _audioSurface = GetComponent<BattleActorAudioSurface>();
         _baseColor = ResolveBaseColor(actor);
-        _renderer.sharedMaterial = BattlePresentationMaterialFactory.Create(_baseColor);
-    }
-
-    private void CreateHeadAnchor(BattleUnitReadModel actor)
-    {
-        var centerAnchorGo = new GameObject("CenterAnchor");
-        centerAnchorGo.transform.SetParent(transform, false);
-        centerAnchorGo.transform.localPosition = new Vector3(0f, 0.10f, 0f);
-        _centerAnchor = centerAnchorGo.transform;
-
-        var headAnchorGo = new GameObject("HeadAnchor");
-        headAnchorGo.transform.SetParent(transform, false);
-        headAnchorGo.transform.localPosition = new Vector3(0f, Mathf.Max(1.2f, actor.HeadAnchorHeight), 0f);
-        _headAnchor = headAnchorGo.transform;
     }
 
     private void CreateTelegraphRoot()

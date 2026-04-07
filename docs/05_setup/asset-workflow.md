@@ -1,7 +1,7 @@
 # 에셋 워크플로
 
-- 상태: draft
-- 최종수정일: 2026-03-31
+- 상태: active
+- 최종수정일: 2026-04-08
 - 소유자: repository
 
 ## 목적
@@ -31,6 +31,8 @@
 - 최소 integration path만 먼저 테스트한다.
 - vendor 원본을 수정하지 않고 쓸 수 있는지 확인한다.
 - 필요한 wrapper, adapter, project-owned config asset을 식별한다.
+- battle actor intake는 `Assets/_Game/Scenes/BattleAssetIntakeSandbox.unity`를 우선 사용한다.
+- socket completeness, fallback 사용 여부, overlay attach, reset silence를 sandbox에서 먼저 본다.
 
 ### 3. Project-Owned Integration
 
@@ -38,6 +40,8 @@
 - 필요하면 project ScriptableObject data asset이나 catalog를 만든다.
 - 가져온 의존성을 격리하는 prefab 또는 config asset을 만든다.
 - production scene을 첫 integration site로 쓰지 않는다.
+- battle actor는 `BattleActorPresentationCatalog` entry를 통해서만 spawn path에 연결한다.
+- 기본 primitive baseline은 `BattleActor_PrimitiveWrapper.prefab` 계약을 유지한다.
 
 ### 4. Promotion
 
@@ -61,6 +65,17 @@
 - project-owned folder 아래 wrapper 존재
 - accidental vendor-original edit 없음
 - sandbox validation 결과를 검토자가 이해할 수 있음
+
+## battle asset intake bootstrap
+
+- editor compile이 green이면 `SM/Setup/Repair Battle Asset Intake Assets`로
+  아래 자산을 자동 복구한다.
+  - `Assets/_Game/Prefabs/Battle/Actors/BattleActor_PrimitiveWrapper.prefab`
+  - `Assets/_Game/Prefabs/Battle/Actors/Templates/BattleActor_VendorWrapperTemplate.prefab`
+  - `Assets/Resources/_Game/Battle/BattleActorPresentationCatalog.asset`
+  - `Assets/_Game/Scenes/BattleAssetIntakeSandbox.unity`
+- compile blocker가 남아 있으면 auto bootstrap이 멈출 수 있으므로,
+  먼저 asmdef/runtime 오류를 정리한 뒤 같은 메뉴를 다시 실행한다.
 
 ## 열린 질문
 

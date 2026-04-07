@@ -5,7 +5,7 @@
 - 작업명: Battle Contract Closure
 - 담당: Codex
 - 상태: 진행 중
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-08
 - 의존:
   - `tasks/004_launch_floor_catalog_closure/status.md`
   - `docs/03_architecture/unity-agent-harness-contract.md`
@@ -33,6 +33,8 @@
 - 필요한 profile asset / string table entry / sandbox scenario
   evidence를 이 phase에서 정리한다.
 - Play Mode에서 reserialize/asset authoring을 섞지 않는다.
+- battle wrapper seam은 code-first로 닫고,
+  prefab/catalog/sandbox asset materialize는 editor compile green 이후 bootstrap으로 복구한다.
 
 ## Phase 3 validation
 
