@@ -20,245 +20,587 @@ MonoBehaviour:
     - rid: 162163771961769986
   m_TableData:
   - m_Id: 1864476226740224
-    m_Localized: Expedition Operator UI
+    m_Localized: "Expedition Operator UI"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071872
-    m_Localized: 'Position: {0}/{1} | Current: {2} | Selected: {3}'
+    m_Localized: "Position: {0}/{1} | Current: {2} | Selected: {3}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071873
-    m_Localized: Selection Needed
+    m_Localized: "Selection Needed"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071874
-    m_Localized: Five-node operator map
+    m_Localized: "Five-node operator map"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071875
-    m_Localized: '[Current]'
+    m_Localized: "[Current]"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071876
-    m_Localized: '[Selected]'
+    m_Localized: "[Selected]"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071877
-    m_Localized: '[Candidate]'
+    m_Localized: "[Candidate]"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071878
-    m_Localized: '[Done]'
+    m_Localized: "[Done]"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071879
-    m_Localized: '[Upcoming]'
+    m_Localized: "[Upcoming]"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071880
-    m_Localized: Battle
+    m_Localized: "Battle"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071881
-    m_Localized: Travel
+    m_Localized: "Travel"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071882
-    m_Localized: Selected Route / Node Effect
+    m_Localized: "Selected Route / Node Effect"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071883
-    m_Localized: '- Planned Reward: {0}'
+    m_Localized: "- Planned Reward: {0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071884
-    m_Localized: '- Node Effect: {0}'
+    m_Localized: "- Node Effect: {0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071885
-    m_Localized: '- Description: {0}'
+    m_Localized: "- Description: {0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071886
-    m_Localized: No branch is selected yet.
+    m_Localized: "No branch is selected yet."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071887
-    m_Localized: 'Last Applied Effect: {0}'
+    m_Localized: "Last Applied Effect: {0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071888
-    m_Localized: Current Expedition Squad
+    m_Localized: "Current Expedition Squad"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071889
-    m_Localized: Team Posture
+    m_Localized: "Team Posture"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071890
-    m_Localized: Deployment
+    m_Localized: "Deployment"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071891
-    m_Localized: Temp Augments
+    m_Localized: "Temp Augments"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071892
-    m_Localized: Select the next route first.
+    m_Localized: "Select the next route first."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071893
-    m_Localized: 'Team posture: {0}'
+    m_Localized: "Team posture: {0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071894
-    m_Localized: Route {0} selected.
+    m_Localized: "Route {0} selected."
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071895
-    m_Localized: '{0} was resolved without a battle.'
+    m_Localized: "{0} was resolved without a battle."
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071896
-    m_Localized: Choose a branch, then continue to the next battle.
+    m_Localized: "Choose a branch, then continue to the next battle."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071897
-    m_Localized: '{0} is ready for battle.'
+    m_Localized: "{0} is ready for battle."
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071898
-    m_Localized: '{0} can be cleared without battle.'
+    m_Localized: "{0} can be cleared without battle."
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071899
-    m_Localized: '{0} deployment updated.'
+    m_Localized: "{0} deployment updated."
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071900
-    m_Localized: No hero is available for deployment.
+    m_Localized: "No hero is available for deployment."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071901
-    m_Localized: Failed to advance the selected node.
+    m_Localized: "Failed to advance the selected node."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071902
-    m_Localized: That node cannot be selected from the current position.
+    m_Localized: "That node cannot be selected from the current position."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071903
-    m_Localized: Route
+    m_Localized: "Route"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071904
-    m_Localized: Next Battle
+    m_Localized: "Next Battle"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071905
-    m_Localized: No effect
+    m_Localized: "No effect"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071906
-    m_Localized: +{0} Gold
+    m_Localized: "+{0} Gold"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071907
-    m_Localized: Echo +{0}
+    m_Localized: "Echo +{0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071908
-    m_Localized: Echo +{0}
+    m_Localized: "Echo +{0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071909
-    m_Localized: 'Temp Augment: {0}'
+    m_Localized: "Temp Augment: {0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071910
-    m_Localized: Permanent Slot +{0}
+    m_Localized: "Permanent Slot +{0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769986
   - m_Id: 1864476277071911
-    m_Localized: Expedition ended. Returning to Town.
+    m_Localized: "Expedition ended. Returning to Town."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071912
-    m_Localized: Camp
+    m_Localized: "Camp"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071913
-    m_Localized: Recovery / Safe Travel
+    m_Localized: "Recovery / Safe Travel"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071914
-    m_Localized: Opening node that lets you choose the next branch without battle.
+    m_Localized: "Opening node that lets you choose the next branch without battle."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071915
-    m_Localized: Ambush Route
+    m_Localized: "Ambush Route"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071916
-    m_Localized: Extra Gold Reward
+    m_Localized: "Extra Gold Reward"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071917
-    m_Localized: Fight a short battle to secure extra gold.
+    m_Localized: "Fight a short battle to secure extra gold."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071918
-    m_Localized: Relay Route
+    m_Localized: "Relay Route"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476277071919
-    m_Localized: Echo Recovery Reward
+    m_Localized: "Echo Recovery Reward"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476281266176
-    m_Localized: Battle for Echo that recovers recruit RNG.
+    m_Localized: "Battle for Echo that recovers recruit RNG."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476281266177
-    m_Localized: Shrine Route
+    m_Localized: "Shrine Route"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476281266178
-    m_Localized: Temporary Augment
+    m_Localized: "Temporary Augment"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476281266179
-    m_Localized: Win a harder battle to claim a temporary augment.
+    m_Localized: "Win a harder battle to claim a temporary augment."
     m_Metadata:
       m_Items: []
   - m_Id: 1864476281266180
-    m_Localized: Extract Route
+    m_Localized: "Extract Route"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476281266181
-    m_Localized: Extraction Reward
+    m_Localized: "Extraction Reward"
     m_Metadata:
       m_Items: []
   - m_Id: 1864476281266182
-    m_Localized: Safely return and claim the final reward.
+    m_Localized: "Safely return and claim the final reward."
     m_Metadata:
       m_Items: []
+  - m_Id: 1
+    m_Localized: "Expedition Operator UI"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2
+    m_Localized: "Position: {0}/{1} | Current: {2} | Selected: {3}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 3
+    m_Localized: "Selection Needed"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4
+    m_Localized: "[Current]"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5
+    m_Localized: "[Selected]"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6
+    m_Localized: "[Candidate]"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7
+    m_Localized: "[Done]"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8
+    m_Localized: "[Upcoming]"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9
+    m_Localized: "Battle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10
+    m_Localized: "Travel"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11
+    m_Localized: "Selected Route / Node Effect"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12
+    m_Localized: "- Planned Reward: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 13
+    m_Localized: "- Node Effect: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 14
+    m_Localized: "- Description: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 15
+    m_Localized: "No branch is selected yet."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16
+    m_Localized: "Last Applied Effect: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 17
+    m_Localized: "Team Posture"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18
+    m_Localized: "Deployment"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19
+    m_Localized: "Temp Augments"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20
+    m_Localized: "Select the next route first."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21
+    m_Localized: "Team posture: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 22
+    m_Localized: "Route {0} selected."
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 23
+    m_Localized: "{0} was resolved without a battle."
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 24
+    m_Localized: "Choose a branch, then continue to the next battle."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25
+    m_Localized: "{0} is ready for battle."
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 26
+    m_Localized: "{0} can be cleared without battle."
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 27
+    m_Localized: "{0} deployment updated."
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 28
+    m_Localized: "No hero is available for deployment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29
+    m_Localized: "Failed to advance the selected node."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30
+    m_Localized: "That node cannot be selected from the current position."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31
+    m_Localized: "Route"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32
+    m_Localized: "Next Battle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33
+    m_Localized: "No effect"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34
+    m_Localized: "+{0} Gold"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 35
+    m_Localized: "Echo +{0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 36
+    m_Localized: "Echo +{0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 37
+    m_Localized: "Temp Augment: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 38
+    m_Localized: "Permanent Slot +{0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 39
+    m_Localized: "Expedition ended. Returning to Town."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40
+    m_Localized: "Camp"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41
+    m_Localized: "Recovery / Safe Travel"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42
+    m_Localized: "Opening node that lets you choose the next branch without battle."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43
+    m_Localized: "Ambush Route"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44
+    m_Localized: "Extra Gold Reward"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45
+    m_Localized: "Fight a short battle to secure extra gold."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46
+    m_Localized: "Relay Route"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47
+    m_Localized: "Echo Recovery Reward"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48
+    m_Localized: "Battle for Echo that recovers recruit RNG."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49
+    m_Localized: "Shrine Route"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50
+    m_Localized: "Temporary Augment"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51
+    m_Localized: "Win a harder battle to claim a temporary augment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52
+    m_Localized: "Extract Route"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53
+    m_Localized: "Extraction Reward"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54
+    m_Localized: "Safely return and claim the final reward."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55
+    m_Localized: "Map / Position"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56
+    m_Localized: "Routes"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57
+    m_Localized: "Selected Route"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58
+    m_Localized: "Squad / Deploy"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59
+    m_Localized: "Primary"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60
+    m_Localized: "Warning"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61
+    m_Localized: "Choose a node, then read the selected route summary before entering battle or resolving settlement."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62
+    m_Localized: "Resolve Settlement"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63
+    m_Localized: "Type: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 64
+    m_Localized: "Planned Reward: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 65
+    m_Localized: "Node Effect: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 66
+    m_Localized: "Chapter: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 67
+    m_Localized: "Site: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 68
+    m_Localized: "Current: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 69
+    m_Localized: "Selected: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 70
+    m_Localized: "Type: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 71
+    m_Localized: "Battle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72
+    m_Localized: "Settlement"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73
+    m_Localized: "Type: {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 74
+    m_Localized: "Return to Town: abandon this expedition and lose the current route commitment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 75
+    m_Localized: "Choose a route first. The summary panel explains the reward and risk."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76
+    m_Localized: "Enter the selected battle node with the current deploy and posture."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77
+    m_Localized: "Resolve this settlement node and move to Reward without a battle."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 78
+    m_Localized: "Abandon the current expedition and return to Town."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 79
+    m_Localized: "{0}. Planned reward: {1}. Node effect: {2}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
   references:
     version: 2
     RefIds:
@@ -283,3 +625,29 @@ MonoBehaviour:
         - id: 1864476277071908
         - id: 1864476277071909
         - id: 1864476277071910
+        - id: 2
+        - id: 12
+        - id: 13
+        - id: 14
+        - id: 16
+        - id: 21
+        - id: 22
+        - id: 23
+        - id: 25
+        - id: 26
+        - id: 27
+        - id: 34
+        - id: 35
+        - id: 36
+        - id: 37
+        - id: 38
+        - id: 63
+        - id: 64
+        - id: 65
+        - id: 66
+        - id: 67
+        - id: 68
+        - id: 69
+        - id: 70
+        - id: 73
+        - id: 79

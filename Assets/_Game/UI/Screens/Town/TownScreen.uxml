@@ -1,66 +1,74 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:VisualElement name="TownScreenRoot" class="screen">
         <ui:VisualElement class="screen__topbar">
-            <ui:Label name="TitleLabel" class="screen__title" text="Town" />
-            <ui:VisualElement class="screen__locale">
-                <ui:Label name="LocaleStatusLabel" class="screen__locale-status" text="Locale" />
-                <ui:Button name="LocaleKoButton" class="ui-button" text="KO" />
-                <ui:Button name="LocaleEnButton" class="ui-button" text="EN" />
+            <ui:Label name="TitleLabel" class="screen__title" />
+            <ui:VisualElement class="screen__toolbar">
+                <ui:VisualElement class="screen__locale">
+                    <ui:Label name="LocaleStatusLabel" class="screen__locale-status" />
+                    <ui:Button name="LocaleKoButton" class="ui-button" />
+                    <ui:Button name="LocaleEnButton" class="ui-button" />
+                </ui:VisualElement>
+                <ui:Button name="HelpButton" class="ui-button" />
             </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="HelpStrip" class="panel panel--dense help-strip">
+            <ui:Label name="HelpBodyLabel" class="panel__text help-strip__body" />
+            <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss" />
         </ui:VisualElement>
 
         <ui:VisualElement class="screen__body">
             <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Campaign" />
+                    <ui:Label name="CampaignTitleLabel" class="panel__title" />
                     <ui:Label name="CampaignSummaryLabel" class="panel__text" />
                     <ui:VisualElement class="action-row">
-                        <ui:Button name="PrevChapterButton" class="ui-button" text="Prev Chapter" />
-                        <ui:Button name="NextChapterButton" class="ui-button" text="Next Chapter" />
+                        <ui:Button name="PrevChapterButton" class="ui-button" />
+                        <ui:Button name="NextChapterButton" class="ui-button" />
                     </ui:VisualElement>
                     <ui:VisualElement class="action-row">
-                        <ui:Button name="PrevSiteButton" class="ui-button" text="Prev Site" />
-                        <ui:Button name="NextSiteButton" class="ui-button" text="Next Site" />
+                        <ui:Button name="PrevSiteButton" class="ui-button" />
+                        <ui:Button name="NextSiteButton" class="ui-button" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Roster" />
+                    <ui:Label name="RosterTitleLabel" class="panel__title" />
                     <ui:Label name="RosterLabel" class="panel__text" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement class="screen__column" style="flex-grow: 1.4;">
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Currency" />
+                    <ui:Label name="EconomyTitleLabel" class="panel__title" />
                     <ui:Label name="CurrencyLabel" class="panel__text" />
                 </ui:VisualElement>
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Blueprint" />
+                    <ui:Label name="BlueprintTitleLabel" class="panel__title" />
                     <ui:Label name="BlueprintSummaryLabel" class="panel__text" />
                 </ui:VisualElement>
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Recruit" />
+                    <ui:Label name="RecruitTitleLabel" class="panel__title" />
                     <ui:Label name="RecruitSummaryLabel" class="panel__text" />
                     <ui:VisualElement class="card-row" name="RecruitCardsRow">
                         <ui:VisualElement class="card" name="RecruitCard1">
                             <ui:Label name="RecruitCard1TitleLabel" class="card__title" />
                             <ui:Label name="RecruitCard1BodyLabel" class="card__body" />
-                            <ui:Button name="RecruitCard1Button" class="ui-button ui-button--accent" text="Recruit" />
+                            <ui:Button name="RecruitCard1Button" class="ui-button" />
                         </ui:VisualElement>
                         <ui:VisualElement class="card" name="RecruitCard2">
                             <ui:Label name="RecruitCard2TitleLabel" class="card__title" />
                             <ui:Label name="RecruitCard2BodyLabel" class="card__body" />
-                            <ui:Button name="RecruitCard2Button" class="ui-button ui-button--accent" text="Recruit" />
+                            <ui:Button name="RecruitCard2Button" class="ui-button" />
                         </ui:VisualElement>
                         <ui:VisualElement class="card" name="RecruitCard3">
                             <ui:Label name="RecruitCard3TitleLabel" class="card__title" />
                             <ui:Label name="RecruitCard3BodyLabel" class="card__body" />
-                            <ui:Button name="RecruitCard3Button" class="ui-button ui-button--accent" text="Recruit" />
+                            <ui:Button name="RecruitCard3Button" class="ui-button" />
                         </ui:VisualElement>
                         <ui:VisualElement class="card" name="RecruitCard4">
                             <ui:Label name="RecruitCard4TitleLabel" class="card__title" />
                             <ui:Label name="RecruitCard4BodyLabel" class="card__body" />
-                            <ui:Button name="RecruitCard4Button" class="ui-button ui-button--accent" text="Recruit" />
+                            <ui:Button name="RecruitCard4Button" class="ui-button" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
@@ -68,50 +76,64 @@
 
             <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Selected Hero" />
+                    <ui:Label name="SelectedHeroTitleLabel" class="panel__title" />
                     <ui:Label name="SelectedHeroLabel" class="panel__text" />
                 </ui:VisualElement>
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Deploy" />
+                    <ui:Label name="DeployTitleLabel" class="panel__title" />
                     <ui:Label name="DeployPreviewLabel" class="panel__text" />
                     <ui:VisualElement class="deploy-grid">
-                        <ui:Button name="DeployButton_FrontTop" class="ui-button deploy-button" text="Front Top" />
-                        <ui:Button name="DeployButton_FrontCenter" class="ui-button deploy-button" text="Front Center" />
-                        <ui:Button name="DeployButton_FrontBottom" class="ui-button deploy-button" text="Front Bottom" />
-                        <ui:Button name="DeployButton_BackTop" class="ui-button deploy-button" text="Back Top" />
-                        <ui:Button name="DeployButton_BackCenter" class="ui-button deploy-button" text="Back Center" />
-                        <ui:Button name="DeployButton_BackBottom" class="ui-button deploy-button" text="Back Bottom" />
+                        <ui:Button name="DeployButton_FrontTop" class="ui-button deploy-button" />
+                        <ui:Button name="DeployButton_FrontCenter" class="ui-button deploy-button" />
+                        <ui:Button name="DeployButton_FrontBottom" class="ui-button deploy-button" />
+                        <ui:Button name="DeployButton_BackTop" class="ui-button deploy-button" />
+                        <ui:Button name="DeployButton_BackCenter" class="ui-button deploy-button" />
+                        <ui:Button name="DeployButton_BackBottom" class="ui-button deploy-button" />
                     </ui:VisualElement>
-                    <ui:Button name="TeamPostureButton" class="ui-button" text="Posture" />
+                    <ui:Button name="TeamPostureButton" class="ui-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 
         <ui:VisualElement class="panel panel--dense status-bar">
-            <ui:VisualElement class="action-row">
-                <ui:Button name="RerollButton" class="ui-button" text="Reroll" />
-                <ui:Button name="SaveButton" class="ui-button" text="Save" />
-                <ui:Button name="LoadButton" class="ui-button" text="Load" />
-                <ui:Button name="ReturnToStartButton" class="ui-button" text="Return to Start" />
-                <ui:Button name="ExpeditionButton" class="ui-button ui-button--accent" text="Start Expedition" />
-                <ui:Button name="QuickBattleButton" class="ui-button" text="Quick Battle (Smoke)" />
+            <ui:VisualElement class="action-group">
+                <ui:Label name="PrimaryActionsTitleLabel" class="action-group__title" />
+                <ui:VisualElement class="action-row">
+                    <ui:Button name="ExpeditionButton" class="ui-button ui-button--accent" />
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement class="action-row">
-                <ui:Button name="CycleHeroButton" class="ui-button" text="Cycle Hero" />
-                <ui:Button name="CycleItemButton" class="ui-button" text="Cycle Item" />
-                <ui:Button name="ScoutButton" class="ui-button" text="Scout" />
-                <ui:Button name="RetrainActiveButton" class="ui-button" text="Retrain Active" />
-                <ui:Button name="RetrainPassiveButton" class="ui-button" text="Retrain Passive" />
-                <ui:Button name="FullRetrainButton" class="ui-button" text="Full Retrain" />
-                <ui:Button name="DismissButton" class="ui-button ui-button--danger" text="Dismiss" />
+            <ui:VisualElement class="action-group">
+                <ui:Label name="GameplayActionsTitleLabel" class="action-group__title" />
+                <ui:VisualElement class="action-row">
+                    <ui:Button name="RerollButton" class="ui-button" />
+                    <ui:Button name="CycleHeroButton" class="ui-button" />
+                    <ui:Button name="CycleItemButton" class="ui-button" />
+                    <ui:Button name="ScoutButton" class="ui-button" />
+                    <ui:Button name="RetrainActiveButton" class="ui-button" />
+                    <ui:Button name="RetrainPassiveButton" class="ui-button" />
+                    <ui:Button name="FullRetrainButton" class="ui-button" />
+                    <ui:Button name="DismissButton" class="ui-button ui-button--danger" />
+                    <ui:Button name="RefitButton" class="ui-button" />
+                    <ui:Button name="CycleBoardButton" class="ui-button" />
+                    <ui:Button name="CycleNodeButton" class="ui-button" />
+                    <ui:Button name="ToggleNodeButton" class="ui-button" />
+                    <ui:Button name="CyclePermanentButton" class="ui-button" />
+                    <ui:Button name="EquipPermanentButton" class="ui-button" />
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement class="action-row">
-                <ui:Button name="RefitButton" class="ui-button" text="Refit" />
-                <ui:Button name="CycleBoardButton" class="ui-button" text="Cycle Board" />
-                <ui:Button name="CycleNodeButton" class="ui-button" text="Cycle Node" />
-                <ui:Button name="ToggleNodeButton" class="ui-button" text="Toggle Node" />
-                <ui:Button name="CyclePermanentButton" class="ui-button" text="Cycle Permanent" />
-                <ui:Button name="EquipPermanentButton" class="ui-button" text="Equip Permanent" />
+            <ui:VisualElement class="action-group">
+                <ui:Label name="UtilityActionsTitleLabel" class="action-group__title" />
+                <ui:VisualElement class="action-row">
+                    <ui:Button name="SaveButton" class="ui-button" />
+                    <ui:Button name="LoadButton" class="ui-button" />
+                    <ui:Button name="ReturnToStartButton" class="ui-button ui-button--warning" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="DebugActionsGroup" class="action-group action-group--debug">
+                <ui:Label name="DebugActionsTitleLabel" class="action-group__title" />
+                <ui:VisualElement class="action-row">
+                    <ui:Button name="QuickBattleButton" class="ui-button ui-button--debug" />
+                </ui:VisualElement>
             </ui:VisualElement>
             <ui:Label name="StatusLabel" class="panel__text panel__text--muted" />
         </ui:VisualElement>

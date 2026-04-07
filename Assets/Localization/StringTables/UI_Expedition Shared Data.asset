@@ -239,6 +239,322 @@ MonoBehaviour:
     m_Key: ui.expedition.route.extract.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 1
+    m_Key: ui.expedition.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2
+    m_Key: ui.expedition.position.summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3
+    m_Key: ui.expedition.position.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4
+    m_Key: ui.expedition.map.marker.current
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5
+    m_Key: ui.expedition.map.marker.selected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6
+    m_Key: ui.expedition.map.marker.candidate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7
+    m_Key: ui.expedition.map.marker.completed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8
+    m_Key: ui.expedition.map.marker.upcoming
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9
+    m_Key: ui.expedition.map.battle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10
+    m_Key: ui.expedition.map.travel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11
+    m_Key: ui.expedition.reward.header
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12
+    m_Key: ui.expedition.reward.planned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13
+    m_Key: ui.expedition.reward.effect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14
+    m_Key: ui.expedition.reward.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15
+    m_Key: ui.expedition.reward.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16
+    m_Key: ui.expedition.reward.last_effect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17
+    m_Key: ui.expedition.squad.posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18
+    m_Key: ui.expedition.squad.deployment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19
+    m_Key: ui.expedition.squad.temp_augments
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20
+    m_Key: ui.expedition.status.select_route_first
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21
+    m_Key: ui.expedition.status.team_posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22
+    m_Key: ui.expedition.status.route_selected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23
+    m_Key: ui.expedition.status.node_cleared
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24
+    m_Key: ui.expedition.status.default
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25
+    m_Key: ui.expedition.status.ready_battle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26
+    m_Key: ui.expedition.status.safe_node
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27
+    m_Key: ui.expedition.status.anchor_cycled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28
+    m_Key: ui.expedition.error.no_deployable_heroes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29
+    m_Key: ui.expedition.error.advance_failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30
+    m_Key: ui.expedition.error.invalid_route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31
+    m_Key: ui.expedition.action.route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32
+    m_Key: ui.expedition.action.next_battle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33
+    m_Key: ui.expedition.effect.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34
+    m_Key: ui.expedition.effect.gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35
+    m_Key: ui.expedition.effect.reroll
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36
+    m_Key: ui.expedition.effect.echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37
+    m_Key: ui.expedition.effect.temp_augment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38
+    m_Key: ui.expedition.effect.permanent_slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39
+    m_Key: ui.expedition.effect.return_town
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40
+    m_Key: ui.expedition.route.camp.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41
+    m_Key: ui.expedition.route.camp.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42
+    m_Key: ui.expedition.route.camp.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43
+    m_Key: ui.expedition.route.ambush.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44
+    m_Key: ui.expedition.route.ambush.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45
+    m_Key: ui.expedition.route.ambush.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46
+    m_Key: ui.expedition.route.relay.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47
+    m_Key: ui.expedition.route.relay.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48
+    m_Key: ui.expedition.route.relay.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49
+    m_Key: ui.expedition.route.shrine.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50
+    m_Key: ui.expedition.route.shrine.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51
+    m_Key: ui.expedition.route.shrine.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52
+    m_Key: ui.expedition.route.extract.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53
+    m_Key: ui.expedition.route.extract.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54
+    m_Key: ui.expedition.route.extract.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55
+    m_Key: ui.expedition.panel.map
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56
+    m_Key: ui.expedition.panel.routes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57
+    m_Key: ui.expedition.panel.selected_route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58
+    m_Key: ui.expedition.panel.squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59
+    m_Key: ui.expedition.group.primary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60
+    m_Key: ui.expedition.group.warning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61
+    m_Key: ui.expedition.help.body
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62
+    m_Key: ui.expedition.action.resolve_settlement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63
+    m_Key: ui.expedition.node.type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64
+    m_Key: ui.expedition.node.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65
+    m_Key: ui.expedition.node.effect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66
+    m_Key: ui.expedition.position.chapter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 67
+    m_Key: ui.expedition.position.site
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68
+    m_Key: ui.expedition.position.current
+    m_Metadata:
+      m_Items: []
+  - m_Id: 69
+    m_Key: ui.expedition.position.selected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70
+    m_Key: ui.expedition.position.type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71
+    m_Key: ui.expedition.position.node_type.battle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72
+    m_Key: ui.expedition.position.node_type.settlement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73
+    m_Key: ui.expedition.reward.type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 74
+    m_Key: ui.expedition.reward.return_town
+    m_Metadata:
+      m_Items: []
+  - m_Id: 75
+    m_Key: ui.expedition.tooltip.next_action_locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76
+    m_Key: ui.expedition.tooltip.enter_battle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77
+    m_Key: ui.expedition.tooltip.resolve_settlement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 78
+    m_Key: ui.expedition.tooltip.return_town
+    m_Metadata:
+      m_Items: []
+  - m_Id: 79
+    m_Key: ui.expedition.tooltip.route_card
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

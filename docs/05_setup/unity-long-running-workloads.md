@@ -1,7 +1,7 @@
 # Unity 장시간 작업 런북
 
 - 상태: active
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-08
 - 소유자: repository
 - 소스오브트루스: `docs/05_setup/unity-long-running-workloads.md`
 - 관련문서:
@@ -67,6 +67,10 @@
 
 - `pwsh -File tools/unity-bridge.ps1 status`
 - `pwsh -File tools/unity-bridge.ps1 compile`
+- `pwsh -File tools/unity-bridge.ps1 prepare-playable`
+- `pwsh -File tools/unity-bridge.ps1 quick-battle-smoke`
+- `pwsh -File tools/unity-bridge.ps1 content-validate`
+- `pwsh -File tools/unity-bridge.ps1 balance-sweep-smoke`
 - `pwsh -File tools/unity-bridge.ps1 clear-console`
 - `pwsh -File tools/unity-bridge.ps1 console`
 - `pwsh -File tools/unity-bridge.ps1 report-town`
@@ -84,6 +88,8 @@
 - `pwsh -File tools/unity-bridge.ps1 loopd-full`
 
 긴 lane은 CI 기본 test lane이 아니라, shardable manual validation lane으로 취급한다.
+`pwsh -File tools/pre-art-rc.ps1`는 blocking automated floor를 순차 실행하지만,
+Loop D는 여전히 shard lane으로 개별 phase를 기록한다.
 
 ### 2. default `test-edit`는 targeted oracle용이다
 
@@ -115,6 +121,7 @@
 - `LoopDTelemetryAndBalanceTests`의 장시간 smoke는 default EditMode suite에서 제외한다.
 - Loop D artifact smoke/full evidence는 `FirstPlayableBalanceRunner` test가 아니라 `loop_d_balance_report`
   custom tool과 `tools/unity-bridge.ps1 loopd-*` verb로 회수한다.
+- release floor wrapper도 `loopd-slice -> loopd-purekit -> loopd-systemic -> loopd-runlite`를 그대로 사용한다.
 - `SM/Validation/Run Loop D Balance Smoke`는 기본 경로가 아니다.
 - Loop D full suite는 CI mandatory lane이 아니라 manual artifact lane이다.
 

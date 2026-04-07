@@ -20,185 +20,595 @@ MonoBehaviour:
     - rid: 1798213439901401364
   m_TableData:
   - m_Id: 901000001
-    m_Localized: Battle Observer UI
+    m_Localized: "Battle Observer UI"
     m_Metadata:
       m_Items: []
   - m_Id: 901000002
-    m_Localized: Allied HP
+    m_Localized: "Allied HP"
     m_Metadata:
       m_Items: []
   - m_Id: 901000003
-    m_Localized: Enemy HP
+    m_Localized: "Enemy HP"
     m_Metadata:
       m_Items: []
   - m_Id: 901000004
-    m_Localized: Preparing battle log
+    m_Localized: "Preparing battle log"
     m_Metadata:
       m_Items: []
   - m_Id: 901000005
-    m_Localized: Battle in progress
+    m_Localized: "Battle in progress"
     m_Metadata:
       m_Items: []
   - m_Id: 901000006
-    m_Localized: Victory
+    m_Localized: "Victory"
     m_Metadata:
       m_Items: []
   - m_Id: 901000007
-    m_Localized: Defeat
+    m_Localized: "Defeat"
     m_Metadata:
       m_Items: []
   - m_Id: 901000008
-    m_Localized: Speed x{0:0}
+    m_Localized: "Speed x{0:0}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000009
-    m_Localized: Speed x{0:0} | Paused
+    m_Localized: "Speed x{0:0} | Paused"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000010
-    m_Localized: Initializing live simulation
+    m_Localized: "Initializing live simulation"
     m_Metadata:
       m_Items: []
   - m_Id: 901000011
-    m_Localized: Battle paused
+    m_Localized: "Battle paused"
     m_Metadata:
       m_Items: []
   - m_Id: 901000012
-    m_Localized: Battle resumed
+    m_Localized: "Battle resumed"
     m_Metadata:
       m_Items: []
   - m_Id: 901000013
-    m_Localized: ' | Paused'
+    m_Localized: " | Paused"
     m_Metadata:
       m_Items: []
   - m_Id: 901000014
-    m_Localized: Battle finished | {0} steps | {1} events
+    m_Localized: "Battle finished | {0} steps | {1} events"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000015
-    m_Localized: Step {0} | Result resolved{1}
+    m_Localized: "Step {0} | Result resolved{1}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000016
-    m_Localized: Step {0} | {1} -> {2} | {3} {4:0}{5}
+    m_Localized: "Step {0} | {1} -> {2} | {3} {4:0}{5}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000017
-    m_Localized: Step {0} | {1} windup {2}% -> {3}{4}
+    m_Localized: "Step {0} | {1} windup {2}% -> {3}{4}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000018
-    m_Localized: Step {0} | posture {1}{2}
+    m_Localized: "Step {0} | posture {1}{2}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000019
-    m_Localized: No allied unit is ready for battle.
+    m_Localized: "No allied unit is ready for battle."
     m_Metadata:
       m_Items: []
   - m_Id: 901000020
-    m_Localized: Battle View Settings
+    m_Localized: "Battle View Settings"
     m_Metadata:
       m_Items: []
   - m_Id: 901000021
-    m_Localized: Settings panel closed
+    m_Localized: "Settings panel closed"
     m_Metadata:
       m_Items: []
   - m_Id: 901000022
-    m_Localized: '{0}: {1}'
+    m_Localized: "{0}: {1}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000023
-    m_Localized: Overhead UI
+    m_Localized: "Overhead UI"
     m_Metadata:
       m_Items: []
   - m_Id: 901000024
-    m_Localized: Damage Text
+    m_Localized: "Damage Text"
     m_Metadata:
       m_Items: []
   - m_Id: 901000025
-    m_Localized: Overhead UI
+    m_Localized: "Overhead UI"
     m_Metadata:
       m_Items: []
   - m_Id: 901000026
-    m_Localized: Damage Text
+    m_Localized: "Damage Text"
     m_Metadata:
       m_Items: []
   - m_Id: 901000027
-    m_Localized: Debug Overlay
+    m_Localized: "Debug Overlay"
     m_Metadata:
       m_Items: []
   - m_Id: 901000028
-    m_Localized: Team Summary
+    m_Localized: "Team Summary"
     m_Metadata:
       m_Items: []
   - m_Id: 901000029
-    m_Localized: Overhead UI {0}
+    m_Localized: "Overhead UI {0}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000030
-    m_Localized: Damage Text {0}
+    m_Localized: "Damage Text {0}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000031
-    m_Localized: Overhead UI {0}
+    m_Localized: "Overhead UI {0}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000032
-    m_Localized: Damage Text {0}
+    m_Localized: "Damage Text {0}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000033
-    m_Localized: Debug Overlay {0}
+    m_Localized: "Debug Overlay {0}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 901000034
-    m_Localized: Team Summary {0}
+    m_Localized: "Team Summary {0}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401364
   - m_Id: 2688396089614336
-    m_Localized: Character
+    m_Localized: "Character"
     m_Metadata:
       m_Items: []
   - m_Id: 2688396177694720
-    m_Localized: Archetype
+    m_Localized: "Archetype"
     m_Metadata:
       m_Items: []
   - m_Id: 2688396177694721
-    m_Localized: Race
+    m_Localized: "Race"
     m_Metadata:
       m_Items: []
   - m_Id: 2688396177694722
-    m_Localized: Class
+    m_Localized: "Class"
     m_Metadata:
       m_Items: []
   - m_Id: 2688396181889024
-    m_Localized: Role
+    m_Localized: "Role"
     m_Metadata:
       m_Items: []
   - m_Id: 2688396181889025
-    m_Localized: Role Family
+    m_Localized: "Role Family"
     m_Metadata:
       m_Items: []
   - m_Id: 2688396181889026
-    m_Localized: Anchor
+    m_Localized: "Anchor"
     m_Metadata:
       m_Items: []
   - m_Id: 2688396181889027
-    m_Localized: Selected Unit
+    m_Localized: "Selected Unit"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1
+    m_Localized: "Battle Observer UI"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2
+    m_Localized: "Allied HP"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3
+    m_Localized: "Enemy HP"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4
+    m_Localized: "Victory"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5
+    m_Localized: "Defeat"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6
+    m_Localized: "Speed x{0:0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 7
+    m_Localized: "Speed x{0:0} | Paused"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 8
+    m_Localized: "Battle paused"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9
+    m_Localized: "Battle resumed"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10
+    m_Localized: " | Paused"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11
+    m_Localized: "Battle finished | {0} steps | {1} events"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 12
+    m_Localized: "Step {0} | Result resolved{1}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 13
+    m_Localized: "Step {0} | {1} -> {2} | {3} {4:0}{5}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 14
+    m_Localized: "Step {0} | {1} windup {2}% -> {3}{4}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 15
+    m_Localized: "Step {0} | posture {1}{2}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 16
+    m_Localized: "No allied unit is ready for battle."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17
+    m_Localized: "Battle View Settings"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18
+    m_Localized: "Settings panel closed"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19
+    m_Localized: "{0}: {1}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 20
+    m_Localized: "Overhead UI"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21
+    m_Localized: "Damage Text"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22
+    m_Localized: "Overhead UI"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23
+    m_Localized: "Damage Text"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24
+    m_Localized: "Debug Overlay"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25
+    m_Localized: "Archetype"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26
+    m_Localized: "Race"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27
+    m_Localized: "Class"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28
+    m_Localized: "Role"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29
+    m_Localized: "Anchor"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30
+    m_Localized: "Selected Unit"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31
+    m_Localized: "Team Summary"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32
+    m_Localized: "Overhead UI {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 33
+    m_Localized: "Damage Text {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 34
+    m_Localized: "Overhead UI {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 35
+    m_Localized: "Damage Text {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 36
+    m_Localized: "Debug Overlay {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 37
+    m_Localized: "Team Summary {0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 38
+    m_Localized: "Summary"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39
+    m_Localized: "Allies"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40
+    m_Localized: "Enemies"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41
+    m_Localized: "Log"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42
+    m_Localized: "Playback"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43
+    m_Localized: "Primary Action"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44
+    m_Localized: "Debug / Smoke"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45
+    m_Localized: "Utility"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46
+    m_Localized: "Read the battle through the summary, recent log, and selected unit panel. Continue unlocks after the battle resolves."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47
+    m_Localized: "x1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48
+    m_Localized: "x2"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49
+    m_Localized: "x4"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50
+    m_Localized: "Replay"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51
+    m_Localized: "Rebattle (Debug)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52
+    m_Localized: "Return to Town (Debug)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53
+    m_Localized: "Authored Expedition Battle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54
+    m_Localized: "Quick Battle (Smoke) | Speed x{0:0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 55
+    m_Localized: "Quick Battle (Smoke) | Speed x{0:0} | Paused"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 56
+    m_Localized: "Allies pressing"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57
+    m_Localized: "Enemies pressing"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58
+    m_Localized: "Pressure even"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59
+    m_Localized: "Result | {0} | {1}{2}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 60
+    m_Localized: "Step {0:000} | {1} {2} -> {3} | {4}{5}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 61
+    m_Localized: "Step {0:000} | {1}{2}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 62
+    m_Localized: "{0} | {1:000} steps | {2} events"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 63
+    m_Localized: "Continue activates after the battle is fully resolved."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64
+    m_Localized: "Re-battle is only available in Quick Battle (Smoke)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65
+    m_Localized: "Direct return to Town is only available in Quick Battle (Smoke)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66
+    m_Localized: "Finish the battle before returning directly to Town."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 67
+    m_Localized: "Display"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68
+    m_Localized: "Debug"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 69
+    m_Localized: "Quick Battle (Smoke) lets you pause, replay, and change playback speed."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70
+    m_Localized: "Proceed to Reward with the resolved battle result."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71
+    m_Localized: "Continue activates after the battle is fully resolved."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72
+    m_Localized: "Replay the current Quick Battle (Smoke) timeline from the start."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73
+    m_Localized: "Restart Quick Battle (Smoke) with a fresh seed."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 74
+    m_Localized: "Leave Quick Battle (Smoke) after the battle is resolved and go directly back to Town."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 75
+    m_Localized: "Open display settings. Debug settings appear only in Quick Battle (Smoke)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76
+    m_Localized: "Show HP and state over units in the battle field."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77
+    m_Localized: "Show floating damage and heal numbers during battle."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 78
+    m_Localized: "Show ally and enemy team summaries in the side panels."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 79
+    m_Localized: "Show targeting lines and battle diagnostics for Quick Battle (Smoke)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80
+    m_Localized: "[{0}] {1} hit {2} -{3:0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 81
+    m_Localized: "[{0}] {1} heal {2} +{3:0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 82
+    m_Localized: "[{0}] {1} skill {2} -{3:0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 83
+    m_Localized: "[{0}] {1} guard"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 84
+    m_Localized: "[{0}] {1} down"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 85
+    m_Localized: "[{0}] {1} {2}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 86
+    m_Localized: "State"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87
+    m_Localized: "Engage Slot"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88
+    m_Localized: "Targeting"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89
+    m_Localized: "Retarget Lock"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 90
+    m_Localized: "Guard Radius"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 91
+    m_Localized: "Cluster Radius"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 92
+    m_Localized: "No current target"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93
+    m_Localized: "Contact"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94
+    m_Localized: "Keep current"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 95
+    m_Localized: "Preferred Range"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96
+    m_Localized: "Current target"
     m_Metadata:
       m_Items: []
   references:
@@ -223,3 +633,29 @@ MonoBehaviour:
         - id: 901000032
         - id: 901000033
         - id: 901000034
+        - id: 6
+        - id: 7
+        - id: 11
+        - id: 12
+        - id: 13
+        - id: 14
+        - id: 15
+        - id: 19
+        - id: 32
+        - id: 33
+        - id: 34
+        - id: 35
+        - id: 36
+        - id: 37
+        - id: 54
+        - id: 55
+        - id: 59
+        - id: 60
+        - id: 61
+        - id: 62
+        - id: 80
+        - id: 81
+        - id: 82
+        - id: 83
+        - id: 84
+        - id: 85

@@ -155,6 +155,626 @@ MonoBehaviour:
     m_Key: ui.town.action.quick_battle
     m_Metadata:
       m_Items: []
+  - m_Id: 1
+    m_Key: ui.town.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2
+    m_Key: ui.town.currency.summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3
+    m_Key: ui.town.roster.tag.expedition
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4
+    m_Key: ui.town.roster.tag.reserve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5
+    m_Key: ui.town.recruit.header
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6
+    m_Key: ui.town.recruit.current_count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7
+    m_Key: ui.town.recruit.cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8
+    m_Key: ui.town.recruit.reroll_cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9
+    m_Key: ui.town.recruit.roster_count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10
+    m_Key: ui.town.recruit.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11
+    m_Key: ui.town.recruit.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12
+    m_Key: ui.town.squad.header
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13
+    m_Key: ui.town.deploy.header
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14
+    m_Key: ui.town.deploy.posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15
+    m_Key: ui.town.deploy.start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16
+    m_Key: ui.town.deploy.resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17
+    m_Key: ui.town.deploy.last_reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18
+    m_Key: ui.town.deploy.last_effect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19
+    m_Key: ui.town.deploy.route_needed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20
+    m_Key: ui.town.status.default.resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21
+    m_Key: ui.town.status.default.start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22
+    m_Key: ui.town.status.profile_loaded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23
+    m_Key: ui.town.status.profile_saved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24
+    m_Key: ui.town.status.recruit_success
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25
+    m_Key: ui.town.status.reroll_success
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26
+    m_Key: ui.town.status.team_posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27
+    m_Key: ui.town.status.anchor_cycled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28
+    m_Key: ui.town.error.recruit_failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29
+    m_Key: ui.town.error.reroll_failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30
+    m_Key: ui.town.error.return_start_locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31
+    m_Key: ui.town.action.recruit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32
+    m_Key: ui.town.action.reroll
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33
+    m_Key: ui.town.action.start_expedition
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34
+    m_Key: ui.town.action.resume_expedition
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35
+    m_Key: ui.town.panel.campaign
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36
+    m_Key: ui.town.panel.economy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37
+    m_Key: ui.town.panel.roster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38
+    m_Key: ui.town.panel.blueprint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39
+    m_Key: ui.town.panel.recruit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40
+    m_Key: ui.town.panel.selected_hero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41
+    m_Key: ui.town.panel.deploy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42
+    m_Key: ui.town.group.primary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43
+    m_Key: ui.town.group.gameplay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44
+    m_Key: ui.town.group.utility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45
+    m_Key: ui.town.group.debug
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46
+    m_Key: ui.town.help.body
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47
+    m_Key: ui.town.action.prev_chapter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48
+    m_Key: ui.town.action.next_chapter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49
+    m_Key: ui.town.action.prev_site
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50
+    m_Key: ui.town.action.next_site
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51
+    m_Key: ui.town.action.quick_battle_smoke
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52
+    m_Key: ui.town.action.cycle_hero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53
+    m_Key: ui.town.action.cycle_item
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54
+    m_Key: ui.town.action.scout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55
+    m_Key: ui.town.action.dismiss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56
+    m_Key: ui.town.action.refit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57
+    m_Key: ui.town.action.cycle_board
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58
+    m_Key: ui.town.action.cycle_node
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59
+    m_Key: ui.town.action.toggle_node
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60
+    m_Key: ui.town.action.cycle_permanent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61
+    m_Key: ui.town.action.equip_permanent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62
+    m_Key: ui.town.tooltip.team_posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63
+    m_Key: ui.town.tooltip.quick_battle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64
+    m_Key: ui.town.tooltip.return_start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65
+    m_Key: ui.town.tooltip.return_start_locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66
+    m_Key: ui.town.tooltip.expedition_start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 67
+    m_Key: ui.town.tooltip.expedition_resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68
+    m_Key: ui.town.tooltip.expedition_reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 69
+    m_Key: ui.town.campaign.chapter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70
+    m_Key: ui.town.campaign.site
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71
+    m_Key: ui.town.campaign.selection_state
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72
+    m_Key: ui.town.campaign.objective
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73
+    m_Key: ui.town.campaign.unlocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 74
+    m_Key: ui.town.campaign.locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 75
+    m_Key: ui.town.campaign.pending_reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76
+    m_Key: ui.town.campaign.active_run
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77
+    m_Key: ui.town.campaign.quick_battle_ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 78
+    m_Key: ui.town.campaign.quick_battle_locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 79
+    m_Key: ui.town.deploy.squad_count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80
+    m_Key: ui.town.deploy.readiness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 81
+    m_Key: ui.town.deploy.ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82
+    m_Key: ui.town.deploy.not_ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83
+    m_Key: ui.town.deploy.primary_start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84
+    m_Key: ui.town.deploy.primary_resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85
+    m_Key: ui.town.deploy.primary_reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86
+    m_Key: ui.town.deploy.pending_reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87
+    m_Key: ui.town.deploy.last_permanent_unlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88
+    m_Key: ui.town.economy.gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89
+    m_Key: ui.town.economy.echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 90
+    m_Key: ui.town.economy.refresh_cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 91
+    m_Key: ui.town.economy.refresh_state
+    m_Metadata:
+      m_Items: []
+  - m_Id: 92
+    m_Key: ui.town.economy.refresh_available
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93
+    m_Key: ui.town.economy.refresh_used
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94
+    m_Key: ui.town.economy.scout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 95
+    m_Key: ui.town.economy.available
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96
+    m_Key: ui.town.economy.used
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97
+    m_Key: ui.town.economy.rare_pity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 98
+    m_Key: ui.town.economy.epic_pity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 99
+    m_Key: ui.town.recruit.badge.on_plan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 100
+    m_Key: ui.town.recruit.badge.protected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101
+    m_Key: ui.town.recruit.badge.scout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102
+    m_Key: ui.town.recruit.badge.protected_scout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 103
+    m_Key: ui.town.recruit.slot.standard_a
+    m_Metadata:
+      m_Items: []
+  - m_Id: 104
+    m_Key: ui.town.recruit.slot.standard_b
+    m_Metadata:
+      m_Items: []
+  - m_Id: 105
+    m_Key: ui.town.recruit.slot.on_plan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106
+    m_Key: ui.town.recruit.slot.protected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 107
+    m_Key: ui.town.recruit.tier.common
+    m_Metadata:
+      m_Items: []
+  - m_Id: 108
+    m_Key: ui.town.recruit.tier.rare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 109
+    m_Key: ui.town.recruit.tier.epic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 110
+    m_Key: ui.town.recruit.plan.on_plan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 111
+    m_Key: ui.town.recruit.plan.off_plan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112
+    m_Key: ui.town.recruit.plan.bridge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 113
+    m_Key: ui.town.recruit.formation.frontline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114
+    m_Key: ui.town.recruit.formation.midline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 115
+    m_Key: ui.town.recruit.formation.backline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 116
+    m_Key: ui.town.recruit.tags
+    m_Metadata:
+      m_Items: []
+  - m_Id: 117
+    m_Key: ui.town.recruit.counter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 118
+    m_Key: ui.town.recruit.tooltip.summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 119
+    m_Key: ui.town.recruit.tooltip.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 120
+    m_Key: ui.town.recruit.tooltip.standard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 121
+    m_Key: ui.town.recruit.tooltip.on_plan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122
+    m_Key: ui.town.recruit.tooltip.protected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123
+    m_Key: ui.town.scout.frontline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 124
+    m_Key: ui.town.scout.backline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 125
+    m_Key: ui.town.scout.physical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 126
+    m_Key: ui.town.scout.magical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 127
+    m_Key: ui.town.scout.support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 128
+    m_Key: ui.town.selected_hero.retrain_active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 129
+    m_Key: ui.town.selected_hero.retrain_passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 130
+    m_Key: ui.town.selected_hero.retrain_full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 131
+    m_Key: ui.town.selected_hero.dismiss_refund
+    m_Metadata:
+      m_Items: []
+  - m_Id: 132
+    m_Key: ui.town.selected_hero.refit_preview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 133
+    m_Key: ui.town.selected_hero.passive_nodes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 134
+    m_Key: ui.town.error.chapter_cycle_failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 135
+    m_Key: ui.town.error.chapter_locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 136
+    m_Key: ui.town.error.site_cycle_failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 137
+    m_Key: ui.town.error.site_locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 138
+    m_Key: ui.town.error.quick_battle_locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 139
+    m_Key: ui.town.error.scout_failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 140
+    m_Key: ui.town.status.chapter_changed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 141
+    m_Key: ui.town.status.site_changed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 142
+    m_Key: ui.town.status.default.reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 143
+    m_Key: ui.town.status.scout_used
+    m_Metadata:
+      m_Items: []
+  - m_Id: 144
+    m_Key: ui.town.status.retrain_active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 145
+    m_Key: ui.town.status.retrain_passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 146
+    m_Key: ui.town.status.retrain_full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 147
+    m_Key: ui.town.status.dismiss_success
+    m_Metadata:
+      m_Items: []
+  - m_Id: 148
+    m_Key: ui.town.status.refit_success
+    m_Metadata:
+      m_Items: []
+  - m_Id: 149
+    m_Key: ui.town.status.board_selected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 150
+    m_Key: ui.town.status.node_toggled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 151
+    m_Key: ui.town.status.perm_augment_equipped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 152
+    m_Key: ui.town.action.retrain_active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 153
+    m_Key: ui.town.action.retrain_passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 154
+    m_Key: ui.town.action.full_retrain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 155
+    m_Key: ui.town.permanent.equipped
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

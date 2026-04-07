@@ -53,6 +53,7 @@ public sealed class BattleScreenPresenterReadabilityTests
             Assert.That(state.ReplayLabel, Is.EqualTo("Replay"));
             Assert.That(state.LogText, Does.Contain("Enemy down"));
             Assert.That(state.AllyHpText, Does.Contain("Allies"));
+            Assert.That(state.ShowPlaybackControls, Is.False);
         }
         finally
         {

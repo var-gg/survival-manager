@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-08
 - 소스오브트루스: `docs/03_architecture/validation-and-acceptance-oracles.md`
 - 관련문서:
   - `docs/03_architecture/content-authoring-and-balance-data.md`
@@ -74,3 +74,20 @@ evidence가 없으면 구두 보고만으로 task를 닫지 않는다.
 - 이런 oracle은 shardable manual lane 또는 custom CLI tool로 분리하고, task `status.md`에 evidence 경로를 남긴다.
 - long-running suite를 default test lane에 넣어 Unity Test Runner callback을 장시간 점유하게 만들면,
   transport busy와 테스트 실패를 구분하기 어려워지므로 acceptance oracle로 보지 않는다.
+
+## pre-art RC floor
+
+pre-art floor에서는 아래를 같은 SHA blocking set으로 묶는다.
+
+- docs preflight: `docs-policy-check`, repo structure `smoke-check`
+- compile: `pwsh -File tools/unity-bridge.ps1 compile`
+- targeted tests: `test-batch-fast`, `test-batch-edit`, `test-play`
+- validator / asset integrity: `content-validate`, `balance-sweep-smoke`
+- runtime/report evidence: `prepare-playable`, `report-town`, `report-battle`
+- long-running shard evidence: `loopd-slice`, `loopd-purekit`, `loopd-systemic`, `loopd-runlite`
+
+중요:
+
+- `tools/smoke-check.ps1`는 runtime smoke가 아니라 repo structure preflight다.
+- compile green만으로 RC floor를 통과했다고 보지 않는다.
+- automated floor 결과는 `tools/pre-art-rc.ps1` packet과 task `status.md` 둘 다에 남긴다.

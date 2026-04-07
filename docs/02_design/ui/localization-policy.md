@@ -52,6 +52,8 @@
 - locale change 후 같은 화면에서 즉시 refresh되어야 한다.
 - layout, sprite on/off, locale별 오브젝트 차이는 예외적으로만 Property Variants를 쓴다.
 - 일반 텍스트 카탈로그 용도에는 Property Variants를 쓰지 않는다.
+- player-facing screen chrome(panel title, button label, tooltip, help strip)는 UXML 정적 literal을 남기지 않고 table key로만 authoring한다.
+- same-scene locale change 뒤 mixed-language panel이 남으면 실패로 본다.
 
 ## 콘텐츠 정책
 
@@ -91,6 +93,7 @@
 - `BattleEvent`는 최종 문장을 저장하지 않는다.
 - 전투 로그는 `BattleLogCode`와 typed payload를 저장하고 UI에서 `Combat_Log` Smart String으로 렌더링한다.
 - locale change 후 최근 로그는 다시 렌더링 가능해야 한다.
+- Town / Expedition / Battle / Reward는 locale change 뒤 scene reload 없이 summary / tooltip / help strip / selected unit metadata를 다시 그려야 한다.
 
 ## 폰트 정책
 

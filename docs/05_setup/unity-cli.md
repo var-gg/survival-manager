@@ -1,7 +1,7 @@
 # Unity CLI 로컬 Fast Lane 가이드
 
 - 상태: active
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-08
 - 소유자: repository
 - 소스오브트루스: `docs/05_setup/unity-cli.md`
 - 관련문서:
@@ -79,8 +79,13 @@ pwsh -File tools/unity-bridge.ps1 status
 pwsh -File tools/unity-bridge.ps1 compile
 pwsh -File tools/unity-bridge.ps1 clear-console
 pwsh -File tools/unity-bridge.ps1 console
-pwsh -File tools/unity-bridge.ps1 bootstrap
+pwsh -File tools/unity-bridge.ps1 prepare-playable
+pwsh -File tools/unity-bridge.ps1 repair-scenes
+pwsh -File tools/unity-bridge.ps1 ensure-localization
+pwsh -File tools/unity-bridge.ps1 quick-battle-smoke
 pwsh -File tools/unity-bridge.ps1 seed-content
+pwsh -File tools/unity-bridge.ps1 content-validate
+pwsh -File tools/unity-bridge.ps1 balance-sweep-smoke
 pwsh -File tools/unity-bridge.ps1 report-town
 pwsh -File tools/unity-bridge.ps1 report-battle
 pwsh -File tools/unity-bridge.ps1 smoke-observer
@@ -92,7 +97,12 @@ pwsh -File tools/unity-bridge.ps1 loopd-systemic
 pwsh -File tools/unity-bridge.ps1 loopd-runlite
 pwsh -File tools/unity-bridge.ps1 loopd-smoke
 pwsh -File tools/unity-bridge.ps1 loopd-full
+pwsh -File tools/pre-art-rc.ps1
 ```
+
+- `prepare-playable`이 canonical newcomer/setup lane이다.
+- `quick-battle-smoke`가 `SM/Quick Battle`를 노출한다.
+- `bootstrap`은 하위 호환용 deprecated alias로만 남고, canonical bootstrap 의미로 쓰지 않는다.
 
 `console` verb는 wrapper 입력을 `-Filter`로 받지만 실제 `unity-cli`에는 `--type`으로 전달한다.
 현재 `unity-cli v0.3.5` help 기준 콘솔 필터 flag는 `--type`이다.
@@ -206,7 +216,7 @@ observer/report 기본 검증 순서는 아래와 같다.
 2. `pwsh -File tools/unity-bridge.ps1 compile`
 3. `pwsh -File tools/unity-bridge.ps1 clear-console`
 4. 필요 시 `pwsh -File tools/unity-bridge.ps1 seed-content`
-5. `pwsh -File tools/unity-bridge.ps1 bootstrap`
+5. `pwsh -File tools/unity-bridge.ps1 prepare-playable`
 6. `pwsh -File tools/unity-bridge.ps1 report-town` 또는 `report-battle`
 7. `pwsh -File tools/unity-bridge.ps1 console`
 8. 그래도 불명확하면 targeted MCP
@@ -221,7 +231,7 @@ test 기본 검증 순서는 아래와 같다.
 6. 필요 시 `pwsh -File tools/unity-bridge.ps1 console`
 7. 그래도 불명확하면 test artifact 또는 targeted MCP
 
-`compile`, `bootstrap`, `seed-content`, `test-edit`, `test-play`는 wrapper가 ready polling을 내장한다.
+`compile`, `prepare-playable`, `repair-scenes`, `ensure-localization`, `quick-battle-smoke`, `seed-content`, `test-edit`, `test-play`는 wrapper가 ready polling을 내장한다.
 즉, 기본 경로에서는 이 명령들이 끝나기 전에 connector recovery를 먼저 기다린다.
 `test-*`는 connection이 중간에 끊겨도 fresh `TestResults.xml`이 생기면 wrapper가 결과를 다시 판정한다.
 readiness failure를 숨기려고 test/runtime 경로에서 `EnsureCanonicalSampleContent()`를 재도입하지 않는다.
@@ -235,12 +245,16 @@ readiness failure를 숨기려고 test/runtime 경로에서 `EnsureCanonicalSamp
 pwsh -File tools/unity-bridge.ps1 status
 pwsh -File tools/unity-bridge.ps1 clear-console
 pwsh -File tools/unity-bridge.ps1 seed-content
-pwsh -File tools/unity-bridge.ps1 bootstrap
+pwsh -File tools/unity-bridge.ps1 prepare-playable
 pwsh -File tools/unity-bridge.ps1 status
 pwsh -File tools/unity-bridge.ps1 report-town
 pwsh -File tools/unity-bridge.ps1 report-battle
 pwsh -File tools/unity-bridge.ps1 console -Lines 200 -Filter error,warning,log
 ```
+
+RC packet은 `pwsh -File tools/pre-art-rc.ps1`를 기본으로 사용한다.
+이 wrapper는 `smoke-observer`처럼 monolithic one-shot callback이 아니라
+docs preflight, compile, batch lane, play lane, Loop D shard, observer report를 분리해서 순차 실행한다.
 
 full test도 같은 원칙을 따른다.
 

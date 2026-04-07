@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -20,6 +22,37 @@ jobs:
       - name: Run docs policy check
         shell: pwsh
         run: pwsh -File tools/docs-policy-check.ps1 -RepoRoot .
+
+      - name: Collect changed markdown files
+        id: changed_markdown
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base_sha="${{ github.event.pull_request.base.sha }}"
+          else
+            base_sha="${{ github.event.before }}"
+          fi
+
+          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git diff --name-only --diff-filter=ACMR "${base_sha}" "${{ github.sha }}" -- '*.md' > changed-markdown.txt
+
+          if [[ -s changed-markdown.txt ]]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run touched docs check
+        if: steps.changed_markdown.outputs.has_changes == 'true'
+        shell: pwsh
+        run: |
+          $paths = Get-Content changed-markdown.txt | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+          & ./tools/docs-check.ps1 -RepoRoot . -Paths $paths
 
       - name: Run smoke check
         shell: pwsh

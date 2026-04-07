@@ -62,6 +62,21 @@ public sealed class MyFastTests
 
 ## CLI 명령어
 
+### canonical / smoke / recovery verbs
+
+```powershell
+pwsh -File tools/unity-bridge.ps1 prepare-playable
+pwsh -File tools/unity-bridge.ps1 repair-scenes
+pwsh -File tools/unity-bridge.ps1 ensure-localization
+pwsh -File tools/unity-bridge.ps1 quick-battle-smoke
+pwsh -File tools/unity-bridge.ps1 content-validate
+pwsh -File tools/unity-bridge.ps1 balance-sweep-smoke
+```
+
+- `prepare-playable`이 canonical newcomer/setup lane이다.
+- `quick-battle-smoke`는 debug smoke lane이다.
+- 기존 `bootstrap`은 `quick-battle-smoke`의 deprecated alias로만 유지한다.
+
 ### GUI 에디터 기반 (unity-cli 필요)
 
 ```powershell
@@ -84,6 +99,7 @@ pwsh -File tools/unity-bridge.ps1 test-batch-edit -TestFilter "MySpecificTest"
 - **`-quit`는 `-runTests`와 결합하면 안 된다** — 테스트 완료 전 Unity가 종료될 수 있다.
 - `-runSynchronously`는 EditMode 전용이며, `[UnityTest]`/`[UnitySetUp]`/`[UnityTearDown]`을 필터링한다.
 - batchmode는 별도 Unity 프로세스를 실행하므로 GUI 에디터와 동시 실행하지 않는다.
+- `tools/unity-bridge.ps1 test-batch-fast|test-batch-edit`는 stale `TestResults-Batch.xml`을 성공으로 재사용하지 않는다. fresh 결과가 없으면 project lock failure로 취급한다.
 
 ## Preflight Lint
 
@@ -102,6 +118,7 @@ pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
 추가 메모:
 - 기본 playable/runtime 경로는 `new RuntimeCombatContentLookup()`의 default mode를 사용한다.
 - editor sweep / file fallback이 필요한 검증은 `new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true)`를 명시적으로 사용하고 `BatchOnly`로 고정한다.
+- `tools/smoke-check.ps1`는 runtime smoke가 아니라 repo structure preflight다.
 
 ## 에이전트 테스트 실행 순서
 
@@ -121,3 +138,15 @@ pwsh -File tools/unity-bridge.ps1 test-batch-edit
 주의:
 - `test-batch-fast`와 `test-batch-edit`를 동시에 실행하면 프로젝트 잠금 충돌. 순차 실행한다.
 - `test-batch-edit`는 전체 에셋 로딩으로 **10분+, 3GB+ 메모리**가 소모된다. 일상 작업에서는 `test-batch-fast`만 실행한다.
+
+## RC wrapper
+
+paid asset pass 직전 automated floor는 아래 wrapper로 묶는다.
+
+```powershell
+pwsh -File tools/pre-art-rc.ps1
+```
+
+- 실행 순서: docs preflight -> compile -> batch/edit/play/content -> Loop D shard -> observer report packet
+- 출력: `Logs/release-floor/<timestamp>-<shortsha>/manifest.json`, `summary.md`, `town_observer_contract.json`, `battle_observer_contract.json`
+- 수동 newcomer witness, normal loop, quick battle smoke, localization, save/load/recovery sign-off는 `summary.md` 체크리스트로 별도 남긴다.

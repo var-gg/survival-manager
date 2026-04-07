@@ -8,10 +8,13 @@ namespace SM.Unity.UI.Expedition;
 
 public sealed class ExpeditionScreenPresenter
 {
+    private const string HelpPrefsKey = "SM.Help.Expedition";
+
     private readonly GameSessionRoot _root;
     private readonly GameLocalizationController _localization;
     private readonly ContentTextResolver _contentText;
     private readonly ExpeditionScreenView _view;
+    private readonly ScreenHelpState _helpState;
 
     public ExpeditionScreenPresenter(
         GameSessionRoot root,
@@ -23,6 +26,7 @@ public sealed class ExpeditionScreenPresenter
         _localization = localization;
         _contentText = contentText;
         _view = view;
+        _helpState = new ScreenHelpState(HelpPrefsKey);
     }
 
     public void Initialize()
@@ -38,6 +42,17 @@ public sealed class ExpeditionScreenPresenter
     public void SelectNode3() => SelectNode(2);
     public void SelectNode4() => SelectNode(3);
     public void SelectNode5() => SelectNode(4);
+    public void ToggleHelp()
+    {
+        _helpState.Toggle();
+        Refresh();
+    }
+
+    public void DismissHelp()
+    {
+        _helpState.Dismiss();
+        Refresh();
+    }
 
     public void NextBattleOrAdvance()
     {
@@ -64,14 +79,26 @@ public sealed class ExpeditionScreenPresenter
                 return;
             }
 
-            _root.SaveProfile();
+            var checkpoint = _root.SaveProfile(SessionCheckpointKind.ManualSave);
+            if (!checkpoint.IsSuccessful)
+            {
+                Refresh(checkpoint.Message);
+                return;
+            }
+
             _root.SceneFlow.GoToBattle();
             return;
         }
 
         if (session.ResolveSelectedNodeToRewardSettlement())
         {
-            _root.SaveProfile();
+            var checkpoint = _root.SaveProfile(SessionCheckpointKind.ManualSave);
+            if (!checkpoint.IsSuccessful)
+            {
+                Refresh(checkpoint.Message);
+                return;
+            }
+
             _root.SceneFlow.GoToReward();
             return;
         }
@@ -82,7 +109,13 @@ public sealed class ExpeditionScreenPresenter
     public void ReturnToTown()
     {
         _root.SessionState.AbandonExpeditionRun();
-        _root.SaveProfile();
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.ManualSave);
+        if (!checkpoint.IsSuccessful)
+        {
+            Refresh(checkpoint.Message);
+            return;
+        }
+
         _root.SceneFlow.ReturnToTown();
     }
 
@@ -130,18 +163,28 @@ public sealed class ExpeditionScreenPresenter
             BuildLocaleStatus(),
             GetLocaleButtonLabel("ko", "한국어"),
             GetLocaleButtonLabel("en", "English"),
+            Localize(GameLocalizationTables.UICommon, "ui.common.help", "Help"),
+            BuildHelpState(),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.panel.map", "Map / Position"),
             BuildPositionText(session, currentNode, selectedNode),
             BuildMapText(session),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.panel.selected_route", "Selected Route"),
             BuildRewardText(session),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.panel.squad", "Squad / Deploy"),
             BuildSquadText(session),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.panel.routes", "Routes"),
             BuildNodeCards(session),
             BuildDeployButtons(session),
             Localize(GameLocalizationTables.UICommon, "ui.common.posture", "Posture") + "\n" + session.SelectedTeamPosture,
-            string.IsNullOrWhiteSpace(message) ? BuildDefaultStatus(selectedNode) : message,
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.group.primary", "Primary"),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.group.warning", "Return / Warning"),
+            string.IsNullOrWhiteSpace(message) ? string.Empty : message,
             selectedNode != null && !selectedNode.RequiresBattle
                 ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.action.resolve_settlement", "Resolve Settlement")
                 : Localize(GameLocalizationTables.UIExpedition, "ui.expedition.action.next_battle", "Enter Battle"),
-            Localize(GameLocalizationTables.UICommon, "ui.common.return_town", "Return Town"));
+            BuildNextBattleTooltip(selectedNode),
+            Localize(GameLocalizationTables.UICommon, "ui.common.return_town", "Return Town"),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.tooltip.return_town", "Abandon the current expedition and return to Town."));
     }
 
     private IReadOnlyList<ExpeditionNodeCardViewState> BuildNodeCards(GameSessionState session)
@@ -152,7 +195,7 @@ public sealed class ExpeditionScreenPresenter
         {
             if (i >= session.ExpeditionNodes.Count)
             {
-                cards.Add(new ExpeditionNodeCardViewState(string.Empty, string.Empty, string.Empty, false, false, false, false, false));
+                cards.Add(new ExpeditionNodeCardViewState(string.Empty, string.Empty, string.Empty, string.Empty, false, false, false, false, false));
                 continue;
             }
 
@@ -162,7 +205,11 @@ public sealed class ExpeditionScreenPresenter
             var isSelectable = selectable.Contains(node.Index);
             cards.Add(new ExpeditionNodeCardViewState(
                 $"{i + 1}. {ResolveNodeLabel(node)}",
-                $"{ResolveNodeReward(node)}\n{BuildNodeEffectTag(node)}",
+                string.Join(
+                    "\n",
+                    Localize(GameLocalizationTables.UIExpedition, "ui.expedition.node.type", "Type: {0}", ResolveNodeType(node)),
+                    Localize(GameLocalizationTables.UIExpedition, "ui.expedition.node.reward", "Planned Reward: {0}", ResolveNodeReward(node)),
+                    Localize(GameLocalizationTables.UIExpedition, "ui.expedition.node.effect", "Node Effect: {0}", BuildNodeEffectTag(node))),
                 isSelected
                     ? Localize(GameLocalizationTables.UICommon, "ui.common.selected", "Selected")
                     : isCurrent
@@ -170,6 +217,7 @@ public sealed class ExpeditionScreenPresenter
                         : isSelectable
                             ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.action.route", "Route")
                             : Localize(GameLocalizationTables.UICommon, "ui.common.locked", "Locked"),
+                BuildNodeTooltip(node),
                 true,
                 isSelectable,
                 isSelected,
@@ -214,6 +262,29 @@ public sealed class ExpeditionScreenPresenter
         return fallback;
     }
 
+    private HelpStripViewState BuildHelpState()
+    {
+        return new HelpStripViewState(
+            _helpState.IsVisible,
+            Localize(
+                GameLocalizationTables.UIExpedition,
+                "ui.expedition.help.body",
+                "Choose a node, then read the selected route summary before entering battle or resolving settlement."),
+            Localize(GameLocalizationTables.UICommon, "ui.common.hide", "Hide"));
+    }
+
+    private string BuildNextBattleTooltip(ExpeditionNodeViewModel? selectedNode)
+    {
+        if (selectedNode == null)
+        {
+            return Localize(GameLocalizationTables.UIExpedition, "ui.expedition.tooltip.next_action_locked", "Choose a route first. The summary panel explains the reward and risk.");
+        }
+
+        return selectedNode.RequiresBattle
+            ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.tooltip.enter_battle", "Enter the selected battle node with the current deploy and posture.")
+            : Localize(GameLocalizationTables.UIExpedition, "ui.expedition.tooltip.resolve_settlement", "Resolve this settlement node and move to Reward without a battle.");
+    }
+
     private string BuildMapText(GameSessionState session)
     {
         var sb = new StringBuilder();
@@ -243,17 +314,19 @@ public sealed class ExpeditionScreenPresenter
     {
         var sb = new StringBuilder();
         var selected = session.GetSelectedExpeditionNode();
-        sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.header", "Selected Route / Node Effect"));
         if (selected != null)
         {
             sb.AppendLine(ResolveNodeLabel(selected));
-            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.planned", "- Planned Reward: {0}", ResolveNodeReward(selected)));
-            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.effect", "- Node Effect: {0}", BuildNodeEffectTag(selected)));
-            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.description", "- Description: {0}", ResolveNodeDescription(selected)));
+            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.type", "Type: {0}", ResolveNodeType(selected)));
+            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.planned", "Planned Reward: {0}", ResolveNodeReward(selected)));
+            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.effect", "Node Effect / Risk: {0}", BuildNodeEffectTag(selected)));
+            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.description", "Route Note: {0}", ResolveNodeDescription(selected)));
+            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.return_town", "Return to Town: abandon this expedition and lose the current route commitment."));
         }
         else
         {
             sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.none", "No branch is selected yet."));
+            sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.return_town", "Return to Town: abandon this expedition and lose the current route commitment."));
         }
 
         if (session.LastExpeditionEffectMessage.HasValue)
@@ -267,6 +340,24 @@ public sealed class ExpeditionScreenPresenter
         }
 
         return sb.ToString();
+    }
+
+    private string ResolveNodeType(ExpeditionNodeViewModel node)
+    {
+        return node.RequiresBattle
+            ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.map.battle", "Battle")
+            : Localize(GameLocalizationTables.UIExpedition, "ui.expedition.position.node_type.settlement", "Settlement");
+    }
+
+    private string BuildNodeTooltip(ExpeditionNodeViewModel node)
+    {
+        return Localize(
+            GameLocalizationTables.UIExpedition,
+            "ui.expedition.tooltip.route_card",
+            "{0}. Planned reward: {1}. Node effect: {2}",
+            ResolveNodeType(node),
+            ResolveNodeReward(node),
+            BuildNodeEffectTag(node));
     }
 
     private string BuildSquadText(GameSessionState session)

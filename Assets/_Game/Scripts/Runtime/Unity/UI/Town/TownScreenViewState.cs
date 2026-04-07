@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SM.Combat.Model;
+using SM.Unity.UI;
 
 namespace SM.Unity.UI.Town;
 
@@ -7,6 +8,7 @@ public sealed record TownRecruitCardViewState(
     string Title,
     string Body,
     string ActionLabel,
+    string Tooltip,
     bool IsEnabled);
 
 public sealed record TownDeployButtonViewState(
@@ -18,6 +20,9 @@ public sealed record TownScreenViewState(
     string LocaleStatus,
     string LocaleKoLabel,
     string LocaleEnLabel,
+    string HelpButtonLabel,
+    HelpStripViewState Help,
+    string CampaignTitle,
     string CampaignSummaryText,
     string PreviousChapterLabel,
     bool CanSelectPreviousChapter,
@@ -27,15 +32,22 @@ public sealed record TownScreenViewState(
     bool CanSelectPreviousSite,
     string NextSiteLabel,
     bool CanSelectNextSite,
+    string EconomyTitle,
     string CurrencySummary,
+    string RosterTitle,
     string RosterText,
+    string BlueprintTitle,
     string BlueprintSummaryText,
+    string RecruitTitle,
     string RecruitSummaryText,
     IReadOnlyList<TownRecruitCardViewState> RecruitCards,
+    string SelectedHeroTitle,
     string SelectedHeroSummaryText,
+    string DeployTitle,
     string DeployPreviewText,
     IReadOnlyList<TownDeployButtonViewState> DeployButtons,
     string TeamPostureButtonLabel,
+    string TeamPostureTooltip,
     string CycleHeroLabel,
     bool CanCycleHero,
     string CycleItemLabel,
@@ -67,7 +79,15 @@ public sealed record TownScreenViewState(
     string SaveLabel,
     string LoadLabel,
     string ReturnToStartLabel,
+    string ReturnToStartTooltip,
     bool CanReturnToStart,
     string ExpeditionActionLabel,
+    string ExpeditionTooltip,
+    string PrimaryActionsTitle,
+    string GameplayActionsTitle,
+    string UtilityActionsTitle,
+    string DebugActionsTitle,
     string QuickBattleLabel,
+    string QuickBattleTooltip,
+    bool ShowDebugActions,
     bool CanQuickBattle);

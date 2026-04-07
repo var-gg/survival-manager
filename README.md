@@ -30,6 +30,12 @@
 
 위 경로는 개발자용 smoke/복구 인프라다. 본선 playable lane으로 취급하지 않는다.
 
+## optional CLI mirrors
+
+- canonical setup fast lane: `pwsh -File tools/unity-bridge.ps1 prepare-playable`
+- debug smoke fast lane: `pwsh -File tools/unity-bridge.ps1 quick-battle-smoke`
+- release-candidate packet: `pwsh -File tools/pre-art-rc.ps1`
+
 ## 지금 실제로 보이는 범위
 
 - `Boot -> Town -> Expedition -> Battle -> Reward -> Town`
@@ -42,6 +48,8 @@
 
 - EditMode: canonical content, scene integrity, replay builder
 - PlayMode: Boot start screen, normal authored expedition loop, debug quick battle smoke lane
+- docs/structure preflight: `tools/docs-policy-check.ps1`, `tools/smoke-check.ps1`
+- release floor wrapper: `tools/pre-art-rc.ps1`가 blocking automated floors와 observer packet을 순차 실행한다.
 
 ## 문서 시작점
 
@@ -50,3 +58,4 @@
 - quick battle smoke: `docs/05_setup/quick-battle-smoke.md`
 - operator 체크리스트: `docs/06_production/operator-first-playable-checklist.md`
 - 현재 playable 상태: `docs/06_production/first-playable-review.md`
+- pre-art release floor: `docs/06_production/pre-art-release-floor.md`

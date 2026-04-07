@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'bootstrap', 'seed-content', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
+    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'prepare-playable', 'repair-scenes', 'ensure-localization', 'quick-battle-smoke', 'bootstrap', 'seed-content', 'content-validate', 'balance-sweep-smoke', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
     [string]$Verb,
     [int]$Lines = 30,
     [string]$Filter = 'error,warning,log',
@@ -214,6 +214,18 @@ function Invoke-Step {
     & $Action
 }
 
+function Invoke-UnityMenuCommand {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$MenuPath,
+        [Parameter(Mandatory = $true)]
+        [string]$ReadyContext,
+        [int]$ReadyRetries = $unityCliLongReadyPollRetries
+    )
+
+    Invoke-UnityCli @('menu', $MenuPath) -WaitForReady -ReadyContext $ReadyContext -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds -ReadyRetries $ReadyRetries
+}
+
 function Get-UnityTestResultsPath {
     $localAppDataRoot = Split-Path $env:LOCALAPPDATA -Parent
     $candidates = @(
@@ -419,6 +431,7 @@ function Invoke-UnityBatchmodeTest {
 
     $unityExe = Resolve-UnityEditorPath
     $resultsPath = Join-Path $projectRoot 'TestResults-Batch.xml'
+    $previousWriteTimeUtc = Get-FileLastWriteTimeUtcOrMinValue -Path $resultsPath
 
     $arguments = @(
         '-batchmode',
@@ -450,19 +463,32 @@ function Invoke-UnityBatchmodeTest {
 
     $process = Start-Process -FilePath $unityExe -ArgumentList $arguments -PassThru -Wait -NoNewWindow
     $exitCode = $process.ExitCode
+    $hasFreshResults = $false
 
     if (Test-Path $resultsPath) {
-        $summary = Get-UnityTestSummary -Path $resultsPath
-        Write-UnityTestSummary -Summary $summary
+        $resultsItem = Get-Item $resultsPath
+        $hasFreshResults = $resultsItem.LastWriteTimeUtc -gt $previousWriteTimeUtc -and $resultsItem.Length -gt 0
 
-        if ($summary.failed -gt 0) {
-            throw "Batchmode test completed with $($summary.failed) failed tests."
+        if ($hasFreshResults) {
+            $summary = Get-UnityTestSummary -Path $resultsPath
+            Write-UnityTestSummary -Summary $summary
+
+            if ($summary.failed -gt 0) {
+                throw "Batchmode test completed with $($summary.failed) failed tests."
+            }
         }
     }
-    else {
+
+    if (-not $hasFreshResults) {
         if ($exitCode -ne 0) {
-            throw "Unity batchmode test exited with code $exitCode and no results file was produced."
+            throw "Unity batchmode test exited with code $exitCode and no fresh results file was produced. Another Unity instance may still hold the project lock."
         }
+
+        throw "Unity batchmode test completed without writing a fresh results file at $resultsPath"
+    }
+
+    if ($exitCode -ne 0) {
+        throw "Unity batchmode test exited with code $exitCode despite producing fresh results. Treating the run as failed."
     }
 
     Write-Host "Batchmode test completed (exit code $exitCode)."
@@ -485,11 +511,36 @@ try {
         'console' {
             Invoke-UnityCli @('console', '--lines', $Lines, '--type', $Filter)
         }
+        'prepare-playable' {
+            Invoke-UnityMenuCommand -MenuPath 'SM/Setup/Prepare Observer Playable' -ReadyContext 'prepare playable menu dispatch'
+        }
+        'repair-scenes' {
+            Invoke-UnityMenuCommand -MenuPath 'SM/Setup/Repair First Playable Scenes' -ReadyContext 'repair scenes menu dispatch'
+        }
+        'ensure-localization' {
+            Invoke-UnityMenuCommand -MenuPath 'SM/Setup/Ensure Localization Foundation' -ReadyContext 'ensure localization menu dispatch'
+        }
+        'quick-battle-smoke' {
+            Invoke-UnityMenuCommand -MenuPath 'SM/Quick Battle' -ReadyContext 'quick battle smoke menu dispatch'
+        }
         'bootstrap' {
-            Invoke-UnityCli @('menu', 'SM/Quick Battle') -WaitForReady -ReadyContext 'bootstrap menu dispatch' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds
+            Write-Warning "bootstrap is a deprecated alias for quick-battle-smoke. Prefer 'prepare-playable' for the canonical playable setup lane."
+            Invoke-UnityMenuCommand -MenuPath 'SM/Quick Battle' -ReadyContext 'bootstrap alias menu dispatch'
         }
         'seed-content' {
-            Invoke-UnityCli @('menu', 'SM/Setup/Generate Sample Content') -WaitForReady -ReadyContext 'sample content generation' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds -ReadyRetries $unityCliLongReadyPollRetries
+            Invoke-UnityMenuCommand -MenuPath 'SM/Setup/Generate Sample Content' -ReadyContext 'sample content generation'
+        }
+        'content-validate' {
+            & pwsh -File (Join-Path $PSScriptRoot 'unity-execute-method.ps1') -Method 'SM.Editor.Validation.ValidationBatchEntryPoint.RunContentValidation' -LogFile 'Logs/content-validation-ci.log' -PhaseName 'content validation' -ProjectRoot $projectRoot
+            if ($LASTEXITCODE -ne 0) {
+                throw 'content validation executeMethod wrapper failed.'
+            }
+        }
+        'balance-sweep-smoke' {
+            & pwsh -File (Join-Path $PSScriptRoot 'unity-execute-method.ps1') -Method 'SM.Editor.Validation.ValidationBatchEntryPoint.RunBalanceSweepSmoke' -LogFile 'Logs/balance-sweep-ci.log' -PhaseName 'balance sweep smoke' -ProjectRoot $projectRoot
+            if ($LASTEXITCODE -ne 0) {
+                throw 'balance sweep smoke executeMethod wrapper failed.'
+            }
         }
         'test-edit' {
             Invoke-UnityCliTest @('test') -ReadyContext 'edit mode test dispatch' -TestFilter $TestFilter
@@ -516,7 +567,7 @@ try {
         'smoke-observer' {
             Invoke-Step -Name 'compile' -Action { Invoke-UnityCli @('editor', 'refresh', '--compile') -WaitForReady -ReadyContext 'compile' }
             Invoke-Step -Name 'clear-console' -Action { Invoke-UnityCli @('console', '--clear') }
-            Invoke-Step -Name 'bootstrap' -Action { Invoke-UnityCli @('menu', 'SM/Quick Battle') -WaitForReady -ReadyContext 'bootstrap menu dispatch' -InitialReadyDelaySeconds $unityCliPostDispatchDelaySeconds }
+            Invoke-Step -Name 'prepare-playable' -Action { Invoke-UnityMenuCommand -MenuPath 'SM/Setup/Prepare Observer Playable' -ReadyContext 'prepare playable menu dispatch' }
             Invoke-Step -Name 'report-town' -Action { Invoke-UnityCli @('observer_contract_report', '--scene', 'town') }
             Invoke-Step -Name 'report-battle' -Action { Invoke-UnityCli @('observer_contract_report', '--scene', 'battle') }
             Invoke-Step -Name 'console' -Action { Invoke-UnityCli @('console', '--lines', $Lines, '--type', $Filter) }

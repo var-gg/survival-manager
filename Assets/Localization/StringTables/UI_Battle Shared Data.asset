@@ -183,6 +183,390 @@ MonoBehaviour:
     m_Key: ui.battle.selected.header
     m_Metadata:
       m_Items: []
+  - m_Id: 1
+    m_Key: ui.battle.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2
+    m_Key: ui.battle.hp.allies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3
+    m_Key: ui.battle.hp.enemies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4
+    m_Key: ui.battle.result.victory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5
+    m_Key: ui.battle.result.defeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6
+    m_Key: ui.battle.speed.active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7
+    m_Key: ui.battle.speed.paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8
+    m_Key: ui.battle.status.paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9
+    m_Key: ui.battle.status.resumed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10
+    m_Key: ui.battle.status.pause_suffix
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11
+    m_Key: ui.battle.status.finished
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12
+    m_Key: ui.battle.status.resolved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13
+    m_Key: ui.battle.status.last_event
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14
+    m_Key: ui.battle.status.windup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15
+    m_Key: ui.battle.status.posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16
+    m_Key: ui.battle.error.no_allies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17
+    m_Key: ui.battle.settings.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18
+    m_Key: ui.battle.settings.closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19
+    m_Key: ui.battle.settings.state_changed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20
+    m_Key: ui.battle.settings.world_hp_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21
+    m_Key: ui.battle.settings.overlay_hp_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22
+    m_Key: ui.battle.settings.overhead_ui_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23
+    m_Key: ui.battle.settings.damage_text_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24
+    m_Key: ui.battle.settings.debug_overlay_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25
+    m_Key: ui.battle.axis.archetype
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26
+    m_Key: ui.battle.axis.race
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27
+    m_Key: ui.battle.axis.class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28
+    m_Key: ui.battle.axis.role
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29
+    m_Key: ui.battle.axis.anchor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30
+    m_Key: ui.battle.selected.header
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31
+    m_Key: ui.battle.settings.team_summary_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32
+    m_Key: ui.battle.settings.world_hp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33
+    m_Key: ui.battle.settings.overlay_hp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34
+    m_Key: ui.battle.settings.overhead_ui
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35
+    m_Key: ui.battle.settings.damage_text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36
+    m_Key: ui.battle.settings.debug_overlay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37
+    m_Key: ui.battle.settings.team_summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38
+    m_Key: ui.battle.panel.summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 39
+    m_Key: ui.battle.panel.allies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40
+    m_Key: ui.battle.panel.enemies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41
+    m_Key: ui.battle.panel.log
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42
+    m_Key: ui.battle.group.playback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43
+    m_Key: ui.battle.group.primary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44
+    m_Key: ui.battle.group.smoke
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45
+    m_Key: ui.battle.group.utility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46
+    m_Key: ui.battle.help.body
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47
+    m_Key: ui.battle.action.speed_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48
+    m_Key: ui.battle.action.speed_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49
+    m_Key: ui.battle.action.speed_4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50
+    m_Key: ui.battle.action.replay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51
+    m_Key: ui.battle.action.rebattle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52
+    m_Key: ui.battle.action.return_town_debug
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53
+    m_Key: ui.battle.playback.ingame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54
+    m_Key: ui.battle.playback.quick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55
+    m_Key: ui.battle.playback.quick_paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56
+    m_Key: ui.battle.pressure.allies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57
+    m_Key: ui.battle.pressure.enemies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 58
+    m_Key: ui.battle.pressure.even
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59
+    m_Key: ui.battle.status.finished_summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 60
+    m_Key: ui.battle.status.step_focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61
+    m_Key: ui.battle.status.step_only
+    m_Metadata:
+      m_Items: []
+  - m_Id: 62
+    m_Key: ui.battle.result.summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 63
+    m_Key: ui.battle.error.continue_before_finish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64
+    m_Key: ui.battle.error.rebattle_smoke_only
+    m_Metadata:
+      m_Items: []
+  - m_Id: 65
+    m_Key: ui.battle.error.return_town_smoke_only
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66
+    m_Key: ui.battle.error.return_town_before_finish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 67
+    m_Key: ui.battle.settings.display
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68
+    m_Key: ui.battle.settings.debug
+    m_Metadata:
+      m_Items: []
+  - m_Id: 69
+    m_Key: ui.battle.tooltip.playback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70
+    m_Key: ui.battle.tooltip.continue_ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71
+    m_Key: ui.battle.tooltip.continue_locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72
+    m_Key: ui.battle.tooltip.replay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 73
+    m_Key: ui.battle.tooltip.rebattle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 74
+    m_Key: ui.battle.tooltip.return_town_direct
+    m_Metadata:
+      m_Items: []
+  - m_Id: 75
+    m_Key: ui.battle.tooltip.settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76
+    m_Key: ui.battle.tooltip.overhead_ui
+    m_Metadata:
+      m_Items: []
+  - m_Id: 77
+    m_Key: ui.battle.tooltip.damage_text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 78
+    m_Key: ui.battle.tooltip.team_summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 79
+    m_Key: ui.battle.tooltip.debug_overlay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 80
+    m_Key: ui.battle.log.basic_attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 81
+    m_Key: ui.battle.log.heal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82
+    m_Key: ui.battle.log.skill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83
+    m_Key: ui.battle.log.guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 84
+    m_Key: ui.battle.log.down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85
+    m_Key: ui.battle.log.generic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 86
+    m_Key: ui.battle.axis.state
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87
+    m_Key: ui.battle.axis.slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88
+    m_Key: ui.battle.axis.targeting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89
+    m_Key: ui.battle.axis.retarget_lock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 90
+    m_Key: ui.battle.axis.guard_radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 91
+    m_Key: ui.battle.axis.cluster_radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 92
+    m_Key: ui.battle.target.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93
+    m_Key: ui.battle.range.contact
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94
+    m_Key: ui.battle.targeting.keep_current
+    m_Metadata:
+      m_Items: []
+  - m_Id: 95
+    m_Key: ui.battle.axis.range
+    m_Metadata:
+      m_Items: []
+  - m_Id: 96
+    m_Key: ui.battle.targeting.current
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

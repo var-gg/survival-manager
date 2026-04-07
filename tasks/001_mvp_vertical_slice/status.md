@@ -1,7 +1,7 @@
 # 작업 상태: 001 MVP Vertical Slice
 
 - 상태: 진행 중
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-08
 - 단계: prototype
 - 작업 ID: 001
 
@@ -11,51 +11,70 @@
 
 ## 이 문서의 역할
 
-- playable boundary, 현재 리스크, 다음 우선순위에 대한 단일 live source of truth
-- `docs/06_production/**` 문서는 이 상태 문서를 요약하거나 보조하는 역할만 가진다.
+- playable boundary, release blocker, 다음 우선순위의 live source of truth
+- `docs/06_production/**`는 이 상태 문서를 요약하거나 packet 운영 규칙을 보조하는 역할만 가진다.
 
 ## 관련 운영 계약
 
-- 큰 Unity migration이나 catalog closure 작업은 `tasks/004_launch_floor_catalog_closure/status.md`를 parent live state로 참고한다.
-- task shaping, loop budget, validator-first 규칙은 `docs/03_architecture/unity-agent-harness-contract.md`를 따른다.
-- asmdef/persistence ownership은 `docs/03_architecture/assembly-boundaries-and-persistence-ownership.md`를, validator/evidence 규칙은 `docs/03_architecture/validation-and-acceptance-oracles.md`를 우선한다.
+- newcomer / smoke / recovery / RC floor는 `docs/06_production/pre-art-release-floor.md`
+- validator / compile / targeted test / runtime smoke 관계는 `docs/03_architecture/validation-and-acceptance-oracles.md`
+- combat / Loop D shard lane은 `docs/03_architecture/combat-harness-and-debug-contract.md`
 
 ## 현재 검증된 playable 경계
 
 - `Boot -> Town -> Expedition -> Battle -> Reward -> Town`
-- Town active surface는 chapter/site 선택, `Start Expedition` / `Resume Expedition`, secondary `Quick Battle (Smoke)`로 정리된다.
-- Quick Battle은 active authored run을 덮어쓰지 않도록 secondary/debug smoke lane으로만 유지된다.
+- Town active surface는 chapter/site 선택, `Start Expedition`, `Resume Expedition`, secondary `Quick Battle (Smoke)`다.
+- Quick Battle은 authored progression acceptance가 아니라 debug smoke lane이다.
 
 ## 현재 구현 상태
 
-- Battle은 `resolve once -> replay`가 아니라 fixed-step live simulation으로 동작한다.
-- normal battle path는 authored `chapter/site/encounter` catalog를 통해 enemy squad와 seed를 resolve한다.
-- Expedition은 hand-authored `site track` 기반 `skirmish -> skirmish -> elite -> boss -> extract` 5노드 진행을 사용한다.
-- battle 결과 뒤에는 항상 Reward를 거치고, extract도 non-battle settlement로 Reward를 거쳐 Town에서 run close를 확정한다.
-- Town 복귀 뒤 active run이면 `Resume Expedition`으로 같은 site track을 재개하고 chapter/site selector는 잠긴다.
-- 4인 배치는 3x2 anchor 버튼 UI로 조정되며, team posture 선택이 Town/Expedition 양쪽에 노출된다.
-- trait / item / affix / temporary augment modifier가 실제 전투 세팅으로 전달된다.
-- status / cleanse / DR과 automatic loot가 실제 전투 결과와 Reward 화면에 연결된다.
-- recruit cost `3 Gold`, reroll cost `1 Gold`, town roster cap `12`가 세션 로직에서 강제된다.
+- fixed-step live simulation, authored chapter/site/encounter, Reward settlement, Town resume semantics는 구현돼 있다.
+- extract settlement도 `Reward -> Town(close)`로 끝나는 authored loop를 사용한다.
+- save/load, localization foundation, scene repair/bootstrap, sample content bootstrap, observer report surface가 저장소에 들어와 있다.
+- release-floor tooling은 `prepare-playable` canonical lane, `quick-battle-smoke` smoke lane, `repair-scenes` / `ensure-localization` recovery lane으로 정리됐다.
+- `tools/pre-art-rc.ps1`와 `docs/06_production/pre-art-release-floor.md`가 same-SHA automated floor와 packet 경로를 남기도록 추가됐다.
+- `tools/unity-bridge.ps1 test-batch-fast|test-batch-edit`는 stale `TestResults-Batch.xml`을 더 이상 success evidence로 재사용하지 않는다.
 
-## 지금 바로 보이는 화면
+## release-floor snapshot
 
-- Town operator UI
-- Expedition site track UI
-- Battle observer UI
-- Reward 3카드 UI + automatic loot summary
+- 현재 남은 5%는 새 gameplay 시스템 추가가 아니라 same-SHA evidence refresh, lane naming 정리, RC packet 운영화다.
+- latest packet attempt:
+  - `Logs/release-floor/20260408-020521-41ebbb3/manifest.json`
+- current pass:
+  - `pwsh -File tools/docs-policy-check.ps1 -RepoRoot .`
+  - `pwsh -File tools/smoke-check.ps1 -RepoRoot .`
+  - `pwsh -File tools/test-harness-lint.ps1 -RepoRoot .`
+  - `$paths = @(...); & .\tools\docs-check.ps1 -RepoRoot . -Paths $paths`
+- current blocker:
+  - `pwsh -File tools/unity-bridge.ps1 compile`가 `Waiting for Unity... timed out waiting for Unity (port 8090)`로 실패한다.
+  - batch lane은 열린 Unity 인스턴스 때문에 project lock으로 중단된다.
+- dirty worktree note:
+  - `Assets/_Game/**`, `docs/02_design/ui/**`, `docs/03_architecture/localization-runtime-and-content-pipeline.md` 등 사용자 변경이 열린 상태에서 로컬 evidence를 수집했다.
 
 ## 아직 남은 리스크
 
-- Battle 연출은 readable observer 단계이며 high-fidelity animation, VFX, camera polish 단계는 아니다.
-- Quick Battle은 정상 authored progression이 아니라 debug smoke fallback 경로다.
-- chapter/site count는 launch floor 바닥만 채운 상태라 추가 콘텐츠 다양성은 아직 부족하다.
-- operator UI는 placeholder UGUI 품질이며 최종 UX 기준과는 거리가 있다.
-- live arena backend, leaderboard, season ops는 아직 구현 범위 밖이다.
-- 현재 로컬 검증 환경에서는 열린 Unity 인스턴스 때문에 `test-batch-fast` batchmode가 잠금 충돌을 낼 수 있어, GUI lane 또는 정리된 에디터 상태에서 재검증이 필요할 수 있다.
+- same-SHA compile / PlayMode / Loop D shard / observer report fresh evidence는 아직 final green이 아니다.
+- clean clone newcomer witness, normal loop, localization, save/load, recovery manual sign-off가 packet과 `status.md`에 아직 남지 않았다.
+- art/presentation polish, content breadth, online seam은 여전히 out-of-scope open item이다.
+
+## Evidence
+
+- commit SHA baseline: `41ebbb3d8b2f65ef288cc485cbea4502aa34daae`
+- RC packet:
+  - command: `pwsh -File tools/pre-art-rc.ps1 -UnityRecoveryBudget 0`
+  - artifact: `Logs/release-floor/20260408-020521-41ebbb3/manifest.json`
+  - result: compile phase fail
+- fresh blocker confirmation:
+  - `pwsh -File tools/unity-bridge.ps1 test-batch-fast`
+    - result: `Another Unity instance may still hold the project lock.`
+  - `pwsh -File tools/unity-bridge.ps1 content-validate`
+    - artifact: `Logs/content-validation-ci.log`
+    - result: project lock으로 batch executeMethod fail
+- lane skipped:
+  - `test-play`, `loopd-*`, `prepare-playable`, `report-town`, `report-battle`는 compile ready가 current SHA에서 닫히지 않아 final evidence로 채택하지 않았다.
 
 ## 다음 우선순위
 
-1. Battle camera / floor / hit timing / readability polish
-2. chapter/site/encounter 콘텐츠 확장과 보상 밸런스 보정
-3. reward-to-item / permanent progression / combat feedback 연결 강화
+1. multiple Unity instances / connector busy를 정리한 뒤 same-SHA `pre-art-rc` green packet을 다시 회수한다.
+2. clean clone newcomer witness와 manual normal loop / Quick Battle smoke / localization / save-load / recovery sign-off를 `summary.md`와 status에 남긴다.
+3. 남은 open item을 art/presentation/content breadth/online 후속으로만 제한하고 paid asset pass로 넘어간다.

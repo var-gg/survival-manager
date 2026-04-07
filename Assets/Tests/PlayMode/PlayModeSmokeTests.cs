@@ -98,7 +98,14 @@ public sealed class PlayModeSmokeTests
         Assert.That(battleHost!.Root.Q<Button>("SettingsButton"), Is.Not.Null, "SettingsButton should be present in the runtime panel.");
         Assert.That(battleHost.Root.Q<VisualElement>("SettingsPanel"), Is.Not.Null, "SettingsPanel should be present even when hidden by default.");
         yield return WaitForCondition(() => battle!.LatestStep != null, 5f);
+        var playbackActionsGroup = battleHost.Root.Q<VisualElement>("PlaybackActionsGroup");
+        var smokeActionsGroup = battleHost.Root.Q<VisualElement>("SmokeActionsGroup");
         Assert.That(battle!.ActiveAllyPosture, Is.EqualTo(TeamPostureType.AllInBackline));
+        Assert.That(battle.PlaybackMode, Is.EqualTo(BattlePlaybackMode.InGame));
+        Assert.That(playbackActionsGroup, Is.Not.Null, "Battle runtime panel should expose a playback group container.");
+        Assert.That(smokeActionsGroup, Is.Not.Null, "Battle runtime panel should expose a smoke action group container.");
+        Assert.That(playbackActionsGroup!.style.display.value, Is.EqualTo(DisplayStyle.None), "Authored battle should hide playback controls.");
+        Assert.That(smokeActionsGroup!.style.display.value, Is.EqualTo(DisplayStyle.None), "Authored battle should hide smoke-only actions.");
         Assert.That(battle.LatestStep!.Units.Any(unit => unit.Id.EndsWith(heroA) && unit.Anchor == DeploymentAnchorId.BackBottom), Is.True, "Assigned anchor should flow into live battle state.");
         Assert.That(battle.LatestStep!.Units.Any(unit => unit.Id.EndsWith(heroB) && unit.Anchor == DeploymentAnchorId.FrontCenter), Is.True, "Second assigned anchor should flow into live battle state.");
 
@@ -219,7 +226,15 @@ public sealed class PlayModeSmokeTests
 
         yield return WaitForScene(SceneNames.Battle);
         yield return WaitForComponent<BattleScreenController>();
+        var battle = FindAny<BattleScreenController>();
+        var battleHost = FindPanelHost("BattleRuntimePanelHost");
         Assert.That(root.SessionState.IsQuickBattleSmokeActive, Is.True);
+        Assert.That(battle, Is.Not.Null, BuildSceneDiagnostic("Battle scene should contain BattleScreenController during Quick Battle smoke."));
+        Assert.That(battleHost, Is.Not.Null, BuildSceneDiagnostic("Battle scene should contain BattleRuntimePanelHost during Quick Battle smoke."));
+        yield return WaitForCondition(() => battle!.LatestStep != null, 5f);
+        Assert.That(battle!.PlaybackMode, Is.EqualTo(BattlePlaybackMode.QuickBattle));
+        Assert.That(battleHost!.Root.Q<VisualElement>("PlaybackActionsGroup")!.style.display.value, Is.EqualTo(DisplayStyle.Flex), "Quick Battle smoke should show playback controls.");
+        Assert.That(battleHost.Root.Q<VisualElement>("SmokeActionsGroup")!.style.display.value, Is.EqualTo(DisplayStyle.Flex), "Quick Battle smoke should show smoke-only actions.");
         root.SessionState.SetLastBattleResult(true, "quick smoke");
         root.SaveProfile();
         root.SceneFlow.GoToReward();

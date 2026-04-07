@@ -12,18 +12,34 @@ public sealed class TownScreenView
     private readonly Label _localeStatusLabel;
     private readonly Button _localeKoButton;
     private readonly Button _localeEnButton;
+    private readonly Button _helpButton;
+    private readonly VisualElement _helpStrip;
+    private readonly Label _helpBodyLabel;
+    private readonly Button _helpDismissButton;
+    private readonly Label _campaignTitleLabel;
     private readonly Label _campaignSummaryLabel;
     private readonly Button _previousChapterButton;
     private readonly Button _nextChapterButton;
     private readonly Button _previousSiteButton;
     private readonly Button _nextSiteButton;
+    private readonly Label _economyTitleLabel;
     private readonly Label _currencyLabel;
+    private readonly Label _rosterTitleLabel;
     private readonly Label _rosterLabel;
+    private readonly Label _blueprintTitleLabel;
     private readonly Label _blueprintSummaryLabel;
+    private readonly Label _recruitTitleLabel;
     private readonly Label _recruitSummaryLabel;
+    private readonly Label _selectedHeroTitleLabel;
     private readonly Label _selectedHeroLabel;
+    private readonly Label _deployTitleLabel;
     private readonly Label _deployPreviewLabel;
     private readonly Label _statusLabel;
+    private readonly Label _primaryActionsTitleLabel;
+    private readonly Label _gameplayActionsTitleLabel;
+    private readonly Label _utilityActionsTitleLabel;
+    private readonly Label _debugActionsTitleLabel;
+    private readonly VisualElement _debugActionsGroup;
     private readonly Button _rerollButton;
     private readonly Button _saveButton;
     private readonly Button _loadButton;
@@ -53,18 +69,34 @@ public sealed class TownScreenView
         _localeStatusLabel = Require<Label>(root, "LocaleStatusLabel");
         _localeKoButton = Require<Button>(root, "LocaleKoButton");
         _localeEnButton = Require<Button>(root, "LocaleEnButton");
+        _helpButton = Require<Button>(root, "HelpButton");
+        _helpStrip = Require<VisualElement>(root, "HelpStrip");
+        _helpBodyLabel = Require<Label>(root, "HelpBodyLabel");
+        _helpDismissButton = Require<Button>(root, "HelpDismissButton");
+        _campaignTitleLabel = Require<Label>(root, "CampaignTitleLabel");
         _campaignSummaryLabel = Require<Label>(root, "CampaignSummaryLabel");
         _previousChapterButton = Require<Button>(root, "PrevChapterButton");
         _nextChapterButton = Require<Button>(root, "NextChapterButton");
         _previousSiteButton = Require<Button>(root, "PrevSiteButton");
         _nextSiteButton = Require<Button>(root, "NextSiteButton");
+        _economyTitleLabel = Require<Label>(root, "EconomyTitleLabel");
         _currencyLabel = Require<Label>(root, "CurrencyLabel");
+        _rosterTitleLabel = Require<Label>(root, "RosterTitleLabel");
         _rosterLabel = Require<Label>(root, "RosterLabel");
+        _blueprintTitleLabel = Require<Label>(root, "BlueprintTitleLabel");
         _blueprintSummaryLabel = Require<Label>(root, "BlueprintSummaryLabel");
+        _recruitTitleLabel = Require<Label>(root, "RecruitTitleLabel");
         _recruitSummaryLabel = Require<Label>(root, "RecruitSummaryLabel");
+        _selectedHeroTitleLabel = Require<Label>(root, "SelectedHeroTitleLabel");
         _selectedHeroLabel = Require<Label>(root, "SelectedHeroLabel");
+        _deployTitleLabel = Require<Label>(root, "DeployTitleLabel");
         _deployPreviewLabel = Require<Label>(root, "DeployPreviewLabel");
         _statusLabel = Require<Label>(root, "StatusLabel");
+        _primaryActionsTitleLabel = Require<Label>(root, "PrimaryActionsTitleLabel");
+        _gameplayActionsTitleLabel = Require<Label>(root, "GameplayActionsTitleLabel");
+        _utilityActionsTitleLabel = Require<Label>(root, "UtilityActionsTitleLabel");
+        _debugActionsTitleLabel = Require<Label>(root, "DebugActionsTitleLabel");
+        _debugActionsGroup = Require<VisualElement>(root, "DebugActionsGroup");
         _rerollButton = Require<Button>(root, "RerollButton");
         _saveButton = Require<Button>(root, "SaveButton");
         _loadButton = Require<Button>(root, "LoadButton");
@@ -108,6 +140,8 @@ public sealed class TownScreenView
     {
         _localeKoButton.clicked += presenter.SelectKorean;
         _localeEnButton.clicked += presenter.SelectEnglish;
+        _helpButton.clicked += presenter.ToggleHelp;
+        _helpDismissButton.clicked += presenter.DismissHelp;
         _previousChapterButton.clicked += presenter.PreviousChapter;
         _nextChapterButton.clicked += presenter.NextChapter;
         _previousSiteButton.clicked += presenter.PreviousSite;
@@ -152,6 +186,12 @@ public sealed class TownScreenView
         _localeStatusLabel.text = state.LocaleStatus;
         _localeKoButton.text = state.LocaleKoLabel;
         _localeEnButton.text = state.LocaleEnLabel;
+        _helpButton.text = state.HelpButtonLabel;
+        _helpStrip.style.display = state.Help.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
+        _helpBodyLabel.text = state.Help.Body;
+        _helpDismissButton.text = state.Help.DismissLabel;
+
+        _campaignTitleLabel.text = state.CampaignTitle;
         _campaignSummaryLabel.text = state.CampaignSummaryText;
         _previousChapterButton.text = state.PreviousChapterLabel;
         _previousChapterButton.SetEnabled(state.CanSelectPreviousChapter);
@@ -161,22 +201,23 @@ public sealed class TownScreenView
         _previousSiteButton.SetEnabled(state.CanSelectPreviousSite);
         _nextSiteButton.text = state.NextSiteLabel;
         _nextSiteButton.SetEnabled(state.CanSelectNextSite);
+
+        _economyTitleLabel.text = state.EconomyTitle;
         _currencyLabel.text = state.CurrencySummary;
+        _rosterTitleLabel.text = state.RosterTitle;
         _rosterLabel.text = state.RosterText;
+        _blueprintTitleLabel.text = state.BlueprintTitle;
         _blueprintSummaryLabel.text = state.BlueprintSummaryText;
+        _recruitTitleLabel.text = state.RecruitTitle;
         _recruitSummaryLabel.text = state.RecruitSummaryText;
+        _selectedHeroTitleLabel.text = state.SelectedHeroTitle;
         _selectedHeroLabel.text = state.SelectedHeroSummaryText;
+        _deployTitleLabel.text = state.DeployTitle;
         _deployPreviewLabel.text = state.DeployPreviewText;
         _statusLabel.text = state.StatusText;
-        _rerollButton.text = state.RerollLabel;
-        _saveButton.text = state.SaveLabel;
-        _loadButton.text = state.LoadLabel;
-        _returnToStartButton.text = state.ReturnToStartLabel;
-        _returnToStartButton.SetEnabled(state.CanReturnToStart);
-        _expeditionButton.text = state.ExpeditionActionLabel;
-        _quickBattleButton.text = state.QuickBattleLabel;
-        _quickBattleButton.SetEnabled(state.CanQuickBattle);
+
         _teamPostureButton.text = state.TeamPostureButtonLabel;
+        _teamPostureButton.tooltip = state.TeamPostureTooltip;
         _cycleHeroButton.text = state.CycleHeroLabel;
         _cycleHeroButton.SetEnabled(state.CanCycleHero);
         _cycleItemButton.text = state.CycleItemLabel;
@@ -204,12 +245,35 @@ public sealed class TownScreenView
         _equipPermanentButton.text = state.EquipPermanentLabel;
         _equipPermanentButton.SetEnabled(state.CanEquipPermanent);
 
+        _primaryActionsTitleLabel.text = state.PrimaryActionsTitle;
+        _gameplayActionsTitleLabel.text = state.GameplayActionsTitle;
+        _utilityActionsTitleLabel.text = state.UtilityActionsTitle;
+        _debugActionsTitleLabel.text = state.DebugActionsTitle;
+        _debugActionsGroup.style.display = state.ShowDebugActions ? DisplayStyle.Flex : DisplayStyle.None;
+
+        _rerollButton.text = state.RerollLabel;
+        _saveButton.text = state.SaveLabel;
+        _loadButton.text = state.LoadLabel;
+        _returnToStartButton.text = state.ReturnToStartLabel;
+        _returnToStartButton.tooltip = state.ReturnToStartTooltip;
+        _returnToStartButton.SetEnabled(state.CanReturnToStart);
+        _expeditionButton.text = state.ExpeditionActionLabel;
+        _expeditionButton.tooltip = state.ExpeditionTooltip;
+        _quickBattleButton.text = state.QuickBattleLabel;
+        _quickBattleButton.tooltip = state.QuickBattleTooltip;
+        _quickBattleButton.SetEnabled(state.CanQuickBattle);
+
         for (var i = 0; i < _recruitCards.Count; i++)
         {
-            var cardState = i < state.RecruitCards.Count ? state.RecruitCards[i] : new TownRecruitCardViewState(string.Empty, string.Empty, string.Empty, false);
+            var cardState = i < state.RecruitCards.Count
+                ? state.RecruitCards[i]
+                : new TownRecruitCardViewState(string.Empty, string.Empty, string.Empty, string.Empty, false);
             _recruitCards[i].title.text = cardState.Title;
             _recruitCards[i].body.text = cardState.Body;
+            _recruitCards[i].title.tooltip = cardState.Tooltip;
+            _recruitCards[i].body.tooltip = cardState.Tooltip;
             _recruitCards[i].button.text = cardState.ActionLabel;
+            _recruitCards[i].button.tooltip = cardState.Tooltip;
             _recruitCards[i].button.SetEnabled(cardState.IsEnabled);
         }
 

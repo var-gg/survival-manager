@@ -12,11 +12,21 @@ public sealed class ExpeditionScreenView
     private readonly Label _localeStatusLabel;
     private readonly Button _localeKoButton;
     private readonly Button _localeEnButton;
+    private readonly Button _helpButton;
+    private readonly VisualElement _helpStrip;
+    private readonly Label _helpBodyLabel;
+    private readonly Button _helpDismissButton;
+    private readonly Label _mapTitleLabel;
     private readonly Label _positionLabel;
     private readonly Label _mapLabel;
+    private readonly Label _routesTitleLabel;
+    private readonly Label _selectedRouteTitleLabel;
     private readonly Label _rewardLabel;
+    private readonly Label _squadTitleLabel;
     private readonly Label _squadLabel;
     private readonly Label _statusLabel;
+    private readonly Label _primaryActionsTitleLabel;
+    private readonly Label _warningActionsTitleLabel;
     private readonly Button _nextBattleButton;
     private readonly Button _returnTownButton;
     private readonly Button _teamPostureButton;
@@ -29,11 +39,21 @@ public sealed class ExpeditionScreenView
         _localeStatusLabel = Require<Label>(root, "LocaleStatusLabel");
         _localeKoButton = Require<Button>(root, "LocaleKoButton");
         _localeEnButton = Require<Button>(root, "LocaleEnButton");
+        _helpButton = Require<Button>(root, "HelpButton");
+        _helpStrip = Require<VisualElement>(root, "HelpStrip");
+        _helpBodyLabel = Require<Label>(root, "HelpBodyLabel");
+        _helpDismissButton = Require<Button>(root, "HelpDismissButton");
+        _mapTitleLabel = Require<Label>(root, "MapTitleLabel");
         _positionLabel = Require<Label>(root, "PositionLabel");
         _mapLabel = Require<Label>(root, "MapLabel");
+        _routesTitleLabel = Require<Label>(root, "RoutesTitleLabel");
+        _selectedRouteTitleLabel = Require<Label>(root, "SelectedRouteTitleLabel");
         _rewardLabel = Require<Label>(root, "RewardLabel");
+        _squadTitleLabel = Require<Label>(root, "SquadTitleLabel");
         _squadLabel = Require<Label>(root, "SquadLabel");
         _statusLabel = Require<Label>(root, "StatusLabel");
+        _primaryActionsTitleLabel = Require<Label>(root, "PrimaryActionsTitleLabel");
+        _warningActionsTitleLabel = Require<Label>(root, "WarningActionsTitleLabel");
         _nextBattleButton = Require<Button>(root, "NextBattleButton");
         _returnTownButton = Require<Button>(root, "ReturnTownButton");
         _teamPostureButton = Require<Button>(root, "TeamPostureButton");
@@ -61,6 +81,8 @@ public sealed class ExpeditionScreenView
     {
         _localeKoButton.clicked += presenter.SelectKorean;
         _localeEnButton.clicked += presenter.SelectEnglish;
+        _helpButton.clicked += presenter.ToggleHelp;
+        _helpDismissButton.clicked += presenter.DismissHelp;
         _nextBattleButton.clicked += presenter.NextBattleOrAdvance;
         _returnTownButton.clicked += presenter.ReturnToTown;
         _teamPostureButton.clicked += presenter.CycleTeamPosture;
@@ -85,23 +107,40 @@ public sealed class ExpeditionScreenView
         _localeStatusLabel.text = state.LocaleStatus;
         _localeKoButton.text = state.LocaleKoLabel;
         _localeEnButton.text = state.LocaleEnLabel;
+        _helpButton.text = state.HelpButtonLabel;
+        _helpStrip.style.display = state.Help.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
+        _helpBodyLabel.text = state.Help.Body;
+        _helpDismissButton.text = state.Help.DismissLabel;
+        _mapTitleLabel.text = state.MapTitle;
         _positionLabel.text = state.PositionText;
         _mapLabel.text = state.MapText;
+        _routesTitleLabel.text = state.RoutesTitle;
+        _selectedRouteTitleLabel.text = state.SelectedRouteTitle;
         _rewardLabel.text = state.RewardText;
+        _squadTitleLabel.text = state.SquadTitle;
         _squadLabel.text = state.SquadText;
         _statusLabel.text = state.StatusText;
+        _primaryActionsTitleLabel.text = state.PrimaryActionsTitle;
+        _warningActionsTitleLabel.text = state.WarningActionsTitle;
         _nextBattleButton.text = state.NextBattleLabel;
+        _nextBattleButton.tooltip = state.NextBattleTooltip;
         _returnTownButton.text = state.ReturnTownLabel;
+        _returnTownButton.tooltip = state.ReturnTownTooltip;
         _teamPostureButton.text = state.TeamPostureButtonLabel;
 
         for (var i = 0; i < _nodeCards.Count; i++)
         {
-            var cardState = i < state.NodeCards.Count ? state.NodeCards[i] : new ExpeditionNodeCardViewState(string.Empty, string.Empty, string.Empty, false, false, false, false, false);
+            var cardState = i < state.NodeCards.Count
+                ? state.NodeCards[i]
+                : new ExpeditionNodeCardViewState(string.Empty, string.Empty, string.Empty, string.Empty, false, false, false, false, false);
             var card = _nodeCards[i];
             card.card.style.display = cardState.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
             card.title.text = cardState.Title;
+            card.title.tooltip = cardState.Tooltip;
             card.reward.text = cardState.RewardSummary;
+            card.reward.tooltip = cardState.Tooltip;
             card.button.text = cardState.ActionLabel;
+            card.button.tooltip = cardState.Tooltip;
             card.button.SetEnabled(cardState.IsSelectable);
             SetCardClass(card.card, "node-card--current", cardState.IsCurrent);
             SetCardClass(card.card, "node-card--selected", cardState.IsSelected);

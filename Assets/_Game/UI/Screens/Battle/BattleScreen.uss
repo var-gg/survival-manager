@@ -43,9 +43,17 @@
     min-width: 84px;
 }
 
+.battle-screen .help-strip {
+    position: absolute;
+    top: 62px;
+    left: 16px;
+    right: 16px;
+    z-index: 5;
+}
+
 .battle-screen .battle-shell__main {
     position: absolute;
-    top: 68px;
+    top: 118px;
     left: 16px;
     right: 16px;
     bottom: 16px;
@@ -72,6 +80,11 @@
     line-height: 18px;
 }
 
+.battle-screen .battle-shell__result {
+    font-size: 16px;
+    unity-font-style: bold;
+}
+
 .battle-screen .panel {
     background-color: rgba(20, 27, 40, 0.74);
 }
@@ -80,7 +93,27 @@
     white-space: normal;
 }
 
+.battle-screen .battle-track {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
 .battle-screen .action-row {
     flex-wrap: wrap;
     row-gap: 8px;
+}
+
+.battle-screen .action-group {
+    margin-top: 10px;
+}
+
+.battle-screen .battle-settings {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    width: 280px;
+}
+
+.battle-screen .battle-settings__section {
+    margin-top: 10px;
 }

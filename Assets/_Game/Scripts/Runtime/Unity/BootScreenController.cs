@@ -44,7 +44,9 @@ public sealed class BootScreenController : MonoBehaviour
             "ui.common.start_screen.title",
             "Start");
         statusText.text = BuildStatusText();
-        hintText.text = BuildHintText();
+        var hint = BuildHintText();
+        hintText.text = hint;
+        hintText.gameObject.SetActive(!string.IsNullOrWhiteSpace(hint));
     }
 
     private void HandleOfflineSelected()
@@ -69,7 +71,7 @@ public sealed class BootScreenController : MonoBehaviour
         return Localize(
             GameLocalizationTables.UICommon,
             "ui.common.start_screen.status",
-            "Start the local playable run.");
+            "This build runs a local loop from Town through Expedition, Battle, and Reward.");
     }
 
     private string BuildHintText()
@@ -77,7 +79,7 @@ public sealed class BootScreenController : MonoBehaviour
         return Localize(
             GameLocalizationTables.UICommon,
             "ui.common.start_screen.hint",
-            "This build exposes one local/authored loop with JSON save.");
+            string.Empty);
     }
 
     private string Localize(string table, string key, string fallback, params object[] args)

@@ -16,28 +16,26 @@
 
 - battle shell은 `RuntimePanelHost + UITK` 기준으로 렌더
 - 좌측 아군 / 우측 적 observer 레이아웃
+- 가운데 summary panel은 `result / current state / progress / action groups`를 묶어 보여 준다
 - `BattleActorWrapper` 기반 actor presentation
 - pre-art baseline은 primitive wrapper adapter를 사용
 - actor 머리 위 screen-space overhead UI
-- overhead UI / damage text / 팀 summary는 settings panel에서 ON/OFF
+- overhead UI / damage text / 팀 summary는 settings panel `Display` 섹션에서 ON/OFF
+- debug overlay는 settings panel `Debug` 섹션에서만 노출한다
 - team summary는 per-unit dump가 아니라 aggregate(`alive/total | current/max HP`)다
 - 최근 로그는 내부적으로 더 유지해도 normal lane 표시는 compact 5줄 기준이다
 - status headline은 `Step 042 | Rowan Skill -> Ghoul Brute | Allies pressing` 수준의 한 줄 요약을 우선한다
-- 타임라인 스크러버 (UITK progress track)
-- explicit `Replay` 버튼
+- 타임라인 progress track은 항상 보이지만 authored lane에서는 정보 표면만 담당한다
+- `Continue`는 authored lane의 유일한 primary CTA다
+- playback group / smoke group / utility group을 분리한다
 - settings 버튼 + battle view settings panel
-- continue 버튼
 - selected tactical card
 
 ## 타임라인 플레이백
 
 - `BattleTimelineController`가 시뮬레이션 스텝을 전수 녹화한다 (최대 300개).
-- 스크러버 드래그로 임의 시점 탐색이 가능하다.
-- 뒤로 탐색은 녹화된 스텝 인덱싱으로 즉시 수행한다.
-- 앞으로 탐색은 시뮬레이터를 추가 진행하여 스텝을 채운다.
-- `Replay`: 같은 recorded timeline rewind.
-- `Rebattle`: 새 seed로 새 timeline 생성.
-- `RestartSameSeed`: debug/dev shortcut으로 유지.
+- Quick Battle smoke에서만 스크러버 드래그, replay, rebattle, restart-same-seed를 노출한다.
+- authored Expedition battle은 recorded timeline을 내부적으로 가져도 player-facing surface에서는 `Continue` 중심 관찰 UX로 고정한다.
 
 ### 플레이백 모드
 
@@ -45,8 +43,10 @@
 - `InGame`: 전투 종료 후에만 `pause`, `seek`, `speed`, `replay`를 허용한다.
 
 - `BattlePlaybackPolicy`가 모드별 제어 가능 여부를 판단한다.
-- QuickBattle: 전투 중에도 모든 플레이백 조작 가능.
-- InGame: 전투 완료 후에만 모든 조작 해금.
+- current shipping shell에서는 authored lane가 `InGame` policy를 써도 playback affordance를 기본 표면에 노출하지 않는다.
+- current convergence:
+  - authored expedition battle -> `BattlePlaybackMode.InGame`
+  - quick battle smoke -> `BattlePlaybackMode.QuickBattle`
 
 ## 행동 피드백
 
@@ -70,7 +70,7 @@
 
 - scene installer가 `BattleRuntimeRoot`, `BattleRuntimePanelHost`, `BattlePresentationRoot`, `BattleStageRoot`, `ActorOverlayCanvas`, `ActorOverlayRoot`, `BattleCameraRoot`를 만든다.
 - actor wrapper는 `BattlePresentationRoot` 하위에만 spawn되고, localized overhead는 wrapper의 `HudAnchor`에 붙는다.
-- `PauseButton`, `ReplayButton`, `RebattleButton`, `SettingsPanel`, `ProgressFill` 같은 화면 요소 이름 계약은 `BattleScreen.uxml`에 저장된다.
+- `PlaybackActionsGroup`, `SmokeActionsGroup`, `SettingsPanel`, `ProgressFill` 같은 화면 요소 이름 계약은 `BattleScreen.uxml`에 저장된다.
 - selected unit은 `Tab` cycle과 좌클릭 pick 둘 다 허용한다.
 - Quick Battle smoke는 Expedition 진행도를 건드리지 않고 Battle observer만 빠르게 확인한다.
 - observer readability는 polished animation보다 상태 추적 가능성을 우선한다.

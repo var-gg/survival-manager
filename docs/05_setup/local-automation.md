@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-08
 - 소스오브트루스: `docs/05_setup/local-automation.md`
 - 적용범위: Codex와 로컬 기여자
 
@@ -24,7 +24,8 @@
 ### 로컬
 
 ```powershell
-pwsh -File tools/docs-check.ps1 -RepoRoot .
+$paths = @('README.md', 'docs/05_setup/local-runbook.md')
+& .\tools\docs-check.ps1 -RepoRoot . -Paths $paths
 ```
 
 ### CI
@@ -42,12 +43,14 @@ CI 기본 명령:
 
 ```powershell
 pwsh -File tools/docs-policy-check.ps1 -RepoRoot .
+pwsh -File tools/docs-check.ps1 -RepoRoot . -Paths <changed-md>
 pwsh -File tools/smoke-check.ps1 -RepoRoot .
 ```
 
 `tools/docs-check.ps1`는 `tools/docs-policy-check.ps1`를 먼저 실행한 뒤
 repo-root `.markdownlint-cli2.jsonc` 설정을 사용해 markdownlint와
-markdown-link-check를 수행한다.
+markdown-link-check를 수행한다. 기본은 repo-wide이지만, 현재 운영 gate는
+touched markdown만 `-Paths`로 lint하는 쪽을 우선한다.
 `Assets/ThirdParty/**` 같은 upstream/vendor 문서는 lint 대상에서 제외한다.
 
 ## Unity 테스트
@@ -89,6 +92,7 @@ pwsh -File tools/smoke-check.ps1 -RepoRoot .
 
 smoke check는 핵심 저장소 경로와 거버넌스 문서가 여전히 존재하는지 확인한다.
 더 무거운 검증 앞뒤에 둘 수 있는 빠른 sanity layer로 유지한다.
+runtime playable smoke로 집계하지 않는다.
 
 ## 실패 시 먼저 볼 것
 

@@ -135,6 +135,8 @@ public static class FirstPlayableRuntimeSceneBinder
         if (Application.isPlaying)
         {
             bootstrap.RunBootstrap();
+            var root = GameSessionRoot.EnsureInstance();
+            GlobalLocalizationOverlayView.EnsureAttached(canvas.GetComponent<RectTransform>(), root.Localization);
         }
     }
 

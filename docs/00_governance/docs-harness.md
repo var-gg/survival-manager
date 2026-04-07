@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-08
 - 소스오브트루스: `docs/00_governance/docs-harness.md`
 - 관련문서:
   - `AGENTS.md`
@@ -103,9 +103,10 @@ matrix는 최소 아래 열을 가진다.
 문서 구조, 수명주기, 언어 정책, index 체계가 바뀌면 아래 루프를 수행한다.
 
 1. `pwsh -File tools/docs-policy-check.ps1 -RepoRoot .`
-2. `pwsh -File tools/docs-check.ps1 -RepoRoot .`
-3. `pwsh -File tools/smoke-check.ps1 -RepoRoot .`
-4. 결과와 남은 리스크를 task `status.md`에 기록한다.
+2. touched-file gate면 `pwsh -File tools/docs-check.ps1 -RepoRoot . -Paths <changed-md>`
+3. repo-wide debt 확인이 필요할 때만 `pwsh -File tools/docs-check.ps1 -RepoRoot .`
+4. `pwsh -File tools/smoke-check.ps1 -RepoRoot .`
+5. 결과와 남은 리스크를 task `status.md`에 기록한다.
 
 ## 병렬 조사 원칙
 

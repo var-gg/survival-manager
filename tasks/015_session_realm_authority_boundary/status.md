@@ -9,51 +9,55 @@
 
 ## Current state
 
-- realm/capability/query/command seam, offline adapter, hidden future seam 정리는 유지한 채 `OfflineLocal` persistence hardening이 추가됐다.
-- `JsonSaveRepository`에 manifest/hash, temp write, backup fallback, quarantine, corrupt-vs-missing 분리 로직을 넣었다.
-- `SessionCheckpointResult`, smoke lane 분리, Town manual load guard, reward settlement idempotency/resume, operational telemetry, summary-first instrumentation 정책을 반영했다.
-- `tools/test-harness-lint.ps1`, `tools/docs-policy-check.ps1`, `tools/smoke-check.ps1`는 fresh green이다.
-- Unity batch 기반 fresh evidence는 project lock 때문에 아직 불완전하다.
-- `docs-check`는 이번 작업 범위 밖의 기존 markdownlint 이슈 때문에 전체 green을 만들지 못했다.
+- realm/capability/query/command seam, offline adapter, hidden future seam, 관련 design/architecture/ADR/task 문서는 이미 반영돼 있다.
+- release-floor docs/tooling은 `prepare-playable` canonical lane, `quick-battle-smoke` smoke lane, `tools/pre-art-rc.ps1` packet으로 정리됐다.
+- touched-file `docs-check` gate는 현재 변경 집합에서 green이다.
+- stale batch false green은 제거했다. `test-batch-fast`와 batch executeMethod는 fresh artifact가 없으면 project lock failure로 끝난다.
+- current local fresh evidence는 여전히 불완전하다. `unity-cli` compile ready 복구와 batch project lock 해소가 먼저 필요하다.
 
 ## Acceptance matrix
 
 | 항목 | 요구 | 현재 상태 | 근거 / 다음 확인 |
 | --- | --- | --- | --- |
-| compile | C# compile green | 미확정 | Unity batch lock 때문에 fresh compile evidence 미회수, 로컬 MSBuild는 `.NETFramework,Version=v4.7.1` reference assemblies 부재 |
+| compile | C# compile green | blocker | `Logs/release-floor/20260408-020521-41ebbb3/manifest.json`에서 `unity-bridge compile`이 port `8090` timeout으로 fail |
 | validator | test harness lint green | 통과 | `tools/test-harness-lint.ps1` |
 | docs policy | 문서 정책 검사 | 통과 | `tools/docs-policy-check.ps1` |
-| docs lint | 저장소 문서 lint | blocker | 기존 repo-wide markdownlint 이슈로 실패 |
-| targeted tests | `FastUnit`, `EditMode` | 부분확인 | `test-batch-fast`는 lock 때문에 stale result 경고 |
+| docs lint | 저장소 문서 lint | 부분통과 | touched-file gate는 green, repo-wide markdownlint debt는 informational 유지 |
+| targeted tests | `FastUnit`, `EditMode` | blocker | stale-result guard 추가 후 `test-batch-fast`가 project lock을 명시적 failure로 보고 |
 | smoke | 기본 smoke check | 통과 | `tools/smoke-check.ps1` |
-| runtime smoke | Boot/Town/Reward contract | 미완료 | Unity lock 해소 후 bootstrap / editmode 재확인 필요 |
+| runtime smoke | Boot/Town/Reward contract | 미완료 | compile ready 해소 후 `prepare-playable` / `test-play` / observer report 재확인 필요 |
 
 ## Evidence
 
-- 핵심 코드:
-  - `Assets/_Game/Scripts/Runtime/Persistence/Json/JsonSaveRepository.cs`
-  - `Assets/_Game/Scripts/Runtime/Unity/OfflineLocalSessionAdapter.cs`
-  - `Assets/_Game/Scripts/Runtime/Unity/SessionRealmCoordinator.cs`
-  - `Assets/_Game/Scripts/Runtime/Unity/GameSessionRoot.cs`
-  - `Assets/_Game/Scripts/Runtime/Unity/GameSessionState.cs`
-  - `Assets/_Game/Scripts/Runtime/Unity/UI/Town/TownScreenPresenter.cs`
-  - `Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenPresenter.cs`
-  - `Assets/_Game/Scripts/Runtime/Unity/BattleScreenController.cs`
-- 새/갱신 테스트:
-  - `Assets/Tests/EditMode/SaveRecoveryTests.cs`
-  - `Assets/Tests/EditMode/SessionRealmCoordinatorTests.cs`
-  - `Assets/Tests/EditMode/RunLoopContractFastTests.cs`
-- `pwsh -File tools/test-harness-lint.ps1 -RepoRoot .`
-- `pwsh -File tools/unity-bridge.ps1 test-batch-fast`
-- `pwsh -File tools/docs-policy-check.ps1 -RepoRoot .`
-- `pwsh -File tools/docs-check.ps1 -RepoRoot .`
-- `pwsh -File tools/smoke-check.ps1 -RepoRoot .`
+- commit SHA baseline: `41ebbb3d8b2f65ef288cc485cbea4502aa34daae`
+- dirty worktree note:
+  - unrelated user changes가 `Assets/_Game/**`, `docs/02_design/ui/**`, `docs/03_architecture/localization-runtime-and-content-pipeline.md` 등에 열려 있다.
+- pass:
+  - `pwsh -File tools/docs-policy-check.ps1 -RepoRoot .`
+  - `$paths = @(...); & .\tools\docs-check.ps1 -RepoRoot . -Paths $paths`
+  - `pwsh -File tools/smoke-check.ps1 -RepoRoot .`
+  - `pwsh -File tools/test-harness-lint.ps1 -RepoRoot .`
+- RC packet attempt:
+  - `pwsh -File tools/pre-art-rc.ps1 -UnityRecoveryBudget 0`
+  - artifact: `Logs/release-floor/20260408-020521-41ebbb3/manifest.json`
+  - result: compile phase fail (`Waiting for Unity... timed out waiting for Unity (port 8090)`)
+- fresh batch blocker confirmation:
+  - `pwsh -File tools/unity-bridge.ps1 test-batch-fast`
+    - result: `Unity batchmode test exited with code 1 and no fresh results file was produced. Another Unity instance may still hold the project lock.`
+  - `pwsh -File tools/unity-bridge.ps1 content-validate`
+    - artifact: `Logs/content-validation-ci.log`
+    - result: project lock으로 batch executeMethod fail
+- lane rename / docs sync:
+  - canonical setup verb: `prepare-playable`
+  - smoke verb: `quick-battle-smoke`
+  - deprecated alias: `bootstrap` -> `quick-battle-smoke`
 
 ## Remaining blockers
 
-- Unity project lock 때문에 fresh `test-batch-fast` / `test-batch-edit` / `bootstrap` evidence가 안정적으로 회수되지 않는다.
-- local MSBuild compile은 machine에 `.NETFramework,Version=v4.7.1` reference assemblies가 없어 Unity 바깥 fallback compile 근거로 쓰기 어렵다.
-- `docs-check`는 `docs/**`, `CLAUDE.md`, `Packages/com.coplaydev.unity-mcp/README.md`, `.claude/worktrees/**`에 남아 있는 기존 markdownlint 이슈 때문에 실패한다.
+- `unity-cli` compile ready가 current SHA에서 port `8090` timeout으로 막혀 있다.
+- 열린 Unity 인스턴스 때문에 fresh `test-batch-fast` / `test-batch-edit` / `content-validate` evidence가 project lock으로 중단된다.
+- `prepare-playable`, `test-play`, observer report, save/load/recovery manual note는 compile ready가 닫히기 전까지 final evidence로 채택할 수 없다.
+- repo-wide `docs-check` debt는 여전히 informational이지만, 이번 패스의 blocker는 docs가 아니라 Unity ready / project lock 쪽이다.
 
 ## Deferred / debug-only
 
@@ -62,19 +66,20 @@
 - `OnlineMockAdapter`
 - actual server adapter
 - `SaveProfile` concern 분해
-- paid asset 이후 readability retune / target hardware perf certification
 
 ## Loop budget consumed
 
-- compile-fix: 2
+- compile-fix: 1
 - refresh/read-console: 0
 - asset authoring retry: 1
+- stale-batch-guard / release-floor tooling: 1
 - budget 초과 시 남긴 diagnosis:
-  - batch test project lock warning
-  - local MSBuild reference assemblies missing
+  - unity bridge `compile` timeout (`port 8090`)
+  - batch test / executeMethod project lock hard fail
 
 ## Handoff notes
 
-- Unity lock이 풀리면 `test-batch-fast`, normal playable smoke, quick battle smoke evidence를 다시 돌려 status evidence를 갱신한다.
-- repo-wide markdownlint 이슈를 별도 task로 정리한 뒤 `tools/docs-check.ps1`를 다시 돌린다.
-- runtime 운영 계약은 `docs/06_production/runtime-hardening-contract.md`를 기준으로 본다.
+- Unity lock이 풀리면 `compile`, `test-batch-fast`, `test-batch-edit`, `prepare-playable`, `test-play`를 같은 SHA에서 다시 돌려 status evidence를 갱신한다.
+- RC packet 기본 entry는 `pwsh -File tools/pre-art-rc.ps1`다. compile phase에서 실패하면 뒤 lane은 evidence로 채택하지 않는다.
+- repo-wide markdownlint debt는 별도 task로 정리하되, current lane gate는 touched-file `docs-check`로 유지한다.
+- Boot scene canonical save/recovery가 필요하면 `prepare-playable`과 `repair-scenes`를 우선 사용한다.

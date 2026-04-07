@@ -14,11 +14,14 @@ namespace SM.Unity.UI.Town;
 
 public sealed class TownScreenPresenter
 {
+    private const string HelpPrefsKey = "SM.Help.Town";
+
     private readonly GameSessionRoot _root;
     private readonly GameLocalizationController _localization;
     private readonly ContentTextResolver _contentText;
     private readonly TownScreenView _view;
     private readonly BuildIdentityFormatter _buildFormatter;
+    private readonly ScreenHelpState _helpState;
     private int _selectedHeroIndex;
     private int _selectedItemIndex;
     private int _selectedPassiveNodeIndex;
@@ -35,6 +38,7 @@ public sealed class TownScreenPresenter
         _contentText = contentText;
         _view = view;
         _buildFormatter = new BuildIdentityFormatter(contentText);
+        _helpState = new ScreenHelpState(HelpPrefsKey);
     }
 
     public void Initialize()
@@ -53,6 +57,17 @@ public sealed class TownScreenPresenter
     public void NextChapter() => CycleCampaignChapter(1);
     public void PreviousSite() => CycleCampaignSite(-1);
     public void NextSite() => CycleCampaignSite(1);
+    public void ToggleHelp()
+    {
+        _helpState.Toggle();
+        Refresh();
+    }
+
+    public void DismissHelp()
+    {
+        _helpState.Dismiss();
+        Refresh();
+    }
 
     public void RerollOffers()
     {
@@ -65,14 +80,28 @@ public sealed class TownScreenPresenter
 
     public void SaveProfile()
     {
-        _root.SaveProfile();
-        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.profile_saved", "Profile saved."));
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.ManualSave);
+        Refresh(checkpoint.Status == SessionCheckpointStatus.Success
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.profile_saved", "Profile saved.")
+            : checkpoint.Message);
     }
 
     public void LoadProfile()
     {
-        _root.BindProfile();
-        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.profile_loaded", "Profile reloaded."));
+        if (!_root.SessionState.CanManualProfileReload(out var reason))
+        {
+            _root.SessionState.RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateManualReloadBlocked(
+                _root.ActiveProfileId,
+                _root.ActiveProfileId,
+                reason));
+            Refresh(reason);
+            return;
+        }
+
+        var checkpoint = _root.BindProfile(SessionCheckpointKind.ManualLoad);
+        Refresh(checkpoint.Status == SessionCheckpointStatus.Success
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.profile_loaded", "Profile reloaded.")
+            : checkpoint.Message);
     }
 
     public void ReturnToStart()
@@ -86,27 +115,49 @@ public sealed class TownScreenPresenter
             return;
         }
 
-        _root.ReturnToSessionMenu();
+        var checkpoint = _root.ReturnToSessionMenu();
+        if (!checkpoint.IsSuccessful)
+        {
+            Refresh(checkpoint.Message);
+        }
     }
 
     public void OpenExpedition()
     {
         if (_root.SessionState.HasPendingRewardSettlement)
         {
-            _root.SaveProfile();
+            var checkpoint = _root.SaveProfile(SessionCheckpointKind.TownExit);
+            if (!checkpoint.IsSuccessful)
+            {
+                Refresh(checkpoint.Message);
+                return;
+            }
+
             _root.SceneFlow.GoToReward();
             return;
         }
 
         if (_root.SessionState.CanResumeExpedition)
         {
-            _root.SaveProfile();
+            var checkpoint = _root.SaveProfile(SessionCheckpointKind.TownExit);
+            if (!checkpoint.IsSuccessful)
+            {
+                Refresh(checkpoint.Message);
+                return;
+            }
+
             _root.SceneFlow.GoToExpedition();
             return;
         }
 
         _root.SessionState.BeginNewExpedition();
-        _root.SaveProfile();
+        var newRunCheckpoint = _root.SaveProfile(SessionCheckpointKind.TownExit);
+        if (!newRunCheckpoint.IsSuccessful)
+        {
+            Refresh(newRunCheckpoint.Message);
+            return;
+        }
+
         _root.SceneFlow.GoToExpedition();
     }
 
@@ -121,8 +172,15 @@ public sealed class TownScreenPresenter
             return;
         }
 
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.TownExit);
+        if (!checkpoint.IsSuccessful)
+        {
+            Refresh(checkpoint.Message);
+            return;
+        }
+
+        _root.BeginTransientTownSmoke();
         _root.SessionState.PrepareQuickBattleSmoke();
-        _root.SaveProfile();
         _root.SceneFlow.GoToBattle();
     }
 
@@ -351,15 +409,17 @@ public sealed class TownScreenPresenter
         var canRefit = selectedItem != null && session.Profile.Currencies.Echo >= MetaBalanceDefaults.RefitEchoCost;
         var canEquipPermanent = !string.IsNullOrWhiteSpace(selectedPermanentId)
                                 && !string.Equals(selectedPermanentId, GetEquippedPermanentAugmentId(session), StringComparison.Ordinal);
-        var statusText = string.IsNullOrWhiteSpace(message)
-            ? BuildDefaultStatus(session)
-            : message;
+        var statusText = string.IsNullOrWhiteSpace(message) ? string.Empty : message;
+        var showDebugActions = Application.isEditor || Debug.isDebugBuild;
 
         return new TownScreenViewState(
             Localize(GameLocalizationTables.UITown, "ui.town.title", "Town Operator UI"),
             BuildLocaleStatus(),
             GetLocaleButtonLabel("ko", "한국어"),
             GetLocaleButtonLabel("en", "English"),
+            Localize(GameLocalizationTables.UICommon, "ui.common.help", "Help"),
+            BuildHelpState(),
+            Localize(GameLocalizationTables.UITown, "ui.town.panel.campaign", "Campaign"),
             BuildCampaignSummary(session),
             Localize(GameLocalizationTables.UITown, "ui.town.action.prev_chapter", "Prev Chapter"),
             canCycleChapter,
@@ -369,15 +429,22 @@ public sealed class TownScreenPresenter
             canCycleSite,
             Localize(GameLocalizationTables.UITown, "ui.town.action.next_site", "Next Site"),
             canCycleSite,
+            Localize(GameLocalizationTables.UITown, "ui.town.panel.economy", "Economy"),
             BuildEconomyRailText(session, profile),
+            Localize(GameLocalizationTables.UITown, "ui.town.panel.roster", "Roster"),
             BuildRosterText(profile, selectedHero?.HeroId ?? string.Empty),
+            Localize(GameLocalizationTables.UITown, "ui.town.panel.blueprint", "Build"),
             _buildFormatter.BuildBlueprintSummary(session),
+            Localize(GameLocalizationTables.UITown, "ui.town.panel.recruit", "Recruit"),
             BuildRecruitSummary(session, profile),
             BuildRecruitCards(session),
+            Localize(GameLocalizationTables.UITown, "ui.town.panel.selected_hero", "Selected Hero"),
             BuildSelectedHeroSummary(session, selectedHero, selectedItem, selectedNode?.Id ?? string.Empty, retrainActiveCost, retrainPassiveCost, fullRetrainCost, dismissRefund),
+            Localize(GameLocalizationTables.UITown, "ui.town.panel.deploy", "Squad / Deploy"),
             BuildDeployPreviewText(session, profile, loadout),
             BuildDeployButtons(profile, loadout),
             Localize(GameLocalizationTables.UICommon, "ui.common.posture", "Posture") + "\n" + session.SelectedTeamPosture,
+            Localize(GameLocalizationTables.UITown, "ui.town.tooltip.team_posture", "Sets the current team posture used for deploy and battle readiness."),
             BuildCycleHeroLabel(selectedHero),
             session.Profile.Heroes.Count > 0,
             BuildCycleItemLabel(selectedItem),
@@ -409,14 +476,22 @@ public sealed class TownScreenPresenter
             Localize(GameLocalizationTables.UICommon, "ui.common.save", "Save"),
             Localize(GameLocalizationTables.UICommon, "ui.common.load", "Load"),
             Localize(GameLocalizationTables.UICommon, "ui.common.return_start", "Return to Start"),
+            BuildReturnToStartTooltip(session),
             !IsReturnToStartBlocked(session),
             session.HasPendingRewardSettlement
                 ? Localize(GameLocalizationTables.UIReward, "ui.reward.action.open", "Open Reward")
                 : session.CanResumeExpedition
                     ? Localize(GameLocalizationTables.UITown, "ui.town.action.resume_expedition", "Resume Expedition")
                     : Localize(GameLocalizationTables.UITown, "ui.town.action.start_expedition", "Start Expedition"),
+            BuildExpeditionTooltip(session),
+            Localize(GameLocalizationTables.UITown, "ui.town.group.primary", "Primary"),
+            Localize(GameLocalizationTables.UITown, "ui.town.group.gameplay", "Gameplay"),
+            Localize(GameLocalizationTables.UITown, "ui.town.group.utility", "Utility"),
+            Localize(GameLocalizationTables.UITown, "ui.town.group.debug", "Debug / Smoke"),
             Localize(GameLocalizationTables.UITown, "ui.town.action.quick_battle_smoke", "Quick Battle (Smoke)"),
-            session.CanStartQuickBattleSmoke);
+            Localize(GameLocalizationTables.UITown, "ui.town.tooltip.quick_battle", "Open the smoke-only debug battle lane without altering authored campaign progress."),
+            showDebugActions,
+            showDebugActions && session.CanStartQuickBattleSmoke);
     }
 
     private void CycleCampaignChapter(int direction)
@@ -430,8 +505,10 @@ public sealed class TownScreenPresenter
             return;
         }
 
-        _root.SaveProfile();
-        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.chapter_changed", "Campaign chapter updated."));
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.ManualSave);
+        Refresh(checkpoint.IsSuccessful
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.chapter_changed", "Campaign chapter updated.")
+            : checkpoint.Message);
     }
 
     private void CycleCampaignSite(int direction)
@@ -445,8 +522,10 @@ public sealed class TownScreenPresenter
             return;
         }
 
-        _root.SaveProfile();
-        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.site_changed", "Expedition site updated."));
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.ManualSave);
+        Refresh(checkpoint.IsSuccessful
+            ? Localize(GameLocalizationTables.UITown, "ui.town.status.site_changed", "Expedition site updated.")
+            : checkpoint.Message);
     }
 
     private string BuildCampaignSummary(GameSessionState session)
@@ -454,14 +533,20 @@ public sealed class TownScreenPresenter
         var chapterName = _contentText.GetCampaignChapterName(session.SelectedCampaignChapterId);
         var siteName = _contentText.GetExpeditionSiteName(session.SelectedCampaignSiteId);
         var sb = new StringBuilder();
-        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.campaign.header", "Campaign Selection"));
         sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.campaign.chapter", "Chapter: {0}", chapterName));
         sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.campaign.site", "Site: {0}", siteName));
-        sb.AppendLine(_contentText.GetExpeditionSiteDescription(session.SelectedCampaignSiteId));
-        sb.AppendLine();
-        sb.AppendLine(session.CanChangeCampaignSelection
-            ? Localize(GameLocalizationTables.UITown, "ui.town.campaign.unlocked", "Selection unlocked: choose the next chapter and site before departure.")
-            : Localize(GameLocalizationTables.UITown, "ui.town.campaign.locked", "Selection locked: active expedition run must keep the same chapter and site."));
+        sb.AppendLine(Localize(
+            GameLocalizationTables.UITown,
+            "ui.town.campaign.selection_state",
+            "Selection: {0}",
+            session.CanChangeCampaignSelection
+                ? Localize(GameLocalizationTables.UITown, "ui.town.campaign.unlocked", "Unlocked for a new authored route.")
+                : Localize(GameLocalizationTables.UITown, "ui.town.campaign.locked", "Locked while the current run stays active.")));
+        sb.AppendLine(Localize(
+            GameLocalizationTables.UITown,
+            "ui.town.campaign.objective",
+            "Objective: {0}",
+            _contentText.GetExpeditionSiteDescription(session.SelectedCampaignSiteId)));
 
         if (session.HasPendingRewardSettlement)
         {
@@ -533,6 +618,7 @@ public sealed class TownScreenPresenter
                 offer == null ? Localize(GameLocalizationTables.UITown, "ui.town.recruit.empty", "Empty Slot") : _contentText.GetArchetypeName(offer.UnitBlueprintId),
                 BuildRecruitCardBody(offer),
                 Localize(GameLocalizationTables.UITown, "ui.town.action.recruit", "Recruit"),
+                BuildRecruitCardTooltip(offer),
                 offer != null));
         }
 
@@ -571,6 +657,33 @@ public sealed class TownScreenPresenter
         }
 
         return fallback;
+    }
+
+    private HelpStripViewState BuildHelpState()
+    {
+        return new HelpStripViewState(
+            _helpState.IsVisible,
+            Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.help.body",
+                "1) Check chapter/site 2) confirm recruit and deploy 3) set posture 4) start the expedition."),
+            Localize(GameLocalizationTables.UICommon, "ui.common.hide", "Hide"));
+    }
+
+    private string BuildReturnToStartTooltip(GameSessionState session)
+    {
+        return IsReturnToStartBlocked(session)
+            ? Localize(GameLocalizationTables.UITown, "ui.town.tooltip.return_start_locked", "Blocked while an authored run or smoke battle is still active.")
+            : Localize(GameLocalizationTables.UITown, "ui.town.tooltip.return_start", "Leave the local run shell and go back to Boot.");
+    }
+
+    private string BuildExpeditionTooltip(GameSessionState session)
+    {
+        return session.HasPendingRewardSettlement
+            ? Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_reward", "Open Reward to settle the previous node before continuing.")
+            : session.CanResumeExpedition
+                ? Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_resume", "Resume the authored expedition from the currently selected route.")
+                : Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_start", "Begin the authored expedition loop with the current preparation.");
     }
 
     private void NormalizeUiSelections(GameSessionState session)
@@ -782,14 +895,26 @@ public sealed class TownScreenPresenter
         var recruitPity = session.RecruitPity;
         var scoutDirective = ResolveScoutDirective();
         var builder = new StringBuilder();
-        builder.AppendLine("Economy Rail");
-        builder.AppendLine($"Gold: {profile.Gold}");
-        builder.AppendLine($"Echo: {profile.Echo}");
-        builder.AppendLine($"Free Refresh: {(recruitPhase.FreeRefreshesRemaining > 0 ? "Available" : "Used")}");
-        builder.AppendLine($"Next Refresh Cost: {session.CurrentRecruitRefreshCost}");
-        builder.AppendLine($"Scout: {(session.CanUseScout ? "Available" : "Used")} / {scoutDirective.Kind}");
-        builder.AppendLine($"Rare Pity: {recruitPity.PacksSinceRarePlusSeen}");
-        builder.AppendLine($"Epic Pity: {recruitPity.PacksSinceEpicSeen}");
+        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.economy.gold", "Gold: {0}", profile.Gold));
+        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.economy.echo", "Echo: {0}", profile.Echo));
+        builder.AppendLine(Localize(
+            GameLocalizationTables.UITown,
+            "ui.town.economy.refresh_state",
+            "Refresh: {0}",
+            recruitPhase.FreeRefreshesRemaining > 0
+                ? Localize(GameLocalizationTables.UITown, "ui.town.economy.refresh_available", "Free refresh available")
+                : Localize(GameLocalizationTables.UITown, "ui.town.economy.refresh_used", "Free refresh used")));
+        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.economy.refresh_cost", "Next reroll: {0} Gold", session.CurrentRecruitRefreshCost));
+        builder.AppendLine(Localize(
+            GameLocalizationTables.UITown,
+            "ui.town.economy.scout",
+            "Scout: {0} / {1}",
+            session.CanUseScout
+                ? Localize(GameLocalizationTables.UITown, "ui.town.economy.available", "Available")
+                : Localize(GameLocalizationTables.UITown, "ui.town.economy.used", "Used"),
+            LocalizeScoutDirective(scoutDirective.Kind)));
+        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.economy.rare_pity", "Rare pity: {0}", recruitPity.PacksSinceRarePlusSeen));
+        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.economy.epic_pity", "Epic pity: {0}", recruitPity.PacksSinceEpicSeen));
         return builder.ToString();
     }
 
@@ -838,8 +963,16 @@ public sealed class TownScreenPresenter
     private string BuildDeployPreviewText(GameSessionState session, ProfileView profile, LoadoutView loadout)
     {
         var sb = new StringBuilder();
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.squad_count", "Squad: {0}/8", loadout.ExpeditionSquadCount));
         sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.header", "Deploy Preview ({0}/4)", loadout.BattleDeployCount));
         sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.posture", "Team Posture: {0}", loadout.TeamPosture));
+        sb.AppendLine(Localize(
+            GameLocalizationTables.UITown,
+            "ui.town.deploy.readiness",
+            "Readiness: {0}",
+            loadout.BattleDeployCount >= 4
+                ? Localize(GameLocalizationTables.UITown, "ui.town.deploy.ready", "Ready for the next battle handoff.")
+                : Localize(GameLocalizationTables.UITown, "ui.town.deploy.not_ready", "Assign more heroes before a full battle deploy.")));
         foreach (var deployment in loadout.Deployments)
         {
             var hero = profile.Heroes.FirstOrDefault(x => x.HeroId == deployment.HeroId);
@@ -850,6 +983,7 @@ public sealed class TownScreenPresenter
         sb.AppendLine();
         if (session.HasPendingRewardSettlement)
         {
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.primary_reward", "Primary Action: Open Reward"));
             sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.pending_reward", "Reward settlement is pending. Open Reward before moving to the next node."));
         }
         else if (session.CanResumeExpedition)
@@ -858,10 +992,12 @@ public sealed class TownScreenPresenter
             var routeLabel = nextNode == null
                 ? Localize(GameLocalizationTables.UITown, "ui.town.deploy.route_needed", "Route selection required")
                 : $"{Localize(GameLocalizationTables.UIExpedition, nextNode.LabelKey, nextNode.Id)} -> {Localize(GameLocalizationTables.UIExpedition, nextNode.PlannedRewardKey, nextNode.Id)}";
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.primary_resume", "Primary Action: Resume Expedition"));
             sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.resume", "Resume Expedition: {0}", routeLabel));
         }
         else
         {
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.primary_start", "Primary Action: Start Expedition"));
             sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.start", "Start Expedition: begin the authored route from camp."));
         }
 
@@ -911,11 +1047,17 @@ public sealed class TownScreenPresenter
 
         var slotBadge = offer.Metadata.SlotType switch
         {
-            SM.Core.Contracts.RecruitOfferSlotType.OnPlan => "[OnPlan]",
-            SM.Core.Contracts.RecruitOfferSlotType.Protected => offer.Metadata.BiasedByScout ? "[Protected][Scout]" : "[Protected]",
-            _ => offer.Metadata.BiasedByScout ? "[Scout]" : $"[{offer.Metadata.SlotType}]",
+            SM.Core.Contracts.RecruitOfferSlotType.OnPlan => Localize(GameLocalizationTables.UITown, "ui.town.recruit.badge.on_plan", "[On Plan]"),
+            SM.Core.Contracts.RecruitOfferSlotType.Protected => offer.Metadata.BiasedByScout
+                ? Localize(GameLocalizationTables.UITown, "ui.town.recruit.badge.protected_scout", "[Protected][Scout]")
+                : Localize(GameLocalizationTables.UITown, "ui.town.recruit.badge.protected", "[Protected]"),
+            _ => offer.Metadata.BiasedByScout
+                ? Localize(GameLocalizationTables.UITown, "ui.town.recruit.badge.scout", "[Scout]")
+                : $"[{LocalizeRecruitSlotType(offer.Metadata.SlotType)}]",
         };
-        var formation = archetype?.BehaviorProfile?.FormationLine.ToString() ?? "Unknown";
+        var formation = archetype?.BehaviorProfile?.FormationLine is { } line
+            ? LocalizeFormationLine(line)
+            : Localize(GameLocalizationTables.UICommon, "ui.common.unknown", "Unknown");
         var roleFantasy = string.IsNullOrWhiteSpace(archetype?.RoleTag)
             ? formation
             : $"{archetype.RoleTag} / {formation}";
@@ -931,10 +1073,32 @@ public sealed class TownScreenPresenter
 
         return string.Join(
             "\n",
-            $"{slotBadge} {offer.Metadata.Tier} / {offer.Metadata.PlanFit} / {offer.Metadata.GoldCost} Gold",
+            $"{slotBadge} {LocalizeRecruitTier(offer.Metadata.Tier)} / {LocalizePlanFit(offer.Metadata.PlanFit)} / {offer.Metadata.GoldCost} Gold",
             $"{_contentText.GetRaceName(archetype?.Race.Id ?? string.Empty)} / {_contentText.GetClassName(archetype?.Class.Id ?? string.Empty)} / {roleFantasy}",
-            $"Tags: {(keyTags.Length == 0 ? "None" : string.Join(", ", keyTags))}",
-            $"Counter: {(counterHints.Length == 0 ? "None" : string.Join(", ", counterHints))}");
+            $"{Localize(GameLocalizationTables.UITown, "ui.town.recruit.tags", "Tags")}: {(keyTags.Length == 0 ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None") : string.Join(", ", keyTags))}",
+            $"{Localize(GameLocalizationTables.UITown, "ui.town.recruit.counter", "Counter")}: {(counterHints.Length == 0 ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None") : string.Join(", ", counterHints))}");
+    }
+
+    private string BuildRecruitCardTooltip(RecruitUnitPreview? offer)
+    {
+        if (offer == null)
+        {
+            return Localize(GameLocalizationTables.UITown, "ui.town.recruit.tooltip.empty", "No recruit offer is available in this slot.");
+        }
+
+        var slotMeaning = offer.Metadata.SlotType switch
+        {
+            SM.Core.Contracts.RecruitOfferSlotType.OnPlan => Localize(GameLocalizationTables.UITown, "ui.town.recruit.tooltip.on_plan", "On-plan offer that matches the current build direction."),
+            SM.Core.Contracts.RecruitOfferSlotType.Protected => Localize(GameLocalizationTables.UITown, "ui.town.recruit.tooltip.protected", "Protected offer kept stable for this town visit."),
+            _ => Localize(GameLocalizationTables.UITown, "ui.town.recruit.tooltip.standard", "Standard recruit offer for the current town visit."),
+        };
+
+        return Localize(
+            GameLocalizationTables.UITown,
+            "ui.town.recruit.tooltip.summary",
+            "{0} Cost: {1} Gold.",
+            slotMeaning,
+            offer.Metadata.GoldCost);
     }
 
     private string ResolvePlayerId()
@@ -961,19 +1125,24 @@ public sealed class TownScreenPresenter
 
         if (selectedItem != null)
         {
-            builder.AppendLine($"Refit Preview: {MetaBalanceDefaults.RefitEchoCost} Echo");
+            builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.selected_hero.refit_preview", "Refit Preview: {0} Echo", MetaBalanceDefaults.RefitEchoCost));
         }
 
-        builder.AppendLine($"Retrain Active: {retrainActiveCost} Echo");
-        builder.AppendLine($"Retrain Passive: {retrainPassiveCost} Echo");
-        builder.AppendLine($"Full Retrain: {fullRetrainCost} Echo");
-        builder.AppendLine($"Dismiss Refund: +{dismissRefund.GoldRefund} Gold / +{dismissRefund.EchoRefund} Echo");
+        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.selected_hero.retrain_active", "Retrain Active: {0} Echo", retrainActiveCost));
+        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.selected_hero.retrain_passive", "Retrain Passive: {0} Echo", retrainPassiveCost));
+        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.selected_hero.retrain_full", "Full Retrain: {0} Echo", fullRetrainCost));
+        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.selected_hero.dismiss_refund", "Dismiss Refund: +{0} Gold / +{1} Echo", dismissRefund.GoldRefund, dismissRefund.EchoRefund));
 
         var loadout = session.Profile.HeroLoadouts.FirstOrDefault(record =>
             string.Equals(record.HeroId, selectedHero.HeroId, StringComparison.Ordinal));
         if (loadout != null)
         {
-            builder.AppendLine($"Passive Nodes: {loadout.SelectedPassiveNodeIds.Count}/{PassiveBoardSelectionValidator.MaxActiveNodeCount}");
+            builder.AppendLine(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.selected_hero.passive_nodes",
+                "Passive Nodes: {0}/{1}",
+                loadout.SelectedPassiveNodeIds.Count,
+                PassiveBoardSelectionValidator.MaxActiveNodeCount));
         }
 
         return builder.ToString().TrimEnd();
@@ -981,46 +1150,46 @@ public sealed class TownScreenPresenter
 
     private string BuildCycleHeroLabel(HeroInstanceRecord? selectedHero)
         => selectedHero == null
-            ? "Cycle Hero"
-            : $"Cycle Hero\n{selectedHero.Name}";
+            ? Localize(GameLocalizationTables.UITown, "ui.town.action.cycle_hero", "Cycle Hero")
+            : $"{Localize(GameLocalizationTables.UITown, "ui.town.action.cycle_hero", "Cycle Hero")}\n{selectedHero.Name}";
 
     private string BuildCycleItemLabel(InventoryItemRecord? selectedItem)
         => selectedItem == null
-            ? "Cycle Item"
-            : $"Cycle Item\n{_contentText.GetItemName(selectedItem.ItemBaseId)}";
+            ? Localize(GameLocalizationTables.UITown, "ui.town.action.cycle_item", "Cycle Item")
+            : $"{Localize(GameLocalizationTables.UITown, "ui.town.action.cycle_item", "Cycle Item")}\n{_contentText.GetItemName(selectedItem.ItemBaseId)}";
 
     private string BuildCycleBoardLabel(HeroInstanceRecord? selectedHero)
     {
         if (selectedHero == null)
         {
-            return "Cycle Board";
+            return Localize(GameLocalizationTables.UITown, "ui.town.action.cycle_board", "Cycle Board");
         }
 
         var loadout = _root.SessionState.Profile.HeroLoadouts.FirstOrDefault(record =>
             string.Equals(record.HeroId, selectedHero.HeroId, StringComparison.Ordinal));
         var boardName = string.IsNullOrWhiteSpace(loadout?.PassiveBoardId)
-            ? "None"
+            ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None")
             : _contentText.GetPassiveBoardName(loadout.PassiveBoardId);
-        return $"Cycle Board\n{boardName}";
+        return $"{Localize(GameLocalizationTables.UITown, "ui.town.action.cycle_board", "Cycle Board")}\n{boardName}";
     }
 
     private string BuildCycleNodeLabel(PassiveNodeDefinition? selectedNode)
         => selectedNode == null
-            ? "Cycle Node"
-            : $"Cycle Node\n{_contentText.GetPassiveNodeName(selectedNode.Id)}";
+            ? Localize(GameLocalizationTables.UITown, "ui.town.action.cycle_node", "Cycle Node")
+            : $"{Localize(GameLocalizationTables.UITown, "ui.town.action.cycle_node", "Cycle Node")}\n{_contentText.GetPassiveNodeName(selectedNode.Id)}";
 
     private string BuildCyclePermanentLabel(string selectedPermanentId)
     {
         if (string.IsNullOrWhiteSpace(selectedPermanentId))
         {
-            return "Cycle Permanent";
+            return Localize(GameLocalizationTables.UITown, "ui.town.action.cycle_permanent", "Cycle Permanent");
         }
 
         var equippedPermanentId = GetEquippedPermanentAugmentId(_root.SessionState);
         var equippedBadge = string.Equals(selectedPermanentId, equippedPermanentId, StringComparison.Ordinal)
-            ? " [Equipped]"
+            ? $" {Localize(GameLocalizationTables.UITown, "ui.town.permanent.equipped", "[Equipped]")}"
             : string.Empty;
-        return $"Cycle Permanent\n{_contentText.GetAugmentName(selectedPermanentId)}{equippedBadge}";
+        return $"{Localize(GameLocalizationTables.UITown, "ui.town.action.cycle_permanent", "Cycle Permanent")}\n{_contentText.GetAugmentName(selectedPermanentId)}{equippedBadge}";
     }
 
     private string BuildDefaultStatus(GameSessionState session)
@@ -1054,6 +1223,59 @@ public sealed class TownScreenPresenter
 
         var wrapped = index % count;
         return wrapped < 0 ? wrapped + count : wrapped;
+    }
+
+    private string LocalizeScoutDirective(SM.Core.Contracts.ScoutDirectiveKind kind)
+    {
+        return kind switch
+        {
+            SM.Core.Contracts.ScoutDirectiveKind.Frontline => Localize(GameLocalizationTables.UITown, "ui.town.scout.frontline", "Frontline"),
+            SM.Core.Contracts.ScoutDirectiveKind.Backline => Localize(GameLocalizationTables.UITown, "ui.town.scout.backline", "Backline"),
+            SM.Core.Contracts.ScoutDirectiveKind.Magical => Localize(GameLocalizationTables.UITown, "ui.town.scout.magical", "Magical"),
+            SM.Core.Contracts.ScoutDirectiveKind.Support => Localize(GameLocalizationTables.UITown, "ui.town.scout.support", "Support"),
+            _ => Localize(GameLocalizationTables.UITown, "ui.town.scout.physical", "Physical"),
+        };
+    }
+
+    private string LocalizeRecruitSlotType(SM.Core.Contracts.RecruitOfferSlotType slotType)
+    {
+        return slotType switch
+        {
+            SM.Core.Contracts.RecruitOfferSlotType.OnPlan => Localize(GameLocalizationTables.UITown, "ui.town.recruit.slot.on_plan", "On Plan"),
+            SM.Core.Contracts.RecruitOfferSlotType.Protected => Localize(GameLocalizationTables.UITown, "ui.town.recruit.slot.protected", "Protected"),
+            SM.Core.Contracts.RecruitOfferSlotType.StandardB => Localize(GameLocalizationTables.UITown, "ui.town.recruit.slot.standard_b", "Standard B"),
+            _ => Localize(GameLocalizationTables.UITown, "ui.town.recruit.slot.standard_a", "Standard A"),
+        };
+    }
+
+    private string LocalizeRecruitTier(SM.Core.Contracts.RecruitTier tier)
+    {
+        return tier switch
+        {
+            SM.Core.Contracts.RecruitTier.Rare => Localize(GameLocalizationTables.UITown, "ui.town.recruit.tier.rare", "Rare"),
+            SM.Core.Contracts.RecruitTier.Epic => Localize(GameLocalizationTables.UITown, "ui.town.recruit.tier.epic", "Epic"),
+            _ => Localize(GameLocalizationTables.UITown, "ui.town.recruit.tier.common", "Common"),
+        };
+    }
+
+    private string LocalizePlanFit(SM.Core.Contracts.CandidatePlanFit planFit)
+    {
+        return planFit switch
+        {
+            SM.Core.Contracts.CandidatePlanFit.OnPlan => Localize(GameLocalizationTables.UITown, "ui.town.recruit.plan.on_plan", "On Plan"),
+            SM.Core.Contracts.CandidatePlanFit.Bridge => Localize(GameLocalizationTables.UITown, "ui.town.recruit.plan.bridge", "Bridge"),
+            _ => Localize(GameLocalizationTables.UITown, "ui.town.recruit.plan.off_plan", "Off Plan"),
+        };
+    }
+
+    private string LocalizeFormationLine(SM.Core.Contracts.FormationLine line)
+    {
+        return line switch
+        {
+            SM.Core.Contracts.FormationLine.Backline => Localize(GameLocalizationTables.UITown, "ui.town.recruit.formation.backline", "Backline"),
+            SM.Core.Contracts.FormationLine.Midline => Localize(GameLocalizationTables.UITown, "ui.town.recruit.formation.midline", "Midline"),
+            _ => Localize(GameLocalizationTables.UITown, "ui.town.recruit.formation.frontline", "Frontline"),
+        };
     }
 
     private string LocalizeAnchor(DeploymentAnchorId anchor)

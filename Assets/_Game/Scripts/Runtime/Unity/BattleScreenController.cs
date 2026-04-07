@@ -20,6 +20,7 @@ public sealed class BattleScreenController : MonoBehaviour
     private const int MaxRecentLogLines = 8;
     private const int MaxBattleSteps = BattleSimulator.DefaultMaxSteps;
     private const string QuickBattleRequestedEditorPrefKey = "SM.QuickBattleRequested";
+    private const string HelpPrefsKey = "SM.Help.Battle";
 
     [SerializeField] private RuntimePanelHost panelHost = null!;
     [SerializeField] private BattlePresentationController presentationController = null!;
@@ -29,6 +30,7 @@ public sealed class BattleScreenController : MonoBehaviour
     private readonly List<string> _decisiveTimeline = new();
     private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
     private readonly BattleCameraFramingPolicy _cameraFramingPolicy = new();
+    private readonly ScreenHelpState _helpState = new(HelpPrefsKey);
     private string _selectedUnitId = string.Empty;
     private string _settingsStatusText = string.Empty;
     private GameSessionRoot _root = null!;
@@ -64,9 +66,11 @@ public sealed class BattleScreenController : MonoBehaviour
     public bool IsBattleFinished => _timeline?.IsFinished ?? false;
     public BattleSimulationStep? LatestStep => _timeline?.CurrentStep;
     public TeamPostureType? ActiveAllyPosture => _simulator?.State.AllyPosture;
+    public BattlePlaybackMode PlaybackMode => _policy.Mode;
 
     private static readonly Vector3 DefaultCameraPosition = new(0.4f, 7.8f, -9.1f);
     private static readonly Quaternion DefaultCameraRotation = Quaternion.Euler(33f, -12f, 0f);
+    private bool IsSmokeLane => _policy.Mode == BattlePlaybackMode.QuickBattle;
 
     private void Start()
     {
@@ -161,13 +165,25 @@ public sealed class BattleScreenController : MonoBehaviour
 
     public void SelectKorean() => _localization.TrySetLocale("ko");
     public void SelectEnglish() => _localization.TrySetLocale("en");
+    public void ToggleHelp()
+    {
+        _helpState.Toggle();
+        RenderCurrentState();
+    }
+
+    public void DismissHelp()
+    {
+        _helpState.Dismiss();
+        RenderCurrentState();
+    }
+
     public void SetSpeed1() => SetSpeed(1f);
     public void SetSpeed2() => SetSpeed(2f);
     public void SetSpeed4() => SetSpeed(4f);
 
     public void HandleScrubberSeek(float normalized)
     {
-        if (_timeline == null || !_policy.CanSeek(_timeline.IsFinished))
+        if (!IsSmokeLane || _timeline == null || !_policy.CanSeek(_timeline.IsFinished))
         {
             return;
         }
@@ -179,7 +195,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
     public void ReplayRecordedTimeline()
     {
-        if (_timeline == null || !_policy.CanReplay(_timeline.IsFinished))
+        if (!IsSmokeLane || _timeline == null || !_policy.CanReplay(_timeline.IsFinished))
         {
             return;
         }
@@ -203,7 +219,13 @@ public sealed class BattleScreenController : MonoBehaviour
 
         _root.SessionState.ReloadQuickBattleConfig();
         _root.SessionState.PrepareQuickBattleSmoke();
-        _root.SaveProfile();
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
+        if (checkpoint.Status == SessionCheckpointStatus.Failed)
+        {
+            RenderErrorState(checkpoint.Message);
+            return;
+        }
+
         RenderLoadingState();
         RunBattle();
     }
@@ -227,8 +249,25 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
-        _root.SessionState.ReturnToTownAfterReward();
-        _root.SaveProfile();
+        if (_root.IsTransientTownSmokeActive)
+        {
+            var restored = _root.RestoreCanonicalProfileAfterTransientSmoke();
+            if (!restored.IsSuccessful)
+            {
+                RenderErrorState(restored.Message);
+                return;
+            }
+        }
+        else
+        {
+            _root.SessionState.ReturnToTownAfterReward();
+            var checkpoint = _root.SaveProfile(SessionCheckpointKind.RewardSettled);
+            if (!checkpoint.IsSuccessful)
+            {
+                RenderErrorState(checkpoint.Message);
+                return;
+            }
+        }
 
         if (cameraController != null)
         {
@@ -240,7 +279,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
     public void TogglePause()
     {
-        if (!EnsureReady() || _timeline == null || !_policy.CanPause(_timeline.IsFinished))
+        if (!EnsureReady() || !IsSmokeLane || _timeline == null || !_policy.CanPause(_timeline.IsFinished))
         {
             return;
         }
@@ -259,7 +298,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
         if (!IsBattleFinished)
         {
-            RenderErrorState("전투가 아직 끝나지 않았습니다.");
+            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.continue_before_finish", "Continue activates after the battle is fully resolved."));
             return;
         }
 
@@ -268,7 +307,13 @@ public sealed class BattleScreenController : MonoBehaviour
             cameraController.SetInputEnabled(false);
         }
 
-        _root.SaveProfile();
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.BattleResolved);
+        if (checkpoint.Status == SessionCheckpointStatus.Failed)
+        {
+            RenderErrorState(checkpoint.Message);
+            return;
+        }
+
         _root.SceneFlow.GoToReward();
     }
 
@@ -313,6 +358,11 @@ public sealed class BattleScreenController : MonoBehaviour
 
     public void ToggleDebugOverlay()
     {
+        if (!IsSmokeLane)
+        {
+            return;
+        }
+
         _presentationOptions.ToggleDebugOverlay();
         ApplyPresentationOptions(
             GameLocalizationTables.UIBattle,
@@ -452,10 +502,17 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         EditorPrefs.DeleteKey(QuickBattleRequestedEditorPrefKey);
+        _root.UseDedicatedSmokeNamespace();
         _root.EnsureOfflineLocalSession();
         _root.SessionState.ReloadQuickBattleConfig();
         _root.SessionState.PrepareQuickBattleSmoke();
-        _root.SaveProfile();
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
+        if (!checkpoint.IsSuccessful)
+        {
+            Debug.LogError($"[BattleScreenController] Quick Battle bootstrap failed: {checkpoint.Message}");
+            return;
+        }
+
         Debug.Log("[BattleScreenController] Quick Battle bootstrap 요청을 소비하고 Battle smoke를 초기화했습니다.");
 #endif
     }
@@ -477,6 +534,8 @@ public sealed class BattleScreenController : MonoBehaviour
         _view.Bind(new BattleScreenActions(
             SelectKorean,
             SelectEnglish,
+            ToggleHelp,
+            DismissHelp,
             SetSpeed1,
             SetSpeed2,
             SetSpeed4,
@@ -523,7 +582,7 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
-        _view!.Render(_presenter!.BuildLoadingState());
+        _view!.Render(_presenter!.BuildLoadingState(_helpState.IsVisible));
         _view.SetScrubberInteractable(false);
     }
 
@@ -531,7 +590,7 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         if (EnsureViewReady())
         {
-            _view!.Render(_presenter!.BuildErrorState(message));
+            _view!.Render(_presenter!.BuildErrorState(message, _helpState.IsVisible));
             _view.SetScrubberInteractable(false);
         }
 
@@ -548,7 +607,7 @@ public sealed class BattleScreenController : MonoBehaviour
         var currentStep = step ?? _timeline?.CurrentStep;
         if (currentStep == null)
         {
-            _view!.Render(_presenter!.BuildLoadingState());
+            _view!.Render(_presenter!.BuildLoadingState(_helpState.IsVisible));
             _view.SetScrubberInteractable(false);
             return;
         }
@@ -567,16 +626,19 @@ public sealed class BattleScreenController : MonoBehaviour
             _settingsVisible,
             _timeline?.NormalizedProgress ?? 0f,
             _settingsStatusText,
-            canReplay: _timeline != null && _policy.CanReplay(_timeline.IsFinished),
-            canRebattle: _root.SessionState.IsQuickBattleSmokeActive,
-            _metadataFormatter.BuildSelectedUnitPanel(selectedUnit));
+            canReplay: IsSmokeLane && _timeline != null && _policy.CanReplay(_timeline.IsFinished),
+            canRebattle: IsSmokeLane,
+            canPause: IsSmokeLane && _timeline != null && _policy.CanPause(_timeline.IsFinished),
+            canChangeSpeed: IsSmokeLane && _timeline != null && _policy.CanControlSpeed(_timeline.IsFinished),
+            showHelp: _helpState.IsVisible,
+            selectedUnit: _metadataFormatter.BuildSelectedUnitPanel(selectedUnit));
         _view!.Render(state);
-        _view.SetScrubberInteractable(_timeline != null && _policy.CanSeek(_timeline.IsFinished));
+        _view.SetScrubberInteractable(IsSmokeLane && _timeline != null && _policy.CanSeek(_timeline.IsFinished));
     }
 
     private void SetSpeed(float speed)
     {
-        if (_timeline == null || !_policy.CanControlSpeed(_timeline.IsFinished))
+        if (!IsSmokeLane || _timeline == null || !_policy.CanControlSpeed(_timeline.IsFinished))
         {
             return;
         }
@@ -618,20 +680,18 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
-        if (_toggleDebugAction.WasPressedThisFrame())
+        if (IsSmokeLane && _toggleDebugAction.WasPressedThisFrame())
         {
-            _presentationOptions.ToggleDebugOverlay();
-            presentationController.ApplyOptions(_presentationOptions);
-            RenderCurrentState();
+            ToggleDebugOverlay();
         }
 
-        if (_stepOnceAction.WasPressedThisFrame() && _timeline is { IsPaused: true } && !IsBattleFinished)
+        if (IsSmokeLane && _stepOnceAction.WasPressedThisFrame() && _timeline is { IsPaused: true } && !IsBattleFinished)
         {
             _timeline.StepOnce();
             RefreshAfterSeek();
         }
 
-        if (_restartAction.WasPressedThisFrame() && _simulator != null)
+        if (IsSmokeLane && _restartAction.WasPressedThisFrame() && _simulator != null)
         {
             RestartSameSeed();
         }
@@ -643,7 +703,7 @@ public sealed class BattleScreenController : MonoBehaviour
             RenderCurrentState();
         }
 
-        if (_togglePauseAction.WasPressedThisFrame())
+        if (IsSmokeLane && _togglePauseAction.WasPressedThisFrame())
         {
             TogglePause();
         }
@@ -758,7 +818,10 @@ public sealed class BattleScreenController : MonoBehaviour
         new EncounterResolutionService(snapshot).ApplyBattleBootstrap(simulationState, encounter);
 
         _simulator = new BattleSimulator(simulationState, MaxBattleSteps);
-        _policy = new BattlePlaybackPolicy(BattlePlaybackMode.QuickBattle);
+        _policy = new BattlePlaybackPolicy(
+            _root.SessionState.IsQuickBattleSmokeActive
+                ? BattlePlaybackMode.QuickBattle
+                : BattlePlaybackMode.InGame);
         _timeline = new BattleTimelineController();
         _timeline.Initialize(_simulator, _simulator.CurrentStep, MaxBattleSteps);
 
@@ -786,8 +849,8 @@ public sealed class BattleScreenController : MonoBehaviour
         _timeline.MarkFinished();
 
         var currentStep = _timeline.CurrentStep!;
-        var winner = currentStep.Winner ?? TeamSide.Ally;
         var result = _simulator.RunToEnd();
+        var winner = result.Winner;
         var replay = ReplayAssembler.Assemble(
             _compiledSnapshot,
             _enemyLoadouts,
@@ -796,12 +859,22 @@ public sealed class BattleScreenController : MonoBehaviour
             _battleStartedAtUtc,
             DateTime.UtcNow.ToString("O"));
         _root.SessionState.RecordBattleAudit(replay);
-        BattleDebugLogWriter.Write(replay, currentStep.Units);
+        if (RuntimeInstrumentation.ShouldEmitVerboseArtifacts)
+        {
+            BattleDebugLogWriter.Write(replay, currentStep.Units);
+        }
+
         _root.SessionState.MarkBattleResolved(
             winner == TeamSide.Ally,
-            currentStep.StepIndex,
+            result.StepCount,
             _totalEventCount);
-        _root.SaveProfile();
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.BattleResolved);
+        if (checkpoint.Status == SessionCheckpointStatus.Failed)
+        {
+            RenderErrorState(checkpoint.Message);
+            return;
+        }
+
         RenderCurrentState(currentStep);
         _view?.SetProgress(1f);
     }
@@ -851,7 +924,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!_presentationOptions.ShowDebugOverlay || _timeline?.CurrentStep == null)
+        if (!IsSmokeLane || !_presentationOptions.ShowDebugOverlay || _timeline?.CurrentStep == null)
         {
             return;
         }

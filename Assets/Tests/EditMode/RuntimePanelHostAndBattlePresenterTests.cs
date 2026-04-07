@@ -55,11 +55,12 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
 
             var state = presenter.BuildLoadingState();
 
-            Assert.That(state.Title, Is.EqualTo("Battle Observer UI"));
+            Assert.That(state.Title, Is.EqualTo("Battle"));
             Assert.That(state.LocaleKoLabel, Is.EqualTo("한국어"));
             Assert.That(state.LocaleEnLabel, Is.EqualTo("English"));
             Assert.That(state.Settings.OverheadLabel.Contains("ui.battle"), Is.False);
             Assert.That(state.Settings.DebugOverlayLabel.Contains("ui.battle"), Is.False);
+            Assert.That(state.HelpButtonLabel, Is.EqualTo("Help"));
         }
         finally
         {
@@ -109,11 +110,13 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
 
             Assert.That(state.LogText, Does.Contain("hit"));
             Assert.That(state.LogText.Contains("combat.log.damage"), Is.False);
-            Assert.That(state.SpeedText, Is.EqualTo("Speed x2"));
+            Assert.That(state.SpeedText, Is.EqualTo("Authored Expedition Battle"));
             Assert.That(state.StatusText.Contains("ui.battle.status"), Is.False);
             Assert.That(state.Settings.TeamSummaryLabel, Does.Contain("Team Summary"));
             Assert.That(state.Settings.IsVisible, Is.True);
             Assert.That(state.AllyHpText, Does.Contain("Allies 1/1"));
+            Assert.That(state.ShowPlaybackControls, Is.False);
+            Assert.That(state.ShowSmokeActions, Is.False);
         }
         finally
         {
@@ -148,6 +151,8 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
             Assert.That(finishedState.CanRebattle, Is.False);
             Assert.That(finishedState.CanReplay, Is.True);
             Assert.That(finishedState.CanReturnTownDirect, Is.False);
+            Assert.That(finishedState.ShowPlaybackControls, Is.False);
+            Assert.That(finishedState.ShowSmokeActions, Is.False);
 
             session.PrepareQuickBattleSmoke();
             finishedState = presenter.BuildState(
@@ -166,6 +171,8 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
 
             Assert.That(finishedState.CanRebattle, Is.True);
             Assert.That(finishedState.CanReturnTownDirect, Is.True);
+            Assert.That(finishedState.ShowPlaybackControls, Is.True);
+            Assert.That(finishedState.ShowSmokeActions, Is.True);
         }
         finally
         {

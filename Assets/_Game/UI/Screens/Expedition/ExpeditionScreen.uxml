@@ -1,18 +1,26 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:VisualElement name="ExpeditionScreenRoot" class="screen">
         <ui:VisualElement class="screen__topbar">
-            <ui:Label name="TitleLabel" class="screen__title" text="Expedition" />
-            <ui:VisualElement class="screen__locale">
-                <ui:Label name="LocaleStatusLabel" class="screen__locale-status" text="Locale" />
-                <ui:Button name="LocaleKoButton" class="ui-button" text="KO" />
-                <ui:Button name="LocaleEnButton" class="ui-button" text="EN" />
+            <ui:Label name="TitleLabel" class="screen__title" />
+            <ui:VisualElement class="screen__toolbar">
+                <ui:VisualElement class="screen__locale">
+                    <ui:Label name="LocaleStatusLabel" class="screen__locale-status" />
+                    <ui:Button name="LocaleKoButton" class="ui-button" />
+                    <ui:Button name="LocaleEnButton" class="ui-button" />
+                </ui:VisualElement>
+                <ui:Button name="HelpButton" class="ui-button" />
             </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="HelpStrip" class="panel panel--dense help-strip">
+            <ui:Label name="HelpBodyLabel" class="panel__text help-strip__body" />
+            <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss" />
         </ui:VisualElement>
 
         <ui:VisualElement class="screen__body">
             <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Map" />
+                    <ui:Label name="MapTitleLabel" class="panel__title" />
                     <ui:Label name="PositionLabel" class="panel__text" />
                     <ui:Label name="MapLabel" class="panel__text" />
                 </ui:VisualElement>
@@ -20,62 +28,70 @@
 
             <ui:VisualElement class="screen__column" style="flex-grow: 1.5;">
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Routes" />
+                    <ui:Label name="RoutesTitleLabel" class="panel__title" />
                     <ui:VisualElement class="card-row">
                         <ui:VisualElement class="card node-card" name="NodeCard1">
                             <ui:Label name="NodeCard1TitleLabel" class="card__title" />
                             <ui:Label name="NodeCard1RewardLabel" class="card__body" />
-                            <ui:Button name="NodeCard1Button" class="ui-button ui-button--accent" text="Route" />
+                            <ui:Button name="NodeCard1Button" class="ui-button" />
                         </ui:VisualElement>
                         <ui:VisualElement class="card node-card" name="NodeCard2">
                             <ui:Label name="NodeCard2TitleLabel" class="card__title" />
                             <ui:Label name="NodeCard2RewardLabel" class="card__body" />
-                            <ui:Button name="NodeCard2Button" class="ui-button ui-button--accent" text="Route" />
+                            <ui:Button name="NodeCard2Button" class="ui-button" />
                         </ui:VisualElement>
                         <ui:VisualElement class="card node-card" name="NodeCard3">
                             <ui:Label name="NodeCard3TitleLabel" class="card__title" />
                             <ui:Label name="NodeCard3RewardLabel" class="card__body" />
-                            <ui:Button name="NodeCard3Button" class="ui-button ui-button--accent" text="Route" />
+                            <ui:Button name="NodeCard3Button" class="ui-button" />
                         </ui:VisualElement>
                         <ui:VisualElement class="card node-card" name="NodeCard4">
                             <ui:Label name="NodeCard4TitleLabel" class="card__title" />
                             <ui:Label name="NodeCard4RewardLabel" class="card__body" />
-                            <ui:Button name="NodeCard4Button" class="ui-button ui-button--accent" text="Route" />
+                            <ui:Button name="NodeCard4Button" class="ui-button" />
                         </ui:VisualElement>
                         <ui:VisualElement class="card node-card" name="NodeCard5">
                             <ui:Label name="NodeCard5TitleLabel" class="card__title" />
                             <ui:Label name="NodeCard5RewardLabel" class="card__body" />
-                            <ui:Button name="NodeCard5Button" class="ui-button ui-button--accent" text="Route" />
+                            <ui:Button name="NodeCard5Button" class="ui-button" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Squad" />
+                    <ui:Label name="SquadTitleLabel" class="panel__title" />
                     <ui:Label name="SquadLabel" class="panel__text" />
                     <ui:VisualElement class="deploy-grid">
-                        <ui:Button name="DeployButton_FrontTop" class="ui-button deploy-button" text="Front Top" />
-                        <ui:Button name="DeployButton_FrontCenter" class="ui-button deploy-button" text="Front Center" />
-                        <ui:Button name="DeployButton_FrontBottom" class="ui-button deploy-button" text="Front Bottom" />
-                        <ui:Button name="DeployButton_BackTop" class="ui-button deploy-button" text="Back Top" />
-                        <ui:Button name="DeployButton_BackCenter" class="ui-button deploy-button" text="Back Center" />
-                        <ui:Button name="DeployButton_BackBottom" class="ui-button deploy-button" text="Back Bottom" />
+                        <ui:Button name="DeployButton_FrontTop" class="ui-button deploy-button" />
+                        <ui:Button name="DeployButton_FrontCenter" class="ui-button deploy-button" />
+                        <ui:Button name="DeployButton_FrontBottom" class="ui-button deploy-button" />
+                        <ui:Button name="DeployButton_BackTop" class="ui-button deploy-button" />
+                        <ui:Button name="DeployButton_BackCenter" class="ui-button deploy-button" />
+                        <ui:Button name="DeployButton_BackBottom" class="ui-button deploy-button" />
                     </ui:VisualElement>
-                    <ui:Button name="TeamPostureButton" class="ui-button" text="Posture" />
+                    <ui:Button name="TeamPostureButton" class="ui-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Reward" />
+                    <ui:Label name="SelectedRouteTitleLabel" class="panel__title" />
                     <ui:Label name="RewardLabel" class="panel__text" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 
         <ui:VisualElement class="panel panel--dense status-bar">
-            <ui:VisualElement class="action-row">
-                <ui:Button name="NextBattleButton" class="ui-button ui-button--accent" text="Next Battle" />
-                <ui:Button name="ReturnTownButton" class="ui-button" text="Return Town" />
+            <ui:VisualElement class="action-group">
+                <ui:Label name="PrimaryActionsTitleLabel" class="action-group__title" />
+                <ui:VisualElement class="action-row">
+                    <ui:Button name="NextBattleButton" class="ui-button ui-button--accent" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="action-group action-group--warning">
+                <ui:Label name="WarningActionsTitleLabel" class="action-group__title" />
+                <ui:VisualElement class="action-row">
+                    <ui:Button name="ReturnTownButton" class="ui-button ui-button--warning" />
+                </ui:VisualElement>
             </ui:VisualElement>
             <ui:Label name="StatusLabel" class="panel__text panel__text--muted" />
         </ui:VisualElement>

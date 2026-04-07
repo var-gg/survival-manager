@@ -1,66 +1,100 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:VisualElement name="BattleScreenRoot" class="screen battle-screen">
-        <ui:VisualElement class="screen__topbar">
-            <ui:Label name="TitleLabel" class="screen__title" text="Battle" />
+        <ui:VisualElement class="screen__topbar screen__toolbar">
+            <ui:Label name="TitleLabel" class="screen__title" />
             <ui:VisualElement class="screen__locale">
-                <ui:Label name="LocaleStatusLabel" class="screen__locale-status" text="Locale" />
-                <ui:Button name="LocaleKoButton" class="ui-button" text="KO" />
-                <ui:Button name="LocaleEnButton" class="ui-button" text="EN" />
+                <ui:Label name="LocaleStatusLabel" class="screen__locale-status" />
+                <ui:Button name="LocaleKoButton" class="ui-button" />
+                <ui:Button name="LocaleEnButton" class="ui-button" />
+                <ui:Button name="HelpButton" class="ui-button" />
             </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="HelpStrip" class="help-strip">
+            <ui:Label name="HelpBodyLabel" class="panel__text help-strip__body" />
+            <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss" />
         </ui:VisualElement>
 
         <ui:VisualElement class="battle-shell__main">
             <ui:VisualElement class="battle-shell__side">
                 <ui:VisualElement class="panel" name="AllySummaryPanel">
-                    <ui:Label class="panel__title" text="Allies" />
+                    <ui:Label name="AllyTitleLabel" class="panel__title" />
                     <ui:Label name="AllyHpLabel" class="panel__text" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement class="battle-shell__center">
                 <ui:VisualElement class="panel">
-                    <ui:Label name="ResultLabel" class="panel__title" />
-                    <ui:Label name="SpeedLabel" class="panel__text" />
+                    <ui:Label name="SummaryTitleLabel" class="panel__title" />
+                    <ui:Label name="ResultLabel" class="panel__text battle-shell__result" />
+                    <ui:Label name="SpeedLabel" class="panel__text panel__text--muted" />
                     <ui:Label name="StatusLabel" class="panel__text battle-shell__status" />
                     <ui:VisualElement name="ProgressTrack" class="battle-track">
                         <ui:VisualElement name="ProgressFill" class="battle-track__fill" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="action-row">
-                        <ui:Button name="Speed1Button" class="ui-button" text="x1" />
-                        <ui:Button name="Speed2Button" class="ui-button" text="x2" />
-                        <ui:Button name="Speed4Button" class="ui-button" text="x4" />
-                        <ui:Button name="PauseButton" class="ui-button" text="Pause" />
-                        <ui:Button name="ContinueButton" class="ui-button ui-button--accent" text="Continue" />
-                        <ui:Button name="ReplayButton" class="ui-button" text="Replay" />
-                        <ui:Button name="RebattleButton" class="ui-button" text="Re-battle" />
-                        <ui:Button name="ReturnTownButton" class="ui-button" text="Return Town" />
-                        <ui:Button name="SettingsButton" class="ui-button" text="Settings" />
+
+                    <ui:VisualElement name="PlaybackActionsGroup" class="action-group">
+                        <ui:Label name="PlaybackGroupTitleLabel" class="action-group__title" />
+                        <ui:VisualElement class="action-row">
+                            <ui:Button name="Speed1Button" class="ui-button" />
+                            <ui:Button name="Speed2Button" class="ui-button" />
+                            <ui:Button name="Speed4Button" class="ui-button" />
+                            <ui:Button name="PauseButton" class="ui-button" />
+                            <ui:Button name="ReplayButton" class="ui-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement name="ContinueActionsGroup" class="action-group">
+                        <ui:Label name="ContinueGroupTitleLabel" class="action-group__title" />
+                        <ui:VisualElement class="action-row">
+                            <ui:Button name="ContinueButton" class="ui-button ui-button--accent" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement name="SmokeActionsGroup" class="action-group action-group--debug">
+                        <ui:Label name="SmokeGroupTitleLabel" class="action-group__title" />
+                        <ui:VisualElement class="action-row">
+                            <ui:Button name="RebattleButton" class="ui-button ui-button--debug" />
+                            <ui:Button name="ReturnTownButton" class="ui-button ui-button--warning" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="action-group">
+                        <ui:Label name="UtilityGroupTitleLabel" class="action-group__title" />
+                        <ui:VisualElement class="action-row">
+                            <ui:Button name="SettingsButton" class="ui-button" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
+
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Log" />
+                    <ui:Label name="LogTitleLabel" class="panel__title" />
                     <ui:Label name="LogLabel" class="panel__text" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement class="battle-shell__side">
                 <ui:VisualElement class="panel battle-shell__selected-unit" name="SelectedUnitPanel">
-                    <ui:Label name="SelectedUnitHeaderLabel" class="panel__title" text="Selected Unit" />
+                    <ui:Label name="SelectedUnitHeaderLabel" class="panel__title" />
                     <ui:Label name="SelectedUnitBodyLabel" class="panel__text battle-shell__selected-body" />
                 </ui:VisualElement>
                 <ui:VisualElement class="panel" name="EnemySummaryPanel">
-                    <ui:Label class="panel__title" text="Enemies" />
+                    <ui:Label name="EnemyTitleLabel" class="panel__title" />
                     <ui:Label name="EnemyHpLabel" class="panel__text" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 
         <ui:VisualElement name="SettingsPanel" class="panel battle-settings">
-            <ui:Label class="panel__title" text="Battle View Settings" />
-            <ui:Button name="ToggleOverheadButton" class="ui-button" text="Overhead" />
-            <ui:Button name="ToggleDamageTextButton" class="ui-button" text="Damage Text" />
-            <ui:Button name="ToggleTeamSummaryButton" class="ui-button" text="Team Summary" />
-            <ui:Button name="ToggleDebugOverlayButton" class="ui-button" text="Debug Overlay" />
+            <ui:Label name="SettingsTitleLabel" class="panel__title" />
+            <ui:Label name="SettingsDisplayTitleLabel" class="action-group__title" />
+            <ui:Button name="ToggleOverheadButton" class="ui-button" />
+            <ui:Button name="ToggleDamageTextButton" class="ui-button" />
+            <ui:Button name="ToggleTeamSummaryButton" class="ui-button" />
+            <ui:VisualElement name="DebugSettingsSection" class="battle-settings__section action-group action-group--debug">
+                <ui:Label name="SettingsDebugTitleLabel" class="action-group__title" />
+                <ui:Button name="ToggleDebugOverlayButton" class="ui-button ui-button--debug" />
+            </ui:VisualElement>
             <ui:Label name="SettingsStatusLabel" class="panel__text panel__text--muted" />
         </ui:VisualElement>
     </ui:VisualElement>

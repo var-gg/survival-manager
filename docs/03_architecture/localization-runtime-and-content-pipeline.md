@@ -27,9 +27,10 @@
 
 1. Boot에서 `GameLocalizationController`가 `LocalizationSettings` 초기화를 보장한다.
 2. startup selector는 `PlayerPref -> System -> Specific(en)` 순서로 locale을 고른다.
-3. active scene binder가 공통 UI font, localizer binder, 글로벌 언어 오버레이를 scene에 주입한다.
+3. active scene binder가 공통 UI font를 scene에 주입하고, Boot에만 글로벌 언어 오버레이를 붙인다.
 4. 화면 controller는 locale change 이벤트를 받아 자기 view를 다시 그린다.
 5. 동적 콘텐츠명, 증강명, 아이템명은 `ContentTextResolver`를 통해 key -> localized text로 변환한다.
+6. Town / Expedition / Battle / Reward shell은 panel title, summary, tooltip, help strip까지 같은 refresh 경로 아래 둔다.
 
 ## content authoring 계약
 
@@ -68,6 +69,7 @@
 - `GameSessionState`는 raw UI 문장을 오래 들고 있지 않는다.
 - session summary는 `SessionTextToken`처럼 locale refresh 가능한 semantic token으로 유지한다.
 - Town / Expedition / Reward 화면은 token을 locale 기준으로 resolve해서 표시한다.
+- screen chrome은 UXML 정적 visible literal을 source-of-truth로 두지 않는다.
 
 ## 전투 로그 계약
 
@@ -76,6 +78,7 @@
 - `BattleScreenController`가 `Combat_Log` Smart String으로 최근 로그를 렌더링한다.
 - battle unit axis text는 `BattleUnitMetadataFormatter`가 `ContentTextResolver`를 통해 조립한다.
 - locale change 후 `_recentLogs`를 다시 문자열로 변환해도 event truth는 바뀌지 않는다.
+- current authored lane / smoke lane 분기는 `BattleScreenController`가 playback policy와 action visibility 둘 다 소유한다.
 
 ## Addressables와 preload
 
