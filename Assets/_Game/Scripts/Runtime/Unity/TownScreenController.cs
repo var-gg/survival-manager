@@ -42,9 +42,13 @@ public sealed class TownScreenController : MonoBehaviour
     public void RerollOffers() => _presenter?.RerollOffers();
     public void SaveProfile() => _presenter?.SaveProfile();
     public void LoadProfile() => _presenter?.LoadProfile();
-    public void SessionMenu() => _presenter?.SessionMenu();
-    public void DebugStartExpedition() => _presenter?.DebugStartExpedition();
+    public void ReturnToStart() => _presenter?.ReturnToStart();
+    public void OpenExpedition() => _presenter?.OpenExpedition();
     public void QuickBattle() => _presenter?.QuickBattle();
+    public void PreviousChapter() => _presenter?.PreviousChapter();
+    public void NextChapter() => _presenter?.NextChapter();
+    public void PreviousSite() => _presenter?.PreviousSite();
+    public void NextSite() => _presenter?.NextSite();
 
     public void EnsureRuntimeControls()
     {

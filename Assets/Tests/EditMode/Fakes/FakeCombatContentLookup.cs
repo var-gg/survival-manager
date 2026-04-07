@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Stats;
@@ -21,6 +22,10 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
     private readonly Dictionary<string, ClassDefinition> _classes = new(StringComparer.Ordinal);
     private readonly Dictionary<string, CharacterDefinition> _characters = new(StringComparer.Ordinal);
     private readonly Dictionary<string, RoleInstructionDefinition> _roleInstructions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, CampaignChapterDefinition> _campaignChapters = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, ExpeditionSiteDefinition> _expeditionSites = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, EncounterDefinition> _encounters = new(StringComparer.Ordinal);
+    private readonly List<CampaignChapterDefinition> _orderedCampaignChapters = new();
 
     public FakeCombatContentLookup(
         CombatContentSnapshot? snapshot = null,
@@ -29,7 +34,11 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
         IReadOnlyDictionary<string, RaceDefinition>? races = null,
         IReadOnlyDictionary<string, ClassDefinition>? classes = null,
         IReadOnlyDictionary<string, CharacterDefinition>? characters = null,
-        IReadOnlyDictionary<string, RoleInstructionDefinition>? roleInstructions = null)
+        IReadOnlyDictionary<string, RoleInstructionDefinition>? roleInstructions = null,
+        IReadOnlyDictionary<string, CampaignChapterDefinition>? campaignChapters = null,
+        IReadOnlyDictionary<string, ExpeditionSiteDefinition>? expeditionSites = null,
+        IReadOnlyDictionary<string, EncounterDefinition>? encounters = null,
+        IReadOnlyList<CampaignChapterDefinition>? orderedCampaignChapters = null)
     {
         _snapshot = snapshot ?? CreateEmptySnapshot();
         _firstPlayableSlice = firstPlayableSlice;
@@ -71,6 +80,41 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
             {
                 _roleInstructions[id] = roleInstruction;
             }
+        }
+
+        if (campaignChapters != null)
+        {
+            foreach (var (id, chapter) in campaignChapters)
+            {
+                _campaignChapters[id] = chapter;
+            }
+        }
+
+        if (expeditionSites != null)
+        {
+            foreach (var (id, site) in expeditionSites)
+            {
+                _expeditionSites[id] = site;
+            }
+        }
+
+        if (encounters != null)
+        {
+            foreach (var (id, encounter) in encounters)
+            {
+                _encounters[id] = encounter;
+            }
+        }
+
+        if (orderedCampaignChapters != null)
+        {
+            _orderedCampaignChapters.AddRange(orderedCampaignChapters.Where(chapter => chapter != null));
+        }
+        else if (_campaignChapters.Count > 0)
+        {
+            _orderedCampaignChapters.AddRange(_campaignChapters.Values
+                .OrderBy(chapter => chapter.StoryOrder)
+                .ThenBy(chapter => chapter.Id, StringComparer.Ordinal));
         }
     }
 
@@ -150,20 +194,17 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
 
     public bool TryGetCampaignChapterDefinition(string chapterId, out CampaignChapterDefinition chapter)
     {
-        chapter = null!;
-        return false;
+        return _campaignChapters.TryGetValue(chapterId, out chapter!);
     }
 
     public bool TryGetExpeditionSiteDefinition(string siteId, out ExpeditionSiteDefinition site)
     {
-        site = null!;
-        return false;
+        return _expeditionSites.TryGetValue(siteId, out site!);
     }
 
     public bool TryGetEncounterDefinition(string encounterId, out EncounterDefinition encounter)
     {
-        encounter = null!;
-        return false;
+        return _encounters.TryGetValue(encounterId, out encounter!);
     }
 
     // ── Trait ──
@@ -183,7 +224,7 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
 
     // ── Ordered collections ──
 
-    public IReadOnlyList<CampaignChapterDefinition> GetOrderedCampaignChapters() => Array.Empty<CampaignChapterDefinition>();
+    public IReadOnlyList<CampaignChapterDefinition> GetOrderedCampaignChapters() => _orderedCampaignChapters;
 
     // ── Normalization (identity passthrough) ──
 

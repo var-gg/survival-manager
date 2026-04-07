@@ -70,8 +70,8 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 3. first playable scene repair + build settings 보정
 4. Boot scene open
 5. Play 후 `GameBootstrap`가 `GameSessionRoot`와 content/localization preflight를 보장
-6. Boot에서 session realm 선택 대기
-7. `OfflineLocal` 선택 시 profile load/create
+6. Boot에서 `Start Local Run` 대기
+7. 내부적으로 `OfflineLocal` profile load/create
 8. Town 이동
 9. Expedition 진입
 10. Battle 결과 생성
@@ -81,7 +81,7 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 ## realm 전환 규칙
 
 - Boot가 session realm 진입점이다.
-- Session Menu를 통해 Boot로 돌아갈 수 있지만 진행 중인 런에서는 막는다.
+- `Return to Start`로 Boot로 돌아갈 수 있지만 진행 중인 런에서는 막는다.
 - Quick Battle과 direct-scene play는 tooling 안정성을 위해 `OfflineLocal`을 auto-start한다.
 - `OnlineAuthoritative` 개념은 future seam으로 남기되, 현재 playable UI에서는 노출하지 않는다.
 

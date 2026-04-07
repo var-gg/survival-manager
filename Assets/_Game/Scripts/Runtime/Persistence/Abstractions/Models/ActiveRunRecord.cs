@@ -20,6 +20,7 @@ public sealed class ActiveRunRecord
     public string CompileVersion = string.Empty;
     public string CompileHash = string.Empty;
     public string LastBattleMatchId = string.Empty;
+    public bool LastSettlementWasVictory;
     public string ChapterId = string.Empty;
     public string SiteId = string.Empty;
     public int SiteNodeIndex = 0;

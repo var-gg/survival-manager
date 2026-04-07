@@ -112,8 +112,8 @@ public sealed class GameSessionRoot : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns existing Instance or creates a minimal emergency root.
-    /// Use when a scene is played directly without going through Boot.
+    /// Returns the existing Instance or creates a minimal debug fallback root.
+    /// Use when a scene is played directly without going through the authored Boot flow.
     /// </summary>
     public static GameSessionRoot EnsureInstance()
     {
@@ -122,7 +122,7 @@ public sealed class GameSessionRoot : MonoBehaviour
             return Instance;
         }
 
-        Debug.LogWarning("[GameSessionRoot] Boot 씬을 거치지 않고 직접 실행됨. 최소 초기화를 수행합니다.");
+        Debug.LogWarning("[GameSessionRoot] Boot authored loop를 거치지 않은 direct-scene debug fallback을 수행합니다.");
         var go = new GameObject("GameSessionRoot");
         var root = go.AddComponent<GameSessionRoot>();
         if (SessionRealmAutoStartPolicy.ShouldForceOfflineLocalForScene(SceneManager.GetActiveScene().name))

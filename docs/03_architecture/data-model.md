@@ -46,7 +46,7 @@
 - 전투 상태: `SM.Combat.*`
 - 메타 상태: `SM.Meta.*`
 - 저장 계약과 save model: `SM.Persistence.Abstractions.*`
-- 저장 구현 세부: `SM.Persistence.Json.*`, `SM.Persistence.Postgres.*`
+- 저장 구현 세부: `SM.Persistence.Json.*`
 
 ## 분리 신호
 

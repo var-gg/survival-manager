@@ -9,7 +9,7 @@
 
 ## Current state
 
-- realm/capability/query/command seam, offline adapter, Boot/Town/Reward UI 표면, 관련 design/architecture/ADR/task 문서가 반영됐다.
+- realm/capability/query/command seam, offline adapter, hidden future seam 정리, 관련 design/architecture/ADR/task 문서가 반영됐다.
 - local lint, docs policy, smoke, MSBuild compile check는 통과했다.
 - Unity batch 기반 fresh evidence는 project lock 때문에 아직 불완전하다.
 - `docs-check`는 이번 작업 범위 밖의 기존 markdownlint 이슈 때문에 전체 green을 만들지 못했다.
@@ -44,9 +44,10 @@
 
 ## Deferred / debug-only
 
+- `OnlineAuthoritative`
+- official arena/PvP settlement/evidence
 - `OnlineMockAdapter`
 - actual server adapter
-- official arena settlement / reward delivery
 - `SaveProfile` concern 분해
 
 ## Loop budget consumed

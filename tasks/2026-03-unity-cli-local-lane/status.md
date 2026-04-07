@@ -24,7 +24,7 @@
 
 ## 완료
 - 필수 기준 문서와 현재 manifest/Unity version을 확인했다.
-- `SM/Bootstrap/Prepare Observer Playable` menu path가 이미 존재함을 확인했다.
+- `SM/Setup/Prepare Observer Playable` menu path가 이미 존재함을 확인했다.
 - 기존 MCP를 유지하고 제거하지 않는다는 기본 결정을 선기록했다.
 - `unity-cli v0.3.5`를 Windows PowerShell 설치 스크립트로 로컬 설치했다.
 - connector pin `com.youngwoocho02.unity-cli-connector#v0.3.5`를 manifest와 packages lock에 반영했다.

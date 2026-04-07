@@ -9,8 +9,8 @@
 
 ## Phase 2 asset/UI
 
-- Boot는 uGUI realm 선택 화면 계약을 갖도록 installer/runtime binder를 둘 다 갱신했다.
-- Town는 realm/capability/arena availability와 Session Menu 버튼을 추가했다.
+- Boot는 uGUI start screen 계약을 갖도록 installer/runtime binder를 둘 다 갱신했다.
+- Town는 hidden seam은 내부에 남기되 active UI는 expedition loop와 Return to Start만 노출하도록 정리했다.
 - Reward는 local-only reward 경고를 명시적으로 표시하도록 상태 문구를 바꿨다.
 
 ## Phase 3 validation

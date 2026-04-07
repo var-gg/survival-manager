@@ -67,21 +67,19 @@ public sealed class RewardScreenPresenter
 
     private RewardScreenViewState BuildState(GameSessionState session, string message)
     {
-        var profile = _root.ProfileQueries.GetProfileView(_root.ActiveProfileId);
-        var defaultStatus = Localize(GameLocalizationTables.UIReward, "ui.reward.status.default", "Pick one card and return to town.");
+        var defaultStatus = BuildDefaultStatus(session);
         return new RewardScreenViewState(
             Localize(GameLocalizationTables.UIReward, "ui.reward.title", "Reward Operator UI"),
             BuildLocaleStatus(),
             GetLocaleButtonLabel("ko", "한국어"),
             GetLocaleButtonLabel("en", "English"),
-            BuildRealmStatus(profile),
             BuildSummaryText(session),
             Localize(GameLocalizationTables.UIReward, "ui.reward.choices.header", "Choose one reward card"),
             BuildChoiceCards(session),
             string.IsNullOrWhiteSpace(message)
                 ? defaultStatus
                 : message,
-            Localize(GameLocalizationTables.UICommon, "ui.common.return_town", "Return Town"));
+            BuildReturnTownLabel(session));
     }
 
     private IReadOnlyList<RewardChoiceCardViewState> BuildChoiceCards(GameSessionState session)
@@ -106,12 +104,12 @@ public sealed class RewardScreenPresenter
         var sb = new StringBuilder();
         sb.AppendLine(Localize(
             GameLocalizationTables.UIReward,
-            "ui.reward.summary.battle_result",
-            "Battle Result: {0}",
-            session.LastBattleVictory
-                ? Localize(GameLocalizationTables.UIReward, "ui.reward.result.victory", "Victory")
-                : Localize(GameLocalizationTables.UIReward, "ui.reward.result.defeat", "Defeat")));
-        sb.AppendLine(session.LastBattleSummary.Resolve(_localization, _contentText));
+            "ui.reward.summary.settlement_result",
+            "Settlement: {0}",
+            BuildSettlementHeadline(session)));
+        sb.AppendLine(session.LastBattleSummary.HasValue
+            ? session.LastBattleSummary.Resolve(_localization, _contentText)
+            : BuildFallbackSummary(session));
         sb.AppendLine(Localize(
             GameLocalizationTables.UIReward,
             "ui.reward.summary.auto_loot",
@@ -124,15 +122,6 @@ public sealed class RewardScreenPresenter
         sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.inventory", "Inventory: {0}", profile.InventoryCount));
         sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.temp_augments", "Temp Augments: {0}", session.Expedition.TemporaryAugmentIds.Count));
         return sb.ToString();
-    }
-
-    private string BuildRealmStatus(ProfileView profile)
-    {
-        return Localize(
-            GameLocalizationTables.UICommon,
-            "ui.common.session_realm.current",
-            "Current realm: {0}",
-            profile.Realm);
     }
 
     private string BuildLocaleStatus()
@@ -168,6 +157,81 @@ public sealed class RewardScreenPresenter
             RewardChoiceKind.PermanentAugmentSlot => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.permanent_slot", "Permanent Slot +{0}", choice.PermanentSlotAmount),
             _ => choice.Kind.ToString()
         };
+    }
+
+    private string BuildDefaultStatus(GameSessionState session)
+    {
+        if (session.IsQuickBattleSmokeActive)
+        {
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.status.default.quick", "Quick Battle smoke settlement: pick one card and return to Town.");
+        }
+
+        if (!session.LastBattleVictory)
+        {
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.status.default.defeat", "Run failed. Pick a fallback reward and return to Town.");
+        }
+
+        return IsFinalExtractSettlement(session)
+            ? Localize(GameLocalizationTables.UIReward, "ui.reward.status.default.complete", "Run complete. Pick one reward and return to Town.")
+            : Localize(GameLocalizationTables.UIReward, "ui.reward.status.default.resume", "Pick one reward and return to Town. You can resume the expedition later.");
+    }
+
+    private string BuildReturnTownLabel(GameSessionState session)
+    {
+        if (session.IsQuickBattleSmokeActive)
+        {
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.action.return_town_smoke", "Return to Town / Smoke Complete");
+        }
+
+        if (!session.LastBattleVictory)
+        {
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.action.return_town_failed", "Return to Town / Run Failed");
+        }
+
+        return IsFinalExtractSettlement(session)
+            ? Localize(GameLocalizationTables.UIReward, "ui.reward.action.return_town_complete", "Return to Town / Run Complete")
+            : Localize(GameLocalizationTables.UIReward, "ui.reward.action.return_town_resume", "Return to Town / Resume Later");
+    }
+
+    private string BuildSettlementHeadline(GameSessionState session)
+    {
+        if (session.IsQuickBattleSmokeActive)
+        {
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.result.quick_smoke", "Quick Battle Smoke");
+        }
+
+        if (!session.LastBattleVictory)
+        {
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.result.defeat", "Defeat");
+        }
+
+        return IsFinalExtractSettlement(session)
+            ? Localize(GameLocalizationTables.UIReward, "ui.reward.result.run_complete", "Final Extract")
+            : Localize(GameLocalizationTables.UIReward, "ui.reward.result.victory", "Victory");
+    }
+
+    private string BuildFallbackSummary(GameSessionState session)
+    {
+        var currentNode = session.GetCurrentExpeditionNode();
+        if (currentNode == null)
+        {
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.summary.none", "Settlement summary is unavailable.");
+        }
+
+        return Localize(
+            GameLocalizationTables.UIReward,
+            "ui.reward.summary.route_only",
+            "Route: {0} / {1}",
+            Localize(GameLocalizationTables.UIExpedition, currentNode.LabelKey, currentNode.Id),
+            Localize(GameLocalizationTables.UIExpedition, currentNode.PlannedRewardKey, currentNode.Id));
+    }
+
+    private static bool IsFinalExtractSettlement(GameSessionState session)
+    {
+        var currentNode = session.GetCurrentExpeditionNode();
+        return currentNode != null
+            && !currentNode.RequiresBattle
+            && string.Equals(currentNode.Id, $"{session.SelectedCampaignSiteId}:extract", System.StringComparison.Ordinal);
     }
 
     private string ResolveChoiceTitle(RewardChoiceViewModel choice) => Localize(GameLocalizationTables.UIReward, choice.TitleKey, choice.PayloadId);

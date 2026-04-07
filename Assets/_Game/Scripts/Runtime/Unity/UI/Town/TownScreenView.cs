@@ -12,7 +12,11 @@ public sealed class TownScreenView
     private readonly Label _localeStatusLabel;
     private readonly Button _localeKoButton;
     private readonly Button _localeEnButton;
-    private readonly Label _realmSummaryLabel;
+    private readonly Label _campaignSummaryLabel;
+    private readonly Button _previousChapterButton;
+    private readonly Button _nextChapterButton;
+    private readonly Button _previousSiteButton;
+    private readonly Button _nextSiteButton;
     private readonly Label _currencyLabel;
     private readonly Label _rosterLabel;
     private readonly Label _recruitSummaryLabel;
@@ -22,8 +26,8 @@ public sealed class TownScreenView
     private readonly Button _rerollButton;
     private readonly Button _saveButton;
     private readonly Button _loadButton;
-    private readonly Button _sessionMenuButton;
-    private readonly Button _debugStartButton;
+    private readonly Button _returnToStartButton;
+    private readonly Button _expeditionButton;
     private readonly Button _quickBattleButton;
     private readonly Button _teamPostureButton;
     private readonly IReadOnlyList<(Label title, Label body, Button button)> _recruitCards;
@@ -35,7 +39,11 @@ public sealed class TownScreenView
         _localeStatusLabel = Require<Label>(root, "LocaleStatusLabel");
         _localeKoButton = Require<Button>(root, "LocaleKoButton");
         _localeEnButton = Require<Button>(root, "LocaleEnButton");
-        _realmSummaryLabel = Require<Label>(root, "RealmSummaryLabel");
+        _campaignSummaryLabel = Require<Label>(root, "CampaignSummaryLabel");
+        _previousChapterButton = Require<Button>(root, "PrevChapterButton");
+        _nextChapterButton = Require<Button>(root, "NextChapterButton");
+        _previousSiteButton = Require<Button>(root, "PrevSiteButton");
+        _nextSiteButton = Require<Button>(root, "NextSiteButton");
         _currencyLabel = Require<Label>(root, "CurrencyLabel");
         _rosterLabel = Require<Label>(root, "RosterLabel");
         _recruitSummaryLabel = Require<Label>(root, "RecruitSummaryLabel");
@@ -45,8 +53,8 @@ public sealed class TownScreenView
         _rerollButton = Require<Button>(root, "RerollButton");
         _saveButton = Require<Button>(root, "SaveButton");
         _loadButton = Require<Button>(root, "LoadButton");
-        _sessionMenuButton = Require<Button>(root, "SessionMenuButton");
-        _debugStartButton = Require<Button>(root, "DebugStartButton");
+        _returnToStartButton = Require<Button>(root, "ReturnToStartButton");
+        _expeditionButton = Require<Button>(root, "ExpeditionButton");
         _quickBattleButton = Require<Button>(root, "QuickBattleButton");
         _teamPostureButton = Require<Button>(root, "TeamPostureButton");
 
@@ -72,11 +80,15 @@ public sealed class TownScreenView
     {
         _localeKoButton.clicked += presenter.SelectKorean;
         _localeEnButton.clicked += presenter.SelectEnglish;
+        _previousChapterButton.clicked += presenter.PreviousChapter;
+        _nextChapterButton.clicked += presenter.NextChapter;
+        _previousSiteButton.clicked += presenter.PreviousSite;
+        _nextSiteButton.clicked += presenter.NextSite;
         _rerollButton.clicked += presenter.RerollOffers;
         _saveButton.clicked += presenter.SaveProfile;
         _loadButton.clicked += presenter.LoadProfile;
-        _sessionMenuButton.clicked += presenter.SessionMenu;
-        _debugStartButton.clicked += presenter.DebugStartExpedition;
+        _returnToStartButton.clicked += presenter.ReturnToStart;
+        _expeditionButton.clicked += presenter.OpenExpedition;
         _quickBattleButton.clicked += presenter.QuickBattle;
         _teamPostureButton.clicked += presenter.CycleTeamPosture;
 
@@ -99,7 +111,15 @@ public sealed class TownScreenView
         _localeStatusLabel.text = state.LocaleStatus;
         _localeKoButton.text = state.LocaleKoLabel;
         _localeEnButton.text = state.LocaleEnLabel;
-        _realmSummaryLabel.text = state.RealmSummaryText;
+        _campaignSummaryLabel.text = state.CampaignSummaryText;
+        _previousChapterButton.text = state.PreviousChapterLabel;
+        _previousChapterButton.SetEnabled(state.CanSelectPreviousChapter);
+        _nextChapterButton.text = state.NextChapterLabel;
+        _nextChapterButton.SetEnabled(state.CanSelectNextChapter);
+        _previousSiteButton.text = state.PreviousSiteLabel;
+        _previousSiteButton.SetEnabled(state.CanSelectPreviousSite);
+        _nextSiteButton.text = state.NextSiteLabel;
+        _nextSiteButton.SetEnabled(state.CanSelectNextSite);
         _currencyLabel.text = state.CurrencySummary;
         _rosterLabel.text = state.RosterText;
         _recruitSummaryLabel.text = state.RecruitSummaryText;
@@ -109,10 +129,11 @@ public sealed class TownScreenView
         _rerollButton.text = state.RerollLabel;
         _saveButton.text = state.SaveLabel;
         _loadButton.text = state.LoadLabel;
-        _sessionMenuButton.text = state.SessionMenuLabel;
-        _sessionMenuButton.SetEnabled(state.CanOpenSessionMenu);
-        _debugStartButton.text = state.DebugStartLabel;
+        _returnToStartButton.text = state.ReturnToStartLabel;
+        _returnToStartButton.SetEnabled(state.CanReturnToStart);
+        _expeditionButton.text = state.ExpeditionActionLabel;
         _quickBattleButton.text = state.QuickBattleLabel;
+        _quickBattleButton.SetEnabled(state.CanQuickBattle);
         _teamPostureButton.text = state.TeamPostureButtonLabel;
 
         for (var i = 0; i < _recruitCards.Count; i++)

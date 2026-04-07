@@ -65,7 +65,6 @@
 - `SM.Meta.*`
 - `SM.Persistence.Abstractions.*`
 - `SM.Persistence.Json.*`
-- `SM.Persistence.Postgres.*`
 - `SM.Unity.*`
 - `SM.Editor.*`
 

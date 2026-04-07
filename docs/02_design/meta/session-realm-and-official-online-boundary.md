@@ -32,10 +32,10 @@
 
 ## UX 규칙
 
-- session realm 선택은 Boot에서 수행한다.
+- session realm 선택은 Boot 내부 start action에서 수행한다.
 - realm 선택 전에는 Town으로 자동 진입하지 않는다.
 - 한 번 시작한 런에서는 realm 전환을 허용하지 않는다.
-- realm 전환이 필요하면 Session Menu로 돌아가 Boot에서 다시 선택한다.
+- realm 전환이 필요하면 `Return to Start`로 돌아가 Boot에서 다시 선택한다.
 - 현재 playable UI는 `OfflineLocal` 진입만 노출하고 `OnlineAuthoritative`는 future seam으로만 유지한다.
 
 ## 공식/비공식 기능 경계
@@ -47,6 +47,6 @@
 
 ## 현재 slice 적용 메모
 
-- Boot는 content/localization preflight 후 realm 선택 대기 화면으로 머문다.
+- Boot는 content/localization preflight 후 `Start Local Run` 대기 화면으로 머문다.
 - Quick Battle과 direct-scene play는 tooling 안정성을 위해 자동으로 `OfflineLocal`을 시작한다.
 - Town과 Reward는 현재 realm 기반 local flow만 유지하고, capability/arena/official reward 표시는 current playable surface에서 뺀다.

@@ -24,5 +24,5 @@
 ## adapter 규칙
 
 - `SM.Persistence.Abstractions`는 save contract만 가진다.
-- JSON과 Postgres adapter는 같은 모델을 직렬화할 수 있어야 한다.
+- JSON adapter는 같은 save model을 안정적으로 직렬화해야 한다.
 - combat는 persistence DTO를 직접 참조하지 않는다.

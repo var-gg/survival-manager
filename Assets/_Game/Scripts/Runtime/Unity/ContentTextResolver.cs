@@ -113,6 +113,34 @@ public sealed class ContentTextResolver
             : traitId;
     }
 
+    public string GetCampaignChapterName(string chapterId)
+    {
+        return _lookup.TryGetCampaignChapterDefinition(chapterId, out var chapter)
+            ? Localize(ContentLocalizationTables.Campaign, chapter.NameKey, chapter.LegacyDisplayName, chapterId)
+            : chapterId;
+    }
+
+    public string GetCampaignChapterDescription(string chapterId)
+    {
+        return _lookup.TryGetCampaignChapterDefinition(chapterId, out var chapter)
+            ? Localize(ContentLocalizationTables.Campaign, chapter.DescriptionKey, chapter.LegacyDescription, chapterId)
+            : chapterId;
+    }
+
+    public string GetExpeditionSiteName(string siteId)
+    {
+        return _lookup.TryGetExpeditionSiteDefinition(siteId, out var site)
+            ? Localize(ContentLocalizationTables.Campaign, site.NameKey, site.LegacyDisplayName, siteId)
+            : siteId;
+    }
+
+    public string GetExpeditionSiteDescription(string siteId)
+    {
+        return _lookup.TryGetExpeditionSiteDefinition(siteId, out var site)
+            ? Localize(ContentLocalizationTables.Campaign, site.DescriptionKey, site.LegacyDescription, siteId)
+            : siteId;
+    }
+
     private string Localize(string table, string key, string fallback, string finalFallback)
     {
         return _localization.LocalizePlayerFacingContent(

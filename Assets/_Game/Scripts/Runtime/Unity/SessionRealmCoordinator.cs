@@ -35,7 +35,7 @@ public sealed class SessionRealmCoordinator :
     {
         if (realm == SessionRealm.OnlineAuthoritative)
         {
-            reason = "공식 온라인 세션은 후속 패스에서 개방됩니다.";
+            reason = "공식 온라인 seam은 hidden future seam이며 현재 local loop에 포함되지 않습니다.";
             return false;
         }
 
@@ -58,7 +58,7 @@ public sealed class SessionRealmCoordinator :
             return true;
         }
 
-        error = "OnlineAuthoritative adapter는 이번 패스 범위에 포함되지 않습니다.";
+        error = "OnlineAuthoritative seam은 이번 패스 범위에 포함되지 않습니다.";
         return false;
     }
 
@@ -89,7 +89,7 @@ public sealed class SessionRealmCoordinator :
             return;
         }
 
-        throw new NotSupportedException("OnlineAuthoritative reload path is not implemented in this slice.");
+        throw new NotSupportedException("OnlineAuthoritative reload seam is not implemented in this slice.");
     }
 
     public void SaveActiveSession()
@@ -130,9 +130,9 @@ public sealed class SessionRealmCoordinator :
 
         if (!_currentRealm.HasValue)
         {
-            throw new InvalidOperationException("No active session realm. Select a realm at Boot first.");
+            throw new InvalidOperationException("No active session. Use the Boot start screen first.");
         }
 
-        throw new NotSupportedException("OnlineAuthoritative adapter is not implemented in this slice.");
+        throw new NotSupportedException("OnlineAuthoritative seam is not implemented in this slice.");
     }
 }

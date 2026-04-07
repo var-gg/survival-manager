@@ -23,7 +23,6 @@
 - `adr-0007-thirdparty-asset-policy.md`: 서드파티 에셋 정책 채택
 - `adr-0008-editor-bridge-policy.md`: 에디터 브리지 정책 채택
 - `adr-0009-persistence-boundary.md`: persistence 경계 채택
-- `adr-0010-local-postgres-policy.md`: 로컬 Postgres 정책 채택
 - `adr-0011-mcp-adoption-policy.md`: MCP 도입 정책
 - `adr-0012-code-structure-and-dependency-policy.md`: 코드 구조와 의존 정책 채택
 - `adr-0013-unity-cli-hybrid-lane.md`: Unity CLI hybrid lane 채택

@@ -38,6 +38,7 @@ public sealed class ExpeditionScreenController : MonoBehaviour
     public void SelectNode3() => _presenter?.SelectNode3();
     public void SelectNode4() => _presenter?.SelectNode4();
     public void SelectNode5() => _presenter?.SelectNode5();
+    public void NextBattle() => _presenter?.NextBattleOrAdvance();
     public void NextBattleOrAdvance() => _presenter?.NextBattleOrAdvance();
     public void ReturnToTown() => _presenter?.ReturnToTown();
 

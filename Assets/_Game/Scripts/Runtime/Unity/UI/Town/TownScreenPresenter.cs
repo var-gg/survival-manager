@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using SM.Combat.Model;
 using SM.Meta.Model;
+using UnityEngine;
 
 namespace SM.Unity.UI.Town;
 
@@ -38,6 +39,10 @@ public sealed class TownScreenPresenter
     public void RecruitOffer1() => Recruit(1);
     public void RecruitOffer2() => Recruit(2);
     public void RecruitOffer3() => Recruit(3);
+    public void PreviousChapter() => CycleCampaignChapter(-1);
+    public void NextChapter() => CycleCampaignChapter(1);
+    public void PreviousSite() => CycleCampaignSite(-1);
+    public void NextSite() => CycleCampaignSite(1);
 
     public void RerollOffers()
     {
@@ -60,24 +65,32 @@ public sealed class TownScreenPresenter
         Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.profile_loaded", "Profile reloaded."));
     }
 
-    public void SessionMenu()
+    public void ReturnToStart()
     {
-        if (IsSessionMenuBlocked(_root.SessionState))
+        if (IsReturnToStartBlocked(_root.SessionState))
         {
             Refresh(Localize(
                 GameLocalizationTables.UITown,
-                "ui.town.error.session_realm_locked",
-                "진행 중인 런이 있어 지금은 Session Menu로 돌아갈 수 없습니다."));
+                "ui.town.error.return_start_locked",
+                "진행 중인 런이 있어 지금은 시작 화면으로 돌아갈 수 없습니다."));
             return;
         }
 
         _root.ReturnToSessionMenu();
     }
 
-    public void DebugStartExpedition()
+    public void OpenExpedition()
     {
+        if (_root.SessionState.HasPendingRewardSettlement)
+        {
+            _root.SaveProfile();
+            _root.SceneFlow.GoToReward();
+            return;
+        }
+
         if (_root.SessionState.CanResumeExpedition)
         {
+            _root.SaveProfile();
             _root.SceneFlow.GoToExpedition();
             return;
         }
@@ -89,6 +102,15 @@ public sealed class TownScreenPresenter
 
     public void QuickBattle()
     {
+        if (!_root.SessionState.CanStartQuickBattleSmoke)
+        {
+            Refresh(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.error.quick_battle_locked",
+                "Quick Battle (Smoke) is unavailable while a reward settlement or expedition run is active."));
+            return;
+        }
+
         _root.SessionState.PrepareQuickBattleSmoke();
         _root.SaveProfile();
         _root.SceneFlow.GoToBattle();
@@ -136,13 +158,25 @@ public sealed class TownScreenPresenter
         var playerId = ResolvePlayerId();
         var profile = _root.ProfileQueries.GetProfileView(playerId);
         var loadout = _root.ProfileQueries.GetLoadoutView(playerId);
+        var chapterIds = GetOrderedChapterIds();
+        var siteIds = GetOrderedSiteIds(session.SelectedCampaignChapterId);
+        var canCycleChapter = session.CanChangeCampaignSelection && chapterIds.Count > 1;
+        var canCycleSite = session.CanChangeCampaignSelection && siteIds.Count > 1;
 
         return new TownScreenViewState(
             Localize(GameLocalizationTables.UITown, "ui.town.title", "Town Operator UI"),
             BuildLocaleStatus(),
             GetLocaleButtonLabel("ko", "한국어"),
             GetLocaleButtonLabel("en", "English"),
-            BuildRealmSummary(profile),
+            BuildCampaignSummary(session),
+            Localize(GameLocalizationTables.UITown, "ui.town.action.prev_chapter", "Prev Chapter"),
+            canCycleChapter,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.next_chapter", "Next Chapter"),
+            canCycleChapter,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.prev_site", "Prev Site"),
+            canCycleSite,
+            Localize(GameLocalizationTables.UITown, "ui.town.action.next_site", "Next Site"),
+            canCycleSite,
             Localize(
                 GameLocalizationTables.UITown,
                 "ui.town.currency.summary",
@@ -158,17 +192,128 @@ public sealed class TownScreenPresenter
             BuildDeployButtons(profile, loadout),
             Localize(GameLocalizationTables.UICommon, "ui.common.posture", "Posture") + "\n" + session.SelectedTeamPosture,
             string.IsNullOrWhiteSpace(message)
-                ? session.CanResumeExpedition
-                    ? Localize(GameLocalizationTables.UITown, "ui.town.status.default.resume", "Recruit, save, resume the expedition, or run a quick battle.")
-                    : Localize(GameLocalizationTables.UITown, "ui.town.status.default.start", "Recruit, save, start an expedition, or run a quick battle.")
+                ? session.HasPendingRewardSettlement
+                    ? Localize(GameLocalizationTables.UITown, "ui.town.status.default.reward", "Reward settlement is pending. Finish the settlement or return to Town.")
+                    : session.CanResumeExpedition
+                        ? Localize(GameLocalizationTables.UITown, "ui.town.status.default.resume", "Recruit, save, and resume the expedition.")
+                        : Localize(GameLocalizationTables.UITown, "ui.town.status.default.start", "Recruit, save, choose a chapter/site, and start the expedition.")
                 : message,
             Localize(GameLocalizationTables.UITown, "ui.town.action.reroll", "Reroll"),
             Localize(GameLocalizationTables.UICommon, "ui.common.save", "Save"),
             Localize(GameLocalizationTables.UICommon, "ui.common.load", "Load"),
-            Localize(GameLocalizationTables.UICommon, "ui.common.session_menu", "Session Menu"),
-            !IsSessionMenuBlocked(session),
-            Localize(GameLocalizationTables.UITown, "ui.town.action.debug_start", "Start Expedition"),
-            Localize(GameLocalizationTables.UITown, "ui.town.action.quick_battle", "Quick Battle"));
+            Localize(GameLocalizationTables.UICommon, "ui.common.return_start", "Return to Start"),
+            !IsReturnToStartBlocked(session),
+            session.HasPendingRewardSettlement
+                ? Localize(GameLocalizationTables.UIReward, "ui.reward.action.open", "Open Reward")
+                : session.CanResumeExpedition
+                    ? Localize(GameLocalizationTables.UITown, "ui.town.action.resume_expedition", "Resume Expedition")
+                    : Localize(GameLocalizationTables.UITown, "ui.town.action.start_expedition", "Start Expedition"),
+            Localize(GameLocalizationTables.UITown, "ui.town.action.quick_battle_smoke", "Quick Battle (Smoke)"),
+            session.CanStartQuickBattleSmoke);
+    }
+
+    private void CycleCampaignChapter(int direction)
+    {
+        var session = _root.SessionState;
+        if (!session.TryCycleCampaignChapter(direction))
+        {
+            Refresh(session.CanChangeCampaignSelection
+                ? Localize(GameLocalizationTables.UITown, "ui.town.error.chapter_cycle_failed", "Chapter selection could not be changed.")
+                : Localize(GameLocalizationTables.UITown, "ui.town.error.chapter_locked", "Chapter and site are locked while an expedition run is active."));
+            return;
+        }
+
+        _root.SaveProfile();
+        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.chapter_changed", "Campaign chapter updated."));
+    }
+
+    private void CycleCampaignSite(int direction)
+    {
+        var session = _root.SessionState;
+        if (!session.TryCycleCampaignSite(direction))
+        {
+            Refresh(session.CanChangeCampaignSelection
+                ? Localize(GameLocalizationTables.UITown, "ui.town.error.site_cycle_failed", "Site selection could not be changed.")
+                : Localize(GameLocalizationTables.UITown, "ui.town.error.site_locked", "Chapter and site are locked while an expedition run is active."));
+            return;
+        }
+
+        _root.SaveProfile();
+        Refresh(Localize(GameLocalizationTables.UITown, "ui.town.status.site_changed", "Expedition site updated."));
+    }
+
+    private string BuildCampaignSummary(GameSessionState session)
+    {
+        var chapterName = _contentText.GetCampaignChapterName(session.SelectedCampaignChapterId);
+        var siteName = _contentText.GetExpeditionSiteName(session.SelectedCampaignSiteId);
+        var sb = new StringBuilder();
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.campaign.header", "Campaign Selection"));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.campaign.chapter", "Chapter: {0}", chapterName));
+        sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.campaign.site", "Site: {0}", siteName));
+        sb.AppendLine(_contentText.GetExpeditionSiteDescription(session.SelectedCampaignSiteId));
+        sb.AppendLine();
+        sb.AppendLine(session.CanChangeCampaignSelection
+            ? Localize(GameLocalizationTables.UITown, "ui.town.campaign.unlocked", "Selection unlocked: choose the next chapter and site before departure.")
+            : Localize(GameLocalizationTables.UITown, "ui.town.campaign.locked", "Selection locked: active expedition run must keep the same chapter and site."));
+
+        if (session.HasPendingRewardSettlement)
+        {
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.campaign.pending_reward", "Pending settlement: open Reward before resuming the run."));
+        }
+        else if (session.HasActiveExpeditionRun)
+        {
+            sb.AppendLine(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.campaign.active_run",
+                "Active run: node {0}/{1} is ready for resume.",
+                session.CurrentExpeditionNodeIndex + 1,
+                Mathf.Max(1, session.ExpeditionNodes.Count)));
+            sb.AppendLine(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.campaign.quick_battle_locked",
+                "Quick Battle (Smoke) is locked until the current expedition run is closed."));
+        }
+        else
+        {
+            sb.AppendLine(Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.campaign.quick_battle_ready",
+                "Quick Battle (Smoke) is available as a secondary debug lane."));
+        }
+
+        return sb.ToString();
+    }
+
+    private IReadOnlyList<string> GetOrderedChapterIds()
+    {
+        return _root.CombatContentLookup.GetOrderedCampaignChapters()
+            .Where(chapter => !string.IsNullOrWhiteSpace(chapter.Id))
+            .Select(chapter => chapter.Id)
+            .ToList();
+    }
+
+    private IReadOnlyList<string> GetOrderedSiteIds(string chapterId)
+    {
+        if (!_root.CombatContentLookup.TryGetCampaignChapterDefinition(chapterId, out var chapter))
+        {
+            return Array.Empty<string>();
+        }
+
+        return chapter.SiteIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Select(id =>
+            {
+                var hasDefinition = _root.CombatContentLookup.TryGetExpeditionSiteDefinition(id, out var site);
+                return new
+                {
+                    Id = id,
+                    Order = hasDefinition ? site.SiteOrder : int.MaxValue,
+                };
+            })
+            .OrderBy(entry => entry.Order)
+            .ThenBy(entry => entry.Id, StringComparer.Ordinal)
+            .Select(entry => entry.Id)
+            .ToList();
     }
 
     private IReadOnlyList<TownRecruitCardViewState> BuildRecruitCards(GameSessionState session)
@@ -275,9 +420,9 @@ public sealed class TownScreenPresenter
         }
 
         sb.AppendLine();
-        if (session.IsQuickBattleSmokeActive)
+        if (session.HasPendingRewardSettlement)
         {
-            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.quick_battle_ready", "Quick battle smoke is ready."));
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.pending_reward", "Reward settlement is pending. Open Reward before moving to the next node."));
         }
         else if (session.CanResumeExpedition)
         {
@@ -289,7 +434,7 @@ public sealed class TownScreenPresenter
         }
         else
         {
-            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.quick_battle_safe", "Quick battle does not consume expedition progress."));
+            sb.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.deploy.start", "Start Expedition: begin the authored route from camp."));
         }
 
         if (session.LastRewardApplicationSummary.HasValue)
@@ -311,15 +456,6 @@ public sealed class TownScreenPresenter
         }
 
         return sb.ToString();
-    }
-
-    private string BuildRealmSummary(ProfileView profile)
-    {
-        return Localize(
-            GameLocalizationTables.UICommon,
-            "ui.common.session_realm.current",
-            "Current realm: {0}",
-            profile.Realm);
     }
 
     private string BuildRecruitCardBody(RecruitUnitPreview? offer)
@@ -369,7 +505,7 @@ public sealed class TownScreenPresenter
         return _root.ActiveProfileId;
     }
 
-    private static bool IsSessionMenuBlocked(GameSessionState session)
+    private static bool IsReturnToStartBlocked(GameSessionState session)
     {
         return session.HasActiveExpeditionRun || session.IsQuickBattleSmokeActive;
     }

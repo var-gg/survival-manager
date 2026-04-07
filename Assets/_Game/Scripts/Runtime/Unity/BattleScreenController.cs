@@ -178,6 +178,12 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
+        if (!_root.SessionState.IsQuickBattleSmokeActive)
+        {
+            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.rebattle_smoke_only", "Re-battle is only available in Quick Battle (Smoke)."));
+            return;
+        }
+
         _root.SessionState.ReloadQuickBattleConfig();
         _root.SessionState.PrepareQuickBattleSmoke();
         _root.SaveProfile();
@@ -194,6 +200,18 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         if (!EnsureReady())
         {
+            return;
+        }
+
+        if (!_root.SessionState.IsQuickBattleSmokeActive)
+        {
+            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.return_town_smoke_only", "Direct return to Town is only available in Quick Battle (Smoke)."));
+            return;
+        }
+
+        if (!IsBattleFinished)
+        {
+            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.return_town_before_finish", "Finish the battle before returning directly to Town."));
             return;
         }
 
@@ -237,6 +255,7 @@ public sealed class BattleScreenController : MonoBehaviour
             cameraController.SetInputEnabled(false);
         }
 
+        _root.SaveProfile();
         _root.SceneFlow.GoToReward();
     }
 
@@ -718,6 +737,7 @@ public sealed class BattleScreenController : MonoBehaviour
             winner == TeamSide.Ally,
             currentStep.StepIndex,
             _totalEventCount);
+        _root.SaveProfile();
         RenderCurrentState(currentStep);
         _view?.SetProgress(1f);
     }

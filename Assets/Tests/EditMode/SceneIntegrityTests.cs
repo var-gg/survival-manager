@@ -135,11 +135,12 @@ public sealed class SceneIntegrityTests
     }
 
     [Test]
-    public void TownScreenUxml_Declares_Session_And_Deployment_Controls()
+    public void TownScreenUxml_Declares_Expedition_And_Deployment_Controls()
     {
         var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/TownScreen.uxml");
-        Assert.That(uxml, Does.Contain("RealmSummaryLabel"));
-        Assert.That(uxml, Does.Contain("SessionMenuButton"));
+        Assert.That(uxml, Does.Not.Contain("RealmSummaryLabel"));
+        Assert.That(uxml, Does.Contain("ReturnToStartButton"));
+        Assert.That(uxml, Does.Contain("ExpeditionButton"));
         Assert.That(uxml, Does.Contain("QuickBattleButton"));
         Assert.That(uxml, Does.Contain("DeployButton_FrontTop"));
         Assert.That(uxml, Does.Contain("TeamPostureButton"));

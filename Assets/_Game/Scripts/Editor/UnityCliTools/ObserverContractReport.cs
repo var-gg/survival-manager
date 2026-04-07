@@ -62,6 +62,8 @@ public static class ObserverContractReport
             },
             TownRuntimeRoot = ContainsName(sceneText, "TownRuntimeRoot"),
             TownRuntimePanelHost = ContainsName(sceneText, "TownRuntimePanelHost"),
+            UxmlReturnToStartButton = uxmlText.Contains("ReturnToStartButton", StringComparison.Ordinal),
+            UxmlExpeditionButton = uxmlText.Contains("ExpeditionButton", StringComparison.Ordinal),
             UxmlQuickBattleButton = uxmlText.Contains("QuickBattleButton", StringComparison.Ordinal),
             UxmlDeployButtonFrontTop = uxmlText.Contains("DeployButton_FrontTop", StringComparison.Ordinal),
             UxmlStatusLabel = uxmlText.Contains("StatusLabel", StringComparison.Ordinal),

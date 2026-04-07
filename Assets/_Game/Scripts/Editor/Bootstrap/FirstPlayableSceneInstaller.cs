@@ -56,10 +56,10 @@ public static class FirstPlayableSceneInstaller
         var controllerGo = EnsureRootObject("BootScreenController");
         var controller = EnsureComponent<BootScreenController>(controllerGo);
 
-        var title = EnsureText(canvas.transform, "BootTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(720f, 44f), TextAnchor.MiddleCenter, 24, "Session Realm");
-        var status = EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 36f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 18, "OfflineLocal 세션으로 Town 흐름을 시작하세요.");
-        var hint = EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -44f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 16, "현재 playable slice는 OfflineLocal만 지원합니다.");
-        var offlineButton = EnsureButton(canvas.transform, "OfflineLocalButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -144f), new Vector2(220f, 44f), "OfflineLocal");
+        var title = EnsureText(canvas.transform, "BootTitleText", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(720f, 44f), TextAnchor.MiddleCenter, 24, "Start");
+        var status = EnsureText(canvas.transform, "BootStatusText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 36f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 18, "Start the local playable run.");
+        var hint = EnsureText(canvas.transform, "BootHintText", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -44f), new Vector2(760f, 80f), TextAnchor.MiddleCenter, 16, "This build exposes one local/authored loop with JSON save.");
+        var offlineButton = EnsureButton(canvas.transform, "OfflineLocalButton", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -144f), new Vector2(220f, 44f), "Start Local Run");
 
         Bind(controller, new Dictionary<string, Object>
         {

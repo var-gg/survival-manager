@@ -139,7 +139,9 @@ public sealed class BattleScreenView
         _pauseButton.text = state.PauseLabel;
         _continueButton.text = state.ContinueLabel;
         _rebattleButton.text = state.RebattleLabel;
+        _rebattleButton.SetEnabled(state.CanRebattle);
         _returnTownButton.text = state.ReturnTownLabel;
+        _returnTownButton.SetEnabled(state.CanReturnTownDirect);
         _settingsButton.text = state.SettingsLabel;
         _continueButton.SetEnabled(state.CanContinue);
         _allySummaryPanel.style.display = state.ShowTeamSummary ? DisplayStyle.Flex : DisplayStyle.None;

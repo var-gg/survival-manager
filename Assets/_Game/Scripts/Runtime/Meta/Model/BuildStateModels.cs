@@ -74,6 +74,7 @@ public sealed record ActiveRunState(
     IReadOnlyList<string> BattleDeployHeroIds,
     bool IsQuickBattle,
     string? LastBattleMatchId = null,
+    bool LastSettlementWasVictory = false,
     bool StoryCleared = false,
     bool EndlessUnlocked = false);
 

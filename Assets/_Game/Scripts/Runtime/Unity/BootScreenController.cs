@@ -33,13 +33,16 @@ public sealed class BootScreenController : MonoBehaviour
             return;
         }
 
-        SetButtonLabel(offlineLocalButton, "OfflineLocal");
+        SetButtonLabel(offlineLocalButton, Localize(
+            GameLocalizationTables.UICommon,
+            "ui.common.start_local_run",
+            "Start Local Run"));
         offlineLocalButton.interactable = !_root.HasBlockingError;
 
         titleText.text = Localize(
             GameLocalizationTables.UICommon,
-            "ui.common.session_realm",
-            "Session Realm");
+            "ui.common.start_screen.title",
+            "Start");
         statusText.text = BuildStatusText();
         hintText.text = BuildHintText();
     }
@@ -63,27 +66,18 @@ public sealed class BootScreenController : MonoBehaviour
             return _root.LastBlockingError ?? string.Empty;
         }
 
-        if (_root.CurrentRealm is SessionRealm realm)
-        {
-            return Localize(
-                GameLocalizationTables.UICommon,
-                "ui.common.session_realm.current",
-                "Current realm: {0}",
-                realm);
-        }
-
         return Localize(
             GameLocalizationTables.UICommon,
-            "ui.common.session_realm.offline_only",
-            "OfflineLocal 세션으로 Town 흐름을 시작하세요.");
+            "ui.common.start_screen.status",
+            "Start the local playable run.");
     }
 
     private string BuildHintText()
     {
         return Localize(
             GameLocalizationTables.UICommon,
-            "ui.common.session_realm.offline_hint",
-            "현재 playable slice는 OfflineLocal만 지원합니다.\n런 중 세션 전환은 허용되지 않습니다.");
+            "ui.common.start_screen.hint",
+            "This build exposes one local/authored loop with JSON save.");
     }
 
     private string Localize(string table, string key, string fallback, params object[] args)

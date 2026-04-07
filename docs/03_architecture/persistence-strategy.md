@@ -9,7 +9,6 @@
   - `docs/03_architecture/recruit-offer-schema.md`
   - `docs/03_architecture/dependency-direction.md`
 - `docs/04_decisions/adr-0009-persistence-boundary.md`
-- `docs/04_decisions/adr-0010-local-postgres-policy.md`
   - `docs/04_decisions/adr-0020-session-realm-authority-boundary.md`
 
 ## 목적
@@ -50,12 +49,9 @@
 - `SM.Persistence.Abstractions`
 - `SM.Persistence.Abstractions.Models`
 - `SM.Persistence.Json`
-- `SM.Persistence.Postgres`
 
 ## 현재 MVP 스타일
 
-- 기본 성공 경로는 JSON fallback이다.
-- Postgres는 local development adapter 정책으로만 다룬다.
-- 연결 정보는 environment variable 또는 local config에서만 읽는다.
-- Postgres가 없어도 데모 플레이를 막지 않아야 한다.
+- 기본 성공 경로는 local JSON save다.
+- runtime persistence contract는 JSON-only다.
 - JSON/`SaveProfile`은 current slice에서 `OfflineLocal` 전용 persistence contract로 본다.

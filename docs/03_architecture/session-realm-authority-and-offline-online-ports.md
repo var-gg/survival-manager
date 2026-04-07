@@ -44,7 +44,7 @@
 - `SessionRealmCoordinator`
 - `OfflineLocalSessionAdapter`
 - `GameSessionRoot`
-- Boot/Town/Reward controller/presenter의 realm/capability orchestration
+- Boot/Town/Reward controller/presenter의 start/local loop orchestration
 
 이 레이어는 현재 slice의 composition root와 offline adapter를 가진다.
 
@@ -69,7 +69,7 @@
 
 ## bootstrap과 direct-play 규칙
 
-- Boot는 realm 선택 전까지 active session을 시작하지 않는다.
+- Boot는 start action 전까지 active session을 시작하지 않는다.
 - Quick Battle은 offline-only tooling path이므로 auto-start로 `OfflineLocal`을 시작한다.
 - `GameSessionRoot.EnsureInstance()`는 Boot가 아닌 scene에서만 `OfflineLocal` auto-start를 수행한다.
 

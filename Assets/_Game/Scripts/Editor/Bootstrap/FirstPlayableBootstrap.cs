@@ -103,7 +103,7 @@ public static class FirstPlayableBootstrap
             flow.Step("Reset local demo save/profile if present", ResetLocalDemoState);
             flow.Step("Open Boot scene", () => EditorSceneManager.OpenScene(BootScenePath, OpenSceneMode.Single));
 
-            Debug.Log("[ObserverPlayable] Success. 이제 Boot scene에서 Play를 누르면 OfflineLocal 버튼으로 Town 흐름을 확인할 수 있다.");
+            Debug.Log("[ObserverPlayable] Success. 이제 Boot scene에서 Play를 누르고 Start Local Run으로 Town 흐름을 확인할 수 있다.");
         }
         catch (System.Exception ex)
         {

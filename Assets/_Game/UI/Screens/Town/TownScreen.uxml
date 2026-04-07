@@ -12,8 +12,16 @@
         <ui:VisualElement class="screen__body">
             <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel">
-                    <ui:Label class="panel__title" text="Session" />
-                    <ui:Label name="RealmSummaryLabel" class="panel__text" />
+                    <ui:Label class="panel__title" text="Campaign" />
+                    <ui:Label name="CampaignSummaryLabel" class="panel__text" />
+                    <ui:VisualElement class="action-row">
+                        <ui:Button name="PrevChapterButton" class="ui-button" text="Prev Chapter" />
+                        <ui:Button name="NextChapterButton" class="ui-button" text="Next Chapter" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="action-row">
+                        <ui:Button name="PrevSiteButton" class="ui-button" text="Prev Site" />
+                        <ui:Button name="NextSiteButton" class="ui-button" text="Next Site" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="panel">
                     <ui:Label class="panel__title" text="Roster" />
@@ -80,9 +88,9 @@
                 <ui:Button name="RerollButton" class="ui-button" text="Reroll" />
                 <ui:Button name="SaveButton" class="ui-button" text="Save" />
                 <ui:Button name="LoadButton" class="ui-button" text="Load" />
-                <ui:Button name="SessionMenuButton" class="ui-button" text="Session Menu" />
-                <ui:Button name="DebugStartButton" class="ui-button" text="Start Expedition" />
-                <ui:Button name="QuickBattleButton" class="ui-button ui-button--accent" text="Quick Battle" />
+                <ui:Button name="ReturnToStartButton" class="ui-button" text="Return to Start" />
+                <ui:Button name="ExpeditionButton" class="ui-button ui-button--accent" text="Start Expedition" />
+                <ui:Button name="QuickBattleButton" class="ui-button" text="Quick Battle (Smoke)" />
             </ui:VisualElement>
             <ui:Label name="StatusLabel" class="panel__text panel__text--muted" />
         </ui:VisualElement>

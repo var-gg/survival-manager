@@ -27,7 +27,6 @@
 - `localization-workflow.md`: localization foundation, key 추가, locale 검증 절차
 - `mcp-adoption-plan.md`: MCP 도입 평가 순서와 운영 범위
 - `mcp-safety-rules.md`: MCP read/write 안전 규칙
-- `postgres-setup.md`: experimental local Postgres 개발 설정
 - `quick-battle-smoke.md`: one-click Battle 직행 smoke 경로
 - `recruitment-and-retrain-harness.md`: Loop B + Loop C recruit/retrain sandbox와 governance inspect
 - `scene-installer.md`: first playable scene rebuild installer 기준

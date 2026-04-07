@@ -107,6 +107,7 @@ public sealed class OfflineLocalSessionAdapter :
     public ArenaDashboardView GetArenaDashboard(string playerId)
     {
         EnsureProfileMatches(playerId);
+        // Arena/authority DTOs remain as hidden future seams and are not rendered on the active UI.
         return new ArenaDashboardView(
             SessionRealm.OfflineLocal,
             false,

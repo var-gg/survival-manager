@@ -1,13 +1,13 @@
 # 작업 상태: 001 MVP Vertical Slice
 
 - 상태: 진행 중
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-07
 - 단계: prototype
 - 작업 ID: 001
 
 ## 먼저 실행할 메뉴
 
-- `SM/Bootstrap/Prepare Observer Playable`
+- `SM/Setup/Prepare Observer Playable`
 
 ## 이 문서의 역할
 
@@ -23,14 +23,16 @@
 ## 현재 검증된 playable 경계
 
 - `Boot -> Town -> Expedition -> Battle -> Reward -> Town`
-- Town `Quick Battle`로 `Town -> Battle -> Reward -> Town` smoke 가능
-- Town `Debug Start`는 진행 중 원정을 이어서 `Expedition`으로 복귀 가능
+- Town active surface는 chapter/site 선택, `Start Expedition` / `Resume Expedition`, secondary `Quick Battle (Smoke)`로 정리된다.
+- Quick Battle은 active authored run을 덮어쓰지 않도록 secondary/debug smoke lane으로만 유지된다.
 
 ## 현재 구현 상태
 
 - Battle은 `resolve once -> replay`가 아니라 fixed-step live simulation으로 동작한다.
 - normal battle path는 authored `chapter/site/encounter` catalog를 통해 enemy squad와 seed를 resolve한다.
 - Expedition은 hand-authored `site track` 기반 `skirmish -> skirmish -> elite -> boss -> extract` 5노드 진행을 사용한다.
+- battle 결과 뒤에는 항상 Reward를 거치고, extract도 non-battle settlement로 Reward를 거쳐 Town에서 run close를 확정한다.
+- Town 복귀 뒤 active run이면 `Resume Expedition`으로 같은 site track을 재개하고 chapter/site selector는 잠긴다.
 - 4인 배치는 3x2 anchor 버튼 UI로 조정되며, team posture 선택이 Town/Expedition 양쪽에 노출된다.
 - trait / item / affix / temporary augment modifier가 실제 전투 세팅으로 전달된다.
 - status / cleanse / DR과 automatic loot가 실제 전투 결과와 Reward 화면에 연결된다.
@@ -46,10 +48,11 @@
 ## 아직 남은 리스크
 
 - Battle 연출은 readable observer 단계이며 high-fidelity animation, VFX, camera polish 단계는 아니다.
-- Quick Battle은 정상 authored progression이 아니라 debug smoke fallback 경로를 여전히 가진다.
+- Quick Battle은 정상 authored progression이 아니라 debug smoke fallback 경로다.
 - chapter/site count는 launch floor 바닥만 채운 상태라 추가 콘텐츠 다양성은 아직 부족하다.
 - operator UI는 placeholder UGUI 품질이며 최종 UX 기준과는 거리가 있다.
 - live arena backend, leaderboard, season ops는 아직 구현 범위 밖이다.
+- 현재 로컬 검증 환경에서는 열린 Unity 인스턴스 때문에 `test-batch-fast` batchmode가 잠금 충돌을 낼 수 있어, GUI lane 또는 정리된 에디터 상태에서 재검증이 필요할 수 있다.
 
 ## 다음 우선순위
 

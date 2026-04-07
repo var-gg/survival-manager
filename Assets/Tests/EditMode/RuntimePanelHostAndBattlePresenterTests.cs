@@ -117,6 +117,51 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
         }
     }
 
+    [Test]
+    public void BattleScreenPresenter_NormalLane_Blocks_DirectReturn_And_Rebattle()
+    {
+        var go = new GameObject("BattlePresenterRunLoop");
+        try
+        {
+            var localization = go.AddComponent<GameLocalizationController>();
+            var session = new GameSessionState(new FakeCombatContentLookup());
+            var presenter = new BattleScreenPresenter(localization, session, BattlePresentationOptions.CreateDefault());
+
+            var finishedState = presenter.BuildState(
+                CreateBattleStep(),
+                recentLogs: new List<BattleEvent>(),
+                totalEventCount: 0,
+                isPaused: false,
+                playbackSpeed: 1f,
+                isBattleFinished: true,
+                showSettings: false,
+                progressNormalized: 1f,
+                settingsStatusText: string.Empty);
+
+            Assert.That(finishedState.CanRebattle, Is.False);
+            Assert.That(finishedState.CanReturnTownDirect, Is.False);
+
+            session.PrepareQuickBattleSmoke();
+            finishedState = presenter.BuildState(
+                CreateBattleStep(),
+                recentLogs: new List<BattleEvent>(),
+                totalEventCount: 0,
+                isPaused: false,
+                playbackSpeed: 1f,
+                isBattleFinished: true,
+                showSettings: false,
+                progressNormalized: 1f,
+                settingsStatusText: string.Empty);
+
+            Assert.That(finishedState.CanRebattle, Is.True);
+            Assert.That(finishedState.CanReturnTownDirect, Is.True);
+        }
+        finally
+        {
+            Object.DestroyImmediate(go);
+        }
+    }
+
     private static BattleSimulationStep CreateBattleStep()
     {
         var state = BattleFactory.Create(

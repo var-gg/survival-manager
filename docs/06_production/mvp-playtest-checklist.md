@@ -1,7 +1,7 @@
 # MVP 플레이테스트 체크리스트
 
 - 상태: active
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-04-07
 - 단계: prototype
 
 ## 첫 에디터 실행
@@ -22,11 +22,12 @@
 
 ### PlayMode
 
-- Boot -> Town 자동 진입
-- Town `Quick Battle`로 Battle 진입
+- Boot start screen에서 `Start Local Run` 진입
+- Town active UI에 legacy debug 버튼과 realm badge가 없음
+- Town `Start Expedition` 또는 `Resume Expedition`으로 Battle 진입
 - Battle 종료 후 Reward 선택과 Town 복귀 가능
 - Expedition route 선택 후 Reward를 거쳐 Town 복귀 가능
-- Town `Debug Start`로 진행 중 원정 재개 가능
+- Town `Resume Expedition`으로 진행 중 원정 재개 가능
 
 ## 수동 검증 기준
 

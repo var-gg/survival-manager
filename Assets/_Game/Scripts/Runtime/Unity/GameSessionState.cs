@@ -37,6 +37,7 @@ public sealed class GameSessionState
     private readonly List<TelemetryEventRecord> _runtimeTelemetryEvents = new();
     private readonly HashSet<string> _resolvedExpeditionNodeIds = new(StringComparer.Ordinal);
     private LootBundleResult? _lastAutomaticLootBundle;
+    private bool _hasPendingRewardSettlement;
     private int _recruitOfferGeneration;
     private RecruitPhaseState _recruitPhaseState = new();
     private RecruitPityState _recruitPityState = new();
@@ -73,7 +74,12 @@ public sealed class GameSessionState
     public IReadOnlyList<RewardChoiceViewModel> PendingRewardChoices => _pendingRewardChoices;
     public IReadOnlyList<TelemetryEventRecord> RuntimeTelemetryEvents => _runtimeTelemetryEvents;
     public LootBundleResult? LastAutomaticLootBundle => _lastAutomaticLootBundle;
-    public bool CanResumeExpedition => HasActiveExpeditionRun && !IsQuickBattleSmokeActive && CurrentExpeditionNodeIndex < _expeditionNodes.Count - 1;
+    public bool HasPendingRewardSettlement => _hasPendingRewardSettlement;
+    public bool CanStartQuickBattleSmoke => !HasActiveExpeditionRun && !_hasPendingRewardSettlement;
+    public bool CanResumeExpedition => HasActiveExpeditionRun && !IsQuickBattleSmokeActive && !_hasPendingRewardSettlement && CurrentExpeditionNodeIndex < _expeditionNodes.Count;
+    public bool CanChangeCampaignSelection => !HasActiveExpeditionRun;
+    public string SelectedCampaignChapterId => Profile.CampaignProgress.SelectedChapterId;
+    public string SelectedCampaignSiteId => Profile.CampaignProgress.SelectedSiteId;
     public RecruitPhaseState RecruitPhase => _recruitPhaseState.Clone();
     public RecruitPityState RecruitPity => _recruitPityState.Clone();
     public DuplicateConversionResult? LastDuplicateConversion => _lastDuplicateConversion;
@@ -144,6 +150,7 @@ public sealed class GameSessionState
             LastExpeditionEffectMessage = SessionTextToken.Empty;
             LastRewardApplicationSummary = SessionTextToken.Empty;
             _lastAutomaticLootBundle = null;
+            _hasPendingRewardSettlement = false;
             _lastDuplicateConversion = null;
             SelectedTeamPosture = TeamPostureType.StandardAdvance;
             SelectedTeamTacticId = string.Empty;
@@ -160,8 +167,8 @@ public sealed class GameSessionState
             EnsureCampaignSelection();
             EnsureExpeditionNodes(reset: true);
             AutoSelectNextExpeditionNode();
-            EnsureRewardChoices(reset: true);
             RestoreActiveRunFromProfile();
+            EnsureRewardChoices(reset: true);
             SyncExpeditionState();
         }
 
@@ -183,6 +190,7 @@ public sealed class GameSessionState
         LastExpeditionEffectMessage = SessionTextToken.Empty;
         LastRewardApplicationSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
+        _hasPendingRewardSettlement = false;
         _runtimeTelemetryEvents.Clear();
         _resolvedExpeditionNodeIds.Clear();
         EnsureBattleDeployReady();
@@ -202,13 +210,19 @@ public sealed class GameSessionState
 
     internal void PrepareQuickBattleSmoke(CombatSandboxConfig? quickBattleConfig)
     {
+        if (!CanStartQuickBattleSmoke && !IsQuickBattleSmokeActive)
+        {
+            return;
+        }
+
         IsQuickBattleSmokeActive = true;
         HasActiveExpeditionRun = false;
         LastBattleVictory = false;
-        LastBattleSummary = new SessionTextToken(GameLocalizationTables.UITown, "ui.town.deploy.quick_battle_ready", "Quick battle smoke is ready.");
+        LastBattleSummary = SessionTextToken.Empty;
         LastExpeditionEffectMessage = SessionTextToken.Empty;
         LastRewardApplicationSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
+        _hasPendingRewardSettlement = false;
         _runtimeTelemetryEvents.Clear();
         QuickBattleConfig = quickBattleConfig;
         EnsureBattleDeployReady();
@@ -216,6 +230,109 @@ public sealed class GameSessionState
         ActiveRun = RunStateService.StartRun("quick-battle", CaptureBlueprintState(), true);
         SyncActiveRunRecord();
         SyncExpeditionState();
+    }
+
+    public bool TryCycleCampaignChapter(int direction)
+    {
+        if (!CanChangeCampaignSelection)
+        {
+            return false;
+        }
+
+        var chapterIds = GetOrderedCampaignChapterIds();
+        if (chapterIds.Count <= 1)
+        {
+            return false;
+        }
+
+        EnsureCampaignSelection();
+        var currentIndex = Math.Max(0, chapterIds.FindIndex(id => string.Equals(id, Profile.CampaignProgress.SelectedChapterId, StringComparison.Ordinal)));
+        var nextIndex = WrapIndex(currentIndex + Math.Sign(direction), chapterIds.Count);
+        if (nextIndex == currentIndex)
+        {
+            return false;
+        }
+
+        Profile.CampaignProgress.SelectedChapterId = chapterIds[nextIndex];
+        var siteIds = GetOrderedSiteIdsForChapter(Profile.CampaignProgress.SelectedChapterId);
+        Profile.CampaignProgress.SelectedSiteId = siteIds.FirstOrDefault() ?? string.Empty;
+        ResetExpeditionTrackForCampaignSelection();
+        return true;
+    }
+
+    public bool TryCycleCampaignSite(int direction)
+    {
+        if (!CanChangeCampaignSelection)
+        {
+            return false;
+        }
+
+        EnsureCampaignSelection();
+        var siteIds = GetOrderedSiteIdsForChapter(Profile.CampaignProgress.SelectedChapterId);
+        if (siteIds.Count <= 1)
+        {
+            return false;
+        }
+
+        var currentIndex = Math.Max(0, siteIds.FindIndex(id => string.Equals(id, Profile.CampaignProgress.SelectedSiteId, StringComparison.Ordinal)));
+        var nextIndex = WrapIndex(currentIndex + Math.Sign(direction), siteIds.Count);
+        if (nextIndex == currentIndex)
+        {
+            return false;
+        }
+
+        Profile.CampaignProgress.SelectedSiteId = siteIds[nextIndex];
+        ResetExpeditionTrackForCampaignSelection();
+        return true;
+    }
+
+    public bool PrepareSelectedBattleNodeHandoff()
+    {
+        var selected = GetSelectedExpeditionNode();
+        if (selected == null || !selected.RequiresBattle)
+        {
+            return false;
+        }
+
+        CurrentExpeditionNodeIndex = selected.Index;
+        SelectedExpeditionNodeIndex = selected.Index;
+        EnsureCampaignSelection();
+        EnsureActiveRunNodeState(selected);
+        RestoreResolvedProgressMarkers(includeCurrentNode: false);
+        SyncActiveRunRecord();
+        SyncExpeditionState();
+        return true;
+    }
+
+    public bool ResolveSelectedNodeToRewardSettlement()
+    {
+        var selected = GetSelectedExpeditionNode();
+        if (selected == null || selected.RequiresBattle)
+        {
+            return false;
+        }
+
+        CurrentExpeditionNodeIndex = selected.Index;
+        SelectedExpeditionNodeIndex = selected.Index;
+        EnsureCampaignSelection();
+        EnsureActiveRunNodeState(selected);
+        MarkNodeResolved(selected);
+        LastBattleVictory = true;
+        LastBattleSummary = BuildNodeSettlementSummaryToken(selected);
+        LastExpeditionEffectMessage = ApplyExpeditionNodeEffect(selected);
+        LastRewardApplicationSummary = SessionTextToken.Empty;
+        _lastAutomaticLootBundle = null;
+        _hasPendingRewardSettlement = true;
+        UpdateCampaignProgressForResolvedNode(selected);
+        if (ActiveRun != null)
+        {
+            ActiveRun = ActiveRun with { LastSettlementWasVictory = true };
+        }
+
+        RestoreResolvedProgressMarkers(includeCurrentNode: true);
+        EnsureRewardChoices(reset: true);
+        SyncActiveRunIfPresent();
+        return true;
     }
 
     public void ReloadQuickBattleConfig()
@@ -286,15 +403,25 @@ public sealed class GameSessionState
             return false;
         }
 
-        CurrentExpeditionNodeIndex = selected.Index;
-        if (ActiveRun != null)
-        {
-            ActiveRun = RunStateService.AdvanceNode(ActiveRun, selected.Index);
-            SyncActiveRunRecord();
-        }
-        MarkCurrentNodeResolved();
+        EnsureCampaignSelection();
+        EnsureActiveRunNodeState(selected);
+        MarkNodeResolved(selected);
         LastExpeditionEffectMessage = ApplyExpeditionNodeEffect(selected);
         UpdateCampaignProgressForResolvedNode(selected);
+        CurrentExpeditionNodeIndex = ResolveNextActiveNodeIndex(selected.Index);
+        if (ActiveRun != null)
+        {
+            ActiveRun = ActiveRun with
+            {
+                Overlay = ActiveRun.Overlay with
+                {
+                    CurrentNodeIndex = CurrentExpeditionNodeIndex,
+                    SiteNodeIndex = CurrentExpeditionNodeIndex,
+                }
+            };
+        }
+        RestoreResolvedProgressMarkers(includeCurrentNode: CurrentExpeditionNodeIndex == selected.Index && CurrentExpeditionNodeIndex >= _expeditionNodes.Count - 1);
+        SyncActiveRunRecord();
         SyncExpeditionState();
         AutoSelectNextExpeditionNode();
         return true;
@@ -309,19 +436,16 @@ public sealed class GameSessionState
             GameLocalizationTables.UIExpedition,
             "ui.expedition.effect.return_town",
             "Expedition ended. Returning to Town.");
+        _hasPendingRewardSettlement = false;
+        _pendingRewardChoices.Clear();
         ActiveRun = null;
         SyncActiveRunRecord();
     }
 
     public void ReturnToTownAfterReward()
     {
+        FinalizeRewardSettlement();
         IsQuickBattleSmokeActive = false;
-        if (!HasActiveExpeditionRun || CurrentExpeditionNodeIndex >= _expeditionNodes.Count - 1)
-        {
-            HasActiveExpeditionRun = false;
-            ActiveRun = null;
-            SyncActiveRunRecord();
-        }
     }
 
     public void SetCurrentScene(string sceneName)
@@ -1227,56 +1351,67 @@ public sealed class GameSessionState
         LastBattleVictory = victory;
         LastBattleSummary = SessionTextToken.Plain(summary);
         LastRewardApplicationSummary = SessionTextToken.Empty;
+        _hasPendingRewardSettlement = true;
+        if (ActiveRun != null)
+        {
+            ActiveRun = ActiveRun with { LastSettlementWasVictory = victory };
+        }
+
         EnsureRewardChoices(reset: true);
         SyncActiveRunIfPresent();
     }
 
     public void MarkBattleResolved(bool victory, int stepCount, int eventCount)
     {
+        var resolvedNode = GetSelectedExpeditionNode() ?? GetCurrentExpeditionNode();
         LastBattleVictory = victory;
         LastRewardApplicationSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
+        _hasPendingRewardSettlement = true;
+
+        if (resolvedNode != null && !IsQuickBattleSmokeActive)
+        {
+            CurrentExpeditionNodeIndex = resolvedNode.Index;
+            SelectedExpeditionNodeIndex = resolvedNode.Index;
+            EnsureCampaignSelection();
+            EnsureActiveRunNodeState(resolvedNode);
+        }
 
         if (victory && ActiveRun != null && !string.IsNullOrWhiteSpace(ActiveRun.Overlay.RewardSourceId))
         {
             TryApplyAutomaticLoot();
         }
 
-        if (victory && !IsQuickBattleSmokeActive)
+        if (victory && resolvedNode != null && !IsQuickBattleSmokeActive)
         {
-            var moved = ResolveSelectedExpeditionNode();
-            var currentNode = GetCurrentExpeditionNode();
-            if (moved && currentNode != null)
-            {
-                LastBattleSummary = LastExpeditionEffectMessage.HasValue
-                    ? new SessionTextToken(
+            MarkNodeResolved(resolvedNode);
+            LastExpeditionEffectMessage = ApplyExpeditionNodeEffect(resolvedNode);
+            UpdateCampaignProgressForResolvedNode(resolvedNode);
+            LastBattleSummary = LastExpeditionEffectMessage.HasValue
+                ? new SessionTextToken(
+                    GameLocalizationTables.UIReward,
+                    "ui.reward.battle_summary.route_effect",
+                    "{0} / {1} steps / {2} events\nRoute: {3}\nNode Effect: {4}",
+                    SessionTextArg.Localized(
                         GameLocalizationTables.UIReward,
-                        "ui.reward.battle_summary.route_effect",
-                        "{0} / {1} steps / {2} events\nRoute: {3}\nNode Effect: {4}",
-                        SessionTextArg.Localized(
-                            GameLocalizationTables.UIReward,
-                            victory ? "ui.reward.result.victory" : "ui.reward.result.defeat",
-                            victory ? "Victory" : "Defeat"),
-                        SessionTextArg.Number(stepCount),
-                        SessionTextArg.Number(eventCount),
-                        SessionTextArg.Localized(GameLocalizationTables.UIExpedition, currentNode.LabelKey, currentNode.Id),
-                        SessionTextArg.Token(LastExpeditionEffectMessage))
-                    : new SessionTextToken(
+                        victory ? "ui.reward.result.victory" : "ui.reward.result.defeat",
+                        victory ? "Victory" : "Defeat"),
+                    SessionTextArg.Number(stepCount),
+                    SessionTextArg.Number(eventCount),
+                    SessionTextArg.Localized(GameLocalizationTables.UIExpedition, resolvedNode.LabelKey, resolvedNode.Id),
+                    SessionTextArg.Token(LastExpeditionEffectMessage))
+                : new SessionTextToken(
+                    GameLocalizationTables.UIReward,
+                    "ui.reward.battle_summary.route",
+                    "{0} / {1} steps / {2} events\nRoute: {3}",
+                    SessionTextArg.Localized(
                         GameLocalizationTables.UIReward,
-                        "ui.reward.battle_summary.route",
-                        "{0} / {1} steps / {2} events\nRoute: {3}",
-                        SessionTextArg.Localized(
-                            GameLocalizationTables.UIReward,
-                            victory ? "ui.reward.result.victory" : "ui.reward.result.defeat",
-                            victory ? "Victory" : "Defeat"),
-                        SessionTextArg.Number(stepCount),
-                        SessionTextArg.Number(eventCount),
-                        SessionTextArg.Localized(GameLocalizationTables.UIExpedition, currentNode.LabelKey, currentNode.Id));
-            }
-            else
-            {
-                LastBattleSummary = BuildBattleSummaryToken(victory, stepCount, eventCount);
-            }
+                        victory ? "ui.reward.result.victory" : "ui.reward.result.defeat",
+                        victory ? "Victory" : "Defeat"),
+                    SessionTextArg.Number(stepCount),
+                    SessionTextArg.Number(eventCount),
+                    SessionTextArg.Localized(GameLocalizationTables.UIExpedition, resolvedNode.LabelKey, resolvedNode.Id));
+            RestoreResolvedProgressMarkers(includeCurrentNode: true);
         }
         else
         {
@@ -1285,14 +1420,19 @@ public sealed class GameSessionState
             {
                 HasActiveExpeditionRun = false;
             }
+
+            if (resolvedNode != null && !IsQuickBattleSmokeActive)
+            {
+                RestoreResolvedProgressMarkers(includeCurrentNode: false);
+            }
+        }
+
+        if (ActiveRun != null)
+        {
+            ActiveRun = ActiveRun with { LastSettlementWasVictory = victory };
         }
 
         EnsureRewardChoices(reset: true);
-        if (!victory)
-        {
-            ActiveRun = null;
-            SyncActiveRunRecord();
-        }
         SyncActiveRunIfPresent();
     }
 
@@ -1382,7 +1522,7 @@ public sealed class GameSessionState
         });
 
         _pendingRewardChoices.Clear();
-        SyncActiveRunIfPresent();
+        FinalizeRewardSettlement();
         return true;
     }
 
@@ -1828,7 +1968,7 @@ public sealed class GameSessionState
             return;
         }
 
-        if (!LastBattleVictory && !LastBattleSummary.HasValue)
+        if (!_hasPendingRewardSettlement)
         {
             return;
         }
@@ -1983,12 +2123,11 @@ public sealed class GameSessionState
         record.EquippedAugmentIds = Profile.UnlockedPermanentAugmentIds.Take(Math.Min(PermanentAugmentSlotCount, 3)).ToList();
     }
 
-    private void MarkCurrentNodeResolved()
+    private void MarkNodeResolved(ExpeditionNodeViewModel node)
     {
-        var current = GetCurrentExpeditionNode();
-        if (current != null)
+        if (!string.IsNullOrWhiteSpace(node.Id))
         {
-            _resolvedExpeditionNodeIds.Add(current.Id);
+            _resolvedExpeditionNodeIds.Add(node.Id);
         }
     }
 
@@ -2003,6 +2142,166 @@ public sealed class GameSessionState
 
         var nextNodes = GetSelectableNextNodeIndices();
         SelectedExpeditionNodeIndex = nextNodes.Count > 0 ? nextNodes[0] : null;
+    }
+
+    private void ResetExpeditionTrackForCampaignSelection()
+    {
+        IsQuickBattleSmokeActive = false;
+        HasActiveExpeditionRun = false;
+        ActiveRun = null;
+        CurrentExpeditionNodeIndex = 0;
+        SelectedExpeditionNodeIndex = null;
+        LastBattleVictory = false;
+        LastBattleSummary = SessionTextToken.Empty;
+        LastExpeditionEffectMessage = SessionTextToken.Empty;
+        LastRewardApplicationSummary = SessionTextToken.Empty;
+        _lastAutomaticLootBundle = null;
+        _hasPendingRewardSettlement = false;
+        _pendingRewardChoices.Clear();
+        _resolvedExpeditionNodeIds.Clear();
+        EnsureExpeditionNodes(reset: true);
+        AutoSelectNextExpeditionNode();
+        SyncExpeditionState();
+        SyncActiveRunRecord();
+    }
+
+    private void EnsureActiveRunNodeState(ExpeditionNodeViewModel node)
+    {
+        ActiveRun ??= RunStateService.StartRun(GetExpeditionRunId(), CaptureBlueprintState(), IsQuickBattleSmokeActive);
+        ActiveRun = ActiveRun with
+        {
+            Overlay = ActiveRun.Overlay with
+            {
+                CurrentNodeIndex = CurrentExpeditionNodeIndex,
+                SiteNodeIndex = CurrentExpeditionNodeIndex,
+                ChapterId = Profile.CampaignProgress.SelectedChapterId,
+                SiteId = Profile.CampaignProgress.SelectedSiteId,
+                EncounterId = node.Id,
+                RewardSourceId = node.RewardSourceId,
+                PendingRewardIds = _pendingRewardChoices
+                    .Select(choice => choice.PayloadId)
+                    .Where(id => !string.IsNullOrWhiteSpace(id))
+                    .Distinct(StringComparer.Ordinal)
+                    .ToList(),
+            }
+        };
+    }
+
+    private void RestoreResolvedProgressMarkers(bool includeCurrentNode)
+    {
+        _resolvedExpeditionNodeIds.Clear();
+        for (var index = 0; index < CurrentExpeditionNodeIndex && index < _expeditionNodes.Count; index++)
+        {
+            MarkNodeResolved(_expeditionNodes[index]);
+        }
+
+        if (includeCurrentNode
+            && CurrentExpeditionNodeIndex >= 0
+            && CurrentExpeditionNodeIndex < _expeditionNodes.Count)
+        {
+            MarkNodeResolved(_expeditionNodes[CurrentExpeditionNodeIndex]);
+        }
+    }
+
+    private int ResolveNextActiveNodeIndex(int resolvedNodeIndex)
+    {
+        return resolvedNodeIndex + 1 < _expeditionNodes.Count
+            ? resolvedNodeIndex + 1
+            : resolvedNodeIndex;
+    }
+
+    private List<string> GetOrderedCampaignChapterIds()
+    {
+        return _combatContentLookup.GetOrderedCampaignChapters()
+            .Where(chapter => !string.IsNullOrWhiteSpace(chapter.Id))
+            .Select(chapter => chapter.Id)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private List<string> GetOrderedSiteIdsForChapter(string chapterId)
+    {
+        if (!_combatContentLookup.TryGetCampaignChapterDefinition(chapterId, out var chapter))
+        {
+            return new List<string>();
+        }
+
+        return chapter.SiteIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Select(id =>
+            {
+                var hasDefinition = _combatContentLookup.TryGetExpeditionSiteDefinition(id, out var site);
+                return new
+                {
+                    Id = id,
+                    Order = hasDefinition ? site.SiteOrder : int.MaxValue,
+                };
+            })
+            .OrderBy(entry => entry.Order)
+            .ThenBy(entry => entry.Id, StringComparer.Ordinal)
+            .Select(entry => entry.Id)
+            .ToList();
+    }
+
+    private void FinalizeRewardSettlement()
+    {
+        if (!_hasPendingRewardSettlement)
+        {
+            return;
+        }
+
+        _hasPendingRewardSettlement = false;
+        _pendingRewardChoices.Clear();
+
+        if (IsQuickBattleSmokeActive || !LastBattleVictory || CurrentExpeditionNodeIndex >= _expeditionNodes.Count - 1)
+        {
+            HasActiveExpeditionRun = false;
+            ActiveRun = null;
+            SyncActiveRunRecord();
+            return;
+        }
+
+        HasActiveExpeditionRun = true;
+        CurrentExpeditionNodeIndex = ResolveNextActiveNodeIndex(CurrentExpeditionNodeIndex);
+        RestoreResolvedProgressMarkers(includeCurrentNode: false);
+        EnsureCampaignSelection();
+        if (ActiveRun != null)
+        {
+            ActiveRun = ActiveRun with
+            {
+                Overlay = ActiveRun.Overlay with
+                {
+                    CurrentNodeIndex = CurrentExpeditionNodeIndex,
+                    SiteNodeIndex = CurrentExpeditionNodeIndex,
+                    PendingRewardIds = Array.Empty<string>(),
+                }
+            };
+        }
+
+        AutoSelectNextExpeditionNode();
+        SyncActiveRunRecord();
+        SyncExpeditionState();
+    }
+
+    private SessionTextToken BuildNodeSettlementSummaryToken(ExpeditionNodeViewModel node)
+    {
+        return new SessionTextToken(
+            GameLocalizationTables.UIReward,
+            "ui.reward.summary.extract_settlement",
+            "Settlement complete\nRoute: {0}\nReward Source: {1}",
+            SessionTextArg.Localized(GameLocalizationTables.UIExpedition, node.LabelKey, node.Id),
+            SessionTextArg.Localized(GameLocalizationTables.UIExpedition, node.PlannedRewardKey, node.Id));
+    }
+
+    private static int WrapIndex(int index, int count)
+    {
+        if (count <= 0)
+        {
+            return 0;
+        }
+
+        var wrapped = index % count;
+        return wrapped < 0 ? wrapped + count : wrapped;
     }
 
     private void SyncExpeditionState()
@@ -2691,11 +2990,25 @@ public sealed class GameSessionState
             Profile.ActiveRun.BattleDeployHeroIds,
             Profile.ActiveRun.IsQuickBattle,
             string.IsNullOrWhiteSpace(Profile.ActiveRun.LastBattleMatchId) ? null : Profile.ActiveRun.LastBattleMatchId,
+            Profile.ActiveRun.LastSettlementWasVictory,
             Profile.ActiveRun.StoryCleared,
             Profile.ActiveRun.EndlessUnlocked);
+        LastBattleVictory = ActiveRun.LastSettlementWasVictory;
+        IsQuickBattleSmokeActive = ActiveRun.IsQuickBattle;
+        HasActiveExpeditionRun = !ActiveRun.IsQuickBattle;
+        _hasPendingRewardSettlement = ActiveRun.Overlay.PendingRewardIds.Count > 0;
         SelectedTeamPosture = blueprint.TeamPosture;
         SelectedTeamTacticId = blueprint.TeamTacticId;
         CurrentExpeditionNodeIndex = ActiveRun.Overlay.CurrentNodeIndex;
+        RestoreResolvedProgressMarkers(includeCurrentNode: _hasPendingRewardSettlement);
+        if (_hasPendingRewardSettlement)
+        {
+            SelectedExpeditionNodeIndex = CurrentExpeditionNodeIndex;
+        }
+        else
+        {
+            AutoSelectNextExpeditionNode();
+        }
     }
 
     private void SyncActiveRunIfPresent()
@@ -2719,9 +3032,11 @@ public sealed class GameSessionState
     {
         if (ActiveRun == null)
         {
-            Profile.ActiveRun ??= new ActiveRunRecord();
-            Profile.ActiveRun.RecruitPhase = _recruitPhaseState.Clone();
-            Profile.ActiveRun.RecruitPity = _recruitPityState.Clone();
+            Profile.ActiveRun = new ActiveRunRecord
+            {
+                RecruitPhase = _recruitPhaseState.Clone(),
+                RecruitPity = _recruitPityState.Clone(),
+            };
             return;
         }
 
@@ -2740,6 +3055,7 @@ public sealed class GameSessionState
             CompileVersion = ActiveRun.Overlay.CompileVersion,
             CompileHash = ActiveRun.Overlay.LastCompileHash,
             LastBattleMatchId = ActiveRun.LastBattleMatchId ?? string.Empty,
+            LastSettlementWasVictory = ActiveRun.LastSettlementWasVictory,
             ChapterId = ActiveRun.Overlay.ChapterId,
             SiteId = ActiveRun.Overlay.SiteId,
             SiteNodeIndex = ActiveRun.Overlay.SiteNodeIndex,

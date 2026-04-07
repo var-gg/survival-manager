@@ -58,14 +58,21 @@ public sealed class ExpeditionScreenPresenter
                 return;
             }
 
+            if (!session.PrepareSelectedBattleNodeHandoff())
+            {
+                Refresh(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.error.advance_failed", "Failed to advance the selected node."));
+                return;
+            }
+
+            _root.SaveProfile();
             _root.SceneFlow.GoToBattle();
             return;
         }
 
-        if (session.ResolveSelectedExpeditionNode())
+        if (session.ResolveSelectedNodeToRewardSettlement())
         {
             _root.SaveProfile();
-            Refresh(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.node_cleared", "{0} was resolved without a battle.", ResolveNodeLabel(selectedNode)));
+            _root.SceneFlow.GoToReward();
             return;
         }
 
@@ -123,14 +130,7 @@ public sealed class ExpeditionScreenPresenter
             BuildLocaleStatus(),
             GetLocaleButtonLabel("ko", "한국어"),
             GetLocaleButtonLabel("en", "English"),
-            Localize(
-                GameLocalizationTables.UIExpedition,
-                "ui.expedition.position.summary",
-                "Position: {0}/{1} | Current: {2} | Selected: {3}",
-                session.CurrentExpeditionNodeIndex + 1,
-                session.ExpeditionNodes.Count,
-                currentNode == null ? "-" : ResolveNodeLabel(currentNode),
-                selectedNode == null ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.position.none", "Selection Needed") : ResolveNodeLabel(selectedNode)),
+            BuildPositionText(session, currentNode, selectedNode),
             BuildMapText(session),
             BuildRewardText(session),
             BuildSquadText(session),
@@ -138,7 +138,9 @@ public sealed class ExpeditionScreenPresenter
             BuildDeployButtons(session),
             Localize(GameLocalizationTables.UICommon, "ui.common.posture", "Posture") + "\n" + session.SelectedTeamPosture,
             string.IsNullOrWhiteSpace(message) ? BuildDefaultStatus(selectedNode) : message,
-            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.action.next_battle", "Next Battle"),
+            selectedNode != null && !selectedNode.RequiresBattle
+                ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.action.resolve_settlement", "Resolve Settlement")
+                : Localize(GameLocalizationTables.UIExpedition, "ui.expedition.action.next_battle", "Enter Battle"),
             Localize(GameLocalizationTables.UICommon, "ui.common.return_town", "Return Town"));
     }
 
@@ -298,7 +300,7 @@ public sealed class ExpeditionScreenPresenter
 
         return selectedNode.RequiresBattle
             ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.ready_battle", "{0} is ready for battle.", ResolveNodeLabel(selectedNode))
-            : Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.safe_node", "{0} can be cleared without battle.", ResolveNodeLabel(selectedNode));
+            : Localize(GameLocalizationTables.UIExpedition, "ui.expedition.status.safe_node", "{0} will settle through Reward before returning to Town.", ResolveNodeLabel(selectedNode));
     }
 
     private string BuildNodeEffectTag(ExpeditionNodeViewModel node)
@@ -319,4 +321,35 @@ public sealed class ExpeditionScreenPresenter
     private string ResolveNodeDescription(ExpeditionNodeViewModel node) => Localize(GameLocalizationTables.UIExpedition, node.DescriptionKey, node.Id);
     private string LocalizeAnchor(DeploymentAnchorId anchor) => Localize(GameLocalizationTables.UICommon, anchor.ToLocalizationKey(), anchor.ToDisplayName());
     private string Localize(string table, string key, string fallback, params object[] args) => _localization.LocalizeOrFallback(table, key, fallback, args);
+
+    private string BuildPositionText(
+        GameSessionState session,
+        ExpeditionNodeViewModel? currentNode,
+        ExpeditionNodeViewModel? selectedNode)
+    {
+        var chapterName = _contentText.GetCampaignChapterName(session.SelectedCampaignChapterId);
+        var siteName = _contentText.GetExpeditionSiteName(session.SelectedCampaignSiteId);
+        var currentNodeType = currentNode == null
+            ? "-"
+            : currentNode.RequiresBattle
+                ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.position.node_type.battle", "Battle")
+                : Localize(GameLocalizationTables.UIExpedition, "ui.expedition.position.node_type.settlement", "Settlement");
+        var selectedNodeText = selectedNode == null
+            ? Localize(GameLocalizationTables.UIExpedition, "ui.expedition.position.none", "Selection Needed")
+            : $"{ResolveNodeLabel(selectedNode)} / {ResolveNodeReward(selectedNode)}";
+
+        return string.Join(
+            "\n",
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.position.chapter", "Chapter: {0}", chapterName),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.position.site", "Site: {0}", siteName),
+            Localize(
+                GameLocalizationTables.UIExpedition,
+                "ui.expedition.position.current",
+                "Current Node: {0}/{1} / {2}",
+                session.CurrentExpeditionNodeIndex + 1,
+                Mathf.Max(1, session.ExpeditionNodes.Count),
+                currentNode == null ? "-" : ResolveNodeLabel(currentNode)),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.position.type", "Node Type: {0}", currentNodeType),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.position.selected", "Selected: {0}", selectedNodeText));
+    }
 }

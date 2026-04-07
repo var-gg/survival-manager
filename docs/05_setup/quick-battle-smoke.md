@@ -8,6 +8,13 @@
 
 전투 테스트를 위한 원클릭 진입 경로와 반복 테스트 워크플로우를 정리한다.
 
+## smoke lane 원칙
+
+- Quick Battle은 canonical playable lane이 아니다.
+- campaign/site progression, site clear, chapter clear 검증에는 사용하지 않는다.
+- Town에서는 `Quick Battle (Smoke)` secondary CTA로만 노출한다.
+- `Re-battle`, `Return Town` direct bypass는 smoke lane에서만 허용한다.
+
 ## 원클릭 전투 테스트
 
 1. Unity 열기
@@ -50,16 +57,18 @@
 
 **적용 방식**: 인스펙터에서 변경 후 `Re-battle` 클릭 시 config가 다시 로드되어 새 전투에 반영된다. 전투 중 라이브 변경은 지원하지 않는다.
 
-## 전체 플로우 비교 (Observer Playable)
+## Town에서 smoke 실행
 
-`SM/Setup/Prepare Observer Playable` 메뉴로 Boot → Town → Battle → Reward 전체 플로우를 확인할 수 있다.
+`SM/Setup/Prepare Observer Playable` 메뉴로 normal playable을 띄운 뒤 Town에서도 smoke를 실행할 수 있다.
 
 1. `SM/Setup/Prepare Observer Playable`
 2. `Boot.unity` Play
-3. Town에서 `Quick Battle`
-4. Battle 종료 후 `Continue`
-5. Reward에서 카드 선택
+3. Town에서 secondary `Quick Battle (Smoke)`
+4. Battle 종료 후 `Continue` 또는 direct `Return Town`
+5. Reward를 택했다면 카드 선택
 6. `Return Town`
+
+이 경로는 Town UI smoke 확인용이며, `Start Expedition / Resume Expedition` acceptance를 대체하지 않는다.
 
 ## 기대 화면
 

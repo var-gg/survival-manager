@@ -25,7 +25,6 @@
 | `SM.Meta` | town, expedition, reward, progression 규칙 | `SM.Core`, `SM.Content`, `SM.Combat` |
 | `SM.Persistence.Abstractions` | save contract, repository port, save model | `SM.Core`, `SM.Content`, `SM.Meta` |
 | `SM.Persistence.Json` | JSON serializer/repository adapter | `SM.Persistence.Abstractions`, `SM.Core`, `SM.Content`, `SM.Meta` |
-| `SM.Persistence.Postgres` | Postgres repository adapter | `SM.Persistence.Abstractions`, `SM.Core`, `SM.Content`, `SM.Meta` |
 | `SM.Unity` | Boot, scene/input/view orchestration | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Persistence.Abstractions`, `SM.Persistence.Json` |
 | `SM.Editor` | bootstrap, validation, editor utility | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Persistence.Abstractions`, `SM.Unity` |
 | `SM.Tests` | 테스트 전용 조합 레이어 | 대상 시나리오에 필요한 runtime asmdef, EditMode는 `SM.Editor` 추가 허용 |
@@ -36,8 +35,8 @@
 - `SM.Content` -> `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Combat` -> `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Meta` -> `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
-- `SM.Persistence.Abstractions` -> `SM.Persistence.Json`, `SM.Persistence.Postgres`, `SM.Unity`, `SM.Editor` 금지
-- `SM.Persistence.Json` / `SM.Persistence.Postgres` -> `SM.Unity`, `SM.Editor` 금지
+- `SM.Persistence.Abstractions` -> `SM.Persistence.Json`, `SM.Unity`, `SM.Editor` 금지
+- `SM.Persistence.Json` -> `SM.Unity`, `SM.Editor` 금지
 - `SM.Unity` -> `SM.Editor`, `SM.Tests` 금지
 - production asmdef -> `SM.Tests.*` 금지
 
@@ -89,7 +88,7 @@
 ### 잘못된 예
 
 - `SM.Combat`에서 save payload를 직접 만들어 `SM.Persistence.Json`으로 넘긴다.
-- `SM.Unity`가 Postgres 연결 문자열을 읽고 repository를 직접 new 한다.
+- `SM.Unity`가 JSON repository concrete를 직접 new 한다.
 - `SM.Meta`와 `SM.Combat`이 서로 결과 타입을 직접 참조하도록 순환 구조를 만든다.
 
 ### 바른 대안

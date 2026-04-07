@@ -12,7 +12,6 @@
         <ui:VisualElement class="screen__body">
             <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel">
-                    <ui:Label name="RealmStatusLabel" class="panel__text panel__text--muted" />
                     <ui:Label class="panel__title" text="Summary" />
                     <ui:Label name="SummaryLabel" class="panel__text" />
                 </ui:VisualElement>

@@ -56,7 +56,6 @@ Assets/_Game/
       Persistence/
         Abstractions/
         Json/
-        Postgres/
       Unity/
         UI/
     Editor/
@@ -81,7 +80,6 @@ Assets/Tests/
 - `Assets/_Game/Scripts/Runtime/Meta` -> `SM.Meta`
 - `Assets/_Game/Scripts/Runtime/Persistence/Abstractions` -> `SM.Persistence.Abstractions`
 - `Assets/_Game/Scripts/Runtime/Persistence/Json` -> `SM.Persistence.Json`
-- `Assets/_Game/Scripts/Runtime/Persistence/Postgres` -> `SM.Persistence.Postgres`
 - `Assets/_Game/Scripts/Runtime/Unity` -> `SM.Unity`
 - `Assets/_Game/Scripts/Runtime/Unity/UI` -> `SM.Unity` 내부 UI runtime 하위 경계
 - `Assets/_Game/Scripts/Editor` -> `SM.Editor`
