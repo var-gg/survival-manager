@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
 using SM.Combat.Model;
+using SM.Combat.Services;
 using SM.Unity.UI.Battle;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +12,8 @@ public sealed class BattleActorView : MonoBehaviour
 {
     private const float OverlayHeight = 2.3f;
     private const float WorldHpWidth = 1.3f;
+    private const float GroundPlaneY = -0.98f;
+    private const float TelegraphDiscThickness = 0.008f;
 
     private Camera _camera = null!;
     private BattlePresentationController _owner = null!;
@@ -23,6 +27,8 @@ public sealed class BattleActorView : MonoBehaviour
     private Text _floatingText = null!;
     private Transform _visualRoot = null!;
     private Transform _headAnchor = null!;
+    private Transform _centerAnchor = null!;
+    private Transform _castAnchor = null!;
     private Transform _worldInfoRoot = null!;
     private Transform _worldHpFillRoot = null!;
     private TextMesh _worldNameText = null!;
@@ -31,6 +37,17 @@ public sealed class BattleActorView : MonoBehaviour
     private TextMesh _worldStateShadowText = null!;
     private Renderer _renderer = null!;
     private Renderer _shadowRenderer = null!;
+    private Renderer _feetRingRenderer = null!;
+    private Renderer _targetReticleRenderer = null!;
+    private Renderer _windupRingRenderer = null!;
+    private Renderer _homeAnchorRenderer = null!;
+    private Renderer _rangeOuterRenderer = null!;
+    private Renderer _rangeInnerRenderer = null!;
+    private Renderer _guardRadiusRenderer = null!;
+    private Renderer _clusterRadiusRenderer = null!;
+    private LineRenderer _focusLineRenderer = null!;
+    private LineRenderer _homeTetherRenderer = null!;
+    private readonly List<Renderer> _slotMarkerRenderers = new();
     private Color _baseColor;
     private BattlePresentationOptions _options = BattlePresentationOptions.CreateDefault();
     private BattleUnitReadModel _currentState = null!;
@@ -39,6 +56,26 @@ public sealed class BattleActorView : MonoBehaviour
     private Coroutine? _impactRoutine;
     private Coroutine? _accentRoutine;
     private BattleUnitMetadataFormatter? _metadataFormatter;
+    private bool _isSelected;
+    private bool _isCurrentActor;
+    private bool _isCurrentTarget;
+    private Vector3? _focusTargetWorld;
+    private float _readabilityBoost;
+    private BattleActionSemantic _activeSemantic = BattleActionSemantic.None;
+    private float _actionCueTimer;
+    private float _actionCueDuration;
+    private float _impactCueTimer;
+    private float _impactCueDuration;
+    private float _accentTimer;
+    private float _accentDuration;
+    private float _guardCueTimer;
+    private float _repositionCueTimer;
+    private float _floatingTimer;
+    private float _floatingDuration;
+    private string _floatingMessage = string.Empty;
+    private Color _accentColor = Color.clear;
+    private Color _impactColor = Color.clear;
+    private Color _floatingColor = Color.clear;
 
     public void Initialize(
         BattleUnitReadModel actor,
@@ -55,6 +92,7 @@ public sealed class BattleActorView : MonoBehaviour
 
         CreateVisualRoot(actor);
         CreateHeadAnchor(actor);
+        CreateTelegraphRoot();
         CreateOverlay(actor);
         ApplyBlend(actor, actor, 1f);
     }
@@ -81,7 +119,128 @@ public sealed class BattleActorView : MonoBehaviour
 
         var displayedHealth = Mathf.Lerp(from.CurrentHealth, to.CurrentHealth, Mathf.Clamp01(alpha));
         ApplyDisplay(to, displayedHealth);
+        RefreshVisualState();
         RefreshOverlayPosition();
+    }
+
+    public void ApplyContext(bool isSelected, bool isCurrentActor, bool isCurrentTarget, Vector3? focusTargetWorld, float readabilityBoost)
+    {
+        _isSelected = isSelected;
+        _isCurrentActor = isCurrentActor;
+        _isCurrentTarget = isCurrentTarget;
+        _focusTargetWorld = focusTargetWorld;
+        _readabilityBoost = readabilityBoost;
+        RefreshVisualState();
+    }
+
+    public void ConsumeCue(BattlePresentationCue cue, Vector3? relatedWorld)
+    {
+        switch (cue.CueType)
+        {
+            case BattlePresentationCueType.WindupEnter:
+                _actionCueTimer = 0.28f;
+                _actionCueDuration = 0.28f;
+                _activeSemantic = ResolveCueSemantic(cue);
+                break;
+            case BattlePresentationCueType.TargetChanged:
+                _accentColor = new Color(0.45f, 0.88f, 1f, 1f);
+                _accentTimer = 0.18f;
+                _accentDuration = 0.18f;
+                break;
+            case BattlePresentationCueType.ActionCommitBasic:
+                StartActionCue(BattleActionSemantic.BasicAttack, 0.20f, ResolveSemanticColor(BattleActionSemantic.BasicAttack), relatedWorld);
+                break;
+            case BattlePresentationCueType.ActionCommitSkill:
+                StartActionCue(BattleActionSemantic.DamagingSkill, 0.24f, ResolveSemanticColor(BattleActionSemantic.DamagingSkill), relatedWorld);
+                break;
+            case BattlePresentationCueType.ActionCommitHeal:
+                StartActionCue(BattleActionSemantic.HealSupport, 0.22f, ResolveSemanticColor(BattleActionSemantic.HealSupport), relatedWorld);
+                break;
+            case BattlePresentationCueType.ImpactDamage:
+                StartImpactCue(0.24f, new Color(1f, 0.32f, 0.28f, 1f), $"-{Mathf.CeilToInt(cue.Magnitude)}");
+                break;
+            case BattlePresentationCueType.ImpactHeal:
+                StartImpactCue(0.24f, new Color(0.38f, 1f, 0.54f, 1f), $"+{Mathf.CeilToInt(cue.Magnitude)}");
+                break;
+            case BattlePresentationCueType.GuardEnter:
+                _guardCueTimer = 0.32f;
+                _accentColor = ResolveSemanticColor(BattleActionSemantic.DefendHold);
+                _accentTimer = 0.22f;
+                _accentDuration = 0.22f;
+                break;
+            case BattlePresentationCueType.GuardExit:
+                _guardCueTimer = 0.10f;
+                break;
+            case BattlePresentationCueType.RepositionStart:
+                _repositionCueTimer = 0.36f;
+                _accentColor = ResolveSemanticColor(BattleActionSemantic.Reposition);
+                _accentTimer = 0.18f;
+                _accentDuration = 0.18f;
+                break;
+            case BattlePresentationCueType.RepositionStop:
+                _repositionCueTimer = 0.10f;
+                break;
+            case BattlePresentationCueType.DeathStart:
+                _impactCueTimer = 0.42f;
+                _impactCueDuration = 0.42f;
+                _impactColor = new Color(0.58f, 0.58f, 0.58f, 1f);
+                break;
+            case BattlePresentationCueType.PlaybackReset:
+            case BattlePresentationCueType.SeekSnapshotApplied:
+                ClearTransients(cue.CueType);
+                return;
+        }
+
+        if (relatedWorld.HasValue)
+        {
+            _focusTargetWorld = relatedWorld;
+        }
+
+        RefreshVisualState();
+    }
+
+    public void ClearTransients(BattlePresentationCueType reason)
+    {
+        _actionCueTimer = 0f;
+        _actionCueDuration = 0f;
+        _impactCueTimer = 0f;
+        _impactCueDuration = 0f;
+        _accentTimer = 0f;
+        _accentDuration = 0f;
+        _guardCueTimer = 0f;
+        _repositionCueTimer = 0f;
+        _floatingTimer = 0f;
+        _floatingDuration = 0f;
+        _floatingMessage = string.Empty;
+        _activeSemantic = BattleActionSemantic.None;
+        _accentColor = Color.clear;
+        _impactColor = Color.clear;
+        _floatingColor = Color.clear;
+
+        if (_floatingText != null)
+        {
+            _floatingText.text = string.Empty;
+            _floatingText.color = Color.clear;
+        }
+
+        RefreshVisualState();
+    }
+
+    public void TickTransients(float deltaTime, float playbackSpeed, bool paused)
+    {
+        if (paused)
+        {
+            return;
+        }
+
+        var scaledDelta = deltaTime * playbackSpeed;
+        _actionCueTimer = Mathf.Max(0f, _actionCueTimer - scaledDelta);
+        _impactCueTimer = Mathf.Max(0f, _impactCueTimer - scaledDelta);
+        _accentTimer = Mathf.Max(0f, _accentTimer - scaledDelta);
+        _guardCueTimer = Mathf.Max(0f, _guardCueTimer - scaledDelta);
+        _repositionCueTimer = Mathf.Max(0f, _repositionCueTimer - scaledDelta);
+        _floatingTimer = Mathf.Max(0f, _floatingTimer - scaledDelta);
+        RefreshVisualState();
     }
 
     public void PlayAsSource(BattleEvent eventData, BattleActorView? targetView)
@@ -162,6 +321,40 @@ public sealed class BattleActorView : MonoBehaviour
         }
     }
 
+    public Vector3 GetAnchorWorld(BattlePresentationAnchorId anchorId)
+    {
+        return anchorId switch
+        {
+            BattlePresentationAnchorId.Root => transform.position,
+            BattlePresentationAnchorId.Feet => new Vector3(transform.position.x, GroundPlaneY, transform.position.z),
+            BattlePresentationAnchorId.Center => _centerAnchor != null ? _centerAnchor.position : transform.position + Vector3.up * 0.1f,
+            BattlePresentationAnchorId.Head => _headAnchor != null ? _headAnchor.position : transform.position + Vector3.up * OverlayHeight,
+            BattlePresentationAnchorId.Cast => _castAnchor != null ? _castAnchor.position : transform.position + transform.forward * 0.6f + Vector3.up * 0.2f,
+            _ => transform.position
+        };
+    }
+
+    public float GetScreenDistanceSquared(Vector2 screenPosition)
+    {
+        if (_camera == null)
+        {
+            _camera = Camera.main!;
+        }
+
+        if (_camera == null)
+        {
+            return -1f;
+        }
+
+        var head = _camera.WorldToScreenPoint(GetAnchorWorld(BattlePresentationAnchorId.Head));
+        if (head.z <= 0f)
+        {
+            return -1f;
+        }
+
+        return (new Vector2(head.x, head.y) - screenPosition).sqrMagnitude;
+    }
+
     private bool IsPaused => _owner != null && _owner.IsPaused;
 
     private void ApplyDisplay(BattleUnitReadModel actor, float displayedHealth)
@@ -170,7 +363,7 @@ public sealed class BattleActorView : MonoBehaviour
         var healthRatio = actor.MaxHealth <= 0f ? 0f : Mathf.Clamp01(displayedHealth / actor.MaxHealth);
         var healthColor = ResolveHealthColor(healthRatio, actor.IsAlive, actor.Side);
         var metadata = _metadataFormatter?.BuildOverhead(actor)
-                      ?? new BattleUnitOverheadText(actor.Name, BuildStatusLine(actor));
+                      ?? new BattleUnitOverheadText(actor.Name, BattleReadabilityFormatter.BuildPlayerFacingState(actor));
 
         if (_renderer != null)
         {
@@ -242,26 +435,234 @@ public sealed class BattleActorView : MonoBehaviour
         RefreshVisibility();
     }
 
-    private string BuildStatusLine(BattleUnitReadModel actor)
+    private void RefreshVisualState()
     {
-        if (!actor.IsAlive)
+        if (_currentState == null || _visualRoot == null || _renderer == null || _shadowRenderer == null)
         {
-            return "Dead";
+            return;
         }
 
-        var target = string.IsNullOrWhiteSpace(actor.TargetName) ? "-" : actor.TargetName;
-        return actor.ActionState switch
+        var restColor = ResolveRestColor(_currentState);
+        if (_accentTimer > 0f && _accentDuration > 0f)
         {
-            CombatActionState.ExecuteAction => $"Action {Mathf.RoundToInt(actor.WindupProgress * 100f)}% -> {target}",
-            CombatActionState.Approach => $"Approach -> {target}",
-            CombatActionState.SecurePosition => $"Secure -> {target}",
-            CombatActionState.BreakContact => $"Break <- {target}",
-            CombatActionState.Recover => actor.IsDefending ? "Guard" : $"Recover {actor.CooldownRemaining:0.0}s",
-            CombatActionState.Reposition => actor.IsDefending ? "Hold Line" : "Reposition",
-            CombatActionState.AdvanceToAnchor => "To Anchor",
-            CombatActionState.AcquireTarget => $"Acquire -> {target}",
-            _ => target == "-" ? actor.ActionState.ToString() : $"{actor.ActionState} -> {target}"
-        };
+            restColor = Color.Lerp(restColor, _accentColor, EvaluatePulse(_accentTimer, _accentDuration));
+        }
+
+        if (_impactCueTimer > 0f && _impactCueDuration > 0f)
+        {
+            restColor = Color.Lerp(restColor, _impactColor, EvaluatePulse(_impactCueTimer, _impactCueDuration));
+        }
+
+        BattlePresentationMaterialFactory.ApplyColor(_renderer.material, restColor);
+        BattlePresentationMaterialFactory.ApplyColor(
+            _shadowRenderer.material,
+            _currentState.IsAlive
+                ? new Color(0f, 0f, 0f, 0.28f)
+                : new Color(0.12f, 0.12f, 0.12f, 0.20f));
+
+        var pose = ResolveBodyPose();
+        _visualRoot.localPosition = pose.position;
+        _visualRoot.localScale = pose.scale;
+        _visualRoot.localRotation = pose.rotation;
+
+        UpdateFocusTelegraphs();
+        UpdateSelectedTelegraphs();
+        UpdateFloatingText();
+    }
+
+    private (Vector3 position, Vector3 scale, Quaternion rotation) ResolveBodyPose()
+    {
+        var scale = _currentState.IsAlive ? Vector3.one : new Vector3(1.08f, 0.46f, 1.18f);
+        var position = Vector3.zero;
+
+        if (_currentState.IsAlive)
+        {
+            if (_currentState.IsDefending)
+            {
+                scale = new Vector3(1.08f, 0.92f, 1.18f);
+                position += new Vector3(0f, -0.08f, 0f);
+            }
+            else if (_currentState.ActionState is CombatActionState.Reposition or CombatActionState.AdvanceToAnchor or CombatActionState.BreakContact)
+            {
+                scale = new Vector3(0.96f, 1.02f, 1.10f);
+                position += new Vector3(0f, -0.04f, -0.08f);
+            }
+        }
+
+        if (_currentState.ActionState == CombatActionState.ExecuteAction)
+        {
+            var windup = Mathf.Clamp01(_currentState.WindupProgress);
+            position += new Vector3(0f, 0f, Mathf.Lerp(-0.20f, -0.06f, windup));
+            scale = Vector3.Lerp(scale, new Vector3(1.06f, 0.94f, 1.12f), 0.45f);
+        }
+
+        if (_actionCueTimer > 0f && _actionCueDuration > 0f)
+        {
+            var cueProgress = 1f - (_actionCueTimer / _actionCueDuration);
+            var lunge = Mathf.Sin(cueProgress * Mathf.PI) * ResolveLungeDistance();
+            var lift = _activeSemantic == BattleActionSemantic.HealSupport ? Mathf.Sin(cueProgress * Mathf.PI) * 0.12f : 0f;
+            position += new Vector3(0f, lift, lunge);
+        }
+
+        if (_impactCueTimer > 0f && _impactCueDuration > 0f)
+        {
+            var impact = Mathf.Sin((1f - (_impactCueTimer / _impactCueDuration)) * Mathf.PI) * 0.14f;
+            position += new Vector3(0f, 0f, -impact);
+            scale = Vector3.Lerp(scale, new Vector3(1.05f, 0.92f, 1.06f), impact);
+        }
+
+        var rotation = ResolveFacingRotation();
+        if (!_currentState.IsAlive)
+        {
+            rotation *= Quaternion.Euler(0f, 0f, 78f);
+            position += new Vector3(0f, -0.34f, 0f);
+        }
+
+        return (position, scale, rotation);
+    }
+
+    private Quaternion ResolveFacingRotation()
+    {
+        var fallbackDirection = _currentState.Side == TeamSide.Ally ? Vector3.right : Vector3.left;
+        var targetWorld = _focusTargetWorld ?? (Vector3?)null;
+        var direction = targetWorld.HasValue
+            ? targetWorld.Value - transform.position
+            : fallbackDirection;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.001f)
+        {
+            direction = fallbackDirection;
+        }
+
+        return Quaternion.LookRotation(direction.normalized, Vector3.up);
+    }
+
+    private void UpdateFocusTelegraphs()
+    {
+        UpdateDisc(_feetRingRenderer, _isCurrentActor || _isSelected, transform.position, GroundPlaneY, _isCurrentActor
+            ? ResolveSemanticColor(ResolveCurrentSemantic())
+            : new Color(0.42f, 0.76f, 1f, 1f), _isCurrentActor ? 1.48f : 1.30f);
+
+        var windupVisible = _isCurrentActor && _currentState.ActionState == CombatActionState.ExecuteAction;
+        var windupScale = Mathf.Lerp(0.45f, 1.18f, Mathf.Clamp01(_currentState.WindupProgress));
+        UpdateDisc(_windupRingRenderer, windupVisible, transform.position, GroundPlaneY + 0.01f, ResolveSemanticColor(ResolveCurrentSemantic()), windupScale);
+
+        UpdateDisc(_targetReticleRenderer, _isCurrentTarget, transform.position, GroundPlaneY + 0.01f, new Color(1f, 0.56f, 0.28f, 1f), 1.38f);
+
+        var showFocusLine = (_isCurrentActor || _isSelected) && _focusTargetWorld.HasValue;
+        _focusLineRenderer.enabled = showFocusLine;
+        if (showFocusLine)
+        {
+            _focusLineRenderer.positionCount = 2;
+            _focusLineRenderer.SetPosition(0, GetAnchorWorld(BattlePresentationAnchorId.Cast));
+            _focusLineRenderer.SetPosition(1, _focusTargetWorld!.Value + Vector3.up * 0.22f);
+            var color = _isCurrentActor
+                ? ResolveSemanticColor(ResolveCurrentSemantic())
+                : new Color(0.55f, 0.78f, 1f, 0.88f);
+            _focusLineRenderer.startWidth = _isCurrentActor ? 0.085f : 0.055f;
+            _focusLineRenderer.endWidth = _isCurrentActor ? 0.045f : 0.03f;
+            _focusLineRenderer.startColor = color;
+            _focusLineRenderer.endColor = new Color(color.r, color.g, color.b, 0.36f);
+        }
+    }
+
+    private void UpdateSelectedTelegraphs()
+    {
+        var homeWorld = ToWorldPosition(BattleFactory.ResolveAnchorPosition(_currentState.Side, _currentState.Anchor));
+        UpdateDisc(_homeAnchorRenderer, _isSelected, homeWorld, GroundPlaneY + 0.005f, new Color(0.86f, 0.94f, 1f, 1f), 1.06f);
+
+        var shouldShowTether = _isSelected
+                               && (_currentState.ActionState is CombatActionState.Reposition or CombatActionState.AdvanceToAnchor or CombatActionState.BreakContact
+                                   || Vector3.Distance(homeWorld, transform.position) > 0.42f);
+        _homeTetherRenderer.enabled = shouldShowTether;
+        if (shouldShowTether)
+        {
+            _homeTetherRenderer.positionCount = 2;
+            _homeTetherRenderer.SetPosition(0, GetAnchorWorld(BattlePresentationAnchorId.Feet));
+            _homeTetherRenderer.SetPosition(1, homeWorld + Vector3.up * 0.02f);
+        }
+
+        var showRange = _isSelected && _currentState.PreferredRangeMax > 0.05f;
+        var rangeDiameter = Mathf.Max(0.5f, _currentState.PreferredRangeMax * 2f);
+        var innerDiameter = Mathf.Max(0.2f, _currentState.PreferredRangeMin * 2f);
+        UpdateDisc(_rangeOuterRenderer, showRange, transform.position, GroundPlaneY, new Color(0.40f, 0.66f, 0.92f, 1f), rangeDiameter);
+        UpdateDisc(_rangeInnerRenderer, showRange && innerDiameter > 0.21f, transform.position, GroundPlaneY + 0.002f, new Color(0.08f, 0.12f, 0.18f, 1f), innerDiameter);
+
+        var showGuard = _isSelected && _currentState.FrontlineGuardRadius > 0.05f && (_currentState.IsDefending || _currentState.ActionState == CombatActionState.Recover);
+        UpdateDisc(_guardRadiusRenderer, showGuard, transform.position, GroundPlaneY - 0.002f, ResolveSemanticColor(BattleActionSemantic.DefendHold), _currentState.FrontlineGuardRadius * 2f);
+
+        var showCluster = _isSelected && _currentState.ClusterRadius > 0.05f && _focusTargetWorld.HasValue;
+        UpdateDisc(_clusterRadiusRenderer, showCluster, _focusTargetWorld ?? transform.position, GroundPlaneY - 0.004f, new Color(0.90f, 0.42f, 0.28f, 1f), _currentState.ClusterRadius * 2f);
+
+        var showSlots = _isSelected && _focusTargetWorld.HasValue && _currentState.EngagementSlotCount > 0 && _currentState.EngagementSlotRadius > 0.05f;
+        for (var i = 0; i < _slotMarkerRenderers.Count; i++)
+        {
+            var renderer = _slotMarkerRenderers[i];
+            var active = showSlots && i < _currentState.EngagementSlotCount;
+            renderer.gameObject.SetActive(active);
+            if (!active)
+            {
+                continue;
+            }
+
+            var angle = (_currentState.EngagementSlotCount == 1 ? 0f : (160f / (_currentState.EngagementSlotCount - 1)) * i) - 80f;
+            var offset = Quaternion.Euler(0f, angle, 0f) * Vector3.forward * _currentState.EngagementSlotRadius;
+            renderer.transform.position = _focusTargetWorld!.Value + new Vector3(offset.x, GroundPlaneY + 0.012f, offset.z);
+        }
+    }
+
+    private void UpdateFloatingText()
+    {
+        if (_floatingText == null)
+        {
+            return;
+        }
+
+        if (_floatingTimer <= 0f || _floatingDuration <= 0f || !_options.ShowDamageText)
+        {
+            _floatingText.text = string.Empty;
+            _floatingText.color = Color.clear;
+            return;
+        }
+
+        var progress = 1f - (_floatingTimer / _floatingDuration);
+        _floatingText.text = _floatingMessage;
+        _floatingText.rectTransform.anchoredPosition = Vector2.Lerp(new Vector2(0f, 8f), new Vector2(0f, 44f), progress);
+        _floatingText.color = new Color(_floatingColor.r, _floatingColor.g, _floatingColor.b, 1f - progress);
+    }
+
+    private void StartActionCue(BattleActionSemantic semantic, float duration, Color color, Vector3? relatedWorld)
+    {
+        _activeSemantic = semantic;
+        _actionCueTimer = duration;
+        _actionCueDuration = duration;
+        _accentColor = color;
+        _accentTimer = duration;
+        _accentDuration = duration;
+        if (relatedWorld.HasValue)
+        {
+            _focusTargetWorld = relatedWorld;
+        }
+    }
+
+    private void StartImpactCue(float duration, Color color, string floatingText)
+    {
+        _impactCueTimer = duration;
+        _impactCueDuration = duration;
+        _impactColor = color;
+
+        if (_options.ShowDamageText)
+        {
+            _floatingTimer = duration * 1.45f;
+            _floatingDuration = _floatingTimer;
+            _floatingMessage = floatingText;
+            _floatingColor = color;
+        }
+    }
+
+    private string BuildStatusLine(BattleUnitReadModel actor)
+    {
+        return BattleReadabilityFormatter.BuildPlayerFacingState(actor);
     }
 
     private void CreateVisualRoot(BattleUnitReadModel actor)
@@ -269,6 +670,11 @@ public sealed class BattleActorView : MonoBehaviour
         var visualGo = new GameObject("VisualRoot");
         visualGo.transform.SetParent(transform, false);
         _visualRoot = visualGo.transform;
+
+        var castAnchorGo = new GameObject("CastAnchor");
+        castAnchorGo.transform.SetParent(_visualRoot, false);
+        castAnchorGo.transform.localPosition = new Vector3(0f, 0.22f, 0.72f);
+        _castAnchor = castAnchorGo.transform;
 
         var shadow = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         shadow.name = "GroundShadow";
@@ -294,10 +700,39 @@ public sealed class BattleActorView : MonoBehaviour
 
     private void CreateHeadAnchor(BattleUnitReadModel actor)
     {
+        var centerAnchorGo = new GameObject("CenterAnchor");
+        centerAnchorGo.transform.SetParent(transform, false);
+        centerAnchorGo.transform.localPosition = new Vector3(0f, 0.10f, 0f);
+        _centerAnchor = centerAnchorGo.transform;
+
         var headAnchorGo = new GameObject("HeadAnchor");
         headAnchorGo.transform.SetParent(transform, false);
         headAnchorGo.transform.localPosition = new Vector3(0f, Mathf.Max(1.2f, actor.HeadAnchorHeight), 0f);
         _headAnchor = headAnchorGo.transform;
+    }
+
+    private void CreateTelegraphRoot()
+    {
+        _feetRingRenderer = CreateDisc("FeetRing", new Color(0.48f, 0.80f, 1f, 1f), 1.3f);
+        _targetReticleRenderer = CreateDisc("TargetReticle", new Color(1f, 0.52f, 0.26f, 1f), 1.35f);
+        _windupRingRenderer = CreateDisc("WindupRing", new Color(1f, 0.82f, 0.30f, 1f), 0.85f);
+        _homeAnchorRenderer = CreateDisc("HomeAnchor", new Color(0.86f, 0.94f, 1f, 1f), 1.0f);
+        _rangeOuterRenderer = CreateDisc("RangeOuter", new Color(0.40f, 0.66f, 0.92f, 1f), 2.2f);
+        _rangeInnerRenderer = CreateDisc("RangeInner", new Color(0.08f, 0.12f, 0.18f, 1f), 1.0f);
+        _guardRadiusRenderer = CreateDisc("GuardRadius", ResolveSemanticColor(BattleActionSemantic.DefendHold), 1.8f);
+        _clusterRadiusRenderer = CreateDisc("ClusterRadius", new Color(0.90f, 0.42f, 0.28f, 1f), 1.6f);
+
+        _focusLineRenderer = CreateLine("FocusLine", 0.06f);
+        _homeTetherRenderer = CreateLine("HomeTether", 0.045f);
+        _homeTetherRenderer.startColor = new Color(0.78f, 0.90f, 1f, 0.75f);
+        _homeTetherRenderer.endColor = new Color(0.78f, 0.90f, 1f, 0.25f);
+
+        var slotRoot = new GameObject("SlotMarkers");
+        slotRoot.transform.SetParent(transform, false);
+        for (var i = 0; i < 6; i++)
+        {
+            _slotMarkerRenderers.Add(CreateDisc($"SlotMarker_{i}", new Color(1f, 0.84f, 0.44f, 1f), 0.22f, slotRoot.transform));
+        }
     }
 
     private void CreateWorldInfo()
@@ -573,6 +1008,63 @@ public sealed class BattleActorView : MonoBehaviour
         routine = StartCoroutine(next);
     }
 
+    private Renderer CreateDisc(string name, Color color, float diameter)
+    {
+        return CreateDisc(name, color, diameter, transform);
+    }
+
+    private Renderer CreateDisc(string name, Color color, float diameter, Transform parent)
+    {
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        go.name = name;
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = new Vector3(0f, GroundPlaneY, 0f);
+        go.transform.localScale = new Vector3(diameter, TelegraphDiscThickness, diameter);
+        RemoveCollider(go);
+
+        var renderer = go.GetComponent<Renderer>();
+        renderer.sharedMaterial = BattlePresentationMaterialFactory.Create(color);
+        go.SetActive(false);
+        return renderer;
+    }
+
+    private LineRenderer CreateLine(string name, float width)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(transform, false);
+        var line = go.AddComponent<LineRenderer>();
+        line.positionCount = 2;
+        line.material = BattlePresentationMaterialFactory.Create(Color.white);
+        line.useWorldSpace = true;
+        line.loop = false;
+        line.alignment = LineAlignment.View;
+        line.numCapVertices = 4;
+        line.textureMode = LineTextureMode.Stretch;
+        line.startWidth = width;
+        line.endWidth = width * 0.55f;
+        line.enabled = false;
+        return line;
+    }
+
+    private void UpdateDisc(Renderer renderer, bool isVisible, Vector3 worldPosition, float worldY, Color color, float diameter)
+    {
+        if (renderer == null)
+        {
+            return;
+        }
+
+        renderer.gameObject.SetActive(isVisible);
+        if (!isVisible)
+        {
+            return;
+        }
+
+        var boost = 0.12f * _readabilityBoost;
+        BattlePresentationMaterialFactory.ApplyColor(renderer.material, color + new Color(boost, boost, boost, 0f));
+        renderer.transform.position = new Vector3(worldPosition.x, worldY, worldPosition.z);
+        renderer.transform.localScale = new Vector3(Mathf.Max(0.08f, diameter), TelegraphDiscThickness, Mathf.Max(0.08f, diameter));
+    }
+
     private static TextMesh CreateWorldText(Transform parent, string name, Font font, Vector3 localPosition, Color color, int fontSize, float characterSize)
     {
         var go = new GameObject(name);
@@ -630,6 +1122,51 @@ public sealed class BattleActorView : MonoBehaviour
         }
     }
 
+    private float ResolveLungeDistance()
+    {
+        return ResolveCurrentSemantic() switch
+        {
+            BattleActionSemantic.BasicAttack => 0.34f,
+            BattleActionSemantic.DamagingSkill => 0.24f,
+            BattleActionSemantic.HealSupport => 0.16f,
+            _ => 0.18f,
+        };
+    }
+
+    private BattleActionSemantic ResolveCurrentSemantic()
+    {
+        return _activeSemantic != BattleActionSemantic.None
+            ? _activeSemantic
+            : BattleReadabilityFormatter.ResolveSemantic(_currentState);
+    }
+
+    private static BattleActionSemantic ResolveCueSemantic(BattlePresentationCue cue)
+    {
+        return cue.CueType switch
+        {
+            BattlePresentationCueType.ActionCommitBasic => BattleActionSemantic.BasicAttack,
+            BattlePresentationCueType.ActionCommitSkill => BattleActionSemantic.DamagingSkill,
+            BattlePresentationCueType.ActionCommitHeal => BattleActionSemantic.HealSupport,
+            BattlePresentationCueType.GuardEnter => BattleActionSemantic.DefendHold,
+            BattlePresentationCueType.RepositionStart => BattleActionSemantic.Reposition,
+            _ when cue.ActionType == BattleActionType.ActiveSkill => BattleActionSemantic.DamagingSkill,
+            _ when cue.ActionType == BattleActionType.BasicAttack => BattleActionSemantic.BasicAttack,
+            _ when cue.ActionType == BattleActionType.WaitDefend => BattleActionSemantic.DefendHold,
+            _ => BattleActionSemantic.None
+        };
+    }
+
+    private static float EvaluatePulse(float timer, float duration)
+    {
+        if (duration <= 0f)
+        {
+            return 0f;
+        }
+
+        var progress = 1f - Mathf.Clamp01(timer / duration);
+        return Mathf.Sin(progress * Mathf.PI);
+    }
+
     private static Color ResolveHealthColor(float ratio, bool isAlive, TeamSide side)
     {
         if (!isAlive)
@@ -640,6 +1177,20 @@ public sealed class BattleActorView : MonoBehaviour
         return side == TeamSide.Ally
             ? new Color(0.30f, 0.82f, 0.38f, 1f)
             : new Color(0.82f, 0.22f, 0.22f, 1f);
+    }
+
+    private static Color ResolveSemanticColor(BattleActionSemantic semantic)
+    {
+        return semantic switch
+        {
+            BattleActionSemantic.BasicAttack => new Color(1f, 0.82f, 0.28f, 1f),
+            BattleActionSemantic.DamagingSkill => new Color(1f, 0.58f, 0.22f, 1f),
+            BattleActionSemantic.HealSupport => new Color(0.42f, 1f, 0.60f, 1f),
+            BattleActionSemantic.DefendHold => new Color(0.34f, 0.76f, 1f, 1f),
+            BattleActionSemantic.Reposition => new Color(0.84f, 0.86f, 1f, 1f),
+            BattleActionSemantic.Down => new Color(0.62f, 0.62f, 0.62f, 1f),
+            _ => Color.white,
+        };
     }
 
     private static Color ResolveBaseColor(BattleUnitReadModel actor)
@@ -653,6 +1204,27 @@ public sealed class BattleActorView : MonoBehaviour
 
     private Color ResolveRestColor(BattleUnitReadModel actor)
     {
-        return actor.IsAlive ? _baseColor : Color.Lerp(_baseColor, Color.gray, 0.82f);
+        if (!actor.IsAlive)
+        {
+            return Color.Lerp(_baseColor, Color.gray, 0.82f);
+        }
+
+        var color = _baseColor;
+        if (_isSelected)
+        {
+            color = Color.Lerp(color, new Color(0.78f, 0.90f, 1f, 1f), 0.16f);
+        }
+
+        if (_isCurrentActor)
+        {
+            color = Color.Lerp(color, ResolveSemanticColor(ResolveCurrentSemantic()), 0.26f);
+        }
+
+        if (actor.IsDefending)
+        {
+            color = Color.Lerp(color, ResolveSemanticColor(BattleActionSemantic.DefendHold), 0.18f);
+        }
+
+        return color;
     }
 }

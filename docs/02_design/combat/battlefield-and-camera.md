@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-05
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/combat/battlefield-and-camera.md`
 - 관련문서:
   - `docs/02_design/combat/deployment-and-anchors.md`
@@ -37,7 +37,7 @@
 - 카메라는 약한 사선 구도를 유지한다.
 - 화면 하나에서 양 팀, 체력바, 현재 타깃, windup 상태를 동시에 읽을 수 있어야 한다.
 - 전투 중 카메라는 유닛 하나를 과하게 따라가지 않는다.
-- 현재 Battle scene prototype은 고정 카메라에 가까운 slanted view를 사용한다.
+- 현재 Battle scene prototype은 manual observer 카메라를 유지하되, suggested framing만 추가한다.
 
 ## 카메라 제어
 
@@ -47,7 +47,7 @@
 ### 입력 매핑
 
 | 입력 | 동작 |
-|------|------|
+| --- | --- |
 | 우클릭 드래그 / 중버튼 드래그 | 카메라 패닝 |
 | 휠 스크롤 | 줌 인/아웃 |
 | WASD / 방향키 | 키보드 패닝 |
@@ -65,11 +65,21 @@
 - 줌 시 커서 방향으로 약간 이동한다 (zoom-to-cursor).
 - `SmoothDamp`로 부드러운 전환을 유지한다.
 
-### 유닛 클릭 선택 (미래)
+### suggested framing
 
-- 좌클릭은 유닛 선택용으로 예약한다.
-- `BattleCameraController.IsDragging`으로 클릭/드래그를 구분한다.
-- 카메라 컨트롤러가 `Camera` 참조를 노출하여 레이캐스트를 가능하게 한다.
+- `Bootstrap`: 전투 시작 / replay-to-zero 직후 alive unit bounds + deployment anchor union을 한 번 fit한다.
+- `Passive`: manual input이 일정 시간 없을 때만 alive unit envelope를 천천히 recenter / refit한다.
+- `ManualHold`: pan / zoom / drag / keyboard input 후 `3초` 동안 자동 보정을 멈춘다.
+- suggested frame는 `BattleScreenController`가 계산하고 `BattleCameraController`가 수용한다.
+- single-target follow, cinematic cut, screen shake는 금지한다.
+
+### 유닛 클릭 선택
+
+- normal lane에서 좌클릭 actor pick을 허용한다.
+- 선택은 camera drag와 구분되어야 하며, blocking UI 위 포인터에서는 동작하지 않는다.
+
+- `BattleCameraController.IsDragging`과 UI block predicate로 클릭/드래그를 구분한다.
+- 선택은 world collider보다 presentation pick(radius 기반 head anchor screen distance)에 의존해도 된다.
 
 ## 비목표
 
@@ -82,5 +92,6 @@
 
 - Battle scene은 capsule actor를 사용한다.
 - 카메라는 `BattleCameraController`가 초기화하고, 없으면 fallback으로 직접 설정한다.
-- 읽기 쉬움이 깨지지 않는 선에서만 위치 보간과 간단한 충돌 회피를 사용한다.
+- anchor plate / lane guide 같은 readability surface를 전장 장식과 분리한다.
+- selected unit의 home anchor 의미는 전투 시작 직후 사라지지 않아야 한다.
 - 전장 가독성 예산은 `docs/02_design/combat/combat-readability.md`를 따른다.

@@ -53,23 +53,34 @@
 }
 
 .battle-screen .battle-shell__center {
-    width: 480px;
+    width: 560px;
 }
 
 .battle-screen .battle-shell__side {
-    width: 260px;
+    width: 272px;
 }
 
 .battle-screen .battle-shell__selected-unit {
     margin-bottom: 12px;
-    min-height: 184px;
+    min-height: 248px;
 }
 
 .battle-screen .battle-shell__selected-body {
     white-space: normal;
     unity-text-align: upper-left;
+    font-size: 13px;
+    line-height: 18px;
 }
 
 .battle-screen .panel {
     background-color: rgba(20, 27, 40, 0.74);
+}
+
+.battle-screen .battle-shell__status {
+    white-space: normal;
+}
+
+.battle-screen .action-row {
+    flex-wrap: wrap;
+    row-gap: 8px;
 }

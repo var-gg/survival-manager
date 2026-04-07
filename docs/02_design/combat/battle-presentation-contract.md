@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-06
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/combat/battle-presentation-contract.md`
 - 관련문서:
   - `docs/02_design/combat/combat-readability.md`
@@ -20,15 +20,33 @@ prototype 전투에서 아트 유무와 무관하게 읽히는 머리 위 정보
 - `HeadAnchor`는 actor root 아래의 authored 또는 runtime-generated anchor다.
 - nameplate, health bar, floating combat text는 actor 회전, pitch, roll을 상속하지 않는다.
 - 발밑 ring, AOE telegraph, 범위 preview만 world-space를 사용한다.
+- normal playable lane은 `current actor + current target + selected unit` 중심으로만 정보를 올린다.
+- debug lane(F3)은 같은 truth를 더 많이 보여줄 뿐, 다른 계산을 만들지 않는다.
 
 ## 표시 구성
 
 - nameplate: actor 이름만 표시한다.
 - health bar: screen-space bar로 표시한다.
-- action/state line:
-  `Acquire`, `Approach`, `Secure`, `Action`, `Break`, `Recover`,
-  `Reposition` 같은 현재 phase를 짧게 노출한다.
+- action/state line: `Windup`, `Basic Attack`, `Skill`, `Heal`, `Guarding`, `Repositioning`, `Recovering`, `Down` 같은 player-facing verb만 노출한다.
 - floating combat text: heal/damage만 표시하고, debug raw string은 금지한다.
+
+## normal lane telegraph
+
+- 항상 표시:
+  - current actor feet ring
+  - current target reticle
+  - current actor source -> target line
+  - current actor windup progress ring
+- selected unit일 때만 추가:
+  - home anchor marker
+  - home anchor tether
+  - preferred range band
+  - target slot markers
+  - guard radius / cluster radius (값이 있고 의미가 있을 때만)
+- F3 debug에서만 유지:
+  - 모든 actor target line
+  - raw selector / fallback / retarget state
+  - full anchor / radius / slot truth
 
 ## 가시성 규칙
 
@@ -47,7 +65,13 @@ prototype 전투에서 아트 유무와 무관하게 읽히는 머리 위 정보
 
 - floating combat text는 actor-local effect가 아니라
   presenter-owned overlay element로 본다.
-- 현재 구현은 경량 coroutine 기반이지만, contract상 poolable widget으로 취급한다.
+- 현재 구현은 playback-locked transient timer를 쓰더라도, contract상 poolable widget으로 취급한다.
+
+## reset / seek 규칙
+
+- seek/replay-reset 시 presentation은 snapshot만 복원한다.
+- hit flash, impact pulse, floating text, source lunge는 seek 때문에 재생되면 안 된다.
+- x2/x4 speed에서도 transient 길이는 real-time coroutine이 아니라 playback state를 따른다.
 
 ## acceptance
 

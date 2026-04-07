@@ -96,20 +96,24 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
             var state = presenter.BuildState(
                 step,
                 recentLogs,
+                decisiveTimeline: new List<string>(),
                 totalEventCount: recentLogs.Count,
                 isPaused: false,
                 playbackSpeed: 2f,
                 isBattleFinished: false,
                 showSettings: true,
                 progressNormalized: 0.25f,
-                settingsStatusText: string.Empty);
+                settingsStatusText: string.Empty,
+                canReplay: true,
+                canRebattle: false);
 
-            Assert.That(state.LogText, Does.Contain("dealt"));
+            Assert.That(state.LogText, Does.Contain("hit"));
             Assert.That(state.LogText.Contains("combat.log.damage"), Is.False);
             Assert.That(state.SpeedText, Is.EqualTo("Speed x2"));
             Assert.That(state.StatusText.Contains("ui.battle.status"), Is.False);
             Assert.That(state.Settings.TeamSummaryLabel, Does.Contain("Team Summary"));
             Assert.That(state.Settings.IsVisible, Is.True);
+            Assert.That(state.AllyHpText, Does.Contain("Allies 1/1"));
         }
         finally
         {
@@ -130,28 +134,35 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
             var finishedState = presenter.BuildState(
                 CreateBattleStep(),
                 recentLogs: new List<BattleEvent>(),
+                decisiveTimeline: new List<string>(),
                 totalEventCount: 0,
                 isPaused: false,
                 playbackSpeed: 1f,
                 isBattleFinished: true,
                 showSettings: false,
                 progressNormalized: 1f,
-                settingsStatusText: string.Empty);
+                settingsStatusText: string.Empty,
+                canReplay: true,
+                canRebattle: false);
 
             Assert.That(finishedState.CanRebattle, Is.False);
+            Assert.That(finishedState.CanReplay, Is.True);
             Assert.That(finishedState.CanReturnTownDirect, Is.False);
 
             session.PrepareQuickBattleSmoke();
             finishedState = presenter.BuildState(
                 CreateBattleStep(),
                 recentLogs: new List<BattleEvent>(),
+                decisiveTimeline: new List<string>(),
                 totalEventCount: 0,
                 isPaused: false,
                 playbackSpeed: 1f,
                 isBattleFinished: true,
                 showSettings: false,
                 progressNormalized: 1f,
-                settingsStatusText: string.Empty);
+                settingsStatusText: string.Empty,
+                canReplay: true,
+                canRebattle: true);
 
             Assert.That(finishedState.CanRebattle, Is.True);
             Assert.That(finishedState.CanReturnTownDirect, Is.True);

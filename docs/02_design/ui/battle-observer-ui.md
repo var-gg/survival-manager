@@ -1,7 +1,7 @@
 # Battle Observer UI
 
 - 상태: active
-- 최종수정일: 2026-04-06
+- 최종수정일: 2026-04-07
 - 단계: prototype
 
 ## source-of-truth note
@@ -15,15 +15,18 @@
 ## 현재 표현 범위
 
 - battle shell은 `RuntimePanelHost + UITK` 기준으로 렌더
-- 좌측 아군 4슬롯, 우측 적 4슬롯 고정 배치
+- 좌측 아군 / 우측 적 observer 레이아웃
 - capsule primitive actor
 - actor 머리 위 screen-space overhead UI
-- overhead UI / damage text / 팀 HP summary는 settings panel에서 ON/OFF
-- 최근 로그 8줄
-- tick / current action / speed / pause 상태 텍스트
+- overhead UI / damage text / 팀 summary는 settings panel에서 ON/OFF
+- team summary는 per-unit dump가 아니라 aggregate(`alive/total | current/max HP`)다
+- 최근 로그는 내부적으로 더 유지해도 normal lane 표시는 compact 5줄 기준이다
+- status headline은 `Step 042 | Rowan Skill -> Ghoul Brute | Allies pressing` 수준의 한 줄 요약을 우선한다
 - 타임라인 스크러버 (UITK progress track)
+- explicit `Replay` 버튼
 - settings 버튼 + battle view settings panel
 - continue 버튼
+- selected tactical card
 
 ## 타임라인 플레이백
 
@@ -31,7 +34,9 @@
 - 스크러버 드래그로 임의 시점 탐색이 가능하다.
 - 뒤로 탐색은 녹화된 스텝 인덱싱으로 즉시 수행한다.
 - 앞으로 탐색은 시뮬레이터를 추가 진행하여 스텝을 채운다.
-- 전투 종료 후 리플레이: 스크러버로 시작점에서 재생. 새 전투(rebattle)와는 별개 기능이다.
+- `Replay`: 같은 recorded timeline rewind.
+- `Rebattle`: 새 seed로 새 timeline 생성.
+- `RestartSameSeed`: debug/dev shortcut으로 유지.
 
 ### 플레이백 모드
 
@@ -44,12 +49,13 @@
 
 ## 행동 피드백
 
-- basic attack: anticipation -> 짧은 lunge -> impact hold -> 복귀
-- damage: red flash + hit jolt + floating text
-- heal: green pulse + floating text
-- defend: blue pulse
-- death: gray tint + scale down
-- 현재 행동 actor는 ground shadow / overlay tint로 강조된다.
+- basic attack: 짧은 lunge + current target line
+- damaging skill: stronger source accent + target line
+- heal/support: green source/target pulse
+- defend/hold: guard posture + guard surface
+- reposition: home tether + 이동 lean
+- death/down: gray collapse
+- current actor / current target / selected unit surface가 normal lane의 핵심이며, full telemetry는 F3 debug에 남긴다.
 
 ## 비목표
 
@@ -61,7 +67,7 @@
 ## 운영 메모
 
 - scene installer가 `BattleRuntimeRoot`, `BattleRuntimePanelHost`, `BattlePresentationRoot`, `BattleStageRoot`, `ActorOverlayCanvas`, `ActorOverlayRoot`, `BattleCameraRoot`를 만든다.
-- `PauseButton`, `SettingsButton`, `SettingsPanel`, `ProgressFill` 같은 화면 요소 이름 계약은 `BattleScreen.uxml`에 저장된다.
-- actor-follow overhead UI와 floating text는 1차에서 기존 `BattleActorView` 경로를 유지한다.
+- `PauseButton`, `ReplayButton`, `RebattleButton`, `SettingsPanel`, `ProgressFill` 같은 화면 요소 이름 계약은 `BattleScreen.uxml`에 저장된다.
+- selected unit은 `Tab` cycle과 좌클릭 pick 둘 다 허용한다.
 - Quick Battle smoke는 Expedition 진행도를 건드리지 않고 Battle observer만 빠르게 확인한다.
 - observer readability는 polished animation보다 상태 추적 가능성을 우선한다.

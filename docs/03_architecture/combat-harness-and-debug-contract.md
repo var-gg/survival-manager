@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/03_architecture/combat-harness-and-debug-contract.md`
 - 관련문서:
   - `docs/03_architecture/editor-sandbox-tooling.md`
@@ -42,6 +42,23 @@
 - AoE cluster radius
 - entity kind
 
+## normal lane vs debug lane
+
+- normal playable lane(F3 off):
+  - current actor ring
+  - current target reticle
+  - current actor source -> target line
+  - selected tactical card
+  - selected-only range / slot / tether / guard surface
+- debug smoke lane(F3 on):
+  - 모든 actor target line
+  - raw selector / fallback / retarget lock
+  - full anchor / radius / slot / cluster truth
+  - OnGUI inspector overlay
+
+- harness는 두 lane이 서로 다른 결과를 말하지 않는지 확인해야 한다.
+- normal lane이 전투 의미 이해를 위해 debug overlay에 의존하면 실패다.
+
 ## acceptance
 
 - authority / summon-chain invalid content가 import 단계에서 실패한다.
@@ -51,6 +68,8 @@
 - summon kill은 mirrored owner credit를 남기되 owner energy와 generic on-kill proc를 주지 않는다.
 - direct ally heal은 summon을 기본 target으로 삼지 않고 team aura는 summon을 포함한다.
 - `ui.battle.*` missing key가 0건이다.
+- seek/reset/replay 시 floating text, hit flash, impact cue가 재발화하지 않는다.
+- x2/x4 speed에서도 transient cue가 smear되지 않는다.
 
 ## known non-goals
 

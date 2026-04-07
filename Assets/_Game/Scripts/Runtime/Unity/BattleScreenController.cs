@@ -28,6 +28,7 @@ public sealed class BattleScreenController : MonoBehaviour
     private readonly List<BattleEvent> _recentLogs = new();
     private readonly List<string> _decisiveTimeline = new();
     private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
+    private readonly BattleCameraFramingPolicy _cameraFramingPolicy = new();
     private string _selectedUnitId = string.Empty;
     private string _settingsStatusText = string.Empty;
     private GameSessionRoot _root = null!;
@@ -135,7 +136,7 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             _totalEventCount += currentStep.Events.Count;
             TrackDecisiveEvents(currentStep);
-            presentationController.PushStep(previousStep, currentStep);
+            presentationController.AdvanceStep(previousStep, currentStep);
             RefreshHud(currentStep);
 
             if (currentStep.IsFinished && !_battleFinishedHandled)
@@ -145,7 +146,12 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         presentationController.SetBlend(previousStep, currentStep, alpha);
+        presentationController.SetFocus(currentStep, _selectedUnitId);
+        presentationController.TickTransients(Time.deltaTime, _timeline.PlaybackSpeed, _timeline.IsPaused);
+        ApplyPassiveCameraFrame(currentStep);
         _view?.SetProgress(_timeline.NormalizedProgress);
+
+        HandlePointerSelection(currentStep);
 
         if (_presentationOptions.ShowDebugOverlay)
         {
@@ -171,6 +177,17 @@ public sealed class BattleScreenController : MonoBehaviour
         RefreshAfterSeek();
     }
 
+    public void ReplayRecordedTimeline()
+    {
+        if (_timeline == null || !_policy.CanReplay(_timeline.IsFinished))
+        {
+            return;
+        }
+
+        _timeline.SeekToStep(0);
+        RefreshAfterSeek(BattlePresentationCueType.PlaybackReset, bootstrapCamera: true);
+    }
+
     public void RebattleNewSeed()
     {
         if (!EnsureReady())
@@ -189,11 +206,6 @@ public sealed class BattleScreenController : MonoBehaviour
         _root.SaveProfile();
         RenderLoadingState();
         RunBattle();
-
-        if (cameraController != null)
-        {
-            cameraController.ResetToDefault();
-        }
     }
 
     public void ReturnToTownDirect()
@@ -234,6 +246,7 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         _timeline.TogglePause();
+        presentationController.TickTransients(0f, _timeline.PlaybackSpeed, _timeline.IsPaused);
         RenderCurrentState();
     }
 
@@ -330,7 +343,7 @@ public sealed class BattleScreenController : MonoBehaviour
         }
     }
 
-    private void RefreshAfterSeek()
+    private void RefreshAfterSeek(BattlePresentationCueType resetReason = BattlePresentationCueType.SeekSnapshotApplied, bool bootstrapCamera = false)
     {
         if (_timeline == null)
         {
@@ -344,10 +357,16 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
-        presentationController.PushStep(previousStep, currentStep);
-        presentationController.SetBlend(previousStep, currentStep, 1f);
+        presentationController.ClearTransients(resetReason);
+        presentationController.RenderSnapshot(currentStep);
+        presentationController.SetFocus(currentStep, _selectedUnitId);
         _view?.SetProgress(_timeline.NormalizedProgress);
         RefreshHud(currentStep);
+
+        if (bootstrapCamera)
+        {
+            ApplyBootstrapCameraFrame(currentStep);
+        }
     }
 
     private void RestartSameSeed()
@@ -376,12 +395,10 @@ public sealed class BattleScreenController : MonoBehaviour
         _settingsStatusText = string.Empty;
         presentationController.Initialize(_simulator.CurrentStep);
         presentationController.ApplyOptions(_presentationOptions);
+        EnsureSelectedUnit(_simulator.CurrentStep);
+        presentationController.SetFocus(_simulator.CurrentStep, _selectedUnitId);
         RenderCurrentState(_simulator.CurrentStep);
-
-        if (cameraController != null)
-        {
-            cameraController.ResetToDefault();
-        }
+        ApplyBootstrapCameraFrame(_simulator.CurrentStep);
     }
 
     private void CycleSelectedUnit()
@@ -465,6 +482,7 @@ public sealed class BattleScreenController : MonoBehaviour
             SetSpeed4,
             TogglePause,
             ContinueToReward,
+            ReplayRecordedTimeline,
             RebattleNewSeed,
             ReturnToTownDirect,
             ToggleSettingsPanel,
@@ -541,6 +559,7 @@ public sealed class BattleScreenController : MonoBehaviour
         var state = _presenter!.BuildState(
             currentStep,
             _recentLogs,
+            _decisiveTimeline,
             _totalEventCount,
             _timeline?.IsPaused ?? false,
             _timeline?.PlaybackSpeed ?? 1f,
@@ -548,6 +567,8 @@ public sealed class BattleScreenController : MonoBehaviour
             _settingsVisible,
             _timeline?.NormalizedProgress ?? 0f,
             _settingsStatusText,
+            canReplay: _timeline != null && _policy.CanReplay(_timeline.IsFinished),
+            canRebattle: _root.SessionState.IsQuickBattleSmokeActive,
             _metadataFormatter.BuildSelectedUnitPanel(selectedUnit));
         _view!.Render(state);
         _view.SetScrubberInteractable(_timeline != null && _policy.CanSeek(_timeline.IsFinished));
@@ -618,12 +639,32 @@ public sealed class BattleScreenController : MonoBehaviour
         if (_cycleUnitAction.WasPressedThisFrame() && _timeline?.CurrentStep != null)
         {
             CycleSelectedUnit();
+            presentationController.SetFocus(_timeline.CurrentStep, _selectedUnitId);
+            RenderCurrentState();
         }
 
         if (_togglePauseAction.WasPressedThisFrame())
         {
             TogglePause();
         }
+    }
+
+    private void HandlePointerSelection(BattleSimulationStep currentStep)
+    {
+        if (Mouse.current?.leftButton.wasPressedThisFrame != true || _view?.IsPointerOverBlockingUi != false)
+        {
+            return;
+        }
+
+        var pointerPosition = Mouse.current.position.ReadValue();
+        if (!presentationController.TryPickActor(pointerPosition, out var actorId))
+        {
+            return;
+        }
+
+        _selectedUnitId = actorId;
+        presentationController.SetFocus(currentStep, _selectedUnitId);
+        RenderCurrentState(currentStep);
     }
 
     private static void SetupCameraFallback()
@@ -636,6 +677,26 @@ public sealed class BattleScreenController : MonoBehaviour
 
         cam.transform.position = DefaultCameraPosition;
         cam.transform.rotation = DefaultCameraRotation;
+    }
+
+    private void ApplyBootstrapCameraFrame(BattleSimulationStep step)
+    {
+        if (cameraController == null)
+        {
+            return;
+        }
+
+        cameraController.SetSuggestedFrame(_cameraFramingPolicy.BuildBootstrapFrame(step, _selectedUnitId));
+    }
+
+    private void ApplyPassiveCameraFrame(BattleSimulationStep step)
+    {
+        if (cameraController == null)
+        {
+            return;
+        }
+
+        cameraController.SetSuggestedFrame(_cameraFramingPolicy.BuildPassiveFrame(step, _selectedUnitId));
     }
 
     private void RunBattle()
@@ -703,7 +764,10 @@ public sealed class BattleScreenController : MonoBehaviour
 
         presentationController.Initialize(_simulator.CurrentStep);
         presentationController.ApplyOptions(_presentationOptions);
+        EnsureSelectedUnit(_simulator.CurrentStep);
+        presentationController.SetFocus(_simulator.CurrentStep, _selectedUnitId);
         RenderCurrentState(_simulator.CurrentStep);
+        ApplyBootstrapCameraFrame(_simulator.CurrentStep);
 
         if (cameraController != null)
         {
@@ -894,11 +958,15 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             if (evt.EventKind == BattleEventKind.Kill)
             {
-                _decisiveTimeline.Add($"<color=#f66>{step.TimeSeconds:0.0}s</color> Kill: {evt.ActorName} -> {evt.TargetName}");
+                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.TargetName} down");
+            }
+            else if (evt.LogCode == BattleLogCode.ActiveSkillHeal)
+            {
+                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.ActorName} heal {evt.TargetName} +{evt.Value:0}");
             }
             else if (evt.ActionType == BattleActionType.ActiveSkill && evt.Value > 0)
             {
-                _decisiveTimeline.Add($"<color=#6cf>{step.TimeSeconds:0.0}s</color> Skill: {evt.ActorName} ({evt.Value:0})");
+                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.ActorName} skill {evt.TargetName} -{evt.Value:0}");
             }
         }
     }
@@ -920,7 +988,8 @@ public sealed class BattleScreenController : MonoBehaviour
         _settingsStatusText = string.Empty;
         if (_timeline?.CurrentStep is { } currentStep)
         {
-            presentationController.SetBlend(currentStep, currentStep, 1f);
+            presentationController.RenderSnapshot(currentStep);
+            presentationController.SetFocus(currentStep, _selectedUnitId);
         }
 
         RenderCurrentState();

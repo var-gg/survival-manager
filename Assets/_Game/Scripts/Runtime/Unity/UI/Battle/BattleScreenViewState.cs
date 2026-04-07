@@ -21,6 +21,8 @@ public sealed record BattleShellViewState(
     string StatusText,
     string PauseLabel,
     string ContinueLabel,
+    string ReplayLabel,
+    bool CanReplay,
     string RebattleLabel,
     bool CanRebattle,
     string ReturnTownLabel,

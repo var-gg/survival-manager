@@ -12,6 +12,7 @@ public readonly record struct BattleScreenActions(
     Action SetSpeed4,
     Action TogglePause,
     Action ContinueToReward,
+    Action ReplayRecordedTimeline,
     Action RebattleNewSeed,
     Action ReturnToTownDirect,
     Action ToggleSettingsPanel,
@@ -40,6 +41,7 @@ public sealed class BattleScreenView
     private readonly Button _speed4Button;
     private readonly Button _pauseButton;
     private readonly Button _continueButton;
+    private readonly Button _replayButton;
     private readonly Button _rebattleButton;
     private readonly Button _returnTownButton;
     private readonly Button _settingsButton;
@@ -82,6 +84,7 @@ public sealed class BattleScreenView
         _speed4Button = Require<Button>(root, "Speed4Button");
         _pauseButton = Require<Button>(root, "PauseButton");
         _continueButton = Require<Button>(root, "ContinueButton");
+        _replayButton = Require<Button>(root, "ReplayButton");
         _rebattleButton = Require<Button>(root, "RebattleButton");
         _returnTownButton = Require<Button>(root, "ReturnTownButton");
         _settingsButton = Require<Button>(root, "SettingsButton");
@@ -98,7 +101,7 @@ public sealed class BattleScreenView
         _selectedUnitBodyLabel = Require<Label>(root, "SelectedUnitBodyLabel");
 
         SetNonBlocking(_titleLabel, _localeStatusLabel, _allySummaryPanel, _enemySummaryPanel, _allyHpLabel, _enemyHpLabel, _logLabel, _resultLabel, _speedLabel, _statusLabel, _settingsPanel, _settingsStatusLabel, _selectedUnitPanel, _selectedUnitHeaderLabel, _selectedUnitBodyLabel);
-        SetBlocking(_localeKoButton, _localeEnButton, _speed1Button, _speed2Button, _speed4Button, _pauseButton, _continueButton, _rebattleButton, _returnTownButton, _settingsButton, _progressTrack, _toggleOverheadButton, _toggleDamageTextButton, _toggleTeamSummaryButton, _toggleDebugOverlayButton);
+        SetBlocking(_localeKoButton, _localeEnButton, _speed1Button, _speed2Button, _speed4Button, _pauseButton, _continueButton, _replayButton, _rebattleButton, _returnTownButton, _settingsButton, _progressTrack, _toggleOverheadButton, _toggleDamageTextButton, _toggleTeamSummaryButton, _toggleDebugOverlayButton);
     }
 
     public void Bind(BattleScreenActions actions)
@@ -110,6 +113,7 @@ public sealed class BattleScreenView
         _speed4Button.clicked += actions.SetSpeed4;
         _pauseButton.clicked += actions.TogglePause;
         _continueButton.clicked += actions.ContinueToReward;
+        _replayButton.clicked += actions.ReplayRecordedTimeline;
         _rebattleButton.clicked += actions.RebattleNewSeed;
         _returnTownButton.clicked += actions.ReturnToTownDirect;
         _settingsButton.clicked += actions.ToggleSettingsPanel;
@@ -138,6 +142,8 @@ public sealed class BattleScreenView
         _statusLabel.text = state.StatusText;
         _pauseButton.text = state.PauseLabel;
         _continueButton.text = state.ContinueLabel;
+        _replayButton.text = state.ReplayLabel;
+        _replayButton.SetEnabled(state.CanReplay);
         _rebattleButton.text = state.RebattleLabel;
         _rebattleButton.SetEnabled(state.CanRebattle);
         _returnTownButton.text = state.ReturnTownLabel;

@@ -1,14 +1,18 @@
 using System.Collections.Generic;
+using System.Linq;
 using SM.Combat.Model;
+using SM.Combat.Services;
 using SM.Unity.UI.Battle;
-using UnityEngine;
 using Unity.Profiling;
+using UnityEngine;
 
 namespace SM.Unity;
 
 public sealed class BattlePresentationController : MonoBehaviour
 {
     private static readonly ProfilerMarker SetBlendMarker = new("SM.BattlePresentationController.SetBlend");
+    private const float ReadabilityBoostDuration = 1.8f;
+    private const float SelectionPickRadiusPixels = 72f;
 
     [SerializeField] private Transform battleStageRoot = null!;
     [SerializeField] private RectTransform actorOverlayRoot = null!;
@@ -16,13 +20,21 @@ public sealed class BattlePresentationController : MonoBehaviour
     private readonly Dictionary<string, BattleActorView> _actorViews = new();
     private readonly Dictionary<string, BattleUnitReadModel> _cachedFromUnitsById = new();
     private readonly Dictionary<string, BattleUnitReadModel> _cachedToUnitsById = new();
+    private readonly Dictionary<string, Renderer> _anchorPlateRenderers = new();
+    private readonly List<Renderer> _laneGuideRenderers = new();
+    private readonly BattlePresentationCueBuilder _cueBuilder = new();
+
     private Camera _camera = null!;
     private BattlePresentationOptions _options = BattlePresentationOptions.CreateDefault();
     private BattleUnitMetadataFormatter? _metadataFormatter;
     private BattleSimulationStep? _cachedFromStep;
     private BattleSimulationStep? _cachedToStep;
+    private string _selectedAnchorKey = string.Empty;
+    private float _readabilityBoostRemaining;
 
     public bool IsPaused { get; private set; }
+    public int LastCueCount { get; private set; }
+    public int TotalCueCount { get; private set; }
 
     private void LateUpdate()
     {
@@ -42,6 +54,7 @@ public sealed class BattlePresentationController : MonoBehaviour
         ValidateReferences();
         _camera = Camera.main!;
         IsPaused = false;
+        LastCueCount = 0;
         Clear();
         CreateStageDecor();
 
@@ -55,12 +68,9 @@ public sealed class BattlePresentationController : MonoBehaviour
             _actorViews[actor.Id] = view;
         }
 
-        SetBlend(initialStep, initialStep, 1f);
-    }
-
-    public void SetPaused(bool isPaused)
-    {
-        IsPaused = isPaused;
+        ClearTransients(BattlePresentationCueType.PlaybackReset);
+        RenderSnapshot(initialStep);
+        SetFocus(initialStep, string.Empty);
     }
 
     public void ApplyOptions(BattlePresentationOptions options)
@@ -83,9 +93,26 @@ public sealed class BattlePresentationController : MonoBehaviour
         }
     }
 
-    public void PushStep(BattleSimulationStep previousStep, BattleSimulationStep currentStep)
+    public void RenderSnapshot(BattleSimulationStep step)
     {
-        TriggerEvents(currentStep.Events);
+        LastCueCount = 0;
+        SetBlend(step, step, 1f);
+    }
+
+    public void AdvanceStep(BattleSimulationStep previousStep, BattleSimulationStep currentStep)
+    {
+        var cues = _cueBuilder.Build(previousStep, currentStep);
+        LastCueCount = cues.Count;
+        TotalCueCount += LastCueCount;
+
+        foreach (var cue in cues)
+        {
+            if (_actorViews.TryGetValue(cue.SubjectActorId, out var view))
+            {
+                view.ConsumeCue(cue, ResolveAnchorWorld(cue.RelatedActorId, cue.RelatedAnchor));
+            }
+        }
+
         SetBlend(previousStep, currentStep, 0f);
     }
 
@@ -113,22 +140,104 @@ public sealed class BattlePresentationController : MonoBehaviour
         }
     }
 
-    private void TriggerEvents(IReadOnlyList<BattleEvent> events)
+    public void SetFocus(BattleSimulationStep step, string selectedUnitId)
     {
-        foreach (var eventData in events)
+        var focusActorId = string.Empty;
+        var focusTargetId = string.Empty;
+        if (BattleReadabilityFormatter.TryResolveStepFocus(step, out var focus))
         {
-            if (_actorViews.TryGetValue(eventData.ActorId.Value, out var sourceView))
-            {
-                BattleActorView? targetView = null;
-                if (eventData.TargetId is { } targetId && _actorViews.TryGetValue(targetId.Value, out var resolvedTarget))
-                {
-                    targetView = resolvedTarget;
-                }
+            focusActorId = focus.ActorId;
+            focusTargetId = focus.TargetId ?? string.Empty;
+        }
 
-                sourceView.PlayAsSource(eventData, targetView);
-                targetView?.PlayAsTarget(eventData);
+        var selectedUnit = step.Units.FirstOrDefault(unit => unit.Id == selectedUnitId);
+        _selectedAnchorKey = selectedUnit == null
+            ? string.Empty
+            : BuildAnchorKey(selectedUnit.Side, selectedUnit.Anchor);
+
+        foreach (var (id, view) in _actorViews)
+        {
+            if (!_cachedToUnitsById.TryGetValue(id, out var unit))
+            {
+                continue;
+            }
+
+            var targetId = id == focusActorId
+                ? focusTargetId
+                : id == selectedUnitId
+                    ? unit.TargetId ?? string.Empty
+                    : string.Empty;
+
+            view.ApplyContext(
+                isSelected: id == selectedUnitId,
+                isCurrentActor: id == focusActorId,
+                isCurrentTarget: id == focusTargetId,
+                focusTargetWorld: ResolveAnchorWorld(targetId, BattlePresentationAnchorId.Center),
+                readabilityBoost: Mathf.Clamp01(_readabilityBoostRemaining / ReadabilityBoostDuration));
+        }
+
+        UpdateStageReadability();
+    }
+
+    public void ClearTransients(BattlePresentationCueType reason)
+    {
+        LastCueCount = 0;
+        if (reason == BattlePresentationCueType.PlaybackReset)
+        {
+            _readabilityBoostRemaining = ReadabilityBoostDuration;
+        }
+
+        foreach (var view in _actorViews.Values)
+        {
+            view.ClearTransients(reason);
+        }
+
+        UpdateStageReadability();
+    }
+
+    public void TickTransients(float deltaTime, float playbackSpeed, bool paused)
+    {
+        IsPaused = paused;
+        if (!paused)
+        {
+            _readabilityBoostRemaining = Mathf.Max(0f, _readabilityBoostRemaining - (deltaTime * playbackSpeed));
+        }
+
+        foreach (var view in _actorViews.Values)
+        {
+            view.TickTransients(deltaTime, playbackSpeed, paused);
+        }
+
+        UpdateStageReadability();
+    }
+
+    public bool TryPickActor(Vector2 screenPosition, out string actorId)
+    {
+        actorId = string.Empty;
+        var bestDistance = SelectionPickRadiusPixels * SelectionPickRadiusPixels;
+        foreach (var (id, view) in _actorViews)
+        {
+            var distance = view.GetScreenDistanceSquared(screenPosition);
+            if (distance >= 0f && distance <= bestDistance)
+            {
+                bestDistance = distance;
+                actorId = id;
             }
         }
+
+        return actorId.Length > 0;
+    }
+
+    private Vector3? ResolveAnchorWorld(string? actorId, BattlePresentationAnchorId anchorId)
+    {
+        if (string.IsNullOrWhiteSpace(actorId))
+        {
+            return null;
+        }
+
+        return _actorViews.TryGetValue(actorId, out var view)
+            ? view.GetAnchorWorld(anchorId)
+            : null;
     }
 
     private void ValidateReferences()
@@ -149,8 +258,12 @@ public sealed class BattlePresentationController : MonoBehaviour
         _actorViews.Clear();
         _cachedFromUnitsById.Clear();
         _cachedToUnitsById.Clear();
+        _anchorPlateRenderers.Clear();
+        _laneGuideRenderers.Clear();
         _cachedFromStep = null;
         _cachedToStep = null;
+        _selectedAnchorKey = string.Empty;
+        _readabilityBoostRemaining = 0f;
 
         if (battleStageRoot != null)
         {
@@ -179,39 +292,111 @@ public sealed class BattlePresentationController : MonoBehaviour
         var decorRoot = new GameObject("StageDecor");
         decorRoot.transform.SetParent(battleStageRoot, false);
 
+        var backgroundRoot = new GameObject("Background");
+        backgroundRoot.transform.SetParent(decorRoot.transform, false);
         CreateStageBlock(
-            decorRoot.transform,
+            backgroundRoot.transform,
             "ArenaFloor",
             new Vector3(0f, -1.12f, 0f),
             new Vector3(18f, 0.16f, 9.2f),
             new Color(0.18f, 0.14f, 0.11f, 1f));
         CreateStageBlock(
-            decorRoot.transform,
+            backgroundRoot.transform,
             "ArenaInnerFloor",
             new Vector3(0f, -1.04f, 0f),
             new Vector3(14.2f, 0.04f, 6.8f),
             new Color(0.25f, 0.21f, 0.17f, 1f));
         CreateStageBlock(
-            decorRoot.transform,
+            backgroundRoot.transform,
             "CenterLine",
             new Vector3(0f, -0.99f, 0f),
             new Vector3(0.12f, 0.01f, 6.2f),
             new Color(0.85f, 0.68f, 0.34f, 1f));
         CreateStageBlock(
-            decorRoot.transform,
+            backgroundRoot.transform,
             "AllyZone",
             new Vector3(-3.35f, -0.985f, 0f),
             new Vector3(4.1f, 0.01f, 5.8f),
             new Color(0.15f, 0.30f, 0.47f, 1f));
         CreateStageBlock(
-            decorRoot.transform,
+            backgroundRoot.transform,
             "EnemyZone",
             new Vector3(3.35f, -0.985f, 0f),
             new Vector3(4.1f, 0.01f, 5.8f),
             new Color(0.42f, 0.17f, 0.15f, 1f));
+
+        var readabilityRoot = new GameObject("ReadabilitySurface");
+        readabilityRoot.transform.SetParent(decorRoot.transform, false);
+
+        _laneGuideRenderers.Add(CreateStageBlock(
+            readabilityRoot.transform,
+            "LaneGuideTop",
+            new Vector3(0f, -0.978f, 1.8f),
+            new Vector3(11.2f, 0.005f, 0.08f),
+            new Color(0.39f, 0.40f, 0.43f, 1f)));
+        _laneGuideRenderers.Add(CreateStageBlock(
+            readabilityRoot.transform,
+            "LaneGuideCenter",
+            new Vector3(0f, -0.978f, 0f),
+            new Vector3(11.2f, 0.005f, 0.08f),
+            new Color(0.39f, 0.40f, 0.43f, 1f)));
+        _laneGuideRenderers.Add(CreateStageBlock(
+            readabilityRoot.transform,
+            "LaneGuideBottom",
+            new Vector3(0f, -0.978f, -1.8f),
+            new Vector3(11.2f, 0.005f, 0.08f),
+            new Color(0.39f, 0.40f, 0.43f, 1f)));
+
+        foreach (TeamSide side in System.Enum.GetValues(typeof(TeamSide)))
+        {
+            foreach (DeploymentAnchorId anchor in System.Enum.GetValues(typeof(DeploymentAnchorId)))
+            {
+                var anchorPosition = BattleFactory.ResolveAnchorPosition(side, anchor);
+                var anchorKey = BuildAnchorKey(side, anchor);
+                _anchorPlateRenderers[anchorKey] = CreateStageBlock(
+                    readabilityRoot.transform,
+                    $"{anchorKey}_Plate",
+                    new Vector3(anchorPosition.X, -0.974f, anchorPosition.Y),
+                    new Vector3(0.68f, 0.008f, 0.92f),
+                    side == TeamSide.Ally
+                        ? new Color(0.22f, 0.45f, 0.62f, 1f)
+                        : new Color(0.58f, 0.24f, 0.21f, 1f));
+            }
+        }
+
+        UpdateStageReadability();
     }
 
-    private static void CreateStageBlock(Transform parent, string name, Vector3 localPosition, Vector3 localScale, Color color)
+    private void UpdateStageReadability()
+    {
+        var boost = Mathf.Clamp01(_readabilityBoostRemaining / ReadabilityBoostDuration);
+        foreach (var renderer in _laneGuideRenderers)
+        {
+            var baseColor = new Color(0.20f, 0.22f, 0.25f, 1f);
+            var boosted = new Color(0.48f, 0.52f, 0.58f, 1f);
+            BattlePresentationMaterialFactory.ApplyColor(renderer.material, Color.Lerp(baseColor, boosted, boost));
+        }
+
+        foreach (var (key, renderer) in _anchorPlateRenderers)
+        {
+            var isAlly = key.StartsWith("Ally", System.StringComparison.Ordinal);
+            var baseColor = isAlly
+                ? new Color(0.16f, 0.26f, 0.33f, 1f)
+                : new Color(0.35f, 0.18f, 0.16f, 1f);
+            var boosted = isAlly
+                ? new Color(0.30f, 0.50f, 0.68f, 1f)
+                : new Color(0.62f, 0.32f, 0.26f, 1f);
+            var selected = isAlly
+                ? new Color(0.70f, 0.92f, 1f, 1f)
+                : new Color(1f, 0.78f, 0.60f, 1f);
+            var color = key == _selectedAnchorKey
+                ? selected
+                : Color.Lerp(baseColor, boosted, boost);
+            BattlePresentationMaterialFactory.ApplyColor(renderer.material, color);
+        }
+    }
+
+    private static Renderer CreateStageBlock(Transform parent, string name, Vector3 localPosition, Vector3 localScale, Color color)
     {
         var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
         block.name = name;
@@ -227,6 +412,12 @@ public sealed class BattlePresentationController : MonoBehaviour
 
         var renderer = block.GetComponent<Renderer>();
         renderer.sharedMaterial = BattlePresentationMaterialFactory.Create(color);
+        return renderer;
+    }
+
+    private static string BuildAnchorKey(TeamSide side, DeploymentAnchorId anchor)
+    {
+        return $"{side}:{anchor}";
     }
 
     private static IReadOnlyDictionary<string, BattleUnitReadModel> ResolveUnitIndex(

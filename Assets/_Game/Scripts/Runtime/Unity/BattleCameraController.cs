@@ -15,6 +15,8 @@ public sealed class BattleCameraController : MonoBehaviour
     private const float ZoomStep = 1.5f;
     private const float MinZoomHeight = 4f;
     private const float MaxZoomHeight = 12f;
+    private const float ManualHoldSeconds = 3f;
+    private const float PassiveRefitSpeed = 1.85f;
 
     // Ground-plane bounds for the camera look-at point
     private const float GroundBoundsMinX = -8f;
@@ -32,6 +34,8 @@ public sealed class BattleCameraController : MonoBehaviour
     private Vector3 _dragOrigin;
     private bool _isDragging;
     private bool _inputEnabled;
+    private float _lastManualInteractionAt = float.NegativeInfinity;
+    private BattleCameraSuggestedFrame? _suggestedFrame;
 
     // Camera-to-ground offset for proper bounds clamping
     private Vector3 _cameraToGroundOffset;
@@ -60,6 +64,7 @@ public sealed class BattleCameraController : MonoBehaviour
         _inputEnabled = true;
 
         _cameraToGroundOffset = ComputeCameraToGroundOffset(defaultPosition, fixedRotation);
+        _suggestedFrame = null;
 
         if (_camera != null)
         {
@@ -79,6 +84,7 @@ public sealed class BattleCameraController : MonoBehaviour
         _zoomVelocity = 0f;
         _isDragging = false;
         _cameraToGroundOffset = ComputeCameraToGroundOffset(_defaultPosition, _fixedRotation);
+        _suggestedFrame = null;
     }
 
     public void SetInputEnabled(bool enabled)
@@ -95,6 +101,20 @@ public sealed class BattleCameraController : MonoBehaviour
     public void SetUiBlockPredicate(Func<bool>? uiBlockPredicate)
     {
         _uiBlockPredicate = uiBlockPredicate;
+    }
+
+    public void SetSuggestedFrame(BattleCameraSuggestedFrame frame)
+    {
+        _suggestedFrame = frame;
+        if (frame.IsBootstrap)
+        {
+            ApplySuggestedFrame(frame, snap: true);
+        }
+    }
+
+    public void NotifyManualInteraction()
+    {
+        _lastManualInteractionAt = Time.unscaledTime;
     }
 
     private void OnDestroy()
@@ -162,6 +182,7 @@ public sealed class BattleCameraController : MonoBehaviour
         HandleMouseZoom();
         HandleKeyboardPan();
         HandleEdgeScroll();
+        ApplyPassiveSuggestion();
 
         ApplySmoothedMovement();
     }
@@ -190,6 +211,7 @@ public sealed class BattleCameraController : MonoBehaviour
                 SnapCameraToTarget();
                 _dragOrigin = groundPoint.Value;
                 _isDragging = true;
+                NotifyManualInteraction();
             }
         }
 
@@ -204,6 +226,7 @@ public sealed class BattleCameraController : MonoBehaviour
                 ClampTargetPosition();
                 // Snap immediately during drag for responsive feel
                 SnapCameraToTarget();
+                NotifyManualInteraction();
             }
         }
 
@@ -242,6 +265,7 @@ public sealed class BattleCameraController : MonoBehaviour
 
         // Snap camera to prevent SmoothDamp oscillation during zoom
         SnapCameraToTarget();
+        NotifyManualInteraction();
 
         // Zoom toward cursor: shift XZ target slightly toward mouse world position
         var mousePos = _pointerPositionAction.ReadValue<Vector2>();
@@ -277,6 +301,7 @@ public sealed class BattleCameraController : MonoBehaviour
         var worldDir = camForward * moveInput.y + camRight * moveInput.x;
         _targetPosition += worldDir.normalized * (PanSpeedKeyboard * Time.deltaTime);
         ClampTargetPosition();
+        NotifyManualInteraction();
     }
 
     private void HandleEdgeScroll()
@@ -309,6 +334,7 @@ public sealed class BattleCameraController : MonoBehaviour
             var worldDir = camForward * moveDir.z + camRight * moveDir.x;
             _targetPosition += worldDir.normalized * (EdgeScrollSpeed * Time.deltaTime);
             ClampTargetPosition();
+            NotifyManualInteraction();
         }
     }
 
@@ -319,6 +345,47 @@ public sealed class BattleCameraController : MonoBehaviour
         var smoothed = Vector3.SmoothDamp(currentPos, desiredPos, ref _velocity, SmoothTime);
         _camera.transform.position = smoothed;
         _camera.transform.rotation = _fixedRotation;
+    }
+
+    private void ApplyPassiveSuggestion()
+    {
+        if (_suggestedFrame == null || _suggestedFrame.Value.IsBootstrap)
+        {
+            return;
+        }
+
+        if (_isDragging || Time.unscaledTime - _lastManualInteractionAt < ManualHoldSeconds)
+        {
+            return;
+        }
+
+        ApplySuggestedFrame(_suggestedFrame.Value, snap: false);
+    }
+
+    private void ApplySuggestedFrame(BattleCameraSuggestedFrame frame, bool snap)
+    {
+        var desiredPosition = ResolveCameraPosition(frame.GroundCenter, frame.ZoomHeight);
+        if (snap)
+        {
+            _targetPosition = desiredPosition;
+            _targetZoomHeight = frame.ZoomHeight;
+            ClampTargetPosition();
+            SnapCameraToTarget();
+            return;
+        }
+
+        var blend = 1f - Mathf.Exp(-PassiveRefitSpeed * Time.deltaTime);
+        _targetPosition = Vector3.Lerp(_targetPosition, desiredPosition, blend);
+        _targetZoomHeight = Mathf.Lerp(_targetZoomHeight, frame.ZoomHeight, blend);
+        ClampTargetPosition();
+    }
+
+    private Vector3 ResolveCameraPosition(Vector3 groundCenter, float zoomHeight)
+    {
+        var provisional = new Vector3(groundCenter.x, zoomHeight, groundCenter.z);
+        var offset = ComputeCameraToGroundOffset(provisional, _fixedRotation);
+        _cameraToGroundOffset = offset;
+        return new Vector3(groundCenter.x - offset.x, zoomHeight, groundCenter.z - offset.z);
     }
 
     private void SnapCameraToTarget()

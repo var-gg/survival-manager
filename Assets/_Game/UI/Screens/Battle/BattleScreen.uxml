@@ -31,6 +31,7 @@
                         <ui:Button name="Speed4Button" class="ui-button" text="x4" />
                         <ui:Button name="PauseButton" class="ui-button" text="Pause" />
                         <ui:Button name="ContinueButton" class="ui-button ui-button--accent" text="Continue" />
+                        <ui:Button name="ReplayButton" class="ui-button" text="Replay" />
                         <ui:Button name="RebattleButton" class="ui-button" text="Re-battle" />
                         <ui:Button name="ReturnTownButton" class="ui-button" text="Return Town" />
                         <ui:Button name="SettingsButton" class="ui-button" text="Settings" />
