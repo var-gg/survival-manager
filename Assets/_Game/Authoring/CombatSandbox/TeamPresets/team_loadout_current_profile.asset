@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: team_loadout_current_profile
+  m_EditorClassIdentifier: SM.Unity:SM.Unity.Sandbox:TeamLoadoutPresetAsset
+  PresetId: current_profile
+  DisplayName: Current Local Profile
+  IsFavorite: 1
+  Source:
+    SourceMode: 0
+    TeamPosture: 1
+    TeamTacticId: 
+    Tags:
+    - starter
+    - profile
+    Members:
+    - MemberId: hero-1
+      SourceKind: 0
+      HeroId: hero-1
+      DisplayName: 
+      ArchetypeId: 
+      CharacterId: 
+      Anchor: 1
+      RoleInstructionId: 
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: hero-3
+      SourceKind: 0
+      HeroId: hero-3
+      DisplayName: 
+      ArchetypeId: 
+      CharacterId: 
+      Anchor: 2
+      RoleInstructionId: 
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: hero-5
+      SourceKind: 0
+      HeroId: hero-5
+      DisplayName: 
+      ArchetypeId: 
+      CharacterId: 
+      Anchor: 3
+      RoleInstructionId: 
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: hero-7
+      SourceKind: 0
+      HeroId: hero-7
+      DisplayName: 
+      ArchetypeId: 
+      CharacterId: 
+      Anchor: 5
+      RoleInstructionId: 
+      BuildOverride: {fileID: 0}
+      Notes: 
+    TeamTemporaryAugmentIds: []
+    TeamPermanentAugmentIds: []
+    SnapshotAsset: {fileID: 0}
+    SnapshotJsonAsset: {fileID: 0}
+    SnapshotJson: 
+    RemoteDeck:
+      UserId: 
+      DeckId: 
+      Revision: 
+    Notes: Uses the current local profile and deployment as the sandbox left side.

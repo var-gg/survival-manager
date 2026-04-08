@@ -679,6 +679,10 @@ MonoBehaviour:
     m_Key: ui.town.sheet.empty
     m_Metadata:
       m_Items: []
+  - m_Id: 3380255539585024
+    m_Key: ui.town.tooltip.quick_battle_smoke
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

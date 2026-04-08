@@ -92,7 +92,7 @@ MonoBehaviour:
       m_Items:
       - rid: 1798213439901401363
   - m_Id: 13
-    m_Localized: Step {0} | {1} -> {2} | {3} {4:0}{5}
+    m_Localized: "\uC2A4\uD15D {0} | {1} -> {2} | {3} {4:0}{5}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401363
@@ -102,7 +102,7 @@ MonoBehaviour:
       m_Items:
       - rid: 1798213439901401363
   - m_Id: 15
-    m_Localized: Step {0} | posture {1}{2}
+    m_Localized: "\uC2A4\uD15D {0} | \uD0DC\uC138 {1}{2}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401363
@@ -466,6 +466,77 @@ MonoBehaviour:
     m_Localized: "\uD604\uC7AC \uB300\uC0C1"
     m_Metadata:
       m_Items: []
+  - m_Id: 3380253555679232
+    m_Localized: Combat Sandbox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010880
+    m_Localized: "\uC694\uC57D, \uCD5C\uADFC \uB85C\uADF8, \uC120\uD0DD \uC720\uB2DB
+      \uD328\uB110\uB85C \uD604\uC7AC \uC804\uD22C\uB97C \uC77D\uC73C\uC138\uC694.
+      Combat Sandbox\uB294 Reward\uB85C \uAC00\uC9C0 \uC54A\uACE0, \uAC19\uC740 seed
+      \uC7AC\uC0DD, \uC0C8 seed, sandbox \uC885\uB8CC\uB9CC \uC81C\uACF5\uD569\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010881
+    m_Localized: "\uAC19\uC740 seed \uB2E4\uC2DC \uC7AC\uC0DD"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010882
+    m_Localized: "\uC0C8 seed"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010883
+    m_Localized: "Sandbox \uC885\uB8CC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010884
+    m_Localized: "Combat Sandbox | \uBC30\uC18D x{0:0}"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401363
+  - m_Id: 3380253606010885
+    m_Localized: "Combat Sandbox | \uBC30\uC18D x{0:0} | \uC77C\uC2DC\uC815\uC9C0"
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401363
+  - m_Id: 3380253606010886
+    m_Localized: "Combat Sandbox\uB294 Reward\uB85C \uC774\uC5B4\uC9C0\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.
+      Exit Sandbox \uB610\uB294 replay control\uC744 \uC0AC\uC6A9\uD558\uC138\uC694."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010887
+    m_Localized: "Combat Sandbox\uC5D0\uC11C \uC77C\uC2DC\uC815\uC9C0, \uAC19\uC740
+      seed \uB2E4\uC2DC \uC7AC\uC0DD, \uC0C8 seed\uB97C \uC0AC\uC6A9\uD560 \uC218
+      \uC788\uC2B5\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010888
+    m_Localized: "\uD604\uC7AC Combat Sandbox \uC804\uD22C\uB97C \uAC19\uC740 deterministic
+      seed\uB85C \uB2E4\uC2DC \uC7AC\uC0DD\uD569\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010889
+    m_Localized: "active preset\uC744 \uC720\uC9C0\uD55C \uCC44 Combat Sandbox\uB97C
+      \uB2E4\uC74C seed\uB85C \uB2E4\uC2DC \uC2DC\uC791\uD569\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010890
+    m_Localized: "\uC804\uD22C\uAC00 \uB05D\uB09C \uB4A4 Combat Sandbox\uB97C \uC885\uB8CC\uD569\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010891
+    m_Localized: "\uD45C\uC2DC \uC124\uC815\uC744 \uC5FD\uB2C8\uB2E4. sandbox diagnostics\uB294
+      Combat Sandbox\uC5D0\uC11C\uB9CC \uBCF4\uC785\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010892
+    m_Localized: "\uD0C0\uAC8C\uD305 \uC120\uACFC sandbox diagnostics\uB97C \uD45C\uC2DC\uD569\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010893
+    m_Localized: "\uB300\uC0C1"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -500,3 +571,5 @@ MonoBehaviour:
         - id: 83
         - id: 84
         - id: 85
+        - id: 3380253606010884
+        - id: 3380253606010885

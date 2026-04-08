@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: unit_build_override_fortress
+  m_EditorClassIdentifier: SM.Unity:SM.Unity.Sandbox:UnitBuildOverrideAsset
+  Data:
+    OverrideId: fortress
+    DisplayName: Fortress
+    Tags:
+    - endgame
+    - tank
+    EquippedItems:
+    - ItemId: item_guardian_shield
+      AffixIds:
+      - affix_guarded
+    - ItemId: item_warden_armor
+      AffixIds:
+      - affix_bracing
+    - ItemId: item_warden_trinket
+      AffixIds:
+      - affix_hallowed
+    PassiveBoardId: board_vanguard
+    PassiveNodeIds:
+    - passive_vanguard_small_01
+    - passive_vanguard_notable_01
+    TemporaryAugmentIds:
+    - augment_silver_guard
+    PermanentAugmentIds:
+    - augment_perm_legacy_oath
+    FlexActiveSkillId: 
+    FlexPassiveSkillId: 
+    PositiveTraitId: 
+    NegativeTraitId: 
+    RoleInstructionIdOverride: 
+    RetrainCount: 0
+    Notes: Frontline stability and anti-burst regression anchor.

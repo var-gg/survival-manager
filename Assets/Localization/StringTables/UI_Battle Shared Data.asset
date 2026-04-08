@@ -419,6 +419,66 @@ MonoBehaviour:
     m_Key: ui.battle.targeting.current
     m_Metadata:
       m_Items: []
+  - m_Id: 3380253555679232
+    m_Key: ui.battle.group.sandbox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010880
+    m_Key: ui.battle.help.body_sandbox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010881
+    m_Key: ui.battle.action.replay_same_seed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010882
+    m_Key: ui.battle.action.new_seed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010883
+    m_Key: ui.battle.action.exit_sandbox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010884
+    m_Key: ui.battle.playback.direct
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010885
+    m_Key: ui.battle.playback.direct_paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010886
+    m_Key: ui.battle.error.direct_sandbox_reward_hidden
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010887
+    m_Key: ui.battle.tooltip.playback_direct
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010888
+    m_Key: ui.battle.tooltip.replay_same_seed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010889
+    m_Key: ui.battle.tooltip.new_seed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010890
+    m_Key: ui.battle.tooltip.exit_sandbox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010891
+    m_Key: ui.battle.tooltip.settings_sandbox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010892
+    m_Key: ui.battle.tooltip.debug_overlay_sandbox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010893
+    m_Key: ui.battle.axis.target
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

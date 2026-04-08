@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: team_loadout_observer_smoke
+  m_EditorClassIdentifier: SM.Unity:SM.Unity.Sandbox:TeamLoadoutPresetAsset
+  PresetId: observer_smoke
+  DisplayName: Observer Smoke
+  IsFavorite: 0
+  Source:
+    SourceMode: 1
+    TeamPosture: 1
+    TeamTacticId: 
+    Tags:
+    - starter
+    - observer_smoke
+    Members:
+    - MemberId: enemy_guardian
+      SourceKind: 2
+      HeroId: 
+      DisplayName: Enemy Guardian
+      ArchetypeId: 
+      CharacterId: guardian
+      Anchor: 0
+      RoleInstructionId: 
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: enemy_raider
+      SourceKind: 2
+      HeroId: 
+      DisplayName: Enemy Raider
+      ArchetypeId: 
+      CharacterId: raider
+      Anchor: 2
+      RoleInstructionId: 
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: enemy_hunter
+      SourceKind: 2
+      HeroId: 
+      DisplayName: Enemy Hunter
+      ArchetypeId: 
+      CharacterId: hunter
+      Anchor: 3
+      RoleInstructionId: 
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: enemy_hexer
+      SourceKind: 2
+      HeroId: 
+      DisplayName: Enemy Hexer
+      ArchetypeId: 
+      CharacterId: hexer
+      Anchor: 5
+      RoleInstructionId: 
+      BuildOverride: {fileID: 0}
+      Notes: 
+    TeamTemporaryAugmentIds: []
+    TeamPermanentAugmentIds: []
+    SnapshotAsset: {fileID: 0}
+    SnapshotJsonAsset: {fileID: 0}
+    SnapshotJson: 
+    RemoteDeck:
+      UserId: 
+      DeckId: 
+      Revision: 
+    Notes: Baseline enemy lane shared by the starter scenarios.

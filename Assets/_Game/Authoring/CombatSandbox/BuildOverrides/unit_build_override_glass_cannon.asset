@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: unit_build_override_glass_cannon
+  m_EditorClassIdentifier: SM.Unity:SM.Unity.Sandbox:UnitBuildOverrideAsset
+  Data:
+    OverrideId: glass_cannon
+    DisplayName: Glass Cannon
+    Tags:
+    - endgame
+    - burst
+    EquippedItems:
+    - ItemId: item_marksman_bow
+      AffixIds:
+      - affix_farshot
+    - ItemId: item_marksman_armor
+      AffixIds:
+      - affix_watchful
+    - ItemId: item_marksman_trinket
+      AffixIds:
+      - affix_quick
+    PassiveBoardId: board_ranger
+    PassiveNodeIds:
+    - passive_ranger_small_01
+    - passive_ranger_notable_01
+    TemporaryAugmentIds:
+    - augment_silver_hunt
+    PermanentAugmentIds:
+    - augment_perm_legacy_fang
+    FlexActiveSkillId: 
+    FlexPassiveSkillId: 
+    PositiveTraitId: 
+    NegativeTraitId: 
+    RoleInstructionIdOverride: 
+    RetrainCount: 0
+    Notes: High-pressure ranged carry baseline.

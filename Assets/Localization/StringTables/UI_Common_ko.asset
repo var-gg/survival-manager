@@ -32,7 +32,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3
-    m_Localized: English
+    m_Localized: "\uC601\uC5B4"
     m_Metadata:
       m_Items: []
   - m_Id: 4
@@ -137,6 +137,40 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 31
     m_Localized: "\uC54C \uC218 \uC5C6\uB294 \uBC30\uCE58"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35
+    m_Localized: "\uC2DC\uC791\uC73C\uB85C \uB3CC\uC544\uAC00\uAE30"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12
+    m_Localized: "\uC2DC\uC791"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13
+    m_Localized: "\uC774 \uBE4C\uB4DC\uB294 Town\uC5D0\uC11C \uC900\uBE44\uD558\uACE0
+      Expedition/Battle/Reward\uB97C \uAC70\uCE58\uB294 \uB85C\uCEEC \uD50C\uB808\uC774
+      \uB8E8\uD504\uC785\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14
+    m_Localized: 
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15
+    m_Localized: "\uB85C\uCEEC \uC2E4\uD589 \uC2DC\uC791"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34
+    m_Localized: "\uB3C4\uC6C0\uB9D0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32
+    m_Localized: "\uB2EB\uAE30"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33
+    m_Localized: "\uC54C \uC218 \uC5C6\uC74C"
     m_Metadata:
       m_Items: []
   references:

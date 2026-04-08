@@ -139,6 +139,39 @@ MonoBehaviour:
     m_Localized: Unknown Anchor
     m_Metadata:
       m_Items: []
+  - m_Id: 35
+    m_Localized: Return to Start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12
+    m_Localized: Start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13
+    m_Localized: This build runs a local loop from Town through Expedition, Battle,
+      and Reward.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14
+    m_Localized: 
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15
+    m_Localized: Start Local Run
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34
+    m_Localized: Help
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32
+    m_Localized: Hide
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33
+    m_Localized: Unknown
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

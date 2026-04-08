@@ -129,13 +129,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 20
-    m_Localized: "\uC601\uC785, \uC800\uC7A5, \uC6D0\uC815 \uC7AC\uAC1C \uB610\uB294
-      Quick Battle\uC744 \uC9C4\uD589\uD558\uC138\uC694."
+    m_Localized: "\uC601\uC785, \uC800\uC7A5, \uC6D0\uC815 \uC7AC\uAC1C\uB97C \uC9C4\uD589\uD558\uC138\uC694."
     m_Metadata:
       m_Items: []
   - m_Id: 21
-    m_Localized: "\uC601\uC785, \uC800\uC7A5, \uC6D0\uC815 \uC2DC\uC791 \uB610\uB294
-      Quick Battle\uC744 \uC9C4\uD589\uD558\uC138\uC694."
+    m_Localized: "\uC601\uC785, \uC800\uC7A5, \uC6D0\uC815 \uC2DC\uC791\uC744 \uC9C4\uD589\uD558\uC138\uC694."
     m_Metadata:
       m_Items: []
   - m_Id: 22
@@ -746,6 +744,12 @@ MonoBehaviour:
     m_Localized: "\uC601\uC6C5\uC744 \uC120\uD0DD\uD558\uBA74 Town \uBE4C\uB4DC,
       \uD328\uC2DC\uBE0C, \uC2DC\uB108\uC9C0, \uC131\uC7A5 \uC815\uBCF4\uB97C \uBCFC
       \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380255539585024
+    m_Localized: "\uD604\uC7AC Town \uBE4C\uB4DC \uC0C1\uD0DC\uB85C integration smoke
+      \uC804\uD22C\uB97C \uC5F4\uACE0, Reward \uB610\uB294 \uC9C1\uC811 Town \uBCF5\uADC0
+      \uC758\uBBF8\uB97C \uC720\uC9C0\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   references:

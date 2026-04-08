@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: team_loadout_endgame_fortress
+  m_EditorClassIdentifier: SM.Unity:SM.Unity.Sandbox:TeamLoadoutPresetAsset
+  PresetId: endgame_fortress
+  DisplayName: Endgame Fortress
+  IsFavorite: 0
+  Source:
+    SourceMode: 1
+    TeamPosture: 0
+    TeamTacticId: team_tactic_hold_line
+    Tags:
+    - endgame
+    - tank
+    Members:
+    - MemberId: fortress.warden
+      SourceKind: 1
+      HeroId: 
+      DisplayName: Warden
+      ArchetypeId: warden
+      CharacterId: 
+      Anchor: 1
+      RoleInstructionId: anchor
+      BuildOverride: {fileID: 11400000, guid: e2c4376c966dd184b9eabfdd68ad1613, type: 2}
+      Notes: 
+    - MemberId: fortress.bulwark
+      SourceKind: 1
+      HeroId: 
+      DisplayName: Bulwark
+      ArchetypeId: bulwark
+      CharacterId: 
+      Anchor: 0
+      RoleInstructionId: anchor
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: fortress.shaman
+      SourceKind: 1
+      HeroId: 
+      DisplayName: Shaman
+      ArchetypeId: shaman
+      CharacterId: 
+      Anchor: 4
+      RoleInstructionId: support
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: fortress.priest
+      SourceKind: 1
+      HeroId: 
+      DisplayName: Priest
+      ArchetypeId: priest
+      CharacterId: 
+      Anchor: 5
+      RoleInstructionId: support
+      BuildOverride: {fileID: 0}
+      Notes: 
+    TeamTemporaryAugmentIds: []
+    TeamPermanentAugmentIds: []
+    SnapshotAsset: {fileID: 0}
+    SnapshotJsonAsset: {fileID: 0}
+    SnapshotJson: 
+    RemoteDeck:
+      UserId: 
+      DeckId: 
+      Revision: 
+    Notes: Sustain shell preset for fortress and anti-burst validation.

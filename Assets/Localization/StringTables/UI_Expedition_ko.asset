@@ -174,17 +174,17 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 34
-    m_Localized: +{0} Gold
+    m_Localized: "\uACE8\uB4DC +{0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769984
   - m_Id: 35
-    m_Localized: Echo +{0}
+    m_Localized: "\uC5D0\uCF54 +{0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769984
   - m_Id: 36
-    m_Localized: Echo +{0}
+    m_Localized: "\uC5D0\uCF54 +{0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769984

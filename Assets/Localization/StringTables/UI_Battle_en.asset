@@ -453,6 +453,75 @@ MonoBehaviour:
     m_Localized: Current target
     m_Metadata:
       m_Items: []
+  - m_Id: 3380253555679232
+    m_Localized: Combat Sandbox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010880
+    m_Localized: 'Read the battle through the summary, recent log, and selected unit
+      panel. Combat Sandbox stays inside battle: replay the same seed, roll a new
+      seed, or exit the sandbox.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010881
+    m_Localized: Replay Same Seed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010882
+    m_Localized: New Seed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010883
+    m_Localized: Exit Sandbox
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010884
+    m_Localized: Combat Sandbox | Speed x{0:0}
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 3380253606010885
+    m_Localized: Combat Sandbox | Speed x{0:0} | Paused
+    m_Metadata:
+      m_Items:
+      - rid: 1798213439901401364
+  - m_Id: 3380253606010886
+    m_Localized: Combat Sandbox does not continue into Reward. Use Exit Sandbox or
+      replay controls instead.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010887
+    m_Localized: Combat Sandbox lets you pause, replay the same seed, and roll a
+      new seed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010888
+    m_Localized: Replay the active Combat Sandbox battle with the same deterministic
+      seed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010889
+    m_Localized: Restart Combat Sandbox with the next seed while keeping the active
+      preset.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010890
+    m_Localized: Leave Combat Sandbox after the battle is resolved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010891
+    m_Localized: Open display settings. Sandbox diagnostics appear only in Combat
+      Sandbox.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010892
+    m_Localized: Show targeting lines and sandbox diagnostics for Combat Sandbox.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010893
+    m_Localized: Target
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -487,3 +556,5 @@ MonoBehaviour:
         - id: 83
         - id: 84
         - id: 85
+        - id: 3380253606010884
+        - id: 3380253606010885
