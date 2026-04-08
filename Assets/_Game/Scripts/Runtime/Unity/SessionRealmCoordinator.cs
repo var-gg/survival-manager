@@ -138,21 +138,21 @@ public sealed class SessionRealmCoordinator :
         _offlineLocal.ReturnToCanonicalLane();
     }
 
-    public ProfileView GetProfileView(string playerId) => RequireOfflineLocal().GetProfileView(playerId);
-    public InventoryView GetInventoryView(string playerId) => RequireOfflineLocal().GetInventoryView(playerId);
-    public LoadoutView GetLoadoutView(string playerId) => RequireOfflineLocal().GetLoadoutView(playerId);
-    public ArenaDashboardView GetArenaDashboard(string playerId) => RequireOfflineLocal().GetArenaDashboard(playerId);
-    public Result EquipItem(string heroId, string itemInstanceId) => RequireOfflineLocal().EquipItem(heroId, itemInstanceId);
-    public Result UnequipItem(string heroId, string itemInstanceId) => RequireOfflineLocal().UnequipItem(heroId, itemInstanceId);
-    public Result EquipPermanentAugment(string augmentId) => RequireOfflineLocal().EquipPermanentAugment(augmentId);
-    public Result SelectPassiveBoard(string heroId, string boardId) => RequireOfflineLocal().SelectPassiveBoard(heroId, boardId);
-    public AuthorityActionResult PublishDefenseSnapshot(string blueprintId) => RequireOfflineLocal().PublishDefenseSnapshot(blueprintId);
-    public AuthorityActionResult StartArenaMatch(string defenseSnapshotId) => RequireOfflineLocal().StartArenaMatch(defenseSnapshotId);
-    public AuthorityActionResult FinalizeArenaMatch(string matchId, string clientEvidence) => RequireOfflineLocal().FinalizeArenaMatch(matchId, clientEvidence);
-    public AuthorityActionResult ClaimArenaReward(string rewardClaimToken) => RequireOfflineLocal().ClaimArenaReward(rewardClaimToken);
-    public AuthorityActionResult CreateOfficialBattleSeed() => RequireOfflineLocal().CreateOfficialBattleSeed();
-    public AuthorityActionResult ResolveOfficialMatch(string matchId) => RequireOfflineLocal().ResolveOfficialMatch(matchId);
-    public AuthorityActionResult ValidateReplayEvidence(string matchId) => RequireOfflineLocal().ValidateReplayEvidence(matchId);
+    ProfileView IProfileQueryService.GetProfileView(string playerId) => ((IProfileQueryService)RequireOfflineLocal()).GetProfileView(playerId);
+    InventoryView IProfileQueryService.GetInventoryView(string playerId) => ((IProfileQueryService)RequireOfflineLocal()).GetInventoryView(playerId);
+    LoadoutView IProfileQueryService.GetLoadoutView(string playerId) => ((IProfileQueryService)RequireOfflineLocal()).GetLoadoutView(playerId);
+    ArenaDashboardView IArenaQueryService.GetArenaDashboard(string playerId) => ((IArenaQueryService)RequireOfflineLocal()).GetArenaDashboard(playerId);
+    Result IProfileCommandService.EquipItem(string heroId, string itemInstanceId) => ((IProfileCommandService)RequireOfflineLocal()).EquipItem(heroId, itemInstanceId);
+    Result IProfileCommandService.UnequipItem(string heroId, string itemInstanceId) => ((IProfileCommandService)RequireOfflineLocal()).UnequipItem(heroId, itemInstanceId);
+    Result IProfileCommandService.EquipPermanentAugment(string augmentId) => ((IProfileCommandService)RequireOfflineLocal()).EquipPermanentAugment(augmentId);
+    Result IProfileCommandService.SelectPassiveBoard(string heroId, string boardId) => ((IProfileCommandService)RequireOfflineLocal()).SelectPassiveBoard(heroId, boardId);
+    AuthorityActionResult IArenaCommandService.PublishDefenseSnapshot(string blueprintId) => ((IArenaCommandService)RequireOfflineLocal()).PublishDefenseSnapshot(blueprintId);
+    AuthorityActionResult IArenaCommandService.StartArenaMatch(string defenseSnapshotId) => ((IArenaCommandService)RequireOfflineLocal()).StartArenaMatch(defenseSnapshotId);
+    AuthorityActionResult IArenaCommandService.FinalizeArenaMatch(string matchId, string clientEvidence) => ((IArenaCommandService)RequireOfflineLocal()).FinalizeArenaMatch(matchId, clientEvidence);
+    AuthorityActionResult IArenaCommandService.ClaimArenaReward(string rewardClaimToken) => ((IArenaCommandService)RequireOfflineLocal()).ClaimArenaReward(rewardClaimToken);
+    AuthorityActionResult IBattleAuthority.CreateOfficialBattleSeed() => ((IBattleAuthority)RequireOfflineLocal()).CreateOfficialBattleSeed();
+    AuthorityActionResult IBattleAuthority.ResolveOfficialMatch(string matchId) => ((IBattleAuthority)RequireOfflineLocal()).ResolveOfficialMatch(matchId);
+    AuthorityActionResult IBattleAuthority.ValidateReplayEvidence(string matchId) => ((IBattleAuthority)RequireOfflineLocal()).ValidateReplayEvidence(matchId);
 
     private OfflineLocalSessionAdapter RequireOfflineLocal()
     {

@@ -220,7 +220,7 @@ public sealed class OfflineLocalSessionAdapter :
         }
     }
 
-    public ProfileView GetProfileView(string playerId)
+    ProfileView IProfileQueryService.GetProfileView(string playerId)
     {
         EnsureProfileMatches(playerId);
         var heroes = _sessionState.Profile.Heroes
@@ -244,7 +244,7 @@ public sealed class OfflineLocalSessionAdapter :
             heroes);
     }
 
-    public InventoryView GetInventoryView(string playerId)
+    InventoryView IProfileQueryService.GetInventoryView(string playerId)
     {
         EnsureProfileMatches(playerId);
         var items = _sessionState.Profile.Inventory
@@ -256,7 +256,7 @@ public sealed class OfflineLocalSessionAdapter :
         return new InventoryView(items.Length, items);
     }
 
-    public LoadoutView GetLoadoutView(string playerId)
+    LoadoutView IProfileQueryService.GetLoadoutView(string playerId)
     {
         EnsureProfileMatches(playerId);
         var deployments = _sessionState.EnumerateDeploymentAssignments()
@@ -272,7 +272,7 @@ public sealed class OfflineLocalSessionAdapter :
             deployments);
     }
 
-    public ArenaDashboardView GetArenaDashboard(string playerId)
+    ArenaDashboardView IArenaQueryService.GetArenaDashboard(string playerId)
     {
         EnsureProfileMatches(playerId);
         return new ArenaDashboardView(
@@ -284,30 +284,30 @@ public sealed class OfflineLocalSessionAdapter :
             _sessionState.Profile.ArenaMatchRecords.Count);
     }
 
-    public Result EquipItem(string heroId, string itemInstanceId) => _sessionState.EquipItem(heroId, itemInstanceId);
-    public Result UnequipItem(string heroId, string itemInstanceId) => _sessionState.UnequipItem(heroId, itemInstanceId);
-    public Result EquipPermanentAugment(string augmentId) => _sessionState.EquipPermanentAugment(augmentId);
-    public Result SelectPassiveBoard(string heroId, string boardId) => _sessionState.SelectPassiveBoard(heroId, boardId);
+    Result IProfileCommandService.EquipItem(string heroId, string itemInstanceId) => _sessionState.EquipItem(heroId, itemInstanceId);
+    Result IProfileCommandService.UnequipItem(string heroId, string itemInstanceId) => _sessionState.UnequipItem(heroId, itemInstanceId);
+    Result IProfileCommandService.EquipPermanentAugment(string augmentId) => _sessionState.EquipPermanentAugment(augmentId);
+    Result IProfileCommandService.SelectPassiveBoard(string heroId, string boardId) => _sessionState.SelectPassiveBoard(heroId, boardId);
 
-    public AuthorityActionResult PublishDefenseSnapshot(string blueprintId)
+    AuthorityActionResult IArenaCommandService.PublishDefenseSnapshot(string blueprintId)
         => AuthorityActionResult.Unsupported("OfflineLocal은 공식 defense snapshot publish를 허용하지 않습니다.");
 
-    public AuthorityActionResult StartArenaMatch(string defenseSnapshotId)
+    AuthorityActionResult IArenaCommandService.StartArenaMatch(string defenseSnapshotId)
         => AuthorityActionResult.Unsupported("OfflineLocal은 공식 arena match start를 허용하지 않습니다.");
 
-    public AuthorityActionResult FinalizeArenaMatch(string matchId, string clientEvidence)
+    AuthorityActionResult IArenaCommandService.FinalizeArenaMatch(string matchId, string clientEvidence)
         => AuthorityActionResult.Unsupported("OfflineLocal은 공식 arena settlement를 허용하지 않습니다.");
 
-    public AuthorityActionResult ClaimArenaReward(string rewardClaimToken)
+    AuthorityActionResult IArenaCommandService.ClaimArenaReward(string rewardClaimToken)
         => AuthorityActionResult.Unsupported("OfflineLocal은 공식 arena reward claim을 허용하지 않습니다.");
 
-    public AuthorityActionResult CreateOfficialBattleSeed()
+    AuthorityActionResult IBattleAuthority.CreateOfficialBattleSeed()
         => AuthorityActionResult.PreviewOnly("OfflineLocal 전투는 로컬 preview/편의 경로이며 official battle seed를 발급하지 않습니다.");
 
-    public AuthorityActionResult ResolveOfficialMatch(string matchId)
+    AuthorityActionResult IBattleAuthority.ResolveOfficialMatch(string matchId)
         => AuthorityActionResult.PreviewOnly("OfflineLocal 전투 결과는 official settlement가 아니라 로컬 반영만 수행합니다.");
 
-    public AuthorityActionResult ValidateReplayEvidence(string matchId)
+    AuthorityActionResult IBattleAuthority.ValidateReplayEvidence(string matchId)
         => AuthorityActionResult.PreviewOnly("OfflineLocal replay는 debug/audit 참고용이며 authoritative evidence가 아닙니다.");
 
     private SaveRepositoryRequest CreateRequest(SessionCheckpointKind kind)

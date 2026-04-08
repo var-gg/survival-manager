@@ -124,6 +124,30 @@ public sealed class BattleActorWrapperContractTests
         }
     }
 
+    [Test]
+    public void CastAndProjectileOrigin_FallbackToSiblingVisualSocket_WhenOnlyOneIsAuthored()
+    {
+        var castOnlyRoot = CreateWrapperWithVisualSocket(castAuthored: true, projectileAuthored: false);
+        var projectileOnlyRoot = CreateWrapperWithVisualSocket(castAuthored: false, projectileAuthored: true);
+
+        try
+        {
+            var castOnlyWrapper = castOnlyRoot.GetComponent<BattleActorWrapper>();
+            var projectileOnlyWrapper = projectileOnlyRoot.GetComponent<BattleActorWrapper>();
+
+            var castAuthoredWorld = castOnlyWrapper.GetSocketTransform(BattleActorSocketId.Cast)!.position;
+            var projectileAuthoredWorld = projectileOnlyWrapper.GetSocketTransform(BattleActorSocketId.ProjectileOrigin)!.position;
+
+            AssertVector(castOnlyWrapper.GetSocketWorld(BattleActorSocketId.ProjectileOrigin), castAuthoredWorld);
+            AssertVector(projectileOnlyWrapper.GetSocketWorld(BattleActorSocketId.Cast), projectileAuthoredWorld);
+        }
+        finally
+        {
+            Object.DestroyImmediate(castOnlyRoot);
+            Object.DestroyImmediate(projectileOnlyRoot);
+        }
+    }
+
     private static BattleUnitReadModel CreateUnit(float headAnchorHeight)
     {
         return new BattleUnitReadModel(
@@ -154,5 +178,43 @@ public sealed class BattleActorWrapperContractTests
         Assert.That(actual.x, Is.EqualTo(expected.x).Within(0.001f));
         Assert.That(actual.y, Is.EqualTo(expected.y).Within(0.001f));
         Assert.That(actual.z, Is.EqualTo(expected.z).Within(0.001f));
+    }
+
+    private static GameObject CreateWrapperWithVisualSocket(bool castAuthored, bool projectileAuthored)
+    {
+        var root = new GameObject("Wrapper");
+        var visualRoot = new GameObject("VisualRoot").transform;
+        visualRoot.SetParent(root.transform, false);
+
+        Transform? cast = null;
+        Transform? projectile = null;
+        if (castAuthored)
+        {
+            cast = new GameObject("Cast").transform;
+            cast.SetParent(visualRoot, false);
+            cast.localPosition = new Vector3(0f, 0.22f, 0.72f);
+        }
+
+        if (projectileAuthored)
+        {
+            projectile = new GameObject("ProjectileOrigin").transform;
+            projectile.SetParent(visualRoot, false);
+            projectile.localPosition = new Vector3(0f, 0.28f, 0.84f);
+        }
+
+        var wrapper = root.AddComponent<BattleActorWrapper>();
+        wrapper.ConfigureAuthoring(
+            visualRoot,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            cast,
+            projectile,
+            null);
+        return root;
     }
 }

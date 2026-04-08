@@ -41,12 +41,18 @@
     - artifact: `Logs/release-floor/20260408-020521-41ebbb3/manifest.json`
     - result: compile phase fail, 이후 Loop D shard 미실행
 - stale-result guard 확인:
+  - `pwsh -File tools/unity-bridge.ps1 status`
+    - result: `unity-cli connector remained busy after 5 attempts. Unity (port 8090): not responding (last heartbeat 105h54m36s ago)`
   - `pwsh -File tools/unity-bridge.ps1 test-batch-fast`
     - result: `Unity batchmode test exited with code 1 and no fresh results file was produced. Another Unity instance may still hold the project lock.`
 - blocked validator lane:
   - `pwsh -File tools/unity-bridge.ps1 content-validate`
     - artifact: `Logs/content-validation-ci.log`
     - result: project lock으로 batch executeMethod fail
+- current editor log diagnostic:
+  - `Assets/_Game/Scripts/Runtime/Meta/Services/PassiveBoardSelectionValidator.cs:145`
+  - `Assets/_Game/Scripts/Runtime/Meta/Services/PermanentAugmentProgressionService.cs:29,50`
+  - note: 열린 editor session에서 Meta compile error가 보이므로 fresh Loop D shard artifact는 아직 회수하지 않았다.
 - 핵심 코드:
   - `Assets/_Game/Scripts/Runtime/Combat/Model/LoopDTelemetryModels.cs`
   - `Assets/_Game/Scripts/Runtime/Combat/Services/BattleTelemetryRecorder.cs`
@@ -67,6 +73,7 @@
 ## Remaining blockers
 
 - `unity-cli` compile이 current SHA에서 `Waiting for Unity... timed out waiting for Unity (port 8090)`로 멈춘다.
+- `unity-cli status`도 `port 8090` stale heartbeat로 busy를 보고해 editor connector recovery가 선행돼야 한다.
 - 열린 Unity 인스턴스 때문에 batch lane은 project lock으로 abort된다. stale XML/로그 reuse는 이제 fail로 막았지만, fresh final evidence는 아직 없다.
 - same-SHA `loopd-slice`, `loopd-purekit`, `loopd-systemic`, `loopd-runlite` artifact를 다시 생성해야 한다.
 - `loop_d_closure_note.txt`와 task evidence는 fresh shard 수치가 다시 들어와야 final close가 가능하다.

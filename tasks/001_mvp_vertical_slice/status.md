@@ -65,11 +65,17 @@
   - artifact: `Logs/release-floor/20260408-020521-41ebbb3/manifest.json`
   - result: compile phase fail
 - fresh blocker confirmation:
+  - `pwsh -File tools/unity-bridge.ps1 status`
+    - result: `unity-cli connector remained busy after 5 attempts. Unity (port 8090): not responding (last heartbeat 105h54m36s ago)`
   - `pwsh -File tools/unity-bridge.ps1 test-batch-fast`
     - result: `Another Unity instance may still hold the project lock.`
   - `pwsh -File tools/unity-bridge.ps1 content-validate`
     - artifact: `Logs/content-validation-ci.log`
     - result: project lock으로 batch executeMethod fail
+  - current editor log diagnostic:
+    - `Assets/_Game/Scripts/Runtime/Meta/Services/PassiveBoardSelectionValidator.cs:145`
+    - `Assets/_Game/Scripts/Runtime/Meta/Services/PermanentAugmentProgressionService.cs:29,50`
+    - note: current opened editor session에서 Meta compile error가 보이며, clean same-SHA rerun 전까지 final evidence로 채택하지 않는다.
 - lane skipped:
   - `test-play`, `loopd-*`, `prepare-playable`, `report-town`, `report-battle`는 compile ready가 current SHA에서 닫히지 않아 final evidence로 채택하지 않았다.
 

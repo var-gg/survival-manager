@@ -113,15 +113,20 @@ public sealed class BattleActorWrapper : MonoBehaviour
             BattleActorSocketId.Hit => GetSocketWorld(BattleActorSocketId.Center),
             BattleActorSocketId.FeetRing => new Vector3(transform.position.x, GroundPlaneY, transform.position.z),
             BattleActorSocketId.Telegraph => GetSocketWorld(BattleActorSocketId.FeetRing),
-            BattleActorSocketId.Cast => projectileOrigin != null
-                ? projectileOrigin.position
-                : GetSocketWorld(BattleActorSocketId.Center),
-            BattleActorSocketId.ProjectileOrigin => castAnchor != null
-                ? castAnchor.position
-                : GetSocketWorld(BattleActorSocketId.Center),
+            BattleActorSocketId.Cast => ResolvePairedVisualSocketFallback(projectileOrigin),
+            BattleActorSocketId.ProjectileOrigin => ResolvePairedVisualSocketFallback(castAnchor),
             BattleActorSocketId.CameraFocus => GetSocketWorld(BattleActorSocketId.Center),
             _ => transform.position,
         };
+    }
+
+    private Vector3 ResolvePairedVisualSocketFallback(Transform? siblingVisualSocket)
+    {
+        // If only one authored visual-rig socket exists, reuse it for the paired cue instead of
+        // snapping one side back to the wrapper root.
+        return siblingVisualSocket != null
+            ? siblingVisualSocket.position
+            : GetSocketWorld(BattleActorSocketId.Center);
     }
 
     public Vector3 GetAnchorWorld(BattlePresentationAnchorId anchorId)

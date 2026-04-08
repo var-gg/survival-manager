@@ -1,31 +1,26 @@
 # _Game
 
-- Status: draft
-- Last Updated: 2026-03-29
+- Status: active
+- Last Updated: 2026-04-08
 - Phase: prototype
 
 ## Purpose
 
-`Assets/_Game` is the project-owned implementation area for the prototype phase.
+`Assets/_Game`는 prototype playable vertical slice의 프로젝트 소유 구현 영역이다.
 
 ## Current Rules
 
-- implementation is allowed in `Assets/_Game/**`
-- tests are allowed in `Assets/Tests/**`
-- direct modification of original vendor content under `Assets/ThirdParty/**` remains prohibited
+- 구현은 `Assets/_Game/**`에서 진행한다.
+- 테스트는 `Assets/Tests/**`에 둔다.
+- `Assets/ThirdParty/**` 원본 vendor content는 직접 수정하지 않는다.
 
-## Bootstrap Scope
+## Current Scope
 
-This area now includes the initial prototype folder skeleton for:
+- Boot -> Town -> Expedition -> Battle -> Reward -> Town canonical lane 구현과 관련 런타임/씬/UI 자산을 포함한다.
+- battle actor wrapper, sample content, localization, persistence, editor validation 자산을 포함한다.
+- debug smoke lane은 secondary path로만 유지한다.
 
-- content definitions
-- scenes
-- runtime assemblies
-- editor support
+## Maintenance Notes
 
-## Open Questions
-
-- how much content should exist before validation tooling becomes mandatory?
-- which folders need additional README guidance as implementation begins?
-- what conventions should be enforced for asset ids and naming?
-- when should temporary prototype folders be promoted to stable structure?
+- 빈 placeholder 폴더는 유지하지 않는다.
+- 구조나 운영 기준이 바뀌면 관련 문서와 task status를 함께 갱신한다.

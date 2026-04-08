@@ -41,13 +41,15 @@ public sealed class SessionRealmCoordinatorTests
     public void OfflineLocalSessionAdapter_OfficialCommandsStayUnsupportedOrPreviewOnly()
     {
         var adapter = CreateOfflineLocalAdapter();
+        var arenaCommands = (IArenaCommandService)adapter;
+        var battleAuthority = (IBattleAuthority)adapter;
 
-        var publish = adapter.PublishDefenseSnapshot("blueprint.default");
-        var start = adapter.StartArenaMatch("defense.snapshot");
-        var settle = adapter.FinalizeArenaMatch("match-001", "client-evidence");
-        var claim = adapter.ClaimArenaReward("reward-claim");
-        var seed = adapter.CreateOfficialBattleSeed();
-        var resolve = adapter.ResolveOfficialMatch("match-001");
+        var publish = arenaCommands.PublishDefenseSnapshot("blueprint.default");
+        var start = arenaCommands.StartArenaMatch("defense.snapshot");
+        var settle = arenaCommands.FinalizeArenaMatch("match-001", "client-evidence");
+        var claim = arenaCommands.ClaimArenaReward("reward-claim");
+        var seed = battleAuthority.CreateOfficialBattleSeed();
+        var resolve = battleAuthority.ResolveOfficialMatch("match-001");
 
         Assert.That(publish.Status, Is.EqualTo(AuthorityActionStatus.UnsupportedForRealm));
         Assert.That(start.Status, Is.EqualTo(AuthorityActionStatus.UnsupportedForRealm));

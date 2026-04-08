@@ -51,6 +51,7 @@
 - `VisualRoot`만 asset offset, rotation, pose 변형을 받는다.
 - `Head`, `Hud`, `FeetRing`, `Telegraph`, `CameraFocus`는 actor pitch/roll에 오염되지 않는 `_Game` socket rig에 둔다.
 - `ProjectileOrigin`과 `Cast`는 visual rig 하위여도 된다.
+- `Cast`와 `ProjectileOrigin` 중 하나만 authored된 경우, 누락된 쪽은 sibling visual socket fallback을 사용할 수 있다. 둘을 분리된 cue surface로 쓰려면 두 socket을 모두 authored한다.
 - `FeetRing`과 `Telegraph` fallback은 항상 root ground projection을 사용한다.
 
 ## asset intake contract

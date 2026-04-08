@@ -60,6 +60,8 @@
 
 - `OfflineLocalSessionAdapter`만 `ISaveRepository.LoadOrCreate/Save`를 호출한다.
 - `GameSessionRoot`, presenter, controller, future online port는 repository를 직접 호출하지 않는다.
+- active runtime UI가 직접 잡는 surface는 `GameSessionRoot.ProfileQueries` / `ProfileCommands` 두 포트만 유지한다.
+- `IArenaQueryService`, `IArenaCommandService`, `IBattleAuthority`는 future seam 계약으로 남기되, 현재 구현에서는 explicit interface 뒤에 숨겨 controller/presenter의 기본 탐색 surface에 노출하지 않는다.
 - `IProfileCommandService`에서 현재 연결하는 mutation은 다음 네 개만 허용한다.
   - `EquipItem`
   - `UnequipItem`

@@ -10,6 +10,7 @@
 ## Current state
 
 - realm/capability/query/command seam, offline adapter, hidden future seam, 관련 design/architecture/ADR/task 문서는 이미 반영돼 있다.
+- active runtime surface는 `GameSessionRoot.ProfileQueries` / `ProfileCommands`로 유지하고, arena/authority future seam은 `SessionRealmCoordinator` / `OfflineLocalSessionAdapter`의 explicit interface 뒤로 숨겼다.
 - release-floor docs/tooling은 `prepare-playable` canonical lane, `quick-battle-smoke` smoke lane, `tools/pre-art-rc.ps1` packet으로 정리됐다.
 - touched-file `docs-check` gate는 현재 변경 집합에서 green이다.
 - stale batch false green은 제거했다. `test-batch-fast`와 batch executeMethod는 fresh artifact가 없으면 project lock failure로 끝난다.
@@ -37,16 +38,27 @@
   - `$paths = @(...); & .\tools\docs-check.ps1 -RepoRoot . -Paths $paths`
   - `pwsh -File tools/smoke-check.ps1 -RepoRoot .`
   - `pwsh -File tools/test-harness-lint.ps1 -RepoRoot .`
+- code cleanup:
+  - `BattleActorWrapper`는 `Cast` / `ProjectileOrigin` sibling fallback 의도를 helper + test로 고정했다.
+  - `TownScreenController`에서 미참조 debug-only runtime methods를 제거했다.
+  - `Assets/README.md`, `Assets/_Game/README.md`를 current prototype 상태에 맞게 갱신했다.
+  - 빈 placeholder `Audio`, `Settings`, `Persistence/Postgres` meta residue를 제거했다.
 - RC packet attempt:
   - `pwsh -File tools/pre-art-rc.ps1 -UnityRecoveryBudget 0`
   - artifact: `Logs/release-floor/20260408-020521-41ebbb3/manifest.json`
   - result: compile phase fail (`Waiting for Unity... timed out waiting for Unity (port 8090)`)
 - fresh batch blocker confirmation:
+  - `pwsh -File tools/unity-bridge.ps1 status`
+    - result: `unity-cli connector remained busy after 5 attempts. Unity (port 8090): not responding (last heartbeat 105h54m36s ago)`
   - `pwsh -File tools/unity-bridge.ps1 test-batch-fast`
     - result: `Unity batchmode test exited with code 1 and no fresh results file was produced. Another Unity instance may still hold the project lock.`
   - `pwsh -File tools/unity-bridge.ps1 content-validate`
     - artifact: `Logs/content-validation-ci.log`
     - result: project lock으로 batch executeMethod fail
+  - current editor log diagnostic:
+    - `Assets/_Game/Scripts/Runtime/Meta/Services/PassiveBoardSelectionValidator.cs:145`
+    - `Assets/_Game/Scripts/Runtime/Meta/Services/PermanentAugmentProgressionService.cs:29,50`
+    - note: 열린 editor session에서 Meta compile error가 보이므로 clean same-SHA rerun 전까지 release evidence를 닫지 않는다.
 - lane rename / docs sync:
   - canonical setup verb: `prepare-playable`
   - smoke verb: `quick-battle-smoke`
@@ -55,6 +67,7 @@
 ## Remaining blockers
 
 - `unity-cli` compile ready가 current SHA에서 port `8090` timeout으로 막혀 있다.
+- `unity-cli status`도 stale heartbeat를 보고해 connector 자체가 현재 editor session과 정상 동기화되지 않는다.
 - 열린 Unity 인스턴스 때문에 fresh `test-batch-fast` / `test-batch-edit` / `content-validate` evidence가 project lock으로 중단된다.
 - `prepare-playable`, `test-play`, observer report, save/load/recovery manual note는 compile ready가 닫히기 전까지 final evidence로 채택할 수 없다.
 - repo-wide `docs-check` debt는 여전히 informational이지만, 이번 패스의 blocker는 docs가 아니라 Unity ready / project lock 쪽이다.
