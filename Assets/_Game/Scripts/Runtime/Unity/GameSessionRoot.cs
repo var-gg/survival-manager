@@ -40,7 +40,7 @@ public sealed class GameSessionRoot : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         Localization = GetComponent<GameLocalizationController>() ?? gameObject.AddComponent<GameLocalizationController>();
-        CombatContentLookup = new RuntimeCombatContentLookup();
+        CombatContentLookup = CreateCombatContentLookup();
         SessionState = new GameSessionState(CombatContentLookup);
         Sessions = new SessionRealmCoordinator(SessionState, new PersistenceEntryPoint());
         SceneFlow = new SceneFlowController(this, SessionState);
@@ -215,5 +215,16 @@ public sealed class GameSessionRoot : MonoBehaviour
         {
             Debug.LogError(result.Message);
         }
+    }
+
+    private static RuntimeCombatContentLookup CreateCombatContentLookup()
+    {
+#if UNITY_EDITOR
+        // Editor play paths can start from Boot or direct Battle scenes before Resources import catches up.
+        // Allow AssetDatabase recovery fallback so SM/Play entry points remain self-healing inside the editor.
+        return new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
+#else
+        return new RuntimeCombatContentLookup();
+#endif
     }
 }
