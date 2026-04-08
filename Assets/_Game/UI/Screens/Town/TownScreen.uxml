@@ -75,9 +75,25 @@
             </ui:VisualElement>
 
             <ui:VisualElement class="screen__column">
-                <ui:VisualElement class="panel">
-                    <ui:Label name="SelectedHeroTitleLabel" class="panel__title" />
-                    <ui:Label name="SelectedHeroLabel" class="panel__text" />
+                <ui:VisualElement class="panel panel--dense">
+                    <ui:Label name="CharacterSheetOverviewTitleLabel" class="panel__title" />
+                    <ui:Label name="CharacterSheetOverviewBodyLabel" class="panel__text" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel panel--dense">
+                    <ui:Label name="CharacterSheetLoadoutTitleLabel" class="panel__title" />
+                    <ui:Label name="CharacterSheetLoadoutBodyLabel" class="panel__text" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel panel--dense">
+                    <ui:Label name="CharacterSheetPassivesTitleLabel" class="panel__title" />
+                    <ui:Label name="CharacterSheetPassivesBodyLabel" class="panel__text" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel panel--dense">
+                    <ui:Label name="CharacterSheetSynergyTitleLabel" class="panel__title" />
+                    <ui:Label name="CharacterSheetSynergyBodyLabel" class="panel__text" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel panel--dense">
+                    <ui:Label name="CharacterSheetProgressionTitleLabel" class="panel__title" />
+                    <ui:Label name="CharacterSheetProgressionBodyLabel" class="panel__text" />
                 </ui:VisualElement>
                 <ui:VisualElement class="panel">
                     <ui:Label name="DeployTitleLabel" class="panel__title" />

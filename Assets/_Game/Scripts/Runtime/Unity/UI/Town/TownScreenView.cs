@@ -30,8 +30,7 @@ public sealed class TownScreenView
     private readonly Label _blueprintSummaryLabel;
     private readonly Label _recruitTitleLabel;
     private readonly Label _recruitSummaryLabel;
-    private readonly Label _selectedHeroTitleLabel;
-    private readonly Label _selectedHeroLabel;
+    private readonly IReadOnlyList<(Label title, Label body)> _characterSheetPanels;
     private readonly Label _deployTitleLabel;
     private readonly Label _deployPreviewLabel;
     private readonly Label _statusLabel;
@@ -87,8 +86,24 @@ public sealed class TownScreenView
         _blueprintSummaryLabel = Require<Label>(root, "BlueprintSummaryLabel");
         _recruitTitleLabel = Require<Label>(root, "RecruitTitleLabel");
         _recruitSummaryLabel = Require<Label>(root, "RecruitSummaryLabel");
-        _selectedHeroTitleLabel = Require<Label>(root, "SelectedHeroTitleLabel");
-        _selectedHeroLabel = Require<Label>(root, "SelectedHeroLabel");
+        _characterSheetPanels = new[]
+        {
+            (
+                Require<Label>(root, "CharacterSheetOverviewTitleLabel"),
+                Require<Label>(root, "CharacterSheetOverviewBodyLabel")),
+            (
+                Require<Label>(root, "CharacterSheetLoadoutTitleLabel"),
+                Require<Label>(root, "CharacterSheetLoadoutBodyLabel")),
+            (
+                Require<Label>(root, "CharacterSheetPassivesTitleLabel"),
+                Require<Label>(root, "CharacterSheetPassivesBodyLabel")),
+            (
+                Require<Label>(root, "CharacterSheetSynergyTitleLabel"),
+                Require<Label>(root, "CharacterSheetSynergyBodyLabel")),
+            (
+                Require<Label>(root, "CharacterSheetProgressionTitleLabel"),
+                Require<Label>(root, "CharacterSheetProgressionBodyLabel")),
+        };
         _deployTitleLabel = Require<Label>(root, "DeployTitleLabel");
         _deployPreviewLabel = Require<Label>(root, "DeployPreviewLabel");
         _statusLabel = Require<Label>(root, "StatusLabel");
@@ -210,8 +225,20 @@ public sealed class TownScreenView
         _blueprintSummaryLabel.text = state.BlueprintSummaryText;
         _recruitTitleLabel.text = state.RecruitTitle;
         _recruitSummaryLabel.text = state.RecruitSummaryText;
-        _selectedHeroTitleLabel.text = state.SelectedHeroTitle;
-        _selectedHeroLabel.text = state.SelectedHeroSummaryText;
+        var sheetPanels = new[]
+        {
+            state.CharacterSheet.Overview,
+            state.CharacterSheet.Loadout,
+            state.CharacterSheet.Passives,
+            state.CharacterSheet.Synergy,
+            state.CharacterSheet.Progression,
+        };
+        for (var i = 0; i < _characterSheetPanels.Count; i++)
+        {
+            var panel = sheetPanels[i];
+            _characterSheetPanels[i].title.text = panel.Title;
+            _characterSheetPanels[i].body.text = panel.Body;
+        }
         _deployTitleLabel.text = state.DeployTitle;
         _deployPreviewLabel.text = state.DeployPreviewText;
         _statusLabel.text = state.StatusText;

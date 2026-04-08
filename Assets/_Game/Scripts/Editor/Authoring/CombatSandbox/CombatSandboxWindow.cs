@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Editor.Bootstrap;
 using SM.Combat.Services;
+using SM.Unity;
 using SM.Unity.Sandbox;
 using UnityEditor;
 using UnityEngine;
@@ -222,6 +223,9 @@ public sealed class CombatSandboxWindow : EditorWindow
             DrawReadOnlyBlock("Scenario Summary", string.IsNullOrWhiteSpace(_state.ScenarioSummary) ? "Preview not generated yet." : _state.ScenarioSummary);
             DrawReadOnlyBlock("Left Team Preview", string.IsNullOrWhiteSpace(_state.LeftTeamPreview) ? "Preview not generated yet." : _state.LeftTeamPreview);
             DrawReadOnlyBlock("Right Team Preview", string.IsNullOrWhiteSpace(_state.RightTeamPreview) ? "Preview not generated yet." : _state.RightTeamPreview);
+            DrawReadOnlyBlock("Breakpoint Summary", _state.PreviewBreakpointSummary);
+            DrawReadOnlyBlock("Baseline Drift", _state.PreviewBaselineDriftSummary);
+            DrawReadOnlyBlock("Slice Membership", _state.PreviewMembershipWarning);
             DrawReadOnlyBlock("Recent", string.IsNullOrWhiteSpace(_state.RecentScenarioIdsCsv) ? "none" : _state.RecentScenarioIdsCsv.Replace(";", "\n"));
             EditorGUILayout.EndScrollView();
         }
@@ -236,6 +240,9 @@ public sealed class CombatSandboxWindow : EditorWindow
             EditorGUILayout.LabelField($"Compile Hash: {_state.LastCompileHash}");
             EditorGUILayout.LabelField($"Replay Hash: {_state.LastReplayHash}");
             EditorGUILayout.LabelField($"Layout Source: {string.IsNullOrWhiteSpace(_state.LayoutSourceLabel) ? "Default" : _state.LayoutSourceLabel}");
+            DrawReadOnlyBlock("Breakpoint Summary", _state.LastBreakpointSummary);
+            DrawReadOnlyBlock("Baseline Drift", _state.LastBaselineDriftSummary);
+            DrawReadOnlyBlock("Slice Membership", _state.LastMembershipWarning);
             DrawReadOnlyBlock("Metrics", _state.LastMetricsSummary);
             DrawReadOnlyBlock("Counter Coverage", _state.LastCounterCoverageSummary);
             DrawReadOnlyBlock("Governance", _state.LastGovernanceSummary);
@@ -260,6 +267,7 @@ public sealed class CombatSandboxWindow : EditorWindow
             var sceneController = FindAnyObjectByType<CombatSandboxSceneController>();
             var sceneLayout = sceneController != null ? sceneController.ExportSceneLayout() : null;
             var compiled = CombatSandboxExecutionService.BuildCompiledScenario(config, _state.Seed);
+            var launchTruth = CombatSandboxLaunchTruthDiffService.BuildPreview(compiled, new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true));
             var batchCount = runAsBatch
                 ? (_state.BatchCount > 0 ? _state.BatchCount : Math.Max(1, compiled.Execution.BatchCount))
                 : 1;
@@ -274,6 +282,9 @@ public sealed class CombatSandboxWindow : EditorWindow
             _state.LayoutSourceLabel = sceneLayout != null ? "Scene" : "Default";
             _state.LastCompileHash = primary.PlayerSnapshot.CompileHash;
             _state.LastReplayHash = primary.ReplayHash;
+            _state.LastBreakpointSummary = launchTruth.BreakpointSummary;
+            _state.LastBaselineDriftSummary = launchTruth.DriftSummary;
+            _state.LastMembershipWarning = launchTruth.MembershipWarning;
             _state.LastMetricsSummary = BuildMetricsSummary(primary.Metrics);
             _state.LastCounterCoverageSummary = CombatSandboxExecutionService.BuildCounterCoverageSummary(primary.PlayerSnapshot.TeamCounterCoverage, CounterCoverageAggregationService.AggregateFromLoadouts(primary.EnemyLoadout));
             _state.LastGovernanceSummary = CombatSandboxExecutionService.BuildGovernanceSummary(primary.PlayerSnapshot, _state.InspectUnitId);
@@ -299,6 +310,9 @@ public sealed class CombatSandboxWindow : EditorWindow
         catch (Exception ex)
         {
             _state.LastValidationMessage = ex.Message;
+            _state.LastBreakpointSummary = string.Empty;
+            _state.LastBaselineDriftSummary = string.Empty;
+            _state.LastMembershipWarning = string.Empty;
         }
         finally
         {
@@ -352,9 +366,13 @@ public sealed class CombatSandboxWindow : EditorWindow
         try
         {
             var compiled = CombatSandboxExecutionService.BuildCompiledScenario(config, _state.Seed);
+            var launchTruth = CombatSandboxLaunchTruthDiffService.BuildPreview(compiled, new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true));
             _state.ScenarioSummary = CombatSandboxPreviewFormatter.BuildScenarioSummary(compiled);
             _state.LeftTeamPreview = CombatSandboxPreviewFormatter.BuildTeamPreview(compiled.LeftTeam);
             _state.RightTeamPreview = CombatSandboxPreviewFormatter.BuildTeamPreview(compiled.RightTeam);
+            _state.PreviewBreakpointSummary = launchTruth.BreakpointSummary;
+            _state.PreviewBaselineDriftSummary = launchTruth.DriftSummary;
+            _state.PreviewMembershipWarning = launchTruth.MembershipWarning;
             _state.LastValidationMessage = string.Join("\n", compiled.Warnings.Distinct(StringComparer.Ordinal));
         }
         catch (Exception ex)
@@ -362,6 +380,9 @@ public sealed class CombatSandboxWindow : EditorWindow
             _state.ScenarioSummary = string.Empty;
             _state.LeftTeamPreview = string.Empty;
             _state.RightTeamPreview = string.Empty;
+            _state.PreviewBreakpointSummary = string.Empty;
+            _state.PreviewBaselineDriftSummary = string.Empty;
+            _state.PreviewMembershipWarning = string.Empty;
             _state.LastValidationMessage = ex.Message;
         }
         finally

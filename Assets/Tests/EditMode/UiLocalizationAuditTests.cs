@@ -22,6 +22,7 @@ public sealed class UiLocalizationAuditTests
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "BootScreenController.cs"),
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "BattleScreenController.cs"),
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Town", "TownScreenPresenter.cs"),
+        Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Town", "TownCharacterSheetFormatter.cs"),
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Expedition", "ExpeditionScreenPresenter.cs"),
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Battle", "BattleScreenPresenter.cs"),
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Battle", "BattleUnitMetadataFormatter.cs"),

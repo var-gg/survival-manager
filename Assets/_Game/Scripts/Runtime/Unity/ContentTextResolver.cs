@@ -129,6 +129,20 @@ public sealed class ContentTextResolver
             : nodeId;
     }
 
+    public string GetTeamTacticName(string teamTacticId)
+    {
+        return _lookup.TryGetTeamTacticDefinition(teamTacticId, out var teamTactic)
+            ? Localize(ContentLocalizationTables.TeamTactics, teamTactic.NameKey, teamTactic.LegacyDisplayName, teamTacticId)
+            : teamTacticId;
+    }
+
+    public string GetSynergyName(string synergyId)
+    {
+        return _lookup.TryGetSynergyDefinition(synergyId, out var synergy)
+            ? Localize(ContentLocalizationTables.Synergies, synergy.NameKey, synergy.LegacyDisplayName, synergyId)
+            : synergyId;
+    }
+
     public string GetRoleFamilyName(string classId)
     {
         var roleFamilyTag = RoleGlossary.GetRoleFamilyTagOrDefault(classId);

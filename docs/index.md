@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-06
+- 최종수정일: 2026-04-08
 - 소스오브트루스: `docs/index.md`
 - 관련문서:
   - `AGENTS.md`

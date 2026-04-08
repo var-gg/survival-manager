@@ -21,9 +21,12 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
     private readonly Dictionary<string, ItemBaseDefinition> _items = new(StringComparer.Ordinal);
     private readonly Dictionary<string, AffixDefinition> _affixes = new(StringComparer.Ordinal);
     private readonly Dictionary<string, AugmentDefinition> _augments = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, SkillDefinitionAsset> _skills = new(StringComparer.Ordinal);
     private readonly Dictionary<string, RaceDefinition> _races = new(StringComparer.Ordinal);
     private readonly Dictionary<string, ClassDefinition> _classes = new(StringComparer.Ordinal);
     private readonly Dictionary<string, CharacterDefinition> _characters = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, TeamTacticDefinition> _teamTactics = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, SynergyDefinition> _synergies = new(StringComparer.Ordinal);
     private readonly Dictionary<string, RoleInstructionDefinition> _roleInstructions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, PassiveBoardDefinition> _passiveBoards = new(StringComparer.Ordinal);
     private readonly Dictionary<string, PassiveNodeDefinition> _passiveNodes = new(StringComparer.Ordinal);
@@ -39,9 +42,12 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
         IReadOnlyDictionary<string, ItemBaseDefinition>? items = null,
         IReadOnlyDictionary<string, AffixDefinition>? affixes = null,
         IReadOnlyDictionary<string, AugmentDefinition>? augments = null,
+        IReadOnlyDictionary<string, SkillDefinitionAsset>? skills = null,
         IReadOnlyDictionary<string, RaceDefinition>? races = null,
         IReadOnlyDictionary<string, ClassDefinition>? classes = null,
         IReadOnlyDictionary<string, CharacterDefinition>? characters = null,
+        IReadOnlyDictionary<string, TeamTacticDefinition>? teamTactics = null,
+        IReadOnlyDictionary<string, SynergyDefinition>? synergies = null,
         IReadOnlyDictionary<string, RoleInstructionDefinition>? roleInstructions = null,
         IReadOnlyDictionary<string, PassiveBoardDefinition>? passiveBoards = null,
         IReadOnlyDictionary<string, PassiveNodeDefinition>? passiveNodes = null,
@@ -84,6 +90,14 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
             }
         }
 
+        if (skills != null)
+        {
+            foreach (var (id, skill) in skills)
+            {
+                _skills[id] = skill;
+            }
+        }
+
         if (races != null)
         {
             foreach (var (id, race) in races)
@@ -105,6 +119,22 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
             foreach (var (id, character) in characters)
             {
                 _characters[id] = character;
+            }
+        }
+
+        if (teamTactics != null)
+        {
+            foreach (var (id, teamTactic) in teamTactics)
+            {
+                _teamTactics[id] = teamTactic;
+            }
+        }
+
+        if (synergies != null)
+        {
+            foreach (var (id, synergy) in synergies)
+            {
+                _synergies[id] = synergy;
             }
         }
 
@@ -197,7 +227,7 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
     public IReadOnlyList<string> GetCanonicalPassiveBoardIds() => _firstPlayableSlice?.PassiveBoardIds?.Count > 0
         ? _firstPlayableSlice.PassiveBoardIds.ToArray()
         : _passiveBoards.Keys.OrderBy(id => id, StringComparer.Ordinal).ToArray();
-    public IReadOnlyList<string> GetCanonicalSynergyFamilyIds() => Array.Empty<string>();
+    public IReadOnlyList<string> GetCanonicalSynergyFamilyIds() => _synergies.Keys.OrderBy(id => id, StringComparer.Ordinal).ToArray();
 
     // ── Single-definition lookup ──
 
@@ -235,8 +265,7 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
 
     public bool TryGetSkillDefinition(string skillId, out SkillDefinitionAsset skill)
     {
-        skill = null!;
-        return false;
+        return _skills.TryGetValue(skillId, out skill!);
     }
 
     public bool TryGetAffixDefinition(string affixId, out AffixDefinition affix)
@@ -252,6 +281,16 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
     public bool TryGetPassiveNodeDefinition(string nodeId, out PassiveNodeDefinition node)
     {
         return _passiveNodes.TryGetValue(nodeId, out node!);
+    }
+
+    public bool TryGetTeamTacticDefinition(string teamTacticId, out TeamTacticDefinition teamTactic)
+    {
+        return _teamTactics.TryGetValue(teamTacticId, out teamTactic!);
+    }
+
+    public bool TryGetSynergyDefinition(string synergyId, out SynergyDefinition synergy)
+    {
+        return _synergies.TryGetValue(synergyId, out synergy!);
     }
 
     public bool TryGetRoleInstructionDefinition(string roleInstructionId, out RoleInstructionDefinition roleInstruction)

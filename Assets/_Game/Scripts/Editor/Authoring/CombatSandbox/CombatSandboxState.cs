@@ -16,9 +16,15 @@ public sealed class CombatSandboxState : ScriptableObject
     [TextArea] public string ScenarioSummary = string.Empty;
     [TextArea] public string LeftTeamPreview = string.Empty;
     [TextArea] public string RightTeamPreview = string.Empty;
+    [TextArea] public string PreviewBreakpointSummary = string.Empty;
+    [TextArea] public string PreviewBaselineDriftSummary = string.Empty;
+    [TextArea] public string PreviewMembershipWarning = string.Empty;
     public string InspectUnitId = string.Empty;
     public string LastCompileHash = string.Empty;
     public string LastReplayHash = string.Empty;
+    [TextArea] public string LastBreakpointSummary = string.Empty;
+    [TextArea] public string LastBaselineDriftSummary = string.Empty;
+    [TextArea] public string LastMembershipWarning = string.Empty;
     [TextArea] public string LastMetricsSummary = string.Empty;
     [TextArea] public string LastCounterCoverageSummary = string.Empty;
     [TextArea] public string LastGovernanceSummary = string.Empty;

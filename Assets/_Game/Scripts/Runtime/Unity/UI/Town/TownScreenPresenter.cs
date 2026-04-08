@@ -21,6 +21,7 @@ public sealed class TownScreenPresenter
     private readonly ContentTextResolver _contentText;
     private readonly TownScreenView _view;
     private readonly BuildIdentityFormatter _buildFormatter;
+    private readonly TownCharacterSheetFormatter _characterSheetFormatter;
     private readonly ScreenHelpState _helpState;
     private int _selectedHeroIndex;
     private int _selectedItemIndex;
@@ -38,6 +39,7 @@ public sealed class TownScreenPresenter
         _contentText = contentText;
         _view = view;
         _buildFormatter = new BuildIdentityFormatter(contentText);
+        _characterSheetFormatter = new TownCharacterSheetFormatter(localization, contentText, root.CombatContentLookup);
         _helpState = new ScreenHelpState(HelpPrefsKey);
     }
 
@@ -438,8 +440,7 @@ public sealed class TownScreenPresenter
             Localize(GameLocalizationTables.UITown, "ui.town.panel.recruit", "Recruit"),
             BuildRecruitSummary(session, profile),
             BuildRecruitCards(session),
-            Localize(GameLocalizationTables.UITown, "ui.town.panel.selected_hero", "Selected Hero"),
-            BuildSelectedHeroSummary(session, selectedHero, selectedItem, selectedNode?.Id ?? string.Empty, retrainActiveCost, retrainPassiveCost, fullRetrainCost, dismissRefund),
+            _characterSheetFormatter.Build(session, selectedHero, selectedItem, selectedNode, retrainActiveCost, retrainPassiveCost, fullRetrainCost, dismissRefund),
             Localize(GameLocalizationTables.UITown, "ui.town.panel.deploy", "Squad / Deploy"),
             BuildDeployPreviewText(session, profile, loadout),
             BuildDeployButtons(profile, loadout),
@@ -1104,48 +1105,6 @@ public sealed class TownScreenPresenter
     private string ResolvePlayerId()
     {
         return _root.ActiveProfileId;
-    }
-
-    private string BuildSelectedHeroSummary(
-        GameSessionState session,
-        HeroInstanceRecord? selectedHero,
-        InventoryItemRecord? selectedItem,
-        string selectedNodeId,
-        int retrainActiveCost,
-        int retrainPassiveCost,
-        int fullRetrainCost,
-        DismissRefundResult dismissRefund)
-    {
-        var builder = new StringBuilder();
-        builder.AppendLine(_buildFormatter.BuildSelectedHeroSummary(session, selectedHero, selectedItem, selectedNodeId));
-        if (selectedHero == null)
-        {
-            return builder.ToString().TrimEnd();
-        }
-
-        if (selectedItem != null)
-        {
-            builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.selected_hero.refit_preview", "Refit Preview: {0} Echo", MetaBalanceDefaults.RefitEchoCost));
-        }
-
-        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.selected_hero.retrain_active", "Retrain Active: {0} Echo", retrainActiveCost));
-        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.selected_hero.retrain_passive", "Retrain Passive: {0} Echo", retrainPassiveCost));
-        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.selected_hero.retrain_full", "Full Retrain: {0} Echo", fullRetrainCost));
-        builder.AppendLine(Localize(GameLocalizationTables.UITown, "ui.town.selected_hero.dismiss_refund", "Dismiss Refund: +{0} Gold / +{1} Echo", dismissRefund.GoldRefund, dismissRefund.EchoRefund));
-
-        var loadout = session.Profile.HeroLoadouts.FirstOrDefault(record =>
-            string.Equals(record.HeroId, selectedHero.HeroId, StringComparison.Ordinal));
-        if (loadout != null)
-        {
-            builder.AppendLine(Localize(
-                GameLocalizationTables.UITown,
-                "ui.town.selected_hero.passive_nodes",
-                "Passive Nodes: {0}/{1}",
-                loadout.SelectedPassiveNodeIds.Count,
-                PassiveBoardSelectionValidator.MaxActiveNodeCount));
-        }
-
-        return builder.ToString().TrimEnd();
     }
 
     private string BuildCycleHeroLabel(HeroInstanceRecord? selectedHero)

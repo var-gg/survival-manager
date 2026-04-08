@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-08
 - 소스오브트루스: `docs/02_design/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -94,6 +94,8 @@
 ## 기타 디자인 문서
 
 - `deck/roster-archetype-launch-scope.md`: 출시 기준 roster와 archetype package
+- `deck/launch-core-roster-sheet.md`: 12 core archetype 운영용 roster truth sheet
 - `progression/explanation-progression-premise.md`: progression premise 설명 문서
 - `ui/battle-observer-ui.md`: 전투 관전자 UI 기준
+- `ui/town-character-sheet-ui.md`: Town 5-panel character sheet IA
 - `ui/localization-policy.md`: 플레이어 노출 텍스트와 localization table 정책

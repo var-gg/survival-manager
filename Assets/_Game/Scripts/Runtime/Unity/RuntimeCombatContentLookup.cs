@@ -229,6 +229,18 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
         return _registry.PassiveNodeDefinitions.TryGetValue(nodeId, out node!);
     }
 
+    public bool TryGetTeamTacticDefinition(string teamTacticId, out TeamTacticDefinition teamTactic)
+    {
+        EnsureLoaded();
+        return _registry.TeamTacticDefinitions.TryGetValue(teamTacticId, out teamTactic!);
+    }
+
+    public bool TryGetSynergyDefinition(string synergyId, out SynergyDefinition synergy)
+    {
+        EnsureLoaded();
+        return _registry.SynergyDefinitions.TryGetValue(synergyId, out synergy!);
+    }
+
     public bool TryGetRoleInstructionDefinition(string roleInstructionId, out RoleInstructionDefinition roleInstruction)
     {
         EnsureLoaded();

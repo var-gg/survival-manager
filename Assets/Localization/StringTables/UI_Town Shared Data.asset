@@ -775,6 +775,30 @@ MonoBehaviour:
     m_Key: ui.town.permanent.equipped
     m_Metadata:
       m_Items: []
+  - m_Id: 156
+    m_Key: ui.town.sheet.overview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 157
+    m_Key: ui.town.sheet.loadout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 158
+    m_Key: ui.town.sheet.passives
+    m_Metadata:
+      m_Items: []
+  - m_Id: 159
+    m_Key: ui.town.sheet.synergy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 160
+    m_Key: ui.town.sheet.progression
+    m_Metadata:
+      m_Items: []
+  - m_Id: 161
+    m_Key: ui.town.sheet.empty
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

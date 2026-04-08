@@ -44,11 +44,21 @@ public sealed class CharacterAxisLocalizationTests
         character.DefaultRoleInstruction = role;
         SetLegacyField(character, "legacyDisplayName", "Slayer Hero");
 
+        var tactic = ScriptableObject.CreateInstance<TeamTacticDefinition>();
+        tactic.Id = "team_tactic_standard_advance";
+        SetLegacyField(tactic, "legacyDisplayName", "Standard Advance");
+
+        var synergy = ScriptableObject.CreateInstance<SynergyDefinition>();
+        synergy.Id = "synergy_duelist";
+        SetLegacyField(synergy, "legacyDisplayName", "Duelist Bond");
+
         var lookup = new FakeCombatContentLookup(
             archetypes: new Dictionary<string, UnitArchetypeDefinition> { ["slayer"] = archetype },
             races: new Dictionary<string, RaceDefinition> { ["human"] = race },
             classes: new Dictionary<string, ClassDefinition> { ["duelist"] = @class },
             characters: new Dictionary<string, CharacterDefinition> { ["slayer"] = character },
+            teamTactics: new Dictionary<string, TeamTacticDefinition> { ["team_tactic_standard_advance"] = tactic },
+            synergies: new Dictionary<string, SynergyDefinition> { ["synergy_duelist"] = synergy },
             roleInstructions: new Dictionary<string, RoleInstructionDefinition> { ["bruiser"] = role });
 
         var go = new GameObject("LocalizationResolver");
@@ -60,6 +70,8 @@ public sealed class CharacterAxisLocalizationTests
             Assert.That(resolver.GetCharacterName("slayer", "slayer"), Is.EqualTo("Slayer Hero"));
             Assert.That(resolver.GetRoleName("bruiser", "bruiser"), Is.EqualTo("Bruiser"));
             Assert.That(resolver.GetRoleFamilyName("duelist"), Is.EqualTo("Striker"));
+            Assert.That(resolver.GetTeamTacticName("team_tactic_standard_advance"), Is.EqualTo("Standard Advance"));
+            Assert.That(resolver.GetSynergyName("synergy_duelist"), Is.EqualTo("Duelist Bond"));
         }
         finally
         {
@@ -69,6 +81,8 @@ public sealed class CharacterAxisLocalizationTests
             Object.DestroyImmediate(archetype);
             Object.DestroyImmediate(role);
             Object.DestroyImmediate(character);
+            Object.DestroyImmediate(tactic);
+            Object.DestroyImmediate(synergy);
         }
     }
 

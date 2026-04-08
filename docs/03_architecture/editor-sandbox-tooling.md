@@ -86,7 +86,8 @@ left/right team은 아래 source mode 중 하나로 컴파일된다.
 - `Scenario Detail`: notes, expected outcome, `Save As New`, active handoff sync
 - `Preview`: scenario summary, left/right preview, derived coverage/weakness/provenance
 - `Execution`: seed override, batch count, inspect unit, single/batch/side swap
-- `Results`: compile hash, replay hash, metrics, governance, readability, explanation, provenance, validation
+- `Preview Drift`: breakpoint summary, baseline drift, first playable slice membership warning
+- `Results`: compile hash, replay hash, breakpoint/drift/membership, metrics, governance, readability, explanation, provenance, validation
 
 편집은 `SerializedObject`/`SerializedProperty` 기반으로 묶어 Undo와 dirty 처리 경로를 유지한다.
 
@@ -99,7 +100,7 @@ left/right team은 아래 source mode 중 하나로 컴파일된다.
 `SM.Editor.Authoring.Inspectors` 네임스페이스.
 
 | 인스펙터 | 대상 | 표시 내용 |
-|----------|------|----------|
+| --- | --- | --- |
 | `UnitArchetypeDefinitionEditor` | 아키타입 | 비기본 스탯, 스킬 슬롯 분포, 프로필 요약, compiled effective values (ResolveBehavior) |
 | `SkillDefinitionAssetEditor` | 스킬 | 케이던스 타임라인, 스케일링 계수, 타겟팅 지오메트리 |
 | `FootprintProfileDefinitionEditor` | 풋프린트 | 공간 반경, reach/separation 경고 |
@@ -126,8 +127,18 @@ left/right team은 아래 source mode 중 하나로 컴파일된다.
 - `Set Active` / `Push Active + Play`
 - scenario clone 기반 `Save As New`
 - scene anchor handle → `ExportSceneLayout()` → `BattlefieldLayout` authoritative layout 연결
+- Preview/Results: breakpoint summary, baseline drift, first playable slice membership warning
 - Results: compile hash, replay hash, metrics, governance, readability, explanation, provenance, layout source
 - Provenance: subject별 artifact 카운트 + drill-down
+
+launch truth drift는 아래 category만 사용한다.
+
+- `slot`
+- `equipment`
+- `passive-board`
+- `augment`
+- `posture/tactic`
+- `out_of_roster_scope`
 
 ### 축 3: Runtime Battle HUD
 
@@ -183,6 +194,7 @@ left/right team은 아래 source mode 중 하나로 컴파일된다.
 ## starter library 운영
 
 - starter scenarios는 `opening_default_4unit`, `endgame_glass_cannon`, `endgame_fortress`, `anti_burst_regression`을 기본으로 둔다.
+- scenario tag 운영은 `opening_default_4unit=starter`, `endgame_* = endgame`, `anti_burst_regression = regression + counter`로 고정한다.
 - daily work는 starter를 직접 덮어쓰기보다 `Save As New`로 variant를 만든다.
 - active handoff는 배포/실행용 단일 asset이고, regression/history는 library asset으로 남긴다.
 
