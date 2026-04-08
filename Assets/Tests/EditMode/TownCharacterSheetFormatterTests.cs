@@ -171,6 +171,7 @@ public sealed class TownCharacterSheetFormatterTests
         warden.Race = race;
         warden.Class = @class;
         warden.RoleTag = "anchor";
+        warden.PreferredTeamPosture = TeamPostureTypeValue.HoldLine;
         SetLegacyField(warden, "legacyDisplayName", "Iron Warden");
 
         var guardian = ScriptableObject.CreateInstance<UnitArchetypeDefinition>();
@@ -178,6 +179,7 @@ public sealed class TownCharacterSheetFormatterTests
         guardian.Race = race;
         guardian.Class = @class;
         guardian.RoleTag = "anchor";
+        guardian.PreferredTeamPosture = TeamPostureTypeValue.HoldLine;
         SetLegacyField(guardian, "legacyDisplayName", "Crypt Guardian");
 
         var character = ScriptableObject.CreateInstance<CharacterDefinition>();
@@ -215,6 +217,20 @@ public sealed class TownCharacterSheetFormatterTests
         var flexActive = CreateSkill("skill_warden_utility", "Shield Bash");
         var flexPassive = CreateSkill("skill_vanguard_support_1", "Anchored");
         var signaturePassive = CreateSkill("skill_vanguard_passive_1", "Vanguard's Resolve");
+        warden.Loadout = new UnitLoadoutDefinition
+        {
+            SignatureActive = signatureActive,
+            FlexActive = flexActive,
+            SignaturePassive = new PassiveDefinition { Id = "skill_vanguard_passive_1" },
+            FlexPassive = new PassiveDefinition { Id = "skill_vanguard_support_1" },
+        };
+        guardian.Loadout = new UnitLoadoutDefinition
+        {
+            SignatureActive = signatureActive,
+            FlexActive = flexActive,
+            SignaturePassive = new PassiveDefinition { Id = "skill_vanguard_passive_1" },
+            FlexPassive = new PassiveDefinition { Id = "skill_vanguard_support_1" },
+        };
 
         var board = ScriptableObject.CreateInstance<PassiveBoardDefinition>();
         board.Id = "board_vanguard";
@@ -237,6 +253,7 @@ public sealed class TownCharacterSheetFormatterTests
 
         var slice = new FirstPlayableSliceDefinition
         {
+            UnitBlueprintIds = new[] { "warden", "guardian" },
             SynergyGrammar = new List<SynergyGrammarEntry>
             {
                 new() { FamilyId = "synergy_human", MinorThreshold = 2, MajorThreshold = 4 },

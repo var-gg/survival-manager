@@ -30,6 +30,13 @@ public sealed class CombatSandboxLaunchTruthDiffTests
         warden.Race = race;
         warden.Class = @class;
         warden.PreferredTeamPosture = TeamPostureTypeValue.StandardAdvance;
+        warden.Loadout = new UnitLoadoutDefinition
+        {
+            SignatureActive = CreateSkillAsset("skill_power_strike"),
+            FlexActive = CreateSkillAsset("skill_warden_utility"),
+            SignaturePassive = new PassiveDefinition { Id = "skill_vanguard_passive_1" },
+            FlexPassive = new PassiveDefinition { Id = "skill_vanguard_support_1" },
+        };
 
         var lookup = new FakeCombatContentLookup(
             firstPlayableSlice: new FirstPlayableSliceDefinition
@@ -78,6 +85,8 @@ public sealed class CombatSandboxLaunchTruthDiffTests
         }
         finally
         {
+            UnityEngine.Object.DestroyImmediate(warden.Loadout.SignatureActive);
+            UnityEngine.Object.DestroyImmediate(warden.Loadout.FlexActive);
             UnityEngine.Object.DestroyImmediate(race);
             UnityEngine.Object.DestroyImmediate(@class);
             UnityEngine.Object.DestroyImmediate(warden);
@@ -98,13 +107,23 @@ public sealed class CombatSandboxLaunchTruthDiffTests
         warden.Race = race;
         warden.Class = @class;
         warden.PreferredTeamPosture = TeamPostureTypeValue.HoldLine;
+        warden.Loadout = new UnitLoadoutDefinition
+        {
+            SignatureActive = CreateSkillAsset("skill_power_strike"),
+            FlexActive = CreateSkillAsset("skill_warden_utility"),
+            SignaturePassive = new PassiveDefinition { Id = "skill_vanguard_passive_1" },
+            FlexPassive = new PassiveDefinition { Id = "skill_vanguard_support_1" },
+        };
+        var board = ScriptableObject.CreateInstance<PassiveBoardDefinition>();
+        board.Id = "board_vanguard";
 
         var lookup = new FakeCombatContentLookup(
             firstPlayableSlice: new FirstPlayableSliceDefinition
             {
                 UnitBlueprintIds = new[] { "warden" },
             },
-            archetypes: new Dictionary<string, UnitArchetypeDefinition> { ["warden"] = warden });
+            archetypes: new Dictionary<string, UnitArchetypeDefinition> { ["warden"] = warden },
+            passiveBoards: new Dictionary<string, PassiveBoardDefinition> { ["board_vanguard"] = board });
 
         try
         {
@@ -139,18 +158,31 @@ public sealed class CombatSandboxLaunchTruthDiffTests
 
             var preview = CombatSandboxLaunchTruthDiffService.BuildPreview(scenario, lookup);
 
-            Assert.That(preview.DriftSummary, Does.Contain("slot"));
-            Assert.That(preview.DriftSummary, Does.Contain("equipment"));
-            Assert.That(preview.DriftSummary, Does.Contain("passive-board"));
-            Assert.That(preview.DriftSummary, Does.Contain("augment"));
-            Assert.That(preview.DriftSummary, Does.Contain("posture/tactic"));
+            Assert.That(preview.DriftSummary, Does.Contain("slot signature_active:skill_power_strike->skill_wrong_signature"));
+            Assert.That(preview.DriftSummary, Does.Contain("flex_active:skill_warden_utility->skill_wrong_flex"));
+            Assert.That(preview.DriftSummary, Does.Contain("signature_passive:skill_vanguard_passive_1->skill_wrong_signature_passive"));
+            Assert.That(preview.DriftSummary, Does.Contain("flex_passive:skill_vanguard_support_1->skill_wrong_flex_passive"));
+            Assert.That(preview.DriftSummary, Does.Contain("equipment +item_guardian_shield"));
+            Assert.That(preview.DriftSummary, Does.Contain("passive-board baseline=board_vanguard +passive_vanguard_small_01"));
+            Assert.That(preview.DriftSummary, Does.Contain("augment +perm[augment_perm_legacy_oath]"));
+            Assert.That(preview.DriftSummary, Does.Contain("posture/tactic posture:HoldLine->StandardAdvance, tactic:team_tactic_hold_line->team_tactic_standard_advance"));
         }
         finally
         {
+            UnityEngine.Object.DestroyImmediate(warden.Loadout.SignatureActive);
+            UnityEngine.Object.DestroyImmediate(warden.Loadout.FlexActive);
+            UnityEngine.Object.DestroyImmediate(board);
             UnityEngine.Object.DestroyImmediate(race);
             UnityEngine.Object.DestroyImmediate(@class);
             UnityEngine.Object.DestroyImmediate(warden);
         }
+    }
+
+    private static SkillDefinitionAsset CreateSkillAsset(string id)
+    {
+        var skill = ScriptableObject.CreateInstance<SkillDefinitionAsset>();
+        skill.Id = id;
+        return skill;
     }
 
     private static CombatSandboxCompiledTeam CreateTeam(

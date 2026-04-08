@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-04-09
 - 소스오브트루스: `docs/03_architecture/town-character-sheet-contract.md`
 - 관련문서:
   - `docs/03_architecture/ui-runtime-architecture.md`
@@ -26,6 +26,7 @@
 - content lookup
   - `ICombatContentLookup`
   - `ContentTextResolver`
+  - `LaunchCoreRosterBaselineCatalog`
 - formatter
   - `TownCharacterSheetFormatter`
 - presenter
@@ -49,15 +50,16 @@
 | panel | primary source | derived source | 비고 |
 | --- | --- | --- | --- |
 | `Overview` | `HeroInstanceRecord`, `GameSessionState.SelectedTeamPosture`, `SelectedTeamTacticId` | `ContentTextResolver` | role은 archetype default role tag fallback 허용 |
-| `Loadout` | equipped inventory + archetype default loadout + hero flex ids | `ContentTextResolver` | per-encounter compiled mutation은 다루지 않음 |
+| `Loadout` | equipped inventory + archetype default loadout + hero flex ids | `ContentTextResolver`, `LaunchCoreRosterBaselineCatalog` | per-encounter compiled mutation은 다루지 않음 |
 | `Passives` | `HeroLoadoutRecord`, `PassiveBoardDefinition`, selected node | `ContentTextResolver` | node count cap은 validator constant 사용 |
-| `Synergy` | `ExpeditionSquadHeroIds`, `FirstPlayableSlice.SynergyGrammar`, archetype governance | `ContentTextResolver` | current squad 기준만 계산 |
+| `Synergy` | `ExpeditionSquadHeroIds`, `FirstPlayableSlice.SynergyGrammar`, archetype governance | `ContentTextResolver`, `LaunchCoreRosterBaselineCatalog` | current squad 기준만 계산 |
 | `Progression` | recruit/retrain/economy/permanent/passive progression state | formatter local summary | history timeline은 범위 밖 |
 
 ## locale refresh 규칙
 
 - panel title과 content body는 `TownScreenPresenter.Refresh()` 한 번으로 다시 조립한다
 - formatter는 localized string을 캐시하지 않는다
+- panel body label과 state text도 `ui.town.sheet.*` key를 통해 전부 재조립한다
 - `ContentTextResolver.GetTeamTacticName(...)`와 `GetSynergyName(...)`를 통해 content-localized 이름을 가져온다
 - missing localization은 fallback text/id로 degrade한다
 
@@ -73,8 +75,8 @@
 
 ## sandbox diff input
 
-- Town character sheet와 sandbox diff는 둘 다 committed asset + current session/profile만 읽는다
-- sandbox diff는 `CombatSandboxLaunchTruthDiffService`가 `slot`, `equipment`, `passive-board`, `augment`, `posture/tactic`, `out_of_roster_scope`를 요약한다
+- Town character sheet와 sandbox diff는 둘 다 committed asset + current session/profile만 읽고, baseline 해석은 `LaunchCoreRosterBaselineCatalog` 하나로 공유한다
+- sandbox diff는 `CombatSandboxLaunchTruthDiffService`가 `slot`, `equipment`, `passive-board`, `augment`, `posture/tactic`, `out_of_roster_scope`를 exact delta 문장으로 요약한다
 - Town sheet는 drift category를 직접 보여 주지 않지만, 같은 source-of-truth를 읽는 운영 surface로 본다
 
 ## acceptance

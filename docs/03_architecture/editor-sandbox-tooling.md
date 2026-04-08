@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-04-09
 - 소스오브트루스: `docs/03_architecture/editor-sandbox-tooling.md`
 - 관련문서:
   - `docs/03_architecture/content-authoring-model.md`
@@ -37,6 +37,7 @@ Combat Sandbox는 전투 truth를 만들지 않고, 입력 조립과 실행, 비
 - `SM.Unity.Sandbox.CombatSandboxRunRequest`: compile 후 실행 입력
 - `SM.Unity.Sandbox.CombatSandboxRunResult`: replay hash, metrics, provenance 결과
 - `SM.Unity.Sandbox.CombatSandboxSceneController`: simulator/replay 조합과 scene anchor preview 진입점
+- `SM.Unity.LaunchCoreRosterBaselineCatalog`: committed asset에서 launch baseline을 파생하는 shared read model
 
 ### editor
 
@@ -86,7 +87,7 @@ left/right team은 아래 source mode 중 하나로 컴파일된다.
 - `Scenario Detail`: notes, expected outcome, `Save As New`, active handoff sync
 - `Preview`: scenario summary, left/right preview, derived coverage/weakness/provenance
 - `Execution`: seed override, batch count, inspect unit, single/batch/side swap
-- `Preview Drift`: breakpoint summary, baseline drift, first playable slice membership warning
+- `Preview Drift`: breakpoint summary, executable baseline delta, first playable slice membership warning
 - `Results`: compile hash, replay hash, breakpoint/drift/membership, metrics, governance, readability, explanation, provenance, validation
 
 편집은 `SerializedObject`/`SerializedProperty` 기반으로 묶어 Undo와 dirty 처리 경로를 유지한다.
@@ -139,6 +140,15 @@ launch truth drift는 아래 category만 사용한다.
 - `augment`
 - `posture/tactic`
 - `out_of_roster_scope`
+
+category는 유지하지만 출력은 category 이름만 남기지 않는다.
+
+- `slot`: baseline slot id -> compiled slot id
+- `equipment`: executable baseline 대비 `+item`
+- `passive-board`: baseline board id + selected node delta
+- `augment`: executable baseline 대비 `+temp[]` / `+perm[]`
+- `posture/tactic`: baseline posture/tactic -> compiled team tactic
+- `out_of_roster_scope`: first playable slice 밖 unit
 
 ### 축 3: Runtime Battle HUD
 

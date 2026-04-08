@@ -746,6 +746,294 @@ MonoBehaviour:
       \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
+  - m_Id: 162
+    m_Localized: "종족 / 직업"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163
+    m_Localized: "역할"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 164
+    m_Localized: "역할군"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 165
+    m_Localized: "특성"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166
+    m_Localized: "태세"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167
+    m_Localized: "전술"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168
+    m_Localized: "무기"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 169
+    m_Localized: "방어구"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170
+    m_Localized: "장신구"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171
+    m_Localized: "기본 공격"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 172
+    m_Localized: "기본 공격"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 173
+    m_Localized: "시그니처 액티브"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 174
+    m_Localized: "시그니처 패시브"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 175
+    m_Localized: "플렉스 액티브"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 176
+    m_Localized: "플렉스 패시브"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 177
+    m_Localized: "보드"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178
+    m_Localized: "활성 노드"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 179
+    m_Localized: "선택 노드"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 180
+    m_Localized: "노드 수"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181
+    m_Localized: "키스톤"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182
+    m_Localized: "스쿼드"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 183
+    m_Localized: "명"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 184
+    m_Localized: "예상 시너지"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 185
+    m_Localized: "대응 수단"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 186
+    m_Localized: "취약 축"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 187
+    m_Localized: "영입"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 188
+    m_Localized: "재훈련 상태"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 189
+    m_Localized: "재훈련 비용"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 190
+    m_Localized: "해산 환급"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 191
+    m_Localized: "개조 미리보기"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 192
+    m_Localized: "블루프린트 영구 증강"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 193
+    m_Localized: "해금 영구 증강"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 194
+    m_Localized: "패시브 진행도"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 195
+    m_Localized: "활성"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 196
+    m_Localized: "비활성"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 197
+    m_Localized: "비어 있음"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 198
+    m_Localized: "횟수"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 199
+    m_Localized: "비일관"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200
+    m_Localized: "최대"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 201
+    m_Localized: "해금"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 202
+    m_Localized: "달성"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 203
+    m_Localized: "다음"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 204
+    m_Localized: "유닛"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 205
+    m_Localized: "골드"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 206
+    m_Localized: "에코"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 207
+    m_Localized: "액티브"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208
+    m_Localized: "패시브"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 209
+    m_Localized: "전체"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 210
+    m_Localized: "영입 단계"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 211
+    m_Localized: "전투 보상"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 212
+    m_Localized: "이벤트 보상"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 213
+    m_Localized: "직접 지급"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 214
+    m_Localized: "전열 고정"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 215
+    m_Localized: "표준 전진"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 216
+    m_Localized: "캐리 보호"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 217
+    m_Localized: "약측 붕괴"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 218
+    m_Localized: "후열 집중"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 219
+    m_Localized: "방어 파쇄"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 220
+    m_Localized: "노출 부여"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 221
+    m_Localized: "가드 파괴 연타"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 222
+    m_Localized: "추적 광역"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 223
+    m_Localized: "강인도 안정화"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 224
+    m_Localized: "치유 차단 분쇄"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 225
+    m_Localized: "가로채기 보호"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 226
+    m_Localized: "쓸기 파동 정리"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 227
+    m_Localized: "약함"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 228
+    m_Localized: "표준"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 229
+    m_Localized: "강함"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230
+    m_Localized: "방어 파쇄 / 지속 피해 / 전열 무시"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231
+    m_Localized: "보호 / 유도 전환 / 강한 군중 제어"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 232
+    m_Localized: "다이브 / 후열 압박"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 233
+    m_Localized: "침묵 / 빠른 다이브"
+    m_Metadata:
+      m_Items: []
   - m_Id: 3380255539585024
     m_Localized: "\uD604\uC7AC Town \uBE4C\uB4DC \uC0C1\uD0DC\uB85C integration smoke
       \uC804\uD22C\uB97C \uC5F4\uACE0, Reward \uB610\uB294 \uC9C1\uC811 Town \uBCF5\uADC0

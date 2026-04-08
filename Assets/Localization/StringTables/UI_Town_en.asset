@@ -724,6 +724,294 @@ MonoBehaviour:
     m_Localized: Select a hero to inspect town loadout, passives, synergy, and progression.
     m_Metadata:
       m_Items: []
+  - m_Id: 162
+    m_Localized: Race / Class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163
+    m_Localized: Role
+    m_Metadata:
+      m_Items: []
+  - m_Id: 164
+    m_Localized: Role Family
+    m_Metadata:
+      m_Items: []
+  - m_Id: 165
+    m_Localized: Traits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166
+    m_Localized: Posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167
+    m_Localized: Tactic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168
+    m_Localized: Weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 169
+    m_Localized: Armor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170
+    m_Localized: Accessory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171
+    m_Localized: Basic Attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 172
+    m_Localized: Basic Attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 173
+    m_Localized: Signature Active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 174
+    m_Localized: Signature Passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 175
+    m_Localized: Flex Active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 176
+    m_Localized: Flex Passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 177
+    m_Localized: Board
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178
+    m_Localized: Active Nodes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 179
+    m_Localized: Highlighted Node
+    m_Metadata:
+      m_Items: []
+  - m_Id: 180
+    m_Localized: Node Count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181
+    m_Localized: Keystone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182
+    m_Localized: Squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 183
+    m_Localized: members
+    m_Metadata:
+      m_Items: []
+  - m_Id: 184
+    m_Localized: Expected Families
+    m_Metadata:
+      m_Items: []
+  - m_Id: 185
+    m_Localized: Counter Hints
+    m_Metadata:
+      m_Items: []
+  - m_Id: 186
+    m_Localized: Soft Weakness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 187
+    m_Localized: Recruit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 188
+    m_Localized: Retrain State
+    m_Metadata:
+      m_Items: []
+  - m_Id: 189
+    m_Localized: Retrain Costs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 190
+    m_Localized: Dismiss Refund
+    m_Metadata:
+      m_Items: []
+  - m_Id: 191
+    m_Localized: Refit Preview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 192
+    m_Localized: Blueprint Permanent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 193
+    m_Localized: Unlocked Permanents
+    m_Metadata:
+      m_Items: []
+  - m_Id: 194
+    m_Localized: Passive Progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 195
+    m_Localized: Active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 196
+    m_Localized: Inactive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 197
+    m_Localized: Empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 198
+    m_Localized: count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 199
+    m_Localized: incoherent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200
+    m_Localized: max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 201
+    m_Localized: unlocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 202
+    m_Localized: reached
+    m_Metadata:
+      m_Items: []
+  - m_Id: 203
+    m_Localized: next
+    m_Metadata:
+      m_Items: []
+  - m_Id: 204
+    m_Localized: units
+    m_Metadata:
+      m_Items: []
+  - m_Id: 205
+    m_Localized: Gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 206
+    m_Localized: Echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 207
+    m_Localized: active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208
+    m_Localized: passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 209
+    m_Localized: full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 210
+    m_Localized: Recruit Phase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 211
+    m_Localized: Combat Reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 212
+    m_Localized: Event Reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 213
+    m_Localized: Direct Grant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 214
+    m_Localized: Hold Line
+    m_Metadata:
+      m_Items: []
+  - m_Id: 215
+    m_Localized: Standard Advance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 216
+    m_Localized: Protect Carry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 217
+    m_Localized: Collapse Weak Side
+    m_Metadata:
+      m_Items: []
+  - m_Id: 218
+    m_Localized: All In Backline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 219
+    m_Localized: Armor Shred
+    m_Metadata:
+      m_Items: []
+  - m_Id: 220
+    m_Localized: Exposure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 221
+    m_Localized: Guard Break
+    m_Metadata:
+      m_Items: []
+  - m_Id: 222
+    m_Localized: Tracking Area
+    m_Metadata:
+      m_Items: []
+  - m_Id: 223
+    m_Localized: Tenacity Stability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 224
+    m_Localized: Anti-Heal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 225
+    m_Localized: Intercept Peel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 226
+    m_Localized: Cleave Waveclear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 227
+    m_Localized: Light
+    m_Metadata:
+      m_Items: []
+  - m_Id: 228
+    m_Localized: Standard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 229
+    m_Localized: Strong
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230
+    m_Localized: armor shred / dot / ignore-front
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231
+    m_Localized: peel / redirect / hard CC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 232
+    m_Localized: dive / backline pressure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 233
+    m_Localized: silence / fast dive
+    m_Metadata:
+      m_Items: []
   - m_Id: 3380255539585024
     m_Localized: Open an integration smoke battle using the current Town build, then
       return through Reward or direct Town restore.

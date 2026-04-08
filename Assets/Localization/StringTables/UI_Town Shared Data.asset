@@ -679,6 +679,294 @@ MonoBehaviour:
     m_Key: ui.town.sheet.empty
     m_Metadata:
       m_Items: []
+  - m_Id: 162
+    m_Key: ui.town.sheet.race_class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 163
+    m_Key: ui.town.sheet.role
+    m_Metadata:
+      m_Items: []
+  - m_Id: 164
+    m_Key: ui.town.sheet.role_family
+    m_Metadata:
+      m_Items: []
+  - m_Id: 165
+    m_Key: ui.town.sheet.traits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 166
+    m_Key: ui.town.sheet.posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 167
+    m_Key: ui.town.sheet.tactic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 168
+    m_Key: ui.town.sheet.weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 169
+    m_Key: ui.town.sheet.armor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 170
+    m_Key: ui.town.sheet.accessory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 171
+    m_Key: ui.town.sheet.basic_attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 172
+    m_Key: ui.town.sheet.value.basic_attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 173
+    m_Key: ui.town.sheet.signature_active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 174
+    m_Key: ui.town.sheet.signature_passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 175
+    m_Key: ui.town.sheet.flex_active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 176
+    m_Key: ui.town.sheet.flex_passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 177
+    m_Key: ui.town.sheet.board
+    m_Metadata:
+      m_Items: []
+  - m_Id: 178
+    m_Key: ui.town.sheet.active_nodes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 179
+    m_Key: ui.town.sheet.highlighted_node
+    m_Metadata:
+      m_Items: []
+  - m_Id: 180
+    m_Key: ui.town.sheet.node_count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 181
+    m_Key: ui.town.sheet.keystone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182
+    m_Key: ui.town.sheet.squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 183
+    m_Key: ui.town.sheet.members
+    m_Metadata:
+      m_Items: []
+  - m_Id: 184
+    m_Key: ui.town.sheet.expected_families
+    m_Metadata:
+      m_Items: []
+  - m_Id: 185
+    m_Key: ui.town.sheet.counter_hints
+    m_Metadata:
+      m_Items: []
+  - m_Id: 186
+    m_Key: ui.town.sheet.soft_weakness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 187
+    m_Key: ui.town.sheet.recruit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 188
+    m_Key: ui.town.sheet.retrain_state
+    m_Metadata:
+      m_Items: []
+  - m_Id: 189
+    m_Key: ui.town.sheet.retrain_costs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 190
+    m_Key: ui.town.sheet.dismiss_refund
+    m_Metadata:
+      m_Items: []
+  - m_Id: 191
+    m_Key: ui.town.sheet.refit_preview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 192
+    m_Key: ui.town.sheet.blueprint_permanent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 193
+    m_Key: ui.town.sheet.unlocked_permanents
+    m_Metadata:
+      m_Items: []
+  - m_Id: 194
+    m_Key: ui.town.sheet.passive_progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 195
+    m_Key: ui.town.sheet.state.active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 196
+    m_Key: ui.town.sheet.state.inactive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 197
+    m_Key: ui.town.sheet.state.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 198
+    m_Key: ui.town.sheet.count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 199
+    m_Key: ui.town.sheet.incoherent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 200
+    m_Key: ui.town.sheet.max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 201
+    m_Key: ui.town.sheet.unlocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 202
+    m_Key: ui.town.sheet.reached
+    m_Metadata:
+      m_Items: []
+  - m_Id: 203
+    m_Key: ui.town.sheet.next
+    m_Metadata:
+      m_Items: []
+  - m_Id: 204
+    m_Key: ui.town.sheet.units
+    m_Metadata:
+      m_Items: []
+  - m_Id: 205
+    m_Key: ui.town.sheet.currency.gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 206
+    m_Key: ui.town.sheet.currency.echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 207
+    m_Key: ui.town.sheet.cost.active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 208
+    m_Key: ui.town.sheet.cost.passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 209
+    m_Key: ui.town.sheet.cost.full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 210
+    m_Key: ui.town.sheet.recruit_source.recruit_phase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 211
+    m_Key: ui.town.sheet.recruit_source.combat_reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 212
+    m_Key: ui.town.sheet.recruit_source.event_reward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 213
+    m_Key: ui.town.sheet.recruit_source.direct_grant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 214
+    m_Key: ui.town.sheet.posture.hold_line
+    m_Metadata:
+      m_Items: []
+  - m_Id: 215
+    m_Key: ui.town.sheet.posture.standard_advance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 216
+    m_Key: ui.town.sheet.posture.protect_carry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 217
+    m_Key: ui.town.sheet.posture.collapse_weak_side
+    m_Metadata:
+      m_Items: []
+  - m_Id: 218
+    m_Key: ui.town.sheet.posture.all_in_backline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 219
+    m_Key: ui.town.sheet.counter_tool.armor_shred
+    m_Metadata:
+      m_Items: []
+  - m_Id: 220
+    m_Key: ui.town.sheet.counter_tool.exposure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 221
+    m_Key: ui.town.sheet.counter_tool.guard_break_multi_hit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 222
+    m_Key: ui.town.sheet.counter_tool.tracking_area
+    m_Metadata:
+      m_Items: []
+  - m_Id: 223
+    m_Key: ui.town.sheet.counter_tool.tenacity_stability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 224
+    m_Key: ui.town.sheet.counter_tool.anti_heal_shatter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 225
+    m_Key: ui.town.sheet.counter_tool.intercept_peel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 226
+    m_Key: ui.town.sheet.counter_tool.cleave_waveclear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 227
+    m_Key: ui.town.sheet.counter_strength.light
+    m_Metadata:
+      m_Items: []
+  - m_Id: 228
+    m_Key: ui.town.sheet.counter_strength.standard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 229
+    m_Key: ui.town.sheet.counter_strength.strong
+    m_Metadata:
+      m_Items: []
+  - m_Id: 230
+    m_Key: ui.town.sheet.weakness.vanguard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 231
+    m_Key: ui.town.sheet.weakness.duelist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 232
+    m_Key: ui.town.sheet.weakness.ranger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 233
+    m_Key: ui.town.sheet.weakness.mystic
+    m_Metadata:
+      m_Items: []
   - m_Id: 3380255539585024
     m_Key: ui.town.tooltip.quick_battle_smoke
     m_Metadata:
