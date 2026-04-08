@@ -11,6 +11,7 @@ namespace SM.Persistence.Json;
 
 public sealed class JsonSaveRepository : ISaveRepository, ISaveRepositoryDiagnostics
 {
+    private static readonly UTF8Encoding Utf8NoBom = new(false);
     private readonly string _rootDirectory;
     private readonly string _quarantineDirectory;
 
@@ -157,11 +158,11 @@ public sealed class JsonSaveRepository : ISaveRepository, ISaveRepositoryDiagnos
         {
             Directory.CreateDirectory(_rootDirectory);
 
-            File.WriteAllText(artifacts.TempPayloadPath, json, Encoding.UTF8);
+            File.WriteAllText(artifacts.TempPayloadPath, json, Utf8NoBom);
             File.WriteAllText(
                 artifacts.TempManifestPath,
                 JsonConvert.SerializeObject(manifest, Formatting.Indented),
-                Encoding.UTF8);
+                Utf8NoBom);
 
             var tempAttempt = TryReadProfileArtifacts(artifacts.TempPayloadPath, artifacts.TempManifestPath, profile.ProfileId);
             if (tempAttempt.Status != ProfileReadStatus.Valid)
@@ -394,18 +395,12 @@ public sealed class JsonSaveRepository : ISaveRepository, ISaveRepositoryDiagnos
             }
 
             var payloadBytes = File.ReadAllBytes(payloadPath);
-            if (manifest.PayloadBytes > 0 && manifest.PayloadBytes != payloadBytes.Length)
+            if (!TryResolveVerifiedPayloadBytes(payloadBytes, manifest, out var verifiedPayloadBytes, out var verificationFailure))
             {
-                return ProfileReadAttempt.Invalid("payload_size_mismatch");
+                return ProfileReadAttempt.Invalid(verificationFailure);
             }
 
-            var hash = ComputeHash(payloadBytes);
-            if (!string.Equals(hash, manifest.PayloadHash, StringComparison.OrdinalIgnoreCase))
-            {
-                return ProfileReadAttempt.Invalid("payload_hash_mismatch");
-            }
-
-            var profile = JsonConvert.DeserializeObject<SaveProfile>(Encoding.UTF8.GetString(payloadBytes));
+            var profile = JsonConvert.DeserializeObject<SaveProfile>(Encoding.UTF8.GetString(verifiedPayloadBytes));
             if (profile == null)
             {
                 return ProfileReadAttempt.Invalid("profile_deserialize_failed");
@@ -421,12 +416,65 @@ public sealed class JsonSaveRepository : ISaveRepository, ISaveRepositoryDiagnos
                 return ProfileReadAttempt.Invalid("profile_id_mismatch");
             }
 
-            return ProfileReadAttempt.Valid(profile, manifest, payloadBytes.Length);
+            return ProfileReadAttempt.Valid(profile, manifest, verifiedPayloadBytes.Length);
         }
         catch (Exception ex)
         {
             return ProfileReadAttempt.Invalid(ex.Message);
         }
+    }
+
+    private static bool TryResolveVerifiedPayloadBytes(
+        byte[] payloadBytes,
+        SaveManifestRecord manifest,
+        out byte[] verifiedPayloadBytes,
+        out string failureReason)
+    {
+        verifiedPayloadBytes = payloadBytes;
+        failureReason = string.Empty;
+
+        if (MatchesManifest(payloadBytes, manifest))
+        {
+            return true;
+        }
+
+        if (TryTrimUtf8Bom(payloadBytes, out var bomlessPayloadBytes)
+            && MatchesManifest(bomlessPayloadBytes, manifest))
+        {
+            verifiedPayloadBytes = bomlessPayloadBytes;
+            return true;
+        }
+
+        failureReason = manifest.PayloadBytes > 0 && manifest.PayloadBytes != payloadBytes.Length
+            ? "payload_size_mismatch"
+            : "payload_hash_mismatch";
+        return false;
+    }
+
+    private static bool MatchesManifest(byte[] payloadBytes, SaveManifestRecord manifest)
+    {
+        if (manifest.PayloadBytes > 0 && manifest.PayloadBytes != payloadBytes.Length)
+        {
+            return false;
+        }
+
+        var hash = ComputeHash(payloadBytes);
+        return string.Equals(hash, manifest.PayloadHash, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool TryTrimUtf8Bom(byte[] payloadBytes, out byte[] trimmedBytes)
+    {
+        var preamble = Encoding.UTF8.GetPreamble();
+        if (payloadBytes.Length >= preamble.Length
+            && preamble.Length > 0
+            && payloadBytes.Take(preamble.Length).SequenceEqual(preamble))
+        {
+            trimmedBytes = payloadBytes.Skip(preamble.Length).ToArray();
+            return true;
+        }
+
+        trimmedBytes = Array.Empty<byte>();
+        return false;
     }
 
     private static string ComputeHash(byte[] bytes)

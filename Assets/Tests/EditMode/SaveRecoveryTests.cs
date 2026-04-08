@@ -1,8 +1,12 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using NUnit.Framework;
 using SM.Persistence.Abstractions.Models;
 using SM.Persistence.Json;
+using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
@@ -89,6 +93,81 @@ public sealed class SaveRecoveryTests
         }
     }
 
+    [Test]
+    public void SaveDetailed_WritesPayloadWithoutUtf8Bom_AndManifestMatchesFileLength()
+    {
+        var root = CreateTempRoot();
+        try
+        {
+            var repo = new JsonSaveRepository(root);
+            var profile = new SaveProfile
+            {
+                ProfileId = "default",
+                DisplayName = "Player",
+            };
+
+            var save = repo.SaveDetailed(profile);
+
+            Assert.That(save.IsSuccessful, Is.True, save.Message);
+            var payloadPath = Path.Combine(root, "default.json");
+            var manifestPath = Path.Combine(root, "default.manifest.json");
+            var payloadBytes = File.ReadAllBytes(payloadPath);
+            var manifest = JsonUtility.FromJson<SaveManifestRecord>(File.ReadAllText(manifestPath));
+
+            Assert.That(payloadBytes.Take(3).SequenceEqual(Encoding.UTF8.GetPreamble()), Is.False);
+            Assert.That(manifest.PayloadBytes, Is.EqualTo(payloadBytes.Length));
+            Assert.That(manifest.PayloadHash, Is.EqualTo(ComputeHash(payloadBytes)));
+        }
+        finally
+        {
+            DeleteRoot(root);
+        }
+    }
+
+    [Test]
+    public void LoadOrCreateDetailed_AcceptsLegacyUtf8BomPayload_WhenManifestWasRecordedWithoutBom()
+    {
+        var root = CreateTempRoot();
+        try
+        {
+            var repo = new JsonSaveRepository(root);
+            var profile = new SaveProfile
+            {
+                ProfileId = "default",
+                DisplayName = "Legacy",
+            };
+            profile.Currencies.Gold = 23;
+
+            var json = JsonUtility.ToJson(profile, true);
+            var bomlessPayloadBytes = Encoding.UTF8.GetBytes(json);
+            var payloadPath = Path.Combine(root, "default.json");
+            var manifestPath = Path.Combine(root, "default.manifest.json");
+            File.WriteAllBytes(payloadPath, Encoding.UTF8.GetPreamble().Concat(bomlessPayloadBytes).ToArray());
+            File.WriteAllText(
+                manifestPath,
+                "{\n"
+                + "  \"ProfileId\": \"default\",\n"
+                + "  \"SavedAtUtc\": \"2026-04-09T00:00:00.0000000Z\",\n"
+                + "  \"CheckpointKind\": \"StartupLoad\",\n"
+                + "  \"CompileHash\": \"\",\n"
+                + $"  \"PayloadHash\": \"{ComputeHash(bomlessPayloadBytes)}\",\n"
+                + $"  \"PayloadBytes\": {bomlessPayloadBytes.Length}\n"
+                + "}",
+                new UTF8Encoding(false));
+
+            var result = repo.LoadOrCreateDetailed("default");
+
+            Assert.That(result.Status, Is.EqualTo(SaveRepositoryLoadStatus.LoadedPrimary));
+            Assert.That(result.Profile, Is.Not.Null);
+            Assert.That(result.Profile!.Currencies.Gold, Is.EqualTo(23));
+            Assert.That(result.PayloadBytes, Is.EqualTo(bomlessPayloadBytes.Length));
+        }
+        finally
+        {
+            DeleteRoot(root);
+        }
+    }
+
     private static string CreateTempRoot()
     {
         var root = Path.Combine(Path.GetTempPath(), "sm_save_recovery_" + Guid.NewGuid().ToString("N"));
@@ -102,5 +181,18 @@ public sealed class SaveRecoveryTests
         {
             Directory.Delete(root, true);
         }
+    }
+
+    private static string ComputeHash(byte[] bytes)
+    {
+        using var algorithm = SHA256.Create();
+        var hash = algorithm.ComputeHash(bytes);
+        var builder = new StringBuilder(hash.Length * 2);
+        foreach (var value in hash)
+        {
+            builder.Append(value.ToString("X2"));
+        }
+
+        return builder.ToString();
     }
 }
