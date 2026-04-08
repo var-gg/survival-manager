@@ -144,7 +144,9 @@ public sealed class TownCharacterSheetFormatter
         PassiveBoardDefinition? board,
         PassiveNodeDefinition? selectedNode)
     {
-        IReadOnlyList<string> selectedNodeIds = loadout?.SelectedPassiveNodeIds ?? Array.Empty<string>();
+        IReadOnlyList<string> selectedNodeIds = loadout == null
+            ? Array.Empty<string>()
+            : loadout.SelectedPassiveNodeIds;
         var builder = new StringBuilder();
 
         AppendLabeledLine(builder, "ui.town.sheet.board", "Board", FormatPassiveBoardName(board?.Id ?? string.Empty));
