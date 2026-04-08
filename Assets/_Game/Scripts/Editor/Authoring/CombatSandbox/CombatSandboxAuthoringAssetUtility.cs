@@ -16,10 +16,20 @@ public static class CombatSandboxAuthoringAssetUtility
     private const string TeamPresetFolder = RootFolder + "/TeamPresets";
     private const string ExecutionPresetFolder = RootFolder + "/ExecutionPresets";
     private const string ScenarioFolder = RootFolder + "/Scenarios";
+    private const string LayoutFolder = RootFolder + "/Layouts";
+    private const string PreviewSettingsFolder = RootFolder + "/PreviewSettings";
+    private const string DefaultSceneLayoutPath = LayoutFolder + "/combat_sandbox_layout_default.asset";
+    private const string DefaultPreviewSettingsPath = PreviewSettingsFolder + "/combat_sandbox_preview_settings_default.asset";
 
     public static CombatSandboxConfig? EnsureActiveConfig()
     {
-        return FirstPlayableBootstrap.EnsureQuickBattleConfig();
+        var config = FirstPlayableBootstrap.EnsureQuickBattleConfig();
+        if (config != null)
+        {
+            EnsureSharedAssets(config);
+        }
+
+        return config;
     }
 
     public static void EnsureStarterLibrary()
@@ -30,6 +40,10 @@ public static class CombatSandboxAuthoringAssetUtility
         EnsureFolder(RootFolder, "TeamPresets");
         EnsureFolder(RootFolder, "ExecutionPresets");
         EnsureFolder(RootFolder, "Scenarios");
+        EnsureFolder(RootFolder, "Layouts");
+        EnsureFolder(RootFolder, "PreviewSettings");
+        var defaultLayout = EnsureDefaultSceneLayoutAsset();
+        var defaultPreviewSettings = EnsureDefaultPreviewSettingsAsset();
 
         var glassCannon = GetOrCreateAsset<UnitBuildOverrideAsset>(
             BuildOverrideFolder + "/unit_build_override_glass_cannon.asset",
@@ -181,6 +195,22 @@ public static class CombatSandboxAuthoringAssetUtility
         CreateScenario("endgame_glass_cannon", "Endgame Glass Cannon", endgameGlassCannon, observerSmoke, regressionBatch, true, "endgame", "burst");
         CreateScenario("endgame_fortress", "Endgame Fortress", endgameFortress, observerSmoke, fixedSeed, false, "endgame", "tank");
         CreateScenario("anti_burst_regression", "Anti Burst Regression", endgameFortress, endgameGlassCannon, regressionBatch, true, "regression", "counter", "anti_burst");
+        var activeConfig = FirstPlayableBootstrap.EnsureQuickBattleConfig();
+        if (activeConfig != null)
+        {
+            if (activeConfig.SceneLayout == null)
+            {
+                activeConfig.SceneLayout = defaultLayout;
+            }
+
+            if (activeConfig.PreviewSettings == null)
+            {
+                activeConfig.PreviewSettings = defaultPreviewSettings;
+            }
+
+            EditorUtility.SetDirty(activeConfig);
+        }
+
         AssetDatabase.SaveAssets();
     }
 
@@ -244,6 +274,7 @@ public static class CombatSandboxAuthoringAssetUtility
                 Notes = scenario.ExecutionPreset.Settings.Notes,
             }
             : new CombatSandboxExecutionSettings { PresetId = "runtime.active", DisplayName = "Runtime Active", Seed = 42, BatchCount = 1 };
+        EnsureSharedAssets(activeConfig);
         activeConfig.Seed = activeConfig.Execution.Seed;
         activeConfig.BatchCount = activeConfig.Execution.BatchCount;
         activeConfig.AllySlots = BuildLegacyAllyMirror(leftTeam);
@@ -272,6 +303,84 @@ public static class CombatSandboxAuthoringAssetUtility
 
         AssetDatabase.SaveAssets();
         return AssetDatabase.LoadAssetAtPath<CombatSandboxScenarioAsset>(destinationPath);
+    }
+
+    public static CombatSandboxConfig CreateTransientConfigCopy(CombatSandboxConfig source)
+    {
+        var copy = ScriptableObject.CreateInstance<CombatSandboxConfig>();
+        copy.hideFlags = HideFlags.HideAndDontSave;
+        EditorUtility.CopySerialized(source, copy);
+        EnsureSharedAssets(copy);
+        return copy;
+    }
+
+    public static bool IsActiveConfigAsset(CombatSandboxConfig? config)
+    {
+        if (config == null)
+        {
+            return false;
+        }
+
+        var assetPath = AssetDatabase.GetAssetPath(config);
+        return string.Equals(assetPath, FirstPlayableBootstrap.QuickBattleConfigAssetPath, StringComparison.Ordinal);
+    }
+
+    public static bool TryPushConfigToActiveConfig(CombatSandboxConfig source, out string message)
+    {
+        message = string.Empty;
+        if (source == null)
+        {
+            message = "Source config is missing.";
+            return false;
+        }
+
+        var activeConfig = EnsureActiveConfig();
+        if (activeConfig == null)
+        {
+            message = "Active Combat Sandbox config could not be created.";
+            return false;
+        }
+
+        EditorUtility.CopySerialized(source, activeConfig);
+        EnsureSharedAssets(activeConfig);
+        EditorUtility.SetDirty(activeConfig);
+        AssetDatabase.SaveAssets();
+        return true;
+    }
+
+    public static CombatSandboxSceneLayoutAsset EnsureDefaultSceneLayoutAsset()
+    {
+        return GetOrCreateAsset<CombatSandboxSceneLayoutAsset>(
+            DefaultSceneLayoutPath,
+            asset =>
+            {
+                asset.LayoutId = "combat_sandbox_layout_default";
+                asset.DisplayName = "Combat Sandbox Default Layout";
+                asset.SpawnOffsetX = 1.25f;
+                asset.AllyAnchors = CombatSandboxSceneLayoutAsset.CreateDefaultAnchors(isEnemy: false);
+                asset.EnemyAnchors = CombatSandboxSceneLayoutAsset.CreateDefaultAnchors(isEnemy: true);
+            });
+    }
+
+    public static CombatSandboxPreviewSettingsAsset EnsureDefaultPreviewSettingsAsset()
+    {
+        return GetOrCreateAsset<CombatSandboxPreviewSettingsAsset>(
+            DefaultPreviewSettingsPath,
+            asset =>
+            {
+                asset.SettingsId = "combat_sandbox_preview_default";
+                asset.DisplayName = "Combat Sandbox Default Preview";
+                asset.RangePreviewRadius = 2f;
+                asset.NavigationPreviewRadius = 0.5f;
+                asset.SeparationPreviewRadius = 0.75f;
+                asset.PreferredRangeMinPreview = 1f;
+                asset.PreferredRangeMaxPreview = 3f;
+                asset.EngagementSlotRadiusPreview = 1.25f;
+                asset.EngagementSlotCountPreview = 4;
+                asset.HeadAnchorHeightPreview = 2f;
+                asset.FrontlineGuardRadiusPreview = 2.5f;
+                asset.ClusterRadiusPreview = 2.5f;
+            });
     }
 
     private static bool TryBuildTeamDefinition(TeamLoadoutPresetAsset preset, out CombatSandboxTeamDefinition definition, out string warning)
@@ -514,6 +623,19 @@ public static class CombatSandboxAuthoringAssetUtility
             : "Regression / matchup authoring baseline.";
         scenario.Notes = "Generated by CombatSandboxAuthoringAssetUtility.";
         EditorUtility.SetDirty(scenario);
+    }
+
+    private static void EnsureSharedAssets(CombatSandboxConfig config)
+    {
+        if (config.SceneLayout == null)
+        {
+            config.SceneLayout = EnsureDefaultSceneLayoutAsset();
+        }
+
+        if (config.PreviewSettings == null)
+        {
+            config.PreviewSettings = EnsureDefaultPreviewSettingsAsset();
+        }
     }
 
     private static T GetOrCreateAsset<T>(string assetPath, Action<T> initialize) where T : ScriptableObject

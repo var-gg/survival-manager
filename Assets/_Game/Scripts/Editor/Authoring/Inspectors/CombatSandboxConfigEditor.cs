@@ -1,16 +1,24 @@
 using SM.Unity.Sandbox;
+using SM.Editor.Authoring.CombatSandbox;
+using SM.Editor.Bootstrap;
 using UnityEditor;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace SM.Editor.Authoring.Inspectors;
 
 [CustomEditor(typeof(CombatSandboxConfig))]
 public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
 {
+    private static readonly Dictionary<int, CombatSandboxEditorPreviewResult> PreviewCache = new();
+    private static readonly Dictionary<int, CombatSandboxEditorRunSummary> RunCache = new();
+
     private SerializedProperty _id = null!;
     private SerializedProperty _displayName = null!;
     private SerializedProperty _useScenarioAuthoring = null!;
     private SerializedProperty _defaultLaneKind = null!;
+    private SerializedProperty _sceneLayout = null!;
+    private SerializedProperty _previewSettings = null!;
     private SerializedProperty _scenario = null!;
     private SerializedProperty _leftTeam = null!;
     private SerializedProperty _rightTeam = null!;
@@ -23,6 +31,9 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
     private SerializedProperty _allySlots = null!;
     private SerializedProperty _enemySlots = null!;
     private bool _showLegacyMirror = true;
+    private string _inspectUnitId = string.Empty;
+    private Vector2 _previewScroll;
+    private Vector2 _resultsScroll;
 
     private void OnEnable()
     {
@@ -30,6 +41,8 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
         _displayName = serializedObject.FindProperty(nameof(CombatSandboxConfig.DisplayName));
         _useScenarioAuthoring = serializedObject.FindProperty(nameof(CombatSandboxConfig.UseScenarioAuthoring));
         _defaultLaneKind = serializedObject.FindProperty(nameof(CombatSandboxConfig.DefaultLaneKind));
+        _sceneLayout = serializedObject.FindProperty(nameof(CombatSandboxConfig.SceneLayout));
+        _previewSettings = serializedObject.FindProperty(nameof(CombatSandboxConfig.PreviewSettings));
         _scenario = serializedObject.FindProperty(nameof(CombatSandboxConfig.Scenario));
         _leftTeam = serializedObject.FindProperty(nameof(CombatSandboxConfig.LeftTeam));
         _rightTeam = serializedObject.FindProperty(nameof(CombatSandboxConfig.RightTeam));
@@ -51,6 +64,12 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
         EditorGUILayout.Space(8f);
         DrawAuthoringSection();
         EditorGUILayout.Space(8f);
+        DrawActionSection();
+        EditorGUILayout.Space(8f);
+        DrawPreviewSection();
+        EditorGUILayout.Space(8f);
+        DrawResultsSection();
+        EditorGUILayout.Space(8f);
         _showLegacyMirror = EditorGUILayout.Foldout(_showLegacyMirror, EditorLocalizedTextResolver.Label("Legacy Mirror / Compatibility", "Legacy Mirror / Compatibility"), true);
         if (_showLegacyMirror)
         {
@@ -67,13 +86,15 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
         EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Combat Sandbox Active Handoff", "Combat Sandbox Active Handoff"), EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(
             EditorLocalizedTextResolver.Label(
-                "이 asset은 runtime direct sandbox가 읽는 active handoff이다. 무거운 프리셋 authoring과 library 관리는 Combat Sandbox window에서 수행하고, 여기서는 sync 결과와 compatibility mirror를 확인한다.",
-                "This asset is the runtime active handoff for direct Combat Sandbox play. Use the Combat Sandbox window for preset authoring and library management, and use this inspector to verify the synced handoff plus compatibility mirrors."),
+                "이 asset은 runtime direct sandbox가 읽는 active handoff이자 주 authoring surface다. preset library와 history/result 비교는 Window/SM/Combat Sandbox에서 보조로 다룬다.",
+                "This asset is the runtime active handoff and the primary authoring surface for direct Combat Sandbox play. Use Window/SM/Combat Sandbox as the secondary library, history, and result surface."),
             MessageType.Info);
         EditorGUILayout.PropertyField(_id, new GUIContent(EditorLocalizedTextResolver.Label("구성 ID", "Config Id")));
         EditorGUILayout.PropertyField(_displayName, new GUIContent(EditorLocalizedTextResolver.Label("표시 이름", "Display Name")));
         EditorGUILayout.PropertyField(_useScenarioAuthoring, new GUIContent(EditorLocalizedTextResolver.Label("Scenario Authoring 사용", "Use Scenario Authoring")));
         EditorGUILayout.PropertyField(_defaultLaneKind, new GUIContent(EditorLocalizedTextResolver.Label("기본 lane", "Default Lane")));
+        EditorGUILayout.PropertyField(_sceneLayout, new GUIContent(EditorLocalizedTextResolver.Label("씬 레이아웃", "Scene Layout")));
+        EditorGUILayout.PropertyField(_previewSettings, new GUIContent(EditorLocalizedTextResolver.Label("미리보기 설정", "Preview Settings")));
     }
 
     private void DrawAuthoringSection()
@@ -90,6 +111,98 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
         EditorGUILayout.PropertyField(_enemyPosture, new GUIContent(EditorLocalizedTextResolver.Label("적군 태세", "Enemy Posture")));
         EditorGUILayout.PropertyField(_seed, new GUIContent(EditorLocalizedTextResolver.Label("시드", "Seed")));
         EditorGUILayout.PropertyField(_batchCount, new GUIContent(EditorLocalizedTextResolver.Label("배치 횟수", "Batch Count")));
+    }
+
+    private void DrawActionSection()
+    {
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Inspector Actions", "Inspector Actions"), EditorStyles.boldLabel);
+        _inspectUnitId = EditorGUILayout.TextField(EditorLocalizedTextResolver.Label("검사 유닛 ID", "Inspect Unit Id"), _inspectUnitId);
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if (GUILayout.Button(EditorLocalizedTextResolver.Label("미리보기 컴파일", "Compile Preview")))
+            {
+                CompilePreview();
+            }
+
+            if (GUILayout.Button(EditorLocalizedTextResolver.Label("액티브로 밀기", "Push Active")))
+            {
+                PushActive();
+            }
+
+            if (GUILayout.Button(EditorLocalizedTextResolver.Label("라이브러리 열기", "Open Library")))
+            {
+                CombatSandboxWindow.OpenWindow();
+            }
+        }
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if (GUILayout.Button(EditorLocalizedTextResolver.Label("단일 실행", "Run Single")))
+            {
+                Run(false, false);
+            }
+
+            if (GUILayout.Button(EditorLocalizedTextResolver.Label("배치 실행", "Run Batch")))
+            {
+                Run(true, false);
+            }
+
+            if (GUILayout.Button(EditorLocalizedTextResolver.Label("사이드 스왑", "Run Side Swap")))
+            {
+                Run(true, true);
+            }
+
+            if (GUILayout.Button(EditorLocalizedTextResolver.Label("밀고 실행", "Push Active + Play")))
+            {
+                if (PushActive())
+                {
+                    FirstPlayableBootstrap.PlayCombatSandbox();
+                }
+            }
+        }
+    }
+
+    private void DrawPreviewSection()
+    {
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Preview", "Preview"), EditorStyles.boldLabel);
+        if (!PreviewCache.TryGetValue(target.GetInstanceID(), out var preview))
+        {
+            EditorGUILayout.HelpBox(EditorLocalizedTextResolver.Label("아직 컴파일한 미리보기가 없습니다.", "No compiled preview yet."), MessageType.None);
+            return;
+        }
+
+        _previewScroll = EditorGUILayout.BeginScrollView(_previewScroll, GUILayout.MinHeight(220f));
+        DrawReadOnlyBlock("Scenario Summary", preview.ScenarioSummary);
+        DrawReadOnlyBlock("Left Team Preview", preview.LeftTeamPreview);
+        DrawReadOnlyBlock("Right Team Preview", preview.RightTeamPreview);
+        DrawReadOnlyBlock("Breakpoint Summary", preview.LaunchTruth.BreakpointSummary);
+        DrawReadOnlyBlock("Baseline Drift", preview.LaunchTruth.DriftSummary);
+        DrawReadOnlyBlock("Slice Membership", preview.LaunchTruth.MembershipWarning);
+        DrawReadOnlyBlock("Validation", preview.ValidationMessage);
+        EditorGUILayout.EndScrollView();
+    }
+
+    private void DrawResultsSection()
+    {
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Results", "Results"), EditorStyles.boldLabel);
+        if (!RunCache.TryGetValue(target.GetInstanceID(), out var run))
+        {
+            EditorGUILayout.HelpBox(EditorLocalizedTextResolver.Label("아직 실행 결과가 없습니다.", "No run results yet."), MessageType.None);
+            return;
+        }
+
+        _resultsScroll = EditorGUILayout.BeginScrollView(_resultsScroll, GUILayout.MinHeight(220f));
+        EditorGUILayout.LabelField($"Compile Hash: {run.PrimaryResult.PlayerSnapshot.CompileHash}");
+        EditorGUILayout.LabelField($"Replay Hash: {run.PrimaryResult.ReplayHash}");
+        EditorGUILayout.LabelField($"Layout Source: {run.LayoutSourceLabel}");
+        DrawReadOnlyBlock("Metrics", BuildMetricsSummary(run.PrimaryResult.Metrics, run.SideSwapResult));
+        DrawReadOnlyBlock("Counter Coverage", CombatSandboxExecutionService.BuildCounterCoverageSummary(run.PrimaryResult.PlayerSnapshot.TeamCounterCoverage, SM.Combat.Services.CounterCoverageAggregationService.AggregateFromLoadouts(run.PrimaryResult.EnemyLoadout)));
+        DrawReadOnlyBlock("Governance", CombatSandboxExecutionService.BuildGovernanceSummary(run.PrimaryResult.PlayerSnapshot, _inspectUnitId));
+        DrawReadOnlyBlock("Readability", CombatSandboxExecutionService.BuildReadabilitySummary(run.PrimaryResult.LastReplay.Readability));
+        DrawReadOnlyBlock("Explanation", CombatSandboxExecutionService.BuildExplanationSummary(run.PrimaryResult.LastReplay.BattleSummary));
+        DrawReadOnlyBlock("Provenance", CombatSandboxExecutionService.BuildProvenanceSummary(run.PrimaryResult.Provenance));
+        EditorGUILayout.EndScrollView();
     }
 
     private void DrawAllySlots()
@@ -157,6 +270,96 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
     {
         EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("축 미리보기", "Axis Preview"), EditorStyles.miniBoldLabel);
         EditorGUILayout.HelpBox(preview.BuildSummary(), preview.IsResolved ? MessageType.None : MessageType.Warning);
+    }
+
+    private void CompilePreview()
+    {
+        ApplyPendingChanges();
+        try
+        {
+            PreviewCache[target.GetInstanceID()] = CombatSandboxEditorSession.Shared.BuildPreview((CombatSandboxConfig)target);
+        }
+        catch (System.Exception ex)
+        {
+            EditorUtility.DisplayDialog("Combat Sandbox", ex.Message, "OK");
+        }
+    }
+
+    private bool PushActive()
+    {
+        ApplyPendingChanges();
+        if (CombatSandboxAuthoringAssetUtility.IsActiveConfigAsset((CombatSandboxConfig)target))
+        {
+            EditorUtility.SetDirty(target);
+            AssetDatabase.SaveAssets();
+            return true;
+        }
+
+        if (CombatSandboxAuthoringAssetUtility.TryPushConfigToActiveConfig((CombatSandboxConfig)target, out var message))
+        {
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                Debug.Log(message);
+            }
+
+            return true;
+        }
+
+        EditorUtility.DisplayDialog("Combat Sandbox", message, "OK");
+        return false;
+    }
+
+    private void Run(bool runAsBatch, bool runSideSwap)
+    {
+        ApplyPendingChanges();
+        try
+        {
+            var sceneController = FindAnyObjectByType<CombatSandboxSceneController>();
+            var session = CombatSandboxEditorSession.Shared;
+            var config = (CombatSandboxConfig)target;
+            var runSummary = session.Run(
+                config,
+                config.Seed,
+                config.BatchCount,
+                runAsBatch,
+                runSideSwap,
+                session.ResolveLayout(config, sceneController));
+            PreviewCache[target.GetInstanceID()] = runSummary.Preview;
+            RunCache[target.GetInstanceID()] = runSummary;
+        }
+        catch (System.Exception ex)
+        {
+            EditorUtility.DisplayDialog("Combat Sandbox", ex.Message, "OK");
+        }
+    }
+
+    private void ApplyPendingChanges()
+    {
+        serializedObject.ApplyModifiedProperties();
+        EditorUtility.SetDirty(target);
+        AssetDatabase.SaveAssets();
+    }
+
+    private static void DrawReadOnlyBlock(string label, string value)
+    {
+        EditorGUILayout.LabelField(label, EditorStyles.miniBoldLabel);
+        using (new EditorGUI.DisabledScope(true))
+        {
+            EditorGUILayout.TextArea(string.IsNullOrWhiteSpace(value) ? "none" : value, GUILayout.MinHeight(44f));
+        }
+    }
+
+    private static string BuildMetricsSummary(CombatSandboxMetrics metrics, CombatSandboxRunResult? sideSwapResult)
+    {
+        var summary =
+            $"win_rate={metrics.WinRate:0.###}\navg_duration={metrics.AverageDurationSeconds:0.###}\navg_events={metrics.AverageEventCount:0.###}\nfirst_action={metrics.AverageFirstActionSeconds:0.###}";
+        if (sideSwapResult == null)
+        {
+            return summary;
+        }
+
+        return summary +
+               $"\n--- side_swap ---\nwin_rate={sideSwapResult.Metrics.WinRate:0.###}\navg_duration={sideSwapResult.Metrics.AverageDurationSeconds:0.###}\navg_events={sideSwapResult.Metrics.AverageEventCount:0.###}\nfirst_action={sideSwapResult.Metrics.AverageFirstActionSeconds:0.###}";
     }
 
     private static void DrawArraySizeToolbar(SerializedProperty arrayProperty, string label)

@@ -1,7 +1,7 @@
 # Unity CLI 로컬 Fast Lane 가이드
 
 - 상태: active
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-04-09
 - 소유자: repository
 - 소스오브트루스: `docs/05_setup/unity-cli.md`
 - 관련문서:
@@ -19,7 +19,7 @@
 이 저장소에서 `unity-cli`는 MCP를 제거하거나 대체하는 도구가 아니라, CLI로 빨리 끝나는 read/diagnostic/smoke/report 작업을 줄 세우는 도구다.
 
 기본 원칙은 여전히 file-first다.
-코드, 문서, 테스트, repo-tracked YAML은 먼저 파일로 수정하고, Unity bridge는 compile/bootstrap/smoke/report surface로만 사용한다.
+코드, 문서, 테스트, repo-tracked YAML은 먼저 파일로 수정하고, Unity bridge는 compile/preflight/smoke/report surface로만 사용한다.
 
 ## 로컬 설치
 
@@ -67,7 +67,7 @@ CLI background 처리 지연을 줄이기 위해 아래 설정을 권장한다.
 기본 실행 진입점은 `tools/unity-bridge.ps1`다.
 wrapper는 항상 현재 repo를 `--project`로 고정한다.
 Windows에서는 instance discovery가 `--project .`나 백슬래시 경로와 잘 맞지 않을 수 있으므로, wrapper가 절대 경로를 `A:/...` 형식으로 정규화해서 넘긴다.
-또한 local install 경로 fallback, transient connector retry, `compile` / `bootstrap` / `seed-content` / `test-*` 이후 자동 `status` polling을 포함하므로, busy state를 wrapper가 먼저 흡수하는 기본 경로로 쓴다.
+또한 local install 경로 fallback, transient connector retry, `compile` / `prepare-playable` / `quick-battle-smoke` / `seed-content` / `test-*` 이후 자동 `status` polling을 포함하므로, busy state를 wrapper가 먼저 흡수하는 기본 경로로 쓴다.
 `test-*`가 `run_tests sent (connection closed before response)`로 끝나도 wrapper는 ready 복구 뒤 `TestResults.xml`을 읽어 pass/fail을 다시 판단한다.
 sample content generation은 이제 `seed-content` 같은 explicit preflight lane에서만 허용한다.
 runtime/test 경로는 canonical content가 준비되지 않았을 때 asset rewrite를 하지 않고, preflight command를 안내하는 쪽으로 고정한다.
@@ -101,8 +101,8 @@ pwsh -File tools/pre-art-rc.ps1
 ```
 
 - `prepare-playable`이 canonical newcomer/setup lane이다.
-- `quick-battle-smoke`가 `SM/Quick Battle`를 노출한다.
-- `bootstrap`은 하위 호환용 deprecated alias로만 남고, canonical bootstrap 의미로 쓰지 않는다.
+- `quick-battle-smoke`는 `SM/Play/Combat Sandbox`를 호출한다.
+- `seed-content`는 `SM/Internal/Content/Generate Sample Content`를 호출한다.
 
 `console` verb는 wrapper 입력을 `-Filter`로 받지만 실제 `unity-cli`에는 `--type`으로 전달한다.
 현재 `unity-cli v0.3.5` help 기준 콘솔 필터 flag는 `--type`이다.
@@ -131,7 +131,7 @@ connector heartbeat가 잠시 끊긴 것처럼 보일 수 있다.
 
 - connector port는 세션마다 달라질 수 있으므로 숫자를 기준으로 수동 대응하지 않는다.
 - 재부팅 직후에는 `PATH` 반영이 꼬일 수 있으므로 `unity-cli` 직호출보다 wrapper를 우선한다.
-- compile, bootstrap, test 직후에는 Editor가 잠시 busy state라 `status`가 한두 번 실패할 수 있다.
+- compile, prepare-playable, quick-battle-smoke, test 직후에는 Editor가 잠시 busy state라 `status`가 한두 번 실패할 수 있다.
 
 ## wrapper 출력 해석
 
@@ -262,7 +262,7 @@ full test도 같은 원칙을 따른다.
 - default `test-edit`에는 multi-minute balance smoke를 넣지 않는다.
 - 장시간 deterministic suite는 `loopd-*` shard verb처럼 manual artifact lane으로 분리한다.
 - sample content regenerate가 필요하면 먼저 `seed-content`를 별도 lane으로 실행하고 test lane 안에서 암묵 repair를 기대하지 않는다.
-- `test-*`는 observer bootstrap/report 직후의 같은 직렬 파이프라인에 습관적으로 붙이지 않는다.
+- `test-*`는 observer preflight/report 직후의 같은 직렬 파이프라인에 습관적으로 붙이지 않는다.
 - wrapper를 쓴다면 test 실행 직후의 connector recovery는 wrapper가 먼저 처리한다.
 - wrapper를 쓴다면 `run_tests sent`만 보고 성공으로 간주하지 않고 결과 artifact까지 회수한다.
 - bare `unity-cli`를 직접 쓴다면 connector가 끊긴 직후 즉시 재실행하지 말고 `status`가 돌아올 때까지 기다린다.
@@ -295,4 +295,4 @@ pwsh -File tools/unity-bridge.ps1 loopd-runlite
 - current project lock과 connector 선언 dependency의 patch version이 다를 수 있다.
 - CLI가 빠르다고 해서 broad write automation 기본 경로로 확장하면 정책 위반이 된다.
 - Unity Editor throttling이 켜져 있으면 background command 응답이 늦을 수 있다.
-- compile / bootstrap / test 직후에는 connector heartbeat가 잠시 끊겨 wrapper가 false negative처럼 보일 수 있다.
+- compile / prepare-playable / quick-battle-smoke / test 직후에는 connector heartbeat가 잠시 끊겨 wrapper가 false negative처럼 보일 수 있다.

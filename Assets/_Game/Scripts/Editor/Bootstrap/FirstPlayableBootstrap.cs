@@ -19,7 +19,7 @@ public static class FirstPlayableBootstrap
     internal const string QuickBattleRequestedKey = "SM.QuickBattleRequested";
     private const string QuickBattleInspectorRestoreKey = "SM.QuickBattleRestoreInspector";
     private const string QuickBattleConfigFolder = "Assets/Resources/_Game/Content/Definitions/QuickBattle";
-    private const string QuickBattleConfigAssetPath = "Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset";
+    internal const string QuickBattleConfigAssetPath = "Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset";
     private static readonly (string HeroId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultQuickBattleAllySlots =
     {
         ("hero-1", SM.Combat.Model.DeploymentAnchorId.FrontCenter),
@@ -54,27 +54,15 @@ public static class FirstPlayableBootstrap
         try
         {
             using var flow = RuntimeInstrumentation.BeginFlow("CombatSandbox");
-            flow.Step("Ensure Combat Sandbox starter library", CombatSandboxAuthoringAssetUtility.EnsureStarterLibrary);
-            flow.Step("Ensure localization foundation", LocalizationFoundationBootstrap.EnsureFoundationAssets);
-            flow.Step("Ensure minimum canonical content", () => EnsureCanonicalSampleContentForPrototypeEntry("CombatSandbox"));
-            flow.Step("Write content validation report (non-blocking)", () => ValidateContentDefinitionsForPrototypeEntry("CombatSandbox"));
-            flow.Step("Repair first playable scenes", FirstPlayableSceneInstaller.RepairFirstPlayableScenes);
-            var quickBattleConfig = flow.Step("Ensure Combat Sandbox active handoff", EnsureQuickBattleConfig);
-            if (quickBattleConfig != null)
+            if (!TryValidateCombatSandboxPreflight(out var quickBattleConfig, out var error))
             {
-                EditorPrefs.SetBool(QuickBattleInspectorRestoreKey, true);
-                Selection.activeObject = quickBattleConfig;
-                EditorGUIUtility.PingObject(quickBattleConfig);
+                throw new System.InvalidOperationException(error);
             }
 
-            flow.Step("Reset local demo save/profile", ResetLocalDemoState);
+            EditorPrefs.SetBool(QuickBattleInspectorRestoreKey, true);
+            Selection.activeObject = quickBattleConfig;
+            EditorGUIUtility.PingObject(quickBattleConfig);
             flow.Step("Open Battle scene", () => EditorSceneManager.OpenScene(BattleScenePath, OpenSceneMode.Single));
-            if (quickBattleConfig != null)
-            {
-                Selection.activeObject = quickBattleConfig;
-                EditorGUIUtility.PingObject(quickBattleConfig);
-            }
-
             EditorPrefs.SetBool(QuickBattleRequestedKey, true);
             flow.Step("Enter Play Mode", EditorApplication.EnterPlaymode);
         }
@@ -87,14 +75,7 @@ public static class FirstPlayableBootstrap
         }
     }
 
-    [MenuItem("SM/Quick Battle")]
-    public static void QuickBattleOneClick()
-    {
-        PlayCombatSandbox();
-    }
-
     [MenuItem("SM/Play/Full Loop")]
-    [MenuItem("SM/Setup/Prepare Observer Playable")]
     public static void PrepareObserverPlayableMenu()
     {
         PrepareObserverPlayable();
@@ -104,19 +85,18 @@ public static class FirstPlayableBootstrap
     {
         try
         {
-            using var flow = RuntimeInstrumentation.BeginFlow("PrepareObserverPlayable");
-            flow.Step("Ensure localization foundation", LocalizationFoundationBootstrap.EnsureFoundationAssets);
-            flow.Step("Ensure minimum canonical content without rewriting committed authoring", () => EnsureCanonicalSampleContentForPrototypeEntry("ObserverPlayable"));
-            flow.Step("Write content validation report (non-blocking)", () => ValidateContentDefinitionsForPrototypeEntry("ObserverPlayable"));
-            flow.Step("Repair first playable scenes", FirstPlayableSceneInstaller.RepairFirstPlayableScenes);
-            flow.Step("Reset local demo save/profile if present", ResetLocalDemoState);
-            flow.Step("Open Boot scene", () => EditorSceneManager.OpenScene(BootScenePath, OpenSceneMode.Single));
+            using var flow = RuntimeInstrumentation.BeginFlow("FullLoop");
+            if (!TryValidateFullLoopPreflight(out var error))
+            {
+                throw new System.InvalidOperationException(error);
+            }
 
-            Debug.Log("[ObserverPlayable] Success. 이제 Boot scene에서 Play를 누르고 Start Local Run으로 Town 흐름을 확인할 수 있다.");
+            flow.Step("Open Boot scene", () => EditorSceneManager.OpenScene(BootScenePath, OpenSceneMode.Single));
+            Debug.Log("[FullLoop] Success. 이제 Boot scene에서 Play를 누르고 Start Local Run으로 Town 흐름을 확인할 수 있다.");
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"[ObserverPlayable] Failed: {ex.Message}\n{ex}");
+            Debug.LogError($"[FullLoop] Failed: {ex.Message}\n{ex}");
             throw;
         }
     }
@@ -126,22 +106,26 @@ public static class FirstPlayableBootstrap
         PrepareObserverPlayable();
     }
 
-    [MenuItem("SM/Recovery/Ensure Localization Foundation")]
     public static void EnsureLocalizationFoundation()
     {
         LocalizationFoundationBootstrap.EnsureFoundationAssets();
     }
 
-    [MenuItem("SM/Recovery/Repair First Playable Scenes")]
     public static void RepairFirstPlayableScenes()
     {
         FirstPlayableSceneInstaller.RepairFirstPlayableScenes();
     }
 
-    [MenuItem("SM/Recovery/Validate Canonical Content")]
+    [MenuItem("SM/Internal/Validation/Validate Canonical Content")]
     public static void ValidateCanonicalContent()
     {
         ValidateContentDefinitionsForPrototypeEntry("Recovery");
+    }
+
+    internal static bool TryLoadQuickBattleConfig(out SM.Unity.Sandbox.CombatSandboxConfig config)
+    {
+        config = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(QuickBattleConfigAssetPath);
+        return config != null;
     }
 
     internal static SM.Unity.Sandbox.CombatSandboxConfig? EnsureQuickBattleConfig()
@@ -271,6 +255,86 @@ public static class FirstPlayableBootstrap
         config.EnemySlots = BuildDefaultQuickBattleEnemySlots();
     }
 
+    private static bool TryValidateFullLoopPreflight(out string error)
+    {
+        error = string.Empty;
+        if (!File.Exists(BootScenePath))
+        {
+            error = $"Boot scene is missing: {BootScenePath}";
+            return false;
+        }
+
+        try
+        {
+            FirstPlayableContentBootstrap.RequireSampleContentReady(nameof(PrepareObserverPlayable));
+        }
+        catch (System.Exception ex)
+        {
+            error = $"{ex.Message}\nRecovery: SM/Internal/Content/Ensure Sample Content";
+            return false;
+        }
+
+        if (!FirstPlayableSceneInstaller.TryValidateSavedSceneContract(SceneNames.Boot, out error))
+        {
+            error += "\nRecovery: SM/Internal/Recovery/Repair First Playable Scenes";
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryValidateCombatSandboxPreflight(
+        out SM.Unity.Sandbox.CombatSandboxConfig quickBattleConfig,
+        out string error)
+    {
+        quickBattleConfig = null!;
+        error = string.Empty;
+
+        if (!File.Exists(BattleScenePath))
+        {
+            error = $"Battle scene is missing: {BattleScenePath}";
+            return false;
+        }
+
+        if (!TryLoadQuickBattleConfig(out quickBattleConfig))
+        {
+            error =
+                $"Combat Sandbox active handoff is missing: {QuickBattleConfigAssetPath}\n" +
+                "Recovery: Window/SM/Combat Sandbox or SM/Internal/Content/Ensure Sample Content";
+            return false;
+        }
+
+        try
+        {
+            FirstPlayableContentBootstrap.RequireSampleContentReady(nameof(PlayCombatSandbox));
+        }
+        catch (System.Exception ex)
+        {
+            error = $"{ex.Message}\nRecovery: SM/Internal/Content/Ensure Sample Content";
+            return false;
+        }
+
+        if (!FirstPlayableSceneInstaller.TryValidateSavedSceneContract(SceneNames.Battle, out error))
+        {
+            error += "\nRecovery: SM/Internal/Recovery/Repair First Playable Scenes";
+            return false;
+        }
+
+        try
+        {
+            CombatSandboxEditorSession.Shared.BuildCompiledScenario(quickBattleConfig);
+        }
+        catch (System.Exception ex)
+        {
+            error =
+                $"Combat Sandbox preflight compile failed.\n{ex.Message}\n" +
+                "Recovery: Window/SM/Combat Sandbox, SM/Internal/Validation/Validate Canonical Content";
+            return false;
+        }
+
+        return true;
+    }
+
     private static SM.Unity.Sandbox.CombatSandboxTeamDefinition BuildDefaultDirectLeftTeam()
     {
         return new SM.Unity.Sandbox.CombatSandboxTeamDefinition
@@ -377,13 +441,13 @@ public static class FirstPlayableBootstrap
                 if (File.Exists(savePath))
                 {
                     File.Delete(savePath);
-                    Debug.Log($"[ObserverPlayable] Quick Battle smoke save removed: {savePath}");
+                    Debug.Log($"[CombatSandbox] Quick Battle smoke save removed: {savePath}");
                 }
             }
         }
         catch (System.Exception ex)
         {
-            Debug.LogWarning($"[ObserverPlayable] Local demo save reset skipped: {ex.Message}");
+            Debug.LogWarning($"[CombatSandbox] Local demo save reset skipped: {ex.Message}");
         }
     }
 
@@ -437,7 +501,7 @@ public static class FirstPlayableBootstrap
         {
             Debug.LogWarning(
                 $"[{flowLabel}] Content validation reported {errorCount} error(s) and {warningCount} warning(s). " +
-                $"Prototype entry continues. Strict gating is still available via SM/Validation/Validate Content Definitions. " +
+                $"Prototype entry continues. Strict gating is still available via SM/Internal/Validation/Validate Content Definitions. " +
                 $"Report: {report.JsonReportPath}");
             return;
         }
@@ -461,7 +525,7 @@ public static class FirstPlayableBootstrap
         {
             Debug.LogWarning(
                 $"[{flowLabel}] Canonical sample content ensure reported validation errors but prototype entry continues. " +
-                $"Strict gating is still available via SM/Validation/Validate Content Definitions. {ex.Message}");
+                $"Strict gating is still available via SM/Internal/Validation/Validate Content Definitions. {ex.Message}");
         }
     }
 

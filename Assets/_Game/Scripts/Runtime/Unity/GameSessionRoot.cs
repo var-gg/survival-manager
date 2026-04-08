@@ -44,6 +44,7 @@ public sealed class GameSessionRoot : MonoBehaviour
         SessionState = new GameSessionState(CombatContentLookup);
         Sessions = new SessionRealmCoordinator(SessionState, new PersistenceEntryPoint());
         SceneFlow = new SceneFlowController(this, SessionState);
+        BootstrapDirectCombatSandboxIfRequested();
         FirstPlayableRuntimeSceneBinder.EnsureSceneBindings(SceneManager.GetActiveScene());
     }
 
@@ -188,6 +189,45 @@ public sealed class GameSessionRoot : MonoBehaviour
         return root;
     }
 
+    private void BootstrapDirectCombatSandboxIfRequested()
+    {
+#if UNITY_EDITOR
+        if (!ConsumeDirectCombatSandboxRequest())
+        {
+            return;
+        }
+
+        UseDedicatedSmokeNamespace();
+        EnsureOfflineLocalSession();
+        SessionState.ReloadQuickBattleConfig();
+        SessionState.PrepareCombatSandboxDirect();
+        var checkpoint = SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
+        if (!checkpoint.IsSuccessful)
+        {
+            SetBlockingError(checkpoint.Message);
+        }
+#endif
+    }
+
+#if UNITY_EDITOR
+    private static bool ConsumeDirectCombatSandboxRequest()
+    {
+        if (SceneManager.GetActiveScene().name != SceneNames.Battle)
+        {
+            return false;
+        }
+
+        if (!EditorPrefs.GetBool("SM.QuickBattleRequested", false))
+        {
+            return false;
+        }
+
+        EditorPrefs.DeleteKey("SM.QuickBattleRequested");
+        Debug.Log("[GameSessionRoot] Combat Sandbox direct 요청을 소비하고 Battle scene bootstrap을 준비합니다.");
+        return true;
+    }
+#endif
+
     private void HandleCheckpointResult(SessionCheckpointResult result, bool blockOnFailure)
     {
         if (result.IsSuccessful)
@@ -219,12 +259,6 @@ public sealed class GameSessionRoot : MonoBehaviour
 
     private static RuntimeCombatContentLookup CreateCombatContentLookup()
     {
-#if UNITY_EDITOR
-        // Editor play paths can start from Boot or direct Battle scenes before Resources import catches up.
-        // Allow AssetDatabase recovery fallback so SM/Play entry points remain self-healing inside the editor.
-        return new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
-#else
         return new RuntimeCombatContentLookup();
-#endif
     }
 }

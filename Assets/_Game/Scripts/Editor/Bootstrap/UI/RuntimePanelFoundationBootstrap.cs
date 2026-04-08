@@ -11,7 +11,7 @@ public static class RuntimePanelFoundationBootstrap
     private const string FoundationRoot = "Assets/_Game/UI/Foundation";
     private const string PanelSettingsRoot = "Assets/_Game/UI/Foundation/PanelSettings";
 
-    [MenuItem("SM/Setup/Ensure Runtime Panel Foundation")]
+    [MenuItem("SM/Internal/Recovery/Ensure Runtime Panel Foundation")]
     public static void EnsureFoundationAssets()
     {
         EnsureFolder("Assets/_Game");
@@ -33,6 +33,9 @@ public static class RuntimePanelFoundationBootstrap
             AssetDatabase.CreateAsset(panelSettings, RuntimePanelAssetRegistry.SharedPanelSettingsPath);
         }
 
+        panelSettings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
+        panelSettings.referenceResolution = new Vector2Int(1920, 1080);
+        panelSettings.clearColor = false;
         EditorUtility.SetDirty(panelSettings);
     }
 

@@ -170,11 +170,12 @@ main 브랜치에서 바로 연결 검증하지 않는다.
 2. `git status`로 변경 파일 확인
 3. `git restore`로 개별 파일 복구
 4. 필요 시 branch reset
-5. Unity scene 상태가 꼬였으면 scene reinstall bootstrap 재실행
+5. Unity scene 상태가 꼬였으면 internal recovery lane을 재실행
 
-프로젝트 기준 bootstrap 예:
+프로젝트 기준 recovery 예:
 
-- `SM/Setup/Prepare Observer Playable`
+- `SM/Play/Full Loop`
+- `SM/Internal/Recovery/Repair First Playable Scenes`
 
 ## 최소 도입 원칙
 

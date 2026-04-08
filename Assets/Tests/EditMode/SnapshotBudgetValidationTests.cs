@@ -23,7 +23,7 @@ public sealed class SnapshotBudgetValidationTests
         var path = ResolveSnapshotPath();
         if (!File.Exists(path))
         {
-            Assert.Ignore($"content-snapshot.json not found at {path}. Run SM/Content/Export Content Snapshot to enable budget validation tests.");
+            Assert.Ignore($"content-snapshot.json not found at {path}. Run SM/Internal/Content/Export Content Snapshot to enable budget validation tests.");
             return;
         }
 
@@ -37,7 +37,7 @@ public sealed class SnapshotBudgetValidationTests
         var path = ResolveSnapshotPath();
         if (!File.Exists(path))
         {
-            Assert.Ignore("content-snapshot.json not exported yet. Run SM/Content/Export Content Snapshot.");
+            Assert.Ignore("content-snapshot.json not exported yet. Run SM/Internal/Content/Export Content Snapshot.");
             return;
         }
 
@@ -63,7 +63,7 @@ public sealed class SnapshotBudgetValidationTests
         var path = ResolveSnapshotPath();
         if (!File.Exists(path))
         {
-            Assert.Ignore("content-snapshot.json not exported yet. Run SM/Content/Export Content Snapshot.");
+            Assert.Ignore("content-snapshot.json not exported yet. Run SM/Internal/Content/Export Content Snapshot.");
             return;
         }
 

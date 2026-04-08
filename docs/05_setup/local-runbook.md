@@ -1,13 +1,13 @@
 # 로컬 실행 런북
 
 - 상태: active
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-04-09
 - 단계: prototype
 
 ## 먼저 실행할 메뉴
 
 - `SM/Play/Full Loop`
-- 필요 시 `SM/Recovery/Ensure Localization Foundation`
+- 필요 시 `SM/Internal/Recovery/Ensure Localization Foundation`
 
 ## 빠른 실행 절차
 
@@ -75,14 +75,15 @@
 - normal playable acceptance에는 두 경로 모두 사용하지 않는다.
 - direct sandbox에서는 `Replay Same Seed`, `New Seed`, `Exit Sandbox`만 보이고 Reward/Town progression CTA는 숨겨져야 한다.
 - Town smoke에서는 `Continue`, `Return to Town (Debug)`가 유지되고, canonical Town 상태 복구 계약을 따라야 한다.
-- heavy preset authoring, batch, source 전환은 `SM/Authoring/Combat Sandbox`에서 수행한다.
+- heavy preset authoring, batch, source 전환은 Inspector 또는 `Window/SM/Combat Sandbox`에서 수행한다.
 
 ## 현재 계약 경로
 
 - canonical sample content root: `Assets/Resources/_Game/Content/Definitions/**`
-- scene repair source of truth: `SM/Recovery/Repair First Playable Scenes`
-- one-shot bootstrap: `SM/Play/Full Loop` (legacy alias `SM/Setup/Prepare Observer Playable`)
-- localization foundation source of truth: `SM/Recovery/Ensure Localization Foundation`
+- scene repair source of truth: `SM/Internal/Recovery/Repair First Playable Scenes`
+- full-loop preflight + launch: `SM/Play/Full Loop`
+- localization foundation source of truth: `SM/Internal/Recovery/Ensure Localization Foundation`
+- canonical content recovery: `SM/Internal/Content/Ensure Sample Content`
 - release-floor packet wrapper: `pwsh -File tools/pre-art-rc.ps1`
 - default playable content load path: `Resources.LoadAll(...)` only
 - editor sweep / file fallback: explicit diagnostic lane only

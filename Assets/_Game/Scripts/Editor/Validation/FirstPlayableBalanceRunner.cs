@@ -89,7 +89,7 @@ public static class FirstPlayableBalanceRunner
         IReadOnlyList<string> Failures,
         string ReportDirectory);
 
-    [MenuItem("SM/Validation/Run Loop D Balance")]
+    [MenuItem("SM/Internal/Validation/Run Loop D Balance")]
     public static void RunMenu()
     {
         var report = RunAndWriteReport();
@@ -101,7 +101,7 @@ public static class FirstPlayableBalanceRunner
         Debug.Log($"[LoopD] Reports written to {report.ReportDirectory}");
     }
 
-    [MenuItem("SM/Validation/Run Loop D Balance Smoke")]
+    [MenuItem("SM/Internal/Validation/Run Loop D Balance Smoke")]
     public static void RunSmokeMenu()
     {
         var report = RunAndWriteReport(smokeMode: true);

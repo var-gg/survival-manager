@@ -13,7 +13,7 @@ public static class BaselineDocGenerator
 {
     private const string OutputDirectory = "Logs/baseline-docs";
 
-    [MenuItem("SM/Content/Write Baseline Asset Docs")]
+    [MenuItem("SM/Internal/Content/Write Baseline Asset Docs")]
     public static void Generate()
     {
         Directory.CreateDirectory(OutputDirectory);
@@ -39,7 +39,7 @@ public static class BaselineDocGenerator
         EditorUtility.RevealInFinder(outputPath);
     }
 
-    [MenuItem("SM/Content/Write Baseline Asset Docs", true)]
+    [MenuItem("SM/Internal/Content/Write Baseline Asset Docs", true)]
     private static bool CanGenerate() => !EditorApplication.isCompiling;
 
     private static List<T> FindAssets<T>() where T : ScriptableObject

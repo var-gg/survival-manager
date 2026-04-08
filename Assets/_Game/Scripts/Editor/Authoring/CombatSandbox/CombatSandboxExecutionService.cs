@@ -3,8 +3,6 @@ using System.Linq;
 using System.Text;
 using SM.Combat.Model;
 using SM.Combat.Services;
-using SM.Persistence.Abstractions;
-using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 using SM.Unity.Sandbox;
 
@@ -14,65 +12,7 @@ public static class CombatSandboxExecutionService
 {
     public static CombatSandboxCompiledScenario BuildCompiledScenario(CombatSandboxConfig config, int seedOverride = 0)
     {
-        var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
-        var session = new GameSessionState(lookup);
-        session.BindProfile(LoadLocalProfile());
-        session.EnsureBattleDeployReady();
-
-        var compiler = new CombatSandboxScenarioCompiler(lookup);
-        if (!compiler.TryCompileScenario(
-                new CombatSandboxCompilationContext(
-                    session.Profile,
-                    session.DeploymentAssignments,
-                    session.ExpeditionSquadHeroIds,
-                    session.SelectedTeamPosture,
-                    session.SelectedTeamTacticId,
-                    session.Expedition.TemporaryAugmentIds,
-                    session.CurrentExpeditionNodeIndex),
-                config,
-                config.DefaultLaneKind == CombatSandboxLaneKind.None ? CombatSandboxLaneKind.DirectCombatSandbox : config.DefaultLaneKind,
-                seedOverride == 0 ? null : seedOverride,
-                out var compiled,
-                out var error))
-        {
-            throw new InvalidOperationException(error);
-        }
-
-        return compiled;
-    }
-
-    private static SaveProfile LoadLocalProfile()
-    {
-        var persistence = new PersistenceEntryPoint();
-        var profileId = string.IsNullOrWhiteSpace(persistence.Config.ProfileId)
-            ? "default"
-            : persistence.Config.ProfileId;
-
-        try
-        {
-            if (persistence.Repository is ISaveRepositoryDiagnostics diagnostics)
-            {
-                var result = diagnostics.LoadOrCreateDetailed(
-                    profileId,
-                    new SaveRepositoryRequest
-                    {
-                        CheckpointKind = "CombatSandboxPreview",
-                    });
-                if (result.Profile != null)
-                {
-                    return result.Profile;
-                }
-            }
-
-            return persistence.Repository.LoadOrCreate(profileId);
-        }
-        catch
-        {
-            return new SaveProfile
-            {
-                ProfileId = profileId,
-            };
-        }
+        return CombatSandboxEditorSession.Shared.BuildCompiledScenario(config, seedOverride);
     }
 
     public static CombatSandboxRunRequest BuildRequest(CombatSandboxState state, BattlefieldLayout? sceneLayout = null)
@@ -84,13 +24,14 @@ public static class CombatSandboxExecutionService
 
         var compiled = BuildCompiledScenario(state.Config, state.Seed);
         var batchCount = state.BatchCount > 0 ? state.BatchCount : Math.Max(1, compiled.Execution.BatchCount);
+        var effectiveLayout = sceneLayout ?? CombatSandboxEditorSession.Shared.ResolveLayout(state.Config, null);
         return new CombatSandboxRunRequest(
             compiled.LeftTeam.Snapshot,
             compiled.RightTeam.Snapshot.Allies,
             compiled.Seed,
             batchCount,
             compiled.ScenarioId,
-            sceneLayout);
+            effectiveLayout);
     }
 
     public static string BuildCounterCoverageSummary(TeamCounterCoverageReport? ally, TeamCounterCoverageReport? enemy)

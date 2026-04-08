@@ -82,7 +82,7 @@ public static class ContentDefinitionValidator
         return ContentValidationCompositionRoot.ReportPaths.GetDefaultReportDirectory();
     }
 
-    [MenuItem("SM/Validation/Validate Content Definitions")]
+    [MenuItem("SM/Internal/Validation/Validate Content Definitions")]
     public static void Validate()
     {
         var report = ValidateAndWriteReport();
@@ -95,7 +95,7 @@ public static class ContentDefinitionValidator
         Debug.Log($"SM content validation passed. Report: {report.JsonReportPath}");
     }
 
-    [MenuItem("SM/Validation/Write Content Validation Report")]
+    [MenuItem("SM/Internal/Validation/Write Content Validation Report")]
     public static void WriteReportMenu()
     {
         var report = WriteValidationReport(BuildValidationReport());

@@ -1,7 +1,7 @@
 # Combat Sandbox And Quick Battle Smoke
 
 - 상태: active
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-04-09
 - 단계: prototype
 
 ## 목적
@@ -11,9 +11,8 @@
 ## 사람이 기억할 메뉴
 
 - `SM/Play/Combat Sandbox`
-  - legacy alias: `SM/Quick Battle`
 - `SM/Play/Full Loop`
-  - legacy alias: `SM/Setup/Prepare Observer Playable`
+- `Window/SM/Combat Sandbox`
 
 ## lane 원칙
 
@@ -34,24 +33,17 @@ CLI mirror:
 pwsh -File tools/unity-bridge.ps1 quick-battle-smoke
 ```
 
-legacy alias:
-
-- `SM/Quick Battle`
-- `pwsh -File tools/unity-bridge.ps1 bootstrap`
-
-이 한 번의 메뉴 클릭으로 다음이 자동 수행된다:
-- 로컬라이제이션 기반 에셋 확인
-- 샘플 콘텐츠 확인/생성
-- 콘텐츠 유효성 검증
-- 씬 복구
-- active sandbox handoff 에셋 확인/생성
-- starter preset library 확인/생성
-- 로컬 세이브 초기화
+이 경로는 fail-fast preflight 뒤에 아래만 수행한다:
+- active sandbox handoff 로드
+- canonical content readiness 확인
+- Battle scene contract 확인
+- direct sandbox compile 가능 여부 확인
 - Battle 씬 열기
 - **자동 Play 진입**
 - `OfflineLocal` 세션 자동 준비 후 direct Combat Sandbox 초기화
 
-즉 direct Combat Sandbox actual path는 `Open Battle scene -> Enter Play Mode`이며, Boot/Town은 우회한다.
+repair, localization foundation, scene reinstall, sample content generation은 자동으로 돌지 않는다.
+실패 시에는 `SM/Internal/Recovery/*`, `SM/Internal/Content/*`, `SM/Internal/Validation/*`로 명시적으로 복구한다.
 
 ## persistence 격리 규칙
 
@@ -88,24 +80,30 @@ legacy alias:
 | Reward settlement의 실제 진행 의미 | sandbox와 분리 |
 | extract close semantics | full loop acceptance 전용 |
 
-### authoring window 전용 작업
+### inspector / window 전용 작업
 
 | 항목 | 위치 |
 | --- | --- |
-| preset library 탐색 / search / tag filter / favorites / recent | `SM/Authoring/Combat Sandbox` |
-| `Set Active`, `Push Active + Play` | `SM/Authoring/Combat Sandbox` |
-| `Run Single`, `Run Batch`, `Run Side Swap` | `SM/Authoring/Combat Sandbox` |
-| `Save As New`, preview, provenance/metrics drill-down | `SM/Authoring/Combat Sandbox` |
+| team/loadout/tactic/passive/seed/layout 직접 편집 | `CombatSandboxConfig` Inspector |
+| `Compile Preview`, `Push Active`, `Push Active + Play` | `CombatSandboxConfig` Inspector |
+| `Run Single`, `Run Batch`, `Run Side Swap` | `CombatSandboxConfig` Inspector |
+| preset library 탐색 / search / tag filter / favorites / recent | `Window/SM/Combat Sandbox` |
+| `Set Active`, `Save As New`, history/result compare | `Window/SM/Combat Sandbox` |
 
-## authoring window
+## authoring surface
 
-주 authoring surface는 `SM/Authoring/Combat Sandbox`다.
+주 authoring surface는 `CombatSandboxConfig` Inspector다.
 
-- scenario library: search, tag filter, favorites, recent
-- preview: scenario summary, left/right team preview, counter coverage, provenance, weakness summary
-- active handoff: `Set Active`, `Push Active + Play`
-- execution: `Run Single`, `Run Batch`, `Run Side Swap`
-- library workflow: `Save As New`로 scenario clone 후 variant를 만든다.
+- Inspector:
+  - active handoff 직접 편집
+  - compile preview
+  - single/batch/side-swap 실행
+  - `Push Active`, `Push Active + Play`
+- `Window/SM/Combat Sandbox`:
+  - scenario library: search, tag filter, favorites, recent
+  - preview/history/result compare
+  - `Set Active`
+  - `Save As New`로 scenario clone 후 variant 생성
 
 ## asset / preset 구조
 
@@ -120,7 +118,8 @@ runtime active handoff:
 
 **경로**: `Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset`
 
-active handoff는 runtime direct sandbox가 읽는 단일 asset이고, authoring window가 library asset을 flatten해서 sync한다.
+active handoff는 runtime direct sandbox가 읽는 단일 asset이고, Inspector가 primary editing surface다.
+window/library path는 scenario asset을 active handoff로 sync하는 secondary surface다.
 
 핵심 authoring 개념:
 

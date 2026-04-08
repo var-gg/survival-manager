@@ -1,7 +1,7 @@
 # Runtime Hardening Contract
 
 - 상태: active
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-04-09
 - 단계: prototype
 - 소스오브트루스: `docs/06_production/runtime-hardening-contract.md`
 - 관련문서:
@@ -38,7 +38,7 @@ prototype pre-art 단계에서 `OfflineLocal` runtime을 silent save corruption,
 
 ## quick battle isolation
 
-- `SM/Quick Battle` direct entry는 dedicated smoke namespace를 사용한다.
+- `SM/Play/Combat Sandbox` direct entry는 dedicated smoke namespace를 사용한다.
 - dedicated smoke auto-clear는 `<profile>.smoke` namespace만 삭제한다.
 - Town `Quick Battle (Smoke)`는 canonical checkpoint 후 transient overlay로 진입한다.
 - transient Town smoke 중에는 canonical save write를 허용하지 않는다.
@@ -71,7 +71,7 @@ prototype pre-art 단계에서 `OfflineLocal` runtime을 silent save corruption,
 3. fast deterministic balance smoke
 4. slice artifact
 5. explicit balance runner artifact
-6. Quick Battle smoke evidence
+6. Combat Sandbox smoke evidence
 7. normal playable smoke with restart injection
 
 ## out of scope

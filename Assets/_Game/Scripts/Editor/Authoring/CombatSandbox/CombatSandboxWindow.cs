@@ -13,7 +13,7 @@ namespace SM.Editor.Authoring.CombatSandbox;
 
 public sealed class CombatSandboxWindow : EditorWindow
 {
-    private const string MenuPath = "SM/Authoring/Combat Sandbox";
+    private const string MenuPath = "Window/SM/Combat Sandbox";
 
     private CombatSandboxState _state = null!;
     private Vector2 _libraryScroll;
@@ -71,7 +71,7 @@ public sealed class CombatSandboxWindow : EditorWindow
     private void DrawHeader()
     {
         EditorGUILayout.HelpBox(
-            "Canonical editor entry points are SM/Play/Full Loop and SM/Play/Combat Sandbox. This window is the main authoring surface for sandbox scenarios, active handoff sync, preview, and regression runs.",
+            "Canonical entry points are SM/Play/Full Loop, SM/Play/Combat Sandbox, and Window/SM/Combat Sandbox. This window is now the secondary library/history/results surface; direct config editing happens in the Combat Sandbox inspector.",
             MessageType.Info);
         using (new EditorGUILayout.HorizontalScope())
         {
@@ -83,6 +83,7 @@ public sealed class CombatSandboxWindow : EditorWindow
             if (GUILayout.Button("Ensure Starter Library", GUILayout.Width(160f)))
             {
                 CombatSandboxAuthoringAssetUtility.EnsureStarterLibrary();
+                _state.Config = CombatSandboxAuthoringAssetUtility.EnsureActiveConfig();
             }
         }
     }
@@ -265,46 +266,31 @@ public sealed class CombatSandboxWindow : EditorWindow
         try
         {
             var sceneController = FindAnyObjectByType<CombatSandboxSceneController>();
-            var sceneLayout = sceneController != null ? sceneController.ExportSceneLayout() : null;
-            var compiled = CombatSandboxExecutionService.BuildCompiledScenario(config, _state.Seed);
-            var launchTruth = CombatSandboxLaunchTruthDiffService.BuildPreview(compiled, new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true));
-            var batchCount = runAsBatch
-                ? (_state.BatchCount > 0 ? _state.BatchCount : Math.Max(1, compiled.Execution.BatchCount))
-                : 1;
-            var effectiveRunSideSwap = runSideSwap || (runAsBatch && compiled.Execution.RunSideSwap);
-            var primary = CombatSandboxSceneController.Execute(new CombatSandboxRunRequest(
-                compiled.LeftTeam.Snapshot,
-                compiled.RightTeam.Snapshot.Allies,
-                compiled.Seed,
-                batchCount,
-                compiled.ScenarioId,
-                sceneLayout));
-            _state.LayoutSourceLabel = sceneLayout != null ? "Scene" : "Default";
-            _state.LastCompileHash = primary.PlayerSnapshot.CompileHash;
-            _state.LastReplayHash = primary.ReplayHash;
-            _state.LastBreakpointSummary = launchTruth.BreakpointSummary;
-            _state.LastBaselineDriftSummary = launchTruth.DriftSummary;
-            _state.LastMembershipWarning = launchTruth.MembershipWarning;
-            _state.LastMetricsSummary = BuildMetricsSummary(primary.Metrics);
-            _state.LastCounterCoverageSummary = CombatSandboxExecutionService.BuildCounterCoverageSummary(primary.PlayerSnapshot.TeamCounterCoverage, CounterCoverageAggregationService.AggregateFromLoadouts(primary.EnemyLoadout));
-            _state.LastGovernanceSummary = CombatSandboxExecutionService.BuildGovernanceSummary(primary.PlayerSnapshot, _state.InspectUnitId);
-            _state.LastReadabilitySummary = CombatSandboxExecutionService.BuildReadabilitySummary(primary.LastReplay.Readability);
-            _state.LastExplanationSummary = CombatSandboxExecutionService.BuildExplanationSummary(primary.LastReplay.BattleSummary);
-            _state.LastProvenanceSummary = CombatSandboxExecutionService.BuildProvenanceSummary(primary.Provenance);
-            _state.LastValidationMessage = string.IsNullOrWhiteSpace(_state.LastValidationMessage)
-                ? $"config={compiled.ScenarioId}\nprovenance={primary.Provenance.Count}\nteam_tags={string.Join(", ", primary.PlayerSnapshot.TeamTags)}"
-                : _state.LastValidationMessage;
+            var session = CombatSandboxEditorSession.Shared;
+            var runSummary = session.Run(
+                config,
+                _state.Seed,
+                _state.BatchCount,
+                runAsBatch,
+                runSideSwap,
+                session.ResolveLayout(config, sceneController));
+            _state.LayoutSourceLabel = runSummary.LayoutSourceLabel;
+            _state.LastCompileHash = runSummary.PrimaryResult.PlayerSnapshot.CompileHash;
+            _state.LastReplayHash = runSummary.PrimaryResult.ReplayHash;
+            _state.LastBreakpointSummary = runSummary.Preview.LaunchTruth.BreakpointSummary;
+            _state.LastBaselineDriftSummary = runSummary.Preview.LaunchTruth.DriftSummary;
+            _state.LastMembershipWarning = runSummary.Preview.LaunchTruth.MembershipWarning;
+            _state.LastMetricsSummary = BuildMetricsSummary(runSummary.PrimaryResult.Metrics);
+            _state.LastCounterCoverageSummary = CombatSandboxExecutionService.BuildCounterCoverageSummary(runSummary.PrimaryResult.PlayerSnapshot.TeamCounterCoverage, CounterCoverageAggregationService.AggregateFromLoadouts(runSummary.PrimaryResult.EnemyLoadout));
+            _state.LastGovernanceSummary = CombatSandboxExecutionService.BuildGovernanceSummary(runSummary.PrimaryResult.PlayerSnapshot, _state.InspectUnitId);
+            _state.LastReadabilitySummary = CombatSandboxExecutionService.BuildReadabilitySummary(runSummary.PrimaryResult.LastReplay.Readability);
+            _state.LastExplanationSummary = CombatSandboxExecutionService.BuildExplanationSummary(runSummary.PrimaryResult.LastReplay.BattleSummary);
+            _state.LastProvenanceSummary = CombatSandboxExecutionService.BuildProvenanceSummary(runSummary.PrimaryResult.Provenance);
+            _state.LastValidationMessage = runSummary.Preview.ValidationMessage;
 
-            if (effectiveRunSideSwap)
+            if (runSummary.SideSwapResult != null)
             {
-                var swapped = CombatSandboxSceneController.Execute(new CombatSandboxRunRequest(
-                    compiled.RightTeam.Snapshot,
-                    compiled.LeftTeam.Snapshot.Allies,
-                    compiled.Seed,
-                    batchCount,
-                    $"{compiled.ScenarioId}.side_swap",
-                    sceneLayout));
-                _state.LastMetricsSummary += $"\n--- side_swap ---\n{BuildMetricsSummary(swapped.Metrics)}";
+                _state.LastMetricsSummary += $"\n--- side_swap ---\n{BuildMetricsSummary(runSummary.SideSwapResult.Metrics)}";
             }
         }
         catch (Exception ex)
@@ -365,15 +351,14 @@ public sealed class CombatSandboxWindow : EditorWindow
 
         try
         {
-            var compiled = CombatSandboxExecutionService.BuildCompiledScenario(config, _state.Seed);
-            var launchTruth = CombatSandboxLaunchTruthDiffService.BuildPreview(compiled, new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true));
-            _state.ScenarioSummary = CombatSandboxPreviewFormatter.BuildScenarioSummary(compiled);
-            _state.LeftTeamPreview = CombatSandboxPreviewFormatter.BuildTeamPreview(compiled.LeftTeam);
-            _state.RightTeamPreview = CombatSandboxPreviewFormatter.BuildTeamPreview(compiled.RightTeam);
-            _state.PreviewBreakpointSummary = launchTruth.BreakpointSummary;
-            _state.PreviewBaselineDriftSummary = launchTruth.DriftSummary;
-            _state.PreviewMembershipWarning = launchTruth.MembershipWarning;
-            _state.LastValidationMessage = string.Join("\n", compiled.Warnings.Distinct(StringComparer.Ordinal));
+            var preview = CombatSandboxEditorSession.Shared.BuildPreview(config, _state.Seed);
+            _state.ScenarioSummary = preview.ScenarioSummary;
+            _state.LeftTeamPreview = preview.LeftTeamPreview;
+            _state.RightTeamPreview = preview.RightTeamPreview;
+            _state.PreviewBreakpointSummary = preview.LaunchTruth.BreakpointSummary;
+            _state.PreviewBaselineDriftSummary = preview.LaunchTruth.DriftSummary;
+            _state.PreviewMembershipWarning = preview.LaunchTruth.MembershipWarning;
+            _state.LastValidationMessage = preview.ValidationMessage;
         }
         catch (Exception ex)
         {
@@ -404,8 +389,8 @@ public sealed class CombatSandboxWindow : EditorWindow
                 return null;
             }
 
-            EditorUtility.CopySerialized(_state.Config, config);
-            return config;
+            DestroyImmediate(config);
+            return CombatSandboxAuthoringAssetUtility.CreateTransientConfigCopy(_state.Config);
         }
 
         if (!CombatSandboxAuthoringAssetUtility.TryPushScenarioToActiveConfig(_state.SelectedScenario, config, out var message))

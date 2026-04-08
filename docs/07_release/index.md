@@ -2,7 +2,7 @@
 
 - 상태: draft
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-09
 - 소스오브트루스: `docs/07_release/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -15,7 +15,11 @@
 
 ## 현재 상태
 
-초기 구조만 생성되었고 세부 문서는 아직 없다.
+Steam 1차 런칭 기준 display/input 정책 문서를 추가했다.
+
+## 문서 목록
+
+- `display-and-input-policy.md`: Steam 1차 런칭 기준 해상도, UI scaling, input, mobile future-proof seam 정책
 
 ## 운영 메모
 

@@ -19,7 +19,6 @@ public sealed class BattleScreenController : MonoBehaviour
 {
     private const int MaxRecentLogLines = 8;
     private const int MaxBattleSteps = BattleSimulator.DefaultMaxSteps;
-    private const string QuickBattleRequestedEditorPrefKey = "SM.QuickBattleRequested";
     private const string HelpPrefsKey = "SM.Help.Battle";
 
     [SerializeField] private RuntimePanelHost panelHost = null!;
@@ -78,8 +77,6 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             return;
         }
-
-        BootstrapQuickBattleDirectEntryIfRequested();
 
         if (!EnsureViewReady())
         {
@@ -515,30 +512,6 @@ public sealed class BattleScreenController : MonoBehaviour
         _localization = _root.Localization;
         _metadataFormatter ??= new BattleUnitMetadataFormatter(_localization, _root.CombatContentLookup);
         return true;
-    }
-
-    private void BootstrapQuickBattleDirectEntryIfRequested()
-    {
-#if UNITY_EDITOR
-        if (!EditorPrefs.GetBool(QuickBattleRequestedEditorPrefKey, false))
-        {
-            return;
-        }
-
-        EditorPrefs.DeleteKey(QuickBattleRequestedEditorPrefKey);
-        _root.UseDedicatedSmokeNamespace();
-        _root.EnsureOfflineLocalSession();
-        _root.SessionState.ReloadQuickBattleConfig();
-        _root.SessionState.PrepareCombatSandboxDirect();
-        var checkpoint = _root.SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
-        if (!checkpoint.IsSuccessful)
-        {
-            Debug.LogError($"[BattleScreenController] Quick Battle bootstrap failed: {checkpoint.Message}");
-            return;
-        }
-
-        Debug.Log("[BattleScreenController] Quick Battle bootstrap 요청을 소비하고 Battle smoke를 초기화했습니다.");
-#endif
     }
 
     private bool EnsureViewReady()

@@ -237,7 +237,7 @@ public sealed class RuntimePanelHost : MonoBehaviour
         var fallback = ScriptableObject.CreateInstance<PanelSettings>();
         fallback.name = "RuntimePanelHostFallbackSettings";
         fallback.scaleMode = PanelScaleMode.ScaleWithScreenSize;
-        fallback.referenceResolution = new Vector2Int(1200, 800);
+        fallback.referenceResolution = new Vector2Int(1920, 1080);
         fallback.clearColor = false;
         return fallback;
     }

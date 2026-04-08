@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-09
 - 소스오브트루스: `docs/02_design/meta/town-and-expedition-loop.md`
 - 관련문서:
   - `docs/02_design/meta/campaign-chapter-and-expedition-sites.md`
@@ -22,7 +22,7 @@
 
 ## Quick Battle smoke
 
-- Town의 `Quick Battle (Smoke)`와 `SM/Quick Battle`은 Expedition을 건너뛰고 Battle observer smoke를 연다.
+- Town의 `Quick Battle (Smoke)`와 `SM/Play/Combat Sandbox`는 Expedition을 건너뛰고 Battle observer smoke를 연다.
 - 이 경로는 Expedition 진행도를 건드리지 않는다.
 - smoke lane의 direct `Return Town`과 `Re-battle`은 normal lane 계약에 포함하지 않는다.
 

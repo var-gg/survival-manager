@@ -29,7 +29,7 @@ public static class BattleAssetIntakeBootstrap
         EditorApplication.delayCall += TryAutoEnsure;
     }
 
-    [MenuItem("SM/Setup/Repair Battle Asset Intake Assets")]
+    [MenuItem("SM/Internal/Content/Repair Battle Asset Intake Assets")]
     public static void RepairBattleAssetIntakeAssets()
     {
         EnsureFolder("Assets/_Game/Prefabs");

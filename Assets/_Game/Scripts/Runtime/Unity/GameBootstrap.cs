@@ -51,26 +51,7 @@ public sealed class GameBootstrap : MonoBehaviour
 
         root.ClearBlockingError();
 
-        if (SessionRealmAutoStartPolicy.ShouldForceOfflineLocalForQuickBattle(ConsumeQuickBattleRequest()))
-        {
-            root.UseDedicatedSmokeNamespace();
-            root.EnsureOfflineLocalSession();
-            root.SessionState.PrepareCombatSandboxDirect();
-            var checkpoint = root.SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
-            if (!checkpoint.IsSuccessful)
-            {
-                root.SetBlockingError(checkpoint.Message);
-                RefreshBootScreen();
-                _bootstrapRoutine = null;
-                yield break;
-            }
-
-            root.SceneFlow.GoToBattle();
-        }
-        else
-        {
-            RefreshBootScreen();
-        }
+        RefreshBootScreen();
 
         _bootstrapRoutine = null;
     }
@@ -84,22 +65,6 @@ public sealed class GameBootstrap : MonoBehaviour
 
         var go = new GameObject("GameSessionRoot");
         return go.AddComponent<GameSessionRoot>();
-    }
-
-    private static bool ConsumeQuickBattleRequest()
-    {
-#if UNITY_EDITOR
-        if (!EditorPrefs.GetBool("SM.QuickBattleRequested", false))
-        {
-            return false;
-        }
-
-        EditorPrefs.DeleteKey("SM.QuickBattleRequested");
-        Debug.Log("[GameBootstrap] Quick Battle 요청 감지. Town을 건너뛰고 Battle로 직행합니다.");
-        return true;
-#else
-        return false;
-#endif
     }
 
     private static bool HasSeedContent()
@@ -121,7 +86,7 @@ public sealed class GameBootstrap : MonoBehaviour
     private static void HandleMissingSampleContent(GameSessionRoot root)
     {
 #if UNITY_EDITOR
-        const string fallback = "샘플 콘텐츠 canonical root가 비어 있습니다. 먼저 SM/Setup/Ensure Sample Content를 실행하고, 복구가 안 되면 SM/Setup/Generate Sample Content를 repair 용도로 실행한 뒤 다시 Play 하세요. 계약 경로: Assets/Resources/_Game/Content/Definitions/**";
+        const string fallback = "샘플 콘텐츠 canonical root가 비어 있습니다. 먼저 SM/Internal/Content/Ensure Sample Content를 실행하고, 복구가 안 되면 SM/Internal/Content/Generate Sample Content를 repair 용도로 실행한 뒤 다시 Play 하세요. 계약 경로: Assets/Resources/_Game/Content/Definitions/**";
         root.SetBlockingError(GameLocalizationTables.SystemMessages, "system.bootstrap.missing_sample_content.editor", fallback);
         Debug.LogWarning(root.LastBlockingError);
         EditorApplication.isPaused = true;

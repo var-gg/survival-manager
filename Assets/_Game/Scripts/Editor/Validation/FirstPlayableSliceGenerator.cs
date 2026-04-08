@@ -16,7 +16,7 @@ public static class FirstPlayableSliceGenerator
     private const string ArtifactFolderName = "Logs/loop-d-balance";
     private const string SliceMarkdownFileName = "first_playable_slice.md";
 
-    [MenuItem("SM/Validation/Generate First Playable Slice")]
+    [MenuItem("SM/Internal/Validation/Generate First Playable Slice")]
     public static void GenerateMenu()
     {
         var result = GenerateAndWriteArtifacts();

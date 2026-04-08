@@ -20,7 +20,7 @@ public static class FirstPlayableSceneInstaller
     private const string ScenesRoot = "Assets/_Game/Scenes";
     private static readonly string[] OrderedSceneNames = { "Boot", "Town", "Expedition", "Battle", "Reward" };
 
-    [MenuItem("SM/Setup/Repair First Playable Scenes")]
+    [MenuItem("SM/Internal/Recovery/Repair First Playable Scenes")]
     public static void RepairFirstPlayableScenes()
     {
         LocalizationFoundationBootstrap.EnsureFoundationAssets();
@@ -41,6 +41,21 @@ public static class FirstPlayableSceneInstaller
     public static void RebuildFirstPlayableScenes()
     {
         RepairFirstPlayableScenes();
+    }
+
+    public static bool TryValidateSavedSceneContract(string sceneName, out string error)
+    {
+        try
+        {
+            ValidateSceneContract(sceneName);
+            error = string.Empty;
+            return true;
+        }
+        catch (System.Exception ex)
+        {
+            error = ex.Message;
+            return false;
+        }
     }
 
     private static void RebuildBoot()
@@ -198,54 +213,78 @@ public static class FirstPlayableSceneInstaller
 
     private static void ValidateSavedSceneContracts()
     {
-        ValidateScene(
-            "Boot",
-            new[] { "SceneMarker_Boot", "GameBootstrap", "BootScreenController", "BootCanvas", "BootTitleText", "BootStatusText", "BootHintText", "OfflineLocalButton", "Main Camera", "EventSystem" },
-            new Dictionary<string, System.Type[]>
-            {
-                ["GameBootstrap"] = new[] { typeof(GameBootstrap) },
-                ["BootCanvas"] = new[] { typeof(Canvas) },
-                ["BootScreenController"] = new[] { typeof(BootScreenController) },
-            });
+        foreach (var sceneName in OrderedSceneNames)
+        {
+            ValidateSceneContract(sceneName);
+        }
+    }
 
-        ValidateScene(
-            "Town",
-            new[] { "SceneMarker_Town", "TownRuntimeRoot", "TownRuntimePanelHost", "TownScreenController", "Main Camera", "EventSystem" },
-            new Dictionary<string, System.Type[]>
-            {
-                ["TownRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
-                ["TownScreenController"] = new[] { typeof(TownScreenController) },
-            });
+    private static void ValidateSceneContract(string sceneName)
+    {
+        switch (sceneName)
+        {
+            case SceneNames.Boot:
+                ValidateScene(
+                    SceneNames.Boot,
+                    new[] { "SceneMarker_Boot", "GameBootstrap", "BootScreenController", "BootCanvas", "BootTitleText", "BootStatusText", "BootHintText", "OfflineLocalButton", "Main Camera", "EventSystem" },
+                    new Dictionary<string, System.Type[]>
+                    {
+                        ["GameBootstrap"] = new[] { typeof(GameBootstrap) },
+                        ["BootCanvas"] = new[] { typeof(Canvas) },
+                        ["BootScreenController"] = new[] { typeof(BootScreenController) },
+                    });
+                break;
 
-        ValidateScene(
-            "Expedition",
-            new[] { "SceneMarker_Expedition", "ExpeditionRuntimeRoot", "ExpeditionRuntimePanelHost", "ExpeditionScreenController", "Main Camera", "EventSystem" },
-            new Dictionary<string, System.Type[]>
-            {
-                ["ExpeditionRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
-                ["ExpeditionScreenController"] = new[] { typeof(ExpeditionScreenController) },
-            });
+            case SceneNames.Town:
+                ValidateScene(
+                    SceneNames.Town,
+                    new[] { "SceneMarker_Town", "TownRuntimeRoot", "TownRuntimePanelHost", "TownScreenController", "Main Camera", "EventSystem" },
+                    new Dictionary<string, System.Type[]>
+                    {
+                        ["TownRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
+                        ["TownScreenController"] = new[] { typeof(TownScreenController) },
+                    });
+                break;
 
-        ValidateScene(
-            "Battle",
-            new[] { "SceneMarker_Battle", "BattleRuntimeRoot", "BattleRuntimePanelHost", "BattleScreenController", "BattlePresentationRoot", "BattleStageRoot", "BattleCameraRoot", "ActorOverlayCanvas", "ActorOverlayRoot", "Main Camera", "EventSystem" },
-            new Dictionary<string, System.Type[]>
-            {
-                ["BattleRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
-                ["BattleScreenController"] = new[] { typeof(BattleScreenController) },
-                ["BattlePresentationRoot"] = new[] { typeof(BattlePresentationController) },
-                ["BattleCameraRoot"] = new[] { typeof(BattleCameraController) },
-                ["ActorOverlayCanvas"] = new[] { typeof(Canvas) },
-            });
+            case SceneNames.Expedition:
+                ValidateScene(
+                    SceneNames.Expedition,
+                    new[] { "SceneMarker_Expedition", "ExpeditionRuntimeRoot", "ExpeditionRuntimePanelHost", "ExpeditionScreenController", "Main Camera", "EventSystem" },
+                    new Dictionary<string, System.Type[]>
+                    {
+                        ["ExpeditionRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
+                        ["ExpeditionScreenController"] = new[] { typeof(ExpeditionScreenController) },
+                    });
+                break;
 
-        ValidateScene(
-            "Reward",
-            new[] { "SceneMarker_Reward", "RewardRuntimeRoot", "RewardRuntimePanelHost", "RewardScreenController", "Main Camera", "EventSystem" },
-            new Dictionary<string, System.Type[]>
-            {
-                ["RewardRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
-                ["RewardScreenController"] = new[] { typeof(RewardScreenController) },
-            });
+            case SceneNames.Battle:
+                ValidateScene(
+                    SceneNames.Battle,
+                    new[] { "SceneMarker_Battle", "BattleRuntimeRoot", "BattleRuntimePanelHost", "BattleScreenController", "BattlePresentationRoot", "BattleStageRoot", "BattleCameraRoot", "ActorOverlayCanvas", "ActorOverlayRoot", "Main Camera", "EventSystem" },
+                    new Dictionary<string, System.Type[]>
+                    {
+                        ["BattleRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
+                        ["BattleScreenController"] = new[] { typeof(BattleScreenController) },
+                        ["BattlePresentationRoot"] = new[] { typeof(BattlePresentationController) },
+                        ["BattleCameraRoot"] = new[] { typeof(BattleCameraController) },
+                        ["ActorOverlayCanvas"] = new[] { typeof(Canvas) },
+                    });
+                break;
+
+            case SceneNames.Reward:
+                ValidateScene(
+                    SceneNames.Reward,
+                    new[] { "SceneMarker_Reward", "RewardRuntimeRoot", "RewardRuntimePanelHost", "RewardScreenController", "Main Camera", "EventSystem" },
+                    new Dictionary<string, System.Type[]>
+                    {
+                        ["RewardRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
+                        ["RewardScreenController"] = new[] { typeof(RewardScreenController) },
+                    });
+                break;
+
+            default:
+                throw new System.InvalidOperationException($"Unknown scene contract '{sceneName}'.");
+        }
     }
 
     private static void ValidateScene(string sceneName, IReadOnlyList<string> requiredObjectNames, IReadOnlyDictionary<string, System.Type[]> requiredComponents)

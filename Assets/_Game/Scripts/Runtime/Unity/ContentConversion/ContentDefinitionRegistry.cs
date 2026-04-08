@@ -152,7 +152,7 @@ internal sealed class ContentDefinitionRegistry
                 {
                     throw new InvalidOperationException(
                         "SM canonical content가 Resources runtime path에서 누락되었습니다. " +
-                        "먼저 `SM/Setup/Ensure Sample Content`를 실행하고, 필요하면 `SM/Setup/Generate Sample Content`로 복구한 뒤 다시 시도하세요.");
+                        "먼저 `SM/Internal/Content/Ensure Sample Content`를 실행하고, 필요하면 `SM/Internal/Content/Generate Sample Content`로 복구한 뒤 다시 시도하세요.");
                 }
 
                 RuntimeCombatParsedContent parsed;
@@ -665,7 +665,7 @@ internal sealed class ContentDefinitionRegistry
 
         throw new InvalidOperationException(
             "SM canonical sample content is not preflight-ready for ContentDefinitionRegistry. " +
-            "Run 'pwsh -File tools/unity-bridge.ps1 seed-content' or Unity menu 'SM/Setup/Generate Sample Content' before using editor-side runtime lookup.");
+            "Run 'pwsh -File tools/unity-bridge.ps1 seed-content' or Unity menu 'SM/Internal/Content/Generate Sample Content' before using editor-side runtime lookup.");
     }
 #endif
 }

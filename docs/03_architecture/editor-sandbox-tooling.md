@@ -19,9 +19,9 @@ Combat Sandbox는 전투 truth를 만들지 않고, 입력 조립과 실행, 비
 ## 기본 원칙
 
 1. 사람이 기억하는 top-level entry는 `SM/Play/Full Loop`와 `SM/Play/Combat Sandbox` 두 개만 남긴다.
-2. authoring은 `ScriptableObject` library + runtime active handoff 구조를 중심으로 둔다.
+2. authoring은 `CombatSandboxConfig` Inspector를 primary surface로 두고, `ScriptableObject` library + runtime active handoff 구조를 보조로 둔다.
 3. Combat Sandbox는 `LoadoutCompiler -> BattleLoadoutSnapshot -> BattleSimulator -> ReplayAssembler` 경계를 그대로 사용한다.
-4. editor window는 layout/binding만 맡고, 실행 로직은 별도 서비스로 분리한다.
+4. editor window는 preset library, history, result compare를 맡고, 실행 로직은 별도 서비스로 분리한다.
 5. `SM.Editor`는 `SM.Unity`와 runtime model을 참조할 수 있지만, runtime은 editor를 참조하지 않는다.
 
 ## 현재 구성
@@ -29,6 +29,8 @@ Combat Sandbox는 전투 truth를 만들지 않고, 입력 조립과 실행, 비
 ### runtime
 
 - `SM.Unity.Sandbox.CombatSandboxConfig`: runtime active handoff asset
+- `SM.Unity.Sandbox.CombatSandboxSceneLayoutAsset`: authored layout truth asset
+- `SM.Unity.Sandbox.CombatSandboxPreviewSettingsAsset`: preview gizmo/settings asset
 - `SM.Unity.Sandbox.CombatSandboxScenarioMetadata`
 - `SM.Unity.Sandbox.CombatSandboxTeamDefinition`
 - `SM.Unity.Sandbox.CombatSandboxBuildOverrideData`
@@ -41,8 +43,10 @@ Combat Sandbox는 전투 truth를 만들지 않고, 입력 조립과 실행, 비
 
 ### editor
 
-- `SM.Editor.Authoring.CombatSandbox.CombatSandboxWindow`: main authoring window
+- `SM.Editor.Authoring.Inspectors.CombatSandboxConfigEditor`: primary authoring inspector
+- `SM.Editor.Authoring.CombatSandbox.CombatSandboxWindow`: secondary library/history/result window
 - `SM.Editor.Authoring.CombatSandbox.CombatSandboxState`: editor transient state
+- `SM.Editor.Authoring.CombatSandbox.CombatSandboxEditorSession`: cached compile/preview/run session
 - `SM.Editor.Authoring.CombatSandbox.CombatSandboxExecutionService`: session/build/request 조립기
 - `SM.Editor.Authoring.CombatSandbox.CombatSandboxAuthoringAssetUtility`: starter library 생성, active handoff sync, scenario clone
 - `SM.Editor.Authoring.CombatSandbox.CombatSandboxToolbarOverlay`: scene view overlay
@@ -64,7 +68,7 @@ Combat Sandbox는 전투 truth를 만들지 않고, 입력 조립과 실행, 비
   - saved snapshot / cached remote seam
 
 runtime은 여전히 active asset 하나만 읽는다.
-authoring window가 library asset을 flatten해서 `Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset`로 sync한다.
+Inspector가 active handoff를 primary로 편집하고, window/library path가 scenario asset을 flatten해서 `Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset`로 sync한다.
 
 ## source abstraction
 
@@ -79,14 +83,22 @@ left/right team은 아래 source mode 중 하나로 컴파일된다.
 `RemoteDeckRef`는 현재 live backend를 호출하지 않는다.
 대신 `userId / deckId / revision` reference model과 cached snapshot seam만 유지한다.
 
-## 창 구조
+## inspector / 창 구조
 
-`CombatSandboxWindow`는 아래 흐름으로 고정한다.
+`CombatSandboxConfigEditor`는 아래 흐름으로 고정한다.
+
+- active handoff 직접 편집
+- `Compile Preview`
+- `Push Active`
+- `Run Single`, `Run Batch`, `Run Side Swap`
+- `Push Active + Play`
+- preview/result surface
+
+`CombatSandboxWindow`는 아래 보조 흐름으로 고정한다.
 
 - `Preset Library`: search, tag filter, favorites, recent
 - `Scenario Detail`: notes, expected outcome, `Save As New`, active handoff sync
 - `Preview`: scenario summary, left/right preview, derived coverage/weakness/provenance
-- `Execution`: seed override, batch count, inspect unit, single/batch/side swap
 - `Preview Drift`: breakpoint summary, executable baseline delta, first playable slice membership warning
 - `Results`: compile hash, replay hash, breakpoint/drift/membership, metrics, governance, readability, explanation, provenance, validation
 
@@ -124,10 +136,10 @@ left/right team은 아래 source mode 중 하나로 컴파일된다.
 
 `SM.Editor.Authoring.CombatSandbox.CombatSandboxWindow`.
 
-- Config → BuildRequest → Execute 파이프라인
-- `Set Active` / `Push Active + Play`
+- preset library / history / results surface
+- scenario -> active handoff sync
 - scenario clone 기반 `Save As New`
-- scene anchor handle → `ExportSceneLayout()` → `BattlefieldLayout` authoritative layout 연결
+- scene anchor handle → `CombatSandboxSceneLayoutAsset` → `BattlefieldLayout` authoritative layout 연결
 - Preview/Results: breakpoint summary, baseline drift, first playable slice membership warning
 - Results: compile hash, replay hash, metrics, governance, readability, explanation, provenance, layout source
 - Provenance: subject별 artifact 카운트 + drill-down
@@ -170,7 +182,7 @@ category는 유지하지만 출력은 category 이름만 남기지 않는다.
 
 - `DeploymentAnchorTool`은 `CombatSandboxSceneController`가 가진 anchor transform만 직접 만진다.
 - `CombatRangeGizmos`는 12개 gizmo를 모두 그린다: head anchor, navigation, separation, combat reach, preferred range band, engagement slot ring, frontline guard radius, AoE cluster radius, entity kind label.
-- scene handle에서 움직인 좌표는 `ExportSceneLayout()`을 통해 실행 request의 authoritative layout이 된다.
+- scene handle에서 움직인 좌표는 `CombatSandboxSceneLayoutAsset`으로 캡처되고, `ExportSceneLayout()`을 통해 실행 request의 authoritative layout이 된다.
 - scene tool은 배치와 공간 확인 전용이고, 실제 판정 규칙은 domain simulator가 계속 소유한다.
 
 ## lane 분리 규칙
@@ -181,7 +193,8 @@ category는 유지하지만 출력은 category 이름만 남기지 않는다.
 - Town `Quick Battle (Smoke)`
   - 현재 Town 상태 기반 integration smoke
   - `Continue -> Reward`, `Return to Town` 의미를 유지한다.
-- heavy config 전환, batch, preview, source/build authoring은 window에 몰아넣는다.
+- heavy library 탐색, history 비교, 결과 drill-down은 window에 둔다.
+- daily edit/compile/play loop는 Inspector에 둔다.
 
 ## knob 관리 규칙
 
@@ -197,7 +210,7 @@ category는 유지하지만 출력은 category 이름만 남기지 않는다.
 
 ## baseline 운영
 
-- `SM/Generate/Write Baseline Asset Docs` 메뉴로 `Logs/baseline-docs/baseline-asset-summary.md` 생성.
+- `SM/Internal/Content/Write Baseline Asset Docs` 메뉴로 `Logs/baseline-docs/baseline-asset-summary.md` 생성.
 - archetype, skill, footprint, behavior, mobility 프로필을 마크다운 테이블로 정리.
 - release 전 baseline 스냅샷과 delta 비교는 생성된 마크다운을 git diff로 확인.
 

@@ -11,7 +11,7 @@ public static class BattleActorWrapperValidator
 {
     private const string PrefabRoot = "Assets/_Game/Prefabs/Battle/Actors";
 
-    [MenuItem("SM/Validation/Validate Battle Actor Wrappers")]
+    [MenuItem("SM/Internal/Validation/Validate Battle Actor Wrappers")]
     public static void ValidateProjectWrappers()
     {
         var reports = AssetDatabase.FindAssets("t:Prefab", new[] { PrefabRoot })

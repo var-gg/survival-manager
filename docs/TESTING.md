@@ -75,7 +75,7 @@ pwsh -File tools/unity-bridge.ps1 balance-sweep-smoke
 
 - `prepare-playable`이 canonical newcomer/setup lane이다.
 - `quick-battle-smoke`는 debug smoke lane이다.
-- 기존 `bootstrap`은 `quick-battle-smoke`의 deprecated alias로만 유지한다.
+- `bootstrap` verb는 제거됐고, canonical CLI entry는 `prepare-playable` / `quick-battle-smoke` / `seed-content`다.
 
 ### GUI 에디터 기반 (unity-cli 필요)
 

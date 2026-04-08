@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'prepare-playable', 'repair-scenes', 'ensure-localization', 'quick-battle-smoke', 'bootstrap', 'seed-content', 'content-validate', 'balance-sweep-smoke', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
+    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'prepare-playable', 'repair-scenes', 'ensure-localization', 'quick-battle-smoke', 'seed-content', 'content-validate', 'balance-sweep-smoke', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
     [string]$Verb,
     [int]$Lines = 30,
     [string]$Filter = 'error,warning,log',
@@ -512,23 +512,19 @@ try {
             Invoke-UnityCli @('console', '--lines', $Lines, '--type', $Filter)
         }
         'prepare-playable' {
-            Invoke-UnityMenuCommand -MenuPath 'SM/Setup/Prepare Observer Playable' -ReadyContext 'prepare playable menu dispatch'
+            Invoke-UnityMenuCommand -MenuPath 'SM/Play/Full Loop' -ReadyContext 'prepare playable menu dispatch'
         }
         'repair-scenes' {
-            Invoke-UnityMenuCommand -MenuPath 'SM/Setup/Repair First Playable Scenes' -ReadyContext 'repair scenes menu dispatch'
+            Invoke-UnityMenuCommand -MenuPath 'SM/Internal/Recovery/Repair First Playable Scenes' -ReadyContext 'repair scenes menu dispatch'
         }
         'ensure-localization' {
-            Invoke-UnityMenuCommand -MenuPath 'SM/Setup/Ensure Localization Foundation' -ReadyContext 'ensure localization menu dispatch'
+            Invoke-UnityMenuCommand -MenuPath 'SM/Internal/Recovery/Ensure Localization Foundation' -ReadyContext 'ensure localization menu dispatch'
         }
         'quick-battle-smoke' {
-            Invoke-UnityMenuCommand -MenuPath 'SM/Quick Battle' -ReadyContext 'quick battle smoke menu dispatch'
-        }
-        'bootstrap' {
-            Write-Warning "bootstrap is a deprecated alias for quick-battle-smoke. Prefer 'prepare-playable' for the canonical playable setup lane."
-            Invoke-UnityMenuCommand -MenuPath 'SM/Quick Battle' -ReadyContext 'bootstrap alias menu dispatch'
+            Invoke-UnityMenuCommand -MenuPath 'SM/Play/Combat Sandbox' -ReadyContext 'quick battle smoke menu dispatch'
         }
         'seed-content' {
-            Invoke-UnityMenuCommand -MenuPath 'SM/Setup/Generate Sample Content' -ReadyContext 'sample content generation'
+            Invoke-UnityMenuCommand -MenuPath 'SM/Internal/Content/Generate Sample Content' -ReadyContext 'sample content generation'
         }
         'content-validate' {
             & pwsh -File (Join-Path $PSScriptRoot 'unity-execute-method.ps1') -Method 'SM.Editor.Validation.ValidationBatchEntryPoint.RunContentValidation' -LogFile 'Logs/content-validation-ci.log' -PhaseName 'content validation' -ProjectRoot $projectRoot
@@ -567,7 +563,7 @@ try {
         'smoke-observer' {
             Invoke-Step -Name 'compile' -Action { Invoke-UnityCli @('editor', 'refresh', '--compile') -WaitForReady -ReadyContext 'compile' }
             Invoke-Step -Name 'clear-console' -Action { Invoke-UnityCli @('console', '--clear') }
-            Invoke-Step -Name 'prepare-playable' -Action { Invoke-UnityMenuCommand -MenuPath 'SM/Setup/Prepare Observer Playable' -ReadyContext 'prepare playable menu dispatch' }
+            Invoke-Step -Name 'prepare-playable' -Action { Invoke-UnityMenuCommand -MenuPath 'SM/Play/Full Loop' -ReadyContext 'prepare playable menu dispatch' }
             Invoke-Step -Name 'report-town' -Action { Invoke-UnityCli @('observer_contract_report', '--scene', 'town') }
             Invoke-Step -Name 'report-battle' -Action { Invoke-UnityCli @('observer_contract_report', '--scene', 'battle') }
             Invoke-Step -Name 'console' -Action { Invoke-UnityCli @('console', '--lines', $Lines, '--type', $Filter) }

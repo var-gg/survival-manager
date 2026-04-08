@@ -19,9 +19,9 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 879747072
-    m_Localized: Sample content canonical root is empty. Run SM/Setup/Ensure Sample
-      Content first, and use SM/Setup/Generate Sample Content only as a repair path
-      before entering Play mode.
+    m_Localized: Sample content canonical root is empty. Run SM/Internal/Content/Ensure
+      Sample Content first, and use SM/Internal/Content/Generate Sample Content
+      only as a repair path before entering Play mode.
     m_Metadata:
       m_Items: []
   - m_Id: 955244544

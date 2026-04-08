@@ -24,7 +24,7 @@ Unity Editor와 외부 AI 클라이언트를 로컬 MCP로 연결해,
 
 1. console 읽기
 2. scene hierarchy 조회
-3. `SM/Setup/*` menu item 조회
+3. `SM/Play/*`, `SM/Internal/*` menu item 조회
 4. 승인된 menu item 1회 실행
 5. 지정 scene load/save
 6. `GameBootstrap`, `SceneFlowController`, `TownScreenController` 존재 확인
@@ -35,7 +35,7 @@ Unity Editor와 외부 AI 클라이언트를 로컬 MCP로 연결해,
 2. `git status`
 3. `git restore`
 4. 필요 시 branch reset
-5. `SM/Setup/Prepare Observer Playable` 재실행
+5. `SM/Play/Full Loop` 또는 `SM/Internal/Recovery/Repair First Playable Scenes` 재실행
 
 ## 금지 사항
 

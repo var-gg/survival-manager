@@ -36,6 +36,8 @@ public sealed class CombatSandboxConfig : ScriptableObject
     public string DisplayName = "Combat Sandbox";
     public bool UseScenarioAuthoring = false;
     public CombatSandboxLaneKind DefaultLaneKind = CombatSandboxLaneKind.DirectCombatSandbox;
+    public CombatSandboxSceneLayoutAsset SceneLayout = null!;
+    public CombatSandboxPreviewSettingsAsset PreviewSettings = null!;
     public CombatSandboxScenarioMetadata Scenario = new();
     public CombatSandboxTeamDefinition LeftTeam = new();
     public CombatSandboxTeamDefinition RightTeam = new();

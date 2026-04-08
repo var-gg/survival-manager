@@ -20,10 +20,10 @@ MonoBehaviour:
   m_TableData:
   - m_Id: 879747072
     m_Localized: "\uC0D8\uD50C \uCF58\uD150\uCE20 canonical root\uAC00 \uBE44\uC5B4
-      \uC788\uC2B5\uB2C8\uB2E4. \uBA3C\uC800 SM/Setup/Ensure Sample Content\uB97C
-      \uC2E4\uD589\uD558\uACE0, \uBCF5\uAD6C\uAC00 \uC548 \uB418\uBA74 SM/Setup/Generate
-      Sample Content\uB97C repair \uC6A9\uB3C4\uB85C \uC2E4\uD589\uD55C \uB4A4 \uB2E4\uC2DC
-      Play \uD558\uC138\uC694."
+      \uC788\uC2B5\uB2C8\uB2E4. \uBA3C\uC800 SM/Internal/Content/Ensure Sample
+      Content\uB97C \uC2E4\uD589\uD558\uACE0, \uBCF5\uAD6C\uAC00 \uC548 \uB418\uBA74
+      SM/Internal/Content/Generate Sample Content\uB97C repair \uC6A9\uB3C4\uB85C
+      \uC2E4\uD589\uD55C \uB4A4 \uB2E4\uC2DC Play \uD558\uC138\uC694."
     m_Metadata:
       m_Items: []
   - m_Id: 955244544

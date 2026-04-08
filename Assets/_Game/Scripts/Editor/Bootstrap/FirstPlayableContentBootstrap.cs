@@ -6,7 +6,7 @@ namespace SM.Editor.Bootstrap;
 
 public static class FirstPlayableContentBootstrap
 {
-    [MenuItem("SM/Setup/Ensure Sample Content")]
+    [MenuItem("SM/Internal/Content/Ensure Sample Content")]
     public static void EnsureSampleContent()
     {
         SampleSeedGenerator.EnsureCanonicalSampleContent();
@@ -18,7 +18,7 @@ public static class FirstPlayableContentBootstrap
         SampleSeedGenerator.RequireCanonicalSampleContentReady(consumer);
     }
 
-    [MenuItem("SM/Setup/Ensure Sample Content", true)]
+    [MenuItem("SM/Internal/Content/Ensure Sample Content", true)]
     public static bool ValidateEnsureSampleContent()
     {
         return !EditorApplication.isPlayingOrWillChangePlaymode;

@@ -179,7 +179,7 @@ public static class BalanceSweepRunner
         }
     }
 
-    [MenuItem("SM/Validation/Run Balance Sweep Smoke")]
+    [MenuItem("SM/Internal/Validation/Run Balance Sweep Smoke")]
     public static void RunSmokeMenu()
     {
         var report = RunSmokeAndWriteReport();
@@ -191,7 +191,7 @@ public static class BalanceSweepRunner
         Debug.Log($"[BalanceSweep] Report written. Json={report.JsonReportPath} Csv={report.CsvReportPath}");
     }
 
-    [MenuItem("SM/Validation/Run Balance Sweep Smoke", true)]
+    [MenuItem("SM/Internal/Validation/Run Balance Sweep Smoke", true)]
     public static bool ValidateRunSmokeMenu()
     {
         return !EditorApplication.isPlayingOrWillChangePlaymode;
