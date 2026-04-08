@@ -239,7 +239,7 @@ public sealed class CombatSandboxWindow : EditorWindow
         {
             EditorGUILayout.LabelField($"Compile Hash: {_state.LastCompileHash}");
             EditorGUILayout.LabelField($"Replay Hash: {_state.LastReplayHash}");
-            EditorGUILayout.LabelField($"Layout Source: {string.IsNullOrWhiteSpace(_state.LayoutSourceLabel) ? "Default" : _state.LayoutSourceLabel}");
+            EditorGUILayout.LabelField($"Layout Source: {(string.IsNullOrWhiteSpace(_state.LayoutSourceLabel) ? "Default" : _state.LayoutSourceLabel)}");
             DrawReadOnlyBlock("Breakpoint Summary", _state.LastBreakpointSummary);
             DrawReadOnlyBlock("Baseline Drift", _state.LastBaselineDriftSummary);
             DrawReadOnlyBlock("Slice Membership", _state.LastMembershipWarning);
@@ -439,7 +439,7 @@ public sealed class CombatSandboxWindow : EditorWindow
     private string[] BuildTagOptions()
     {
         var tags = CombatSandboxAuthoringAssetUtility.FindScenarioAssets()
-            .SelectMany(asset => asset.Tags ?? Array.Empty<string>())
+            .SelectMany(asset => asset.Tags ?? new List<string>())
             .Where(tag => !string.IsNullOrWhiteSpace(tag))
             .Distinct(StringComparer.Ordinal)
             .OrderBy(tag => tag, StringComparer.Ordinal)

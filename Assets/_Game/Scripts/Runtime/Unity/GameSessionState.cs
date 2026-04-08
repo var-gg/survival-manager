@@ -1112,7 +1112,7 @@ public sealed class GameSessionState
 
         var result = PassiveBoardSelectionValidator.Toggle(
             loadout.PassiveBoardId,
-            loadout.SelectedPassiveNodeIds ?? Array.Empty<string>(),
+            loadout.SelectedPassiveNodeIds ?? new List<string>(),
             nodeId,
             nodesById);
         if (!result.IsValid)
@@ -1393,20 +1393,20 @@ public sealed class GameSessionState
 
         if (TryBuildQuickBattleCompiledScenario(out var quickBattleScenario, out error))
         {
-            var blueprint = quickBattleScenario.LeftTeam.Blueprint;
-            var overlay = quickBattleScenario.LeftTeam.Overlay with
+            var quickBattleBlueprint = quickBattleScenario.LeftTeam.Blueprint;
+            var quickBattleOverlay = quickBattleScenario.LeftTeam.Overlay with
             {
                 CurrentNodeIndex = CurrentExpeditionNodeIndex,
                 SiteNodeIndex = CurrentExpeditionNodeIndex,
             };
-            var activeRun = ActiveRun ?? RunStateService.StartRun("quick-battle", blueprint, true);
+            var quickBattleRun = ActiveRun ?? RunStateService.StartRun("quick-battle", quickBattleBlueprint, true);
 
             LastCompiledBattleSnapshot = quickBattleScenario.LeftTeam.Snapshot;
             _compiledQuickBattleScenario = quickBattleScenario;
-            ActiveRun = activeRun with
+            ActiveRun = quickBattleRun with
             {
-                Blueprint = blueprint,
-                Overlay = overlay,
+                Blueprint = quickBattleBlueprint,
+                Overlay = quickBattleOverlay,
                 BattleDeployHeroIds = quickBattleScenario.LeftTeam.Snapshot.BattleDeployHeroIds.ToList(),
             };
             if (TryBuildBattleContext(snapshot, ActiveRun!, out var quickBattleContext, out _))
@@ -1416,7 +1416,7 @@ public sealed class GameSessionState
 
             ActiveRun = RunStateService.SyncBlueprint(
                 ActiveRun!,
-                blueprint,
+                quickBattleBlueprint,
                 quickBattleScenario.LeftTeam.Snapshot.CompileHash,
                 Array.Empty<string>());
             SyncActiveRunRecord();
@@ -1474,24 +1474,24 @@ public sealed class GameSessionState
 
         if (TryBuildQuickBattleCompiledScenario(out var quickBattleScenario, out error))
         {
-            var run = ActiveRun ?? RunStateService.StartRun("quick-battle", quickBattleScenario.LeftTeam.Blueprint, true);
-            var overlay = quickBattleScenario.LeftTeam.Overlay with
+            var quickBattleRun = ActiveRun ?? RunStateService.StartRun("quick-battle", quickBattleScenario.LeftTeam.Blueprint, true);
+            var quickBattleOverlay = quickBattleScenario.LeftTeam.Overlay with
             {
                 CurrentNodeIndex = CurrentExpeditionNodeIndex,
                 SiteNodeIndex = CurrentExpeditionNodeIndex,
             };
-            var battleContext = BuildQuickBattleContext(quickBattleScenario, run.RunId);
+            var quickBattleContext = BuildQuickBattleContext(quickBattleScenario, quickBattleRun.RunId);
             ActiveRun = RunStateService.SetBattleContext(
-                run with
+                quickBattleRun with
                 {
                     Blueprint = quickBattleScenario.LeftTeam.Blueprint,
-                    Overlay = overlay,
+                    Overlay = quickBattleOverlay,
                     BattleDeployHeroIds = quickBattleScenario.LeftTeam.Snapshot.BattleDeployHeroIds.ToList(),
                 },
-                battleContext);
+                quickBattleContext);
             SyncActiveRunRecord();
             context = new ResolvedEncounterContext(
-                battleContext,
+                quickBattleContext,
                 quickBattleScenario.RightTeam.Snapshot.TeamTactic.Posture,
                 quickBattleScenario.RightTeam.Snapshot.Allies);
             return true;

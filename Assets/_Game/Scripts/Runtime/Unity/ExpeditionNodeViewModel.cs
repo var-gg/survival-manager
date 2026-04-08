@@ -22,4 +22,7 @@ public sealed record ExpeditionNodeViewModel(
     ExpeditionNodeEffectKind EffectKind,
     int EffectAmount,
     string EffectPayloadId,
-    IReadOnlyList<int> NextNodeIndices);
+    IReadOnlyList<int> NextNodeIndices)
+{
+    public string RewardSourceId => RequiresBattle ? EffectPayloadId : string.Empty;
+}

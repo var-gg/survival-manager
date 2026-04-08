@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using SM.Combat.Model;
-using SM.Core.Ids;
+using CoreEntityId = SM.Core.Ids.EntityId;
 using SM.Tests.EditMode.Fakes;
 using SM.Unity;
 using SM.Unity.UI.Battle;
@@ -30,7 +30,7 @@ public sealed class BattleScreenPresenterReadabilityTests
                 },
                 new List<BattleEvent>
                 {
-                    new(42, 4.2f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 18f)
+                    new(42, 4.2f, new CoreEntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new CoreEntityId("enemy"), "Enemy", 18f)
                 },
                 true,
                 TeamSide.Ally);
@@ -81,6 +81,7 @@ public sealed class BattleScreenPresenterReadabilityTests
             WindupProgress: windupProgress,
             CooldownRemaining: 0f,
             CurrentEnergy: 0f,
-            MaxEnergy: 100f);
+            MaxEnergy: 100f,
+            IsDefending: false);
     }
 }

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using SM.Meta.Model;
+using SM.Meta.Services;
 using SM.Persistence.Abstractions;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;

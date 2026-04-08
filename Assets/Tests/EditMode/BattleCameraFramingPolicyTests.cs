@@ -70,6 +70,7 @@ public sealed class BattleCameraFramingPolicyTests
             WindupProgress: 0f,
             CooldownRemaining: 0f,
             CurrentEnergy: 0f,
-            MaxEnergy: 100f);
+            MaxEnergy: 100f,
+            IsDefending: false);
     }
 }

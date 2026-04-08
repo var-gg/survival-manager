@@ -48,7 +48,7 @@ internal static class RuntimeOperationalTelemetry
             profileId,
             0f,
             string.IsNullOrWhiteSpace(quarantinePath) ? message : quarantinePath,
-            boolValueA: !string.IsNullOrWhiteSpace(quarantinePath),
+            usedBackup: !string.IsNullOrWhiteSpace(quarantinePath),
             stringValueB: message);
     }
 

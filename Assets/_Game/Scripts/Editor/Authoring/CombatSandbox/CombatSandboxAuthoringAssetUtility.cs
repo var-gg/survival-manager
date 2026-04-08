@@ -207,8 +207,9 @@ public static class CombatSandboxAuthoringAssetUtility
             return false;
         }
 
-        if (!TryBuildTeamDefinition(scenario.LeftTeam, out var leftTeam, out var leftWarning)
-            || !TryBuildTeamDefinition(scenario.RightTeam, out var rightTeam, out var rightWarning))
+        var leftTeamBuilt = TryBuildTeamDefinition(scenario.LeftTeam, out var leftTeam, out var leftWarning);
+        var rightTeamBuilt = TryBuildTeamDefinition(scenario.RightTeam, out var rightTeam, out var rightWarning);
+        if (!leftTeamBuilt || !rightTeamBuilt)
         {
             message = string.Join("\n", new[] { leftWarning, rightWarning }.Where(text => !string.IsNullOrWhiteSpace(text)));
             return false;

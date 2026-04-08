@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using SM.Combat.Model;
-using SM.Core.Ids;
+using CoreEntityId = SM.Core.Ids.EntityId;
 using UnityEngine;
 
 namespace SM.Unity.Sandbox;
@@ -238,11 +238,11 @@ public sealed class BattleAssetIntakeSandboxController : MonoBehaviour
                 new BattleEvent(
                     stepIndex,
                     stepIndex * 0.1f,
-                    new EntityId("sandbox_ally"),
+                    new CoreEntityId("sandbox_ally"),
                     "Sandbox Ally",
                     BattleActionType.BasicAttack,
                     BattleLogCode.BasicAttackDamage,
-                    new EntityId("sandbox_enemy"),
+                    new CoreEntityId("sandbox_enemy"),
                     "Sandbox Enemy",
                     6f),
             },
@@ -295,11 +295,11 @@ public sealed class BattleAssetIntakeSandboxController : MonoBehaviour
                 new BattleEvent(
                     stepIndex,
                     stepIndex * 0.1f,
-                    new EntityId("sandbox_ally"),
+                    new CoreEntityId("sandbox_ally"),
                     "Sandbox Ally",
                     BattleActionType.BasicAttack,
                     BattleLogCode.BasicAttackDamage,
-                    new EntityId("sandbox_enemy"),
+                    new CoreEntityId("sandbox_enemy"),
                     "Sandbox Enemy",
                     14f,
                     BattleEventKind.Kill),

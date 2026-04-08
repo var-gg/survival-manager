@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Contracts;
+using SM.Core.Stats;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
@@ -901,18 +902,18 @@ public sealed class CombatSandboxScenarioCompiler
     {
         return new HeroLoadoutState(
             loadout.HeroId,
-            loadout.EquippedItemInstanceIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? Array.Empty<string>(),
-            loadout.EquippedSkillInstanceIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? Array.Empty<string>(),
+            NormalizeIds(loadout.EquippedItemInstanceIds),
+            NormalizeIds(loadout.EquippedSkillInstanceIds),
             loadout.PassiveBoardId ?? string.Empty,
-            loadout.SelectedPassiveNodeIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? Array.Empty<string>(),
-            loadout.EquippedPermanentAugmentIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? Array.Empty<string>());
+            NormalizeIds(loadout.SelectedPassiveNodeIds),
+            NormalizeIds(loadout.EquippedPermanentAugmentIds));
     }
 
     private static HeroLoadoutState CreateHeroLoadoutState(HeroInstanceRecord hero)
     {
         return new HeroLoadoutState(
             hero.HeroId,
-            hero.EquippedItemIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? Array.Empty<string>(),
+            NormalizeIds(hero.EquippedItemIds),
             Array.Empty<string>(),
             string.Empty,
             Array.Empty<string>(),
@@ -925,8 +926,8 @@ public sealed class CombatSandboxScenarioCompiler
             progression.HeroId,
             progression.Level,
             progression.Experience,
-            progression.UnlockedPassiveNodeIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? Array.Empty<string>(),
-            progression.UnlockedSkillIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? Array.Empty<string>());
+            NormalizeIds(progression.UnlockedPassiveNodeIds),
+            NormalizeIds(progression.UnlockedSkillIds));
     }
 
     private static HeroProgressionState CreateHeroProgressionState(string heroId)
@@ -939,7 +940,7 @@ public sealed class CombatSandboxScenarioCompiler
         return new PassiveBoardSelectionState(
             selection.HeroId,
             selection.BoardId ?? string.Empty,
-            selection.SelectedNodeIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? Array.Empty<string>());
+            NormalizeIds(selection.SelectedNodeIds));
     }
 
     private static PassiveBoardSelectionState CreatePassiveSelectionState(string heroId, string boardId, IReadOnlyList<string> selectedNodeIds)
@@ -947,7 +948,7 @@ public sealed class CombatSandboxScenarioCompiler
         return new PassiveBoardSelectionState(
             heroId,
             boardId ?? string.Empty,
-            selectedNodeIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? Array.Empty<string>());
+            NormalizeIds(selectedNodeIds));
     }
 
     private static ItemInstanceState CreateItemInstanceState(InventoryItemRecord item)
@@ -955,8 +956,21 @@ public sealed class CombatSandboxScenarioCompiler
         return new ItemInstanceState(
             item.ItemInstanceId,
             item.ItemBaseId,
-            item.AffixIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? Array.Empty<string>(),
+            NormalizeIds(item.AffixIds),
             item.EquippedHeroId ?? string.Empty);
+    }
+
+    private static IReadOnlyList<string> NormalizeIds(IEnumerable<string>? ids)
+    {
+        if (ids == null)
+        {
+            return Array.Empty<string>();
+        }
+
+        return ids
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
     }
 
     private static string ResolveRoleInstructionId(CombatSandboxTeamMemberDefinition member)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Editor.Authoring.CombatSandbox;
 using SM.Meta.Model;

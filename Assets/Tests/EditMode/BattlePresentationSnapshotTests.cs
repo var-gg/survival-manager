@@ -1,7 +1,7 @@
 using System.Reflection;
 using NUnit.Framework;
 using SM.Combat.Model;
-using SM.Core.Ids;
+using CoreEntityId = SM.Core.Ids.EntityId;
 using SM.Unity;
 using UnityEngine;
 
@@ -30,7 +30,7 @@ public sealed class BattlePresentationSnapshotTests
             var initial = CreateStep(0, events: System.Array.Empty<BattleEvent>());
             var current = CreateStep(1, events: new[]
             {
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 10f)
+                new BattleEvent(1, 0.1f, new CoreEntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new CoreEntityId("enemy"), "Enemy", 10f)
             });
 
             controller.Initialize(initial);
@@ -59,8 +59,8 @@ public sealed class BattlePresentationSnapshotTests
             stepIndex * 0.1f,
             new[]
             {
-                new BattleUnitReadModel("ally", "Ally", TeamSide.Ally, DeploymentAnchorId.FrontCenter, "human", "vanguard", new CombatVector2(-1f, 0f), 20f, 20f, true, CombatActionState.AcquireTarget, BattleActionType.BasicAttack, "enemy", "Enemy", 0f, 0f, 0f, 100f),
-                new BattleUnitReadModel("enemy", "Enemy", TeamSide.Enemy, DeploymentAnchorId.BackCenter, "human", "vanguard", new CombatVector2(1f, 0f), 20f, 20f, true, CombatActionState.AcquireTarget, BattleActionType.BasicAttack, "ally", "Ally", 0f, 0f, 0f, 100f),
+                new BattleUnitReadModel("ally", "Ally", TeamSide.Ally, DeploymentAnchorId.FrontCenter, "human", "vanguard", new CombatVector2(-1f, 0f), 20f, 20f, true, CombatActionState.AcquireTarget, BattleActionType.BasicAttack, "enemy", "Enemy", 0f, 0f, 0f, 100f, false),
+                new BattleUnitReadModel("enemy", "Enemy", TeamSide.Enemy, DeploymentAnchorId.BackCenter, "human", "vanguard", new CombatVector2(1f, 0f), 20f, 20f, true, CombatActionState.AcquireTarget, BattleActionType.BasicAttack, "ally", "Ally", 0f, 0f, 0f, 100f, false),
             },
             events,
             false,

@@ -92,7 +92,7 @@ internal sealed class DefaultLoopCGovernanceSubjectExtractor : ILoopCGovernanceS
     {
         var subjects = new List<LoopCGovernanceSubject>();
         var referencedSynergyTierIds = catalog.OfType<SynergyDefinition>()
-            .SelectMany(definition => definition.Tiers ?? Array.Empty<SynergyTierDefinition>())
+            .SelectMany(definition => definition.Tiers ?? new List<SynergyTierDefinition>())
             .Where(tier => tier != null && !string.IsNullOrWhiteSpace(tier.Id))
             .Select(tier => tier.Id)
             .ToHashSet(StringComparer.Ordinal);

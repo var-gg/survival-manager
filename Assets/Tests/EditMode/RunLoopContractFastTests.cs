@@ -1,13 +1,12 @@
 using System;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Stats;
 using SM.Meta.Model;
+using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
 using SM.Unity;
 using UnityEngine;
@@ -219,8 +218,7 @@ public sealed class RunLoopContractFastTests
 
     private static SaveProfile CloneProfile(SaveProfile profile)
     {
-        return JsonConvert.DeserializeObject<SaveProfile>(
-                   JsonConvert.SerializeObject(profile, Formatting.Indented))
+        return JsonUtility.FromJson<SaveProfile>(JsonUtility.ToJson(profile))
                ?? new SaveProfile();
     }
 

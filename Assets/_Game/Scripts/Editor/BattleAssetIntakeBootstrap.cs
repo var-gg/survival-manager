@@ -1,5 +1,6 @@
 using System.IO;
 using SM.Editor.Validation;
+using SM.Combat.Model;
 using SM.Unity;
 using SM.Unity.Sandbox;
 using UnityEditor;

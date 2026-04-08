@@ -94,32 +94,35 @@ internal static class FirstPlayableAuthoringContract
 
     internal static IReadOnlyList<string> ExtractAnswerLanes(IEnumerable<string> tags)
     {
-        return tags?
-            .Where(tag => AllowedAnswerLaneIds.Contains(tag))
-            .Distinct(StringComparer.Ordinal)
-            .OrderBy(tag => tag, StringComparer.Ordinal)
-            .ToList()
-            ?? Array.Empty<string>();
+        return tags == null
+            ? Array.Empty<string>()
+            : tags
+                .Where(tag => AllowedAnswerLaneIds.Contains(tag))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(tag => tag, StringComparer.Ordinal)
+                .ToList();
     }
 
     internal static IReadOnlyList<string> ExtractOverlayAskTags(IEnumerable<string> tags)
     {
-        return tags?
-            .Where(tag => !string.IsNullOrWhiteSpace(tag) && tag.StartsWith("overlay_ask_", StringComparison.Ordinal))
-            .Distinct(StringComparer.Ordinal)
-            .OrderBy(tag => tag, StringComparer.Ordinal)
-            .ToList()
-            ?? Array.Empty<string>();
+        return tags == null
+            ? Array.Empty<string>()
+            : tags
+                .Where(tag => !string.IsNullOrWhiteSpace(tag) && tag.StartsWith("overlay_ask_", StringComparison.Ordinal))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(tag => tag, StringComparer.Ordinal)
+                .ToList();
     }
 
     internal static IReadOnlyList<string> ExtractContextTags(LootBundleEntryDefinition entry)
     {
-        return entry.RequiredContextTags?
-            .Where(tag => !string.IsNullOrWhiteSpace(tag))
-            .Distinct(StringComparer.Ordinal)
-            .OrderBy(tag => tag, StringComparer.Ordinal)
-            .ToList()
-            ?? Array.Empty<string>();
+        return entry.RequiredContextTags == null
+            ? Array.Empty<string>()
+            : entry.RequiredContextTags
+                .Where(tag => !string.IsNullOrWhiteSpace(tag))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(tag => tag, StringComparer.Ordinal)
+                .ToList();
     }
 
     internal static IReadOnlyList<string> CollectSupportSkillIds(UnitArchetypeDefinition archetype)

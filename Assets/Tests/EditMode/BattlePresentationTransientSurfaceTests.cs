@@ -1,7 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
-using SM.Core.Ids;
+using CoreEntityId = SM.Core.Ids.EntityId;
 using SM.Unity;
 using UnityEngine;
 
@@ -34,7 +34,7 @@ public sealed class BattlePresentationTransientSurfaceTests
             var initial = CreateStep(0, 20f, true, CombatActionState.AcquireTarget, System.Array.Empty<BattleEvent>());
             var current = CreateStep(1, 12f, true, CombatActionState.Recover, new[]
             {
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 8f)
+                new BattleEvent(1, 0.1f, new CoreEntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new CoreEntityId("enemy"), "Enemy", 8f)
             });
 
             controller.Initialize(initial);

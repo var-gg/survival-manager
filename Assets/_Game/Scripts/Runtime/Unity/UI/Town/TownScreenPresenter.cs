@@ -288,7 +288,10 @@ public sealed class TownScreenPresenter
         var currentBoardId = _root.SessionState.Profile.HeroLoadouts
             .FirstOrDefault(record => string.Equals(record.HeroId, hero.HeroId, StringComparison.Ordinal))
             ?.PassiveBoardId ?? string.Empty;
-        var currentIndex = boardIds.FindIndex(id => string.Equals(id, currentBoardId, StringComparison.Ordinal));
+        var currentIndex = boardIds
+            .Select((id, index) => new { id, index })
+            .FirstOrDefault(entry => string.Equals(entry.id, currentBoardId, StringComparison.Ordinal))
+            ?.index ?? -1;
         var nextBoardId = boardIds[WrapIndex(currentIndex + 1, boardIds.Count)];
         var result = _root.SessionState.SelectPassiveBoard(hero.HeroId, nextBoardId);
         _selectedPassiveNodeIndex = 0;
