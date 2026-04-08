@@ -19,727 +19,516 @@ MonoBehaviour:
     m_Items:
     - rid: 162163771961769992
   m_TableData:
-  - m_Id: 1864474683236352
-    m_Localized: "Reward Operator UI"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179392
-    m_Localized: "Battle Result: {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179393
-    m_Localized: "Gold: {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179394
-    m_Localized: "Echo: {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179395
-    m_Localized: "Echo: {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179396
-    m_Localized: "Perm Slots: {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179397
-    m_Localized: "Inventory: {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179398
-    m_Localized: "Temp Augments: {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179399
-    m_Localized: "{0} / {1} steps / {2} events"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179400
-    m_Localized: "{0} / {1} steps / {2} events\n\u000ARoute: {3}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179401
-    m_Localized: "{0} / {1} steps / {2} events\n\u000ARoute: {3}\n\u000ANode Effect: {4}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179402
-    m_Localized: "Victory"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179403
-    m_Localized: "Defeat"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179404
-    m_Localized: "Choose one reward card"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179405
-    m_Localized: "Pick one card and return to town."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179406
-    m_Localized: "Reward applied."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179407
-    m_Localized: "{0} applied."
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179408
-    m_Localized: "Failed to apply the selected reward."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179409
-    m_Localized: "Choose"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179410
-    m_Localized: "Empty Card"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179411
-    m_Localized: "No reward choice is available."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179412
-    m_Localized: "Gold +{0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179413
-    m_Localized: "Item / {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179414
-    m_Localized: "Temp / {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179415
-    m_Localized: "Echo +{0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179416
-    m_Localized: "Echo +{0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
-  - m_Id: 1864474725179417
-    m_Localized: "Permanent Slot +{0}"
-    m_Metadata:
-      m_Items:
-      - rid: 162163771961769992
   - m_Id: 1864474725179418
-    m_Localized: "Gold Cache"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179419
-    m_Localized: "Take an immediate gold payout."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179420
-    m_Localized: "Iron Blade Supply"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179421
-    m_Localized: "Gain a baseline weapon item."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179422
-    m_Localized: "Aggro Spark"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179423
-    m_Localized: "Gain an aggressive temporary augment."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179424
-    m_Localized: "War Chest"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179425
-    m_Localized: "Large gold reward for the ambush route."
+    m_Localized: Gold Cache
     m_Metadata:
       m_Items: []
   - m_Id: 1864474725179426
-    m_Localized: "Hook Spear"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179427
-    m_Localized: "Gain a frontline skirmish item."
+    m_Localized: Hook Spear
     m_Metadata:
       m_Items: []
   - m_Id: 1864474725179428
-    m_Localized: "Scout Intel"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179429
-    m_Localized: "Gain extra Echo for recruit and retrain recovery."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179430
-    m_Localized: "Field Kit"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179431
-    m_Localized: "Gain a steady defensive item."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179432
-    m_Localized: "Anchor Beat"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179433
-    m_Localized: "Gain a frontline stabilizing augment."
+    m_Localized: Scout Intel
     m_Metadata:
       m_Items: []
   - m_Id: 1864474725179434
-    m_Localized: "Relay Pouch"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179435
-    m_Localized: "Gain a medium gold payout."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179436
-    m_Localized: "Permanent Socket"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179437
-    m_Localized: "Increase permanent augment slots."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179438
-    m_Localized: "Sigil Core"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179439
-    m_Localized: "Gain a late-run utility item."
+    m_Localized: Relay Pouch
     m_Metadata:
       m_Items: []
   - m_Id: 1864474725179440
-    m_Localized: "Doctrine Cache"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179441
-    m_Localized: "Gain a larger Echo payout."
+    m_Localized: Doctrine Cache
     m_Metadata:
       m_Items: []
   - m_Id: 1864474725179442
-    m_Localized: "Fallback Stash"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179443
-    m_Localized: "Collect a minimum fallback payout after defeat."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179444
-    m_Localized: "Tactical Notes"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474725179445
-    m_Localized: "Gain Echo for tactical correction."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474729373696
-    m_Localized: "Guard Spark"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1864474729373697
-    m_Localized: "Gain a stabilizing temporary augment."
+    m_Localized: Fallback Stash
     m_Metadata:
       m_Items: []
   - m_Id: 1
-    m_Localized: "Reward Operator UI"
+    m_Localized: Reward Operator UI
     m_Metadata:
       m_Items: []
   - m_Id: 2
-    m_Localized: "Battle Result: {0}"
+    m_Localized: 'Battle Result: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 3
-    m_Localized: "Gold: {0}"
+    m_Localized: 'Gold: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 4
-    m_Localized: "Echo: {0}"
+    m_Localized: 'Echo: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 5
-    m_Localized: "Echo: {0}"
+    m_Localized: 'Echo: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 6
-    m_Localized: "Perm Slots: {0}"
+    m_Localized: 'Perm Slots: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 7
-    m_Localized: "Inventory: {0}"
+    m_Localized: 'Inventory: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 8
-    m_Localized: "Temp Augments: {0}"
+    m_Localized: 'Temp Augments: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 9
-    m_Localized: "{0} / {1} steps / {2} events"
+    m_Localized: '{0} / {1} steps / {2} events'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 10
-    m_Localized: "{0} / {1} steps / {2} events\n\u000ARoute: {3}"
+    m_Localized: '{0} / {1} steps / {2} events
+
+      Route: {3}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 11
-    m_Localized: "{0} / {1} steps / {2} events\n\u000ARoute: {3}\n\u000ANode Effect: {4}"
+    m_Localized: '{0} / {1} steps / {2} events
+
+      Route: {3}
+
+      Node Effect:
+      {4}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 12
-    m_Localized: "Victory"
+    m_Localized: Victory
     m_Metadata:
       m_Items: []
   - m_Id: 13
-    m_Localized: "Defeat"
+    m_Localized: Defeat
     m_Metadata:
       m_Items: []
   - m_Id: 14
-    m_Localized: "Choose one reward card"
+    m_Localized: Choose one reward card
     m_Metadata:
       m_Items: []
   - m_Id: 15
-    m_Localized: "Pick one card and return to town."
+    m_Localized: Pick one card and return to town.
     m_Metadata:
       m_Items: []
   - m_Id: 16
-    m_Localized: "Reward applied."
+    m_Localized: Reward applied.
     m_Metadata:
       m_Items: []
   - m_Id: 17
-    m_Localized: "{0} applied."
+    m_Localized: '{0} applied.'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 18
-    m_Localized: "Failed to apply the selected reward."
+    m_Localized: Failed to apply the selected reward.
     m_Metadata:
       m_Items: []
   - m_Id: 19
-    m_Localized: "Choose"
+    m_Localized: Choose
     m_Metadata:
       m_Items: []
   - m_Id: 20
-    m_Localized: "Empty Card"
+    m_Localized: Empty Card
     m_Metadata:
       m_Items: []
   - m_Id: 21
-    m_Localized: "No reward choice is available."
+    m_Localized: No reward choice is available.
     m_Metadata:
       m_Items: []
   - m_Id: 22
-    m_Localized: "Gold +{0}"
+    m_Localized: Gold +{0}
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 23
-    m_Localized: "Item / {0}"
+    m_Localized: Item / {0}
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 24
-    m_Localized: "Temp / {0}"
+    m_Localized: Temp / {0}
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 25
-    m_Localized: "Echo +{0}"
+    m_Localized: Echo +{0}
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 26
-    m_Localized: "Echo +{0}"
+    m_Localized: Echo +{0}
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 27
-    m_Localized: "Permanent Slot +{0}"
+    m_Localized: Permanent Slot +{0}
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 28
-    m_Localized: "Take an immediate gold payout."
+    m_Localized: Take an immediate gold payout.
     m_Metadata:
       m_Items: []
   - m_Id: 29
-    m_Localized: "Iron Blade Supply"
+    m_Localized: Iron Blade Supply
     m_Metadata:
       m_Items: []
   - m_Id: 30
-    m_Localized: "Gain a baseline weapon item."
+    m_Localized: Gain a baseline weapon item.
     m_Metadata:
       m_Items: []
   - m_Id: 31
-    m_Localized: "Aggro Spark"
+    m_Localized: Aggro Spark
     m_Metadata:
       m_Items: []
   - m_Id: 32
-    m_Localized: "Gain an aggressive temporary augment."
+    m_Localized: Gain an aggressive temporary augment.
     m_Metadata:
       m_Items: []
   - m_Id: 33
-    m_Localized: "War Chest"
+    m_Localized: War Chest
     m_Metadata:
       m_Items: []
   - m_Id: 34
-    m_Localized: "Large gold reward for the ambush route."
+    m_Localized: Large gold reward for the ambush route.
     m_Metadata:
       m_Items: []
   - m_Id: 35
-    m_Localized: "Gain a frontline skirmish item."
+    m_Localized: Gain a frontline skirmish item.
     m_Metadata:
       m_Items: []
   - m_Id: 36
-    m_Localized: "Gain extra Echo for recruit and retrain recovery."
+    m_Localized: Gain extra Echo for recruit and retrain recovery.
     m_Metadata:
       m_Items: []
   - m_Id: 37
-    m_Localized: "Field Kit"
+    m_Localized: Field Kit
     m_Metadata:
       m_Items: []
   - m_Id: 38
-    m_Localized: "Gain a steady defensive item."
+    m_Localized: Gain a steady defensive item.
     m_Metadata:
       m_Items: []
   - m_Id: 39
-    m_Localized: "Anchor Beat"
+    m_Localized: Anchor Beat
     m_Metadata:
       m_Items: []
   - m_Id: 40
-    m_Localized: "Gain a frontline stabilizing augment."
+    m_Localized: Gain a frontline stabilizing augment.
     m_Metadata:
       m_Items: []
   - m_Id: 41
-    m_Localized: "Gain a medium gold payout."
+    m_Localized: Gain a medium gold payout.
     m_Metadata:
       m_Items: []
   - m_Id: 42
-    m_Localized: "Permanent Socket"
+    m_Localized: Permanent Socket
     m_Metadata:
       m_Items: []
   - m_Id: 43
-    m_Localized: "Increase permanent augment slots."
+    m_Localized: Increase permanent augment slots.
     m_Metadata:
       m_Items: []
   - m_Id: 44
-    m_Localized: "Sigil Core"
+    m_Localized: Sigil Core
     m_Metadata:
       m_Items: []
   - m_Id: 45
-    m_Localized: "Gain a late-run utility item."
+    m_Localized: Gain a late-run utility item.
     m_Metadata:
       m_Items: []
   - m_Id: 46
-    m_Localized: "Gain a larger Echo payout."
+    m_Localized: Gain a larger Echo payout.
     m_Metadata:
       m_Items: []
   - m_Id: 47
-    m_Localized: "Collect a minimum fallback payout after defeat."
+    m_Localized: Collect a minimum fallback payout after defeat.
     m_Metadata:
       m_Items: []
   - m_Id: 48
-    m_Localized: "Tactical Notes"
+    m_Localized: Tactical Notes
     m_Metadata:
       m_Items: []
   - m_Id: 49
-    m_Localized: "Gain Echo for tactical correction."
+    m_Localized: Gain Echo for tactical correction.
     m_Metadata:
       m_Items: []
   - m_Id: 50
-    m_Localized: "Guard Spark"
+    m_Localized: Guard Spark
     m_Metadata:
       m_Items: []
   - m_Id: 51
-    m_Localized: "Gain a stabilizing temporary augment."
+    m_Localized: Gain a stabilizing temporary augment.
     m_Metadata:
       m_Items: []
   - m_Id: 52
-    m_Localized: "Summary"
+    m_Localized: Summary
     m_Metadata:
       m_Items: []
   - m_Id: 53
-    m_Localized: "Build Context"
+    m_Localized: Build Context
     m_Metadata:
       m_Items: []
   - m_Id: 54
-    m_Localized: "Pick one reward to apply it immediately, then return to Town to resume or close the run."
+    m_Localized: Pick one reward to apply it immediately, then return to Town to
+      resume or close the run.
     m_Metadata:
       m_Items: []
   - m_Id: 55
-    m_Localized: "Open Reward"
+    m_Localized: Open Reward
     m_Metadata:
       m_Items: []
   - m_Id: 56
-    m_Localized: "Return to Town / Smoke Complete"
+    m_Localized: Return to Town / Smoke Complete
     m_Metadata:
       m_Items: []
   - m_Id: 57
-    m_Localized: "Return to Town / Run Failed"
+    m_Localized: Return to Town / Run Failed
     m_Metadata:
       m_Items: []
   - m_Id: 58
-    m_Localized: "Return to Town / Run Complete"
+    m_Localized: Return to Town / Run Complete
     m_Metadata:
       m_Items: []
   - m_Id: 59
-    m_Localized: "Return to Town / Resume Later"
+    m_Localized: Return to Town / Resume Later
     m_Metadata:
       m_Items: []
   - m_Id: 60
-    m_Localized: "Quick Battle Smoke"
+    m_Localized: Quick Battle Smoke
     m_Metadata:
       m_Items: []
   - m_Id: 61
-    m_Localized: "Final Extract"
+    m_Localized: Final Extract
     m_Metadata:
       m_Items: []
   - m_Id: 62
-    m_Localized: "Reward locked in. Return to Town to continue."
+    m_Localized: Reward locked in. Return to Town to continue.
     m_Metadata:
       m_Items: []
   - m_Id: 63
-    m_Localized: "Quick Battle smoke settlement: pick one card and return to Town."
+    m_Localized: 'Quick Battle smoke settlement: pick one card and return to Town.'
     m_Metadata:
       m_Items: []
   - m_Id: 64
-    m_Localized: "Run failed. Pick a fallback reward and return to Town."
+    m_Localized: Run failed. Pick a fallback reward and return to Town.
     m_Metadata:
       m_Items: []
   - m_Id: 65
-    m_Localized: "Run complete. Pick one reward and return to Town."
+    m_Localized: Run complete. Pick one reward and return to Town.
     m_Metadata:
       m_Items: []
   - m_Id: 66
-    m_Localized: "Pick one reward and return to Town. You can resume the expedition later."
+    m_Localized: Pick one reward and return to Town. You can resume the expedition
+      later.
     m_Metadata:
       m_Items: []
   - m_Id: 67
-    m_Localized: "Settlement: {0}"
+    m_Localized: 'Settlement: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 68
-    m_Localized: "Base Reward: {0}"
+    m_Localized: 'Base Reward: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 69
-    m_Localized: "Auto Loot: {0}"
+    m_Localized: 'Auto Loot: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 70
-    m_Localized: "Chosen Reward: {0}"
+    m_Localized: 'Chosen Reward: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 71
-    m_Localized: "Permanent Candidate Pending: {0}"
+    m_Localized: 'Permanent Candidate Pending: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 72
-    m_Localized: "Wallet Now: {0} Gold / {1} Echo"
+    m_Localized: 'Wallet Now: {0} Gold / {1} Echo'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 73
-    m_Localized: "Inventory Now: {0} items"
+    m_Localized: 'Inventory Now: {0} items'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 74
-    m_Localized: "Continuation: {0}"
+    m_Localized: 'Continuation: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 75
-    m_Localized: "Choose one reward before returning."
+    m_Localized: Choose one reward before returning.
     m_Metadata:
       m_Items: []
   - m_Id: 76
-    m_Localized: "Settlement summary is unavailable."
+    m_Localized: Settlement summary is unavailable.
     m_Metadata:
       m_Items: []
   - m_Id: 77
-    m_Localized: "Route: {0} / {1}"
+    m_Localized: 'Route: {0} / {1}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 78
-    m_Localized: "Posture: {0}"
+    m_Localized: 'Posture: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 79
-    m_Localized: "Equipped Permanent: {0}"
+    m_Localized: 'Equipped Permanent: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 80
-    m_Localized: "Bench Candidates: {0}"
+    m_Localized: 'Bench Candidates: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 81
-    m_Localized: "Current Temp Augments: {0}"
+    m_Localized: 'Current Temp Augments: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 82
-    m_Localized: "Build Thesis: {0}"
+    m_Localized: 'Build Thesis: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 83
-    m_Localized: "No permanent thesis"
+    m_Localized: No permanent thesis
     m_Metadata:
       m_Items: []
   - m_Id: 84
-    m_Localized: "No temporary augments"
+    m_Localized: No temporary augments
     m_Metadata:
       m_Items: []
   - m_Id: 85
-    m_Localized: "{0} temp augment(s)"
+    m_Localized: '{0} temp augment(s)'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 86
-    m_Localized: "Hex focus"
+    m_Localized: Hex focus
     m_Metadata:
       m_Items: []
   - m_Id: 87
-    m_Localized: "Hunt focus"
+    m_Localized: Hunt focus
     m_Metadata:
       m_Items: []
   - m_Id: 88
-    m_Localized: "Tempo focus"
+    m_Localized: Tempo focus
     m_Metadata:
       m_Items: []
   - m_Id: 89
-    m_Localized: "Ward focus"
+    m_Localized: Ward focus
     m_Metadata:
       m_Items: []
   - m_Id: 90
-    m_Localized: "Build Impact: {0}"
+    m_Localized: 'Build Impact: {0}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 91
-    m_Localized: "Economy rail: recruit and refresh."
+    m_Localized: 'Economy rail: recruit and refresh.'
     m_Metadata:
       m_Items: []
   - m_Id: 92
-    m_Localized: "Economy rail: scout, retrain, refit, and recovery."
+    m_Localized: 'Economy rail: scout, retrain, refit, and recovery.'
     m_Metadata:
       m_Items: []
   - m_Id: 93
-    m_Localized: "Normal lane does not generate permanent slot rewards."
+    m_Localized: Normal lane does not generate permanent slot rewards.
     m_Metadata:
       m_Items: []
   - m_Id: 94
-    m_Localized: "Hero hook: offensive or rule-changing weapon line."
+    m_Localized: 'Hero hook: offensive or rule-changing weapon line.'
     m_Metadata:
       m_Items: []
   - m_Id: 95
-    m_Localized: "Hero hook: frontline durability or protection line."
+    m_Localized: 'Hero hook: frontline durability or protection line.'
     m_Metadata:
       m_Items: []
   - m_Id: 96
-    m_Localized: "Hero hook: utility or sustain accessory line."
+    m_Localized: 'Hero hook: utility or sustain accessory line.'
     m_Metadata:
       m_Items: []
   - m_Id: 97
-    m_Localized: "Hero hook: inventory-ready permanent item."
+    m_Localized: 'Hero hook: inventory-ready permanent item.'
     m_Metadata:
       m_Items: []
   - m_Id: 98
-    m_Localized: "Immediate fixed temporary augment for the current build."
+    m_Localized: Immediate fixed temporary augment for the current build.
     m_Metadata:
       m_Items: []
   - m_Id: 99
-    m_Localized: "Temporary augment that previews a permanent unlock path."
+    m_Localized: Temporary augment that previews a permanent unlock path.
     m_Metadata:
       m_Items: []
   - m_Id: 100
-    m_Localized: "Build hook: temporary augment pressure line."
+    m_Localized: 'Build hook: temporary augment pressure line.'
     m_Metadata:
       m_Items: []
   - m_Id: 101
-    m_Localized: "Build hook: hex pressure line."
+    m_Localized: 'Build hook: hex pressure line.'
     m_Metadata:
       m_Items: []
   - m_Id: 102
-    m_Localized: "Build hook: hunt finish line."
+    m_Localized: 'Build hook: hunt finish line.'
     m_Metadata:
       m_Items: []
   - m_Id: 103
-    m_Localized: "Build hook: tempo acceleration line."
+    m_Localized: 'Build hook: tempo acceleration line.'
     m_Metadata:
       m_Items: []
   - m_Id: 104
-    m_Localized: "Build hook: ward stability line."
+    m_Localized: 'Build hook: ward stability line.'
     m_Metadata:
       m_Items: []
   - m_Id: 105
-    m_Localized: "Build hook: permanent unlock candidate."
+    m_Localized: 'Build hook: permanent unlock candidate.'
     m_Metadata:
       m_Items: []
   - m_Id: 106
-    m_Localized: "Quick Battle smoke lane closes"
+    m_Localized: Quick Battle smoke lane closes
     m_Metadata:
       m_Items: []
   - m_Id: 107
-    m_Localized: "run closes"
+    m_Localized: run closes
     m_Metadata:
       m_Items: []
   - m_Id: 108
-    m_Localized: "{0}. {1}"
+    m_Localized: '{0}. {1}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
   - m_Id: 109
-    m_Localized: "Choose one reward first. The summary will keep the applied delta on screen."
+    m_Localized: Choose one reward first. The summary will keep the applied delta
+      on screen.
     m_Metadata:
       m_Items: []
   - m_Id: 110
-    m_Localized: "Return to Town with the applied reward result and continuation state."
+    m_Localized: Return to Town with the applied reward result and continuation state.
     m_Metadata:
       m_Items: []
   - m_Id: 111
-    m_Localized: "Return to Town, then resume the expedition"
+    m_Localized: Return to Town, then resume the expedition
     m_Metadata:
       m_Items: []
   references:
@@ -750,23 +539,6 @@ MonoBehaviour:
       data:
         m_Entries: 
         m_SharedEntries:
-        - id: 1864474725179392
-        - id: 1864474725179393
-        - id: 1864474725179394
-        - id: 1864474725179395
-        - id: 1864474725179396
-        - id: 1864474725179397
-        - id: 1864474725179398
-        - id: 1864474725179399
-        - id: 1864474725179400
-        - id: 1864474725179401
-        - id: 1864474725179407
-        - id: 1864474725179412
-        - id: 1864474725179413
-        - id: 1864474725179414
-        - id: 1864474725179415
-        - id: 1864474725179416
-        - id: 1864474725179417
         - id: 2
         - id: 3
         - id: 4

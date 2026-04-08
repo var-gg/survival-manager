@@ -142,7 +142,7 @@ public static class PassiveBoardSelectionValidator
     private static IEnumerable<string> GetTagIds(PassiveNodeDefinition definition)
     {
         return definition.MutualExclusionTags
-            .Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id))
+            .Where(tag => !ReferenceEquals(tag, null) && !string.IsNullOrWhiteSpace(tag.Id))
             .Select(tag => tag.Id);
     }
 

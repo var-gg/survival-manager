@@ -26,7 +26,7 @@ public static class PermanentAugmentProgressionService
         }
 
         var definitions = augmentDefinitions?
-            .Where(definition => definition != null && !string.IsNullOrWhiteSpace(definition.Id))
+            .Where(definition => !ReferenceEquals(definition, null) && !string.IsNullOrWhiteSpace(definition.Id))
             .GroupBy(definition => definition.Id, StringComparer.Ordinal)
             .Select(group => group.First())
             .ToList() ?? new List<AugmentDefinition>();
@@ -40,20 +40,20 @@ public static class PermanentAugmentProgressionService
             return PermanentAugmentUnlockResolution.None;
         }
 
-        var permanentCandidates = definitions
+        var permanentCandidateIds = definitions
             .Where(definition => definition.IsPermanent
                                  && string.Equals(definition.FamilyId, selectedTemporary.FamilyId, StringComparison.Ordinal))
             .Select(definition => definition.Id)
             .Distinct(StringComparer.Ordinal)
-            .ToList();
+            .ToArray();
 
-        if (permanentCandidates.Count != 1)
+        if (permanentCandidateIds.Length != 1)
         {
             return PermanentAugmentUnlockResolution.None;
         }
 
-        var unlockAugmentId = permanentCandidates[0];
-        if (knownPermanentAugmentIds.Contains(unlockAugmentId, StringComparer.Ordinal))
+        var unlockAugmentId = permanentCandidateIds[0];
+        if (knownPermanentAugmentIds.Any(existingId => string.Equals(existingId, unlockAugmentId, StringComparison.Ordinal)))
         {
             return PermanentAugmentUnlockResolution.None;
         }

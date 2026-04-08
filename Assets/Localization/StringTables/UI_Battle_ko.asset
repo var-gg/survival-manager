@@ -19,18 +19,6 @@ MonoBehaviour:
     m_Items:
     - rid: 1798213439901401363
   m_TableData:
-  - m_Id: 901000001
-    m_Localized: "\uC804\uD22C \uAD00\uC804 \uD654\uBA74"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000002
-    m_Localized: "\uC544\uAD70 HP"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000003
-    m_Localized: "\uC801\uAD70 HP"
-    m_Metadata:
-      m_Items: []
   - m_Id: 901000004
     m_Localized: "\uC804\uD22C \uB85C\uADF8 \uC900\uBE44 \uC911"
     m_Metadata:
@@ -39,166 +27,16 @@ MonoBehaviour:
     m_Localized: "\uC804\uD22C \uC9C4\uD589 \uC911"
     m_Metadata:
       m_Items: []
-  - m_Id: 901000006
-    m_Localized: "\uC2B9\uB9AC"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000007
-    m_Localized: "\uD328\uBC30"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000008
-    m_Localized: "\uBC30\uC18D x{0:0}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000009
-    m_Localized: "\uBC30\uC18D x{0:0} | \uC77C\uC2DC\uC815\uC9C0"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
   - m_Id: 901000010
     m_Localized: "\uC2E4\uC2DC\uAC04 \uC2DC\uBBAC\uB808\uC774\uC158 \uCD08\uAE30\uD654"
     m_Metadata:
       m_Items: []
-  - m_Id: 901000011
-    m_Localized: "\uC804\uD22C \uC77C\uC2DC\uC815\uC9C0"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000012
-    m_Localized: "\uC804\uD22C \uC7AC\uAC1C"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000013
-    m_Localized: " | \uC77C\uC2DC\uC815\uC9C0"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000014
-    m_Localized: "\uC804\uD22C \uC885\uB8CC | {0} steps | {1} events"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000015
-    m_Localized: "Step {0} | \uACB0\uACFC \uD655\uC815{1}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000016
-    m_Localized: "\uC2A4\uD15D {0} | {1} -> {2} | {3} {4:0}{5}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000017
-    m_Localized: "Step {0} | {1} \uC900\uBE44 {2}% -> {3}{4}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000018
-    m_Localized: "\uC2A4\uD15D {0} | \uD0DC\uC138 {1}{2}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000019
-    m_Localized: "\uC804\uD22C\uC5D0 \uD22C\uC785\uD560 \uC544\uAD70\uC774 \uC5C6\uC2B5\uB2C8\uB2E4."
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000020
-    m_Localized: "\uC804\uD22C \uD45C\uC2DC \uC635\uC158"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000021
-    m_Localized: "\uC124\uC815 \uD328\uB110 \uB2EB\uD798"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000022
-    m_Localized: "{0}: {1}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000023
-    m_Localized: "\uC624\uBC84\uD5E4\uB4DC UI"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000024
-    m_Localized: "\uB370\uBBF8\uC9C0 \uC22B\uC790"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000025
-    m_Localized: "\uC624\uBC84\uD5E4\uB4DC UI"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000026
-    m_Localized: "\uB370\uBBF8\uC9C0 \uC22B\uC790"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000027
-    m_Localized: "\uB514\uBC84\uADF8 \uC624\uBC84\uB808\uC774"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000028
-    m_Localized: "\uD300 \uC694\uC57D"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 901000029
-    m_Localized: "\uC624\uBC84\uD5E4\uB4DC UI {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000030
-    m_Localized: "\uB370\uBBF8\uC9C0 \uC22B\uC790 {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000031
-    m_Localized: "\uC624\uBC84\uD5E4\uB4DC UI {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000032
-    m_Localized: "\uB370\uBBF8\uC9C0 \uC22B\uC790 {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000033
-    m_Localized: "\uB514\uBC84\uADF8 \uC624\uBC84\uB808\uC774 {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
-  - m_Id: 901000034
-    m_Localized: "\uD300 \uC694\uC57D {0}"
-    m_Metadata:
-      m_Items:
-      - rid: 1798213439901401363
   - m_Id: 2688396089614336
     m_Localized: "\uCE90\uB9AD\uD130"
     m_Metadata:
       m_Items: []
-  - m_Id: 2688396177694720
-    m_Localized: "\uC804\uD22C \uC6D0\uD615"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2688396177694721
-    m_Localized: "\uC885\uC871"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2688396177694722
-    m_Localized: "\uC9C1\uC5C5"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2688396181889024
-    m_Localized: "\uC5ED\uD560"
-    m_Metadata:
-      m_Items: []
   - m_Id: 2688396181889025
     m_Localized: "\uC5ED\uD560\uAD70"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2688396181889026
-    m_Localized: "\uBC30\uCE58"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2688396181889027
-    m_Localized: "\uC120\uD0DD \uC720\uB2DB"
     m_Metadata:
       m_Items: []
   - m_Id: 1
@@ -254,7 +92,7 @@ MonoBehaviour:
       m_Items:
       - rid: 1798213439901401363
   - m_Id: 13
-    m_Localized: "\uC2A4\uD15D {0} | {1} -> {2} | {3} {4:0}{5}"
+    m_Localized: Step {0} | {1} -> {2} | {3} {4:0}{5}
     m_Metadata:
       m_Items:
       - rid: 1798213439901401363
@@ -264,7 +102,7 @@ MonoBehaviour:
       m_Items:
       - rid: 1798213439901401363
   - m_Id: 15
-    m_Localized: "\uC2A4\uD15D {0} | \uD0DC\uC138 {1}{2}"
+    m_Localized: Step {0} | posture {1}{2}
     m_Metadata:
       m_Items:
       - rid: 1798213439901401363
@@ -281,7 +119,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 19
-    m_Localized: "{0}: {1}"
+    m_Localized: '{0}: {1}'
     m_Metadata:
       m_Items:
       - rid: 1798213439901401363
@@ -396,19 +234,21 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 46
-    m_Localized: "\uC694\uC57D, \uCD5C\uADFC \uB85C\uADF8, \uC120\uD0DD \uC720\uB2DB \uD328\uB110\uB85C \uD604\uC7AC \uC804\uD22C\uB97C \uC77D\uACE0 \uC885\uB8CC \uD6C4 Continue\uB97C \uB204\uB974\uC138\uC694."
+    m_Localized: "\uC694\uC57D, \uCD5C\uADFC \uB85C\uADF8, \uC120\uD0DD \uC720\uB2DB
+      \uD328\uB110\uB85C \uD604\uC7AC \uC804\uD22C\uB97C \uC77D\uACE0 \uC885\uB8CC
+      \uD6C4 Continue\uB97C \uB204\uB974\uC138\uC694."
     m_Metadata:
       m_Items: []
   - m_Id: 47
-    m_Localized: "x1"
+    m_Localized: x1
     m_Metadata:
       m_Items: []
   - m_Id: 48
-    m_Localized: "x2"
+    m_Localized: x2
     m_Metadata:
       m_Items: []
   - m_Id: 49
-    m_Localized: "x4"
+    m_Localized: x4
     m_Metadata:
       m_Items: []
   - m_Id: 50
@@ -470,19 +310,23 @@ MonoBehaviour:
       m_Items:
       - rid: 1798213439901401363
   - m_Id: 63
-    m_Localized: "\uC804\uD22C\uAC00 \uC644\uC804\uD788 \uB05D\uB09C \uB4A4 Continue\uAC00 \uD65C\uC131\uD654\uB429\uB2C8\uB2E4."
+    m_Localized: "\uC804\uD22C\uAC00 \uC644\uC804\uD788 \uB05D\uB09C \uB4A4 Continue\uAC00
+      \uD65C\uC131\uD654\uB429\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 64
-    m_Localized: "Rebattle\uC740 Quick Battle (Smoke)\uC5D0\uC11C\uB9CC \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "Rebattle\uC740 Quick Battle (Smoke)\uC5D0\uC11C\uB9CC \uC0AC\uC6A9\uD560
+      \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 65
-    m_Localized: "\uC9C1\uC811 Town \uBCF5\uADC0\uB294 Quick Battle (Smoke)\uC5D0\uC11C\uB9CC \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "\uC9C1\uC811 Town \uBCF5\uADC0\uB294 Quick Battle (Smoke)\uC5D0\uC11C\uB9CC
+      \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 66
-    m_Localized: "\uC9C1\uC811 Town\uC73C\uB85C \uB3CC\uC544\uAC00\uB824\uBA74 \uC804\uD22C\uB97C \uBA3C\uC800 \uB05D\uB0B4\uC57C \uD569\uB2C8\uB2E4."
+    m_Localized: "\uC9C1\uC811 Town\uC73C\uB85C \uB3CC\uC544\uAC00\uB824\uBA74 \uC804\uD22C\uB97C
+      \uBA3C\uC800 \uB05D\uB0B4\uC57C \uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 67
@@ -494,19 +338,23 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 69
-    m_Localized: "Quick Battle (Smoke)\uC5D0\uC11C \uC77C\uC2DC\uC815\uC9C0, \uB2E4\uC2DC \uC7AC\uC0DD, \uBC30\uC18D \uC870\uC808\uC744 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+    m_Localized: "Quick Battle (Smoke)\uC5D0\uC11C \uC77C\uC2DC\uC815\uC9C0, \uB2E4\uC2DC
+      \uC7AC\uC0DD, \uBC30\uC18D \uC870\uC808\uC744 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 70
-    m_Localized: "\uD655\uC815\uB41C \uC804\uD22C \uACB0\uACFC\uB97C \uAC00\uC9C0\uACE0 Reward\uB85C \uC9C4\uD589\uD569\uB2C8\uB2E4."
+    m_Localized: "\uD655\uC815\uB41C \uC804\uD22C \uACB0\uACFC\uB97C \uAC00\uC9C0\uACE0
+      Reward\uB85C \uC9C4\uD589\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 71
-    m_Localized: "\uC804\uD22C\uAC00 \uC644\uC804\uD788 \uB05D\uB09C \uB4A4 Continue\uAC00 \uD65C\uC131\uD654\uB429\uB2C8\uB2E4."
+    m_Localized: "\uC804\uD22C\uAC00 \uC644\uC804\uD788 \uB05D\uB09C \uB4A4 Continue\uAC00
+      \uD65C\uC131\uD654\uB429\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 72
-    m_Localized: "\uD604\uC7AC Quick Battle (Smoke) timeline\uC744 \uCC98\uC74C\uBD80\uD130 \uB2E4\uC2DC \uC7AC\uC0DD\uD569\uB2C8\uB2E4."
+    m_Localized: "\uD604\uC7AC Quick Battle (Smoke) timeline\uC744 \uCC98\uC74C\uBD80\uD130
+      \uB2E4\uC2DC \uC7AC\uC0DD\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 73
@@ -514,31 +362,38 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 74
-    m_Localized: "\uC804\uD22C\uAC00 \uB05D\uB09C \uB4A4 Quick Battle (Smoke)\uB97C \uC815\uB9AC\uD558\uACE0 \uC989\uC2DC Town\uC73C\uB85C \uB3CC\uC544\uAC11\uB2C8\uB2E4."
+    m_Localized: "\uC804\uD22C\uAC00 \uB05D\uB09C \uB4A4 Quick Battle (Smoke)\uB97C
+      \uC815\uB9AC\uD558\uACE0 \uC989\uC2DC Town\uC73C\uB85C \uB3CC\uC544\uAC11\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 75
-    m_Localized: "\uD45C\uC2DC \uC124\uC815\uC744 \uC5FD\uB2C8\uB2E4. \uB514\uBC84\uADF8 \uC124\uC815\uC740 Quick Battle (Smoke)\uC5D0\uC11C\uB9CC \uBCF4\uC785\uB2C8\uB2E4."
+    m_Localized: "\uD45C\uC2DC \uC124\uC815\uC744 \uC5FD\uB2C8\uB2E4. \uB514\uBC84\uADF8
+      \uC124\uC815\uC740 Quick Battle (Smoke)\uC5D0\uC11C\uB9CC \uBCF4\uC785\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 76
-    m_Localized: "\uC804\uC7A5 \uC720\uB2DB \uC704\uC5D0 HP\uC640 \uC0C1\uD0DC\uB97C \uD45C\uC2DC\uD569\uB2C8\uB2E4."
+    m_Localized: "\uC804\uC7A5 \uC720\uB2DB \uC704\uC5D0 HP\uC640 \uC0C1\uD0DC\uB97C
+      \uD45C\uC2DC\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 77
-    m_Localized: "\uC804\uD22C \uC911 \uD53C\uD574\uC640 \uD68C\uBCF5 \uC218\uCE58\uB97C \uD45C\uC2DC\uD569\uB2C8\uB2E4."
+    m_Localized: "\uC804\uD22C \uC911 \uD53C\uD574\uC640 \uD68C\uBCF5 \uC218\uCE58\uB97C
+      \uD45C\uC2DC\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 78
-    m_Localized: "\uC591\uCABD \uD300 \uC694\uC57D \uD328\uB110 \uD45C\uC2DC\uB97C \uD1A0\uAE00\uD569\uB2C8\uB2E4."
+    m_Localized: "\uC591\uCABD \uD300 \uC694\uC57D \uD328\uB110 \uD45C\uC2DC\uB97C
+      \uD1A0\uAE00\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 79
-    m_Localized: "\uD0C0\uAC8C\uD305 \uC120\uACFC \uC804\uD22C \uC9C4\uB2E8 \uC815\uBCF4\uB97C \uD45C\uC2DC\uD569\uB2C8\uB2E4."
+    m_Localized: "\uD0C0\uAC8C\uD305 \uC120\uACFC \uC804\uD22C \uC9C4\uB2E8 \uC815\uBCF4\uB97C
+      \uD45C\uC2DC\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 80
-    m_Localized: "[{0}] {1}\uC774(\uAC00) {2}\uC5D0\uAC8C \uAE30\uBCF8 \uACF5\uACA9 -{3:0}"
+    m_Localized: "[{0}] {1}\uC774(\uAC00) {2}\uC5D0\uAC8C \uAE30\uBCF8 \uACF5\uACA9
+      -{3:0}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401363
@@ -563,7 +418,7 @@ MonoBehaviour:
       m_Items:
       - rid: 1798213439901401363
   - m_Id: 85
-    m_Localized: "[{0}] {1} {2}"
+    m_Localized: '[{0}] {1} {2}'
     m_Metadata:
       m_Items:
       - rid: 1798213439901401363
@@ -619,20 +474,6 @@ MonoBehaviour:
       data:
         m_Entries: 
         m_SharedEntries:
-        - id: 901000008
-        - id: 901000009
-        - id: 901000014
-        - id: 901000015
-        - id: 901000016
-        - id: 901000017
-        - id: 901000018
-        - id: 901000022
-        - id: 901000029
-        - id: 901000030
-        - id: 901000031
-        - id: 901000032
-        - id: 901000033
-        - id: 901000034
         - id: 6
         - id: 7
         - id: 11
