@@ -180,7 +180,7 @@ public sealed class TownScreenPresenter
         }
 
         _root.BeginTransientTownSmoke();
-        _root.SessionState.PrepareQuickBattleSmoke();
+        _root.SessionState.PrepareTownQuickBattleSmoke();
         _root.SceneFlow.GoToBattle();
     }
 
@@ -489,7 +489,7 @@ public sealed class TownScreenPresenter
             Localize(GameLocalizationTables.UITown, "ui.town.group.utility", "Utility"),
             Localize(GameLocalizationTables.UITown, "ui.town.group.debug", "Debug / Smoke"),
             Localize(GameLocalizationTables.UITown, "ui.town.action.quick_battle_smoke", "Quick Battle (Smoke)"),
-            Localize(GameLocalizationTables.UITown, "ui.town.tooltip.quick_battle", "Open the smoke-only debug battle lane without altering authored campaign progress."),
+            Localize(GameLocalizationTables.UITown, "ui.town.tooltip.quick_battle_smoke", "Open an integration smoke battle using the current Town build, then return through Reward or direct Town restore."),
             showDebugActions,
             showDebugActions && session.CanStartQuickBattleSmoke);
     }

@@ -7,7 +7,8 @@
 
 ## 먼저 실행할 메뉴
 
-- `SM/Setup/Prepare Observer Playable`
+- `SM/Play/Full Loop`
+- `SM/Play/Combat Sandbox`
 
 ## 이 문서의 역할
 
@@ -24,14 +25,16 @@
 
 - `Boot -> Town -> Expedition -> Battle -> Reward -> Town`
 - Town active surface는 chapter/site 선택, `Start Expedition`, `Resume Expedition`, secondary `Quick Battle (Smoke)`다.
-- Quick Battle은 authored progression acceptance가 아니라 debug smoke lane이다.
+- 사람이 기억하는 top-level entry는 `SM/Play/Full Loop`와 `SM/Play/Combat Sandbox` 두 개다.
+- direct Combat Sandbox는 pure battle lane이고, Town `Quick Battle (Smoke)`는 integration smoke lane이다.
 
 ## 현재 구현 상태
 
 - fixed-step live simulation, authored chapter/site/encounter, Reward settlement, Town resume semantics는 구현돼 있다.
 - extract settlement도 `Reward -> Town(close)`로 끝나는 authored loop를 사용한다.
 - save/load, localization foundation, scene repair/bootstrap, sample content bootstrap, observer report surface가 저장소에 들어와 있다.
-- release-floor tooling은 `prepare-playable` canonical lane, `quick-battle-smoke` smoke lane, `repair-scenes` / `ensure-localization` recovery lane으로 정리됐다.
+- release-floor tooling은 `prepare-playable` canonical lane, `quick-battle-smoke` combat sandbox lane, `repair-scenes` / `ensure-localization` recovery lane으로 정리됐다.
+- `SM/Authoring/Combat Sandbox`가 scenario library, active handoff sync, preview, batch run의 주 authoring surface로 승격됐다.
 - `tools/pre-art-rc.ps1`와 `docs/06_production/pre-art-release-floor.md`가 same-SHA automated floor와 packet 경로를 남기도록 추가됐다.
 - `tools/unity-bridge.ps1 test-batch-fast|test-batch-edit`는 stale `TestResults-Batch.xml`을 더 이상 success evidence로 재사용하지 않는다.
 

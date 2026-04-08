@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
+using System.Text;
 using SM.Combat.Model;
-using SM.Content.Definitions;
-using SM.Meta.Model;
-using SM.Meta.Services;
+using SM.Combat.Services;
+using SM.Persistence.Abstractions;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 using SM.Unity.Sandbox;
@@ -12,147 +12,203 @@ namespace SM.Editor.Authoring.CombatSandbox;
 
 public static class CombatSandboxExecutionService
 {
-    public static CombatSandboxRunRequest BuildRequest(CombatSandboxState state, BattlefieldLayout? sceneLayout = null)
+    public static CombatSandboxCompiledScenario BuildCompiledScenario(CombatSandboxConfig config, int seedOverride = 0)
     {
         var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         var session = new GameSessionState(lookup);
-        session.BindProfile(new SaveProfile());
+        session.BindProfile(LoadLocalProfile());
+        session.EnsureBattleDeployReady();
 
-        if (state.Config != null)
-        {
-            session.SetTeamPosture(state.Config.AllyPosture);
-            session.SetTeamTactic(state.Config.TeamTacticId);
-            if (state.Config.AllySlots.Count > 0)
-            {
-                foreach (var anchor in session.DeploymentAnchors)
-                {
-                    session.AssignHeroToAnchor(anchor, null);
-                }
-
-                foreach (var slot in state.Config.AllySlots.Where(slot => !string.IsNullOrWhiteSpace(slot.HeroId)))
-                {
-                    session.AssignHeroToAnchor(slot.Anchor, slot.HeroId);
-                }
-            }
-        }
-
-        var allySnapshot = session.BuildBattleLoadoutSnapshot();
-        if (!lookup.TryGetCombatSnapshot(out var content, out var error))
+        var compiler = new CombatSandboxScenarioCompiler(lookup);
+        if (!compiler.TryCompileScenario(
+                new CombatSandboxCompilationContext(
+                    session.Profile,
+                    session.DeploymentAssignments,
+                    session.ExpeditionSquadHeroIds,
+                    session.SelectedTeamPosture,
+                    session.SelectedTeamTacticId,
+                    session.Expedition.TemporaryAugmentIds,
+                    session.CurrentExpeditionNodeIndex),
+                config,
+                config.DefaultLaneKind == CombatSandboxLaneKind.None ? CombatSandboxLaneKind.DirectCombatSandbox : config.DefaultLaneKind,
+                seedOverride == 0 ? null : seedOverride,
+                out var compiled,
+                out var error))
         {
             throw new InvalidOperationException(error);
         }
 
-        var encounter = BuildEncounter(lookup, state.Config);
-        var buildResult = BattleSetupBuilder.Build(Array.Empty<BattleParticipantSpec>(), encounter, content);
-        if (!buildResult.IsSuccess)
+        return compiled;
+    }
+
+    private static SaveProfile LoadLocalProfile()
+    {
+        var persistence = new PersistenceEntryPoint();
+        var profileId = string.IsNullOrWhiteSpace(persistence.Config.ProfileId)
+            ? "default"
+            : persistence.Config.ProfileId;
+
+        try
         {
-            throw new InvalidOperationException(buildResult.Error ?? "Sandbox encounter build failed.");
+            if (persistence.Repository is ISaveRepositoryDiagnostics diagnostics)
+            {
+                var result = diagnostics.LoadOrCreateDetailed(
+                    profileId,
+                    new SaveRepositoryRequest
+                    {
+                        CheckpointKind = "CombatSandboxPreview",
+                    });
+                if (result.Profile != null)
+                {
+                    return result.Profile;
+                }
+            }
+
+            return persistence.Repository.LoadOrCreate(profileId);
+        }
+        catch
+        {
+            return new SaveProfile
+            {
+                ProfileId = profileId,
+            };
+        }
+    }
+
+    public static CombatSandboxRunRequest BuildRequest(CombatSandboxState state, BattlefieldLayout? sceneLayout = null)
+    {
+        if (state.Config == null)
+        {
+            throw new InvalidOperationException("Combat Sandbox active config is missing.");
         }
 
-        var seed = state.Config != null && state.Config.Seed != 0 ? state.Config.Seed : state.Seed;
-        var batchCount = state.Config != null && state.Config.BatchCount > 0 ? state.Config.BatchCount : state.BatchCount;
+        var compiled = BuildCompiledScenario(state.Config, state.Seed);
+        var batchCount = state.BatchCount > 0 ? state.BatchCount : Math.Max(1, compiled.Execution.BatchCount);
         return new CombatSandboxRunRequest(
-            allySnapshot,
-            buildResult.Enemies,
-            seed == 0 ? 17 : seed,
-            Math.Max(1, batchCount),
-            state.Config != null && !string.IsNullOrWhiteSpace(state.Config.Id) ? state.Config.Id : "sandbox.transient",
+            compiled.LeftTeam.Snapshot,
+            compiled.RightTeam.Snapshot.Allies,
+            compiled.Seed,
+            batchCount,
+            compiled.ScenarioId,
             sceneLayout);
     }
 
-    private static BattleEncounterPlan BuildEncounter(ICombatContentLookup lookup, CombatSandboxConfig? config)
+    public static string BuildCounterCoverageSummary(TeamCounterCoverageReport? ally, TeamCounterCoverageReport? enemy)
     {
-        if (config == null || config.EnemySlots.Count == 0)
-        {
-            return BattleEncounterPlans.CreateObserverSmokePlan();
-        }
-
-        return new BattleEncounterPlan(
-            config.EnemySlots.Select(slot => new BattleParticipantSpec(
-                string.IsNullOrWhiteSpace(slot.ParticipantId) ? $"enemy.{ResolveSandboxArchetypeId(lookup, slot)}.{slot.Anchor}" : slot.ParticipantId,
-                string.IsNullOrWhiteSpace(slot.DisplayName) ? ResolveSandboxCharacterId(slot) : slot.DisplayName,
-                ResolveSandboxArchetypeId(lookup, slot),
-                slot.Anchor,
-                slot.PositiveTraitId,
-                slot.NegativeTraitId,
-                Array.Empty<BattleEquippedItemSpec>(),
-                slot.TemporaryAugmentIds,
-                config.EnemyPosture,
-                ResolveSandboxRoleTag(lookup, slot),
-                "opening:standard",
-                ResolveSandboxCharacterId(slot),
-                ResolveSandboxRoleInstructionId(lookup, slot)))
-            .ToList(),
-            config.EnemyPosture);
+        var builder = new StringBuilder();
+        builder.AppendLine("Ally coverage");
+        AppendCoverage(builder, ally);
+        builder.AppendLine();
+        builder.AppendLine("Enemy coverage");
+        AppendCoverage(builder, enemy);
+        return builder.ToString().TrimEnd();
     }
 
-    private static string ResolveSandboxCharacterId(CombatSandboxEnemySlot slot)
+    public static string BuildGovernanceSummary(BattleLoadoutSnapshot snapshot, string inspectUnitId)
     {
-        if (!string.IsNullOrWhiteSpace(slot.CharacterId))
+        var unit = !string.IsNullOrWhiteSpace(inspectUnitId)
+            ? snapshot.Allies.FirstOrDefault(candidate => string.Equals(candidate.Id, inspectUnitId, StringComparison.Ordinal))
+            : snapshot.Allies.FirstOrDefault();
+        if (unit?.Governance == null)
         {
-            return slot.CharacterId;
+            return "Selected unit governance unavailable.";
         }
 
-        return slot.ArchetypeIdOverride ?? string.Empty;
+        var builder = new StringBuilder();
+        builder.AppendLine($"unit={unit.Id}");
+        builder.AppendLine($"rarity={unit.Governance.Rarity} role={unit.Governance.RoleProfile} budget={unit.Governance.BudgetFinalScore}");
+        builder.AppendLine($"threats=[{string.Join(", ", unit.Governance.DeclaredThreatPatterns)}]");
+        builder.AppendLine($"counters=[{string.Join(", ", unit.Governance.DeclaredCounterTools.Select(tool => $"{tool.Tool}:{tool.Strength}"))}]");
+        builder.AppendLine($"flags={unit.Governance.DeclaredFeatureFlags}");
+        return builder.ToString().TrimEnd();
     }
 
-    private static string ResolveSandboxArchetypeId(ICombatContentLookup lookup, CombatSandboxEnemySlot slot)
+    public static string BuildReadabilitySummary(ReadabilityReport? report)
     {
-        if (!string.IsNullOrWhiteSpace(slot.ArchetypeIdOverride))
+        if (report == null)
         {
-            return slot.ArchetypeIdOverride;
+            return "Readability report unavailable.";
         }
 
-        if (lookup.TryGetCharacterDefinition(ResolveSandboxCharacterId(slot), out var character)
-            && character.DefaultArchetype != null)
-        {
-            return character.DefaultArchetype.Id;
-        }
-
-        return ResolveSandboxCharacterId(slot);
+        var builder = new StringBuilder();
+        builder.AppendLine($"salience_p95={report.SalienceWeightPer1sP95:0.###}");
+        builder.AppendLine($"unexplained_damage={report.UnexplainedDamageRatio:0.###}");
+        builder.AppendLine($"target_switch_p95={report.TargetSwitchesPer10sP95:0.###}");
+        builder.AppendLine($"violations=[{string.Join(", ", report.Violations ?? Array.Empty<ReadabilityViolationKind>())}]");
+        return builder.ToString().TrimEnd();
     }
 
-    private static string ResolveSandboxRoleInstructionId(ICombatContentLookup lookup, CombatSandboxEnemySlot slot)
+    public static string BuildExplanationSummary(BattleSummaryReport? report)
     {
-        if (!string.IsNullOrWhiteSpace(slot.RoleInstructionId))
+        if (report == null)
         {
-            return slot.RoleInstructionId;
+            return "Battle summary unavailable.";
         }
 
-        if (lookup.TryGetCharacterDefinition(ResolveSandboxCharacterId(slot), out var character)
-            && character.DefaultRoleInstruction != null)
+        var builder = new StringBuilder();
+        builder.AppendLine($"top_damage=[{string.Join(", ", report.TopDamageSources ?? Array.Empty<string>())}]");
+        builder.AppendLine($"top_reasons=[{string.Join(", ", report.TopDecisionReasons ?? Array.Empty<string>())}]");
+        builder.AppendLine($"decisive=[{string.Join(", ", report.DecisiveMoments ?? Array.Empty<string>())}]");
+        return builder.ToString().TrimEnd();
+    }
+
+    public static string BuildProvenanceSummary(System.Collections.Generic.IReadOnlyList<CompileProvenanceEntry> provenance)
+    {
+        if (provenance == null || provenance.Count == 0)
         {
-            return character.DefaultRoleInstruction.Id;
+            return "Provenance unavailable.";
         }
 
-        if (lookup.TryGetArchetype(ResolveSandboxArchetypeId(lookup, slot), out var archetype))
+        var builder = new StringBuilder();
+        var grouped = provenance
+            .GroupBy(entry => entry.SubjectId)
+            .OrderBy(group => group.Key)
+            .ToList();
+
+        builder.AppendLine($"--- {grouped.Count} subjects, {provenance.Count} entries ---");
+
+        foreach (var group in grouped)
         {
-            return archetype.Class.Id switch
+            var artifacts = group.GroupBy(e => e.ArtifactKind).Select(g => $"{g.Key}({g.Count()})");
+            builder.AppendLine($"[{group.Key}] {string.Join(" ", artifacts)}");
+            foreach (var entry in group)
             {
-                "vanguard" => "anchor",
-                "duelist" => "bruiser",
-                "ranger" => "carry",
-                "mystic" => "support",
-                _ => slot.Anchor.IsFrontRow() ? "frontline" : "backline",
-            };
+                builder.AppendLine($"  {entry.ArtifactKind} source={entry.SourceId}");
+                if (entry.Details != null && entry.Details.Count > 0)
+                {
+                    foreach (var detail in entry.Details)
+                    {
+                        builder.AppendLine($"    {detail}");
+                    }
+                }
+            }
         }
 
-        return string.Empty;
+        return builder.ToString().TrimEnd();
     }
 
-    private static string ResolveSandboxRoleTag(ICombatContentLookup lookup, CombatSandboxEnemySlot slot)
+    private static void AppendCoverage(StringBuilder builder, TeamCounterCoverageReport? report)
     {
-        if (!string.IsNullOrWhiteSpace(slot.RoleTag) && !string.Equals(slot.RoleTag, "auto", StringComparison.Ordinal))
+        if (report == null)
         {
-            return slot.RoleTag;
+            builder.AppendLine("- missing");
+            return;
         }
 
-        var roleInstructionId = ResolveSandboxRoleInstructionId(lookup, slot);
-        if (lookup.TryGetRoleInstructionDefinition(roleInstructionId, out var roleInstruction))
+        foreach (var lane in new[]
+                 {
+                     ("ArmorShred", report.ArmorShred),
+                     ("Exposure", report.Exposure),
+                     ("GuardBreakMultiHit", report.GuardBreakMultiHit),
+                     ("TrackingArea", report.TrackingArea),
+                     ("TenacityStability", report.TenacityStability),
+                     ("AntiHealShatter", report.AntiHealShatter),
+                     ("InterceptPeel", report.InterceptPeel),
+                     ("CleaveWaveclear", report.CleaveWaveclear),
+                 })
         {
-            return roleInstruction.RoleTag;
+            var warning = lane.Item2 is CounterCoverageLevelValue.None or CounterCoverageLevelValue.Light ? " !weak" : string.Empty;
+            builder.AppendLine($"- {lane.Item1}: {lane.Item2}{warning}");
         }
-
-        return slot.Anchor.IsFrontRow() ? "frontline" : "backline";
     }
 }

@@ -23,11 +23,11 @@
 - `github-publish-notes.md`: GitHub publish/push 주의사항
 - `github-setup.md`: GitHub 연동 설정
 - `local-automation.md`: 문서 검사, Unity 테스트, smoke check 자동화 기준
-- `local-runbook.md`: 로컬 실행 런북
+- `local-runbook.md`: `Full Loop` / `Combat Sandbox` / Town smoke 실행 런북
 - `localization-workflow.md`: localization foundation, key 추가, locale 검증 절차
 - `mcp-adoption-plan.md`: MCP 도입 평가 순서와 운영 범위
 - `mcp-safety-rules.md`: MCP read/write 안전 규칙
-- `quick-battle-smoke.md`: one-click Battle 직행 smoke 경로
+- `quick-battle-smoke.md`: `Combat Sandbox` direct lane와 Town `Quick Battle (Smoke)` 운영 기준
 - `recruitment-and-retrain-harness.md`: Loop B + Loop C recruit/retrain sandbox와 governance inspect
 - `scene-installer.md`: first playable scene rebuild installer 기준
 - `scene-repair-bootstrap.md`: first playable scene repair/bootstrap 운영 기준

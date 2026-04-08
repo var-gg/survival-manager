@@ -129,6 +129,7 @@ public sealed class BattleScreenPresenter
         BattleSelectedUnitViewState? selectedUnit = null)
     {
         var isSmoke = _sessionState.IsQuickBattleSmokeActive;
+        var isDirect = _sessionState.IsDirectCombatSandboxLane;
         return new BattleShellViewState(
             Localize(GameLocalizationTables.UIBattle, "ui.battle.title", "Battle"),
             BuildLocaleStatus(),
@@ -155,35 +156,37 @@ public sealed class BattleScreenPresenter
                 : Localize(GameLocalizationTables.UICommon, "ui.common.pause", "Pause"),
             Localize(
                 GameLocalizationTables.UIBattle,
-                "ui.battle.tooltip.playback",
-                "Quick Battle (Smoke) lets you pause, replay, and change playback speed."),
+                isDirect ? "ui.battle.tooltip.playback_direct" : "ui.battle.tooltip.playback",
+                isDirect
+                    ? "Combat Sandbox lets you pause, replay the same seed, and roll a new seed."
+                    : "Quick Battle (Smoke) lets you pause, replay, and change playback speed."),
             isSmoke,
             canChangeSpeed,
             canPause,
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.group.primary", "Primary Action"),
+            Localize(GameLocalizationTables.UIBattle, "ui.battle.group.primary", isDirect ? "Sandbox Result" : "Primary Action"),
             Localize(GameLocalizationTables.UICommon, "ui.common.continue", "Continue"),
-            true,
+            !isDirect,
             isBattleFinished
                 ? Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.continue_ready", "Proceed to Reward with the resolved battle result.")
                 : Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.continue_locked", "Continue activates after the battle is fully resolved."),
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.action.replay", "Replay"),
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.replay", "Replay the current Quick Battle (Smoke) timeline from the start."),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.action.replay_same_seed" : "ui.battle.action.replay", isDirect ? "Replay Same Seed" : "Replay"),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.replay_same_seed" : "ui.battle.tooltip.replay", isDirect ? "Replay the active Combat Sandbox battle with the same deterministic seed." : "Replay the current Quick Battle (Smoke) timeline from the start."),
             canReplay,
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.action.rebattle", "Rebattle (Debug)"),
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.rebattle", "Restart Quick Battle (Smoke) with a fresh seed."),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.action.new_seed" : "ui.battle.action.rebattle", isDirect ? "New Seed" : "Rebattle (Debug)"),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.new_seed" : "ui.battle.tooltip.rebattle", isDirect ? "Restart Combat Sandbox with the next seed while keeping the active preset." : "Restart Quick Battle (Smoke) with a fresh seed."),
             canRebattle,
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.action.return_town_debug", "Return to Town (Debug)"),
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.return_town_direct", "Leave Quick Battle (Smoke) after the battle is resolved and go directly back to Town."),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.action.exit_sandbox" : "ui.battle.action.return_town_debug", isDirect ? "Exit Sandbox" : "Return to Town (Debug)"),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.exit_sandbox" : "ui.battle.tooltip.return_town_direct", isDirect ? "Leave Combat Sandbox after the battle is resolved." : "Leave Quick Battle (Smoke) after the battle is resolved and go directly back to Town."),
             isSmoke && isBattleFinished,
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.group.smoke", "Debug / Smoke"),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.group.sandbox" : "ui.battle.group.smoke", isDirect ? "Combat Sandbox" : "Quick Battle (Smoke)"),
             isSmoke,
             Localize(GameLocalizationTables.UIBattle, "ui.battle.group.utility", "Utility"),
             Localize(GameLocalizationTables.UICommon, "ui.common.settings", "Settings"),
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.settings", "Open display settings. Debug settings appear only in Quick Battle (Smoke)."),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.settings_sandbox" : "ui.battle.tooltip.settings", isDirect ? "Open display settings. Sandbox diagnostics appear only in Combat Sandbox." : "Open display settings. Debug settings appear only in Quick Battle (Smoke)."),
             progressNormalized,
             true,
             _options.ShowTeamHpSummary,
-            isBattleFinished,
+            !isDirect && isBattleFinished,
             new BattleSettingsViewState(
                 showSettings,
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.title", "Battle View Settings"),
@@ -196,7 +199,7 @@ public sealed class BattleScreenPresenter
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.team_summary", "Show ally and enemy team summaries in the side panels."),
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.debug", "Debug"),
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.debug_overlay", "Debug Overlay {0}", BuildStateLabel(_options.ShowDebugOverlay)),
-                Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.debug_overlay", "Show targeting lines and battle diagnostics for Quick Battle (Smoke)."),
+                Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.debug_overlay_sandbox" : "ui.battle.tooltip.debug_overlay", isDirect ? "Show targeting lines and sandbox diagnostics for Combat Sandbox." : "Show targeting lines and battle diagnostics for Quick Battle (Smoke)."),
                 isSmoke,
                 string.IsNullOrWhiteSpace(settingsStatusText)
                     ? Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.title", "Battle View Settings")
@@ -206,12 +209,15 @@ public sealed class BattleScreenPresenter
 
     private HelpStripViewState CreateHelpState(bool showHelp)
     {
+        var helpBody = _sessionState.IsDirectCombatSandboxLane
+            ? "Read the battle through the summary, recent log, and selected unit panel. Combat Sandbox stays inside battle: replay the same seed, roll a new seed, or exit the sandbox."
+            : "Read the battle through the summary, recent log, and selected unit panel. Continue unlocks after the battle resolves.";
         return new HelpStripViewState(
             showHelp,
             Localize(
                 GameLocalizationTables.UIBattle,
-                "ui.battle.help.body",
-                "Read the battle through the summary, recent log, and selected unit panel. Continue unlocks after the battle resolves."),
+                _sessionState.IsDirectCombatSandboxLane ? "ui.battle.help.body_sandbox" : "ui.battle.help.body",
+                helpBody),
             Localize(GameLocalizationTables.UICommon, "ui.common.hide", "Hide"));
     }
 
@@ -241,6 +247,13 @@ public sealed class BattleScreenPresenter
 
     private string BuildPlaybackText(bool isPaused, float playbackSpeed)
     {
+        if (_sessionState.IsDirectCombatSandboxLane)
+        {
+            return isPaused
+                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.direct_paused", "Combat Sandbox | Speed x{0:0} | Paused", playbackSpeed)
+                : Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.direct", "Combat Sandbox | Speed x{0:0}", playbackSpeed);
+        }
+
         if (_sessionState.IsQuickBattleSmokeActive)
         {
             return isPaused

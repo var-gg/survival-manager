@@ -6,12 +6,13 @@
 
 ## 먼저 실행할 메뉴
 
-- `SM/Setup/Prepare Observer Playable`
+- `SM/Play/Full Loop`
 
 ## 한 줄 요약
 
 - 현재 prototype의 공개 playable 경계는 `Boot -> Town -> Expedition -> Battle -> Reward -> Town` 단일 local/authored loop다.
-- canonical lane은 `Town -> Expedition -> Battle -> Reward -> Town`이고, `Quick Battle (Smoke)`는 별도 debug lane이다.
+- canonical lane은 `Town -> Expedition -> Battle -> Reward -> Town`이고, 사람이 기억하는 top-level entry는 `Full Loop`와 `Combat Sandbox` 두 개다.
+- Town `Quick Battle (Smoke)`는 integration smoke, direct `Combat Sandbox`는 pure battle lane이다.
 
 ## normal playable lane
 
@@ -23,7 +24,7 @@
 ## debug smoke lane
 
 - Town의 `Quick Battle (Smoke)`
-- `SM/Quick Battle`
+- `SM/Play/Combat Sandbox`
 - direct-scene play fallback
 - runtime rebind/repair
 

@@ -1,6 +1,7 @@
 using SM.Unity;
 using SM.Editor.SeedData;
 using SM.Editor.Validation;
+using SM.Editor.Authoring.CombatSandbox;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -41,23 +42,24 @@ public static class FirstPlayableBootstrap
         EditorApplication.playModeStateChanged += HandlePlayModeStateChanged;
     }
 
-    [MenuItem("SM/Quick Battle")]
-    public static void QuickBattleOneClick()
+    [MenuItem("SM/Play/Combat Sandbox")]
+    public static void PlayCombatSandbox()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode)
         {
-            Debug.LogWarning("[QuickBattle] 이미 Play 중입니다.");
+            Debug.LogWarning("[CombatSandbox] 이미 Play 중입니다.");
             return;
         }
 
         try
         {
-            using var flow = RuntimeInstrumentation.BeginFlow("QuickBattle");
+            using var flow = RuntimeInstrumentation.BeginFlow("CombatSandbox");
+            flow.Step("Ensure Combat Sandbox starter library", CombatSandboxAuthoringAssetUtility.EnsureStarterLibrary);
             flow.Step("Ensure localization foundation", LocalizationFoundationBootstrap.EnsureFoundationAssets);
-            flow.Step("Ensure minimum canonical content", () => EnsureCanonicalSampleContentForPrototypeEntry("QuickBattle"));
-            flow.Step("Write content validation report (non-blocking)", () => ValidateContentDefinitionsForPrototypeEntry("QuickBattle"));
+            flow.Step("Ensure minimum canonical content", () => EnsureCanonicalSampleContentForPrototypeEntry("CombatSandbox"));
+            flow.Step("Write content validation report (non-blocking)", () => ValidateContentDefinitionsForPrototypeEntry("CombatSandbox"));
             flow.Step("Repair first playable scenes", FirstPlayableSceneInstaller.RepairFirstPlayableScenes);
-            var quickBattleConfig = flow.Step("Ensure Quick Battle config", EnsureQuickBattleConfig);
+            var quickBattleConfig = flow.Step("Ensure Combat Sandbox active handoff", EnsureQuickBattleConfig);
             if (quickBattleConfig != null)
             {
                 EditorPrefs.SetBool(QuickBattleInspectorRestoreKey, true);
@@ -80,11 +82,18 @@ public static class FirstPlayableBootstrap
         {
             EditorPrefs.DeleteKey(QuickBattleRequestedKey);
             EditorPrefs.DeleteKey(QuickBattleInspectorRestoreKey);
-            Debug.LogError($"[QuickBattle] Failed: {ex.Message}\n{ex}");
+            Debug.LogError($"[CombatSandbox] Failed: {ex.Message}\n{ex}");
             throw;
         }
     }
 
+    [MenuItem("SM/Quick Battle")]
+    public static void QuickBattleOneClick()
+    {
+        PlayCombatSandbox();
+    }
+
+    [MenuItem("SM/Play/Full Loop")]
     [MenuItem("SM/Setup/Prepare Observer Playable")]
     public static void PrepareObserverPlayableMenu()
     {
@@ -117,7 +126,25 @@ public static class FirstPlayableBootstrap
         PrepareObserverPlayable();
     }
 
-    private static SM.Unity.Sandbox.CombatSandboxConfig? EnsureQuickBattleConfig()
+    [MenuItem("SM/Recovery/Ensure Localization Foundation")]
+    public static void EnsureLocalizationFoundation()
+    {
+        LocalizationFoundationBootstrap.EnsureFoundationAssets();
+    }
+
+    [MenuItem("SM/Recovery/Repair First Playable Scenes")]
+    public static void RepairFirstPlayableScenes()
+    {
+        FirstPlayableSceneInstaller.RepairFirstPlayableScenes();
+    }
+
+    [MenuItem("SM/Recovery/Validate Canonical Content")]
+    public static void ValidateCanonicalContent()
+    {
+        ValidateContentDefinitionsForPrototypeEntry("Recovery");
+    }
+
+    internal static SM.Unity.Sandbox.CombatSandboxConfig? EnsureQuickBattleConfig()
     {
         var existing = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(QuickBattleConfigAssetPath);
         if (existing != null)
@@ -136,7 +163,7 @@ public static class FirstPlayableBootstrap
         ApplyDefaultQuickBattleConfig(config);
         AssetDatabase.CreateAsset(config, QuickBattleConfigAssetPath);
         AssetDatabase.SaveAssets();
-        Debug.Log($"[QuickBattle] 디폴트 config 생성: {QuickBattleConfigAssetPath}");
+        Debug.Log($"[CombatSandbox] active handoff 생성: {QuickBattleConfigAssetPath}");
         return config;
     }
 
@@ -152,13 +179,52 @@ public static class FirstPlayableBootstrap
 
         if (string.IsNullOrWhiteSpace(config.DisplayName))
         {
-            config.DisplayName = "Quick Battle Default";
+            config.DisplayName = "Combat Sandbox Active";
+            dirty = true;
+        }
+
+        if (!config.UseScenarioAuthoring)
+        {
+            config.UseScenarioAuthoring = true;
+            dirty = true;
+        }
+
+        if (config.DefaultLaneKind == SM.Unity.Sandbox.CombatSandboxLaneKind.None)
+        {
+            config.DefaultLaneKind = SM.Unity.Sandbox.CombatSandboxLaneKind.DirectCombatSandbox;
             dirty = true;
         }
 
         if (config.Seed == 0)
         {
             config.Seed = 42;
+            dirty = true;
+        }
+
+        if (string.IsNullOrWhiteSpace(config.Scenario.ScenarioId))
+        {
+            config.Scenario.ScenarioId = "opening_default_4unit";
+            config.Scenario.DisplayName = "Opening Default 4 Unit";
+            config.Scenario.Tags = new System.Collections.Generic.List<string> { "starter", "opening" };
+            config.Scenario.ExpectedOutcome = "Baseline direct combat sandbox lane for daily balance and readability checks.";
+            dirty = true;
+        }
+
+        if (config.LeftTeam.Members.Count == 0)
+        {
+            config.LeftTeam = BuildDefaultDirectLeftTeam();
+            dirty = true;
+        }
+
+        if (config.RightTeam.Members.Count == 0)
+        {
+            config.RightTeam = BuildDefaultDirectRightTeam();
+            dirty = true;
+        }
+
+        if (config.Execution.BatchCount <= 0 || config.Execution.Seed == 0)
+        {
+            config.Execution = BuildDefaultExecutionPreset();
             dirty = true;
         }
 
@@ -181,16 +247,86 @@ public static class FirstPlayableBootstrap
 
         EditorUtility.SetDirty(config);
         AssetDatabase.SaveAssets();
-        Debug.Log($"[QuickBattle] 디폴트 config 보정: {QuickBattleConfigAssetPath}");
+        Debug.Log($"[CombatSandbox] active handoff 보정: {QuickBattleConfigAssetPath}");
     }
 
     private static void ApplyDefaultQuickBattleConfig(SM.Unity.Sandbox.CombatSandboxConfig config)
     {
         config.Id = "quick_battle_default";
-        config.DisplayName = "Quick Battle Default";
+        config.DisplayName = "Combat Sandbox Active";
+        config.UseScenarioAuthoring = true;
+        config.DefaultLaneKind = SM.Unity.Sandbox.CombatSandboxLaneKind.DirectCombatSandbox;
+        config.Scenario = new SM.Unity.Sandbox.CombatSandboxScenarioMetadata
+        {
+            ScenarioId = "opening_default_4unit",
+            DisplayName = "Opening Default 4 Unit",
+            Tags = new System.Collections.Generic.List<string> { "starter", "opening" },
+            ExpectedOutcome = "Baseline direct combat sandbox lane for daily balance and readability checks.",
+        };
+        config.LeftTeam = BuildDefaultDirectLeftTeam();
+        config.RightTeam = BuildDefaultDirectRightTeam();
+        config.Execution = BuildDefaultExecutionPreset();
         config.Seed = 42;
         config.AllySlots = BuildDefaultQuickBattleAllySlots();
         config.EnemySlots = BuildDefaultQuickBattleEnemySlots();
+    }
+
+    private static SM.Unity.Sandbox.CombatSandboxTeamDefinition BuildDefaultDirectLeftTeam()
+    {
+        return new SM.Unity.Sandbox.CombatSandboxTeamDefinition
+        {
+            TeamId = "starter.current_profile",
+            DisplayName = "Current Local Profile",
+            SourceMode = SM.Unity.Sandbox.SandboxLoadoutSourceKind.CurrentLocalProfile,
+            TeamPosture = SM.Combat.Model.TeamPostureType.StandardAdvance,
+            ProvenanceLabel = "starter.current_profile",
+            Tags = new System.Collections.Generic.List<string> { "starter", "profile" },
+            Members = DefaultQuickBattleAllySlots
+                .Select(slot => new SM.Unity.Sandbox.CombatSandboxTeamMemberDefinition
+                {
+                    MemberId = slot.HeroId,
+                    HeroId = slot.HeroId,
+                    SourceKind = SM.Unity.Sandbox.SandboxUnitSourceKind.LocalProfileHero,
+                    Anchor = slot.Anchor,
+                })
+                .ToList(),
+        };
+    }
+
+    private static SM.Unity.Sandbox.CombatSandboxTeamDefinition BuildDefaultDirectRightTeam()
+    {
+        return new SM.Unity.Sandbox.CombatSandboxTeamDefinition
+        {
+            TeamId = "starter.observer_smoke",
+            DisplayName = "Observer Smoke",
+            SourceMode = SM.Unity.Sandbox.SandboxLoadoutSourceKind.AuthoredSyntheticTeam,
+            TeamPosture = SM.Combat.Model.TeamPostureType.StandardAdvance,
+            ProvenanceLabel = "starter.observer_smoke",
+            Tags = new System.Collections.Generic.List<string> { "starter", "observer_smoke" },
+            Members = DefaultQuickBattleEnemySlots
+                .Select(slot => new SM.Unity.Sandbox.CombatSandboxTeamMemberDefinition
+                {
+                    MemberId = slot.ParticipantId,
+                    DisplayName = slot.DisplayName,
+                    SourceKind = SM.Unity.Sandbox.SandboxUnitSourceKind.Character,
+                    CharacterId = slot.CharacterId,
+                    Anchor = slot.Anchor,
+                })
+                .ToList(),
+        };
+    }
+
+    private static SM.Unity.Sandbox.CombatSandboxExecutionSettings BuildDefaultExecutionPreset()
+    {
+        return new SM.Unity.Sandbox.CombatSandboxExecutionSettings
+        {
+            PresetId = "starter.fixed_seed",
+            DisplayName = "Fixed Seed",
+            SeedMode = SM.Unity.Sandbox.SandboxSeedMode.Fixed,
+            Seed = 42,
+            BatchCount = 1,
+            RecordReplay = true,
+        };
     }
 
     private static bool HasConfiguredAllySlots(SM.Unity.Sandbox.CombatSandboxConfig config)

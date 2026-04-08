@@ -34,6 +34,12 @@ public sealed class CombatSandboxConfig : ScriptableObject
 {
     public string Id = "sandbox.default";
     public string DisplayName = "Combat Sandbox";
+    public bool UseScenarioAuthoring = false;
+    public CombatSandboxLaneKind DefaultLaneKind = CombatSandboxLaneKind.DirectCombatSandbox;
+    public CombatSandboxScenarioMetadata Scenario = new();
+    public CombatSandboxTeamDefinition LeftTeam = new();
+    public CombatSandboxTeamDefinition RightTeam = new();
+    public CombatSandboxExecutionSettings Execution = new();
     public TeamPostureType AllyPosture = TeamPostureType.StandardAdvance;
     public string TeamTacticId = string.Empty;
     public TeamPostureType EnemyPosture = TeamPostureType.StandardAdvance;

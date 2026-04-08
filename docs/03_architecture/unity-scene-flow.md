@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-08
 - 소스오브트루스: `docs/03_architecture/unity-scene-flow.md`
 - 관련문서:
   - `docs/03_architecture/unity-boundaries.md`
@@ -42,8 +42,8 @@
 
 - `FirstPlayableSceneInstaller`는 playable scene asset 복구와 build settings 보정을 담당한다.
 - `FirstPlayableSceneInstaller`는 Boot에서 realm 선택용 uGUI canvas를, 그 외 play scene에서는 `*RuntimeRoot`, `*RuntimePanelHost`, `*ScreenController`, Battle overlay root를 보장한다.
-- `FirstPlayableBootstrap`는 sample content 보장, validation, scene repair, demo save reset, Boot open을 순서대로 orchestration 한다.
-- operator가 first playable을 보려면 `SM/Setup/Prepare Observer Playable`를 먼저 실행하는 흐름을 기본값으로 둔다.
+- `FirstPlayableBootstrap`는 sample content 보장, validation, scene repair, demo save reset, Boot open 또는 direct Battle open을 순서대로 orchestration 한다.
+- operator가 first playable을 보려면 `SM/Play/Full Loop`를 먼저 실행하는 흐름을 기본값으로 둔다.
 
 ## scene별 UI runtime 계약
 
@@ -65,7 +65,7 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 
 ## 현재 시작 흐름
 
-1. editor에서 `SM/Setup/Prepare Observer Playable` 실행
+1. editor에서 `SM/Play/Full Loop` 실행
 2. sample content 보장 및 validation
 3. first playable scene repair + build settings 보정
 4. Boot scene open
@@ -85,18 +85,29 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 - Quick Battle과 direct-scene play는 tooling 안정성을 위해 `OfflineLocal`을 auto-start한다.
 - `OnlineAuthoritative` 개념은 future seam으로 남기되, 현재 playable UI에서는 노출하지 않는다.
 
-## Quick Battle 바이패스 플로우
+## Combat Sandbox direct 플로우
 
-`SM/Quick Battle` 메뉴는 위 흐름에서 Boot/Town을 우회하고 Battle 씬을 직접 연 뒤 Play로 진입한다.
+`SM/Play/Combat Sandbox` 메뉴는 위 흐름에서 Boot/Town을 우회하고 Battle 씬을 직접 연 뒤 Play로 진입한다.
+legacy alias는 `SM/Quick Battle`다.
 
-1. `FirstPlayableBootstrap.QuickBattleOneClick()` 실행
-2. 기존 setup 6단계 + QuickBattleConfig 에셋 보장
+1. `FirstPlayableBootstrap.PlayCombatSandbox()` 실행
+2. 기존 setup 6단계 + active sandbox handoff / starter library 보장
 3. `EditorPrefs`에 `SM.QuickBattleRequested` 플래그 설정
 4. Battle 씬 open
 5. `EditorApplication.EnterPlaymode()` 자동 진입
 6. `BattleScreenController` direct-entry bootstrap이 플래그 소비
-7. `PrepareQuickBattleSmoke()` + Battle smoke 시작
-8. Battle 씬에서 Re-battle / Return Town 가능
+7. `PrepareCombatSandboxDirect()` + Battle sandbox 시작
+8. Battle 씬에서 same-seed replay / new seed / exit sandbox 가능
+
+## Town integration smoke 플로우
+
+Town의 `Quick Battle (Smoke)`는 direct sandbox와 다르게 현재 Town 상태를 들고 integration smoke를 수행한다.
+
+1. `SM/Play/Full Loop`로 Boot/Town 진입
+2. Town secondary CTA `Quick Battle (Smoke)` 클릭
+3. `PrepareTownQuickBattleSmoke()`로 현재 profile/deploy/posture를 유지한 채 Battle 진입
+4. Battle 종료 후 `Continue -> Reward` 또는 `Return to Town (Debug)`
+5. transient overlay를 정리하고 canonical Town 상태 복구
 
 ## GameSessionRoot.EnsureInstance 패턴
 

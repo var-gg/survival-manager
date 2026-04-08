@@ -38,10 +38,12 @@ public sealed class GameSessionState
     private readonly HashSet<string> _resolvedExpeditionNodeIds = new(StringComparer.Ordinal);
     private LootBundleResult? _lastAutomaticLootBundle;
     private bool _hasPendingRewardSettlement;
+    private int? _quickBattleSeedOverride;
     private int _recruitOfferGeneration;
     private RecruitPhaseState _recruitPhaseState = new();
     private RecruitPityState _recruitPityState = new();
     private DuplicateConversionResult? _lastDuplicateConversion;
+    private CombatSandboxCompiledScenario? _compiledQuickBattleScenario;
 
     public SaveProfile Profile { get; private set; } = new();
     public ActiveRunState? ActiveRun { get; private set; }
@@ -55,6 +57,7 @@ public sealed class GameSessionState
     public bool LastBattleVictory { get; private set; }
     public bool IsQuickBattleSmokeActive { get; private set; }
     public CombatSandboxConfig? QuickBattleConfig { get; private set; }
+    public CombatSandboxLaneKind QuickBattleLaneKind { get; private set; }
     public bool HasActiveExpeditionRun { get; private set; }
     public SessionTextToken LastBattleSummary { get; private set; } = SessionTextToken.Empty;
     public SessionTextToken LastExpeditionEffectMessage { get; private set; } = SessionTextToken.Empty;
@@ -77,6 +80,8 @@ public sealed class GameSessionState
     public LootBundleResult? LastAutomaticLootBundle => _lastAutomaticLootBundle;
     public bool HasPendingRewardSettlement => _hasPendingRewardSettlement;
     public bool CanStartQuickBattleSmoke => !HasActiveExpeditionRun && !_hasPendingRewardSettlement;
+    public bool IsDirectCombatSandboxLane => IsQuickBattleSmokeActive && QuickBattleLaneKind == CombatSandboxLaneKind.DirectCombatSandbox;
+    public bool IsTownIntegrationSmokeLane => IsQuickBattleSmokeActive && QuickBattleLaneKind == CombatSandboxLaneKind.TownIntegrationSmoke;
     public bool CanResumeExpedition => HasActiveExpeditionRun && !IsQuickBattleSmokeActive && !_hasPendingRewardSettlement && CurrentExpeditionNodeIndex < _expeditionNodes.Count;
     public bool CanChangeCampaignSelection => !HasActiveExpeditionRun;
     public string SelectedCampaignChapterId => Profile.CampaignProgress.SelectedChapterId;
@@ -146,6 +151,7 @@ public sealed class GameSessionState
             SelectedExpeditionNodeIndex = null;
             LastBattleVictory = false;
             IsQuickBattleSmokeActive = false;
+            QuickBattleLaneKind = CombatSandboxLaneKind.None;
             HasActiveExpeditionRun = false;
             LastBattleSummary = SessionTextToken.Empty;
             LastExpeditionEffectMessage = SessionTextToken.Empty;
@@ -154,6 +160,8 @@ public sealed class GameSessionState
             _lastAutomaticLootBundle = null;
             _hasPendingRewardSettlement = false;
             _lastDuplicateConversion = null;
+            _quickBattleSeedOverride = null;
+            _compiledQuickBattleScenario = null;
             SelectedTeamPosture = TeamPostureType.StandardAdvance;
             SelectedTeamTacticId = string.Empty;
             _recruitOfferGeneration = 0;
@@ -184,6 +192,7 @@ public sealed class GameSessionState
     public void BeginNewExpedition()
     {
         IsQuickBattleSmokeActive = false;
+        QuickBattleLaneKind = CombatSandboxLaneKind.None;
         HasActiveExpeditionRun = true;
         CurrentExpeditionNodeIndex = 0;
         SelectedExpeditionNodeIndex = null;
@@ -194,6 +203,8 @@ public sealed class GameSessionState
         LastPermanentUnlockSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
         _hasPendingRewardSettlement = false;
+        _quickBattleSeedOverride = null;
+        _compiledQuickBattleScenario = null;
         _runtimeTelemetryEvents.Clear();
         _resolvedExpeditionNodeIds.Clear();
         EnsureBattleDeployReady();
@@ -208,10 +219,61 @@ public sealed class GameSessionState
 
     public void PrepareQuickBattleSmoke()
     {
-        PrepareQuickBattleSmoke(LoadQuickBattleConfig());
+        var config = LoadQuickBattleConfig();
+        PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
+    }
+
+    public void PrepareCombatSandboxDirect()
+    {
+        var config = LoadQuickBattleConfig();
+        PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.DirectCombatSandbox);
+    }
+
+    public void PrepareTownQuickBattleSmoke()
+    {
+        var config = LoadQuickBattleConfig();
+        PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
     }
 
     internal void PrepareQuickBattleSmoke(CombatSandboxConfig? quickBattleConfig)
+    {
+        PrepareQuickBattleSmoke(quickBattleConfig, CombatSandboxLaneKind.TownIntegrationSmoke);
+    }
+
+    public void RestartQuickBattle(bool advanceSeed)
+    {
+        ReloadQuickBattleConfig();
+        if (advanceSeed)
+        {
+            _quickBattleSeedOverride = (_quickBattleSeedOverride ?? ResolveConfiguredQuickBattleSeed(QuickBattleConfig)) + 1;
+        }
+
+        PrepareQuickBattleSmoke(
+            QuickBattleConfig,
+            QuickBattleLaneKind == CombatSandboxLaneKind.None
+                ? ResolveDefaultQuickBattleLane(QuickBattleConfig)
+                : QuickBattleLaneKind,
+            resetSeedOverride: !advanceSeed);
+    }
+
+    public void ExitCombatSandbox()
+    {
+        IsQuickBattleSmokeActive = false;
+        QuickBattleLaneKind = CombatSandboxLaneKind.None;
+        HasActiveExpeditionRun = false;
+        _hasPendingRewardSettlement = false;
+        _pendingRewardChoices.Clear();
+        _quickBattleSeedOverride = null;
+        _compiledQuickBattleScenario = null;
+        ActiveRun = null;
+        SyncActiveRunRecord();
+        SyncExpeditionState();
+    }
+
+    internal void PrepareQuickBattleSmoke(
+        CombatSandboxConfig? quickBattleConfig,
+        CombatSandboxLaneKind laneKind,
+        bool resetSeedOverride = true)
     {
         if (!CanStartQuickBattleSmoke && !IsQuickBattleSmokeActive)
         {
@@ -228,7 +290,15 @@ public sealed class GameSessionState
         _lastAutomaticLootBundle = null;
         _hasPendingRewardSettlement = false;
         _runtimeTelemetryEvents.Clear();
+        _pendingRewardChoices.Clear();
+        if (resetSeedOverride)
+        {
+            _quickBattleSeedOverride = null;
+        }
+
+        _compiledQuickBattleScenario = null;
         QuickBattleConfig = quickBattleConfig;
+        QuickBattleLaneKind = laneKind;
         EnsureBattleDeployReady();
         EnsureRewardChoices(reset: true);
         ActiveRun = RunStateService.StartRun("quick-battle", CaptureBlueprintState(), true);
@@ -345,9 +415,70 @@ public sealed class GameSessionState
         QuickBattleConfig = LoadQuickBattleConfig();
     }
 
+    private bool TryBuildQuickBattleCompiledScenario(out CombatSandboxCompiledScenario scenario, out string error)
+    {
+        scenario = null!;
+        error = string.Empty;
+
+        if (!IsQuickBattleSmokeActive || QuickBattleConfig == null)
+        {
+            return false;
+        }
+
+        var compiler = new CombatSandboxScenarioCompiler(_combatContentLookup);
+        var context = new CombatSandboxCompilationContext(
+            Profile,
+            _deploymentAssignments,
+            _expeditionSquadHeroIds,
+            SelectedTeamPosture,
+            SelectedTeamTacticId,
+            Expedition.TemporaryAugmentIds,
+            CurrentExpeditionNodeIndex);
+        if (!compiler.TryCompileScenario(
+                context,
+                QuickBattleConfig,
+                QuickBattleLaneKind == CombatSandboxLaneKind.None
+                    ? ResolveDefaultQuickBattleLane(QuickBattleConfig)
+                    : QuickBattleLaneKind,
+                _quickBattleSeedOverride,
+                out scenario,
+                out error))
+        {
+            return false;
+        }
+
+        _compiledQuickBattleScenario = scenario;
+        return true;
+    }
+
     private static CombatSandboxConfig? LoadQuickBattleConfig()
     {
         return UnityEngine.Resources.Load<CombatSandboxConfig>("_Game/Content/Definitions/QuickBattle/quick_battle_default");
+    }
+
+    private static CombatSandboxLaneKind ResolveDefaultQuickBattleLane(CombatSandboxConfig? config)
+    {
+        if (config == null || config.DefaultLaneKind == CombatSandboxLaneKind.None)
+        {
+            return CombatSandboxLaneKind.DirectCombatSandbox;
+        }
+
+        return config.DefaultLaneKind;
+    }
+
+    private static int ResolveConfiguredQuickBattleSeed(CombatSandboxConfig? config)
+    {
+        if (config == null)
+        {
+            return 17;
+        }
+
+        if (config.Execution.Seed != 0)
+        {
+            return config.Execution.Seed;
+        }
+
+        return config.Seed != 0 ? config.Seed : 17;
     }
 
     public void AdvanceExpeditionNode()
@@ -435,6 +566,7 @@ public sealed class GameSessionState
     public void AbandonExpeditionRun()
     {
         IsQuickBattleSmokeActive = false;
+        QuickBattleLaneKind = CombatSandboxLaneKind.None;
         HasActiveExpeditionRun = false;
         SelectedExpeditionNodeIndex = null;
         LastExpeditionEffectMessage = new SessionTextToken(
@@ -452,6 +584,9 @@ public sealed class GameSessionState
         ConsumePendingPermanentUnlock();
         FinalizeRewardSettlement();
         IsQuickBattleSmokeActive = false;
+        QuickBattleLaneKind = CombatSandboxLaneKind.None;
+        _quickBattleSeedOverride = null;
+        _compiledQuickBattleScenario = null;
     }
 
     public void SetCurrentScene(string sceneName)
@@ -1032,7 +1167,10 @@ public sealed class GameSessionState
     public void EnsureBattleDeployReady()
     {
         EnsureDefaultSquad();
-        if (IsQuickBattleSmokeActive && QuickBattleConfig != null && QuickBattleConfig.AllySlots.Count > 0)
+        if (IsQuickBattleSmokeActive
+            && QuickBattleConfig != null
+            && !QuickBattleConfig.UseScenarioAuthoring
+            && QuickBattleConfig.AllySlots.Count > 0)
         {
             ApplyQuickBattleAllySlotOverrides(QuickBattleConfig);
             return;
@@ -1253,6 +1391,39 @@ public sealed class GameSessionState
             throw new InvalidOperationException(error);
         }
 
+        if (TryBuildQuickBattleCompiledScenario(out var quickBattleScenario, out error))
+        {
+            var blueprint = quickBattleScenario.LeftTeam.Blueprint;
+            var overlay = quickBattleScenario.LeftTeam.Overlay with
+            {
+                CurrentNodeIndex = CurrentExpeditionNodeIndex,
+                SiteNodeIndex = CurrentExpeditionNodeIndex,
+            };
+            var activeRun = ActiveRun ?? RunStateService.StartRun("quick-battle", blueprint, true);
+
+            LastCompiledBattleSnapshot = quickBattleScenario.LeftTeam.Snapshot;
+            _compiledQuickBattleScenario = quickBattleScenario;
+            ActiveRun = activeRun with
+            {
+                Blueprint = blueprint,
+                Overlay = overlay,
+                BattleDeployHeroIds = quickBattleScenario.LeftTeam.Snapshot.BattleDeployHeroIds.ToList(),
+            };
+            if (TryBuildBattleContext(snapshot, ActiveRun!, out var quickBattleContext, out _))
+            {
+                ActiveRun = RunStateService.SetBattleContext(ActiveRun!, quickBattleContext);
+            }
+
+            ActiveRun = RunStateService.SyncBlueprint(
+                ActiveRun!,
+                blueprint,
+                quickBattleScenario.LeftTeam.Snapshot.CompileHash,
+                Array.Empty<string>());
+            SyncActiveRunRecord();
+            SyncExpeditionState();
+            return quickBattleScenario.LeftTeam.Snapshot;
+        }
+
         var blueprint = CaptureBlueprintState();
         var activeRun = ActiveRun ?? RunStateService.StartRun(IsQuickBattleSmokeActive ? "quick-battle" : GetExpeditionRunId(), blueprint, IsQuickBattleSmokeActive);
         var overlay = activeRun.Overlay with
@@ -1299,6 +1470,31 @@ public sealed class GameSessionState
         if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out error))
         {
             return false;
+        }
+
+        if (TryBuildQuickBattleCompiledScenario(out var quickBattleScenario, out error))
+        {
+            var run = ActiveRun ?? RunStateService.StartRun("quick-battle", quickBattleScenario.LeftTeam.Blueprint, true);
+            var overlay = quickBattleScenario.LeftTeam.Overlay with
+            {
+                CurrentNodeIndex = CurrentExpeditionNodeIndex,
+                SiteNodeIndex = CurrentExpeditionNodeIndex,
+            };
+            var battleContext = BuildQuickBattleContext(quickBattleScenario, run.RunId);
+            ActiveRun = RunStateService.SetBattleContext(
+                run with
+                {
+                    Blueprint = quickBattleScenario.LeftTeam.Blueprint,
+                    Overlay = overlay,
+                    BattleDeployHeroIds = quickBattleScenario.LeftTeam.Snapshot.BattleDeployHeroIds.ToList(),
+                },
+                battleContext);
+            SyncActiveRunRecord();
+            context = new ResolvedEncounterContext(
+                battleContext,
+                quickBattleScenario.RightTeam.Snapshot.TeamTactic.Posture,
+                quickBattleScenario.RightTeam.Snapshot.Allies);
+            return true;
         }
 
         var run = ActiveRun ?? RunStateService.StartRun(IsQuickBattleSmokeActive ? "quick-battle" : GetExpeditionRunId(), CaptureBlueprintState(), IsQuickBattleSmokeActive);
@@ -1452,11 +1648,12 @@ public sealed class GameSessionState
     public void MarkBattleResolved(bool victory, int stepCount, int eventCount)
     {
         var resolvedNode = GetSelectedExpeditionNode() ?? GetCurrentExpeditionNode();
+        var shouldCreateRewardSettlement = !IsDirectCombatSandboxLane;
         LastBattleVictory = victory;
         LastRewardApplicationSummary = SessionTextToken.Empty;
         LastPermanentUnlockSummary = SessionTextToken.Empty;
         _lastAutomaticLootBundle = null;
-        _hasPendingRewardSettlement = true;
+        _hasPendingRewardSettlement = shouldCreateRewardSettlement;
 
         if (resolvedNode != null && !IsQuickBattleSmokeActive)
         {
@@ -1518,10 +1715,26 @@ public sealed class GameSessionState
 
         if (ActiveRun != null)
         {
-            ActiveRun = ActiveRun with { LastSettlementWasVictory = victory };
+            ActiveRun = ActiveRun with
+            {
+                LastSettlementWasVictory = victory,
+                Overlay = ActiveRun.Overlay with
+                {
+                    PendingRewardIds = shouldCreateRewardSettlement ? ActiveRun.Overlay.PendingRewardIds : Array.Empty<string>(),
+                    RewardSourceId = shouldCreateRewardSettlement ? ActiveRun.Overlay.RewardSourceId : string.Empty,
+                }
+            };
         }
 
-        EnsureRewardChoices(reset: true);
+        if (shouldCreateRewardSettlement)
+        {
+            EnsureRewardChoices(reset: true);
+        }
+        else
+        {
+            _pendingRewardChoices.Clear();
+        }
+
         SyncActiveRunIfPresent();
     }
 
@@ -2246,6 +2459,7 @@ public sealed class GameSessionState
     private void ResetExpeditionTrackForCampaignSelection()
     {
         IsQuickBattleSmokeActive = false;
+        QuickBattleLaneKind = CombatSandboxLaneKind.None;
         HasActiveExpeditionRun = false;
         ActiveRun = null;
         CurrentExpeditionNodeIndex = 0;
@@ -2356,6 +2570,7 @@ public sealed class GameSessionState
         if (IsQuickBattleSmokeActive || !LastBattleVictory || CurrentExpeditionNodeIndex >= _expeditionNodes.Count - 1)
         {
             HasActiveExpeditionRun = false;
+            QuickBattleLaneKind = IsQuickBattleSmokeActive ? QuickBattleLaneKind : CombatSandboxLaneKind.None;
             ActiveRun = null;
             SyncActiveRunRecord();
             return;
@@ -2493,7 +2708,21 @@ public sealed class GameSessionState
         out string error)
     {
         var resolver = new EncounterResolutionService(snapshot);
-        if (IsQuickBattleSmokeActive || !resolver.HasAuthoredCatalog)
+        if (IsQuickBattleSmokeActive)
+        {
+            if (_compiledQuickBattleScenario != null)
+            {
+                context = BuildQuickBattleContext(_compiledQuickBattleScenario, run.RunId);
+                error = string.Empty;
+                return true;
+            }
+
+            context = resolver.BuildDebugSmokeContext(run, CurrentExpeditionNodeIndex);
+            error = string.Empty;
+            return true;
+        }
+
+        if (!resolver.HasAuthoredCatalog)
         {
             context = resolver.BuildDebugSmokeContext(run, CurrentExpeditionNodeIndex);
             error = string.Empty;
@@ -2510,6 +2739,29 @@ public sealed class GameSessionState
             nodeIndex);
         error = string.Empty;
         return true;
+    }
+
+    private BattleContextState BuildQuickBattleContext(CombatSandboxCompiledScenario scenario, string runId)
+    {
+        var laneId = scenario.LaneKind == CombatSandboxLaneKind.DirectCombatSandbox
+            ? "combat_sandbox"
+            : "town_smoke";
+        var rewardSourceId = scenario.LaneKind == CombatSandboxLaneKind.DirectCombatSandbox
+            ? string.Empty
+            : "reward_source_debug_smoke";
+        var contextHash = $"{runId}:{laneId}:{scenario.ScenarioId}:{scenario.Seed}:{scenario.LeftTeam.Snapshot.CompileHash}:{scenario.RightTeam.Snapshot.CompileHash}";
+        return new BattleContextState(
+            "sandbox",
+            laneId,
+            CurrentExpeditionNodeIndex,
+            scenario.ScenarioId,
+            scenario.Seed,
+            contextHash,
+            rewardSourceId,
+            1,
+            false,
+            laneId,
+            string.Empty);
     }
 
     private bool TryBuildRewardChoicesFromAuthoredSource(out IReadOnlyList<RewardChoiceViewModel> choices)
@@ -3342,6 +3594,9 @@ public sealed class GameSessionState
             Profile.ActiveRun.EndlessUnlocked);
         LastBattleVictory = ActiveRun.LastSettlementWasVictory;
         IsQuickBattleSmokeActive = ActiveRun.IsQuickBattle;
+        QuickBattleLaneKind = ActiveRun.IsQuickBattle
+            ? CombatSandboxLaneKind.TownIntegrationSmoke
+            : CombatSandboxLaneKind.None;
         HasActiveExpeditionRun = !ActiveRun.IsQuickBattle;
         CurrentExpeditionNodeIndex = ActiveRun.Overlay.CurrentNodeIndex;
 
@@ -3413,9 +3668,12 @@ public sealed class GameSessionState
         }
 
         var compileHash = LastCompiledBattleSnapshot?.CompileHash ?? ActiveRun.Overlay.LastCompileHash;
+        var blueprint = IsQuickBattleSmokeActive && _compiledQuickBattleScenario != null
+            ? _compiledQuickBattleScenario.LeftTeam.Blueprint
+            : CaptureBlueprintState();
         ActiveRun = RunStateService.SyncBlueprint(
             ActiveRun,
-            CaptureBlueprintState(),
+            blueprint,
             compileHash,
             _pendingRewardChoices.Select(choice => choice.PayloadId).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList());
         SyncActiveRunRecord();
@@ -3705,7 +3963,7 @@ public sealed class GameSessionState
 
     private string ResolveBlueprintRoleInstructionId(string heroId, string classId, DeploymentAnchorId anchor)
     {
-        if (IsQuickBattleSmokeActive && QuickBattleConfig != null)
+        if (IsQuickBattleSmokeActive && QuickBattleConfig != null && !QuickBattleConfig.UseScenarioAuthoring)
         {
             var overrideId = QuickBattleConfig.AllySlots
                 .Where(slot => slot != null && string.Equals(slot.HeroId, heroId, StringComparison.Ordinal))

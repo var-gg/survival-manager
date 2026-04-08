@@ -2,7 +2,7 @@
 
 ## 반드시 먼저 실행할 메뉴 1개
 
-- `SM/Setup/Prepare Observer Playable`
+- `SM/Play/Full Loop`
 
 - 상태: active
 - 최종수정일: 2026-04-08
@@ -11,7 +11,7 @@
 ## normal lane acceptance
 
 1. Unity 열기
-2. `SM/Setup/Prepare Observer Playable`
+2. `SM/Play/Full Loop`
 3. `Boot.unity` Play
 4. Boot에서 `Start Local Run`
 5. Boot one-line summary와 locale overlay가 보이는지 확인한다.
@@ -31,6 +31,13 @@
 2. Battle에서 playback group과 `Debug / Smoke` group이 보이는지 확인한다.
 3. `Rebattle (Debug)` / direct `Return to Town (Debug)`가 보이는지 확인한다.
 4. Town 복귀 뒤 campaign/site progression이 바뀌지 않았는지 확인한다.
+
+## direct combat sandbox acceptance
+
+1. `SM/Play/Combat Sandbox`를 누른다.
+2. Battle이 직접 열리고 Reward 없이 sandbox result/action surface로 진입하는지 확인한다.
+3. `Replay Same Seed`, `New Seed`, `Exit Sandbox`가 보이는지 확인한다.
+4. `Continue`가 숨겨지고 Reward/Town progression 문구가 없는지 확인한다.
 
 ## 확인 항목
 

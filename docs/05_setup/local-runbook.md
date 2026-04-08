@@ -6,18 +6,18 @@
 
 ## 먼저 실행할 메뉴
 
-- `SM/Setup/Prepare Observer Playable`
-- 필요 시 `SM/Setup/Ensure Localization Foundation`
+- `SM/Play/Full Loop`
+- 필요 시 `SM/Recovery/Ensure Localization Foundation`
 
 ## 빠른 실행 절차
 
 1. Unity editor `6000.4.0f1`로 프로젝트를 연다.
-2. `SM/Setup/Prepare Observer Playable`를 실행한다.
+2. `SM/Play/Full Loop`를 실행한다.
 3. `Boot.unity`가 자동으로 열렸는지 확인한다.
 4. Play 한다.
 5. Boot에서 `Start Local Run`을 누른다.
 6. Boot 우측 상단 language overlay에서 `ko`/`en` 전환이 되는지 확인한다.
-7. Boot status가 `Town -> Expedition -> Battle -> Reward` local loop를 한 줄로 설명하고, 추가 debug surface가 없는지 본다.
+7. Boot status가 `Town -> Expedition -> Battle -> Reward` local loop를 한 줄로 설명하고, top-level 기억 대상이 `Full Loop`와 `Combat Sandbox` 두 개뿐인지 확인한다.
 
 ## optional CLI fast lane
 
@@ -30,7 +30,7 @@
 
 1. Town에서 `CampaignSummaryLabel`이 chapter/site, lock 상태, pending reward 또는 active run 상태를 설명하는지 확인한다.
 2. Town에서 `DeployPreviewLabel`이 squad 인원, deploy, posture, primary CTA 상태를 보여 주고 `StatusLabel`은 transient feedback만 담당하는지 본다.
-3. Town 하단 액션이 `Primary / Gameplay / Utility / Debug / Smoke`로 분리되고 `Quick Battle (Smoke)`가 debug group 안에만 보이는지 확인한다.
+3. Town 하단 액션에서 `Quick Battle (Smoke)`가 secondary/debug group에만 남고, primary mental model은 `Start Expedition` / `Resume Expedition`인지 확인한다.
 4. active run이 없으면 `Start Expedition`을 누른다.
 5. Expedition에서 선택 route summary가 `type -> planned reward -> node effect / risk -> return to town consequence` 순서로 읽히는지 본다.
 6. battle node면 `Enter Battle`, settlement node면 `Resolve Settlement`로 CTA가 바뀌는지 확인한다.
@@ -68,19 +68,21 @@
 4. 다시 Town에서 `Resume Expedition`을 눌러 진행 중 원정을 재개한다.
 5. Quick Battle은 active run이 있을 때 비활성화되어야 한다.
 
-## debug smoke lane
+## combat sandbox / smoke lane
 
-- Town의 `Quick Battle (Smoke)`와 `SM/Quick Battle`, `pwsh -File tools/unity-bridge.ps1 quick-battle-smoke`는 smoke 전용 경로다.
-- normal playable acceptance에는 사용하지 않는다.
-- smoke lane에서는 Battle의 playback group과 `Debug / Smoke` group이 보여야 한다.
-- direct-scene play fallback과 runtime rebind는 복구 인프라로만 본다.
+- `SM/Play/Combat Sandbox`와 `pwsh -File tools/unity-bridge.ps1 quick-battle-smoke`는 pure battle direct lane이다.
+- Town의 `Quick Battle (Smoke)`는 현재 Town 빌드를 들고 들어가는 integration smoke다.
+- normal playable acceptance에는 두 경로 모두 사용하지 않는다.
+- direct sandbox에서는 `Replay Same Seed`, `New Seed`, `Exit Sandbox`만 보이고 Reward/Town progression CTA는 숨겨져야 한다.
+- Town smoke에서는 `Continue`, `Return to Town (Debug)`가 유지되고, canonical Town 상태 복구 계약을 따라야 한다.
+- heavy preset authoring, batch, source 전환은 `SM/Authoring/Combat Sandbox`에서 수행한다.
 
 ## 현재 계약 경로
 
 - canonical sample content root: `Assets/Resources/_Game/Content/Definitions/**`
-- scene repair source of truth: `SM/Setup/Repair First Playable Scenes`
-- one-shot bootstrap: `SM/Setup/Prepare Observer Playable`
-- localization foundation source of truth: `SM/Setup/Ensure Localization Foundation`
+- scene repair source of truth: `SM/Recovery/Repair First Playable Scenes`
+- one-shot bootstrap: `SM/Play/Full Loop` (legacy alias `SM/Setup/Prepare Observer Playable`)
+- localization foundation source of truth: `SM/Recovery/Ensure Localization Foundation`
 - release-floor packet wrapper: `pwsh -File tools/pre-art-rc.ps1`
 - default playable content load path: `Resources.LoadAll(...)` only
 - editor sweep / file fallback: explicit diagnostic lane only

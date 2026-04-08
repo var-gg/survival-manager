@@ -9,6 +9,12 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
 {
     private SerializedProperty _id = null!;
     private SerializedProperty _displayName = null!;
+    private SerializedProperty _useScenarioAuthoring = null!;
+    private SerializedProperty _defaultLaneKind = null!;
+    private SerializedProperty _scenario = null!;
+    private SerializedProperty _leftTeam = null!;
+    private SerializedProperty _rightTeam = null!;
+    private SerializedProperty _execution = null!;
     private SerializedProperty _allyPosture = null!;
     private SerializedProperty _teamTacticId = null!;
     private SerializedProperty _enemyPosture = null!;
@@ -16,11 +22,18 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
     private SerializedProperty _batchCount = null!;
     private SerializedProperty _allySlots = null!;
     private SerializedProperty _enemySlots = null!;
+    private bool _showLegacyMirror = true;
 
     private void OnEnable()
     {
         _id = serializedObject.FindProperty(nameof(CombatSandboxConfig.Id));
         _displayName = serializedObject.FindProperty(nameof(CombatSandboxConfig.DisplayName));
+        _useScenarioAuthoring = serializedObject.FindProperty(nameof(CombatSandboxConfig.UseScenarioAuthoring));
+        _defaultLaneKind = serializedObject.FindProperty(nameof(CombatSandboxConfig.DefaultLaneKind));
+        _scenario = serializedObject.FindProperty(nameof(CombatSandboxConfig.Scenario));
+        _leftTeam = serializedObject.FindProperty(nameof(CombatSandboxConfig.LeftTeam));
+        _rightTeam = serializedObject.FindProperty(nameof(CombatSandboxConfig.RightTeam));
+        _execution = serializedObject.FindProperty(nameof(CombatSandboxConfig.Execution));
         _allyPosture = serializedObject.FindProperty(nameof(CombatSandboxConfig.AllyPosture));
         _teamTacticId = serializedObject.FindProperty(nameof(CombatSandboxConfig.TeamTacticId));
         _enemyPosture = serializedObject.FindProperty(nameof(CombatSandboxConfig.EnemyPosture));
@@ -36,18 +49,42 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
 
         DrawGeneralSection();
         EditorGUILayout.Space(8f);
-        DrawAllySlots();
+        DrawAuthoringSection();
         EditorGUILayout.Space(8f);
-        DrawEnemySlots();
+        _showLegacyMirror = EditorGUILayout.Foldout(_showLegacyMirror, EditorLocalizedTextResolver.Label("Legacy Mirror / Compatibility", "Legacy Mirror / Compatibility"), true);
+        if (_showLegacyMirror)
+        {
+            DrawAllySlots();
+            EditorGUILayout.Space(8f);
+            DrawEnemySlots();
+        }
 
         serializedObject.ApplyModifiedProperties();
     }
 
     private void DrawGeneralSection()
     {
-        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Quick Battle 설정", "Quick Battle Settings"), EditorStyles.boldLabel);
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Combat Sandbox Active Handoff", "Combat Sandbox Active Handoff"), EditorStyles.boldLabel);
+        EditorGUILayout.HelpBox(
+            EditorLocalizedTextResolver.Label(
+                "이 asset은 runtime direct sandbox가 읽는 active handoff이다. 무거운 프리셋 authoring과 library 관리는 Combat Sandbox window에서 수행하고, 여기서는 sync 결과와 compatibility mirror를 확인한다.",
+                "This asset is the runtime active handoff for direct Combat Sandbox play. Use the Combat Sandbox window for preset authoring and library management, and use this inspector to verify the synced handoff plus compatibility mirrors."),
+            MessageType.Info);
         EditorGUILayout.PropertyField(_id, new GUIContent(EditorLocalizedTextResolver.Label("구성 ID", "Config Id")));
         EditorGUILayout.PropertyField(_displayName, new GUIContent(EditorLocalizedTextResolver.Label("표시 이름", "Display Name")));
+        EditorGUILayout.PropertyField(_useScenarioAuthoring, new GUIContent(EditorLocalizedTextResolver.Label("Scenario Authoring 사용", "Use Scenario Authoring")));
+        EditorGUILayout.PropertyField(_defaultLaneKind, new GUIContent(EditorLocalizedTextResolver.Label("기본 lane", "Default Lane")));
+    }
+
+    private void DrawAuthoringSection()
+    {
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Scenario Handoff", "Scenario Handoff"), EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(_scenario, new GUIContent(EditorLocalizedTextResolver.Label("시나리오 메타데이터", "Scenario Metadata")), true);
+        EditorGUILayout.PropertyField(_leftTeam, new GUIContent(EditorLocalizedTextResolver.Label("왼쪽 팀", "Left Team")), true);
+        EditorGUILayout.PropertyField(_rightTeam, new GUIContent(EditorLocalizedTextResolver.Label("오른쪽 팀", "Right Team")), true);
+        EditorGUILayout.PropertyField(_execution, new GUIContent(EditorLocalizedTextResolver.Label("실행 프리셋", "Execution Preset")), true);
+        EditorGUILayout.Space(4f);
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Legacy Fallback Values", "Legacy Fallback Values"), EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(_allyPosture, new GUIContent(EditorLocalizedTextResolver.Label("아군 태세", "Ally Posture")));
         EditorGUILayout.PropertyField(_teamTacticId, new GUIContent(EditorLocalizedTextResolver.Label("팀 전술 ID", "Team Tactic Id")));
         EditorGUILayout.PropertyField(_enemyPosture, new GUIContent(EditorLocalizedTextResolver.Label("적군 태세", "Enemy Posture")));

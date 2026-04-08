@@ -217,13 +217,15 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
-        _root.SessionState.ReloadQuickBattleConfig();
-        _root.SessionState.PrepareQuickBattleSmoke();
-        var checkpoint = _root.SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
-        if (checkpoint.Status == SessionCheckpointStatus.Failed)
+        _root.SessionState.RestartQuickBattle(advanceSeed: true);
+        if (!_root.SessionState.IsDirectCombatSandboxLane)
         {
-            RenderErrorState(checkpoint.Message);
-            return;
+            var checkpoint = _root.SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
+            if (checkpoint.Status == SessionCheckpointStatus.Failed)
+            {
+                RenderErrorState(checkpoint.Message);
+                return;
+            }
         }
 
         RenderLoadingState();
@@ -246,6 +248,22 @@ public sealed class BattleScreenController : MonoBehaviour
         if (!IsBattleFinished)
         {
             RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.return_town_before_finish", "Finish the battle before returning directly to Town."));
+            return;
+        }
+
+        if (_root.SessionState.IsDirectCombatSandboxLane)
+        {
+            _root.SessionState.ExitCombatSandbox();
+            if (cameraController != null)
+            {
+                cameraController.SetInputEnabled(false);
+            }
+
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#else
+            _root.SceneFlow.GoToBoot();
+#endif
             return;
         }
 
@@ -293,6 +311,12 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         if (!EnsureReady())
         {
+            return;
+        }
+
+        if (_root.SessionState.IsDirectCombatSandboxLane)
+        {
+            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.direct_sandbox_reward_hidden", "Combat Sandbox does not continue into Reward. Use Exit Sandbox or replay controls instead."));
             return;
         }
 
@@ -505,7 +529,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _root.UseDedicatedSmokeNamespace();
         _root.EnsureOfflineLocalSession();
         _root.SessionState.ReloadQuickBattleConfig();
-        _root.SessionState.PrepareQuickBattleSmoke();
+        _root.SessionState.PrepareCombatSandboxDirect();
         var checkpoint = _root.SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
         if (!checkpoint.IsSuccessful)
         {

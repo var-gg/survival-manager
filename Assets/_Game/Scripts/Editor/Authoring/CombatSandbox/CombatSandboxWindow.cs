@@ -1,11 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using SM.Combat.Model;
+using SM.Editor.Bootstrap;
 using SM.Combat.Services;
 using SM.Unity.Sandbox;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,7 +15,9 @@ public sealed class CombatSandboxWindow : EditorWindow
     private const string MenuPath = "SM/Authoring/Combat Sandbox";
 
     private CombatSandboxState _state = null!;
-    private SerializedObject _serializedState = null!;
+    private Vector2 _libraryScroll;
+    private Vector2 _detailsScroll;
+    private GUIStyle? _wrappedTextAreaStyle;
 
     public CombatSandboxState State => _state;
 
@@ -25,16 +26,19 @@ public sealed class CombatSandboxWindow : EditorWindow
     {
         var window = GetWindow<CombatSandboxWindow>();
         window.titleContent = new GUIContent("Combat Sandbox");
-        window.minSize = new Vector2(420f, 480f);
+        window.minSize = new Vector2(960f, 620f);
         window.Show();
     }
 
     private void OnEnable()
     {
+        CombatSandboxAuthoringAssetUtility.EnsureStarterLibrary();
         _state = CreateInstance<CombatSandboxState>();
         _state.hideFlags = HideFlags.HideAndDontSave;
-        _serializedState = new SerializedObject(_state);
-        BuildUi();
+        _state.Config = CombatSandboxAuthoringAssetUtility.EnsureActiveConfig();
+        rootVisualElement.Clear();
+        rootVisualElement.Add(new IMGUIContainer(DrawGui));
+        RefreshPreview();
     }
 
     private void OnDisable()
@@ -45,250 +49,423 @@ public sealed class CombatSandboxWindow : EditorWindow
         }
     }
 
-    private void BuildUi()
+    private void DrawGui()
     {
-        rootVisualElement.Clear();
-        rootVisualElement.style.paddingLeft = 8;
-        rootVisualElement.style.paddingRight = 8;
-        rootVisualElement.style.paddingTop = 8;
-        rootVisualElement.style.paddingBottom = 8;
+        EnsureState();
+        _wrappedTextAreaStyle ??= new GUIStyle(EditorStyles.textArea) { wordWrap = true };
 
-        rootVisualElement.Add(BuildSection("Squad Setup", section =>
+        DrawHeader();
+        DrawToolbar();
+
+        using (new EditorGUILayout.HorizontalScope())
         {
-            section.Add(new PropertyField(_serializedState.FindProperty(nameof(CombatSandboxState.Config))));
-        }));
-
-        rootVisualElement.Add(BuildSection("Overrides", section =>
-        {
-            section.Add(new PropertyField(_serializedState.FindProperty(nameof(CombatSandboxState.Seed))));
-            section.Add(new PropertyField(_serializedState.FindProperty(nameof(CombatSandboxState.BatchCount))));
-            section.Add(new PropertyField(_serializedState.FindProperty(nameof(CombatSandboxState.InspectUnitId))));
-        }));
-
-        rootVisualElement.Add(BuildSection("Execution", section =>
-        {
-            var singleRunButton = new Button(RunSingle) { text = "Single Run" };
-            var batchRunButton = new Button(RunBatch) { text = "Batch Run" };
-            section.Add(singleRunButton);
-            section.Add(batchRunButton);
-        }));
-
-        rootVisualElement.Add(BuildSection("Results", section =>
-        {
-            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastCompileHash)));
-            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastReplayHash)));
-            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastMetricsSummary), 72f));
-            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastCounterCoverageSummary), 120f));
-            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastGovernanceSummary), 120f));
-            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastReadabilitySummary), 120f));
-            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastExplanationSummary), 120f));
-            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastProvenanceSummary), 120f));
-            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LastValidationMessage), 72f));
-            section.Add(CreateReadOnlyField(nameof(CombatSandboxState.LayoutSourceLabel)));
-        }));
-
-        rootVisualElement.Bind(_serializedState);
-    }
-
-    private VisualElement BuildSection(string title, Action<VisualElement> build)
-    {
-        var container = new VisualElement();
-        container.style.marginBottom = 8;
-        container.style.paddingLeft = 8;
-        container.style.paddingRight = 8;
-        container.style.paddingTop = 8;
-        container.style.paddingBottom = 8;
-        container.style.borderBottomWidth = 1;
-        container.style.borderTopWidth = 1;
-        container.style.borderLeftWidth = 1;
-        container.style.borderRightWidth = 1;
-        container.style.borderBottomColor = new Color(0.22f, 0.22f, 0.22f);
-        container.style.borderTopColor = new Color(0.22f, 0.22f, 0.22f);
-        container.style.borderLeftColor = new Color(0.22f, 0.22f, 0.22f);
-        container.style.borderRightColor = new Color(0.22f, 0.22f, 0.22f);
-
-        var titleLabel = new Label(title);
-        titleLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-        titleLabel.style.marginBottom = 6;
-        container.Add(titleLabel);
-        build(container);
-        return container;
-    }
-
-    private PropertyField CreateReadOnlyField(string propertyName, float minHeight = 0f)
-    {
-        var field = new PropertyField(_serializedState.FindProperty(propertyName));
-        field.SetEnabled(false);
-        if (minHeight > 0f)
-        {
-            field.style.minHeight = minHeight;
+            DrawLibraryPane();
+            GUILayout.Space(8f);
+            DrawDetailsPane();
         }
 
-        return field;
+        DrawResultsPane();
     }
 
-    private void RunSingle()
+    private void DrawHeader()
     {
-        Execute(runAsBatch: false);
+        EditorGUILayout.HelpBox(
+            "Canonical editor entry points are SM/Play/Full Loop and SM/Play/Combat Sandbox. This window is the main authoring surface for sandbox scenarios, active handoff sync, preview, and regression runs.",
+            MessageType.Info);
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            using (new EditorGUI.DisabledScope(true))
+            {
+                _state.Config = (CombatSandboxConfig)EditorGUILayout.ObjectField("Active Handoff", _state.Config, typeof(CombatSandboxConfig), false);
+            }
+
+            if (GUILayout.Button("Ensure Starter Library", GUILayout.Width(160f)))
+            {
+                CombatSandboxAuthoringAssetUtility.EnsureStarterLibrary();
+            }
+        }
     }
 
-    private void RunBatch()
+    private void DrawToolbar()
     {
-        Execute(runAsBatch: true);
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            _state.SearchText = EditorGUILayout.TextField("Search", _state.SearchText);
+            _state.FavoritesOnly = GUILayout.Toggle(_state.FavoritesOnly, "Favorites Only", GUILayout.Width(120f));
+
+            var tags = BuildTagOptions();
+            var tagIndex = Array.IndexOf(tags, string.IsNullOrWhiteSpace(_state.TagFilter) ? "All Tags" : _state.TagFilter);
+            var selectedTag = EditorGUILayout.Popup("Tag", Mathf.Max(0, tagIndex), tags);
+            _state.TagFilter = selectedTag <= 0 ? string.Empty : tags[selectedTag];
+        }
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            _state.Seed = EditorGUILayout.IntField("Seed Override", _state.Seed);
+            _state.BatchCount = Mathf.Max(0, EditorGUILayout.IntField("Batch Count", _state.BatchCount));
+            _state.InspectUnitId = EditorGUILayout.TextField("Inspect Unit", _state.InspectUnitId);
+        }
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if (GUILayout.Button("Set Active", GUILayout.Width(120f)))
+            {
+                SetActiveFromSelection();
+            }
+
+            if (GUILayout.Button("Run Single", GUILayout.Width(120f)))
+            {
+                Execute(runAsBatch: false, runSideSwap: false);
+            }
+
+            if (GUILayout.Button("Run Batch", GUILayout.Width(120f)))
+            {
+                Execute(runAsBatch: true, runSideSwap: false);
+            }
+
+            if (GUILayout.Button("Run Side Swap", GUILayout.Width(140f)))
+            {
+                Execute(runAsBatch: true, runSideSwap: true);
+            }
+
+            if (GUILayout.Button("Push Active + Play", GUILayout.Width(160f)))
+            {
+                if (SetActiveFromSelection())
+                {
+                    FirstPlayableBootstrap.PlayCombatSandbox();
+                }
+            }
+
+            if (GUILayout.Button("Refresh Preview", GUILayout.Width(140f)))
+            {
+                RefreshPreview();
+            }
+        }
     }
 
-    private void Execute(bool runAsBatch)
+    private void DrawLibraryPane()
     {
-        _serializedState.ApplyModifiedPropertiesWithoutUndo();
+        using (new EditorGUILayout.VerticalScope(GUILayout.Width(position.width * 0.38f)))
+        {
+            EditorGUILayout.LabelField("Preset Library", EditorStyles.boldLabel);
+            _libraryScroll = EditorGUILayout.BeginScrollView(_libraryScroll, GUILayout.ExpandHeight(true));
+            foreach (var scenario in FilterScenarios(CombatSandboxAuthoringAssetUtility.FindScenarioAssets()))
+            {
+                using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+                {
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        if (GUILayout.Button(scenario.DisplayName, EditorStyles.linkLabel))
+                        {
+                            SelectScenario(scenario);
+                        }
+
+                        GUILayout.FlexibleSpace();
+                        GUILayout.Label(scenario.IsFavorite ? "★" : "·", GUILayout.Width(18f));
+                    }
+
+                    EditorGUILayout.LabelField($"id={scenario.ScenarioId}");
+                    EditorGUILayout.LabelField($"tags={FormatTags(scenario.Tags)}");
+                    EditorGUILayout.LabelField($"left={scenario.LeftTeam?.DisplayName ?? "none"}");
+                    EditorGUILayout.LabelField($"right={scenario.RightTeam?.DisplayName ?? "none"}");
+                    if (GUILayout.Button("Select", GUILayout.Width(90f)))
+                    {
+                        SelectScenario(scenario);
+                    }
+                }
+            }
+
+            EditorGUILayout.EndScrollView();
+        }
+    }
+
+    private void DrawDetailsPane()
+    {
+        using (new EditorGUILayout.VerticalScope(GUILayout.ExpandWidth(true)))
+        {
+            if (_state.SelectedScenario == null)
+            {
+                EditorGUILayout.HelpBox("Select a scenario from the library to inspect its notes, preview, and authoring actions.", MessageType.None);
+                return;
+            }
+
+            var scenario = _state.SelectedScenario;
+            EditorGUILayout.LabelField(scenario.DisplayName, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Scenario Id: {scenario.ScenarioId}");
+            EditorGUILayout.LabelField($"Tags: {FormatTags(scenario.Tags)}");
+            EditorGUILayout.LabelField($"Execution: {scenario.ExecutionPreset?.Settings.DisplayName ?? "none"}");
+            EditorGUILayout.LabelField($"Left Team: {scenario.LeftTeam?.DisplayName ?? "none"}");
+            EditorGUILayout.LabelField($"Right Team: {scenario.RightTeam?.DisplayName ?? "none"}");
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button(scenario.IsFavorite ? "Unset Favorite" : "Mark Favorite", GUILayout.Width(120f)))
+                {
+                    scenario.IsFavorite = !scenario.IsFavorite;
+                    EditorUtility.SetDirty(scenario);
+                    AssetDatabase.SaveAssets();
+                }
+
+                if (GUILayout.Button("Save As New", GUILayout.Width(120f)))
+                {
+                    var clone = CombatSandboxAuthoringAssetUtility.DuplicateScenario(scenario);
+                    if (clone != null)
+                    {
+                        SelectScenario(clone);
+                    }
+                }
+            }
+
+            _detailsScroll = EditorGUILayout.BeginScrollView(_detailsScroll, GUILayout.ExpandHeight(true));
+            DrawReadOnlyBlock("Expected Outcome", string.IsNullOrWhiteSpace(scenario.ExpectedOutcome) ? "none" : scenario.ExpectedOutcome);
+            DrawReadOnlyBlock("Notes", string.IsNullOrWhiteSpace(scenario.Notes) ? "none" : scenario.Notes);
+            DrawReadOnlyBlock("Scenario Summary", string.IsNullOrWhiteSpace(_state.ScenarioSummary) ? "Preview not generated yet." : _state.ScenarioSummary);
+            DrawReadOnlyBlock("Left Team Preview", string.IsNullOrWhiteSpace(_state.LeftTeamPreview) ? "Preview not generated yet." : _state.LeftTeamPreview);
+            DrawReadOnlyBlock("Right Team Preview", string.IsNullOrWhiteSpace(_state.RightTeamPreview) ? "Preview not generated yet." : _state.RightTeamPreview);
+            DrawReadOnlyBlock("Recent", string.IsNullOrWhiteSpace(_state.RecentScenarioIdsCsv) ? "none" : _state.RecentScenarioIdsCsv.Replace(";", "\n"));
+            EditorGUILayout.EndScrollView();
+        }
+    }
+
+    private void DrawResultsPane()
+    {
+        EditorGUILayout.Space(8f);
+        EditorGUILayout.LabelField("Results", EditorStyles.boldLabel);
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        {
+            EditorGUILayout.LabelField($"Compile Hash: {_state.LastCompileHash}");
+            EditorGUILayout.LabelField($"Replay Hash: {_state.LastReplayHash}");
+            EditorGUILayout.LabelField($"Layout Source: {string.IsNullOrWhiteSpace(_state.LayoutSourceLabel) ? "Default" : _state.LayoutSourceLabel}");
+            DrawReadOnlyBlock("Metrics", _state.LastMetricsSummary);
+            DrawReadOnlyBlock("Counter Coverage", _state.LastCounterCoverageSummary);
+            DrawReadOnlyBlock("Governance", _state.LastGovernanceSummary);
+            DrawReadOnlyBlock("Readability", _state.LastReadabilitySummary);
+            DrawReadOnlyBlock("Explanation", _state.LastExplanationSummary);
+            DrawReadOnlyBlock("Provenance", _state.LastProvenanceSummary);
+            DrawReadOnlyBlock("Validation", _state.LastValidationMessage);
+        }
+    }
+
+    private void Execute(bool runAsBatch, bool runSideSwap)
+    {
+        var config = BuildPreviewConfig();
+        if (config == null)
+        {
+            _state.LastValidationMessage = "Unable to resolve a preview config.";
+            return;
+        }
 
         try
         {
             var sceneController = FindAnyObjectByType<CombatSandboxSceneController>();
             var sceneLayout = sceneController != null ? sceneController.ExportSceneLayout() : null;
-            var request = CombatSandboxExecutionService.BuildRequest(_state, sceneLayout);
-            var effectiveRequest = runAsBatch ? request : request with { BatchCount = 1 };
-            var result = CombatSandboxSceneController.Execute(effectiveRequest);
+            var compiled = CombatSandboxExecutionService.BuildCompiledScenario(config, _state.Seed);
+            var batchCount = runAsBatch
+                ? (_state.BatchCount > 0 ? _state.BatchCount : Math.Max(1, compiled.Execution.BatchCount))
+                : 1;
+            var effectiveRunSideSwap = runSideSwap || (runAsBatch && compiled.Execution.RunSideSwap);
+            var primary = CombatSandboxSceneController.Execute(new CombatSandboxRunRequest(
+                compiled.LeftTeam.Snapshot,
+                compiled.RightTeam.Snapshot.Allies,
+                compiled.Seed,
+                batchCount,
+                compiled.ScenarioId,
+                sceneLayout));
             _state.LayoutSourceLabel = sceneLayout != null ? "Scene" : "Default";
-            _state.LastCompileHash = result.PlayerSnapshot.CompileHash;
-            _state.LastReplayHash = result.ReplayHash;
-            _state.LastMetricsSummary =
-                $"win_rate={result.Metrics.WinRate:0.###}\navg_duration={result.Metrics.AverageDurationSeconds:0.###}\navg_events={result.Metrics.AverageEventCount:0.###}\nfirst_action={result.Metrics.AverageFirstActionSeconds:0.###}";
-            _state.LastCounterCoverageSummary = BuildCounterCoverageSummary(
-                result.PlayerSnapshot.TeamCounterCoverage,
-                CounterCoverageAggregationService.AggregateFromLoadouts(result.EnemyLoadout));
-            _state.LastGovernanceSummary = BuildGovernanceSummary(result.PlayerSnapshot, _state.InspectUnitId);
-            _state.LastReadabilitySummary = BuildReadabilitySummary(result.LastReplay.Readability);
-            _state.LastExplanationSummary = BuildExplanationSummary(result.LastReplay.BattleSummary);
-            _state.LastProvenanceSummary = BuildProvenanceSummary(result.Provenance);
-            _state.LastValidationMessage =
-                $"config={effectiveRequest.RequestedConfigId}\nprovenance={result.Provenance.Count}\nteam_tags={string.Join(", ", result.PlayerSnapshot.TeamTags)}";
+            _state.LastCompileHash = primary.PlayerSnapshot.CompileHash;
+            _state.LastReplayHash = primary.ReplayHash;
+            _state.LastMetricsSummary = BuildMetricsSummary(primary.Metrics);
+            _state.LastCounterCoverageSummary = CombatSandboxExecutionService.BuildCounterCoverageSummary(primary.PlayerSnapshot.TeamCounterCoverage, CounterCoverageAggregationService.AggregateFromLoadouts(primary.EnemyLoadout));
+            _state.LastGovernanceSummary = CombatSandboxExecutionService.BuildGovernanceSummary(primary.PlayerSnapshot, _state.InspectUnitId);
+            _state.LastReadabilitySummary = CombatSandboxExecutionService.BuildReadabilitySummary(primary.LastReplay.Readability);
+            _state.LastExplanationSummary = CombatSandboxExecutionService.BuildExplanationSummary(primary.LastReplay.BattleSummary);
+            _state.LastProvenanceSummary = CombatSandboxExecutionService.BuildProvenanceSummary(primary.Provenance);
+            _state.LastValidationMessage = string.IsNullOrWhiteSpace(_state.LastValidationMessage)
+                ? $"config={compiled.ScenarioId}\nprovenance={primary.Provenance.Count}\nteam_tags={string.Join(", ", primary.PlayerSnapshot.TeamTags)}"
+                : _state.LastValidationMessage;
+
+            if (effectiveRunSideSwap)
+            {
+                var swapped = CombatSandboxSceneController.Execute(new CombatSandboxRunRequest(
+                    compiled.RightTeam.Snapshot,
+                    compiled.LeftTeam.Snapshot.Allies,
+                    compiled.Seed,
+                    batchCount,
+                    $"{compiled.ScenarioId}.side_swap",
+                    sceneLayout));
+                _state.LastMetricsSummary += $"\n--- side_swap ---\n{BuildMetricsSummary(swapped.Metrics)}";
+            }
         }
         catch (Exception ex)
         {
             _state.LastValidationMessage = ex.Message;
         }
+        finally
+        {
+            DestroyImmediate(config);
+        }
 
-        _serializedState.Update();
-        rootVisualElement.Bind(_serializedState);
         Repaint();
     }
 
-    private static string BuildCounterCoverageSummary(TeamCounterCoverageReport? ally, TeamCounterCoverageReport? enemy)
+    private bool SetActiveFromSelection()
     {
-        var builder = new StringBuilder();
-        builder.AppendLine("Ally coverage");
-        AppendCoverage(builder, ally);
-        builder.AppendLine();
-        builder.AppendLine("Enemy coverage");
-        AppendCoverage(builder, enemy);
-        return builder.ToString().TrimEnd();
+        EnsureState();
+        if (_state.Config == null || _state.SelectedScenario == null)
+        {
+            _state.LastValidationMessage = "Select a scenario and ensure the active handoff asset exists first.";
+            return false;
+        }
+
+        if (!CombatSandboxAuthoringAssetUtility.TryPushScenarioToActiveConfig(_state.SelectedScenario, _state.Config, out var message))
+        {
+            _state.LastValidationMessage = message;
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _state.LastValidationMessage = message;
+        }
+
+        RefreshPreview();
+        Selection.activeObject = _state.Config;
+        EditorGUIUtility.PingObject(_state.Config);
+        return true;
     }
 
-    private static void AppendCoverage(StringBuilder builder, TeamCounterCoverageReport? report)
+    private void SelectScenario(CombatSandboxScenarioAsset scenario)
     {
-        if (report == null)
+        _state.SelectedScenario = scenario;
+        AddRecentScenario(scenario.ScenarioId);
+        RefreshPreview();
+    }
+
+    private void RefreshPreview()
+    {
+        var config = BuildPreviewConfig();
+        if (config == null)
         {
-            builder.AppendLine("- missing");
             return;
         }
 
-        foreach (var lane in new[]
-                 {
-                     ("ArmorShred", report.ArmorShred),
-                     ("Exposure", report.Exposure),
-                     ("GuardBreakMultiHit", report.GuardBreakMultiHit),
-                     ("TrackingArea", report.TrackingArea),
-                     ("TenacityStability", report.TenacityStability),
-                     ("AntiHealShatter", report.AntiHealShatter),
-                     ("InterceptPeel", report.InterceptPeel),
-                     ("CleaveWaveclear", report.CleaveWaveclear),
-                 })
+        try
         {
-            var warning = lane.Item2 is CounterCoverageLevelValue.None or CounterCoverageLevelValue.Light ? " !weak" : string.Empty;
-            builder.AppendLine($"- {lane.Item1}: {lane.Item2}{warning}");
+            var compiled = CombatSandboxExecutionService.BuildCompiledScenario(config, _state.Seed);
+            _state.ScenarioSummary = CombatSandboxPreviewFormatter.BuildScenarioSummary(compiled);
+            _state.LeftTeamPreview = CombatSandboxPreviewFormatter.BuildTeamPreview(compiled.LeftTeam);
+            _state.RightTeamPreview = CombatSandboxPreviewFormatter.BuildTeamPreview(compiled.RightTeam);
+            _state.LastValidationMessage = string.Join("\n", compiled.Warnings.Distinct(StringComparer.Ordinal));
+        }
+        catch (Exception ex)
+        {
+            _state.ScenarioSummary = string.Empty;
+            _state.LeftTeamPreview = string.Empty;
+            _state.RightTeamPreview = string.Empty;
+            _state.LastValidationMessage = ex.Message;
+        }
+        finally
+        {
+            DestroyImmediate(config);
         }
     }
 
-    private static string BuildGovernanceSummary(BattleLoadoutSnapshot snapshot, string inspectUnitId)
+    private CombatSandboxConfig? BuildPreviewConfig()
     {
-        var unit = !string.IsNullOrWhiteSpace(inspectUnitId)
-            ? snapshot.Allies.FirstOrDefault(candidate => string.Equals(candidate.Id, inspectUnitId, StringComparison.Ordinal))
-            : snapshot.Allies.FirstOrDefault();
-        if (unit?.Governance == null)
+        EnsureState();
+        var config = CreateInstance<CombatSandboxConfig>();
+        config.hideFlags = HideFlags.HideAndDontSave;
+        if (_state.SelectedScenario == null)
         {
-            return "Selected unit governance unavailable.";
-        }
-
-        var builder = new StringBuilder();
-        builder.AppendLine($"unit={unit.Id}");
-        builder.AppendLine($"rarity={unit.Governance.Rarity} role={unit.Governance.RoleProfile} budget={unit.Governance.BudgetFinalScore}");
-        builder.AppendLine($"threats=[{string.Join(", ", unit.Governance.DeclaredThreatPatterns)}]");
-        builder.AppendLine($"counters=[{string.Join(", ", unit.Governance.DeclaredCounterTools.Select(tool => $"{tool.Tool}:{tool.Strength}"))}]");
-        builder.AppendLine($"flags={unit.Governance.DeclaredFeatureFlags}");
-        return builder.ToString().TrimEnd();
-    }
-
-    private static string BuildReadabilitySummary(ReadabilityReport? report)
-    {
-        if (report == null)
-        {
-            return "Readability report unavailable.";
-        }
-
-        var builder = new StringBuilder();
-        builder.AppendLine($"salience_p95={report.SalienceWeightPer1sP95:0.###}");
-        builder.AppendLine($"unexplained_damage={report.UnexplainedDamageRatio:0.###}");
-        builder.AppendLine($"target_switch_p95={report.TargetSwitchesPer10sP95:0.###}");
-        builder.AppendLine($"violations=[{string.Join(", ", report.Violations ?? Array.Empty<ReadabilityViolationKind>())}]");
-        return builder.ToString().TrimEnd();
-    }
-
-    private static string BuildExplanationSummary(BattleSummaryReport? report)
-    {
-        if (report == null)
-        {
-            return "Battle summary unavailable.";
-        }
-
-        var builder = new StringBuilder();
-        builder.AppendLine($"top_damage=[{string.Join(", ", report.TopDamageSources ?? Array.Empty<string>())}]");
-        builder.AppendLine($"top_reasons=[{string.Join(", ", report.TopDecisionReasons ?? Array.Empty<string>())}]");
-        builder.AppendLine($"decisive=[{string.Join(", ", report.DecisiveMoments ?? Array.Empty<string>())}]");
-        return builder.ToString().TrimEnd();
-    }
-
-    private static string BuildProvenanceSummary(System.Collections.Generic.IReadOnlyList<CompileProvenanceEntry> provenance)
-    {
-        if (provenance == null || provenance.Count == 0)
-        {
-            return "Provenance unavailable.";
-        }
-
-        var builder = new StringBuilder();
-        var grouped = provenance
-            .GroupBy(entry => entry.SubjectId)
-            .OrderBy(group => group.Key)
-            .ToList();
-
-        builder.AppendLine($"--- {grouped.Count} subjects, {provenance.Count} entries ---");
-
-        foreach (var group in grouped)
-        {
-            var artifacts = group.GroupBy(e => e.ArtifactKind).Select(g => $"{g.Key}({g.Count()})");
-            builder.AppendLine($"[{group.Key}] {string.Join(" ", artifacts)}");
-            foreach (var entry in group)
+            if (_state.Config == null)
             {
-                builder.AppendLine($"  {entry.ArtifactKind} source={entry.SourceId}");
-                if (entry.Details != null && entry.Details.Count > 0)
-                {
-                    foreach (var detail in entry.Details)
-                    {
-                        builder.AppendLine($"    {detail}");
-                    }
-                }
+                DestroyImmediate(config);
+                return null;
             }
+
+            EditorUtility.CopySerialized(_state.Config, config);
+            return config;
         }
 
-        return builder.ToString().TrimEnd();
+        if (!CombatSandboxAuthoringAssetUtility.TryPushScenarioToActiveConfig(_state.SelectedScenario, config, out var message))
+        {
+            _state.LastValidationMessage = message;
+            DestroyImmediate(config);
+            return null;
+        }
+
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _state.LastValidationMessage = message;
+        }
+
+        return config;
+    }
+
+    private void EnsureState()
+    {
+        if (_state != null)
+        {
+            _state.Config ??= CombatSandboxAuthoringAssetUtility.EnsureActiveConfig();
+            return;
+        }
+
+        _state = CreateInstance<CombatSandboxState>();
+        _state.hideFlags = HideFlags.HideAndDontSave;
+        _state.Config = CombatSandboxAuthoringAssetUtility.EnsureActiveConfig();
+    }
+
+    private string[] BuildTagOptions()
+    {
+        var tags = CombatSandboxAuthoringAssetUtility.FindScenarioAssets()
+            .SelectMany(asset => asset.Tags ?? Array.Empty<string>())
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(tag => tag, StringComparer.Ordinal)
+            .ToList();
+        tags.Insert(0, "All Tags");
+        return tags.ToArray();
+    }
+
+    private IEnumerable<CombatSandboxScenarioAsset> FilterScenarios(IReadOnlyList<CombatSandboxScenarioAsset> scenarios)
+    {
+        return scenarios.Where(asset =>
+            (!_state.FavoritesOnly || asset.IsFavorite)
+            && (string.IsNullOrWhiteSpace(_state.TagFilter) || (asset.Tags?.Any(tag => string.Equals(tag, _state.TagFilter, StringComparison.Ordinal)) ?? false))
+            && (string.IsNullOrWhiteSpace(_state.SearchText)
+                || asset.DisplayName.IndexOf(_state.SearchText, StringComparison.OrdinalIgnoreCase) >= 0
+                || asset.ScenarioId.IndexOf(_state.SearchText, StringComparison.OrdinalIgnoreCase) >= 0));
+    }
+
+    private void AddRecentScenario(string scenarioId)
+    {
+        var recent = _state.RecentScenarioIdsCsv?
+            .Split(';', StringSplitOptions.RemoveEmptyEntries)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToList() ?? new List<string>();
+        recent.RemoveAll(id => string.Equals(id, scenarioId, StringComparison.Ordinal));
+        recent.Insert(0, scenarioId);
+        _state.RecentScenarioIdsCsv = string.Join(";", recent.Take(6));
+    }
+
+    private void DrawReadOnlyBlock(string label, string value)
+    {
+        EditorGUILayout.LabelField(label, EditorStyles.miniBoldLabel);
+        using (new EditorGUI.DisabledScope(true))
+        {
+            EditorGUILayout.TextArea(string.IsNullOrWhiteSpace(value) ? "none" : value, _wrappedTextAreaStyle, GUILayout.MinHeight(44f));
+        }
+    }
+
+    private static string BuildMetricsSummary(CombatSandboxMetrics metrics)
+    {
+        return
+            $"win_rate={metrics.WinRate:0.###}\navg_duration={metrics.AverageDurationSeconds:0.###}\navg_events={metrics.AverageEventCount:0.###}\nfirst_action={metrics.AverageFirstActionSeconds:0.###}";
+    }
+
+    private static string FormatTags(IEnumerable<string> tags)
+    {
+        var materialized = tags?.Where(tag => !string.IsNullOrWhiteSpace(tag)).ToList() ?? new List<string>();
+        return materialized.Count == 0 ? "none" : string.Join(", ", materialized);
     }
 }

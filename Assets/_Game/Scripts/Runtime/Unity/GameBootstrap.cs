@@ -55,7 +55,7 @@ public sealed class GameBootstrap : MonoBehaviour
         {
             root.UseDedicatedSmokeNamespace();
             root.EnsureOfflineLocalSession();
-            root.SessionState.PrepareQuickBattleSmoke();
+            root.SessionState.PrepareCombatSandboxDirect();
             var checkpoint = root.SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
             if (!checkpoint.IsSuccessful)
             {
