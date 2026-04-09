@@ -281,8 +281,14 @@ public sealed class CombatSandboxScenarioCompiler
 
         if (heroes.Count == 0)
         {
-            error = $"Combat Sandbox {teamKey} team could not compile any local-profile hero.";
-            return false;
+            warnings.Add($"Combat Sandbox {teamKey} team could not compile any local-profile hero. Falling back to starter synthetic roster.");
+            return TryCompileSyntheticTeam(
+                context,
+                BuildCurrentProfileFallbackTeam(team),
+                teamKey,
+                content,
+                out compiled,
+                out error);
         }
 
         MergeAugments(team, temporaryAugmentIds, permanentAugmentIds);
@@ -383,7 +389,14 @@ public sealed class CombatSandboxScenarioCompiler
 
         if (heroes.Count == 0)
         {
-            error = $"Combat Sandbox {teamKey} team does not contain any valid authored member.";
+            var authoredMembers = string.Join(
+                " | ",
+                team.Members
+                    .Where(member => member != null)
+                    .Select(member => $"{member.SourceKind}:{member.CharacterId}/{member.ArchetypeId}/{member.HeroId}@{member.Anchor}"));
+            error = warnings.Count == 0
+                ? $"Combat Sandbox {teamKey} team does not contain any valid authored member. Members={authoredMembers}"
+                : $"Combat Sandbox {teamKey} team does not contain any valid authored member. Members={authoredMembers} | {string.Join(" | ", warnings.Distinct(StringComparer.Ordinal))}";
             return false;
         }
 
@@ -1153,6 +1166,33 @@ public sealed class CombatSandboxScenarioCompiler
         }
 
         return team;
+    }
+
+    private static CombatSandboxTeamDefinition BuildCurrentProfileFallbackTeam(CombatSandboxTeamDefinition source)
+    {
+        return new CombatSandboxTeamDefinition
+        {
+            TeamId = string.IsNullOrWhiteSpace(source.TeamId) ? "starter.synthetic_left" : source.TeamId,
+            DisplayName = string.IsNullOrWhiteSpace(source.DisplayName) ? "Starter Synthetic" : source.DisplayName,
+            SourceMode = SandboxLoadoutSourceKind.AuthoredSyntheticTeam,
+            TeamPosture = source.TeamPosture,
+            TeamTacticId = source.TeamTacticId,
+            ProvenanceLabel = string.IsNullOrWhiteSpace(source.ProvenanceLabel) ? "starter.synthetic_left" : source.ProvenanceLabel,
+            Notes = string.IsNullOrWhiteSpace(source.Notes)
+                ? "Fallback synthetic roster used when the local profile has no compile-ready hero."
+                : source.Notes,
+            Tags = source.Tags
+                .Append("profile_fallback")
+                .Distinct(StringComparer.Ordinal)
+                .ToList(),
+            Members = new List<CombatSandboxTeamMemberDefinition>
+            {
+                new() { MemberId = "ally_warden", DisplayName = "Warden", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "warden", Anchor = DeploymentAnchorId.FrontCenter, RoleInstructionId = "anchor" },
+                new() { MemberId = "ally_slayer", DisplayName = "Slayer", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "slayer", Anchor = DeploymentAnchorId.FrontBottom, RoleInstructionId = "bruiser" },
+                new() { MemberId = "ally_hunter", DisplayName = "Hunter", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "hunter", Anchor = DeploymentAnchorId.BackTop, RoleInstructionId = "carry" },
+                new() { MemberId = "ally_priest", DisplayName = "Priest", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "priest", Anchor = DeploymentAnchorId.BackBottom, RoleInstructionId = "support" },
+            },
+        };
     }
 
     private static CombatSandboxExecutionSettings CloneExecution(CombatSandboxExecutionSettings source)

@@ -78,6 +78,7 @@ internal static class YamlFieldExtractor
             StatDefinition stat => stat.Id,
             RaceDefinition race => race.Id,
             ClassDefinition @class => @class.Id,
+            CharacterDefinition character => character.Id,
             SkillDefinitionAsset skill => skill.Id,
             TraitPoolDefinition traitPool => traitPool.Id,
             ItemBaseDefinition item => item.Id,
@@ -951,6 +952,11 @@ internal static class YamlFieldExtractor
                 @class.Id = CoalesceId(@class.Id, DeriveId(assetPath, "class_"));
                 @class.NameKey = Coalesce(@class.NameKey, ContentLocalizationTables.BuildClassNameKey(@class.Id));
                 @class.DescriptionKey = Coalesce(@class.DescriptionKey, ContentLocalizationTables.BuildClassDescriptionKey(@class.Id));
+                break;
+            case CharacterDefinition character:
+                character.Id = CoalesceId(character.Id, DeriveId(assetPath, "character_"));
+                character.NameKey = Coalesce(character.NameKey, ContentLocalizationTables.BuildCharacterNameKey(character.Id));
+                character.DescriptionKey = Coalesce(character.DescriptionKey, ContentLocalizationTables.BuildCharacterDescriptionKey(character.Id));
                 break;
             case SkillDefinitionAsset skill:
                 skill.Id = CoalesceId(skill.Id, DeriveId(assetPath));

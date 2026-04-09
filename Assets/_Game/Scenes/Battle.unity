@@ -299,7 +299,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 946505821}
-  - component: {fileID: 946505820}
   - component: {fileID: 946505822}
   m_Layer: 0
   m_Name: BattlePresentationRoot
@@ -308,21 +307,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &946505820
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 946505819}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1790996547}
-  m_Name: 
-  m_EditorClassIdentifier: SM.Unity::SM.Unity.BattlePresentationController
-  battleStageRoot: {fileID: 1843520584}
-  actorOverlayRoot: {fileID: 198399812}
-  presentationCatalog: {fileID: 0}
 --- !u!4 &946505821
 Transform:
   m_ObjectHideFlags: 0
@@ -676,7 +660,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SM.Unity::SM.Unity.BattleScreenController
   panelHost: {fileID: 1745795907}
-  presentationController: {fileID: 946505820}
+  presentationController: {fileID: 946505822}
   cameraController: {fileID: 1840327618}
 --- !u!1 &1745795906
 GameObject:
@@ -754,21 +738,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 750090348}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!115 &1790996547
-MonoScript:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
-  m_Icon: {fileID: 0}
-  m_Type: 0
-  m_ExecutionOrder: 0
-  m_ClassName: BattlePresentationController
-  m_Namespace: SM.Unity
-  m_AssemblyName: SM.Unity
 --- !u!1 &1840327614
 GameObject:
   m_ObjectHideFlags: 0

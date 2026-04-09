@@ -17,8 +17,6 @@ public sealed class BattleActorPresentationCatalog : ScriptableObject
     [SerializeField] private List<BattleActorPresentationEntry> characterOverrides = new();
     [SerializeField] private List<BattleActorPresentationEntry> archetypeOverrides = new();
 
-    private static BattleActorPresentationCatalog? _runtimeFallback;
-
     public void SetDefaultWrapper(BattleActorWrapper wrapper)
     {
         defaultPrimitiveWrapper = wrapper;
@@ -84,8 +82,7 @@ public sealed class BattleActorPresentationCatalog : ScriptableObject
             return loaded;
         }
 
-        _runtimeFallback ??= CreateRuntimeFallbackCatalog();
-        return _runtimeFallback;
+        return CreateRuntimeFallbackCatalog();
     }
 
     private static bool TryResolve(

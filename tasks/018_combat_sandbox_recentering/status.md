@@ -20,6 +20,9 @@
 - direct Combat Sandbox active handoff는 `Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset` 대신 `Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`를 editor-authoring lane의 단일 handoff로 보도록 옮겼다.
 - `quick_battle_default.asset`의 직접 import blocker는 한 차례 넘겼고 preflight는 scene contract -> canonical content -> active handoff instability 순으로 blocker가 이동했다.
 - `CombatSandboxConfig` / layout / preview 관련 script meta와 file/class 계약을 부분 복구했지만, broader asset refresh 또는 `SM/Internal/Content/Ensure Sample Content` 이후 active handoff가 다시 `AssetDatabase` null로 되돌아가는 instability가 남아 있다.
+- `RuntimeCombatContentFileParser` fallback에서 `CharacterDefinition` 식별자 추출이 빠져 canonical character YAML이 전부 버려지고 있었다. `YamlFieldExtractor`에 character id/name fallback을 추가한 뒤 fallback snapshot의 `Characters`가 다시 채워진다.
+- `Battle.unity`의 `BattleScreenController.presentationController`는 실제 `BattlePresentationController`가 아니라 `<missing>` component 슬롯을 참조하고 있었다. 현재는 valid controller 슬롯으로 재연결했고 direct Combat Sandbox lane은 Battle scene 진입 후 console error 0건까지 확인했다.
+- `BattleActorPresentationCatalog`의 runtime fallback은 static cache를 재사용하지 않도록 바꿨다. direct Combat Sandbox는 Battle scene 재진입 2회 연속에서도 stale wrapper cache 없이 clean 진입한다.
 
 ## Acceptance matrix
 
@@ -28,7 +31,7 @@
 | compile | sandbox/menu/runtime refactor 후 compile 유지 | 부분 완료 | `2026-04-09 11:13:27 +09:00` `test-batch-fast`가 compile 후 실제 테스트까지 진입했다. `2026-04-09 11:24:05 +09:00` direct connector `refresh_unity`도 `ready + compileErrors=false`를 기록했다. |
 | validator | legacy alias 제거와 docs/index sync 유지 | 부분 완료 | `test-harness-lint`, `docs-policy-check`, `smoke-check`, targeted `git diff --check` 통과. `docs-check`는 repo pre-existing markdownlint debt와 `.claude/worktrees/**` 복사본 때문에 계속 실패 |
 | targeted tests | sandbox preflight/cache/layout smoke 보강 | 부분 완료 | `test-batch-fast`는 이제 project lock blocker를 넘겼고, 7개 failing test를 구체적으로 식별했다. 다음 라운드는 해당 7건 triage가 필요하다. |
-| runtime smoke | direct sandbox / Town smoke / Full Loop 분리 유지 | 부분 완료 | `SM/Play/Full Loop`는 `2026-04-09 17:03:58 +09:00`에 `Boot.unity`까지 clean 진입했다. `SM/Play/Combat Sandbox`는 `quick_battle_default.asset` import blocker는 넘겼지만, 현재는 authoring handoff reload instability 때문에 다시 preflight에서 막힌다. |
+| runtime smoke | direct sandbox / Town smoke / Full Loop 분리 유지 | 완료 | `SM/Play/Full Loop`는 `2026-04-09 17:03:58 +09:00`에 `Boot.unity`까지 clean 진입했다. `SM/Play/Combat Sandbox`는 이번 라운드 latest re-entry check(`2026-04-09 22:26:35 +09:00`)에서 Battle scene 진입 + `console` error 0건을 기록했고, stop 후 재실행 반복에서도 같은 결과를 유지했다. |
 
 ## Evidence
 
@@ -89,6 +92,14 @@
   - direct exec probe:
     - `2026-04-09 16:56~17:04 +09:00` `Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`는 recreate 직후 `typed=True; main=True`까지 살아났고 `ScenarioId=opening_default_4unit`도 회수됐다.
     - 같은 asset이 broader refresh / `Ensure Sample Content` 이후 다시 `typed=False; main=False`로 되돌아가는 패턴을 재현했다.
+  - 이번 라운드 direct connector `exec` 재검증 -> `RuntimeCombatContentFileParser.TryLoad` 결과 `chars=12; archetypes=12`, `RuntimeCombatContentLookup` snapshot도 `snapshotChars=12`, `warden/slayer/hunter/priest=True`로 회복됨. 원인: `YamlFieldExtractor.ExtractDefinitionId` / `ApplyFallbackIdentity`에 `CharacterDefinition` 분기가 빠져 file fallback character catalog가 비어 있었다.
+  - 같은 라운드 direct connector POST `menu 'SM/Play/Combat Sandbox'` intermediate run -> preflight compile 통과 후 Battle runtime NRE 재현. console:
+    - `[BattleScreenController] Missing BattlePresentationController reference: presentationController`
+    - `NullReferenceException: BattlePresentationController.ConfigureMetadataFormatter`
+  - `2026-04-09 22:24:16 +09:00` direct connector POST `menu 'SM/Play/Combat Sandbox'` after `Battle.unity` reference repair + runtime fallback cache fix -> success. editor state: `isPlaying=True; isPaused=False; scene=Assets/_Game/Scenes/Battle.unity`, console `Retrieved 0 entries.`
+  - `2026-04-09 22:26:35 +09:00` direct connector re-entry check after stop/play cycle -> success again. editor state: `isPlaying=True; isPaused=False; scene=Assets/_Game/Scenes/Battle.unity`, console `Retrieved 0 entries.`
+  - `2026-04-09 22:11:47 +09:00` `pwsh -File tools/unity-bridge.ps1 test-batch-fast` -> fail, but failure reason is compile/runtime regression이 아니라 batchmode project lock:
+    - `It looks like another Unity instance is running with this project open.`
   - connector 참고 로그:
     - heartbeat: `C:\Users\curioustore\.unity-cli\instances\51319016d32ea605.json`
     - batch test result: `A:\projects\game\survival-manager\TestResults-Batch.xml`
@@ -107,9 +118,10 @@
 - `quick_battle_default.asset`는 더 이상 active handoff 경로로 쓰지 않는다. `Definitions/Resources` 아래 `CombatSandboxConfig`는 content export/import lane과 충돌하며 반복적으로 unload되므로, direct sandbox handoff를 `Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`로 옮겼다.
 - 하지만 `Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`도 broader asset refresh / `SM/Internal/Content/Ensure Sample Content` 이후 다시 `AssetDatabase.LoadAssetAtPath` null로 되돌아간다. 즉 direct sandbox blocker는 이제 path 하나의 손상보다 `CombatSandboxConfig` asset reload stability 자체다.
 - `Boot.unity` missing component blocker는 정리됐고 `SM/Play/Full Loop`는 현재 clean 진입한다.
-- `Battle.unity`의 `BattleCameraController` missing component는 한 차례 복구해서 blocker를 다음 단계로 넘겼지만, YAML 상 `<missing>` placeholder가 일부 남아 있어 scene contract를 다시 흔들 수 있다.
+- `Battle.unity`의 `BattleCameraController` missing component blocker는 정리됐고, 이번 라운드에는 `BattlePresentationController` 참조가 `<missing>` slot을 물고 있던 문제도 함께 복구했다.
+- direct Combat Sandbox runtime blocker였던 `BattlePresentationController` missing reference / stale runtime wrapper cache는 정리됐다.
 - `Assets/_Game/Scripts/Runtime/Unity/Sandbox`의 asset-bearing script와 일부 runtime Unity script meta가 guid-only 상태라 Unity serialization contract가 불안정하다. 이번 라운드에서는 `CombatSandboxConfig.cs.meta`, `CombatSandboxAssetTypes.cs.meta`, `CombatSandboxSceneAssetTypes` 대체 파일, `BattlePresentationController.cs.meta`, `BattleCameraController.cs.meta`, `GameBootstrap.cs.meta`를 우선 복구했다.
-- `test-batch-fast`는 compile blocker를 넘겼지만 7 failing test가 남아 있다. 특히 edit-mode `Destroy` 사용과 `RuntimeCombatContentLookup` 기본 생성자 계약 변경이 눈에 띈다.
+- `test-batch-fast`는 이번 라운드에서 다시 시도했지만 열린 Unity 에디터 인스턴스 때문에 batchmode project lock으로 중단됐다. test triage 7건 자체는 여전히 후속 작업이다.
 - `docs-check`는 이번 작업 범위 밖의 기존 markdownlint debt와 `.claude/worktrees/**` 복사본까지 스캔해 실패한다.
 
 ## Deferred / debug-only
