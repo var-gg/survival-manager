@@ -90,7 +90,7 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 
 1. `FirstPlayableBootstrap.PlayCombatSandbox()` 실행
 2. active sandbox handoff / canonical content / Battle scene contract / compile 가능 여부를 fail-fast preflight
-3. `EditorPrefs`에 `SM.QuickBattleRequested` 플래그 설정
+3. `EditorPrefs`에 `SM.CombatSandboxRequested` 플래그를 설정하고, legacy `SM.QuickBattleRequested`는 소비 전용 호환 키로만 남긴다.
 4. Battle 씬 open
 5. `EditorApplication.EnterPlaymode()` 자동 진입
 6. `GameSessionRoot` direct-entry bootstrap이 플래그 소비

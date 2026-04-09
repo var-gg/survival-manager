@@ -87,6 +87,7 @@
 - release-floor packet wrapper: `pwsh -File tools/pre-art-rc.ps1`
 - default playable content load path: `Resources.LoadAll(...)` only
 - editor sweep / file fallback: explicit diagnostic lane only
+- `GameBootstrap`는 normal playable path에서 editor filesystem fallback을 보지 않는다.
 
 ## 참고 문서
 

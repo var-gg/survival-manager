@@ -94,6 +94,12 @@ left/right team은 아래 source mode 중 하나로 컴파일된다.
 - `Push Active + Play`
 - preview/result surface
 
+`Compile Preview`, `Run Single`, `Run Batch`, `Run Side Swap`는 `ApplyModifiedProperties()`와 dirty만 수행한다.
+실제 디스크 저장은 `Push Active` 또는 명시적 save 액션에서만 수행한다.
+
+`CombatSandboxEditorSession`의 preview/build path는 `PersistenceEntryPoint`로 읽은 `SaveProfile`과 저장된 blueprint/run overlay snapshot만 사용한다.
+preview compile을 위해 `GameSessionState`를 생성하거나 bind하지 않는다.
+
 `CombatSandboxWindow`는 아래 보조 흐름으로 고정한다.
 
 - `Preset Library`: search, tag filter, favorites, recent
@@ -226,4 +232,5 @@ category는 유지하지만 출력은 category 이름만 남기지 않는다.
 - same snapshot + same seed는 같은 replay hash를 만들어야 한다.
 - editor window는 play mode 없이 request를 만들 수 있어야 한다.
 - sandbox는 `GameSessionState`를 직접 truth로 저장하지 않는다.
+- preview/build와 runtime launch handoff 생성은 분리한다.
 - validator warning/error 기준은 `ContentDefinitionValidator`가 맡는다.

@@ -16,11 +16,13 @@ public static class FirstPlayableBootstrap
 {
     private const string BootScenePath = "Assets/_Game/Scenes/Boot.unity";
     private const string BattleScenePath = "Assets/_Game/Scenes/Battle.unity";
-    internal const string QuickBattleRequestedKey = "SM.QuickBattleRequested";
-    private const string QuickBattleInspectorRestoreKey = "SM.QuickBattleRestoreInspector";
-    private const string QuickBattleConfigFolder = "Assets/Resources/_Game/Content/Definitions/QuickBattle";
-    internal const string QuickBattleConfigAssetPath = "Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset";
-    private static readonly (string HeroId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultQuickBattleAllySlots =
+    internal const string CombatSandboxRequestedKey = "SM.CombatSandboxRequested";
+    internal const string LegacyQuickBattleRequestedKey = "SM.QuickBattleRequested";
+    private const string CombatSandboxInspectorRestoreKey = "SM.CombatSandboxRestoreInspector";
+    private const string LegacyQuickBattleInspectorRestoreKey = "SM.QuickBattleRestoreInspector";
+    private const string CombatSandboxConfigFolder = "Assets/Resources/_Game/Content/Definitions/QuickBattle";
+    internal const string CombatSandboxConfigAssetPath = "Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset";
+    private static readonly (string HeroId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxAllySlots =
     {
         ("hero-1", SM.Combat.Model.DeploymentAnchorId.FrontCenter),
         ("hero-3", SM.Combat.Model.DeploymentAnchorId.FrontBottom),
@@ -28,7 +30,7 @@ public static class FirstPlayableBootstrap
         ("hero-7", SM.Combat.Model.DeploymentAnchorId.BackBottom),
     };
 
-    private static readonly (string ParticipantId, string DisplayName, string CharacterId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultQuickBattleEnemySlots =
+    private static readonly (string ParticipantId, string DisplayName, string CharacterId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxEnemySlots =
     {
         ("enemy_guardian", "Enemy Guardian", "guardian", SM.Combat.Model.DeploymentAnchorId.FrontTop),
         ("enemy_raider", "Enemy Raider", "raider", SM.Combat.Model.DeploymentAnchorId.FrontBottom),
@@ -59,17 +61,19 @@ public static class FirstPlayableBootstrap
                 throw new System.InvalidOperationException(error);
             }
 
-            EditorPrefs.SetBool(QuickBattleInspectorRestoreKey, true);
+            EditorPrefs.SetBool(CombatSandboxInspectorRestoreKey, true);
             Selection.activeObject = quickBattleConfig;
             EditorGUIUtility.PingObject(quickBattleConfig);
             flow.Step("Open Battle scene", () => EditorSceneManager.OpenScene(BattleScenePath, OpenSceneMode.Single));
-            EditorPrefs.SetBool(QuickBattleRequestedKey, true);
+            EditorPrefs.SetBool(CombatSandboxRequestedKey, true);
             flow.Step("Enter Play Mode", EditorApplication.EnterPlaymode);
         }
         catch (System.Exception ex)
         {
-            EditorPrefs.DeleteKey(QuickBattleRequestedKey);
-            EditorPrefs.DeleteKey(QuickBattleInspectorRestoreKey);
+            EditorPrefs.DeleteKey(CombatSandboxRequestedKey);
+            EditorPrefs.DeleteKey(LegacyQuickBattleRequestedKey);
+            EditorPrefs.DeleteKey(CombatSandboxInspectorRestoreKey);
+            EditorPrefs.DeleteKey(LegacyQuickBattleInspectorRestoreKey);
             Debug.LogError($"[CombatSandbox] Failed: {ex.Message}\n{ex}");
             throw;
         }
@@ -122,36 +126,36 @@ public static class FirstPlayableBootstrap
         ValidateContentDefinitionsForPrototypeEntry("Recovery");
     }
 
-    internal static bool TryLoadQuickBattleConfig(out SM.Unity.Sandbox.CombatSandboxConfig config)
+    internal static bool TryLoadCombatSandboxConfig(out SM.Unity.Sandbox.CombatSandboxConfig config)
     {
-        config = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(QuickBattleConfigAssetPath);
+        config = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(CombatSandboxConfigAssetPath);
         return config != null;
     }
 
-    internal static SM.Unity.Sandbox.CombatSandboxConfig? EnsureQuickBattleConfig()
+    internal static SM.Unity.Sandbox.CombatSandboxConfig? EnsureCombatSandboxConfig()
     {
-        var existing = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(QuickBattleConfigAssetPath);
+        var existing = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(CombatSandboxConfigAssetPath);
         if (existing != null)
         {
-            RepairQuickBattleConfig(existing);
+            RepairCombatSandboxConfig(existing);
             return existing;
         }
 
-        if (!AssetDatabase.IsValidFolder(QuickBattleConfigFolder))
+        if (!AssetDatabase.IsValidFolder(CombatSandboxConfigFolder))
         {
-            var parent = System.IO.Path.GetDirectoryName(QuickBattleConfigFolder)!.Replace('\\', '/');
+            var parent = System.IO.Path.GetDirectoryName(CombatSandboxConfigFolder)!.Replace('\\', '/');
             AssetDatabase.CreateFolder(parent, "QuickBattle");
         }
 
         var config = ScriptableObject.CreateInstance<SM.Unity.Sandbox.CombatSandboxConfig>();
-        ApplyDefaultQuickBattleConfig(config);
-        AssetDatabase.CreateAsset(config, QuickBattleConfigAssetPath);
+        ApplyDefaultCombatSandboxConfig(config);
+        AssetDatabase.CreateAsset(config, CombatSandboxConfigAssetPath);
         AssetDatabase.SaveAssets();
-        Debug.Log($"[CombatSandbox] active handoff 생성: {QuickBattleConfigAssetPath}");
+        Debug.Log($"[CombatSandbox] active handoff 생성: {CombatSandboxConfigAssetPath}");
         return config;
     }
 
-    private static void RepairQuickBattleConfig(SM.Unity.Sandbox.CombatSandboxConfig config)
+    private static void RepairCombatSandboxConfig(SM.Unity.Sandbox.CombatSandboxConfig config)
     {
         var dirty = false;
 
@@ -214,13 +218,13 @@ public static class FirstPlayableBootstrap
 
         if (!HasConfiguredAllySlots(config))
         {
-            config.AllySlots = BuildDefaultQuickBattleAllySlots();
+            config.AllySlots = BuildDefaultCombatSandboxAllySlots();
             dirty = true;
         }
 
         if (!HasConfiguredEnemySlots(config))
         {
-            config.EnemySlots = BuildDefaultQuickBattleEnemySlots();
+            config.EnemySlots = BuildDefaultCombatSandboxEnemySlots();
             dirty = true;
         }
 
@@ -231,10 +235,10 @@ public static class FirstPlayableBootstrap
 
         EditorUtility.SetDirty(config);
         AssetDatabase.SaveAssets();
-        Debug.Log($"[CombatSandbox] active handoff 보정: {QuickBattleConfigAssetPath}");
+        Debug.Log($"[CombatSandbox] active handoff 보정: {CombatSandboxConfigAssetPath}");
     }
 
-    private static void ApplyDefaultQuickBattleConfig(SM.Unity.Sandbox.CombatSandboxConfig config)
+    private static void ApplyDefaultCombatSandboxConfig(SM.Unity.Sandbox.CombatSandboxConfig config)
     {
         config.Id = "quick_battle_default";
         config.DisplayName = "Combat Sandbox Active";
@@ -251,8 +255,8 @@ public static class FirstPlayableBootstrap
         config.RightTeam = BuildDefaultDirectRightTeam();
         config.Execution = BuildDefaultExecutionPreset();
         config.Seed = 42;
-        config.AllySlots = BuildDefaultQuickBattleAllySlots();
-        config.EnemySlots = BuildDefaultQuickBattleEnemySlots();
+        config.AllySlots = BuildDefaultCombatSandboxAllySlots();
+        config.EnemySlots = BuildDefaultCombatSandboxEnemySlots();
     }
 
     private static bool TryValidateFullLoopPreflight(out string error)
@@ -296,10 +300,10 @@ public static class FirstPlayableBootstrap
             return false;
         }
 
-        if (!TryLoadQuickBattleConfig(out quickBattleConfig))
+        if (!TryLoadCombatSandboxConfig(out quickBattleConfig))
         {
             error =
-                $"Combat Sandbox active handoff is missing: {QuickBattleConfigAssetPath}\n" +
+                $"Combat Sandbox active handoff is missing: {CombatSandboxConfigAssetPath}\n" +
                 "Recovery: Window/SM/Combat Sandbox or SM/Internal/Content/Ensure Sample Content";
             return false;
         }
@@ -345,7 +349,7 @@ public static class FirstPlayableBootstrap
             TeamPosture = SM.Combat.Model.TeamPostureType.StandardAdvance,
             ProvenanceLabel = "starter.current_profile",
             Tags = new System.Collections.Generic.List<string> { "starter", "profile" },
-            Members = DefaultQuickBattleAllySlots
+            Members = DefaultCombatSandboxAllySlots
                 .Select(slot => new SM.Unity.Sandbox.CombatSandboxTeamMemberDefinition
                 {
                     MemberId = slot.HeroId,
@@ -367,7 +371,7 @@ public static class FirstPlayableBootstrap
             TeamPosture = SM.Combat.Model.TeamPostureType.StandardAdvance,
             ProvenanceLabel = "starter.observer_smoke",
             Tags = new System.Collections.Generic.List<string> { "starter", "observer_smoke" },
-            Members = DefaultQuickBattleEnemySlots
+            Members = DefaultCombatSandboxEnemySlots
                 .Select(slot => new SM.Unity.Sandbox.CombatSandboxTeamMemberDefinition
                 {
                     MemberId = slot.ParticipantId,
@@ -405,9 +409,9 @@ public static class FirstPlayableBootstrap
                && config.EnemySlots.Any(slot => slot != null && (!string.IsNullOrWhiteSpace(slot.CharacterId) || !string.IsNullOrWhiteSpace(slot.ArchetypeIdOverride)));
     }
 
-    private static System.Collections.Generic.List<SM.Unity.Sandbox.CombatSandboxAllySlot> BuildDefaultQuickBattleAllySlots()
+    private static System.Collections.Generic.List<SM.Unity.Sandbox.CombatSandboxAllySlot> BuildDefaultCombatSandboxAllySlots()
     {
-        return DefaultQuickBattleAllySlots
+        return DefaultCombatSandboxAllySlots
             .Select(slot => new SM.Unity.Sandbox.CombatSandboxAllySlot
             {
                 HeroId = slot.HeroId,
@@ -417,9 +421,9 @@ public static class FirstPlayableBootstrap
             .ToList();
     }
 
-    private static System.Collections.Generic.List<SM.Unity.Sandbox.CombatSandboxEnemySlot> BuildDefaultQuickBattleEnemySlots()
+    private static System.Collections.Generic.List<SM.Unity.Sandbox.CombatSandboxEnemySlot> BuildDefaultCombatSandboxEnemySlots()
     {
-        return DefaultQuickBattleEnemySlots
+        return DefaultCombatSandboxEnemySlots
             .Select(slot => new SM.Unity.Sandbox.CombatSandboxEnemySlot
             {
                 ParticipantId = slot.ParticipantId,
@@ -458,24 +462,25 @@ public static class FirstPlayableBootstrap
             return;
         }
 
-        if (!EditorPrefs.GetBool(QuickBattleInspectorRestoreKey, false))
+        if (!EditorPrefs.GetBool(CombatSandboxInspectorRestoreKey, false) && !EditorPrefs.GetBool(LegacyQuickBattleInspectorRestoreKey, false))
         {
             return;
         }
 
-        EditorApplication.delayCall += RestoreQuickBattleInspectorSelection;
+        EditorApplication.delayCall += RestoreCombatSandboxInspectorSelection;
     }
 
-    private static void RestoreQuickBattleInspectorSelection()
+    private static void RestoreCombatSandboxInspectorSelection()
     {
-        EditorPrefs.DeleteKey(QuickBattleInspectorRestoreKey);
+        EditorPrefs.DeleteKey(CombatSandboxInspectorRestoreKey);
+        EditorPrefs.DeleteKey(LegacyQuickBattleInspectorRestoreKey);
 
         if (!Application.isPlaying || SceneManager.GetActiveScene().name != SceneNames.Battle)
         {
             return;
         }
 
-        var quickBattleConfig = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(QuickBattleConfigAssetPath);
+        var quickBattleConfig = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(CombatSandboxConfigAssetPath);
         if (quickBattleConfig != null)
         {
             Selection.activeObject = quickBattleConfig;

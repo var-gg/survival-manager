@@ -1,10 +1,10 @@
-using System.Diagnostics;
 using System.Linq;
 using SM.Unity.UI;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace SM.Unity;
 
@@ -106,7 +106,7 @@ public static class FirstPlayableRuntimeSceneBinder
         var button = ResolveComponent<Button>(scene, "OfflineLocalButton");
         if (bootstrap == null || controller == null || canvas == null || button == null)
         {
-            Debug.LogError($"[FirstPlayableRuntimeSceneBinder] Boot scene contract is incomplete. Repair via SM/Internal/Recovery/Repair First Playable Scenes.");
+            UnityEngine.Debug.LogError($"[FirstPlayableRuntimeSceneBinder] Boot scene contract is incomplete. Repair via SM/Internal/Recovery/Repair First Playable Scenes.");
             return;
         }
 
@@ -125,7 +125,7 @@ public static class FirstPlayableRuntimeSceneBinder
         var overlay = ResolveComponent<Canvas>(scene, "ActorOverlayCanvas");
         if (host == null || controller == null || presentation == null || cameraController == null || overlay == null)
         {
-            Debug.LogError($"[FirstPlayableRuntimeSceneBinder] Battle scene contract is incomplete. Repair via SM/Internal/Recovery/Repair First Playable Scenes.");
+            UnityEngine.Debug.LogError($"[FirstPlayableRuntimeSceneBinder] Battle scene contract is incomplete. Repair via SM/Internal/Recovery/Repair First Playable Scenes.");
             return;
         }
 
@@ -143,7 +143,7 @@ public static class FirstPlayableRuntimeSceneBinder
         var controller = ResolveComponent<TController>(scene, controllerName);
         if (host == null || controller == null)
         {
-            Debug.LogError($"[FirstPlayableRuntimeSceneBinder] Scene '{scene.name}' is missing '{hostName}' or '{controllerName}'. Repair via SM/Internal/Recovery/Repair First Playable Scenes.");
+            UnityEngine.Debug.LogError($"[FirstPlayableRuntimeSceneBinder] Scene '{scene.name}' is missing '{hostName}' or '{controllerName}'. Repair via SM/Internal/Recovery/Repair First Playable Scenes.");
             return;
         }
 

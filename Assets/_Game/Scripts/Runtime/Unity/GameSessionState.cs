@@ -219,19 +219,19 @@ public sealed class GameSessionState
 
     public void PrepareQuickBattleSmoke()
     {
-        var config = LoadQuickBattleConfig();
+        var config = LoadCombatSandboxConfig();
         PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
     }
 
     public void PrepareCombatSandboxDirect()
     {
-        var config = LoadQuickBattleConfig();
+        var config = LoadCombatSandboxConfig();
         PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.DirectCombatSandbox);
     }
 
     public void PrepareTownQuickBattleSmoke()
     {
-        var config = LoadQuickBattleConfig();
+        var config = LoadCombatSandboxConfig();
         PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
     }
 
@@ -242,7 +242,7 @@ public sealed class GameSessionState
 
     public void RestartQuickBattle(bool advanceSeed)
     {
-        ReloadQuickBattleConfig();
+        ReloadCombatSandboxConfig();
         if (advanceSeed)
         {
             _quickBattleSeedOverride = (_quickBattleSeedOverride ?? ResolveConfiguredQuickBattleSeed(QuickBattleConfig)) + 1;
@@ -410,9 +410,14 @@ public sealed class GameSessionState
         return true;
     }
 
+    public void ReloadCombatSandboxConfig()
+    {
+        QuickBattleConfig = LoadCombatSandboxConfig();
+    }
+
     public void ReloadQuickBattleConfig()
     {
-        QuickBattleConfig = LoadQuickBattleConfig();
+        ReloadCombatSandboxConfig();
     }
 
     private bool TryBuildQuickBattleCompiledScenario(out CombatSandboxCompiledScenario scenario, out string error)
@@ -426,7 +431,7 @@ public sealed class GameSessionState
         }
 
         var compiler = new CombatSandboxScenarioCompiler(_combatContentLookup);
-        var context = new CombatSandboxCompilationContext(
+        var context = CombatSandboxCompilationContextFactory.Create(
             Profile,
             _deploymentAssignments,
             _expeditionSquadHeroIds,
@@ -451,7 +456,7 @@ public sealed class GameSessionState
         return true;
     }
 
-    private static CombatSandboxConfig? LoadQuickBattleConfig()
+    private static CombatSandboxConfig? LoadCombatSandboxConfig()
     {
         return UnityEngine.Resources.Load<CombatSandboxConfig>("_Game/Content/Definitions/QuickBattle/quick_battle_default");
     }

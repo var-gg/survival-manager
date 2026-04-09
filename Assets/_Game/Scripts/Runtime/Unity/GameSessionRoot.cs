@@ -10,6 +10,11 @@ namespace SM.Unity;
 
 public sealed class GameSessionRoot : MonoBehaviour
 {
+#if UNITY_EDITOR
+    private const string CombatSandboxRequestedKey = "SM.CombatSandboxRequested";
+    private const string LegacyQuickBattleRequestedKey = "SM.QuickBattleRequested";
+#endif
+
     public static GameSessionRoot? Instance { get; private set; }
 
     public RuntimeCombatContentLookup CombatContentLookup { get; private set; } = null!;
@@ -178,7 +183,7 @@ public sealed class GameSessionRoot : MonoBehaviour
         if (SessionRealmAutoStartPolicy.ShouldForceOfflineLocalForScene(SceneManager.GetActiveScene().name))
         {
 #if UNITY_EDITOR
-            if (EditorPrefs.GetBool("SM.QuickBattleRequested", false))
+            if (IsCombatSandboxRequested())
             {
                 root.UseDedicatedSmokeNamespace();
             }
@@ -199,7 +204,7 @@ public sealed class GameSessionRoot : MonoBehaviour
 
         UseDedicatedSmokeNamespace();
         EnsureOfflineLocalSession();
-        SessionState.ReloadQuickBattleConfig();
+        SessionState.ReloadCombatSandboxConfig();
         SessionState.PrepareCombatSandboxDirect();
         var checkpoint = SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
         if (!checkpoint.IsSuccessful)
@@ -210,6 +215,12 @@ public sealed class GameSessionRoot : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    private static bool IsCombatSandboxRequested()
+    {
+        return EditorPrefs.GetBool(CombatSandboxRequestedKey, false)
+               || EditorPrefs.GetBool(LegacyQuickBattleRequestedKey, false);
+    }
+
     private static bool ConsumeDirectCombatSandboxRequest()
     {
         if (SceneManager.GetActiveScene().name != SceneNames.Battle)
@@ -217,12 +228,13 @@ public sealed class GameSessionRoot : MonoBehaviour
             return false;
         }
 
-        if (!EditorPrefs.GetBool("SM.QuickBattleRequested", false))
+        if (!IsCombatSandboxRequested())
         {
             return false;
         }
 
-        EditorPrefs.DeleteKey("SM.QuickBattleRequested");
+        EditorPrefs.DeleteKey(CombatSandboxRequestedKey);
+        EditorPrefs.DeleteKey(LegacyQuickBattleRequestedKey);
         Debug.Log("[GameSessionRoot] Combat Sandbox direct 요청을 소비하고 Battle scene bootstrap을 준비합니다.");
         return true;
     }

@@ -11,7 +11,7 @@
 ## 이슈
 
 - Battle 연출은 readable observer 단계라 animation / VFX / camera polish가 제한적이다.
-- default playable path의 canonical sample content lookup은 `Resources`만 정상 경로로 사용한다. editor validation/diagnostic lane에서는 fallback이 여전히 개입할 수 있다.
+- default playable path의 canonical sample content lookup은 `Resources`만 정상 경로로 사용한다. `GameBootstrap`도 같은 계약을 강제하며, editor validation/diagnostic lane에서만 fallback을 별도 opt-in 할 수 있다.
 - Expedition은 고정 5-node linear authored track까지만 구현되어 있고 procedural map은 아직 없다.
 - scene repair asset contract는 정리됐지만 일부 씬/프리팹 참조 drift는 internal recovery lane을 전제로 한다.
 - Unity MCP console에는 환경에 따라 `UnityCliTools` 관련 로그가 남을 수 있다.

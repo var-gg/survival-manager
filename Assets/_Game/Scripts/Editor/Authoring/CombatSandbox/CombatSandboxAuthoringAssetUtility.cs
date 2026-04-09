@@ -23,7 +23,7 @@ public static class CombatSandboxAuthoringAssetUtility
 
     public static CombatSandboxConfig? EnsureActiveConfig()
     {
-        var config = FirstPlayableBootstrap.EnsureQuickBattleConfig();
+        var config = FirstPlayableBootstrap.EnsureCombatSandboxConfig();
         if (config != null)
         {
             EnsureSharedAssets(config);
@@ -195,7 +195,7 @@ public static class CombatSandboxAuthoringAssetUtility
         CreateScenario("endgame_glass_cannon", "Endgame Glass Cannon", endgameGlassCannon, observerSmoke, regressionBatch, true, "endgame", "burst");
         CreateScenario("endgame_fortress", "Endgame Fortress", endgameFortress, observerSmoke, fixedSeed, false, "endgame", "tank");
         CreateScenario("anti_burst_regression", "Anti Burst Regression", endgameFortress, endgameGlassCannon, regressionBatch, true, "regression", "counter", "anti_burst");
-        var activeConfig = FirstPlayableBootstrap.EnsureQuickBattleConfig();
+        var activeConfig = FirstPlayableBootstrap.EnsureCombatSandboxConfig();
         if (activeConfig != null)
         {
             if (activeConfig.SceneLayout == null)
@@ -281,7 +281,7 @@ public static class CombatSandboxAuthoringAssetUtility
         activeConfig.EnemySlots = BuildLegacyEnemyMirror(rightTeam);
 
         EditorUtility.SetDirty(activeConfig);
-        AssetDatabase.SaveAssets();
+        AssetDatabase.SaveAssetIfDirty(activeConfig);
         message = string.Join("\n", new[] { leftWarning, rightWarning }.Where(text => !string.IsNullOrWhiteSpace(text)));
         return true;
     }
@@ -322,7 +322,7 @@ public static class CombatSandboxAuthoringAssetUtility
         }
 
         var assetPath = AssetDatabase.GetAssetPath(config);
-        return string.Equals(assetPath, FirstPlayableBootstrap.QuickBattleConfigAssetPath, StringComparison.Ordinal);
+        return string.Equals(assetPath, FirstPlayableBootstrap.CombatSandboxConfigAssetPath, StringComparison.Ordinal);
     }
 
     public static bool TryPushConfigToActiveConfig(CombatSandboxConfig source, out string message)
@@ -344,7 +344,7 @@ public static class CombatSandboxAuthoringAssetUtility
         EditorUtility.CopySerialized(source, activeConfig);
         EnsureSharedAssets(activeConfig);
         EditorUtility.SetDirty(activeConfig);
-        AssetDatabase.SaveAssets();
+        AssetDatabase.SaveAssetIfDirty(activeConfig);
         return true;
     }
 

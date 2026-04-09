@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Persistence.Abstractions;
 using SM.Persistence.Abstractions.Models;
@@ -31,7 +32,8 @@ public sealed class CombatSandboxEditorSession
 
     private RuntimeCombatContentLookup? _lookup;
     private PersistenceEntryPoint? _persistence;
-    private GameSessionState? _sessionState;
+    private SaveProfile _profile = new();
+    private CombatSandboxCompilationContext _compilationContext = CombatSandboxCompilationContextFactory.CreatePreviewContext(new SaveProfile());
     private string _profileHash = string.Empty;
     private string _cachedCompileKey = string.Empty;
     private CombatSandboxCompiledScenario? _cachedCompiledScenario;
@@ -57,10 +59,9 @@ public sealed class CombatSandboxEditorSession
     {
         _persistence ??= new PersistenceEntryPoint();
         _lookup ??= new RuntimeCombatContentLookup();
-        _sessionState ??= new GameSessionState(_lookup);
-        _sessionState.BindProfile(LoadLocalProfile(_persistence));
-        _sessionState.EnsureBattleDeployReady();
-        _profileHash = ComputeProfileHash(_sessionState.Profile);
+        _profile = LoadLocalProfile(_persistence);
+        _compilationContext = CombatSandboxCompilationContextFactory.CreatePreviewContext(_profile);
+        _profileHash = ComputeProfileHash(_profile);
         Invalidate();
     }
 
@@ -164,7 +165,7 @@ public sealed class CombatSandboxEditorSession
 
     private void EnsureContext()
     {
-        if (_sessionState != null && _lookup != null)
+        if (_lookup != null)
         {
             return;
         }
@@ -174,14 +175,7 @@ public sealed class CombatSandboxEditorSession
 
     private CombatSandboxCompilationContext BuildCompilationContext()
     {
-        return new CombatSandboxCompilationContext(
-            _sessionState!.Profile,
-            _sessionState.DeploymentAssignments,
-            _sessionState.ExpeditionSquadHeroIds,
-            _sessionState.SelectedTeamPosture,
-            _sessionState.SelectedTeamTacticId,
-            _sessionState.Expedition.TemporaryAugmentIds,
-            _sessionState.CurrentExpeditionNodeIndex);
+        return _compilationContext;
     }
 
     private string BuildCompileCacheKey(CombatSandboxConfig config, CombatSandboxLaneKind laneKind, int seedOverride)

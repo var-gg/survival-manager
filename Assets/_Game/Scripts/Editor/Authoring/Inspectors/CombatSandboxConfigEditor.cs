@@ -287,15 +287,15 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
 
     private bool PushActive()
     {
-        ApplyPendingChanges();
-        if (CombatSandboxAuthoringAssetUtility.IsActiveConfigAsset((CombatSandboxConfig)target))
+        var config = (CombatSandboxConfig)target;
+        if (CombatSandboxAuthoringAssetUtility.IsActiveConfigAsset(config))
         {
-            EditorUtility.SetDirty(target);
-            AssetDatabase.SaveAssets();
+            ApplyPendingChanges(saveAsset: true);
             return true;
         }
 
-        if (CombatSandboxAuthoringAssetUtility.TryPushConfigToActiveConfig((CombatSandboxConfig)target, out var message))
+        ApplyPendingChanges();
+        if (CombatSandboxAuthoringAssetUtility.TryPushConfigToActiveConfig(config, out var message))
         {
             if (!string.IsNullOrWhiteSpace(message))
             {
@@ -333,11 +333,14 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
         }
     }
 
-    private void ApplyPendingChanges()
+    private void ApplyPendingChanges(bool saveAsset = false)
     {
         serializedObject.ApplyModifiedProperties();
         EditorUtility.SetDirty(target);
-        AssetDatabase.SaveAssets();
+        if (saveAsset)
+        {
+            AssetDatabase.SaveAssetIfDirty(target);
+        }
     }
 
     private static void DrawReadOnlyBlock(string label, string value)
