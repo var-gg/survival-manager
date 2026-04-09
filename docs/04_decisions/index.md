@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-10
 - 소스오브트루스: `docs/04_decisions/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -34,6 +34,7 @@
 - `adr-0019-runtime-panel-host-ui-toolkit-first.md`: RuntimePanelHost, UITK asset-first, battle shell only 채택
 - `adr-0020-session-realm-authority-boundary.md`: session realm authority boundary와 offline-first port seam 채택
 - `adr-0021-character-definition-identity-layer.md`: `CharacterDefinition` identity layer와 localized battle metadata 채택
+- `adr-0022-narrative-architecture.md`: 내러티브 아키텍처 (definitions in Content, runtime in Meta, presentation in Unity) 채택
 
 ## 운영 메모
 

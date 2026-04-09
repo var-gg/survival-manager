@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-04-10
 - 소스오브트루스: `docs/02_design/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -91,10 +91,30 @@
 - `systems/rarity-ladder-contract.md`: `Common / Rare / Epic` governance rarity 계약
 - `systems/v1-forbidden-list.md`: fatal validator forbidden policy
 
+## narrative 문서
+
+- `narrative/index.md`: 내러티브 설계 인덱스 (세계관, 페이싱, 아크, 비트, 이벤트 스키마, 세력 충돌)
+- `narrative/world-building-bible.md`: 세계관 바이블
+- `narrative/narrative-pacing-formula.md`: 감정 곡선, session cadence, reveal timing 공식
+- `narrative/campaign-story-arc.md`: 캠페인 로그라인, chapter 목적, 엔딩/후속작 hook
+- `narrative/chapter-beat-sheet.md`: node 단위 비트, 감정값, 영웅 합류
+- `narrative/dialogue-event-schema.md`: story event ID, trigger, once policy, presentation grade
+- `narrative/faction-conflict-matrix.md`: 세력 쌍별 충돌 행렬
+
+### narrative / deck / meta cross-link
+
+- site topology와 encounter lane은 `meta/campaign-chapter-and-expedition-sites.md`가 소유한다.
+- node 단위 beat와 감정값은 `narrative/chapter-beat-sheet.md`가 소유한다.
+- hero canon과 tier는 `deck/character-lore-registry.md`가 소유한다.
+- story unlock/fail-safe는 `meta/story-gating-and-unlock-rules.md`가 소유한다.
+
 ## 기타 디자인 문서
 
+- `deck/index.md`: 덱 설계 인덱스
 - `deck/roster-archetype-launch-scope.md`: 출시 기준 roster와 archetype package
 - `deck/launch-core-roster-sheet.md`: 12 core archetype 운영용 roster truth sheet
+- `deck/character-lore-registry.md`: 영웅 canon short bio, tier, beat budget 레지스트리
+- `deck/hero-expansion-roadmap.md`: 영웅풀 확장 wave, specialist 정책, DLC/sequel 규칙
 - `progression/explanation-progression-premise.md`: progression premise 설명 문서
 - `ui/battle-observer-ui.md`: 전투 관전자 UI 기준
 - `ui/town-character-sheet-ui.md`: Town 5-panel character sheet IA
