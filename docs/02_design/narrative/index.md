@@ -26,7 +26,8 @@
 | `faction-conflict-matrix.md` | 세력 충돌 행렬 | faction pair별 오해/진실/충돌축/encounter link | `world-building-bible.md` | `campaign-story-arc.md`, `docs/02_design/deck/hero-expansion-roadmap.md` |
 | `campaign-story-arc.md` | 캠페인 전체 아크 | 로그라인, chapter 목적, 갈등 해소율, 엔딩/후속작 hook | `world-building-bible.md`, `narrative-pacing-formula.md`, `faction-conflict-matrix.md`, `docs/02_design/meta/campaign-chapter-and-expedition-sites.md` | `chapter-beat-sheet.md`, `docs/02_design/deck/hero-expansion-roadmap.md` |
 | `chapter-beat-sheet.md` | node별 비트 SoT | chapter/site/node별 beat, reveal, emotion target, join timing | `campaign-story-arc.md`, `narrative-pacing-formula.md` | `dialogue-event-schema.md` |
-| `dialogue-event-schema.md` | 대사/이벤트 스키마 | story_event_id, trigger, once policy, presentation grade, authoring 규칙 | `chapter-beat-sheet.md` | `docs/03_architecture/narrative-code-architecture.md` |
+| `dialogue-event-schema.md` | 대사/이벤트 스키마 | story_event_id, trigger, once policy, presentation grade, authoring 규칙 | `chapter-beat-sheet.md` | `master-script.md`, `docs/03_architecture/narrative-code-architecture.md` |
+| `master-script.md` | 마스터 대사 스크립트 | 캠페인 전체 대사 원문 텍스트 | `dialogue-event-schema.md`, `campaign-story-arc.md`, `docs/02_design/deck/character-lore-registry.md` | — |
 
 ## 문서 의존 그래프
 
@@ -42,6 +43,9 @@ flowchart TD
     arc --> beat
     beat --> schema[dialogue-event-schema]
     schema --> code[architecture/narrative-code-architecture]
+    schema --> script[master-script]
+    arc --> script
+    deck_lore[deck/character-lore-registry] --> script
 ```
 
 ## 작성 순서
@@ -52,6 +56,7 @@ flowchart TD
 4. `campaign-story-arc.md` — chapter 목적과 hook 상태가 확정되어야 node beat를 쓸 수 있다.
 5. `chapter-beat-sheet.md` — node별 beat와 감정값이 확정되어야 event schema를 쓸 수 있다.
 6. `dialogue-event-schema.md` — event ID와 authoring 규칙이 확정되어야 코드 구현이 시작된다.
+7. `master-script.md` — dialogue-event-schema의 loc key에 대응하는 실제 대사 텍스트를 작성한다.
 
 ## source of truth 경계
 
@@ -59,6 +64,7 @@ flowchart TD
 - chapter purpose와 hook 상태는 `campaign-story-arc.md`가 소유한다.
 - node 단위 감정값과 비트는 `chapter-beat-sheet.md`가 소유한다.
 - event ID와 authoring 규칙은 `dialogue-event-schema.md`가 소유한다.
+- 대사 원문 텍스트는 `master-script.md`가 소유한다.
 - site topology와 encounter lane은 `docs/02_design/meta/campaign-chapter-and-expedition-sites.md`가 소유한다.
 - hero canon과 tier는 `docs/02_design/deck/character-lore-registry.md`가 소유한다.
 
