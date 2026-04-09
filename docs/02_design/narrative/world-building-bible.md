@@ -40,7 +40,8 @@
 | `chrono_relicborn_sealing` | 봉인기 | ~1800년 전 | 유적은 비어 있다 | Relicborn는 Heartforge 봉인 관리자이며, 격자를 완성한 뒤 자발적 휴면에 들어갔다 | `chapter_3_site_2` |
 | `chrono_long_peace` | 장기 평화기 | ~1800~200년 전 | 봉인 이후 종족 간 긴장이 줄었다 | 격자가 Heartforge 출력을 억제하고 있었다. 종족들은 이유를 몰랐다 | — |
 | `chrono_seal_decay` | 격자 풍화기 | ~200년 전 | 변경 지대에 이상한 진동과 분쟁이 늘어났다 | 봉인 격자가 풍화되기 시작하면서 Heartforge 출력이 미세하게 누출되었다 | `chapter_2` |
-| `chrono_kingdom_abuse` | 왕국 오용기 | ~80년 전 | 왕국이 강력한 방벽 기술을 개발했다 | 왕국 학자들이 격자 파편을 발견하고 방어 장치로 전용했다. 이것이 격자 풍화를 가속했다 | `chapter_2_site_2` |
+| `chrono_kingdom_abuse` | 왕국 오용기 | ~80년 전 | 왕국이 강력한 방벽 기술을 개발했다 | 초대 학자장 Aldric Sternholt가 격자 파편을 발견하고 군사 전용을 주도했다. Heartforge의 본질을 가장 먼저 이해했지만 "통제 가능"하다고 판단해 오용을 시작. 이것이 격자 풍화를 가속했다 | `chapter_2_site_2` |
+| `chrono_aldric_death` | 학자장 사망기 | ~40년 전 | 초대 학자장이 연구 중 사고로 사망했다 | Aldric은 Heartforge 심부에서 직접 격자를 조작하다 사망했으며, 죽는 순간 Heartforge가 그의 기억과 의지를 흡수했다. 그의 인격이 Heartforge 안에 잔류하고 있다 | `chapter_3~4` |
 | `chrono_rising_tension` | 긴장 고조기 | ~80~5년 전 | 전선 곳곳에서 교전이 빈번해졌다 | Heartforge 누출이 강해지면서 모든 종족의 적대감이 증폭되었다. 왕국 오용이 근본 원인이지만 아무도 모른다 | `chapter_2` |
 | `chrono_fall_of_gate` | 붕괴기 | ~5년 전 | 국경문이 외부 침공으로 무너졌다 | Heartforge 파편 공명이 세 세력의 적대감을 증폭해 붕괴를 촉발했다. 외부 침공은 구실일 뿐이다 | `chapter_3` |
 | `chrono_expedition_begins` | 원정기 | 현재 | 혼성 원정대가 원인 조사를 위해 파견된다 | 원정의 진짜 목적은 순환 종결이 된다 | `chapter_4~5` |
@@ -58,8 +59,9 @@
 | 게임플레이 연결 | `bastion_front`, `protect_carry` |
 
 - **지도자 계층**: Steward Council. 국왕은 전사했고, 5인 집정관이 잔여 영토를 분할 통치한다. 최고 집정관 직위는 공석이며, 군사/행정/신앙/교역/정보 각 한 명이 합의로 결정한다.
+- **학자장 계보**: 초대 학자장 Aldric Sternholt(`npc_aldric`)가 80년 전 격자 파편을 발견하고 군사 전용과 Eternal Order 교리 체계를 동시에 설계했다. 그의 연구가 왕국의 방벽 기술과 신앙 체계 모두의 기반이다. 40년 전 Heartforge 심부에서 사망했으나, 그의 기억과 의지가 Heartforge에 흡수되어 잔류하고 있다. 격자 풍화가 심해질수록 Aldric의 인격이 Heartforge 안에서 강해진다. Dawn Priest에게는 사실상 "스승의 스승"에 해당한다.
 - **사회 구조**: 주둔지 기반 위계. 군인-장인-사제-민간인 4단 계급. 전쟁 이후 계급 간 이동이 강제로 열렸지만, 사제 계급의 정화 권한이 나머지를 억누른다.
-- **신앙**: '영원한 질서(Eternal Order)'. 세계에는 정해진 자리가 있으며, 이탈은 오염이라 본다. 봉인 격자 파편을 신성한 유물로 숭배하지만, 그것이 실제로 무엇인지는 모른다.
+- **신앙**: '영원한 질서(Eternal Order)'. Aldric이 격자 파편의 성질을 교리로 포장해 만든 신앙 체계. 세계에는 정해진 자리가 있으며 이탈은 오염이라 본다. 봉인 격자 파편을 신성한 유물로 숭배하지만, 그것이 실제로 무엇인지는 모른다.
 - **금기**: 사제의 정화 재판에 이의를 제기하는 것. 결과적으로 왕국 내부의 이견은 지하로 숨는다.
 - **어조/언어 색채**: 명령형, 격식체. 칭호와 직위를 빠뜨리면 무례로 간주한다. 색채는 강철 회색, 백금, 곤색.
 - **오해받기 쉬운 점**: 플레이어가 처음에는 왕국을 '질서의 편'으로 인식하지만, chapter 2에서 정화 재판과 격자 오용이 드러나면서 가해자이기도 했음을 알게 된다.
@@ -153,6 +155,8 @@
 | `location_execution_grounds` | location | `faction_kingdom_remnant` | 사제 계급이 정화 재판을 집행하는 장소. 십일조 도로(Tithe Road) 곁에 있다. | chapter 2에서 왕국의 폭력성을 보여주는 핵심 장소. |
 | `location_conclave_chamber` | location | `faction_undead_remnant` | Memory Conclave의 의사결정 장소. 기억 투표가 이루어지는 반구형 석실. | chapter 3에서 언데드의 사회 구조를 보여주는 장소. |
 | `location_lattice_nexus` | location | `faction_relicborn` | 격자 노드가 수렴하는 중심점. Heartforge 바로 위에 있다. 수문장들이 합의를 이루던 곳. | chapter 5에서 최종 정화/봉인을 시도하는 장소. |
+| `relic_aldric_journal` | relic | `faction_kingdom_remnant` | Aldric Sternholt의 연구 노트. 격자 파편의 성질, Heartforge 접근 경로, "통제 가능" 판단의 근거가 기록되어 있다. | chapter 2에서 발견. Aldric의 존재를 처음 드러내는 물리적 증거. |
+| `npc_aldric` | npc | — (사망, Heartforge 잔류) | 왕국 초대 학자장. 격자를 오용하고, Eternal Order 교리를 설계하고, Heartforge 심부에서 사망한 뒤 그 안에 의지가 남아 있다. | ch2 기록, ch3 기억 투사, ch4 직접 간섭, ch5 최종 적대자. Dawn Priest의 "스승의 스승". |
 
 ## 명명 규칙
 

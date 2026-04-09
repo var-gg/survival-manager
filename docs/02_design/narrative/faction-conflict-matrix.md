@@ -101,12 +101,25 @@ world bible은 각 세력의 단독 설명을 소유하고, campaign arc는 chap
 
 | conflict_pair | chapter_1 | chapter_2 | chapter_3 | chapter_4 | chapter_5 |
 |---|---|---|---|---|---|
-| kingdom-beastkin | seed: 국경 교전 목격, 첫 오해 인지 | escalate: 왕국 정화 재판의 여파로 야수족 영역 압박 심화 | partial resolve: 고대 기억에서 공존 발견, 적대감 원인 의심 시작 | deepen empathy: 유리 숲에서 양측 피해 목격, 공감 형성 | mostly resolved: 4세력 서약에서 영역 존중 합의 |
-| kingdom-undead | hidden: 원정대 내부에서 불신만 존재 | seed+escalate: 요새 기록에서 오용 증거 발견, Dawn Priest 균열 | partial resolve: 기억 투사에서 왕국 책임 명확화, 상호 비난에서 공동 피해자 인식으로 | negotiate: 격자 복원을 위해 왕국이 오용 파편 반환 논의 | mostly resolved: 왕국이 과거 오용을 공식 인정 |
-| kingdom-relicborn | hidden | hidden | teaser: Relicborn 각성 목격, 왕국은 적대적 존재로 분류 | confrontation->negotiate: 방어 장치가 격자 파편임 증명, Dawn Priest가 약탈품 인정 | stabilized: 왕국이 파편 반환과 격자 복원 협력 |
-| beastkin-undead | seed: 사냥터 변이 발견, 상대 탓 | hidden: 양측 모두 왕국과의 갈등에 집중 | partial resolve: 고대 공존 기억 공유 목격 | mutual understanding: 양측 모두 Heartforge 피해자임을 수용 | mostly resolved: 영역 분리 합의와 기억 보호 협력 |
-| beastkin-relicborn | hidden | hidden | teaser: Relicborn 각성 시 본능 반응 경험 | first contact->ally: 격자 공명 조절로 첫 협력 | stabilized: 격자가 본능 완화에 도움됨을 확인 |
-| undead-relicborn | hidden | hidden | reveal: 같은 봉인 프로젝트의 후손임이 밝혀짐 | negotiate: 기억 보관과 격자 복원의 양립 방안 논의 | stabilized: 공동 관리 체계 합의 |
+| kingdom-beastkin | seed: 국경 교전 목격, 첫 오해 인지 | escalate: 왕국 정화 재판의 여파로 야수족 영역 압박 심화 | partial resolve: 고대 기억에서 공존 발견, 적대감 원인 의심 시작 | method debate: 왕국은 정화(속죄), 야수족은 저항(동료를 가두는 것) — Pack Raider가 개인적 대가를 수용하며 합의 | sacrifice accepted: Pack Raider가 분열된 씨족으로 귀환, 영역 존중은 합의되었으나 개인 비용은 미해결 |
+| kingdom-undead | hidden: 원정대 내부에서 불신만 존재 | seed+escalate: 요새 기록에서 오용 증거 발견, Dawn Priest 균열 | partial resolve: 기억 투사에서 왕국 책임 명확화, 상호 비난에서 공동 피해자 인식으로 | aligned: 양측 모두 정화 지지 (기억 보존 + 죄의식 해소), Aldric 간섭에 공동 대응 | resolved with cost: 왕국이 과거 오용 인정, Dawn Priest는 사제 정체성을 상실 |
+| kingdom-relicborn | hidden | hidden | teaser: Relicborn 각성 목격, 왕국은 적대적 존재로 분류 | confrontation->negotiate: 방어 장치가 격자 파편임 증명, 일부 Relicborn은 동족 희생에 저항 — Echo Savant의 자원으로 논쟁 종결 | stabilized with absence: 왕국이 파편 반환과 격자 복원 협력, Echo Savant는 심부에 잔류 |
+| beastkin-undead | seed: 사냥터 변이 발견, 상대 탓 | hidden: 양측 모두 왕국과의 갈등에 집중 | partial resolve: 고대 공존 기억 공유 목격 | method debate: 야수족은 봉인(즉각 안전), 언데드는 정화(재발 방지) — Grave Hexer의 희생이 야수족을 설득 | resolved with loss: Grave Hexer가 기원 기억을 상실, 양측 기억 보호 협력 합의 |
+| beastkin-relicborn | hidden | hidden | teaser: Relicborn 각성 시 본능 반응 경험 | method debate->ally: 야수족은 희생 비용에 불신, Prism Seeker가 격자 복원의 실질적 이득을 증명하며 첫 협력 | stabilized: 격자가 본능 완화에 도움됨 확인, 신뢰 형성 |
+| undead-relicborn | hidden | hidden | reveal: 같은 봉인 프로젝트의 후손임이 밝혀짐 | negotiate: 양측 정화 수용하나 정화 이후 기억 관리권 논쟁 — 공동 관리 제안으로 수렴 | stabilized: 공동 관리 체계 합의, 잔류 기억의 공동 수호 |
+
+### Post-Midpoint Method Debate (ch4~5)
+
+중반 이후 정화/봉인/파괴 논쟁이 각 세력 쌍의 갈등에 어떻게 매핑되는지를 정리한다.
+
+| faction pair | purify position | seal position | destroy position | resolution |
+|---|---|---|---|---|
+| kingdom-beastkin | 왕국은 정화 지지 (속죄의 의미), 야수족은 저항 (동료를 가두는 셈) | — | — | Pack Raider가 개인적 대가를 수용하며 정화에 합의 |
+| kingdom-undead | 양측 정화 지지 (기억 보존 + 죄의식 해소) | — | — | 이해가 일치하여 자연 합의 |
+| kingdom-relicborn | 왕국은 정화 지지, 일부 Relicborn은 저항 (동족 희생이 필요하므로) | — | — | Echo Savant가 자원하면서 논쟁 종결 |
+| beastkin-undead | — | 야수족은 봉인 선호 (즉각 안전 확보) | — | Grave Hexer의 기원 기억 희생이 야수족을 설득하여 정화로 수렴 |
+| beastkin-relicborn | — | — | 야수족은 희생 비용 자체에 불신 | Prism Seeker가 격자 복원의 실질적 이득(본능 완화)을 증명하여 협력 시작 |
+| undead-relicborn | 양측 정화 수용하나 정화 이후 기억 관리권에서 대립 | — | — | 공동 관리 체계 제안으로 수렴 |
 
 ## 작성 지침
 
