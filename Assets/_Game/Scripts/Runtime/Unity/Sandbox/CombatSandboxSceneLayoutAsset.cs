@@ -1,17 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using SM.Combat.Model;
 using UnityEngine;
 
 namespace SM.Unity.Sandbox;
-
-[Serializable]
-public sealed class CombatSandboxAnchorPose
-{
-    public DeploymentAnchorId Anchor = DeploymentAnchorId.FrontCenter;
-    public Vector3 Position = Vector3.zero;
-}
 
 [CreateAssetMenu(menuName = "SM/Sandbox/Combat Sandbox Scene Layout", fileName = "combat_sandbox_layout_")]
 public sealed class CombatSandboxSceneLayoutAsset : ScriptableObject
@@ -104,57 +95,5 @@ public sealed class CombatSandboxSceneLayoutAsset : ScriptableObject
         {
             poses[index].Anchor = OrderedAnchors[index];
         }
-    }
-}
-
-[CreateAssetMenu(menuName = "SM/Sandbox/Combat Sandbox Preview Settings", fileName = "combat_sandbox_preview_settings_")]
-public sealed class CombatSandboxPreviewSettingsAsset : ScriptableObject
-{
-    public string SettingsId = "combat_sandbox_preview_default";
-    public string DisplayName = "Combat Sandbox Preview";
-    public float RangePreviewRadius = 2f;
-    public float NavigationPreviewRadius = 0.5f;
-    public float SeparationPreviewRadius = 0.75f;
-    public float PreferredRangeMinPreview = 1f;
-    public float PreferredRangeMaxPreview = 3f;
-    public float EngagementSlotRadiusPreview = 1.25f;
-    public int EngagementSlotCountPreview = 4;
-    public float HeadAnchorHeightPreview = 2f;
-    public float FrontlineGuardRadiusPreview = 2.5f;
-    public float ClusterRadiusPreview = 2.5f;
-}
-
-public static class CombatSandboxSceneLayoutCompiler
-{
-    public static BattlefieldLayout BuildBattlefieldLayout(
-        IReadOnlyList<CombatSandboxAnchorPose> allyAnchors,
-        IReadOnlyList<CombatSandboxAnchorPose> enemyAnchors,
-        float spawnOffsetX)
-    {
-        var allAnchors = allyAnchors.Concat(enemyAnchors).ToList();
-        var frontAnchors = allAnchors.Where(pose => pose.Anchor.IsFrontRow()).ToList();
-        var backAnchors = allAnchors.Where(pose => !pose.Anchor.IsFrontRow()).ToList();
-        var topAnchors = allAnchors.Where(pose => pose.Anchor.ToString().EndsWith("Top", StringComparison.Ordinal)).ToList();
-        var centerAnchors = allAnchors.Where(pose => pose.Anchor.ToString().EndsWith("Center", StringComparison.Ordinal)).ToList();
-        var bottomAnchors = allAnchors.Where(pose => pose.Anchor.ToString().EndsWith("Bottom", StringComparison.Ordinal)).ToList();
-
-        if (frontAnchors.Count == 0 || backAnchors.Count == 0 || topAnchors.Count == 0 || centerAnchors.Count == 0 || bottomAnchors.Count == 0)
-        {
-            return BattlefieldLayout.Default;
-        }
-
-        var frontX = frontAnchors.Average(pose => Mathf.Abs(pose.Position.x));
-        var backX = backAnchors.Average(pose => Mathf.Abs(pose.Position.x));
-        var topY = topAnchors.Average(pose => pose.Position.z);
-        var centerY = centerAnchors.Average(pose => pose.Position.z);
-        var bottomY = bottomAnchors.Average(pose => pose.Position.z);
-
-        return new BattlefieldLayout(
-            frontX,
-            backX,
-            topY,
-            centerY,
-            bottomY,
-            Mathf.Max(0.25f, spawnOffsetX));
     }
 }

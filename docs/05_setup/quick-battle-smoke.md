@@ -116,9 +116,9 @@ authoring library:
 
 runtime active handoff:
 
-**경로**: `Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset`
+**경로**: `Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`
 
-active handoff는 runtime direct sandbox가 읽는 단일 asset이고, Inspector가 primary editing surface다.
+active handoff는 editor direct sandbox가 읽는 단일 authoring asset이고, Inspector가 primary editing surface다.
 window/library path는 scenario asset을 active handoff로 sync하는 secondary surface다.
 
 핵심 authoring 개념:

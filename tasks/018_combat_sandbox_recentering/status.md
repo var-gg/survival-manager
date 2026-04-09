@@ -16,7 +16,10 @@
 - `CombatSandboxConfigEditor`의 `Compile Preview` / `Run Single` / `Run Batch` / `Run Side Swap`은 이제 `ApplyModifiedProperties()` + dirty까지만 수행하고, 실제 디스크 save는 `Push Active` 또는 명시적 save에서만 일어난다.
 - preview compile path는 `CombatSandboxCompilationContextFactory`를 통해 saved profile snapshot 기반으로 재구성되고, `CombatSandboxEditorSession`은 더 이상 preview/build를 위해 `GameSessionState`를 직접 만들지 않는다.
 - 내부 bootstrap/request/reload naming은 `CombatSandbox` 기준으로 정리하기 시작했고, legacy `QuickBattle` key/method는 compatibility wrapper만 남겨 두었다.
-- fresh execution evidence는 batchmode + direct connector HTTP 우회로 다시 회수했다. compile 증거는 확보됐지만 `SM/Play/Combat Sandbox`와 `SM/Play/Full Loop`는 각각 active handoff import 불가와 Boot scene missing component로 실패했다.
+- fresh execution evidence는 direct connector HTTP 우회로 다시 회수했다. `SM/Play/Full Loop`는 now clean하게 `Boot.unity`까지 진입하고 console error 없이 통과한다.
+- direct Combat Sandbox active handoff는 `Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset` 대신 `Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`를 editor-authoring lane의 단일 handoff로 보도록 옮겼다.
+- `quick_battle_default.asset`의 직접 import blocker는 한 차례 넘겼고 preflight는 scene contract -> canonical content -> active handoff instability 순으로 blocker가 이동했다.
+- `CombatSandboxConfig` / layout / preview 관련 script meta와 file/class 계약을 부분 복구했지만, broader asset refresh 또는 `SM/Internal/Content/Ensure Sample Content` 이후 active handoff가 다시 `AssetDatabase` null로 되돌아가는 instability가 남아 있다.
 
 ## Acceptance matrix
 
@@ -25,7 +28,7 @@
 | compile | sandbox/menu/runtime refactor 후 compile 유지 | 부분 완료 | `2026-04-09 11:13:27 +09:00` `test-batch-fast`가 compile 후 실제 테스트까지 진입했다. `2026-04-09 11:24:05 +09:00` direct connector `refresh_unity`도 `ready + compileErrors=false`를 기록했다. |
 | validator | legacy alias 제거와 docs/index sync 유지 | 부분 완료 | `test-harness-lint`, `docs-policy-check`, `smoke-check`, targeted `git diff --check` 통과. `docs-check`는 repo pre-existing markdownlint debt와 `.claude/worktrees/**` 복사본 때문에 계속 실패 |
 | targeted tests | sandbox preflight/cache/layout smoke 보강 | 부분 완료 | `test-batch-fast`는 이제 project lock blocker를 넘겼고, 7개 failing test를 구체적으로 식별했다. 다음 라운드는 해당 7건 triage가 필요하다. |
-| runtime smoke | direct sandbox / Town smoke / Full Loop 분리 유지 | 실패 | `SM/Play/Combat Sandbox`는 active handoff asset import 실패로 preflight 중단, `SM/Play/Full Loop`는 `Boot.unity`의 `BootScreenController` missing component로 preflight 실패 |
+| runtime smoke | direct sandbox / Town smoke / Full Loop 분리 유지 | 부분 완료 | `SM/Play/Full Loop`는 `2026-04-09 17:03:58 +09:00`에 `Boot.unity`까지 clean 진입했다. `SM/Play/Combat Sandbox`는 `quick_battle_default.asset` import blocker는 넘겼지만, 현재는 authoring handoff reload instability 때문에 다시 preflight에서 막힌다. |
 
 ## Evidence
 
@@ -43,7 +46,13 @@
   - `Assets/_Game/Scripts/Runtime/Unity/GameSessionRoot.cs`
   - `Assets/_Game/Scripts/Runtime/Unity/GameSessionState.cs`
   - `Assets/_Game/Scripts/Runtime/Unity/FirstPlayableRuntimeSceneBinder.cs`
+  - `Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxConfig.cs`
+  - `Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxSlotTypes.cs`
   - `Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxCompilationContextFactory.cs`
+  - `Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxAnchorPose.cs`
+  - `Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxSceneLayoutAsset.cs`
+  - `Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxPreviewSettingsAsset.cs`
+  - `Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxSceneLayoutCompiler.cs`
   - `Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxSceneController.cs`
   - `docs/03_architecture/editor-sandbox-tooling.md`
   - `docs/03_architecture/unity-scene-flow.md`
@@ -66,6 +75,20 @@
   - `2026-04-09 11:32:33 +09:00` direct connector POST `menu 'SM/Play/Full Loop'` -> fail. editor state는 `Boot.unity`까지 이동했지만 preflight가 scene contract에서 중단됐다. console:
     - `[FirstPlayableRuntimeSceneBinder] Boot scene contract is incomplete. Repair via SM/Internal/Recovery/Repair First Playable Scenes.`
     - `[FullLoop] Failed: Scene repair failed. Missing component 'BootScreenController' on 'BootScreenController' in Assets/_Game/Scenes/Boot.unity`
+  - `2026-04-09 16:30:33 +09:00` direct connector POST `menu 'SM/Play/Full Loop'` -> success. editor state: `isPlaying=False; scene=Assets/_Game/Scenes/Boot.unity`, console `Retrieved 0 entries.`
+  - `2026-04-09 16:49:24 +09:00` direct connector POST `menu 'SM/Play/Combat Sandbox'` -> `quick_battle_default.asset` import blocker는 지나갔고 Battle scene contract blocker로 이동했다. console:
+    - `[FirstPlayableRuntimeSceneBinder] Battle scene contract is incomplete. Repair via SM/Internal/Recovery/Repair First Playable Scenes.`
+    - `[CombatSandbox] Failed: Scene repair failed. Missing component 'BattleCameraController' on 'BattleCameraRoot' in Assets/_Game/Scenes/Battle.unity`
+  - `2026-04-09 17:03:12 +09:00` direct connector POST `menu 'SM/Play/Combat Sandbox'` -> active handoff를 authoring path로 옮긴 뒤 preflight compile까지 진행했다. console:
+    - `[CombatSandbox] Failed: Combat Sandbox preflight compile failed.`
+    - `SM canonical content가 Resources runtime path에서 누락되었습니다. 먼저 SM/Internal/Content/Ensure Sample Content를 실행...`
+  - `2026-04-09 17:03:58 +09:00` direct connector POST `menu 'SM/Play/Full Loop'` -> success. editor state: `isPlaying=False; scene=Assets/_Game/Scenes/Boot.unity`, console `Retrieved 0 entries.`
+  - `2026-04-09 17:04:40 +09:00` direct connector POST `menu 'SM/Internal/Content/Ensure Sample Content'` -> console error 없음.
+  - `2026-04-09 17:05:05 +09:00` direct connector POST `menu 'SM/Play/Combat Sandbox'` -> active handoff reload instability 재현. console:
+    - `[CombatSandbox] Failed: Combat Sandbox active handoff is missing: Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`
+  - direct exec probe:
+    - `2026-04-09 16:56~17:04 +09:00` `Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`는 recreate 직후 `typed=True; main=True`까지 살아났고 `ScenarioId=opening_default_4unit`도 회수됐다.
+    - 같은 asset이 broader refresh / `Ensure Sample Content` 이후 다시 `typed=False; main=False`로 되돌아가는 패턴을 재현했다.
   - connector 참고 로그:
     - heartbeat: `C:\Users\curioustore\.unity-cli\instances\51319016d32ea605.json`
     - batch test result: `A:\projects\game\survival-manager\TestResults-Batch.xml`
@@ -81,8 +104,11 @@
 
 - 기존 dirty worktree가 scene/authoring asset 쪽에 열려 있으므로 관련 파일 편집 시 사용자 변경을 보존해야 한다.
 - `unity-cli` 0.3.5의 `status` / `--project` auto-discovery는 현재 프로젝트 heartbeat를 잘못 읽고 `133h stale`로 오판한다. 반면 connector HTTP 서버(`127.0.0.1:8090`)와 heartbeat 파일은 정상이라서, 이번 라운드는 direct POST로 우회했다.
-- `Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset`는 파일이 디스크에 존재하고 GUID도 있으나 `AssetDatabase.LoadMainAssetAtPath`가 null을 반환한다. 동일 타입의 새 diagnostic asset은 정상 import되므로, 이 handoff YAML은 현행 스키마 기준 재serialize/복구가 필요하다.
-- `Boot.unity`는 `BootScreenController` missing component 때문에 `SM/Play/Full Loop` preflight를 통과하지 못한다. 현재 dirty scene 변경과 충돌 가능성이 있어 scene repair는 사용자 변경을 보존하면서 처리해야 한다.
+- `quick_battle_default.asset`는 더 이상 active handoff 경로로 쓰지 않는다. `Definitions/Resources` 아래 `CombatSandboxConfig`는 content export/import lane과 충돌하며 반복적으로 unload되므로, direct sandbox handoff를 `Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`로 옮겼다.
+- 하지만 `Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`도 broader asset refresh / `SM/Internal/Content/Ensure Sample Content` 이후 다시 `AssetDatabase.LoadAssetAtPath` null로 되돌아간다. 즉 direct sandbox blocker는 이제 path 하나의 손상보다 `CombatSandboxConfig` asset reload stability 자체다.
+- `Boot.unity` missing component blocker는 정리됐고 `SM/Play/Full Loop`는 현재 clean 진입한다.
+- `Battle.unity`의 `BattleCameraController` missing component는 한 차례 복구해서 blocker를 다음 단계로 넘겼지만, YAML 상 `<missing>` placeholder가 일부 남아 있어 scene contract를 다시 흔들 수 있다.
+- `Assets/_Game/Scripts/Runtime/Unity/Sandbox`의 asset-bearing script와 일부 runtime Unity script meta가 guid-only 상태라 Unity serialization contract가 불안정하다. 이번 라운드에서는 `CombatSandboxConfig.cs.meta`, `CombatSandboxAssetTypes.cs.meta`, `CombatSandboxSceneAssetTypes` 대체 파일, `BattlePresentationController.cs.meta`, `BattleCameraController.cs.meta`, `GameBootstrap.cs.meta`를 우선 복구했다.
 - `test-batch-fast`는 compile blocker를 넘겼지만 7 failing test가 남아 있다. 특히 edit-mode `Destroy` 사용과 `RuntimeCombatContentLookup` 기본 생성자 계약 변경이 눈에 띈다.
 - `docs-check`는 이번 작업 범위 밖의 기존 markdownlint debt와 `.claude/worktrees/**` 복사본까지 스캔해 실패한다.
 
@@ -95,9 +121,9 @@
 ## Loop budget consumed
 
 - compile-fix: 2 (`CombatSandboxSceneController` missing using, `FirstPlayableRuntimeSceneBinder` ambiguous `Debug`)
-- refresh/read-console: 3 (`test-batch-fast` 재실행, direct connector compile, direct connector menu/console 회수)
-- asset authoring retry: 1 (`quick_battle_default.asset` import 진단, minimal `m_Script` repair 시도)
-- budget 초과 시 남긴 diagnosis: connector stale 판정은 우회했지만, handoff asset import 불가 + Boot scene missing component + 7 failing fast tests가 새 concrete blocker로 남았다.
+- refresh/read-console: 9 (`compile`, direct connector menu/console 재회수, heartbeat/editor log 반복 확인)
+- asset/scene recovery retry: 6 (`BootScreenController`, `BattlePresentationController`, `BattleCameraController`, authoring handoff recreate, sample content ensure, scene/layout asset type split`)
+- budget 초과 시 남긴 diagnosis: `Full Loop`는 회수했지만 direct Combat Sandbox는 `CombatSandboxConfig` asset reload stability가 남아서 이번 라운드에서 완전히 닫지 못했다.
 
 ## Handoff notes
 
@@ -108,7 +134,7 @@
 - legacy alias를 다시 노출하지 않는다.
 - runtime binder는 self-healing 확대가 아니라 typed contract 축소 방향으로만 수정한다.
 - 다음 validation 우선순위:
-  - `quick_battle_default.asset`를 현행 `CombatSandboxConfig` 스키마로 복구해서 `AssetDatabase.LoadMainAssetAtPath`가 다시 살아나는지 확인
-  - `Boot.unity`의 `BootScreenController` missing component 원인을 사용자 dirty scene 변경과 충돌 없이 정리
+  - `CombatSandboxConfig` active handoff가 refresh / `Ensure Sample Content` 이후에도 `AssetDatabase`에서 살아남도록 root cause를 닫기
+  - 필요하면 `CombatSandboxAssetTypes.cs`도 file/class 계약 기준으로 추가 분리해서 starter library create/reload 안정성을 맞추기
   - `pwsh -File tools/unity-bridge.ps1 test-batch-fast` failing 7건 triage
-  - `SM/Play/Combat Sandbox`와 `SM/Play/Full Loop`를 다시 실행해 direct connector 우회 없이도 증거가 회수되는지 확인
+  - `SM/Play/Combat Sandbox`를 다시 실행해 active handoff import 없이 preflight compile -> Battle entry까지 닫히는지 확인

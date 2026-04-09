@@ -68,7 +68,7 @@ Combat Sandbox는 전투 truth를 만들지 않고, 입력 조립과 실행, 비
   - saved snapshot / cached remote seam
 
 runtime은 여전히 active asset 하나만 읽는다.
-Inspector가 active handoff를 primary로 편집하고, window/library path가 scenario asset을 flatten해서 `Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset`로 sync한다.
+Inspector가 active handoff를 primary로 편집하고, window/library path가 scenario asset을 flatten해서 `Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset`로 sync한다.
 
 ## source abstraction
 

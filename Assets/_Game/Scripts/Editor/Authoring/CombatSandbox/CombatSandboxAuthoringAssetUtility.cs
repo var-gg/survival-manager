@@ -247,7 +247,7 @@ public static class CombatSandboxAuthoringAssetUtility
 
         activeConfig.UseScenarioAuthoring = true;
         activeConfig.DefaultLaneKind = CombatSandboxLaneKind.DirectCombatSandbox;
-        activeConfig.Id = string.IsNullOrWhiteSpace(activeConfig.Id) ? "quick_battle_default" : activeConfig.Id;
+        activeConfig.Id = string.IsNullOrWhiteSpace(activeConfig.Id) ? "combat_sandbox_active" : activeConfig.Id;
         activeConfig.DisplayName = string.IsNullOrWhiteSpace(activeConfig.DisplayName) ? "Combat Sandbox Active" : activeConfig.DisplayName;
         activeConfig.Scenario = new CombatSandboxScenarioMetadata
         {

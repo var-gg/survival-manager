@@ -16,6 +16,9 @@ namespace SM.Unity;
 public sealed class GameSessionState
 {
     private static readonly ProfilerMarker BindProfileMarker = new("SM.GameSessionState.BindProfile");
+#if UNITY_EDITOR
+    private const string CombatSandboxEditorAssetPath = "Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset";
+#endif
 
     private static readonly DeploymentAnchorId[] DeploymentAnchorOrder =
     {
@@ -458,7 +461,11 @@ public sealed class GameSessionState
 
     private static CombatSandboxConfig? LoadCombatSandboxConfig()
     {
-        return UnityEngine.Resources.Load<CombatSandboxConfig>("_Game/Content/Definitions/QuickBattle/quick_battle_default");
+#if UNITY_EDITOR
+        return UnityEditor.AssetDatabase.LoadAssetAtPath<CombatSandboxConfig>(CombatSandboxEditorAssetPath);
+#else
+        return null;
+#endif
     }
 
     private static CombatSandboxLaneKind ResolveDefaultQuickBattleLane(CombatSandboxConfig? config)

@@ -20,8 +20,8 @@ public static class FirstPlayableBootstrap
     internal const string LegacyQuickBattleRequestedKey = "SM.QuickBattleRequested";
     private const string CombatSandboxInspectorRestoreKey = "SM.CombatSandboxRestoreInspector";
     private const string LegacyQuickBattleInspectorRestoreKey = "SM.QuickBattleRestoreInspector";
-    private const string CombatSandboxConfigFolder = "Assets/Resources/_Game/Content/Definitions/QuickBattle";
-    internal const string CombatSandboxConfigAssetPath = "Assets/Resources/_Game/Content/Definitions/QuickBattle/quick_battle_default.asset";
+    private const string CombatSandboxConfigFolder = "Assets/_Game/Authoring/CombatSandbox";
+    internal const string CombatSandboxConfigAssetPath = "Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset";
     private static readonly (string HeroId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxAllySlots =
     {
         ("hero-1", SM.Combat.Model.DeploymentAnchorId.FrontCenter),
@@ -141,11 +141,7 @@ public static class FirstPlayableBootstrap
             return existing;
         }
 
-        if (!AssetDatabase.IsValidFolder(CombatSandboxConfigFolder))
-        {
-            var parent = System.IO.Path.GetDirectoryName(CombatSandboxConfigFolder)!.Replace('\\', '/');
-            AssetDatabase.CreateFolder(parent, "QuickBattle");
-        }
+        EnsureFolderPath(CombatSandboxConfigFolder);
 
         var config = ScriptableObject.CreateInstance<SM.Unity.Sandbox.CombatSandboxConfig>();
         ApplyDefaultCombatSandboxConfig(config);
@@ -161,7 +157,7 @@ public static class FirstPlayableBootstrap
 
         if (string.IsNullOrWhiteSpace(config.Id))
         {
-            config.Id = "quick_battle_default";
+            config.Id = "combat_sandbox_active";
             dirty = true;
         }
 
@@ -240,7 +236,7 @@ public static class FirstPlayableBootstrap
 
     private static void ApplyDefaultCombatSandboxConfig(SM.Unity.Sandbox.CombatSandboxConfig config)
     {
-        config.Id = "quick_battle_default";
+        config.Id = "combat_sandbox_active";
         config.DisplayName = "Combat Sandbox Active";
         config.UseScenarioAuthoring = true;
         config.DefaultLaneKind = SM.Unity.Sandbox.CombatSandboxLaneKind.DirectCombatSandbox;
@@ -537,6 +533,22 @@ public static class FirstPlayableBootstrap
     private static bool IsNonBlockingContentValidationFailure(System.Exception ex)
     {
         return ex.Message.Contains("SM content validation failed", System.StringComparison.Ordinal);
+    }
+
+    private static void EnsureFolderPath(string folderPath)
+    {
+        if (AssetDatabase.IsValidFolder(folderPath))
+        {
+            return;
+        }
+
+        var parent = Path.GetDirectoryName(folderPath)!.Replace('\\', '/');
+        if (!AssetDatabase.IsValidFolder(parent))
+        {
+            EnsureFolderPath(parent);
+        }
+
+        AssetDatabase.CreateFolder(parent, Path.GetFileName(folderPath));
     }
 
     private static string[] EnumerateLocalDemoSavePaths()
