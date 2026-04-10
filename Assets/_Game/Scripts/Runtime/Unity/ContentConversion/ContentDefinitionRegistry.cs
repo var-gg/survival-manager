@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using SM.Combat.Model;
+using SM.Content;
 using SM.Content.Definitions;
 using SM.Core.Contracts;
 using SM.Meta.Model;
@@ -48,6 +48,10 @@ internal sealed class ContentDefinitionRegistry
     private readonly Dictionary<string, DropTableDefinition> _dropTableDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, LootBundleDefinition> _lootBundleDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, TraitTokenDefinition> _traitTokenDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, StoryEventDefinition> _storyEventDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, DialogueSequenceDefinition> _dialogueSequenceDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, ChapterBeatDefinition> _chapterBeatDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, HeroLoreDefinition> _heroLoreDefinitions = new(StringComparer.Ordinal);
     private readonly bool _allowEditorRecoveryFallback;
     private FirstPlayableSliceDefinition? _firstPlayableSlice;
     private bool _loaded;
@@ -83,6 +87,10 @@ internal sealed class ContentDefinitionRegistry
     internal IReadOnlyDictionary<string, DropTableDefinition> DropTableDefinitions => _dropTableDefinitions;
     internal IReadOnlyDictionary<string, LootBundleDefinition> LootBundleDefinitions => _lootBundleDefinitions;
     internal IReadOnlyDictionary<string, TraitTokenDefinition> TraitTokenDefinitions => _traitTokenDefinitions;
+    internal IReadOnlyDictionary<string, StoryEventDefinition> StoryEventDefinitions => _storyEventDefinitions;
+    internal IReadOnlyDictionary<string, DialogueSequenceDefinition> DialogueSequenceDefinitions => _dialogueSequenceDefinitions;
+    internal IReadOnlyDictionary<string, ChapterBeatDefinition> ChapterBeatDefinitions => _chapterBeatDefinitions;
+    internal IReadOnlyDictionary<string, HeroLoreDefinition> HeroLoreDefinitions => _heroLoreDefinitions;
     internal FirstPlayableSliceDefinition? FirstPlayableSlice => _firstPlayableSlice;
     internal bool AllowsEditorRecoveryFallback => _allowEditorRecoveryFallback;
 
@@ -99,11 +107,18 @@ internal sealed class ContentDefinitionRegistry
 
     private void LoadContent()
     {
-        var stopwatch = Stopwatch.StartNew();
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         using (LoadContentMarker.Auto())
         {
 #if UNITY_EDITOR
-            RequireEditorCanonicalSampleContentReady();
+            if (_allowEditorRecoveryFallback)
+            {
+                WarnEditorCanonicalSampleContentIssueIfRecoveryEnabled();
+            }
+            else
+            {
+                RequireEditorCanonicalSampleContentReady();
+            }
 #endif
             var archetypes = LoadDefinitions<UnitArchetypeDefinition>("_Game/Content/Definitions/Archetypes", "Assets/Resources/_Game/Content/Definitions/Archetypes");
             var traitPools = LoadDefinitions<TraitPoolDefinition>("_Game/Content/Definitions/Traits", "Assets/Resources/_Game/Content/Definitions/Traits");
@@ -131,6 +146,10 @@ internal sealed class ContentDefinitionRegistry
             var dropTables = LoadDefinitions<DropTableDefinition>("_Game/Content/Definitions/DropTables", "Assets/Resources/_Game/Content/Definitions/DropTables");
             var lootBundles = LoadDefinitions<LootBundleDefinition>("_Game/Content/Definitions/LootBundles", "Assets/Resources/_Game/Content/Definitions/LootBundles");
             var traitTokens = LoadDefinitions<TraitTokenDefinition>("_Game/Content/Definitions/TraitTokens", "Assets/Resources/_Game/Content/Definitions/TraitTokens");
+            var storyEvents = LoadDefinitions<StoryEventDefinition>("_Game/Content/Definitions/StoryEvents", "Assets/Resources/_Game/Content/Definitions/StoryEvents");
+            var dialogueSequences = LoadDefinitions<DialogueSequenceDefinition>("_Game/Content/Definitions/DialogueSequences", "Assets/Resources/_Game/Content/Definitions/DialogueSequences");
+            var chapterBeats = LoadDefinitions<ChapterBeatDefinition>("_Game/Content/Definitions/ChapterBeats", "Assets/Resources/_Game/Content/Definitions/ChapterBeats");
+            var heroLore = LoadDefinitions<HeroLoreDefinition>("_Game/Content/Definitions/HeroLore", "Assets/Resources/_Game/Content/Definitions/HeroLore");
             var firstPlayableSliceAssets = LoadDefinitions<FirstPlayableSliceDefinitionAsset>("_Game/Content/Definitions/FirstPlayable", "Assets/Resources/_Game/Content/Definitions/FirstPlayable");
 
             var requiresFileFallback =
@@ -156,7 +175,7 @@ internal sealed class ContentDefinitionRegistry
                 }
 
                 RuntimeCombatParsedContent parsed;
-                var fallbackStopwatch = Stopwatch.StartNew();
+                var fallbackStopwatch = System.Diagnostics.Stopwatch.StartNew();
                 using (FileFallbackMarker.Auto())
                 {
                     if (!RuntimeCombatContentFileParser.TryLoad(out parsed, out var parseError))
@@ -265,6 +284,14 @@ internal sealed class ContentDefinitionRegistry
                 _lootBundleDefinitions[lootBundle.Id] = lootBundle;
             foreach (var traitToken in traitTokens.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
                 _traitTokenDefinitions[traitToken.Id] = traitToken;
+            foreach (var storyEvent in storyEvents.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _storyEventDefinitions[storyEvent.Id] = storyEvent;
+            foreach (var dialogueSequence in dialogueSequences.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _dialogueSequenceDefinitions[dialogueSequence.Id] = dialogueSequence;
+            foreach (var chapterBeat in chapterBeats.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _chapterBeatDefinitions[chapterBeat.Id] = chapterBeat;
+            foreach (var lore in heroLore.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _heroLoreDefinitions[lore.Id] = lore;
 
             _firstPlayableSlice = NormalizeFirstPlayableSlice(
                 firstPlayableSliceAssets
@@ -307,6 +334,10 @@ internal sealed class ContentDefinitionRegistry
         _dropTableDefinitions.Clear();
         _lootBundleDefinitions.Clear();
         _traitTokenDefinitions.Clear();
+        _storyEventDefinitions.Clear();
+        _dialogueSequenceDefinitions.Clear();
+        _chapterBeatDefinitions.Clear();
+        _heroLoreDefinitions.Clear();
     }
 
     private FirstPlayableSliceDefinition? NormalizeFirstPlayableSlice(FirstPlayableSliceDefinition? authored)
@@ -580,7 +611,7 @@ internal sealed class ContentDefinitionRegistry
         }
 
         var resourcesCount = results.Count;
-        var sweepStopwatch = Stopwatch.StartNew();
+        var sweepStopwatch = System.Diagnostics.Stopwatch.StartNew();
         using (EditorSweepMarker.Auto())
         {
             foreach (var path in AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { editorFolderPath })
@@ -619,6 +650,8 @@ internal sealed class ContentDefinitionRegistry
     }
 
 #if UNITY_EDITOR
+    private static string _lastEditorRecoveryContentIssue = string.Empty;
+
     private static T? LoadEditorAssetAtPath<T>(string path) where T : UnityEngine.Object
     {
         var mainAsset = AssetDatabase.LoadMainAssetAtPath(path) as T;
@@ -628,6 +661,39 @@ internal sealed class ContentDefinitionRegistry
         }
 
         return AssetDatabase.LoadAllAssetsAtPath(path).OfType<T>().FirstOrDefault();
+    }
+
+    private static void WarnEditorCanonicalSampleContentIssueIfRecoveryEnabled()
+    {
+        var generatorType = Type.GetType("SM.Editor.SeedData.SampleSeedGenerator, SM.Editor");
+        if (generatorType == null)
+        {
+            return;
+        }
+
+        var readinessMethod = generatorType.GetMethod("TryGetCanonicalSampleContentReadinessIssue", BindingFlags.Public | BindingFlags.Static);
+        if (readinessMethod == null)
+        {
+            return;
+        }
+
+        var args = new object?[] { string.Empty };
+        if (readinessMethod.Invoke(null, args) is true)
+        {
+            _lastEditorRecoveryContentIssue = string.Empty;
+            return;
+        }
+
+        var issue = args[0] as string ?? "Unknown canonical content issue.";
+        if (string.Equals(issue, _lastEditorRecoveryContentIssue, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _lastEditorRecoveryContentIssue = issue;
+        UnityEngine.Debug.LogWarning(
+            "[ContentDefinitionRegistry] Canonical sample content is not fully preflight-ready. " +
+            $"Editor recovery fallback will be used because allowEditorRecoveryFallback=true. {issue}");
     }
 
     private static void RequireEditorCanonicalSampleContentReady()

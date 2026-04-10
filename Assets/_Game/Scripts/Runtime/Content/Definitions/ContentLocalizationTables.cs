@@ -1,4 +1,5 @@
 using System;
+using SM.Content;
 
 namespace SM.Content.Definitions;
 
@@ -24,6 +25,7 @@ public static class ContentLocalizationTables
     public const string Campaign = "Content_Campaign";
     public const string Encounters = "Content_Encounters";
     public const string Status = "Content_Status";
+    public const string Story = "Content_Story";
     public const string SystemMessages = "System_Messages";
 
     public static string BuildItemNameKey(string id) => $"content.item.{NormalizeId(id)}.name";
@@ -208,6 +210,14 @@ public static class ContentLocalizationTables
             || definitionType == typeof(ControlDiminishingRuleDefinition))
         {
             return Status;
+        }
+
+        if (definitionType == typeof(StoryEventDefinition)
+            || definitionType == typeof(DialogueSequenceDefinition)
+            || definitionType == typeof(ChapterBeatDefinition)
+            || definitionType == typeof(HeroLoreDefinition))
+        {
+            return Story;
         }
 
         return SystemMessages;

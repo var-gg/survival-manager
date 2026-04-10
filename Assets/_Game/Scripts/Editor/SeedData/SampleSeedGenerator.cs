@@ -4,7 +4,10 @@ using System.IO;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Editor.Bootstrap;
+using SM.Editor.Validation;
+using SM.Content;
 using SM.Content.Definitions;
+using SM.Core;
 using SM.Core.Contracts;
 using UnityEditor;
 using UnityEditor.Localization;
@@ -17,6 +20,11 @@ public static class SampleSeedGenerator
 {
     public const string ResourcesRoot = "Assets/Resources/_Game/Content/Definitions";
     public const string LegacyRoot = "Assets/_Game/Content/Definitions";
+    private const string StoryEventsDir = ResourcesRoot + "/StoryEvents";
+    private const string DialogueSequencesDir = ResourcesRoot + "/DialogueSequences";
+    private const string ChapterBeatsDir = ResourcesRoot + "/ChapterBeats";
+    private const string HeroLoreDir = ResourcesRoot + "/HeroLore";
+    private const string StoryTableName = ContentLocalizationTables.Story;
 
     [MenuItem("SM/Internal/Content/Generate Sample Content")]
     public static void Generate()
@@ -58,6 +66,7 @@ public static class SampleSeedGenerator
         CreateExpedition(rewardTables);
         RepairResidualAuthoring(stableTags);
         ApplyLoopCGovernance(stableTags);
+        SeedNarrativeContent();
 
         AssetDatabase.SaveAssets();
         ReimportCanonicalAssets();
@@ -125,13 +134,10 @@ public static class SampleSeedGenerator
         var minimumFailures = GetCanonicalMinimumContentFailures();
         if (minimumFailures.Count > 0)
         {
-            if (HasCanonicalAssetFootprintInDatabase() || HasCanonicalAssetFootprintOnDisk())
-            {
-                issue = string.Empty;
-                return true;
-            }
-
-            issue = $"Canonical root is missing required baseline assets under {ResourcesRoot}: {string.Join(", ", minimumFailures.Take(4))}.";
+            var failureList = string.Join(", ", minimumFailures.Take(4));
+            issue = HasCanonicalAssetFootprintInDatabase() || HasCanonicalAssetFootprintOnDisk()
+                ? $"Canonical root contains unreadable or invalid baseline assets under {ResourcesRoot}: {failureList}."
+                : $"Canonical root is missing required baseline assets under {ResourcesRoot}: {failureList}.";
             return false;
         }
 
@@ -158,9 +164,9 @@ public static class SampleSeedGenerator
         CheckMinimum(failures, "Races/race_human.asset", HasCanonicalAsset<RaceDefinition>($"{ResourcesRoot}/Races/race_human.asset", race => race.Id, "human"));
         CheckMinimum(failures, "Classes/class_vanguard.asset", HasCanonicalAsset<ClassDefinition>($"{ResourcesRoot}/Classes/class_vanguard.asset", @class => @class.Id, "vanguard"));
         CheckMinimum(failures, "Characters/character_warden.asset", HasCanonicalAsset<CharacterDefinition>($"{ResourcesRoot}/Characters/character_warden.asset", character => character.Id, "warden"));
-        CheckMinimum(failures, "FootprintProfiles/footprint_vanguard.asset", HasCanonicalAsset<FootprintProfileDefinition>($"{ResourcesRoot}/FootprintProfiles/footprint_vanguard.asset", profile => profile.EngagementSlotCount > 0));
-        CheckMinimum(failures, "BehaviorProfiles/behavior_vanguard.asset", HasCanonicalAsset<BehaviorProfileDefinition>($"{ResourcesRoot}/BehaviorProfiles/behavior_vanguard.asset", profile => profile.ReevaluationInterval > 0f));
-        CheckMinimum(failures, "MobilityProfiles/mobility_ranger.asset", HasCanonicalAsset<MobilityProfileDefinition>($"{ResourcesRoot}/MobilityProfiles/mobility_ranger.asset", profile => profile.Distance > 0f));
+        CheckMinimum(failures, "FootprintProfiles/footprint_vanguard.asset", HasCanonicalAsset<FootprintProfileDefinition>($"{ResourcesRoot}/FootprintProfiles/footprint_vanguard.asset", profile => profile.EngagementSlotCount > 0, fallbackPath => HasAssetNumericFieldAboveZero(fallbackPath, "EngagementSlotCount")));
+        CheckMinimum(failures, "BehaviorProfiles/behavior_vanguard.asset", HasCanonicalAsset<BehaviorProfileDefinition>($"{ResourcesRoot}/BehaviorProfiles/behavior_vanguard.asset", profile => profile.ReevaluationInterval > 0f, fallbackPath => HasAssetNumericFieldAboveZero(fallbackPath, "ReevaluationInterval")));
+        CheckMinimum(failures, "MobilityProfiles/mobility_ranger.asset", HasCanonicalAsset<MobilityProfileDefinition>($"{ResourcesRoot}/MobilityProfiles/mobility_ranger.asset", profile => profile.Distance > 0f, fallbackPath => HasAssetNumericFieldAboveZero(fallbackPath, "Distance")));
         CheckMinimum(failures, "Archetypes/archetype_warden.asset", HasCanonicalAsset<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_warden.asset", archetype => archetype.Id, "warden"));
         CheckMinimum(failures, "Skills/skill_warden_utility.asset", HasCanonicalAsset<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/skill_warden_utility.asset", skill => skill.Id, "skill_warden_utility"));
         CheckMinimum(failures, "Augments/augment_silver_guard.asset", HasCanonicalAsset<AugmentDefinition>($"{ResourcesRoot}/Augments/augment_silver_guard.asset", augment => augment.Id, "augment_silver_guard"));
@@ -171,6 +177,10 @@ public static class SampleSeedGenerator
         CheckMinimum(failures, "StatusFamilies/status_family_guarded.asset", HasCanonicalAsset<StatusFamilyDefinition>($"{ResourcesRoot}/StatusFamilies/status_family_guarded.asset", status => status.Id, "guarded"));
         CheckMinimum(failures, "RewardSources/reward_source_skirmish.asset", HasCanonicalAsset<RewardSourceDefinition>($"{ResourcesRoot}/RewardSources/reward_source_skirmish.asset", reward => reward.Id, "reward_source_skirmish"));
         CheckMinimum(failures, "TraitTokens/trait_reroll_token.asset", HasCanonicalAsset<TraitTokenDefinition>($"{ResourcesRoot}/TraitTokens/trait_reroll_token.asset", token => token.Id, "trait_reroll_token"));
+        CheckMinimum(failures, "StoryEvents/story_event_site_intro_ashen_gate.asset", HasCanonicalAsset<StoryEventDefinition>($"{StoryEventsDir}/story_event_site_intro_ashen_gate.asset", definition => definition.Id, "story_event_site_intro_ashen_gate"));
+        CheckMinimum(failures, "DialogueSequences/dialogue_scene_ashen_gate_intro.asset", HasCanonicalAsset<DialogueSequenceDefinition>($"{DialogueSequencesDir}/dialogue_scene_ashen_gate_intro.asset", definition => definition.Id, "dialogue_scene_ashen_gate_intro"));
+        CheckMinimum(failures, "ChapterBeats/beat.chapter_ashen_gate.site_ashen_gate.node_1.asset", HasCanonicalAsset<ChapterBeatDefinition>($"{ChapterBeatsDir}/beat.chapter_ashen_gate.site_ashen_gate.node_1.asset", definition => definition.Id, "beat.chapter_ashen_gate.site_ashen_gate.node_1"));
+        CheckMinimum(failures, "HeroLore/hero_lore_dawn_priest.asset", HasCanonicalAsset<HeroLoreDefinition>($"{HeroLoreDir}/hero_lore_dawn_priest.asset", definition => definition.Id, "hero_lore_dawn_priest"));
 
         return failures;
     }
@@ -219,6 +229,10 @@ public static class SampleSeedGenerator
             $"{ResourcesRoot}/TraitTokens",
             $"{ResourcesRoot}/Rewards",
             $"{ResourcesRoot}/Expeditions",
+            StoryEventsDir,
+            DialogueSequencesDir,
+            ChapterBeatsDir,
+            HeroLoreDir,
         };
 
         foreach (var folder in folders)
@@ -339,6 +353,41 @@ public static class SampleSeedGenerator
         return false;
     }
 
+    private static bool HasAssetNumericFieldAboveZero(string path, string fieldName)
+    {
+        foreach (var candidatePath in EnumerateProjectCandidatePaths(path))
+        {
+            if (!File.Exists(candidatePath))
+            {
+                continue;
+            }
+
+            foreach (var line in File.ReadLines(candidatePath))
+            {
+                var trimmed = line.Trim();
+                if (!trimmed.StartsWith(fieldName + ":", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var valueText = trimmed.Substring(fieldName.Length + 1).Trim();
+                if (float.TryParse(valueText, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var floatValue))
+                {
+                    return floatValue > 0f;
+                }
+
+                if (int.TryParse(valueText, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var intValue))
+                {
+                    return intValue > 0;
+                }
+
+                return false;
+            }
+        }
+
+        return false;
+    }
+
     private static bool HasCanonicalAsset<T>(string path, System.Func<T, string> selector, string expectedId) where T : UnityEngine.Object
     {
         var asset = TryLoadCanonicalAsset<T>(path);
@@ -354,6 +403,17 @@ public static class SampleSeedGenerator
     {
         var asset = TryLoadCanonicalAsset<T>(path);
         return asset != null && predicate(asset);
+    }
+
+    private static bool HasCanonicalAsset<T>(string path, System.Func<T, bool> predicate, System.Func<string, bool> fallbackPredicate) where T : UnityEngine.Object
+    {
+        var asset = TryLoadCanonicalAsset<T>(path);
+        if (asset != null)
+        {
+            return predicate(asset);
+        }
+
+        return fallbackPredicate(path);
     }
 
     private static string ToResourcesLoadPath(string assetPath)
@@ -2909,6 +2969,21 @@ public static class SampleSeedGenerator
         }
     }
 
+    private static void SetObjectReferenceArray<T>(SerializedProperty? property, IReadOnlyList<T> values)
+        where T : UnityEngine.Object
+    {
+        if (property == null)
+        {
+            return;
+        }
+
+        property.arraySize = values.Count;
+        for (var index = 0; index < values.Count; index++)
+        {
+            property.GetArrayElementAtIndex(index).objectReferenceValue = values[index];
+        }
+    }
+
     private static bool IsValidTagReference(StableTagDefinition? tag)
     {
         return tag != null && !string.IsNullOrWhiteSpace(tag.Id);
@@ -3134,10 +3209,319 @@ public static class SampleSeedGenerator
         }
     }
 
+    public static void SeedNarrativeContent()
+    {
+        EnsureFolder(StoryEventsDir);
+        EnsureFolder(DialogueSequencesDir);
+        EnsureFolder(ChapterBeatsDir);
+        EnsureFolder(HeroLoreDir);
+
+        NarrativeSeedData.ValidateSeedCountsOrThrow();
+
+        var storyTableCollection = EnsureStoryTableCollection();
+        SeedStoryStringEntries(storyTableCollection, NarrativeSeedData.Strings);
+        SeedDialogueSequences(NarrativeSeedData.DialogueSequences);
+        SeedHeroLore(NarrativeSeedData.HeroLore);
+        SeedStoryEvents(NarrativeSeedData.StoryEvents);
+        SeedChapterBeats(NarrativeSeedData.ChapterBeats);
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+
+        NarrativeContentValidator.ValidateOrThrow();
+    }
+
+    private static StringTableCollection EnsureStoryTableCollection()
+    {
+        var collection = LocalizationEditorSettings.GetStringTableCollection(StoryTableName);
+        if (collection != null)
+        {
+            return collection;
+        }
+
+        var locales = LocalizationEditorSettings.GetLocales()
+            .Where(locale => locale != null && (locale.Identifier.Code == "ko" || locale.Identifier.Code == "en"))
+            .ToList();
+        if (locales.Count != 2)
+        {
+            throw new InvalidOperationException("Missing ko/en locales for narrative string table seeding.");
+        }
+
+        collection = LocalizationEditorSettings.CreateStringTableCollection(
+            StoryTableName,
+            LocalizationFoundationBootstrap.StringTableRoot,
+            locales);
+
+        EditorUtility.SetDirty(collection);
+        EditorUtility.SetDirty(collection.SharedData);
+        return collection;
+    }
+
+    private static void SeedStoryStringEntries(
+        StringTableCollection collection,
+        IReadOnlyList<StoryStringSeed> seeds)
+    {
+        var koTable = GetOrCreateStringTable(collection, "ko");
+        var enTable = GetOrCreateStringTable(collection, "en");
+
+        foreach (var seed in seeds)
+        {
+            UpsertNarrativeStringEntry(koTable, seed.Key, seed.Ko, preserveExistingValueWhenIncomingIsEmpty: false);
+            UpsertNarrativeStringEntry(enTable, seed.Key, seed.En, preserveExistingValueWhenIncomingIsEmpty: true);
+        }
+
+        LocalizationEditorSettings.SetPreloadTableFlag(koTable, true);
+        LocalizationEditorSettings.SetPreloadTableFlag(enTable, true);
+        EditorUtility.SetDirty(collection);
+        EditorUtility.SetDirty(collection.SharedData);
+        EditorUtility.SetDirty(koTable);
+        EditorUtility.SetDirty(enTable);
+    }
+
+    private static void SeedDialogueSequences(IReadOnlyList<DialogueSequenceSeed> seeds)
+    {
+        foreach (var seed in seeds)
+        {
+            var assetPath = $"{DialogueSequencesDir}/{seed.Id}.asset";
+            CreateAsset<DialogueSequenceDefinition>(assetPath, asset => ApplyDialogueSequence(asset, assetPath, seed));
+        }
+    }
+
+    private static void SeedHeroLore(IReadOnlyList<HeroLoreSeed> seeds)
+    {
+        foreach (var seed in seeds)
+        {
+            var assetPath = $"{HeroLoreDir}/{seed.Id}.asset";
+            CreateAsset<HeroLoreDefinition>(assetPath, asset => ApplyHeroLore(asset, seed));
+        }
+    }
+
+    private static void SeedStoryEvents(IReadOnlyList<StoryEventSeed> seeds)
+    {
+        foreach (var seed in seeds)
+        {
+            var assetPath = $"{StoryEventsDir}/{seed.Id}.asset";
+            CreateAsset<StoryEventDefinition>(assetPath, asset => ApplyStoryEvent(asset, assetPath, seed));
+        }
+    }
+
+    private static void SeedChapterBeats(IReadOnlyList<ChapterBeatSeed> seeds)
+    {
+        foreach (var seed in seeds)
+        {
+            var assetPath = $"{ChapterBeatsDir}/{seed.Id}.asset";
+            CreateAsset<ChapterBeatDefinition>(assetPath, asset => ApplyChapterBeat(asset, seed));
+        }
+    }
+
+    private static void ApplyDialogueSequence(
+        DialogueSequenceDefinition asset,
+        string assetPath,
+        DialogueSequenceSeed seed)
+    {
+        var serializedObject = new SerializedObject(asset);
+        serializedObject.FindProperty("_id")!.stringValue = seed.Id;
+
+        var lineAssets = SyncChildAssets<DialogueLineDefinition, DialogueLineSeed>(
+            assetPath,
+            "line",
+            seed.Lines,
+            (lineAsset, lineSeed, index) => ApplyDialogueLine(lineAsset, seed.Id, lineSeed, index));
+
+        SetObjectReferenceArray(serializedObject.FindProperty("_lines"), lineAssets);
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void ApplyDialogueLine(
+        DialogueLineDefinition asset,
+        string sequenceId,
+        DialogueLineSeed seed,
+        int lineIndex)
+    {
+        var serializedObject = new SerializedObject(asset);
+        serializedObject.FindProperty("_id")!.stringValue = $"{sequenceId}.line.{lineIndex:D2}";
+        serializedObject.FindProperty("_speakerId")!.stringValue = seed.SpeakerId;
+        serializedObject.FindProperty("_textKey")!.stringValue = NarrativeSeedData.BuildDialogueTextKey(sequenceId, lineIndex);
+        serializedObject.FindProperty("_emote")!.stringValue = seed.Emotion ?? string.Empty;
+        serializedObject.FindProperty("_autoAdvanceHint")!.floatValue = seed.AutoAdvanceHint;
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void ApplyStoryEvent(
+        StoryEventDefinition asset,
+        string assetPath,
+        StoryEventSeed seed)
+    {
+        var serializedObject = new SerializedObject(asset);
+        serializedObject.FindProperty("_id")!.stringValue = seed.Id;
+        serializedObject.FindProperty("_moment")!.enumValueIndex = (int)seed.Moment;
+        serializedObject.FindProperty("_priority")!.intValue = seed.Priority;
+        serializedObject.FindProperty("_oncePolicy")!.enumValueIndex = (int)seed.OncePolicy;
+        serializedObject.FindProperty("_presentationKey")!.stringValue = seed.PresentationKey;
+
+        var conditionAssets = SyncChildAssets<StoryConditionDefinition, StoryConditionSeed>(
+            assetPath,
+            "condition",
+            seed.Conditions,
+            (conditionAsset, conditionSeed, index) => ApplyStoryCondition(conditionAsset, seed.Id, conditionSeed, index));
+        SetObjectReferenceArray(serializedObject.FindProperty("_conditions"), conditionAssets);
+
+        var effectiveEffects = BuildEffectiveStoryEffects(seed);
+        var effectAssets = SyncChildAssets<StoryEffectDefinition, StoryEffectSeed>(
+            assetPath,
+            "effect",
+            effectiveEffects,
+            (effectAsset, effectSeed, index) => ApplyStoryEffect(effectAsset, seed.Id, effectSeed, index));
+        SetObjectReferenceArray(serializedObject.FindProperty("_effects"), effectAssets);
+
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static StoryEffectSeed[] BuildEffectiveStoryEffects(StoryEventSeed seed)
+    {
+        if (string.IsNullOrWhiteSpace(seed.PresentationKey))
+        {
+            return seed.Effects;
+        }
+
+        var effects = new List<StoryEffectSeed>(seed.Effects.Length + 1);
+        effects.AddRange(seed.Effects);
+        effects.Add(new StoryEffectSeed(
+            StoryEffectKind.EnqueuePresentation,
+            NarrativeSeedData.InferPresentationKind(seed.PresentationKey).ToString()));
+        return effects.ToArray();
+    }
+
+    private static void ApplyStoryCondition(
+        StoryConditionDefinition asset,
+        string eventId,
+        StoryConditionSeed seed,
+        int index)
+    {
+        var serializedObject = new SerializedObject(asset);
+        serializedObject.FindProperty("_id")!.stringValue = $"{eventId}.condition.{index:D2}";
+        serializedObject.FindProperty("_kind")!.enumValueIndex = (int)seed.Kind;
+        serializedObject.FindProperty("_operandA")!.stringValue = seed.OperandA ?? string.Empty;
+        serializedObject.FindProperty("_operandB")!.stringValue = seed.OperandB ?? string.Empty;
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void ApplyStoryEffect(
+        StoryEffectDefinition asset,
+        string eventId,
+        StoryEffectSeed seed,
+        int index)
+    {
+        var serializedObject = new SerializedObject(asset);
+        serializedObject.FindProperty("_id")!.stringValue = $"{eventId}.effect.{index:D2}";
+        serializedObject.FindProperty("_kind")!.enumValueIndex = (int)seed.Kind;
+        serializedObject.FindProperty("_payload")!.stringValue = seed.Payload ?? string.Empty;
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void ApplyChapterBeat(ChapterBeatDefinition asset, ChapterBeatSeed seed)
+    {
+        var serializedObject = new SerializedObject(asset);
+        serializedObject.FindProperty("_id")!.stringValue = seed.Id;
+        serializedObject.FindProperty("_chapterId")!.stringValue = seed.ChapterId;
+        serializedObject.FindProperty("_siteId")!.stringValue = seed.SiteId;
+        serializedObject.FindProperty("_nodeIndex")!.intValue = seed.NodeIndex;
+        serializedObject.FindProperty("_beatLabel")!.stringValue = seed.BeatLabel;
+        serializedObject.FindProperty("_tensionTarget")!.floatValue = seed.TensionTarget;
+        serializedObject.FindProperty("_reliefTarget")!.floatValue = seed.ReliefTarget;
+        serializedObject.FindProperty("_humorTarget")!.floatValue = seed.HumorTarget;
+        serializedObject.FindProperty("_catharsisTarget")!.floatValue = seed.CatharsisTarget;
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void ApplyHeroLore(HeroLoreDefinition asset, HeroLoreSeed seed)
+    {
+        var serializedObject = new SerializedObject(asset);
+        serializedObject.FindProperty("_id")!.stringValue = seed.Id;
+        serializedObject.FindProperty("_heroId")!.stringValue = seed.HeroId;
+        serializedObject.FindProperty("_tier")!.enumValueIndex = (int)seed.Tier;
+        serializedObject.FindProperty("_beatBudget")!.intValue = seed.BeatBudget;
+        serializedObject.FindProperty("_canonBio")!.stringValue = string.Join(
+            "\n\n",
+            new[] { seed.SummaryKo }.Concat(seed.BodyKo).Where(value => !string.IsNullOrWhiteSpace(value)));
+        serializedObject.FindProperty("_unresolvedHook")!.stringValue = seed.UnresolvedHook ?? string.Empty;
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static TChild[] SyncChildAssets<TChild, TSeed>(
+        string assetPath,
+        string childPrefix,
+        IReadOnlyList<TSeed> seeds,
+        Action<TChild, TSeed, int> apply)
+        where TChild : ScriptableObject
+    {
+        var existingChildren = AssetDatabase.LoadAllAssetsAtPath(assetPath)
+            .OfType<TChild>()
+            .OrderBy(asset => asset.name, StringComparer.Ordinal)
+            .ToList();
+
+        while (existingChildren.Count > seeds.Count)
+        {
+            var lastIndex = existingChildren.Count - 1;
+            UnityEngine.Object.DestroyImmediate(existingChildren[lastIndex], true);
+            existingChildren.RemoveAt(lastIndex);
+        }
+
+        var result = new TChild[seeds.Count];
+        for (var index = 0; index < seeds.Count; index++)
+        {
+            TChild childAsset;
+            if (index < existingChildren.Count)
+            {
+                childAsset = existingChildren[index];
+            }
+            else
+            {
+                childAsset = ScriptableObject.CreateInstance<TChild>();
+                AssetDatabase.AddObjectToAsset(childAsset, assetPath);
+                existingChildren.Add(childAsset);
+            }
+
+            childAsset.name = $"{childPrefix}_{index:D2}";
+            apply(childAsset, seeds[index], index);
+            EditorUtility.SetDirty(childAsset);
+            result[index] = childAsset;
+        }
+
+        return result;
+    }
+
+    private static StringTable GetOrCreateStringTable(StringTableCollection collection, string localeCode)
+    {
+        return collection.GetTable(new UnityEngine.Localization.LocaleIdentifier(localeCode)) as StringTable
+               ?? collection.AddNewTable(new UnityEngine.Localization.LocaleIdentifier(localeCode)) as StringTable
+               ?? throw new InvalidOperationException($"Failed to load or create locale table '{localeCode}' for '{collection.name}'.");
+    }
+
+    private static void UpsertNarrativeStringEntry(
+        StringTable table,
+        string key,
+        string incomingValue,
+        bool preserveExistingValueWhenIncomingIsEmpty)
+    {
+        var entry = table.GetEntry(key) ?? table.AddEntry(key, incomingValue ?? string.Empty);
+        if (!preserveExistingValueWhenIncomingIsEmpty || !string.IsNullOrWhiteSpace(incomingValue))
+        {
+            entry.Value = incomingValue ?? string.Empty;
+        }
+        else if (string.IsNullOrWhiteSpace(entry.Value))
+        {
+            entry.Value = string.Empty;
+        }
+
+        EditorUtility.SetDirty(table);
+        EditorUtility.SetDirty(table.SharedData);
+    }
+
     private static T CreateAsset<T>(string path, System.Action<T> configure) where T : ScriptableObject
     {
-        var existing = AssetDatabase.LoadAssetAtPath<T>(path);
-        if (existing == null || HasBrokenScriptReference(path))
+        var existing = TryLoadCanonicalAsset<T>(path);
+        if (existing == null)
         {
             if (AssetDatabase.LoadMainAssetAtPath(path) != null || File.Exists(path))
             {
@@ -3153,11 +3537,6 @@ public static class SampleSeedGenerator
         ClearLegacyTextFields(existing);
         EditorUtility.SetDirty(existing);
         return existing;
-    }
-
-    private static bool HasBrokenScriptReference(string path)
-    {
-        return File.Exists(path) && File.ReadAllText(path).Contains("m_Script: {fileID: 0}", StringComparison.Ordinal);
     }
 
     private static void UpsertStringEntry(string tableName, string key, string koValue, string enValue, bool smart = false)

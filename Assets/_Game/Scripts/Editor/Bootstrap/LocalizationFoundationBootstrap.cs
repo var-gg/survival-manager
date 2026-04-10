@@ -50,6 +50,7 @@ public static class LocalizationFoundationBootstrap
         ContentLocalizationTables.Stats,
         ContentLocalizationTables.Rewards,
         ContentLocalizationTables.Expedition,
+        ContentLocalizationTables.Story,
     };
 
     private static readonly Dictionary<string, (string ko, string en, bool smart)> SharedEntries = new(StringComparer.Ordinal)
@@ -840,7 +841,7 @@ public static class LocalizationFoundationBootstrap
 
                 SyncSharedEntries(tableName, locale.Identifier.Code, table);
 
-                LocalizationEditorSettings.SetPreloadTableFlag(table, tableName is GameLocalizationTables.UICommon or GameLocalizationTables.UITown or GameLocalizationTables.UIExpedition or GameLocalizationTables.UIBattle or GameLocalizationTables.UIReward or GameLocalizationTables.CombatLog or GameLocalizationTables.SystemMessages);
+                LocalizationEditorSettings.SetPreloadTableFlag(table, tableName is GameLocalizationTables.UICommon or GameLocalizationTables.UITown or GameLocalizationTables.UIExpedition or GameLocalizationTables.UIBattle or GameLocalizationTables.UIReward or GameLocalizationTables.CombatLog or GameLocalizationTables.SystemMessages or ContentLocalizationTables.Story);
                 EditorUtility.SetDirty(table);
                 EditorUtility.SetDirty(table.SharedData);
             }
