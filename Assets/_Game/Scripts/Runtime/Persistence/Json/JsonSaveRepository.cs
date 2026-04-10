@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
+using SM.Meta;
 using SM.Persistence.Abstractions;
 using SM.Persistence.Abstractions.Models;
 
@@ -410,6 +411,8 @@ public sealed class JsonSaveRepository : ISaveRepository, ISaveRepositoryDiagnos
             {
                 profile.ProfileId = expectedProfileId;
             }
+
+            profile.Narrative = NarrativeProgressRecord.Normalize(profile.Narrative);
 
             if (!string.Equals(profile.ProfileId, expectedProfileId, StringComparison.Ordinal))
             {

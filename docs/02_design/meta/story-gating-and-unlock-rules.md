@@ -24,7 +24,7 @@ story unlock, hero join, endless gate, fail-safe, save field를 메타 관점에
 ## 해금 규칙 표
 
 | gate_id | source_event | target_unlock | fail_safe | ui_surface | save_field |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `gate_unlock_rift_stalker` | `story_event_unlock_rift_stalker` | `hero_rift_stalker` | 다음 town 진입 시 재평가 | `toast_unlock_rift_stalker` | `UnlockedStoryHeroIds` |
 | `gate_unlock_bastion_penitent` | `story_event_unlock_bastion_penitent` | `hero_bastion_penitent` | 다음 town 진입 시 재평가 | `toast_unlock_bastion_penitent` | `UnlockedStoryHeroIds` |
 | `gate_unlock_pale_executor` | `story_event_unlock_pale_executor` | `hero_pale_executor` | 다음 town 진입 시 재평가 | `toast_unlock_pale_executor` | `UnlockedStoryHeroIds` |
@@ -33,12 +33,12 @@ story unlock, hero join, endless gate, fail-safe, save field를 메타 관점에
 | `gate_unlock_shardblade` | `story_event_unlock_shardblade` | `hero_shardblade` | 다음 town 진입 시 재평가 | `toast_unlock_shardblade` | `UnlockedStoryHeroIds` |
 | `gate_unlock_prism_seeker` | `story_event_unlock_prism_seeker` | `hero_prism_seeker` | 다음 town 진입 시 재평가 | `toast_unlock_prism_seeker` | `UnlockedStoryHeroIds` |
 | `gate_unlock_mirror_cantor` | `story_event_unlock_mirror_cantor` | `hero_mirror_cantor` | 다음 town 진입 시 재평가 | `toast_unlock_mirror_cantor` | `UnlockedStoryHeroIds` |
-| `gate_unlock_endless_cycle` | `story_event_campaign_complete` | `mode_endless_cycle` | credits 종료 후 재평가 | `story_card_endless_open` | `StoryFlags.story_flag_endless_open` |
+| `gate_unlock_endless_cycle` | `story_event_campaign_complete` | `mode_endless_cycle` | credits 종료 후 재평가 | `story_card_endless_open` | `StoryFlags` 내 `mode:endless_cycle` |
 
 ## fail-safe 표
 
 | failure_case | canonical_resolution | owner_service |
-|---|---|---|
+| --- | --- | --- |
 | unlock toast 재생 전 종료 | save에는 unlock이 이미 남아 있어야 한다. presentation은 다음 scene에서 재시도 | `StoryDirectorService` |
 | story-card skip | presentation만 스킵되고 flag/effect는 유지된다 | `StoryPresentationRunner` |
 | extract 중 crash | extract commit은 atomic으로 save에 기록. narrative effect는 다음 boot에서 재평가 | `StoryDirectorService` |
@@ -47,7 +47,7 @@ story unlock, hero join, endless gate, fail-safe, save field를 메타 관점에
 ## UI 표면화 규칙
 
 | unlock_type | ui_surface | timing | note |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | hero unlock | `toast-banner` | extract commit 직후 | truth(save)는 toast 이전에 이미 기록됨 |
 | story flag | 없음 (내부 상태) | event evaluation 시 | UI에 직접 노출하지 않음 |
 | codex entry | `toast-banner` | battle resolve 또는 extract | 수집 요소 |
@@ -55,16 +55,22 @@ story unlock, hero join, endless gate, fail-safe, save field를 메타 관점에
 
 UI는 truth를 만들지 않고 truth를 보여주기만 해야 한다.
 
+추가 규칙:
+
+- mode unlock은 dedicated field가 아니라 `StoryFlags` 예약값 `mode:{modeId}`로 저장한다.
+- `SeenEventIds`, `ResolvedEventIds`, `StoryFlags`, `UnlockedStoryHeroIds`는 ordinal 기준 unique set으로 취급한다.
+- `PendingPresentations`만 queue라서 순서를 유지한다.
+
 ## save field 연계
 
 | gate_category | save_field | type | migration_default |
-|---|---|---|---|
-| hero unlock | `NarrativeProgressRecord.UnlockedStoryHeroIds` | `List<string>` | empty list |
-| story flag | `NarrativeProgressRecord.StoryFlags` | `Dictionary<string, bool>` | empty map |
-| seen events | `NarrativeProgressRecord.SeenEventIds` | `List<string>` | empty list |
-| resolved events | `NarrativeProgressRecord.ResolvedEventIds` | `List<string>` | empty list |
-| endless state | `NarrativeProgressRecord.EndlessCycle` | `EndlessCycleStateRecord` | null (not started) |
-| pending presentation | `NarrativeProgressRecord.PendingPresentations` | `List<StoryPresentationRequest>` | empty list |
+| --- | --- | --- | --- |
+| hero unlock | `NarrativeProgressRecord.UnlockedStoryHeroIds` | `string[]` | empty array |
+| story flag | `NarrativeProgressRecord.StoryFlags` | `string[]` | empty array |
+| seen events | `NarrativeProgressRecord.SeenEventIds` | `string[]` | empty array |
+| resolved events | `NarrativeProgressRecord.ResolvedEventIds` | `string[]` | empty array |
+| endless state | `NarrativeProgressRecord.EndlessCycle` | `EndlessCycleStateRecord` | `EndlessCycleStateRecord.Empty` |
+| pending presentation | `NarrativeProgressRecord.PendingPresentations` | `StoryPresentationRequest[]` | empty array |
 
 ## 작성 지침
 

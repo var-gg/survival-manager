@@ -1,7 +1,7 @@
 # 작업 상태: 001 MVP Vertical Slice
 
 - 상태: 진행 중
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-04-10
 - 단계: prototype
 - 작업 ID: 001
 
@@ -33,6 +33,8 @@
 - fixed-step live simulation, authored chapter/site/encounter, Reward settlement, Town resume semantics는 구현돼 있다.
 - extract settlement도 `Reward -> Town(close)`로 끝나는 authored loop를 사용한다.
 - save/load, localization foundation, scene repair/bootstrap, sample content bootstrap, observer report surface가 저장소에 들어와 있다.
+- narrative runtime core(`SM.Core` enum, `SM.Content` narrative definition, `SM.Meta` story director/progress/save host, `GameSessionState` binding)까지는 코드로 들어와 있다.
+- `StorySceneFlowBridge`, `StoryPresentationRunner`, 4종 presenter/view/UXML/USS가 들어와 있어 Town/Expedition/Battle/Reward scene에서 narrative presentation queue를 소비할 수 있다.
 - release-floor tooling은 `prepare-playable` canonical lane, `quick-battle-smoke` combat sandbox lane, `repair-scenes` / `ensure-localization` recovery lane으로 정리됐다.
 - `SM/Authoring/Combat Sandbox`가 scenario library, active handoff sync, preview, batch run의 주 authoring surface로 승격됐다.
 - `tools/pre-art-rc.ps1`와 `docs/06_production/pre-art-release-floor.md`가 same-SHA automated floor와 packet 경로를 남기도록 추가됐다.
@@ -59,6 +61,7 @@
 - same-SHA compile / PlayMode / Loop D shard / observer report fresh evidence는 아직 final green이 아니다.
 - clean clone newcomer witness, normal loop, localization, save/load, recovery manual sign-off가 packet과 `status.md`에 아직 남지 않았다.
 - art/presentation polish, content breadth, online seam은 여전히 out-of-scope open item이다.
+- narrative seed content, validator, same-SHA Unity compile evidence는 아직 deferred다.
 
 ## Evidence
 

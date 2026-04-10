@@ -1,6 +1,6 @@
 # ADR-0022 내러티브 아키텍처
 
-- 상태: draft
+- 상태: active
 - 소유자: repository
 - 최종수정일: 2026-04-10
 - 소스오브트루스: `docs/04_decisions/adr-0022-narrative-architecture.md`
@@ -29,13 +29,14 @@
 - `StoryEventDefinition`, `ChapterBeatDefinition` 등 authored data는 `SM.Content`
 - `StoryDirectorService`, `NarrativeProgressRecord` 등 runtime state/service는 `SM.Meta`
 - 기존 root save에 `Narrative` 필드 추가 (새 save 파일 없음)
-- `StorySceneFlowBridge`, `StoryPresentationRunner`, presenters는 `SM.Unity`
-- 연출은 `toast-banner`, `dialogue-overlay`, `story-card` 3단만 지원
+- 현재 runtime bootstrap은 `SM.Unity.NarrativeRuntimeBootstrap` + `GameSessionState`가 담당한다
+- scene bridge / presenter / runner는 `SM.Unity`에 두되 truth는 여전히 `StoryDirectorService`가 가진다
+- 연출 kind는 `toast-banner`, `dialogue-overlay`, `dialogue-scene`, `story-card` 4단으로 고정한다
 
 ## 검토한 대안
 
 | option | description | pros | cons | verdict |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `option_a_all_in_unity` | presenter/controller가 story logic까지 소유 | 구현이 빨라 보임 | truth/presentation 혼합, EditMode 테스트 불가, 의존방향 위반 | reject |
 | `option_b_content_meta_split` | definition/state/presentation 분리 | 의존방향 보존, save/test 용이, SoT 명확 | 초기 문서화 비용, 타입 수 증가 | **accept** |
 | `option_c_branching_engine` | 범용 branching dialogue runtime | 분기 표현력 높음 | v1은 선형 트랙, 유지비 과다, 인디 규모 초과 | reject |
@@ -47,22 +48,18 @@
 - 기존 asmdef 의존방향을 100% 유지한다.
 - EditMode에서 `StoryDirectorService`를 단독 테스트할 수 있다.
 - presentation skip/crash 시에도 narrative truth가 보존된다.
-- 연출 3단은 인디 규모에서 구현/유지 가능하다.
+- save root에 `Narrative`만 추가하면 legacy load normalization이 단순하다.
 
 감수할 비용:
 - 초기에 enum, definition, record, service 타입을 한꺼번에 추가해야 한다.
-- `StorySceneFlowBridge`가 scene마다 필요하다.
+- `PresentationKey`만 가진 queue payload를 실제 UI model로 해석하는 adapter를 `SM.Unity`에 별도로 유지해야 한다.
 - branching dialogue를 나중에 추가하려면 `StoryEventDefinition` 확장이 필요하다.
 
 ## 후속 작업
 
-1. narrative 설계 문서군 작성 (world bible -> faction conflict -> pacing -> arc -> beat sheet -> event schema)
-2. `SM.Core` enum 타입 추가
-3. `SM.Content` definition 타입 추가
-4. `SM.Meta` record/service 타입 추가
-5. 기존 root save에 `NarrativeProgressRecord` 필드 추가
-6. `SM.Unity` bridge/runner/presenter 구현
-7. seed content로 첫 site story event 연동 검증
+1. narrative seed content와 validator 추가
+2. `RewardCommitted` 시점의 authored trigger 연결
+3. concrete battle/reward summary type canonicalization
 
 ## 작성 지침
 

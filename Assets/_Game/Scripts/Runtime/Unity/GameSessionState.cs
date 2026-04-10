@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Content;
 using SM.Content.Definitions;
+using SM.Core;
 using SM.Core.Contracts;
 using SM.Core.Results;
+using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
@@ -31,6 +34,7 @@ public sealed class GameSessionState
     };
 
     private readonly ICombatContentLookup _combatContentLookup;
+    private readonly NarrativeRuntimeBootstrap _narrativeRuntimeBootstrap;
     private readonly LoadoutCompiler _loadoutCompiler = new();
     private readonly List<string> _expeditionSquadHeroIds = new();
     private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
@@ -51,6 +55,7 @@ public sealed class GameSessionState
     public SaveProfile Profile { get; private set; } = new();
     public ActiveRunState? ActiveRun { get; private set; }
     public BattleLoadoutSnapshot? LastCompiledBattleSnapshot { get; private set; }
+    public StoryDirectorService StoryDirector { get; private set; }
     public RosterState Roster { get; private set; } = new();
     public ExpeditionState Expedition { get; private set; } = new();
     public string CurrentSceneName { get; private set; } = SceneNames.Boot;
@@ -100,10 +105,13 @@ public sealed class GameSessionState
     public int CurrentRecruitRefreshCost => RefreshCostService.GetRefreshCost(_recruitPhaseState);
     public bool CanUseScout => !_recruitPhaseState.ScoutUsedThisPhase;
     public TeamPlanProfile CurrentTeamPlan => BuildTeamPlanProfile();
+    public NarrativeProgressRecord NarrativeProgress => StoryDirector.Progress;
 
     public GameSessionState(ICombatContentLookup combatContentLookup)
     {
         _combatContentLookup = combatContentLookup;
+        _narrativeRuntimeBootstrap = NarrativeRuntimeBootstrap.LoadFromResources();
+        StoryDirector = _narrativeRuntimeBootstrap.CreateStoryDirector(NarrativeProgressRecord.Empty);
     }
 
     public void BindProfile(SaveProfile profile)
@@ -141,6 +149,7 @@ public sealed class GameSessionState
             Profile.ArenaMatchRecords ??= new List<ArenaMatchRecordRecord>();
             Profile.ArenaSeasons ??= new List<ArenaSeasonStateRecord>();
             Profile.ArenaRewardLedger ??= new List<ArenaRewardLedgerEntryRecord>();
+            Profile.Narrative = NarrativeProgressRecord.Normalize(Profile.Narrative);
             NormalizeProfileContentIds();
             EnsureProfileBuildState();
 
@@ -183,6 +192,7 @@ public sealed class GameSessionState
             RestoreActiveRunFromProfile();
             EnsureRewardChoices(reset: true);
             SyncExpeditionState();
+            RebindNarrativeServices();
         }
 
         stopwatch.Stop();
@@ -190,6 +200,25 @@ public sealed class GameSessionState
             nameof(GameSessionState) + ".BindProfile",
             stopwatch.Elapsed,
             $"heroes={Profile.Heroes.Count}; inventory={Profile.Inventory.Count}");
+    }
+
+    public void AdvanceNarrative(NarrativeMoment moment, StoryMomentContext? context = null)
+    {
+        StoryDirector.Advance(moment, context ?? StoryMomentContext.Empty);
+        SyncNarrativeProgress();
+    }
+
+    public bool TryDequeueNarrativePresentation(out StoryPresentationRequest? request)
+    {
+        var dequeued = StoryDirector.TryDequeuePendingPresentation(out request);
+        SyncNarrativeProgress();
+        return dequeued;
+    }
+
+    public void ResetNarrativeRunScopedProgress()
+    {
+        StoryDirector.ResetRunScopedProgress();
+        SyncNarrativeProgress();
     }
 
     public void BeginNewExpedition()
@@ -3659,6 +3688,17 @@ public sealed class GameSessionState
                && Profile.RewardLedger.Any(entry =>
                    string.Equals(entry.SourceId, sourceId, StringComparison.Ordinal)
                    && entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
+    }
+
+    private void RebindNarrativeServices()
+    {
+        StoryDirector = _narrativeRuntimeBootstrap.CreateStoryDirector(Profile.Narrative);
+        SyncNarrativeProgress();
+    }
+
+    private void SyncNarrativeProgress()
+    {
+        Profile.Narrative = StoryDirector.Progress;
     }
 
     private TelemetryEventRecord BuildEconomySnapshot(string label)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SM.Meta;
 
 namespace SM.Persistence.Abstractions.Models;
 
@@ -32,4 +33,5 @@ public sealed class SaveProfile
     public List<ArenaMatchRecordRecord> ArenaMatchRecords = new();
     public List<ArenaSeasonStateRecord> ArenaSeasons = new();
     public List<ArenaRewardLedgerEntryRecord> ArenaRewardLedger = new();
+    public NarrativeProgressRecord Narrative = NarrativeProgressRecord.Empty;
 }
