@@ -1,0 +1,122 @@
+:root {
+    --story-backdrop-color: rgba(0, 0, 0, 0.62);
+    --story-panel-color: rgba(18, 20, 26, 0.84);
+    --story-border-color: rgba(255, 255, 255, 0.1);
+    --story-text-color: rgb(236, 238, 244);
+    --story-muted-text-color: rgba(236, 238, 244, 0.68);
+    --story-narrator-color: rgb(204, 212, 255);
+    --story-accent-color: var(--color-accent);
+    --story-danger-soft-color: rgb(200, 154, 84);
+}
+
+.story-layer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: none;
+    opacity: 0;
+}
+
+.story-layer--visible {
+    display: flex;
+    opacity: 1;
+}
+
+.story-panel {
+    background-color: var(--story-panel-color);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--story-border-color);
+    border-right-color: var(--story-border-color);
+    border-top-color: var(--story-border-color);
+    border-bottom-color: var(--story-border-color);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    color: var(--story-text-color);
+}
+
+.story-speaker-name {
+    color: var(--story-accent-color);
+    font-size: 15px;
+    unity-font-style: bold;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+}
+
+.story-text--character {
+    color: var(--story-text-color);
+    font-size: 22px;
+    white-space: normal;
+}
+
+.story-text--narrator {
+    color: var(--story-narrator-color);
+    font-size: 22px;
+    white-space: normal;
+    unity-font-style: italic;
+}
+
+.story-speaker--hidden {
+    display: none;
+}
+
+.story-portrait-slot--hidden {
+    display: none;
+}
+
+.story-portrait {
+    opacity: 0.45;
+}
+
+.story-portrait--active {
+    opacity: 1;
+    scale: 1 1;
+}
+
+.story-portrait--inactive {
+    opacity: 0.45;
+    scale: 0.96 0.96;
+}
+
+.story-continue-hint {
+    margin-top: 10px;
+    color: var(--story-muted-text-color);
+    font-size: 12px;
+    unity-font-style: italic;
+}
+
+.story-skip-button {
+    min-width: 96px;
+    min-height: 34px;
+}
+
+.story-confirm-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.72);
+}
+
+.story-confirm-button--primary {
+    background-color: var(--story-danger-soft-color);
+    color: rgb(23, 16, 7);
+}
+
+.story-confirm-button--secondary {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--story-text-color);
+}

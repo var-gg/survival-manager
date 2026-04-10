@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="story-toast-root" class="story-toast-root">
+        <ui:VisualElement name="story-toast-anchor" class="story-toast-anchor">
+            <ui:VisualElement name="story-toast-panel" class="story-panel story-toast-panel">
+                <ui:Label name="story-toast-title" class="story-toast-title" text="Narrative" />
+                <ui:Label name="story-toast-body" class="story-toast-body" text="Toast body" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

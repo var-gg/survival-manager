@@ -1,3 +1,6 @@
+using SM.Core;
+using SM.Meta;
+using SM.Unity.Narrative;
 using SM.Unity.UI;
 using SM.Unity.UI.Town;
 using UnityEngine;
@@ -7,6 +10,7 @@ namespace SM.Unity;
 public sealed class TownScreenController : MonoBehaviour
 {
     [SerializeField] private RuntimePanelHost panelHost = null!;
+    [SerializeField] private StorySceneFlowBridge _storyBridge = null!;
 
     private GameSessionRoot _root = null!;
     private GameLocalizationController _localization = null!;
@@ -23,10 +27,15 @@ public sealed class TownScreenController : MonoBehaviour
         _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Town);
         _presenter!.Initialize();
+        if (EnsureStoryBridgeReady())
+        {
+            _storyBridge.Advance(NarrativeMoment.TownEntered, BuildStoryMomentContext());
+        }
     }
 
     private void OnDestroy()
     {
+        _storyBridge?.ClearPending();
         if (_localization != null)
         {
             _localization.LocaleChanged -= HandleLocaleChanged;
@@ -128,13 +137,31 @@ public sealed class TownScreenController : MonoBehaviour
         return true;
     }
 
-    private string Localize(string table, string key, string fallback, params object[] args)
+    private bool EnsureStoryBridgeReady()
     {
-        return _localization != null
-            ? _localization.LocalizeOrFallback(table, key, fallback, args)
-            : args.Length == 0
-                ? fallback
-                : string.Format(fallback, args);
+        if (_storyBridge != null)
+        {
+            return true;
+        }
+
+        _storyBridge = GetComponent<StorySceneFlowBridge>();
+        if (_storyBridge == null)
+        {
+            _storyBridge = gameObject.AddComponent<StorySceneFlowBridge>();
+        }
+
+        return _storyBridge != null;
+    }
+
+    private StoryMomentContext BuildStoryMomentContext()
+    {
+        var session = _root.SessionState;
+        return new StoryMomentContext
+        {
+            ChapterId = session.SelectedCampaignChapterId,
+            SiteId = session.SelectedCampaignSiteId,
+            NodeIndex = session.CurrentExpeditionNodeIndex,
+        };
     }
 
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)

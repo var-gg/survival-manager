@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="dialogue-overlay-root" class="story-layer dialogue-overlay-root">
+        <ui:VisualElement name="dialogue-overlay-panel" class="story-panel dialogue-overlay-panel">
+            <ui:VisualElement name="dialogue-overlay-left-slot" class="dialogue-overlay-slot">
+                <ui:Image name="dialogue-overlay-left-portrait" class="story-portrait dialogue-overlay-portrait" />
+            </ui:VisualElement>
+            <ui:VisualElement name="dialogue-overlay-center" class="dialogue-overlay-center">
+                <ui:Label name="dialogue-overlay-speaker" class="story-speaker-name dialogue-overlay-speaker" text="Speaker" />
+                <ui:Label name="dialogue-overlay-line" class="dialogue-overlay-line story-text--character" text="Dialogue line" />
+                <ui:Label name="dialogue-overlay-continue-hint" class="story-continue-hint dialogue-overlay-continue-hint" text="Tap to continue" />
+            </ui:VisualElement>
+            <ui:VisualElement name="dialogue-overlay-right-slot" class="dialogue-overlay-slot">
+                <ui:Image name="dialogue-overlay-right-portrait" class="story-portrait dialogue-overlay-portrait" />
+            </ui:VisualElement>
+            <ui:VisualElement name="dialogue-overlay-actions" class="dialogue-overlay-actions">
+                <ui:Button name="dialogue-overlay-skip-all-button" class="ui-button story-skip-button" text="Skip" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

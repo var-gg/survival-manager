@@ -1,0 +1,56 @@
+.dialogue-overlay-root {
+    justify-content: flex-end;
+    align-items: center;
+    padding-left: 28px;
+    padding-right: 28px;
+    padding-bottom: 22px;
+}
+
+.dialogue-overlay-panel {
+    width: 1120px;
+    max-width: 100%;
+    min-height: 180px;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.dialogue-overlay-slot {
+    width: 220px;
+    height: 220px;
+    justify-content: flex-end;
+    overflow: hidden;
+    margin-right: 16px;
+}
+
+.dialogue-overlay-portrait {
+    width: 100%;
+    height: 100%;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+}
+
+.dialogue-overlay-center {
+    flex-grow: 1;
+    min-width: 0;
+    padding-bottom: 4px;
+}
+
+.dialogue-overlay-speaker {
+    margin-bottom: 8px;
+}
+
+.dialogue-overlay-line {
+    flex-grow: 1;
+}
+
+.dialogue-overlay-continue-hint {
+    align-self: flex-start;
+}
+
+.dialogue-overlay-actions {
+    justify-content: flex-start;
+    align-items: flex-end;
+    margin-left: 16px;
+}

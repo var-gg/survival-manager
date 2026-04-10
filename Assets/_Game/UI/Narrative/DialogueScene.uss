@@ -1,0 +1,94 @@
+.dialogue-scene-root {
+    justify-content: center;
+    align-items: center;
+}
+
+.dialogue-scene-backdrop {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--story-backdrop-color);
+}
+
+.dialogue-scene-layout {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 36px;
+    padding-right: 36px;
+    padding-top: 36px;
+    padding-bottom: 36px;
+}
+
+.dialogue-scene-slot {
+    width: 300px;
+    min-height: 420px;
+    justify-content: flex-end;
+    overflow: hidden;
+}
+
+.dialogue-scene-portrait {
+    width: 100%;
+    height: 420px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+}
+
+.dialogue-scene-center {
+    flex-grow: 1;
+    max-width: 760px;
+    min-width: 0;
+    margin-left: 24px;
+    margin-right: 24px;
+}
+
+.dialogue-scene-nameplate {
+    margin-bottom: 10px;
+}
+
+.dialogue-scene-text-panel {
+    min-height: 220px;
+}
+
+.dialogue-scene-line {
+    min-height: 112px;
+}
+
+.dialogue-scene-actions {
+    margin-top: 14px;
+    align-items: flex-end;
+}
+
+.dialogue-scene-skip-confirm-panel {
+    width: 420px;
+    max-width: 90%;
+}
+
+.dialogue-scene-confirm-title {
+    color: var(--story-accent-color);
+    font-size: 18px;
+    unity-font-style: bold;
+    margin-bottom: 8px;
+}
+
+.dialogue-scene-confirm-body {
+    color: var(--story-text-color);
+    white-space: normal;
+    margin-bottom: 16px;
+}
+
+.dialogue-scene-confirm-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.dialogue-scene-confirm-actions > Button {
+    margin-left: 10px;
+}

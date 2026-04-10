@@ -1,3 +1,6 @@
+using SM.Core;
+using SM.Meta;
+using SM.Unity.Narrative;
 using SM.Unity.UI;
 using SM.Unity.UI.Reward;
 using UnityEngine;
@@ -7,6 +10,7 @@ namespace SM.Unity;
 public sealed class RewardScreenController : MonoBehaviour
 {
     [SerializeField] private RuntimePanelHost panelHost = null!;
+    [SerializeField] private StorySceneFlowBridge _storyBridge = null!;
 
     private GameSessionRoot _root = null!;
     private GameLocalizationController _localization = null!;
@@ -23,10 +27,15 @@ public sealed class RewardScreenController : MonoBehaviour
         _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Reward);
         _presenter!.Initialize();
+        if (EnsureStoryBridgeReady())
+        {
+            _storyBridge.Advance(NarrativeMoment.RewardOpened, BuildStoryMomentContext());
+        }
     }
 
     private void OnDestroy()
     {
+        _storyBridge?.ClearPending();
         if (_localization != null)
         {
             _localization.LocaleChanged -= HandleLocaleChanged;
@@ -80,6 +89,34 @@ public sealed class RewardScreenController : MonoBehaviour
         _localization = _root.Localization;
         _contentText = new ContentTextResolver(_localization, _root.CombatContentLookup);
         return true;
+    }
+
+    private bool EnsureStoryBridgeReady()
+    {
+        if (_storyBridge != null)
+        {
+            return true;
+        }
+
+        _storyBridge = GetComponent<StorySceneFlowBridge>();
+        if (_storyBridge == null)
+        {
+            _storyBridge = gameObject.AddComponent<StorySceneFlowBridge>();
+        }
+
+        return _storyBridge != null;
+    }
+
+    private StoryMomentContext BuildStoryMomentContext()
+    {
+        var session = _root.SessionState;
+        return new StoryMomentContext
+        {
+            ChapterId = session.SelectedCampaignChapterId,
+            SiteId = session.SelectedCampaignSiteId,
+            NodeIndex = session.CurrentExpeditionNodeIndex,
+            RewardSummary = session.LastRewardApplicationSummary,
+        };
     }
 
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)

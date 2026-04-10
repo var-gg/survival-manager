@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="story-card-root" class="story-layer story-card-root">
+        <ui:Image name="story-card-background" class="story-card-background" />
+        <ui:VisualElement name="story-card-overlay" class="story-card-overlay">
+            <ui:VisualElement name="story-card-panel" class="story-panel story-card-panel">
+                <ui:Label name="story-card-title" class="story-card-title" text="Story Card" />
+                <ui:ScrollView name="story-card-body-scroll" class="story-card-body-scroll" mode="Vertical">
+                    <ui:Label name="story-card-body" class="story-card-body story-text--narrator" text="Card body" />
+                </ui:ScrollView>
+                <ui:VisualElement name="story-card-actions" class="story-card-actions">
+                    <ui:Button name="story-card-skip-button" class="ui-button story-skip-button" text="Skip" />
+                    <ui:Label name="story-card-continue-hint" class="story-continue-hint story-card-continue-hint" text="Tap to continue" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

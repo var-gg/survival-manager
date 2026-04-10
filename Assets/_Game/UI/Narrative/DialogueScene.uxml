@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="dialogue-scene-root" class="story-layer dialogue-scene-root">
+        <ui:VisualElement name="dialogue-scene-backdrop" class="dialogue-scene-backdrop" />
+        <ui:VisualElement name="dialogue-scene-layout" class="dialogue-scene-layout">
+            <ui:VisualElement name="dialogue-scene-left-slot" class="dialogue-scene-slot">
+                <ui:Image name="dialogue-scene-left-portrait" class="story-portrait dialogue-scene-portrait" />
+            </ui:VisualElement>
+            <ui:VisualElement name="dialogue-scene-center" class="dialogue-scene-center">
+                <ui:Label name="dialogue-scene-nameplate" class="story-speaker-name dialogue-scene-nameplate" text="Speaker" />
+                <ui:VisualElement name="dialogue-scene-text-panel" class="story-panel dialogue-scene-text-panel">
+                    <ui:Label name="dialogue-scene-line" class="dialogue-scene-line story-text--character" text="Dialogue line" />
+                    <ui:Label name="dialogue-scene-continue-hint" class="story-continue-hint dialogue-scene-continue-hint" text="Tap to continue" />
+                </ui:VisualElement>
+                <ui:VisualElement name="dialogue-scene-actions" class="dialogue-scene-actions">
+                    <ui:Button name="dialogue-scene-skip-all-button" class="ui-button story-skip-button" text="Skip Scene" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="dialogue-scene-right-slot" class="dialogue-scene-slot">
+                <ui:Image name="dialogue-scene-right-portrait" class="story-portrait dialogue-scene-portrait" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="dialogue-scene-skip-confirm-overlay" class="story-confirm-overlay dialogue-scene-skip-confirm-overlay">
+            <ui:VisualElement name="dialogue-scene-skip-confirm-panel" class="story-panel dialogue-scene-skip-confirm-panel">
+                <ui:Label name="dialogue-scene-skip-confirm-title" class="dialogue-scene-confirm-title" text="Skip this scene?" />
+                <ui:Label name="dialogue-scene-skip-confirm-body" class="dialogue-scene-confirm-body" text="This only skips presentation." />
+                <ui:VisualElement name="dialogue-scene-skip-confirm-actions" class="dialogue-scene-confirm-actions">
+                    <ui:Button name="dialogue-scene-skip-confirm-accept-button" class="ui-button story-confirm-button--primary" text="Skip" />
+                    <ui:Button name="dialogue-scene-skip-confirm-cancel-button" class="ui-button story-confirm-button--secondary" text="Cancel" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

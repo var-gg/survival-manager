@@ -83,7 +83,7 @@
 
 ## 내러티브 아키텍처 문서
 
-- `narrative-code-architecture.md`: story/dialogue/event definition, runtime state, save model, scene flow 삽입 지점
+- `narrative-code-architecture.md`: story/dialogue/event definition, runtime state, save model, `StorySceneFlowBridge` / `StoryPresentationRunner` playback adapter
 
 ## 기타 운영 문서
 

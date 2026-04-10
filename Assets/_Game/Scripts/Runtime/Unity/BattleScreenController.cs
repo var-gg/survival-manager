@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Combat.Services;
+using SM.Core;
+using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
+using SM.Unity.Narrative;
 using SM.Unity.UI;
 using SM.Unity.UI.Battle;
 using UnityEngine;
@@ -24,6 +27,7 @@ public sealed class BattleScreenController : MonoBehaviour
     [SerializeField] private RuntimePanelHost panelHost = null!;
     [SerializeField] private BattlePresentationController presentationController = null!;
     [SerializeField] private BattleCameraController cameraController = null!;
+    [SerializeField] private StorySceneFlowBridge _storyBridge = null!;
 
     private readonly List<BattleEvent> _recentLogs = new();
     private readonly List<string> _decisiveTimeline = new();
@@ -34,6 +38,7 @@ public sealed class BattleScreenController : MonoBehaviour
     private string _settingsStatusText = string.Empty;
     private GameSessionRoot _root = null!;
     private GameLocalizationController _localization = null!;
+    private ContentTextResolver _contentText = null!;
     private BattleUnitMetadataFormatter _metadataFormatter = null!;
     private BattleSimulator? _simulator;
     private BattleLoadoutSnapshot? _compiledSnapshot;
@@ -109,6 +114,7 @@ public sealed class BattleScreenController : MonoBehaviour
             _localization.LocaleChanged -= HandleLocaleChanged;
         }
 
+        _storyBridge?.ClearPending();
         ReleaseDebugOverlayResources();
         DisposeInputActions();
     }
@@ -335,6 +341,12 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
+        if (EnsureStoryBridgeReady())
+        {
+            _storyBridge.Advance(NarrativeMoment.BattleResolved, BuildStoryMomentContext(), _root.SceneFlow.GoToReward);
+            return;
+        }
+
         _root.SceneFlow.GoToReward();
     }
 
@@ -510,6 +522,7 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         _localization = _root.Localization;
+        _contentText ??= new ContentTextResolver(_localization, _root.CombatContentLookup);
         _metadataFormatter ??= new BattleUnitMetadataFormatter(_localization, _root.CombatContentLookup);
         return true;
     }
@@ -1063,6 +1076,34 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         RenderCurrentState();
+    }
+
+    private bool EnsureStoryBridgeReady()
+    {
+        if (_storyBridge != null)
+        {
+            return true;
+        }
+
+        _storyBridge = GetComponent<StorySceneFlowBridge>();
+        if (_storyBridge == null)
+        {
+            _storyBridge = gameObject.AddComponent<StorySceneFlowBridge>();
+        }
+
+        return _storyBridge != null;
+    }
+
+    private StoryMomentContext BuildStoryMomentContext()
+    {
+        var session = _root.SessionState;
+        return new StoryMomentContext
+        {
+            ChapterId = session.SelectedCampaignChapterId,
+            SiteId = session.SelectedCampaignSiteId,
+            NodeIndex = session.GetSelectedExpeditionNode()?.Index ?? session.CurrentExpeditionNodeIndex,
+            BattleSummary = session.LastBattleSummary,
+        };
     }
 
     private void EnsureSelectedUnit(BattleSimulationStep step)
