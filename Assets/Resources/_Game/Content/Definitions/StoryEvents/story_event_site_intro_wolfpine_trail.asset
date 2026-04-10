@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5214120449476137509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_site_intro_wolfpine_trail.effect.01
+  _kind: 3
+  _payload: DialogueScene
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: story_event_site_intro_wolfpine_trail
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
+  _id: story_event_site_intro_wolfpine_trail
+  _moment: 3
+  _priority: 100
+  _oncePolicy: 0
+  _conditions:
+  - {fileID: 3980376738723408519}
+  - {fileID: 7376655999250991481}
+  _effects:
+  - {fileID: 6910460639752942705}
+  - {fileID: -5214120449476137509}
+  _presentationKey: dialogue_scene_wolfpine_trail_intro
+--- !u!114 &3980376738723408519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_site_intro_wolfpine_trail.condition.00
+  _kind: 0
+  _operandA: chapter_ashen_gate
+  _operandB: 
+--- !u!114 &6910460639752942705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_site_intro_wolfpine_trail.effect.00
+  _kind: 1
+  _payload: story_flag_intro_wolfpine_trail
+--- !u!114 &7376655999250991481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_site_intro_wolfpine_trail.condition.01
+  _kind: 1
+  _operandA: site_wolfpine_trail
+  _operandB: 

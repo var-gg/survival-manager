@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 696cf146f9bd47cbb5ce0ed0f1ac95c6, type: 3}
+  m_Script: {fileID: 0}
   m_Name: character_priest
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CharacterDefinition
   Id: priest
   NameKey: content.character.priest.name
-  DescriptionKey: content.character.priest.description
+  DescriptionKey: content.character.priest.desc
   Race: {fileID: 11400000, guid: 732863225f9204842af76a32f0d75924, type: 2}
   Class: {fileID: 11400000, guid: 303ce1202540bc442896129adc2f364a, type: 2}
   DefaultArchetype: {fileID: 11400000, guid: 1c71bee10669b9044b81ad7bf0233553, type: 2}
-  DefaultRoleInstruction: {fileID: 11400000, guid: 878a4f8c30ad1cf4491ffabf9a038ec9, type: 2}
+  DefaultRoleInstruction: {fileID: 0}
   legacyDisplayName: 
   legacyDescription: 

@@ -4,8 +4,8 @@ internal static partial class NarrativeSeedData
 {
     private static partial ChapterBeatSeed[] CreateChapterBeats()
     {
-        return
-        [
+        return new[]
+        {
             Beat("beat.chapter_ashen_gate.site_ashen_gate.node_1", "chapter_ashen_gate", "site_ashen_gate", 1, "경계 돌파와 징후 확인", 28f, 69f, 8f, 3f),
             Beat("beat.chapter_ashen_gate.site_ashen_gate.node_2", "chapter_ashen_gate", "site_ashen_gate", 2, "초기 교전 규칙 확립", 33f, 63f, 10f, 3f),
             Beat("beat.chapter_ashen_gate.site_ashen_gate.node_3", "chapter_ashen_gate", "site_ashen_gate", 3, "엘리트 경비 격파", 40f, 54f, 9f, 10f),
@@ -56,6 +56,9 @@ internal static partial class NarrativeSeedData
             Beat("beat.chapter_heartforge_descent.site_worldscar_depths.node_3", "chapter_heartforge_descent", "site_worldscar_depths", 3, "돌이킬 수 없는 선택", 100f, 23f, 1f, 28f),
             Beat("beat.chapter_heartforge_descent.site_worldscar_depths.node_4", "chapter_heartforge_descent", "site_worldscar_depths", 4, "최종 적대체 격파", 100f, 9f, 0f, 100f),
             Beat("beat.chapter_heartforge_descent.site_worldscar_depths.node_5", "chapter_heartforge_descent", "site_worldscar_depths", 5, "종결과 엔드게임 해금", 80f, 72f, 10f, 92f),
-        ];
+        };
     }
 }
+
+
+

@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: e07258a0eb9c71f4fbedb2e399efe1cf, type: 3}
   m_Name: quick_battle_default
-  m_EditorClassIdentifier: SM.Unity:SM.Unity.Sandbox:CombatSandboxConfig
+  m_EditorClassIdentifier: 
   Id: quick_battle_default
   DisplayName: Quick Battle Default
   UseScenarioAuthoring: 1

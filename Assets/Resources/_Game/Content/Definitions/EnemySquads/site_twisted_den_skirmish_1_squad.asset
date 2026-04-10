@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_twisted_den_skirmish_1_squad_2
     NameKey: 
-    ArchetypeId: reaver
+    ArchetypeId: raider
     Anchor: 2
     Role: 0
     PositiveTraitId: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_twisted_den_skirmish_1_squad_3
     NameKey: 
-    ArchetypeId: raider
+    ArchetypeId: scout
     Anchor: 3
     Role: 0
     PositiveTraitId: 
@@ -52,7 +52,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_twisted_den_skirmish_1_squad_4
     NameKey: 
-    ArchetypeId: scout
+    ArchetypeId: shaman
     Anchor: 5
     Role: 0
     PositiveTraitId: 

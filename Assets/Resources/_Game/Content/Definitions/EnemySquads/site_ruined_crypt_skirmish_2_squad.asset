@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ruined_crypt_skirmish_2_squad_2
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: hexer
     Anchor: 2
     Role: 0
     PositiveTraitId: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ruined_crypt_skirmish_2_squad_3
     NameKey: 
-    ArchetypeId: reaver
+    ArchetypeId: priest
     Anchor: 3
     Role: 0
     PositiveTraitId: 
@@ -52,7 +52,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ruined_crypt_skirmish_2_squad_4
     NameKey: 
-    ArchetypeId: priest
+    ArchetypeId: marksman
     Anchor: 5
     Role: 0
     PositiveTraitId: 

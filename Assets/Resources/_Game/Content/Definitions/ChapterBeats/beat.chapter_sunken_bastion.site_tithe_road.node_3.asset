@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: beat.chapter_sunken_bastion.site_tithe_road.node_3
+  m_EditorClassIdentifier: SM.Content:SM.Content:ChapterBeatDefinition
+  _id: beat.chapter_sunken_bastion.site_tithe_road.node_3
+  _chapterId: chapter_sunken_bastion
+  _siteId: site_tithe_road
+  _nodeIndex: 3
+  _beatLabel: "\uC815\uD654 \uC758\uC2DD\uC758 \uC2E4\uCCB4 \uD655\uC778"
+  _tensionTarget: 65
+  _reliefTarget: 43
+  _humorTarget: 7
+  _catharsisTarget: 16

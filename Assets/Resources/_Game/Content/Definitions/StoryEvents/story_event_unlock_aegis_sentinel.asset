@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6715634028695302193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_unlock_aegis_sentinel.effect.01
+  _kind: 1
+  _payload: story_flag_aegis_sentinel_joined
+--- !u!114 &-4920550764725843022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_unlock_aegis_sentinel.effect.02
+  _kind: 3
+  _payload: ToastBanner
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: story_event_unlock_aegis_sentinel
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
+  _id: story_event_unlock_aegis_sentinel
+  _moment: 7
+  _priority: 300
+  _oncePolicy: 0
+  _conditions:
+  - {fileID: 6821973459359982484}
+  - {fileID: 2738385934265943470}
+  _effects:
+  - {fileID: 5060142369764107646}
+  - {fileID: -6715634028695302193}
+  - {fileID: -4920550764725843022}
+  _presentationKey: toast_unlock_aegis_sentinel
+--- !u!114 &2738385934265943470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_unlock_aegis_sentinel.condition.01
+  _kind: 1
+  _operandA: site_ruined_crypts
+  _operandB: 
+--- !u!114 &5060142369764107646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_unlock_aegis_sentinel.effect.00
+  _kind: 0
+  _payload: hero_aegis_sentinel
+--- !u!114 &6821973459359982484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_unlock_aegis_sentinel.condition.00
+  _kind: 0
+  _operandA: chapter_ruined_crypts
+  _operandB: 

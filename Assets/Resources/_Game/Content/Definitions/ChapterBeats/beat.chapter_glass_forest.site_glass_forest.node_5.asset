@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: beat.chapter_glass_forest.site_glass_forest.node_5
+  m_EditorClassIdentifier: SM.Content:SM.Content:ChapterBeatDefinition
+  _id: beat.chapter_glass_forest.site_glass_forest.node_5
+  _chapterId: chapter_glass_forest
+  _siteId: site_glass_forest
+  _nodeIndex: 5
+  _beatLabel: "Relicborn \uC804\uC0AC \uD569\uB958"
+  _tensionTarget: 65
+  _reliefTarget: 79
+  _humorTarget: 12
+  _catharsisTarget: 32

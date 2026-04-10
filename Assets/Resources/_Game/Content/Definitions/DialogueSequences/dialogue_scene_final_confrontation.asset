@@ -1,0 +1,268 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7510826699271658817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.11
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_final_confrontation.11
+  _emote: resolute
+  _autoAdvanceHint: 0
+--- !u!114 &-5399384411601219055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.01
+  _speakerId: npc_aldric
+  _textKey: loc.story.scene_final_confrontation.1
+  _emote: calm
+  _autoAdvanceHint: 0
+--- !u!114 &-3031809138534775489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.13
+  _speakerId: Narrator
+  _textKey: loc.story.scene_final_confrontation.13
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &-307133754430851329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.08
+  _speakerId: npc_aldric
+  _textKey: loc.story.scene_final_confrontation.8
+  _emote: sad
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_final_confrontation
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_final_confrontation
+  _lines:
+  - {fileID: 618110669814973746}
+  - {fileID: -5399384411601219055}
+  - {fileID: 7629480546189412252}
+  - {fileID: 1554490189135006280}
+  - {fileID: 5642539332903501457}
+  - {fileID: 2320150096630002189}
+  - {fileID: 6490707886761740953}
+  - {fileID: 6877591346762376465}
+  - {fileID: -307133754430851329}
+  - {fileID: 5196279476641519480}
+  - {fileID: 7012468887221683820}
+  - {fileID: -7510826699271658817}
+  - {fileID: 1166196326482246698}
+  - {fileID: -3031809138534775489}
+--- !u!114 &618110669814973746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_final_confrontation.0
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &1166196326482246698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.12
+  _speakerId: npc_aldric
+  _textKey: loc.story.scene_final_confrontation.12
+  _emote: resigned
+  _autoAdvanceHint: 0
+--- !u!114 &1554490189135006280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.03
+  _speakerId: npc_aldric
+  _textKey: loc.story.scene_final_confrontation.3
+  _emote: patient
+  _autoAdvanceHint: 0
+--- !u!114 &2320150096630002189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_final_confrontation.5
+  _emote: bitter
+  _autoAdvanceHint: 0
+--- !u!114 &5196279476641519480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.09
+  _speakerId: Narrator
+  _textKey: loc.story.scene_final_confrontation.9
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &5642539332903501457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.04
+  _speakerId: Narrator
+  _textKey: loc.story.scene_final_confrontation.4
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &6490707886761740953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.06
+  _speakerId: npc_aldric
+  _textKey: loc.story.scene_final_confrontation.6
+  _emote: measured
+  _autoAdvanceHint: 0
+--- !u!114 &6877591346762376465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.07
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_final_confrontation.7
+  _emote: cold
+  _autoAdvanceHint: 0
+--- !u!114 &7012468887221683820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.10
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_final_confrontation.10
+  _emote: flat
+  _autoAdvanceHint: 0
+--- !u!114 &7629480546189412252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.02
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_final_confrontation.2
+  _emote: defiant
+  _autoAdvanceHint: 0

@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8351379150275577370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_site_intro_tithe_road.effect.00
+  _kind: 1
+  _payload: story_flag_intro_tithe_road
+--- !u!114 &-3568203641586242073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_site_intro_tithe_road.effect.01
+  _kind: 3
+  _payload: DialogueScene
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: story_event_site_intro_tithe_road
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
+  _id: story_event_site_intro_tithe_road
+  _moment: 3
+  _priority: 100
+  _oncePolicy: 0
+  _conditions:
+  - {fileID: 6298432203281026655}
+  - {fileID: 2349770909195046970}
+  _effects:
+  - {fileID: -8351379150275577370}
+  - {fileID: -3568203641586242073}
+  _presentationKey: dialogue_scene_tithe_road_intro
+--- !u!114 &2349770909195046970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_site_intro_tithe_road.condition.01
+  _kind: 1
+  _operandA: site_tithe_road
+  _operandB: 
+--- !u!114 &6298432203281026655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_site_intro_tithe_road.condition.00
+  _kind: 0
+  _operandA: chapter_sunken_bastion
+  _operandB: 

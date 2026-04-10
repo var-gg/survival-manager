@@ -29,7 +29,5 @@ MonoBehaviour:
   - reward_source_boss
   - faction_ashen_vanguard
   - boss
-  - encounter_family_bastion_front
-  - answer_lane_guard_anchor
   legacyDisplayName: 
   legacyDescription: 

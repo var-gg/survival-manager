@@ -1,0 +1,196 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7129766076425195149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.03
+  _speakerId: Narrator
+  _textKey: loc.story.scene_wolfpine_trail_intro.3
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4776753713533452510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.02
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_wolfpine_trail_intro.2
+  _emote: solemn
+  _autoAdvanceHint: 0
+--- !u!114 &-2270265422837675192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.09
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_wolfpine_trail_intro.9
+  _emote: sardonic
+  _autoAdvanceHint: 0
+--- !u!114 &-411312606777260380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_wolfpine_trail_intro.5
+  _emote: bitter
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_wolfpine_trail_intro
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_wolfpine_trail_intro
+  _lines:
+  - {fileID: 927520683445493809}
+  - {fileID: 5487791313386735455}
+  - {fileID: -4776753713533452510}
+  - {fileID: -7129766076425195149}
+  - {fileID: 3267290234620326202}
+  - {fileID: -411312606777260380}
+  - {fileID: 2513959991022688469}
+  - {fileID: 8177244719559893466}
+  - {fileID: 3103395414512860088}
+  - {fileID: -2270265422837675192}
+--- !u!114 &927520683445493809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_wolfpine_trail_intro.0
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &2513959991022688469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.06
+  _speakerId: Narrator
+  _textKey: loc.story.scene_wolfpine_trail_intro.6
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &3103395414512860088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.08
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_wolfpine_trail_intro.8
+  _emote: resolute
+  _autoAdvanceHint: 0
+--- !u!114 &3267290234620326202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.04
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_wolfpine_trail_intro.4
+  _emote: tense
+  _autoAdvanceHint: 0
+--- !u!114 &5487791313386735455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_wolfpine_trail_intro.1
+  _emote: grim
+  _autoAdvanceHint: 0
+--- !u!114 &8177244719559893466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.07
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_wolfpine_trail_intro.7
+  _emote: solemn
+  _autoAdvanceHint: 0

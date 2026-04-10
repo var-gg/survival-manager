@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7711552343781708161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_aldric_whisper.effect.01
+  _kind: 3
+  _payload: DialogueScene
+--- !u!114 &-7220794227966084070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_aldric_whisper.effect.00
+  _kind: 1
+  _payload: story_flag_aldric_whisper
+--- !u!114 &-631035010035810905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_aldric_whisper.condition.01
+  _kind: 1
+  _operandA: site_glass_forest
+  _operandB: 
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: story_event_aldric_whisper
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
+  _id: story_event_aldric_whisper
+  _moment: 5
+  _priority: 400
+  _oncePolicy: 0
+  _conditions:
+  - {fileID: 8978234429349314249}
+  - {fileID: -631035010035810905}
+  - {fileID: 2468486616944414826}
+  - {fileID: 1941865065912413391}
+  _effects:
+  - {fileID: -7220794227966084070}
+  - {fileID: -7711552343781708161}
+  _presentationKey: dialogue_scene_aldric_whisper
+--- !u!114 &1941865065912413391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_aldric_whisper.condition.03
+  _kind: 3
+  _operandA: story_flag_aldric_face_seen
+  _operandB: 
+--- !u!114 &2468486616944414826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_aldric_whisper.condition.02
+  _kind: 2
+  _operandA: 2
+  _operandB: 
+--- !u!114 &8978234429349314249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_aldric_whisper.condition.00
+  _kind: 0
+  _operandA: chapter_glass_forest
+  _operandB: 

@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 696cf146f9bd47cbb5ce0ed0f1ac95c6, type: 3}
+  m_Script: {fileID: 0}
   m_Name: character_raider
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CharacterDefinition
   Id: raider
   NameKey: content.character.raider.name
-  DescriptionKey: content.character.raider.description
+  DescriptionKey: content.character.raider.desc
   Race: {fileID: 11400000, guid: 9dd3fb1286383554abea4725a9f7c4c4, type: 2}
   Class: {fileID: 11400000, guid: ae9c9da2287c8624e818c771bc678450, type: 2}
   DefaultArchetype: {fileID: 11400000, guid: 8b72a476e54623846b183975afd0b447, type: 2}
-  DefaultRoleInstruction: {fileID: 11400000, guid: a6f8bce66c670e1418579d29f11206bc, type: 2}
+  DefaultRoleInstruction: {fileID: 0}
   legacyDisplayName: 
   legacyDescription: 

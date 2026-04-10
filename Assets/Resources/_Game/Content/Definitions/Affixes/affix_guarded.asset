@@ -32,6 +32,9 @@ MonoBehaviour:
   BudgetScore: 0
   BudgetCard:
     Domain: 4
+    Rarity: 0
+    PowerBand: 2
+    RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0

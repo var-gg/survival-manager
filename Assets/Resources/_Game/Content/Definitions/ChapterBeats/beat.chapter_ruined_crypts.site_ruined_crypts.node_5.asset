@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: beat.chapter_ruined_crypts.site_ruined_crypts.node_5
+  m_EditorClassIdentifier: SM.Content:SM.Content:ChapterBeatDefinition
+  _id: beat.chapter_ruined_crypts.site_ruined_crypts.node_5
+  _chapterId: chapter_ruined_crypts
+  _siteId: site_ruined_crypts
+  _nodeIndex: 5
+  _beatLabel: "\uC720\uBB3C \uC218\uD638 \uC2E0\uD638 \uAC10\uC9C0"
+  _tensionTarget: 45
+  _reliefTarget: 88
+  _humorTarget: 14
+  _catharsisTarget: 28

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: hero_lore_prism_seeker
+  m_EditorClassIdentifier: SM.Content:SM.Content:HeroLoreDefinition
+  _id: hero_lore_prism_seeker
+  _heroId: hero_prism_seeker
+  _tier: 2
+  _beatBudget: 1
+  _canonBio: "\uC9C4\uC2E4 \uCD94\uC801\uC790\n\n\uC9C4\uC2E4 \uCD94\uC801\uC790"
+  _unresolvedHook: 

@@ -1,0 +1,250 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8397564357426519080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.08
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_aldric_journal.8
+  _emote: grim
+  _autoAdvanceHint: 0
+--- !u!114 &-5829379900705620364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_aldric_journal.5
+  _emote: bitter
+  _autoAdvanceHint: 0
+--- !u!114 &-4089951576515710180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.09
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_aldric_journal.9
+  _emote: sardonic
+  _autoAdvanceHint: 0
+--- !u!114 &-3625638660742239055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.03
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_aldric_journal.3
+  _emote: grim
+  _autoAdvanceHint: 0
+--- !u!114 &-2724310848383443627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_aldric_journal.0
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1583555986361475814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.10
+  _speakerId: Narrator
+  _textKey: loc.story.scene_aldric_journal.10
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &-457144081734024775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.04
+  _speakerId: Narrator
+  _textKey: loc.story.scene_aldric_journal.4
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_aldric_journal
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_aldric_journal
+  _lines:
+  - {fileID: -2724310848383443627}
+  - {fileID: 8166504183675514479}
+  - {fileID: 1532944966753927057}
+  - {fileID: -3625638660742239055}
+  - {fileID: -457144081734024775}
+  - {fileID: -5829379900705620364}
+  - {fileID: 2918343837368694177}
+  - {fileID: 3501594732907907469}
+  - {fileID: -8397564357426519080}
+  - {fileID: -4089951576515710180}
+  - {fileID: -1583555986361475814}
+  - {fileID: 4679923082006241805}
+  - {fileID: 5787564850383602364}
+--- !u!114 &1532944966753927057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.02
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_aldric_journal.2
+  _emote: skeptical
+  _autoAdvanceHint: 0
+--- !u!114 &2918343837368694177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.06
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_aldric_journal.6
+  _emote: weary
+  _autoAdvanceHint: 0
+--- !u!114 &3501594732907907469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.07
+  _speakerId: Narrator
+  _textKey: loc.story.scene_aldric_journal.7
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &4679923082006241805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.11
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_aldric_journal.11
+  _emote: grim
+  _autoAdvanceHint: 0
+--- !u!114 &5787564850383602364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.12
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_aldric_journal.12
+  _emote: skeptical
+  _autoAdvanceHint: 0
+--- !u!114 &8166504183675514479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_aldric_journal.1
+  _emote: shock
+  _autoAdvanceHint: 0

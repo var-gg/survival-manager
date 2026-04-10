@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8720120316545565496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_midpoint_reveal.condition.00
+  _kind: 0
+  _operandA: chapter_ruined_crypts
+  _operandB: 
+--- !u!114 &-5759351696271890679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_midpoint_reveal.effect.00
+  _kind: 1
+  _payload: story_flag_midpoint_revealed
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: story_event_midpoint_reveal
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
+  _id: story_event_midpoint_reveal
+  _moment: 7
+  _priority: 600
+  _oncePolicy: 0
+  _conditions:
+  - {fileID: -8720120316545565496}
+  - {fileID: 7946239922341902881}
+  _effects:
+  - {fileID: -5759351696271890679}
+  - {fileID: 427294291051782632}
+  _presentationKey: dialogue_scene_midpoint_reveal
+--- !u!114 &427294291051782632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_midpoint_reveal.effect.01
+  _kind: 3
+  _payload: DialogueScene
+--- !u!114 &7946239922341902881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_midpoint_reveal.condition.01
+  _kind: 1
+  _operandA: site_bone_orchard
+  _operandB: 

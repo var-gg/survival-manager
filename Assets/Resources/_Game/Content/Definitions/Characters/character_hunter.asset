@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 696cf146f9bd47cbb5ce0ed0f1ac95c6, type: 3}
+  m_Script: {fileID: 0}
   m_Name: character_hunter
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CharacterDefinition
   Id: hunter
   NameKey: content.character.hunter.name
-  DescriptionKey: content.character.hunter.description
+  DescriptionKey: content.character.hunter.desc
   Race: {fileID: 11400000, guid: 732863225f9204842af76a32f0d75924, type: 2}
   Class: {fileID: 11400000, guid: 9f586812c5ec3d94586eb6362c6288fb, type: 2}
   DefaultArchetype: {fileID: 11400000, guid: a4abfcae6c1379b4e83f0bb364c59f83, type: 2}
-  DefaultRoleInstruction: {fileID: 11400000, guid: dbc93371803665447a7a2c62c73c0c3f, type: 2}
+  DefaultRoleInstruction: {fileID: 0}
   legacyDisplayName: 
   legacyDescription: 

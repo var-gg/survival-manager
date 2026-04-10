@@ -25,7 +25,7 @@ MonoBehaviour:
   Members:
   - Id: site_cinder_watch_skirmish_1_squad_1
     NameKey: 
-    ArchetypeId: marksman
+    ArchetypeId: hunter
     Anchor: 0
     Role: 0
     PositiveTraitId: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_cinder_watch_skirmish_1_squad_3
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: raider
     Anchor: 3
     Role: 0
     PositiveTraitId: 

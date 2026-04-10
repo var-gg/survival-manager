@@ -353,6 +353,12 @@ public static class SampleSeedGenerator
         return false;
     }
 
+    private static bool HasSerializedIdText(string path, string expectedId)
+    {
+        return HasAssetText(path, $"Id: {expectedId}")
+               || HasAssetText(path, $"_id: {expectedId}");
+    }
+
     private static bool HasAssetNumericFieldAboveZero(string path, string fieldName)
     {
         foreach (var candidatePath in EnumerateProjectCandidatePaths(path))
@@ -396,7 +402,7 @@ public static class SampleSeedGenerator
             return string.Equals(selector(asset), expectedId, System.StringComparison.Ordinal);
         }
 
-        return HasAssetText(path, $"Id: {expectedId}");
+        return HasSerializedIdText(path, expectedId);
     }
 
     private static bool HasCanonicalAsset<T>(string path, System.Func<T, bool> predicate) where T : UnityEngine.Object

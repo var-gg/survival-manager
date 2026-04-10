@@ -25,7 +25,7 @@ MonoBehaviour:
   Members:
   - Id: site_ruined_crypt_elite_1_squad_1
     NameKey: 
-    ArchetypeId: marksman
+    ArchetypeId: bulwark
     Anchor: 0
     Role: 0
     PositiveTraitId: 
@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ruined_crypt_elite_1_squad_2
     NameKey: 
-    ArchetypeId: hunter
+    ArchetypeId: hexer
     Anchor: 2
     Role: 0
     PositiveTraitId: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ruined_crypt_elite_1_squad_3
     NameKey: 
-    ArchetypeId: reaver
+    ArchetypeId: priest
     Anchor: 3
     Role: 0
     PositiveTraitId: 
@@ -52,7 +52,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ruined_crypt_elite_1_squad_4
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: marksman
     Anchor: 5
     Role: 0
     PositiveTraitId: 

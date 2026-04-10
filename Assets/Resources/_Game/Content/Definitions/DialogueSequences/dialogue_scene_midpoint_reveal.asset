@@ -1,0 +1,232 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8820007929520957785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.08
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_midpoint_reveal.8
+  _emote: resolute
+  _autoAdvanceHint: 0
+--- !u!114 &-3281102804762770653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.06
+  _speakerId: Narrator
+  _textKey: loc.story.scene_midpoint_reveal.6
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3022141861153717159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.03
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_midpoint_reveal.3
+  _emote: dry
+  _autoAdvanceHint: 0
+--- !u!114 &-2549679951000702201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.07
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_midpoint_reveal.7
+  _emote: quiet
+  _autoAdvanceHint: 0
+--- !u!114 &-2264755401946587280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.09
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_midpoint_reveal.9
+  _emote: bitter
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_midpoint_reveal
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_midpoint_reveal
+  _lines:
+  - {fileID: 780233491176922913}
+  - {fileID: 4868127578561881702}
+  - {fileID: 3101689093758286517}
+  - {fileID: -3022141861153717159}
+  - {fileID: 8909186862691587742}
+  - {fileID: 7963911408933236706}
+  - {fileID: -3281102804762770653}
+  - {fileID: -2549679951000702201}
+  - {fileID: -8820007929520957785}
+  - {fileID: -2264755401946587280}
+  - {fileID: 6560916722654768450}
+  - {fileID: 156750244517876573}
+--- !u!114 &156750244517876573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.11
+  _speakerId: Narrator
+  _textKey: loc.story.scene_midpoint_reveal.11
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &780233491176922913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_midpoint_reveal.0
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &3101689093758286517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.02
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_midpoint_reveal.2
+  _emote: shock
+  _autoAdvanceHint: 0
+--- !u!114 &4868127578561881702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.01
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_midpoint_reveal.1
+  _emote: grim
+  _autoAdvanceHint: 0
+--- !u!114 &6560916722654768450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.10
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_midpoint_reveal.10
+  _emote: flat
+  _autoAdvanceHint: 0
+--- !u!114 &7963911408933236706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.05
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_midpoint_reveal.5
+  _emote: flat
+  _autoAdvanceHint: 0
+--- !u!114 &8909186862691587742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_midpoint_reveal.line.04
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_midpoint_reveal.4
+  _emote: defiant
+  _autoAdvanceHint: 0

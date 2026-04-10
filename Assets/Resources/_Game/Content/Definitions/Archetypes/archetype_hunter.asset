@@ -250,7 +250,7 @@ MonoBehaviour:
   FootprintProfile: {fileID: 11400000, guid: a81b3870596764c429790a3a0e75a089, type: 2}
   BehaviorProfile: {fileID: 11400000, guid: 694569802d1952445a6d582f97449372, type: 2}
   MobilityProfile: {fileID: 11400000, guid: 90f39a3f53210ab4697d716b89c641a6, type: 2}
-  BaseMaxHealth: 68
+  BaseMaxHealth: 18
   BaseArmor: 2
   BaseResist: 0
   BaseBarrierPower: 0
@@ -283,7 +283,7 @@ MonoBehaviour:
   BaseProjectileSpeed: 0
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
-  BaseAttackCooldown: 0.4
-  BaseLeashDistance: 8
+  BaseAttackCooldown: 1
+  BaseLeashDistance: 4.6
   BaseTargetSwitchDelay: 0.3
   legacyDisplayName: 

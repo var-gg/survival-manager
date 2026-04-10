@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: beat.chapter_ashen_gate.site_ashen_gate.node_3
+  m_EditorClassIdentifier: SM.Content:SM.Content:ChapterBeatDefinition
+  _id: beat.chapter_ashen_gate.site_ashen_gate.node_3
+  _chapterId: chapter_ashen_gate
+  _siteId: site_ashen_gate
+  _nodeIndex: 3
+  _beatLabel: "\uC5D8\uB9AC\uD2B8 \uACBD\uBE44 \uACA9\uD30C"
+  _tensionTarget: 40
+  _reliefTarget: 54
+  _humorTarget: 9
+  _catharsisTarget: 10

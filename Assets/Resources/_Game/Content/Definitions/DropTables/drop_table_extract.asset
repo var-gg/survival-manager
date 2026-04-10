@@ -23,17 +23,20 @@ MonoBehaviour:
     RarityBracket: 0
     Weight: 1
     IsGuaranteed: 1
+    RequiredContextTags: []
   - Id: ember_dust_extract
     RewardType: 6
     Amount: 5
     RarityBracket: 1
     Weight: 1
     IsGuaranteed: 1
+    RequiredContextTags: []
   - Id: echo_extract
     RewardType: 2
     Amount: 35
     RarityBracket: 1
     Weight: 2
     IsGuaranteed: 0
+    RequiredContextTags: []
   legacyDisplayName: 
   legacyDescription: 

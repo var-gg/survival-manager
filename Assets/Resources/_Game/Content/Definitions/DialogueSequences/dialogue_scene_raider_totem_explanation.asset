@@ -1,0 +1,196 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7738965270282976525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_totem_explanation.line.04
+  _speakerId: Narrator
+  _textKey: loc.story.scene_raider_totem_explanation.4
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6466978488195003660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_totem_explanation.line.08
+  _speakerId: Narrator
+  _textKey: loc.story.scene_raider_totem_explanation.8
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6111954458768664222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_totem_explanation.line.01
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_totem_explanation.1
+  _emote: solemn
+  _autoAdvanceHint: 0
+--- !u!114 &-4020255704761924457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_totem_explanation.line.09
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_raider_totem_explanation.9
+  _emote: grim
+  _autoAdvanceHint: 0
+--- !u!114 &-1091589979435412745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_totem_explanation.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_totem_explanation.5
+  _emote: shock
+  _autoAdvanceHint: 0
+--- !u!114 &-939777044893523825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_totem_explanation.line.07
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_totem_explanation.7
+  _emote: bitter
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_raider_totem_explanation
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_raider_totem_explanation
+  _lines:
+  - {fileID: 8876140736513992175}
+  - {fileID: -6111954458768664222}
+  - {fileID: 1420664941507353512}
+  - {fileID: 7082042279152474664}
+  - {fileID: -7738965270282976525}
+  - {fileID: -1091589979435412745}
+  - {fileID: 7016906665729242979}
+  - {fileID: -939777044893523825}
+  - {fileID: -6466978488195003660}
+  - {fileID: -4020255704761924457}
+--- !u!114 &1420664941507353512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_totem_explanation.line.02
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_raider_totem_explanation.2
+  _emote: curious
+  _autoAdvanceHint: 0
+--- !u!114 &7016906665729242979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_totem_explanation.line.06
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_raider_totem_explanation.6
+  _emote: shock
+  _autoAdvanceHint: 0
+--- !u!114 &7082042279152474664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_totem_explanation.line.03
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_totem_explanation.3
+  _emote: solemn
+  _autoAdvanceHint: 0
+--- !u!114 &8876140736513992175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_totem_explanation.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_raider_totem_explanation.0
+  _emote: 
+  _autoAdvanceHint: 0

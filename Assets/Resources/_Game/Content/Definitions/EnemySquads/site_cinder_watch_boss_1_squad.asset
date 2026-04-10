@@ -25,7 +25,7 @@ MonoBehaviour:
   Members:
   - Id: site_cinder_watch_boss_1_squad_captain
     NameKey: 
-    ArchetypeId: reaver
+    ArchetypeId: marksman
     Anchor: 1
     Role: 1
     PositiveTraitId: 
@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_cinder_watch_boss_1_squad_escort_1
     NameKey: 
-    ArchetypeId: raider
+    ArchetypeId: scout
     Anchor: 3
     Role: 2
     PositiveTraitId: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_cinder_watch_boss_1_squad_escort_2
     NameKey: 
-    ArchetypeId: marksman
+    ArchetypeId: priest
     Anchor: 5
     Role: 2
     PositiveTraitId: 

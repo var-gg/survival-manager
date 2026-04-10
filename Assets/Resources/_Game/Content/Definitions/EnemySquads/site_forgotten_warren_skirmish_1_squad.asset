@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_forgotten_warren_skirmish_1_squad_3
     NameKey: 
-    ArchetypeId: hunter
+    ArchetypeId: shaman
     Anchor: 3
     Role: 0
     PositiveTraitId: 
@@ -52,7 +52,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_forgotten_warren_skirmish_1_squad_4
     NameKey: 
-    ArchetypeId: slayer
+    ArchetypeId: hunter
     Anchor: 5
     Role: 0
     PositiveTraitId: 

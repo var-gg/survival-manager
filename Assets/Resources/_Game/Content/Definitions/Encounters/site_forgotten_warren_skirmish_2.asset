@@ -29,7 +29,5 @@ MonoBehaviour:
   - reward_source_skirmish
   - faction_warren_pack
   - skirmish
-  - encounter_family_summon_pressure
-  - answer_lane_anti_swarm_persistence
   legacyDisplayName: 
   legacyDescription: 

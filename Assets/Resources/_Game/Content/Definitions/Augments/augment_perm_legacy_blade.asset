@@ -40,7 +40,7 @@ MonoBehaviour:
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
   Category: 0
-  FamilyId: hunt_line
+  FamilyId: permanent_legacy
   Tier: 1
   OfferWeight: 1
   OfferBucket: 0

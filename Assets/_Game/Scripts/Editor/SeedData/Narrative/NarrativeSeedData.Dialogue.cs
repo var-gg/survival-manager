@@ -4,8 +4,8 @@ internal static partial class NarrativeSeedData
 {
     private static partial DialogueSequenceSeed[] CreateDialogueSequences()
     {
-        return
-        [
+        return new[]
+        {
             Seq("dialogue_scene_ashen_gate_intro", @"
 Narrator||재가 바람에 실려 온다. 국경문의 철 파편이 들판에 박혀 있고, 그 위로 까마귀 한 마리가 움직이지 않는다.
 Dawn Priest|resolute|""집정관 회의의 명에 따라, 이 문 너머를 조사합니다. 영원한 질서의 이름으로.""
@@ -665,6 +665,8 @@ Dawn Priest|quiet|""끝났습니다.""
 Pack Raider|quiet|""...끝났어.""
 Narrator||세 사람이 마을로 걸어 들어간다. 빛이 등 뒤에서 비추고 있다. 한 명이 빠져 있다. 하지만 서 있다.
 "),
-        ];
+        };
     }
 }
+
+

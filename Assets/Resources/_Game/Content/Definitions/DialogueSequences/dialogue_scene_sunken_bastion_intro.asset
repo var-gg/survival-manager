@@ -1,0 +1,232 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7709280849958752494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.09
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_sunken_bastion_intro.9
+  _emote: bitter
+  _autoAdvanceHint: 0
+--- !u!114 &-5493492526967180304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.06
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_sunken_bastion_intro.6
+  _emote: skeptical
+  _autoAdvanceHint: 0
+--- !u!114 &-5479504130348119378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.02
+  _speakerId: Narrator
+  _textKey: loc.story.scene_sunken_bastion_intro.2
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &-5069019257179831826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.07
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_sunken_bastion_intro.7
+  _emote: grim
+  _autoAdvanceHint: 0
+--- !u!114 &-3163704137041157696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.04
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_sunken_bastion_intro.4
+  _emote: sardonic
+  _autoAdvanceHint: 0
+--- !u!114 &-2552654905463345338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.05
+  _speakerId: Narrator
+  _textKey: loc.story.scene_sunken_bastion_intro.5
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2471993726582024941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.03
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_sunken_bastion_intro.3
+  _emote: weary
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_sunken_bastion_intro
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_sunken_bastion_intro
+  _lines:
+  - {fileID: 2928719921666875365}
+  - {fileID: 1176597361025456739}
+  - {fileID: -5479504130348119378}
+  - {fileID: -2471993726582024941}
+  - {fileID: -3163704137041157696}
+  - {fileID: -2552654905463345338}
+  - {fileID: -5493492526967180304}
+  - {fileID: -5069019257179831826}
+  - {fileID: 4804593602741823800}
+  - {fileID: -7709280849958752494}
+  - {fileID: 7984314384106056191}
+  - {fileID: 2699712433231332508}
+--- !u!114 &1176597361025456739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_sunken_bastion_intro.1
+  _emote: shock
+  _autoAdvanceHint: 0
+--- !u!114 &2699712433231332508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.11
+  _speakerId: Narrator
+  _textKey: loc.story.scene_sunken_bastion_intro.11
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &2928719921666875365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_sunken_bastion_intro.0
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &4804593602741823800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.08
+  _speakerId: Narrator
+  _textKey: loc.story.scene_sunken_bastion_intro.8
+  _emote: 
+  _autoAdvanceHint: 0
+--- !u!114 &7984314384106056191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sunken_bastion_intro.line.10
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_sunken_bastion_intro.10
+  _emote: resolute
+  _autoAdvanceHint: 0

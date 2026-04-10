@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_cinder_watch_elite_1_squad_2
     NameKey: 
-    ArchetypeId: hunter
+    ArchetypeId: bulwark
     Anchor: 2
     Role: 0
     PositiveTraitId: 
@@ -52,7 +52,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_cinder_watch_elite_1_squad_4
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: hexer
     Anchor: 5
     Role: 0
     PositiveTraitId: 

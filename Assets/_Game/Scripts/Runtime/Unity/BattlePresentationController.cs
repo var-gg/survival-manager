@@ -393,7 +393,7 @@ public sealed class BattlePresentationController : MonoBehaviour
         {
             var baseColor = new Color(0.20f, 0.22f, 0.25f, 1f);
             var boosted = new Color(0.48f, 0.52f, 0.58f, 1f);
-            BattlePresentationMaterialFactory.ApplyColor(renderer.material, Color.Lerp(baseColor, boosted, boost));
+            BattlePresentationMaterialFactory.ApplyColor(renderer.sharedMaterial, Color.Lerp(baseColor, boosted, boost));
         }
 
         foreach (var (key, renderer) in _anchorPlateRenderers)
@@ -411,7 +411,7 @@ public sealed class BattlePresentationController : MonoBehaviour
             var color = key == _selectedAnchorKey
                 ? selected
                 : Color.Lerp(baseColor, boosted, boost);
-            BattlePresentationMaterialFactory.ApplyColor(renderer.material, color);
+            BattlePresentationMaterialFactory.ApplyColor(renderer.sharedMaterial, color);
         }
     }
 
@@ -426,7 +426,14 @@ public sealed class BattlePresentationController : MonoBehaviour
         var collider = block.GetComponent<Collider>();
         if (collider != null)
         {
-            Destroy(collider);
+            if (Application.isPlaying)
+            {
+                Destroy(collider);
+            }
+            else
+            {
+                DestroyImmediate(collider);
+            }
         }
 
         var renderer = block.GetComponent<Renderer>();

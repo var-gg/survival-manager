@@ -23,11 +23,13 @@ MonoBehaviour:
     RarityBracket: 2
     Weight: 1
     IsGuaranteed: 1
+    RequiredContextTags: []
   - Id: echo_crystal_shrine
     RewardType: 7
     Amount: 1
     RarityBracket: 1
     Weight: 2
     IsGuaranteed: 0
+    RequiredContextTags: []
   legacyDisplayName: 
   legacyDescription: 

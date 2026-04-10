@@ -17,15 +17,14 @@ MonoBehaviour:
   DescriptionKey: content.boss_overlay.boss_overlay_twisted_den.desc
   PhaseTrigger: 1
   ThreatCost: 1
-  SignatureAuraTag: boss_aura_control
-  SignatureUtilityTag: boss_utility_lockdown
+  SignatureAuraTag: boss_aura_curse
+  SignatureUtilityTag: boss_utility_revive
   RewardDropTags:
   - boss
   - boss_overlay_twisted_den
-  - overlay_ask_control
   AppliedStatuses:
-  - Id: boss_overlay_twisted_den_root
-    StatusId: root
+  - Id: boss_overlay_twisted_den_guarded
+    StatusId: guarded
     DurationSeconds: 999
     Magnitude: 0
     MaxStacks: 1

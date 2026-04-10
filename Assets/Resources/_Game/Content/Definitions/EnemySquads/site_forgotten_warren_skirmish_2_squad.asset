@@ -25,7 +25,7 @@ MonoBehaviour:
   Members:
   - Id: site_forgotten_warren_skirmish_2_squad_1
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: reaver
     Anchor: 0
     Role: 0
     PositiveTraitId: 
@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_forgotten_warren_skirmish_2_squad_2
     NameKey: 
-    ArchetypeId: shaman
+    ArchetypeId: scout
     Anchor: 2
     Role: 0
     PositiveTraitId: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_forgotten_warren_skirmish_2_squad_3
     NameKey: 
-    ArchetypeId: scout
+    ArchetypeId: shaman
     Anchor: 3
     Role: 0
     PositiveTraitId: 
@@ -52,7 +52,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_forgotten_warren_skirmish_2_squad_4
     NameKey: 
-    ArchetypeId: raider
+    ArchetypeId: hunter
     Anchor: 5
     Role: 0
     PositiveTraitId: 

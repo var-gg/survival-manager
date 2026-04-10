@@ -178,7 +178,11 @@ internal static partial class NarrativeSeedData
     private static string[] BuildStoryFlags()
     {
         return StoryEvents
-            .SelectMany(seed => seed.Conditions)
+            .SelectMany(seed => seed.Conditions
+                .Where(condition =>
+                    condition.Kind == StoryConditionKind.FlagSet ||
+                    condition.Kind == StoryConditionKind.FlagNotSet)
+                .Select(condition => condition.OperandA))
             .Concat(StoryEvents
                 .SelectMany(seed => seed.Effects)
                 .Select(effect => effect.Kind switch

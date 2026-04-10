@@ -25,79 +25,25 @@ MonoBehaviour:
     IsGuaranteed: 1
     RequiredContextTags: []
   - Id: ember_dust_elite
-    RewardType: 7
+    RewardType: 6
     Amount: 4
     RarityBracket: 1
     Weight: 1
     IsGuaranteed: 1
     RequiredContextTags: []
   - Id: item_bone_blade
-    RewardType: 3
+    RewardType: 2
     Amount: 1
     RarityBracket: 2
     Weight: 3
     IsGuaranteed: 0
     RequiredContextTags: []
   - Id: skill_precision_shot
-    RewardType: 10
+    RewardType: 9
     Amount: 1
     RarityBracket: 2
     Weight: 2
     IsGuaranteed: 0
     RequiredContextTags: []
-  - Id: support_anchored
-    RewardType: 10
-    Amount: 1
-    RarityBracket: 2
-    Weight: 1
-    IsGuaranteed: 1
-    RequiredContextTags:
-    - site_ashen_gate
-    - answer_lane_guard_anchor
-  - Id: support_hunter_mark
-    RewardType: 10
-    Amount: 1
-    RarityBracket: 2
-    Weight: 1
-    IsGuaranteed: 1
-    RequiredContextTags:
-    - site_cinder_watch
-    - answer_lane_reach_anti_carry
-  - Id: support_lingering
-    RewardType: 10
-    Amount: 1
-    RarityBracket: 2
-    Weight: 1
-    IsGuaranteed: 1
-    RequiredContextTags:
-    - site_forgotten_warren
-    - answer_lane_anti_swarm_persistence
-  - Id: support_swift
-    RewardType: 10
-    Amount: 1
-    RarityBracket: 2
-    Weight: 1
-    IsGuaranteed: 1
-    RequiredContextTags:
-    - site_twisted_den
-    - answer_lane_peel_cleanse
-  - Id: support_piercing
-    RewardType: 10
-    Amount: 1
-    RarityBracket: 2
-    Weight: 1
-    IsGuaranteed: 1
-    RequiredContextTags:
-    - site_ruined_crypt
-    - answer_lane_anti_sustain_finish
-  - Id: support_echo
-    RewardType: 10
-    Amount: 1
-    RarityBracket: 2
-    Weight: 1
-    IsGuaranteed: 1
-    RequiredContextTags:
-    - site_grave_sanctum
-    - answer_lane_hybrid_boss_prep
   legacyDisplayName: 
   legacyDescription: 
