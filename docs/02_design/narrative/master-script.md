@@ -77,6 +77,19 @@ dialogue-event-schema.md는 트리거/스키마를, 이 문서는 실제 대사 
 
 ---
 
+### `dialogue_overlay_foreshadow_lattice` — 탑 내벽의 격자 문양
+
+> **컨텍스트**: 엘리트 전투 후 탑 내벽에서 인간/야수족 어느 쪽 것도 아닌 격자 문양을 발견한다.
+> **연출**: dialogue-overlay
+
+| # | 화자 | 감정 | 대사 |
+|---|---|---|---|
+| 0 | Narrator | — | 탑 내벽에 깊이 새겨진 문양이 있다. 인간의 성물 도안도, 야수족의 갈퀴 자국도 아니다. |
+| 1 | Dawn Priest | grim | "이 문양은... 어디서도 본 적이 없습니다. 성전 기록에도 없는 양식이에요." |
+| 2 | Pack Raider | skeptical | "우리 것도 아니야. 냄새가 다르거든. 돌보다 오래된 냄새." |
+
+---
+
 ### `dialogue_overlay_boss_bark_ashen_gate` — 재의 문지기 조우
 
 > **컨텍스트**: 자동 방어 골렘 '재의 문지기'가 기동한다. 가슴판에서 성유물과 같은 빛이 난다.
@@ -263,6 +276,9 @@ dialogue-event-schema.md는 트리거/스키마를, 이 문서는 실제 대사 
 | 7 | Narrator | — | Dawn Priest가 일지를 닫는다. 잠시 동안 아무 말도 하지 않는다. 물이 발목을 적시고 있다. |
 | 8 | Dawn Priest | grim | "이 사람이 모든 것을 설계했습니다. 교리도. 방벽도. 전부." |
 | 9 | Pack Raider | sardonic | "이제야 네 집 기둥이 도둑질로 세워진 걸 알았군." |
+| 10 | Narrator | — | 저널 마지막 페이지에 다른 잉크로 쓴 메모가 있다. '제4수문 — 격자가 우리가 생각한 것보다 더 많은 것을 기억하고 있다. 네 번째 봉인 뒤에 무언가 잠들어 있다.' |
+| 11 | Dawn Priest | grim | "제4수문? 영원한 질서의 교리에는 수문이 세 개뿐입니다. 네 번째라니..." |
+| 12 | Pack Raider | skeptical | "세 개라고 가르치고 네 개째를 숨겼다? 너희 신앙답다." |
 
 ---
 
@@ -334,6 +350,9 @@ dialogue-event-schema.md는 트리거/스키마를, 이 문서는 실제 대사 
 | 5 | Narrator | — | 물이 대심문관의 몸 위로 차오른다. 빛이 완전히 꺼진다. |
 | 6 | Pack Raider | quiet | "믿던 게 부서지는 소리가 이렇게 크더라." |
 | 7 | Dawn Priest | weary | "...예." |
+| 8 | Narrator | — | 대심문관의 갑옷에서 격자 파편이 빠져나오며 짧은 음성이 울린다. 오래된 말투. 교리처럼 들리지만 무기에서 나온다. |
+| 9 | npc_aldric (voice fragment) | — | "...통제할 수 있소. 질서는 도구에서 시작하오..." |
+| 10 | Dawn Priest | shock | "이 목소리... 경전의 서문과 같은 어조입니다. 왜 무기에서..." |
 
 ---
 
@@ -611,6 +630,26 @@ dialogue-event-schema.md는 트리거/스키마를, 이 문서는 실제 대사 
 
 ---
 
+### `dialogue_scene_echo_grave_bonding` — Echo Savant와 Grave Hexer의 조용한 유대
+
+> **컨텍스트**: 중반 반전 직후, 원정대가 유골 과수원을 빠져나오는 길. Echo Savant와 Grave Hexer가 뒤에 처져 걷는다.
+> **연출**: dialogue-scene
+
+| # | 화자 | 감정 | 대사 |
+|---|---|---|---|
+| 0 | Narrator | — | 과수원 출구. 뼈나무 사이로 인광이 스러진다. 앞서 걷는 세 사람과 떨어져, 둘이 나란히 걷는다. |
+| 1 | Echo Savant | solemn | "기억을 어떻게 견디나." |
+| 2 | Grave Hexer | — | "...뭐?" |
+| 3 | Echo Savant | solemn | "그 무게를. 수백 년. 어떻게." |
+| 4 | Grave Hexer | gentle | "농담을 해. 400년 전 일을 어제 일처럼 말하면 사람들이 웃거든. 웃기면 견딜 만해." |
+| 5 | Echo Savant | — | "..." |
+| 6 | Narrator | — | Echo Savant가 웃지 않는다. Grave Hexer는 그것을 알아차린다. |
+| 7 | Grave Hexer | solemn | "너는 안 웃는구나. 1800년 동안 혼자 있으면 그렇게 되나." |
+| 8 | Echo Savant | solemn | "웃는 법을 잊었다. 격자 안에는 웃을 이유가 없었다." |
+| 9 | Grave Hexer | gentle | "그럼 내가 대신 웃어 줄게. 네 몫까지." |
+
+---
+
 ## Chapter 4: Glass Forest — 유리의 숲
 
 ---
@@ -627,59 +666,57 @@ dialogue-event-schema.md는 트리거/스키마를, 이 문서는 실제 대사 
 | 2 | Pack Raider | disturbed | "야수족도 있어. 달리다가 굳은 자세야. 도망치고 있었어." |
 | 3 | Grave Hexer | quiet | "내 동족도 보여. 여기서 모두가 동시에 죽었어." |
 | 4 | Narrator | — | 결정 나무 사이로 빛이 굴절된다. 네 가지 색 — 강철 회색, 호박색, 인광 녹색, 프리즘 보라. |
-| 5 | Echo Savant | flat | "폭주 흔적이다. 심장이 한 번 터졌다. 오래전에." |
-| 6 | Dawn Priest | grim | "모든 세력의 전사가... 같은 순간에..." |
-| 7 | Pack Raider | bitter | "여기가 중립 지대라는 거야. 아무도 이기지 못한 곳." |
-| 8 | Narrator | — | 유리를 밟을 때마다 소리가 난다. 뼈가 부러지는 소리와 비슷하다. |
-| 9 | Grave Hexer | dry | "적어도 공평하긴 했네. 모두 같이 죽었으니까." |
-| 10 | Echo Savant | grim | "같이 죽은 게 아니다. 같이 얼어붙은 거다." |
-| 11 | Dawn Priest | resolute | "다시 이런 일이 없도록. 그것이 이유입니다." |
+| 5 | Narrator | — | Echo Savant가 고개를 든다. 유리 수관 사이로 하늘이 보인다. 1800년 만에 처음. |
+| 6 | Narrator | — | 평가도, 분석도 아닌 표정이 그의 얼굴에 떠오른다. 원정대가 처음 보는 얼굴이다. |
+| 7 | Echo Savant | flat | "폭주 흔적이다. 심장이 한 번 터졌다. 오래전에." |
+| 8 | Dawn Priest | grim | "모든 세력의 전사가... 같은 순간에..." |
+| 9 | Pack Raider | bitter | "여기가 중립 지대라는 거야. 아무도 이기지 못한 곳." |
+| 10 | Narrator | — | 유리를 밟을 때마다 소리가 난다. 뼈가 부러지는 소리와 비슷하다. |
+| 11 | Grave Hexer | dry | "적어도 공평하긴 했네. 모두 같이 죽었으니까." |
+| 12 | Echo Savant | grim | "같이 죽은 게 아니다. 같이 얼어붙은 거다." |
+| 13 | Dawn Priest | resolute | "다시 이런 일이 없도록. 그것이 이유입니다." |
 
 ---
 
 ### `dialogue_scene_method_debate` — 정화/봉인/파괴 논쟁
 
-> **컨텍스트**: Heartforge를 어떻게 처리할 것인가. 네 캐릭터의 첫 본격 충돌.
+> **컨텍스트**: 유리 숲 진입 후 Echo Savant가 세 선택지를 설명한다. lead 4명의 입장이 갈린다. 정화, 봉인, 파괴 — 각각의 대가가 다르고, 누구도 쉽게 양보하지 않는다.
 > **연출**: dialogue-scene
 
 | # | 화자 | 감정 | 대사 |
 |---|---|---|---|
-| 0 | Narrator | — | 유리 숲의 개활지. 네 사람이 원을 그리고 서 있다. 이것이 첫 회의다. |
-| 1 | Pack Raider | defiant | "부숴. 그게 제일 빨라. 깨끗하고." |
-| 2 | Grave Hexer | sharp | "부수면 기억이 전부 날아가. 수천 년치. 내 동족의 존재 이유가 사라져." |
-| 3 | Pack Raider | frustrated | "그럼 봉인해. 다시 묻어." |
-| 4 | Echo Savant | flat | "봉인은 1800년 전에 했다. 결과가 이거다." |
-| 5 | Dawn Priest | resolute | "정화가 유일한 길입니다. Heartforge를 멈추면서 기억을 지키는 방법." |
-| 6 | Pack Raider | skeptical | "대가가 뭔데." |
-| 7 | Dawn Priest | hesitant | "누군가가... 격자에 영구히 속박됩니다." |
-| 8 | Narrator | — | 침묵이 내려앉는다. 유리가 바람에 부딪혀 맑은 소리를 낸다. |
-| 9 | Pack Raider | furious | "동맹을 가두겠다고? 그게 너희가 했던 짓이랑 뭐가 달라?" |
-| 10 | Dawn Priest | pained | "...다르다고 말하고 싶습니다. 하지만 구조가 같다는 것을... 압니다." |
-| 11 | Grave Hexer | bitter | "봉인은 같은 실수의 반복이야. 파괴는 학살이고. 남는 건 정화뿐인데 대가가 이거라니." |
-| 12 | Echo Savant | quiet | "선택할 시간이 있다. 아직." |
-| 13 | Narrator | — | 아무도 움직이지 않는다. 유리 숲이 네 사람을 둘러싸고 빛나고 있다. |
+| 0 | Echo Savant | solemn | "세 가지 길이 있다. 정화, 봉인, 파괴." |
+| 1 | Narrator | — | 짧은 침묵. 유리 나뭇가지에서 빛이 굴절되어 네 사람의 얼굴에 서로 다른 색을 입힌다. |
+| 2 | Dawn Priest | resolute | "정화해야 합니다. 왕국이 진 빚을 갚으려면 순환을 완전히 끝내야 해요. 대가가 있더라도." |
+| 3 | Pack Raider | defiant | "대가? 누구 대가? 네가 치를 거야, 사제? 아니면 저 친구를 격자 안에 가둘 거야?" |
+| 4 | Dawn Priest | weary | "그건..." |
+| 5 | Pack Raider | bitter | "봉인이면 아무도 안 죽어. 아무도 안 갇혀. 200년이든 500년이든 그때 가서 또 생각하면 되잖아." |
+| 6 | Grave Hexer | solemn | "200년 후에 같은 전쟁이 반복돼. 나는 그 전쟁을 기억하고 있거든. 똑같은 전쟁을." |
+| 7 | Pack Raider | bitter | "그래서 기억을 바치겠다고? 네 기원을? 그건 네 존재 자체잖아." |
+| 8 | Grave Hexer | — | "..." |
+| 9 | Narrator | — | Grave Hexer가 처음으로 말을 잇지 못한다. 농담도, 과거형도 나오지 않는다. |
+| 10 | Echo Savant | solemn | "봉인은 전례가 있다. 우리가 1800년 전에 했다. 하지만..." |
+| 11 | Echo Savant | grim | "격자가 다시 풍화되면 다음 세대가 우리와 같은 자리에 선다." |
+| 12 | Pack Raider | weary | "...그래도 지금 여기서 친구를 묻을 순 없어." |
+| 13 | Narrator | — | 네 사람이 서로 다른 방향을 보고 있다. 합의는 없다. 유리가 바람에 울린다. |
 
 ---
 
 ### `dialogue_scene_aldric_whisper` — Aldric의 속삭임
 
-> **컨텍스트**: 격자 풍화가 깊어지면서 Aldric의 목소리가 Dawn Priest의 머릿속에 닿는다.
+> **컨텍스트**: 유리 숲 전투 후, 결정을 통해 Aldric의 목소리가 각 lead에게 다르게 속삭인다.
 > **연출**: dialogue-scene
 
 | # | 화자 | 감정 | 대사 |
 |---|---|---|---|
-| 0 | Narrator | — | 밤이다. 다른 셋이 잠들었다. Dawn Priest만 깨어 있다. 유리 나무가 달빛을 머금는다. |
-| 1 | Aldric | calm | "내가 너에게 질서를 주었소." |
-| 2 | Narrator | — | Dawn Priest가 몸을 굳힌다. 귓속이 아니라 머릿속에서 울리는 목소리. |
-| 3 | Dawn Priest | tense | "누구십니까." |
-| 4 | Aldric | calm | "네가 읽은 기도의 원문을 쓴 사람이오. 네가 암송한 교리를 설계한 사람." |
-| 5 | Dawn Priest | dread | "Aldric... Sternholt." |
-| 6 | Aldric | reasonable | "내가 혼돈에 질서를 가져왔소. 격자를 이해하고, 통제하고, 세계를 안정시킨 것은 나요." |
-| 7 | Dawn Priest | defiant | "통제가 아니라 약탈이었습니다." |
-| 8 | Narrator | — | 속삭임이 웃는다. 분노가 아니라 실망한 스승의 웃음처럼. |
-| 9 | Aldric | patient | "약탈이라. 그 판단 기준도 내가 만든 것이오. 네가 사용하는 도덕 체계가 내 설계라는 걸 잊지 마시오." |
-| 10 | Narrator | — | Dawn Priest의 손이 떨린다. 반박하려 하지만 — 말이 나오지 않는다. |
-| 11 | Dawn Priest | shaken | "..." |
+| 0 | Narrator | — | 유리 파편이 울리기 시작한다. 같은 소리가 아니다. 각자 다른 주파수로. |
+| 1 | npc_aldric | — | (to Dawn Priest) "그대의 속죄가 이것을 요구하오. 정화만이 그대가 진 빚을 갚는 길이오." |
+| 2 | Dawn Priest | shock | "이 목소리... 저널의 필체와 같은 사람. 왜 제게..." |
+| 3 | npc_aldric | — | (to Pack Raider) "봉인하시오. 무리가 안전해지오. 지금, 당장. 희생은 필요 없소." |
+| 4 | Pack Raider | bitter | "꺼져. 네 목소리가 달콤할수록 썩은 냄새가 나." |
+| 5 | Narrator | — | Pack Raider가 코를 찡그린다. 하지만 손이 떨린다. 봉인이라는 말에 흔들렸다. |
+| 6 | Dawn Priest | grim | "이 자는 우리가 듣고 싶은 말을 하고 있어요. 그게 가장 위험한 거예요." |
+| 7 | Pack Raider | weary | "...알아. 알고 있어. 그래도 반은 맞는 말이잖아." |
 
 ---
 
@@ -731,21 +768,22 @@ dialogue-event-schema.md는 트리거/스키마를, 이 문서는 실제 대사 
 
 ### `dialogue_scene_clan_split` — 씨족 분열
 
-> **컨텍스트**: 야수족 영역에서 전령이 도착한다. Pack Raider의 씨족이 분열했다는 소식.
+> **컨텍스트**: 굶주린 우리 진입 직전, Ember Runner가 숨을 헐떡이며 도착한다. 씨족 분열 소식을 가져왔다.
 > **연출**: dialogue-scene
 
 | # | 화자 | 감정 | 대사 |
 |---|---|---|---|
-| 0 | Narrator | — | 전령이 숨을 몰아쉬며 도착한다. 야수족 특유의 털 갑옷. 얼굴에 갈퀴 자국이 새겨져 있다. |
-| 1 | Pack Raider | tense | "무슨 소식이야." |
-| 2 | Narrator | — | 전령이 고개를 숙인다. 좋은 소식이 아니다. |
-| 3 | Pack Raider | shock | "...장로들이 배신이라 했다고?" |
-| 4 | Narrator | — | Pack Raider의 손이 떨린다. 주먹을 쥔다. 펀다. 다시 쥔다. |
-| 5 | Pack Raider | furious | "내가 여기서 뭘 하고 있는지도 모르면서! 형제를 죽인 것이 뭔지 알려주려고 이러는 건데!" |
-| 6 | Narrator | — | 고함이 유리 숲에 울린다. 메아리가 돌아온다. 그리고 — 갑자기 멈춘다. |
-| 7 | Pack Raider | empty | "..." |
-| 8 | Dawn Priest | gentle | "...Pack Raider." |
-| 9 | Pack Raider | hollow | "반쪽이 갈라졌어. 돌아가도 예전 씨족은 없어." |
+| 0 | Narrator | — | 유리 숲 경계에서 작은 그림자가 달려온다. 야수족 소녀. 다리에 피가 묻어 있다. |
+| 1 | npc_ember_runner | shock | "형... 오빠! 장로들이... Grey Fang이 서약을 철회했어요." |
+| 2 | Pack Raider | shock | "뭐라고?" |
+| 3 | npc_ember_runner | weary | "인간과 손잡은 건 배신이래요. 무리의 반이 떠났어요. Grey Fang이 이끌고." |
+| 4 | Narrator | — | Pack Raider가 아무 말도 하지 않는다. 분노가 아니다. 비어 있다. |
+| 5 | Dawn Priest | gentle | "Pack Raider..." |
+| 6 | Pack Raider | — | "...형제가 날 버렸어." |
+| 7 | Narrator | — | 그가 처음으로 냄새도 바람도 이야기하지 않는다. 감각이 꺼진 것 같다. |
+| 8 | Grave Hexer | gentle | "400년 전에도 같은 일이 있었지. 무리가 쪼개지고, 한쪽이 돌아오지 않았어." |
+| 9 | Pack Raider | bitter | "위로야? 농담이야?" |
+| 10 | Grave Hexer | solemn | "사실이야. 그리고 돌아오지 않은 쪽도 살았어. 다만 다른 이름으로." |
 
 ---
 
@@ -845,12 +883,16 @@ dialogue-event-schema.md는 트리거/스키마를, 이 문서는 실제 대사 
 | 3 | Grave Hexer | quiet | "난 가장 오래된 기억을 줘야 해. 내가 누구였는지의 처음을." |
 | 4 | Narrator | — | Grave Hexer가 웃는다. 평소의 건조한 웃음이 아니다. 약간 더 얇다. |
 | 5 | Grave Hexer | forced-casual | "뭐, 첫 기억 없이도 400년은 살았잖아. 얼마나 중요하겠어." |
-| 6 | Echo Savant | quiet | "나는 남는다. 격자 안에." |
-| 7 | Narrator | — | 가장 짧은 문장. 가장 무거운 문장. |
-| 8 | Pack Raider | shock | "...뭐라고?" |
-| 9 | Echo Savant | flat | "영구 수호자가 필요하다. 자원한다." |
-| 10 | Dawn Priest | pained | "다른 방법이..." |
-| 11 | Echo Savant | calm | "1800년 전에도 선택했다. 이번에는 눈을 뜨고 한다." |
+| 6 | Echo Savant | solemn | "안은 너무 조용하다." |
+| 7 | Grave Hexer | skeptical | "뭐가?" |
+| 8 | Echo Savant | solemn | "격자 안. 1800년. 아무 소리도 없었다." |
+| 9 | Narrator | — | Grave Hexer가 그 말의 무게를 이해하기 전에, Echo Savant가 입을 연다. |
+| 10 | Echo Savant | quiet | "나는 남는다. 격자 안에." |
+| 11 | Narrator | — | 가장 짧은 문장. 가장 무거운 문장. |
+| 12 | Pack Raider | shock | "...뭐라고?" |
+| 13 | Echo Savant | flat | "영구 수호자가 필요하다. 자원한다." |
+| 14 | Dawn Priest | pained | "다른 방법이..." |
+| 15 | Echo Savant | calm | "1800년 전에도 선택했다. 이번에는 눈을 뜨고 한다." |
 
 ---
 
