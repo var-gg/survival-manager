@@ -18,6 +18,7 @@
 - **스토리 이벤트**: `story_event_{purpose}` — 예: `story_event_site_intro_ashen_gate`, `story_event_unlock_rift_stalker`
 - **대사 시퀀스**: `dialogue_seq_{context}` — 예: `dialogue_seq_ashen_gate_intro`
 - **스토리 플래그**: `story_flag_{state}` — 예: `story_flag_relicborn_revealed`
+- **나레이터**: speaker_id `Narrator`. 상황 묘사, 감정 전환, 시간 경과, 행동 묘사를 담당. 대사가 아니라 지문이므로 따옴표 없이 표기.
 - ID는 chapter/site/node 혹은 hero/faction/reveal 목적이 읽히도록 구성한다.
 
 ## 이벤트 스키마 표
@@ -26,11 +27,11 @@
 
 | story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
 |---|---|---:|---|---|---|---|
-| `story_event_site_intro_ashen_gate` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_ashen_gate` | `SetFlag:story_flag_intro_ashen_gate` | `story_card_ashen_gate_intro` |
+| `story_event_site_intro_ashen_gate` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_ashen_gate` | `SetFlag:story_flag_intro_ashen_gate` | `dialogue_scene_ashen_gate_intro` |
 | `story_event_boss_bark_ashen_gate` | `BattleStarted` | 200 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_ashen_gate`, `NodeIs:4` | — | `dialogue_overlay_boss_bark_ashen_gate` |
 | `story_event_boss_defeat_ashen_gate` | `BattleResolved` | 250 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_ashen_gate`, `NodeIs:4` | `SetFlag:story_flag_gatekeeper_defeated` | `dialogue_overlay_boss_defeat_ashen_gate` |
 | `story_event_extract_ashen_gate` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_ashen_gate` | `SetFlag:story_flag_first_clue` | `story_card_extract_ashen_gate` |
-| `story_event_site_intro_wolfpine_trail` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_wolfpine_trail` | `SetFlag:story_flag_intro_wolfpine_trail` | `story_card_wolfpine_trail_intro` |
+| `story_event_site_intro_wolfpine_trail` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_wolfpine_trail` | `SetFlag:story_flag_intro_wolfpine_trail` | `dialogue_scene_wolfpine_trail_intro` |
 | `story_event_boss_bark_wolfpine_trail` | `BattleStarted` | 200 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_wolfpine_trail`, `NodeIs:4` | — | `dialogue_overlay_boss_bark_wolfpine_trail` |
 | `story_event_boss_defeat_wolfpine_trail` | `BattleResolved` | 250 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_wolfpine_trail`, `NodeIs:4` | `SetFlag:story_flag_grey_fang_defeated` | `dialogue_overlay_boss_defeat_wolfpine_trail` |
 | `story_event_unlock_rift_stalker` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_wolfpine_trail` | `UnlockHero:hero_rift_stalker`, `SetFlag:story_flag_rift_stalker_joined` | `toast_unlock_rift_stalker` |
@@ -39,55 +40,63 @@
 
 | story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
 |---|---|---:|---|---|---|---|
-| `story_event_site_intro_sunken_bastion` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_sunken_bastion` | `SetFlag:story_flag_intro_sunken_bastion` | `story_card_sunken_bastion_intro` |
+| `story_event_site_intro_sunken_bastion` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_sunken_bastion` | `SetFlag:story_flag_intro_sunken_bastion` | `dialogue_scene_sunken_bastion_intro` |
 | `story_event_boss_bark_sunken_bastion` | `BattleStarted` | 200 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_sunken_bastion`, `NodeIs:4` | — | `dialogue_overlay_boss_bark_sunken_bastion` |
 | `story_event_boss_defeat_sunken_bastion` | `BattleResolved` | 250 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_sunken_bastion`, `NodeIs:4` | `SetFlag:story_flag_silent_regent_defeated` | `dialogue_overlay_boss_defeat_sunken_bastion` |
 | `story_event_unlock_bastion_penitent` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_sunken_bastion` | `UnlockHero:hero_bastion_penitent`, `SetFlag:story_flag_bastion_penitent_joined` | `toast_unlock_bastion_penitent` |
-| `story_event_site_intro_tithe_road` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_tithe_road` | `SetFlag:story_flag_intro_tithe_road` | `story_card_tithe_road_intro` |
+| `story_event_site_intro_tithe_road` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_tithe_road` | `SetFlag:story_flag_intro_tithe_road` | `dialogue_scene_tithe_road_intro` |
 | `story_event_boss_bark_tithe_road` | `BattleStarted` | 200 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_tithe_road`, `NodeIs:4` | — | `dialogue_overlay_boss_bark_tithe_road` |
 | `story_event_boss_defeat_tithe_road` | `BattleResolved` | 250 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_tithe_road`, `NodeIs:4` | `SetFlag:story_flag_inquisitor_defeated` | `dialogue_overlay_boss_defeat_tithe_road` |
 | `story_event_unlock_pale_executor` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_tithe_road` | `UnlockHero:hero_pale_executor`, `SetFlag:story_flag_pale_executor_joined` | `toast_unlock_pale_executor` |
+| `story_event_aldric_journal_found` | `BattleResolved` | 280 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_sunken_bastion`, `NodeIs:3` | `SetFlag:story_flag_aldric_named` | `dialogue_scene_aldric_journal` |
 
 ### Chapter 3: Ruined Crypts
 
 | story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
 |---|---|---:|---|---|---|---|
-| `story_event_site_intro_ruined_crypts` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_ruined_crypts` | `SetFlag:story_flag_intro_ruined_crypts` | `story_card_ruined_crypts_intro` |
+| `story_event_site_intro_ruined_crypts` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_ruined_crypts` | `SetFlag:story_flag_intro_ruined_crypts` | `dialogue_scene_ruined_crypts_intro` |
 | `story_event_boss_bark_ruined_crypts` | `BattleStarted` | 200 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_ruined_crypts`, `NodeIs:4` | — | `dialogue_overlay_boss_bark_ruined_crypts` |
 | `story_event_boss_defeat_ruined_crypts` | `BattleResolved` | 250 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_ruined_crypts`, `NodeIs:4` | `SetFlag:story_flag_silent_archivist_defeated` | `dialogue_overlay_boss_defeat_ruined_crypts` |
 | `story_event_unlock_aegis_sentinel` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_ruined_crypts` | `UnlockHero:hero_aegis_sentinel`, `SetFlag:story_flag_aegis_sentinel_joined` | `toast_unlock_aegis_sentinel` |
-| `story_event_site_intro_bone_orchard` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard` | `SetFlag:story_flag_intro_bone_orchard` | `story_card_bone_orchard_intro` |
+| `story_event_site_intro_bone_orchard` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard` | `SetFlag:story_flag_intro_bone_orchard` | `dialogue_scene_bone_orchard_intro` |
 | `story_event_boss_bark_bone_orchard` | `BattleStarted` | 200 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard`, `NodeIs:4` | — | `dialogue_overlay_boss_bark_bone_orchard` |
-| `story_event_relicborn_awakening` | `BattleResolved` | 500 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard`, `NodeIs:3` | `SetFlag:story_flag_relicborn_awakened` | `dialogue_overlay_relicborn_awakening` |
+| `story_event_relicborn_awakening` | `BattleResolved` | 500 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard`, `NodeIs:3` | `SetFlag:story_flag_relicborn_awakened` | `dialogue_scene_relicborn_awakening` |
 | `story_event_boss_defeat_bone_orchard` | `BattleResolved` | 250 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard`, `NodeIs:4` | `SetFlag:story_flag_root_watcher_defeated` | `dialogue_overlay_boss_defeat_bone_orchard` |
-| `story_event_midpoint_reveal` | `ExtractCommitted` | 600 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard` | `SetFlag:story_flag_midpoint_revealed` | `story_card_midpoint_reveal` |
+| `story_event_midpoint_reveal` | `ExtractCommitted` | 600 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard` | `SetFlag:story_flag_midpoint_revealed` | `dialogue_scene_midpoint_reveal` |
 | `story_event_unlock_echo_savant` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard` | `UnlockHero:hero_echo_savant`, `SetFlag:story_flag_echo_savant_joined` | `toast_unlock_echo_savant` |
+| `story_event_aldric_face_revealed` | `BattleResolved` | 520 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard`, `NodeIs:3`, `FlagIs:story_flag_relicborn_awakened` | `SetFlag:story_flag_aldric_face_seen` | `dialogue_scene_aldric_face` |
 
 ### Chapter 4: Glass Forest
 
 | story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
 |---|---|---:|---|---|---|---|
-| `story_event_site_intro_glass_forest` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_glass_forest` | `SetFlag:story_flag_intro_glass_forest` | `story_card_glass_forest_intro` |
+| `story_event_site_intro_glass_forest` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_glass_forest` | `SetFlag:story_flag_intro_glass_forest` | `dialogue_scene_glass_forest_intro` |
 | `story_event_boss_bark_glass_forest` | `BattleStarted` | 200 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_glass_forest`, `NodeIs:4` | — | `dialogue_overlay_boss_bark_glass_forest` |
 | `story_event_boss_defeat_glass_forest` | `BattleResolved` | 250 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_glass_forest`, `NodeIs:4` | `SetFlag:story_flag_prism_guardian_defeated` | `dialogue_overlay_boss_defeat_glass_forest` |
 | `story_event_unlock_shardblade` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_glass_forest` | `UnlockHero:hero_shardblade`, `SetFlag:story_flag_shardblade_joined` | `toast_unlock_shardblade` |
-| `story_event_site_intro_starved_menagerie` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_starved_menagerie` | `SetFlag:story_flag_intro_starved_menagerie` | `story_card_starved_menagerie_intro` |
+| `story_event_site_intro_starved_menagerie` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_starved_menagerie` | `SetFlag:story_flag_intro_starved_menagerie` | `dialogue_scene_starved_menagerie_intro` |
 | `story_event_boss_bark_starved_menagerie` | `BattleStarted` | 200 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_starved_menagerie`, `NodeIs:4` | — | `dialogue_overlay_boss_bark_starved_menagerie` |
 | `story_event_boss_defeat_starved_menagerie` | `BattleResolved` | 250 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_starved_menagerie`, `NodeIs:4` | `SetFlag:story_flag_hunger_warden_defeated` | `dialogue_overlay_boss_defeat_starved_menagerie` |
 | `story_event_unlock_prism_seeker` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_starved_menagerie` | `UnlockHero:hero_prism_seeker`, `SetFlag:story_flag_prism_seeker_joined` | `toast_unlock_prism_seeker` |
+| `story_event_method_debate` | `SiteEntered` | 120 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_glass_forest`, `FlagIs:story_flag_midpoint_revealed` | `SetFlag:story_flag_method_debate_started` | `dialogue_scene_method_debate` |
+| `story_event_aldric_whisper` | `BattleResolved` | 400 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_glass_forest`, `NodeIs:2`, `FlagIs:story_flag_aldric_face_seen` | `SetFlag:story_flag_aldric_whisper` | `dialogue_scene_aldric_whisper` |
+| `story_event_clan_split` | `SiteEntered` | 130 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_starved_menagerie` | `SetFlag:story_flag_clan_split` | `dialogue_scene_clan_split` |
+| `story_event_costs_accepted` | `ExtractCommitted` | 350 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_starved_menagerie` | `SetFlag:story_flag_costs_accepted` | `dialogue_scene_costs_accepted` |
 
 ### Chapter 5: Heartforge Descent
 
 | story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
 |---|---|---:|---|---|---|---|
-| `story_event_site_intro_heartforge_gate` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_heartforge_gate` | `SetFlag:story_flag_intro_heartforge_gate` | `story_card_heartforge_gate_intro` |
+| `story_event_site_intro_heartforge_gate` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_heartforge_gate` | `SetFlag:story_flag_intro_heartforge_gate` | `dialogue_scene_heartforge_gate_intro` |
 | `story_event_boss_bark_heartforge_gate` | `BattleStarted` | 200 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_heartforge_gate`, `NodeIs:4` | — | `dialogue_overlay_boss_bark_heartforge_gate` |
 | `story_event_boss_defeat_heartforge_gate` | `BattleResolved` | 250 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_heartforge_gate`, `NodeIs:4` | `SetFlag:story_flag_eternal_bulwark_defeated` | `dialogue_overlay_boss_defeat_heartforge_gate` |
 | `story_event_unlock_mirror_cantor` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_heartforge_gate` | `UnlockHero:hero_mirror_cantor`, `SetFlag:story_flag_mirror_cantor_joined` | `toast_unlock_mirror_cantor` |
-| `story_event_site_intro_worldscar_depths` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_worldscar_depths` | `SetFlag:story_flag_intro_worldscar_depths` | `story_card_worldscar_depths_intro` |
+| `story_event_site_intro_worldscar_depths` | `SiteEntered` | 100 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_worldscar_depths` | `SetFlag:story_flag_intro_worldscar_depths` | `dialogue_scene_worldscar_depths_intro` |
 | `story_event_boss_bark_worldscar_depths` | `BattleStarted` | 200 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_worldscar_depths`, `NodeIs:4` | — | `dialogue_overlay_boss_bark_worldscar_depths` |
-| `story_event_final_boss` | `BattleResolved` | 700 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_worldscar_depths`, `NodeIs:4` | `SetFlag:story_flag_final_boss_defeated` | `story_card_final_boss` |
-| `story_event_campaign_complete` | `ExtractCommitted` | 900 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_worldscar_depths` | `SetFlag:story_flag_campaign_complete`, `SetFlag:story_flag_endless_open` | `story_card_campaign_complete` |
+| `story_event_final_boss` | `BattleResolved` | 700 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_worldscar_depths`, `NodeIs:4` | `SetFlag:story_flag_final_boss_defeated` | `dialogue_scene_final_confrontation` |
+| `story_event_campaign_complete` | `ExtractCommitted` | 900 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_worldscar_depths` | `SetFlag:story_flag_campaign_complete`, `SetFlag:story_flag_endless_open` | `dialogue_scene_campaign_complete` |
+| `story_event_sacrifice_sequence` | `BattleResolved` | 800 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_worldscar_depths`, `NodeIs:4` | `SetFlag:story_flag_sacrifice_done` | `dialogue_scene_sacrifice_sequence` |
+| `story_event_echo_farewell` | `ExtractCommitted` | 850 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_worldscar_depths`, `FlagIs:story_flag_sacrifice_done` | `SetFlag:story_flag_echo_farewell` | `dialogue_scene_echo_farewell` |
 | `story_event_endless_open` | `ExtractCommitted` | 900 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_worldscar_depths`, `FlagIs:story_flag_campaign_complete` | `UnlockMode:mode_endless_cycle`, `SetFlag:story_flag_endless_unlocked` | `toast_endless_open` |
 
 ### Town Return Reactions
@@ -102,11 +111,11 @@
 
 ## 대사 시퀀스 표
 
-### Chapter 1: Ashen Gate — Site Intro
+### Chapter 1: Ashen Gate — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_ashen_gate_intro` | 0 | `hero_dawn_priest` | `loc.story.ashen_gate.intro.0` | `grim` | 원정 명분 선언 |
+| `dialogue_seq_ashen_gate_intro` | 0 | `hero_dawn_priest` | `loc.story.ashen_gate.intro.0` | `grim` | 원정 명분 선언 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_ashen_gate_intro` | 1 | `hero_pack_raider` | `loc.story.ashen_gate.intro.1` | `skeptical` | 인간 불신 표출 |
 | `dialogue_seq_ashen_gate_intro` | 2 | `hero_dawn_priest` | `loc.story.ashen_gate.intro.2` | `solemn` | 재의 들판 묘사 |
 
@@ -119,11 +128,11 @@
 | `dialogue_seq_boss_defeat_ashen_gate` | 0 | `hero_dawn_priest` | `loc.story.ashen_gate.boss_defeat.0` | `shock` | 성유물이 무기였다 |
 | `dialogue_seq_boss_defeat_ashen_gate` | 1 | `hero_pack_raider` | `loc.story.ashen_gate.boss_defeat.1` | `skeptical` | 인간의 신앙 의심 |
 
-### Chapter 1: Wolfpine Trail
+### Chapter 1: Wolfpine Trail (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_wolfpine_trail_intro` | 0 | `hero_pack_raider` | `loc.story.wolfpine.intro.0` | `solemn` | 영역 표식 설명 |
+| `dialogue_seq_wolfpine_trail_intro` | 0 | `hero_pack_raider` | `loc.story.wolfpine.intro.0` | `solemn` | 영역 표식 설명 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_wolfpine_trail_intro` | 1 | `hero_dawn_priest` | `loc.story.wolfpine.intro.1` | `grim` | 야수족 영역 진입 긴장 |
 | `dialogue_seq_boss_bark_wolfpine_trail` | 0 | `hero_pack_raider` | `loc.story.wolfpine.boss_bark.0` | `bitter` | 회색 송곳니와의 재회 |
 | `dialogue_seq_boss_bark_wolfpine_trail` | 1 | `hero_dawn_priest` | `loc.story.wolfpine.boss_bark.1` | `grim` | 시험을 받아들이겠다 |
@@ -149,11 +158,11 @@
 | `dialogue_seq_priest_ashen_gate` | 1 | `hero_dawn_priest` | `loc.story.priest.ashen_gate.1` | `grim` | 이 문은 우리가 세운 것 |
 | `dialogue_seq_priest_ashen_gate` | 2 | `hero_dawn_priest` | `loc.story.priest.ashen_gate.2` | `solemn` | 문 너머의 진실을 보겠다 |
 
-### Chapter 2: Sunken Bastion — Site Intro
+### Chapter 2: Sunken Bastion — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_sunken_bastion_intro` | 0 | `hero_dawn_priest` | `loc.story.sunken_bastion.intro.0` | `shock` | 기울어진 요새 — 내 훈련장 |
+| `dialogue_seq_sunken_bastion_intro` | 0 | `hero_dawn_priest` | `loc.story.sunken_bastion.intro.0` | `shock` | 기울어진 요새 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_sunken_bastion_intro` | 1 | `hero_pack_raider` | `loc.story.sunken_bastion.intro.1` | `skeptical` | 인간은 자기가 지은 것도 지키지 못한다 |
 | `dialogue_seq_sunken_bastion_intro` | 2 | `hero_dawn_priest` | `loc.story.sunken_bastion.intro.2` | `weary` | 같은 신도끼리 싸우는 현실 |
 
@@ -166,11 +175,11 @@
 | `dialogue_seq_boss_defeat_sunken_bastion` | 0 | `hero_dawn_priest` | `loc.story.sunken_bastion.boss_defeat.0` | `shock` | 성유물이 도굴품이었다 |
 | `dialogue_seq_boss_defeat_sunken_bastion` | 1 | `hero_pack_raider` | `loc.story.sunken_bastion.boss_defeat.1` | `bitter` | 80년간 감춰온 약탈 |
 
-### Chapter 2: Tithe Road — Site Intro
+### Chapter 2: Tithe Road — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_tithe_road_intro` | 0 | `hero_dawn_priest` | `loc.story.tithe_road.intro.0` | `grim` | 처형대와 고해소의 행렬 |
+| `dialogue_seq_tithe_road_intro` | 0 | `hero_dawn_priest` | `loc.story.tithe_road.intro.0` | `grim` | 처형대와 고해소 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_tithe_road_intro` | 1 | `hero_pack_raider` | `loc.story.tithe_road.intro.1` | `shock` | 자기 동족에게도 이런 짓을 |
 | `dialogue_seq_tithe_road_intro` | 2 | `hero_dawn_priest` | `loc.story.tithe_road.intro.2` | `weary` | 정화라는 이름의 폭력 |
 
@@ -202,11 +211,11 @@
 | `dialogue_seq_raider_kingdom_anger` | 1 | `hero_pack_raider` | `loc.story.raider.kingdom_anger.1` | `bitter` | 피 냄새가 돌담에 배어 있다 |
 | `dialogue_seq_raider_kingdom_anger` | 2 | `hero_dawn_priest` | `loc.story.raider.kingdom_anger.2` | `solemn` | 부정하지 않겠다 |
 
-### Chapter 3: Ruined Crypts — Site Intro
+### Chapter 3: Ruined Crypts — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_ruined_crypts_intro` | 0 | `hero_grave_hexer` | `loc.story.ruined_crypts.intro.0` | `solemn` | 고향에 돌아왔다 |
+| `dialogue_seq_ruined_crypts_intro` | 0 | `hero_grave_hexer` | `loc.story.ruined_crypts.intro.0` | `solemn` | 고향에 돌아왔다 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_ruined_crypts_intro` | 1 | `hero_grave_hexer` | `loc.story.ruined_crypts.intro.1` | `gentle` | 속삭임은 공격이 아니라 부름 |
 | `dialogue_seq_ruined_crypts_intro` | 2 | `hero_dawn_priest` | `loc.story.ruined_crypts.intro.2` | `grim` | 죽음의 땅이라 들었지만 |
 
@@ -219,11 +228,11 @@
 | `dialogue_seq_boss_defeat_ruined_crypts` | 0 | `hero_grave_hexer` | `loc.story.ruined_crypts.boss_defeat.0` | `gentle` | 기록관이 열쇠를 넘겼다 |
 | `dialogue_seq_boss_defeat_ruined_crypts` | 1 | `hero_dawn_priest` | `loc.story.ruined_crypts.boss_defeat.1` | `solemn` | 수복자로 인정받았다 |
 
-### Chapter 3: Bone Orchard — Site Intro
+### Chapter 3: Bone Orchard — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_bone_orchard_intro` | 0 | `hero_grave_hexer` | `loc.story.bone_orchard.intro.0` | `grim` | 기억 밀도가 묘역의 수십 배 |
+| `dialogue_seq_bone_orchard_intro` | 0 | `hero_grave_hexer` | `loc.story.bone_orchard.intro.0` | `grim` | 기억 밀도가 묘역의 수십 배 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_bone_orchard_intro` | 1 | `hero_pack_raider` | `loc.story.bone_orchard.intro.1` | `defiant` | 뼈가 뿌리처럼 자란 나무 |
 | `dialogue_seq_bone_orchard_intro` | 2 | `hero_dawn_priest` | `loc.story.bone_orchard.intro.2` | `solemn` | 무언가 깨어나려 한다 |
 
@@ -236,11 +245,11 @@
 | `dialogue_seq_boss_defeat_bone_orchard` | 0 | `hero_grave_hexer` | `loc.story.bone_orchard.boss_defeat.0` | `solemn` | 무지 때문이었다는 선언 |
 | `dialogue_seq_boss_defeat_bone_orchard` | 1 | `hero_dawn_priest` | `loc.story.bone_orchard.boss_defeat.1` | `weary` | 세 세력의 피해가 한눈에 |
 
-### Chapter 3: Relicborn Awakening
+### Chapter 3: Relicborn Awakening (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_relicborn_awakening` | 0 | `hero_grave_hexer` | `loc.story.relicborn.awaken.0` | `shock` | 각성 감지 — 격자가 깨어난다 |
+| `dialogue_seq_relicborn_awakening` | 0 | `hero_grave_hexer` | `loc.story.relicborn.awaken.0` | `shock` | 각성 감지 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_relicborn_awakening` | 1 | `hero_echo_savant` | `loc.story.relicborn.awaken.1` | `solemn` | 수문장 자기소개 |
 | `dialogue_seq_relicborn_awakening` | 2 | `hero_dawn_priest` | `loc.story.relicborn.awaken.2` | `shock` | 봉인 그물의 수호자가 있었다 |
 | `dialogue_seq_relicborn_awakening` | 3 | `hero_pack_raider` | `loc.story.relicborn.awaken.3` | `skeptical` | 또 다른 세력이라 |
@@ -267,11 +276,11 @@
 | `dialogue_seq_savant_lattice_assessment` | 1 | `hero_echo_savant` | `loc.story.savant.lattice.1` | `solemn` | 부산물은 적대감 — 제어 없이 증폭된다 |
 | `dialogue_seq_savant_lattice_assessment` | 2 | `hero_dawn_priest` | `loc.story.savant.lattice.2` | `shock` | 우리 모두가 기계의 부산물에 조종당했다 |
 
-### Chapter 3: Midpoint Reveal
+### Chapter 3: Midpoint Reveal (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_midpoint_reveal` | 0 | `hero_echo_savant` | `loc.story.midpoint.reveal.0` | `solemn` | 조사가 아니라 순환 종결이 목적이다 |
+| `dialogue_seq_midpoint_reveal` | 0 | `hero_echo_savant` | `loc.story.midpoint.reveal.0` | `solemn` | 조사가 아니라 순환 종결 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_midpoint_reveal` | 1 | `hero_dawn_priest` | `loc.story.midpoint.reveal.1` | `resolute` | 왕국의 죄를 인정하고 나아간다 |
 | `dialogue_seq_midpoint_reveal` | 2 | `hero_pack_raider` | `loc.story.midpoint.reveal.2` | `solemn` | 씨족의 분노 너머를 보겠다 |
 | `dialogue_seq_midpoint_reveal` | 3 | `hero_grave_hexer` | `loc.story.midpoint.reveal.3` | `resolute` | 기억의 정의를 위해 |
@@ -284,11 +293,11 @@
 | `dialogue_seq_priest_midpoint_shock` | 1 | `hero_dawn_priest` | `loc.story.priest.midpoint.1` | `bitter` | 사제로서 무엇을 지켜왔나 |
 | `dialogue_seq_priest_midpoint_shock` | 2 | `hero_pack_raider` | `loc.story.priest.midpoint.2` | `gentle` | 부서진 것에서 새 뿌리가 난다 |
 
-### Chapter 4: Glass Forest — Site Intro
+### Chapter 4: Glass Forest — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_glass_forest_intro` | 0 | `hero_echo_savant` | `loc.story.glass_forest.intro.0` | `solemn` | 격자 폭발의 결정 — 전쟁의 화석 |
+| `dialogue_seq_glass_forest_intro` | 0 | `hero_echo_savant` | `loc.story.glass_forest.intro.0` | `solemn` | 격자 폭발의 결정 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_glass_forest_intro` | 1 | `hero_pack_raider` | `loc.story.glass_forest.intro.1` | `bitter` | 결정 안에 씨족 전사가 얼어 있다 |
 | `dialogue_seq_glass_forest_intro` | 2 | `hero_dawn_priest` | `loc.story.glass_forest.intro.2` | `weary` | 아름다움과 파괴가 공존한다 |
 
@@ -301,11 +310,11 @@
 | `dialogue_seq_boss_defeat_glass_forest` | 0 | `hero_echo_savant` | `loc.story.glass_forest.boss_defeat.0` | `solemn` | 도관이 열렸다 — 도난의 통로 |
 | `dialogue_seq_boss_defeat_glass_forest` | 1 | `hero_dawn_priest` | `loc.story.glass_forest.boss_defeat.1` | `bitter` | 방어 장치가 훔친 파편이었다 |
 
-### Chapter 4: Starved Menagerie — Site Intro
+### Chapter 4: Starved Menagerie — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_starved_menagerie_intro` | 0 | `hero_pack_raider` | `loc.story.starved_menagerie.intro.0` | `bitter` | 우리가 돌보던 짐승들이었다 |
+| `dialogue_seq_starved_menagerie_intro` | 0 | `hero_pack_raider` | `loc.story.starved_menagerie.intro.0` | `bitter` | 우리가 돌보던 짐승들 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_starved_menagerie_intro` | 1 | `hero_grave_hexer` | `loc.story.starved_menagerie.intro.1` | `solemn` | 변이체의 잔류 기억 — 주인을 찾고 있다 |
 | `dialogue_seq_starved_menagerie_intro` | 2 | `hero_echo_savant` | `loc.story.starved_menagerie.intro.2` | `grim` | Heartforge 오염이 자연까지 |
 
@@ -342,11 +351,11 @@
 | `dialogue_seq_savant_resonance_adj` | 1 | `hero_echo_savant` | `loc.story.savant.resonance.1` | `gentle` | 간섭이 사라지면 맑은 의식이 돌아온다 |
 | `dialogue_seq_savant_resonance_adj` | 2 | `hero_pack_raider` | `loc.story.savant.resonance.2` | `shock` | 이것이 본래의 감각인가 |
 
-### Chapter 5: Heartforge Gate — Site Intro
+### Chapter 5: Heartforge Gate — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_heartforge_gate_intro` | 0 | `hero_echo_savant` | `loc.story.heartforge_gate.intro.0` | `solemn` | 관문의 네 문양 — 공존 협약의 증거 |
+| `dialogue_seq_heartforge_gate_intro` | 0 | `hero_echo_savant` | `loc.story.heartforge_gate.intro.0` | `solemn` | 관문의 네 문양 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_heartforge_gate_intro` | 1 | `hero_dawn_priest` | `loc.story.heartforge_gate.intro.1` | `resolute` | 왕국의 죄를 인정하고 격자 복원에 동의한다 |
 | `dialogue_seq_heartforge_gate_intro` | 2 | `hero_pack_raider` | `loc.story.heartforge_gate.intro.2` | `solemn` | 영역의 안정은 수복으로만 온다 |
 | `dialogue_seq_heartforge_gate_intro` | 3 | `hero_grave_hexer` | `loc.story.heartforge_gate.intro.3` | `solemn` | 기억 보존과 정화가 양립하는지 확인해야 한다 |
@@ -360,19 +369,19 @@
 | `dialogue_seq_boss_defeat_heartforge_gate` | 0 | `hero_dawn_priest` | `loc.story.heartforge_gate.boss_defeat.0` | `weary` | 가장 고통스러운 기억을 넘었다 |
 | `dialogue_seq_boss_defeat_heartforge_gate` | 1 | `hero_echo_savant` | `loc.story.heartforge_gate.boss_defeat.1` | `solemn` | 정화 코드가 노출되었다 |
 
-### Chapter 5: Worldscar Depths — Site Intro
+### Chapter 5: Worldscar Depths — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_worldscar_depths_intro` | 0 | `hero_echo_savant` | `loc.story.worldscar_depths.intro.0` | `solemn` | 3000년의 기억이 벽면에 투사된다 |
+| `dialogue_seq_worldscar_depths_intro` | 0 | `hero_echo_savant` | `loc.story.worldscar_depths.intro.0` | `solemn` | 3000년의 기억 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_worldscar_depths_intro` | 1 | `hero_dawn_priest` | `loc.story.worldscar_depths.intro.1` | `weary` | 가한 피해와 받은 피해를 동시에 본다 |
 | `dialogue_seq_worldscar_depths_intro` | 2 | `hero_pack_raider` | `loc.story.worldscar_depths.intro.2` | `solemn` | 바람의 기억도 여기 있다 |
 
-### Chapter 5: Worldscar Depths — Final Boss & Campaign Complete
+### Chapter 5: Worldscar Depths — Final Boss & Campaign Complete (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 |---|---:|---|---|---|---|
-| `dialogue_seq_boss_bark_worldscar_depths` | 0 | `hero_echo_savant` | `loc.story.worldscar_depths.boss_bark.0` | `grim` | 순환의 핵 — 3000년의 적대감 응축 |
+| `dialogue_seq_boss_bark_worldscar_depths` | 0 | `hero_echo_savant` | `loc.story.worldscar_depths.boss_bark.0` | `grim` | 순환의 핵 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_boss_bark_worldscar_depths` | 1 | `hero_dawn_priest` | `loc.story.worldscar_depths.boss_bark.1` | `resolute` | 이 순환을 끝낸다 |
 | `dialogue_seq_boss_bark_worldscar_depths` | 2 | `hero_pack_raider` | `loc.story.worldscar_depths.boss_bark.2` | `defiant` | 이빨과 발톱을 세운다 |
 | `dialogue_seq_boss_bark_worldscar_depths` | 3 | `hero_grave_hexer` | `loc.story.worldscar_depths.boss_bark.3` | `resolute` | 기억의 정의를 위해 |
@@ -380,7 +389,7 @@
 | `dialogue_seq_final_boss_defeat` | 1 | `hero_echo_savant` | `loc.story.final_boss.defeat.1` | `solemn` | 격자가 복원된다 |
 | `dialogue_seq_final_boss_defeat` | 2 | `hero_pack_raider` | `loc.story.final_boss.defeat.2` | `gentle` | 바람이 맑아졌다 |
 | `dialogue_seq_final_boss_defeat` | 3 | `hero_grave_hexer` | `loc.story.final_boss.defeat.3` | `gentle` | 기억이 평화로운 장면으로 바뀐다 |
-| `dialogue_seq_campaign_complete` | 0 | `hero_dawn_priest` | `loc.story.campaign.complete.0` | `resolute` | 부서진 신앙 위에 새 의미를 세우겠다 |
+| `dialogue_seq_campaign_complete` | 0 | `hero_dawn_priest` | `loc.story.campaign.complete.0` | `resolute` | 부서진 신앙 위에 새 의미 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_campaign_complete` | 1 | `hero_pack_raider` | `loc.story.campaign.complete.1` | `solemn` | 씨족에게 진실을 전하러 돌아간다 |
 | `dialogue_seq_campaign_complete` | 2 | `hero_grave_hexer` | `loc.story.campaign.complete.2` | `resolute` | 복원된 기억을 모든 세력에 전한다 |
 | `dialogue_seq_campaign_complete` | 3 | `hero_echo_savant` | `loc.story.campaign.complete.3` | `solemn` | 격자 수호를 이어가겠다 — 심부에 남는다 |
@@ -434,6 +443,21 @@
 | `dialogue_seq_town_return_ch5` | 1 | `hero_pack_raider` | `loc.story.town.return_ch5.1` | `gentle` | 바람이 달라졌다 — 깨끗하다 |
 | `dialogue_seq_town_return_ch5` | 2 | `hero_grave_hexer` | `loc.story.town.return_ch5.2` | `resolute` | 기억의 유산을 전할 준비가 되었다 |
 
+### Aldric Arc — dialogue-scene 시퀀스
+
+> 실제 대사 텍스트는 `master-script.md`에 작성. 아래는 구조 메타데이터만 기록.
+
+| dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
+|---|---:|---|---|---|---|
+| `dialogue_seq_aldric_journal` | 0 | `Narrator` | `loc.story.aldric.journal.0` | — | Ch2 — 일지 발견 지문, dialogue-scene (10~20줄), Narrator 지문 포함 |
+| `dialogue_seq_aldric_face` | 0 | `Narrator` | `loc.story.aldric.face.0` | — | Ch3 — 얼굴 드러남 지문, dialogue-scene (10~20줄), Narrator 지문 포함 |
+| `dialogue_seq_method_debate` | 0 | `Narrator` | `loc.story.method_debate.0` | — | Ch4 — 방법론 논쟁, dialogue-scene (10~20줄), 다자간 대화 |
+| `dialogue_seq_aldric_whisper` | 0 | `Narrator` | `loc.story.aldric.whisper.0` | — | Ch4 — 속삭임, dialogue-scene (10~20줄), Narrator 지문 포함 |
+| `dialogue_seq_clan_split` | 0 | `Narrator` | `loc.story.clan_split.0` | — | Ch4 — 씨족 분열, dialogue-scene (10~20줄), 다자간 대화 |
+| `dialogue_seq_costs_accepted` | 0 | `Narrator` | `loc.story.costs_accepted.0` | — | Ch4 — 대가 수용, dialogue-scene (10~20줄), Narrator 지문 포함 |
+| `dialogue_seq_sacrifice_sequence` | 0 | `Narrator` | `loc.story.sacrifice.0` | — | Ch5 — 희생 시퀀스, dialogue-scene (10~20줄), Narrator 지문 포함 |
+| `dialogue_seq_echo_farewell` | 0 | `Narrator` | `loc.story.echo_farewell.0` | — | Ch5 — 이별, dialogue-scene (10~20줄), Narrator 지문 포함 |
+
 ## JSON 예시
 
 ```json
@@ -461,6 +485,7 @@
 |---|---|---|---|
 | `toast-banner` | codex unlock, clue, hero unlock 반응 | 제목 1개 + 본문 1~2줄 + icon | 즉시 skip 허용 |
 | `dialogue-overlay` | pre/post battle bark, town 반응, 짧은 갈등 대사 | portrait 0~2개 + 2~8줄 | line skip/전체 skip 허용 |
+| `dialogue-scene` | 핵심 스토리 장면 (site intro, midpoint, 논쟁, 개인 아크, 서약, 이별) | Narrator + 다자간 대화, 10~20줄 | line skip 허용, 전체 skip은 확인 후 |
 | `story-card` | chapter/site intro/outro, ending | full-screen still + 제목 + 본문 1~3문단 | card 단위 skip 허용 |
 
 금지: full cutscene, camera rail, branching dialogue, lip sync, timeline animation.
