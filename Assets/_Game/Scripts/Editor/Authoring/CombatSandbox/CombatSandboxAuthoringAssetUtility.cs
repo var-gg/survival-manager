@@ -11,6 +11,10 @@ namespace SM.Editor.Authoring.CombatSandbox;
 
 public static class CombatSandboxAuthoringAssetUtility
 {
+    public const string AuthoringMenuPath = "SM/Authoring/Combat Sandbox";
+    public const string OpenActiveConfigMenuPath = "Window/SM/Combat Sandbox Active Config";
+    public const string RecoveryMenuPath = "SM/Internal/Recovery/Refresh Combat Sandbox Authoring Assets";
+
     private const string RootFolder = "Assets/_Game/Authoring/CombatSandbox";
     private const string BuildOverrideFolder = RootFolder + "/BuildOverrides";
     private const string TeamPresetFolder = RootFolder + "/TeamPresets";
@@ -20,6 +24,56 @@ public static class CombatSandboxAuthoringAssetUtility
     private const string PreviewSettingsFolder = RootFolder + "/PreviewSettings";
     private const string DefaultSceneLayoutPath = LayoutFolder + "/combat_sandbox_layout_default.asset";
     private const string DefaultPreviewSettingsPath = PreviewSettingsFolder + "/combat_sandbox_preview_settings_default.asset";
+    private static readonly string[] RecoveryImportPaths =
+    {
+        "Assets/_Game/Scripts/Runtime/Unity/SM.Unity.asmdef",
+        "Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxConfig.cs",
+        "Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxSceneLayoutAsset.cs",
+        "Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxPreviewSettingsAsset.cs",
+        "Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxAuthoringModels.cs",
+        "Assets/_Game/Scripts/Runtime/Unity/Sandbox/CombatSandboxAssetTypes.cs",
+        "Assets/_Game/Scripts/Editor/Authoring/CombatSandbox",
+        RootFolder,
+        "Assets/Resources/_Game/Content/Definitions/QuickBattle/combat_sandbox_active.asset",
+    };
+
+    public static string RecoveryInstructions =>
+        $"{RecoveryMenuPath} 실행 후 asset을 다시 선택한다. 계속 `None (Mono Script)`면 Unity를 한 번 재시작한다.";
+
+    [MenuItem(AuthoringMenuPath)]
+    [MenuItem(OpenActiveConfigMenuPath)]
+    public static void OpenActiveConfig()
+    {
+        var config = EnsureActiveConfig();
+        if (config == null)
+        {
+            Debug.LogWarning(
+                "[CombatSandbox] active config를 열 수 없습니다.\n" +
+                $"Recovery: {RecoveryInstructions}");
+            return;
+        }
+
+        Selection.activeObject = config;
+        EditorGUIUtility.PingObject(config);
+        EditorApplication.ExecuteMenuItem("Window/General/Inspector");
+        EditorUtility.FocusProjectWindow();
+    }
+
+    [MenuItem(RecoveryMenuPath)]
+    public static void RefreshAuthoringAssets()
+    {
+        AssetDatabase.SaveAssets();
+
+        foreach (var path in RecoveryImportPaths)
+        {
+            ImportAssetIfPresent(path);
+        }
+
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        Debug.Log(
+            "[CombatSandbox] sandbox authoring asset/script refresh 완료. " +
+            "Inspector가 계속 None (Mono Script)이면 Unity를 재시작한 뒤 asset을 다시 선택하세요.");
+    }
 
     public static CombatSandboxConfig? EnsureActiveConfig()
     {
@@ -640,17 +694,69 @@ public static class CombatSandboxAuthoringAssetUtility
 
     private static T GetOrCreateAsset<T>(string assetPath, Action<T> initialize) where T : ScriptableObject
     {
+        EnsureFolderPath(Path.GetDirectoryName(assetPath)!.Replace('\\', '/'));
+
         var existing = AssetDatabase.LoadAssetAtPath<T>(assetPath);
         if (existing != null)
         {
             return existing;
         }
 
+        if (AssetDatabase.LoadMainAssetAtPath(assetPath) != null || File.Exists(assetPath))
+        {
+            throw BuildUnresolvedAssetException<T>(
+                assetPath,
+                "기존 asset 파일이 있지만 Unity가 현재 타입을 해석하지 못해 자동 재생성을 중단했다.");
+        }
+
         var asset = ScriptableObject.CreateInstance<T>();
         initialize(asset);
+        var script = MonoScript.FromScriptableObject(asset);
+        if (script == null)
+        {
+            UnityEngine.Object.DestroyImmediate(asset);
+            throw BuildUnresolvedAssetException<T>(
+                assetPath,
+                "ScriptableObject script 등록이 아직 준비되지 않아 새 asset 생성을 중단했다.");
+        }
+
         AssetDatabase.CreateAsset(asset, assetPath);
         EditorUtility.SetDirty(asset);
-        return asset;
+        AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
+        var reloaded = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+        if (reloaded != null)
+        {
+            return reloaded;
+        }
+
+        throw BuildUnresolvedAssetException<T>(
+            assetPath,
+            "새로 만든 asset을 다시 로드하지 못해 broken asset 자동 교체를 중단했다.");
+    }
+
+    private static InvalidOperationException BuildUnresolvedAssetException<T>(string assetPath, string reason) where T : ScriptableObject
+    {
+        return new InvalidOperationException(
+            $"[CombatSandbox] {typeof(T).Name} asset load failed: {assetPath}\n" +
+            $"{reason}\n" +
+            $"Recovery: {RecoveryInstructions}");
+    }
+
+    private static void ImportAssetIfPresent(string assetPath)
+    {
+        if (string.IsNullOrWhiteSpace(assetPath))
+        {
+            return;
+        }
+
+        if (!AssetDatabase.IsValidFolder(assetPath)
+            && AssetDatabase.LoadMainAssetAtPath(assetPath) == null
+            && !File.Exists(assetPath))
+        {
+            return;
+        }
+
+        AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
     }
 
     private static void EnsureFolder(string parentFolder, string childFolder)
@@ -661,5 +767,21 @@ public static class CombatSandboxAuthoringAssetUtility
         }
 
         AssetDatabase.CreateFolder(parentFolder, childFolder);
+    }
+
+    private static void EnsureFolderPath(string folderPath)
+    {
+        if (AssetDatabase.IsValidFolder(folderPath))
+        {
+            return;
+        }
+
+        var parent = Path.GetDirectoryName(folderPath)!.Replace('\\', '/');
+        if (!AssetDatabase.IsValidFolder(parent))
+        {
+            EnsureFolderPath(parent);
+        }
+
+        AssetDatabase.CreateFolder(parent, Path.GetFileName(folderPath));
     }
 }

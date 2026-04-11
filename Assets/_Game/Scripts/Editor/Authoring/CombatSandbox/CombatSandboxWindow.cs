@@ -71,13 +71,19 @@ public sealed class CombatSandboxWindow : EditorWindow
     private void DrawHeader()
     {
         EditorGUILayout.HelpBox(
-            "Canonical entry points are SM/Play/Full Loop, SM/Play/Combat Sandbox, and Window/SM/Combat Sandbox. This window is now the secondary library/history/results surface; direct config editing happens in the Combat Sandbox inspector.",
+            "Daily edit/compile/play starts at SM/Authoring/Combat Sandbox. Use SM/Play/Combat Sandbox for direct runtime verification, and use this window as the secondary library/history/results surface.",
             MessageType.Info);
         using (new EditorGUILayout.HorizontalScope())
         {
             using (new EditorGUI.DisabledScope(true))
             {
                 _state.Config = (CombatSandboxConfig)EditorGUILayout.ObjectField("Active Handoff", _state.Config, typeof(CombatSandboxConfig), false);
+            }
+
+            if (GUILayout.Button("Open Active Config", GUILayout.Width(150f)))
+            {
+                CombatSandboxAuthoringAssetUtility.OpenActiveConfig();
+                _state.Config = CombatSandboxAuthoringAssetUtility.EnsureActiveConfig();
             }
 
             if (GUILayout.Button("Ensure Starter Library", GUILayout.Width(160f)))

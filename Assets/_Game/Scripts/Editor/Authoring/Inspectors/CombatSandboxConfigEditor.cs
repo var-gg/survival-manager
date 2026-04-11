@@ -70,7 +70,7 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
         EditorGUILayout.Space(8f);
         DrawResultsSection();
         EditorGUILayout.Space(8f);
-        _showLegacyMirror = EditorGUILayout.Foldout(_showLegacyMirror, EditorLocalizedTextResolver.Label("Legacy Mirror / Compatibility", "Legacy Mirror / Compatibility"), true);
+        _showLegacyMirror = EditorGUILayout.Foldout(_showLegacyMirror, EditorLocalizedTextResolver.Label("레거시 미러 / 호환", "Legacy Mirror / Compatibility"), true);
         if (_showLegacyMirror)
         {
             DrawAllySlots();
@@ -83,7 +83,7 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
 
     private void DrawGeneralSection()
     {
-        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Combat Sandbox Active Handoff", "Combat Sandbox Active Handoff"), EditorStyles.boldLabel);
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Combat Sandbox 액티브 핸드오프", "Combat Sandbox Active Handoff"), EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(
             EditorLocalizedTextResolver.Label(
                 "이 asset은 runtime direct sandbox가 읽는 active handoff이자 주 authoring surface다. preset library와 history/result 비교는 Window/SM/Combat Sandbox에서 보조로 다룬다.",
@@ -99,13 +99,13 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
 
     private void DrawAuthoringSection()
     {
-        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Scenario Handoff", "Scenario Handoff"), EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(_scenario, new GUIContent(EditorLocalizedTextResolver.Label("시나리오 메타데이터", "Scenario Metadata")), true);
-        EditorGUILayout.PropertyField(_leftTeam, new GUIContent(EditorLocalizedTextResolver.Label("왼쪽 팀", "Left Team")), true);
-        EditorGUILayout.PropertyField(_rightTeam, new GUIContent(EditorLocalizedTextResolver.Label("오른쪽 팀", "Right Team")), true);
-        EditorGUILayout.PropertyField(_execution, new GUIContent(EditorLocalizedTextResolver.Label("실행 프리셋", "Execution Preset")), true);
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("시나리오 핸드오프", "Scenario Handoff"), EditorStyles.boldLabel);
+        DrawScenarioMetadataProperty(_scenario, "시나리오 메타데이터", "Scenario Metadata");
+        DrawTeamDefinitionProperty(_leftTeam, "왼쪽 팀", "Left Team");
+        DrawTeamDefinitionProperty(_rightTeam, "오른쪽 팀", "Right Team");
+        DrawExecutionSettingsProperty(_execution, "실행 프리셋", "Execution Preset");
         EditorGUILayout.Space(4f);
-        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Legacy Fallback Values", "Legacy Fallback Values"), EditorStyles.boldLabel);
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("레거시 fallback 값", "Legacy Fallback Values"), EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(_allyPosture, new GUIContent(EditorLocalizedTextResolver.Label("아군 태세", "Ally Posture")));
         EditorGUILayout.PropertyField(_teamTacticId, new GUIContent(EditorLocalizedTextResolver.Label("팀 전술 ID", "Team Tactic Id")));
         EditorGUILayout.PropertyField(_enemyPosture, new GUIContent(EditorLocalizedTextResolver.Label("적군 태세", "Enemy Posture")));
@@ -113,9 +113,219 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
         EditorGUILayout.PropertyField(_batchCount, new GUIContent(EditorLocalizedTextResolver.Label("배치 횟수", "Batch Count")));
     }
 
+    private static void DrawScenarioMetadataProperty(SerializedProperty property, string koLabel, string enLabel)
+    {
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        {
+            DrawFoldout(property, koLabel, enLabel);
+            if (!property.isExpanded)
+            {
+                return;
+            }
+
+            using (new EditorGUI.IndentLevelScope())
+            {
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxScenarioMetadata.ScenarioId)), "시나리오 ID", "Scenario Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxScenarioMetadata.DisplayName)), "표시 이름", "Display Name");
+                DrawStringListProperty(property.FindPropertyRelative(nameof(CombatSandboxScenarioMetadata.Tags)), "태그", "Tags", "태그", "Tag");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxScenarioMetadata.Notes)), "노트", "Notes");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxScenarioMetadata.ExpectedOutcome)), "기대 결과", "Expected Outcome");
+            }
+        }
+    }
+
+    private static void DrawTeamDefinitionProperty(SerializedProperty property, string koLabel, string enLabel)
+    {
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        {
+            DrawFoldout(property, koLabel, enLabel);
+            if (!property.isExpanded)
+            {
+                return;
+            }
+
+            using (new EditorGUI.IndentLevelScope())
+            {
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.TeamId)), "팀 ID", "Team Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.DisplayName)), "표시 이름", "Display Name");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.SourceMode)), "소스 모드", "Source Mode");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.TeamPosture)), "팀 태세", "Team Posture");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.TeamTacticId)), "팀 전술 ID", "Team Tactic Id");
+                DrawStringListProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.Tags)), "태그", "Tags", "태그", "Tag");
+                DrawTeamMembersProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.Members)));
+                DrawStringListProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.TeamTemporaryAugmentIds)), "팀 임시 증강 ID", "Team Temporary Augment Ids", "임시 증강", "Temp Augment");
+                DrawStringListProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.TeamPermanentAugmentIds)), "팀 영구 증강 ID", "Team Permanent Augment Ids", "영구 증강", "Permanent Augment");
+                DrawRemoteDeckProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.RemoteDeck)), "원격 덱 참조", "Remote Deck Reference");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.ProvenanceLabel)), "출처 라벨", "Provenance Label");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxTeamDefinition.Notes)), "노트", "Notes");
+            }
+        }
+    }
+
+    private static void DrawExecutionSettingsProperty(SerializedProperty property, string koLabel, string enLabel)
+    {
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        {
+            DrawFoldout(property, koLabel, enLabel);
+            if (!property.isExpanded)
+            {
+                return;
+            }
+
+            using (new EditorGUI.IndentLevelScope())
+            {
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxExecutionSettings.PresetId)), "프리셋 ID", "Preset Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxExecutionSettings.DisplayName)), "표시 이름", "Display Name");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxExecutionSettings.SeedMode)), "시드 모드", "Seed Mode");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxExecutionSettings.Seed)), "시드", "Seed");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxExecutionSettings.BatchCount)), "배치 횟수", "Batch Count");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxExecutionSettings.RunSideSwap)), "사이드 스왑 실행", "Run Side Swap");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxExecutionSettings.RecordReplay)), "리플레이 기록", "Record Replay");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxExecutionSettings.StopOnMismatch)), "불일치 시 중단", "Stop On Mismatch");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxExecutionSettings.StopOnReadabilityViolation)), "가독성 위반 시 중단", "Stop On Readability Violation");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxExecutionSettings.Notes)), "노트", "Notes");
+            }
+        }
+    }
+
+    private static void DrawTeamMembersProperty(SerializedProperty arrayProperty)
+    {
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        {
+            DrawArraySizeToolbar(arrayProperty, EditorLocalizedTextResolver.Label("팀 멤버", "Team Members"));
+            for (var index = 0; index < arrayProperty.arraySize; index++)
+            {
+                var member = arrayProperty.GetArrayElementAtIndex(index);
+                using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+                {
+                    DrawSlotHeader(EditorLocalizedTextResolver.Label($"멤버 {index + 1}", $"Member {index + 1}"), arrayProperty, index);
+                    DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.MemberId)), "멤버 ID", "Member Id");
+                    DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.SourceKind)), "유닛 소스", "Unit Source");
+                    DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.HeroId)), "영웅 ID", "Hero Id");
+                    DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.DisplayName)), "표시 이름", "Display Name");
+                    DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.ArchetypeId)), "전투 원형 ID", "Archetype Id");
+                    DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.CharacterId)), "캐릭터 ID", "Character Id");
+                    DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.Anchor)), "배치", "Anchor");
+                    DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.RoleInstructionId)), "역할 ID", "Role Id");
+                    DrawBuildOverrideProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.BuildOverride)), "빌드 Override", "Build Override");
+                    DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.Notes)), "노트", "Notes");
+                }
+            }
+        }
+    }
+
+    private static void DrawBuildOverrideProperty(SerializedProperty property, string koLabel, string enLabel)
+    {
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        {
+            DrawFoldout(property, koLabel, enLabel);
+            if (!property.isExpanded)
+            {
+                return;
+            }
+
+            using (new EditorGUI.IndentLevelScope())
+            {
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.OverrideId)), "오버라이드 ID", "Override Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.DisplayName)), "표시 이름", "Display Name");
+                DrawStringListProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.Tags)), "태그", "Tags", "태그", "Tag");
+                DrawItemOverridesProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.EquippedItems)));
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.PassiveBoardId)), "패시브 보드 ID", "Passive Board Id");
+                DrawStringListProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.PassiveNodeIds)), "패시브 노드 ID", "Passive Node Ids", "패시브 노드", "Passive Node");
+                DrawStringListProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.TemporaryAugmentIds)), "임시 증강 ID", "Temporary Augment Ids", "임시 증강", "Temp Augment");
+                DrawStringListProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.PermanentAugmentIds)), "영구 증강 ID", "Permanent Augment Ids", "영구 증강", "Permanent Augment");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.FlexActiveSkillId)), "유연 액티브 스킬 ID", "Flex Active Skill Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.FlexPassiveSkillId)), "유연 패시브 스킬 ID", "Flex Passive Skill Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.PositiveTraitId)), "긍정 특성 ID", "Positive Trait Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.NegativeTraitId)), "부정 특성 ID", "Negative Trait Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.RoleInstructionIdOverride)), "역할 Override ID", "Role Override Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.RetrainCount)), "재훈련 횟수", "Retrain Count");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxBuildOverrideData.Notes)), "노트", "Notes");
+            }
+        }
+    }
+
+    private static void DrawRemoteDeckProperty(SerializedProperty property, string koLabel, string enLabel)
+    {
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        {
+            DrawFoldout(property, koLabel, enLabel);
+            if (!property.isExpanded)
+            {
+                return;
+            }
+
+            using (new EditorGUI.IndentLevelScope())
+            {
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxRemoteDeckReference.UserId)), "사용자 ID", "User Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxRemoteDeckReference.DeckId)), "덱 ID", "Deck Id");
+                DrawLocalizedProperty(property.FindPropertyRelative(nameof(CombatSandboxRemoteDeckReference.Revision)), "리비전", "Revision");
+            }
+        }
+    }
+
+    private static void DrawItemOverridesProperty(SerializedProperty arrayProperty)
+    {
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        {
+            DrawArraySizeToolbar(arrayProperty, EditorLocalizedTextResolver.Label("장착 아이템", "Equipped Items"));
+            for (var index = 0; index < arrayProperty.arraySize; index++)
+            {
+                var item = arrayProperty.GetArrayElementAtIndex(index);
+                using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+                {
+                    DrawSlotHeader(EditorLocalizedTextResolver.Label($"아이템 {index + 1}", $"Item {index + 1}"), arrayProperty, index);
+                    DrawLocalizedProperty(item.FindPropertyRelative(nameof(CombatSandboxItemOverrideData.ItemId)), "아이템 ID", "Item Id");
+                    DrawStringListProperty(item.FindPropertyRelative(nameof(CombatSandboxItemOverrideData.AffixIds)), "접두사 ID", "Affix Ids", "접두사", "Affix");
+                }
+            }
+        }
+    }
+
+    private static void DrawStringListProperty(SerializedProperty arrayProperty, string koLabel, string enLabel, string itemKoPrefix, string itemEnPrefix)
+    {
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        {
+            DrawArraySizeToolbar(arrayProperty, EditorLocalizedTextResolver.Label(koLabel, enLabel));
+            for (var index = 0; index < arrayProperty.arraySize; index++)
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.PropertyField(
+                        arrayProperty.GetArrayElementAtIndex(index),
+                        new GUIContent(EditorLocalizedTextResolver.Label($"{itemKoPrefix} {index + 1}", $"{itemEnPrefix} {index + 1}")));
+
+                    if (GUILayout.Button(EditorLocalizedTextResolver.Label("삭제", "Remove"), GUILayout.Width(72f)))
+                    {
+                        arrayProperty.DeleteArrayElementAtIndex(index);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private static void DrawLocalizedProperty(SerializedProperty? property, string koLabel, string enLabel, bool includeChildren = false)
+    {
+        if (property == null)
+        {
+            return;
+        }
+
+        EditorGUILayout.PropertyField(property, new GUIContent(EditorLocalizedTextResolver.Label(koLabel, enLabel)), includeChildren);
+    }
+
+    private static void DrawFoldout(SerializedProperty property, string koLabel, string enLabel)
+    {
+        property.isExpanded = EditorGUILayout.Foldout(
+            property.isExpanded,
+            EditorLocalizedTextResolver.Label(koLabel, enLabel),
+            true);
+    }
+
     private void DrawActionSection()
     {
-        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Inspector Actions", "Inspector Actions"), EditorStyles.boldLabel);
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Inspector 작업", "Inspector Actions"), EditorStyles.boldLabel);
         _inspectUnitId = EditorGUILayout.TextField(EditorLocalizedTextResolver.Label("검사 유닛 ID", "Inspect Unit Id"), _inspectUnitId);
 
         using (new EditorGUILayout.HorizontalScope())
@@ -165,7 +375,7 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
 
     private void DrawPreviewSection()
     {
-        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Preview", "Preview"), EditorStyles.boldLabel);
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("미리보기", "Preview"), EditorStyles.boldLabel);
         if (!PreviewCache.TryGetValue(target.GetInstanceID(), out var preview))
         {
             EditorGUILayout.HelpBox(EditorLocalizedTextResolver.Label("아직 컴파일한 미리보기가 없습니다.", "No compiled preview yet."), MessageType.None);
@@ -173,19 +383,19 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
         }
 
         _previewScroll = EditorGUILayout.BeginScrollView(_previewScroll, GUILayout.MinHeight(220f));
-        DrawReadOnlyBlock("Scenario Summary", preview.ScenarioSummary);
-        DrawReadOnlyBlock("Left Team Preview", preview.LeftTeamPreview);
-        DrawReadOnlyBlock("Right Team Preview", preview.RightTeamPreview);
-        DrawReadOnlyBlock("Breakpoint Summary", preview.LaunchTruth.BreakpointSummary);
-        DrawReadOnlyBlock("Baseline Drift", preview.LaunchTruth.DriftSummary);
-        DrawReadOnlyBlock("Slice Membership", preview.LaunchTruth.MembershipWarning);
-        DrawReadOnlyBlock("Validation", preview.ValidationMessage);
+        DrawReadOnlyBlock("시나리오 요약", "Scenario Summary", preview.ScenarioSummary);
+        DrawReadOnlyBlock("왼쪽 팀 미리보기", "Left Team Preview", preview.LeftTeamPreview);
+        DrawReadOnlyBlock("오른쪽 팀 미리보기", "Right Team Preview", preview.RightTeamPreview);
+        DrawReadOnlyBlock("브레이크포인트 요약", "Breakpoint Summary", preview.LaunchTruth.BreakpointSummary);
+        DrawReadOnlyBlock("기준선 드리프트", "Baseline Drift", preview.LaunchTruth.DriftSummary);
+        DrawReadOnlyBlock("슬라이스 포함 여부", "Slice Membership", preview.LaunchTruth.MembershipWarning);
+        DrawReadOnlyBlock("검증", "Validation", preview.ValidationMessage);
         EditorGUILayout.EndScrollView();
     }
 
     private void DrawResultsSection()
     {
-        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("Results", "Results"), EditorStyles.boldLabel);
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label("결과", "Results"), EditorStyles.boldLabel);
         if (!RunCache.TryGetValue(target.GetInstanceID(), out var run))
         {
             EditorGUILayout.HelpBox(EditorLocalizedTextResolver.Label("아직 실행 결과가 없습니다.", "No run results yet."), MessageType.None);
@@ -193,15 +403,15 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
         }
 
         _resultsScroll = EditorGUILayout.BeginScrollView(_resultsScroll, GUILayout.MinHeight(220f));
-        EditorGUILayout.LabelField($"Compile Hash: {run.PrimaryResult.PlayerSnapshot.CompileHash}");
-        EditorGUILayout.LabelField($"Replay Hash: {run.PrimaryResult.ReplayHash}");
-        EditorGUILayout.LabelField($"Layout Source: {run.LayoutSourceLabel}");
-        DrawReadOnlyBlock("Metrics", BuildMetricsSummary(run.PrimaryResult.Metrics, run.SideSwapResult));
-        DrawReadOnlyBlock("Counter Coverage", CombatSandboxExecutionService.BuildCounterCoverageSummary(run.PrimaryResult.PlayerSnapshot.TeamCounterCoverage, SM.Combat.Services.CounterCoverageAggregationService.AggregateFromLoadouts(run.PrimaryResult.EnemyLoadout)));
-        DrawReadOnlyBlock("Governance", CombatSandboxExecutionService.BuildGovernanceSummary(run.PrimaryResult.PlayerSnapshot, _inspectUnitId));
-        DrawReadOnlyBlock("Readability", CombatSandboxExecutionService.BuildReadabilitySummary(run.PrimaryResult.LastReplay.Readability));
-        DrawReadOnlyBlock("Explanation", CombatSandboxExecutionService.BuildExplanationSummary(run.PrimaryResult.LastReplay.BattleSummary));
-        DrawReadOnlyBlock("Provenance", CombatSandboxExecutionService.BuildProvenanceSummary(run.PrimaryResult.Provenance));
+        EditorGUILayout.LabelField($"{EditorLocalizedTextResolver.Label("컴파일 해시", "Compile Hash")}: {run.PrimaryResult.PlayerSnapshot.CompileHash}");
+        EditorGUILayout.LabelField($"{EditorLocalizedTextResolver.Label("리플레이 해시", "Replay Hash")}: {run.PrimaryResult.ReplayHash}");
+        EditorGUILayout.LabelField($"{EditorLocalizedTextResolver.Label("레이아웃 소스", "Layout Source")}: {run.LayoutSourceLabel}");
+        DrawReadOnlyBlock("지표", "Metrics", BuildMetricsSummary(run.PrimaryResult.Metrics, run.SideSwapResult));
+        DrawReadOnlyBlock("카운터 커버리지", "Counter Coverage", CombatSandboxExecutionService.BuildCounterCoverageSummary(run.PrimaryResult.PlayerSnapshot.TeamCounterCoverage, SM.Combat.Services.CounterCoverageAggregationService.AggregateFromLoadouts(run.PrimaryResult.EnemyLoadout)));
+        DrawReadOnlyBlock("거버넌스", "Governance", CombatSandboxExecutionService.BuildGovernanceSummary(run.PrimaryResult.PlayerSnapshot, _inspectUnitId));
+        DrawReadOnlyBlock("가독성", "Readability", CombatSandboxExecutionService.BuildReadabilitySummary(run.PrimaryResult.LastReplay.Readability));
+        DrawReadOnlyBlock("설명", "Explanation", CombatSandboxExecutionService.BuildExplanationSummary(run.PrimaryResult.LastReplay.BattleSummary));
+        DrawReadOnlyBlock("출처", "Provenance", CombatSandboxExecutionService.BuildProvenanceSummary(run.PrimaryResult.Provenance));
         EditorGUILayout.EndScrollView();
     }
 
@@ -343,12 +553,16 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
         }
     }
 
-    private static void DrawReadOnlyBlock(string label, string value)
+    private static void DrawReadOnlyBlock(string koLabel, string enLabel, string value)
     {
-        EditorGUILayout.LabelField(label, EditorStyles.miniBoldLabel);
+        EditorGUILayout.LabelField(EditorLocalizedTextResolver.Label(koLabel, enLabel), EditorStyles.miniBoldLabel);
         using (new EditorGUI.DisabledScope(true))
         {
-            EditorGUILayout.TextArea(string.IsNullOrWhiteSpace(value) ? "none" : value, GUILayout.MinHeight(44f));
+            EditorGUILayout.TextArea(
+                string.IsNullOrWhiteSpace(value)
+                    ? EditorLocalizedTextResolver.Label("없음", "none")
+                    : value,
+                GUILayout.MinHeight(44f));
         }
     }
 

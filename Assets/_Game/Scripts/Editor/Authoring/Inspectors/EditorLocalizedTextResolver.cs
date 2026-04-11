@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using SM.Editor.Bootstrap;
 using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Unity;
 using UnityEditor.Localization;
+using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 using UnityEngine.Localization.Tables;
@@ -11,8 +13,10 @@ namespace SM.Editor.Authoring.Inspectors;
 
 internal static class EditorLocalizedTextResolver
 {
+    private static bool _editorLocalizationInitialized;
+
     public static string CurrentLocaleCode =>
-        LocalizationSettings.SelectedLocale?.Identifier.Code ?? "en";
+        ResolveCurrentLocaleCode();
 
     public static string Label(string koFallback, string enFallback)
     {
@@ -165,5 +169,38 @@ internal static class EditorLocalizedTextResolver
     private static bool IsKoreanLocale()
     {
         return string.Equals(CurrentLocaleCode, "ko", System.StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ResolveCurrentLocaleCode()
+    {
+        EnsureEditorLocalizationInitialized();
+        return LocalizationSettings.SelectedLocale?.Identifier.Code ?? "en";
+    }
+
+    private static void EnsureEditorLocalizationInitialized()
+    {
+        if (_editorLocalizationInitialized)
+        {
+            return;
+        }
+
+        try
+        {
+            LocalizationFoundationBootstrap.EnsureFoundationAssets();
+
+            var initialization = LocalizationSettings.InitializationOperation;
+            if (initialization != null && !initialization.IsDone)
+            {
+                initialization.WaitForCompletion();
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[EditorLocalization] Failed to initialize editor localization. Falling back to English. {ex.Message}");
+        }
+        finally
+        {
+            _editorLocalizationInitialized = true;
+        }
     }
 }

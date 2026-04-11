@@ -129,6 +129,13 @@ public static class FirstPlayableBootstrap
     internal static bool TryLoadCombatSandboxConfig(out SM.Unity.Sandbox.CombatSandboxConfig config)
     {
         config = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(CombatSandboxConfigAssetPath);
+        if (config != null)
+        {
+            RepairCombatSandboxConfig(config);
+            return true;
+        }
+
+        config = EnsureCombatSandboxConfig();
         return config != null;
     }
 
@@ -141,14 +148,46 @@ public static class FirstPlayableBootstrap
             return existing;
         }
 
+        if (AssetDatabase.LoadMainAssetAtPath(CombatSandboxConfigAssetPath) != null || File.Exists(CombatSandboxConfigAssetPath))
+        {
+            Debug.LogWarning(
+                $"[CombatSandbox] active handoff를 타입 해석하지 못해 자동 재생성을 중단합니다: {CombatSandboxConfigAssetPath}\n" +
+                $"Recovery: {CombatSandboxAuthoringAssetUtility.RecoveryInstructions}");
+            return null;
+        }
+
         EnsureFolderPath(CombatSandboxConfigFolder);
 
         var config = ScriptableObject.CreateInstance<SM.Unity.Sandbox.CombatSandboxConfig>();
+        var script = MonoScript.FromScriptableObject(config);
+        if (script == null)
+        {
+            DestroyImmediate(config);
+            Debug.LogWarning(
+                "[CombatSandbox] CombatSandboxConfig script 등록이 아직 준비되지 않아 active handoff 생성을 중단합니다.\n" +
+                $"Recovery: {CombatSandboxAuthoringAssetUtility.RecoveryInstructions}");
+            return null;
+        }
+
         ApplyDefaultCombatSandboxConfig(config);
         AssetDatabase.CreateAsset(config, CombatSandboxConfigAssetPath);
         AssetDatabase.SaveAssets();
-        Debug.Log($"[CombatSandbox] active handoff 생성: {CombatSandboxConfigAssetPath}");
-        return config;
+        AssetDatabase.ImportAsset(
+            CombatSandboxConfigAssetPath,
+            ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
+
+        var reloaded = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(CombatSandboxConfigAssetPath);
+        if (reloaded != null)
+        {
+            RepairCombatSandboxConfig(reloaded);
+            Debug.Log($"[CombatSandbox] active handoff 생성: {CombatSandboxConfigAssetPath}");
+            return reloaded;
+        }
+
+        Debug.LogWarning(
+            $"[CombatSandbox] active handoff 생성 후 다시 로드하지 못했습니다: {CombatSandboxConfigAssetPath}\n" +
+            $"Recovery: {CombatSandboxAuthoringAssetUtility.RecoveryInstructions}");
+        return null;
     }
 
     private static void RepairCombatSandboxConfig(SM.Unity.Sandbox.CombatSandboxConfig config)
@@ -182,6 +221,18 @@ public static class FirstPlayableBootstrap
         if (config.Seed == 0)
         {
             config.Seed = 42;
+            dirty = true;
+        }
+
+        if (config.SceneLayout == null)
+        {
+            config.SceneLayout = CombatSandboxAuthoringAssetUtility.EnsureDefaultSceneLayoutAsset();
+            dirty = true;
+        }
+
+        if (config.PreviewSettings == null)
+        {
+            config.PreviewSettings = CombatSandboxAuthoringAssetUtility.EnsureDefaultPreviewSettingsAsset();
             dirty = true;
         }
 
@@ -247,6 +298,8 @@ public static class FirstPlayableBootstrap
             Tags = new System.Collections.Generic.List<string> { "starter", "opening" },
             ExpectedOutcome = "Baseline direct combat sandbox lane for daily balance and readability checks.",
         };
+        config.SceneLayout = CombatSandboxAuthoringAssetUtility.EnsureDefaultSceneLayoutAsset();
+        config.PreviewSettings = CombatSandboxAuthoringAssetUtility.EnsureDefaultPreviewSettingsAsset();
         config.LeftTeam = BuildDefaultDirectLeftTeam();
         config.RightTeam = BuildDefaultDirectRightTeam();
         config.Execution = BuildDefaultExecutionPreset();
@@ -299,8 +352,8 @@ public static class FirstPlayableBootstrap
         if (!TryLoadCombatSandboxConfig(out quickBattleConfig))
         {
             error =
-                $"Combat Sandbox active handoff is missing: {CombatSandboxConfigAssetPath}\n" +
-                "Recovery: Window/SM/Combat Sandbox or SM/Internal/Content/Ensure Sample Content";
+                $"Combat Sandbox active handoff could not be loaded: {CombatSandboxConfigAssetPath}\n" +
+                $"Recovery: {CombatSandboxAuthoringAssetUtility.RecoveryInstructions}";
             return false;
         }
 
@@ -328,7 +381,8 @@ public static class FirstPlayableBootstrap
         {
             error =
                 $"Combat Sandbox preflight compile failed.\n{ex.Message}\n" +
-                "Recovery: Window/SM/Combat Sandbox, SM/Internal/Validation/Validate Canonical Content";
+                $"Recovery: {CombatSandboxAuthoringAssetUtility.RecoveryInstructions}\n" +
+                "Fallback: Window/SM/Combat Sandbox, SM/Internal/Validation/Validate Canonical Content";
             return false;
         }
 
