@@ -1332,3 +1332,115 @@ Dawn Priest의 손에 사제 인장이 없다. Aldric의 일지가 있다. Pack 
 | 0 | Dawn Priest | quiet | "끝났습니다." |
 | 1 | Pack Raider | quiet | "...끝났어." |
 | 2 | Narrator | — | 세 사람이 마을로 걸어 들어간다. 빛이 등 뒤에서 비추고 있다. 한 명이 빠져 있다. 하지만 서 있다. |
+
+---
+
+## Town Pair Micro-Scenes — 마을 관계 반응
+
+---
+
+### `dialogue_overlay_town_pair_priest_raider_ch1` — Dawn Priest & Pack Raider: 첫 밤
+
+> **컨텍스트**: ch1 귀환 후. 마을에서 처음으로 같은 지붕 아래 쉰다. 아직 적대적.
+> **연출**: dialogue-overlay
+
+| # | 화자 | 감정 | 대사 |
+|---|---|---|---|
+| 0 | Pack Raider | skeptical | "같은 불을 쬐는 건 좋은데. 등은 내가 본다." |
+| 1 | Dawn Priest | grim | "아직 신뢰가 아니란 건 압니다. 하지만 불은 따뜻합니다." |
+| 2 | Narrator | — | 둘 사이에 불이 있다. 그것만으로 충분하다. 지금은. |
+
+---
+
+### `dialogue_overlay_town_pair_priest_raider_ch2` — Dawn Priest & Pack Raider: 균열 후
+
+> **컨텍스트**: ch2 귀환 후. Dawn Priest의 신앙이 흔들린 상태에서 Pack Raider의 반응.
+> **연출**: dialogue-overlay
+
+| # | 화자 | 감정 | 대사 |
+|---|---|---|---|
+| 0 | Narrator | — | Dawn Priest가 사제 인장을 불빛에 비추고 있다. 닦지 않는다. |
+| 1 | Pack Raider | quiet | "...그거 안 버리는구나." |
+| 2 | Dawn Priest | weary | "증거니까요. 제가 뭘 믿었는지의." |
+| 3 | Pack Raider | solemn | "증거를 들고 다니는 건 용기야. 우리 씨족에선 그래." |
+
+---
+
+### `dialogue_overlay_town_pair_hexer_raider_ch3` — Grave Hexer & Pack Raider: 기억과 본능
+
+> **컨텍스트**: ch3 귀환 후. 야수족과 언데드가 같은 물을 마시던 기억을 본 직후.
+> **연출**: dialogue-overlay
+
+| # | 화자 | 감정 | 대사 |
+|---|---|---|---|
+| 0 | Pack Raider | quiet | "그 기억에서... 우리 조상이 웃고 있었어. 이빨을 보이면서." |
+| 1 | Grave Hexer | gentle | "이빨을 보이는 게 위협이 아니라 인사였거든. 그때는." |
+| 2 | Narrator | — | Pack Raider가 자기 이빨을 만진다. 오래된 습관의 의미가 달라진다. |
+
+---
+
+### `dialogue_overlay_town_pair_savant_hexer_ch4` — Echo Savant & Grave Hexer: 마지막 밤
+
+> **컨텍스트**: ch4 귀환 후. 대가가 확정된 후 마지막 밤. Echo Savant는 격자에 남기로 했고, Grave Hexer는 기원 기억을 바치기로 했다.
+> **연출**: dialogue-overlay
+
+| # | 화자 | 감정 | 대사 |
+|---|---|---|---|
+| 0 | Grave Hexer | quiet | "내일이면 400년 전 일을 잊어. 네가 1800년 잠든 것처럼." |
+| 1 | Echo Savant | calm | "잊는 것과 잠드는 것은 다르다." |
+| 2 | Grave Hexer | bitter | "뭐가 다른데." |
+| 3 | Echo Savant | calm | "잠든 쪽이 낫다. 깨어날 수 있으니까." |
+
+---
+
+## Hero Join Reactions — 합류 반응
+
+---
+
+### `dialogue_overlay_join_rift_stalker` — Rift Stalker 합류 반응
+
+> **컨텍스트**: ch1 site_wolfpine_trail extract 후. 회색 송곳니가 Rift Stalker를 원정대에 배속.
+> **연출**: dialogue-overlay
+
+| # | 화자 | 감정 | 대사 |
+|---|---|---|---|
+| 0 | Pack Raider | solemn | "이 친구는 내 형제가 보낸 거야. 믿어도 돼." |
+| 1 | Dawn Priest | resolute | "환영합니다. 함께 걸읍시다." |
+| 2 | Rift Stalker | grim | "형제의 빚을 갚으러 왔다. 빚이 끝나면 떠난다." |
+
+---
+
+### `dialogue_overlay_join_bastion_penitent` — Bastion Penitent 합류 반응
+
+> **컨텍스트**: ch2 site_sunken_bastion extract 후. 감옥에서 해방된 내부 고발자.
+> **연출**: dialogue-overlay
+
+| # | 화자 | 감정 | 대사 |
+|---|---|---|---|
+| 0 | Bastion Penitent | weary | "감옥에서 나오니 세상이 더 무너져 있군요." |
+| 1 | Dawn Priest | grim | "당신이 옳았습니다. 우리가 늦었을 뿐." |
+
+---
+
+### `dialogue_overlay_join_echo_savant` — Echo Savant 합류 반응
+
+> **컨텍스트**: ch3 site_bone_orchard extract 후. 1800년 만에 깨어난 수문장.
+> **연출**: dialogue-overlay
+
+| # | 화자 | 감정 | 대사 |
+|---|---|---|---|
+| 0 | Grave Hexer | dry | "1800년 자고 일어났는데 첫마디가 격자 풍화 보고라니. 재미있는 친구야." |
+| 1 | Pack Raider | skeptical | "사교적이진 않네." |
+| 2 | Echo Savant | flat | "사교가 뭔지 잊었다. 격자 안에는 상대가 없었다." |
+
+---
+
+### `dialogue_overlay_join_mirror_cantor` — Mirror Cantor 합류 반응
+
+> **컨텍스트**: ch5 site_heartforge_gate extract 후. 마지막 specialist.
+> **연출**: dialogue-overlay
+
+| # | 화자 | 감정 | 대사 |
+|---|---|---|---|
+| 0 | Dawn Priest | solemn | "이제 막바지입니다. 함께해주시겠습니까." |
+| 1 | Mirror Cantor | resolute | "심부의 소리가 부른다. 선택의 여지가 없었다." |

@@ -109,6 +109,24 @@
 | `story_event_town_return_ch4` | `TownEntered` | 150 | `OncePerProfile` | `FlagIs:story_flag_prism_seeker_joined`, `FlagNot:story_flag_town_return_ch4` | `SetFlag:story_flag_town_return_ch4` | `dialogue_overlay_town_return_ch4` |
 | `story_event_town_return_ch5` | `TownEntered` | 150 | `OncePerProfile` | `FlagIs:story_flag_campaign_complete`, `FlagNot:story_flag_town_return_ch5` | `SetFlag:story_flag_town_return_ch5` | `dialogue_overlay_town_return_ch5` |
 
+### Town Pair Micro-Scenes
+
+| story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
+|---|---|---:|---|---|---|---|
+| `story_event_town_pair_priest_raider_ch1` | `TownEntered` | 130 | `OncePerProfile` | `FlagIs:story_flag_town_return_ch1`, `FlagNot:story_flag_town_pair_pr_ch1` | `SetFlag:story_flag_town_pair_pr_ch1` | `dialogue_overlay_town_pair_priest_raider_ch1` |
+| `story_event_town_pair_priest_raider_ch2` | `TownEntered` | 130 | `OncePerProfile` | `FlagIs:story_flag_town_return_ch2`, `FlagNot:story_flag_town_pair_pr_ch2` | `SetFlag:story_flag_town_pair_pr_ch2` | `dialogue_overlay_town_pair_priest_raider_ch2` |
+| `story_event_town_pair_hexer_raider_ch3` | `TownEntered` | 130 | `OncePerProfile` | `FlagIs:story_flag_town_return_ch3`, `FlagNot:story_flag_town_pair_hr_ch3` | `SetFlag:story_flag_town_pair_hr_ch3` | `dialogue_overlay_town_pair_hexer_raider_ch3` |
+| `story_event_town_pair_savant_hexer_ch4` | `TownEntered` | 130 | `OncePerProfile` | `FlagIs:story_flag_town_return_ch4`, `FlagNot:story_flag_town_pair_sh_ch4` | `SetFlag:story_flag_town_pair_sh_ch4` | `dialogue_overlay_town_pair_savant_hexer_ch4` |
+
+### Hero Join Reactions
+
+| story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
+|---|---|---:|---|---|---|---|
+| `story_event_join_reaction_rift_stalker` | `ExtractCommitted` | 280 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_wolfpine_trail`, `FlagIs:story_flag_rift_stalker_joined` | `SetFlag:story_flag_join_reaction_rift_stalker` | `dialogue_overlay_join_rift_stalker` |
+| `story_event_join_reaction_bastion_penitent` | `ExtractCommitted` | 280 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_sunken_bastion`, `FlagIs:story_flag_bastion_penitent_joined` | `SetFlag:story_flag_join_reaction_bastion_penitent` | `dialogue_overlay_join_bastion_penitent` |
+| `story_event_join_reaction_echo_savant` | `ExtractCommitted` | 280 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard`, `FlagIs:story_flag_echo_savant_joined` | `SetFlag:story_flag_join_reaction_echo_savant` | `dialogue_overlay_join_echo_savant` |
+| `story_event_join_reaction_mirror_cantor` | `ExtractCommitted` | 280 | `OncePerProfile` | `ChapterIs:chapter_heartforge_descent`, `SiteIs:site_heartforge_gate`, `FlagIs:story_flag_mirror_cantor_joined` | `SetFlag:story_flag_join_reaction_mirror_cantor` | `dialogue_overlay_join_mirror_cantor` |
+
 ## 대사 시퀀스 표
 
 ### Chapter 1: Ashen Gate — Site Intro (dialogue-scene)
