@@ -5,5 +5,6 @@ public readonly record struct StoryDialogueLineModel(
     string SpeakerNameText,
     StorySpeakerSide SpeakerSide,
     string EmoteId,
+    string EmotionText,
     string LineText,
     bool IsNarrator);

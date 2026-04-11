@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "speakers": {
+    "Dawn Priest": "hero_dawn_priest",
+    "Pack Raider": "hero_pack_raider",
+    "Grave Hexer": "hero_grave_hexer",
+    "Echo Savant": "hero_echo_savant",
+    "Rift Stalker": "hero_rift_stalker",
+    "Bastion Penitent": "hero_bastion_penitent",
+    "Pale Executor": "hero_pale_executor",
+    "Aegis Sentinel": "hero_aegis_sentinel",
+    "Shardblade": "hero_shardblade",
+    "Prism Seeker": "hero_prism_seeker",
+    "Mirror Cantor": "hero_mirror_cantor",
+    "Aldric Sternholt": "aldric_sternholt",
+    "Narrator": "Narrator"
+  },
+  "emotions": {
+    "resolute":  { "emotionId": "resolute",  "emoteId": "Resolute" },
+    "grim":      { "emotionId": "grim",      "emoteId": "Grim" },
+    "bitter":    { "emotionId": "bitter",     "emoteId": "Grim" },
+    "skeptical": { "emotionId": "skeptical",  "emoteId": "Skeptical" },
+    "defiant":   { "emotionId": "defiant",    "emoteId": "Defiant" },
+    "solemn":    { "emotionId": "solemn",      "emoteId": "Resolute" },
+    "shock":     { "emotionId": "shock",       "emoteId": "Shock" },
+    "sardonic":  { "emotionId": "sardonic",    "emoteId": "Skeptical" },
+    "tense":     { "emotionId": "tense",       "emoteId": "Grim" },
+    "gentle":    { "emotionId": "gentle",      "emoteId": "Default" },
+    "weary":     { "emotionId": "weary",       "emoteId": "Grim" },
+    "cold":      { "emotionId": "cold",        "emoteId": "Grim" },
+    "mournful":  { "emotionId": "mournful",    "emoteId": "Grim" },
+    "desperate": { "emotionId": "desperate",   "emoteId": "Shock" },
+    "quiet":     { "emotionId": "quiet",       "emoteId": "Default" },
+    "broken":    { "emotionId": "broken",      "emoteId": "Grim" },
+    "calm":      { "emotionId": "calm",        "emoteId": "Default" },
+    "\u2014":    { "emotionId": "none",         "emoteId": "Default" },
+    "":          { "emotionId": "none",         "emoteId": "Default" }
+  },
+  "conditionAliases": {
+    "ChapterIs": "ChapterIs",
+    "SiteIs": "SiteIs",
+    "NodeIs": "NodeIs",
+    "FlagIs": "FlagSet",
+    "FlagNot": "FlagNotSet",
+    "FlagSet": "FlagSet",
+    "FlagNotSet": "FlagNotSet",
+    "HeroUnlocked": "HeroUnlocked",
+    "HeroNotUnlocked": "HeroNotUnlocked"
+  },
+  "effectAliases": {
+    "SetFlag": "SetFlag",
+    "ClearFlag": "ClearFlag",
+    "UnlockHero": "UnlockHero",
+    "UnlockMode": "UnlockMode",
+    "EnqueuePresentation": "EnqueuePresentation"
+  },
+  "presentationKindAliases": {
+    "dialogue-scene": "DialogueScene",
+    "dialogue-overlay": "DialogueOverlay",
+    "story-card": "StoryCard",
+    "toast-banner": "ToastBanner",
+    "DialogueScene": "DialogueScene",
+    "DialogueOverlay": "DialogueOverlay",
+    "StoryCard": "StoryCard",
+    "ToastBanner": "ToastBanner"
+  }
+}

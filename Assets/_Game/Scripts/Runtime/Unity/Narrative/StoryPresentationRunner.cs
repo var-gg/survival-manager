@@ -552,6 +552,7 @@ public sealed class StoryPresentationRunner : MonoBehaviour
                 isNarrator ? string.Empty : ResolveSpeakerDisplayName(line.SpeakerId),
                 speakerSide,
                 string.IsNullOrWhiteSpace(line.Emote) ? DefaultEmoteId : line.Emote,
+                ResolveEmotionText(line.EmotionTextKey),
                 ResolveDialogueLineText(line.TextKey),
                 isNarrator));
         }
@@ -646,6 +647,19 @@ public sealed class StoryPresentationRunner : MonoBehaviour
         }
 
         return DefaultEmoteId;
+    }
+
+    private string ResolveEmotionText(string emotionTextKey)
+    {
+        if (string.IsNullOrWhiteSpace(emotionTextKey))
+        {
+            return string.Empty;
+        }
+
+        return _localization!.LocalizePlayerFacingContent(
+            DefaultNarrativeLocalizationTable,
+            emotionTextKey,
+            string.Empty);
     }
 
     private string ResolveDialogueLineText(string textKey)

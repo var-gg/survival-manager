@@ -115,7 +115,6 @@ public sealed class RewardScreenController : MonoBehaviour
             ChapterId = session.SelectedCampaignChapterId,
             SiteId = session.SelectedCampaignSiteId,
             NodeIndex = session.CurrentExpeditionNodeIndex,
-            RewardSummary = session.LastRewardApplicationSummary,
         };
     }
 

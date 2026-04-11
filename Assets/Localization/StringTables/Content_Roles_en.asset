@@ -42,6 +42,10 @@ MonoBehaviour:
     m_Localized: Backline
     m_Metadata:
       m_Items: []
+  - m_Id: 3692750754013184
+    m_Localized: Striker
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

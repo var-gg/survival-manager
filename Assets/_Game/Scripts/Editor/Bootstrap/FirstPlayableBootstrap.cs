@@ -162,7 +162,7 @@ public static class FirstPlayableBootstrap
         var script = MonoScript.FromScriptableObject(config);
         if (script == null)
         {
-            DestroyImmediate(config);
+            Object.DestroyImmediate(config);
             Debug.LogWarning(
                 "[CombatSandbox] CombatSandboxConfig script 등록이 아직 준비되지 않아 active handoff 생성을 중단합니다.\n" +
                 $"Recovery: {CombatSandboxAuthoringAssetUtility.RecoveryInstructions}");

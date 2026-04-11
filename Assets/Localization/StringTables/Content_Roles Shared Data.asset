@@ -39,6 +39,10 @@ MonoBehaviour:
     m_Key: content.role.backline.name
     m_Metadata:
       m_Items: []
+  - m_Id: 3692750754013184
+    m_Key: content.role.striker.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

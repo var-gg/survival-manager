@@ -36,6 +36,7 @@
 - 목적이 다른 내용을 한 문서에 섞지 않는다.
 - 캐시, 임시 산출물, 개인 환경 파일을 커밋하지 않는다.
 - 구현 범위 밖에 게임 로직을 흩뿌리지 않는다.
+- `static` mutable global state로 세션 truth를 저장하지 않는다. Enter Play Mode Options(Domain/Scene Reload 스킵)가 활성화되어 있어 Play 진입 시 static 필드가 초기화되지 않는다.
 
 ## 현재 단계 규칙
 

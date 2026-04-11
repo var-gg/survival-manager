@@ -20,15 +20,18 @@ MonoBehaviour:
   m_TableData:
   - m_Id: 879747072
     m_Localized: "\uC0D8\uD50C \uCF58\uD150\uCE20 canonical root\uAC00 \uBE44\uC5B4
-      \uC788\uC2B5\uB2C8\uB2E4. \uBA3C\uC800 SM/Internal/Content/Ensure Sample
-      Content\uB97C \uC2E4\uD589\uD558\uACE0, \uBCF5\uAD6C\uAC00 \uC548 \uB418\uBA74
+      \uC788\uC2B5\uB2C8\uB2E4. normal playable path\uB294 Resources canonical root\uB9CC
+      \uD5C8\uC6A9\uD558\uBA70 editor filesystem fallback\uC740 diagnostic/internal
+      lane \uC804\uC6A9\uC785\uB2C8\uB2E4. \uBA3C\uC800 SM/Internal/Content/Ensure
+      Sample Content\uB97C \uC2E4\uD589\uD558\uACE0, \uBCF5\uAD6C\uAC00 \uC548 \uB418\uBA74
       SM/Internal/Content/Generate Sample Content\uB97C repair \uC6A9\uB3C4\uB85C
       \uC2E4\uD589\uD55C \uB4A4 \uB2E4\uC2DC Play \uD558\uC138\uC694."
     m_Metadata:
       m_Items: []
   - m_Id: 955244544
     m_Localized: "\uD544\uC218 \uC0D8\uD50C \uCF58\uD150\uCE20 canonical root\uAC00
-      \uBE44\uC5B4 \uC788\uC5B4 \uC2DC\uC791\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+      \uBE44\uC5B4 \uC788\uC5B4 \uC2DC\uC791\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.
+      normal playable path\uB294 Resources content contract\uB9CC \uD5C8\uC6A9\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 955244545

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using SM.Combat.Model;
 using SM.Combat.Services;
+using SM.Editor.Bootstrap;
 using SM.Persistence.Abstractions;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity;
@@ -58,7 +59,7 @@ public sealed class CombatSandboxEditorSession
     public void RefreshProfile()
     {
         _persistence ??= new PersistenceEntryPoint();
-        _lookup ??= new RuntimeCombatContentLookup();
+        _lookup ??= new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         _profile = LoadLocalProfile(_persistence);
         _compilationContext = CombatSandboxCompilationContextFactory.CreatePreviewContext(_profile);
         _profileHash = ComputeProfileHash(_profile);
@@ -68,6 +69,7 @@ public sealed class CombatSandboxEditorSession
     public CombatSandboxCompiledScenario BuildCompiledScenario(CombatSandboxConfig config, int seedOverride = 0)
     {
         EnsureContext();
+        var configPath = AssetDatabase.GetAssetPath(config);
         var laneKind = config.DefaultLaneKind == CombatSandboxLaneKind.None
             ? CombatSandboxLaneKind.DirectCombatSandbox
             : config.DefaultLaneKind;
@@ -76,6 +78,9 @@ public sealed class CombatSandboxEditorSession
         {
             return _cachedCompiledScenario;
         }
+
+        config = ResolveStableConfigReference(config, configPath)
+                 ?? throw new InvalidOperationException("Combat Sandbox active config could not be restored.");
 
         var compiler = new CombatSandboxScenarioCompiler(_lookup!);
         if (!compiler.TryCompileScenario(
@@ -224,5 +229,30 @@ public sealed class CombatSandboxEditorSession
                 ProfileId = profileId,
             };
         }
+    }
+
+    private static CombatSandboxConfig? ResolveStableConfigReference(CombatSandboxConfig? config, string configPath)
+    {
+        if (config != null)
+        {
+            return config;
+        }
+
+        if (string.Equals(configPath, FirstPlayableBootstrap.CombatSandboxConfigAssetPath, StringComparison.Ordinal))
+        {
+            return FirstPlayableBootstrap.EnsureCombatSandboxConfig();
+        }
+
+        if (string.IsNullOrWhiteSpace(configPath))
+        {
+            return FirstPlayableBootstrap.EnsureCombatSandboxConfig();
+        }
+
+        if (!string.IsNullOrWhiteSpace(configPath))
+        {
+            return AssetDatabase.LoadAssetAtPath<CombatSandboxConfig>(configPath);
+        }
+
+        return null;
     }
 }

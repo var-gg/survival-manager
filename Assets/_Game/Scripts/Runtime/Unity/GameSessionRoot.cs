@@ -271,6 +271,12 @@ public sealed class GameSessionRoot : MonoBehaviour
 
     private static RuntimeCombatContentLookup CreateCombatContentLookup()
     {
+#if UNITY_EDITOR
+        if (IsCombatSandboxRequested())
+        {
+            return new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
+        }
+#endif
         return new RuntimeCombatContentLookup();
     }
 }

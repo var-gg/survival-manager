@@ -1102,7 +1102,6 @@ public sealed class BattleScreenController : MonoBehaviour
             ChapterId = session.SelectedCampaignChapterId,
             SiteId = session.SelectedCampaignSiteId,
             NodeIndex = session.GetSelectedExpeditionNode()?.Index ?? session.CurrentExpeditionNodeIndex,
-            BattleSummary = session.LastBattleSummary,
         };
     }
 

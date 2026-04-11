@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: behavior_probe
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:BehaviorProfileDefinition
+  FormationLine: 0
+  RangeDiscipline: 1
+  ReevaluationInterval: 0.25
+  RangeHysteresis: 0.25
+  PreferredRangeMin: 0
+  PreferredRangeMax: 0
+  ApproachBuffer: 0.4
+  RetreatBuffer: 0.25
+  ChaseLeashMeters: 5
+  RetreatAtHpPercent: 0
+  RetreatBias: 0.15
+  MaintainRangeBias: 0.15
+  Opportunism: 0.5
+  Discipline: 0.5
+  DodgeChance: 0
+  BlockChance: 0
+  BlockMitigation: 0.25
+  Stability: 0.5
+  BlockCooldownSeconds: 1.2
+  FrontlineGuardRadius: 2.5

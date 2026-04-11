@@ -114,6 +114,38 @@ MonoBehaviour:
     m_Localized: Base character identity for Shaman
     m_Metadata:
       m_Items: []
+  - m_Id: -1113435644370944
+    m_Localized: Warden character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: -1113434939727872
+    m_Localized: Guardian character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: -1113434281222144
+    m_Localized: Slayer character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: -1113433580773376
+    m_Localized: Raider character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: -1113432758689792
+    m_Localized: Hunter character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: -1113431844331520
+    m_Localized: Scout character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: -1113431177437184
+    m_Localized: Priest character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: -1113430321799168
+    m_Localized: Hexer character identity
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

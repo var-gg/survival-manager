@@ -189,7 +189,7 @@ internal static class EditorLocalizedTextResolver
             LocalizationFoundationBootstrap.EnsureFoundationAssets();
 
             var initialization = LocalizationSettings.InitializationOperation;
-            if (initialization != null && !initialization.IsDone)
+            if (initialization.IsValid() && !initialization.IsDone)
             {
                 initialization.WaitForCompletion();
             }
