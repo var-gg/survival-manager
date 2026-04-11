@@ -484,11 +484,46 @@
 | kind | 사용 시점 | payload | skip 정책 |
 |---|---|---|---|
 | `toast-banner` | codex unlock, clue, hero unlock 반응 | 제목 1개 + 본문 1~2줄 + icon | 즉시 skip 허용 |
-| `dialogue-overlay` | pre/post battle bark, town 반응, 짧은 갈등 대사 | portrait 0~2개 + 2~8줄 | line skip/전체 skip 허용 |
-| `dialogue-scene` | 핵심 스토리 장면 (site intro, midpoint, 논쟁, 개인 아크, 서약, 이별) | Narrator + 다자간 대화, 10~20줄 | line skip 허용, 전체 skip은 확인 후 |
-| `story-card` | chapter/site intro/outro, ending | full-screen still + 제목 + 본문 1~3문단 | card 단위 skip 허용 |
+| `dialogue-overlay` | pre/post battle bark, town 반응, 짧은 갈등 대사, 전투 결과 반응 | portrait 0~2개 + 2~6줄 | line skip/전체 skip 허용 |
+| `dialogue-scene` | 핵심 스토리 장면 (site intro, midpoint, 논쟁, 개인 아크, 서약, 이별) | Narrator + 다자간 대화, 8~14줄 | line skip 허용, 전체 skip은 확인 후 |
+| `story-card` | site extract, chapter intro/outro, 대형 reveal 여운, off-screen 서술 | full-screen still + 제목 + 본문 1~3문단 | card 단위 skip 허용 |
 
 금지: full cutscene, camera rail, branching dialogue, lip sync, timeline animation.
+
+## 사이트별 권장 연출 배분
+
+사이트당 연출 유형의 권장 구성이다. `story-card`를 빠뜨리면 여운이 증발하고 `dialogue-scene`이 과적재된다.
+
+| 슬롯 | 연출 유형 | 용도 | 필수 여부 |
+|---|---|---|---|
+| 사이트 진입 | `dialogue-overlay` 또는 `story-card` | 분위기 세팅, 이동 중 잔향 | 권장 |
+| 핵심 충돌 | `dialogue-scene` 1개 | 사이트의 핵심 갈등/reveal. SceneTurn 4슬롯 필수 | **필수** |
+| 보스 전후 | `dialogue-overlay` 2개 | 전투 전 bark + 전투 후 반응 | **필수** |
+| 추출(extract) | `story-card` 1개 | 사이트의 여운, 잔상, 다음 사이트 hook | **필수** |
+| 전투 결과 반응 | `dialogue-overlay` 0~1개 | battle summary 기반 반응 (optional reactive) | 권장 |
+
+### `dialogue-scene` 장면 문법 슬롯
+
+`narrative-pacing-formula.md`의 SceneTurn 공식에 따라, 모든 `dialogue-scene`은 다음 4슬롯을 포함해야 한다. 슬롯이 빠지면 장면이 요약으로 수축한다.
+
+| 슬롯 | 역할 | 누락 시 증상 |
+|---|---|---|
+| `hook` | 누군가가 무언가를 원함. 첫 줄은 비난/고백/경고/조롱/부탁/유혹 | 장면이 상황 설명으로 시작하여 스킵 유발 |
+| `resistance` | 다른 누군가가 그것을 막음. 거부/반박/침묵/회피 | 갈등 없는 브리핑이 됨 |
+| `proof` | 새 증거/상처/비밀이 균형을 깨뜨림 | 정보 교환으로 끝남, 긴장 전환 없음 |
+| `changed` | 장면 시작과 끝에서 관계/믿음/상태가 다름 | 요약으로 끝남, 서사 진행 없음 |
+
+### `dialogue-scene` 추가 메타데이터
+
+`master-script.md`에서 각 `dialogue-scene`을 작성할 때 아래 메타데이터를 컨텍스트에 명시한다.
+
+| 필드 | 설명 | 예시 |
+|---|---|---|
+| `scene_want` | 이 장면에서 누가 무엇을 원하는가 | Dawn Priest는 파편의 정체를 확인하고 싶다 |
+| `scene_block` | 누가/무엇이 그것을 막는가 | Pack Raider는 인간이 또 약탈할 것이라 불신한다 |
+| `scene_object` | 이 장면의 중심 사물 | Heartforge 파편, 토템의 진동 |
+| `scene_changed` | 장면 후 무엇이 달라지는가 | 양측 유물이 같은 근원이라는 의심이 열린다 |
+| `forbidden_words` | 이 장면에서 금지되는 표현 | "끝내야 합니다", "그래서 ~란 말입니까" |
 
 ## 작성 지침
 
@@ -496,3 +531,4 @@
 - condition/effect는 data-driven enum + payload 형태를 우선한다.
 - event ID와 node beat는 반드시 역참조 가능해야 한다.
 - priority가 높을수록 먼저 재생된다. 같은 moment에 여러 event가 걸리면 priority 내림차순으로 evaluate한다.
+- presentation grade 규격은 이 문서가 유일한 SoT다. `master-script.md`의 연출 유형 표와 충돌하면 이 문서가 우선한다.
