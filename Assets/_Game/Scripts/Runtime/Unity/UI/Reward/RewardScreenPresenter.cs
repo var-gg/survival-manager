@@ -53,6 +53,8 @@ public sealed class RewardScreenPresenter
         Refresh();
     }
 
+    public event Action<int>? RewardChoiceCommitted;
+
     public void ReturnToTown()
     {
         if (_root.IsTransientTownSmokeActive)
@@ -96,6 +98,8 @@ public sealed class RewardScreenPresenter
                 Refresh(checkpoint.Message);
                 return;
             }
+
+            RewardChoiceCommitted?.Invoke(index);
 
             Refresh(choice == null
                 ? Localize(GameLocalizationTables.UIReward, "ui.reward.status.choice_applied", "Reward applied.")

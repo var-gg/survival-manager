@@ -356,10 +356,12 @@ public sealed class StoryPresentationRunner : MonoBehaviour
 
         var sideBySpeaker = BuildSpeakerSideMap(request, sequence);
         var lines = BuildDialogueLines(sequence, sideBySpeaker);
+        var participants = BuildParticipants(sequence, sideBySpeaker);
         model = new DialogueScenePlaybackModel
         {
             LeftSpeaker = BuildSpeakerModel(sequence, sideBySpeaker, StorySpeakerSide.Left),
             RightSpeaker = BuildSpeakerModel(sequence, sideBySpeaker, StorySpeakerSide.Right),
+            Participants = participants,
             Lines = lines,
             EnableTypingEffect = true,
             CharactersPerSecond = DefaultCharactersPerSecond,
@@ -500,17 +502,36 @@ public sealed class StoryPresentationRunner : MonoBehaviour
         }
 
         var map = new Dictionary<string, StorySpeakerSide>(StringComparer.Ordinal);
-        if (orderedSpeakerIds.Count > 0)
+        var slots = orderedSpeakerIds.Count switch
         {
-            map[orderedSpeakerIds[0]] = StorySpeakerSide.Left;
-        }
+            1 => new[] { StorySpeakerSide.Left },
+            2 => new[] { StorySpeakerSide.Left, StorySpeakerSide.Right },
+            3 => new[] { StorySpeakerSide.Left, StorySpeakerSide.Right, StorySpeakerSide.FarLeft },
+            _ => new[] { StorySpeakerSide.Left, StorySpeakerSide.Right, StorySpeakerSide.FarLeft, StorySpeakerSide.FarRight },
+        };
 
-        if (orderedSpeakerIds.Count > 1)
+        for (var i = 0; i < orderedSpeakerIds.Count && i < slots.Length; i++)
         {
-            map[orderedSpeakerIds[1]] = StorySpeakerSide.Right;
+            map[orderedSpeakerIds[i]] = slots[i];
         }
 
         return map;
+    }
+
+    private IReadOnlyList<StorySpeakerModel> BuildParticipants(
+        DialogueSequenceDefinition sequence,
+        IReadOnlyDictionary<string, StorySpeakerSide> sideBySpeaker)
+    {
+        var participants = new List<StorySpeakerModel>();
+        foreach (var pair in sideBySpeaker.OrderBy(p => (int)p.Value))
+        {
+            participants.Add(new StorySpeakerModel(
+                pair.Key,
+                ResolveSpeakerDisplayName(pair.Key),
+                pair.Value,
+                ResolveDefaultEmote(sequence, pair.Key)));
+        }
+        return participants;
     }
 
     private StorySpeakerModel? BuildSpeakerModel(

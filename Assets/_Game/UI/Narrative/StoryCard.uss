@@ -1,6 +1,14 @@
 .story-card-root {
     justify-content: center;
     align-items: center;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 220ms;
+    transition-timing-function: ease-in-out;
+}
+
+.story-card-root.story-layer--visible {
+    opacity: 1;
 }
 
 .story-card-background {
@@ -23,35 +31,45 @@
     padding-right: 24px;
     padding-top: 24px;
     padding-bottom: 24px;
+    background-color: rgba(0, 0, 0, 0.62);
+    background-image: none;
 }
 
 .story-card-panel {
-    width: 880px;
-    max-width: 100%;
+    width: 780px;
+    max-width: 90%;
     max-height: 86%;
+    align-items: center;
 }
 
 .story-card-title {
     color: var(--story-accent-color);
     font-size: 36px;
     unity-font-style: bold;
-    margin-bottom: 14px;
+    margin-bottom: 18px;
+    -unity-text-align: middle-center;
 }
 
 .story-card-body-scroll {
     flex-grow: 1;
     max-height: 380px;
-    margin-bottom: 18px;
+    margin-bottom: 24px;
 }
 
 .story-card-body {
     white-space: normal;
     font-size: 20px;
-    line-height: 1.3;
+    line-height: 1.45;
+    -unity-text-align: upper-left;
 }
 
 .story-card-actions {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+}
+
+.story-card-continue-hint {
+    opacity: 0.6;
+    font-size: 16px;
 }

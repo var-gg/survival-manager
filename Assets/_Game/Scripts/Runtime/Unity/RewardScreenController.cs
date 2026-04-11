@@ -27,6 +27,7 @@ public sealed class RewardScreenController : MonoBehaviour
         _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Reward);
         _presenter!.Initialize();
+        _presenter.RewardChoiceCommitted += HandleRewardChoiceCommitted;
         if (EnsureStoryBridgeReady())
         {
             _storyBridge.Advance(NarrativeMoment.RewardOpened, BuildStoryMomentContext());
@@ -116,6 +117,16 @@ public sealed class RewardScreenController : MonoBehaviour
             SiteId = session.SelectedCampaignSiteId,
             NodeIndex = session.CurrentExpeditionNodeIndex,
         };
+    }
+
+    private void HandleRewardChoiceCommitted(int choiceIndex)
+    {
+        if (!EnsureStoryBridgeReady())
+        {
+            return;
+        }
+
+        _storyBridge.Advance(NarrativeMoment.RewardCommitted, BuildStoryMomentContext());
     }
 
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)

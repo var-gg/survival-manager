@@ -5,4 +5,6 @@ public enum StorySpeakerSide
     None = 0,
     Left = 1,
     Right = 2,
+    FarLeft = 3,
+    FarRight = 4,
 }
