@@ -2,15 +2,15 @@
 
 ## 사람이 기억할 메뉴 2개
 
-- `SM/Play/Full Loop`
+- `SM/전체테스트`
   - legacy alias: `SM/Setup/Prepare Observer Playable`
-- `SM/Play/Combat Sandbox`
+- `SM/전투테스트`
   - legacy alias: `SM/Quick Battle`
 
 ## Full Loop 4단계
 
 1. Unity `6000.4.0f1`로 프로젝트를 연다.
-2. 메뉴에서 `SM/Play/Full Loop`를 실행한다.
+2. 메뉴에서 `SM/전체테스트`를 실행한다.
 3. `Boot.unity`가 열리면 Play를 누른다.
 4. Boot에서 `Start Local Run`을 누른다.
 

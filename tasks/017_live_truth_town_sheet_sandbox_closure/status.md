@@ -53,5 +53,5 @@
 
 - 다음 세션 시작점은 `tasks/017_live_truth_town_sheet_sandbox_closure/status.md`
 - Unity project lock을 해소한 뒤 `pwsh -File tools/unity-bridge.ps1 test-batch-fast`를 먼저 재실행한다
-- 그 다음 `SM/Play/Full Loop` Town locale flip, `SM/Authoring/Combat Sandbox` preview/result drift, `SM/Play/Combat Sandbox` direct lane smoke를 수동 확인한다
+- 그 다음 `SM/전체테스트` Town locale flip, `SM/Authoring/Combat Sandbox` preview/result drift, `SM/전투테스트` direct lane smoke를 수동 확인한다
 - repo-wide `docs-check`를 green으로 만들려면 이번 task 범위 밖의 기존 lint debt를 별도 정리해야 한다

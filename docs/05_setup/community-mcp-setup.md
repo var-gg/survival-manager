@@ -174,7 +174,7 @@ main 브랜치에서 바로 연결 검증하지 않는다.
 
 프로젝트 기준 recovery 예:
 
-- `SM/Play/Full Loop`
+- `SM/전체테스트`
 - `SM/Internal/Recovery/Repair First Playable Scenes`
 
 ## 최소 도입 원칙

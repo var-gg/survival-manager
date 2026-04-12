@@ -44,7 +44,7 @@ public static class FirstPlayableBootstrap
         EditorApplication.playModeStateChanged += HandlePlayModeStateChanged;
     }
 
-    [MenuItem("SM/Play/Combat Sandbox")]
+    [MenuItem("SM/전투테스트", false, 1)]
     public static void PlayCombatSandbox()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode)
@@ -79,7 +79,7 @@ public static class FirstPlayableBootstrap
         }
     }
 
-    [MenuItem("SM/Play/Full Loop")]
+    [MenuItem("SM/전체테스트", false, 2)]
     public static void PrepareObserverPlayableMenu()
     {
         PrepareObserverPlayable();
@@ -108,6 +108,12 @@ public static class FirstPlayableBootstrap
     public static void PrepareFirstPlayable()
     {
         PrepareObserverPlayable();
+    }
+
+    [MenuItem("SM/극장모드", false, 3)]
+    public static void PlayTheaterMode()
+    {
+        EditorUtility.DisplayDialog("극장모드", "극장모드는 준비 중입니다.", "확인");
     }
 
     public static void EnsureLocalizationFoundation()
@@ -150,25 +156,23 @@ public static class FirstPlayableBootstrap
 
         if (AssetDatabase.LoadMainAssetAtPath(CombatSandboxConfigAssetPath) != null || File.Exists(CombatSandboxConfigAssetPath))
         {
-            Debug.LogWarning(
-                $"[CombatSandbox] active handoff를 타입 해석하지 못해 자동 재생성을 중단합니다: {CombatSandboxConfigAssetPath}\n" +
-                $"Recovery: {CombatSandboxAuthoringAssetUtility.RecoveryInstructions}");
-            return null;
+            Debug.Log($"[CombatSandbox] active handoff 타입 해석 불가 — 삭제 후 재생성합니다: {CombatSandboxConfigAssetPath}");
+            AssetDatabase.DeleteAsset(CombatSandboxConfigAssetPath);
+            if (File.Exists(CombatSandboxConfigAssetPath))
+            {
+                File.Delete(CombatSandboxConfigAssetPath);
+            }
+            var metaPath = CombatSandboxConfigAssetPath + ".meta";
+            if (File.Exists(metaPath))
+            {
+                File.Delete(metaPath);
+            }
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         }
 
         EnsureFolderPath(CombatSandboxConfigFolder);
 
         var config = ScriptableObject.CreateInstance<SM.Unity.Sandbox.CombatSandboxConfig>();
-        var script = MonoScript.FromScriptableObject(config);
-        if (script == null)
-        {
-            Object.DestroyImmediate(config);
-            Debug.LogWarning(
-                "[CombatSandbox] CombatSandboxConfig script 등록이 아직 준비되지 않아 active handoff 생성을 중단합니다.\n" +
-                $"Recovery: {CombatSandboxAuthoringAssetUtility.RecoveryInstructions}");
-            return null;
-        }
-
         ApplyDefaultCombatSandboxConfig(config);
         AssetDatabase.CreateAsset(config, CombatSandboxConfigAssetPath);
         AssetDatabase.SaveAssets();
@@ -308,32 +312,57 @@ public static class FirstPlayableBootstrap
         config.EnemySlots = BuildDefaultCombatSandboxEnemySlots();
     }
 
-    private static bool TryValidateFullLoopPreflight(out string error)
+    private static bool TryAutoEnsurePrerequisites(string sceneName, string scenePath, string flowLabel, out string error)
     {
         error = string.Empty;
-        if (!File.Exists(BootScenePath))
+
+        if (!File.Exists(scenePath))
         {
-            error = $"Boot scene is missing: {BootScenePath}";
-            return false;
+            Debug.Log($"[{flowLabel}] {sceneName} 씬이 없어 자동 생성합니다.");
+            FirstPlayableSceneInstaller.RepairFirstPlayableScenes();
+            if (!File.Exists(scenePath))
+            {
+                error = $"{sceneName} 씬 자동 생성 실패: {scenePath}";
+                return false;
+            }
         }
 
         try
         {
-            FirstPlayableContentBootstrap.RequireSampleContentReady(nameof(PrepareObserverPlayable));
+            FirstPlayableContentBootstrap.RequireSampleContentReady(flowLabel);
         }
-        catch (System.Exception ex)
+        catch
         {
-            error = $"{ex.Message}\nRecovery: SM/Internal/Content/Ensure Sample Content";
-            return false;
+            Debug.Log($"[{flowLabel}] 샘플 콘텐츠를 자동 생성합니다.");
+            try
+            {
+                FirstPlayableContentBootstrap.EnsureSampleContent();
+                FirstPlayableContentBootstrap.RequireSampleContentReady(flowLabel);
+            }
+            catch (System.Exception ex)
+            {
+                error = $"샘플 콘텐츠 자동 생성 실패: {ex.Message}";
+                return false;
+            }
         }
 
-        if (!FirstPlayableSceneInstaller.TryValidateSavedSceneContract(SceneNames.Boot, out error))
+        if (!FirstPlayableSceneInstaller.TryValidateSavedSceneContract(sceneName, out error))
         {
-            error += "\nRecovery: SM/Internal/Recovery/Repair First Playable Scenes";
-            return false;
+            Debug.Log($"[{flowLabel}] {sceneName} 씬 구조가 깨져 자동 복구합니다.");
+            FirstPlayableSceneInstaller.RepairFirstPlayableScenes();
+            if (!FirstPlayableSceneInstaller.TryValidateSavedSceneContract(sceneName, out error))
+            {
+                error = $"{sceneName} 씬 자동 복구 실패: {error}";
+                return false;
+            }
         }
 
         return true;
+    }
+
+    private static bool TryValidateFullLoopPreflight(out string error)
+    {
+        return TryAutoEnsurePrerequisites(SceneNames.Boot, BootScenePath, "전체테스트", out error);
     }
 
     private static bool TryValidateCombatSandboxPreflight(
@@ -341,36 +370,21 @@ public static class FirstPlayableBootstrap
         out string error)
     {
         quickBattleConfig = null!;
-        error = string.Empty;
 
-        if (!File.Exists(BattleScenePath))
-        {
-            error = $"Battle scene is missing: {BattleScenePath}";
+        if (!TryAutoEnsurePrerequisites(SceneNames.Battle, BattleScenePath, "전투테스트", out error))
             return false;
-        }
 
         if (!TryLoadCombatSandboxConfig(out quickBattleConfig))
         {
-            error =
-                $"Combat Sandbox active handoff could not be loaded: {CombatSandboxConfigAssetPath}\n" +
-                $"Recovery: {CombatSandboxAuthoringAssetUtility.RecoveryInstructions}";
-            return false;
-        }
-
-        try
-        {
-            FirstPlayableContentBootstrap.RequireSampleContentReady(nameof(PlayCombatSandbox));
-        }
-        catch (System.Exception ex)
-        {
-            error = $"{ex.Message}\nRecovery: SM/Internal/Content/Ensure Sample Content";
-            return false;
-        }
-
-        if (!FirstPlayableSceneInstaller.TryValidateSavedSceneContract(SceneNames.Battle, out error))
-        {
-            error += "\nRecovery: SM/Internal/Recovery/Repair First Playable Scenes";
-            return false;
+            Debug.Log("[전투테스트] Combat Sandbox 설정 로드 실패 — 스크립트 참조를 복구합니다.");
+            CombatSandboxAuthoringAssetUtility.RefreshAuthoringAssets();
+            if (!TryLoadCombatSandboxConfig(out quickBattleConfig))
+            {
+                error =
+                    $"Combat Sandbox 설정을 불러올 수 없습니다: {CombatSandboxConfigAssetPath}\n" +
+                    "자동 복구에 실패했습니다. Unity를 재시작한 뒤 다시 시도하세요.";
+                return false;
+            }
         }
 
         try
@@ -379,10 +393,7 @@ public static class FirstPlayableBootstrap
         }
         catch (System.Exception ex)
         {
-            error =
-                $"Combat Sandbox preflight compile failed.\n{ex.Message}\n" +
-                $"Recovery: {CombatSandboxAuthoringAssetUtility.RecoveryInstructions}\n" +
-                "Fallback: Window/SM/Combat Sandbox, SM/Internal/Validation/Validate Canonical Content";
+            error = $"시나리오 컴파일 실패: {ex.Message}";
             return false;
         }
 

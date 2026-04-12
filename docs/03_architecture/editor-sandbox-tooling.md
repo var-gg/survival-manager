@@ -18,7 +18,7 @@ Combat Sandbox는 전투 truth를 만들지 않고, 입력 조립과 실행, 비
 
 ## 기본 원칙
 
-1. 사람이 기억하는 top-level play entry는 `SM/Play/Full Loop`와 `SM/Play/Combat Sandbox` 두 개로 고정하고, daily authoring entry는 `SM/Authoring/Combat Sandbox`로 고정한다.
+1. 사람이 기억하는 top-level play entry는 `SM/전체테스트`와 `SM/전투테스트` 두 개로 고정하고, daily authoring entry는 `SM/Authoring/Combat Sandbox`로 고정한다.
 2. authoring은 `CombatSandboxConfig` Inspector를 primary surface로 두고, `ScriptableObject` library + runtime active handoff 구조를 보조로 둔다.
 3. Combat Sandbox는 `LoadoutCompiler -> BattleLoadoutSnapshot -> BattleSimulator -> ReplayAssembler` 경계를 그대로 사용한다.
 4. editor window는 preset library, history, result compare를 맡고, 실행 로직은 별도 서비스로 분리한다.
@@ -196,7 +196,7 @@ category는 유지하지만 출력은 category 이름만 남기지 않는다.
 
 ## lane 분리 규칙
 
-- `SM/Play/Combat Sandbox`
+- `SM/전투테스트`
   - pure battle-first lane
   - Reward/Town progression을 만들지 않거나 최소한 사용자-facing 의미를 만들지 않는다.
 - `SM/Authoring/Combat Sandbox`

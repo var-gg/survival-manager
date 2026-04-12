@@ -6,13 +6,13 @@
 
 ## 먼저 실행할 메뉴
 
-- `SM/Play/Full Loop`
+- `SM/전체테스트`
 - 필요 시 `SM/Internal/Recovery/Ensure Localization Foundation`
 
 ## 빠른 실행 절차
 
 1. Unity editor `6000.4.0f1`로 프로젝트를 연다.
-2. `SM/Play/Full Loop`를 실행한다.
+2. `SM/전체테스트`를 실행한다.
 3. `Boot.unity`가 자동으로 열렸는지 확인한다.
 4. Play 한다.
 5. Boot에서 `Start Local Run`을 누른다.
@@ -70,7 +70,7 @@
 
 ## combat sandbox / smoke lane
 
-- `SM/Play/Combat Sandbox`와 `pwsh -File tools/unity-bridge.ps1 quick-battle-smoke`는 pure battle direct lane이다.
+- `SM/전투테스트`와 `pwsh -File tools/unity-bridge.ps1 quick-battle-smoke`는 pure battle direct lane이다.
 - Town의 `Quick Battle (Smoke)`는 현재 Town 빌드를 들고 들어가는 integration smoke다.
 - normal playable acceptance에는 두 경로 모두 사용하지 않는다.
 - direct sandbox에서는 `Replay Same Seed`, `New Seed`, `Exit Sandbox`만 보이고 Reward/Town progression CTA는 숨겨져야 한다.
@@ -81,7 +81,7 @@
 
 - canonical sample content root: `Assets/Resources/_Game/Content/Definitions/**`
 - scene repair source of truth: `SM/Internal/Recovery/Repair First Playable Scenes`
-- full-loop preflight + launch: `SM/Play/Full Loop`
+- full-loop preflight + launch: `SM/전체테스트`
 - localization foundation source of truth: `SM/Internal/Recovery/Ensure Localization Foundation`
 - canonical content recovery: `SM/Internal/Content/Ensure Sample Content`
 - release-floor packet wrapper: `pwsh -File tools/pre-art-rc.ps1`

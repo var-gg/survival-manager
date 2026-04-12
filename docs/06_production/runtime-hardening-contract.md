@@ -38,7 +38,7 @@ prototype pre-art 단계에서 `OfflineLocal` runtime을 silent save corruption,
 
 ## quick battle isolation
 
-- `SM/Play/Combat Sandbox` direct entry는 dedicated smoke namespace를 사용한다.
+- `SM/전투테스트` direct entry는 dedicated smoke namespace를 사용한다.
 - dedicated smoke auto-clear는 `<profile>.smoke` namespace만 삭제한다.
 - Town `Quick Battle (Smoke)`는 canonical checkpoint 후 transient overlay로 진입한다.
 - transient Town smoke 중에는 canonical save write를 허용하지 않는다.

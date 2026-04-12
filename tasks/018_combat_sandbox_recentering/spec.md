@@ -29,7 +29,7 @@
 ## Authoritative boundary
 
 - 이번 task는 `SM/Play` 엔트리 계약, `CombatSandboxConfig` authoring contract, direct sandbox runtime bootstrap, scene/layout preview contract를 한 축으로 닫는다.
-- source-of-truth는 `SM/Play/Full Loop`, `SM/Play/Combat Sandbox`, `Window/SM/Combat Sandbox`, active `CombatSandboxConfig`, `docs/07_release/display-and-input-policy.md`로 이동한다.
+- source-of-truth는 `SM/전체테스트`, `SM/전투테스트`, `Window/SM/Combat Sandbox`, active `CombatSandboxConfig`, `docs/07_release/display-and-input-policy.md`로 이동한다.
 - Town smoke lane의 존재는 유지하지만 canonical newcomer lane이나 sandbox authoring source로 승격하지 않는다.
 
 ## In scope

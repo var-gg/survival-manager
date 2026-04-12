@@ -22,7 +22,7 @@
 
 ## Quick Battle smoke
 
-- Town의 `Quick Battle (Smoke)`와 `SM/Play/Combat Sandbox`는 Expedition을 건너뛰고 Battle observer smoke를 연다.
+- Town의 `Quick Battle (Smoke)`와 `SM/전투테스트`는 Expedition을 건너뛰고 Battle observer smoke를 연다.
 - 이 경로는 Expedition 진행도를 건드리지 않는다.
 - smoke lane의 direct `Return Town`과 `Re-battle`은 normal lane 계약에 포함하지 않는다.
 

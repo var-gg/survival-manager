@@ -7,8 +7,8 @@
 
 ## 먼저 실행할 메뉴
 
-- `SM/Play/Full Loop`
-- `SM/Play/Combat Sandbox`
+- `SM/전체테스트`
+- `SM/전투테스트`
 
 ## 이 문서의 역할
 
@@ -25,7 +25,7 @@
 
 - `Boot -> Town -> Expedition -> Battle -> Reward -> Town`
 - Town active surface는 chapter/site 선택, `Start Expedition`, `Resume Expedition`, secondary `Quick Battle (Smoke)`다.
-- 사람이 기억하는 top-level entry는 `SM/Play/Full Loop`와 `SM/Play/Combat Sandbox` 두 개다.
+- 사람이 기억하는 top-level entry는 `SM/전체테스트`와 `SM/전투테스트` 두 개다.
 - direct Combat Sandbox는 pure battle lane이고, Town `Quick Battle (Smoke)`는 integration smoke lane이다.
 
 ## 현재 구현 상태

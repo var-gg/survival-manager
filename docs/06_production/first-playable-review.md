@@ -6,7 +6,7 @@
 
 ## 먼저 실행할 메뉴
 
-- `SM/Play/Full Loop`
+- `SM/전체테스트`
 
 ## 한 줄 요약
 
@@ -24,7 +24,7 @@
 ## debug smoke lane
 
 - Town의 `Quick Battle (Smoke)`
-- `SM/Play/Combat Sandbox`
+- `SM/전투테스트`
 - direct-scene play fallback
 - runtime rebind/repair
 

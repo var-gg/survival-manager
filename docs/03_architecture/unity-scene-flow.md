@@ -43,7 +43,7 @@
 - `FirstPlayableSceneInstaller`는 playable scene asset 복구와 build settings 보정을 담당한다.
 - `FirstPlayableSceneInstaller`는 Boot에서 realm 선택용 uGUI canvas를, 그 외 play scene에서는 `*RuntimeRoot`, `*RuntimePanelHost`, `*ScreenController`, Battle overlay root를 보장한다.
 - `FirstPlayableBootstrap`는 fail-fast preflight와 scene open/play 진입만 담당한다.
-- operator가 first playable을 보려면 `SM/Play/Full Loop`를 먼저 실행하는 흐름을 기본값으로 둔다.
+- operator가 first playable을 보려면 `SM/전체테스트`를 먼저 실행하는 흐름을 기본값으로 둔다.
 
 ## scene별 UI runtime 계약
 
@@ -65,7 +65,7 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 
 ## 현재 시작 흐름
 
-1. editor에서 `SM/Play/Full Loop` 실행
+1. editor에서 `SM/전체테스트` 실행
 2. canonical content와 Boot scene contract fail-fast preflight
 3. Boot scene open
 4. Play 후 `GameBootstrap`가 `GameSessionRoot`와 content/localization preflight를 보장
@@ -86,7 +86,7 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 
 ## Combat Sandbox direct 플로우
 
-`SM/Play/Combat Sandbox` 메뉴는 위 흐름에서 Boot/Town을 우회하고 Battle 씬을 직접 연 뒤 Play로 진입한다.
+`SM/전투테스트` 메뉴는 위 흐름에서 Boot/Town을 우회하고 Battle 씬을 직접 연 뒤 Play로 진입한다.
 
 1. `FirstPlayableBootstrap.PlayCombatSandbox()` 실행
 2. active sandbox handoff / canonical content / Battle scene contract / compile 가능 여부를 fail-fast preflight
@@ -101,7 +101,7 @@ major navigation은 계속 scene 단위로 유지하고, scene 내부 modal / to
 
 Town의 `Quick Battle (Smoke)`는 direct sandbox와 다르게 현재 Town 상태를 들고 integration smoke를 수행한다.
 
-1. `SM/Play/Full Loop`로 Boot/Town 진입
+1. `SM/전체테스트`로 Boot/Town 진입
 2. Town secondary CTA `Quick Battle (Smoke)` 클릭
 3. `PrepareTownQuickBattleSmoke()`로 현재 profile/deploy/posture를 유지한 채 Battle 진입
 4. Battle 종료 후 `Continue -> Reward` 또는 `Return to Town (Debug)`

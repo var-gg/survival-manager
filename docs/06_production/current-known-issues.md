@@ -6,7 +6,7 @@
 
 ## 먼저 실행할 메뉴
 
-- `SM/Play/Full Loop`
+- `SM/전체테스트`
 
 ## 이슈
 
@@ -19,12 +19,12 @@
 
 ## 우회 절차
 
-- scene/UI 참조가 꼬였으면 `SM/Internal/Recovery/Repair First Playable Scenes`를 실행한 뒤 `SM/Play/Full Loop` 또는 `SM/Play/Combat Sandbox`를 다시 시도한다.
+- scene/UI 참조가 꼬였으면 `SM/Internal/Recovery/Repair First Playable Scenes`를 실행한 뒤 `SM/전체테스트` 또는 `SM/전투테스트`를 다시 시도한다.
 - sample content가 비정상적이면 먼저 `SM/Internal/Content/Ensure Sample Content`를 실행하고, 필요할 때만 `SM/Internal/Content/Generate Sample Content`를 다시 실행한다.
 
 ## debug smoke lane 메모
 
-- 빠른 Battle smoke가 필요하면 Town의 `Quick Battle (Smoke)` 또는 `SM/Play/Combat Sandbox`를 사용한다.
+- 빠른 Battle smoke가 필요하면 Town의 `Quick Battle (Smoke)` 또는 `SM/전투테스트`를 사용한다.
 - 원정 재개 확인은 Town의 `Resume Expedition`으로 검증한다.
 - direct-scene play fallback과 runtime rebind는 개발자용 복구 인프라로만 취급한다.
 - direct-scene fallback / runtime rebind 성공만으로 normal playable acceptance를 닫지 않는다.

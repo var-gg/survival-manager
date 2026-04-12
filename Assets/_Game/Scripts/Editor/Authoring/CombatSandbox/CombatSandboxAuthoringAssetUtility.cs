@@ -704,22 +704,21 @@ public static class CombatSandboxAuthoringAssetUtility
 
         if (AssetDatabase.LoadMainAssetAtPath(assetPath) != null || File.Exists(assetPath))
         {
-            throw BuildUnresolvedAssetException<T>(
-                assetPath,
-                "기존 asset 파일이 있지만 Unity가 현재 타입을 해석하지 못해 자동 재생성을 중단했다.");
+            Debug.Log($"[CombatSandbox] {typeof(T).Name} 타입 해석 불가 — 삭제 후 재생성합니다: {assetPath}");
+            AssetDatabase.DeleteAsset(assetPath);
+            if (File.Exists(assetPath))
+            {
+                File.Delete(assetPath);
+            }
+            var metaPath = assetPath + ".meta";
+            if (File.Exists(metaPath))
+            {
+                File.Delete(metaPath);
+            }
         }
 
         var asset = ScriptableObject.CreateInstance<T>();
         initialize(asset);
-        var script = MonoScript.FromScriptableObject(asset);
-        if (script == null)
-        {
-            UnityEngine.Object.DestroyImmediate(asset);
-            throw BuildUnresolvedAssetException<T>(
-                assetPath,
-                "ScriptableObject script 등록이 아직 준비되지 않아 새 asset 생성을 중단했다.");
-        }
-
         AssetDatabase.CreateAsset(asset, assetPath);
         EditorUtility.SetDirty(asset);
         AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);

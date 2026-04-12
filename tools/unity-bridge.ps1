@@ -512,7 +512,7 @@ try {
             Invoke-UnityCli @('console', '--lines', $Lines, '--type', $Filter)
         }
         'prepare-playable' {
-            Invoke-UnityMenuCommand -MenuPath 'SM/Play/Full Loop' -ReadyContext 'prepare playable menu dispatch'
+            Invoke-UnityMenuCommand -MenuPath 'SM/전체테스트' -ReadyContext 'prepare playable menu dispatch'
         }
         'repair-scenes' {
             Invoke-UnityMenuCommand -MenuPath 'SM/Internal/Recovery/Repair First Playable Scenes' -ReadyContext 'repair scenes menu dispatch'
@@ -521,7 +521,7 @@ try {
             Invoke-UnityMenuCommand -MenuPath 'SM/Internal/Recovery/Ensure Localization Foundation' -ReadyContext 'ensure localization menu dispatch'
         }
         'quick-battle-smoke' {
-            Invoke-UnityMenuCommand -MenuPath 'SM/Play/Combat Sandbox' -ReadyContext 'quick battle smoke menu dispatch'
+            Invoke-UnityMenuCommand -MenuPath 'SM/전투테스트' -ReadyContext 'quick battle smoke menu dispatch'
         }
         'seed-content' {
             Invoke-UnityMenuCommand -MenuPath 'SM/Internal/Content/Generate Sample Content' -ReadyContext 'sample content generation'
@@ -563,7 +563,7 @@ try {
         'smoke-observer' {
             Invoke-Step -Name 'compile' -Action { Invoke-UnityCli @('editor', 'refresh', '--compile') -WaitForReady -ReadyContext 'compile' }
             Invoke-Step -Name 'clear-console' -Action { Invoke-UnityCli @('console', '--clear') }
-            Invoke-Step -Name 'prepare-playable' -Action { Invoke-UnityMenuCommand -MenuPath 'SM/Play/Full Loop' -ReadyContext 'prepare playable menu dispatch' }
+            Invoke-Step -Name 'prepare-playable' -Action { Invoke-UnityMenuCommand -MenuPath 'SM/전체테스트' -ReadyContext 'prepare playable menu dispatch' }
             Invoke-Step -Name 'report-town' -Action { Invoke-UnityCli @('observer_contract_report', '--scene', 'town') }
             Invoke-Step -Name 'report-battle' -Action { Invoke-UnityCli @('observer_contract_report', '--scene', 'battle') }
             Invoke-Step -Name 'console' -Action { Invoke-UnityCli @('console', '--lines', $Lines, '--type', $Filter) }

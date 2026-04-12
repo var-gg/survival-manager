@@ -71,7 +71,7 @@ public sealed class CombatSandboxWindow : EditorWindow
     private void DrawHeader()
     {
         EditorGUILayout.HelpBox(
-            "Daily edit/compile/play starts at SM/Authoring/Combat Sandbox. Use SM/Play/Combat Sandbox for direct runtime verification, and use this window as the secondary library/history/results surface.",
+            "Daily edit/compile/play starts at SM/Authoring/Combat Sandbox. Use SM/전투테스트 for direct runtime verification, and use this window as the secondary library/history/results surface.",
             MessageType.Info);
         using (new EditorGUILayout.HorizontalScope())
         {

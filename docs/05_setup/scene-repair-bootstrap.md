@@ -7,7 +7,7 @@
 ## 공식 메뉴
 
 - `SM/Internal/Recovery/Repair First Playable Scenes`
-- `SM/Play/Full Loop`
+- `SM/전체테스트`
 - `SM/Internal/Recovery/Ensure Localization Foundation`
 
 ## CLI mirror
@@ -27,7 +27,7 @@
 ## 운영 절차
 
 1. Unity 열기
-2. 먼저 canonical newcomer lane이면 `SM/Play/Full Loop`
+2. 먼저 canonical newcomer lane이면 `SM/전체테스트`
 3. 복구만 필요하면 `SM/Internal/Recovery/Repair First Playable Scenes`
 4. locale foundation이 의심되면 `SM/Internal/Recovery/Ensure Localization Foundation`
 5. `Boot.unity` 자동 오픈 확인

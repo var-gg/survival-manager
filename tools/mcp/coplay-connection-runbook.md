@@ -35,7 +35,7 @@ Unity Editor와 외부 AI 클라이언트를 로컬 MCP로 연결해,
 2. `git status`
 3. `git restore`
 4. 필요 시 branch reset
-5. `SM/Play/Full Loop` 또는 `SM/Internal/Recovery/Repair First Playable Scenes` 재실행
+5. `SM/전체테스트` 또는 `SM/Internal/Recovery/Repair First Playable Scenes` 재실행
 
 ## 금지 사항
 

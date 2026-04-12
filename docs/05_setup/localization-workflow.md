@@ -39,7 +39,7 @@
 
 ## locale 전환 확인
 
-1. `SM/Play/Full Loop`를 실행한다.
+1. `SM/전체테스트`를 실행한다.
 2. `Boot.unity` Play 후 화면 우측 상단 language overlay를 확인한다.
 3. `ko`와 `en`을 번갈아 선택한다.
 4. Town, Expedition, Battle, Reward 정적 라벨이 즉시 갱신되는지 본다.

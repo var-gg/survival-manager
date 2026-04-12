@@ -101,7 +101,7 @@ pwsh -File tools/pre-art-rc.ps1
 ```
 
 - `prepare-playable`이 canonical newcomer/setup lane이다.
-- `quick-battle-smoke`는 `SM/Play/Combat Sandbox`를 호출한다.
+- `quick-battle-smoke`는 `SM/전투테스트`를 호출한다.
 - `seed-content`는 `SM/Internal/Content/Generate Sample Content`를 호출한다.
 
 `console` verb는 wrapper 입력을 `-Filter`로 받지만 실제 `unity-cli`에는 `--type`으로 전달한다.

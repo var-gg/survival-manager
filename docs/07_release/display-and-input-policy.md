@@ -37,7 +37,7 @@
 
 - shipped control baseline은 mouse/keyboard다.
 - input abstraction은 유지하되, 모바일 전용 touch gesture/UX는 이번 범위에 넣지 않는다.
-- `SM/Play/Combat Sandbox`와 `SM/Play/Full Loop` 모두 동일한 데스크톱 입력 기본 계약을 공유한다.
+- `SM/전투테스트`와 `SM/전체테스트` 모두 동일한 데스크톱 입력 기본 계약을 공유한다.
 
 ## mobile future-proof 범위
 
@@ -55,5 +55,5 @@
 
 - `1280x720`, `1920x1080`, `1920x1200`, `2560x1440`, `3440x1440`에서 UI 확인
 - locale flip 시 label overflow와 clipped panel 없음 확인
-- `SM/Play/Combat Sandbox` direct lane과 `SM/Play/Full Loop`에서 동일한 기준 해상도 정책 유지 확인
+- `SM/전투테스트` direct lane과 `SM/전체테스트`에서 동일한 기준 해상도 정책 유지 확인
 - internal recovery 실행 후에도 panel reference resolution drift가 재도입되지 않았는지 확인
