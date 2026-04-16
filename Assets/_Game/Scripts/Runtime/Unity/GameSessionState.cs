@@ -1001,7 +1001,7 @@ public sealed class GameSessionState
             Profile.UnlockedPermanentAugmentIds.Add(augmentId);
         }
 
-        NormalizePermanentAugmentState();
+        PermanentAugmentSlotCount = GameSessionProfileNormalizer.NormalizePermanentAugments(Profile, _combatContentLookup);
         return Result.Success();
     }
 
@@ -3162,7 +3162,6 @@ public sealed class GameSessionState
         NormalizeInventoryContentIds();
         NormalizeExpeditionContentIds();
         NormalizeEquippedItemReferences();
-        NormalizePermanentAugmentUnlockIds();
         NormalizeBuildStateRecords();
     }
 
@@ -3411,12 +3410,6 @@ public sealed class GameSessionState
             .ToDictionary(node => node.Id, node => node, StringComparer.Ordinal);
     }
 
-    private static bool IsLegacyPermanentSlotToken(string id)
-    {
-        return id.StartsWith("perm-slot", StringComparison.Ordinal)
-               || id.StartsWith("perm-slot.", StringComparison.Ordinal);
-    }
-
     private static IEnumerable<HeroRecord> ToHeroRecords(SaveProfile profile)
     {
         foreach (var hero in profile.Heroes)
@@ -3520,45 +3513,8 @@ public sealed class GameSessionState
             blueprint.HeroRoleIds ??= new Dictionary<string, string>();
         }
 
-        NormalizePermanentAugmentState();
+        PermanentAugmentSlotCount = GameSessionProfileNormalizer.NormalizePermanentAugments(Profile, _combatContentLookup);
         NormalizePassiveBoardStates();
-    }
-
-    private void NormalizePermanentAugmentUnlockIds()
-    {
-        Profile.UnlockedPermanentAugmentIds = Profile.UnlockedPermanentAugmentIds
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Where(id => !IsLegacyPermanentSlotToken(id))
-            .Where(id => !_combatContentLookup.TryGetAugmentDefinition(id, out var augment) || augment.IsPermanent)
-            .Distinct(StringComparer.Ordinal)
-            .ToList();
-    }
-
-    private void NormalizePermanentAugmentState()
-    {
-        foreach (var loadout in Profile.PermanentAugmentLoadouts)
-        {
-            var validEquippedAugmentIds = loadout.EquippedAugmentIds
-                .Where(id => !string.IsNullOrWhiteSpace(id))
-                .Where(id => !IsLegacyPermanentSlotToken(id))
-                .Where(id => !_combatContentLookup.TryGetAugmentDefinition(id, out var augment) || augment.IsPermanent)
-                .Distinct(StringComparer.Ordinal)
-                .ToList();
-
-            foreach (var equippedAugmentId in validEquippedAugmentIds)
-            {
-                if (!Profile.UnlockedPermanentAugmentIds.Contains(equippedAugmentId, StringComparer.Ordinal))
-                {
-                    Profile.UnlockedPermanentAugmentIds.Add(equippedAugmentId);
-                }
-            }
-
-            loadout.EquippedAugmentIds = validEquippedAugmentIds
-                .Take(MetaBalanceDefaults.MaxPermanentAugmentSlots)
-                .ToList();
-        }
-
-        PermanentAugmentSlotCount = MetaBalanceDefaults.MaxPermanentAugmentSlots;
     }
 
     private void NormalizePassiveBoardStates()
