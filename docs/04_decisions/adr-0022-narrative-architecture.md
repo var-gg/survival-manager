@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-10
+- 최종수정일: 2026-04-16
 - 소스오브트루스: `docs/04_decisions/adr-0022-narrative-architecture.md`
 - 관련문서:
   - `docs/03_architecture/narrative-code-architecture.md`
@@ -31,6 +31,7 @@
 - 기존 root save에 `Narrative` 필드 추가 (새 save 파일 없음)
 - 현재 runtime bootstrap은 `SM.Unity.NarrativeRuntimeBootstrap` + `GameSessionState`가 담당한다
 - scene bridge / presenter / runner는 `SM.Unity`에 두되 truth는 여전히 `StoryDirectorService`가 가진다
+- narrative authoring seed import와 validation은 runtime truth가 아니므로 `tools/narrative-*.ps1`와 `SM.Editor.Narrative`가 담당한다
 - 연출 kind는 `toast-banner`, `dialogue-overlay`, `dialogue-scene`, `story-card` 4단으로 고정한다
 
 ## 검토한 대안
@@ -57,9 +58,13 @@
 
 ## 후속 작업
 
-1. narrative seed content와 validator 추가
-2. `RewardCommitted` 시점의 authored trigger 연결
+1. `RewardCommitted` 시점의 authored trigger 연결
+2. same-SHA Unity compile / batch evidence refresh
 3. concrete battle/reward summary type canonicalization
+
+완료된 후속 작업:
+
+- narrative seed content와 editor import/validation lane 추가
 
 ## 작성 지침
 

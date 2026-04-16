@@ -2,7 +2,7 @@
 
 - 상태: draft
 - 소유자: repository
-- 최종수정일: 2026-04-10
+- 최종수정일: 2026-04-16
 - 소스오브트루스: `docs/02_design/narrative/index.md`
 - 관련문서:
   - `docs/02_design/index.md`
@@ -20,7 +20,7 @@
 ## 문서 목록
 
 | path | purpose | owns_truth | depends_on | depended_by |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `world-building-bible.md` | 세계관 바이블 | 불변 세계관 진실, 세력, 지리, 연대기, 명명 규칙 | — | `campaign-story-arc.md`, `faction-conflict-matrix.md`, `docs/02_design/deck/character-lore-registry.md` |
 | `narrative-pacing-formula.md` | 페이싱 공식 | 감정 곡선, session cadence, reveal timing | — | `campaign-story-arc.md`, `chapter-beat-sheet.md`, `docs/02_design/meta/story-gating-and-unlock-rules.md` |
 | `faction-conflict-matrix.md` | 세력 충돌 행렬 | faction pair별 오해/진실/충돌축/encounter link | `world-building-bible.md` | `campaign-story-arc.md`, `docs/02_design/deck/hero-expansion-roadmap.md` |
@@ -28,6 +28,7 @@
 | `chapter-beat-sheet.md` | node별 비트 SoT | chapter/site/node별 beat, reveal, emotion target, join timing | `campaign-story-arc.md`, `narrative-pacing-formula.md` | `dialogue-event-schema.md` |
 | `dialogue-event-schema.md` | 대사/이벤트 스키마 | story_event_id, trigger, once policy, presentation grade, authoring 규칙 | `chapter-beat-sheet.md` | `master-script.md`, `docs/03_architecture/narrative-code-architecture.md` |
 | `master-script.md` | 마스터 대사 스크립트 | 캠페인 전체 대사 원문 텍스트 | `dialogue-event-schema.md`, `campaign-story-arc.md`, `docs/02_design/deck/character-lore-registry.md` | — |
+| `authoring-guide.md` | contributor 어서링 절차 | Markdown 작성 절차, alias, validate/build command | `master-script.md`, `dialogue-event-schema.md`, `tools/narrative-authoring-map.json` | — |
 
 ## 문서 의존 그래프
 
@@ -44,8 +45,10 @@ flowchart TD
     beat --> schema[dialogue-event-schema]
     schema --> code[architecture/narrative-code-architecture]
     schema --> script[master-script]
+    schema --> guide[authoring-guide]
     arc --> script
     deck_lore[deck/character-lore-registry] --> script
+    script --> guide
 ```
 
 ## 작성 순서
@@ -57,6 +60,7 @@ flowchart TD
 5. `chapter-beat-sheet.md` — node별 beat와 감정값이 확정되어야 event schema를 쓸 수 있다.
 6. `dialogue-event-schema.md` — event ID와 authoring 규칙이 확정되어야 코드 구현이 시작된다.
 7. `master-script.md` — dialogue-event-schema의 loc key에 대응하는 실제 대사 텍스트를 작성한다.
+8. `authoring-guide.md` — 신규 contributor가 확정된 schema와 script 규칙을 따라 작성·검증·빌드하는 절차를 확인한다.
 
 ## source of truth 경계
 
@@ -65,6 +69,7 @@ flowchart TD
 - node 단위 감정값과 비트는 `chapter-beat-sheet.md`가 소유한다.
 - event ID와 authoring 규칙은 `dialogue-event-schema.md`가 소유한다.
 - 대사 원문 텍스트는 `master-script.md`가 소유한다.
+- 작성 절차와 alias 사용법은 `authoring-guide.md`가 설명하되, narrative truth를 새로 소유하지 않는다.
 - site topology와 encounter lane은 `docs/02_design/meta/campaign-chapter-and-expedition-sites.md`가 소유한다.
 - hero canon과 tier는 `docs/02_design/deck/character-lore-registry.md`가 소유한다.
 

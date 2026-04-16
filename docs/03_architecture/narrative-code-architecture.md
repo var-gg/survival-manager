@@ -2,7 +2,7 @@
 
 - 상태: draft
 - 소유자: repository
-- 최종수정일: 2026-04-10
+- 최종수정일: 2026-04-16
 - 소스오브트루스: `docs/03_architecture/narrative-code-architecture.md`
 - 관련문서:
   - `docs/02_design/meta/story-gating-and-unlock-rules.md`
@@ -13,7 +13,7 @@
 ## 목적
 
 내러티브 runtime core의 실제 코드 배치와 저장 경계를 고정한다.
-이 문서는 현재 저장소에 **구현된 narrative runtime core와 Unity playback surface**를 함께 설명하고, 아직 deferred인 authored seed/runtime hardening 항목을 구분한다.
+이 문서는 현재 저장소에 **구현된 narrative runtime core, Unity playback surface, authoring seed/import/validation surface**를 함께 설명하고, 아직 deferred인 runtime hardening 항목을 구분한다.
 
 ## 현재 구현 범위
 
@@ -23,6 +23,8 @@
 - `SM.Persistence.Abstractions`: `SaveProfile.Narrative` save host field
 - `SM.Unity`: `NarrativeRuntimeBootstrap`가 `Resources.LoadAll<T>(string.Empty)`로 narrative asset을 읽어 `GameSessionState`에 `StoryDirectorService`를 바인딩한다.
 - `SM.Unity.Narrative`: `StorySceneFlowBridge`, `StoryPresentationRunner`, portrait resolver, viewstate, presenter, UITK view wrapper가 scene lifecycle과 UI playback을 담당한다.
+- `SM.Editor.Narrative`: `NarrativeSeedImporter`, `NarrativeAssetValidator`, `NarrativePortraitValidator`, `NarrativePortraitPlaceholderGenerator`가 Markdown-derived seed manifest를 ScriptableObject/localization/portrait placeholder asset으로 가져오고 검증한다.
+- `tools/narrative-build.ps1`, `tools/narrative-validate.ps1`: authoring Markdown -> `Temp/Narrative/narrative-seed.json` -> Unity importer/portrait placeholder lane을 실행한다.
 - `GameSessionState` public surface:
   - `AdvanceNarrative`
   - `TryDequeueNarrativePresentation`
@@ -33,9 +35,8 @@
   - `BattleScreenController -> NarrativeMoment.BattleResolved`
   - `RewardScreenController -> NarrativeMoment.RewardOpened`
 
-아직 구현되지 않은 것:
+아직 닫히지 않은 것:
 
-- narrative 전용 seed asset과 validator
 - `RewardCommitted` 시점의 authored narrative trigger 연결
 - same-SHA Unity compile / batch evidence refresh
 
@@ -48,6 +49,7 @@
 | `SM.Meta` | `NarrativeProgressRecord`, `StoryMomentContext`, `StoryEventStateRecord`, `StoryPresentationRequest`, `RecruitConversionStateRecord`, `EndlessCycleStateRecord`, `DialogueAssemblyService`, `RecruitConversionService`, `StoryDirectorService` | `SM.Core`, `SM.Content` |
 | `SM.Persistence.Abstractions` | `SaveProfile.Narrative` | `SM.Core`, `SM.Content`, `SM.Meta` |
 | `SM.Unity` | `NarrativeRuntimeBootstrap`, `GameSessionState` binding/wrapper, `StorySceneFlowBridge`, `StoryPresentationRunner`, presenter/view/runtime adapter | `SM.Core`, `SM.Content`, `SM.Meta`, `SM.Persistence.Abstractions` |
+| `SM.Editor` | narrative seed import, asset validation, portrait validation/placeholder generation | `SM.Core`, `SM.Content`, `SM.Meta`, `SM.Unity`, Unity editor APIs |
 
 금지 규칙은 그대로 유지한다.
 
@@ -107,6 +109,17 @@
 | `ToastBannerPresenter`, `DialogueOverlayPresenter`, `DialogueScenePresenter`, `StoryCardPresenter` | UITK view wrapper를 순수 C# presenter로 구동한다 |
 | `StoryToastBannerView`, `DialogueOverlayView`, `DialogueSceneView`, `StoryCardView` | `Q<T>("name")` 바인딩, 표시 토글, 이벤트 emit만 담당한다 |
 | `Story*ViewState`, `StorySpeakerModel`, `StoryDialogueLineModel`, `Dialogue*PlaybackModel` | runtime adapter가 presenter에 전달하는 렌더링 snapshot / playback contract다 |
+
+### `SM.Editor.Narrative` / tools
+
+| type / tool | 역할 |
+| --- | --- |
+| `NarrativeSeedImporter` | `Temp/Narrative/narrative-seed.json`을 `StoryEventDefinition`, `DialogueSequenceDefinition`, `Content_Story` localization entry로 반영한다 |
+| `NarrativeAssetValidator` | narrative definition asset, dialogue sequence asset, story localization table, portrait 기본 검증을 묶어 실행한다 |
+| `NarrativePortraitValidator` | `tools/narrative-authoring-map.json`의 speaker/emote mapping을 기준으로 portrait placeholder 누락을 검증한다 |
+| `NarrativePortraitPlaceholderGenerator` | speaker별 `Assets/Resources/Narrative/Portraits/{speakerId}/Default.png` placeholder를 생성한다 |
+| `tools/narrative_validate.py` / `tools/narrative-validate.ps1` | authoring Markdown 구조와 cross-reference를 Unity import 전에 검증한다 |
+| `tools/narrative_build.py` / `tools/narrative-build.ps1` | authoring Markdown을 seed manifest로 변환하고 Unity importer/portrait placeholder lane으로 넘긴다 |
 
 ## 런타임 규칙
 
