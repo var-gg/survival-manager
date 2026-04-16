@@ -31,9 +31,21 @@ public sealed class BattleUnitMetadataFormatter
 
     public BattleUnitOverheadText BuildOverhead(BattleUnitReadModel unit)
     {
+        var character = _contentText.GetCharacterName(unit.CharacterId, unit.ArchetypeId);
+        var archetype = _contentText.GetArchetypeName(unit.ArchetypeId);
+        var header = string.IsNullOrWhiteSpace(archetype) || string.Equals(character, archetype, StringComparison.Ordinal)
+            ? character
+            : $"{character} ({archetype})";
+        var subtitle = string.Join(" / ", new[]
+        {
+            _contentText.GetRaceName(unit.RaceId),
+            _contentText.GetClassName(unit.ClassId),
+            _contentText.GetRoleName(unit.RoleInstructionId, unit.RoleTag)
+        });
+
         return new BattleUnitOverheadText(
-            _contentText.GetCharacterName(unit.CharacterId, unit.ArchetypeId),
-            BattleReadabilityFormatter.BuildPlayerFacingState(unit));
+            header,
+            subtitle);
     }
 
     public BattleSelectedUnitViewState BuildSelectedUnitPanel(BattleUnitReadModel? unit)
@@ -47,6 +59,8 @@ public sealed class BattleUnitMetadataFormatter
         var role = _contentText.GetRoleName(unit.RoleInstructionId, unit.RoleTag);
         var roleFamily = _contentText.GetRoleFamilyName(unit.ClassId);
         var builder = new StringBuilder();
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.character", "캐릭터", "Character")}: {character}");
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.role_family", "역할군", "Role Family")}: {roleFamily}");
         builder.AppendLine($"{AxisLabel("ui.battle.axis.role", "역할", "Role")}: {role} / {roleFamily}");
         builder.AppendLine($"{AxisLabel("ui.battle.axis.state", "상태", "State")}: {BattleReadabilityFormatter.BuildPlayerFacingState(unit)}");
         builder.AppendLine($"{AxisLabel("ui.battle.axis.target", "대상", "Target")}: {ResolveTarget(unit)}");

@@ -75,12 +75,12 @@ public sealed class BattlePrimitiveActorVisualAdapter : BattleActorVisualAdapter
 
         if (bodyRenderer != null)
         {
-            BattlePresentationMaterialFactory.ApplyColor(bodyRenderer.material, state.BodyColor);
+            BattlePresentationMaterialFactory.ApplyColor(bodyRenderer.sharedMaterial, state.BodyColor);
         }
 
         if (shadowRenderer != null)
         {
-            BattlePresentationMaterialFactory.ApplyColor(shadowRenderer.material, state.ShadowColor);
+            BattlePresentationMaterialFactory.ApplyColor(shadowRenderer.sharedMaterial, state.ShadowColor);
         }
     }
 
@@ -101,7 +101,7 @@ public sealed class BattlePrimitiveActorVisualAdapter : BattleActorVisualAdapter
         var collider = go.GetComponent<Collider>();
         if (collider != null)
         {
-            Destroy(collider);
+            DestroyPresentationObject(collider);
         }
 
         var renderer = go.GetComponent<Renderer>();
@@ -126,6 +126,18 @@ public sealed class BattlePrimitiveActorVisualAdapter : BattleActorVisualAdapter
         if (renderer.sharedMaterial == null)
         {
             renderer.sharedMaterial = BattlePresentationMaterialFactory.Create(color);
+        }
+    }
+
+    private static void DestroyPresentationObject(Object target)
+    {
+        if (Application.isPlaying)
+        {
+            Destroy(target);
+        }
+        else
+        {
+            DestroyImmediate(target);
         }
     }
 }

@@ -27,6 +27,6 @@ public sealed class RuntimeCombatContentLookupModeTests
     {
         return (RuntimeCombatContentLookup)Activator.CreateInstance(
             typeof(RuntimeCombatContentLookup),
-            allowEditorRecoveryFallback)!;
+            new object[] { allowEditorRecoveryFallback })!;
     }
 }

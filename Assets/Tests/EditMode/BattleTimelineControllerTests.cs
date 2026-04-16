@@ -149,8 +149,8 @@ public sealed class BattleTimelineControllerTests
 
         Assert.That(timeline.NormalizedProgress, Is.EqualTo(0f).Within(0.001f));
 
-        timeline.SeekToStep(150);
-        var expected = 150f / BattleSimulator.DefaultMaxSteps;
+        timeline.SeekToStep(10);
+        var expected = 10f / BattleSimulator.DefaultMaxSteps;
         Assert.That(timeline.NormalizedProgress, Is.EqualTo(expected).Within(0.01f));
     }
 }

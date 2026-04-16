@@ -283,20 +283,20 @@ public sealed class BattlePresentationController : MonoBehaviour
         {
             for (var i = battleStageRoot.childCount - 1; i >= 0; i--)
             {
-                Destroy(battleStageRoot.GetChild(i).gameObject);
+                DestroyPresentationObject(battleStageRoot.GetChild(i).gameObject);
             }
         }
 
         for (var i = transform.childCount - 1; i >= 0; i--)
         {
-            Destroy(transform.GetChild(i).gameObject);
+            DestroyPresentationObject(transform.GetChild(i).gameObject);
         }
 
         if (actorOverlayRoot != null)
         {
             for (var i = actorOverlayRoot.childCount - 1; i >= 0; i--)
             {
-                Destroy(actorOverlayRoot.GetChild(i).gameObject);
+                DestroyPresentationObject(actorOverlayRoot.GetChild(i).gameObject);
             }
         }
     }
@@ -426,19 +426,24 @@ public sealed class BattlePresentationController : MonoBehaviour
         var collider = block.GetComponent<Collider>();
         if (collider != null)
         {
-            if (Application.isPlaying)
-            {
-                Destroy(collider);
-            }
-            else
-            {
-                DestroyImmediate(collider);
-            }
+            DestroyPresentationObject(collider);
         }
 
         var renderer = block.GetComponent<Renderer>();
         renderer.sharedMaterial = BattlePresentationMaterialFactory.Create(color);
         return renderer;
+    }
+
+    private static void DestroyPresentationObject(UnityEngine.Object target)
+    {
+        if (Application.isPlaying)
+        {
+            Destroy(target);
+        }
+        else
+        {
+            DestroyImmediate(target);
+        }
     }
 
     private static string BuildAnchorKey(TeamSide side, DeploymentAnchorId anchor)

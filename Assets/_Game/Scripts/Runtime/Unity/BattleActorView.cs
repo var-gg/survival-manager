@@ -1051,7 +1051,7 @@ public sealed class BattleActorView : MonoBehaviour
         }
 
         var boost = 0.12f * _readabilityBoost;
-        BattlePresentationMaterialFactory.ApplyColor(renderer.material, color + new Color(boost, boost, boost, 0f));
+        BattlePresentationMaterialFactory.ApplyColor(renderer.sharedMaterial, color + new Color(boost, boost, boost, 0f));
         renderer.transform.position = new Vector3(worldPosition.x, worldY, worldPosition.z);
         renderer.transform.localScale = new Vector3(Mathf.Max(0.08f, diameter), TelegraphDiscThickness, Mathf.Max(0.08f, diameter));
     }
@@ -1109,7 +1109,19 @@ public sealed class BattleActorView : MonoBehaviour
         var collider = go.GetComponent<Collider>();
         if (collider != null)
         {
-            Destroy(collider);
+            DestroyPresentationObject(collider);
+        }
+    }
+
+    private static void DestroyPresentationObject(UnityEngine.Object target)
+    {
+        if (Application.isPlaying)
+        {
+            Destroy(target);
+        }
+        else
+        {
+            DestroyImmediate(target);
         }
     }
 

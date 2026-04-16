@@ -3538,21 +3538,24 @@ public sealed class GameSessionState
     {
         foreach (var loadout in Profile.PermanentAugmentLoadouts)
         {
-            loadout.EquippedAugmentIds = loadout.EquippedAugmentIds
+            var validEquippedAugmentIds = loadout.EquippedAugmentIds
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Where(id => !IsLegacyPermanentSlotToken(id))
                 .Where(id => !_combatContentLookup.TryGetAugmentDefinition(id, out var augment) || augment.IsPermanent)
                 .Distinct(StringComparer.Ordinal)
-                .Take(MetaBalanceDefaults.MaxPermanentAugmentSlots)
                 .ToList();
 
-            foreach (var equippedAugmentId in loadout.EquippedAugmentIds)
+            foreach (var equippedAugmentId in validEquippedAugmentIds)
             {
                 if (!Profile.UnlockedPermanentAugmentIds.Contains(equippedAugmentId, StringComparer.Ordinal))
                 {
                     Profile.UnlockedPermanentAugmentIds.Add(equippedAugmentId);
                 }
             }
+
+            loadout.EquippedAugmentIds = validEquippedAugmentIds
+                .Take(MetaBalanceDefaults.MaxPermanentAugmentSlots)
+                .ToList();
         }
 
         PermanentAugmentSlotCount = MetaBalanceDefaults.MaxPermanentAugmentSlots;
