@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5115616239888182160
+--- !u!114 &-8771325767836532720
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_10
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.10
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_method_debate.10
-  _emote: solemn
+  _id: dialogue_scene_method_debate.line.03
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_method_debate.3
+  _emote: defiant
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-1112231431566338545
+--- !u!114 &-7932656595472502835
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27,7 +27,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_method_debate.line.02
@@ -36,7 +36,7 @@ MonoBehaviour:
   _emote: resolute
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-344045284470379295
+--- !u!114 &-5748933932923245343
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,13 +45,49 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_12
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.12
+  _id: dialogue_scene_method_debate.line.01
+  _speakerId: Narrator
+  _textKey: loc.story.scene_method_debate.1
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3627420272276940832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_method_debate.line.10
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_method_debate.10
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-49183005964068032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_method_debate.line.07
   _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_method_debate.12
-  _emote: weary
+  _textKey: loc.story.scene_method_debate.7
+  _emote: bitter
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -63,26 +99,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_method_debate
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_method_debate
   _lines:
-  - {fileID: 7317579600739566769}
-  - {fileID: 3536262840180631087}
-  - {fileID: -1112231431566338545}
-  - {fileID: 2818671947147059431}
-  - {fileID: 6721652315301405344}
-  - {fileID: 7670339911433352192}
-  - {fileID: 2244950304539078084}
-  - {fileID: 182366752707717381}
-  - {fileID: 326250863968934967}
-  - {fileID: 7009568306083431829}
-  - {fileID: -5115616239888182160}
-  - {fileID: 5514991872185342152}
-  - {fileID: -344045284470379295}
-  - {fileID: 361766017808506167}
---- !u!114 &182366752707717381
+  - {fileID: 4607756803293176769}
+  - {fileID: -5748933932923245343}
+  - {fileID: -7932656595472502835}
+  - {fileID: -8771325767836532720}
+  - {fileID: 527896423872052117}
+  - {fileID: 4523433820433599607}
+  - {fileID: 8257391531851011657}
+  - {fileID: -49183005964068032}
+  - {fileID: 7591520059672916256}
+  - {fileID: 6019706309079147955}
+  - {fileID: -3627420272276940832}
+  - {fileID: 7306367731826705553}
+  - {fileID: 7151128942367248757}
+  - {fileID: 2488294048611039532}
+--- !u!114 &527896423872052117
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,133 +127,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.07
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_method_debate.7
-  _emote: bitter
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &326250863968934967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.08
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_method_debate.8
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &361766017808506167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_13
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.13
-  _speakerId: Narrator
-  _textKey: loc.story.scene_method_debate.13
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &2244950304539078084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.06
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_method_debate.6
-  _emote: solemn
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &2818671947147059431
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.03
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_method_debate.3
-  _emote: defiant
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &3536262840180631087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.01
-  _speakerId: Narrator
-  _textKey: loc.story.scene_method_debate.1
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &5514991872185342152
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_11
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.11
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_method_debate.11
-  _emote: grim
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &6721652315301405344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_method_debate.line.04
@@ -226,7 +136,7 @@ MonoBehaviour:
   _emote: weary
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &7009568306083431829
+--- !u!114 &2488294048611039532
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -235,16 +145,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.09
+  _id: dialogue_scene_method_debate.line.13
   _speakerId: Narrator
-  _textKey: loc.story.scene_method_debate.9
+  _textKey: loc.story.scene_method_debate.13
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &7317579600739566769
+--- !u!114 &4523433820433599607
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -253,7 +163,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_method_debate.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_method_debate.5
+  _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4607756803293176769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_method_debate.line.00
@@ -262,7 +190,7 @@ MonoBehaviour:
   _emote: solemn
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &7670339911433352192
+--- !u!114 &6019706309079147955
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -271,12 +199,84 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_method_debate.line.05
+  _id: dialogue_scene_method_debate.line.09
+  _speakerId: Narrator
+  _textKey: loc.story.scene_method_debate.9
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7151128942367248757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_method_debate.line.12
   _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_method_debate.5
-  _emote: bitter
+  _textKey: loc.story.scene_method_debate.12
+  _emote: weary
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7306367731826705553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_method_debate.line.11
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_method_debate.11
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7591520059672916256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_method_debate.line.08
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_method_debate.8
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8257391531851011657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_method_debate.line.06
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_method_debate.6
+  _emote: solemn
   _emotionTextKey: 
   _autoAdvanceHint: 0

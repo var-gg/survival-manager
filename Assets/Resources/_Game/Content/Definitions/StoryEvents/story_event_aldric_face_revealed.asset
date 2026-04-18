@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7171786707584026640
+--- !u!114 &-8421237581947513025
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,14 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_aldric_face_revealed.condition.02
-  _kind: 2
-  _operandA: 3
-  _operandB: 
---- !u!114 &-5725406180518443709
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_aldric_face_revealed.effect.00
+  _kind: 1
+  _payload: story_flag_aldric_face_seen
+--- !u!114 &-4342464325888286605
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -25,14 +24,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
   _id: story_event_aldric_face_revealed.condition.01
   _kind: 1
   _operandA: site_bone_orchard
   _operandB: 
---- !u!114 &-5449990841411756475
+--- !u!114 &-2843384207618354045
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,44 +40,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_aldric_face_revealed.condition.00
-  _kind: 0
-  _operandA: chapter_ruined_crypts
-  _operandB: 
---- !u!114 &-4327992705327370951
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_aldric_face_revealed.condition.03
-  _kind: 3
-  _operandA: story_flag_relicborn_awakened
-  _operandB: 
---- !u!114 &-2477410400632265355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_aldric_face_revealed.effect.00
-  _kind: 1
-  _payload: story_flag_aldric_face_seen
+  _id: story_event_aldric_face_revealed.effect.01
+  _kind: 3
+  _payload: DialogueScene
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,7 +55,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 322218310d13d8a45b3d85a9fb83b805, type: 3}
   m_Name: story_event_aldric_face_revealed
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
   _id: story_event_aldric_face_revealed
@@ -96,15 +63,15 @@ MonoBehaviour:
   _priority: 520
   _oncePolicy: 0
   _conditions:
-  - {fileID: -5449990841411756475}
-  - {fileID: -5725406180518443709}
-  - {fileID: -7171786707584026640}
-  - {fileID: -4327992705327370951}
+  - {fileID: 7412955891194270028}
+  - {fileID: -4342464325888286605}
+  - {fileID: 478348831447312086}
+  - {fileID: 4340042409888349720}
   _effects:
-  - {fileID: -2477410400632265355}
-  - {fileID: 3223150245564696690}
+  - {fileID: -8421237581947513025}
+  - {fileID: -2843384207618354045}
   _presentationKey: dialogue_scene_aldric_face
---- !u!114 &3223150245564696690
+--- !u!114 &478348831447312086
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -113,9 +80,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_aldric_face_revealed.effect.01
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_aldric_face_revealed.condition.02
+  _kind: 2
+  _operandA: 3
+  _operandB: 
+--- !u!114 &4340042409888349720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_aldric_face_revealed.condition.03
   _kind: 3
-  _payload: DialogueScene
+  _operandA: story_flag_relicborn_awakened
+  _operandB: 
+--- !u!114 &7412955891194270028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_aldric_face_revealed.condition.00
+  _kind: 0
+  _operandA: chapter_ruined_crypts
+  _operandB: 

@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 72bf28f92c8ff2243b20e6b3b56b2f41, type: 3}
   m_Name: synergy_ranger
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SynergyDefinition
   Id: synergy_ranger
   NameKey: content.synergy.synergy_ranger.name
   DescriptionKey: content.synergy.synergy_ranger.desc
   CountedTagId: ranger
+  AuthorityLayer: 3
   Tiers:
   - {fileID: 11400000, guid: 96d512900fd8f72408226af5a5ae91d4, type: 2}
   - {fileID: 11400000, guid: 01eb9590b6c868f4187b8882cf3fb181, type: 2}

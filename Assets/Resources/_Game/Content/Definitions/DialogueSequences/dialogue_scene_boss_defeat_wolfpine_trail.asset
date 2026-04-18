@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5698623508145564110
+--- !u!114 &-8198007689134996188
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_wolfpine_trail.line.03
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_boss_defeat_wolfpine_trail.3
-  _emote: bitter
+  _id: dialogue_scene_boss_defeat_wolfpine_trail.line.04
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_boss_defeat_wolfpine_trail.4
+  _emote: gentle
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-2170067225738589037
+--- !u!114 &-7347949173848650473
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27,7 +27,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_boss_defeat_wolfpine_trail.line.06
@@ -36,7 +36,7 @@ MonoBehaviour:
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-1648550677510366113
+--- !u!114 &-480019847279175752
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,13 +45,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_wolfpine_trail.line.04
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_boss_defeat_wolfpine_trail.4
-  _emote: gentle
+  _id: dialogue_scene_boss_defeat_wolfpine_trail.line.03
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_boss_defeat_wolfpine_trail.3
+  _emote: bitter
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -63,20 +63,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_boss_defeat_wolfpine_trail
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_boss_defeat_wolfpine_trail
   _lines:
-  - {fileID: 1634621317243828375}
-  - {fileID: 2987631092848418394}
-  - {fileID: 4472680400868937020}
-  - {fileID: -5698623508145564110}
-  - {fileID: -1648550677510366113}
-  - {fileID: 3582336863142901475}
-  - {fileID: -2170067225738589037}
-  - {fileID: 5733573545503017902}
---- !u!114 &1634621317243828375
+  - {fileID: 2169055903476023836}
+  - {fileID: 4036694675646266457}
+  - {fileID: 182483140895268922}
+  - {fileID: -480019847279175752}
+  - {fileID: -8198007689134996188}
+  - {fileID: 5847253213883144028}
+  - {fileID: -7347949173848650473}
+  - {fileID: 1665156342632086118}
+--- !u!114 &182483140895268922
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,61 +85,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_wolfpine_trail.line.00
-  _speakerId: Narrator
-  _textKey: loc.story.scene_boss_defeat_wolfpine_trail.0
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &2987631092848418394
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_wolfpine_trail.line.01
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_boss_defeat_wolfpine_trail.1
-  _emote: shock
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &3582336863142901475
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_wolfpine_trail.line.05
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_boss_defeat_wolfpine_trail.5
-  _emote: bitter
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &4472680400868937020
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_boss_defeat_wolfpine_trail.line.02
@@ -148,7 +94,7 @@ MonoBehaviour:
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &5733573545503017902
+--- !u!114 &1665156342632086118
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,12 +103,66 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_boss_defeat_wolfpine_trail.line.07
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_boss_defeat_wolfpine_trail.7
   _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2169055903476023836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_boss_defeat_wolfpine_trail.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_boss_defeat_wolfpine_trail.0
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4036694675646266457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_boss_defeat_wolfpine_trail.line.01
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_boss_defeat_wolfpine_trail.1
+  _emote: shock
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5847253213883144028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_boss_defeat_wolfpine_trail.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_boss_defeat_wolfpine_trail.5
+  _emote: bitter
   _emotionTextKey: 
   _autoAdvanceHint: 0

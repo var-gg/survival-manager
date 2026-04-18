@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 317f0135c04991a4e91ddd8d0479dbe4, type: 3}
   m_Name: skill_priest_core
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
   Id: skill_priest_core
@@ -40,6 +40,9 @@ MonoBehaviour:
   AuthorityLayer: 1
   BudgetCard:
     Domain: 1
+    Rarity: 0
+    PowerBand: 2
+    RoleProfile: -1
     Vector:
       SustainedDamage: 3
       BurstDamage: 4
@@ -84,9 +87,17 @@ MonoBehaviour:
   LearnSource: 0
   EffectFamilyId: priest_signature
   MutuallyExclusiveGroupId: 
-  RecruitNativeTags: []
-  RecruitPlanTags: []
-  RecruitScoutTags: []
+  RecruitNativeTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  RecruitPlanTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  RecruitScoutTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
   TargetRuleData:
     Domain: 2
     PrimarySelector: 1
@@ -118,12 +129,20 @@ MonoBehaviour:
       InheritDodge: 0
       InheritBlock: 0
   Effects: []
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  - {fileID: 11400000, guid: 6474ff9f130f96c40bf0483e6a3206ed, type: 2}
+  - {fileID: 11400000, guid: 21302356fb3b0f144838934d6387e5a4, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  - {fileID: 11400000, guid: 6474ff9f130f96c40bf0483e6a3206ed, type: 2}
+  - {fileID: 11400000, guid: 21302356fb3b0f144838934d6387e5a4, type: 2}
   SupportBlockedTags: []
-  RequiredWeaponTags: []
-  RequiredClassTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 5b8638d14ee22444e8b2baf4abd01965, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   AppliedStatuses:
   - Id: status_barrier_priest
     StatusId: barrier

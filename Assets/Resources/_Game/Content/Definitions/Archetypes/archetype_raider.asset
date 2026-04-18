@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 9d45f3acf997cc84eb3a37cb922175bf, type: 3}
   m_Name: archetype_raider
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
   Id: raider
@@ -19,7 +19,10 @@ MonoBehaviour:
   Class: {fileID: 11400000, guid: ae9c9da2287c8624e818c771bc678450, type: 2}
   TraitPool: {fileID: 11400000, guid: 960c098308840fb4e8271679a8f187fe, type: 2}
   Skills:
-  - {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
+  - {fileID: 11400000, guid: 5e25f95f618389b48a44c1f971c7bd64, type: 2}
+  - {fileID: 11400000, guid: 24f7c6de92fa6ac4986d2534cf33e31d, type: 2}
+  - {fileID: 11400000, guid: 831d9b2dedb75a442a43c870afe77cf9, type: 2}
+  - {fileID: 11400000, guid: 3ae7482bc3e559f4ab4087ade6ddb17f, type: 2}
   TacticPreset:
   - Priority: 0
     ConditionType: 4
@@ -89,12 +92,22 @@ MonoBehaviour:
   LockedAttackProfileTag: 
   LockedSignatureActiveSkill: {fileID: 0}
   LockedSignaturePassiveSkill: {fileID: 0}
-  FlexUtilitySkillPool: []
+  FlexUtilitySkillPool:
+  - {fileID: 11400000, guid: d16677b3364fd9a408c86f044f9a7b24, type: 2}
+  - {fileID: 11400000, guid: 24f7c6de92fa6ac4986d2534cf33e31d, type: 2}
+  - {fileID: 11400000, guid: db48c7e154ce1d0478788063fa1be368, type: 2}
   FlexSupportSkillPool:
+  - {fileID: 11400000, guid: f1fa154f7810df948bdae0514c3f8df3, type: 2}
+  - {fileID: 11400000, guid: 3ae7482bc3e559f4ab4087ade6ddb17f, type: 2}
   - {fileID: 11400000, guid: 8556d04ce07bc7c43a626bb572997878, type: 2}
   - {fileID: 11400000, guid: f3efdc15db88f144bb2436566e1be83c, type: 2}
-  RecruitFlexActivePool: []
+  RecruitFlexActivePool:
+  - {fileID: 11400000, guid: d16677b3364fd9a408c86f044f9a7b24, type: 2}
+  - {fileID: 11400000, guid: 24f7c6de92fa6ac4986d2534cf33e31d, type: 2}
+  - {fileID: 11400000, guid: db48c7e154ce1d0478788063fa1be368, type: 2}
   RecruitFlexPassivePool:
+  - {fileID: 11400000, guid: f1fa154f7810df948bdae0514c3f8df3, type: 2}
+  - {fileID: 11400000, guid: 3ae7482bc3e559f4ab4087ade6ddb17f, type: 2}
   - {fileID: 11400000, guid: 8556d04ce07bc7c43a626bb572997878, type: 2}
   - {fileID: 11400000, guid: f3efdc15db88f144bb2436566e1be83c, type: 2}
   RecruitBannedPairings:
@@ -127,7 +140,7 @@ MonoBehaviour:
         AllowsPersistentSummonChain: 0
         LoadoutTopologyDelta: 0
     SignatureActive: {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
-    FlexActive: {fileID: 0}
+    FlexActive: {fileID: 11400000, guid: d16677b3364fd9a408c86f044f9a7b24, type: 2}
     SignaturePassive:
       Id: 
       NameKey: 

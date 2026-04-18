@@ -2,24 +2,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace SM.Content.Definitions;
-
-[CreateAssetMenu(menuName = "SM/Definitions/Campaign Chapter Definition", fileName = "campaign_chapter_")]
-public sealed class CampaignChapterDefinition : ScriptableObject
+namespace SM.Content.Definitions
 {
-    public string Id = string.Empty;
-    public string NameKey = string.Empty;
-    public string DescriptionKey = string.Empty;
-    public int StoryOrder = 0;
-    public List<string> SiteIds = new();
-    public bool UnlocksEndlessOnClear;
 
-    [FormerlySerializedAs("DisplayName")]
-    [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;
+    [CreateAssetMenu(menuName = "SM/Definitions/Campaign Chapter Definition", fileName = "campaign_chapter_")]
+    public sealed class CampaignChapterDefinition : ScriptableObject
+    {
+        public string Id = string.Empty;
+        public string NameKey = string.Empty;
+        public string DescriptionKey = string.Empty;
+        public int StoryOrder = 0;
+        public List<string> SiteIds = new();
+        public bool UnlocksEndlessOnClear;
 
-    [FormerlySerializedAs("Description")]
-    [SerializeField, HideInInspector, TextArea] private string legacyDescription = string.Empty;
+        [FormerlySerializedAs("DisplayName")]
+        [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;
 
-    public string LegacyDisplayName => legacyDisplayName;
-    public string LegacyDescription => legacyDescription;
+        [FormerlySerializedAs("Description")]
+        [SerializeField, HideInInspector, TextArea] private string legacyDescription = string.Empty;
+
+        public string LegacyDisplayName => legacyDisplayName;
+        public string LegacyDescription => legacyDescription;
+    }
 }

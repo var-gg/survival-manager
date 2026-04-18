@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-3388027439308471242
+--- !u!114 &-8448908800701251916
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_hexer_ancient_coexistence.line.06
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_hexer_ancient_coexistence.6
-  _emote: quiet
+  _id: dialogue_scene_hexer_ancient_coexistence.line.03
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_hexer_ancient_coexistence.3
+  _emote: shock
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-2063052705354783522
+--- !u!114 &-2997891500819896152
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27,7 +27,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_hexer_ancient_coexistence.line.01
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_hexer_ancient_coexistence.1
+  _emote: gentle
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1423841353158005593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_hexer_ancient_coexistence.line.04
@@ -45,20 +63,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_hexer_ancient_coexistence
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_hexer_ancient_coexistence
   _lines:
-  - {fileID: 4948143494975303423}
-  - {fileID: 53712997242402633}
-  - {fileID: 1225279613038334542}
-  - {fileID: 1409793081226587329}
-  - {fileID: -2063052705354783522}
-  - {fileID: 582284541478232002}
-  - {fileID: -3388027439308471242}
-  - {fileID: 2275314871001074198}
---- !u!114 &53712997242402633
+  - {fileID: 2571830681068925547}
+  - {fileID: -2997891500819896152}
+  - {fileID: 7155176798885957447}
+  - {fileID: -8448908800701251916}
+  - {fileID: -1423841353158005593}
+  - {fileID: 4451037168114121873}
+  - {fileID: 4240753632615311715}
+  - {fileID: 1432804095226534672}
+--- !u!114 &1432804095226534672
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,79 +85,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_hexer_ancient_coexistence.line.01
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_hexer_ancient_coexistence.1
-  _emote: gentle
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &582284541478232002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_hexer_ancient_coexistence.line.05
-  _speakerId: Narrator
-  _textKey: loc.story.scene_hexer_ancient_coexistence.5
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &1225279613038334542
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_hexer_ancient_coexistence.line.02
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_hexer_ancient_coexistence.2
-  _emote: solemn
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &1409793081226587329
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_hexer_ancient_coexistence.line.03
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_hexer_ancient_coexistence.3
-  _emote: shock
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &2275314871001074198
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_hexer_ancient_coexistence.line.07
@@ -148,7 +94,7 @@ MonoBehaviour:
   _emote: weary
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &4948143494975303423
+--- !u!114 &2571830681068925547
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,12 +103,66 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_hexer_ancient_coexistence.line.00
   _speakerId: Narrator
   _textKey: loc.story.scene_hexer_ancient_coexistence.0
   _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4240753632615311715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_hexer_ancient_coexistence.line.06
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_hexer_ancient_coexistence.6
+  _emote: quiet
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4451037168114121873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_hexer_ancient_coexistence.line.05
+  _speakerId: Narrator
+  _textKey: loc.story.scene_hexer_ancient_coexistence.5
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7155176798885957447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_hexer_ancient_coexistence.line.02
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_hexer_ancient_coexistence.2
+  _emote: solemn
   _emotionTextKey: 
   _autoAdvanceHint: 0

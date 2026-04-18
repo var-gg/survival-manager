@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 8c6132fd4d99016488827bc1a9720f5e, type: 3}
   m_Name: loot_bundle_extract_bonus
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:LootBundleDefinition
   Id: loot_bundle_extract_bonus

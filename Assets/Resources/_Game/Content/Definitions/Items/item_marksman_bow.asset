@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 4607bc68289f5bd4faf79120829fb39c, type: 3}
   m_Name: item_marksman_bow
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ItemBaseDefinition
   Id: item_marksman_bow
@@ -25,9 +25,11 @@ MonoBehaviour:
   BudgetBand: personal_power_10
   CraftCurrencyTag: ember_dust
   GrantedSkills: []
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 29962574aef879948ae1bd7b26653f05, type: 2}
   RuleModifierTags: []
-  AllowedClassTags: []
+  AllowedClassTags:
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
   AllowedCraftOperations: 00000000010000000200000004000000

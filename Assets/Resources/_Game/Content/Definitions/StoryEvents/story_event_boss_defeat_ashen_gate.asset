@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4723653134677956741
+--- !u!114 &-5275294431848779769
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
   _id: story_event_boss_defeat_ashen_gate.condition.01
   _kind: 1
   _operandA: site_ashen_gate
   _operandB: 
---- !u!114 &-2089356797930556962
+--- !u!114 &-1655153956066478641
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -25,12 +25,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_ashen_gate.effect.00
-  _kind: 1
-  _payload: story_flag_gatekeeper_defeated
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_boss_defeat_ashen_gate.condition.00
+  _kind: 0
+  _operandA: chapter_ashen_gate
+  _operandB: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 322218310d13d8a45b3d85a9fb83b805, type: 3}
   m_Name: story_event_boss_defeat_ashen_gate
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
   _id: story_event_boss_defeat_ashen_gate
@@ -48,14 +49,14 @@ MonoBehaviour:
   _priority: 250
   _oncePolicy: 0
   _conditions:
-  - {fileID: 1983617394645052282}
-  - {fileID: -4723653134677956741}
-  - {fileID: 8718471160619951302}
+  - {fileID: -1655153956066478641}
+  - {fileID: -5275294431848779769}
+  - {fileID: 6883157375848505262}
   _effects:
-  - {fileID: -2089356797930556962}
-  - {fileID: 8638558677747067689}
+  - {fileID: 3791117649630227128}
+  - {fileID: 6574972603459134011}
   _presentationKey: dialogue_overlay_boss_defeat_ashen_gate
---- !u!114 &1983617394645052282
+--- !u!114 &3791117649630227128
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,14 +65,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_ashen_gate.condition.00
-  _kind: 0
-  _operandA: chapter_ashen_gate
-  _operandB: 
---- !u!114 &8638558677747067689
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_boss_defeat_ashen_gate.effect.00
+  _kind: 1
+  _payload: story_flag_gatekeeper_defeated
+--- !u!114 &6574972603459134011
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -80,13 +80,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
   _id: story_event_boss_defeat_ashen_gate.effect.01
   _kind: 3
   _payload: DialogueOverlay
---- !u!114 &8718471160619951302
+--- !u!114 &6883157375848505262
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,7 +95,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_02
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
   _id: story_event_boss_defeat_ashen_gate.condition.02

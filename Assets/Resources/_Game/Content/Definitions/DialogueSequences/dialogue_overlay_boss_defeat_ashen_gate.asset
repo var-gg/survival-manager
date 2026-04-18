@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4865042620396915792
+--- !u!114 &-789432128609155393
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_defeat_ashen_gate.line.00
-  _speakerId: Narrator
-  _textKey: loc.story.overlay_boss_defeat_ashen_gate.0
-  _emote: 
+  _id: dialogue_overlay_boss_defeat_ashen_gate.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.overlay_boss_defeat_ashen_gate.1
+  _emote: shock
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -27,15 +27,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_overlay_boss_defeat_ashen_gate
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_overlay_boss_defeat_ashen_gate
   _lines:
-  - {fileID: -4865042620396915792}
-  - {fileID: 42719035054421006}
-  - {fileID: 4996627303837596568}
---- !u!114 &42719035054421006
+  - {fileID: 7356039258764953610}
+  - {fileID: -789432128609155393}
+  - {fileID: 524382543445444097}
+--- !u!114 &524382543445444097
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,30 +44,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_defeat_ashen_gate.line.01
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.overlay_boss_defeat_ashen_gate.1
-  _emote: shock
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &4996627303837596568
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_overlay_boss_defeat_ashen_gate.line.02
   _speakerId: hero_pack_raider
   _textKey: loc.story.overlay_boss_defeat_ashen_gate.2
   _emote: sardonic
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7356039258764953610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_overlay_boss_defeat_ashen_gate.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.overlay_boss_defeat_ashen_gate.0
+  _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0

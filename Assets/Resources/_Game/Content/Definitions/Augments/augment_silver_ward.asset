@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: bd8fa3098ca0a1f44b2be322ad1ff823, type: 3}
   m_Name: augment_silver_ward
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
   Id: augment_silver_ward
@@ -17,18 +17,48 @@ MonoBehaviour:
   DescriptionKey: content.augment.augment_silver_ward.desc
   Rarity: 0
   IsPermanent: 0
+  BudgetCard:
+    Domain: 6
+    Rarity: 0
+    PowerBand: 3
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 0
+      BurstDamage: 0
+      Durability: 9
+      Control: 0
+      Mobility: 0
+      Support: 3
+      CounterCoverage: 0
+      Reliability: 6
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
   Category: 0
   FamilyId: ward_line
   Tier: 1
   OfferWeight: 1
+  OfferBucket: 0
+  RiskRewardClass: 0
+  BudgetScore: 0
   SuppressIfPermanentEquipped: 0
   Tags:
   - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  BuildBiasTags: []
+  ProtectionTags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
   EligibleModes: 3
+  AuthorityLayer: 4
+  RosterSlotDelta: 0
+  Effects: []
   Modifiers:
   - StatId: resist
     Op: 0

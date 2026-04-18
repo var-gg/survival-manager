@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7963348876266712712
+--- !u!114 &-8853110456667802404
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,79 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_bone_orchard_intro.line.08
-  _speakerId: Narrator
-  _textKey: loc.story.scene_bone_orchard_intro.8
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-4248448639518504608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_bone_orchard_intro.line.01
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_bone_orchard_intro.1
-  _emote: grim
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-3605399415950436021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_bone_orchard_intro.line.03
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_bone_orchard_intro.3
-  _emote: solemn
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-3559641526223360176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_bone_orchard_intro.line.05
-  _speakerId: Narrator
-  _textKey: loc.story.scene_bone_orchard_intro.5
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-3537867866677539344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_bone_orchard_intro.line.02
@@ -90,7 +18,7 @@ MonoBehaviour:
   _emote: uneasy
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-1216005495197376173
+--- !u!114 &-7951221582061832343
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -99,13 +27,67 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.09
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_bone_orchard_intro.9
+  _emote: shock
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4469624097968704186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.08
+  _speakerId: Narrator
+  _textKey: loc.story.scene_bone_orchard_intro.8
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3895796851096063250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_bone_orchard_intro.line.06
   _speakerId: hero_pack_raider
   _textKey: loc.story.scene_bone_orchard_intro.6
   _emote: wary
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2556834810822986198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.07
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_bone_orchard_intro.7
+  _emote: grim
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -117,22 +99,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_bone_orchard_intro
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_bone_orchard_intro
   _lines:
-  - {fileID: 6662854196633470834}
-  - {fileID: -4248448639518504608}
-  - {fileID: -3537867866677539344}
-  - {fileID: -3605399415950436021}
-  - {fileID: 4448201688737509801}
-  - {fileID: -3559641526223360176}
-  - {fileID: -1216005495197376173}
-  - {fileID: 6538879892497702397}
-  - {fileID: -7963348876266712712}
-  - {fileID: 7255293542358577306}
---- !u!114 &4448201688737509801
+  - {fileID: 8611074292103659595}
+  - {fileID: 8144400108471028963}
+  - {fileID: -8853110456667802404}
+  - {fileID: 750435173461723256}
+  - {fileID: 1013939644427500788}
+  - {fileID: 5073439348847046958}
+  - {fileID: -3895796851096063250}
+  - {fileID: -2556834810822986198}
+  - {fileID: -4469624097968704186}
+  - {fileID: -7951221582061832343}
+--- !u!114 &750435173461723256
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,7 +123,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.03
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_bone_orchard_intro.3
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &1013939644427500788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_bone_orchard_intro.line.04
@@ -150,7 +150,7 @@ MonoBehaviour:
   _emote: warning
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &6538879892497702397
+--- !u!114 &5073439348847046958
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -159,16 +159,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_bone_orchard_intro.line.07
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_bone_orchard_intro.7
+  _id: dialogue_scene_bone_orchard_intro.line.05
+  _speakerId: Narrator
+  _textKey: loc.story.scene_bone_orchard_intro.5
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8144400108471028963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.01
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_bone_orchard_intro.1
   _emote: grim
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &6662854196633470834
+--- !u!114 &8611074292103659595
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -177,30 +195,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_bone_orchard_intro.line.00
   _speakerId: Narrator
   _textKey: loc.story.scene_bone_orchard_intro.0
   _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &7255293542358577306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_bone_orchard_intro.line.09
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_bone_orchard_intro.9
-  _emote: shock
   _emotionTextKey: 
   _autoAdvanceHint: 0

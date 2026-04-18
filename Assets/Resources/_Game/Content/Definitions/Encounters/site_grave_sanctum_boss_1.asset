@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 0a5a8ad2cd1d6ad4296f85b4af65bfff, type: 3}
   m_Name: site_grave_sanctum_boss_1
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:EncounterDefinition
   Id: site_grave_sanctum_boss_1

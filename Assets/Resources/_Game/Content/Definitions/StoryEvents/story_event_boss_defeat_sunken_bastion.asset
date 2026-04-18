@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-11783988038461590
+--- !u!114 &-8036664853148298292
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,13 +9,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_sunken_bastion.condition.01
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_boss_defeat_sunken_bastion.effect.00
   _kind: 1
-  _operandA: site_sunken_bastion
-  _operandB: 
+  _payload: story_flag_silent_regent_defeated
+--- !u!114 &-728246233436984850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_boss_defeat_sunken_bastion.effect.01
+  _kind: 3
+  _payload: DialogueOverlay
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25,7 +39,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 322218310d13d8a45b3d85a9fb83b805, type: 3}
   m_Name: story_event_boss_defeat_sunken_bastion
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
   _id: story_event_boss_defeat_sunken_bastion
@@ -33,14 +47,14 @@ MonoBehaviour:
   _priority: 250
   _oncePolicy: 0
   _conditions:
-  - {fileID: 6340047384878721898}
-  - {fileID: -11783988038461590}
-  - {fileID: 4310423364243613468}
+  - {fileID: 4579190227886435492}
+  - {fileID: 204271916640121407}
+  - {fileID: 7528564025030273504}
   _effects:
-  - {fileID: 6792523800516466308}
-  - {fileID: 1846623218899119341}
+  - {fileID: -8036664853148298292}
+  - {fileID: -728246233436984850}
   _presentationKey: dialogue_overlay_boss_defeat_sunken_bastion
---- !u!114 &1846623218899119341
+--- !u!114 &204271916640121407
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49,29 +63,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_sunken_bastion.effect.01
-  _kind: 3
-  _payload: DialogueOverlay
---- !u!114 &4310423364243613468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_02
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_sunken_bastion.condition.02
-  _kind: 2
-  _operandA: 4
+  _id: story_event_boss_defeat_sunken_bastion.condition.01
+  _kind: 1
+  _operandA: site_sunken_bastion
   _operandB: 
---- !u!114 &6340047384878721898
+--- !u!114 &4579190227886435492
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -80,14 +79,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
   _id: story_event_boss_defeat_sunken_bastion.condition.00
   _kind: 0
   _operandA: chapter_sunken_bastion
   _operandB: 
---- !u!114 &6792523800516466308
+--- !u!114 &7528564025030273504
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,9 +95,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_sunken_bastion.effect.00
-  _kind: 1
-  _payload: story_flag_silent_regent_defeated
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_boss_defeat_sunken_bastion.condition.02
+  _kind: 2
+  _operandA: 4
+  _operandB: 

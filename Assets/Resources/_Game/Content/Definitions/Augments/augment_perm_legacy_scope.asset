@@ -9,25 +9,55 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: bd8fa3098ca0a1f44b2be322ad1ff823, type: 3}
   m_Name: augment_perm_legacy_scope
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
   Id: augment_perm_legacy_scope
   NameKey: content.augment.augment_perm_legacy_scope.name
   DescriptionKey: content.augment.augment_perm_legacy_scope.desc
-  Rarity: 3
+  Rarity: 2
   IsPermanent: 1
+  BudgetCard:
+    Domain: 6
+    Rarity: 2
+    PowerBand: 5
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 11
+      BurstDamage: 5
+      Durability: 0
+      Control: 0
+      Mobility: 5
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 13
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 4
+    ConditionClauseCount: 2
+    RuleExceptionCount: 1
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
   Category: 0
   FamilyId: legacy_scope
   Tier: 1
   OfferWeight: 1
+  OfferBucket: 0
+  RiskRewardClass: 0
+  BudgetScore: 0
   SuppressIfPermanentEquipped: 0
   Tags:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  BuildBiasTags: []
+  ProtectionTags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
   EligibleModes: 3
+  AuthorityLayer: 4
+  RosterSlotDelta: 0
+  Effects: []
   Modifiers:
   - StatId: attack_range
     Op: 0

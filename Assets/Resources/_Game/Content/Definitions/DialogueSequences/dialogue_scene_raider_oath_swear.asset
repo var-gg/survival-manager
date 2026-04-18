@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6262429763587271793
+--- !u!114 &-6071465953932753099
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_oath_swear.line.03
+  _id: dialogue_scene_raider_oath_swear.line.05
   _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_oath_swear.3
+  _textKey: loc.story.scene_raider_oath_swear.5
   _emote: fierce
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-4262086050885445300
+--- !u!114 &-2390912079625162313
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27,43 +27,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_oath_swear.line.04
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_raider_oath_swear.4
-  _emote: moved
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-2511224366502261164
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_oath_swear.line.02
-  _speakerId: Narrator
-  _textKey: loc.story.scene_raider_oath_swear.2
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-2005226553217944513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_oath_swear.line.01
@@ -72,7 +36,7 @@ MonoBehaviour:
   _emote: solemn
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-1861035429667234713
+--- !u!114 &-1176174404079322124
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -81,7 +45,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_oath_swear.line.00
@@ -99,20 +63,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_raider_oath_swear
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_raider_oath_swear
   _lines:
-  - {fileID: -1861035429667234713}
-  - {fileID: -2005226553217944513}
-  - {fileID: -2511224366502261164}
-  - {fileID: -6262429763587271793}
-  - {fileID: -4262086050885445300}
-  - {fileID: 7412844205183636638}
-  - {fileID: 4766360397935663661}
-  - {fileID: 2048046819487742264}
---- !u!114 &2048046819487742264
+  - {fileID: -1176174404079322124}
+  - {fileID: -2390912079625162313}
+  - {fileID: 8477711516187303898}
+  - {fileID: 3224330389535080110}
+  - {fileID: 4677379729823207213}
+  - {fileID: -6071465953932753099}
+  - {fileID: 8604689184801315366}
+  - {fileID: 7964653827039463698}
+--- !u!114 &3224330389535080110
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,7 +85,43 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_oath_swear.line.03
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_oath_swear.3
+  _emote: fierce
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4677379729823207213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_oath_swear.line.04
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_raider_oath_swear.4
+  _emote: moved
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7964653827039463698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_oath_swear.line.07
@@ -130,7 +130,7 @@ MonoBehaviour:
   _emote: gentle
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &4766360397935663661
+--- !u!114 &8477711516187303898
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -139,30 +139,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_oath_swear.line.02
+  _speakerId: Narrator
+  _textKey: loc.story.scene_raider_oath_swear.2
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8604689184801315366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_oath_swear.line.06
   _speakerId: Narrator
   _textKey: loc.story.scene_raider_oath_swear.6
   _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &7412844205183636638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_oath_swear.line.05
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_oath_swear.5
-  _emote: fierce
   _emotionTextKey: 
   _autoAdvanceHint: 0

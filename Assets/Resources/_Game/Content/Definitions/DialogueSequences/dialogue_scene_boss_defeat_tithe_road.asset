@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7955441207638498139
+--- !u!114 &-6603439366933722595
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,25 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_tithe_road.line.05
-  _speakerId: Narrator
-  _textKey: loc.story.scene_boss_defeat_tithe_road.5
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-6581184044986618331
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_boss_defeat_tithe_road.line.00
@@ -36,7 +18,7 @@ MonoBehaviour:
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-5885575718395922399
+--- !u!114 &-3407690612623463148
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,16 +27,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_tithe_road.line.08
-  _speakerId: Narrator
-  _textKey: loc.story.scene_boss_defeat_tithe_road.8
-  _emote: 
+  _id: dialogue_scene_boss_defeat_tithe_road.line.04
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_boss_defeat_tithe_road.4
+  _emote: bitter
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-3345804466091220512
+--- !u!114 &-2681103364395096823
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,31 +45,49 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_tithe_road.line.06
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_boss_defeat_tithe_road.6
-  _emote: quiet
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-238731978889129416
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_boss_defeat_tithe_road.line.01
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_boss_defeat_tithe_road.1
   _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1956361112114974545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_boss_defeat_tithe_road.line.09
+  _speakerId: npc_aldric
+  _textKey: loc.story.scene_boss_defeat_tithe_road.9
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-218777042060208288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_boss_defeat_tithe_road.line.03
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_boss_defeat_tithe_road.3
+  _emote: solemn
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -99,23 +99,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_boss_defeat_tithe_road
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_boss_defeat_tithe_road
   _lines:
-  - {fileID: -6581184044986618331}
-  - {fileID: -238731978889129416}
-  - {fileID: 8763711260301624290}
-  - {fileID: 8490052768585603223}
-  - {fileID: 4169437323534921185}
-  - {fileID: -7955441207638498139}
-  - {fileID: -3345804466091220512}
-  - {fileID: 2414250211093684157}
-  - {fileID: -5885575718395922399}
-  - {fileID: 6683244626847826792}
-  - {fileID: 2030029267453551417}
---- !u!114 &2030029267453551417
+  - {fileID: -6603439366933722595}
+  - {fileID: -2681103364395096823}
+  - {fileID: 4448751411045351362}
+  - {fileID: -218777042060208288}
+  - {fileID: -3407690612623463148}
+  - {fileID: 5243572551139948145}
+  - {fileID: 3630885864150808358}
+  - {fileID: 2837240903803681177}
+  - {fileID: 6006160117774541110}
+  - {fileID: -1956361112114974545}
+  - {fileID: 3980199699840797727}
+--- !u!114 &2837240903803681177
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -124,25 +124,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_tithe_road.line.10
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_boss_defeat_tithe_road.10
-  _emote: shock
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &2414250211093684157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_boss_defeat_tithe_road.line.07
@@ -151,7 +133,7 @@ MonoBehaviour:
   _emote: weary
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &4169437323534921185
+--- !u!114 &3630885864150808358
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -160,52 +142,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_tithe_road.line.04
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_boss_defeat_tithe_road.4
-  _emote: bitter
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &6683244626847826792
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_tithe_road.line.09
-  _speakerId: npc_aldric
-  _textKey: loc.story.scene_boss_defeat_tithe_road.9
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &8490052768585603223
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_boss_defeat_tithe_road.line.03
+  _id: dialogue_scene_boss_defeat_tithe_road.line.06
   _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_boss_defeat_tithe_road.3
-  _emote: solemn
+  _textKey: loc.story.scene_boss_defeat_tithe_road.6
+  _emote: quiet
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &8763711260301624290
+--- !u!114 &3980199699840797727
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,12 +160,66 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_boss_defeat_tithe_road.line.10
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_boss_defeat_tithe_road.10
+  _emote: shock
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4448751411045351362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_boss_defeat_tithe_road.line.02
   _speakerId: Narrator
   _textKey: loc.story.scene_boss_defeat_tithe_road.2
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5243572551139948145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_boss_defeat_tithe_road.line.05
+  _speakerId: Narrator
+  _textKey: loc.story.scene_boss_defeat_tithe_road.5
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6006160117774541110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_boss_defeat_tithe_road.line.08
+  _speakerId: Narrator
+  _textKey: loc.story.scene_boss_defeat_tithe_road.8
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0

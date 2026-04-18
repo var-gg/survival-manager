@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 2df8cd526d9f07c4e8ad222eb8b0ff56, type: 3}
   m_Name: stat_target_switch_delay
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:StatDefinition
   Id: target_switch_delay

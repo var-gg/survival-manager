@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7894148783056816946
+--- !u!114 &-5799247860357725405
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,28 +9,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_bark_ashen_gate.condition.00
-  _kind: 0
-  _operandA: chapter_ashen_gate
-  _operandB: 
---- !u!114 &-578280719063261894
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
   _id: story_event_boss_bark_ashen_gate.condition.01
   _kind: 1
   _operandA: site_ashen_gate
+  _operandB: 
+--- !u!114 &-2785314907818449284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_boss_bark_ashen_gate.condition.02
+  _kind: 2
+  _operandA: 4
   _operandB: 
 --- !u!114 &11400000
 MonoBehaviour:
@@ -41,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 322218310d13d8a45b3d85a9fb83b805, type: 3}
   m_Name: story_event_boss_bark_ashen_gate
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
   _id: story_event_boss_bark_ashen_gate
@@ -49,13 +49,13 @@ MonoBehaviour:
   _priority: 200
   _oncePolicy: 0
   _conditions:
-  - {fileID: -7894148783056816946}
-  - {fileID: -578280719063261894}
-  - {fileID: 6049154349643816857}
+  - {fileID: 4438162431487116566}
+  - {fileID: -5799247860357725405}
+  - {fileID: -2785314907818449284}
   _effects:
-  - {fileID: 2402218725196602905}
+  - {fileID: 4435463432862070458}
   _presentationKey: dialogue_overlay_boss_bark_ashen_gate
---- !u!114 &2402218725196602905
+--- !u!114 &4435463432862070458
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,13 +64,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
   _id: story_event_boss_bark_ashen_gate.effect.00
   _kind: 3
   _payload: DialogueOverlay
---- !u!114 &6049154349643816857
+--- !u!114 &4438162431487116566
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -79,10 +79,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_02
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_bark_ashen_gate.condition.02
-  _kind: 2
-  _operandA: 4
+  _id: story_event_boss_bark_ashen_gate.condition.00
+  _kind: 0
+  _operandA: chapter_ashen_gate
   _operandB: 

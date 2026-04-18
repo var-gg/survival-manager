@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 46b6b2032385e93459feb2db7c8588a6, type: 3}
   m_Name: anchor
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RoleInstructionDefinition
   Id: anchor

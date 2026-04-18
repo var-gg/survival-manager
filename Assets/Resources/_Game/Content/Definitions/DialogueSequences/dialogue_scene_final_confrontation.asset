@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8461788541428257708
+--- !u!114 &-8146086030930646484
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,61 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_12
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_final_confrontation.line.12
-  _speakerId: npc_aldric
-  _textKey: loc.story.scene_final_confrontation.12
-  _emote: resigned
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-7003800231379888876
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_final_confrontation.line.02
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_final_confrontation.2
-  _emote: defiant
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-6338767679305792695
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_final_confrontation.line.10
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_final_confrontation.10
-  _emote: flat
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-4994488245143521654
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_final_confrontation.line.01
@@ -72,7 +18,7 @@ MonoBehaviour:
   _emote: calm
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-3016380719257284933
+--- !u!114 &-6766974839524027023
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -81,61 +27,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_final_confrontation.line.07
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_final_confrontation.7
-  _emote: cold
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-1725771182440278206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_13
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_final_confrontation.line.13
-  _speakerId: Narrator
-  _textKey: loc.story.scene_final_confrontation.13
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-1436848110556028178
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_final_confrontation.line.09
-  _speakerId: Narrator
-  _textKey: loc.story.scene_final_confrontation.9
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-232874160555696036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_final_confrontation.line.00
@@ -144,7 +36,7 @@ MonoBehaviour:
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-162367440970294801
+--- !u!114 &-5186374341949063596
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -153,13 +45,121 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_final_confrontation.line.08
+  _id: dialogue_scene_final_confrontation.line.02
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_final_confrontation.2
+  _emote: defiant
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-5147922261314378374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.11
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_final_confrontation.11
+  _emote: resolute
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4711951206228079008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.12
   _speakerId: npc_aldric
-  _textKey: loc.story.scene_final_confrontation.8
-  _emote: sad
+  _textKey: loc.story.scene_final_confrontation.12
+  _emote: resigned
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1389982699334076363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.07
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_final_confrontation.7
+  _emote: cold
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1343651805514720153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.09
+  _speakerId: Narrator
+  _textKey: loc.story.scene_final_confrontation.9
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-746032514745233385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.10
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_final_confrontation.10
+  _emote: flat
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-91503175671742898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.04
+  _speakerId: Narrator
+  _textKey: loc.story.scene_final_confrontation.4
+  _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -171,26 +171,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_final_confrontation
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_final_confrontation
   _lines:
-  - {fileID: -232874160555696036}
-  - {fileID: -4994488245143521654}
-  - {fileID: -7003800231379888876}
-  - {fileID: 6424193878375926579}
-  - {fileID: 6810204874335335770}
-  - {fileID: 976518918777313096}
-  - {fileID: 319150726087184703}
-  - {fileID: -3016380719257284933}
-  - {fileID: -162367440970294801}
-  - {fileID: -1436848110556028178}
-  - {fileID: -6338767679305792695}
-  - {fileID: 4207434662318449799}
-  - {fileID: -8461788541428257708}
-  - {fileID: -1725771182440278206}
---- !u!114 &319150726087184703
+  - {fileID: -6766974839524027023}
+  - {fileID: -8146086030930646484}
+  - {fileID: -5186374341949063596}
+  - {fileID: 3772152979279768803}
+  - {fileID: -91503175671742898}
+  - {fileID: 4126105778109368821}
+  - {fileID: 3454687462570382629}
+  - {fileID: -1389982699334076363}
+  - {fileID: 8549158335101416425}
+  - {fileID: -1343651805514720153}
+  - {fileID: -746032514745233385}
+  - {fileID: -5147922261314378374}
+  - {fileID: -4711951206228079008}
+  - {fileID: 3107445876882619917}
+--- !u!114 &3107445876882619917
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -199,7 +199,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.13
+  _speakerId: Narrator
+  _textKey: loc.story.scene_final_confrontation.13
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &3454687462570382629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_final_confrontation.line.06
@@ -208,7 +226,7 @@ MonoBehaviour:
   _emote: measured
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &976518918777313096
+--- !u!114 &3772152979279768803
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -217,43 +235,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_final_confrontation.line.05
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_final_confrontation.5
-  _emote: bitter
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &4207434662318449799
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_11
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_final_confrontation.line.11
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_final_confrontation.11
-  _emote: resolute
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &6424193878375926579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_03
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_final_confrontation.line.03
@@ -262,7 +244,7 @@ MonoBehaviour:
   _emote: patient
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &6810204874335335770
+--- !u!114 &4126105778109368821
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -271,12 +253,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_final_confrontation.line.04
-  _speakerId: Narrator
-  _textKey: loc.story.scene_final_confrontation.4
-  _emote: 
+  _id: dialogue_scene_final_confrontation.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_final_confrontation.5
+  _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8549158335101416425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_final_confrontation.line.08
+  _speakerId: npc_aldric
+  _textKey: loc.story.scene_final_confrontation.8
+  _emote: sad
   _emotionTextKey: 
   _autoAdvanceHint: 0

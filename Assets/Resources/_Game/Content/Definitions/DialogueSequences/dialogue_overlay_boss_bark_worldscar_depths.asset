@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8855477616148325973
+--- !u!114 &-8708885076262145847
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_overlay_boss_bark_worldscar_depths.line.02
@@ -18,7 +18,7 @@ MonoBehaviour:
   _emote: resolute
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-6841986791983518472
+--- !u!114 &-1499111641541655402
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27,49 +27,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_bark_worldscar_depths.line.00
-  _speakerId: npc_aldric
-  _textKey: loc.story.overlay_boss_bark_worldscar_depths.0
-  _emote: calm
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-3511512515975376691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_overlay_boss_bark_worldscar_depths.line.01
   _speakerId: npc_aldric
   _textKey: loc.story.overlay_boss_bark_worldscar_depths.1
   _emote: reasonable
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-3348612857380584487
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_bark_worldscar_depths.line.03
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.overlay_boss_bark_worldscar_depths.3
-  _emote: grim
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -81,12 +45,48 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_overlay_boss_bark_worldscar_depths
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_overlay_boss_bark_worldscar_depths
   _lines:
-  - {fileID: -6841986791983518472}
-  - {fileID: -3511512515975376691}
-  - {fileID: -8855477616148325973}
-  - {fileID: -3348612857380584487}
+  - {fileID: 9147802588802622768}
+  - {fileID: -1499111641541655402}
+  - {fileID: -8708885076262145847}
+  - {fileID: 7496762107820974921}
+--- !u!114 &7496762107820974921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_overlay_boss_bark_worldscar_depths.line.03
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.overlay_boss_bark_worldscar_depths.3
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &9147802588802622768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_overlay_boss_bark_worldscar_depths.line.00
+  _speakerId: npc_aldric
+  _textKey: loc.story.overlay_boss_bark_worldscar_depths.0
+  _emote: calm
+  _emotionTextKey: 
+  _autoAdvanceHint: 0

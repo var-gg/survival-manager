@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 317f0135c04991a4e91ddd8d0479dbe4, type: 3}
   m_Name: skill_hunter_utility
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
   Id: skill_hunter_utility
@@ -40,6 +40,9 @@ MonoBehaviour:
   AuthorityLayer: 1
   BudgetCard:
     Domain: 1
+    Rarity: 0
+    PowerBand: 1
+    RoleProfile: -1
     Vector:
       SustainedDamage: 2
       BurstDamage: 2
@@ -82,9 +85,17 @@ MonoBehaviour:
   LearnSource: 0
   EffectFamilyId: hunter_mark
   MutuallyExclusiveGroupId: 
-  RecruitNativeTags: []
-  RecruitPlanTags: []
-  RecruitScoutTags: []
+  RecruitNativeTags:
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
+  RecruitPlanTags:
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
+  - {fileID: 11400000, guid: b3f169cbfb1cd2042af9b8c8c80c8345, type: 2}
+  - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
+  RecruitScoutTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
   TargetRuleData:
     Domain: 2
     PrimarySelector: 1
@@ -116,12 +127,20 @@ MonoBehaviour:
       InheritDodge: 0
       InheritBlock: 0
   Effects: []
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
+  - {fileID: 11400000, guid: 5b16dd5cacf97a844a7b278e8fbccd32, type: 2}
+  - {fileID: 11400000, guid: b3f169cbfb1cd2042af9b8c8c80c8345, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
+  - {fileID: 11400000, guid: 5b16dd5cacf97a844a7b278e8fbccd32, type: 2}
+  - {fileID: 11400000, guid: b3f169cbfb1cd2042af9b8c8c80c8345, type: 2}
   SupportBlockedTags: []
-  RequiredWeaponTags: []
-  RequiredClassTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 29962574aef879948ae1bd7b26653f05, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   AppliedStatuses:
   - Id: status_slow
     StatusId: slow

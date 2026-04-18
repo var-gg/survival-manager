@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: e4a9c8ac1bc41084485398731b313dad, type: 3}
   m_Name: board_vanguard
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:PassiveBoardDefinition
   Id: board_vanguard

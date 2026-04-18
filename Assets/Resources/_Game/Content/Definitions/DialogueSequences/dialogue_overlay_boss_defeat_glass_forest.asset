@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2836687196031841969
+--- !u!114 &-8278182107526275910
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,31 +9,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_overlay_boss_defeat_glass_forest.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.overlay_boss_defeat_glass_forest.1
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3570511050183637951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_overlay_boss_defeat_glass_forest.line.00
   _speakerId: Narrator
   _textKey: loc.story.overlay_boss_defeat_glass_forest.0
   _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-1461142602570806681
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_defeat_glass_forest.line.02
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.overlay_boss_defeat_glass_forest.2
-  _emote: dry
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -45,15 +45,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_overlay_boss_defeat_glass_forest
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_overlay_boss_defeat_glass_forest
   _lines:
-  - {fileID: -2836687196031841969}
-  - {fileID: 6987147845438666110}
-  - {fileID: -1461142602570806681}
---- !u!114 &6987147845438666110
+  - {fileID: -3570511050183637951}
+  - {fileID: -8278182107526275910}
+  - {fileID: 6433548131423156435}
+--- !u!114 &6433548131423156435
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -62,12 +62,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_defeat_glass_forest.line.01
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.overlay_boss_defeat_glass_forest.1
-  _emote: grim
+  _id: dialogue_overlay_boss_defeat_glass_forest.line.02
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.overlay_boss_defeat_glass_forest.2
+  _emote: dry
   _emotionTextKey: 
   _autoAdvanceHint: 0

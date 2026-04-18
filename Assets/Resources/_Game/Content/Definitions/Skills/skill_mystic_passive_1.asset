@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 317f0135c04991a4e91ddd8d0479dbe4, type: 3}
   m_Name: skill_mystic_passive_1
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
   Id: skill_mystic_passive_1
@@ -40,6 +40,9 @@ MonoBehaviour:
   AuthorityLayer: 1
   BudgetCard:
     Domain: 1
+    Rarity: 0
+    PowerBand: 1
+    RoleProfile: -1
     Vector:
       SustainedDamage: 2
       BurstDamage: 2
@@ -122,8 +125,10 @@ MonoBehaviour:
   SupportAllowedTags:
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
   SupportBlockedTags: []
-  RequiredWeaponTags: []
-  RequiredClassTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 5b8638d14ee22444e8b2baf4abd01965, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   AppliedStatuses: []
   CleanseProfileId: 
   legacyDisplayName: 

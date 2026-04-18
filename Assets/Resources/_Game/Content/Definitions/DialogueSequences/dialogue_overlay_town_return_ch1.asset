@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6174342045591695735
+--- !u!114 &-8516217350039578612
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,13 +9,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_town_return_ch1.line.01
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.overlay_town_return_ch1.1
-  _emote: sardonic
+  _id: dialogue_overlay_town_return_ch1.line.02
+  _speakerId: Narrator
+  _textKey: loc.story.overlay_town_return_ch1.2
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1487579459151331203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_overlay_town_return_ch1.line.00
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.overlay_town_return_ch1.0
+  _emote: resolute
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -27,15 +45,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_overlay_town_return_ch1
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_overlay_town_return_ch1
   _lines:
-  - {fileID: 6669371601432827637}
-  - {fileID: -6174342045591695735}
-  - {fileID: 4177523000309201450}
---- !u!114 &4177523000309201450
+  - {fileID: -1487579459151331203}
+  - {fileID: 4056752411711267839}
+  - {fileID: -8516217350039578612}
+--- !u!114 &4056752411711267839
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,30 +62,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_town_return_ch1.line.02
-  _speakerId: Narrator
-  _textKey: loc.story.overlay_town_return_ch1.2
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &6669371601432827637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_town_return_ch1.line.00
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.overlay_town_return_ch1.0
-  _emote: resolute
+  _id: dialogue_overlay_town_return_ch1.line.01
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.overlay_town_return_ch1.1
+  _emote: sardonic
   _emotionTextKey: 
   _autoAdvanceHint: 0

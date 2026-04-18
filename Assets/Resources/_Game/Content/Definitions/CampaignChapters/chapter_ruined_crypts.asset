@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 7af65033b0a610741a878cd28ab6ef52, type: 3}
   m_Name: chapter_ruined_crypts
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CampaignChapterDefinition
   Id: chapter_ruined_crypts

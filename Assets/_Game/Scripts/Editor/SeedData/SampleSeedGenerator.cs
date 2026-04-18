@@ -77,6 +77,13 @@ public static class SampleSeedGenerator
         PatchSafeTargetSpecialistFallbackYaml();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        var fixedScriptReferences = CanonicalContentScriptReferenceRepair.RepairResourcesRoot();
+        if (fixedScriptReferences > 0)
+        {
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        }
+
         Debug.Log($"SM sample content generated under Resources. Root={ResourcesRoot}, Stats={stats.Count}, Races={races.Count}, Classes={classes.Count}, Skills={skills.Count}, Archetypes={patchedArchetypes.Count}, Characters={characters.Count}");
     }
 
@@ -113,6 +120,13 @@ public static class SampleSeedGenerator
 
         if (TryGetCanonicalSampleContentReadinessIssue(out var issue))
         {
+            var fixedScriptReferences = CanonicalContentScriptReferenceRepair.RepairResourcesRoot();
+            if (fixedScriptReferences > 0)
+            {
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+            }
+
             Debug.Log($"SM canonical sample content already preflight-ready. Root={ResourcesRoot}");
             return;
         }
@@ -2561,6 +2575,7 @@ public static class SampleSeedGenerator
 
     private static void ApplyLoopCAugmentGovernance(AugmentDefinition augment)
     {
+        augment.Rarity = NormalizeAuthoredContentRarity(augment.Rarity);
         var target = ResolveAuthoredAugmentBudgetTarget(augment);
         var band = augment.Rarity switch
         {
@@ -2593,6 +2608,13 @@ public static class SampleSeedGenerator
         return augment.Rarity == ContentRarity.Epic && !augment.IsPermanent
             ? target - LoopCContentGovernance.AugmentBudgetTargets[augment.Rarity].Tolerance
             : target;
+    }
+
+    private static ContentRarity NormalizeAuthoredContentRarity(ContentRarity rarity)
+    {
+        return LoopCContentGovernance.AugmentBudgetTargets.ContainsKey(rarity)
+            ? rarity
+            : ContentRarity.Epic;
     }
 
     private static void ApplyLoopCStatusGovernance(StatusFamilyDefinition status)

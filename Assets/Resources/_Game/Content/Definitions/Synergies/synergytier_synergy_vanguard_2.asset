@@ -9,13 +9,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 53c491a25d614144fa8d4485e635e08f, type: 3}
   m_Name: synergytier_synergy_vanguard_2
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SynergyTierDefinition
   Id: synergytier_synergy_vanguard_2
   NameKey: content.synergy.synergy_vanguard.tier_2.name
   DescriptionKey: content.synergy.synergy_vanguard.tier_2.desc
   Threshold: 2
+  BudgetCard:
+    Domain: 5
+    Rarity: 0
+    PowerBand: 2
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 3
+      BurstDamage: 1
+      Durability: 3
+      Control: 1
+      Mobility: 0
+      Support: 2
+      CounterCoverage: 0
+      Reliability: 2
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
+  Effects: []
   Modifiers:
   - StatId: armor
     Op: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: bulwark
   NameKey: content.character.bulwark.name
-  DescriptionKey: content.character.bulwark.description
+  DescriptionKey: content.character.bulwark.desc
   Race: {fileID: 11400000, guid: 9dd3fb1286383554abea4725a9f7c4c4, type: 2}
   Class: {fileID: 11400000, guid: 2797722ba4364b04ab5a5e375294258b, type: 2}
   DefaultArchetype: {fileID: 11400000, guid: 4798b8aef908202458a95902a7f6afc0, type: 2}

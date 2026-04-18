@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 9d45f3acf997cc84eb3a37cb922175bf, type: 3}
   m_Name: archetype_marksman
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
   Id: marksman
@@ -50,6 +50,9 @@ MonoBehaviour:
   RecruitTier: 1
   BudgetCard:
     Domain: 0
+    Rarity: 1
+    PowerBand: 2
+    RoleProfile: 3
     Vector:
       SustainedDamage: 28
       BurstDamage: 8
@@ -75,8 +78,15 @@ MonoBehaviour:
   IsBossOnly: 0
   IsUnreleased: 0
   IsTestOnly: 0
-  RecruitPlanTags: []
-  ScoutBiasTags: []
+  RecruitPlanTags:
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 81f8159238428fa4fa946849f2e98580, type: 2}
+  - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
+  ScoutBiasTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   SupportModifierBiasTags:
   - {fileID: 0}
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
@@ -91,9 +101,10 @@ MonoBehaviour:
   FlexSupportSkillPool:
   - {fileID: 11400000, guid: c0141da1013d60a4ca6d88111715baef, type: 2}
   - {fileID: 11400000, guid: 79907c95ca267f14f8b4644831834361, type: 2}
-  - {fileID: 11400000, guid: 52ad983a86fdaa4408b2c9d688cb4b00, type: 2}
   - {fileID: 11400000, guid: 0d501200015205d4d83b10ffc7410cba, type: 2}
+  - {fileID: 11400000, guid: 52ad983a86fdaa4408b2c9d688cb4b00, type: 2}
   - {fileID: 11400000, guid: e0f267fcc08c15145baae728a4c7d264, type: 2}
+  - {fileID: 11400000, guid: e97d18ab83713184b8fe4491b44bf808, type: 2}
   RecruitFlexActivePool:
   - {fileID: 11400000, guid: dd86a56c52828af40b28489fe94661a4, type: 2}
   - {fileID: 11400000, guid: 69c477993ea28ef468d3e94c76aa4d74, type: 2}
@@ -101,9 +112,10 @@ MonoBehaviour:
   RecruitFlexPassivePool:
   - {fileID: 11400000, guid: c0141da1013d60a4ca6d88111715baef, type: 2}
   - {fileID: 11400000, guid: 79907c95ca267f14f8b4644831834361, type: 2}
-  - {fileID: 11400000, guid: 52ad983a86fdaa4408b2c9d688cb4b00, type: 2}
   - {fileID: 11400000, guid: 0d501200015205d4d83b10ffc7410cba, type: 2}
+  - {fileID: 11400000, guid: 52ad983a86fdaa4408b2c9d688cb4b00, type: 2}
   - {fileID: 11400000, guid: e0f267fcc08c15145baae728a4c7d264, type: 2}
+  - {fileID: 11400000, guid: e97d18ab83713184b8fe4491b44bf808, type: 2}
   RecruitBannedPairings:
   - FlexActiveId: skill_scout_utility
     FlexPassiveId: support_longshot
@@ -143,6 +155,9 @@ MonoBehaviour:
       MutuallyExclusiveGroupId: 
       BudgetCard:
         Domain: 2
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -176,6 +191,9 @@ MonoBehaviour:
       MutuallyExclusiveGroupId: 
       BudgetCard:
         Domain: 2
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -207,6 +225,9 @@ MonoBehaviour:
       DescriptionKey: 
       BudgetCard:
         Domain: 3
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0

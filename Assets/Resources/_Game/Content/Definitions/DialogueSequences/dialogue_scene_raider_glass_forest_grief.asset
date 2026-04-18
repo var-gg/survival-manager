@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5480811732455533892
+--- !u!114 &-8913109240185270967
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,7 +9,61 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_glass_forest_grief.line.09
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_glass_forest_grief.9
+  _emote: quiet
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-5532231237622685695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_glass_forest_grief.line.06
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_glass_forest_grief.6
+  _emote: sardonic
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4973711145138025951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_glass_forest_grief.line.02
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_glass_forest_grief.2
+  _emote: hollow
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3305215056330529513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_05
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_glass_forest_grief.line.05
@@ -18,7 +72,7 @@ MonoBehaviour:
   _emote: quiet
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-5066091205768379026
+--- !u!114 &-1623581408143079179
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27,7 +81,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_03
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_glass_forest_grief.line.03
@@ -36,7 +90,7 @@ MonoBehaviour:
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-3397981970758411892
+--- !u!114 &-427693375494953580
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,13 +99,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_glass_forest_grief.line.02
+  _id: dialogue_scene_raider_glass_forest_grief.line.04
   _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_glass_forest_grief.2
-  _emote: hollow
+  _textKey: loc.story.scene_raider_glass_forest_grief.4
+  _emote: bitter
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -63,22 +117,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_raider_glass_forest_grief
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_raider_glass_forest_grief
   _lines:
-  - {fileID: 4514261372031743622}
-  - {fileID: 1802337523666228182}
-  - {fileID: -3397981970758411892}
-  - {fileID: -5066091205768379026}
-  - {fileID: 2284189987268651714}
-  - {fileID: -5480811732455533892}
-  - {fileID: 598795021279843716}
-  - {fileID: 2714936595609790995}
-  - {fileID: 1856899296413044816}
-  - {fileID: 8170244258508806727}
---- !u!114 &598795021279843716
+  - {fileID: 4476248317821677848}
+  - {fileID: 8146230106900751427}
+  - {fileID: -4973711145138025951}
+  - {fileID: -1623581408143079179}
+  - {fileID: -427693375494953580}
+  - {fileID: -3305215056330529513}
+  - {fileID: -5532231237622685695}
+  - {fileID: 6424079743595176238}
+  - {fileID: 143691406524333404}
+  - {fileID: -8913109240185270967}
+--- !u!114 &143691406524333404
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,43 +141,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_glass_forest_grief.line.06
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_glass_forest_grief.6
-  _emote: sardonic
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &1802337523666228182
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_glass_forest_grief.line.01
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_raider_glass_forest_grief.1
-  _emote: careful
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &1856899296413044816
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_08
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_glass_forest_grief.line.08
@@ -132,7 +150,7 @@ MonoBehaviour:
   _emote: gentle
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &2284189987268651714
+--- !u!114 &4476248317821677848
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,43 +159,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_glass_forest_grief.line.04
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_glass_forest_grief.4
-  _emote: bitter
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &2714936595609790995
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_glass_forest_grief.line.07
-  _speakerId: Narrator
-  _textKey: loc.story.scene_raider_glass_forest_grief.7
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &4514261372031743622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_glass_forest_grief.line.00
@@ -186,7 +168,7 @@ MonoBehaviour:
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &8170244258508806727
+--- !u!114 &6424079743595176238
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,12 +177,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_glass_forest_grief.line.09
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_glass_forest_grief.9
-  _emote: quiet
+  _id: dialogue_scene_raider_glass_forest_grief.line.07
+  _speakerId: Narrator
+  _textKey: loc.story.scene_raider_glass_forest_grief.7
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8146230106900751427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_glass_forest_grief.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_raider_glass_forest_grief.1
+  _emote: careful
   _emotionTextKey: 
   _autoAdvanceHint: 0

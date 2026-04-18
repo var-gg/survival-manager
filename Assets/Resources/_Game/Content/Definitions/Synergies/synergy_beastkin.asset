@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 72bf28f92c8ff2243b20e6b3b56b2f41, type: 3}
   m_Name: synergy_beastkin
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SynergyDefinition
   Id: synergy_beastkin
   NameKey: content.synergy.synergy_beastkin.name
   DescriptionKey: content.synergy.synergy_beastkin.desc
   CountedTagId: beastkin
+  AuthorityLayer: 3
   Tiers:
   - {fileID: 11400000, guid: ea06e9f2c6320724680fe9904015cf28, type: 2}
   - {fileID: 11400000, guid: 5477a287bca2f15499cb31cfb4449239, type: 2}

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 24c1a61f91337fa4899a3d03067d0911, type: 3}
   m_Name: beat.chapter_glass_forest.site_starved_menagerie.node_1
   m_EditorClassIdentifier: SM.Content:SM.Content:ChapterBeatDefinition
   _id: beat.chapter_glass_forest.site_starved_menagerie.node_1

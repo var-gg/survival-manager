@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 317f0135c04991a4e91ddd8d0479dbe4, type: 3}
   m_Name: skill_slayer_core
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
   Id: skill_slayer_core
@@ -40,6 +40,9 @@ MonoBehaviour:
   AuthorityLayer: 1
   BudgetCard:
     Domain: 1
+    Rarity: 0
+    PowerBand: 2
+    RoleProfile: -1
     Vector:
       SustainedDamage: 4
       BurstDamage: 4
@@ -82,9 +85,17 @@ MonoBehaviour:
   LearnSource: 0
   EffectFamilyId: slayer_signature
   MutuallyExclusiveGroupId: 
-  RecruitNativeTags: []
-  RecruitPlanTags: []
-  RecruitScoutTags: []
+  RecruitNativeTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  RecruitPlanTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
+  - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
+  RecruitScoutTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
   TargetRuleData:
     Domain: 2
     PrimarySelector: 1
@@ -116,12 +127,20 @@ MonoBehaviour:
       InheritDodge: 0
       InheritBlock: 0
   Effects: []
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  - {fileID: 11400000, guid: 3086f8cde41918f4189a3562a391a724, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  - {fileID: 11400000, guid: 3086f8cde41918f4189a3562a391a724, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
   SupportBlockedTags: []
-  RequiredWeaponTags: []
-  RequiredClassTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 6579675f3d02790408543c39e489282b, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   AppliedStatuses:
   - Id: status_bleed
     StatusId: bleed

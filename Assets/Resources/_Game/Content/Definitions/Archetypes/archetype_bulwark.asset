@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 9d45f3acf997cc84eb3a37cb922175bf, type: 3}
   m_Name: archetype_bulwark
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
   Id: bulwark
@@ -50,6 +50,9 @@ MonoBehaviour:
   RecruitTier: 1
   BudgetCard:
     Domain: 0
+    Rarity: 1
+    PowerBand: 2
+    RoleProfile: 0
     Vector:
       SustainedDamage: 10
       BurstDamage: 4
@@ -75,8 +78,15 @@ MonoBehaviour:
   IsBossOnly: 0
   IsUnreleased: 0
   IsTestOnly: 0
-  RecruitPlanTags: []
-  ScoutBiasTags: []
+  RecruitPlanTags:
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 21302356fb3b0f144838934d6387e5a4, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  ScoutBiasTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
   SupportModifierBiasTags:
   - {fileID: 0}
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
@@ -90,7 +100,7 @@ MonoBehaviour:
   FlexSupportSkillPool:
   - {fileID: 11400000, guid: 46b032dc7350b0445b83f0258c88a29f, type: 2}
   - {fileID: 11400000, guid: 3f09216fe0af34448a6a556b915e1ddf, type: 2}
-  - {fileID: 11400000, guid: 095cb9ca5abae634192373206abbf2e0, type: 2}
+  - {fileID: 11400000, guid: 1e0f89962bef823438b747a441f65197, type: 2}
   - {fileID: 11400000, guid: 7f9f03e0103c49f4eb3f77fb6b4befb9, type: 2}
   RecruitFlexActivePool:
   - {fileID: 11400000, guid: c9597000b38b85d46964a561713062bb, type: 2}
@@ -98,7 +108,7 @@ MonoBehaviour:
   RecruitFlexPassivePool:
   - {fileID: 11400000, guid: 46b032dc7350b0445b83f0258c88a29f, type: 2}
   - {fileID: 11400000, guid: 3f09216fe0af34448a6a556b915e1ddf, type: 2}
-  - {fileID: 11400000, guid: 095cb9ca5abae634192373206abbf2e0, type: 2}
+  - {fileID: 11400000, guid: 1e0f89962bef823438b747a441f65197, type: 2}
   - {fileID: 11400000, guid: 7f9f03e0103c49f4eb3f77fb6b4befb9, type: 2}
   RecruitBannedPairings:
   - FlexActiveId: skill_warden_utility
@@ -139,6 +149,9 @@ MonoBehaviour:
       MutuallyExclusiveGroupId: 
       BudgetCard:
         Domain: 2
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -172,6 +185,9 @@ MonoBehaviour:
       MutuallyExclusiveGroupId: 
       BudgetCard:
         Domain: 2
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -203,6 +219,9 @@ MonoBehaviour:
       DescriptionKey: 
       BudgetCard:
         Domain: 3
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0

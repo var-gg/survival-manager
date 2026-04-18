@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6257819470102501780
+--- !u!114 &-9155079918518431733
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,7 +9,61 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_first_contact.line.07
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_first_contact.7
+  _emote: sardonic
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6038227785854499692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_first_contact.line.08
+  _speakerId: Narrator
+  _textKey: loc.story.scene_raider_first_contact.8
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3897327182081734321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_first_contact.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_first_contact.5
+  _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3880181892607382643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_03
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_first_contact.line.03
@@ -18,7 +72,7 @@ MonoBehaviour:
   _emote: bitter
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-5314971678019761119
+--- !u!114 &-3767184984562692993
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27,34 +81,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_first_contact.line.01
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_first_contact.1
-  _emote: defiant
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-3985800716901406667
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_first_contact.line.00
+  _id: dialogue_scene_raider_first_contact.line.04
   _speakerId: Narrator
-  _textKey: loc.story.scene_raider_first_contact.0
+  _textKey: loc.story.scene_raider_first_contact.4
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-2409288129527059420
+--- !u!114 &-231134190946317247
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,31 +99,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_first_contact.line.02
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_raider_first_contact.2
   _emote: solemn
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-421485797420156044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_first_contact.line.05
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_first_contact.5
-  _emote: bitter
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -99,22 +117,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_raider_first_contact
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_raider_first_contact
   _lines:
-  - {fileID: -3985800716901406667}
-  - {fileID: -5314971678019761119}
-  - {fileID: -2409288129527059420}
-  - {fileID: -6257819470102501780}
-  - {fileID: 8458974855483802807}
-  - {fileID: -421485797420156044}
-  - {fileID: 1389699312833665718}
-  - {fileID: 1996809618388239185}
-  - {fileID: 8857841472031821557}
-  - {fileID: 5471496373069434529}
---- !u!114 &1389699312833665718
+  - {fileID: 2052144542584742797}
+  - {fileID: 5258263250927316733}
+  - {fileID: -231134190946317247}
+  - {fileID: -3880181892607382643}
+  - {fileID: -3767184984562692993}
+  - {fileID: -3897327182081734321}
+  - {fileID: 6012148650792993413}
+  - {fileID: -9155079918518431733}
+  - {fileID: -6038227785854499692}
+  - {fileID: 3887508860104999659}
+--- !u!114 &2052144542584742797
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -123,16 +141,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_first_contact.line.06
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_raider_first_contact.6
-  _emote: resolute
+  _id: dialogue_scene_raider_first_contact.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_raider_first_contact.0
+  _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &1996809618388239185
+--- !u!114 &3887508860104999659
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,25 +159,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_first_contact.line.07
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_first_contact.7
-  _emote: sardonic
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &5471496373069434529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_09
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_raider_first_contact.line.09
@@ -168,7 +168,7 @@ MonoBehaviour:
   _emote: wary
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &8458974855483802807
+--- !u!114 &5258263250927316733
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -177,16 +177,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_first_contact.line.04
-  _speakerId: Narrator
-  _textKey: loc.story.scene_raider_first_contact.4
-  _emote: 
+  _id: dialogue_scene_raider_first_contact.line.01
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_first_contact.1
+  _emote: defiant
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &8857841472031821557
+--- !u!114 &6012148650792993413
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,12 +195,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_first_contact.line.08
-  _speakerId: Narrator
-  _textKey: loc.story.scene_raider_first_contact.8
-  _emote: 
+  _id: dialogue_scene_raider_first_contact.line.06
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_raider_first_contact.6
+  _emote: resolute
   _emotionTextKey: 
   _autoAdvanceHint: 0

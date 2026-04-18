@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6440945131850374529
+--- !u!114 &-9200375594629511896
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,52 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_campaign_complete.line.04
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_campaign_complete.4
-  _emote: quiet
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-5325193353498384695
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_campaign_complete.line.06
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_campaign_complete.6
-  _emote: confused
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-3369965238921635036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_campaign_complete.line.09
+  _id: dialogue_scene_campaign_complete.line.05
   _speakerId: Narrator
-  _textKey: loc.story.scene_campaign_complete.9
+  _textKey: loc.story.scene_campaign_complete.5
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-3321233128791246362
+--- !u!114 &-6215008435401017823
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,66 +27,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_campaign_complete.line.03
+  _speakerId: Narrator
+  _textKey: loc.story.scene_campaign_complete.3
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3346729543221091036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_campaign_complete.line.02
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_campaign_complete.2
-  _emote: quiet
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-2489684529721533154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_campaign_complete.line.07
-  _speakerId: Narrator
-  _textKey: loc.story.scene_campaign_complete.7
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-131427549717713149
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_campaign_complete.line.00
-  _speakerId: Narrator
-  _textKey: loc.story.scene_campaign_complete.0
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-111437141024859760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_campaign_complete.line.10
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_campaign_complete.10
   _emote: quiet
   _emotionTextKey: 
   _autoAdvanceHint: 0
@@ -135,24 +63,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_campaign_complete
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_campaign_complete
   _lines:
-  - {fileID: -131427549717713149}
-  - {fileID: 3538260875927374986}
-  - {fileID: -3321233128791246362}
-  - {fileID: 2009903758548306862}
-  - {fileID: -6440945131850374529}
-  - {fileID: 2915937834002974072}
-  - {fileID: -5325193353498384695}
-  - {fileID: -2489684529721533154}
-  - {fileID: 8304166335185087471}
-  - {fileID: -3369965238921635036}
-  - {fileID: -111437141024859760}
-  - {fileID: 7102522025814589223}
---- !u!114 &2009903758548306862
+  - {fileID: 7696872669805506719}
+  - {fileID: 8477277126926916010}
+  - {fileID: -3346729543221091036}
+  - {fileID: -6215008435401017823}
+  - {fileID: 228949814254118703}
+  - {fileID: -9200375594629511896}
+  - {fileID: 2798647488431144445}
+  - {fileID: 9158687661669707344}
+  - {fileID: 7800652995196092281}
+  - {fileID: 8780659717795691944}
+  - {fileID: 444246114843497814}
+  - {fileID: 4188734484331016146}
+--- !u!114 &228949814254118703
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -161,16 +89,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_campaign_complete.line.03
-  _speakerId: Narrator
-  _textKey: loc.story.scene_campaign_complete.3
-  _emote: 
+  _id: dialogue_scene_campaign_complete.line.04
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_campaign_complete.4
+  _emote: quiet
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &2915937834002974072
+--- !u!114 &444246114843497814
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -179,16 +107,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_campaign_complete.line.05
-  _speakerId: Narrator
-  _textKey: loc.story.scene_campaign_complete.5
-  _emote: 
+  _id: dialogue_scene_campaign_complete.line.10
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_campaign_complete.10
+  _emote: quiet
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &3538260875927374986
+--- !u!114 &2798647488431144445
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -197,16 +125,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_campaign_complete.line.01
-  _speakerId: Narrator
-  _textKey: loc.story.scene_campaign_complete.1
-  _emote: 
+  _id: dialogue_scene_campaign_complete.line.06
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_campaign_complete.6
+  _emote: confused
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &7102522025814589223
+--- !u!114 &4188734484331016146
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -215,7 +143,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_11
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_campaign_complete.line.11
@@ -224,7 +152,7 @@ MonoBehaviour:
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &8304166335185087471
+--- !u!114 &7696872669805506719
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -233,12 +161,84 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_campaign_complete.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_campaign_complete.0
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7800652995196092281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_08
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_campaign_complete.line.08
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_campaign_complete.8
   _emote: gentle
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8477277126926916010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_campaign_complete.line.01
+  _speakerId: Narrator
+  _textKey: loc.story.scene_campaign_complete.1
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8780659717795691944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_campaign_complete.line.09
+  _speakerId: Narrator
+  _textKey: loc.story.scene_campaign_complete.9
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &9158687661669707344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_campaign_complete.line.07
+  _speakerId: Narrator
+  _textKey: loc.story.scene_campaign_complete.7
+  _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0

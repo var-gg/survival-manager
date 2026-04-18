@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8899011389259481958
+--- !u!114 &-7802015907585870619
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_journal.line.08
+  _id: dialogue_scene_aldric_journal.line.11
   _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_aldric_journal.8
+  _textKey: loc.story.scene_aldric_journal.11
   _emote: grim
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-8276509252669512438
+--- !u!114 &-7337171322697028349
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27,43 +27,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_journal.line.04
-  _speakerId: Narrator
-  _textKey: loc.story.scene_aldric_journal.4
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-4188228178345209320
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_journal.line.10
-  _speakerId: Narrator
-  _textKey: loc.story.scene_aldric_journal.10
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-3891173761498177001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_aldric_journal.line.07
@@ -72,7 +36,7 @@ MonoBehaviour:
   _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-2991360410291522661
+--- !u!114 &-6924480368339352442
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -81,7 +45,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.03
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_aldric_journal.3
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6295778408255364289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_aldric_journal.line.01
@@ -90,7 +72,7 @@ MonoBehaviour:
   _emote: shock
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-2605964554803814776
+--- !u!114 &-6236051807074843223
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -99,25 +81,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_12
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_journal.line.12
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_aldric_journal.12
-  _emote: skeptical
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-2155893696045465538
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_09
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_aldric_journal.line.09
@@ -126,7 +90,7 @@ MonoBehaviour:
   _emote: sardonic
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-717028968644148385
+--- !u!114 &-5585643359712532155
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,13 +99,49 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_journal.line.00
+  _id: dialogue_scene_aldric_journal.line.04
   _speakerId: Narrator
-  _textKey: loc.story.scene_aldric_journal.0
+  _textKey: loc.story.scene_aldric_journal.4
   _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4016937907005550894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.02
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_aldric_journal.2
+  _emote: skeptical
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3562703457971659990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_aldric_journal.5
+  _emote: bitter
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -153,25 +153,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_aldric_journal
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_aldric_journal
   _lines:
-  - {fileID: -717028968644148385}
-  - {fileID: -2991360410291522661}
-  - {fileID: 9121513310225515124}
-  - {fileID: 3758092729422290744}
-  - {fileID: -8276509252669512438}
-  - {fileID: 484000628346842414}
-  - {fileID: 8312219674603449899}
-  - {fileID: -3891173761498177001}
-  - {fileID: -8899011389259481958}
-  - {fileID: -2155893696045465538}
-  - {fileID: -4188228178345209320}
-  - {fileID: 1980533975836158107}
-  - {fileID: -2605964554803814776}
---- !u!114 &484000628346842414
+  - {fileID: 3528263641927444952}
+  - {fileID: -6295778408255364289}
+  - {fileID: -4016937907005550894}
+  - {fileID: -6924480368339352442}
+  - {fileID: -5585643359712532155}
+  - {fileID: -3562703457971659990}
+  - {fileID: 4749372927542382009}
+  - {fileID: -7337171322697028349}
+  - {fileID: 6330467214824198851}
+  - {fileID: -6236051807074843223}
+  - {fileID: 7063593185151821377}
+  - {fileID: -7802015907585870619}
+  - {fileID: 8155960860506512689}
+--- !u!114 &3528263641927444952
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -180,16 +180,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_journal.line.05
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_aldric_journal.5
-  _emote: bitter
+  _id: dialogue_scene_aldric_journal.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_aldric_journal.0
+  _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &1980533975836158107
+--- !u!114 &4749372927542382009
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -198,43 +198,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_11
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_journal.line.11
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_aldric_journal.11
-  _emote: grim
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &3758092729422290744
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_journal.line.03
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_aldric_journal.3
-  _emote: grim
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &8312219674603449899
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_aldric_journal.line.06
@@ -243,7 +207,7 @@ MonoBehaviour:
   _emote: weary
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &9121513310225515124
+--- !u!114 &6330467214824198851
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -252,12 +216,48 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_journal.line.02
+  _id: dialogue_scene_aldric_journal.line.08
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_aldric_journal.8
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7063593185151821377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.10
+  _speakerId: Narrator
+  _textKey: loc.story.scene_aldric_journal.10
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8155960860506512689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_journal.line.12
   _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_aldric_journal.2
+  _textKey: loc.story.scene_aldric_journal.12
   _emote: skeptical
   _emotionTextKey: 
   _autoAdvanceHint: 0

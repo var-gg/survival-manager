@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: e07258a0eb9c71f4fbedb2e399efe1cf, type: 3}
   m_Name: combat_sandbox_active
   m_EditorClassIdentifier: SM.Unity:SM.Unity.Sandbox:CombatSandboxConfig
   Id: combat_sandbox_active

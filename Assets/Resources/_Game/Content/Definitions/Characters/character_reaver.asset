@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: reaver
   NameKey: content.character.reaver.name
-  DescriptionKey: content.character.reaver.description
+  DescriptionKey: content.character.reaver.desc
   Race: {fileID: 11400000, guid: 40397d4c74bfc1540a9b6b77e3418712, type: 2}
   Class: {fileID: 11400000, guid: ae9c9da2287c8624e818c771bc678450, type: 2}
   DefaultArchetype: {fileID: 11400000, guid: b7f9b105acb50c24e8ac5e752ba47733, type: 2}

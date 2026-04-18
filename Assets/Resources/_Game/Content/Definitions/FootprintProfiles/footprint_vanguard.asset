@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: de6689e57582cbe499b3baa8f557c5f7, type: 3}
   m_Name: footprint_vanguard
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:FootprintProfileDefinition
   NavigationRadius: 0.58

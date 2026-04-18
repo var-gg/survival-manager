@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8925084840087645126
+--- !u!114 &-6444142171769045660
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,106 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_wolfpine_trail_intro.line.02
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_wolfpine_trail_intro.2
-  _emote: solemn
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-7512561074912224182
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_wolfpine_trail_intro.line.03
-  _speakerId: Narrator
-  _textKey: loc.story.scene_wolfpine_trail_intro.3
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-6351240790993100454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_wolfpine_trail_intro.line.09
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_wolfpine_trail_intro.9
-  _emote: sardonic
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-3441540718769947329
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_wolfpine_trail_intro.line.00
-  _speakerId: Narrator
-  _textKey: loc.story.scene_wolfpine_trail_intro.0
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-2881152573706445082
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_wolfpine_trail_intro.line.06
-  _speakerId: Narrator
-  _textKey: loc.story.scene_wolfpine_trail_intro.6
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-2501894328666285941
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_wolfpine_trail_intro.line.08
+  _id: dialogue_scene_wolfpine_trail_intro.line.04
   _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_wolfpine_trail_intro.8
-  _emote: resolute
+  _textKey: loc.story.scene_wolfpine_trail_intro.4
+  _emote: tense
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-1372804935845177798
+--- !u!114 &-5934094464990671366
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -117,7 +27,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_wolfpine_trail_intro.1
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4441688397005603862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_wolfpine_trail_intro.line.07
@@ -126,7 +54,7 @@ MonoBehaviour:
   _emote: solemn
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-793382079956738467
+--- !u!114 &-3909236204205211336
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,13 +63,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_wolfpine_trail_intro.line.05
+  _id: dialogue_scene_wolfpine_trail_intro.line.03
+  _speakerId: Narrator
+  _textKey: loc.story.scene_wolfpine_trail_intro.3
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1994404550510544406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.02
   _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_wolfpine_trail_intro.5
-  _emote: bitter
+  _textKey: loc.story.scene_wolfpine_trail_intro.2
+  _emote: solemn
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -153,22 +99,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_wolfpine_trail_intro
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_wolfpine_trail_intro
   _lines:
-  - {fileID: -3441540718769947329}
-  - {fileID: 9126980708449672877}
-  - {fileID: -8925084840087645126}
-  - {fileID: -7512561074912224182}
-  - {fileID: 8641773535583915860}
-  - {fileID: -793382079956738467}
-  - {fileID: -2881152573706445082}
-  - {fileID: -1372804935845177798}
-  - {fileID: -2501894328666285941}
-  - {fileID: -6351240790993100454}
---- !u!114 &8641773535583915860
+  - {fileID: 6110559770462270422}
+  - {fileID: -5934094464990671366}
+  - {fileID: -1994404550510544406}
+  - {fileID: -3909236204205211336}
+  - {fileID: -6444142171769045660}
+  - {fileID: 503886573182863695}
+  - {fileID: 234079619366889614}
+  - {fileID: -4441688397005603862}
+  - {fileID: 3303927772903863945}
+  - {fileID: 5518941812089507152}
+--- !u!114 &234079619366889614
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -177,16 +123,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_wolfpine_trail_intro.line.04
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_wolfpine_trail_intro.4
-  _emote: tense
+  _id: dialogue_scene_wolfpine_trail_intro.line.06
+  _speakerId: Narrator
+  _textKey: loc.story.scene_wolfpine_trail_intro.6
+  _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &9126980708449672877
+--- !u!114 &503886573182863695
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,12 +141,66 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_wolfpine_trail_intro.line.01
+  _id: dialogue_scene_wolfpine_trail_intro.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_wolfpine_trail_intro.5
+  _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &3303927772903863945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.08
   _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_wolfpine_trail_intro.1
-  _emote: grim
+  _textKey: loc.story.scene_wolfpine_trail_intro.8
+  _emote: resolute
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5518941812089507152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.09
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_wolfpine_trail_intro.9
+  _emote: sardonic
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6110559770462270422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_wolfpine_trail_intro.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_wolfpine_trail_intro.0
+  _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0

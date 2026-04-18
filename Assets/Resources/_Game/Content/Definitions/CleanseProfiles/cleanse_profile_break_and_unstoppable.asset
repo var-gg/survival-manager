@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: ab6043d9be63af24086a55c18567cbcf, type: 3}
   m_Name: cleanse_profile_break_and_unstoppable
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CleanseProfileDefinition
   Id: break_and_unstoppable

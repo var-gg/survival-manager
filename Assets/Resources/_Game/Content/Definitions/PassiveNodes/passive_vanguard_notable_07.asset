@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: bef9f17bcf6f2a344b0cb228121d6958, type: 3}
   m_Name: passive_vanguard_notable_07
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:PassiveNodeDefinition
   Id: passive_vanguard_notable_07

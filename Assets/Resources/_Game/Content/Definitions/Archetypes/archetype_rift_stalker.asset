@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 9d45f3acf997cc84eb3a37cb922175bf, type: 3}
   m_Name: archetype_rift_stalker
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
   Id: rift_stalker
@@ -30,6 +30,24 @@ MonoBehaviour:
     ActionType: 1
     TargetSelector: 5
     Skill: {fileID: 11400000, guid: bbcc8c7a6e47d1d43bf7e0b8da813739, type: 2}
+  - Priority: 1
+    ConditionType: 3
+    Threshold: 0
+    ActionType: 0
+    TargetSelector: 3
+    Skill: {fileID: 0}
+  - Priority: 2
+    ConditionType: 5
+    Threshold: 0
+    ActionType: 2
+    TargetSelector: 0
+    Skill: {fileID: 0}
+  - Priority: 0
+    ConditionType: 4
+    Threshold: 1.5
+    ActionType: 1
+    TargetSelector: 5
+    Skill: {fileID: 11400000, guid: 5ddb89669e0424f479445d2195999821, type: 2}
   - Priority: 1
     ConditionType: 3
     Threshold: 0
@@ -115,6 +133,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e0f267fcc08c15145baae728a4c7d264, type: 2}
   - {fileID: 11400000, guid: e97d18ab83713184b8fe4491b44bf808, type: 2}
   RecruitBannedPairings:
+  - FlexActiveId: skill_scout_utility
+    FlexPassiveId: support_longshot
   - FlexActiveId: skill_scout_utility
     FlexPassiveId: support_longshot
   Loadout:
@@ -263,20 +283,20 @@ MonoBehaviour:
   FootprintProfile: {fileID: 11400000, guid: a81b3870596764c429790a3a0e75a089, type: 2}
   BehaviorProfile: {fileID: 11400000, guid: 694569802d1952445a6d582f97449372, type: 2}
   MobilityProfile: {fileID: 11400000, guid: 90f39a3f53210ab4697d716b89c641a6, type: 2}
-  BaseMaxHealth: 20
+  BaseMaxHealth: 18
   BaseArmor: 2
   BaseResist: 0
   BaseBarrierPower: 0
   BaseTenacity: 0
-  BasePhysPower: 5
+  BasePhysPower: 6
   BaseMagPower: 0
-  BaseAttackSpeed: 3
-  BaseAttack: 5
+  BaseAttackSpeed: 6
+  BaseAttack: 6
   BaseDefense: 2
-  BaseSpeed: 3
+  BaseSpeed: 6
   BaseHealPower: 0
-  BaseMoveSpeed: 1.7
-  BaseAttackRange: 1.5
+  BaseMoveSpeed: 1.85
+  BaseAttackRange: 3.2
   BaseMaxEnergy: 100
   BaseStartingEnergy: 10
   BaseSkillHaste: 0
@@ -288,15 +308,15 @@ MonoBehaviour:
   BaseCritMultiplier: 0
   BasePhysPen: 0
   BaseMagPen: 0
-  BaseAggroRadius: 7
+  BaseAggroRadius: 8
   BasePreferredDistance: 0
   BaseProtectRadius: 0
-  BaseAttackWindup: 0.22
+  BaseAttackWindup: 0.18
   BaseCastWindup: 0.22
   BaseProjectileSpeed: 0
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
-  BaseAttackCooldown: 0.95
-  BaseLeashDistance: 5
-  BaseTargetSwitchDelay: 0.35
+  BaseAttackCooldown: 1
+  BaseLeashDistance: 4.6
+  BaseTargetSwitchDelay: 0.3
   legacyDisplayName: 

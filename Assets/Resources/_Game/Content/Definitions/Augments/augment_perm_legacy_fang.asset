@@ -9,25 +9,55 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: bd8fa3098ca0a1f44b2be322ad1ff823, type: 3}
   m_Name: augment_perm_legacy_fang
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
   Id: augment_perm_legacy_fang
   NameKey: content.augment.augment_perm_legacy_fang.name
   DescriptionKey: content.augment.augment_perm_legacy_fang.desc
-  Rarity: 3
+  Rarity: 2
   IsPermanent: 1
+  BudgetCard:
+    Domain: 6
+    Rarity: 2
+    PowerBand: 5
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 11
+      BurstDamage: 11
+      Durability: 0
+      Control: 0
+      Mobility: 0
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 12
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 4
+    ConditionClauseCount: 2
+    RuleExceptionCount: 1
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
   Category: 0
   FamilyId: tempo_drive
   Tier: 1
   OfferWeight: 1
+  OfferBucket: 0
+  RiskRewardClass: 0
+  BudgetScore: 0
   SuppressIfPermanentEquipped: 0
   Tags:
   - {fileID: 0}
+  BuildBiasTags: []
+  ProtectionTags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
   EligibleModes: 3
+  AuthorityLayer: 4
+  RosterSlotDelta: 0
+  Effects: []
   Modifiers:
   - StatId: crit_chance
     Op: 0

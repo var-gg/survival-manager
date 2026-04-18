@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: bd8fa3098ca0a1f44b2be322ad1ff823, type: 3}
   m_Name: augment_platinum_hinterland
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
   Id: augment_platinum_hinterland
@@ -17,18 +17,48 @@ MonoBehaviour:
   DescriptionKey: content.augment.augment_platinum_hinterland.desc
   Rarity: 2
   IsPermanent: 0
+  BudgetCard:
+    Domain: 6
+    Rarity: 2
+    PowerBand: 5
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 10
+      BurstDamage: 10
+      Durability: 0
+      Control: 0
+      Mobility: 0
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 11
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 4
+    ConditionClauseCount: 2
+    RuleExceptionCount: 1
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
   Category: 0
   FamilyId: ward_line
   Tier: 3
   OfferWeight: 1
+  OfferBucket: 0
+  RiskRewardClass: 0
+  BudgetScore: 0
   SuppressIfPermanentEquipped: 0
   Tags:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
+  BuildBiasTags: []
+  ProtectionTags: []
   MutualExclusionTags: []
   RequiresTags: []
   RuleModifierTags: []
   EligibleModes: 3
+  AuthorityLayer: 4
+  RosterSlotDelta: 0
+  Effects: []
   Modifiers:
   - StatId: preferred_distance
     Op: 0

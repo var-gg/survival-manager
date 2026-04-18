@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: shaman
   NameKey: content.character.shaman.name
-  DescriptionKey: content.character.shaman.description
+  DescriptionKey: content.character.shaman.desc
   Race: {fileID: 11400000, guid: 9dd3fb1286383554abea4725a9f7c4c4, type: 2}
   Class: {fileID: 11400000, guid: 303ce1202540bc442896129adc2f364a, type: 2}
   DefaultArchetype: {fileID: 11400000, guid: 9daf8e44184407b489e001971b14e705, type: 2}

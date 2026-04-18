@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6705177791856845209
+--- !u!114 &-5812119737127252353
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_hexer_memory_debt.line.04
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_hexer_memory_debt.4
-  _emote: dry
+  _id: dialogue_scene_hexer_memory_debt.line.07
+  _speakerId: Narrator
+  _textKey: loc.story.scene_hexer_memory_debt.7
+  _emote: 
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-5488048237991242754
+--- !u!114 &-5503150803430007814
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27,7 +27,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_08
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_hexer_memory_debt.line.08
@@ -36,7 +36,7 @@ MonoBehaviour:
   _emote: quiet
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-4988125667861732965
+--- !u!114 &-3945192664348290597
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,16 +45,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_hexer_memory_debt.line.03
+  _id: dialogue_scene_hexer_memory_debt.line.04
   _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_hexer_memory_debt.3
-  _emote: bitter
+  _textKey: loc.story.scene_hexer_memory_debt.4
+  _emote: dry
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-361258889783949304
+--- !u!114 &-306919118502734485
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,7 +63,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_hexer_memory_debt.line.01
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_hexer_memory_debt.1
+  _emote: realization
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-221694484186110354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_hexer_memory_debt.line.06
@@ -81,21 +99,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
   m_Name: dialogue_scene_hexer_memory_debt
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_scene_hexer_memory_debt
   _lines:
-  - {fileID: 8622803528012135771}
-  - {fileID: 1662935312579449830}
-  - {fileID: 1337980507116005019}
-  - {fileID: -4988125667861732965}
-  - {fileID: -6705177791856845209}
-  - {fileID: 7439238126761914170}
-  - {fileID: -361258889783949304}
-  - {fileID: 278990128220168442}
-  - {fileID: -5488048237991242754}
---- !u!114 &278990128220168442
+  - {fileID: 6325475641930208756}
+  - {fileID: -306919118502734485}
+  - {fileID: 7547059346364510347}
+  - {fileID: 7936387369825370459}
+  - {fileID: -3945192664348290597}
+  - {fileID: 4508449431392055501}
+  - {fileID: -221694484186110354}
+  - {fileID: -5812119737127252353}
+  - {fileID: -5503150803430007814}
+--- !u!114 &4508449431392055501
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -104,61 +122,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_hexer_memory_debt.line.07
-  _speakerId: Narrator
-  _textKey: loc.story.scene_hexer_memory_debt.7
-  _emote: 
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &1337980507116005019
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_hexer_memory_debt.line.02
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_hexer_memory_debt.2
-  _emote: concerned
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &1662935312579449830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_hexer_memory_debt.line.01
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_hexer_memory_debt.1
-  _emote: realization
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &7439238126761914170
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_05
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_hexer_memory_debt.line.05
@@ -167,7 +131,7 @@ MonoBehaviour:
   _emote: shock
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &8622803528012135771
+--- !u!114 &6325475641930208756
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,12 +140,48 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
   m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_hexer_memory_debt.line.00
   _speakerId: Narrator
   _textKey: loc.story.scene_hexer_memory_debt.0
   _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7547059346364510347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_hexer_memory_debt.line.02
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_hexer_memory_debt.2
+  _emote: concerned
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7936387369825370459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_hexer_memory_debt.line.03
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_hexer_memory_debt.3
+  _emote: bitter
   _emotionTextKey: 
   _autoAdvanceHint: 0

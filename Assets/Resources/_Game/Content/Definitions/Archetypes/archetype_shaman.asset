@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 9d45f3acf997cc84eb3a37cb922175bf, type: 3}
   m_Name: archetype_shaman
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:UnitArchetypeDefinition
   Id: shaman
@@ -50,6 +50,9 @@ MonoBehaviour:
   RecruitTier: 2
   BudgetCard:
     Domain: 0
+    Rarity: 2
+    PowerBand: 2
+    RoleProfile: 4
     Vector:
       SustainedDamage: 8
       BurstDamage: 30
@@ -77,8 +80,15 @@ MonoBehaviour:
   IsBossOnly: 0
   IsUnreleased: 0
   IsTestOnly: 0
-  RecruitPlanTags: []
-  ScoutBiasTags: []
+  RecruitPlanTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 754f0c18dd0a18e4781970042cb79b6a, type: 2}
+  - {fileID: 11400000, guid: f3d6dde03d5ebbc40b81076b5de3c9ca, type: 2}
+  ScoutBiasTags:
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 754f0c18dd0a18e4781970042cb79b6a, type: 2}
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   SupportModifierBiasTags:
   - {fileID: 0}
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
@@ -87,21 +97,27 @@ MonoBehaviour:
   LockedSignatureActiveSkill: {fileID: 0}
   LockedSignaturePassiveSkill: {fileID: 0}
   FlexUtilitySkillPool:
+  - {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
   - {fileID: 11400000, guid: d33f586ea1fa04847808cfc697d92505, type: 2}
   - {fileID: 11400000, guid: fc6bd916959c0b04995bc0d9d8ba3770, type: 2}
   FlexSupportSkillPool:
   - {fileID: 11400000, guid: c6b69d993a0f7784aba596f64453ae2e, type: 2}
   - {fileID: 11400000, guid: 0305e0c3579d4f447b14848e5cb53ece, type: 2}
-  - {fileID: 11400000, guid: 65300c7336ada1f4daea15e352c6c27d, type: 2}
+  - {fileID: 11400000, guid: 095cb9ca5abae634192373206abbf2e0, type: 2}
+  - {fileID: 11400000, guid: e0fc0307a8185f1459e6f7aed0fc85fe, type: 2}
   - {fileID: 11400000, guid: 4ecd2cc5b604c6b46995f67debd2e986, type: 2}
+  - {fileID: 11400000, guid: 65300c7336ada1f4daea15e352c6c27d, type: 2}
   RecruitFlexActivePool:
+  - {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
   - {fileID: 11400000, guid: d33f586ea1fa04847808cfc697d92505, type: 2}
   - {fileID: 11400000, guid: fc6bd916959c0b04995bc0d9d8ba3770, type: 2}
   RecruitFlexPassivePool:
   - {fileID: 11400000, guid: c6b69d993a0f7784aba596f64453ae2e, type: 2}
   - {fileID: 11400000, guid: 0305e0c3579d4f447b14848e5cb53ece, type: 2}
-  - {fileID: 11400000, guid: 65300c7336ada1f4daea15e352c6c27d, type: 2}
+  - {fileID: 11400000, guid: 095cb9ca5abae634192373206abbf2e0, type: 2}
+  - {fileID: 11400000, guid: e0fc0307a8185f1459e6f7aed0fc85fe, type: 2}
   - {fileID: 11400000, guid: 4ecd2cc5b604c6b46995f67debd2e986, type: 2}
+  - {fileID: 11400000, guid: 65300c7336ada1f4daea15e352c6c27d, type: 2}
   RecruitBannedPairings:
   - FlexActiveId: skill_minor_heal
     FlexPassiveId: support_siphon
@@ -141,6 +157,9 @@ MonoBehaviour:
       MutuallyExclusiveGroupId: 
       BudgetCard:
         Domain: 2
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -174,6 +193,9 @@ MonoBehaviour:
       MutuallyExclusiveGroupId: 
       BudgetCard:
         Domain: 2
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0
@@ -205,6 +227,9 @@ MonoBehaviour:
       DescriptionKey: 
       BudgetCard:
         Domain: 3
+        Rarity: 0
+        PowerBand: 2
+        RoleProfile: -1
         Vector:
           SustainedDamage: 0
           BurstDamage: 0

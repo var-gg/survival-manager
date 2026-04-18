@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8114514153055712079
+--- !u!114 &-6107160465044716803
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_site_intro_ashen_gate.effect.00
-  _kind: 1
-  _payload: story_flag_intro_ashen_gate
---- !u!114 &-5088389282669100703
+  _id: story_event_site_intro_ashen_gate.effect.01
+  _kind: 3
+  _payload: DialogueScene
+--- !u!114 &-5526729380715241834
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -24,12 +24,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_00
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_site_intro_ashen_gate.condition.00
-  _kind: 0
-  _operandA: chapter_ashen_gate
+  _id: story_event_site_intro_ashen_gate.condition.01
+  _kind: 1
+  _operandA: site_ashen_gate
   _operandB: 
 --- !u!114 &11400000
 MonoBehaviour:
@@ -40,7 +40,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 322218310d13d8a45b3d85a9fb83b805, type: 3}
   m_Name: story_event_site_intro_ashen_gate
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
   _id: story_event_site_intro_ashen_gate
@@ -48,13 +48,13 @@ MonoBehaviour:
   _priority: 100
   _oncePolicy: 0
   _conditions:
-  - {fileID: -5088389282669100703}
-  - {fileID: 4430450426947068797}
+  - {fileID: 8298132887988259447}
+  - {fileID: -5526729380715241834}
   _effects:
-  - {fileID: -8114514153055712079}
-  - {fileID: 898901920828877013}
+  - {fileID: 3423136490406723831}
+  - {fileID: -6107160465044716803}
   _presentationKey: dialogue_scene_ashen_gate_intro
---- !u!114 &898901920828877013
+--- !u!114 &3423136490406723831
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,13 +63,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_01
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_site_intro_ashen_gate.effect.01
-  _kind: 3
-  _payload: DialogueScene
---- !u!114 &4430450426947068797
+  _id: story_event_site_intro_ashen_gate.effect.00
+  _kind: 1
+  _payload: story_flag_intro_ashen_gate
+--- !u!114 &8298132887988259447
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,10 +78,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_01
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_site_intro_ashen_gate.condition.01
-  _kind: 1
-  _operandA: site_ashen_gate
+  _id: story_event_site_intro_ashen_gate.condition.00
+  _kind: 0
+  _operandA: chapter_ashen_gate
   _operandB: 

@@ -1,21 +1,23 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace SM.Content.Definitions;
-
-[CreateAssetMenu(menuName = "SM/Definitions/Race Definition", fileName = "race_")]
-public sealed class RaceDefinition : ScriptableObject
+namespace SM.Content.Definitions
 {
-    public string Id = string.Empty;
-    public string NameKey = string.Empty;
-    public string DescriptionKey = string.Empty;
 
-    [FormerlySerializedAs("DisplayName")]
-    [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;
+    [CreateAssetMenu(menuName = "SM/Definitions/Race Definition", fileName = "race_")]
+    public sealed class RaceDefinition : ScriptableObject
+    {
+        public string Id = string.Empty;
+        public string NameKey = string.Empty;
+        public string DescriptionKey = string.Empty;
 
-    [FormerlySerializedAs("Description")]
-    [SerializeField, HideInInspector, TextArea] private string legacyDescription = string.Empty;
+        [FormerlySerializedAs("DisplayName")]
+        [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;
 
-    public string LegacyDisplayName => legacyDisplayName;
-    public string LegacyDescription => legacyDescription;
+        [FormerlySerializedAs("Description")]
+        [SerializeField, HideInInspector, TextArea] private string legacyDescription = string.Empty;
+
+        public string LegacyDisplayName => legacyDisplayName;
+        public string LegacyDescription => legacyDescription;
+    }
 }

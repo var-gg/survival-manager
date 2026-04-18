@@ -696,6 +696,14 @@ public sealed partial class GameSessionState
             };
         }
 
+        if (ActiveRun == null)
+        {
+            Profile.ActiveRun ??= new ActiveRunRecord();
+            Profile.ActiveRun.RecruitPhase = _recruitPhaseState.Clone();
+            Profile.ActiveRun.RecruitPity = _recruitPityState.Clone();
+            return;
+        }
+
         SyncActiveRunRecord();
     }
 

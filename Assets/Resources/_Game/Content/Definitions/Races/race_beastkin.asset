@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c34354134f38c4b46add9465a414b515, type: 3}
   m_Name: race_beastkin
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:RaceDefinition
   Id: beastkin

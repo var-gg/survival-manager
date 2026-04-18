@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 72bf28f92c8ff2243b20e6b3b56b2f41, type: 3}
   m_Name: synergy_human
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SynergyDefinition
   Id: synergy_human
   NameKey: content.synergy.synergy_human.name
   DescriptionKey: content.synergy.synergy_human.desc
   CountedTagId: human
+  AuthorityLayer: 3
   Tiers:
   - {fileID: 11400000, guid: 3ecc3a13f7f467f45b696a4c1c18ba28, type: 2}
   - {fileID: 11400000, guid: ecf79b811b8daf646a366e3d894d08ca, type: 2}

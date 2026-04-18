@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: marksman
   NameKey: content.character.marksman.name
-  DescriptionKey: content.character.marksman.description
+  DescriptionKey: content.character.marksman.desc
   Race: {fileID: 11400000, guid: 40397d4c74bfc1540a9b6b77e3418712, type: 2}
   Class: {fileID: 11400000, guid: 9f586812c5ec3d94586eb6362c6288fb, type: 2}
   DefaultArchetype: {fileID: 11400000, guid: 4b4fc457b3fa2fe448263b367ff2eeba, type: 2}

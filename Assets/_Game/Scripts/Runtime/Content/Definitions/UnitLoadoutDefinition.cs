@@ -1,20 +1,22 @@
 using System;
 using UnityEngine;
 
-namespace SM.Content.Definitions;
-
-[Serializable]
-public sealed class UnitLoadoutDefinition
+namespace SM.Content.Definitions
 {
-    public BasicAttackDefinition BasicAttack = new();
-    public SkillDefinitionAsset SignatureActive;
-    public SkillDefinitionAsset FlexActive;
-    public PassiveDefinition SignaturePassive = new();
-    public PassiveDefinition FlexPassive = new();
-    public MobilityDefinition MobilityReaction = new();
 
-    public bool IsComplete()
+    [Serializable]
+    public sealed class UnitLoadoutDefinition
     {
-        return SignatureActive != null && FlexActive != null;
+        public BasicAttackDefinition BasicAttack = new();
+        public SkillDefinitionAsset SignatureActive;
+        public SkillDefinitionAsset FlexActive;
+        public PassiveDefinition SignaturePassive = new();
+        public PassiveDefinition FlexPassive = new();
+        public MobilityDefinition MobilityReaction = new();
+
+        public bool IsComplete()
+        {
+            return SignatureActive != null && FlexActive != null;
+        }
     }
 }
