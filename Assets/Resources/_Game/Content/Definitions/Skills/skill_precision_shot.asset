@@ -40,7 +40,7 @@ MonoBehaviour:
   AuthorityLayer: 1
   BudgetCard:
     Domain: 1
-    Rarity: 0
+    Rarity: 1
     PowerBand: 2
     RoleProfile: -1
     Vector:

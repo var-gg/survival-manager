@@ -371,7 +371,8 @@ public sealed class ContentValidationWorkflowTests
 
         Assert.That(services.Validator, Is.Not.Null);
         Assert.That(services.ReportWriter, Is.Not.Null);
-        Assert.That(services.ReportPaths.GetDefaultReportDirectory(), Does.Contain("Logs/content-validation"));
+        var reportDirectory = services.ReportPaths.GetDefaultReportDirectory().Replace(Path.DirectorySeparatorChar, '/');
+        Assert.That(reportDirectory, Does.Contain("Logs/content-validation"));
     }
 
     private static T CreateTempAsset<T>(string fileName, Action<T> configure) where T : ScriptableObject

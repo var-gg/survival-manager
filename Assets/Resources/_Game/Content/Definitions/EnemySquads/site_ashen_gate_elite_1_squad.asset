@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ashen_gate_elite_1_squad_3
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: mirror_cantor
     Anchor: 3
     Role: 0
     PositiveTraitId: 

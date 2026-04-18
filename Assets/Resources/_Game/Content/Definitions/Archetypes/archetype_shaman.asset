@@ -90,8 +90,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 754f0c18dd0a18e4781970042cb79b6a, type: 2}
   - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   SupportModifierBiasTags:
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  - {fileID: 11400000, guid: 3c20914261aea6e41ab98542472ae4a5, type: 2}
+  - {fileID: 11400000, guid: d3bfae0d8565a5246b4ea7ecb13992b2, type: 2}
   LockedAttackProfileId: 
   LockedAttackProfileTag: 
   LockedSignatureActiveSkill: {fileID: 0}

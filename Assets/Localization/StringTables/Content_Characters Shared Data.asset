@@ -175,6 +175,22 @@ MonoBehaviour:
     m_Key: content.character.mirror_cantor.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 2308061665419264
+    m_Key: content.character.bulwark.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2308061770276864
+    m_Key: content.character.reaver.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2308061774471168
+    m_Key: content.character.marksman.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2308061782859776
+    m_Key: content.character.shaman.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

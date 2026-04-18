@@ -42,24 +42,6 @@ MonoBehaviour:
     ActionType: 2
     TargetSelector: 0
     Skill: {fileID: 0}
-  - Priority: 0
-    ConditionType: 1
-    Threshold: 0.6
-    ActionType: 1
-    TargetSelector: 1
-    Skill: {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
-  - Priority: 1
-    ConditionType: 4
-    Threshold: 1.5
-    ActionType: 0
-    TargetSelector: 5
-    Skill: {fileID: 0}
-  - Priority: 2
-    ConditionType: 5
-    Threshold: 0
-    ActionType: 2
-    TargetSelector: 0
-    Skill: {fileID: 0}
   DefaultAnchor: 4
   PreferredTeamPosture: 2
   RoleTag: support
@@ -107,7 +89,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   - {fileID: 11400000, guid: 6474ff9f130f96c40bf0483e6a3206ed, type: 2}
   - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
-  SupportModifierBiasTags: []
+  SupportModifierBiasTags:
+  - {fileID: 11400000, guid: 8166619448199fa42a59830977fddb17, type: 2}
+  - {fileID: 11400000, guid: d3bfae0d8565a5246b4ea7ecb13992b2, type: 2}
   LockedAttackProfileId: 
   LockedAttackProfileTag: 
   LockedSignatureActiveSkill: {fileID: 0}
@@ -135,8 +119,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4ecd2cc5b604c6b46995f67debd2e986, type: 2}
   - {fileID: 11400000, guid: 65300c7336ada1f4daea15e352c6c27d, type: 2}
   RecruitBannedPairings:
-  - FlexActiveId: skill_minor_heal
-    FlexPassiveId: support_siphon
   - FlexActiveId: skill_minor_heal
     FlexPassiveId: support_siphon
   Loadout:

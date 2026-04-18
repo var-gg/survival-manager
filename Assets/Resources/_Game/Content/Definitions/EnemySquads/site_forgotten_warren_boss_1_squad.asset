@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_forgotten_warren_boss_1_squad_escort_1
     NameKey: 
-    ArchetypeId: scout
+    ArchetypeId: rift_stalker
     Anchor: 3
     Role: 2
     PositiveTraitId: 

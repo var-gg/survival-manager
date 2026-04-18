@@ -943,7 +943,7 @@ public static class SampleSeedGenerator
                 character.DefaultArchetype = archetype;
                 character.DefaultRoleInstruction = roleInstruction;
                 UpsertStringEntry(ContentLocalizationTables.Characters, character.NameKey, ResolveCharacterKoName(archetypeId), ResolveCharacterEnName(archetypeId));
-                UpsertStringEntry(ContentLocalizationTables.Characters, character.DescriptionKey, $"{ResolveCharacterKoName(archetypeId)} 기본 캐릭터", $"{ResolveCharacterEnName(archetypeId)} character identity");
+                UpsertStringEntry(ContentLocalizationTables.Characters, character.DescriptionKey, ResolveCharacterKoDescription(archetypeId), ResolveCharacterEnDescription(archetypeId));
             });
 
             result[archetypeId] = asset;
@@ -1009,10 +1009,10 @@ public static class SampleSeedGenerator
         {
             new { Id = "warden", ScopeKind = ArchetypeScopeValue.Core, RaceId = "human", ClassId = "vanguard", TraitPoolId = "warden", DefaultSkillIds = new[] { "skill_guardian_core", "skill_warden_utility", "skill_vanguard_passive_1", "skill_vanguard_support_1" } },
             new { Id = "guardian", ScopeKind = ArchetypeScopeValue.Core, RaceId = "undead", ClassId = "vanguard", TraitPoolId = "guardian", DefaultSkillIds = new[] { "skill_guardian_core", "skill_guardian_utility", "skill_vanguard_passive_2", "skill_vanguard_support_2" } },
-            new { Id = "bulwark", ScopeKind = ArchetypeScopeValue.Core, RaceId = "beastkin", ClassId = "vanguard", TraitPoolId = "bulwark", DefaultSkillIds = new[] { "skill_bulwark_core", "skill_guardian_core", "skill_warden_utility", "support_guarded" } },
+            new { Id = "bulwark", ScopeKind = ArchetypeScopeValue.Core, RaceId = "beastkin", ClassId = "vanguard", TraitPoolId = "bulwark", DefaultSkillIds = new[] { "skill_bulwark_core", "skill_guardian_core", "skill_warden_utility", "support_purifying" } },
             new { Id = "slayer", ScopeKind = ArchetypeScopeValue.Core, RaceId = "human", ClassId = "duelist", TraitPoolId = "slayer", DefaultSkillIds = new[] { "skill_slayer_core", "skill_slayer_utility", "skill_duelist_passive_1", "skill_duelist_support_1" } },
             new { Id = "raider", ScopeKind = ArchetypeScopeValue.Core, RaceId = "beastkin", ClassId = "duelist", TraitPoolId = "raider", DefaultSkillIds = new[] { "skill_raider_core", "skill_raider_utility", "skill_duelist_passive_2", "skill_duelist_support_2" } },
-            new { Id = "reaver", ScopeKind = ArchetypeScopeValue.Core, RaceId = "undead", ClassId = "duelist", TraitPoolId = "reaver", DefaultSkillIds = new[] { "skill_reaver_core", "skill_raider_core", "skill_reaver_utility", "support_executioner" } },
+            new { Id = "reaver", ScopeKind = ArchetypeScopeValue.Core, RaceId = "undead", ClassId = "duelist", TraitPoolId = "reaver", DefaultSkillIds = new[] { "skill_reaver_core", "skill_raider_core", "skill_reaver_utility", "support_swift" } },
             new { Id = "hunter", ScopeKind = ArchetypeScopeValue.Core, RaceId = "human", ClassId = "ranger", TraitPoolId = "hunter", DefaultSkillIds = new[] { "skill_precision_shot", "skill_hunter_utility", "skill_ranger_passive_1", "skill_ranger_support_1" } },
             new { Id = "scout", ScopeKind = ArchetypeScopeValue.Core, RaceId = "beastkin", ClassId = "ranger", TraitPoolId = "scout", DefaultSkillIds = new[] { "skill_scout_core", "skill_scout_utility", "skill_ranger_passive_2", "skill_ranger_support_2" } },
             new { Id = "marksman", ScopeKind = ArchetypeScopeValue.Core, RaceId = "undead", ClassId = "ranger", TraitPoolId = "marksman", DefaultSkillIds = new[] { "skill_marksman_core", "skill_hunter_utility", "skill_marksman_utility", "support_longshot" } },
@@ -1217,8 +1217,8 @@ public static class SampleSeedGenerator
     {
         return classId switch
         {
-            "vanguard" => new[] { "skill_vanguard_support_1", "skill_vanguard_support_2", "support_guarded", "support_anchored" },
-            "duelist" => new[] { "skill_duelist_support_1", "skill_duelist_support_2", "support_executioner", "support_brutal" },
+            "vanguard" => new[] { "skill_vanguard_support_1", "skill_vanguard_support_2", "support_guarded", "support_purifying", "support_anchored" },
+            "duelist" => new[] { "skill_duelist_support_1", "skill_duelist_support_2", "support_executioner", "support_swift", "support_brutal" },
             "ranger" => new[] { "skill_ranger_support_1", "skill_ranger_support_2", "support_longshot", "support_hunter_mark", "support_piercing", "support_swift" },
             "mystic" => new[] { "skill_mystic_support_1", "skill_mystic_support_2", "support_purifying", "support_siphon", "support_echo", "support_lingering" },
             _ => Array.Empty<string>(),
@@ -2066,7 +2066,8 @@ public static class SampleSeedGenerator
         {
             var trimmed = lines[removeIndex].Trim();
             if (!string.IsNullOrWhiteSpace(trimmed)
-                && lines[removeIndex].Length - lines[removeIndex].TrimStart().Length <= indent)
+                && lines[removeIndex].Length - lines[removeIndex].TrimStart().Length <= indent
+                && !lines[removeIndex].StartsWith($"{prefix}- ", StringComparison.Ordinal))
             {
                 break;
             }
@@ -2454,6 +2455,8 @@ public static class SampleSeedGenerator
         RepairAffixTagReferences();
         RepairPassiveNodeTagReferences();
         RepairSkillTagReferences(tags);
+        RepairArchetypeTagReferences(tags);
+        RepairAugmentTagReferences();
     }
 
     private static void ApplyLoopCGovernance(IReadOnlyDictionary<string, StableTagDefinition> tags)
@@ -2537,9 +2540,10 @@ public static class SampleSeedGenerator
         var target = LoopCContentGovernance.PowerBandTargets[band].Target;
         var counters = ResolveSkillCounterHints(skill);
         var vector = ResolveSkillBudgetVector(skill, target, counters);
+        var rarity = band == PowerBand.Minor ? ContentRarity.Common : ContentRarity.Rare;
         skill.BudgetCard = BuildBudgetCard(
             BudgetDomain.Skill,
-            ContentRarity.Common,
+            rarity,
             band,
             CombatRoleBudgetProfile.None,
             vector,
@@ -3113,6 +3117,53 @@ public static class SampleSeedGenerator
         }
     }
 
+    private static void RepairArchetypeTagReferences(IReadOnlyDictionary<string, StableTagDefinition> tags)
+    {
+        foreach (var archetype in LoadDefinitions<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes"))
+        {
+            var classId = archetype.Class?.Id ?? string.Empty;
+            var recruitPlanTags = archetype.RecruitPlanTags.Where(IsValidTagReference).Distinct().ToList();
+            if (recruitPlanTags.Count == 0)
+            {
+                recruitPlanTags = ResolveTags(tags, new[] { classId, archetype.RoleFamilyTag, archetype.PrimaryWeaponFamilyTag });
+            }
+
+            var scoutBiasTags = archetype.ScoutBiasTags.Where(IsValidTagReference).Distinct().ToList();
+            if (scoutBiasTags.Count == 0)
+            {
+                scoutBiasTags = ResolveTags(tags, new[] { classId, archetype.RoleTag });
+            }
+
+            var supportModifierBiasTags = ResolveArchetypeSupportModifierBiasTags(archetype.Id, classId, tags);
+            var recruitBannedPairings = BuildRecruitBannedPairings(classId)
+                .GroupBy(pair => $"{pair.FlexActiveId}::{pair.FlexPassiveId}", StringComparer.Ordinal)
+                .Select(group => group.First())
+                .ToList();
+
+            archetype.RecruitPlanTags = recruitPlanTags;
+            archetype.ScoutBiasTags = scoutBiasTags;
+            archetype.SupportModifierBiasTags = supportModifierBiasTags;
+            archetype.RecruitBannedPairings = recruitBannedPairings;
+            PatchSerializedArchetypeContract(archetype, recruitPlanTags, scoutBiasTags, supportModifierBiasTags, recruitBannedPairings);
+            EditorUtility.SetDirty(archetype);
+        }
+    }
+
+    private static void RepairAugmentTagReferences()
+    {
+        foreach (var augment in LoadDefinitions<AugmentDefinition>($"{ResourcesRoot}/Augments"))
+        {
+            augment.Tags = augment.Tags.Where(IsValidTagReference).Distinct().ToList();
+            augment.BuildBiasTags = augment.BuildBiasTags.Where(IsValidTagReference).Distinct().ToList();
+            augment.ProtectionTags = augment.ProtectionTags.Where(IsValidTagReference).Distinct().ToList();
+            augment.MutualExclusionTags = augment.MutualExclusionTags.Where(IsValidTagReference).Distinct().ToList();
+            augment.RequiresTags = augment.RequiresTags.Where(IsValidTagReference).Distinct().ToList();
+            augment.RuleModifierTags = augment.RuleModifierTags.Where(IsValidTagReference).Distinct().ToList();
+            PatchSerializedAugmentTags(augment);
+            EditorUtility.SetDirty(augment);
+        }
+    }
+
     private static void CreateStatusCatalog()
     {
         var statuses = new[]
@@ -3325,12 +3376,12 @@ public static class SampleSeedGenerator
     {
         var sites = new[]
         {
-            new { ChapterId = "chapter_ashen_frontier", ChapterOrder = 1, ChapterName = "Ashen Frontier", ChapterNameKo = "잿빛 변경", ChapterDesc = "Open the frontier routes.", ChapterDescKo = "변경의 첫 루트를 연다.", SiteId = "site_ashen_gate", SiteOrder = 1, SiteName = "Ashen Gate", SiteNameKo = "잿문", SiteDesc = "Vanguard outpost route.", SiteDescKo = "전열 진영과 충돌하는 루트.", Faction = "faction_ashen_vanguard", AnswerLaneId = "answer_lane_guard_anchor", EncounterFamilyIds = new[] { "encounter_family_bastion_front", "encounter_family_protect_carry", "encounter_family_control_cleanse", "encounter_family_sustain_grind" }, SkirmishA = new[] { "warden", "hunter", "hexer", "raider" }, SkirmishB = new[] { "guardian", "scout", "hexer", "hunter" }, Elite = new[] { "bulwark", "hunter", "hexer", "warden" }, BossCaptain = "bulwark", BossEscorts = new[] { "hunter", "hexer" }, OverlayId = "boss_overlay_ashen_gate" },
-            new { ChapterId = "chapter_ashen_frontier", ChapterOrder = 1, ChapterName = "Ashen Frontier", ChapterNameKo = "잿빛 변경", ChapterDesc = "Open the frontier routes.", ChapterDescKo = "변경의 첫 루트를 연다.", SiteId = "site_cinder_watch", SiteOrder = 2, SiteName = "Cinder Watch", SiteNameKo = "잿불 망대", SiteDesc = "Ranged harassment route.", SiteDescKo = "원거리 압박이 많은 루트.", Faction = "faction_cinder_watch", AnswerLaneId = "answer_lane_reach_anti_carry", EncounterFamilyIds = new[] { "encounter_family_mark_execute", "encounter_family_weakside_dive", "encounter_family_tempo_swarm", "encounter_family_protect_carry" }, SkirmishA = new[] { "hunter", "scout", "raider", "priest" }, SkirmishB = new[] { "marksman", "scout", "guardian", "hexer" }, Elite = new[] { "marksman", "bulwark", "scout", "hexer" }, BossCaptain = "marksman", BossEscorts = new[] { "scout", "priest" }, OverlayId = "boss_overlay_cinder_watch" },
-            new { ChapterId = "chapter_warren_depths", ChapterOrder = 2, ChapterName = "Warren Depths", ChapterNameKo = "망실 굴지", ChapterDesc = "Break the hidden warrens.", ChapterDescKo = "숨은 굴을 돌파한다.", SiteId = "site_forgotten_warren", SiteOrder = 1, SiteName = "Forgotten Warren", SiteNameKo = "망실 굴", SiteDesc = "Attrition-heavy tunnels.", SiteDescKo = "소모전이 긴 터널.", Faction = "faction_warren_pack", AnswerLaneId = "answer_lane_anti_swarm_persistence", EncounterFamilyIds = new[] { "encounter_family_sustain_grind", "encounter_family_tempo_swarm", "encounter_family_summon_pressure", "encounter_family_weakside_dive" }, SkirmishA = new[] { "raider", "scout", "shaman", "hunter" }, SkirmishB = new[] { "reaver", "scout", "shaman", "hunter" }, Elite = new[] { "reaver", "raider", "scout", "shaman" }, BossCaptain = "reaver", BossEscorts = new[] { "scout", "shaman" }, OverlayId = "boss_overlay_forgotten_warren" },
-            new { ChapterId = "chapter_warren_depths", ChapterOrder = 2, ChapterName = "Warren Depths", ChapterNameKo = "망실 굴지", ChapterDesc = "Break the hidden warrens.", ChapterDescKo = "숨은 굴을 돌파한다.", SiteId = "site_twisted_den", SiteOrder = 2, SiteName = "Twisted Den", SiteNameKo = "뒤틀린 소굴", SiteDesc = "Ambush-heavy den.", SiteDescKo = "기습이 많은 소굴.", Faction = "faction_twisted_den", AnswerLaneId = "answer_lane_peel_cleanse", EncounterFamilyIds = new[] { "encounter_family_weakside_dive", "encounter_family_mark_execute", "encounter_family_summon_pressure", "encounter_family_tempo_swarm" }, SkirmishA = new[] { "slayer", "raider", "scout", "shaman" }, SkirmishB = new[] { "slayer", "hunter", "scout", "priest" }, Elite = new[] { "slayer", "reaver", "scout", "priest" }, BossCaptain = "slayer", BossEscorts = new[] { "scout", "priest" }, OverlayId = "boss_overlay_twisted_den" },
-            new { ChapterId = "chapter_ruined_crypts", ChapterOrder = 3, ChapterName = "Ruined Crypts", ChapterNameKo = "폐허 묘실", ChapterDesc = "Seal the crypt lords.", ChapterDescKo = "묘실의 군주를 봉인한다.", SiteId = "site_ruined_crypt", SiteOrder = 1, SiteName = "Ruined Crypt", SiteNameKo = "폐허 묘실", SiteDesc = "Undead elite route.", SiteDescKo = "언데드 정예 루트.", Faction = "faction_bone_host", AnswerLaneId = "answer_lane_anti_sustain_finish", EncounterFamilyIds = new[] { "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry", "encounter_family_summon_pressure" }, SkirmishA = new[] { "guardian", "hexer", "priest", "hunter" }, SkirmishB = new[] { "bulwark", "hexer", "priest", "marksman" }, Elite = new[] { "bulwark", "hexer", "priest", "marksman" }, BossCaptain = "hexer", BossEscorts = new[] { "priest", "guardian" }, OverlayId = "boss_overlay_ruined_crypt" },
-            new { ChapterId = "chapter_ruined_crypts", ChapterOrder = 3, ChapterName = "Ruined Crypts", ChapterNameKo = "폐허 묘실", ChapterDesc = "Seal the crypt lords.", ChapterDescKo = "묘실의 군주를 봉인한다.", SiteId = "site_grave_sanctum", SiteOrder = 2, SiteName = "Grave Sanctum", SiteNameKo = "무덤 성소", SiteDesc = "Final ritual route.", SiteDescKo = "최종 의식 루트.", Faction = "faction_grave_sanctum", AnswerLaneId = "answer_lane_hybrid_boss_prep", EncounterFamilyIds = new[] { "encounter_family_bastion_front", "encounter_family_control_cleanse", "encounter_family_mark_execute", "encounter_family_bastion_front" }, SkirmishA = new[] { "guardian", "hexer", "shaman", "marksman" }, SkirmishB = new[] { "bulwark", "hexer", "shaman", "hunter" }, Elite = new[] { "bulwark", "guardian", "hexer", "shaman" }, BossCaptain = "shaman", BossEscorts = new[] { "guardian", "hexer" }, OverlayId = "boss_overlay_grave_sanctum" },
+            new { ChapterId = "chapter_ashen_frontier", ChapterOrder = 1, ChapterName = "Ashen Frontier", ChapterNameKo = "잿빛 변경", ChapterDesc = "Open the frontier routes.", ChapterDescKo = "변경의 첫 루트를 연다.", SiteId = "site_ashen_gate", SiteOrder = 1, SiteName = "Ashen Gate", SiteNameKo = "잿문", SiteDesc = "Vanguard outpost route.", SiteDescKo = "전열 진영과 충돌하는 루트.", Faction = "faction_ashen_vanguard", AnswerLaneId = "answer_lane_guard_anchor", EncounterFamilyIds = new[] { "encounter_family_bastion_front", "encounter_family_protect_carry", "encounter_family_control_cleanse", "encounter_family_sustain_grind" }, SkirmishA = new[] { "bastion_penitent", "warden", "hexer", "raider" }, SkirmishB = new[] { "guardian", "scout", "hexer", "hunter" }, Elite = new[] { "bulwark", "hunter", "mirror_cantor", "warden" }, BossCaptain = "bulwark", BossEscorts = new[] { "hunter", "hexer" }, OverlayId = "boss_overlay_ashen_gate" },
+            new { ChapterId = "chapter_ashen_frontier", ChapterOrder = 1, ChapterName = "Ashen Frontier", ChapterNameKo = "잿빛 변경", ChapterDesc = "Open the frontier routes.", ChapterDescKo = "변경의 첫 루트를 연다.", SiteId = "site_cinder_watch", SiteOrder = 2, SiteName = "Cinder Watch", SiteNameKo = "잿불 망대", SiteDesc = "Ranged harassment route.", SiteDescKo = "원거리 압박이 많은 루트.", Faction = "faction_cinder_watch", AnswerLaneId = "answer_lane_reach_anti_carry", EncounterFamilyIds = new[] { "encounter_family_mark_execute", "encounter_family_weakside_dive", "encounter_family_tempo_swarm", "encounter_family_protect_carry" }, SkirmishA = new[] { "hunter", "scout", "pale_executor", "priest" }, SkirmishB = new[] { "marksman", "scout", "guardian", "hexer" }, Elite = new[] { "marksman", "bulwark", "scout", "hexer" }, BossCaptain = "marksman", BossEscorts = new[] { "scout", "priest" }, OverlayId = "boss_overlay_cinder_watch" },
+            new { ChapterId = "chapter_warren_depths", ChapterOrder = 2, ChapterName = "Warren Depths", ChapterNameKo = "망실 굴지", ChapterDesc = "Break the hidden warrens.", ChapterDescKo = "숨은 굴을 돌파한다.", SiteId = "site_forgotten_warren", SiteOrder = 1, SiteName = "Forgotten Warren", SiteNameKo = "망실 굴", SiteDesc = "Attrition-heavy tunnels.", SiteDescKo = "소모전이 긴 터널.", Faction = "faction_warren_pack", AnswerLaneId = "answer_lane_anti_swarm_persistence", EncounterFamilyIds = new[] { "encounter_family_sustain_grind", "encounter_family_tempo_swarm", "encounter_family_summon_pressure", "encounter_family_weakside_dive" }, SkirmishA = new[] { "raider", "scout", "shaman", "hunter" }, SkirmishB = new[] { "reaver", "scout", "shaman", "hunter" }, Elite = new[] { "reaver", "raider", "scout", "shaman" }, BossCaptain = "reaver", BossEscorts = new[] { "rift_stalker", "shaman" }, OverlayId = "boss_overlay_forgotten_warren" },
+            new { ChapterId = "chapter_warren_depths", ChapterOrder = 2, ChapterName = "Warren Depths", ChapterNameKo = "망실 굴지", ChapterDesc = "Break the hidden warrens.", ChapterDescKo = "숨은 굴을 돌파한다.", SiteId = "site_twisted_den", SiteOrder = 2, SiteName = "Twisted Den", SiteNameKo = "뒤틀린 소굴", SiteDesc = "Ambush-heavy den.", SiteDescKo = "기습이 많은 소굴.", Faction = "faction_twisted_den", AnswerLaneId = "answer_lane_peel_cleanse", EncounterFamilyIds = new[] { "encounter_family_weakside_dive", "encounter_family_mark_execute", "encounter_family_summon_pressure", "encounter_family_tempo_swarm" }, SkirmishA = new[] { "rift_stalker", "raider", "scout", "shaman" }, SkirmishB = new[] { "slayer", "hunter", "scout", "priest" }, Elite = new[] { "slayer", "reaver", "scout", "priest" }, BossCaptain = "slayer", BossEscorts = new[] { "scout", "priest" }, OverlayId = "boss_overlay_twisted_den" },
+            new { ChapterId = "chapter_ruined_crypts", ChapterOrder = 3, ChapterName = "Ruined Crypts", ChapterNameKo = "폐허 묘실", ChapterDesc = "Seal the crypt lords.", ChapterDescKo = "묘실의 군주를 봉인한다.", SiteId = "site_ruined_crypt", SiteOrder = 1, SiteName = "Ruined Crypt", SiteNameKo = "폐허 묘실", SiteDesc = "Undead elite route.", SiteDescKo = "언데드 정예 루트.", Faction = "faction_bone_host", AnswerLaneId = "answer_lane_anti_sustain_finish", EncounterFamilyIds = new[] { "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry", "encounter_family_summon_pressure" }, SkirmishA = new[] { "guardian", "hexer", "mirror_cantor", "hunter" }, SkirmishB = new[] { "bulwark", "hexer", "priest", "marksman" }, Elite = new[] { "bulwark", "hexer", "priest", "marksman" }, BossCaptain = "hexer", BossEscorts = new[] { "priest", "guardian" }, OverlayId = "boss_overlay_ruined_crypt" },
+            new { ChapterId = "chapter_ruined_crypts", ChapterOrder = 3, ChapterName = "Ruined Crypts", ChapterNameKo = "폐허 묘실", ChapterDesc = "Seal the crypt lords.", ChapterDescKo = "묘실의 군주를 봉인한다.", SiteId = "site_grave_sanctum", SiteOrder = 2, SiteName = "Grave Sanctum", SiteNameKo = "무덤 성소", SiteDesc = "Final ritual route.", SiteDescKo = "최종 의식 루트.", Faction = "faction_grave_sanctum", AnswerLaneId = "answer_lane_hybrid_boss_prep", EncounterFamilyIds = new[] { "encounter_family_bastion_front", "encounter_family_control_cleanse", "encounter_family_mark_execute", "encounter_family_bastion_front" }, SkirmishA = new[] { "guardian", "hexer", "shaman", "marksman" }, SkirmishB = new[] { "bulwark", "hexer", "shaman", "hunter" }, Elite = new[] { "bulwark", "pale_executor", "hexer", "shaman" }, BossCaptain = "shaman", BossEscorts = new[] { "bastion_penitent", "hexer" }, OverlayId = "boss_overlay_grave_sanctum" },
         };
 
         foreach (var chapterGroup in sites.GroupBy(site => site.ChapterId))
@@ -3711,6 +3762,42 @@ public static class SampleSeedGenerator
         };
     }
 
+    private static List<StableTagDefinition> ResolveArchetypeSupportModifierBiasTags(
+        string archetypeId,
+        string classId,
+        IReadOnlyDictionary<string, StableTagDefinition> tags)
+    {
+        var tagIds = archetypeId switch
+        {
+            "warden" => new[] { "support_guarded", "support_anchored" },
+            "guardian" => new[] { "support_anchored", "support_guarded" },
+            "bulwark" => new[] { "support_purifying", "support_anchored" },
+            "slayer" => new[] { "support_executioner", "support_brutal" },
+            "raider" => new[] { "support_brutal", "support_executioner" },
+            "reaver" => new[] { "support_swift", "support_brutal" },
+            "hunter" => new[] { "support_longshot", "support_piercing" },
+            "scout" => new[] { "support_swift", "support_longshot" },
+            "marksman" => new[] { "support_longshot", "support_piercing" },
+            "priest" => new[] { "support_purifying", "support_echo" },
+            "hexer" => new[] { "support_siphon", "support_lingering" },
+            "shaman" => new[] { "support_lingering", "support_echo" },
+            "rift_stalker" => new[] { "support_swift", "support_longshot" },
+            "bastion_penitent" => new[] { "support_anchored", "support_guarded" },
+            "pale_executor" => new[] { "support_executioner", "support_brutal" },
+            "mirror_cantor" => new[] { "support_purifying", "support_echo" },
+            _ => classId switch
+            {
+                "vanguard" => new[] { "support_guarded", "support_purifying", "support_anchored" },
+                "duelist" => new[] { "support_executioner", "support_swift", "support_brutal" },
+                "ranger" => new[] { "support_longshot", "support_hunter_mark", "support_piercing" },
+                "mystic" => new[] { "support_purifying", "support_echo", "support_lingering", "support_siphon" },
+                _ => Array.Empty<string>()
+            }
+        };
+
+        return ResolveTags(tags, tagIds);
+    }
+
     private static void PatchSerializedItemContract(
         ItemBaseDefinition item,
         string itemFamilyTag,
@@ -3737,6 +3824,33 @@ public static class SampleSeedGenerator
         SetObjectReferenceArray(serializedObject.FindProperty(nameof(ItemBaseDefinition.AllowedArchetypeTags)), allowedArchetypeTags);
         SetObjectReferenceArray(serializedObject.FindProperty(nameof(ItemBaseDefinition.UniqueRuleTags)), uniqueRuleTags);
         SetEnumArray(serializedObject.FindProperty(nameof(ItemBaseDefinition.AllowedCraftOperations)), allowedCraftOperations.Select(value => (int)value));
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void PatchSerializedArchetypeContract(
+        UnitArchetypeDefinition archetype,
+        IReadOnlyList<StableTagDefinition> recruitPlanTags,
+        IReadOnlyList<StableTagDefinition> scoutBiasTags,
+        IReadOnlyList<StableTagDefinition> supportModifierBiasTags,
+        IReadOnlyList<RecruitBannedPairingDefinition> recruitBannedPairings)
+    {
+        var serializedObject = new SerializedObject(archetype);
+        SetObjectReferenceArray(serializedObject.FindProperty(nameof(UnitArchetypeDefinition.RecruitPlanTags)), recruitPlanTags);
+        SetObjectReferenceArray(serializedObject.FindProperty(nameof(UnitArchetypeDefinition.ScoutBiasTags)), scoutBiasTags);
+        SetObjectReferenceArray(serializedObject.FindProperty(nameof(UnitArchetypeDefinition.SupportModifierBiasTags)), supportModifierBiasTags);
+        SetRecruitBannedPairingArray(serializedObject.FindProperty(nameof(UnitArchetypeDefinition.RecruitBannedPairings)), recruitBannedPairings);
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void PatchSerializedAugmentTags(AugmentDefinition augment)
+    {
+        var serializedObject = new SerializedObject(augment);
+        SetObjectReferenceArray(serializedObject.FindProperty(nameof(AugmentDefinition.Tags)), augment.Tags);
+        SetObjectReferenceArray(serializedObject.FindProperty(nameof(AugmentDefinition.BuildBiasTags)), augment.BuildBiasTags);
+        SetObjectReferenceArray(serializedObject.FindProperty(nameof(AugmentDefinition.ProtectionTags)), augment.ProtectionTags);
+        SetObjectReferenceArray(serializedObject.FindProperty(nameof(AugmentDefinition.MutualExclusionTags)), augment.MutualExclusionTags);
+        SetObjectReferenceArray(serializedObject.FindProperty(nameof(AugmentDefinition.RequiresTags)), augment.RequiresTags);
+        SetObjectReferenceArray(serializedObject.FindProperty(nameof(AugmentDefinition.RuleModifierTags)), augment.RuleModifierTags);
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
     }
 
@@ -3803,6 +3917,22 @@ public static class SampleSeedGenerator
         for (var index = 0; index < values.Count; index++)
         {
             property.GetArrayElementAtIndex(index).objectReferenceValue = values[index];
+        }
+    }
+
+    private static void SetRecruitBannedPairingArray(SerializedProperty? property, IReadOnlyList<RecruitBannedPairingDefinition> values)
+    {
+        if (property == null)
+        {
+            return;
+        }
+
+        property.arraySize = values.Count;
+        for (var index = 0; index < values.Count; index++)
+        {
+            var element = property.GetArrayElementAtIndex(index);
+            element.FindPropertyRelative(nameof(RecruitBannedPairingDefinition.FlexActiveId))!.stringValue = values[index].FlexActiveId;
+            element.FindPropertyRelative(nameof(RecruitBannedPairingDefinition.FlexPassiveId))!.stringValue = values[index].FlexPassiveId;
         }
     }
 
@@ -4455,6 +4585,18 @@ public static class SampleSeedGenerator
         return ResolveArchetypeKoName(id);
     }
 
+    private static string ResolveCharacterKoDescription(string id)
+    {
+        return id switch
+        {
+            "rift_stalker" => "균열을 따라 약한 후열을 파고드는 정찰형 특화 영웅",
+            "bastion_penitent" => "무너진 방벽 교리를 원정대의 전열로 되돌리는 특화 영웅",
+            "pale_executor" => "표식이 남긴 틈을 끝까지 추적해 처형하는 특화 영웅",
+            "mirror_cantor" => "제어와 정화를 한 박자로 묶어 대열을 보정하는 특화 영웅",
+            _ => $"{ResolveCharacterKoName(id)} 기본 캐릭터"
+        };
+    }
+
     private static string ResolveCharacterEnName(string id)
     {
         return id switch
@@ -4476,6 +4618,18 @@ public static class SampleSeedGenerator
             "pale_executor" => "Pale Executor",
             "mirror_cantor" => "Mirror Cantor",
             _ => id
+        };
+    }
+
+    private static string ResolveCharacterEnDescription(string id)
+    {
+        return id switch
+        {
+            "rift_stalker" => "Specialist scout that follows rifts into exposed backlines",
+            "bastion_penitent" => "Specialist bulwark that turns broken doctrine into a stable front",
+            "pale_executor" => "Specialist finisher that follows marked openings to execution",
+            "mirror_cantor" => "Specialist cantor that pairs control cleanup with formation support",
+            _ => $"{ResolveCharacterEnName(id)} character identity"
         };
     }
 }

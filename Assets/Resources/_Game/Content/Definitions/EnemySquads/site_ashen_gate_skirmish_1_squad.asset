@@ -25,7 +25,7 @@ MonoBehaviour:
   Members:
   - Id: site_ashen_gate_skirmish_1_squad_1
     NameKey: 
-    ArchetypeId: warden
+    ArchetypeId: bastion_penitent
     Anchor: 0
     Role: 0
     PositiveTraitId: 
@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ashen_gate_skirmish_1_squad_2
     NameKey: 
-    ArchetypeId: hunter
+    ArchetypeId: warden
     Anchor: 2
     Role: 0
     PositiveTraitId: 

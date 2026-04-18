@@ -49,7 +49,6 @@ MonoBehaviour:
   SuppressIfPermanentEquipped: 0
   Tags:
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
-  - {fileID: 0}
   BuildBiasTags: []
   ProtectionTags: []
   MutualExclusionTags: []

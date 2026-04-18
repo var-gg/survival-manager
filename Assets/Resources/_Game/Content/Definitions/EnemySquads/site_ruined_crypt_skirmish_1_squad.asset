@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ruined_crypt_skirmish_1_squad_3
     NameKey: 
-    ArchetypeId: priest
+    ArchetypeId: mirror_cantor
     Anchor: 3
     Role: 0
     PositiveTraitId: 

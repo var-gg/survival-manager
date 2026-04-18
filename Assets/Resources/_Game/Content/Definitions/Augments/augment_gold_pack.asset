@@ -48,7 +48,6 @@ MonoBehaviour:
   BudgetScore: 0
   SuppressIfPermanentEquipped: 0
   Tags:
-  - {fileID: 0}
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   BuildBiasTags: []
   ProtectionTags: []

@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_grave_sanctum_elite_1_squad_2
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: pale_executor
     Anchor: 2
     Role: 0
     PositiveTraitId: 

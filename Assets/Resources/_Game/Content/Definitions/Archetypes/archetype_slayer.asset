@@ -87,7 +87,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
-  SupportModifierBiasTags: []
+  SupportModifierBiasTags:
+  - {fileID: 11400000, guid: 76144c86cf4f54242b64b804b3563c96, type: 2}
+  - {fileID: 11400000, guid: 968a06a48b3441f49a060fcba3312447, type: 2}
   LockedAttackProfileId: 
   LockedAttackProfileTag: 
   LockedSignatureActiveSkill: {fileID: 0}
@@ -100,6 +102,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f1fa154f7810df948bdae0514c3f8df3, type: 2}
   - {fileID: 11400000, guid: 3ae7482bc3e559f4ab4087ade6ddb17f, type: 2}
   - {fileID: 11400000, guid: 8556d04ce07bc7c43a626bb572997878, type: 2}
+  - {fileID: 11400000, guid: e97d18ab83713184b8fe4491b44bf808, type: 2}
   - {fileID: 11400000, guid: f3efdc15db88f144bb2436566e1be83c, type: 2}
   RecruitFlexActivePool:
   - {fileID: 11400000, guid: d16677b3364fd9a408c86f044f9a7b24, type: 2}
@@ -109,6 +112,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f1fa154f7810df948bdae0514c3f8df3, type: 2}
   - {fileID: 11400000, guid: 3ae7482bc3e559f4ab4087ade6ddb17f, type: 2}
   - {fileID: 11400000, guid: 8556d04ce07bc7c43a626bb572997878, type: 2}
+  - {fileID: 11400000, guid: e97d18ab83713184b8fe4491b44bf808, type: 2}
   - {fileID: 11400000, guid: f3efdc15db88f144bb2436566e1be83c, type: 2}
   RecruitBannedPairings:
   - FlexActiveId: skill_reaver_utility

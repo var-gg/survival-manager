@@ -410,12 +410,12 @@ internal static partial class NarrativeSeedData
             Presentation("story_card_extract_ashen_gate", "첫 단서 회수", "Ashen Gate의 잔해에서 첫 번째 Heartforge 파편을 확보했다."),
             Presentation("toast_endless_open", "새 모드 개방", "Endless Cycle이 해금되었다."),
             Presentation("toast_unlock_aegis_sentinel", "영웅 합류", "Aegis Sentinel가 원정대에 합류했다."),
-            Presentation("toast_unlock_bastion_penitent", "영웅 합류", "Bastion Penitent가 원정대에 합류했다."),
+            Presentation("toast_unlock_bastion_penitent", "영웅 합류", "참회 방벽수가 원정대에 합류했다."),
             Presentation("toast_unlock_echo_savant", "영웅 합류", "Echo Savant가 원정대에 합류했다."),
-            Presentation("toast_unlock_mirror_cantor", "영웅 합류", "Mirror Cantor가 원정대에 합류했다."),
-            Presentation("toast_unlock_pale_executor", "영웅 합류", "Pale Executor가 원정대에 합류했다."),
+            Presentation("toast_unlock_mirror_cantor", "영웅 합류", "거울 성가대가 원정대에 합류했다."),
+            Presentation("toast_unlock_pale_executor", "영웅 합류", "창백한 집행자가 원정대에 합류했다."),
             Presentation("toast_unlock_prism_seeker", "영웅 합류", "Prism Seeker가 원정대에 합류했다."),
-            Presentation("toast_unlock_rift_stalker", "영웅 합류", "Rift Stalker가 원정대에 합류했다."),
+            Presentation("toast_unlock_rift_stalker", "영웅 합류", "균열 추적자가 원정대에 합류했다."),
             Presentation("toast_unlock_shardblade", "영웅 합류", "Shardblade가 원정대에 합류했다."),
         };
     }

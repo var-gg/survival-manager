@@ -34,7 +34,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_grave_sanctum_boss_1_squad_escort_1
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: bastion_penitent
     Anchor: 3
     Role: 2
     PositiveTraitId: 

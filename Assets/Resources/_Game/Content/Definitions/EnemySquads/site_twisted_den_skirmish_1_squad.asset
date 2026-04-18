@@ -25,7 +25,7 @@ MonoBehaviour:
   Members:
   - Id: site_twisted_den_skirmish_1_squad_1
     NameKey: 
-    ArchetypeId: slayer
+    ArchetypeId: rift_stalker
     Anchor: 0
     Role: 0
     PositiveTraitId: 

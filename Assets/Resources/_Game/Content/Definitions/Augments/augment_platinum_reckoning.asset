@@ -47,8 +47,7 @@ MonoBehaviour:
   RiskRewardClass: 0
   BudgetScore: 0
   SuppressIfPermanentEquipped: 0
-  Tags:
-  - {fileID: 0}
+  Tags: []
   BuildBiasTags: []
   ProtectionTags: []
   MutualExclusionTags: []

@@ -42,24 +42,6 @@ MonoBehaviour:
     ActionType: 2
     TargetSelector: 0
     Skill: {fileID: 0}
-  - Priority: 0
-    ConditionType: 4
-    Threshold: 1.5
-    ActionType: 1
-    TargetSelector: 5
-    Skill: {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
-  - Priority: 1
-    ConditionType: 3
-    Threshold: 0
-    ActionType: 0
-    TargetSelector: 3
-    Skill: {fileID: 0}
-  - Priority: 2
-    ConditionType: 5
-    Threshold: 0
-    ActionType: 2
-    TargetSelector: 0
-    Skill: {fileID: 0}
   DefaultAnchor: 1
   PreferredTeamPosture: 2
   RoleTag: anchor
@@ -105,7 +87,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
   - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
-  SupportModifierBiasTags: []
+  SupportModifierBiasTags:
+  - {fileID: 11400000, guid: da033920be8c78a44aa5868b0305e7e6, type: 2}
+  - {fileID: 11400000, guid: 66e682e27391ce645bcd507fa8166527, type: 2}
   LockedAttackProfileId: 
   LockedAttackProfileTag: 
   LockedSignatureActiveSkill: {fileID: 0}
@@ -117,6 +101,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 46b032dc7350b0445b83f0258c88a29f, type: 2}
   - {fileID: 11400000, guid: 3f09216fe0af34448a6a556b915e1ddf, type: 2}
   - {fileID: 11400000, guid: 1e0f89962bef823438b747a441f65197, type: 2}
+  - {fileID: 11400000, guid: 095cb9ca5abae634192373206abbf2e0, type: 2}
   - {fileID: 11400000, guid: 7f9f03e0103c49f4eb3f77fb6b4befb9, type: 2}
   RecruitFlexActivePool:
   - {fileID: 11400000, guid: c9597000b38b85d46964a561713062bb, type: 2}
@@ -125,10 +110,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 46b032dc7350b0445b83f0258c88a29f, type: 2}
   - {fileID: 11400000, guid: 3f09216fe0af34448a6a556b915e1ddf, type: 2}
   - {fileID: 11400000, guid: 1e0f89962bef823438b747a441f65197, type: 2}
+  - {fileID: 11400000, guid: 095cb9ca5abae634192373206abbf2e0, type: 2}
   - {fileID: 11400000, guid: 7f9f03e0103c49f4eb3f77fb6b4befb9, type: 2}
   RecruitBannedPairings:
-  - FlexActiveId: skill_warden_utility
-    FlexPassiveId: support_anchored
   - FlexActiveId: skill_warden_utility
     FlexPassiveId: support_anchored
   Loadout:

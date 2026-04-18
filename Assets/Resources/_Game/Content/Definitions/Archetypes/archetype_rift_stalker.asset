@@ -42,24 +42,6 @@ MonoBehaviour:
     ActionType: 2
     TargetSelector: 0
     Skill: {fileID: 0}
-  - Priority: 0
-    ConditionType: 4
-    Threshold: 1.5
-    ActionType: 1
-    TargetSelector: 5
-    Skill: {fileID: 11400000, guid: 5ddb89669e0424f479445d2195999821, type: 2}
-  - Priority: 1
-    ConditionType: 3
-    Threshold: 0
-    ActionType: 0
-    TargetSelector: 3
-    Skill: {fileID: 0}
-  - Priority: 2
-    ConditionType: 5
-    Threshold: 0
-    ActionType: 2
-    TargetSelector: 0
-    Skill: {fileID: 0}
   DefaultAnchor: 5
   PreferredTeamPosture: 3
   RoleTag: carry
@@ -105,7 +87,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   - {fileID: 11400000, guid: 3d08b680c711c40449e3b37cd0d31718, type: 2}
   - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
-  SupportModifierBiasTags: []
+  SupportModifierBiasTags:
+  - {fileID: 11400000, guid: d26a7dc25b947aa4a81d97f531b94095, type: 2}
+  - {fileID: 11400000, guid: e938678a825e99d438f62955e33f3214, type: 2}
   LockedAttackProfileId: 
   LockedAttackProfileTag: 
   LockedSignatureActiveSkill: {fileID: 0}
@@ -133,8 +117,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e0f267fcc08c15145baae728a4c7d264, type: 2}
   - {fileID: 11400000, guid: e97d18ab83713184b8fe4491b44bf808, type: 2}
   RecruitBannedPairings:
-  - FlexActiveId: skill_scout_utility
-    FlexPassiveId: support_longshot
   - FlexActiveId: skill_scout_utility
     FlexPassiveId: support_longshot
   Loadout:

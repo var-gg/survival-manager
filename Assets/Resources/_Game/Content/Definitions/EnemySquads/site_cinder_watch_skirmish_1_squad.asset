@@ -43,7 +43,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_cinder_watch_skirmish_1_squad_3
     NameKey: 
-    ArchetypeId: raider
+    ArchetypeId: pale_executor
     Anchor: 3
     Role: 0
     PositiveTraitId: 

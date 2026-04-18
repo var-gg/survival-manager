@@ -42,24 +42,6 @@ MonoBehaviour:
     ActionType: 2
     TargetSelector: 0
     Skill: {fileID: 0}
-  - Priority: 0
-    ConditionType: 4
-    Threshold: 1.5
-    ActionType: 1
-    TargetSelector: 5
-    Skill: {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
-  - Priority: 1
-    ConditionType: 3
-    Threshold: 0
-    ActionType: 0
-    TargetSelector: 3
-    Skill: {fileID: 0}
-  - Priority: 2
-    ConditionType: 5
-    Threshold: 0
-    ActionType: 2
-    TargetSelector: 0
-    Skill: {fileID: 0}
   DefaultAnchor: 2
   PreferredTeamPosture: 3
   RoleTag: bruiser
@@ -105,7 +87,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
-  SupportModifierBiasTags: []
+  SupportModifierBiasTags:
+  - {fileID: 11400000, guid: 76144c86cf4f54242b64b804b3563c96, type: 2}
+  - {fileID: 11400000, guid: 968a06a48b3441f49a060fcba3312447, type: 2}
   LockedAttackProfileId: 
   LockedAttackProfileTag: 
   LockedSignatureActiveSkill: {fileID: 0}
@@ -118,6 +102,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f1fa154f7810df948bdae0514c3f8df3, type: 2}
   - {fileID: 11400000, guid: 3ae7482bc3e559f4ab4087ade6ddb17f, type: 2}
   - {fileID: 11400000, guid: 8556d04ce07bc7c43a626bb572997878, type: 2}
+  - {fileID: 11400000, guid: e97d18ab83713184b8fe4491b44bf808, type: 2}
   - {fileID: 11400000, guid: f3efdc15db88f144bb2436566e1be83c, type: 2}
   RecruitFlexActivePool:
   - {fileID: 11400000, guid: d16677b3364fd9a408c86f044f9a7b24, type: 2}
@@ -127,10 +112,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f1fa154f7810df948bdae0514c3f8df3, type: 2}
   - {fileID: 11400000, guid: 3ae7482bc3e559f4ab4087ade6ddb17f, type: 2}
   - {fileID: 11400000, guid: 8556d04ce07bc7c43a626bb572997878, type: 2}
+  - {fileID: 11400000, guid: e97d18ab83713184b8fe4491b44bf808, type: 2}
   - {fileID: 11400000, guid: f3efdc15db88f144bb2436566e1be83c, type: 2}
   RecruitBannedPairings:
-  - FlexActiveId: skill_reaver_utility
-    FlexPassiveId: support_brutal
   - FlexActiveId: skill_reaver_utility
     FlexPassiveId: support_brutal
   Loadout:

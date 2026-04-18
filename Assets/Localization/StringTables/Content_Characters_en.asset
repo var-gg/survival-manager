@@ -151,7 +151,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2241005595123712
-    m_Localized: Rift Stalker character identity
+    m_Localized: Specialist scout that follows rifts into exposed backlines
     m_Metadata:
       m_Items: []
   - m_Id: 2241006316544000
@@ -159,7 +159,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2241006316544001
-    m_Localized: Bastion Penitent character identity
+    m_Localized: Specialist bulwark that turns broken doctrine into a stable front
     m_Metadata:
       m_Items: []
   - m_Id: 2241007025381376
@@ -167,7 +167,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2241007025381377
-    m_Localized: Pale Executor character identity
+    m_Localized: Specialist finisher that follows marked openings to execution
     m_Metadata:
       m_Items: []
   - m_Id: 2241007767773184
@@ -175,7 +175,23 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2241007767773185
-    m_Localized: Mirror Cantor character identity
+    m_Localized: Specialist cantor that pairs control cleanup with formation support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2308061665419264
+    m_Localized: Bulwark character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2308061770276864
+    m_Localized: Reaver character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2308061774471168
+    m_Localized: Marksman character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2308061782859776
+    m_Localized: Shaman character identity
     m_Metadata:
       m_Items: []
   references:
