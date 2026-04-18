@@ -146,6 +146,38 @@ MonoBehaviour:
     m_Localized: Hexer character identity
     m_Metadata:
       m_Items: []
+  - m_Id: 2241005515431936
+    m_Localized: Rift Stalker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241005595123712
+    m_Localized: Rift Stalker character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241006316544000
+    m_Localized: Bastion Penitent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241006316544001
+    m_Localized: Bastion Penitent character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241007025381376
+    m_Localized: Pale Executor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241007025381377
+    m_Localized: Pale Executor character identity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241007767773184
+    m_Localized: Mirror Cantor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241007767773185
+    m_Localized: Mirror Cantor character identity
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

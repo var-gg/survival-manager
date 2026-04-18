@@ -306,6 +306,54 @@ MonoBehaviour:
     m_Localized: Shaman Trinket description.
     m_Metadata:
       m_Items: []
+  - m_Id: 7047238265069568
+    m_Localized: Rift Bow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047238348955648
+    m_Localized: Mobile ranger weapon.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047239124901888
+    m_Localized: Penitent Shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047239124901889
+    m_Localized: Defensive vanguard weapon.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047239875682304
+    m_Localized: Cantor Focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047239875682305
+    m_Localized: Support mystic focus.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047240588713984
+    m_Localized: Layered Armor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047240588713985
+    m_Localized: General-purpose layered protection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047241255608320
+    m_Localized: Wayfinder Trinket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047241255608321
+    m_Localized: Mobility accessory for repositioning.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047241993805824
+    m_Localized: Oath Bead
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047241993805825
+    m_Localized: Support accessory for steady recovery.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

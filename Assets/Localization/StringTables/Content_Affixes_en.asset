@@ -210,6 +210,54 @@ MonoBehaviour:
     m_Localized: Ravenous affix.
     m_Metadata:
       m_Items: []
+  - m_Id: 7047254165676032
+    m_Localized: Warded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047254245367808
+    m_Localized: Warded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047254954205184
+    m_Localized: Piercing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047254954205185
+    m_Localized: Piercing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047256560623616
+    m_Localized: Focusing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047256560623617
+    m_Localized: Focusing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047257214935040
+    m_Localized: Cleansing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047257214935041
+    m_Localized: Cleansing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047258364174336
+    m_Localized: Reaching
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047258364174337
+    m_Localized: Reaching
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047259253366784
+    m_Localized: Lithe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047259253366785
+    m_Localized: Lithe
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

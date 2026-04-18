@@ -234,6 +234,78 @@ MonoBehaviour:
     m_Localized: Legacy Signal augment.
     m_Metadata:
       m_Items: []
+  - m_Id: 7047206199615488
+    m_Localized: Clarity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047206279307264
+    m_Localized: Improves control resistance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047207051059200
+    m_Localized: Reach
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047207051059201
+    m_Localized: Improves threat reach.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047211874508800
+    m_Localized: Ward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047211874508801
+    m_Localized: Boosts mixed defensive stability.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047212616900608
+    m_Localized: Haste
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047212616900609
+    m_Localized: Improves skill cadence.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047217176109056
+    m_Localized: Absolute Clarity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047217176109057
+    m_Localized: Heavily improves arcane output.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047217935278080
+    m_Localized: Unbroken Tenacity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047217935278081
+    m_Localized: Heavily improves control stability.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047223480147968
+    m_Localized: Legacy Crown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047223480147969
+    m_Localized: Permanent resistance bonus.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047224176402432
+    m_Localized: Legacy Lantern
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047224176402433
+    m_Localized: Permanent support bonus.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047224964931584
+    m_Localized: Legacy Spur
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047224964931585
+    m_Localized: Permanent mobility bonus.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: character_pale_executor
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CharacterDefinition
+  Id: pale_executor
+  NameKey: content.character.pale_executor.name
+  DescriptionKey: content.character.pale_executor.desc
+  Race: {fileID: 11400000, guid: 40397d4c74bfc1540a9b6b77e3418712, type: 2}
+  Class: {fileID: 11400000, guid: ae9c9da2287c8624e818c771bc678450, type: 2}
+  DefaultArchetype: {fileID: 11400000, guid: c8abb6345272ebf43a150ee7bf39e90b, type: 2}
+  DefaultRoleInstruction: {fileID: 11400000, guid: a6f8bce66c670e1418579d29f11206bc, type: 2}
+  legacyDisplayName: 
+  legacyDescription: 

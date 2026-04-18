@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: augment_platinum_tenacity
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AugmentDefinition
+  Id: augment_platinum_tenacity
+  NameKey: content.augment.augment_platinum_tenacity.name
+  DescriptionKey: content.augment.augment_platinum_tenacity.desc
+  Rarity: 2
+  IsPermanent: 0
+  BudgetCard:
+    Domain: 6
+    Rarity: 2
+    PowerBand: 5
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 0
+      BurstDamage: 0
+      Durability: 15
+      Control: 0
+      Mobility: 0
+      Support: 5
+      CounterCoverage: 0
+      Reliability: 11
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 4
+    ConditionClauseCount: 2
+    RuleExceptionCount: 1
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
+  Category: 0
+  FamilyId: epic
+  Tier: 1
+  OfferWeight: 1
+  OfferBucket: 0
+  RiskRewardClass: 0
+  BudgetScore: 0
+  SuppressIfPermanentEquipped: 0
+  Tags: []
+  BuildBiasTags: []
+  ProtectionTags: []
+  MutualExclusionTags: []
+  RequiresTags: []
+  RuleModifierTags: []
+  EligibleModes: 1
+  AuthorityLayer: 4
+  RosterSlotDelta: 0
+  Effects: []
+  Modifiers:
+  - StatId: tenacity
+    Op: 0
+    Value: 0.2
+  legacyDisplayName: 
+  legacyDescription: 

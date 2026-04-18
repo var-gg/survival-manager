@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: passive_mystic_notable_08
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:PassiveNodeDefinition
+  Id: passive_mystic_notable_08
+  BoardId: board_mystic
+  NameKey: content.passive_node.passive_mystic_notable_08.name
+  DescriptionKey: content.passive_node.passive_mystic_notable_08.desc
+  NodeKind: 1
+  PrerequisiteNodeIds:
+  - passive_mystic_notable_05
+  MutualExclusionTags: []
+  BoardDepth: 4
+  CompileTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  RuleModifierTags: []
+  Modifiers:
+  - StatId: tenacity
+    Op: 0
+    Value: 0.04
+  - StatId: resist
+    Op: 0
+    Value: 0.5
+  legacyIsKeystone: 0
+  legacyDisplayName: 
+  legacyDescription: 

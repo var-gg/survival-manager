@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: item_rift_bow
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ItemBaseDefinition
+  Id: item_rift_bow
+  NameKey: content.item.item_rift_bow.name
+  DescriptionKey: content.item.item_rift_bow.desc
+  SlotType: 0
+  IdentityKind: 0
+  ItemFamilyTag: bow
+  WeaponFamilyTag: bow
+  RarityTier: 0
+  AffixPoolTag: pool_bow
+  CraftCategory: ranger
+  BudgetBand: personal_power_10
+  CraftCurrencyTag: ember_dust
+  GrantedSkills: []
+  CompileTags:
+  - {fileID: 11400000, guid: 29962574aef879948ae1bd7b26653f05, type: 2}
+  RuleModifierTags: []
+  AllowedClassTags:
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
+  AllowedArchetypeTags: []
+  UniqueRuleTags: []
+  AllowedCraftOperations: 00000000010000000200000004000000
+  BaseModifiers:
+  - StatId: phys_power
+    Op: 0
+    Value: 2
+  legacyDisplayName: 

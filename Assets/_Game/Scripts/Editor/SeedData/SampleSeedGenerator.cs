@@ -57,6 +57,7 @@ public static class SampleSeedGenerator
         CreateAugments();
         CreateItems();
         CreateAffixes();
+        CreateSafeTargetPassiveNodes(stableTags);
         PatchLaunchFloorItemsAndSkills(stableTags);
         CreateStatusCatalog();
         CreateTraitTokens();
@@ -70,6 +71,9 @@ public static class SampleSeedGenerator
 
         AssetDatabase.SaveAssets();
         ReimportCanonicalAssets();
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        PatchSafeTargetSpecialistFallbackYaml();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         Debug.Log($"SM sample content generated under Resources. Root={ResourcesRoot}, Stats={stats.Count}, Races={races.Count}, Classes={classes.Count}, Skills={skills.Count}, Archetypes={patchedArchetypes.Count}, Characters={characters.Count}");
@@ -211,6 +215,8 @@ public static class SampleSeedGenerator
             $"{ResourcesRoot}/Traits",
             $"{ResourcesRoot}/Skills",
             $"{ResourcesRoot}/Archetypes",
+            $"{ResourcesRoot}/PassiveBoards",
+            $"{ResourcesRoot}/PassiveNodes",
             $"{ResourcesRoot}/Augments",
             $"{ResourcesRoot}/Items",
             $"{ResourcesRoot}/Affixes",
@@ -779,7 +785,7 @@ public static class SampleSeedGenerator
     private static Dictionary<string, TraitPoolDefinition> CreateTraitPools()
     {
         var result = new Dictionary<string, TraitPoolDefinition>();
-        foreach (var archetypeId in new[] { "warden", "guardian", "bulwark", "slayer", "raider", "reaver", "hunter", "scout", "marksman", "priest", "hexer", "shaman" })
+        foreach (var archetypeId in new[] { "warden", "guardian", "bulwark", "slayer", "raider", "reaver", "hunter", "scout", "marksman", "priest", "hexer", "shaman", "rift_stalker", "bastion_penitent", "pale_executor", "mirror_cantor" })
         {
             var path = $"{ResourcesRoot}/Traits/traitpool_{archetypeId}.asset";
             var asset = CreateAsset<TraitPoolDefinition>(path, a =>
@@ -823,16 +829,20 @@ public static class SampleSeedGenerator
         result["scout"] = CreateArchetype("scout", "Scout", races["beastkin"], classes["ranger"], traitPools["scout"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 17, 5, 2, 6, 0, DeploymentAnchorValue.BackBottom, TeamPostureTypeValue.CollapseWeakSide);
         result["priest"] = CreateArchetype("priest", "Priest", races["human"], classes["mystic"], traitPools["priest"], skills["skill_minor_heal"], footprintProfiles["mystic"], behaviorProfiles["mystic"], mobilityProfiles["mystic"], 18, 3, 2, 4, 5, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.ProtectCarry);
         result["hexer"] = CreateArchetype("hexer", "Hexer", races["undead"], classes["mystic"], traitPools["hexer"], skills["skill_minor_heal"], footprintProfiles["mystic"], behaviorProfiles["mystic"], mobilityProfiles["mystic"], 17, 4, 2, 4, 4, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.AllInBackline);
+        result["rift_stalker"] = CreateArchetype("rift_stalker", "Rift Stalker", races["beastkin"], classes["ranger"], traitPools["rift_stalker"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 18, 6, 2, 6, 0, DeploymentAnchorValue.BackBottom, TeamPostureTypeValue.CollapseWeakSide, ArchetypeScopeValue.Specialist);
+        result["bastion_penitent"] = CreateArchetype("bastion_penitent", "Bastion Penitent", races["human"], classes["vanguard"], traitPools["bastion_penitent"], skills["skill_power_strike"], footprintProfiles["vanguard"], behaviorProfiles["vanguard"], mobilityProfiles["vanguard"], 27, 4, 5, 2, 0, DeploymentAnchorValue.FrontCenter, TeamPostureTypeValue.ProtectCarry, ArchetypeScopeValue.Specialist);
+        result["pale_executor"] = CreateArchetype("pale_executor", "Pale Executor", races["undead"], classes["duelist"], traitPools["pale_executor"], skills["skill_power_strike"], footprintProfiles["duelist"], behaviorProfiles["duelist"], mobilityProfiles["duelist"], 20, 8, 2, 4, 0, DeploymentAnchorValue.FrontBottom, TeamPostureTypeValue.CollapseWeakSide, ArchetypeScopeValue.Specialist);
+        result["mirror_cantor"] = CreateArchetype("mirror_cantor", "Mirror Cantor", races["human"], classes["mystic"], traitPools["mirror_cantor"], skills["skill_minor_heal"], footprintProfiles["mystic"], behaviorProfiles["mystic"], mobilityProfiles["mystic"], 18, 3, 2, 4, 5, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.ProtectCarry, ArchetypeScopeValue.Specialist);
         return result;
     }
 
-    private static UnitArchetypeDefinition CreateArchetype(string id, string name, RaceDefinition race, ClassDefinition @class, TraitPoolDefinition pool, SkillDefinitionAsset skill, FootprintProfileDefinition footprintProfile, BehaviorProfileDefinition behaviorProfile, MobilityProfileDefinition mobilityProfile, float hp, float atk, float def, float spd, float heal, DeploymentAnchorValue defaultAnchor, TeamPostureTypeValue preferredPosture)
+    private static UnitArchetypeDefinition CreateArchetype(string id, string name, RaceDefinition race, ClassDefinition @class, TraitPoolDefinition pool, SkillDefinitionAsset skill, FootprintProfileDefinition footprintProfile, BehaviorProfileDefinition behaviorProfile, MobilityProfileDefinition mobilityProfile, float hp, float atk, float def, float spd, float heal, DeploymentAnchorValue defaultAnchor, TeamPostureTypeValue preferredPosture, ArchetypeScopeValue scopeKind = ArchetypeScopeValue.Core)
     {
         return CreateAsset<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_{id}.asset", a =>
         {
             a.Id = id;
             a.NameKey = ContentLocalizationTables.BuildArchetypeNameKey(id);
-            a.ScopeKind = ArchetypeScopeValue.Core;
+            a.ScopeKind = scopeKind;
             a.Race = race;
             a.Class = @class;
             a.TraitPool = pool;
@@ -898,7 +908,7 @@ public static class SampleSeedGenerator
     {
         var result = new Dictionary<string, CharacterDefinition>(StringComparer.Ordinal);
 
-        foreach (var archetypeId in new[] { "warden", "guardian", "bulwark", "slayer", "raider", "reaver", "hunter", "scout", "marksman", "priest", "hexer", "shaman" })
+        foreach (var archetypeId in new[] { "warden", "guardian", "bulwark", "slayer", "raider", "reaver", "hunter", "scout", "marksman", "priest", "hexer", "shaman", "rift_stalker", "bastion_penitent", "pale_executor", "mirror_cantor" })
         {
             if (!archetypes.TryGetValue(archetypeId, out var archetype))
             {
@@ -982,18 +992,22 @@ public static class SampleSeedGenerator
     {
         var definitions = new[]
         {
-            new { Id = "warden", RaceId = "human", ClassId = "vanguard", TraitPoolId = "warden", DefaultSkillIds = new[] { "skill_guardian_core", "skill_warden_utility", "skill_vanguard_passive_1", "skill_vanguard_support_1" } },
-            new { Id = "guardian", RaceId = "undead", ClassId = "vanguard", TraitPoolId = "guardian", DefaultSkillIds = new[] { "skill_guardian_core", "skill_guardian_utility", "skill_vanguard_passive_2", "skill_vanguard_support_2" } },
-            new { Id = "bulwark", RaceId = "beastkin", ClassId = "vanguard", TraitPoolId = "bulwark", DefaultSkillIds = new[] { "skill_bulwark_core", "skill_guardian_core", "skill_warden_utility", "support_guarded" } },
-            new { Id = "slayer", RaceId = "human", ClassId = "duelist", TraitPoolId = "slayer", DefaultSkillIds = new[] { "skill_slayer_core", "skill_slayer_utility", "skill_duelist_passive_1", "skill_duelist_support_1" } },
-            new { Id = "raider", RaceId = "beastkin", ClassId = "duelist", TraitPoolId = "raider", DefaultSkillIds = new[] { "skill_raider_core", "skill_raider_utility", "skill_duelist_passive_2", "skill_duelist_support_2" } },
-            new { Id = "reaver", RaceId = "undead", ClassId = "duelist", TraitPoolId = "reaver", DefaultSkillIds = new[] { "skill_reaver_core", "skill_raider_core", "skill_reaver_utility", "support_executioner" } },
-            new { Id = "hunter", RaceId = "human", ClassId = "ranger", TraitPoolId = "hunter", DefaultSkillIds = new[] { "skill_precision_shot", "skill_hunter_utility", "skill_ranger_passive_1", "skill_ranger_support_1" } },
-            new { Id = "scout", RaceId = "beastkin", ClassId = "ranger", TraitPoolId = "scout", DefaultSkillIds = new[] { "skill_scout_core", "skill_scout_utility", "skill_ranger_passive_2", "skill_ranger_support_2" } },
-            new { Id = "marksman", RaceId = "undead", ClassId = "ranger", TraitPoolId = "marksman", DefaultSkillIds = new[] { "skill_marksman_core", "skill_hunter_utility", "skill_marksman_utility", "support_longshot" } },
-            new { Id = "priest", RaceId = "human", ClassId = "mystic", TraitPoolId = "priest", DefaultSkillIds = new[] { "skill_priest_core", "skill_minor_heal", "skill_mystic_passive_1", "skill_mystic_support_1" } },
-            new { Id = "hexer", RaceId = "undead", ClassId = "mystic", TraitPoolId = "hexer", DefaultSkillIds = new[] { "skill_hexer_core", "skill_hexer_utility", "skill_mystic_passive_2", "skill_mystic_support_2" } },
-            new { Id = "shaman", RaceId = "beastkin", ClassId = "mystic", TraitPoolId = "shaman", DefaultSkillIds = new[] { "skill_shaman_core", "skill_priest_core", "skill_shaman_utility", "support_siphon" } },
+            new { Id = "warden", ScopeKind = ArchetypeScopeValue.Core, RaceId = "human", ClassId = "vanguard", TraitPoolId = "warden", DefaultSkillIds = new[] { "skill_guardian_core", "skill_warden_utility", "skill_vanguard_passive_1", "skill_vanguard_support_1" } },
+            new { Id = "guardian", ScopeKind = ArchetypeScopeValue.Core, RaceId = "undead", ClassId = "vanguard", TraitPoolId = "guardian", DefaultSkillIds = new[] { "skill_guardian_core", "skill_guardian_utility", "skill_vanguard_passive_2", "skill_vanguard_support_2" } },
+            new { Id = "bulwark", ScopeKind = ArchetypeScopeValue.Core, RaceId = "beastkin", ClassId = "vanguard", TraitPoolId = "bulwark", DefaultSkillIds = new[] { "skill_bulwark_core", "skill_guardian_core", "skill_warden_utility", "support_guarded" } },
+            new { Id = "slayer", ScopeKind = ArchetypeScopeValue.Core, RaceId = "human", ClassId = "duelist", TraitPoolId = "slayer", DefaultSkillIds = new[] { "skill_slayer_core", "skill_slayer_utility", "skill_duelist_passive_1", "skill_duelist_support_1" } },
+            new { Id = "raider", ScopeKind = ArchetypeScopeValue.Core, RaceId = "beastkin", ClassId = "duelist", TraitPoolId = "raider", DefaultSkillIds = new[] { "skill_raider_core", "skill_raider_utility", "skill_duelist_passive_2", "skill_duelist_support_2" } },
+            new { Id = "reaver", ScopeKind = ArchetypeScopeValue.Core, RaceId = "undead", ClassId = "duelist", TraitPoolId = "reaver", DefaultSkillIds = new[] { "skill_reaver_core", "skill_raider_core", "skill_reaver_utility", "support_executioner" } },
+            new { Id = "hunter", ScopeKind = ArchetypeScopeValue.Core, RaceId = "human", ClassId = "ranger", TraitPoolId = "hunter", DefaultSkillIds = new[] { "skill_precision_shot", "skill_hunter_utility", "skill_ranger_passive_1", "skill_ranger_support_1" } },
+            new { Id = "scout", ScopeKind = ArchetypeScopeValue.Core, RaceId = "beastkin", ClassId = "ranger", TraitPoolId = "scout", DefaultSkillIds = new[] { "skill_scout_core", "skill_scout_utility", "skill_ranger_passive_2", "skill_ranger_support_2" } },
+            new { Id = "marksman", ScopeKind = ArchetypeScopeValue.Core, RaceId = "undead", ClassId = "ranger", TraitPoolId = "marksman", DefaultSkillIds = new[] { "skill_marksman_core", "skill_hunter_utility", "skill_marksman_utility", "support_longshot" } },
+            new { Id = "priest", ScopeKind = ArchetypeScopeValue.Core, RaceId = "human", ClassId = "mystic", TraitPoolId = "priest", DefaultSkillIds = new[] { "skill_priest_core", "skill_minor_heal", "skill_mystic_passive_1", "skill_mystic_support_1" } },
+            new { Id = "hexer", ScopeKind = ArchetypeScopeValue.Core, RaceId = "undead", ClassId = "mystic", TraitPoolId = "hexer", DefaultSkillIds = new[] { "skill_hexer_core", "skill_hexer_utility", "skill_mystic_passive_2", "skill_mystic_support_2" } },
+            new { Id = "shaman", ScopeKind = ArchetypeScopeValue.Core, RaceId = "beastkin", ClassId = "mystic", TraitPoolId = "shaman", DefaultSkillIds = new[] { "skill_shaman_core", "skill_priest_core", "skill_shaman_utility", "support_siphon" } },
+            new { Id = "rift_stalker", ScopeKind = ArchetypeScopeValue.Specialist, RaceId = "beastkin", ClassId = "ranger", TraitPoolId = "rift_stalker", DefaultSkillIds = new[] { "skill_scout_core", "skill_scout_utility", "skill_ranger_passive_2", "support_swift" } },
+            new { Id = "bastion_penitent", ScopeKind = ArchetypeScopeValue.Specialist, RaceId = "human", ClassId = "vanguard", TraitPoolId = "bastion_penitent", DefaultSkillIds = new[] { "skill_bulwark_core", "skill_warden_utility", "skill_vanguard_passive_2", "support_anchored" } },
+            new { Id = "pale_executor", ScopeKind = ArchetypeScopeValue.Specialist, RaceId = "undead", ClassId = "duelist", TraitPoolId = "pale_executor", DefaultSkillIds = new[] { "skill_reaver_core", "skill_raider_utility", "skill_duelist_passive_2", "support_executioner" } },
+            new { Id = "mirror_cantor", ScopeKind = ArchetypeScopeValue.Specialist, RaceId = "human", ClassId = "mystic", TraitPoolId = "mirror_cantor", DefaultSkillIds = new[] { "skill_priest_core", "skill_hexer_utility", "skill_mystic_passive_1", "support_purifying" } },
         };
 
         foreach (var definition in definitions)
@@ -1005,7 +1019,7 @@ public static class SampleSeedGenerator
                 continue;
             }
 
-            asset.ScopeKind = ArchetypeScopeValue.Core;
+            asset.ScopeKind = definition.ScopeKind;
             asset.Race = races[definition.RaceId];
             asset.Class = classes[definition.ClassId];
             asset.TraitPool = traitPools[definition.TraitPoolId];
@@ -1067,6 +1081,12 @@ public static class SampleSeedGenerator
 
             ApplyLoopBRecruitmentMetadata(asset, definition.Id, skills, tags);
             ApplyLoopCArchetypeGovernance(asset);
+            if (definition.ScopeKind == ArchetypeScopeValue.Specialist)
+            {
+                EditorUtility.SetDirty(asset);
+                PatchArchetypeSkillFallbackYaml(path, definition.ClassId, definition.DefaultSkillIds);
+                continue;
+            }
 
             EditorUtility.SetDirty(asset);
         }
@@ -1101,6 +1121,7 @@ public static class SampleSeedGenerator
         archetype.RecruitTier = archetypeId switch
         {
             "guardian" or "raider" or "bulwark" or "reaver" or "marksman" => RecruitTier.Rare,
+            "rift_stalker" or "bastion_penitent" or "pale_executor" or "mirror_cantor" => RecruitTier.Rare,
             "hexer" or "shaman" => RecruitTier.Epic,
             _ => RecruitTier.Common,
         };
@@ -1125,6 +1146,10 @@ public static class SampleSeedGenerator
             "priest" => new[] { "mystic", "backline", "support", "heal" },
             "hexer" => new[] { "mystic", "backline", "magical", "silence" },
             "shaman" => new[] { "mystic", "backline", "magical", "burn" },
+            "rift_stalker" => new[] { "ranger", "backline", "dash", "exposed" },
+            "bastion_penitent" => new[] { "vanguard", "frontline", "guard", "shield_skill" },
+            "pale_executor" => new[] { "duelist", "frontline", "mark", "execute" },
+            "mirror_cantor" => new[] { "mystic", "backline", "cleanse", "support" },
             _ => new[] { archetype.Class?.Id ?? string.Empty },
         };
         var scoutTagIds = archetypeId switch
@@ -1134,28 +1159,18 @@ public static class SampleSeedGenerator
             "hunter" or "scout" or "marksman" => new[] { "backline", "physical", "ranger" },
             "priest" => new[] { "backline", "support", "heal", "mystic" },
             "hexer" or "shaman" => new[] { "backline", "magical", "mystic" },
+            "rift_stalker" => new[] { "backline", "exposed", "ranger" },
+            "bastion_penitent" => new[] { "frontline", "guard", "vanguard" },
+            "pale_executor" => new[] { "frontline", "execute", "duelist" },
+            "mirror_cantor" => new[] { "backline", "cleanse", "mystic" },
             _ => Array.Empty<string>(),
         };
 
         archetype.RecruitPlanTags = ResolveTags(tags, planTagIds);
         archetype.ScoutBiasTags = ResolveTags(tags, scoutTagIds);
 
-        var activePoolIds = archetype.Class?.Id switch
-        {
-            "vanguard" => new[] { "skill_guardian_utility", "skill_warden_utility" },
-            "duelist" => new[] { "skill_slayer_utility", "skill_raider_utility", "skill_reaver_utility" },
-            "ranger" => new[] { "skill_hunter_utility", "skill_marksman_utility", "skill_scout_utility" },
-            "mystic" => new[] { "skill_minor_heal", "skill_hexer_utility", "skill_shaman_utility" },
-            _ => Array.Empty<string>(),
-        };
-        var passivePoolIds = archetype.Class?.Id switch
-        {
-            "vanguard" => new[] { "skill_vanguard_support_1", "skill_vanguard_support_2", "support_guarded", "support_anchored" },
-            "duelist" => new[] { "skill_duelist_support_1", "skill_duelist_support_2", "support_executioner", "support_brutal" },
-            "ranger" => new[] { "skill_ranger_support_1", "skill_ranger_support_2", "support_longshot", "support_hunter_mark", "support_piercing", "support_swift" },
-            "mystic" => new[] { "skill_mystic_support_1", "skill_mystic_support_2", "support_purifying", "support_siphon", "support_echo", "support_lingering" },
-            _ => Array.Empty<string>(),
-        };
+        var activePoolIds = ResolveFlexUtilitySkillIds(archetype.Class?.Id ?? string.Empty);
+        var passivePoolIds = ResolveFlexSupportSkillIds(archetype.Class?.Id ?? string.Empty);
 
         archetype.FlexUtilitySkillPool = ResolveSkillPool(skills, activePoolIds);
         archetype.FlexSupportSkillPool = ResolveSkillPool(skills, passivePoolIds);
@@ -1169,6 +1184,30 @@ public static class SampleSeedGenerator
         archetype.Loadout.FlexActive = archetype.Loadout.FlexActive
                                        ?? archetype.FlexUtilitySkillPool.FirstOrDefault(skill => skill != null && skill.SlotKind == SkillSlotKindValue.UtilityActive)
                                        ?? archetype.Skills.FirstOrDefault(skill => skill != null && skill.SlotKind == SkillSlotKindValue.UtilityActive);
+    }
+
+    private static string[] ResolveFlexUtilitySkillIds(string classId)
+    {
+        return classId switch
+        {
+            "vanguard" => new[] { "skill_guardian_utility", "skill_warden_utility" },
+            "duelist" => new[] { "skill_slayer_utility", "skill_raider_utility", "skill_reaver_utility" },
+            "ranger" => new[] { "skill_hunter_utility", "skill_marksman_utility", "skill_scout_utility" },
+            "mystic" => new[] { "skill_minor_heal", "skill_hexer_utility", "skill_shaman_utility" },
+            _ => Array.Empty<string>(),
+        };
+    }
+
+    private static string[] ResolveFlexSupportSkillIds(string classId)
+    {
+        return classId switch
+        {
+            "vanguard" => new[] { "skill_vanguard_support_1", "skill_vanguard_support_2", "support_guarded", "support_anchored" },
+            "duelist" => new[] { "skill_duelist_support_1", "skill_duelist_support_2", "support_executioner", "support_brutal" },
+            "ranger" => new[] { "skill_ranger_support_1", "skill_ranger_support_2", "support_longshot", "support_hunter_mark", "support_piercing", "support_swift" },
+            "mystic" => new[] { "skill_mystic_support_1", "skill_mystic_support_2", "support_purifying", "support_siphon", "support_echo", "support_lingering" },
+            _ => Array.Empty<string>(),
+        };
     }
 
     private static List<RecruitBannedPairingDefinition> BuildRecruitBannedPairings(string classId)
@@ -1280,15 +1319,24 @@ public static class SampleSeedGenerator
             ("augment_silver_guard", "Guard Instinct", "수비 본능", "Improves defensive stability.", "방어 안정성을 높입니다.", ContentRarity.Common, false, "armor", 1f),
             ("augment_silver_focus", "Focus", "집중", "Sharpens offensive focus.", "공격 집중도를 높입니다.", ContentRarity.Common, false, "phys_power", 1f),
             ("augment_silver_stride", "Stride", "질주", "Improves battle tempo.", "전투 템포를 높입니다.", ContentRarity.Common, false, "attack_speed", 1f),
+            ("augment_silver_clarity", "Clarity", "명료", "Improves control resistance.", "제어 저항을 소폭 높입니다.", ContentRarity.Common, false, "resist", 1f),
+            ("augment_silver_reach", "Reach", "사거리", "Improves threat reach.", "위협 도달 거리를 소폭 늘립니다.", ContentRarity.Common, false, "attack_range", 0.2f),
             ("augment_gold_bastion", "Bastion", "보루", "Boosts frontline endurance.", "전열 생존력을 강화합니다.", ContentRarity.Rare, false, "max_health", 4f),
             ("augment_gold_fury", "Fury", "격노", "Boosts offensive output.", "공격 출력을 강화합니다.", ContentRarity.Rare, false, "phys_power", 2f),
             ("augment_gold_mending", "Mending", "치유술", "Boosts healing throughput.", "회복 효율을 강화합니다.", ContentRarity.Rare, false, "heal_power", 2f),
+            ("augment_gold_ward", "Ward", "결계", "Boosts mixed defensive stability.", "복합 방어 안정성을 강화합니다.", ContentRarity.Rare, false, "resist", 2f),
+            ("augment_gold_haste", "Haste", "가속", "Improves skill cadence.", "기술 순환 속도를 높입니다.", ContentRarity.Rare, false, "cooldown_recovery", 0.08f),
             ("augment_platinum_overrun", "Overrun", "돌파", "Heavily boosts attack.", "공격력을 크게 강화합니다.", ContentRarity.Epic, false, "phys_power", 3f),
             ("augment_platinum_wall", "Wall", "철벽", "Heavily boosts defense.", "방어력을 크게 강화합니다.", ContentRarity.Epic, false, "armor", 3f),
             ("augment_platinum_surge", "Surge", "급류", "Heavily boosts speed.", "속도를 크게 강화합니다.", ContentRarity.Epic, false, "attack_speed", 2f),
+            ("augment_platinum_clarity", "Absolute Clarity", "완전한 명료", "Heavily improves arcane output.", "마법 출력을 크게 강화합니다.", ContentRarity.Epic, false, "mag_power", 3f),
+            ("augment_platinum_tenacity", "Unbroken Tenacity", "불굴", "Heavily improves control stability.", "제어 안정성을 크게 강화합니다.", ContentRarity.Epic, false, "tenacity", 0.2f),
             ("augment_perm_legacy_blade", "Legacy Blade", "유산의 검", "Permanent attack bonus.", "영구 공격 보너스.", ContentRarity.Epic, true, "phys_power", 1f),
             ("augment_perm_legacy_hide", "Legacy Hide", "유산의 가죽", "Permanent defense bonus.", "영구 방어 보너스.", ContentRarity.Epic, true, "armor", 1f),
             ("augment_perm_legacy_grace", "Legacy Grace", "유산의 은총", "Permanent speed bonus.", "영구 속도 보너스.", ContentRarity.Epic, true, "attack_speed", 1f),
+            ("augment_perm_legacy_crown", "Legacy Crown", "유산의 관", "Permanent resistance bonus.", "영구 저항 보너스.", ContentRarity.Epic, true, "resist", 1f),
+            ("augment_perm_legacy_lantern", "Legacy Lantern", "유산의 등불", "Permanent support bonus.", "영구 지원 보너스.", ContentRarity.Epic, true, "heal_power", 1f),
+            ("augment_perm_legacy_spur", "Legacy Spur", "유산의 박차", "Permanent mobility bonus.", "영구 기동 보너스.", ContentRarity.Epic, true, "move_speed", 0.04f),
         };
 
         foreach (var d in definitions)
@@ -1321,6 +1369,12 @@ public static class SampleSeedGenerator
             ("item_bone_plate", "Bone Plate", "골판 갑옷", "Bulky endurance armor.", "버티기에 강한 방어구.", ItemSlotType.Armor, "max_health", 3f),
             ("item_lucky_charm", "Lucky Charm", "행운 부적", "Tempo-focused accessory.", "템포 중심 장신구.", ItemSlotType.Accessory, "attack_speed", 1f),
             ("item_prayer_bead", "Prayer Bead", "기도 구슬", "Support accessory for healing.", "회복 지원용 장신구.", ItemSlotType.Accessory, "heal_power", 2f),
+            ("item_rift_bow", "Rift Bow", "균열궁", "Mobile ranger weapon.", "기동 사수용 무기.", ItemSlotType.Weapon, "phys_power", 2f),
+            ("item_penitent_shield", "Penitent Shield", "참회의 방패", "Defensive vanguard weapon.", "방어형 선봉 무기.", ItemSlotType.Weapon, "armor", 1f),
+            ("item_cantor_focus", "Cantor Focus", "성가 초점구", "Support mystic focus.", "지원 신비술사용 초점구.", ItemSlotType.Weapon, "mag_power", 2f),
+            ("item_layered_armor", "Layered Armor", "겹갑옷", "General-purpose layered protection.", "범용 겹방어구.", ItemSlotType.Armor, "armor", 1f),
+            ("item_wayfinder_trinket", "Wayfinder Trinket", "길잡이 장신구", "Mobility accessory for repositioning.", "재배치용 기동 장신구.", ItemSlotType.Accessory, "move_speed", 0.08f),
+            ("item_oath_bead", "Oath Bead", "맹세 구슬", "Support accessory for steady recovery.", "안정 회복 지원 장신구.", ItemSlotType.Accessory, "heal_power", 1f),
         };
 
         foreach (var d in items)
@@ -1360,6 +1414,12 @@ public static class SampleSeedGenerator
             ("affix_heavy", "Heavy", "중량", "armor", 2f),
             ("affix_sharp", "Sharp", "예리", "phys_power", 2f),
             ("affix_hasty", "Hasty", "재촉", "attack_speed", 2f),
+            ("affix_warded", "Warded", "결계", "resist", 1f),
+            ("affix_piercing", "Piercing", "관통", "phys_pen", 0.7f),
+            ("affix_focusing", "Focusing", "집속", "mag_power", 1f),
+            ("affix_cleansing", "Cleansing", "정화", "heal_power", 1f),
+            ("affix_reaching", "Reaching", "장거리", "attack_range", 0.2f),
+            ("affix_lithe", "Lithe", "날렵", "move_speed", 0.05f),
         };
 
         foreach (var d in affixes)
@@ -1371,16 +1431,16 @@ public static class SampleSeedGenerator
                 a.DescriptionKey = ContentLocalizationTables.BuildAffixDescriptionKey(d.id);
                 a.Category = d.stat switch
                 {
-                    "phys_power" => AffixCategoryValue.OffenseFlat,
-                    "armor" => AffixCategoryValue.DefenseFlat,
-                    "max_health" => AffixCategoryValue.DefenseScaling,
+                    "phys_power" or "mag_power" or "phys_pen" or "mag_pen" => AffixCategoryValue.OffenseFlat,
+                    "armor" or "resist" => AffixCategoryValue.DefenseFlat,
+                    "max_health" or "tenacity" => AffixCategoryValue.DefenseScaling,
                     _ => AffixCategoryValue.Utility
                 };
                 a.AllowedSlotTypes = d.stat switch
                 {
-                    "phys_power" => new List<ItemSlotType> { ItemSlotType.Weapon },
-                    "armor" => new List<ItemSlotType> { ItemSlotType.Armor, ItemSlotType.Accessory },
-                    "max_health" => new List<ItemSlotType> { ItemSlotType.Armor, ItemSlotType.Accessory },
+                    "phys_power" or "mag_power" or "phys_pen" or "mag_pen" or "attack_range" => new List<ItemSlotType> { ItemSlotType.Weapon },
+                    "armor" or "resist" => new List<ItemSlotType> { ItemSlotType.Armor, ItemSlotType.Accessory },
+                    "max_health" or "tenacity" => new List<ItemSlotType> { ItemSlotType.Armor, ItemSlotType.Accessory },
                     _ => new List<ItemSlotType> { ItemSlotType.Accessory, ItemSlotType.Armor }
                 };
                 a.Modifiers = new List<SerializableStatModifier>
@@ -1392,6 +1452,693 @@ public static class SampleSeedGenerator
             });
         }
     }
+
+    private static void CreateSafeTargetPassiveNodes(IReadOnlyDictionary<string, StableTagDefinition> tags)
+    {
+        CreateClassSafeTargetPassiveNodes("vanguard", tags, new[]
+        {
+            NodeSeed("small_13", PassiveNodeKindValue.Small, 3, new[] { "passive_vanguard_small_10" }, "견고한 발판", "Firm Footing", "저항을 소폭 높입니다.", "Slightly improves resistance.", new[] { "frontline", "guard" }, Mods(("resist", 0.5f))),
+            NodeSeed("small_14", PassiveNodeKindValue.Small, 3, new[] { "passive_vanguard_small_11" }, "보호 거리", "Guard Reach", "보호 반경을 소폭 넓힙니다.", "Slightly expands protect radius.", new[] { "frontline", "shield_skill" }, Mods(("protect_radius", 0.25f))),
+            NodeSeed("notable_06", PassiveNodeKindValue.Notable, 4, new[] { "passive_vanguard_small_13" }, "방벽 규율", "Bulwark Discipline", "체력과 저항을 함께 높입니다.", "Improves health and resistance together.", new[] { "frontline", "guard" }, Mods(("max_health", 2f), ("resist", 0.5f))),
+            NodeSeed("notable_07", PassiveNodeKindValue.Notable, 4, new[] { "passive_vanguard_small_14" }, "흔들림 없는 전열", "Unshaken Line", "방어와 강인함을 높입니다.", "Improves armor and tenacity.", new[] { "frontline", "shield_skill" }, Mods(("armor", 1f), ("tenacity", 0.05f))),
+            NodeSeed("notable_08", PassiveNodeKindValue.Notable, 4, new[] { "passive_vanguard_notable_05" }, "도발 반경", "Challenge Radius", "보호와 위협 반경을 넓힙니다.", "Expands protect and aggro radius.", new[] { "frontline", "guard" }, Mods(("protect_radius", 0.35f), ("aggro_radius", 0.4f))),
+            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_vanguard_notable_06", "passive_vanguard_notable_07" }, "불굴의 방패", "Unbroken Shield", "전열 유지력을 크게 높입니다.", "Greatly improves frontline staying power.", new[] { "frontline", "guard", "shield_skill" }, Mods(("armor", 1.2f), ("max_health", 3f), ("tenacity", 0.08f))),
+        });
+
+        CreateClassSafeTargetPassiveNodes("duelist", tags, new[]
+        {
+            NodeSeed("small_13", PassiveNodeKindValue.Small, 3, new[] { "passive_duelist_small_10" }, "치명 각도", "Killing Angle", "치명타 배율을 소폭 높입니다.", "Slightly improves critical multiplier.", new[] { "frontline", "strike" }, Mods(("crit_multiplier", 0.08f))),
+            NodeSeed("small_14", PassiveNodeKindValue.Small, 3, new[] { "passive_duelist_small_11" }, "빠른 전환", "Quick Pivot", "대상 전환 지연을 줄입니다.", "Reduces target switch delay.", new[] { "frontline", "physical" }, Mods(("target_switch_delay", -0.04f))),
+            NodeSeed("notable_06", PassiveNodeKindValue.Notable, 4, new[] { "passive_duelist_small_13" }, "처형 자세", "Execution Stance", "물리 출력과 치명타 배율을 높입니다.", "Improves physical output and critical multiplier.", new[] { "frontline", "execute" }, Mods(("phys_power", 0.8f), ("crit_multiplier", 0.08f))),
+            NodeSeed("notable_07", PassiveNodeKindValue.Notable, 4, new[] { "passive_duelist_small_14" }, "끊김 없는 추격", "Relentless Chase", "이동과 공격 예열을 개선합니다.", "Improves movement and attack windup.", new[] { "frontline", "physical" }, Mods(("move_speed", 0.05f), ("attack_windup", -0.04f))),
+            NodeSeed("notable_08", PassiveNodeKindValue.Notable, 4, new[] { "passive_duelist_notable_05" }, "피의 빈틈", "Blood Opening", "흡혈과 관통력을 높입니다.", "Improves lifesteal and penetration.", new[] { "frontline", "execute" }, Mods(("lifesteal", 0.02f), ("phys_pen", 0.6f))),
+            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_duelist_notable_06", "passive_duelist_notable_07" }, "창백한 결말", "Pale Finale", "마무리 폭발력을 크게 높입니다.", "Greatly improves execution burst.", new[] { "frontline", "execute", "physical" }, Mods(("phys_power", 1.2f), ("crit_chance", 0.02f), ("target_switch_delay", -0.06f))),
+        });
+
+        CreateClassSafeTargetPassiveNodes("ranger", tags, new[]
+        {
+            NodeSeed("small_13", PassiveNodeKindValue.Small, 3, new[] { "passive_ranger_small_10" }, "긴 호흡", "Long Breath", "공격 사거리를 소폭 늘립니다.", "Slightly increases attack range.", new[] { "backline", "projectile" }, Mods(("attack_range", 0.15f))),
+            NodeSeed("small_14", PassiveNodeKindValue.Small, 3, new[] { "passive_ranger_small_11" }, "날카로운 투사체", "Keen Projectile", "투사체 속도를 높입니다.", "Improves projectile speed.", new[] { "backline", "projectile" }, Mods(("projectile_speed", 0.25f))),
+            NodeSeed("notable_06", PassiveNodeKindValue.Notable, 4, new[] { "passive_ranger_small_13" }, "약점 사거리", "Weakside Reach", "물리 출력과 사거리를 높입니다.", "Improves physical output and range.", new[] { "backline", "projectile" }, Mods(("phys_power", 0.8f), ("attack_range", 0.2f))),
+            NodeSeed("notable_07", PassiveNodeKindValue.Notable, 4, new[] { "passive_ranger_small_14" }, "정조준 흐름", "Aimed Flow", "치명타 확률과 투사체 속도를 높입니다.", "Improves critical chance and projectile speed.", new[] { "backline", "mark" }, Mods(("crit_chance", 0.02f), ("projectile_speed", 0.35f))),
+            NodeSeed("notable_08", PassiveNodeKindValue.Notable, 4, new[] { "passive_ranger_notable_05" }, "그림자 이동", "Shadow Step", "이동과 대상 전환을 개선합니다.", "Improves movement and target switching.", new[] { "backline", "exposed" }, Mods(("move_speed", 0.05f), ("target_switch_delay", -0.04f))),
+            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_ranger_notable_06", "passive_ranger_notable_07" }, "균열 저격", "Rift Marksmanship", "후열 화력의 사거리와 정확도를 크게 높입니다.", "Greatly improves backline range and precision.", new[] { "backline", "projectile", "mark" }, Mods(("phys_power", 1f), ("attack_range", 0.25f), ("crit_chance", 0.02f))),
+        });
+
+        CreateClassSafeTargetPassiveNodes("mystic", tags, new[]
+        {
+            NodeSeed("small_13", PassiveNodeKindValue.Small, 3, new[] { "passive_mystic_small_10" }, "고요한 의식", "Quiet Rite", "저항을 소폭 높입니다.", "Slightly improves resistance.", new[] { "backline", "support" }, Mods(("resist", 0.4f))),
+            NodeSeed("small_14", PassiveNodeKindValue.Small, 3, new[] { "passive_mystic_small_11" }, "빠른 기도", "Swift Prayer", "재사용 회복을 높입니다.", "Improves cooldown recovery.", new[] { "backline", "heal" }, Mods(("cooldown_recovery", 0.04f))),
+            NodeSeed("notable_06", PassiveNodeKindValue.Notable, 4, new[] { "passive_mystic_small_13" }, "정화 성가", "Cleansing Canticle", "회복과 재사용 회복을 높입니다.", "Improves healing and cooldown recovery.", new[] { "backline", "cleanse", "heal" }, Mods(("heal_power", 0.8f), ("cooldown_recovery", 0.04f))),
+            NodeSeed("notable_07", PassiveNodeKindValue.Notable, 4, new[] { "passive_mystic_small_14" }, "집속 주문", "Focused Hex", "마법 출력과 관통력을 높입니다.", "Improves magic output and penetration.", new[] { "backline", "magical" }, Mods(("mag_power", 0.8f), ("mag_pen", 0.6f))),
+            NodeSeed("notable_08", PassiveNodeKindValue.Notable, 4, new[] { "passive_mystic_notable_05" }, "거울 안정", "Mirror Stability", "강인함과 저항을 높입니다.", "Improves tenacity and resistance.", new[] { "backline", "support" }, Mods(("tenacity", 0.04f), ("resist", 0.5f))),
+            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_mystic_notable_06", "passive_mystic_notable_07" }, "쌍성 성가", "Twin Cantor", "지원과 마법 순환을 크게 높입니다.", "Greatly improves support and magic cadence.", new[] { "backline", "support", "magical" }, Mods(("heal_power", 1f), ("mag_power", 0.8f), ("cooldown_recovery", 0.06f))),
+        });
+    }
+
+    private static void CreateClassSafeTargetPassiveNodes(
+        string classId,
+        IReadOnlyDictionary<string, StableTagDefinition> tags,
+        IReadOnlyList<PassiveNodeSeed> seeds)
+    {
+        var boardId = $"board_{classId}";
+        var board = LoadDefinition<PassiveBoardDefinition>($"{ResourcesRoot}/PassiveBoards/board_{classId}.asset");
+        if (board == null)
+        {
+            Debug.LogWarning($"SM safe-target passive node generation will patch fallback board YAML for class '{classId}'.");
+        }
+
+        var createdNodes = new List<PassiveNodeDefinition>();
+        foreach (var seed in seeds)
+        {
+            var nodeId = $"passive_{classId}_{seed.Suffix}";
+            var node = CreateAsset<PassiveNodeDefinition>($"{ResourcesRoot}/PassiveNodes/{nodeId}.asset", asset =>
+            {
+                asset.Id = nodeId;
+                asset.BoardId = board != null ? board.Id : boardId;
+                asset.NameKey = ContentLocalizationTables.BuildPassiveNodeNameKey(nodeId);
+                asset.DescriptionKey = ContentLocalizationTables.BuildPassiveNodeDescriptionKey(nodeId);
+                asset.NodeKind = seed.Kind;
+                asset.PrerequisiteNodeIds = seed.PrerequisiteIds.ToList();
+                asset.MutualExclusionTags = new List<StableTagDefinition>();
+                asset.BoardDepth = seed.Depth;
+                asset.CompileTags = ResolveTags(tags, new[] { classId }.Concat(seed.CompileTagIds));
+                asset.RuleModifierTags = new List<StableTagDefinition>();
+                asset.Modifiers = seed.Modifiers
+                    .Select(modifier => new SerializableStatModifier { StatId = modifier.StatId, Op = modifier.Op, Value = modifier.Value })
+                    .ToList();
+                UpsertStringEntry(ContentLocalizationTables.Passives, asset.NameKey, seed.KoName, seed.EnName);
+                UpsertStringEntry(ContentLocalizationTables.Passives, asset.DescriptionKey, seed.KoDescription, seed.EnDescription);
+            });
+            PatchSerializedPassiveNodeTags(node);
+            createdNodes.Add(node);
+        }
+
+        if (board == null)
+        {
+            PatchPassiveBoardFallbackYaml(classId, createdNodes);
+            return;
+        }
+
+        var orderedNodes = new List<PassiveNodeDefinition>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var node in (board.Nodes ?? new List<PassiveNodeDefinition>()).Concat(createdNodes))
+        {
+            if (node == null || string.IsNullOrWhiteSpace(node.Id) || !seen.Add(node.Id))
+            {
+                continue;
+            }
+
+            orderedNodes.Add(node);
+        }
+
+        board.Nodes = orderedNodes;
+        EditorUtility.SetDirty(board);
+    }
+
+    private static void PatchPassiveBoardFallbackYaml(string classId, IReadOnlyList<PassiveNodeDefinition> createdNodes)
+    {
+        var boardPath = $"{ResourcesRoot}/PassiveBoards/board_{classId}.asset";
+        if (!File.Exists(boardPath))
+        {
+            Debug.LogWarning($"SM safe-target passive board YAML patch skipped missing file '{boardPath}'.");
+            return;
+        }
+
+        var referenceLines = createdNodes
+            .Select(node => BuildAssetReferenceLine($"{ResourcesRoot}/PassiveNodes/{node.Id}.asset"))
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .ToList();
+        if (referenceLines.Count == 0)
+        {
+            return;
+        }
+
+        var lines = File.ReadAllLines(boardPath).ToList();
+        var nodesLineIndex = lines.FindIndex(line => string.Equals(line.Trim(), "Nodes:", StringComparison.Ordinal));
+        if (nodesLineIndex < 0)
+        {
+            Debug.LogWarning($"SM safe-target passive board YAML patch skipped board without Nodes block '{boardPath}'.");
+            return;
+        }
+
+        var insertIndex = nodesLineIndex + 1;
+        while (insertIndex < lines.Count && lines[insertIndex].StartsWith("  - ", StringComparison.Ordinal))
+        {
+            insertIndex++;
+        }
+
+        var existing = lines
+            .Skip(nodesLineIndex + 1)
+            .Take(insertIndex - nodesLineIndex - 1)
+            .ToHashSet(StringComparer.Ordinal);
+
+        foreach (var referenceLine in referenceLines)
+        {
+            if (existing.Contains(referenceLine))
+            {
+                continue;
+            }
+
+            lines.Insert(insertIndex, referenceLine);
+            insertIndex++;
+            existing.Add(referenceLine);
+        }
+
+        File.WriteAllLines(boardPath, lines);
+        AssetDatabase.ImportAsset(boardPath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+    }
+
+    private static string BuildAssetReferenceLine(string assetPath)
+    {
+        var referenceValue = BuildAssetReferenceValue(assetPath);
+        return string.IsNullOrWhiteSpace(referenceValue)
+            ? string.Empty
+            : $"  - {referenceValue}";
+    }
+
+    private static void PatchArchetypeSkillFallbackYaml(string assetPath, string classId, IReadOnlyList<string> defaultSkillIds)
+    {
+        if (!File.Exists(assetPath))
+        {
+            return;
+        }
+
+        var activePoolIds = ResolveFlexUtilitySkillIds(classId);
+        var passivePoolIds = ResolveFlexSupportSkillIds(classId);
+        var flexActiveId = defaultSkillIds.FirstOrDefault(id => activePoolIds.Contains(id, StringComparer.Ordinal))
+                           ?? activePoolIds.FirstOrDefault()
+                           ?? string.Empty;
+        var signatureActiveId = defaultSkillIds.FirstOrDefault(id => !activePoolIds.Contains(id, StringComparer.Ordinal) && !passivePoolIds.Contains(id, StringComparer.Ordinal))
+                                ?? defaultSkillIds.FirstOrDefault()
+                                ?? string.Empty;
+
+        var lines = File.ReadAllLines(assetPath).ToList();
+        ReplaceYamlReferenceList(lines, "Skills:", defaultSkillIds.Select(BuildSkillAssetPath));
+        ReplaceYamlReferenceList(lines, "FlexUtilitySkillPool:", activePoolIds.Select(BuildSkillAssetPath));
+        ReplaceYamlReferenceList(lines, "FlexSupportSkillPool:", passivePoolIds.Select(BuildSkillAssetPath));
+        ReplaceYamlReferenceList(lines, "RecruitFlexActivePool:", activePoolIds.Select(BuildSkillAssetPath));
+        ReplaceYamlReferenceList(lines, "RecruitFlexPassivePool:", passivePoolIds.Select(BuildSkillAssetPath));
+        ReplaceYamlReferenceValue(lines, "SignatureActive:", BuildSkillAssetPath(signatureActiveId));
+        ReplaceYamlReferenceValue(lines, "FlexActive:", BuildSkillAssetPath(flexActiveId));
+        File.WriteAllLines(assetPath, lines);
+        AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+    }
+
+    private static void PatchSafeTargetSpecialistFallbackYaml()
+    {
+        var specs = new[]
+        {
+            new SpecialistFallbackSpec(
+                "rift_stalker",
+                "beastkin",
+                "ranger",
+                DeploymentAnchorValue.BackBottom,
+                TeamPostureTypeValue.CollapseWeakSide,
+                new[] { "skill_scout_core", "skill_scout_utility", "skill_ranger_passive_2", "support_swift" },
+                new[] { "ranger", "backline", "dash", "exposed" },
+                new[] { "backline", "exposed", "ranger" }),
+            new SpecialistFallbackSpec(
+                "bastion_penitent",
+                "human",
+                "vanguard",
+                DeploymentAnchorValue.FrontCenter,
+                TeamPostureTypeValue.ProtectCarry,
+                new[] { "skill_bulwark_core", "skill_warden_utility", "skill_vanguard_passive_2", "support_anchored" },
+                new[] { "vanguard", "frontline", "guard", "shield_skill" },
+                new[] { "frontline", "guard", "vanguard" }),
+            new SpecialistFallbackSpec(
+                "pale_executor",
+                "undead",
+                "duelist",
+                DeploymentAnchorValue.FrontBottom,
+                TeamPostureTypeValue.CollapseWeakSide,
+                new[] { "skill_reaver_core", "skill_raider_utility", "skill_duelist_passive_2", "support_executioner" },
+                new[] { "duelist", "frontline", "mark", "execute" },
+                new[] { "frontline", "execute", "duelist" }),
+            new SpecialistFallbackSpec(
+                "mirror_cantor",
+                "human",
+                "mystic",
+                DeploymentAnchorValue.BackCenter,
+                TeamPostureTypeValue.ProtectCarry,
+                new[] { "skill_priest_core", "skill_hexer_utility", "skill_mystic_passive_1", "support_purifying" },
+                new[] { "mystic", "backline", "cleanse", "support" },
+                new[] { "backline", "cleanse", "mystic" }),
+        };
+
+        foreach (var spec in specs)
+        {
+            PatchSpecialistArchetypeFallbackYaml(spec);
+            PatchSpecialistCharacterFallbackYaml(spec);
+        }
+    }
+
+    private static void PatchSpecialistArchetypeFallbackYaml(SpecialistFallbackSpec spec)
+    {
+        var assetPath = $"{ResourcesRoot}/Archetypes/archetype_{spec.Id}.asset";
+        if (!File.Exists(assetPath))
+        {
+            return;
+        }
+
+        var classId = spec.ClassId;
+        var roleFamily = classId == "duelist" ? "striker" : classId;
+        var weaponFamily = ResolveWeaponFamily(classId);
+        var roleTag = ResolveRoleTag(classId);
+        var recruitTier = RecruitTier.Rare;
+        var roleProfile = ResolveRoleProfile(spec.Id, classId);
+        var budgetCard = BuildArchetypeBudgetCard(roleProfile, LoopCContentGovernance.FromRecruitTier(recruitTier));
+        var activePoolIds = ResolveFlexUtilitySkillIds(classId);
+        var passivePoolIds = ResolveFlexSupportSkillIds(classId);
+        var flexActiveId = spec.DefaultSkillIds.FirstOrDefault(id => activePoolIds.Contains(id, StringComparer.Ordinal))
+                           ?? activePoolIds.FirstOrDefault()
+                           ?? string.Empty;
+        var signatureActiveId = spec.DefaultSkillIds.FirstOrDefault(id => !activePoolIds.Contains(id, StringComparer.Ordinal) && !passivePoolIds.Contains(id, StringComparer.Ordinal))
+                                ?? spec.DefaultSkillIds.FirstOrDefault()
+                                ?? string.Empty;
+
+        var lines = File.ReadAllLines(assetPath).ToList();
+        ReplaceYamlScalar(lines, "Id:", spec.Id);
+        ReplaceYamlScalar(lines, "NameKey:", ContentLocalizationTables.BuildArchetypeNameKey(spec.Id));
+        ReplaceYamlScalar(lines, "ScopeKind:", ((int)ArchetypeScopeValue.Specialist).ToString());
+        ReplaceYamlReferenceValue(lines, "Race:", $"{ResourcesRoot}/Races/race_{spec.RaceId}.asset");
+        ReplaceYamlReferenceValue(lines, "Class:", $"{ResourcesRoot}/Classes/class_{classId}.asset");
+        ReplaceYamlReferenceValue(lines, "TraitPool:", $"{ResourcesRoot}/Traits/traitpool_{spec.Id}.asset");
+        ReplaceYamlReferenceList(lines, "Skills:", spec.DefaultSkillIds.Select(BuildSkillAssetPath));
+        ReplaceYamlTacticPreset(lines, classId, BuildSkillAssetPath(signatureActiveId));
+        ReplaceYamlScalar(lines, "DefaultAnchor:", ((int)spec.DefaultAnchor).ToString());
+        ReplaceYamlScalar(lines, "PreferredTeamPosture:", ((int)spec.PreferredPosture).ToString());
+        ReplaceYamlScalar(lines, "RoleTag:", roleTag);
+        ReplaceYamlScalar(lines, "RoleFamilyTag:", roleFamily);
+        ReplaceYamlScalar(lines, "PrimaryWeaponFamilyTag:", weaponFamily);
+        ReplaceYamlScalar(lines, "RecruitTier:", ((int)recruitTier).ToString());
+        ReplaceYamlBudgetCard(lines, budgetCard);
+        ReplaceYamlScalar(lines, "IsRecruitable:", "1");
+        ReplaceYamlScalar(lines, "IsSummonOnly:", "0");
+        ReplaceYamlScalar(lines, "IsEventOnly:", "0");
+        ReplaceYamlScalar(lines, "IsBossOnly:", "0");
+        ReplaceYamlScalar(lines, "IsUnreleased:", "0");
+        ReplaceYamlScalar(lines, "IsTestOnly:", "0");
+        ReplaceYamlReferenceList(lines, "RecruitPlanTags:", spec.PlanTagIds.Select(BuildStableTagAssetPath));
+        ReplaceYamlReferenceList(lines, "ScoutBiasTags:", spec.ScoutTagIds.Select(BuildStableTagAssetPath));
+        ReplaceYamlReferenceList(lines, "FlexUtilitySkillPool:", activePoolIds.Select(BuildSkillAssetPath));
+        ReplaceYamlReferenceList(lines, "FlexSupportSkillPool:", passivePoolIds.Select(BuildSkillAssetPath));
+        ReplaceYamlReferenceList(lines, "RecruitFlexActivePool:", activePoolIds.Select(BuildSkillAssetPath));
+        ReplaceYamlReferenceList(lines, "RecruitFlexPassivePool:", passivePoolIds.Select(BuildSkillAssetPath));
+        ReplaceYamlRecruitBannedPairings(lines, classId);
+        ReplaceYamlReferenceValue(lines, "SignatureActive:", BuildSkillAssetPath(signatureActiveId));
+        ReplaceYamlReferenceValue(lines, "FlexActive:", BuildSkillAssetPath(flexActiveId));
+        ReplaceYamlReferenceValue(lines, "FootprintProfile:", $"{ResourcesRoot}/FootprintProfiles/footprint_{classId}.asset");
+        ReplaceYamlReferenceValue(lines, "BehaviorProfile:", $"{ResourcesRoot}/BehaviorProfiles/behavior_{classId}.asset");
+        ReplaceYamlReferenceValue(lines, "MobilityProfile:", $"{ResourcesRoot}/MobilityProfiles/mobility_{classId}.asset");
+
+        File.WriteAllLines(assetPath, lines);
+        AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+    }
+
+    private static void PatchSpecialistCharacterFallbackYaml(SpecialistFallbackSpec spec)
+    {
+        var assetPath = $"{ResourcesRoot}/Characters/character_{spec.Id}.asset";
+        if (!File.Exists(assetPath))
+        {
+            return;
+        }
+
+        var lines = File.ReadAllLines(assetPath).ToList();
+        ReplaceYamlScalar(lines, "Id:", spec.Id);
+        ReplaceYamlScalar(lines, "NameKey:", ContentLocalizationTables.BuildCharacterNameKey(spec.Id));
+        ReplaceYamlScalar(lines, "DescriptionKey:", ContentLocalizationTables.BuildCharacterDescriptionKey(spec.Id));
+        ReplaceYamlReferenceValue(lines, "Race:", $"{ResourcesRoot}/Races/race_{spec.RaceId}.asset");
+        ReplaceYamlReferenceValue(lines, "Class:", $"{ResourcesRoot}/Classes/class_{spec.ClassId}.asset");
+        ReplaceYamlReferenceValue(lines, "DefaultArchetype:", $"{ResourcesRoot}/Archetypes/archetype_{spec.Id}.asset");
+        ReplaceYamlReferenceValue(lines, "DefaultRoleInstruction:", $"{ResourcesRoot}/RoleInstructions/{ResolveRoleTag(spec.ClassId)}.asset");
+
+        File.WriteAllLines(assetPath, lines);
+        AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+    }
+
+    private static string BuildStableTagAssetPath(string tagId)
+    {
+        return string.IsNullOrWhiteSpace(tagId)
+            ? string.Empty
+            : $"{ResourcesRoot}/StableTags/tag_{tagId}.asset";
+    }
+
+    private static string BuildSkillAssetPath(string skillId)
+    {
+        return string.IsNullOrWhiteSpace(skillId)
+            ? string.Empty
+            : $"{ResourcesRoot}/Skills/{skillId}.asset";
+    }
+
+    private static string ResolveWeaponFamily(string classId)
+    {
+        return classId switch
+        {
+            "vanguard" => "shield",
+            "duelist" => "blade",
+            "ranger" => "bow",
+            "mystic" => "focus",
+            _ => string.Empty,
+        };
+    }
+
+    private static string ResolveRoleTag(string classId)
+    {
+        return classId switch
+        {
+            "vanguard" => "anchor",
+            "duelist" => "bruiser",
+            "ranger" => "carry",
+            "mystic" => "support",
+            _ => "frontline",
+        };
+    }
+
+    private static CombatRoleBudgetProfile ResolveRoleProfile(string archetypeId, string classId)
+    {
+        return classId switch
+        {
+            "vanguard" => CombatRoleBudgetProfile.Vanguard,
+            "ranger" => CombatRoleBudgetProfile.Ranger,
+            "mystic" when string.Equals(archetypeId, "priest", StringComparison.Ordinal) || string.Equals(archetypeId, "mirror_cantor", StringComparison.Ordinal) => CombatRoleBudgetProfile.Support,
+            "mystic" => CombatRoleBudgetProfile.Arcanist,
+            "duelist" when string.Equals(archetypeId, "raider", StringComparison.Ordinal) || string.Equals(archetypeId, "reaver", StringComparison.Ordinal) => CombatRoleBudgetProfile.Bruiser,
+            "duelist" => CombatRoleBudgetProfile.Duelist,
+            _ => CombatRoleBudgetProfile.Vanguard,
+        };
+    }
+
+    private static BudgetCard BuildArchetypeBudgetCard(CombatRoleBudgetProfile roleProfile, ContentRarity rarity)
+    {
+        var target = LoopCContentGovernance.UnitBudgetTargets[rarity].Target;
+        var vector = roleProfile switch
+        {
+            CombatRoleBudgetProfile.Vanguard => MakeBudgetVector(10, 4, 36, 24, 4, 6, 8, 8),
+            CombatRoleBudgetProfile.Bruiser => MakeBudgetVector(24, 12, 28, 6, 14, 2, 6, 8),
+            CombatRoleBudgetProfile.Duelist => MakeBudgetVector(16, 28, 10, 4, 22, 2, 6, 12),
+            CombatRoleBudgetProfile.Ranger => MakeBudgetVector(28, 8, 8, 4, 12, 4, 8, 28),
+            CombatRoleBudgetProfile.Arcanist => MakeBudgetVector(8, 30, 6, 20, 8, 6, 8, 14),
+            CombatRoleBudgetProfile.Support => MakeBudgetVector(6, 6, 18, 8, 6, 32, 6, 18),
+            CombatRoleBudgetProfile.Summoner => MakeBudgetVector(18, 8, 12, 6, 8, 24, 14, 10),
+            _ => MakeBudgetVector(14, 12, 18, 8, 8, 8, 8, 24),
+        };
+        AdjustBudgetFinalScore(vector, target);
+
+        var (threats, counters) = ResolveArchetypeTopology(roleProfile, rarity);
+        return BuildBudgetCard(
+            BudgetDomain.UnitBlueprint,
+            rarity,
+            PowerBand.Standard,
+            roleProfile,
+            vector,
+            keywordCount: rarity switch
+            {
+                ContentRarity.Common => 2,
+                ContentRarity.Rare => 3,
+                _ => 4,
+            },
+            conditionClauseCount: rarity == ContentRarity.Common ? 1 : 2,
+            ruleExceptionCount: rarity == ContentRarity.Epic ? 1 : 0,
+            threats,
+            counters);
+    }
+
+    private static void ReplaceYamlReferenceList(List<string> lines, string header, IEnumerable<string> assetPaths)
+    {
+        var index = FindYamlFieldLineIndex(lines, header);
+        if (index < 0)
+        {
+            return;
+        }
+
+        var indent = lines[index].Length - lines[index].TrimStart().Length;
+        var prefix = new string(' ', indent);
+        lines[index] = $"{prefix}{header}";
+
+        var removeIndex = index + 1;
+        while (removeIndex < lines.Count && lines[removeIndex].StartsWith($"{prefix}- ", StringComparison.Ordinal))
+        {
+            lines.RemoveAt(removeIndex);
+        }
+
+        var insertIndex = index + 1;
+        foreach (var assetPath in assetPaths)
+        {
+            var referenceValue = BuildAssetReferenceValue(assetPath);
+            if (string.IsNullOrWhiteSpace(referenceValue))
+            {
+                continue;
+            }
+
+            lines.Insert(insertIndex, $"{prefix}- {referenceValue}");
+            insertIndex++;
+        }
+    }
+
+    private static void ReplaceYamlScalar(List<string> lines, string field, string value)
+    {
+        var index = FindYamlFieldLineIndex(lines, field);
+        if (index < 0)
+        {
+            return;
+        }
+
+        var indent = lines[index].Length - lines[index].TrimStart().Length;
+        lines[index] = $"{new string(' ', indent)}{field} {value ?? string.Empty}".TrimEnd();
+    }
+
+    private static void ReplaceYamlReferenceValue(List<string> lines, string field, string assetPath)
+    {
+        var index = FindYamlFieldLineIndex(lines, field);
+        if (index < 0)
+        {
+            return;
+        }
+
+        var indent = lines[index].Length - lines[index].TrimStart().Length;
+        var referenceValue = BuildAssetReferenceValue(assetPath);
+        lines[index] = string.IsNullOrWhiteSpace(referenceValue)
+            ? $"{new string(' ', indent)}{field} {{fileID: 0}}"
+            : $"{new string(' ', indent)}{field} {referenceValue}";
+    }
+
+    private static void ReplaceYamlTacticPreset(List<string> lines, string classId, string signatureSkillPath)
+    {
+        var signatureSkill = BuildAssetReferenceValue(signatureSkillPath);
+        if (string.IsNullOrWhiteSpace(signatureSkill))
+        {
+            signatureSkill = "{fileID: 0}";
+        }
+
+        var entries = classId == "mystic"
+            ? new[]
+            {
+                (Priority: 0, ConditionType: 1, Threshold: "0.6", ActionType: 1, TargetSelector: 1, Skill: signatureSkill),
+                (Priority: 1, ConditionType: 4, Threshold: "1.5", ActionType: 0, TargetSelector: 5, Skill: "{fileID: 0}"),
+                (Priority: 2, ConditionType: 5, Threshold: "0", ActionType: 2, TargetSelector: 0, Skill: "{fileID: 0}"),
+            }
+            : new[]
+            {
+                (Priority: 0, ConditionType: 4, Threshold: "1.5", ActionType: 1, TargetSelector: 5, Skill: signatureSkill),
+                (Priority: 1, ConditionType: 3, Threshold: "0", ActionType: 0, TargetSelector: 3, Skill: "{fileID: 0}"),
+                (Priority: 2, ConditionType: 5, Threshold: "0", ActionType: 2, TargetSelector: 0, Skill: "{fileID: 0}"),
+            };
+
+        ReplaceYamlBlock(lines, "TacticPreset:", indent =>
+        {
+            var prefix = new string(' ', indent);
+            var nested = $"{prefix}  ";
+            var block = new List<string>();
+            foreach (var entry in entries)
+            {
+                block.Add($"{prefix}- Priority: {entry.Priority}");
+                block.Add($"{nested}ConditionType: {entry.ConditionType}");
+                block.Add($"{nested}Threshold: {entry.Threshold}");
+                block.Add($"{nested}ActionType: {entry.ActionType}");
+                block.Add($"{nested}TargetSelector: {entry.TargetSelector}");
+                block.Add($"{nested}Skill: {entry.Skill}");
+            }
+
+            return block;
+        });
+    }
+
+    private static void ReplaceYamlBudgetCard(List<string> lines, BudgetCard budgetCard)
+    {
+        ReplaceYamlBlock(lines, "BudgetCard:", indent =>
+        {
+            var nested = $"{new string(' ', indent)}  ";
+            var vector = budgetCard.Vector;
+            var block = new List<string>
+            {
+                $"{nested}Domain: {(int)budgetCard.Domain}",
+                $"{nested}Rarity: {(int)budgetCard.Rarity}",
+                $"{nested}PowerBand: {(int)budgetCard.PowerBand}",
+                $"{nested}RoleProfile: {(int)budgetCard.RoleProfile}",
+                $"{nested}Vector:",
+                $"{nested}  SustainedDamage: {vector.SustainedDamage}",
+                $"{nested}  BurstDamage: {vector.BurstDamage}",
+                $"{nested}  Durability: {vector.Durability}",
+                $"{nested}  Control: {vector.Control}",
+                $"{nested}  Mobility: {vector.Mobility}",
+                $"{nested}  Support: {vector.Support}",
+                $"{nested}  CounterCoverage: {vector.CounterCoverage}",
+                $"{nested}  Reliability: {vector.Reliability}",
+                $"{nested}  Economy: {vector.Economy}",
+                $"{nested}  DrawbackCredit: {vector.DrawbackCredit}",
+                $"{nested}KeywordCount: {budgetCard.KeywordCount}",
+                $"{nested}ConditionClauseCount: {budgetCard.ConditionClauseCount}",
+                $"{nested}RuleExceptionCount: {budgetCard.RuleExceptionCount}",
+                $"{nested}DeclaredThreatPatterns: {SerializePackedEnumArray(budgetCard.DeclaredThreatPatterns)}",
+            };
+
+            if (budgetCard.DeclaredCounterTools.Length == 0)
+            {
+                block.Add($"{nested}DeclaredCounterTools: []");
+            }
+            else
+            {
+                block.Add($"{nested}DeclaredCounterTools:");
+                foreach (var counter in budgetCard.DeclaredCounterTools)
+                {
+                    block.Add($"{nested}- Tool: {(int)counter.Tool}");
+                    block.Add($"{nested}  Strength: {(int)counter.Strength}");
+                }
+            }
+
+            block.Add($"{nested}DeclaredFeatureFlags: {(int)budgetCard.DeclaredFeatureFlags}");
+            return block;
+        });
+    }
+
+    private static void ReplaceYamlRecruitBannedPairings(List<string> lines, string classId)
+    {
+        var pairs = BuildRecruitBannedPairings(classId);
+        ReplaceYamlBlock(lines, "RecruitBannedPairings:", indent =>
+        {
+            if (pairs.Count == 0)
+            {
+                return Array.Empty<string>();
+            }
+
+            var prefix = new string(' ', indent);
+            return pairs
+                .SelectMany(pair => new[]
+                {
+                    $"{prefix}- FlexActiveId: {pair.FlexActiveId}",
+                    $"{prefix}  FlexPassiveId: {pair.FlexPassiveId}",
+                })
+                .ToList();
+        });
+    }
+
+    private static void ReplaceYamlBlock(List<string> lines, string header, Func<int, IReadOnlyList<string>> buildBlock)
+    {
+        var index = FindYamlFieldLineIndex(lines, header);
+        if (index < 0)
+        {
+            return;
+        }
+
+        var indent = lines[index].Length - lines[index].TrimStart().Length;
+        var prefix = new string(' ', indent);
+        lines[index] = $"{prefix}{header}";
+
+        var removeIndex = index + 1;
+        while (removeIndex < lines.Count)
+        {
+            var trimmed = lines[removeIndex].Trim();
+            if (!string.IsNullOrWhiteSpace(trimmed)
+                && lines[removeIndex].Length - lines[removeIndex].TrimStart().Length <= indent)
+            {
+                break;
+            }
+
+            lines.RemoveAt(removeIndex);
+        }
+
+        var insertIndex = index + 1;
+        foreach (var line in buildBlock(indent))
+        {
+            lines.Insert(insertIndex, line);
+            insertIndex++;
+        }
+    }
+
+    private static string SerializePackedEnumArray<TEnum>(IEnumerable<TEnum> values)
+        where TEnum : Enum
+    {
+        return string.Concat(values.Select(value => $"{Convert.ToInt32(value):x2}000000"));
+    }
+
+    private static int FindYamlFieldLineIndex(IReadOnlyList<string> lines, string field)
+    {
+        for (var index = 0; index < lines.Count; index++)
+        {
+            var trimmed = lines[index].TrimStart();
+            if (string.Equals(trimmed, field, StringComparison.Ordinal)
+                || trimmed.StartsWith($"{field} ", StringComparison.Ordinal))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    private static string BuildAssetReferenceValue(string assetPath)
+    {
+        var guid = AssetDatabase.AssetPathToGUID(assetPath);
+        return string.IsNullOrWhiteSpace(guid)
+            ? string.Empty
+            : $"{{fileID: 11400000, guid: {guid}, type: 2}}";
+    }
+
+    private sealed record SpecialistFallbackSpec(
+        string Id,
+        string RaceId,
+        string ClassId,
+        DeploymentAnchorValue DefaultAnchor,
+        TeamPostureTypeValue PreferredPosture,
+        string[] DefaultSkillIds,
+        string[] PlanTagIds,
+        string[] ScoutTagIds);
+
+    private static PassiveNodeSeed NodeSeed(
+        string suffix,
+        PassiveNodeKindValue kind,
+        int depth,
+        string[] prerequisiteIds,
+        string koName,
+        string enName,
+        string koDescription,
+        string enDescription,
+        string[] compileTagIds,
+        SerializableStatModifier[] modifiers)
+    {
+        return new PassiveNodeSeed(suffix, kind, depth, prerequisiteIds, koName, enName, koDescription, enDescription, compileTagIds, modifiers);
+    }
+
+    private static SerializableStatModifier[] Mods(params (string StatId, float Value)[] modifiers)
+    {
+        return modifiers
+            .Select(modifier => new SerializableStatModifier { StatId = modifier.StatId, Value = modifier.Value })
+            .ToArray();
+    }
+
+    private sealed record PassiveNodeSeed(
+        string Suffix,
+        PassiveNodeKindValue Kind,
+        int Depth,
+        string[] PrerequisiteIds,
+        string KoName,
+        string EnName,
+        string KoDescription,
+        string EnDescription,
+        string[] CompileTagIds,
+        SerializableStatModifier[] Modifiers);
 
     private static Dictionary<string, RewardTableDefinition> CreateRewardTables()
     {
@@ -1813,7 +2560,7 @@ public static class SampleSeedGenerator
 
     private static void ApplyLoopCAugmentGovernance(AugmentDefinition augment)
     {
-        var target = LoopCContentGovernance.AugmentBudgetTargets[augment.Rarity].Target;
+        var target = ResolveAuthoredAugmentBudgetTarget(augment);
         var band = augment.Rarity switch
         {
             ContentRarity.Common => PowerBand.Major,
@@ -1837,6 +2584,14 @@ public static class SampleSeedGenerator
             ruleExceptionCount: augment.Rarity == ContentRarity.Epic ? 1 : 0,
             Array.Empty<ThreatPattern>(),
             Array.Empty<CounterToolContribution>());
+    }
+
+    private static int ResolveAuthoredAugmentBudgetTarget(AugmentDefinition augment)
+    {
+        var target = LoopCContentGovernance.AugmentBudgetTargets[augment.Rarity].Target;
+        return augment.Rarity == ContentRarity.Epic && !augment.IsPermanent
+            ? target - LoopCContentGovernance.AugmentBudgetTargets[augment.Rarity].Tolerance
+            : target;
     }
 
     private static void ApplyLoopCStatusGovernance(StatusFamilyDefinition status)
@@ -1913,7 +2668,7 @@ public static class SampleSeedGenerator
         {
             "vanguard" => CombatRoleBudgetProfile.Vanguard,
             "ranger" => CombatRoleBudgetProfile.Ranger,
-            "mystic" when string.Equals(archetype.Id, "priest", StringComparison.Ordinal) => CombatRoleBudgetProfile.Support,
+            "mystic" when string.Equals(archetype.Id, "priest", StringComparison.Ordinal) || string.Equals(archetype.Id, "mirror_cantor", StringComparison.Ordinal) => CombatRoleBudgetProfile.Support,
             "mystic" => CombatRoleBudgetProfile.Arcanist,
             "duelist" when string.Equals(archetype.Id, "raider", StringComparison.Ordinal) || string.Equals(archetype.Id, "reaver", StringComparison.Ordinal) => CombatRoleBudgetProfile.Bruiser,
             "duelist" => CombatRoleBudgetProfile.Duelist,
@@ -2015,9 +2770,9 @@ public static class SampleSeedGenerator
         var statId = augment.Modifiers.FirstOrDefault()?.StatId ?? string.Empty;
         var vector = statId switch
         {
-            "armor" or "max_health" => MakeBudgetVector(0, 0, target / 2, 0, 0, target / 6, 0, target / 3),
+            "armor" or "max_health" or "resist" or "tenacity" => MakeBudgetVector(0, 0, target / 2, 0, 0, target / 6, 0, target / 3),
             "heal_power" => MakeBudgetVector(0, 0, target / 6, 0, 0, target / 2, 0, target / 3),
-            "attack_speed" => MakeBudgetVector(target / 3, target / 6, 0, 0, target / 6, 0, 0, target / 3),
+            "attack_speed" or "move_speed" or "attack_range" or "cooldown_recovery" => MakeBudgetVector(target / 3, target / 6, 0, 0, target / 6, 0, 0, target / 3),
             _ => MakeBudgetVector(target / 3, target / 3, 0, 0, 0, 0, 0, target / 3),
         };
         AdjustBudgetFinalScore(vector, target);
@@ -3664,6 +4419,10 @@ public static class SampleSeedGenerator
             "priest" => "사제",
             "hexer" => "주술사",
             "shaman" => "주술승",
+            "rift_stalker" => "균열 추적자",
+            "bastion_penitent" => "참회 방벽수",
+            "pale_executor" => "창백한 집행자",
+            "mirror_cantor" => "거울 성가대",
             _ => id
         };
     }
@@ -3689,6 +4448,10 @@ public static class SampleSeedGenerator
             "priest" => "Priest",
             "hexer" => "Hexer",
             "shaman" => "Shaman",
+            "rift_stalker" => "Rift Stalker",
+            "bastion_penitent" => "Bastion Penitent",
+            "pale_executor" => "Pale Executor",
+            "mirror_cantor" => "Mirror Cantor",
             _ => id
         };
     }

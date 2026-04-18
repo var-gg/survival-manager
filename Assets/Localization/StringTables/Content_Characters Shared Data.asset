@@ -143,6 +143,38 @@ MonoBehaviour:
     m_Key: content.character.hexer.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 2241005515431936
+    m_Key: content.character.rift_stalker.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241005595123712
+    m_Key: content.character.rift_stalker.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241006316544000
+    m_Key: content.character.bastion_penitent.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241006316544001
+    m_Key: content.character.bastion_penitent.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241007025381376
+    m_Key: content.character.pale_executor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241007025381377
+    m_Key: content.character.pale_executor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241007767773184
+    m_Key: content.character.mirror_cantor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2241007767773185
+    m_Key: content.character.mirror_cantor.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

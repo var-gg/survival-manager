@@ -70,12 +70,14 @@ internal static class LaunchScopeGapEvaluator
 
     internal static void ValidatePassiveBoardShape(PassiveBoardShapeReport board, ICollection<ContentValidationIssue> issues)
     {
-        if (board.SmallCount != 12 || board.NotableCount != 5 || board.KeystoneCount != 1)
+        var matchesFloor = board.SmallCount == 12 && board.NotableCount == 5 && board.KeystoneCount == 1;
+        var matchesSafeTarget = board.SmallCount == 14 && board.NotableCount == 8 && board.KeystoneCount == 2;
+        if (!matchesFloor && !matchesSafeTarget)
         {
             ContentValidationIssueFactory.AddError(
                 issues,
                 "passive_board.shape",
-                $"Passive board '{board.BoardId}' must match the paid launch floor shape 12/5/1. Found {board.SmallCount}/{board.NotableCount}/{board.KeystoneCount}.",
+                $"Passive board '{board.BoardId}' must match the paid launch floor shape 12/5/1 or safe target shape 14/8/2. Found {board.SmallCount}/{board.NotableCount}/{board.KeystoneCount}.",
                 board.BoardId,
                 board.ClassId);
         }

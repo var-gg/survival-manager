@@ -66,6 +66,22 @@ MonoBehaviour:
     m_Localized: Shaman
     m_Metadata:
       m_Items: []
+  - m_Id: 7047176562663424
+    m_Localized: Rift Stalker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047177426690048
+    m_Localized: Bastion Penitent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047178081001472
+    m_Localized: Pale Executor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047178705952768
+    m_Localized: Mirror Cantor
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

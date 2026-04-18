@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: traitpool_mirror_cantor
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:TraitPoolDefinition
+  Id: traitpool_mirror_cantor
+  ArchetypeId: mirror_cantor
+  PositiveTraits:
+  - Id: mirror_cantor_positive_brave
+    NameKey: content.trait.mirror_cantor.mirror_cantor_positive_brave.name
+    DescriptionKey: content.trait.mirror_cantor.mirror_cantor_positive_brave.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 0
+      Value: 2
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: mirror_cantor_positive_sturdy
+    NameKey: content.trait.mirror_cantor.mirror_cantor_positive_sturdy.name
+    DescriptionKey: content.trait.mirror_cantor.mirror_cantor_positive_sturdy.desc
+    Modifiers:
+    - StatId: armor
+      Op: 0
+      Value: 1
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: mirror_cantor_positive_swift
+    NameKey: content.trait.mirror_cantor.mirror_cantor_positive_swift.name
+    DescriptionKey: content.trait.mirror_cantor.mirror_cantor_positive_swift.desc
+    Modifiers:
+    - StatId: attack_speed
+      Op: 0
+      Value: 1
+    legacyDisplayName: 
+    legacyDescription: 
+  NegativeTraits:
+  - Id: mirror_cantor_negative_frail
+    NameKey: content.trait.mirror_cantor.mirror_cantor_negative_frail.name
+    DescriptionKey: content.trait.mirror_cantor.mirror_cantor_negative_frail.desc
+    Modifiers:
+    - StatId: max_health
+      Op: 0
+      Value: -3
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: mirror_cantor_negative_clumsy
+    NameKey: content.trait.mirror_cantor.mirror_cantor_negative_clumsy.name
+    DescriptionKey: content.trait.mirror_cantor.mirror_cantor_negative_clumsy.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 0
+      Value: -1
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: mirror_cantor_negative_slow
+    NameKey: content.trait.mirror_cantor.mirror_cantor_negative_slow.name
+    DescriptionKey: content.trait.mirror_cantor.mirror_cantor_negative_slow.desc
+    Modifiers:
+    - StatId: attack_speed
+      Op: 0
+      Value: -1
+    legacyDisplayName: 
+    legacyDescription: 

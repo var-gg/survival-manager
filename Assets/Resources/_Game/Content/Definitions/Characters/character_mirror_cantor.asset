@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: character_mirror_cantor
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:CharacterDefinition
+  Id: mirror_cantor
+  NameKey: content.character.mirror_cantor.name
+  DescriptionKey: content.character.mirror_cantor.desc
+  Race: {fileID: 11400000, guid: 732863225f9204842af76a32f0d75924, type: 2}
+  Class: {fileID: 11400000, guid: 303ce1202540bc442896129adc2f364a, type: 2}
+  DefaultArchetype: {fileID: 11400000, guid: f53717a401454064cb2ee4741f6764e6, type: 2}
+  DefaultRoleInstruction: {fileID: 11400000, guid: 878a4f8c30ad1cf4491ffabf9a038ec9, type: 2}
+  legacyDisplayName: 
+  legacyDescription: 

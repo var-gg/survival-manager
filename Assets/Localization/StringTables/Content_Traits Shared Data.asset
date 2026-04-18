@@ -1071,6 +1071,198 @@ MonoBehaviour:
     m_Key: content.trait.shaman.shaman_negative_slow.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 7047156157374464
+    m_Key: content.trait.rift_stalker.rift_stalker_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203584
+    m_Key: content.trait.rift_stalker.rift_stalker_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203585
+    m_Key: content.trait.rift_stalker.rift_stalker_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203586
+    m_Key: content.trait.rift_stalker.rift_stalker_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203587
+    m_Key: content.trait.rift_stalker.rift_stalker_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203588
+    m_Key: content.trait.rift_stalker.rift_stalker_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203589
+    m_Key: content.trait.rift_stalker.rift_stalker_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203590
+    m_Key: content.trait.rift_stalker.rift_stalker_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203591
+    m_Key: content.trait.rift_stalker.rift_stalker_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203592
+    m_Key: content.trait.rift_stalker.rift_stalker_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203593
+    m_Key: content.trait.rift_stalker.rift_stalker_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047156283203594
+    m_Key: content.trait.rift_stalker.rift_stalker_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012480
+    m_Key: content.trait.bastion_penitent.bastion_penitent_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012481
+    m_Key: content.trait.bastion_penitent.bastion_penitent_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012482
+    m_Key: content.trait.bastion_penitent.bastion_penitent_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012483
+    m_Key: content.trait.bastion_penitent.bastion_penitent_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012484
+    m_Key: content.trait.bastion_penitent.bastion_penitent_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012485
+    m_Key: content.trait.bastion_penitent.bastion_penitent_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012486
+    m_Key: content.trait.bastion_penitent.bastion_penitent_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012487
+    m_Key: content.trait.bastion_penitent.bastion_penitent_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012488
+    m_Key: content.trait.bastion_penitent.bastion_penitent_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012489
+    m_Key: content.trait.bastion_penitent.bastion_penitent_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012490
+    m_Key: content.trait.bastion_penitent.bastion_penitent_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157013012491
+    m_Key: content.trait.bastion_penitent.bastion_penitent_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157755404288
+    m_Key: content.trait.pale_executor.pale_executor_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157755404289
+    m_Key: content.trait.pale_executor.pale_executor_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157755404290
+    m_Key: content.trait.pale_executor.pale_executor_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157755404291
+    m_Key: content.trait.pale_executor.pale_executor_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157755404292
+    m_Key: content.trait.pale_executor.pale_executor_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157755404293
+    m_Key: content.trait.pale_executor.pale_executor_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157759598592
+    m_Key: content.trait.pale_executor.pale_executor_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157759598593
+    m_Key: content.trait.pale_executor.pale_executor_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157759598594
+    m_Key: content.trait.pale_executor.pale_executor_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157759598595
+    m_Key: content.trait.pale_executor.pale_executor_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157759598596
+    m_Key: content.trait.pale_executor.pale_executor_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047157759598597
+    m_Key: content.trait.pale_executor.pale_executor_negative_slow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298624
+    m_Key: content.trait.mirror_cantor.mirror_cantor_positive_brave.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298625
+    m_Key: content.trait.mirror_cantor.mirror_cantor_positive_brave.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298626
+    m_Key: content.trait.mirror_cantor.mirror_cantor_positive_sturdy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298627
+    m_Key: content.trait.mirror_cantor.mirror_cantor_positive_sturdy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298628
+    m_Key: content.trait.mirror_cantor.mirror_cantor_positive_swift.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298629
+    m_Key: content.trait.mirror_cantor.mirror_cantor_positive_swift.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298630
+    m_Key: content.trait.mirror_cantor.mirror_cantor_negative_frail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298631
+    m_Key: content.trait.mirror_cantor.mirror_cantor_negative_frail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298632
+    m_Key: content.trait.mirror_cantor.mirror_cantor_negative_clumsy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298633
+    m_Key: content.trait.mirror_cantor.mirror_cantor_negative_clumsy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298634
+    m_Key: content.trait.mirror_cantor.mirror_cantor_negative_slow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047158422298635
+    m_Key: content.trait.mirror_cantor.mirror_cantor_negative_slow.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

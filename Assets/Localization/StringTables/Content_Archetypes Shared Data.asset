@@ -63,6 +63,22 @@ MonoBehaviour:
     m_Key: content.archetype.shaman.name
     m_Metadata:
       m_Items: []
+  - m_Id: 7047176562663424
+    m_Key: content.archetype.rift_stalker.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047177426690048
+    m_Key: content.archetype.bastion_penitent.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047178081001472
+    m_Key: content.archetype.pale_executor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047178705952768
+    m_Key: content.archetype.mirror_cantor.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

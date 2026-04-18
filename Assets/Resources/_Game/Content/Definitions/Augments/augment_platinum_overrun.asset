@@ -23,14 +23,14 @@ MonoBehaviour:
     PowerBand: 5
     RoleProfile: -1
     Vector:
-      SustainedDamage: 11
-      BurstDamage: 11
+      SustainedDamage: 10
+      BurstDamage: 10
       Durability: 0
       Control: 0
       Mobility: 0
       Support: 0
       CounterCoverage: 0
-      Reliability: 9
+      Reliability: 11
       Economy: 0
       DrawbackCredit: 0
     KeywordCount: 4

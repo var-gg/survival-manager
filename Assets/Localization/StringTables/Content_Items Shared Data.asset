@@ -303,6 +303,54 @@ MonoBehaviour:
     m_Key: content.item.item_shaman_trinket.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 7047238265069568
+    m_Key: content.item.item_rift_bow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047238348955648
+    m_Key: content.item.item_rift_bow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047239124901888
+    m_Key: content.item.item_penitent_shield.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047239124901889
+    m_Key: content.item.item_penitent_shield.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047239875682304
+    m_Key: content.item.item_cantor_focus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047239875682305
+    m_Key: content.item.item_cantor_focus.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047240588713984
+    m_Key: content.item.item_layered_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047240588713985
+    m_Key: content.item.item_layered_armor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047241255608320
+    m_Key: content.item.item_wayfinder_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047241255608321
+    m_Key: content.item.item_wayfinder_trinket.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047241993805824
+    m_Key: content.item.item_oath_bead.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047241993805825
+    m_Key: content.item.item_oath_bead.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

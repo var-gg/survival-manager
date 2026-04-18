@@ -207,6 +207,54 @@ MonoBehaviour:
     m_Key: content.affix.affix_ravenous.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 7047254165676032
+    m_Key: content.affix.affix_warded.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047254245367808
+    m_Key: content.affix.affix_warded.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047254954205184
+    m_Key: content.affix.affix_piercing.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047254954205185
+    m_Key: content.affix.affix_piercing.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047256560623616
+    m_Key: content.affix.affix_focusing.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047256560623617
+    m_Key: content.affix.affix_focusing.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047257214935040
+    m_Key: content.affix.affix_cleansing.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047257214935041
+    m_Key: content.affix.affix_cleansing.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047258364174336
+    m_Key: content.affix.affix_reaching.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047258364174337
+    m_Key: content.affix.affix_reaching.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047259253366784
+    m_Key: content.affix.affix_lithe.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047259253366785
+    m_Key: content.affix.affix_lithe.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -231,6 +231,78 @@ MonoBehaviour:
     m_Key: content.augment.augment_perm_legacy_signal.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 7047206199615488
+    m_Key: content.augment.augment_silver_clarity.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047206279307264
+    m_Key: content.augment.augment_silver_clarity.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047207051059200
+    m_Key: content.augment.augment_silver_reach.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047207051059201
+    m_Key: content.augment.augment_silver_reach.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047211874508800
+    m_Key: content.augment.augment_gold_ward.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047211874508801
+    m_Key: content.augment.augment_gold_ward.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047212616900608
+    m_Key: content.augment.augment_gold_haste.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047212616900609
+    m_Key: content.augment.augment_gold_haste.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047217176109056
+    m_Key: content.augment.augment_platinum_clarity.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047217176109057
+    m_Key: content.augment.augment_platinum_clarity.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047217935278080
+    m_Key: content.augment.augment_platinum_tenacity.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047217935278081
+    m_Key: content.augment.augment_platinum_tenacity.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047223480147968
+    m_Key: content.augment.augment_perm_legacy_crown.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047223480147969
+    m_Key: content.augment.augment_perm_legacy_crown.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047224176402432
+    m_Key: content.augment.augment_perm_legacy_lantern.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047224176402433
+    m_Key: content.augment.augment_perm_legacy_lantern.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047224964931584
+    m_Key: content.augment.augment_perm_legacy_spur.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7047224964931585
+    m_Key: content.augment.augment_perm_legacy_spur.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

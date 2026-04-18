@@ -623,6 +623,198 @@ MonoBehaviour:
     m_Key: content.passive_board.board_mystic.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 7050075351015424
+    m_Key: content.passive_node.passive_vanguard_small_13.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050076936462336
+    m_Key: content.passive_node.passive_vanguard_small_13.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050079583068160
+    m_Key: content.passive_node.passive_vanguard_small_14.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050079583068161
+    m_Key: content.passive_node.passive_vanguard_small_14.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050081495670784
+    m_Key: content.passive_node.passive_vanguard_notable_06.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050081495670785
+    m_Key: content.passive_node.passive_vanguard_notable_06.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050082787516416
+    m_Key: content.passive_node.passive_vanguard_notable_07.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050082787516417
+    m_Key: content.passive_node.passive_vanguard_notable_07.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050084087750656
+    m_Key: content.passive_node.passive_vanguard_notable_08.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050084087750657
+    m_Key: content.passive_node.passive_vanguard_notable_08.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050086847602688
+    m_Key: content.passive_node.passive_vanguard_keystone_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050086847602689
+    m_Key: content.passive_node.passive_vanguard_keystone_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050088995086336
+    m_Key: content.passive_node.passive_duelist_small_13.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050088995086337
+    m_Key: content.passive_node.passive_duelist_small_13.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050090198851584
+    m_Key: content.passive_node.passive_duelist_small_14.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050090198851585
+    m_Key: content.passive_node.passive_duelist_small_14.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050091364868096
+    m_Key: content.passive_node.passive_duelist_notable_06.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050091364868097
+    m_Key: content.passive_node.passive_duelist_notable_06.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050094317658112
+    m_Key: content.passive_node.passive_duelist_notable_07.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050094317658113
+    m_Key: content.passive_node.passive_duelist_notable_07.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050095680806912
+    m_Key: content.passive_node.passive_duelist_notable_08.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050095680806913
+    m_Key: content.passive_node.passive_duelist_notable_08.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050096762937344
+    m_Key: content.passive_node.passive_duelist_keystone_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050096762937345
+    m_Key: content.passive_node.passive_duelist_keystone_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050098428076032
+    m_Key: content.passive_node.passive_ranger_small_13.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050098428076033
+    m_Key: content.passive_node.passive_ranger_small_13.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050101007572992
+    m_Key: content.passive_node.passive_ranger_small_14.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050101007572993
+    m_Key: content.passive_node.passive_ranger_small_14.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050102018400256
+    m_Key: content.passive_node.passive_ranger_notable_06.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050102018400257
+    m_Key: content.passive_node.passive_ranger_notable_06.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050102895009792
+    m_Key: content.passive_node.passive_ranger_notable_07.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050102895009793
+    m_Key: content.passive_node.passive_ranger_notable_07.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050103775813632
+    m_Key: content.passive_node.passive_ranger_notable_08.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050103775813633
+    m_Key: content.passive_node.passive_ranger_notable_08.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050104509816832
+    m_Key: content.passive_node.passive_ranger_keystone_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050104509816833
+    m_Key: content.passive_node.passive_ranger_keystone_02.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050105994600448
+    m_Key: content.passive_node.passive_mystic_small_13.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050105994600449
+    m_Key: content.passive_node.passive_mystic_small_13.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050106741186560
+    m_Key: content.passive_node.passive_mystic_small_14.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050106741186561
+    m_Key: content.passive_node.passive_mystic_small_14.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050107865260032
+    m_Key: content.passive_node.passive_mystic_notable_06.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050107865260033
+    m_Key: content.passive_node.passive_mystic_notable_06.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050108989333504
+    m_Key: content.passive_node.passive_mystic_notable_07.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050108989333505
+    m_Key: content.passive_node.passive_mystic_notable_07.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050110125989888
+    m_Key: content.passive_node.passive_mystic_notable_08.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050110125989889
+    m_Key: content.passive_node.passive_mystic_notable_08.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050111073902592
+    m_Key: content.passive_node.passive_mystic_keystone_02.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050111073902593
+    m_Key: content.passive_node.passive_mystic_keystone_02.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

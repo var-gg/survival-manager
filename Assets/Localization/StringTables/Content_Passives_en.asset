@@ -626,6 +626,198 @@ MonoBehaviour:
     m_Localized: mystic floor board.
     m_Metadata:
       m_Items: []
+  - m_Id: 7050075351015424
+    m_Localized: Firm Footing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050076936462336
+    m_Localized: Slightly improves resistance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050079583068160
+    m_Localized: Guard Reach
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050079583068161
+    m_Localized: Slightly expands protect radius.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050081495670784
+    m_Localized: Bulwark Discipline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050081495670785
+    m_Localized: Improves health and resistance together.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050082787516416
+    m_Localized: Unshaken Line
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050082787516417
+    m_Localized: Improves armor and tenacity.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050084087750656
+    m_Localized: Challenge Radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050084087750657
+    m_Localized: Expands protect and aggro radius.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050086847602688
+    m_Localized: Unbroken Shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050086847602689
+    m_Localized: Greatly improves frontline staying power.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050088995086336
+    m_Localized: Killing Angle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050088995086337
+    m_Localized: Slightly improves critical multiplier.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050090198851584
+    m_Localized: Quick Pivot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050090198851585
+    m_Localized: Reduces target switch delay.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050091364868096
+    m_Localized: Execution Stance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050091364868097
+    m_Localized: Improves physical output and critical multiplier.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050094317658112
+    m_Localized: Relentless Chase
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050094317658113
+    m_Localized: Improves movement and attack windup.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050095680806912
+    m_Localized: Blood Opening
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050095680806913
+    m_Localized: Improves lifesteal and penetration.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050096762937344
+    m_Localized: Pale Finale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050096762937345
+    m_Localized: Greatly improves execution burst.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050098428076032
+    m_Localized: Long Breath
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050098428076033
+    m_Localized: Slightly increases attack range.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050101007572992
+    m_Localized: Keen Projectile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050101007572993
+    m_Localized: Improves projectile speed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050102018400256
+    m_Localized: Weakside Reach
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050102018400257
+    m_Localized: Improves physical output and range.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050102895009792
+    m_Localized: Aimed Flow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050102895009793
+    m_Localized: Improves critical chance and projectile speed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050103775813632
+    m_Localized: Shadow Step
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050103775813633
+    m_Localized: Improves movement and target switching.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050104509816832
+    m_Localized: Rift Marksmanship
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050104509816833
+    m_Localized: Greatly improves backline range and precision.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050105994600448
+    m_Localized: Quiet Rite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050105994600449
+    m_Localized: Slightly improves resistance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050106741186560
+    m_Localized: Swift Prayer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050106741186561
+    m_Localized: Improves cooldown recovery.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050107865260032
+    m_Localized: Cleansing Canticle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050107865260033
+    m_Localized: Improves healing and cooldown recovery.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050108989333504
+    m_Localized: Focused Hex
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050108989333505
+    m_Localized: Improves magic output and penetration.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050110125989888
+    m_Localized: Mirror Stability
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050110125989889
+    m_Localized: Improves tenacity and resistance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050111073902592
+    m_Localized: Twin Cantor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7050111073902593
+    m_Localized: Greatly improves support and magic cadence.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

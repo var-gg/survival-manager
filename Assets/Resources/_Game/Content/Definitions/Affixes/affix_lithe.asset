@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: affix_lithe
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:AffixDefinition
+  Id: affix_lithe
+  NameKey: content.affix.affix_lithe.name
+  DescriptionKey: content.affix.affix_lithe.desc
+  Category: 4
+  Tier: 1
+  AffixFamily: 0
+  EffectType: 0
+  ValueMin: 0
+  ValueMax: 0
+  AllowedSlotTypes: 0200000001000000
+  CompileTags: []
+  RuleModifierTags: []
+  RequiredTags: []
+  ExcludedTags: []
+  ItemLevelMin: 0
+  SpawnWeight: 1
+  ExclusiveGroupId: 
+  BudgetScore: 0
+  BudgetCard:
+    Domain: 4
+    Rarity: 0
+    PowerBand: 2
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 0
+      BurstDamage: 0
+      Durability: 1
+      Control: 0
+      Mobility: 1
+      Support: 3
+      CounterCoverage: 0
+      Reliability: 1
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 1
+    ConditionClauseCount: 0
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
+  TextTemplateKey: 
+  AuthorityLayer: 2
+  Effects: []
+  Modifiers:
+  - StatId: move_speed
+    Op: 0
+    Value: 0.05
+  legacyDisplayName: 
+  legacyDescription: 

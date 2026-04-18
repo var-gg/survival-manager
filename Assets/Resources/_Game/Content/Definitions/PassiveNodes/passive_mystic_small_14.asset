@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: passive_mystic_small_14
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:PassiveNodeDefinition
+  Id: passive_mystic_small_14
+  BoardId: board_mystic
+  NameKey: content.passive_node.passive_mystic_small_14.name
+  DescriptionKey: content.passive_node.passive_mystic_small_14.desc
+  NodeKind: 0
+  PrerequisiteNodeIds:
+  - passive_mystic_small_11
+  MutualExclusionTags: []
+  BoardDepth: 3
+  CompileTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  RuleModifierTags: []
+  Modifiers:
+  - StatId: cooldown_recovery
+    Op: 0
+    Value: 0.04
+  legacyIsKeystone: 0
+  legacyDisplayName: 
+  legacyDescription: 

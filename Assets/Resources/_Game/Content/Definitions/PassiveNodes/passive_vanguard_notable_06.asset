@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: passive_vanguard_notable_06
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:PassiveNodeDefinition
+  Id: passive_vanguard_notable_06
+  BoardId: board_vanguard
+  NameKey: content.passive_node.passive_vanguard_notable_06.name
+  DescriptionKey: content.passive_node.passive_vanguard_notable_06.desc
+  NodeKind: 1
+  PrerequisiteNodeIds:
+  - passive_vanguard_small_13
+  MutualExclusionTags: []
+  BoardDepth: 4
+  CompileTags:
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  RuleModifierTags: []
+  Modifiers:
+  - StatId: max_health
+    Op: 0
+    Value: 2
+  - StatId: resist
+    Op: 0
+    Value: 0.5
+  legacyIsKeystone: 0
+  legacyDisplayName: 
+  legacyDescription: 
