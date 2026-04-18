@@ -52,7 +52,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_ashen_gate_elite_1_squad_4
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: warden
     Anchor: 5
     Role: 0
     PositiveTraitId: 

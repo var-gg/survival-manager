@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
@@ -8,6 +9,7 @@ using SM.Unity;
 using SM.Unity.UI;
 using SM.Unity.UI.Battle;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 
 namespace SM.Tests.EditMode;
@@ -61,6 +63,28 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
             Assert.That(state.Settings.OverheadLabel.Contains("ui.battle"), Is.False);
             Assert.That(state.Settings.DebugOverlayLabel.Contains("ui.battle"), Is.False);
             Assert.That(state.HelpButtonLabel, Is.EqualTo("Help"));
+            LogAssert.NoUnexpectedReceived();
+        }
+        finally
+        {
+            Object.DestroyImmediate(go);
+        }
+    }
+
+    [Test]
+    public void LocalizationController_Reports_Missing_Key_After_Initialization()
+    {
+        var go = new GameObject("LocalizationControllerMissingKey");
+        try
+        {
+            var controller = go.AddComponent<GameLocalizationController>();
+            SetInitialized(controller, true);
+
+            LogAssert.Expect(LogType.Warning, "[Localization] Missing localized entry 'UI_Battle:ui.battle.missing_test'. Player-facing UI is using fallback text.");
+
+            var localized = controller.LocalizeOrFallback(GameLocalizationTables.UIBattle, "ui.battle.missing_test", "Fallback Label");
+
+            Assert.That(localized, Is.EqualTo("Fallback Label"));
         }
         finally
         {
@@ -187,6 +211,13 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
             new[] { CreateLoadout("enemy", TeamSide.Enemy, "Enemy") });
         var simulator = new BattleSimulator(state, BattleSimulator.DefaultMaxSteps);
         return simulator.CurrentStep;
+    }
+
+    private static void SetInitialized(GameLocalizationController controller, bool value)
+    {
+        var backingField = typeof(GameLocalizationController).GetField("<IsInitialized>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.That(backingField, Is.Not.Null);
+        backingField!.SetValue(controller, value);
     }
 
     private static BattleUnitLoadout CreateLoadout(string id, TeamSide side, string name)

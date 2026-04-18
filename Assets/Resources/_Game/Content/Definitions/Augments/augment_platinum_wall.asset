@@ -30,7 +30,7 @@ MonoBehaviour:
       Mobility: 0
       Support: 5
       CounterCoverage: 0
-      Reliability: 12
+      Reliability: 9
       Economy: 0
       DrawbackCredit: 0
     KeywordCount: 4

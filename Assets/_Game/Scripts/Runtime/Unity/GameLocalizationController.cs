@@ -75,7 +75,10 @@ public sealed class GameLocalizationController : MonoBehaviour
             return localized;
         }
 
-        ReportMissingKey(tableCollection, entryKey);
+        if (IsInitialized)
+        {
+            ReportMissingKey(tableCollection, entryKey);
+        }
 
         if (!allowFallback && string.IsNullOrWhiteSpace(fallback))
         {

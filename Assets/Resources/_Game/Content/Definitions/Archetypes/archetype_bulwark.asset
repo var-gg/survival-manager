@@ -240,20 +240,20 @@ MonoBehaviour:
   FootprintProfile: {fileID: 11400000, guid: b07c3ef2049972e4ab998768a91f4e02, type: 2}
   BehaviorProfile: {fileID: 11400000, guid: 07c1e9da8c03c204e9851ccbb5f54987, type: 2}
   MobilityProfile: {fileID: 11400000, guid: 0d01521760a55c841835084a49d9fb8e, type: 2}
-  BaseMaxHealth: 105
-  BaseArmor: 4.2
-  BaseResist: 0.8
+  BaseMaxHealth: 28
+  BaseArmor: 5
+  BaseResist: 0
   BaseBarrierPower: 0
-  BaseTenacity: 0.25
-  BasePhysPower: 5.8
+  BaseTenacity: 0
+  BasePhysPower: 5
   BaseMagPower: 0
-  BaseAttackSpeed: 3.2
-  BaseAttack: 5.8
-  BaseDefense: 4.2
-  BaseSpeed: 3.2
+  BaseAttackSpeed: 2
+  BaseAttack: 5
+  BaseDefense: 5
+  BaseSpeed: 2
   BaseHealPower: 0
-  BaseMoveSpeed: 1.75
-  BaseAttackRange: 1.45
+  BaseMoveSpeed: 1.65
+  BaseAttackRange: 1.3
   BaseMaxEnergy: 100
   BaseStartingEnergy: 10
   BaseSkillHaste: 0

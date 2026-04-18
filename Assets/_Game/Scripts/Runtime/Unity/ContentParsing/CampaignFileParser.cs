@@ -556,7 +556,7 @@ internal static class CampaignFileParser
                 "boss_overlay_ashen_gate",
                 new[] { "warden", "hunter", "hexer", "raider" },
                 new[] { "guardian", "scout", "hexer", "hunter" },
-                new[] { "bulwark", "hunter", "hexer", "guardian" },
+                new[] { "bulwark", "hunter", "hexer", "warden" },
                 "bulwark",
                 new[] { "hunter", "hexer" }),
             "site_cinder_watch" => new CampaignSiteFallbackSpec(
