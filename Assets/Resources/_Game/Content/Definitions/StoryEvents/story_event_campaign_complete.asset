@@ -1,6 +1,37 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-3941069163717681736
+--- !u!114 &-4738075749766825985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_campaign_complete.condition.01
+  _kind: 1
+  _operandA: site_worldscar_depths
+  _operandB: 
+--- !u!114 &-3152644349469791929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_campaign_complete.effect.01
+  _kind: 1
+  _payload: story_flag_endless_open
+--- !u!114 &-1315185885997853197
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -15,7 +46,7 @@ MonoBehaviour:
   _id: story_event_campaign_complete.effect.02
   _kind: 3
   _payload: DialogueScene
---- !u!114 &-1197574846246109641
+--- !u!114 &-472677624521090799
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -25,12 +56,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_campaign_complete.condition.00
-  _kind: 0
-  _operandA: chapter_heartforge_descent
-  _operandB: 
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_campaign_complete.effect.00
+  _kind: 1
+  _payload: story_flag_campaign_complete
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,14 +78,14 @@ MonoBehaviour:
   _priority: 900
   _oncePolicy: 0
   _conditions:
-  - {fileID: -1197574846246109641}
-  - {fileID: 7034805259533157883}
+  - {fileID: 5773568750040300158}
+  - {fileID: -4738075749766825985}
   _effects:
-  - {fileID: 6258103175460218387}
-  - {fileID: 7131711641622560601}
-  - {fileID: -3941069163717681736}
+  - {fileID: -472677624521090799}
+  - {fileID: -3152644349469791929}
+  - {fileID: -1315185885997853197}
   _presentationKey: dialogue_scene_campaign_complete
---- !u!114 &6258103175460218387
+--- !u!114 &5773568750040300158
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -65,39 +95,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_campaign_complete.effect.00
-  _kind: 1
-  _payload: story_flag_campaign_complete
---- !u!114 &7034805259533157883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_01
+  m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_campaign_complete.condition.01
-  _kind: 1
-  _operandA: site_worldscar_depths
+  _id: story_event_campaign_complete.condition.00
+  _kind: 0
+  _operandA: chapter_heartforge_descent
   _operandB: 
---- !u!114 &7131711641622560601
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_campaign_complete.effect.01
-  _kind: 1
-  _payload: story_flag_endless_open

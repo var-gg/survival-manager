@@ -1,40 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8054077610089081087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_starved_menagerie_intro.line.08
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_starved_menagerie_intro.8
-  _emote: quiet
-  _autoAdvanceHint: 0
---- !u!114 &-7469412638910109015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_starved_menagerie_intro.line.05
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_starved_menagerie_intro.5
-  _emote: bitter
-  _autoAdvanceHint: 0
---- !u!114 &-5036452688084366542
+--- !u!114 &-8833457974304651937
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,8 +16,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_starved_menagerie_intro.7
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-4234833088508860044
+--- !u!114 &-7794967977629032533
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,59 +34,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_starved_menagerie_intro.2
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-3000632084703869114
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_starved_menagerie_intro.line.04
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_starved_menagerie_intro.4
-  _emote: quiet
-  _autoAdvanceHint: 0
---- !u!114 &-2914738852959488510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_starved_menagerie_intro.line.09
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_starved_menagerie_intro.9
-  _emote: solemn
-  _autoAdvanceHint: 0
---- !u!114 &-2336152426866713978
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_starved_menagerie_intro.line.00
-  _speakerId: Narrator
-  _textKey: loc.story.scene_starved_menagerie_intro.0
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &-1310299312148466269
+--- !u!114 &-7341200323075118171
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,32 +52,9 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.scene_starved_menagerie_intro.1
   _emote: horror
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_scene_starved_menagerie_intro
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_scene_starved_menagerie_intro
-  _lines:
-  - {fileID: -2336152426866713978}
-  - {fileID: -1310299312148466269}
-  - {fileID: -4234833088508860044}
-  - {fileID: 5735596336892635932}
-  - {fileID: -3000632084703869114}
-  - {fileID: -7469412638910109015}
-  - {fileID: 6728734445245283702}
-  - {fileID: -5036452688084366542}
-  - {fileID: -8054077610089081087}
-  - {fileID: -2914738852959488510}
---- !u!114 &5735596336892635932
+--- !u!114 &-7110163907106741519
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,8 +70,51 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_starved_menagerie_intro.3
   _emote: grim
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &6728734445245283702
+--- !u!114 &-5680768220654351362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_starved_menagerie_intro.line.09
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_starved_menagerie_intro.9
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_starved_menagerie_intro
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_starved_menagerie_intro
+  _lines:
+  - {fileID: 6335393816151020190}
+  - {fileID: -7341200323075118171}
+  - {fileID: -7794967977629032533}
+  - {fileID: -7110163907106741519}
+  - {fileID: 7809266025625557464}
+  - {fileID: 5664271844745257146}
+  - {fileID: 2558394487352285028}
+  - {fileID: -8833457974304651937}
+  - {fileID: 3717125810904626728}
+  - {fileID: -5680768220654351362}
+--- !u!114 &2558394487352285028
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -193,4 +130,77 @@ MonoBehaviour:
   _speakerId: hero_echo_savant
   _textKey: loc.story.scene_starved_menagerie_intro.6
   _emote: flat
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &3717125810904626728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_starved_menagerie_intro.line.08
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_starved_menagerie_intro.8
+  _emote: quiet
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5664271844745257146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_starved_menagerie_intro.line.05
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_starved_menagerie_intro.5
+  _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6335393816151020190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_starved_menagerie_intro.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_starved_menagerie_intro.0
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7809266025625557464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_starved_menagerie_intro.line.04
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_starved_menagerie_intro.4
+  _emote: quiet
+  _emotionTextKey: 
   _autoAdvanceHint: 0

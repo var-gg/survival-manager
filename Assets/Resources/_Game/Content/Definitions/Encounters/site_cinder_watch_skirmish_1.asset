@@ -29,5 +29,7 @@ MonoBehaviour:
   - reward_source_skirmish
   - faction_cinder_watch
   - skirmish
+  - encounter_family_mark_execute
+  - answer_lane_reach_anti_carry
   legacyDisplayName: 
   legacyDescription: 

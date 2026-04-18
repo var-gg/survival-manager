@@ -1,23 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_overlay_boss_bark_bone_orchard
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_overlay_boss_bark_bone_orchard
-  _lines:
-  - {fileID: 4875047717823724356}
-  - {fileID: 10556430060879953}
-  - {fileID: 9128794114161242569}
---- !u!114 &10556430060879953
+--- !u!114 &-6818871268413467948
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -33,8 +16,9 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.overlay_boss_bark_bone_orchard.1
   _emote: resolute
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &4875047717823724356
+--- !u!114 &-1132928024134206128
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,8 +34,26 @@ MonoBehaviour:
   _speakerId: hero_grave_hexer
   _textKey: loc.story.overlay_boss_bark_bone_orchard.0
   _emote: grim
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &9128794114161242569
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_overlay_boss_bark_bone_orchard
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_overlay_boss_bark_bone_orchard
+  _lines:
+  - {fileID: -1132928024134206128}
+  - {fileID: -6818871268413467948}
+  - {fileID: 7015939164689864679}
+--- !u!114 &7015939164689864679
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,4 +69,5 @@ MonoBehaviour:
   _speakerId: hero_echo_savant
   _textKey: loc.story.overlay_boss_bark_bone_orchard.2
   _emote: grim
+  _emotionTextKey: 
   _autoAdvanceHint: 0

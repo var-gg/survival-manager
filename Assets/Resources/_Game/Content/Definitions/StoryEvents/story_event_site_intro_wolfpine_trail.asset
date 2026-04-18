@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5214120449476137509
+--- !u!114 &-7986050954483891725
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,11 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: effect_01
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_site_intro_wolfpine_trail.condition.00
+  _kind: 0
+  _operandA: chapter_ashen_gate
+  _operandB: 
+--- !u!114 &-75431786167444561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_site_intro_wolfpine_trail.effect.01
-  _kind: 3
-  _payload: DialogueScene
+  _id: story_event_site_intro_wolfpine_trail.effect.00
+  _kind: 1
+  _payload: story_flag_intro_wolfpine_trail
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32,13 +48,13 @@ MonoBehaviour:
   _priority: 100
   _oncePolicy: 0
   _conditions:
-  - {fileID: 3980376738723408519}
-  - {fileID: 7376655999250991481}
+  - {fileID: -7986050954483891725}
+  - {fileID: 4585958708144579072}
   _effects:
-  - {fileID: 6910460639752942705}
-  - {fileID: -5214120449476137509}
+  - {fileID: -75431786167444561}
+  - {fileID: 1972189913764076422}
   _presentationKey: dialogue_scene_wolfpine_trail_intro
---- !u!114 &3980376738723408519
+--- !u!114 &1972189913764076422
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -48,28 +64,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_site_intro_wolfpine_trail.condition.00
-  _kind: 0
-  _operandA: chapter_ashen_gate
-  _operandB: 
---- !u!114 &6910460639752942705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
+  m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_site_intro_wolfpine_trail.effect.00
-  _kind: 1
-  _payload: story_flag_intro_wolfpine_trail
---- !u!114 &7376655999250991481
+  _id: story_event_site_intro_wolfpine_trail.effect.01
+  _kind: 3
+  _payload: DialogueScene
+--- !u!114 &4585958708144579072
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

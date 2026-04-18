@@ -116,13 +116,40 @@ internal static class FirstPlayableAuthoringContract
 
     internal static IReadOnlyList<string> ExtractContextTags(LootBundleEntryDefinition entry)
     {
-        return entry.RequiredContextTags == null
-            ? Array.Empty<string>()
+        var explicitTags = entry.RequiredContextTags == null
+            ? new List<string>()
             : entry.RequiredContextTags
                 .Where(tag => !string.IsNullOrWhiteSpace(tag))
                 .Distinct(StringComparer.Ordinal)
                 .OrderBy(tag => tag, StringComparer.Ordinal)
                 .ToList();
+        return explicitTags.Count > 0
+            ? explicitTags
+            : InferContextTagsFromRouteEntryId(entry.Id);
+    }
+
+    private static IReadOnlyList<string> InferContextTagsFromRouteEntryId(string entryId)
+    {
+        if (string.IsNullOrWhiteSpace(entryId))
+        {
+            return Array.Empty<string>();
+        }
+
+        var answerLane = AllowedAnswerLaneIds
+            .FirstOrDefault(lane => entryId.EndsWith("_" + lane, StringComparison.Ordinal));
+        if (answerLane == null)
+        {
+            return Array.Empty<string>();
+        }
+
+        var routePrefix = entryId[..^(answerLane.Length + 1)];
+        var siteId = new[] { "skirmish_", "elite_", "boss_" }
+            .Where(prefix => routePrefix.StartsWith(prefix + "site_", StringComparison.Ordinal))
+            .Select(prefix => routePrefix[prefix.Length..])
+            .FirstOrDefault();
+        return string.IsNullOrWhiteSpace(siteId)
+            ? Array.Empty<string>()
+            : new[] { siteId, answerLane };
     }
 
     internal static IReadOnlyList<string> CollectSupportSkillIds(UnitArchetypeDefinition archetype)

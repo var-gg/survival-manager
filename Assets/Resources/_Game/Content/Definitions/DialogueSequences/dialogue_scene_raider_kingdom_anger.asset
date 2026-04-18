@@ -1,40 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2646723386375044243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_kingdom_anger.line.01
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_kingdom_anger.1
-  _emote: furious
-  _autoAdvanceHint: 0
---- !u!114 &-1338367409369991263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_kingdom_anger.line.07
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_raider_kingdom_anger.7
-  _emote: bitter
-  _autoAdvanceHint: 0
---- !u!114 &-742680730087640910
+--- !u!114 &-8283928336705427796
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,47 +16,9 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_raider_kingdom_anger.3
   _emote: solemn
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-427604845580556724
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_raider_kingdom_anger.line.06
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_raider_kingdom_anger.6
-  _emote: solemn
-  _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_scene_raider_kingdom_anger
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_scene_raider_kingdom_anger
-  _lines:
-  - {fileID: 3884089073687755914}
-  - {fileID: -2646723386375044243}
-  - {fileID: 3852233133026078778}
-  - {fileID: -742680730087640910}
-  - {fileID: 5776011671271334038}
-  - {fileID: 952023026347252380}
-  - {fileID: -427604845580556724}
-  - {fileID: -1338367409369991263}
---- !u!114 &952023026347252380
+--- !u!114 &-5857873607944554267
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,8 +34,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_raider_kingdom_anger.5
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &3852233133026078778
+--- !u!114 &-5655578006900922353
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -123,8 +52,9 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.scene_raider_kingdom_anger.2
   _emote: bitter
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &3884089073687755914
+--- !u!114 &-5001694842837577399
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,8 +70,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_raider_kingdom_anger.0
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &5776011671271334038
+--- !u!114 &-4457032573479112108
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,4 +88,81 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.scene_raider_kingdom_anger.4
   _emote: furious
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2678650795514124841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_kingdom_anger.line.06
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_raider_kingdom_anger.6
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2466836583697012673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_kingdom_anger.line.07
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_kingdom_anger.7
+  _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_raider_kingdom_anger
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_raider_kingdom_anger
+  _lines:
+  - {fileID: -5001694842837577399}
+  - {fileID: 8212744139638729860}
+  - {fileID: -5655578006900922353}
+  - {fileID: -8283928336705427796}
+  - {fileID: -4457032573479112108}
+  - {fileID: -5857873607944554267}
+  - {fileID: -2678650795514124841}
+  - {fileID: -2466836583697012673}
+--- !u!114 &8212744139638729860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_raider_kingdom_anger.line.01
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_raider_kingdom_anger.1
+  _emote: furious
+  _emotionTextKey: 
   _autoAdvanceHint: 0

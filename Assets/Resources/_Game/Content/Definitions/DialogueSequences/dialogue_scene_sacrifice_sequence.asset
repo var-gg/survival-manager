@@ -1,108 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8289143128809908534
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_sacrifice_sequence.line.06
-  _speakerId: Narrator
-  _textKey: loc.story.scene_sacrifice_sequence.6
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &-6358100910079027727
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_sacrifice_sequence.line.08
-  _speakerId: Narrator
-  _textKey: loc.story.scene_sacrifice_sequence.8
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &-5698992673907405743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_sacrifice_sequence.line.01
-  _speakerId: Narrator
-  _textKey: loc.story.scene_sacrifice_sequence.1
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &-4335757859704396312
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_sacrifice_sequence.line.00
-  _speakerId: Narrator
-  _textKey: loc.story.scene_sacrifice_sequence.0
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &-3759308097887795516
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_sacrifice_sequence.line.05
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_sacrifice_sequence.5
-  _emote: quiet
-  _autoAdvanceHint: 0
---- !u!114 &-1375333074390993365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_12
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_sacrifice_sequence.line.12
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_sacrifice_sequence.12
-  _emote: calm
-  _autoAdvanceHint: 0
---- !u!114 &-705697031022246845
+--- !u!114 &-7507483905122089672
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,8 +16,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_sacrifice_sequence.13
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-631526181478869713
+--- !u!114 &-5452769991816567433
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,14 +28,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: line_10
+  m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_sacrifice_sequence.line.10
+  _id: dialogue_scene_sacrifice_sequence.line.06
   _speakerId: Narrator
-  _textKey: loc.story.scene_sacrifice_sequence.10
+  _textKey: loc.story.scene_sacrifice_sequence.6
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-514706231790906215
+--- !u!114 &-5119479543023970592
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,42 +46,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: line_04
+  m_Name: line_05
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_sacrifice_sequence.line.04
-  _speakerId: Narrator
-  _textKey: loc.story.scene_sacrifice_sequence.4
-  _emote: 
+  _id: dialogue_scene_sacrifice_sequence.line.05
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_sacrifice_sequence.5
+  _emote: quiet
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_scene_sacrifice_sequence
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_scene_sacrifice_sequence
-  _lines:
-  - {fileID: -4335757859704396312}
-  - {fileID: -5698992673907405743}
-  - {fileID: 458548353021115906}
-  - {fileID: 8137213290043268863}
-  - {fileID: -514706231790906215}
-  - {fileID: -3759308097887795516}
-  - {fileID: -8289143128809908534}
-  - {fileID: 6812661096278919934}
-  - {fileID: -6358100910079027727}
-  - {fileID: 3652565858311316845}
-  - {fileID: -631526181478869713}
-  - {fileID: 1361450953527169077}
-  - {fileID: -1375333074390993365}
-  - {fileID: -705697031022246845}
---- !u!114 &458548353021115906
+--- !u!114 &-4987771420419593520
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -197,8 +70,27 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_sacrifice_sequence.2
   _emote: resolute
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &1361450953527169077
+--- !u!114 &-4304999692950346845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sacrifice_sequence.line.12
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_sacrifice_sequence.12
+  _emote: calm
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2046754256979104355
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,8 +106,9 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_sacrifice_sequence.11
   _emote: breaking
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &3652565858311316845
+--- !u!114 &-194656166246893953
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -225,14 +118,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: line_09
+  m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_sacrifice_sequence.line.09
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_sacrifice_sequence.9
-  _emote: calm
+  _id: dialogue_scene_sacrifice_sequence.line.01
+  _speakerId: Narrator
+  _textKey: loc.story.scene_sacrifice_sequence.1
+  _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &6812661096278919934
+--- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -242,14 +136,61 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: line_07
+  m_Name: dialogue_scene_sacrifice_sequence
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_sacrifice_sequence
+  _lines:
+  - {fileID: 2323346177365384852}
+  - {fileID: -194656166246893953}
+  - {fileID: -4987771420419593520}
+  - {fileID: 4063490200619428611}
+  - {fileID: 6011104471908576704}
+  - {fileID: -5119479543023970592}
+  - {fileID: -5452769991816567433}
+  - {fileID: 5962362935452869346}
+  - {fileID: 1565053779838037427}
+  - {fileID: 6878785790509752187}
+  - {fileID: 5962921533855816969}
+  - {fileID: -2046754256979104355}
+  - {fileID: -4304999692950346845}
+  - {fileID: -7507483905122089672}
+--- !u!114 &1565053779838037427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_08
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_sacrifice_sequence.line.07
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_sacrifice_sequence.7
-  _emote: quiet
+  _id: dialogue_scene_sacrifice_sequence.line.08
+  _speakerId: Narrator
+  _textKey: loc.story.scene_sacrifice_sequence.8
+  _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &8137213290043268863
+--- !u!114 &2323346177365384852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sacrifice_sequence.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_sacrifice_sequence.0
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4063490200619428611
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -265,4 +206,77 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_sacrifice_sequence.3
   _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5962362935452869346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sacrifice_sequence.line.07
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_sacrifice_sequence.7
+  _emote: quiet
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5962921533855816969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sacrifice_sequence.line.10
+  _speakerId: Narrator
+  _textKey: loc.story.scene_sacrifice_sequence.10
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6011104471908576704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sacrifice_sequence.line.04
+  _speakerId: Narrator
+  _textKey: loc.story.scene_sacrifice_sequence.4
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6878785790509752187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_sacrifice_sequence.line.09
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_sacrifice_sequence.9
+  _emote: calm
+  _emotionTextKey: 
   _autoAdvanceHint: 0

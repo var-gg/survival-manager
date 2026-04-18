@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4106144240875528690
+--- !u!114 &-3603926467456950911
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16,132 +16,9 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_priest_midpoint_shock.1
   _emote: broken
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-4038201119240714517
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_midpoint_shock.line.05
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_priest_midpoint_shock.5
-  _emote: bitter
-  _autoAdvanceHint: 0
---- !u!114 &-1260561903386644011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_midpoint_shock.line.07
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_priest_midpoint_shock.7
-  _emote: dry
-  _autoAdvanceHint: 0
---- !u!114 &-536225102701664924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_midpoint_shock.line.00
-  _speakerId: Narrator
-  _textKey: loc.story.scene_priest_midpoint_shock.0
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_scene_priest_midpoint_shock
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_scene_priest_midpoint_shock
-  _lines:
-  - {fileID: -536225102701664924}
-  - {fileID: -4106144240875528690}
-  - {fileID: 1558288743880791997}
-  - {fileID: 2453139863946480703}
-  - {fileID: 412708817911595037}
-  - {fileID: -4038201119240714517}
-  - {fileID: 7446362628239320173}
-  - {fileID: -1260561903386644011}
---- !u!114 &412708817911595037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_midpoint_shock.line.04
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_priest_midpoint_shock.4
-  _emote: gentle
-  _autoAdvanceHint: 0
---- !u!114 &1558288743880791997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_midpoint_shock.line.02
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_priest_midpoint_shock.2
-  _emote: breaking
-  _autoAdvanceHint: 0
---- !u!114 &2453139863946480703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_midpoint_shock.line.03
-  _speakerId: Narrator
-  _textKey: loc.story.scene_priest_midpoint_shock.3
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &7446362628239320173
+--- !u!114 &-2687025408749725590
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,4 +34,135 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_priest_midpoint_shock.6
   _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1444061404918657362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_priest_midpoint_shock.line.03
+  _speakerId: Narrator
+  _textKey: loc.story.scene_priest_midpoint_shock.3
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-242482806837206615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_priest_midpoint_shock.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_priest_midpoint_shock.0
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_priest_midpoint_shock
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_priest_midpoint_shock
+  _lines:
+  - {fileID: -242482806837206615}
+  - {fileID: -3603926467456950911}
+  - {fileID: 3204615573774916625}
+  - {fileID: -1444061404918657362}
+  - {fileID: 8932307616836353586}
+  - {fileID: 6474808269929596288}
+  - {fileID: -2687025408749725590}
+  - {fileID: 8684294633079682907}
+--- !u!114 &3204615573774916625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_priest_midpoint_shock.line.02
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_priest_midpoint_shock.2
+  _emote: breaking
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6474808269929596288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_priest_midpoint_shock.line.05
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_priest_midpoint_shock.5
+  _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8684294633079682907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_priest_midpoint_shock.line.07
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_priest_midpoint_shock.7
+  _emote: dry
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8932307616836353586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_priest_midpoint_shock.line.04
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_priest_midpoint_shock.4
+  _emote: gentle
+  _emotionTextKey: 
   _autoAdvanceHint: 0

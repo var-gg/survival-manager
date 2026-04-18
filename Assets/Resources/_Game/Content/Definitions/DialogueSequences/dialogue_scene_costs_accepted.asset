@@ -1,206 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8989944206300767216
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.05
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_costs_accepted.5
-  _emote: forced-casual
-  _autoAdvanceHint: 0
---- !u!114 &-8316699628856500217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_13
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.13
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_costs_accepted.13
-  _emote: flat
-  _autoAdvanceHint: 0
---- !u!114 &-7208803000017356618
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.10
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_costs_accepted.10
-  _emote: quiet
-  _autoAdvanceHint: 0
---- !u!114 &-4154085098822741921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.06
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_costs_accepted.6
-  _emote: solemn
-  _autoAdvanceHint: 0
---- !u!114 &-3883515901469231124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_11
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.11
-  _speakerId: Narrator
-  _textKey: loc.story.scene_costs_accepted.11
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &-1340912894636651541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.07
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_costs_accepted.7
-  _emote: skeptical
-  _autoAdvanceHint: 0
---- !u!114 &-268625177767071780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.01
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_costs_accepted.1
-  _emote: resolute
-  _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_scene_costs_accepted
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_scene_costs_accepted
-  _lines:
-  - {fileID: 7318378441984609277}
-  - {fileID: -268625177767071780}
-  - {fileID: 4303634858093575698}
-  - {fileID: 1857934066538855605}
-  - {fileID: 5138210468957071461}
-  - {fileID: -8989944206300767216}
-  - {fileID: -4154085098822741921}
-  - {fileID: -1340912894636651541}
-  - {fileID: 1827440157818565396}
-  - {fileID: 3431681866162761167}
-  - {fileID: -7208803000017356618}
-  - {fileID: -3883515901469231124}
-  - {fileID: 5424504837503072939}
-  - {fileID: -8316699628856500217}
-  - {fileID: 5021331163934443411}
-  - {fileID: 4555305811822466136}
---- !u!114 &1827440157818565396
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.08
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_costs_accepted.8
-  _emote: solemn
-  _autoAdvanceHint: 0
---- !u!114 &1857934066538855605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.03
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_costs_accepted.3
-  _emote: quiet
-  _autoAdvanceHint: 0
---- !u!114 &3431681866162761167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.09
-  _speakerId: Narrator
-  _textKey: loc.story.scene_costs_accepted.9
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &4303634858093575698
+--- !u!114 &-4480401400468826919
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -216,8 +16,9 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.scene_costs_accepted.2
   _emote: bitter
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &4555305811822466136
+--- !u!114 &-4468539532660878047
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -227,31 +28,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: line_15
+  m_Name: line_11
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.15
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_costs_accepted.15
-  _emote: calm
+  _id: dialogue_scene_costs_accepted.line.11
+  _speakerId: Narrator
+  _textKey: loc.story.scene_costs_accepted.11
+  _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &5021331163934443411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_14
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_costs_accepted.line.14
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_costs_accepted.14
-  _emote: pained
-  _autoAdvanceHint: 0
---- !u!114 &5138210468957071461
+--- !u!114 &-2659666349263049215
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -267,8 +52,129 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_costs_accepted.4
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &5424504837503072939
+--- !u!114 &-1268963087309281307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.06
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_costs_accepted.6
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-954993785829477178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.07
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_costs_accepted.7
+  _emote: skeptical
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_costs_accepted
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_costs_accepted
+  _lines:
+  - {fileID: 8565689997930123196}
+  - {fileID: 1756331584405224824}
+  - {fileID: -4480401400468826919}
+  - {fileID: 4740454586303308440}
+  - {fileID: -2659666349263049215}
+  - {fileID: 3671989906523204973}
+  - {fileID: -1268963087309281307}
+  - {fileID: -954993785829477178}
+  - {fileID: 6331396119854926686}
+  - {fileID: 4143862257259963183}
+  - {fileID: 9055993417890269649}
+  - {fileID: -4468539532660878047}
+  - {fileID: 2657285583671337979}
+  - {fileID: 2100254618877919475}
+  - {fileID: 1058895302636216322}
+  - {fileID: 7733153298007937595}
+--- !u!114 &1058895302636216322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_14
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.14
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_costs_accepted.14
+  _emote: pained
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &1756331584405224824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_costs_accepted.1
+  _emote: resolute
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2100254618877919475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.13
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_costs_accepted.13
+  _emote: flat
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2657285583671337979
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -284,8 +190,99 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.scene_costs_accepted.12
   _emote: shock
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &7318378441984609277
+--- !u!114 &3671989906523204973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.05
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_costs_accepted.5
+  _emote: forced-casual
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4143862257259963183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.09
+  _speakerId: Narrator
+  _textKey: loc.story.scene_costs_accepted.9
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4740454586303308440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.03
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_costs_accepted.3
+  _emote: quiet
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6331396119854926686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.08
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_costs_accepted.8
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7733153298007937595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_15
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.15
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_costs_accepted.15
+  _emote: calm
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8565689997930123196
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -301,4 +298,23 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_costs_accepted.0
   _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &9055993417890269649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_costs_accepted.line.10
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_costs_accepted.10
+  _emote: quiet
+  _emotionTextKey: 
   _autoAdvanceHint: 0

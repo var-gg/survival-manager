@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8657118474205519200
+--- !u!114 &-4104445261949327790
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16,23 +16,7 @@ MonoBehaviour:
   _speakerId: hero_grave_hexer
   _textKey: loc.story.overlay_boss_defeat_starved_menagerie.2
   _emote: gentle
-  _autoAdvanceHint: 0
---- !u!114 &-113916366905725896
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_defeat_starved_menagerie.line.01
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.overlay_boss_defeat_starved_menagerie.1
-  _emote: quiet
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -48,10 +32,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_overlay_boss_defeat_starved_menagerie
   _lines:
-  - {fileID: 3046832352172476166}
-  - {fileID: -113916366905725896}
-  - {fileID: -8657118474205519200}
---- !u!114 &3046832352172476166
+  - {fileID: 3740968134998171960}
+  - {fileID: 8248154716924871787}
+  - {fileID: -4104445261949327790}
+--- !u!114 &3740968134998171960
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,4 +51,23 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.overlay_boss_defeat_starved_menagerie.0
   _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8248154716924871787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_overlay_boss_defeat_starved_menagerie.line.01
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.overlay_boss_defeat_starved_menagerie.1
+  _emote: quiet
+  _emotionTextKey: 
   _autoAdvanceHint: 0

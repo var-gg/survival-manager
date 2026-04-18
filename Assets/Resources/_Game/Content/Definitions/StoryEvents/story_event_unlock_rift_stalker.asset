@@ -1,5 +1,21 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-3289271035961821189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_unlock_rift_stalker.condition.01
+  _kind: 1
+  _operandA: site_wolfpine_trail
+  _operandB: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17,14 +33,14 @@ MonoBehaviour:
   _priority: 300
   _oncePolicy: 0
   _conditions:
-  - {fileID: 8352007670052797662}
-  - {fileID: 1637388118369191049}
+  - {fileID: 4259985247053446599}
+  - {fileID: -3289271035961821189}
   _effects:
-  - {fileID: 7158654484923791696}
-  - {fileID: 2375688003181941553}
-  - {fileID: 9021806504192539162}
+  - {fileID: 7679365212580531778}
+  - {fileID: 6841583099548469999}
+  - {fileID: 1371338854949162194}
   _presentationKey: toast_unlock_rift_stalker
---- !u!114 &1637388118369191049
+--- !u!114 &1371338854949162194
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -34,43 +50,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: condition_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_unlock_rift_stalker.condition.01
-  _kind: 1
-  _operandA: site_wolfpine_trail
-  _operandB: 
---- !u!114 &2375688003181941553
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_01
+  m_Name: effect_02
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_unlock_rift_stalker.effect.01
-  _kind: 1
-  _payload: story_flag_rift_stalker_joined
---- !u!114 &7158654484923791696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_unlock_rift_stalker.effect.00
-  _kind: 0
-  _payload: hero_rift_stalker
---- !u!114 &8352007670052797662
+  _id: story_event_unlock_rift_stalker.effect.02
+  _kind: 3
+  _payload: ToastBanner
+--- !u!114 &4259985247053446599
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,7 +71,7 @@ MonoBehaviour:
   _kind: 0
   _operandA: chapter_ashen_gate
   _operandB: 
---- !u!114 &9021806504192539162
+--- !u!114 &6841583099548469999
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,8 +81,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: effect_02
+  m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_unlock_rift_stalker.effect.02
-  _kind: 3
-  _payload: ToastBanner
+  _id: story_event_unlock_rift_stalker.effect.01
+  _kind: 1
+  _payload: story_flag_rift_stalker_joined
+--- !u!114 &7679365212580531778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_unlock_rift_stalker.effect.00
+  _kind: 0
+  _payload: hero_rift_stalker

@@ -29,5 +29,7 @@ MonoBehaviour:
   - reward_source_boss
   - faction_bone_host
   - boss
+  - encounter_family_summon_pressure
+  - answer_lane_anti_sustain_finish
   legacyDisplayName: 
   legacyDescription: 

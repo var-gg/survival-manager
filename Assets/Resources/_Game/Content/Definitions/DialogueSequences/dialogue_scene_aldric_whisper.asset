@@ -1,57 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2972742872049624356
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_whisper.line.07
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_aldric_whisper.7
-  _emote: weary
-  _autoAdvanceHint: 0
---- !u!114 &-2491758371712664617
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_whisper.line.01
-  _speakerId: npc_aldric
-  _textKey: loc.story.scene_aldric_whisper.1
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &-1629129245553519011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_whisper.line.06
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_aldric_whisper.6
-  _emote: grim
-  _autoAdvanceHint: 0
---- !u!114 &-299241775410348999
+--- !u!114 &-8732886491340860910
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,47 +16,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_aldric_whisper.0
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_scene_aldric_whisper
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_scene_aldric_whisper
-  _lines:
-  - {fileID: -299241775410348999}
-  - {fileID: -2491758371712664617}
-  - {fileID: 2116588694480868546}
-  - {fileID: 1959421943073419577}
-  - {fileID: 6214543930173439680}
-  - {fileID: 7062600184204204289}
-  - {fileID: -1629129245553519011}
-  - {fileID: -2972742872049624356}
---- !u!114 &1959421943073419577
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_whisper.line.03
-  _speakerId: npc_aldric
-  _textKey: loc.story.scene_aldric_whisper.3
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &2116588694480868546
+--- !u!114 &-8220059060623336472
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -123,8 +34,27 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_aldric_whisper.2
   _emote: shock
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &6214543930173439680
+--- !u!114 &-5547270021920868780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_whisper.line.01
+  _speakerId: npc_aldric
+  _textKey: loc.story.scene_aldric_whisper.1
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4701824829153315190
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,8 +70,67 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.scene_aldric_whisper.4
   _emote: bitter
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &7062600184204204289
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_aldric_whisper
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_aldric_whisper
+  _lines:
+  - {fileID: -8732886491340860910}
+  - {fileID: -5547270021920868780}
+  - {fileID: -8220059060623336472}
+  - {fileID: 8039982576466870078}
+  - {fileID: -4701824829153315190}
+  - {fileID: 7176577551641315933}
+  - {fileID: 5110381253771959712}
+  - {fileID: 1317368473256710773}
+--- !u!114 &1317368473256710773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_whisper.line.07
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_aldric_whisper.7
+  _emote: weary
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5110381253771959712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_whisper.line.06
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_aldric_whisper.6
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7176577551641315933
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,4 +146,23 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_aldric_whisper.5
   _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8039982576466870078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_whisper.line.03
+  _speakerId: npc_aldric
+  _textKey: loc.story.scene_aldric_whisper.3
+  _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0

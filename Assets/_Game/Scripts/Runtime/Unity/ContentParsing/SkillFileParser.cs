@@ -148,6 +148,11 @@ internal static class SkillFileParser
             definition.BudgetCard.KeywordCount = Math.Min(definition.BudgetCard.KeywordCount, 2);
             definition.BudgetCard.ConditionClauseCount = Math.Min(definition.BudgetCard.ConditionClauseCount, 1);
             definition.BudgetCard.RuleExceptionCount = 0;
+            if (LoopCContentGovernance.PowerBandTargets.TryGetValue(definition.BudgetCard.PowerBand, out var target)
+                && Math.Abs(definition.BudgetCard.Vector.FinalScore - target.Target) > target.Tolerance)
+            {
+                AdjustBudgetFinalScore(definition.BudgetCard.Vector, target.Target);
+            }
         }
     }
 

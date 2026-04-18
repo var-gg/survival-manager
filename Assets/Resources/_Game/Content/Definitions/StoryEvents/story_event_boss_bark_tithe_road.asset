@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-3454038898161420017
+--- !u!114 &-5873692230853970618
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16,37 +16,6 @@ MonoBehaviour:
   _kind: 2
   _operandA: 4
   _operandB: 
---- !u!114 &-2427963231047491391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_bark_tithe_road.condition.01
-  _kind: 1
-  _operandA: site_tithe_road
-  _operandB: 
---- !u!114 &-568650031799511049
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_bark_tithe_road.effect.00
-  _kind: 3
-  _payload: DialogueOverlay
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,13 +33,28 @@ MonoBehaviour:
   _priority: 200
   _oncePolicy: 0
   _conditions:
-  - {fileID: 741398167320639840}
-  - {fileID: -2427963231047491391}
-  - {fileID: -3454038898161420017}
+  - {fileID: 3375611010679947980}
+  - {fileID: 6024656830279545690}
+  - {fileID: -5873692230853970618}
   _effects:
-  - {fileID: -568650031799511049}
+  - {fileID: 840904857660853893}
   _presentationKey: dialogue_overlay_boss_bark_tithe_road
---- !u!114 &741398167320639840
+--- !u!114 &840904857660853893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_boss_bark_tithe_road.effect.00
+  _kind: 3
+  _payload: DialogueOverlay
+--- !u!114 &3375611010679947980
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,4 +69,20 @@ MonoBehaviour:
   _id: story_event_boss_bark_tithe_road.condition.00
   _kind: 0
   _operandA: chapter_sunken_bastion
+  _operandB: 
+--- !u!114 &6024656830279545690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_boss_bark_tithe_road.condition.01
+  _kind: 1
+  _operandA: site_tithe_road
   _operandB: 

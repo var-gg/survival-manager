@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,7 @@ public static class FirstPlayableSliceGenerator
         var asset = LoadOrCreateAsset();
         CopySlice(slice, asset);
         EnsureDefaultCoverageQuotas(asset);
+        EnsureDefaultSliceContracts(asset);
         EditorUtility.SetDirty(asset);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
@@ -52,7 +54,7 @@ public static class FirstPlayableSliceGenerator
     private static FirstPlayableSliceDefinitionAsset LoadOrCreateAsset()
     {
         var asset = AssetDatabase.LoadAssetAtPath<FirstPlayableSliceDefinitionAsset>(AssetPath);
-        if (asset != null)
+        if (asset != null && !HasMissingScript(asset))
         {
             return asset;
         }
@@ -64,9 +66,38 @@ public static class FirstPlayableSliceGenerator
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         }
 
+        DeleteExistingAssetFile();
+
         asset = ScriptableObject.CreateInstance<FirstPlayableSliceDefinitionAsset>();
         AssetDatabase.CreateAsset(asset, AssetPath);
         return asset;
+    }
+
+    private static bool HasMissingScript(ScriptableObject asset)
+    {
+        var serializedObject = new SerializedObject(asset);
+        var script = serializedObject.FindProperty("m_Script");
+        return script == null || script.objectReferenceValue == null;
+    }
+
+    private static void DeleteExistingAssetFile()
+    {
+        AssetDatabase.DeleteAsset(AssetPath);
+
+        var projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+        var fullPath = Path.GetFullPath(Path.Combine(projectRoot, AssetPath));
+        if (File.Exists(fullPath))
+        {
+            File.Delete(fullPath);
+        }
+
+        var metaPath = fullPath + ".meta";
+        if (File.Exists(metaPath))
+        {
+            File.Delete(metaPath);
+        }
+
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
     }
 
     private static void CopySlice(FirstPlayableSliceDefinition source, FirstPlayableSliceDefinitionAsset target)
@@ -147,6 +178,73 @@ public static class FirstPlayableSliceGenerator
         {
             Kind = kind,
             MinimumCount = minimumCount,
+        };
+    }
+
+    private static void EnsureDefaultSliceContracts(FirstPlayableSliceDefinitionAsset asset)
+    {
+        asset.SignaturePassiveCap = FirstPlayableAuthoringContract.LiveSignaturePassiveCap;
+        if (asset.SignaturePassiveIds.Count > FirstPlayableAuthoringContract.LiveSignaturePassiveCap)
+        {
+            asset.SignaturePassiveIds = asset.SignaturePassiveIds
+                .Take(FirstPlayableAuthoringContract.LiveSignaturePassiveCap)
+                .ToList();
+        }
+
+        if (asset.PassiveBoardIds.Count == 0)
+        {
+            asset.PassiveBoardIds = FirstPlayableAuthoringContract.RequiredPassiveBoardIds.ToList();
+        }
+
+        if (asset.SynergyGrammar.Count == 0 && asset.SynergyFamilyIds.Count > 0)
+        {
+            asset.SynergyGrammar = asset.SynergyFamilyIds
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .Select(BuildDefaultSynergyGrammarEntry)
+                .ToList();
+        }
+
+        var liveIds = new HashSet<string>(StringComparer.Ordinal);
+        AddLiveIds(liveIds, asset.UnitBlueprintIds);
+        AddLiveIds(liveIds, asset.SignatureActiveIds);
+        AddLiveIds(liveIds, asset.SignaturePassiveIds);
+        AddLiveIds(liveIds, asset.FlexActiveIds);
+        AddLiveIds(liveIds, asset.FlexPassiveIds);
+        AddLiveIds(liveIds, asset.AffixIds);
+        AddLiveIds(liveIds, asset.SynergyFamilyIds);
+        AddLiveIds(liveIds, asset.TemporaryAugmentIds);
+        AddLiveIds(liveIds, asset.PermanentAugmentIds);
+        AddLiveIds(liveIds, asset.PassiveBoardIds);
+        asset.ParkingLotContentIds = asset.ParkingLotContentIds
+            .Where(id => !string.IsNullOrWhiteSpace(id) && !liveIds.Contains(id))
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(id => id, StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private static void AddLiveIds(ISet<string> target, IEnumerable<string> ids)
+    {
+        foreach (var id in ids.Where(id => !string.IsNullOrWhiteSpace(id)))
+        {
+            target.Add(id);
+        }
+    }
+
+    private static SynergyGrammarEntry BuildDefaultSynergyGrammarEntry(string familyId)
+    {
+        const string synergyPrefix = "synergy_";
+        var canonicalId = familyId.StartsWith(synergyPrefix, StringComparison.Ordinal)
+            ? familyId[synergyPrefix.Length..]
+            : familyId;
+        var isClassFamily = ContentValidationPolicyCatalog.CanonicalClassIds.Contains(canonicalId);
+        return new SynergyGrammarEntry
+        {
+            FamilyId = familyId,
+            FamilyType = isClassFamily ? SynergyFamilyType.Class : SynergyFamilyType.Race,
+            MinorThreshold = 2,
+            MajorThreshold = isClassFamily ? 3 : 4,
         };
     }
 

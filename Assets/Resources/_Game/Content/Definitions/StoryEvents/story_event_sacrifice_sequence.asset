@@ -1,5 +1,67 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5735730861958421432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_sacrifice_sequence.condition.00
+  _kind: 0
+  _operandA: chapter_heartforge_descent
+  _operandB: 
+--- !u!114 &-4741831667003175660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_sacrifice_sequence.effect.00
+  _kind: 1
+  _payload: story_flag_sacrifice_done
+--- !u!114 &-372988541148613072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_sacrifice_sequence.condition.01
+  _kind: 1
+  _operandA: site_worldscar_depths
+  _operandB: 
+--- !u!114 &-5941482703078215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_sacrifice_sequence.effect.01
+  _kind: 3
+  _payload: DialogueScene
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17,29 +79,14 @@ MonoBehaviour:
   _priority: 800
   _oncePolicy: 0
   _conditions:
-  - {fileID: 8271438294031002093}
-  - {fileID: 5738750365705409299}
-  - {fileID: 2467270214644794197}
+  - {fileID: -5735730861958421432}
+  - {fileID: -372988541148613072}
+  - {fileID: 7680164797022596137}
   _effects:
-  - {fileID: 839129511188676822}
-  - {fileID: 6718096867563041357}
+  - {fileID: -4741831667003175660}
+  - {fileID: -5941482703078215}
   _presentationKey: dialogue_scene_sacrifice_sequence
---- !u!114 &839129511188676822
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_sacrifice_sequence.effect.00
-  _kind: 1
-  _payload: story_flag_sacrifice_done
---- !u!114 &2467270214644794197
+--- !u!114 &7680164797022596137
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -54,51 +101,4 @@ MonoBehaviour:
   _id: story_event_sacrifice_sequence.condition.02
   _kind: 2
   _operandA: 4
-  _operandB: 
---- !u!114 &5738750365705409299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_sacrifice_sequence.condition.01
-  _kind: 1
-  _operandA: site_worldscar_depths
-  _operandB: 
---- !u!114 &6718096867563041357
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_sacrifice_sequence.effect.01
-  _kind: 3
-  _payload: DialogueScene
---- !u!114 &8271438294031002093
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_sacrifice_sequence.condition.00
-  _kind: 0
-  _operandA: chapter_heartforge_descent
   _operandB: 

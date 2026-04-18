@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4919911501835293867
+--- !u!114 &-7156485469607401274
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,28 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_site_intro_bone_orchard.effect.00
-  _kind: 1
-  _payload: story_flag_intro_bone_orchard
---- !u!114 &-4278468883143297643
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_01
+  m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_site_intro_bone_orchard.condition.01
-  _kind: 1
-  _operandA: site_bone_orchard
+  _id: story_event_site_intro_bone_orchard.condition.00
+  _kind: 0
+  _operandA: chapter_ruined_crypts
   _operandB: 
---- !u!114 &-1442449469062405282
+--- !u!114 &-5574292238130970212
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,13 +48,13 @@ MonoBehaviour:
   _priority: 100
   _oncePolicy: 0
   _conditions:
-  - {fileID: 5441733629801114196}
-  - {fileID: -4278468883143297643}
+  - {fileID: -7156485469607401274}
+  - {fileID: 4380944654375355695}
   _effects:
-  - {fileID: -4919911501835293867}
-  - {fileID: -1442449469062405282}
+  - {fileID: 4987728430482961402}
+  - {fileID: -5574292238130970212}
   _presentationKey: dialogue_scene_bone_orchard_intro
---- !u!114 &5441733629801114196
+--- !u!114 &4380944654375355695
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -79,9 +64,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: condition_00
+  m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_site_intro_bone_orchard.condition.00
-  _kind: 0
-  _operandA: chapter_ruined_crypts
+  _id: story_event_site_intro_bone_orchard.condition.01
+  _kind: 1
+  _operandA: site_bone_orchard
   _operandB: 
+--- !u!114 &4987728430482961402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_site_intro_bone_orchard.effect.00
+  _kind: 1
+  _payload: story_flag_intro_bone_orchard

@@ -15,8 +15,8 @@ MonoBehaviour:
   UnitBlueprintCap: 12
   SignatureActiveCap: 12
   SignaturePassiveCap: 8
-  FlexActiveCap: 12
-  FlexPassiveCap: 20
+  FlexActiveCap: 8
+  FlexPassiveCap: 8
   AffixCap: 24
   SynergyFamilyCap: 7
   TemporaryAugmentCap: 12
@@ -89,31 +89,15 @@ MonoBehaviour:
   - skill_hunter_utility
   - skill_marksman_utility
   - skill_scout_utility
-  - skill_bulwark_utility
-  - skill_hexer_utility
-  - skill_minor_heal
-  - skill_shaman_utility
   FlexPassiveIds:
   - skill_vanguard_support_1
   - skill_vanguard_support_2
-  - skill_duelist_support_1
-  - skill_duelist_support_2
-  - skill_ranger_support_1
-  - skill_ranger_support_2
-  - skill_mystic_support_1
-  - skill_mystic_support_2
   - support_guarded
   - support_anchored
-  - support_purifying
-  - support_swift
+  - skill_duelist_support_1
+  - skill_duelist_support_2
   - support_executioner
   - support_brutal
-  - support_longshot
-  - support_hunter_mark
-  - support_piercing
-  - support_echo
-  - support_lingering
-  - support_siphon
   AffixIds:
   - affix_blessed
   - affix_bracing
@@ -162,15 +146,15 @@ MonoBehaviour:
   - augment_platinum_wall
   PermanentAugmentIds:
   - augment_perm_legacy_blade
-  - augment_perm_legacy_bone
-  - augment_perm_legacy_chalice
-  - augment_perm_legacy_fang
   PassiveBoardIds:
   - board_vanguard
   - board_duelist
   - board_ranger
   - board_mystic
   ParkingLotContentIds:
+  - augment_perm_legacy_bone
+  - augment_perm_legacy_chalice
+  - augment_perm_legacy_fang
   - augment_perm_legacy_grace
   - augment_perm_legacy_hide
   - augment_perm_legacy_oath
@@ -182,6 +166,22 @@ MonoBehaviour:
   - augment_silver_hunt
   - augment_silver_stride
   - augment_silver_ward
+  - skill_bulwark_utility
+  - skill_hexer_utility
+  - skill_minor_heal
+  - skill_mystic_support_1
+  - skill_mystic_support_2
+  - skill_ranger_support_1
+  - skill_ranger_support_2
+  - skill_shaman_utility
+  - support_echo
+  - support_hunter_mark
+  - support_lingering
+  - support_longshot
+  - support_piercing
+  - support_purifying
+  - support_siphon
+  - support_swift
   SynergyGrammar:
   - FamilyId: synergy_beastkin
     FamilyType: 0
@@ -211,12 +211,4 @@ MonoBehaviour:
     FamilyType: 1
     MinorThreshold: 2
     MajorThreshold: 3
-  ClassLabelMappings:
-  - CanonicalId: vanguard
-    PlayerFacingLabel: vanguard
-  - CanonicalId: duelist
-    PlayerFacingLabel: striker
-  - CanonicalId: ranger
-    PlayerFacingLabel: ranger
-  - CanonicalId: mystic
-    PlayerFacingLabel: mystic
+  ClassLabelMappings: []

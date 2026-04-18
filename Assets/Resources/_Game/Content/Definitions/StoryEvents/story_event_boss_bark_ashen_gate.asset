@@ -1,6 +1,22 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6910302296787308802
+--- !u!114 &-7894148783056816946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_boss_bark_ashen_gate.condition.00
+  _kind: 0
+  _operandA: chapter_ashen_gate
+  _operandB: 
+--- !u!114 &-578280719063261894
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16,21 +32,6 @@ MonoBehaviour:
   _kind: 1
   _operandA: site_ashen_gate
   _operandB: 
---- !u!114 &-893738595711189786
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_bark_ashen_gate.effect.00
-  _kind: 3
-  _payload: DialogueOverlay
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,13 +49,13 @@ MonoBehaviour:
   _priority: 200
   _oncePolicy: 0
   _conditions:
-  - {fileID: 856373964589595618}
-  - {fileID: -6910302296787308802}
-  - {fileID: 5542245457936862273}
+  - {fileID: -7894148783056816946}
+  - {fileID: -578280719063261894}
+  - {fileID: 6049154349643816857}
   _effects:
-  - {fileID: -893738595711189786}
+  - {fileID: 2402218725196602905}
   _presentationKey: dialogue_overlay_boss_bark_ashen_gate
---- !u!114 &856373964589595618
+--- !u!114 &2402218725196602905
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,13 +65,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_bark_ashen_gate.condition.00
-  _kind: 0
-  _operandA: chapter_ashen_gate
-  _operandB: 
---- !u!114 &5542245457936862273
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_boss_bark_ashen_gate.effect.00
+  _kind: 3
+  _payload: DialogueOverlay
+--- !u!114 &6049154349643816857
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

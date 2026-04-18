@@ -1,39 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-1282584438595171143
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_bark_wolfpine_trail.line.02
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.overlay_boss_bark_wolfpine_trail.2
-  _emote: wary
-  _autoAdvanceHint: 0
---- !u!114 &-239779079613884665
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_bark_wolfpine_trail.line.01
-  _speakerId: Narrator
-  _textKey: loc.story.overlay_boss_bark_wolfpine_trail.1
-  _emote: 
-  _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_overlay_boss_bark_wolfpine_trail
   _lines:
-  - {fileID: 615112655218670986}
-  - {fileID: -239779079613884665}
-  - {fileID: -1282584438595171143}
---- !u!114 &615112655218670986
+  - {fileID: 241975887803358742}
+  - {fileID: 5270286886552767325}
+  - {fileID: 5185359888167343128}
+--- !u!114 &241975887803358742
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,4 +33,41 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.overlay_boss_bark_wolfpine_trail.0
   _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5185359888167343128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_overlay_boss_bark_wolfpine_trail.line.02
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.overlay_boss_bark_wolfpine_trail.2
+  _emote: wary
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5270286886552767325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_overlay_boss_bark_wolfpine_trail.line.01
+  _speakerId: Narrator
+  _textKey: loc.story.overlay_boss_bark_wolfpine_trail.1
+  _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0

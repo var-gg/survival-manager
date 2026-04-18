@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8783324516780996292
+--- !u!114 &-7002330993091598011
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,13 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: condition_01
+  m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_final_boss.condition.01
-  _kind: 1
-  _operandA: site_worldscar_depths
+  _id: story_event_final_boss.condition.00
+  _kind: 0
+  _operandA: chapter_heartforge_descent
   _operandB: 
---- !u!114 &-5530709986300366319
+--- !u!114 &-4939121408954891693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_final_boss.effect.00
+  _kind: 1
+  _payload: story_flag_final_boss_defeated
+--- !u!114 &-2245951784248700194
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -48,14 +63,14 @@ MonoBehaviour:
   _priority: 700
   _oncePolicy: 0
   _conditions:
-  - {fileID: 6088209992338349363}
-  - {fileID: -8783324516780996292}
-  - {fileID: 4484548918199441190}
+  - {fileID: -7002330993091598011}
+  - {fileID: 4619858919910454969}
+  - {fileID: 6884065428510839662}
   _effects:
-  - {fileID: 1751178088502977947}
-  - {fileID: -5530709986300366319}
+  - {fileID: -4939121408954891693}
+  - {fileID: -2245951784248700194}
   _presentationKey: dialogue_scene_final_confrontation
---- !u!114 &1751178088502977947
+--- !u!114 &4619858919910454969
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -65,12 +80,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_final_boss.effect.00
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_final_boss.condition.01
   _kind: 1
-  _payload: story_flag_final_boss_defeated
---- !u!114 &4484548918199441190
+  _operandA: site_worldscar_depths
+  _operandB: 
+--- !u!114 &6884065428510839662
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,20 +101,4 @@ MonoBehaviour:
   _id: story_event_final_boss.condition.02
   _kind: 2
   _operandA: 4
-  _operandB: 
---- !u!114 &6088209992338349363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_final_boss.condition.00
-  _kind: 0
-  _operandA: chapter_heartforge_descent
   _operandB: 

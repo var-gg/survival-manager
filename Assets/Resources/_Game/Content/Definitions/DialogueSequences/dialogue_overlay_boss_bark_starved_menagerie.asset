@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7091184843783699495
+--- !u!114 &-4368096417310338688
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16,25 +16,9 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.overlay_boss_bark_starved_menagerie.0
   _emote: pained
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_overlay_boss_bark_starved_menagerie
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_overlay_boss_bark_starved_menagerie
-  _lines:
-  - {fileID: -7091184843783699495}
-  - {fileID: 7019668242445064586}
-  - {fileID: 3742326314305122500}
---- !u!114 &3742326314305122500
+--- !u!114 &-3439598852074540439
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,8 +34,9 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.overlay_boss_bark_starved_menagerie.2
   _emote: resolute
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &7019668242445064586
+--- !u!114 &-2536533675347112421
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,4 +52,22 @@ MonoBehaviour:
   _speakerId: hero_echo_savant
   _textKey: loc.story.overlay_boss_bark_starved_menagerie.1
   _emote: grim
+  _emotionTextKey: 
   _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_overlay_boss_bark_starved_menagerie
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_overlay_boss_bark_starved_menagerie
+  _lines:
+  - {fileID: -4368096417310338688}
+  - {fileID: -2536533675347112421}
+  - {fileID: -3439598852074540439}

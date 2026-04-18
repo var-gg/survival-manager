@@ -1,6 +1,22 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6012584016457089879
+--- !u!114 &-2835062264959264298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_boss_bark_worldscar_depths.condition.01
+  _kind: 1
+  _operandA: site_worldscar_depths
+  _operandB: 
+--- !u!114 &-2020794149995169449
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16,21 +32,6 @@ MonoBehaviour:
   _kind: 2
   _operandA: 4
   _operandB: 
---- !u!114 &-4182782019427968603
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_bark_worldscar_depths.effect.00
-  _kind: 3
-  _payload: DialogueOverlay
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,13 +49,13 @@ MonoBehaviour:
   _priority: 200
   _oncePolicy: 0
   _conditions:
-  - {fileID: 8770107641283842589}
-  - {fileID: 1217285603484708448}
-  - {fileID: -6012584016457089879}
+  - {fileID: 8396503936667443196}
+  - {fileID: -2835062264959264298}
+  - {fileID: -2020794149995169449}
   _effects:
-  - {fileID: -4182782019427968603}
+  - {fileID: 3760791576998312852}
   _presentationKey: dialogue_overlay_boss_bark_worldscar_depths
---- !u!114 &1217285603484708448
+--- !u!114 &3760791576998312852
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,13 +65,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: condition_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_bark_worldscar_depths.condition.01
-  _kind: 1
-  _operandA: site_worldscar_depths
-  _operandB: 
---- !u!114 &8770107641283842589
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_boss_bark_worldscar_depths.effect.00
+  _kind: 3
+  _payload: DialogueOverlay
+--- !u!114 &8396503936667443196
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4307146980555039106
+--- !u!114 &-135898774296142546
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_aldric_journal_found.effect.00
-  _kind: 1
-  _payload: story_flag_aldric_named
+  m_Name: condition_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_aldric_journal_found.condition.02
+  _kind: 2
+  _operandA: 3
+  _operandB: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32,45 +33,14 @@ MonoBehaviour:
   _priority: 280
   _oncePolicy: 0
   _conditions:
-  - {fileID: 3253383885839644593}
-  - {fileID: 6086514904229082678}
-  - {fileID: 7381094677880285994}
+  - {fileID: 4762317506614248154}
+  - {fileID: 3218924588131032332}
+  - {fileID: -135898774296142546}
   _effects:
-  - {fileID: -4307146980555039106}
-  - {fileID: 2386247216187628536}
+  - {fileID: 3410357915966361607}
+  - {fileID: 5545010442273687684}
   _presentationKey: dialogue_scene_aldric_journal
---- !u!114 &2386247216187628536
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_aldric_journal_found.effect.01
-  _kind: 3
-  _payload: DialogueScene
---- !u!114 &3253383885839644593
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_aldric_journal_found.condition.00
-  _kind: 0
-  _operandA: chapter_sunken_bastion
-  _operandB: 
---- !u!114 &6086514904229082678
+--- !u!114 &3218924588131032332
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,7 +56,7 @@ MonoBehaviour:
   _kind: 1
   _operandA: site_sunken_bastion
   _operandB: 
---- !u!114 &7381094677880285994
+--- !u!114 &3410357915966361607
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,9 +66,39 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: condition_02
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_aldric_journal_found.effect.00
+  _kind: 1
+  _payload: story_flag_aldric_named
+--- !u!114 &4762317506614248154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_aldric_journal_found.condition.02
-  _kind: 2
-  _operandA: 3
+  _id: story_event_aldric_journal_found.condition.00
+  _kind: 0
+  _operandA: chapter_sunken_bastion
   _operandB: 
+--- !u!114 &5545010442273687684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_aldric_journal_found.effect.01
+  _kind: 3
+  _payload: DialogueScene

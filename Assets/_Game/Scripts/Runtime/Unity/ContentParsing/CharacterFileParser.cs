@@ -26,6 +26,16 @@ internal static class CharacterFileParser
             definition.Class = ResolveReference(lines, "Class:", guidToPath, classes);
             definition.DefaultArchetype = ResolveReference(lines, "DefaultArchetype:", guidToPath, archetypes);
             definition.DefaultRoleInstruction = ResolveReference(lines, "DefaultRoleInstruction:", guidToPath, roleInstructions);
+            if (definition.DefaultRoleInstruction == null
+                && definition.DefaultArchetype != null
+                && !string.IsNullOrWhiteSpace(definition.DefaultArchetype.RoleTag))
+            {
+                if (roleInstructions.TryGetValue(definition.DefaultArchetype.RoleTag, out var roleInstruction))
+                {
+                    definition.DefaultRoleInstruction = roleInstruction;
+                }
+            }
+
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
             SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "Description:"));
             ApplyFallbackIdentity(definition, path);

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Contracts;
+using SM.Meta.Model;
 using SM.Unity.ContentParsing;
 using UnityEngine;
 using static SM.Unity.ContentParsing.YamlFieldExtractor;
@@ -43,6 +45,7 @@ public sealed record RuntimeCombatParsedContent(
     IReadOnlyList<DropTableDefinition> DropTables,
     IReadOnlyList<LootBundleDefinition> LootBundles,
     IReadOnlyList<TraitTokenDefinition> TraitTokens,
+    IReadOnlyList<FirstPlayableSliceDefinitionAsset> FirstPlayableSlices,
     IReadOnlyDictionary<int, string> AssetPaths)
 {
     public IReadOnlyList<ScriptableObject> AllAssets =>
@@ -77,6 +80,7 @@ public sealed record RuntimeCombatParsedContent(
             .Concat(DropTables)
             .Concat(LootBundles)
             .Concat(TraitTokens)
+            .Concat(FirstPlayableSlices)
             .ToList();
 }
 
@@ -132,6 +136,7 @@ public static class RuntimeCombatContentFileParser
             var dropTables = RewardFileParser.LoadDropTables();
             var lootBundles = RewardFileParser.LoadLootBundles();
             var traitTokens = StatusFileParser.LoadTraitTokens();
+            var firstPlayableSlices = LoadFirstPlayableSlices();
             var assetPaths = BuildAssetPaths(
                 stats.Values,
                 races.Values,
@@ -163,7 +168,8 @@ public static class RuntimeCombatContentFileParser
                 rewardSources,
                 dropTables,
                 lootBundles,
-                traitTokens.Values);
+                traitTokens.Values,
+                firstPlayableSlices);
 
             parsed = new RuntimeCombatParsedContent(
                 stats.Values.ToList(),
@@ -197,6 +203,7 @@ public static class RuntimeCombatContentFileParser
                 dropTables,
                 lootBundles,
                 traitTokens.Values.ToList(),
+                firstPlayableSlices,
                 assetPaths);
             error = string.Empty;
             return true;
@@ -279,12 +286,223 @@ public static class RuntimeCombatContentFileParser
             DropTableDefinition => "DropTables",
             LootBundleDefinition => "LootBundles",
             TraitTokenDefinition => "TraitTokens",
+            FirstPlayableSliceDefinitionAsset => "FirstPlayable",
             _ => string.Empty,
         };
 
         return string.IsNullOrWhiteSpace(folder) || string.IsNullOrWhiteSpace(asset.name)
             ? string.Empty
             : ToUnityPath(Path.Combine(RootPath, folder, asset.name + ".asset"));
+    }
+
+    private static IReadOnlyList<FirstPlayableSliceDefinitionAsset> LoadFirstPlayableSlices()
+    {
+        var result = new List<FirstPlayableSliceDefinitionAsset>();
+        var folderPath = Path.Combine(RootPath, "FirstPlayable");
+        if (!Directory.Exists(folderPath))
+        {
+            return result;
+        }
+
+        foreach (var assetPath in Directory.EnumerateFiles(folderPath, "*.asset", SearchOption.TopDirectoryOnly))
+        {
+            var lines = File.ReadAllLines(assetPath);
+            var definition = ScriptableObject.CreateInstance<FirstPlayableSliceDefinitionAsset>();
+            definition.name = Path.GetFileNameWithoutExtension(assetPath);
+            definition.UnitBlueprintCap = ExtractIntOrDefault(lines, "UnitBlueprintCap:", definition.UnitBlueprintCap);
+            definition.SignatureActiveCap = ExtractIntOrDefault(lines, "SignatureActiveCap:", definition.SignatureActiveCap);
+            definition.SignaturePassiveCap = ExtractIntOrDefault(lines, "SignaturePassiveCap:", definition.SignaturePassiveCap);
+            definition.FlexActiveCap = ExtractIntOrDefault(lines, "FlexActiveCap:", definition.FlexActiveCap);
+            definition.FlexPassiveCap = ExtractIntOrDefault(lines, "FlexPassiveCap:", definition.FlexPassiveCap);
+            definition.AffixCap = ExtractIntOrDefault(lines, "AffixCap:", definition.AffixCap);
+            definition.SynergyFamilyCap = ExtractIntOrDefault(lines, "SynergyFamilyCap:", definition.SynergyFamilyCap);
+            definition.TemporaryAugmentCap = ExtractIntOrDefault(lines, "TemporaryAugmentCap:", definition.TemporaryAugmentCap);
+            definition.PermanentAugmentCap = ExtractIntOrDefault(lines, "PermanentAugmentCap:", definition.PermanentAugmentCap);
+            definition.PassiveBoardCap = ExtractIntOrDefault(lines, "PassiveBoardCap:", definition.PassiveBoardCap);
+            definition.RequireAllThreatPatternsCovered = ExtractBoolOrDefault(lines, "RequireAllThreatPatternsCovered:", definition.RequireAllThreatPatternsCovered);
+            definition.RequireAllCounterToolsCovered = ExtractBoolOrDefault(lines, "RequireAllCounterToolsCovered:", definition.RequireAllCounterToolsCovered);
+            definition.CoverageQuotas = ParseCoverageQuotas(lines);
+            definition.UnitBlueprintIds = ParseStringList(lines, "UnitBlueprintIds:");
+            definition.SignatureActiveIds = ParseStringList(lines, "SignatureActiveIds:");
+            definition.SignaturePassiveIds = ParseStringList(lines, "SignaturePassiveIds:");
+            definition.FlexActiveIds = ParseStringList(lines, "FlexActiveIds:");
+            definition.FlexPassiveIds = ParseStringList(lines, "FlexPassiveIds:");
+            definition.AffixIds = ParseStringList(lines, "AffixIds:");
+            definition.SynergyFamilyIds = ParseStringList(lines, "SynergyFamilyIds:");
+            definition.TemporaryAugmentIds = ParseStringList(lines, "TemporaryAugmentIds:");
+            definition.PermanentAugmentIds = ParseStringList(lines, "PermanentAugmentIds:");
+            definition.PassiveBoardIds = ParseStringList(lines, "PassiveBoardIds:");
+            definition.ParkingLotContentIds = ParseStringList(lines, "ParkingLotContentIds:");
+            definition.SynergyGrammar = ParseSynergyGrammar(lines);
+            definition.ClassLabelMappings = ParseClassLabelMappings(lines);
+            result.Add(definition);
+        }
+
+        return result;
+    }
+
+    private static int ExtractIntOrDefault(string[] lines, string key, int fallback)
+    {
+        var value = ExtractValue(lines, key);
+        return string.IsNullOrWhiteSpace(value) ? fallback : ParseInt(value);
+    }
+
+    private static bool ExtractBoolOrDefault(string[] lines, string key, bool fallback)
+    {
+        var value = ExtractValue(lines, key);
+        return string.IsNullOrWhiteSpace(value) ? fallback : ParseBool(value);
+    }
+
+    private static List<SliceCoverageQuota> ParseCoverageQuotas(string[] lines)
+    {
+        var result = new List<SliceCoverageQuota>();
+        var index = FindLineIndex(lines, "CoverageQuotas:");
+        if (index < 0)
+        {
+            return result;
+        }
+
+        for (index++; index < lines.Length; index++)
+        {
+            var trimmed = lines[index].Trim();
+            if (!trimmed.StartsWith("- Kind:", StringComparison.Ordinal))
+            {
+                if (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal))
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            var quota = new SliceCoverageQuota
+            {
+                Kind = (SliceCoverageQuotaKind)ParseInt(trimmed["- Kind:".Length..].Trim())
+            };
+            for (index++; index < lines.Length; index++)
+            {
+                trimmed = lines[index].Trim();
+                if (trimmed.StartsWith("- Kind:", StringComparison.Ordinal)
+                    || (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal)))
+                {
+                    index--;
+                    break;
+                }
+
+                if (trimmed.StartsWith("MinimumCount:", StringComparison.Ordinal))
+                {
+                    quota.MinimumCount = ParseInt(trimmed["MinimumCount:".Length..].Trim());
+                }
+            }
+
+            result.Add(quota);
+        }
+
+        return result;
+    }
+
+    private static List<SynergyGrammarEntry> ParseSynergyGrammar(string[] lines)
+    {
+        var result = new List<SynergyGrammarEntry>();
+        var index = FindLineIndex(lines, "SynergyGrammar:");
+        if (index < 0)
+        {
+            return result;
+        }
+
+        for (index++; index < lines.Length; index++)
+        {
+            var trimmed = lines[index].Trim();
+            if (!trimmed.StartsWith("- FamilyId:", StringComparison.Ordinal))
+            {
+                if (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal))
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            var entry = new SynergyGrammarEntry
+            {
+                FamilyId = trimmed["- FamilyId:".Length..].Trim()
+            };
+            for (index++; index < lines.Length; index++)
+            {
+                trimmed = lines[index].Trim();
+                if (trimmed.StartsWith("- FamilyId:", StringComparison.Ordinal)
+                    || (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal)))
+                {
+                    index--;
+                    break;
+                }
+
+                if (trimmed.StartsWith("FamilyType:", StringComparison.Ordinal))
+                {
+                    entry.FamilyType = (SynergyFamilyType)ParseInt(trimmed["FamilyType:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("MinorThreshold:", StringComparison.Ordinal))
+                {
+                    entry.MinorThreshold = ParseInt(trimmed["MinorThreshold:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("MajorThreshold:", StringComparison.Ordinal))
+                {
+                    entry.MajorThreshold = ParseInt(trimmed["MajorThreshold:".Length..].Trim());
+                }
+            }
+
+            result.Add(entry);
+        }
+
+        return result;
+    }
+
+    private static List<ClassLabelMapping> ParseClassLabelMappings(string[] lines)
+    {
+        var result = new List<ClassLabelMapping>();
+        var index = FindLineIndex(lines, "ClassLabelMappings:");
+        if (index < 0)
+        {
+            return result;
+        }
+
+        for (index++; index < lines.Length; index++)
+        {
+            var trimmed = lines[index].Trim();
+            if (!trimmed.StartsWith("- CanonicalId:", StringComparison.Ordinal))
+            {
+                if (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal))
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            var mapping = new ClassLabelMapping
+            {
+                CanonicalId = trimmed["- CanonicalId:".Length..].Trim()
+            };
+            for (index++; index < lines.Length; index++)
+            {
+                trimmed = lines[index].Trim();
+                if (trimmed.StartsWith("- CanonicalId:", StringComparison.Ordinal)
+                    || (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal)))
+                {
+                    index--;
+                    break;
+                }
+
+                if (trimmed.StartsWith("PlayerFacingLabel:", StringComparison.Ordinal))
+                {
+                    mapping.PlayerFacingLabel = trimmed["PlayerFacingLabel:".Length..].Trim();
+                }
+            }
+
+            result.Add(mapping);
+        }
+
+        return result;
     }
 
     internal static Dictionary<string, T> LoadAssets<T>(

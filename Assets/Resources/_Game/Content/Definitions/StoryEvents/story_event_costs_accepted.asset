@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5961058562567524609
+--- !u!114 &-8864239366625011113
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16,23 +16,7 @@ MonoBehaviour:
   _kind: 0
   _operandA: chapter_glass_forest
   _operandB: 
---- !u!114 &-3912403206719138152
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_costs_accepted.condition.01
-  _kind: 1
-  _operandA: site_starved_menagerie
-  _operandB: 
---- !u!114 &-1142933379249045798
+--- !u!114 &-7823779772753657076
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,13 +48,29 @@ MonoBehaviour:
   _priority: 350
   _oncePolicy: 0
   _conditions:
-  - {fileID: -5961058562567524609}
-  - {fileID: -3912403206719138152}
+  - {fileID: -8864239366625011113}
+  - {fileID: 5270765174100882089}
   _effects:
-  - {fileID: -1142933379249045798}
-  - {fileID: 172480576946864414}
+  - {fileID: -7823779772753657076}
+  - {fileID: 6430271780900374723}
   _presentationKey: dialogue_scene_costs_accepted
---- !u!114 &172480576946864414
+--- !u!114 &5270765174100882089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_costs_accepted.condition.01
+  _kind: 1
+  _operandA: site_starved_menagerie
+  _operandB: 
+--- !u!114 &6430271780900374723
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -1,40 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4261083780526846535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_defeat_ruined_crypts.line.00
-  _speakerId: Narrator
-  _textKey: loc.story.overlay_boss_defeat_ruined_crypts.0
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_overlay_boss_defeat_ruined_crypts
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_overlay_boss_defeat_ruined_crypts
-  _lines:
-  - {fileID: -4261083780526846535}
-  - {fileID: 3176669328672802425}
-  - {fileID: 136939171238885512}
---- !u!114 &136939171238885512
+--- !u!114 &-9122300847125275546
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,8 +16,44 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.overlay_boss_defeat_ruined_crypts.2
   _emote: solemn
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &3176669328672802425
+--- !u!114 &-1459527101574910780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_overlay_boss_defeat_ruined_crypts.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.overlay_boss_defeat_ruined_crypts.0
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_overlay_boss_defeat_ruined_crypts
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_overlay_boss_defeat_ruined_crypts
+  _lines:
+  - {fileID: -1459527101574910780}
+  - {fileID: 7406751531061898570}
+  - {fileID: -9122300847125275546}
+--- !u!114 &7406751531061898570
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,4 +69,5 @@ MonoBehaviour:
   _speakerId: hero_grave_hexer
   _textKey: loc.story.overlay_boss_defeat_ruined_crypts.1
   _emote: gentle
+  _emotionTextKey: 
   _autoAdvanceHint: 0

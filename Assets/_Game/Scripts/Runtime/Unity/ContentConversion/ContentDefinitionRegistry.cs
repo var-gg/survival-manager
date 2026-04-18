@@ -215,6 +215,7 @@ internal sealed class ContentDefinitionRegistry
                 if (dropTables.Length == 0) dropTables = parsed.DropTables.ToArray();
                 if (lootBundles.Length == 0) lootBundles = parsed.LootBundles.ToArray();
                 if (traitTokens.Length == 0) traitTokens = parsed.TraitTokens.ToArray();
+                if (firstPlayableSliceAssets.Length == 0) firstPlayableSliceAssets = parsed.FirstPlayableSlices.ToArray();
             }
 
             ClearAll();

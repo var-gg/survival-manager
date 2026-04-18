@@ -1,57 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8225824119688216495
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_ruined_crypts_intro.line.09
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_ruined_crypts_intro.9
-  _emote: dry
-  _autoAdvanceHint: 0
---- !u!114 &-2036515111805078279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_ruined_crypts_intro.line.06
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_ruined_crypts_intro.6
-  _emote: tense
-  _autoAdvanceHint: 0
---- !u!114 &-1661464099262446012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_ruined_crypts_intro.line.03
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_ruined_crypts_intro.3
-  _emote: casual
-  _autoAdvanceHint: 0
---- !u!114 &-1393164274460134352
+--- !u!114 &-8192114259454859748
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,8 +16,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_ruined_crypts_intro.2
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-1338439125131775492
+--- !u!114 &-6850989889358570375
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,14 +28,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: line_10
+  m_Name: line_06
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_ruined_crypts_intro.line.10
+  _id: dialogue_scene_ruined_crypts_intro.line.06
   _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_ruined_crypts_intro.10
-  _emote: grim
+  _textKey: loc.story.scene_ruined_crypts_intro.6
+  _emote: tense
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &11400000
+--- !u!114 &-6575340230734668441
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,40 +46,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: dialogue_scene_ruined_crypts_intro
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_scene_ruined_crypts_intro
-  _lines:
-  - {fileID: 3170571791581001396}
-  - {fileID: 540524588520130552}
-  - {fileID: -1393164274460134352}
-  - {fileID: -1661464099262446012}
-  - {fileID: 8230221050587945273}
-  - {fileID: 466320117449047849}
-  - {fileID: -2036515111805078279}
-  - {fileID: 5225268645028024790}
-  - {fileID: 8287243556325956025}
-  - {fileID: -8225824119688216495}
-  - {fileID: -1338439125131775492}
-  - {fileID: 2909022829791015888}
---- !u!114 &466320117449047849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
+  m_Name: line_03
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_ruined_crypts_intro.line.05
+  _id: dialogue_scene_ruined_crypts_intro.line.03
   _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_ruined_crypts_intro.5
-  _emote: amused
+  _textKey: loc.story.scene_ruined_crypts_intro.3
+  _emote: casual
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &540524588520130552
+--- !u!114 &-4106804185816828070
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -144,8 +70,27 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_ruined_crypts_intro.1
   _emote: grim
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &2909022829791015888
+--- !u!114 &-2809371680048758749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_ruined_crypts_intro.line.10
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_ruined_crypts_intro.10
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1841538361272188661
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -161,8 +106,35 @@ MonoBehaviour:
   _speakerId: hero_grave_hexer
   _textKey: loc.story.scene_ruined_crypts_intro.11
   _emote: gentle
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &3170571791581001396
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_ruined_crypts_intro
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_ruined_crypts_intro
+  _lines:
+  - {fileID: 1150571805304203208}
+  - {fileID: -4106804185816828070}
+  - {fileID: -8192114259454859748}
+  - {fileID: -6575340230734668441}
+  - {fileID: 6567931213102519093}
+  - {fileID: 5208910709801087434}
+  - {fileID: -6850989889358570375}
+  - {fileID: 3795324102804005997}
+  - {fileID: 2021079091411673382}
+  - {fileID: 1818658189812973995}
+  - {fileID: -2809371680048758749}
+  - {fileID: -1841538361272188661}
+--- !u!114 &1150571805304203208
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -178,8 +150,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_ruined_crypts_intro.0
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &5225268645028024790
+--- !u!114 &1818658189812973995
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -189,31 +162,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: line_07
+  m_Name: line_09
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_ruined_crypts_intro.line.07
+  _id: dialogue_scene_ruined_crypts_intro.line.09
   _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_ruined_crypts_intro.7
-  _emote: casual
+  _textKey: loc.story.scene_ruined_crypts_intro.9
+  _emote: dry
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &8230221050587945273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_04
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_ruined_crypts_intro.line.04
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.scene_ruined_crypts_intro.4
-  _emote: wary
-  _autoAdvanceHint: 0
---- !u!114 &8287243556325956025
+--- !u!114 &2021079091411673382
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -229,4 +186,59 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_ruined_crypts_intro.8
   _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &3795324102804005997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_ruined_crypts_intro.line.07
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_ruined_crypts_intro.7
+  _emote: casual
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5208910709801087434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_ruined_crypts_intro.line.05
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_ruined_crypts_intro.5
+  _emote: amused
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6567931213102519093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_ruined_crypts_intro.line.04
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_ruined_crypts_intro.4
+  _emote: wary
+  _emotionTextKey: 
   _autoAdvanceHint: 0

@@ -1,23 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7843350882097816264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_worldscar_depths_intro.line.00
-  _speakerId: Narrator
-  _textKey: loc.story.scene_worldscar_depths_intro.0
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &-7683934105264455816
+--- !u!114 &-8494690446870858560
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -33,119 +16,9 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.scene_worldscar_depths_intro.4
   _emote: quiet
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-3669000253127897338
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_worldscar_depths_intro.line.02
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_worldscar_depths_intro.2
-  _emote: grim
-  _autoAdvanceHint: 0
---- !u!114 &-3605343423703733661
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_worldscar_depths_intro.line.09
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_worldscar_depths_intro.9
-  _emote: solemn
-  _autoAdvanceHint: 0
---- !u!114 &-3248300512320748650
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_11
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_worldscar_depths_intro.line.11
-  _speakerId: Narrator
-  _textKey: loc.story.scene_worldscar_depths_intro.11
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_scene_worldscar_depths_intro
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_scene_worldscar_depths_intro
-  _lines:
-  - {fileID: -7843350882097816264}
-  - {fileID: 5145536247276334263}
-  - {fileID: -3669000253127897338}
-  - {fileID: 2045125671665915464}
-  - {fileID: -7683934105264455816}
-  - {fileID: 1095343762738726760}
-  - {fileID: 6453220676209338997}
-  - {fileID: 193967509675032121}
-  - {fileID: 570085384221131158}
-  - {fileID: -3605343423703733661}
-  - {fileID: 7306092123736585304}
-  - {fileID: -3248300512320748650}
---- !u!114 &193967509675032121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_07
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_worldscar_depths_intro.line.07
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_worldscar_depths_intro.7
-  _emote: gentle
-  _autoAdvanceHint: 0
---- !u!114 &570085384221131158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_08
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_worldscar_depths_intro.line.08
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_worldscar_depths_intro.8
-  _emote: flat
-  _autoAdvanceHint: 0
---- !u!114 &1095343762738726760
+--- !u!114 &-6513135433386589357
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -161,8 +34,45 @@ MonoBehaviour:
   _speakerId: hero_echo_savant
   _textKey: loc.story.scene_worldscar_depths_intro.5
   _emote: grim
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &2045125671665915464
+--- !u!114 &-4427250347724832122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_worldscar_depths_intro.line.09
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_worldscar_depths_intro.9
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4424691247245915904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_worldscar_depths_intro.line.07
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_worldscar_depths_intro.7
+  _emote: gentle
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2288060206268456685
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -178,8 +88,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_worldscar_depths_intro.3
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &5145536247276334263
+--- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -189,14 +100,59 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: line_01
+  m_Name: dialogue_scene_worldscar_depths_intro
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_worldscar_depths_intro
+  _lines:
+  - {fileID: 846523640118804555}
+  - {fileID: 8643340656040607553}
+  - {fileID: 904884156756963671}
+  - {fileID: -2288060206268456685}
+  - {fileID: -8494690446870858560}
+  - {fileID: -6513135433386589357}
+  - {fileID: 1540163014071007931}
+  - {fileID: -4424691247245915904}
+  - {fileID: 6399231252964756197}
+  - {fileID: -4427250347724832122}
+  - {fileID: 1910432681241087506}
+  - {fileID: 6931304033679406655}
+--- !u!114 &846523640118804555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_worldscar_depths_intro.line.01
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_worldscar_depths_intro.1
-  _emote: awe
+  _id: dialogue_scene_worldscar_depths_intro.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_worldscar_depths_intro.0
+  _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &6453220676209338997
+--- !u!114 &904884156756963671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_worldscar_depths_intro.line.02
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_worldscar_depths_intro.2
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &1540163014071007931
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -212,8 +168,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_worldscar_depths_intro.6
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &7306092123736585304
+--- !u!114 &1910432681241087506
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -229,4 +186,59 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.scene_worldscar_depths_intro.10
   _emote: resolute
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6399231252964756197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_worldscar_depths_intro.line.08
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_worldscar_depths_intro.8
+  _emote: flat
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6931304033679406655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_worldscar_depths_intro.line.11
+  _speakerId: Narrator
+  _textKey: loc.story.scene_worldscar_depths_intro.11
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8643340656040607553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_worldscar_depths_intro.line.01
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_worldscar_depths_intro.1
+  _emote: awe
+  _emotionTextKey: 
   _autoAdvanceHint: 0

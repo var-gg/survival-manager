@@ -1872,26 +1872,16 @@ public static class SampleSeedGenerator
         var tiers = LoadDefinitions<SynergyTierDefinition>($"{ResourcesRoot}/Synergies");
         foreach (var tier in tiers)
         {
-            if (tier.Threshold == 3)
-            {
-                var assetPath = AssetDatabase.GetAssetPath(tier);
-                if (!string.IsNullOrWhiteSpace(assetPath))
-                {
-                    AssetDatabase.DeleteAsset(assetPath);
-                }
-
-                continue;
-            }
-
-            var target = tier.Threshold == 4 ? 18 : 12;
-            var vector = tier.Threshold == 4
+            var isMajorBreakpoint = tier.Threshold != 2;
+            var target = isMajorBreakpoint ? 18 : 12;
+            var vector = isMajorBreakpoint
                 ? MakeBudgetVector(6, 2, 4, 2, 0, 2, 0, 2)
                 : MakeBudgetVector(3, 1, 3, 1, 0, 2, 0, 2);
             AdjustBudgetFinalScore(vector, target);
             tier.BudgetCard = BuildBudgetCard(
                 BudgetDomain.SynergyBreakpoint,
                 ContentRarity.Common,
-                tier.Threshold == 4 ? PowerBand.Major : PowerBand.Standard,
+                isMajorBreakpoint ? PowerBand.Major : PowerBand.Standard,
                 CombatRoleBudgetProfile.None,
                 vector,
                 keywordCount: 2,
@@ -1902,10 +1892,15 @@ public static class SampleSeedGenerator
             EditorUtility.SetDirty(tier);
         }
 
+        var tiersById = tiers
+            .Where(tier => !string.IsNullOrWhiteSpace(tier.Id))
+            .ToDictionary(tier => tier.Id, StringComparer.Ordinal);
         foreach (var synergy in LoadDefinitions<SynergyDefinition>($"{ResourcesRoot}/Synergies"))
         {
-            synergy.Tiers = synergy.Tiers
-                .Where(tier => tier != null && (tier.Threshold == 2 || tier.Threshold == 4))
+            synergy.Tiers = FirstPlayableAuthoringContract.GetExpectedSynergyThresholds(synergy)
+                .Select(threshold => tiersById.TryGetValue($"synergytier_{synergy.Id}_{threshold}", out var tier) ? tier : null)
+                .Where(tier => tier != null)
+                .Select(tier => tier!)
                 .OrderBy(tier => tier.Threshold)
                 .ToList();
             EditorUtility.SetDirty(synergy);
@@ -2457,13 +2452,15 @@ public static class SampleSeedGenerator
         CreateRewardSource("reward_source_shrine_event", "Shrine/Event", "사당/이벤트", RewardSourceKindValue.ShrineEvent, "drop_table_shrine_event", new[] { RarityBracketValue.Advanced, RarityBracketValue.Elite });
         CreateRewardSource("reward_source_salvage", "Salvage", "분해", RewardSourceKindValue.SalvageDismantle, "drop_table_salvage", new[] { RarityBracketValue.Common, RarityBracketValue.Advanced });
 
+        var siteAnswerLanes = GetSiteAnswerLaneContracts();
+
         CreateDropTable("drop_table_skirmish", "reward_source_skirmish", new[]
         {
             MakeLootEntry("gold_skirmish", RewardType.Gold, 8, RarityBracketValue.Common, true, 1),
             MakeLootEntry("ember_dust_skirmish", RewardType.EmberDust, 2, RarityBracketValue.Common, true, 1),
             MakeLootEntry("item_iron_sword", RewardType.Item, 1, RarityBracketValue.Advanced, false, 3),
             MakeLootEntry("skill_power_strike", RewardType.SkillShard, 1, RarityBracketValue.Advanced, false, 2),
-        });
+        }.Concat(MakeRewardRouteEntries("skirmish", RewardType.EmberDust, 1, RarityBracketValue.Advanced, siteAnswerLanes)).ToArray());
 
         CreateDropTable("drop_table_elite", "reward_source_elite", new[]
         {
@@ -2471,7 +2468,7 @@ public static class SampleSeedGenerator
             MakeLootEntry("ember_dust_elite", RewardType.EmberDust, 4, RarityBracketValue.Advanced, true, 1),
             MakeLootEntry("item_bone_blade", RewardType.Item, 1, RarityBracketValue.Elite, false, 3),
             MakeLootEntry("skill_precision_shot", RewardType.SkillManual, 1, RarityBracketValue.Elite, false, 2),
-        });
+        }.Concat(MakeRewardRouteEntries("elite", RewardType.Echo, 12, RarityBracketValue.Elite, siteAnswerLanes)).ToArray());
 
         CreateDropTable("drop_table_boss", "reward_source_boss", new[]
         {
@@ -2479,7 +2476,7 @@ public static class SampleSeedGenerator
             MakeLootEntry("echo_crystal_boss", RewardType.EchoCrystal, 2, RarityBracketValue.Elite, true, 1),
             MakeLootEntry("item_prayer_bead", RewardType.Item, 1, RarityBracketValue.Boss, false, 2),
             MakeLootEntry("skill_minor_heal", RewardType.SkillManual, 1, RarityBracketValue.Boss, false, 2),
-        });
+        }.Concat(MakeRewardRouteEntries("boss", RewardType.EchoCrystal, 1, RarityBracketValue.Boss, siteAnswerLanes)).ToArray());
 
         CreateDropTable("drop_table_extract", "reward_source_extract", new[]
         {
@@ -2516,16 +2513,46 @@ public static class SampleSeedGenerator
         });
     }
 
+    private static IReadOnlyList<(string SiteId, string AnswerLaneId)> GetSiteAnswerLaneContracts()
+    {
+        return new[]
+        {
+            ("site_ashen_gate", "answer_lane_guard_anchor"),
+            ("site_cinder_watch", "answer_lane_reach_anti_carry"),
+            ("site_forgotten_warren", "answer_lane_anti_swarm_persistence"),
+            ("site_twisted_den", "answer_lane_peel_cleanse"),
+            ("site_ruined_crypt", "answer_lane_anti_sustain_finish"),
+            ("site_grave_sanctum", "answer_lane_hybrid_boss_prep"),
+        };
+    }
+
+    private static IEnumerable<LootBundleEntryDefinition> MakeRewardRouteEntries(
+        string routeIdPrefix,
+        RewardType rewardType,
+        int amount,
+        RarityBracketValue rarity,
+        IReadOnlyList<(string SiteId, string AnswerLaneId)> siteAnswerLanes)
+    {
+        return siteAnswerLanes.Select(route => MakeLootEntry(
+            $"{routeIdPrefix}_{route.SiteId}_{route.AnswerLaneId}",
+            rewardType,
+            amount,
+            rarity,
+            guaranteed: false,
+            weight: 1,
+            requiredContextTags: new[] { route.SiteId, route.AnswerLaneId }));
+    }
+
     private static void CreateCampaignEncounterCatalog()
     {
         var sites = new[]
         {
-            new { ChapterId = "chapter_ashen_frontier", ChapterOrder = 1, ChapterName = "Ashen Frontier", ChapterNameKo = "잿빛 변경", ChapterDesc = "Open the frontier routes.", ChapterDescKo = "변경의 첫 루트를 연다.", SiteId = "site_ashen_gate", SiteOrder = 1, SiteName = "Ashen Gate", SiteNameKo = "잿문", SiteDesc = "Vanguard outpost route.", SiteDescKo = "전열 진영과 충돌하는 루트.", Faction = "faction_ashen_vanguard", SkirmishA = new[] { "warden", "hunter", "hexer", "raider" }, SkirmishB = new[] { "guardian", "scout", "hexer", "hunter" }, Elite = new[] { "bulwark", "hunter", "hexer", "guardian" }, BossCaptain = "bulwark", BossEscorts = new[] { "hunter", "hexer" }, OverlayId = "boss_overlay_ashen_gate" },
-            new { ChapterId = "chapter_ashen_frontier", ChapterOrder = 1, ChapterName = "Ashen Frontier", ChapterNameKo = "잿빛 변경", ChapterDesc = "Open the frontier routes.", ChapterDescKo = "변경의 첫 루트를 연다.", SiteId = "site_cinder_watch", SiteOrder = 2, SiteName = "Cinder Watch", SiteNameKo = "잿불 망대", SiteDesc = "Ranged harassment route.", SiteDescKo = "원거리 압박이 많은 루트.", Faction = "faction_cinder_watch", SkirmishA = new[] { "hunter", "scout", "raider", "priest" }, SkirmishB = new[] { "marksman", "scout", "guardian", "hexer" }, Elite = new[] { "marksman", "bulwark", "scout", "hexer" }, BossCaptain = "marksman", BossEscorts = new[] { "scout", "priest" }, OverlayId = "boss_overlay_cinder_watch" },
-            new { ChapterId = "chapter_warren_depths", ChapterOrder = 2, ChapterName = "Warren Depths", ChapterNameKo = "망실 굴지", ChapterDesc = "Break the hidden warrens.", ChapterDescKo = "숨은 굴을 돌파한다.", SiteId = "site_forgotten_warren", SiteOrder = 1, SiteName = "Forgotten Warren", SiteNameKo = "망실 굴", SiteDesc = "Attrition-heavy tunnels.", SiteDescKo = "소모전이 긴 터널.", Faction = "faction_warren_pack", SkirmishA = new[] { "raider", "scout", "shaman", "hunter" }, SkirmishB = new[] { "reaver", "scout", "shaman", "hunter" }, Elite = new[] { "reaver", "raider", "scout", "shaman" }, BossCaptain = "reaver", BossEscorts = new[] { "scout", "shaman" }, OverlayId = "boss_overlay_forgotten_warren" },
-            new { ChapterId = "chapter_warren_depths", ChapterOrder = 2, ChapterName = "Warren Depths", ChapterNameKo = "망실 굴지", ChapterDesc = "Break the hidden warrens.", ChapterDescKo = "숨은 굴을 돌파한다.", SiteId = "site_twisted_den", SiteOrder = 2, SiteName = "Twisted Den", SiteNameKo = "뒤틀린 소굴", SiteDesc = "Ambush-heavy den.", SiteDescKo = "기습이 많은 소굴.", Faction = "faction_twisted_den", SkirmishA = new[] { "slayer", "raider", "scout", "shaman" }, SkirmishB = new[] { "slayer", "hunter", "scout", "priest" }, Elite = new[] { "slayer", "reaver", "scout", "priest" }, BossCaptain = "slayer", BossEscorts = new[] { "scout", "priest" }, OverlayId = "boss_overlay_twisted_den" },
-            new { ChapterId = "chapter_ruined_crypts", ChapterOrder = 3, ChapterName = "Ruined Crypts", ChapterNameKo = "폐허 묘실", ChapterDesc = "Seal the crypt lords.", ChapterDescKo = "묘실의 군주를 봉인한다.", SiteId = "site_ruined_crypt", SiteOrder = 1, SiteName = "Ruined Crypt", SiteNameKo = "폐허 묘실", SiteDesc = "Undead elite route.", SiteDescKo = "언데드 정예 루트.", Faction = "faction_bone_host", SkirmishA = new[] { "guardian", "hexer", "priest", "hunter" }, SkirmishB = new[] { "bulwark", "hexer", "priest", "marksman" }, Elite = new[] { "bulwark", "hexer", "priest", "marksman" }, BossCaptain = "hexer", BossEscorts = new[] { "priest", "guardian" }, OverlayId = "boss_overlay_ruined_crypt" },
-            new { ChapterId = "chapter_ruined_crypts", ChapterOrder = 3, ChapterName = "Ruined Crypts", ChapterNameKo = "폐허 묘실", ChapterDesc = "Seal the crypt lords.", ChapterDescKo = "묘실의 군주를 봉인한다.", SiteId = "site_grave_sanctum", SiteOrder = 2, SiteName = "Grave Sanctum", SiteNameKo = "무덤 성소", SiteDesc = "Final ritual route.", SiteDescKo = "최종 의식 루트.", Faction = "faction_grave_sanctum", SkirmishA = new[] { "guardian", "hexer", "shaman", "marksman" }, SkirmishB = new[] { "bulwark", "hexer", "shaman", "hunter" }, Elite = new[] { "bulwark", "guardian", "hexer", "shaman" }, BossCaptain = "shaman", BossEscorts = new[] { "guardian", "hexer" }, OverlayId = "boss_overlay_grave_sanctum" },
+            new { ChapterId = "chapter_ashen_frontier", ChapterOrder = 1, ChapterName = "Ashen Frontier", ChapterNameKo = "잿빛 변경", ChapterDesc = "Open the frontier routes.", ChapterDescKo = "변경의 첫 루트를 연다.", SiteId = "site_ashen_gate", SiteOrder = 1, SiteName = "Ashen Gate", SiteNameKo = "잿문", SiteDesc = "Vanguard outpost route.", SiteDescKo = "전열 진영과 충돌하는 루트.", Faction = "faction_ashen_vanguard", AnswerLaneId = "answer_lane_guard_anchor", EncounterFamilyIds = new[] { "encounter_family_bastion_front", "encounter_family_protect_carry", "encounter_family_control_cleanse", "encounter_family_sustain_grind" }, SkirmishA = new[] { "warden", "hunter", "hexer", "raider" }, SkirmishB = new[] { "guardian", "scout", "hexer", "hunter" }, Elite = new[] { "bulwark", "hunter", "hexer", "guardian" }, BossCaptain = "bulwark", BossEscorts = new[] { "hunter", "hexer" }, OverlayId = "boss_overlay_ashen_gate" },
+            new { ChapterId = "chapter_ashen_frontier", ChapterOrder = 1, ChapterName = "Ashen Frontier", ChapterNameKo = "잿빛 변경", ChapterDesc = "Open the frontier routes.", ChapterDescKo = "변경의 첫 루트를 연다.", SiteId = "site_cinder_watch", SiteOrder = 2, SiteName = "Cinder Watch", SiteNameKo = "잿불 망대", SiteDesc = "Ranged harassment route.", SiteDescKo = "원거리 압박이 많은 루트.", Faction = "faction_cinder_watch", AnswerLaneId = "answer_lane_reach_anti_carry", EncounterFamilyIds = new[] { "encounter_family_mark_execute", "encounter_family_weakside_dive", "encounter_family_tempo_swarm", "encounter_family_protect_carry" }, SkirmishA = new[] { "hunter", "scout", "raider", "priest" }, SkirmishB = new[] { "marksman", "scout", "guardian", "hexer" }, Elite = new[] { "marksman", "bulwark", "scout", "hexer" }, BossCaptain = "marksman", BossEscorts = new[] { "scout", "priest" }, OverlayId = "boss_overlay_cinder_watch" },
+            new { ChapterId = "chapter_warren_depths", ChapterOrder = 2, ChapterName = "Warren Depths", ChapterNameKo = "망실 굴지", ChapterDesc = "Break the hidden warrens.", ChapterDescKo = "숨은 굴을 돌파한다.", SiteId = "site_forgotten_warren", SiteOrder = 1, SiteName = "Forgotten Warren", SiteNameKo = "망실 굴", SiteDesc = "Attrition-heavy tunnels.", SiteDescKo = "소모전이 긴 터널.", Faction = "faction_warren_pack", AnswerLaneId = "answer_lane_anti_swarm_persistence", EncounterFamilyIds = new[] { "encounter_family_sustain_grind", "encounter_family_tempo_swarm", "encounter_family_summon_pressure", "encounter_family_weakside_dive" }, SkirmishA = new[] { "raider", "scout", "shaman", "hunter" }, SkirmishB = new[] { "reaver", "scout", "shaman", "hunter" }, Elite = new[] { "reaver", "raider", "scout", "shaman" }, BossCaptain = "reaver", BossEscorts = new[] { "scout", "shaman" }, OverlayId = "boss_overlay_forgotten_warren" },
+            new { ChapterId = "chapter_warren_depths", ChapterOrder = 2, ChapterName = "Warren Depths", ChapterNameKo = "망실 굴지", ChapterDesc = "Break the hidden warrens.", ChapterDescKo = "숨은 굴을 돌파한다.", SiteId = "site_twisted_den", SiteOrder = 2, SiteName = "Twisted Den", SiteNameKo = "뒤틀린 소굴", SiteDesc = "Ambush-heavy den.", SiteDescKo = "기습이 많은 소굴.", Faction = "faction_twisted_den", AnswerLaneId = "answer_lane_peel_cleanse", EncounterFamilyIds = new[] { "encounter_family_weakside_dive", "encounter_family_mark_execute", "encounter_family_summon_pressure", "encounter_family_tempo_swarm" }, SkirmishA = new[] { "slayer", "raider", "scout", "shaman" }, SkirmishB = new[] { "slayer", "hunter", "scout", "priest" }, Elite = new[] { "slayer", "reaver", "scout", "priest" }, BossCaptain = "slayer", BossEscorts = new[] { "scout", "priest" }, OverlayId = "boss_overlay_twisted_den" },
+            new { ChapterId = "chapter_ruined_crypts", ChapterOrder = 3, ChapterName = "Ruined Crypts", ChapterNameKo = "폐허 묘실", ChapterDesc = "Seal the crypt lords.", ChapterDescKo = "묘실의 군주를 봉인한다.", SiteId = "site_ruined_crypt", SiteOrder = 1, SiteName = "Ruined Crypt", SiteNameKo = "폐허 묘실", SiteDesc = "Undead elite route.", SiteDescKo = "언데드 정예 루트.", Faction = "faction_bone_host", AnswerLaneId = "answer_lane_anti_sustain_finish", EncounterFamilyIds = new[] { "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry", "encounter_family_summon_pressure" }, SkirmishA = new[] { "guardian", "hexer", "priest", "hunter" }, SkirmishB = new[] { "bulwark", "hexer", "priest", "marksman" }, Elite = new[] { "bulwark", "hexer", "priest", "marksman" }, BossCaptain = "hexer", BossEscorts = new[] { "priest", "guardian" }, OverlayId = "boss_overlay_ruined_crypt" },
+            new { ChapterId = "chapter_ruined_crypts", ChapterOrder = 3, ChapterName = "Ruined Crypts", ChapterNameKo = "폐허 묘실", ChapterDesc = "Seal the crypt lords.", ChapterDescKo = "묘실의 군주를 봉인한다.", SiteId = "site_grave_sanctum", SiteOrder = 2, SiteName = "Grave Sanctum", SiteNameKo = "무덤 성소", SiteDesc = "Final ritual route.", SiteDescKo = "최종 의식 루트.", Faction = "faction_grave_sanctum", AnswerLaneId = "answer_lane_hybrid_boss_prep", EncounterFamilyIds = new[] { "encounter_family_bastion_front", "encounter_family_control_cleanse", "encounter_family_mark_execute", "encounter_family_bastion_front" }, SkirmishA = new[] { "guardian", "hexer", "shaman", "marksman" }, SkirmishB = new[] { "bulwark", "hexer", "shaman", "hunter" }, Elite = new[] { "bulwark", "guardian", "hexer", "shaman" }, BossCaptain = "shaman", BossEscorts = new[] { "guardian", "hexer" }, OverlayId = "boss_overlay_grave_sanctum" },
         };
 
         foreach (var chapterGroup in sites.GroupBy(site => site.ChapterId))
@@ -2569,10 +2596,10 @@ public static class SampleSeedGenerator
             CreateEnemySquad($"{site.SiteId}_elite_1_squad", site.Faction, site.Elite, TeamPostureTypeValue.CollapseWeakSide, ThreatTierValue.Tier2, 2);
             CreateBossSquad($"{site.SiteId}_boss_1_squad", site.Faction, site.BossCaptain, site.BossEscorts, ThreatTierValue.Tier3, 3);
 
-            CreateEncounter($"{site.SiteId}_skirmish_1", site.SiteId, site.Faction, EncounterKindValue.Skirmish, $"{site.SiteId}_skirmish_1_squad", string.Empty, "reward_source_skirmish", ThreatTierValue.Tier1, 1, 1, "chapter_entry");
-            CreateEncounter($"{site.SiteId}_skirmish_2", site.SiteId, site.Faction, EncounterKindValue.Skirmish, $"{site.SiteId}_skirmish_2_squad", string.Empty, "reward_source_skirmish", ThreatTierValue.Tier1, 1, 1, "chapter_entry");
-            CreateEncounter($"{site.SiteId}_elite_1", site.SiteId, site.Faction, EncounterKindValue.Elite, $"{site.SiteId}_elite_1_squad", string.Empty, "reward_source_elite", ThreatTierValue.Tier2, 2, 2, "site_mid");
-            CreateEncounter($"{site.SiteId}_boss_1", site.SiteId, site.Faction, EncounterKindValue.Boss, $"{site.SiteId}_boss_1_squad", site.OverlayId, "reward_source_boss", ThreatTierValue.Tier3, 3, 3, "site_boss");
+            CreateEncounter($"{site.SiteId}_skirmish_1", site.SiteId, site.Faction, EncounterKindValue.Skirmish, $"{site.SiteId}_skirmish_1_squad", string.Empty, "reward_source_skirmish", ThreatTierValue.Tier1, 1, 1, "chapter_entry", site.EncounterFamilyIds[0], site.AnswerLaneId);
+            CreateEncounter($"{site.SiteId}_skirmish_2", site.SiteId, site.Faction, EncounterKindValue.Skirmish, $"{site.SiteId}_skirmish_2_squad", string.Empty, "reward_source_skirmish", ThreatTierValue.Tier1, 1, 1, "chapter_entry", site.EncounterFamilyIds[1], site.AnswerLaneId);
+            CreateEncounter($"{site.SiteId}_elite_1", site.SiteId, site.Faction, EncounterKindValue.Elite, $"{site.SiteId}_elite_1_squad", string.Empty, "reward_source_elite", ThreatTierValue.Tier2, 2, 2, "site_mid", site.EncounterFamilyIds[2], site.AnswerLaneId);
+            CreateEncounter($"{site.SiteId}_boss_1", site.SiteId, site.Faction, EncounterKindValue.Boss, $"{site.SiteId}_boss_1_squad", site.OverlayId, "reward_source_boss", ThreatTierValue.Tier3, 3, 3, "site_boss", site.EncounterFamilyIds[3], site.AnswerLaneId);
         }
     }
 
@@ -2608,7 +2635,14 @@ public static class SampleSeedGenerator
         PatchSerializedDropTable(asset, asset.Id, asset.NameKey, asset.DescriptionKey, asset.RewardSourceId, asset.Entries);
     }
 
-    private static LootBundleEntryDefinition MakeLootEntry(string id, RewardType type, int amount, RarityBracketValue rarity, bool guaranteed, int weight)
+    private static LootBundleEntryDefinition MakeLootEntry(
+        string id,
+        RewardType type,
+        int amount,
+        RarityBracketValue rarity,
+        bool guaranteed,
+        int weight,
+        IEnumerable<string>? requiredContextTags = null)
     {
         return new LootBundleEntryDefinition
         {
@@ -2617,7 +2651,11 @@ public static class SampleSeedGenerator
             Amount = amount,
             RarityBracket = rarity,
             IsGuaranteed = guaranteed,
-            Weight = weight
+            Weight = weight,
+            RequiredContextTags = (requiredContextTags ?? Array.Empty<string>())
+                .Where(tag => !string.IsNullOrWhiteSpace(tag))
+                .Distinct(StringComparer.Ordinal)
+                .ToList()
         };
     }
 
@@ -2695,7 +2733,7 @@ public static class SampleSeedGenerator
         });
     }
 
-    private static void CreateEncounter(string id, string siteId, string factionId, EncounterKindValue kind, string squadId, string overlayId, string rewardSourceId, ThreatTierValue threatTier, int threatCost, int threatSkulls, string difficultyBand)
+    private static void CreateEncounter(string id, string siteId, string factionId, EncounterKindValue kind, string squadId, string overlayId, string rewardSourceId, ThreatTierValue threatTier, int threatCost, int threatSkulls, string difficultyBand, string encounterFamilyId, string answerLaneId)
     {
         CreateAsset<EncounterDefinition>($"{ResourcesRoot}/Encounters/{id}.asset", asset =>
         {
@@ -2712,7 +2750,7 @@ public static class SampleSeedGenerator
             asset.ThreatCost = threatCost;
             asset.ThreatSkulls = threatSkulls;
             asset.DifficultyBand = difficultyBand;
-            asset.RewardDropTags = new List<string> { rewardSourceId, factionId, kind.ToString().ToLowerInvariant() };
+            asset.RewardDropTags = new List<string> { rewardSourceId, factionId, kind.ToString().ToLowerInvariant(), encounterFamilyId, answerLaneId };
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.NameKey, id, id);
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.DescriptionKey, $"{siteId} {kind}", $"{siteId} {kind}");
         });
@@ -3212,6 +3250,21 @@ public static class SampleSeedGenerator
             element.FindPropertyRelative(nameof(LootBundleEntryDefinition.RarityBracket))!.enumValueIndex = (int)entry.RarityBracket;
             element.FindPropertyRelative(nameof(LootBundleEntryDefinition.Weight))!.intValue = entry.Weight;
             element.FindPropertyRelative(nameof(LootBundleEntryDefinition.IsGuaranteed))!.boolValue = entry.IsGuaranteed;
+            SetStringArray(element.FindPropertyRelative(nameof(LootBundleEntryDefinition.RequiredContextTags)), entry.RequiredContextTags);
+        }
+    }
+
+    private static void SetStringArray(SerializedProperty? property, IReadOnlyList<string> values)
+    {
+        if (property == null)
+        {
+            return;
+        }
+
+        property.arraySize = values.Count;
+        for (var index = 0; index < values.Count; index++)
+        {
+            property.GetArrayElementAtIndex(index).stringValue = values[index] ?? string.Empty;
         }
     }
 

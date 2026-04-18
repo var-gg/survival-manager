@@ -29,5 +29,7 @@ MonoBehaviour:
   - reward_source_skirmish
   - faction_ashen_vanguard
   - skirmish
+  - encounter_family_protect_carry
+  - answer_lane_guard_anchor
   legacyDisplayName: 
   legacyDescription: 

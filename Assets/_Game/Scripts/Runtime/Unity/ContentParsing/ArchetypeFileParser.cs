@@ -136,15 +136,19 @@ internal static class ArchetypeFileParser
             var definition = ScriptableObject.CreateInstance<TraitPoolDefinition>();
             definition.Id = ExtractValue(lines, "Id:");
             definition.ArchetypeId = ExtractValue(lines, "ArchetypeId:");
-            definition.PositiveTraits = ParseTraitEntries(lines, "PositiveTraits:", "NegativeTraits:");
-            definition.NegativeTraits = ParseTraitEntries(lines, "NegativeTraits:", null);
+            definition.PositiveTraits = ParseTraitEntries(lines, "PositiveTraits:", "NegativeTraits:", definition.ArchetypeId);
+            definition.NegativeTraits = ParseTraitEntries(lines, "NegativeTraits:", null, definition.ArchetypeId);
             ApplyFallbackIdentity(definition, path);
             ApplyTraitPoolFallbacks(definition);
             return definition;
         }, guidToPath);
     }
 
-    internal static List<TraitEntry> ParseTraitEntries(string[] lines, string sectionHeader, string? endSectionHeader)
+    internal static List<TraitEntry> ParseTraitEntries(
+        string[] lines,
+        string sectionHeader,
+        string? endSectionHeader,
+        string archetypeId)
     {
         var result = new List<TraitEntry>();
         var index = FindLineIndex(lines, sectionHeader);
@@ -170,8 +174,8 @@ internal static class ArchetypeFileParser
             {
                 Id = trimmed["- Id:".Length..].Trim()
             };
-            trait.NameKey = ContentLocalizationTables.BuildTraitNameKey(string.Empty, trait.Id);
-            trait.DescriptionKey = ContentLocalizationTables.BuildTraitDescriptionKey(string.Empty, trait.Id);
+            trait.NameKey = ContentLocalizationTables.BuildTraitNameKey(archetypeId, trait.Id);
+            trait.DescriptionKey = ContentLocalizationTables.BuildTraitDescriptionKey(archetypeId, trait.Id);
 
             for (index++; index < lines.Length; index++)
             {
@@ -190,9 +194,21 @@ internal static class ArchetypeFileParser
                     continue;
                 }
 
+                if (trimmed.StartsWith("NameKey:", StringComparison.Ordinal))
+                {
+                    trait.NameKey = Coalesce(trimmed["NameKey:".Length..].Trim(), trait.NameKey);
+                    continue;
+                }
+
                 if (trimmed.StartsWith("Description:", StringComparison.Ordinal))
                 {
                     SetLegacyField(trait, "legacyDescription", trimmed["Description:".Length..].Trim());
+                    continue;
+                }
+
+                if (trimmed.StartsWith("DescriptionKey:", StringComparison.Ordinal))
+                {
+                    trait.DescriptionKey = Coalesce(trimmed["DescriptionKey:".Length..].Trim(), trait.DescriptionKey);
                     continue;
                 }
 
@@ -484,32 +500,47 @@ internal static class ArchetypeFileParser
         definition.RoleTag = Coalesce(definition.RoleTag is "auto" ? string.Empty : definition.RoleTag, spec.RoleTag);
         definition.RecruitTier = spec.RecruitTier;
 
-        if (definition.Skills == null || definition.Skills.Count == 0)
+        definition.Skills ??= new List<SkillDefinitionAsset>();
+        foreach (var skillId in spec.DefaultSkillIds)
         {
-            definition.Skills = spec.DefaultSkillIds
-                .Where(skills.ContainsKey)
-                .Select(id => skills[id])
-                .ToList();
+            if (skills.TryGetValue(skillId, out var skill)
+                && definition.Skills.All(existing => existing == null || !string.Equals(existing.Id, skill.Id, StringComparison.Ordinal)))
+            {
+                definition.Skills.Add(skill);
+            }
         }
 
+        var flexActiveSkills = definition.Skills
+            .Where(skill => skill != null && skill.SlotKind == SkillSlotKindValue.UtilityActive)
+            .ToList();
+        var flexPassiveSkills = definition.Skills
+            .Where(skill => skill != null && skill.SlotKind == SkillSlotKindValue.Support)
+            .ToList();
+        if (definition.FlexUtilitySkillPool == null || definition.FlexUtilitySkillPool.Count == 0)
+        {
+            definition.FlexUtilitySkillPool = flexActiveSkills;
+        }
+
+        if (definition.FlexSupportSkillPool == null || definition.FlexSupportSkillPool.Count == 0)
+        {
+            definition.FlexSupportSkillPool = flexPassiveSkills;
+        }
+
+        definition.Loadout ??= new UnitLoadoutDefinition();
         if (definition.Loadout != null)
         {
             definition.Loadout.SignatureActive ??= definition.Skills.FirstOrDefault(skill => skill != null && skill.SlotKind == SkillSlotKindValue.CoreActive);
-            definition.Loadout.FlexActive ??= definition.Skills.FirstOrDefault(skill => skill != null && skill.SlotKind == SkillSlotKindValue.UtilityActive);
+            definition.Loadout.FlexActive ??= definition.FlexUtilitySkillPool.FirstOrDefault(skill => skill != null);
         }
 
         if (definition.RecruitFlexActivePool == null || definition.RecruitFlexActivePool.Count == 0)
         {
-            definition.RecruitFlexActivePool = definition.Skills
-                .Where(skill => skill != null && skill.SlotKind == SkillSlotKindValue.UtilityActive)
-                .ToList();
+            definition.RecruitFlexActivePool = definition.FlexUtilitySkillPool.ToList();
         }
 
         if (definition.RecruitFlexPassivePool == null || definition.RecruitFlexPassivePool.Count == 0)
         {
-            definition.RecruitFlexPassivePool = definition.Skills
-                .Where(skill => skill != null && skill.SlotKind == SkillSlotKindValue.Support)
-                .ToList();
+            definition.RecruitFlexPassivePool = definition.FlexSupportSkillPool.ToList();
         }
 
         if (definition.TacticPreset == null || definition.TacticPreset.Count == 0)
@@ -521,7 +552,6 @@ internal static class ArchetypeFileParser
             }
         }
 
-        if (definition.BudgetCard == null || definition.BudgetCard.Vector == null || definition.BudgetCard.Vector.FinalScore == 0)
         {
             var rarity = LoopCContentGovernance.FromRecruitTier(definition.RecruitTier);
             var roleProfile = spec.ClassId switch
@@ -534,7 +564,22 @@ internal static class ArchetypeFileParser
                 "duelist" => CombatRoleBudgetProfile.Duelist,
                 _ => CombatRoleBudgetProfile.Vanguard,
             };
-            var target = LoopCContentGovernance.UnitBudgetTargets[rarity].Target;
+            var target = LoopCContentGovernance.UnitBudgetTargets[rarity];
+            var caps = LoopCContentGovernance.RarityComplexityCaps[rarity];
+            var shouldNormalizeBudget =
+                definition.BudgetCard == null
+                || definition.BudgetCard.Vector == null
+                || definition.BudgetCard.Vector.FinalScore == 0
+                || definition.BudgetCard.RoleProfile == CombatRoleBudgetProfile.None
+                || Math.Abs(definition.BudgetCard.Vector.FinalScore - target.Target) > target.Tolerance
+                || definition.BudgetCard.KeywordCount > caps.KeywordCount
+                || definition.BudgetCard.ConditionClauseCount > caps.ConditionClauseCount
+                || definition.BudgetCard.RuleExceptionCount > caps.RuleExceptionCount;
+            if (!shouldNormalizeBudget)
+            {
+                return;
+            }
+
             var vector = roleProfile switch
             {
                 CombatRoleBudgetProfile.Vanguard => MakeBudgetVector(10, 4, 36, 24, 4, 6, 8, 8),
@@ -545,7 +590,7 @@ internal static class ArchetypeFileParser
                 CombatRoleBudgetProfile.Support => MakeBudgetVector(6, 6, 18, 8, 6, 32, 6, 18),
                 _ => MakeBudgetVector(14, 12, 18, 8, 8, 8, 8, 24),
             };
-            AdjustBudgetFinalScore(vector, target);
+            AdjustBudgetFinalScore(vector, target.Target);
             var counters = roleProfile switch
             {
                 CombatRoleBudgetProfile.Vanguard => new[] { MakeCounter(CounterTool.InterceptPeel, CounterCoverageStrength.Standard) },
@@ -566,7 +611,7 @@ internal static class ArchetypeFileParser
                 CombatRoleBudgetProfile.Support => new[] { ThreatPattern.SustainBall },
                 _ => Array.Empty<ThreatPattern>(),
             };
-            definition.BudgetCard = BuildBudgetCard(BudgetDomain.UnitBlueprint, rarity, PowerBand.Standard, roleProfile, vector, rarity == ContentRarity.Common ? 2 : rarity == ContentRarity.Rare ? 3 : 4, rarity == ContentRarity.Common ? 1 : 2, rarity == ContentRarity.Epic ? 1 : 0, threats, counters);
+            definition.BudgetCard = BuildBudgetCard(BudgetDomain.UnitBlueprint, rarity, PowerBand.Standard, roleProfile, vector, caps.KeywordCount, caps.ConditionClauseCount, caps.RuleExceptionCount, threats, counters);
         }
     }
 

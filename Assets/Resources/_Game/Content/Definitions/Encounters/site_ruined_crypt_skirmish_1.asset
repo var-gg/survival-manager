@@ -29,5 +29,7 @@ MonoBehaviour:
   - reward_source_skirmish
   - faction_bone_host
   - skirmish
+  - encounter_family_control_cleanse
+  - answer_lane_anti_sustain_finish
   legacyDisplayName: 
   legacyDescription: 

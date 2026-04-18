@@ -120,11 +120,6 @@ internal static class CatalogFileParser
             SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
             ApplyFallbackIdentity(definition, path);
             ApplySynergyTierFallbacks(definition, path);
-            if (definition.Threshold == 3)
-            {
-                return null!;
-            }
-
             return definition;
         }).Where(pair => pair.Value != null).ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
     }
@@ -167,35 +162,41 @@ internal static class CatalogFileParser
             }
         }
 
-        if (definition.Threshold == 3)
-        {
-            return;
-        }
-
         if (definition.BudgetCard != null && definition.BudgetCard.Vector != null && definition.BudgetCard.Vector.FinalScore > 0)
         {
-            if (definition.Threshold == 4)
+            if (definition.Threshold is 3 or 4)
             {
                 definition.BudgetCard.PowerBand = PowerBand.Major;
+                AdjustBudgetFinalScore(definition.BudgetCard.Vector, 18);
+            }
+            else if (definition.Threshold == 2)
+            {
+                AdjustBudgetFinalScore(definition.BudgetCard.Vector, 12);
             }
 
             return;
         }
 
-        var target = definition.Threshold == 4 ? 18 : 12;
-        var vector = definition.Threshold == 4
+        var target = definition.Threshold is 3 or 4 ? 18 : 12;
+        var vector = definition.Threshold is 3 or 4
             ? MakeBudgetVector(6, 2, 4, 2, 0, 2, 0, 2)
             : MakeBudgetVector(3, 1, 3, 1, 0, 2, 0, 2);
         AdjustBudgetFinalScore(vector, target);
-        definition.BudgetCard = BuildBudgetCard(BudgetDomain.SynergyBreakpoint, ContentRarity.Common, definition.Threshold == 4 ? PowerBand.Major : PowerBand.Standard, CombatRoleBudgetProfile.None, vector, 2, 1, 0, Array.Empty<ThreatPattern>(), Array.Empty<CounterToolContribution>());
+        definition.BudgetCard = BuildBudgetCard(BudgetDomain.SynergyBreakpoint, ContentRarity.Common, definition.Threshold is 3 or 4 ? PowerBand.Major : PowerBand.Standard, CombatRoleBudgetProfile.None, vector, 2, 1, 0, Array.Empty<ThreatPattern>(), Array.Empty<CounterToolContribution>());
     }
 
     internal static void ApplySynergyFallbacks(SynergyDefinition definition)
     {
         definition.CountedTagId = Coalesce(definition.CountedTagId, definition.Id.Replace("synergy_", string.Empty, StringComparison.Ordinal));
+        var expectedMajorThreshold = IsClassSynergy(definition.CountedTagId) ? 3 : 4;
         definition.Tiers = definition.Tiers
-            .Where(tier => tier != null && (tier.Threshold == 2 || tier.Threshold == 4))
+            .Where(tier => tier != null && (tier.Threshold == 2 || tier.Threshold == expectedMajorThreshold))
             .OrderBy(tier => tier.Threshold)
             .ToList();
+    }
+
+    private static bool IsClassSynergy(string countedTagId)
+    {
+        return countedTagId is "vanguard" or "duelist" or "ranger" or "mystic";
     }
 }

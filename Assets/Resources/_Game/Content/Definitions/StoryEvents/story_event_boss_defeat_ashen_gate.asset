@@ -1,37 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6552181540004260342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_ashen_gate.effect.01
-  _kind: 3
-  _payload: DialogueOverlay
---- !u!114 &-4804009655463190618
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_ashen_gate.condition.02
-  _kind: 2
-  _operandA: 4
-  _operandB: 
---- !u!114 &-3793729239682509751
+--- !u!114 &-4723653134677956741
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -47,6 +16,21 @@ MonoBehaviour:
   _kind: 1
   _operandA: site_ashen_gate
   _operandB: 
+--- !u!114 &-2089356797930556962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_boss_defeat_ashen_gate.effect.00
+  _kind: 1
+  _payload: story_flag_gatekeeper_defeated
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,14 +48,14 @@ MonoBehaviour:
   _priority: 250
   _oncePolicy: 0
   _conditions:
-  - {fileID: 338774384959405518}
-  - {fileID: -3793729239682509751}
-  - {fileID: -4804009655463190618}
+  - {fileID: 1983617394645052282}
+  - {fileID: -4723653134677956741}
+  - {fileID: 8718471160619951302}
   _effects:
-  - {fileID: 3342339706652239784}
-  - {fileID: -6552181540004260342}
+  - {fileID: -2089356797930556962}
+  - {fileID: 8638558677747067689}
   _presentationKey: dialogue_overlay_boss_defeat_ashen_gate
---- !u!114 &338774384959405518
+--- !u!114 &1983617394645052282
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,7 +71,7 @@ MonoBehaviour:
   _kind: 0
   _operandA: chapter_ashen_gate
   _operandB: 
---- !u!114 &3342339706652239784
+--- !u!114 &8638558677747067689
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,8 +81,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: effect_00
+  m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_ashen_gate.effect.00
-  _kind: 1
-  _payload: story_flag_gatekeeper_defeated
+  _id: story_event_boss_defeat_ashen_gate.effect.01
+  _kind: 3
+  _payload: DialogueOverlay
+--- !u!114 &8718471160619951302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_boss_defeat_ashen_gate.condition.02
+  _kind: 2
+  _operandA: 4
+  _operandB: 

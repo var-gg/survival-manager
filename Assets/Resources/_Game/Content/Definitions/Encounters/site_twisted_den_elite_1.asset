@@ -29,5 +29,7 @@ MonoBehaviour:
   - reward_source_elite
   - faction_twisted_den
   - elite
+  - encounter_family_summon_pressure
+  - answer_lane_peel_cleanse
   legacyDisplayName: 
   legacyDescription: 

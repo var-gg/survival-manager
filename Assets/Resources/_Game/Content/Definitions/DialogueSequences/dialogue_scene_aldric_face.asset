@@ -1,57 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8426440654259535117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_face.line.01
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_aldric_face.1
-  _emote: shock
-  _autoAdvanceHint: 0
---- !u!114 &-8325467710514439908
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_face.line.02
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.scene_aldric_face.2
-  _emote: grim
-  _autoAdvanceHint: 0
---- !u!114 &-3291831729886510082
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_06
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_face.line.06
-  _speakerId: hero_echo_savant
-  _textKey: loc.story.scene_aldric_face.6
-  _emote: grim
-  _autoAdvanceHint: 0
---- !u!114 &-2344742916199433889
+--- !u!114 &-8542935011306739807
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,8 +16,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_aldric_face.4
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &11400000
+--- !u!114 &-6827305773550040782
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,36 +28,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: dialogue_scene_aldric_face
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_scene_aldric_face
-  _lines:
-  - {fileID: 7204027995040476517}
-  - {fileID: -8426440654259535117}
-  - {fileID: -8325467710514439908}
-  - {fileID: 3964072094699247064}
-  - {fileID: -2344742916199433889}
-  - {fileID: 181437322872634184}
-  - {fileID: -3291831729886510082}
-  - {fileID: 7261082992134814269}
---- !u!114 &181437322872634184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
+  m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_aldric_face.line.05
+  _id: dialogue_scene_aldric_face.line.01
   _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_aldric_face.5
-  _emote: dread
+  _textKey: loc.story.scene_aldric_face.1
+  _emote: shock
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &3964072094699247064
+--- !u!114 &-5526603105583707934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_face.line.02
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_aldric_face.2
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2605881001957792228
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -123,8 +70,27 @@ MonoBehaviour:
   _speakerId: hero_echo_savant
   _textKey: loc.story.scene_aldric_face.3
   _emote: dark
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &7204027995040476517
+--- !u!114 &-2511950434760166006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_face.line.06
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_aldric_face.6
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1291727169103622136
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,8 +106,49 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_aldric_face.0
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &7261082992134814269
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_aldric_face
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_aldric_face
+  _lines:
+  - {fileID: -1291727169103622136}
+  - {fileID: -6827305773550040782}
+  - {fileID: -5526603105583707934}
+  - {fileID: -2605881001957792228}
+  - {fileID: -8542935011306739807}
+  - {fileID: 715348258881188009}
+  - {fileID: -2511950434760166006}
+  - {fileID: 4607624623017151518}
+--- !u!114 &715348258881188009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_aldric_face.line.05
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_aldric_face.5
+  _emote: dread
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4607624623017151518
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,4 +164,5 @@ MonoBehaviour:
   _speakerId: hero_grave_hexer
   _textKey: loc.story.scene_aldric_face.7
   _emote: dry
+  _emotionTextKey: 
   _autoAdvanceHint: 0

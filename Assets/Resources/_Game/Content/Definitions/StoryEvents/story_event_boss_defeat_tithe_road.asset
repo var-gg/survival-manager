@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7198128109279623508
+--- !u!114 &-2533669538662092605
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,41 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: effect_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_tithe_road.effect.01
-  _kind: 3
-  _payload: DialogueScene
---- !u!114 &-6516053829769669883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_tithe_road.effect.00
-  _kind: 1
-  _payload: story_flag_inquisitor_defeated
---- !u!114 &-3951280940999087101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_00
+  m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_tithe_road.condition.00
-  _kind: 0
-  _operandA: chapter_sunken_bastion
+  _id: story_event_boss_defeat_tithe_road.condition.01
+  _kind: 1
+  _operandA: site_tithe_road
   _operandB: 
 --- !u!114 &11400000
 MonoBehaviour:
@@ -63,14 +33,14 @@ MonoBehaviour:
   _priority: 250
   _oncePolicy: 0
   _conditions:
-  - {fileID: -3951280940999087101}
-  - {fileID: 1857764120727737886}
-  - {fileID: 2418268045364035555}
+  - {fileID: 2193075302430954691}
+  - {fileID: -2533669538662092605}
+  - {fileID: 6269721216495422779}
   _effects:
-  - {fileID: -6516053829769669883}
-  - {fileID: -7198128109279623508}
+  - {fileID: 1678176003086210845}
+  - {fileID: 1045708306832486614}
   _presentationKey: dialogue_scene_boss_defeat_tithe_road
---- !u!114 &1857764120727737886
+--- !u!114 &1045708306832486614
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -80,13 +50,43 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: condition_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_tithe_road.condition.01
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_boss_defeat_tithe_road.effect.01
+  _kind: 3
+  _payload: DialogueScene
+--- !u!114 &1678176003086210845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_boss_defeat_tithe_road.effect.00
   _kind: 1
-  _operandA: site_tithe_road
+  _payload: story_flag_inquisitor_defeated
+--- !u!114 &2193075302430954691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_boss_defeat_tithe_road.condition.00
+  _kind: 0
+  _operandA: chapter_sunken_bastion
   _operandB: 
---- !u!114 &2418268045364035555
+--- !u!114 &6269721216495422779
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

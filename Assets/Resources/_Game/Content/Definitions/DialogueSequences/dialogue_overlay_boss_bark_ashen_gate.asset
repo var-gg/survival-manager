@@ -1,6 +1,23 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2332688849620741472
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_overlay_boss_bark_ashen_gate
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_overlay_boss_bark_ashen_gate
+  _lines:
+  - {fileID: 7055143092305709303}
+  - {fileID: 9041581562910573085}
+  - {fileID: 3179531917537900559}
+--- !u!114 &3179531917537900559
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16,42 +33,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.overlay_boss_bark_ashen_gate.2
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-1715823730543278310
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_overlay_boss_bark_ashen_gate.line.01
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.overlay_boss_bark_ashen_gate.1
-  _emote: defiant
-  _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_overlay_boss_bark_ashen_gate
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_overlay_boss_bark_ashen_gate
-  _lines:
-  - {fileID: 1316246937471769597}
-  - {fileID: -1715823730543278310}
-  - {fileID: -2332688849620741472}
---- !u!114 &1316246937471769597
+--- !u!114 &7055143092305709303
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,4 +51,23 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.overlay_boss_bark_ashen_gate.0
   _emote: shock
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &9041581562910573085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_overlay_boss_bark_ashen_gate.line.01
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.overlay_boss_bark_ashen_gate.1
+  _emote: defiant
+  _emotionTextKey: 
   _autoAdvanceHint: 0

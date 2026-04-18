@@ -179,6 +179,23 @@ internal static class ItemFileParser
         definition.FamilyId = Coalesce(definition.FamilyId, definition.Id);
         if (definition.BudgetCard != null && definition.BudgetCard.Vector != null && definition.BudgetCard.Vector.FinalScore > 0)
         {
+            var budgetTarget = LoopCContentGovernance.AugmentBudgetTargets[definition.Rarity];
+            var caps = LoopCContentGovernance.RarityComplexityCaps[definition.Rarity];
+            definition.BudgetCard.Rarity = definition.Rarity;
+            definition.BudgetCard.PowerBand = definition.Rarity switch
+            {
+                ContentRarity.Common => PowerBand.Major,
+                ContentRarity.Rare => PowerBand.Signature,
+                _ => PowerBand.Keystone,
+            };
+            definition.BudgetCard.KeywordCount = Math.Min(definition.BudgetCard.KeywordCount, caps.KeywordCount);
+            definition.BudgetCard.ConditionClauseCount = Math.Min(definition.BudgetCard.ConditionClauseCount, caps.ConditionClauseCount);
+            definition.BudgetCard.RuleExceptionCount = Math.Min(definition.BudgetCard.RuleExceptionCount, caps.RuleExceptionCount);
+            if (Math.Abs(definition.BudgetCard.Vector.FinalScore - budgetTarget.Target) > budgetTarget.Tolerance)
+            {
+                AdjustBudgetFinalScore(definition.BudgetCard.Vector, budgetTarget.Target);
+            }
+
             return;
         }
 

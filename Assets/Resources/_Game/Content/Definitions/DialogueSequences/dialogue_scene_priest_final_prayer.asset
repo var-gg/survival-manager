@@ -1,40 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7830462863448698541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_05
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_final_prayer.line.05
-  _speakerId: Narrator
-  _textKey: loc.story.scene_priest_final_prayer.5
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &-6809617413100900240
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_03
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_final_prayer.line.03
-  _speakerId: Narrator
-  _textKey: loc.story.scene_priest_final_prayer.3
-  _emote: 
-  _autoAdvanceHint: 0
---- !u!114 &-2365526995700805602
+--- !u!114 &-8641506951263889154
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,47 +16,9 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_priest_final_prayer.4
   _emote: breaking
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: dialogue_scene_priest_final_prayer
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
-  _id: dialogue_scene_priest_final_prayer
-  _lines:
-  - {fileID: 5839692495743850244}
-  - {fileID: 4877515808086466521}
-  - {fileID: 2792559114679848761}
-  - {fileID: -6809617413100900240}
-  - {fileID: -2365526995700805602}
-  - {fileID: -7830462863448698541}
-  - {fileID: 6498251507704281967}
-  - {fileID: 4149675363897762628}
---- !u!114 &2792559114679848761
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_final_prayer.line.02
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_priest_final_prayer.2
-  _emote: resolute
-  _autoAdvanceHint: 0
---- !u!114 &4149675363897762628
+--- !u!114 &-6204045070698853156
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,8 +34,9 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.scene_priest_final_prayer.7
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &4877515808086466521
+--- !u!114 &-3860259105094365305
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -117,31 +46,55 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: line_01
+  m_Name: line_03
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_final_prayer.line.01
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.scene_priest_final_prayer.1
-  _emote: quiet
-  _autoAdvanceHint: 0
---- !u!114 &5839692495743850244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: line_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
-  _id: dialogue_scene_priest_final_prayer.line.00
+  _id: dialogue_scene_priest_final_prayer.line.03
   _speakerId: Narrator
-  _textKey: loc.story.scene_priest_final_prayer.0
+  _textKey: loc.story.scene_priest_final_prayer.3
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &6498251507704281967
+--- !u!114 &-3813781254126215676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_priest_final_prayer.line.02
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_priest_final_prayer.2
+  _emote: resolute
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: dialogue_scene_priest_final_prayer
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
+  _id: dialogue_scene_priest_final_prayer
+  _lines:
+  - {fileID: 7735269186154007497}
+  - {fileID: 5675834422080329249}
+  - {fileID: -3813781254126215676}
+  - {fileID: -3860259105094365305}
+  - {fileID: -8641506951263889154}
+  - {fileID: 6924944373902011865}
+  - {fileID: 5190597919537629901}
+  - {fileID: -6204045070698853156}
+--- !u!114 &5190597919537629901
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,4 +110,59 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.scene_priest_final_prayer.6
   _emote: quiet
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5675834422080329249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_priest_final_prayer.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_priest_final_prayer.1
+  _emote: quiet
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6924944373902011865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_priest_final_prayer.line.05
+  _speakerId: Narrator
+  _textKey: loc.story.scene_priest_final_prayer.5
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7735269186154007497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
+  _id: dialogue_scene_priest_final_prayer.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_priest_final_prayer.0
+  _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0

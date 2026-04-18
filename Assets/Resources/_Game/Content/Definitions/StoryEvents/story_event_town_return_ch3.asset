@@ -1,37 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4091271886491528574
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_town_return_ch3.effect.00
-  _kind: 1
-  _payload: story_flag_town_return_ch3
---- !u!114 &-2829419726016186280
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_town_return_ch3.condition.00
-  _kind: 3
-  _operandA: story_flag_echo_savant_joined
-  _operandB: 
---- !u!114 &-1590563406718076999
+--- !u!114 &-3661402899625747997
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,22 +15,6 @@ MonoBehaviour:
   _id: story_event_town_return_ch3.effect.01
   _kind: 3
   _payload: DialogueOverlay
---- !u!114 &-721824255307553646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: condition_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_town_return_ch3.condition.01
-  _kind: 4
-  _operandA: story_flag_town_return_ch3
-  _operandB: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,9 +32,56 @@ MonoBehaviour:
   _priority: 150
   _oncePolicy: 0
   _conditions:
-  - {fileID: -2829419726016186280}
-  - {fileID: -721824255307553646}
+  - {fileID: 211138130973096117}
+  - {fileID: 8979412026429489860}
   _effects:
-  - {fileID: -4091271886491528574}
-  - {fileID: -1590563406718076999}
+  - {fileID: 8439707281209120374}
+  - {fileID: -3661402899625747997}
   _presentationKey: dialogue_overlay_town_return_ch3
+--- !u!114 &211138130973096117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_town_return_ch3.condition.00
+  _kind: 3
+  _operandA: story_flag_echo_savant_joined
+  _operandB: 
+--- !u!114 &8439707281209120374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_town_return_ch3.effect.00
+  _kind: 1
+  _payload: story_flag_town_return_ch3
+--- !u!114 &8979412026429489860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_town_return_ch3.condition.01
+  _kind: 4
+  _operandA: story_flag_town_return_ch3
+  _operandB: 

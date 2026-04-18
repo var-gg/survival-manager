@@ -29,5 +29,7 @@ MonoBehaviour:
   - reward_source_elite
   - faction_warren_pack
   - elite
+  - encounter_family_summon_pressure
+  - answer_lane_anti_swarm_persistence
   legacyDisplayName: 
   legacyDescription: 

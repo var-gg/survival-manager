@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-9001673356841403623
+--- !u!114 &-6166571913958936621
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,13 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: condition_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_unlock_shardblade.condition.00
-  _kind: 0
-  _operandA: chapter_glass_forest
-  _operandB: 
---- !u!114 &-2545325033773826428
+  m_Name: effect_02
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_unlock_shardblade.effect.02
+  _kind: 3
+  _payload: ToastBanner
+--- !u!114 &-1956447392505206717
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49,14 +48,14 @@ MonoBehaviour:
   _priority: 300
   _oncePolicy: 0
   _conditions:
-  - {fileID: -9001673356841403623}
-  - {fileID: -2545325033773826428}
+  - {fileID: 2481768743419747223}
+  - {fileID: -1956447392505206717}
   _effects:
-  - {fileID: 1859976206085575674}
-  - {fileID: 5310943411726970946}
-  - {fileID: 4563520973297742056}
+  - {fileID: 6880367949366259005}
+  - {fileID: 4618946113428393760}
+  - {fileID: -6166571913958936621}
   _presentationKey: toast_unlock_shardblade
---- !u!114 &1859976206085575674
+--- !u!114 &2481768743419747223
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -66,27 +65,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: effect_00
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_unlock_shardblade.effect.00
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
+  _id: story_event_unlock_shardblade.condition.00
   _kind: 0
-  _payload: hero_shardblade
---- !u!114 &4563520973297742056
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: effect_02
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_unlock_shardblade.effect.02
-  _kind: 3
-  _payload: ToastBanner
---- !u!114 &5310943411726970946
+  _operandA: chapter_glass_forest
+  _operandB: 
+--- !u!114 &4618946113428393760
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,3 +86,18 @@ MonoBehaviour:
   _id: story_event_unlock_shardblade.effect.01
   _kind: 1
   _payload: story_flag_shardblade_joined
+--- !u!114 &6880367949366259005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
+  _id: story_event_unlock_shardblade.effect.00
+  _kind: 0
+  _payload: hero_shardblade

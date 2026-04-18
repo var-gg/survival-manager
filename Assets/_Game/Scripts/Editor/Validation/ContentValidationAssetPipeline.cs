@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using SM.Content.Definitions;
 using SM.Editor.SeedData;
+using SM.Unity;
 using UnityEditor;
 using UnityEngine;
 
@@ -408,6 +409,7 @@ internal sealed class DefaultValidationAssetIdentityResolver : IValidationAssetI
             DropTableDefinition dropTable => dropTable.Id,
             LootBundleDefinition lootBundle => lootBundle.Id,
             TraitTokenDefinition traitToken => traitToken.Id,
+            FirstPlayableSliceDefinitionAsset firstPlayable => firstPlayable.name,
             _ => string.Empty,
         };
     }
@@ -667,6 +669,7 @@ internal static class ValidationKnownDefinitionTypes
         typeof(DropTableDefinition),
         typeof(LootBundleDefinition),
         typeof(TraitTokenDefinition),
+        typeof(FirstPlayableSliceDefinitionAsset),
     };
 }
 

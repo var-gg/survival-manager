@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7610946214782044675
+--- !u!114 &-4039524811140828465
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16,8 +16,9 @@ MonoBehaviour:
   _speakerId: hero_dawn_priest
   _textKey: loc.story.overlay_boss_defeat_sunken_bastion.1
   _emote: shock
+  _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-2558167908048592783
+--- !u!114 &-23183950602207798
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -33,6 +34,7 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.overlay_boss_defeat_sunken_bastion.2
   _emote: bitter
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -48,10 +50,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueSequenceDefinition
   _id: dialogue_overlay_boss_defeat_sunken_bastion
   _lines:
-  - {fileID: 1451400126623206993}
-  - {fileID: -7610946214782044675}
-  - {fileID: -2558167908048592783}
---- !u!114 &1451400126623206993
+  - {fileID: 4044846145301155849}
+  - {fileID: -4039524811140828465}
+  - {fileID: -23183950602207798}
+--- !u!114 &4044846145301155849
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,4 +69,5 @@ MonoBehaviour:
   _speakerId: Narrator
   _textKey: loc.story.overlay_boss_defeat_sunken_bastion.0
   _emote: 
+  _emotionTextKey: 
   _autoAdvanceHint: 0
