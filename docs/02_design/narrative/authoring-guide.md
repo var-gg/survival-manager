@@ -94,7 +94,7 @@ heading + metadata + 테이블 형식:
 ### 화자 Alias
 
 | 작성명 | Runtime ID |
-|---|---|
+| --- | --- |
 | Dawn Priest | `hero_dawn_priest` |
 | Pack Raider | `hero_pack_raider` |
 | Grave Hexer | `hero_grave_hexer` |
@@ -112,7 +112,7 @@ heading + metadata + 테이블 형식:
 ### 감정 Alias
 
 | 감정 | EmotionId | Portrait EmoteId |
-|---|---|---|
+| --- | --- | --- |
 | resolute | resolute | Resolute |
 | grim | grim | Grim |
 | bitter | bitter | Grim |
@@ -129,7 +129,7 @@ heading + metadata + 테이블 형식:
 ### Condition Alias
 
 | 작성명 | Runtime |
-|---|---|
+| --- | --- |
 | `ChapterIs` | ChapterIs |
 | `SiteIs` | SiteIs |
 | `NodeIs` | NodeIs |
@@ -141,7 +141,7 @@ heading + metadata + 테이블 형식:
 ### Effect Alias
 
 | 작성명 | Runtime |
-|---|---|
+| --- | --- |
 | `SetFlag` | SetFlag |
 | `ClearFlag` | ClearFlag |
 | `UnlockHero` | UnlockHero |

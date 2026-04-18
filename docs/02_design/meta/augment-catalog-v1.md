@@ -29,21 +29,21 @@
 
 ### EconomyRoster (3) — live
 
-4. `Efficient Training` ★
-5. `Backup Crew` ★
-6. `Salvager` ★
+1. `Efficient Training` ★
+2. `Backup Crew` ★
+3. `Salvager` ★
 
 ### SynergyLinked (3) — live
 
-7. `Banner of Vanguard` ★
-8. `Duel Protocol` ★
-9. `Arcane Loop` ★
+1. `Banner of Vanguard` ★
+2. `Duel Protocol` ★
+3. `Arcane Loop` ★
 
 ### WildcardRisk (3) — live
 
-10. `Blood Price` ★
-11. `Glass Arsenal` ★
-12. `Oath of Attrition` ★
+1. `Blood Price` ★
+2. `Glass Arsenal` ★
+3. `Oath of Attrition` ★
 
 `★` = first playable live subset.
 

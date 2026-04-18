@@ -59,7 +59,7 @@ Unity 에디터는 메인 프로젝트 경로(`A:\projects\game\survival-manager
 
 ```powershell
 pwsh -File tools/focus-unity.ps1            # 반드시 먼저 실행
-```
+```text
 
 ### MCP 서버 복구
 
@@ -83,7 +83,7 @@ pwsh -File tools/unity-bridge.ps1 test-play # PlayMode 테스트
 pwsh -File tools/unity-bridge.ps1 bootstrap # 부트스트랩
 pwsh -File tools/unity-bridge.ps1 seed-content  # 샘플 콘텐츠 생성
 pwsh -File tools/unity-bridge.ps1 smoke-observer # 스모크 옵저버
-```
+```text
 
 ### MCP 사용 기준
 
@@ -166,7 +166,7 @@ budget 초과 시 현재 루프를 멈추고 에러를 요약하여 사용자에
 `AGENTS.md`의 "compile → 후속 작업 간격" 규칙을 반드시 따른다.
 compile 직후 test-edit을 바로 호출하지 않는다.
 
-```
+```text
 focus-unity → compile → sleep 5s → status (ready 확인) → focus-unity → test-edit
 ```
 

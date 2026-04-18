@@ -33,7 +33,7 @@
 사건 순서를 절대연표로 정리한다. chapter beat 문서는 이 연표를 다시 쓰지 않고 참조만 한다.
 
 | chronology_id | era | 연대 (대략) | public_truth | hidden_truth | reveal_window |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `chrono_first_peoples` | 태초기 | ~3000년 전 | 네 종족이 대륙 곳곳에 정착했다 | 최초에는 적대감 없이 공존했다. Heartforge가 아직 가동 전이었다 | `chapter_3` |
 | `chrono_heartforge_creation` | 창조기 | ~2500년 전 | 고대 문명이 세계의 심장부에 위대한 유물을 남겼다 | Heartforge는 기억을 에너지로 변환하는 장치이며, 부작용으로 적대감을 증폭한다 | `chapter_3` |
 | `chrono_first_war` | 첫 전쟁기 | ~2000년 전 | 종족 간 첫 대규모 전쟁이 발발했다 | Heartforge 가동이 적대감을 처음 증폭한 결과다 | `chapter_3_site_1` |
@@ -51,7 +51,7 @@
 ### Kingdom Remnant (`faction_kingdom_remnant`)
 
 | 항목 | 내용 |
-|---|---|
+| --- | --- |
 | 공식 이름 | Kingdom Remnant |
 | 세계관 | 질서와 재건 |
 | 즉각 필요 | 국경 통제와 생존 |
@@ -69,7 +69,7 @@
 ### Beastkin Clans (`faction_beastkin_clans`)
 
 | 항목 | 내용 |
-|---|---|
+| --- | --- |
 | 공식 이름 | Beastkin Clans |
 | 세계관 | 자유와 영역 수호 |
 | 즉각 필요 | 잃어버린 사냥터 탈환 |
@@ -86,7 +86,7 @@
 ### Undead Remnant (`faction_undead_remnant`)
 
 | 항목 | 내용 |
-|---|---|
+| --- | --- |
 | 공식 이름 | Undead Remnant |
 | 세계관 | 기억의 보존과 항구 |
 | 즉각 필요 | 존재 지속과 기억 회수 |
@@ -103,7 +103,7 @@
 ### Relicborn (`faction_relicborn`)
 
 | 항목 | 내용 |
-|---|---|
+| --- | --- |
 | 공식 이름 | Relicborn |
 | 세계관 | 보존과 봉인 |
 | 즉각 필요 | 파손된 격자 수복 |
@@ -122,7 +122,7 @@
 ### 상위 지역
 
 | id | category | description | narrative_rule |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `region_ashen_frontier` | region | Ashen Gate 주변의 불탄 변경지대. 검게 그을린 들판과 무너진 초소가 이어진다. 바람에 재가 섞여 시야가 흐리다. | chapter 1 무대. 원정의 출발점이며, 세계의 위협을 처음 체감하는 곳. |
 | `region_sunken_bastion` | region | 지반 침하로 반쯤 가라앉은 왕국 요새 지대. 돌 위에 이끼와 녹이 번지고, 지하수가 복도를 적신다. | chapter 2 무대. 왕국의 위선과 내부 균열이 드러나는 곳. |
 | `region_ruined_crypts` | region | 고대 묘역과 유골 과수원이 펼쳐진 지하 세계. 창백한 인광이 천장에서 흘러내리고, 기억의 잔향이 공기처럼 떠돈다. | chapter 3 무대. 언데드의 진실과 Relicborn 각성이 일어나는 곳. |
@@ -132,7 +132,7 @@
 ### 사이트별 환경 묘사
 
 | site_id | region | 환경 묘사 | 핵심 분위기 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `site_ashen_gate` | `region_ashen_frontier` | 무너진 국경문의 잔해 사이로 원정대가 진입한다. 철문 파편이 바닥에 박혀 있고, 포대 위에 까마귀가 앉아 있다. 원거리에서 간헐적 교전음이 들린다. | 긴장된 출발, 전쟁의 흔적 |
 | `site_wolfpine_trail` | `region_ashen_frontier` | 소나무 숲길. 야수족의 영역 표식이 나무에 새겨져 있고, 발자국과 갈퀴 자국이 교차한다. 안개가 낮게 깔리고, 먼 곳에서 울음소리가 들린다. | 추적과 조우, 첫 오해 |
 | `site_sunken_bastion` | `region_sunken_bastion` | 지반 아래로 기울어진 왕국 요새. 대리석 기둥이 비스듬히 서 있고, 물이 차오른 지하실에서 녹슨 무기가 떠다닌다. 사제들의 정화 의식 흔적이 벽에 남아 있다. | 권위의 부패, 가라앉는 질서 |
@@ -147,7 +147,7 @@
 ## 유물 / 장소 taxonomy
 
 | id | category | owner | description | narrative_rule |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `relic_heartforge_core` | relic | `faction_relicborn` | Worldscar 심부에 있는 기억-에너지 변환 장치. 심장 형태로 맥동하며, 격자가 제어하지 않으면 적대감을 무한 증폭한다. | main conflict와 직접 연결된다. 파괴하면 기억이 전부 소실되므로, 정화/봉인/정지 중 선택해야 한다. |
 | `relic_lattice_shards` | relic | `faction_relicborn` (원래) / 여러 세력이 산포 | Heartforge를 제어하는 격자의 파편. 왕국이 일부를 방어 장치로 전용했고, 이것이 격자 풍화를 가속했다. 각 사이트에서 하나씩 발견된다. | 수집/복원 서브 목표. 모든 파편을 모으면 격자 복원이 가능해진다. |
 | `relic_memory_vessels` | relic | `faction_undead_remnant` | 기억을 물리적으로 저장하는 용기. 깨지면 기억이 주변에 투사된다. 묘역 곳곳에 산재해 있다. | chapter 3에서 언데드의 진실을 플레이어에게 보여주는 장치. |

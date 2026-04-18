@@ -47,7 +47,7 @@
 ## 현재 targeted EditMode test 목록 (2026-04-04)
 
 | 파일 | 커버리지 |
-|---|---|
+| --- | --- |
 | `CombatActionResolverTests` | 기본공격/스킬/힐/쉴드/킬/어시스트/디펜드 액션 해소 |
 | `MovementResolverTests` | 거리 계산, 레인지 밴드, 포스처별 홈 위치, 충돌 방지, 루트 이동불가 |
 | `EngagementSlotServiceTests` | 슬롯 배치, 다수 공격자 분산, 오버플로우, 원거리 null 반환 |

@@ -52,7 +52,7 @@ The window has four areas: Server Status, Unity Bridge, MCP Client Configuration
   - Cursor / VS Code / Windsurf:
     - Auto Configure: Writes/updates your config to launch the server via `uvx` with the current package version:
       - Command: uvx (or your overridden path)
-      - Args: --from <git-url> mcp-for-unity
+      - Args: `--from git-url mcp-for-unity`
     - Manual Setup: Opens a window with a pre-filled JSON snippet to copy/paste into your client config.
     - Choose UV Install Location: If uv/uvx isn’t on PATH, select the executable.
     - A compact “Config:” line shows the resolved config file name once uv/server are detected.

@@ -22,7 +22,7 @@ Ashen Gate 붕괴 이후 파견된 혼성 원정대가 전선 아래의 Worldsca
 ## 핵심 갈등과 결말 규칙
 
 | 갈등 유형 | 내용 | 런치 해소율 |
-|---|---|---:|
+| --- | --- | ---: |
 | **main conflict** | Heartforge의 기억 증폭 순환 + Aldric의 잔류 의지 | `100%` — 정화로 완결, Aldric 의지 소멸 |
 | **surface faction wars** | 인간-야수족-언데드 전선 | `>= 80%` — 대부분 정리, 정치 재편 1개 남김 |
 | **antagonist arc** | Aldric Sternholt(`npc_aldric`) — Heartforge에 흡수된 왕국 학자-수장의 의지 | `100%` — ch5에서 의지체 격파 및 소멸 |
@@ -33,7 +33,7 @@ Ashen Gate 붕괴 이후 파견된 혼성 원정대가 전선 아래의 Worldsca
 ## 챕터 구조표
 
 | chapter_id | dramatic_function | gameplay_function | key_reveal | resolved_hook | open_hook |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `chapter_ashen_gate` | Exposition | squad loop/site rhythm onboarding | 위협의 실재 | 첫 단서 확보, 정찰 동맹 | 야수족의 진짜 동기 |
 | `chapter_sunken_bastion` | Rising Action I | protect/mark pressure 학습, answer lane 구별 | 인간 진영 culpability, Aldric 일지 발견 | 요새 배신 증거, 적대자에 이름 부여 | 신앙 균열의 폭, Aldric의 정체 |
 | `chapter_ruined_crypts` | Midpoint Reversal | summon pressure + truth pivot | Relicborn reveal, 언데드 기억의 진실, Aldric 얼굴 최초 등장 | 언데드 오해 일부 해소 | Heartforge 전체 목적, Aldric 의지의 위협 |
@@ -43,7 +43,7 @@ Ashen Gate 붕괴 이후 파견된 혼성 원정대가 전선 아래의 Worldsca
 ## 챕터별 서사 목적 / 게임플레이 목적 매핑
 
 | chapter_id | 서사적 목적 | 게임플레이 목적 | 신규 도입 | 챕터 종료 보상 |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `chapter_ashen_gate` | 위협의 실재와 원정의 명분 제시. 인간/야수의 첫 오해를 완충 | 기본 squad synergy, site rhythm, reward cadence onboarding | 첫 specialist 전환 사례 | `hero_rift_stalker` |
 | `chapter_sunken_bastion` | 인간 진영 culpability와 신앙/통제의 폭력을 드러냄. Aldric 일지(`relic_aldric_journal`) 발견으로 적대자에 이름 부여 | protect/mark pressure 학습, answer lane 구별 강화 | specialist 2종 추가 | `hero_bastion_penitent`, `hero_pale_executor` |
 | `chapter_ruined_crypts` | 언데드를 단순 악으로 보던 시각을 뒤집고 Relicborn 진실을 공개. 기억 투사 속 Aldric 얼굴 최초 등장 | summon pressure, midpoint reversal, race 4 teaser | Relicborn 방어/증언 축 도입 | `hero_aegis_sentinel`, `hero_echo_savant` |
@@ -109,7 +109,7 @@ Relicborn은 그 공존을 지키기 위해 Heartforge를 봉인하고 자발적
 ch3의 Relicborn 진실 공개 이후, 원정대 앞에 세 가지 선택지가 놓인다. Heartforge를 어떻게 처리할 것인가.
 
 | 선택지 | 대가 | 지지 세력 | 반대 세력 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **정화(Purification)** | 기억 보존되나, 수호자 1명이 격자에 영구 속박 | 언데드(기억 안전), 왕국(속죄) | 야수족(동맹 속박), 일부 Relicborn(동족 희생) |
 | **봉인(Sealing)** | 안전하나 순환 재발 가능 | 야수족(즉각적 안전), Relicborn(휴면 경험) | 언데드(같은 실수 반복), 왕국(근본 해결 아님) |
 | **파괴(Destruction)** | 적대감 영구 소멸, 그러나 모든 기억도 파괴 | 일부 왕국(새 출발) | 언데드(존재 삭제), Relicborn(격자 파괴) |
@@ -165,7 +165,7 @@ Heartforge는 파괴되지 않는다. 파괴하면 모든 기억이 소실되기
 ### 엔드게임 전환 구조
 
 | 항목 | 설계 |
-|---|---|
+| --- | --- |
 | 모드 ID | `mode_endless_cycle` |
 | 해금 시점 | `site_worldscar_depths` extract 직후 |
 | 구조 | 3-site cycle, site당 5노드, 총 15노드 1사이클 |
@@ -178,7 +178,7 @@ Heartforge는 파괴되지 않는다. 파괴하면 모든 기억이 소실되기
 ## 후속작 / DLC hook 정책
 
 | hook_id | category | status_at_launch_end | followup_media |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `hook_surface_realignment` | secondary conflict | open — 정치 재편 미완 | DLC or sequel |
 | `hook_relicborn_schism` | secondary conflict | open — Relicborn 내부 분열 | DLC or sequel |
 | `hook_far_signal` | external hook | open — 외부 대륙/원거리 신호 | sequel |

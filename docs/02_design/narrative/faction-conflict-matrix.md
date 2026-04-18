@@ -22,7 +22,7 @@ world bible은 각 세력의 단독 설명을 소유하고, campaign arc는 chap
 ### Kingdom Remnant vs Beastkin Clans
 
 | 항목 | 내용 |
-|---|---|
+| --- | --- |
 | 표면 갈등 | 국경 약탈과 보복 |
 | 숨겨진 진실 | 둘 다 Heartforge 파편에 반응해 오판하고 있다 |
 | encounter_link | `weakside_dive`, `protect_carry` |
@@ -40,7 +40,7 @@ world bible은 각 세력의 단독 설명을 소유하고, campaign arc는 chap
 ### Kingdom Remnant vs Undead Remnant
 
 | 항목 | 내용 |
-|---|---|
+| --- | --- |
 | 표면 갈등 | 이단과 정화 |
 | 숨겨진 진실 | 왕국이 과거 봉인 오용의 주범이다 |
 | encounter_link | `bastion_front`, `mark_execute` |
@@ -58,7 +58,7 @@ world bible은 각 세력의 단독 설명을 소유하고, campaign arc는 chap
 ### Kingdom Remnant vs Relicborn
 
 | 항목 | 내용 |
-|---|---|
+| --- | --- |
 | 표면 갈등 | 유적 침입자 탄압 |
 | 숨겨진 진실 | Relicborn는 왕국보다 먼저 이 땅을 지키고 있었다 |
 | encounter_link | `protect_carry`, `control_cleanse` |
@@ -76,7 +76,7 @@ world bible은 각 세력의 단독 설명을 소유하고, campaign arc는 chap
 ### Beastkin Clans vs Undead Remnant
 
 | 항목 | 내용 |
-|---|---|
+| --- | --- |
 | 표면 갈등 | 사냥터 오염과 영역 분쟁 |
 | 숨겨진 진실 | 둘 다 Heartforge 공명에 다른 방식으로 반응할 뿐이다 |
 | encounter_link | `tempo_swarm`, `sustain_grind` |
@@ -94,7 +94,7 @@ world bible은 각 세력의 단독 설명을 소유하고, campaign arc는 chap
 ### Beastkin Clans vs Relicborn
 
 | 항목 | 내용 |
-|---|---|
+| --- | --- |
 | 표면 갈등 | 본능적 적대 (이질적 존재) |
 | 숨겨진 진실 | Relicborn 격자가 야수족 본능 공명을 완화할 수 있다 |
 | encounter_link | `weakside_dive`, `control_cleanse` |
@@ -112,7 +112,7 @@ world bible은 각 세력의 단독 설명을 소유하고, campaign arc는 chap
 ### Undead Remnant vs Relicborn
 
 | 항목 | 내용 |
-|---|---|
+| --- | --- |
 | 표면 갈등 | 유적 소유권 분쟁 |
 | 숨겨진 진실 | 둘 다 과거 봉인 실패의 후손이다 |
 | encounter_link | `summon_pressure`, `control_cleanse` |
@@ -130,7 +130,7 @@ world bible은 각 세력의 단독 설명을 소유하고, campaign arc는 chap
 ## chapter별 해소 상태 상세
 
 | conflict_pair | chapter_1 | chapter_2 | chapter_3 | chapter_4 | chapter_5 |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | kingdom-beastkin | seed: 국경 교전 목격, 첫 오해 인지 | escalate: 왕국 정화 재판의 여파로 야수족 영역 압박 심화 | partial resolve: 고대 기억에서 공존 발견, 적대감 원인 의심 시작 | method debate: 왕국은 정화(속죄), 야수족은 저항(동료를 가두는 것) — Pack Raider가 개인적 대가를 수용하며 합의 | sacrifice accepted: Pack Raider가 분열된 씨족으로 귀환, 영역 존중은 합의되었으나 개인 비용은 미해결 |
 | kingdom-undead | hidden: 원정대 내부에서 불신만 존재 | seed+escalate: 요새 기록에서 오용 증거 발견, Dawn Priest 균열 | partial resolve: 기억 투사에서 왕국 책임 명확화, 상호 비난에서 공동 피해자 인식으로 | aligned: 양측 모두 정화 지지 (기억 보존 + 죄의식 해소), Aldric 간섭에 공동 대응 | resolved with cost: 왕국이 과거 오용 인정, Dawn Priest는 사제 정체성을 상실 |
 | kingdom-relicborn | hidden | hidden | teaser: Relicborn 각성 목격, 왕국은 적대적 존재로 분류 | confrontation->negotiate: 방어 장치가 격자 파편임 증명, 일부 Relicborn은 동족 희생에 저항 — Echo Savant의 자원으로 논쟁 종결 | stabilized with absence: 왕국이 파편 반환과 격자 복원 협력, Echo Savant는 심부에 잔류 |
@@ -145,7 +145,7 @@ world bible은 각 세력의 단독 설명을 소유하고, campaign arc는 chap
 #### 세 선택지의 비용-보상 구조
 
 | 선택지 | 핵심 이점 | 핵심 비용 | 감정적 무게 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **정화(Purification)** | 기억이 보존되고, 적대감 증폭 순환이 영구히 종결된다 | 수문장 1명이 격자에 영구 속박 + Grave Hexer가 기원 기억을 상실한다 | 가장 무거운 개인적 희생. 옳은 선택이지만 그 대가를 직접 치러야 한다 |
 | **봉인(Sealing)** | 모든 세력이 즉각 안전해진다. 아무도 죽거나 갇히거나 기억을 잃지 않는다. 야수족의 본능 자극이 즉시 완화된다 | 격자가 200-500년 뒤 다시 풍화되어 순환이 재개된다. 미래 세대가 같은 문제를 상속받는다 | 자비로운 선택. 지금 눈앞의 사람을 지키되, 아직 태어나지 않은 사람들에게 짐을 넘긴다 |
 | **파괴(Destruction)** | Heartforge 에너지가 영구 소멸하여 어떤 미래의 폭군도 이를 악용할 수 없다. 순환으로부터의 완전한 해방 | 저장된 모든 기억이 삭제된다 — 모든 세력이 역사를 잃는다. 언데드는 문자 그대로 존재가 소멸한다 | 급진적 자유의 급진적 대가. 과거를 전부 태워서 미래를 확보한다 |
@@ -153,7 +153,7 @@ world bible은 각 세력의 단독 설명을 소유하고, campaign arc는 chap
 #### 세력 쌍별 입장
 
 | faction pair | purify position | seal position | destroy position | resolution |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | kingdom-beastkin | 왕국은 정화 지지 (속죄, 순환 종결). Dawn Priest: "대가가 크더라도 끊어야 한다" | 야수족은 봉인 지지 (즉각 안전, 동료 속박 거부). Pack Raider: "친구를 가두는 것은 정의가 아니다" | — | Pack Raider가 Grave Hexer의 자발적 희생과 Echo Savant의 격자 분석을 목도한 뒤, 개인적 대가를 수용하며 정화에 합의 |
 | kingdom-undead | 양측 정화 지지 (기억 보존 + 죄의식 해소). 다만 파괴가 새 출발이 될 수 있다는 왕국 내 소수 의견 존재 | — | 왕국 급진파: 과거를 전부 태우고 새 출발. 그러나 언데드 소멸이라는 대가에 Dawn Priest가 거부 | 이해가 일치하여 정화로 자연 합의. 파괴 주장은 언데드 존재 소멸 비용으로 퇴각 |
 | kingdom-relicborn | 왕국은 정화 지지, 일부 Relicborn은 저항 (동족 희생이 필요하므로) | 일부 Relicborn: 봉인은 익숙한 방식이며 당장 아무도 잃지 않는다 | — | Echo Savant가 재봉인의 풍화 시뮬레이션을 보여준 뒤 자원하면서 논쟁 종결 |
