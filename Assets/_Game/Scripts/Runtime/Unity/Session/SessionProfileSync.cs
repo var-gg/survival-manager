@@ -19,6 +19,37 @@ namespace SM.Unity;
 
 public sealed partial class GameSessionState
 {
+    internal sealed class SessionProfileSync
+    {
+        private readonly GameSessionState _session;
+
+        internal SessionProfileSync(GameSessionState session)
+        {
+            _session = session;
+        }
+
+        internal void BindProfile(SaveProfile profile) => _session.BindProfileCore(profile);
+
+        internal void AdvanceNarrative(NarrativeMoment moment, StoryMomentContext? context) =>
+            _session.AdvanceNarrativeCore(moment, context);
+
+        internal bool TryDequeueNarrativePresentation(out StoryPresentationRequest? request) =>
+            _session.TryDequeueNarrativePresentationCore(out request);
+
+        internal void ResetNarrativeRunScopedProgress() => _session.ResetNarrativeRunScopedProgressCore();
+
+        internal void SetCurrentScene(string sceneName) => _session.SetCurrentSceneCore(sceneName);
+
+        internal bool CanManualProfileReload(out string reason) => _session.CanManualProfileReloadCore(out reason);
+
+        internal void SaveDebugSnapshot(string note) => _session.SaveDebugSnapshotCore(note);
+
+        internal void ClearRuntimeTelemetry() => _session.ClearRuntimeTelemetryCore();
+
+        internal void RecordOperationalTelemetry(TelemetryEventRecord record) =>
+            _session.RecordOperationalTelemetryCore(record);
+    }
+
     private void SeedDemoProfile()
     {
         Profile.DisplayName = "Demo Player";

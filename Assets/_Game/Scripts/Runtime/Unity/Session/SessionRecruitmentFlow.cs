@@ -19,6 +19,30 @@ namespace SM.Unity;
 
 public sealed partial class GameSessionState
 {
+    internal sealed class SessionRecruitmentFlow
+    {
+        private readonly GameSessionState _session;
+
+        internal SessionRecruitmentFlow(GameSessionState session)
+        {
+            _session = session;
+        }
+
+        internal Result RerollRecruitOffers() => _session.RerollRecruitOffersCore();
+
+        internal Result Recruit(int offerIndex) => _session.RecruitCore(offerIndex);
+
+        internal Result UseScout(ScoutDirective directive) => _session.UseScoutCore(directive);
+
+        internal Result RetrainHero(string heroId, RetrainOperationKind operation) =>
+            _session.RetrainHeroCore(heroId, operation);
+
+        internal Result DismissHero(string heroId) => _session.DismissHeroCore(heroId);
+
+        internal Result GrantHeroDirect(string archetypeId, RecruitOfferSource source) =>
+            _session.GrantHeroDirectCore(archetypeId, source);
+    }
+
     private void EnsureRecruitOffers()
     {
         if (_recruitOffers.Count > 0)
@@ -153,7 +177,9 @@ public sealed partial class GameSessionState
         return Math.Abs(HashCode.Combine(value, salt));
     }
 
-    public void ClearRuntimeTelemetry()
+    public void ClearRuntimeTelemetry() => _profileSync.ClearRuntimeTelemetry();
+
+    private void ClearRuntimeTelemetryCore()
     {
         _runtimeTelemetryEvents.Clear();
     }
@@ -169,7 +195,9 @@ public sealed partial class GameSessionState
         _runtimeTelemetryEvents.Add(record);
     }
 
-    internal void RecordOperationalTelemetry(TelemetryEventRecord record)
+    internal void RecordOperationalTelemetry(TelemetryEventRecord record) => _profileSync.RecordOperationalTelemetry(record);
+
+    private void RecordOperationalTelemetryCore(TelemetryEventRecord record)
     {
         AppendRuntimeTelemetry(record);
     }

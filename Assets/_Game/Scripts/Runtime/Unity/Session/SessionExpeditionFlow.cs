@@ -19,6 +19,68 @@ namespace SM.Unity;
 
 public sealed partial class GameSessionState
 {
+    internal sealed class SessionExpeditionFlow
+    {
+        private readonly GameSessionState _session;
+
+        internal SessionExpeditionFlow(GameSessionState session)
+        {
+            _session = session;
+        }
+
+        internal void BeginNewExpedition() => _session.BeginNewExpeditionCore();
+
+        internal void PrepareQuickBattleSmoke() => _session.PrepareQuickBattleSmokeCore();
+
+        internal void PrepareQuickBattleSmoke(CombatSandboxConfig? quickBattleConfig) =>
+            _session.PrepareQuickBattleSmokeCore(quickBattleConfig);
+
+        internal void PrepareQuickBattleSmoke(
+            CombatSandboxConfig? quickBattleConfig,
+            CombatSandboxLaneKind laneKind,
+            bool resetSeedOverride = true) =>
+            _session.PrepareQuickBattleSmokeCore(quickBattleConfig, laneKind, resetSeedOverride);
+
+        internal void PrepareCombatSandboxDirect() => _session.PrepareCombatSandboxDirectCore();
+
+        internal void PrepareTownQuickBattleSmoke() => _session.PrepareTownQuickBattleSmokeCore();
+
+        internal void RestartQuickBattle(bool advanceSeed) => _session.RestartQuickBattleCore(advanceSeed);
+
+        internal void ExitCombatSandbox() => _session.ExitCombatSandboxCore();
+
+        internal bool TryCycleCampaignChapter(int direction) => _session.TryCycleCampaignChapterCore(direction);
+
+        internal bool TryCycleCampaignSite(int direction) => _session.TryCycleCampaignSiteCore(direction);
+
+        internal bool PrepareSelectedBattleNodeHandoff() => _session.PrepareSelectedBattleNodeHandoffCore();
+
+        internal bool ResolveSelectedNodeToRewardSettlement() => _session.ResolveSelectedNodeToRewardSettlementCore();
+
+        internal void ReloadCombatSandboxConfig() => _session.ReloadCombatSandboxConfigCore();
+
+        internal void ReloadQuickBattleConfig() => _session.ReloadQuickBattleConfigCore();
+
+        internal void AdvanceExpeditionNode() => _session.AdvanceExpeditionNodeCore();
+
+        internal bool SelectNextExpeditionNode(int nodeIndex) => _session.SelectNextExpeditionNodeCore(nodeIndex);
+
+        internal ExpeditionNodeViewModel? GetCurrentExpeditionNode() => _session.GetCurrentExpeditionNodeCore();
+
+        internal ExpeditionNodeViewModel? GetSelectedExpeditionNode() => _session.GetSelectedExpeditionNodeCore();
+
+        internal IReadOnlyList<int> GetSelectableNextNodeIndices() => _session.GetSelectableNextNodeIndicesCore();
+
+        internal bool ResolveSelectedExpeditionNode() => _session.ResolveSelectedExpeditionNodeCore();
+
+        internal void AbandonExpeditionRun() => _session.AbandonExpeditionRunCore();
+
+        internal void ReturnToTownAfterReward() => _session.ReturnToTownAfterRewardCore();
+
+        internal bool TryResolveCurrentEncounter(out ResolvedEncounterContext context, out string error) =>
+            _session.TryResolveCurrentEncounterCore(out context, out error);
+    }
+
     private void EnsureExpeditionNodes(bool reset = false)
     {
         if (reset)

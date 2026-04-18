@@ -19,6 +19,29 @@ namespace SM.Unity;
 
 public sealed partial class GameSessionState
 {
+    internal sealed class SessionRewardSettlementFlow
+    {
+        private readonly GameSessionState _session;
+
+        internal SessionRewardSettlementFlow(GameSessionState session)
+        {
+            _session = session;
+        }
+
+        internal void RecordBattleAudit(BattleReplayBundle replay) => _session.RecordBattleAuditCore(replay);
+
+        internal void SetLastBattleResult(bool victory, string summary) =>
+            _session.SetLastBattleResultCore(victory, summary);
+
+        internal void MarkBattleResolved(bool victory, int stepCount, int eventCount) =>
+            _session.MarkBattleResolvedCore(victory, stepCount, eventCount);
+
+        internal bool ApplyRewardChoice(int index) => _session.ApplyRewardChoiceCore(index);
+
+        internal string PreviewPermanentUnlockFromTemporaryAugment(string augmentId) =>
+            _session.PreviewPermanentUnlockFromTemporaryAugmentCore(augmentId);
+    }
+
     private void ApplyLedgerBackedReward(RewardOption option, SessionTextToken summaryToken)
     {
         if (ActiveRun == null)

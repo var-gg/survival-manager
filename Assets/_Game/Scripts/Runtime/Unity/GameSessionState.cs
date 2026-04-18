@@ -36,6 +36,11 @@ public sealed partial class GameSessionState
 
     private readonly ICombatContentLookup _combatContentLookup;
     private readonly NarrativeRuntimeBootstrap _narrativeRuntimeBootstrap;
+    private readonly SessionProfileSync _profileSync;
+    private readonly SessionDeploymentFlow _deploymentFlow;
+    private readonly SessionRecruitmentFlow _recruitmentFlow;
+    private readonly SessionExpeditionFlow _expeditionFlow;
+    private readonly SessionRewardSettlementFlow _rewardSettlementFlow;
     private readonly LoadoutCompiler _loadoutCompiler = new();
     private readonly List<string> _expeditionSquadHeroIds = new();
     private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
@@ -112,10 +117,17 @@ public sealed partial class GameSessionState
     {
         _combatContentLookup = combatContentLookup;
         _narrativeRuntimeBootstrap = NarrativeRuntimeBootstrap.LoadFromResources();
+        _profileSync = new SessionProfileSync(this);
+        _deploymentFlow = new SessionDeploymentFlow(this);
+        _recruitmentFlow = new SessionRecruitmentFlow(this);
+        _expeditionFlow = new SessionExpeditionFlow(this);
+        _rewardSettlementFlow = new SessionRewardSettlementFlow(this);
         StoryDirector = _narrativeRuntimeBootstrap.CreateStoryDirector(NarrativeProgressRecord.Empty);
     }
 
-    public void BindProfile(SaveProfile profile)
+    public void BindProfile(SaveProfile profile) => _profileSync.BindProfile(profile);
+
+    private void BindProfileCore(SaveProfile profile)
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         using (BindProfileMarker.Auto())
@@ -203,26 +215,36 @@ public sealed partial class GameSessionState
             $"heroes={Profile.Heroes.Count}; inventory={Profile.Inventory.Count}");
     }
 
-    public void AdvanceNarrative(NarrativeMoment moment, StoryMomentContext? context = null)
+    public void AdvanceNarrative(NarrativeMoment moment, StoryMomentContext? context = null) =>
+        _profileSync.AdvanceNarrative(moment, context);
+
+    private void AdvanceNarrativeCore(NarrativeMoment moment, StoryMomentContext? context)
     {
         StoryDirector.Advance(moment, context ?? StoryMomentContext.Empty);
         SyncNarrativeProgress();
     }
 
-    public bool TryDequeueNarrativePresentation(out StoryPresentationRequest? request)
+    public bool TryDequeueNarrativePresentation(out StoryPresentationRequest? request) =>
+        _profileSync.TryDequeueNarrativePresentation(out request);
+
+    private bool TryDequeueNarrativePresentationCore(out StoryPresentationRequest? request)
     {
         var dequeued = StoryDirector.TryDequeuePendingPresentation(out request);
         SyncNarrativeProgress();
         return dequeued;
     }
 
-    public void ResetNarrativeRunScopedProgress()
+    public void ResetNarrativeRunScopedProgress() => _profileSync.ResetNarrativeRunScopedProgress();
+
+    private void ResetNarrativeRunScopedProgressCore()
     {
         StoryDirector.ResetRunScopedProgress();
         SyncNarrativeProgress();
     }
 
-    public void BeginNewExpedition()
+    public void BeginNewExpedition() => _expeditionFlow.BeginNewExpedition();
+
+    private void BeginNewExpeditionCore()
     {
         IsQuickBattleSmokeActive = false;
         QuickBattleLaneKind = CombatSandboxLaneKind.None;
@@ -250,30 +272,41 @@ public sealed partial class GameSessionState
         SyncExpeditionState();
     }
 
-    public void PrepareQuickBattleSmoke()
+    public void PrepareQuickBattleSmoke() => _expeditionFlow.PrepareQuickBattleSmoke();
+
+    private void PrepareQuickBattleSmokeCore()
     {
         var config = LoadCombatSandboxConfig();
         PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
     }
 
-    public void PrepareCombatSandboxDirect()
+    public void PrepareCombatSandboxDirect() => _expeditionFlow.PrepareCombatSandboxDirect();
+
+    private void PrepareCombatSandboxDirectCore()
     {
         var config = LoadCombatSandboxConfig();
         PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.DirectCombatSandbox);
     }
 
-    public void PrepareTownQuickBattleSmoke()
+    public void PrepareTownQuickBattleSmoke() => _expeditionFlow.PrepareTownQuickBattleSmoke();
+
+    private void PrepareTownQuickBattleSmokeCore()
     {
         var config = LoadCombatSandboxConfig();
         PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
     }
 
-    internal void PrepareQuickBattleSmoke(CombatSandboxConfig? quickBattleConfig)
+    internal void PrepareQuickBattleSmoke(CombatSandboxConfig? quickBattleConfig) =>
+        _expeditionFlow.PrepareQuickBattleSmoke(quickBattleConfig);
+
+    private void PrepareQuickBattleSmokeCore(CombatSandboxConfig? quickBattleConfig)
     {
         PrepareQuickBattleSmoke(quickBattleConfig, CombatSandboxLaneKind.TownIntegrationSmoke);
     }
 
-    public void RestartQuickBattle(bool advanceSeed)
+    public void RestartQuickBattle(bool advanceSeed) => _expeditionFlow.RestartQuickBattle(advanceSeed);
+
+    private void RestartQuickBattleCore(bool advanceSeed)
     {
         ReloadCombatSandboxConfig();
         if (advanceSeed)
@@ -289,7 +322,9 @@ public sealed partial class GameSessionState
             resetSeedOverride: !advanceSeed);
     }
 
-    public void ExitCombatSandbox()
+    public void ExitCombatSandbox() => _expeditionFlow.ExitCombatSandbox();
+
+    private void ExitCombatSandboxCore()
     {
         IsQuickBattleSmokeActive = false;
         QuickBattleLaneKind = CombatSandboxLaneKind.None;
@@ -304,6 +339,12 @@ public sealed partial class GameSessionState
     }
 
     internal void PrepareQuickBattleSmoke(
+        CombatSandboxConfig? quickBattleConfig,
+        CombatSandboxLaneKind laneKind,
+        bool resetSeedOverride = true) =>
+        _expeditionFlow.PrepareQuickBattleSmoke(quickBattleConfig, laneKind, resetSeedOverride);
+
+    private void PrepareQuickBattleSmokeCore(
         CombatSandboxConfig? quickBattleConfig,
         CombatSandboxLaneKind laneKind,
         bool resetSeedOverride = true)
@@ -339,7 +380,9 @@ public sealed partial class GameSessionState
         SyncExpeditionState();
     }
 
-    public bool TryCycleCampaignChapter(int direction)
+    public bool TryCycleCampaignChapter(int direction) => _expeditionFlow.TryCycleCampaignChapter(direction);
+
+    private bool TryCycleCampaignChapterCore(int direction)
     {
         if (!CanChangeCampaignSelection)
         {
@@ -367,7 +410,9 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    public bool TryCycleCampaignSite(int direction)
+    public bool TryCycleCampaignSite(int direction) => _expeditionFlow.TryCycleCampaignSite(direction);
+
+    private bool TryCycleCampaignSiteCore(int direction)
     {
         if (!CanChangeCampaignSelection)
         {
@@ -393,7 +438,9 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    public bool PrepareSelectedBattleNodeHandoff()
+    public bool PrepareSelectedBattleNodeHandoff() => _expeditionFlow.PrepareSelectedBattleNodeHandoff();
+
+    private bool PrepareSelectedBattleNodeHandoffCore()
     {
         var selected = GetSelectedExpeditionNode();
         if (selected == null || !selected.RequiresBattle)
@@ -411,7 +458,9 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    public bool ResolveSelectedNodeToRewardSettlement()
+    public bool ResolveSelectedNodeToRewardSettlement() => _expeditionFlow.ResolveSelectedNodeToRewardSettlement();
+
+    private bool ResolveSelectedNodeToRewardSettlementCore()
     {
         var selected = GetSelectedExpeditionNode();
         if (selected == null || selected.RequiresBattle)
@@ -443,12 +492,16 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    public void ReloadCombatSandboxConfig()
+    public void ReloadCombatSandboxConfig() => _expeditionFlow.ReloadCombatSandboxConfig();
+
+    private void ReloadCombatSandboxConfigCore()
     {
         QuickBattleConfig = LoadCombatSandboxConfig();
     }
 
-    public void ReloadQuickBattleConfig()
+    public void ReloadQuickBattleConfig() => _expeditionFlow.ReloadQuickBattleConfig();
+
+    private void ReloadQuickBattleConfigCore()
     {
         ReloadCombatSandboxConfig();
     }
@@ -523,12 +576,16 @@ public sealed partial class GameSessionState
         return config.Seed != 0 ? config.Seed : 17;
     }
 
-    public void AdvanceExpeditionNode()
+    public void AdvanceExpeditionNode() => _expeditionFlow.AdvanceExpeditionNode();
+
+    private void AdvanceExpeditionNodeCore()
     {
         ResolveSelectedExpeditionNode();
     }
 
-    public bool SelectNextExpeditionNode(int nodeIndex)
+    public bool SelectNextExpeditionNode(int nodeIndex) => _expeditionFlow.SelectNextExpeditionNode(nodeIndex);
+
+    private bool SelectNextExpeditionNodeCore(int nodeIndex)
     {
         EnsureExpeditionNodes();
         var current = GetCurrentExpeditionNode();
@@ -541,7 +598,9 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    public ExpeditionNodeViewModel? GetCurrentExpeditionNode()
+    public ExpeditionNodeViewModel? GetCurrentExpeditionNode() => _expeditionFlow.GetCurrentExpeditionNode();
+
+    private ExpeditionNodeViewModel? GetCurrentExpeditionNodeCore()
     {
         EnsureExpeditionNodes();
         return CurrentExpeditionNodeIndex >= 0 && CurrentExpeditionNodeIndex < _expeditionNodes.Count
@@ -549,7 +608,9 @@ public sealed partial class GameSessionState
             : null;
     }
 
-    public ExpeditionNodeViewModel? GetSelectedExpeditionNode()
+    public ExpeditionNodeViewModel? GetSelectedExpeditionNode() => _expeditionFlow.GetSelectedExpeditionNode();
+
+    private ExpeditionNodeViewModel? GetSelectedExpeditionNodeCore()
     {
         EnsureExpeditionNodes();
         return SelectedExpeditionNodeIndex is int index && index >= 0 && index < _expeditionNodes.Count
@@ -557,7 +618,9 @@ public sealed partial class GameSessionState
             : null;
     }
 
-    public IReadOnlyList<int> GetSelectableNextNodeIndices()
+    public IReadOnlyList<int> GetSelectableNextNodeIndices() => _expeditionFlow.GetSelectableNextNodeIndices();
+
+    private IReadOnlyList<int> GetSelectableNextNodeIndicesCore()
     {
         var current = GetCurrentExpeditionNode();
         if (current == null)
@@ -573,7 +636,9 @@ public sealed partial class GameSessionState
         return current.NextNodeIndices ?? Array.Empty<int>();
     }
 
-    public bool ResolveSelectedExpeditionNode()
+    public bool ResolveSelectedExpeditionNode() => _expeditionFlow.ResolveSelectedExpeditionNode();
+
+    private bool ResolveSelectedExpeditionNodeCore()
     {
         var selected = GetSelectedExpeditionNode();
         if (selected == null)
@@ -605,7 +670,9 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    public void AbandonExpeditionRun()
+    public void AbandonExpeditionRun() => _expeditionFlow.AbandonExpeditionRun();
+
+    private void AbandonExpeditionRunCore()
     {
         IsQuickBattleSmokeActive = false;
         QuickBattleLaneKind = CombatSandboxLaneKind.None;
@@ -621,7 +688,9 @@ public sealed partial class GameSessionState
         SyncActiveRunRecord();
     }
 
-    public void ReturnToTownAfterReward()
+    public void ReturnToTownAfterReward() => _expeditionFlow.ReturnToTownAfterReward();
+
+    private void ReturnToTownAfterRewardCore()
     {
         ConsumePendingPermanentUnlock();
         FinalizeRewardSettlement();
@@ -631,7 +700,9 @@ public sealed partial class GameSessionState
         _compiledQuickBattleScenario = null;
     }
 
-    public void SetCurrentScene(string sceneName)
+    public void SetCurrentScene(string sceneName) => _profileSync.SetCurrentScene(sceneName);
+
+    private void SetCurrentSceneCore(string sceneName)
     {
         CurrentSceneName = sceneName;
         if (string.Equals(sceneName, SceneNames.Town, StringComparison.Ordinal))
@@ -641,7 +712,9 @@ public sealed partial class GameSessionState
         }
     }
 
-    public bool CanManualProfileReload(out string reason)
+    public bool CanManualProfileReload(out string reason) => _profileSync.CanManualProfileReload(out reason);
+
+    private bool CanManualProfileReloadCore(out string reason)
     {
         if (!string.Equals(CurrentSceneName, SceneNames.Town, StringComparison.Ordinal))
         {
@@ -671,7 +744,9 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    public Result RerollRecruitOffers()
+    public Result RerollRecruitOffers() => _recruitmentFlow.RerollRecruitOffers();
+
+    private Result RerollRecruitOffersCore()
     {
         if (!IsTownEconomyPhase())
         {
@@ -697,7 +772,9 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result Recruit(int offerIndex)
+    public Result Recruit(int offerIndex) => _recruitmentFlow.Recruit(offerIndex);
+
+    private Result RecruitCore(int offerIndex)
     {
         if (!IsTownEconomyPhase())
         {
@@ -735,7 +812,9 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result UseScout(ScoutDirective directive)
+    public Result UseScout(ScoutDirective directive) => _recruitmentFlow.UseScout(directive);
+
+    private Result UseScoutCore(ScoutDirective directive)
     {
         if (!IsTownEconomyPhase())
         {
@@ -769,7 +848,10 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result RetrainHero(string heroId, RetrainOperationKind operation)
+    public Result RetrainHero(string heroId, RetrainOperationKind operation) =>
+        _recruitmentFlow.RetrainHero(heroId, operation);
+
+    private Result RetrainHeroCore(string heroId, RetrainOperationKind operation)
     {
         if (!IsTownEconomyPhase())
         {
@@ -823,7 +905,9 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result DismissHero(string heroId)
+    public Result DismissHero(string heroId) => _recruitmentFlow.DismissHero(heroId);
+
+    private Result DismissHeroCore(string heroId)
     {
         if (!IsTownEconomyPhase())
         {
@@ -853,7 +937,10 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result GrantHeroDirect(string archetypeId, RecruitOfferSource source = RecruitOfferSource.DirectGrant)
+    public Result GrantHeroDirect(string archetypeId, RecruitOfferSource source = RecruitOfferSource.DirectGrant) =>
+        _recruitmentFlow.GrantHeroDirect(archetypeId, source);
+
+    private Result GrantHeroDirectCore(string archetypeId, RecruitOfferSource source = RecruitOfferSource.DirectGrant)
     {
         if (!_combatContentLookup.Snapshot.Archetypes.TryGetValue(archetypeId, out var template))
         {
@@ -885,7 +972,9 @@ public sealed partial class GameSessionState
             : Result.Fail(error);
     }
 
-    public Result EquipItem(string heroId, string itemInstanceId)
+    public Result EquipItem(string heroId, string itemInstanceId) => _deploymentFlow.EquipItem(heroId, itemInstanceId);
+
+    private Result EquipItemCore(string heroId, string itemInstanceId)
     {
         if (!IsTownEconomyPhase())
         {
@@ -920,7 +1009,10 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result UnequipItem(string heroId, string itemInstanceId)
+    public Result UnequipItem(string heroId, string itemInstanceId) =>
+        _deploymentFlow.UnequipItem(heroId, itemInstanceId);
+
+    private Result UnequipItemCore(string heroId, string itemInstanceId)
     {
         if (!IsTownEconomyPhase())
         {
@@ -945,7 +1037,10 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result RefitItem(string itemInstanceId, int affixSlotIndex)
+    public Result RefitItem(string itemInstanceId, int affixSlotIndex) =>
+        _deploymentFlow.RefitItem(itemInstanceId, affixSlotIndex);
+
+    private Result RefitItemCore(string itemInstanceId, int affixSlotIndex)
     {
         if (!IsTownEconomyPhase())
         {
@@ -985,7 +1080,10 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result UnlockPermanentAugmentCandidate(string augmentId)
+    public Result UnlockPermanentAugmentCandidate(string augmentId) =>
+        _deploymentFlow.UnlockPermanentAugmentCandidate(augmentId);
+
+    private Result UnlockPermanentAugmentCandidateCore(string augmentId)
     {
         if (string.IsNullOrWhiteSpace(augmentId))
         {
@@ -1006,7 +1104,9 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result EquipPermanentAugment(string augmentId)
+    public Result EquipPermanentAugment(string augmentId) => _deploymentFlow.EquipPermanentAugment(augmentId);
+
+    private Result EquipPermanentAugmentCore(string augmentId)
     {
         if (!IsTownEconomyPhase())
         {
@@ -1051,7 +1151,9 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result UnequipPermanentAugment(string augmentId)
+    public Result UnequipPermanentAugment(string augmentId) => _deploymentFlow.UnequipPermanentAugment(augmentId);
+
+    private Result UnequipPermanentAugmentCore(string augmentId)
     {
         if (!IsTownEconomyPhase())
         {
@@ -1084,7 +1186,10 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result SelectPassiveBoard(string heroId, string boardId)
+    public Result SelectPassiveBoard(string heroId, string boardId) =>
+        _deploymentFlow.SelectPassiveBoard(heroId, boardId);
+
+    private Result SelectPassiveBoardCore(string heroId, string boardId)
     {
         if (!IsTownEconomyPhase())
         {
@@ -1127,7 +1232,9 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result TogglePassiveNode(string heroId, string nodeId)
+    public Result TogglePassiveNode(string heroId, string nodeId) => _deploymentFlow.TogglePassiveNode(heroId, nodeId);
+
+    private Result TogglePassiveNodeCore(string heroId, string nodeId)
     {
         if (!IsTownEconomyPhase())
         {
@@ -1182,7 +1289,9 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public bool ToggleExpeditionHero(string heroId)
+    public bool ToggleExpeditionHero(string heroId) => _deploymentFlow.ToggleExpeditionHero(heroId);
+
+    private bool ToggleExpeditionHeroCore(string heroId)
     {
         if (_expeditionSquadHeroIds.Contains(heroId))
         {
@@ -1206,7 +1315,9 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    public void EnsureBattleDeployReady()
+    public void EnsureBattleDeployReady() => _deploymentFlow.EnsureBattleDeployReady();
+
+    private void EnsureBattleDeployReadyCore()
     {
         EnsureDefaultSquad();
         if (IsQuickBattleSmokeActive
@@ -1221,7 +1332,10 @@ public sealed partial class GameSessionState
         EnsureDefaultDeploymentAssignments();
     }
 
-    internal void ApplyQuickBattleAllySlotOverrides(CombatSandboxConfig config)
+    internal void ApplyQuickBattleAllySlotOverrides(CombatSandboxConfig config) =>
+        _deploymentFlow.ApplyQuickBattleAllySlotOverrides(config);
+
+    private void ApplyQuickBattleAllySlotOverridesCore(CombatSandboxConfig config)
     {
         EnsureDefaultSquad();
         EnsureAssignmentMapInitialized();
@@ -1273,7 +1387,9 @@ public sealed partial class GameSessionState
         SyncActiveRunIfPresent();
     }
 
-    public void PromoteToBattleDeploy(string heroId)
+    public void PromoteToBattleDeploy(string heroId) => _deploymentFlow.PromoteToBattleDeploy(heroId);
+
+    private void PromoteToBattleDeployCore(string heroId)
     {
         if (!_expeditionSquadHeroIds.Contains(heroId))
         {
@@ -1284,12 +1400,17 @@ public sealed partial class GameSessionState
         AssignHeroToAnchor(preferredAnchor, heroId);
     }
 
-    public string? GetAssignedHeroId(DeploymentAnchorId anchor)
+    public string? GetAssignedHeroId(DeploymentAnchorId anchor) => _deploymentFlow.GetAssignedHeroId(anchor);
+
+    private string? GetAssignedHeroIdCore(DeploymentAnchorId anchor)
     {
         return _deploymentAssignments.TryGetValue(anchor, out var heroId) ? heroId : null;
     }
 
-    public bool AssignHeroToAnchor(DeploymentAnchorId anchor, string? heroId)
+    public bool AssignHeroToAnchor(DeploymentAnchorId anchor, string? heroId) =>
+        _deploymentFlow.AssignHeroToAnchor(anchor, heroId);
+
+    private bool AssignHeroToAnchorCore(DeploymentAnchorId anchor, string? heroId)
     {
         EnsureDefaultSquad();
         EnsureAssignmentMapInitialized();
@@ -1333,7 +1454,9 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    public bool CycleDeploymentAssignment(DeploymentAnchorId anchor)
+    public bool CycleDeploymentAssignment(DeploymentAnchorId anchor) => _deploymentFlow.CycleDeploymentAssignment(anchor);
+
+    private bool CycleDeploymentAssignmentCore(DeploymentAnchorId anchor)
     {
         EnsureBattleDeployReady();
 
@@ -1356,7 +1479,9 @@ public sealed partial class GameSessionState
         return false;
     }
 
-    public void CycleTeamPosture()
+    public void CycleTeamPosture() => _deploymentFlow.CycleTeamPosture();
+
+    private void CycleTeamPostureCore()
     {
         var values = (TeamPostureType[])Enum.GetValues(typeof(TeamPostureType));
         var currentIndex = Array.IndexOf(values, SelectedTeamPosture);
@@ -1365,21 +1490,28 @@ public sealed partial class GameSessionState
         SyncActiveRunIfPresent();
     }
 
-    public void SetTeamPosture(TeamPostureType posture)
+    public void SetTeamPosture(TeamPostureType posture) => _deploymentFlow.SetTeamPosture(posture);
+
+    private void SetTeamPostureCore(TeamPostureType posture)
     {
         SelectedTeamPosture = posture;
         CaptureBlueprintState();
         SyncActiveRunIfPresent();
     }
 
-    public void SetTeamTactic(string teamTacticId)
+    public void SetTeamTactic(string teamTacticId) => _deploymentFlow.SetTeamTactic(teamTacticId);
+
+    private void SetTeamTacticCore(string teamTacticId)
     {
         SelectedTeamTacticId = teamTacticId ?? string.Empty;
         CaptureBlueprintState();
         SyncActiveRunIfPresent();
     }
 
-    public IEnumerable<(DeploymentAnchorId Anchor, string? HeroId)> EnumerateDeploymentAssignments()
+    public IEnumerable<(DeploymentAnchorId Anchor, string? HeroId)> EnumerateDeploymentAssignments() =>
+        _deploymentFlow.EnumerateDeploymentAssignments();
+
+    private IEnumerable<(DeploymentAnchorId Anchor, string? HeroId)> EnumerateDeploymentAssignmentsCore()
     {
         EnsureBattleDeployReady();
         foreach (var anchor in DeploymentAnchorOrder)
@@ -1388,7 +1520,9 @@ public sealed partial class GameSessionState
         }
     }
 
-    public IReadOnlyList<BattleParticipantSpec> BuildBattleParticipants()
+    public IReadOnlyList<BattleParticipantSpec> BuildBattleParticipants() => _deploymentFlow.BuildBattleParticipants();
+
+    private IReadOnlyList<BattleParticipantSpec> BuildBattleParticipantsCore()
     {
         EnsureBattleDeployReady();
 
@@ -1424,7 +1558,9 @@ public sealed partial class GameSessionState
             .ToList();
     }
 
-    public BattleLoadoutSnapshot BuildBattleLoadoutSnapshot()
+    public BattleLoadoutSnapshot BuildBattleLoadoutSnapshot() => _deploymentFlow.BuildBattleLoadoutSnapshot();
+
+    private BattleLoadoutSnapshot BuildBattleLoadoutSnapshotCore()
     {
         EnsureBattleDeployReady();
 
@@ -1504,7 +1640,10 @@ public sealed partial class GameSessionState
         return compiled;
     }
 
-    public bool TryResolveCurrentEncounter(out ResolvedEncounterContext context, out string error)
+    public bool TryResolveCurrentEncounter(out ResolvedEncounterContext context, out string error) =>
+        _expeditionFlow.TryResolveCurrentEncounter(out context, out error);
+
+    private bool TryResolveCurrentEncounterCore(out ResolvedEncounterContext context, out string error)
     {
         context = null!;
         error = string.Empty;
@@ -1593,7 +1732,9 @@ public sealed partial class GameSessionState
             config.EnemyPosture);
     }
 
-    public void RecordBattleAudit(BattleReplayBundle replay)
+    public void RecordBattleAudit(BattleReplayBundle replay) => _rewardSettlementFlow.RecordBattleAudit(replay);
+
+    private void RecordBattleAuditCore(BattleReplayBundle replay)
     {
         Profile.MatchHeaders.Add(new MatchRecordHeader
         {
@@ -1658,7 +1799,9 @@ public sealed partial class GameSessionState
         }
     }
 
-    public void SaveDebugSnapshot(string note = "manual-debug-save")
+    public void SaveDebugSnapshot(string note = "manual-debug-save") => _profileSync.SaveDebugSnapshot(note);
+
+    private void SaveDebugSnapshotCore(string note = "manual-debug-save")
     {
         Profile.RunSummaries.Add(new RunSummaryRecord
         {
@@ -1671,7 +1814,10 @@ public sealed partial class GameSessionState
         });
     }
 
-    public void SetLastBattleResult(bool victory, string summary)
+    public void SetLastBattleResult(bool victory, string summary) =>
+        _rewardSettlementFlow.SetLastBattleResult(victory, summary);
+
+    private void SetLastBattleResultCore(bool victory, string summary)
     {
         LastBattleVictory = victory;
         LastBattleSummary = SessionTextToken.Plain(summary);
@@ -1687,7 +1833,10 @@ public sealed partial class GameSessionState
         SyncActiveRunIfPresent();
     }
 
-    public void MarkBattleResolved(bool victory, int stepCount, int eventCount)
+    public void MarkBattleResolved(bool victory, int stepCount, int eventCount) =>
+        _rewardSettlementFlow.MarkBattleResolved(victory, stepCount, eventCount);
+
+    private void MarkBattleResolvedCore(bool victory, int stepCount, int eventCount)
     {
         var resolvedNode = GetSelectedExpeditionNode() ?? GetCurrentExpeditionNode();
         var shouldCreateRewardSettlement = !IsDirectCombatSandboxLane;
@@ -1780,7 +1929,9 @@ public sealed partial class GameSessionState
         SyncActiveRunIfPresent();
     }
 
-    public bool ApplyRewardChoice(int index)
+    public bool ApplyRewardChoice(int index) => _rewardSettlementFlow.ApplyRewardChoice(index);
+
+    private bool ApplyRewardChoiceCore(int index)
     {
         if (index < 0 || index >= _pendingRewardChoices.Count)
         {
@@ -1878,7 +2029,10 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    public string PreviewPermanentUnlockFromTemporaryAugment(string augmentId)
+    public string PreviewPermanentUnlockFromTemporaryAugment(string augmentId) =>
+        _rewardSettlementFlow.PreviewPermanentUnlockFromTemporaryAugment(augmentId);
+
+    private string PreviewPermanentUnlockFromTemporaryAugmentCore(string augmentId)
     {
         if (string.IsNullOrWhiteSpace(augmentId)
             || ActiveRun == null
