@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SM.Editor.Bootstrap;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Unity;
 using UnityEditor.Localization;
 using UnityEngine;

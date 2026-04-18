@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using UnityEngine;
 using UnityEngine.Serialization;

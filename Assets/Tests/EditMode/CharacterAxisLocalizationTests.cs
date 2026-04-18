@@ -3,6 +3,7 @@ using System.Reflection;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
 using SM.Unity;

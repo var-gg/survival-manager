@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Meta.Model;
@@ -59,7 +60,12 @@ internal static class CatalogEntryConverter
                 ModifierSource.Other,
                 Enumerate(definition.Modifiers).Select(modifier => BuildStatModifier(modifier, ModifierSource.Other, definition.Id)).ToList()),
             Enumerate(definition.CompileTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
-            BuildRulePackage(definition.Id, ModifierSource.Other, definition.RuleModifierTags));
+            BuildRulePackage(definition.Id, ModifierSource.Other, definition.RuleModifierTags),
+            definition.BoardId,
+            definition.BoardDepth,
+            definition.NodeKind,
+            definition.PrerequisiteNodeIds.Where(id => !string.IsNullOrWhiteSpace(id)).ToList(),
+            Enumerate(definition.MutualExclusionTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
     }
 
     internal static AugmentCatalogEntry BuildAugmentCatalogEntry(AugmentDefinition definition)

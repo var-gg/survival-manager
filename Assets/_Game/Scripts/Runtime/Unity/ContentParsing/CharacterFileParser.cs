@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using UnityEngine;
 using static SM.Unity.ContentParsing.YamlFieldExtractor;
 

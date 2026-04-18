@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SM.Content.Definitions;
+using SM.Meta.Model;
 
 namespace SM.Meta.Services;
 
@@ -17,7 +17,7 @@ public static class PermanentAugmentProgressionService
 {
     public static PermanentAugmentUnlockResolution ResolvePendingUnlock(
         string temporaryAugmentId,
-        IEnumerable<AugmentDefinition> augmentDefinitions,
+        IEnumerable<AugmentCatalogEntry> augmentDefinitions,
         IReadOnlyCollection<string> knownPermanentAugmentIds)
     {
         if (string.IsNullOrWhiteSpace(temporaryAugmentId))
@@ -29,7 +29,7 @@ public static class PermanentAugmentProgressionService
             .Where(definition => !ReferenceEquals(definition, null) && !string.IsNullOrWhiteSpace(definition.Id))
             .GroupBy(definition => definition.Id, StringComparer.Ordinal)
             .Select(group => group.First())
-            .ToList() ?? new List<AugmentDefinition>();
+            .ToList() ?? new List<AugmentCatalogEntry>();
 
         var selectedTemporary = definitions.FirstOrDefault(definition =>
             string.Equals(definition.Id, temporaryAugmentId, StringComparison.Ordinal));

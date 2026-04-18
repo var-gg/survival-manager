@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Meta.Model;

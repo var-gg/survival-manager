@@ -11,6 +11,7 @@ using UnityEngine.Localization.Settings;
 using UnityEngine.Localization.Tables;
 using SM.Unity;
 using SM.Content.Definitions;
+using SM.Core.Content;
 
 namespace SM.Editor.Bootstrap;
 

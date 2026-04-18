@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-04-19
 - 소스오브트루스: `docs/03_architecture/technical-overview.md`
 - 관련문서:
   - `docs/03_architecture/index.md`
@@ -41,6 +41,7 @@
 - `SM.Content`
 - `SM.Combat`
 - `SM.Meta`
+- `SM.Meta.Serialization`
 - `SM.Persistence.Abstractions`
 - `SM.Persistence.Json`
 - `SM.Unity`
@@ -53,10 +54,24 @@
 ## 기본 구조 원칙
 
 - core rule은 `SM.Core`, `SM.Combat`, `SM.Meta`에 둔다.
-- 콘텐츠 정의와 authored asset 규칙은 `SM.Content`와 `Assets/_Game/Content/**`를 기준으로 둔다.
+- 콘텐츠 schema enum은 `SM.Core.Content`에 두고, 콘텐츠 정의와 authored asset 규칙은 `SM.Content`와 `Assets/_Game/Content/**`를 기준으로 둔다.
+- `SM.Meta`는 `SM.Content` authored definition을 직접 참조하지 않고 pure spec/template/snapshot만 소비한다.
 - persistence truth는 `SM.Persistence.Abstractions` 뒤에 두고 구현은 adapter로 분리한다.
-- `SM.Unity`는 scene/input/view orchestration만 담당한다.
+- `SM.Unity`는 scene/input/view orchestration과 authored-to-runtime conversion을 담당한다.
 - `SM.Editor`는 bootstrap, validation, authoring 지원만 담당한다.
+
+## 순수 런타임 어셈블리
+
+아래 asmdef는 UnityEngine 참조 없이 유지한다.
+
+- `SM.Core`
+- `SM.Combat`
+- `SM.Meta`
+- `SM.Meta.Serialization`
+- `SM.Persistence.Abstractions`
+
+`SM.Content`는 authored `ScriptableObject` 정의를 포함하므로 Unity-bound assembly로 본다.
+`SM.Unity.ContentConversion`은 `SM.Content` definition을 `SM.Meta` pure spec/model로 바꾸는 composition boundary다.
 
 ## 어떤 문서를 먼저 봐야 하는가
 

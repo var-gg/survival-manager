@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Core.Stats;
 using UnityEngine;

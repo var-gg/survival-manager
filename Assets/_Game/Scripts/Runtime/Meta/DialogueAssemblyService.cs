@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
-using SM.Content;
 using SM.Core;
 
 namespace SM.Meta;
 
 public sealed class DialogueAssemblyService
 {
-    private readonly Dictionary<string, DialogueSequenceDefinition> _dialogueSequencesById;
-    private readonly Dictionary<string, HeroLoreDefinition> _heroLoreById;
+    private readonly Dictionary<string, DialogueSequenceSpec> _dialogueSequencesById;
+    private readonly Dictionary<string, HeroLoreSpec> _heroLoreById;
 
     public DialogueAssemblyService(
-        DialogueSequenceDefinition[] dialogueSequences,
-        HeroLoreDefinition[] heroLoreDefinitions)
+        IReadOnlyList<DialogueSequenceSpec> dialogueSequences,
+        IReadOnlyList<HeroLoreSpec> heroLoreDefinitions)
     {
         _dialogueSequencesById = BuildDialogueIndex(dialogueSequences);
         _heroLoreById = BuildHeroLoreIndex(heroLoreDefinitions);
@@ -55,7 +54,7 @@ public sealed class DialogueAssemblyService
 
         var speakers = new List<string>();
         var seen = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var line in sequence.Lines ?? Array.Empty<DialogueLineDefinition>())
+        foreach (var line in sequence.Lines ?? Array.Empty<DialogueLineSpec>())
         {
             if (line == null || string.IsNullOrWhiteSpace(line.SpeakerId) || !seen.Add(line.SpeakerId))
             {
@@ -92,10 +91,10 @@ public sealed class DialogueAssemblyService
         };
     }
 
-    private static Dictionary<string, DialogueSequenceDefinition> BuildDialogueIndex(DialogueSequenceDefinition[] dialogueSequences)
+    private static Dictionary<string, DialogueSequenceSpec> BuildDialogueIndex(IReadOnlyList<DialogueSequenceSpec> dialogueSequences)
     {
-        var index = new Dictionary<string, DialogueSequenceDefinition>(StringComparer.Ordinal);
-        foreach (var sequence in dialogueSequences ?? Array.Empty<DialogueSequenceDefinition>())
+        var index = new Dictionary<string, DialogueSequenceSpec>(StringComparer.Ordinal);
+        foreach (var sequence in dialogueSequences ?? Array.Empty<DialogueSequenceSpec>())
         {
             if (sequence == null)
             {
@@ -117,10 +116,10 @@ public sealed class DialogueAssemblyService
         return index;
     }
 
-    private static Dictionary<string, HeroLoreDefinition> BuildHeroLoreIndex(HeroLoreDefinition[] heroLoreDefinitions)
+    private static Dictionary<string, HeroLoreSpec> BuildHeroLoreIndex(IReadOnlyList<HeroLoreSpec> heroLoreDefinitions)
     {
-        var index = new Dictionary<string, HeroLoreDefinition>(StringComparer.Ordinal);
-        foreach (var heroLore in heroLoreDefinitions ?? Array.Empty<HeroLoreDefinition>())
+        var index = new Dictionary<string, HeroLoreSpec>(StringComparer.Ordinal);
+        foreach (var heroLore in heroLoreDefinitions ?? Array.Empty<HeroLoreSpec>())
         {
             if (heroLore == null)
             {

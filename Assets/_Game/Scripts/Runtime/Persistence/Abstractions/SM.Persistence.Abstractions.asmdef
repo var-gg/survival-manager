@@ -1,7 +1,7 @@
 {
   "name": "SM.Persistence.Abstractions",
   "rootNamespace": "SM.Persistence.Abstractions",
-  "references": ["SM.Core", "SM.Content", "SM.Meta"],
+  "references": ["SM.Core", "SM.Meta"],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

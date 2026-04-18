@@ -7,6 +7,7 @@ using SM.Editor.Bootstrap;
 using SM.Editor.Validation;
 using SM.Content;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core;
 using SM.Core.Contracts;
 using UnityEditor;

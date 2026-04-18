@@ -1,6 +1,7 @@
 using System.Text;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using UnityEditor;
 using UnityEngine;
 

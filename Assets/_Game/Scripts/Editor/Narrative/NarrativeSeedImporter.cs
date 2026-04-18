@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SM.Content;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core;
 using SM.Editor.Bootstrap;
 using UnityEditor;

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-06
+- 최종수정일: 2026-04-19
 - 소스오브트루스: `docs/03_architecture/unity-project-layout.md`
 - 관련문서:
   - `docs/03_architecture/technical-overview.md`
@@ -50,13 +50,17 @@ Assets/_Game/
   Scripts/
     Runtime/
       Core/
+        Content/
       Content/
       Combat/
       Meta/
+        Serialization/
       Persistence/
         Abstractions/
         Json/
       Unity/
+        ContentConversion/
+        Session/
         UI/
     Editor/
       Bootstrap/
@@ -75,12 +79,16 @@ Assets/Tests/
 ## asmdef 매핑
 
 - `Assets/_Game/Scripts/Runtime/Core` -> `SM.Core`
+- `Assets/_Game/Scripts/Runtime/Core/Content` -> `SM.Core` 내부 content schema enum 경계
 - `Assets/_Game/Scripts/Runtime/Content` -> `SM.Content`
 - `Assets/_Game/Scripts/Runtime/Combat` -> `SM.Combat`
 - `Assets/_Game/Scripts/Runtime/Meta` -> `SM.Meta`
+- `Assets/_Game/Scripts/Runtime/Meta/Serialization` -> `SM.Meta.Serialization`
 - `Assets/_Game/Scripts/Runtime/Persistence/Abstractions` -> `SM.Persistence.Abstractions`
 - `Assets/_Game/Scripts/Runtime/Persistence/Json` -> `SM.Persistence.Json`
 - `Assets/_Game/Scripts/Runtime/Unity` -> `SM.Unity`
+- `Assets/_Game/Scripts/Runtime/Unity/ContentConversion` -> `SM.Unity` 내부 authored-to-runtime adapter 경계
+- `Assets/_Game/Scripts/Runtime/Unity/Session` -> `SM.Unity` 내부 `GameSessionState` facade 흐름 분리 경계
 - `Assets/_Game/Scripts/Runtime/Unity/UI` -> `SM.Unity` 내부 UI runtime 하위 경계
 - `Assets/_Game/Scripts/Editor` -> `SM.Editor`
 - `Assets/Tests/EditMode` -> `SM.Tests.EditMode`

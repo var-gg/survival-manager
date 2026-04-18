@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using SM.Combat.Model;
-using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Stats;
 using SM.Meta.Model;
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;

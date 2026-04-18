@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SM.Combat.Model;
-using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Core.Stats;
 
@@ -89,7 +89,12 @@ public sealed record PassiveNodeTemplate(
     string Id,
     CombatModifierPackage Package,
     IReadOnlyList<string> CompileTags,
-    CombatRuleModifierPackage? RulePackage = null);
+    CombatRuleModifierPackage? RulePackage = null,
+    string BoardId = "",
+    int BoardDepth = 0,
+    PassiveNodeKindValue NodeKind = PassiveNodeKindValue.Small,
+    IReadOnlyList<string>? PrerequisiteNodeIds = null,
+    IReadOnlyList<string>? MutualExclusionTagIds = null);
 
 public sealed record AugmentCatalogEntry(
     string Id,

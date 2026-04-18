@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Meta.Model;
 using static SM.Unity.ContentConversion.ContentConversionShared;
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Meta.Model;
 
 namespace SM.Unity;

@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using NUnit.Framework;
-using SM.Content;
 using SM.Core;
 using SM.Meta;
-using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
@@ -25,7 +22,7 @@ public sealed class StoryDirectorServiceTests
             NarrativeMoment.TownEntered,
             100,
             StoryOncePolicy.OncePerProfile,
-            Array.Empty<StoryConditionDefinition>(),
+            Array.Empty<StoryConditionSpec>(),
             new[]
             {
                 CreateStoryEffect("fx.set.intro", StoryEffectKind.SetFlag, "story:intro"),
@@ -59,7 +56,7 @@ public sealed class StoryDirectorServiceTests
             NarrativeMoment.RewardCommitted,
             100,
             StoryOncePolicy.Repeatable,
-            Array.Empty<StoryConditionDefinition>(),
+            Array.Empty<StoryConditionSpec>(),
             new[]
             {
                 CreateStoryEffect("fx.set.branch", StoryEffectKind.SetFlag, "branch:open"),
@@ -80,7 +77,7 @@ public sealed class StoryDirectorServiceTests
                 CreateStoryEffect("fx.present.card", StoryEffectKind.EnqueuePresentation, nameof(StoryPresentationKind.StoryCard)),
             },
             "card.branch.followup");
-        var director = CreateStoryDirector(new[] { seedEvent, followupEvent }, Array.Empty<DialogueSequenceDefinition>());
+        var director = CreateStoryDirector(new[] { seedEvent, followupEvent }, Array.Empty<DialogueSequenceSpec>());
 
         director.Advance(NarrativeMoment.RewardCommitted, StoryMomentContext.Empty);
 
@@ -104,7 +101,7 @@ public sealed class StoryDirectorServiceTests
             NarrativeMoment.SiteEntered,
             50,
             StoryOncePolicy.OncePerRun,
-            Array.Empty<StoryConditionDefinition>(),
+            Array.Empty<StoryConditionSpec>(),
             new[]
             {
                 CreateStoryEffect("fx.present.run", StoryEffectKind.EnqueuePresentation, nameof(StoryPresentationKind.DialogueOverlay)),
@@ -115,7 +112,7 @@ public sealed class StoryDirectorServiceTests
             NarrativeMoment.SiteEntered,
             40,
             StoryOncePolicy.OncePerProfile,
-            Array.Empty<StoryConditionDefinition>(),
+            Array.Empty<StoryConditionSpec>(),
             new[]
             {
                 CreateStoryEffect("fx.present.profile", StoryEffectKind.EnqueuePresentation, nameof(StoryPresentationKind.DialogueOverlay)),
@@ -152,87 +149,44 @@ public sealed class StoryDirectorServiceTests
     }
 
     private static StoryDirectorService CreateStoryDirector(
-        StoryEventDefinition[] storyEvents,
-        DialogueSequenceDefinition[] dialogueSequences)
+        StoryEventSpec[] storyEvents,
+        DialogueSequenceSpec[] dialogueSequences)
     {
         return new StoryDirectorService(
             NarrativeProgressRecord.Empty,
             storyEvents,
-            new DialogueAssemblyService(dialogueSequences, Array.Empty<HeroLoreDefinition>()));
+            new DialogueAssemblyService(dialogueSequences, Array.Empty<HeroLoreSpec>()));
     }
 
-    private static StoryEventDefinition CreateStoryEvent(
+    private static StoryEventSpec CreateStoryEvent(
         string id,
         NarrativeMoment moment,
         int priority,
         StoryOncePolicy oncePolicy,
-        StoryConditionDefinition[] conditions,
-        StoryEffectDefinition[] effects,
+        StoryConditionSpec[] conditions,
+        StoryEffectSpec[] effects,
         string presentationKey)
     {
-        return CreateAsset<StoryEventDefinition>(
-            ("_id", id),
-            ("_moment", moment),
-            ("_priority", priority),
-            ("_oncePolicy", oncePolicy),
-            ("_conditions", conditions),
-            ("_effects", effects),
-            ("_presentationKey", presentationKey));
+        return new StoryEventSpec(id, moment, priority, oncePolicy, conditions, effects, presentationKey);
     }
 
-    private static StoryConditionDefinition CreateStoryCondition(string id, StoryConditionKind kind, string operandA)
+    private static StoryConditionSpec CreateStoryCondition(string id, StoryConditionKind kind, string operandA)
     {
-        return CreateAsset<StoryConditionDefinition>(
-            ("_id", id),
-            ("_kind", kind),
-            ("_operandA", operandA),
-            ("_operandB", string.Empty));
+        return new StoryConditionSpec(id, kind, operandA, string.Empty);
     }
 
-    private static StoryEffectDefinition CreateStoryEffect(string id, StoryEffectKind kind, string payload)
+    private static StoryEffectSpec CreateStoryEffect(string id, StoryEffectKind kind, string payload)
     {
-        return CreateAsset<StoryEffectDefinition>(
-            ("_id", id),
-            ("_kind", kind),
-            ("_payload", payload));
+        return new StoryEffectSpec(id, kind, payload);
     }
 
-    private static DialogueSequenceDefinition CreateDialogueSequence(string id, params DialogueLineDefinition[] lines)
+    private static DialogueSequenceSpec CreateDialogueSequence(string id, params DialogueLineSpec[] lines)
     {
-        return CreateAsset<DialogueSequenceDefinition>(
-            ("_id", id),
-            ("_lines", lines));
+        return new DialogueSequenceSpec(id, lines);
     }
 
-    private static DialogueLineDefinition CreateDialogueLine(string id, string speakerId, string textKey)
+    private static DialogueLineSpec CreateDialogueLine(string id, string speakerId, string textKey)
     {
-        return CreateAsset<DialogueLineDefinition>(
-            ("_id", id),
-            ("_speakerId", speakerId),
-            ("_textKey", textKey),
-            ("_emote", string.Empty),
-            ("_autoAdvanceHint", 0f));
-    }
-
-    private static T CreateAsset<T>(params (string FieldName, object Value)[] assignments) where T : ScriptableObject
-    {
-        var asset = ScriptableObject.CreateInstance<T>();
-        foreach (var assignment in assignments)
-        {
-            SetField(asset, assignment.FieldName, assignment.Value);
-        }
-
-        return asset;
-    }
-
-    private static void SetField(object target, string fieldName, object value)
-    {
-        var field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-        if (field == null)
-        {
-            throw new InvalidOperationException($"Field '{fieldName}' was not found on '{target.GetType().Name}'.");
-        }
-
-        field.SetValue(target, value);
+        return new DialogueLineSpec(id, speakerId, textKey, string.Empty, string.Empty, 0f);
     }
 }

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-04-19
 - 소스오브트루스: `docs/03_architecture/assembly-boundaries-and-persistence-ownership.md`
 - 관련문서:
   - `docs/03_architecture/dependency-direction.md`
@@ -19,13 +19,14 @@
 
 | 레이어 | 책임 | 하지 말아야 할 일 |
 | --- | --- | --- |
-| `SM.Meta` | town, expedition, encounter, reward, progression, arena 같은 비즈니스 상태 변화 | persistence record 타입 참조, Unity scene/component 타입 참조, repository concrete 생성 |
-| `SM.Unity` | Boot, scene flow, session orchestration, runtime composition root, UI/controller 진입점 | editor-only logic 소유, persistence ownership을 Meta로 밀어 넣는 일 |
+| `SM.Meta` | town, expedition, encounter, reward, progression, arena 같은 비즈니스 상태 변화와 pure runtime spec/model | authored `ScriptableObject` 타입 참조, `SM.Content` 직접 참조, persistence record 타입 참조, Unity scene/component 타입 참조, repository concrete 생성 |
+| `SM.Unity` | Boot, scene flow, session orchestration, runtime composition root, UI/controller 진입점, authored content conversion | editor-only logic 소유, persistence ownership을 Meta로 밀어 넣는 일 |
 | `SM.Persistence.Abstractions` | save contract, record 모델, repository port, persistence-facing DTO | gameplay 규칙 결정, Unity scene 진입점 소유, concrete serializer 구현 |
 
 ## forbidden dependency examples
 
 - `SM.Meta` 서비스가 `ArenaSeasonStateRecord` 같은 persistence record를 직접 참조하는 것
+- `SM.Meta` 서비스가 `StoryEventDefinition`, `DialogueSequenceDefinition`, `PassiveNodeDefinition` 같은 authored definition을 직접 받는 것
 - `SM.Meta`가 save repository를 직접 new 하거나 adapter 세부를 아는 것
 - `SM.Persistence.Abstractions`가 `GameSessionState`, `BattleScreenController` 같은 Unity 진입점을 아는 것
 - `SM.Unity`가 editor bootstrap과 validation 구현을 runtime asmdef 안에 끌어오는 것
@@ -38,6 +39,16 @@
 - composition root와 persistence 포트 연결은 `SM.Unity`가 맡는다.
 - domain state를 persistence record로 바꾸는 translation은 persistence boundary에서 수행한다.
 - feature sprint 안에서 domain model과 persistence record를 동시에 뒤섞지 않는다.
+- `SM.Meta` 안의 `*Record` 이름은 immutable domain/read model로만 취급한다.
+- persistence contract는 `SM.Persistence.Abstractions.Models`만 소유한다.
+- record라는 이름만으로 save contract ownership을 추정하지 않는다.
+
+## content adapter ownership 원칙
+
+- authored `ScriptableObject`와 YAML/resource loading은 `SM.Content`, `SM.Unity`, `SM.Editor` 영역에 둔다.
+- authored definition을 runtime rule에 넣어야 하면 `SM.Unity.ContentConversion`에서 pure spec/template/snapshot으로 변환한다.
+- `SM.Meta`는 변환된 pure model만 받는다.
+- `SM.Core.Content`는 authored와 runtime이 공유하는 enum/schema value만 담고, Unity type이나 repository type을 담지 않는다.
 
 ## asmdef cycle 사전 점검 규칙
 
@@ -65,3 +76,5 @@ preflight에서 아래를 먼저 적는다.
 - `ArenaSimulationService` 계열 작업은 async scaffold와 persistence record 변경을 한 번에 묶지 않는다.
 - `GameSessionState`, `BattleScreenController`, `RunStateService`가 persistence truth를 직접 소유하지 않도록 경계를 유지한다.
 - `SM.Meta -> SM.Persistence.Abstractions` 참조가 필요해 보이면 먼저 boundary 문서와 `dependency-direction.md`를 다시 확인한다.
+- `SM.Meta -> SM.Content` 참조는 금지한다. 누락 필드가 있으면 authored definition을 넘기지 말고 pure template/spec 필드를 추가한다.
+- `GameSessionState.cs` 본 파일은 public facade와 session field 보유를 중심으로 유지하고, 새 규칙/정산/상태전이는 `SM.Meta` 또는 `SM.Unity/Session` 하위 흐름 파일로 이동시킨다.

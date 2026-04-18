@@ -5,6 +5,7 @@ using System.Reflection;
 using SM.Combat.Model;
 using SM.Content;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Meta.Model;
 using UnityEngine;

@@ -1,5 +1,6 @@
 using System.Text;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using UnityEditor;
 
 namespace SM.Editor.Authoring.Inspectors;

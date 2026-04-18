@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Meta.Model;
 using static SM.Unity.ContentConversion.ContentConversionShared;
 

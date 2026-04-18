@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 using SM.Unity.Sandbox;

@@ -4,6 +4,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Meta.Model;
 using SM.Unity.ContentConversion;
 using UnityEngine;

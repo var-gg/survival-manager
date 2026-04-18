@@ -1,4 +1,5 @@
 using UnityEngine;
+using SM.Core.Content;
 using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;

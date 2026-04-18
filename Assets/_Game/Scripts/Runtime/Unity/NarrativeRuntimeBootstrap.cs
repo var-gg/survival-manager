@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using SM.Content;
 using SM.Meta;
+using SM.Unity.ContentConversion;
 using UnityEngine;
 
 namespace SM.Unity;
@@ -42,7 +43,12 @@ internal sealed class NarrativeRuntimeBootstrap
 
     internal StoryDirectorService CreateStoryDirector(NarrativeProgressRecord? initialProgress)
     {
-        var assemblyService = new DialogueAssemblyService(_dialogueSequences, _heroLoreDefinitions);
-        return new StoryDirectorService(initialProgress, _storyEvents, assemblyService);
+        var assemblyService = new DialogueAssemblyService(
+            _dialogueSequences.Select(NarrativeRuntimeContentAdapter.ToSpec).ToArray(),
+            _heroLoreDefinitions.Select(NarrativeRuntimeContentAdapter.ToSpec).ToArray());
+        return new StoryDirectorService(
+            initialProgress,
+            _storyEvents.Select(NarrativeRuntimeContentAdapter.ToSpec).ToArray(),
+            assemblyService);
     }
 }

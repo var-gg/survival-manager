@@ -1,16 +1,9 @@
 using System.Collections.Generic;
+using SM.Core.Content;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
-
-public enum BossPhaseTriggerValue
-{
-    None = 0,
-    HealthBelowHalf = 1,
-    HealthBelowQuarter = 2,
-    EscortDefeated = 3,
-}
 
 [CreateAssetMenu(menuName = "SM/Definitions/Boss Overlay Definition", fileName = "boss_overlay_")]
 public sealed class BossOverlayDefinition : ScriptableObject

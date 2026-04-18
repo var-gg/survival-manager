@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SM.Editor.Bootstrap;
 using SM.Editor.SeedData;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Unity;
 using SM.Unity.UI;
 using UnityEditor;

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SM.Content;
 using SM.Meta;
+using SM.Unity.ContentConversion;
 using SM.Unity.Narrative;
 using UnityEngine;
 
@@ -45,15 +47,19 @@ public sealed class StoryArchiveScreenController : MonoBehaviour
         }
 
         var assemblyService = new DialogueAssemblyService(
-            Resources.LoadAll<DialogueSequenceDefinition>("_Game/Content/Definitions/DialogueSequences"),
-            Resources.LoadAll<HeroLoreDefinition>("_Game/Content/Definitions/HeroLore"));
+            Resources.LoadAll<DialogueSequenceDefinition>("_Game/Content/Definitions/DialogueSequences")
+                .Select(NarrativeRuntimeContentAdapter.ToSpec)
+                .ToArray(),
+            Resources.LoadAll<HeroLoreDefinition>("_Game/Content/Definitions/HeroLore")
+                .Select(NarrativeRuntimeContentAdapter.ToSpec)
+                .ToArray());
 
         _catalogService = new StoryArchiveCatalogService();
         _replayAssembler = new StoryArchiveReplayAssembler(assemblyService);
         _runner = GetComponentInChildren<StoryPresentationRunner>();
 
         var progress = root.SessionState.StoryDirector?.Progress ?? NarrativeProgressRecord.Empty;
-        _entries = _catalogService.BuildCatalog(_catalog, progress);
+        _entries = _catalogService.BuildCatalog(NarrativeRuntimeContentAdapter.ToSpec(_catalog), progress);
 
         CatalogReady?.Invoke();
     }

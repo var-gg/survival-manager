@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SM.Content;
 using SM.Core;
 
 namespace SM.Meta;
@@ -9,7 +8,7 @@ namespace SM.Meta;
 public sealed class StoryDirectorService
 {
     private readonly DialogueAssemblyService _dialogueAssemblyService;
-    private readonly Dictionary<NarrativeMoment, StoryEventDefinition[]> _eventsByMoment;
+    private readonly Dictionary<NarrativeMoment, StoryEventSpec[]> _eventsByMoment;
     private readonly Dictionary<string, StoryEventStateRecord> _eventStates;
     private long _evaluationTick;
 
@@ -17,7 +16,7 @@ public sealed class StoryDirectorService
 
     public StoryDirectorService(
         NarrativeProgressRecord? initialProgress,
-        StoryEventDefinition[] storyEvents,
+        IReadOnlyList<StoryEventSpec> storyEvents,
         DialogueAssemblyService dialogueAssemblyService)
     {
         _dialogueAssemblyService = dialogueAssemblyService ?? throw new ArgumentNullException(nameof(dialogueAssemblyService));
@@ -78,7 +77,7 @@ public sealed class StoryDirectorService
             }
 
             var conditionsPass = true;
-            foreach (var condition in definition.Conditions ?? Array.Empty<StoryConditionDefinition>())
+            foreach (var condition in definition.Conditions ?? Array.Empty<StoryConditionSpec>())
             {
                 if (condition == null)
                 {
@@ -107,7 +106,7 @@ public sealed class StoryDirectorService
                 ? state
                 : default;
 
-            foreach (var effect in definition.Effects ?? Array.Empty<StoryEffectDefinition>())
+            foreach (var effect in definition.Effects ?? Array.Empty<StoryEffectSpec>())
             {
                 if (effect == null)
                 {
@@ -236,7 +235,7 @@ public sealed class StoryDirectorService
     }
 
     private static bool EvaluateCondition(
-        StoryConditionDefinition definition,
+        StoryConditionSpec definition,
         StoryMomentContext context,
         HashSet<string> storyFlags,
         HashSet<string> unlockedHeroIds)
@@ -261,8 +260,8 @@ public sealed class StoryDirectorService
     }
 
     private StoryPresentationRequest BuildPresentationRequest(
-        StoryEventDefinition definition,
-        StoryEffectDefinition effect,
+        StoryEventSpec definition,
+        StoryEffectSpec effect,
         NarrativeProgressRecord workingProgress)
     {
         if (string.IsNullOrWhiteSpace(effect.Payload))
@@ -301,7 +300,7 @@ public sealed class StoryDirectorService
             .ToArray();
     }
 
-    private static string GetStableEventId(StoryEventDefinition definition)
+    private static string GetStableEventId(StoryEventSpec definition)
     {
         return definition.Id;
     }
@@ -316,10 +315,10 @@ public sealed class StoryDirectorService
         return parsed;
     }
 
-    private static Dictionary<NarrativeMoment, StoryEventDefinition[]> BucketEvents(StoryEventDefinition[] storyEvents)
+    private static Dictionary<NarrativeMoment, StoryEventSpec[]> BucketEvents(IReadOnlyList<StoryEventSpec> storyEvents)
     {
-        var buckets = new Dictionary<NarrativeMoment, List<StoryEventDefinition>>();
-        foreach (var definition in storyEvents ?? Array.Empty<StoryEventDefinition>())
+        var buckets = new Dictionary<NarrativeMoment, List<StoryEventSpec>>();
+        foreach (var definition in storyEvents ?? Array.Empty<StoryEventSpec>())
         {
             if (definition == null)
             {
@@ -328,7 +327,7 @@ public sealed class StoryDirectorService
 
             if (!buckets.TryGetValue(definition.Moment, out var bucket))
             {
-                bucket = new List<StoryEventDefinition>();
+                bucket = new List<StoryEventSpec>();
                 buckets[definition.Moment] = bucket;
             }
 

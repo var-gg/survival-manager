@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Stats;
 using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;

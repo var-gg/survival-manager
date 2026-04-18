@@ -1,18 +1,9 @@
 using System.Collections.Generic;
+using SM.Core.Content;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
-
-public enum RewardSourceKindValue
-{
-    Skirmish = 0,
-    Elite = 1,
-    Boss = 2,
-    ShrineEvent = 3,
-    ExtractEndRun = 4,
-    SalvageDismantle = 5,
-}
 
 [CreateAssetMenu(menuName = "SM/Definitions/Reward Source Definition", fileName = "reward_source_")]
 public sealed class RewardSourceDefinition : ScriptableObject

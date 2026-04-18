@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Editor.SeedData;
 using SM.Unity;
 using UnityEditor;

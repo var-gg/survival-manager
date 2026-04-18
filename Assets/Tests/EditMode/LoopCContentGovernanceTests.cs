@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Editor.SeedData;
 using SM.Editor.Validation;
 using UnityEditor;

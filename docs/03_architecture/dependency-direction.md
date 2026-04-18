@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-04-19
 - 소스오브트루스: `docs/03_architecture/dependency-direction.md`
 - 관련문서:
   - `docs/03_architecture/coding-principles.md`
@@ -19,12 +19,13 @@
 
 | 어셈블리 | 책임 | 허용 의존 |
 | --- | --- | --- |
-| `SM.Core` | 공통 primitive, id, result, stat, rng | 없음 |
-| `SM.Content` | definition 해석, content 친화 모델 | `SM.Core` |
+| `SM.Core` | 공통 primitive, id, result, stat, rng, content schema enum | 없음 |
+| `SM.Content` | ScriptableObject authored definition과 content 친화 모델 | `SM.Core` |
 | `SM.Combat` | 전투 규칙과 시뮬레이션 | `SM.Core` |
-| `SM.Meta` | town, expedition, reward, progression 규칙 | `SM.Core`, `SM.Content`, `SM.Combat` |
-| `SM.Persistence.Abstractions` | save contract, repository port, save model | `SM.Core`, `SM.Content`, `SM.Meta` |
-| `SM.Persistence.Json` | JSON serializer/repository adapter | `SM.Persistence.Abstractions`, `SM.Core`, `SM.Content`, `SM.Meta` |
+| `SM.Meta` | town, expedition, reward, progression 규칙과 pure runtime spec/model | `SM.Core`, `SM.Combat` |
+| `SM.Meta.Serialization` | Meta snapshot serialization helper와 pure DTO 변환 | `SM.Core`, `SM.Combat`, `SM.Meta` |
+| `SM.Persistence.Abstractions` | save contract, repository port, save model | `SM.Core`, `SM.Meta` |
+| `SM.Persistence.Json` | JSON serializer/repository adapter | `SM.Persistence.Abstractions`, `SM.Core`, `SM.Meta` |
 | `SM.Unity` | Boot, scene/input/view orchestration | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Persistence.Abstractions`, `SM.Persistence.Json` |
 | `SM.Editor` | bootstrap, validation, editor utility | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Persistence.Abstractions`, `SM.Unity` |
 | `SM.Tests` | 테스트 전용 조합 레이어 | 대상 시나리오에 필요한 runtime asmdef, EditMode는 `SM.Editor` 추가 허용 |
@@ -34,7 +35,8 @@
 - `SM.Core` -> 다른 어떤 상위 계층도 금지
 - `SM.Content` -> `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Combat` -> `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
-- `SM.Meta` -> `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
+- `SM.Meta` -> `SM.Content`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
+- `SM.Meta.Serialization` -> `SM.Content`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Persistence.Abstractions` -> `SM.Persistence.Json`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Persistence.Json` -> `SM.Unity`, `SM.Editor` 금지
 - `SM.Unity` -> `SM.Editor`, `SM.Tests` 금지
@@ -59,7 +61,15 @@
 
 - 정말 공통 primitive면 `SM.Core`
 - save contract와 직렬화 경계면 `SM.Persistence.Abstractions`
-- content definition 해석과 id 해상도면 `SM.Content`
+- authored definition 해석과 id 해상도면 `SM.Content`
+- authored definition과 pure runtime/model 양쪽에서 쓰는 schema enum이면 `SM.Core.Content`
+
+## authored content adapter boundary
+
+- `SM.Content`의 `ScriptableObject` definition은 `SM.Meta`로 직접 들어가지 않는다.
+- `SM.Unity.ContentConversion` 또는 runtime bootstrap이 authored definition을 pure snapshot/spec로 변환한 뒤 `SM.Meta` 서비스에 넘긴다.
+- `SM.Meta`는 `CombatContentSnapshot`, story/dialogue spec, reward/loot/passive template 같은 pure model만 소비한다.
+- `Assets/_Game/Scripts/Runtime/Meta/**` 소스에서 `using SM.Content`, `UnityEngine`, `UnityEditor`를 사용하지 않는다.
 
 ## composition root 위치
 

@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using SM.Content;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using UnityEditor;
 using UnityEditor.Localization;
 using UnityEngine;

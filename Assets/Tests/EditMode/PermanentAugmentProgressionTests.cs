@@ -1,7 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Contracts;
+using SM.Core.Content;
+using SM.Core.Stats;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
@@ -19,9 +24,9 @@ public sealed class PermanentAugmentProgressionTests
     {
         var definitions = new[]
         {
-            CreateAugment("temp_hunt", false, "hunt_line"),
-            CreateAugment("perm_hunt", true, "hunt_line"),
-            CreateAugment("perm_ward", true, "ward_line"),
+            CreateAugmentEntry("temp_hunt", false, "hunt_line"),
+            CreateAugmentEntry("perm_hunt", true, "hunt_line"),
+            CreateAugmentEntry("perm_ward", true, "ward_line"),
         };
 
         var result = PermanentAugmentProgressionService.ResolvePendingUnlock(
@@ -39,8 +44,8 @@ public sealed class PermanentAugmentProgressionTests
     {
         var definitions = new[]
         {
-            CreateAugment("temp_hunt", false, "hunt_line"),
-            CreateAugment("perm_hunt", true, "hunt_line"),
+            CreateAugmentEntry("temp_hunt", false, "hunt_line"),
+            CreateAugmentEntry("perm_hunt", true, "hunt_line"),
         };
 
         var result = PermanentAugmentProgressionService.ResolvePendingUnlock(
@@ -121,5 +126,19 @@ public sealed class PermanentAugmentProgressionTests
         augment.FamilyId = familyId;
         augment.NameKey = id;
         return augment;
+    }
+
+    private static AugmentCatalogEntry CreateAugmentEntry(string id, bool isPermanent, string familyId)
+    {
+        return new AugmentCatalogEntry(
+            id,
+            "combat",
+            familyId,
+            1,
+            isPermanent,
+            false,
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            new CombatModifierPackage(id, ModifierSource.Augment, Array.Empty<StatModifier>()));
     }
 }

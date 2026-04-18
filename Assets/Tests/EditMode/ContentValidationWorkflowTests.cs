@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Editor.SeedData;
 using SM.Editor.Validation;
 using UnityEditor;

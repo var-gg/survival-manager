@@ -2,7 +2,117 @@ using System;
 using System.Collections.Generic;
 using SM.Core.Contracts;
 
-namespace SM.Content.Definitions;
+namespace SM.Core.Content;
+
+public enum SkillKindValue { Strike = 0, Heal = 1, Shield = 2, Buff = 3, Debuff = 4, Utility = 5 }
+public enum DamageTypeValue { Physical = 0, Magical = 1, Healing = 2, True = 3 }
+public enum SkillDeliveryValue { Melee = 0, Ranged = 1, Projectile = 2, Nova = 3, Aura = 4, Trap = 5, Zone = 6 }
+public enum SkillTargetRuleValue { NearestEnemy = 0, LowestHpEnemy = 1, MostExposedEnemy = 2, LowestHpAlly = 3, ProtectedAlly = 4, Self = 5, MarkedTarget = 6 }
+public enum SkillSlotKindValue { CoreActive = 0, UtilityActive = 1, Passive = 2, Support = 3 }
+public enum PassiveNodeKindValue { Small = 0, Notable = 1, Keystone = 2 }
+public enum BattleActionTypeValue { BasicAttack = 0, ActiveSkill = 1, WaitDefend = 2 }
+
+public enum TacticConditionTypeValue
+{
+    SelfHpBelow = 0,
+    AllyHpBelow = 1,
+    EnemyInRange = 2,
+    LowestHpEnemy = 3,
+    EnemyExposed = 4,
+    Fallback = 5,
+    CooldownReady = 6,
+    HasBuff = 7,
+    EnemyTagMatch = 8,
+    AllyThreatened = 9,
+    RangeBand = 10,
+    SelfResource = 11,
+    TargetHealthBand = 12,
+}
+
+public enum TargetSelectorTypeValue { Self = 0, LowestHpAlly = 1, FirstEnemyInRange = 2, LowestHpEnemy = 3, NearestEnemy = 4, MostExposedEnemy = 5 }
+public enum TeamPostureTypeValue { HoldLine = 0, StandardAdvance = 1, ProtectCarry = 2, CollapseWeakSide = 3, AllInBackline = 4 }
+public enum DeploymentAnchorValue { FrontTop = 0, FrontCenter = 1, FrontBottom = 2, BackTop = 3, BackCenter = 4, BackBottom = 5 }
+public enum BodySizeCategoryValue { Small = 0, Medium = 1, Large = 2 }
+public enum MobilityStyleValue { None = 0, Dash = 1, Roll = 2, Blink = 3 }
+public enum MobilityPurposeValue { None = 0, Engage = 1, Disengage = 2, Evade = 3, Chase = 4, MaintainRange = 5 }
+public enum AugmentCategoryValue { Combat = 0, Synergy = 1, EconomyLoot = 2, RunUtility = 3 }
+public enum AffixCategoryValue { OffenseFlat = 0, OffenseScaling = 1, DefenseFlat = 2, DefenseScaling = 3, Utility = 4, SynergyTagged = 5 }
+public enum ItemRarityTierValue { Common = 0, Magic = 1, Rare = 2, Epic = 3, Legendary = 4 }
+public enum ItemIdentityValue { Baseline = 0, Named = 1, Unique = 2 }
+public enum ArchetypeScopeValue { Core = 0, Specialist = 1 }
+
+public enum RewardType
+{
+    Gold = 0,
+    TemporaryAugment = 1,
+    Echo = 2,
+    TraitRerollCurrency = Echo,
+    Item = 3,
+    // Deprecated in the normal playable lane. Kept for legacy content compatibility only.
+    PermanentAugmentSlot = 4,
+    TraitLockToken = 5,
+    TraitPurgeToken = 6,
+    EmberDust = 7,
+    EchoCrystal = 8,
+    BossSigil = 9,
+    SkillManual = 10,
+    SkillShard = 11,
+}
+
+public enum RarityBracketValue
+{
+    Common = 0,
+    Advanced = 1,
+    Elite = 2,
+    Boss = 3,
+}
+
+public enum RewardSourceKindValue
+{
+    Skirmish = 0,
+    Elite = 1,
+    Boss = 2,
+    ShrineEvent = 3,
+    ExtractEndRun = 4,
+    SalvageDismantle = 5,
+}
+
+public enum EncounterKindValue
+{
+    Skirmish = 0,
+    Elite = 1,
+    Boss = 2,
+}
+
+public enum ThreatTierValue
+{
+    Tier1 = 1,
+    Tier2 = 2,
+    Tier3 = 3,
+}
+
+public enum EnemySquadMemberRoleValue
+{
+    Unit = 0,
+    Captain = 1,
+    Escort = 2,
+}
+
+public enum BossPhaseTriggerValue
+{
+    None = 0,
+    HealthBelowHalf = 1,
+    HealthBelowQuarter = 2,
+    EscortDefeated = 3,
+}
+
+public enum StatusGroupValue
+{
+    Control = 0,
+    Attrition = 1,
+    TacticalMark = 2,
+    DefensiveBoon = 3,
+}
 
 public enum BudgetDomain
 {
@@ -221,7 +331,7 @@ public sealed class BudgetCard
 {
     public BudgetDomain Domain = BudgetDomain.UnitBlueprint;
     public ContentRarity Rarity = ContentRarity.Common;
-    public PowerBand PowerBand = global::SM.Content.Definitions.PowerBand.Standard;
+    public PowerBand PowerBand = PowerBand.Standard;
     public CombatRoleBudgetProfile RoleProfile = CombatRoleBudgetProfile.None;
     public BudgetVector Vector = new();
     public int KeywordCount;
@@ -320,12 +430,12 @@ public static class LoopCContentGovernance
 
     public static readonly IReadOnlyDictionary<PowerBand, BudgetTarget> PowerBandTargets = new Dictionary<PowerBand, BudgetTarget>
     {
-        [global::SM.Content.Definitions.PowerBand.Micro] = new(4, 1),
-        [global::SM.Content.Definitions.PowerBand.Minor] = new(8, 1),
-        [global::SM.Content.Definitions.PowerBand.Standard] = new(12, 2),
-        [global::SM.Content.Definitions.PowerBand.Major] = new(18, 2),
-        [global::SM.Content.Definitions.PowerBand.Signature] = new(26, 3),
-        [global::SM.Content.Definitions.PowerBand.Keystone] = new(34, 3),
+        [PowerBand.Micro] = new(4, 1),
+        [PowerBand.Minor] = new(8, 1),
+        [PowerBand.Standard] = new(12, 2),
+        [PowerBand.Major] = new(18, 2),
+        [PowerBand.Signature] = new(26, 3),
+        [PowerBand.Keystone] = new(34, 3),
     };
 
     public static readonly IReadOnlyDictionary<ContentRarity, BudgetTarget> UnitBudgetTargets = new Dictionary<ContentRarity, BudgetTarget>

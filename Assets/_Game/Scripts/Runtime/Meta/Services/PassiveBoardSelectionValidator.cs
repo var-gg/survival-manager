@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SM.Content.Definitions;
+using SM.Core.Content;
+using SM.Meta.Model;
 
 namespace SM.Meta.Services;
 
@@ -25,7 +26,7 @@ public static class PassiveBoardSelectionValidator
     public static PassiveBoardSelectionValidationResult Normalize(
         string boardId,
         IReadOnlyCollection<string> requestedNodeIds,
-        IReadOnlyDictionary<string, PassiveNodeDefinition> nodesById)
+        IReadOnlyDictionary<string, PassiveNodeTemplate> nodesById)
     {
         if (string.IsNullOrWhiteSpace(boardId) || nodesById.Count == 0)
         {
@@ -61,7 +62,7 @@ public static class PassiveBoardSelectionValidator
         string boardId,
         IReadOnlyCollection<string> currentNodeIds,
         string nodeId,
-        IReadOnlyDictionary<string, PassiveNodeDefinition> nodesById)
+        IReadOnlyDictionary<string, PassiveNodeTemplate> nodesById)
     {
         var normalizedCurrent = Normalize(boardId, currentNodeIds, nodesById).NormalizedNodeIds.ToList();
         if (normalizedCurrent.Contains(nodeId, StringComparer.Ordinal))
@@ -83,7 +84,7 @@ public static class PassiveBoardSelectionValidator
         string boardId,
         IReadOnlyCollection<string> selectedNodeIds,
         string candidateNodeId,
-        IReadOnlyDictionary<string, PassiveNodeDefinition> nodesById,
+        IReadOnlyDictionary<string, PassiveNodeTemplate> nodesById,
         out string error)
     {
         error = string.Empty;
@@ -99,7 +100,7 @@ public static class PassiveBoardSelectionValidator
             return true;
         }
 
-        foreach (var prerequisiteNodeId in candidate.PrerequisiteNodeIds.Where(id => !string.IsNullOrWhiteSpace(id)))
+        foreach (var prerequisiteNodeId in (candidate.PrerequisiteNodeIds ?? Array.Empty<string>()).Where(id => !string.IsNullOrWhiteSpace(id)))
         {
             if (!selectedNodeIds.Contains(prerequisiteNodeId, StringComparer.Ordinal))
             {
@@ -139,11 +140,11 @@ public static class PassiveBoardSelectionValidator
         return false;
     }
 
-    private static IEnumerable<string> GetTagIds(PassiveNodeDefinition definition)
+    private static IEnumerable<string> GetTagIds(PassiveNodeTemplate definition)
     {
-        return definition.MutualExclusionTags
-            .Where(tag => !ReferenceEquals(tag, null) && !string.IsNullOrWhiteSpace(tag.Id))
-            .Select(tag => tag.Id);
+        return definition.MutualExclusionTagIds?
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            ?? Array.Empty<string>();
     }
 
     private readonly record struct OrderedPassiveNodeSelection(string NodeId, int Order);

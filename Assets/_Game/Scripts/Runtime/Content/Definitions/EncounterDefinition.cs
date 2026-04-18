@@ -1,22 +1,9 @@
 using System.Collections.Generic;
+using SM.Core.Content;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
-
-public enum EncounterKindValue
-{
-    Skirmish = 0,
-    Elite = 1,
-    Boss = 2,
-}
-
-public enum ThreatTierValue
-{
-    Tier1 = 1,
-    Tier2 = 2,
-    Tier3 = 3,
-}
 
 [CreateAssetMenu(menuName = "SM/Definitions/Encounter Definition", fileName = "encounter_")]
 public sealed class EncounterDefinition : ScriptableObject

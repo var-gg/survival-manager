@@ -1,16 +1,9 @@
 using System.Collections.Generic;
+using SM.Core.Content;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
-
-public enum RarityBracketValue
-{
-    Common = 0,
-    Advanced = 1,
-    Elite = 2,
-    Boss = 3,
-}
 
 [System.Serializable]
 public sealed class LootBundleEntryDefinition

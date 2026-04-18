@@ -1,7 +1,7 @@
 {
   "name": "SM.Meta",
   "rootNamespace": "SM.Meta",
-  "references": ["SM.Core", "SM.Content", "SM.Combat"],
+  "references": ["SM.Core", "SM.Combat"],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
@@ -10,5 +10,5 @@
   "autoReferenced": true,
   "defineConstraints": [],
   "versionDefines": [],
-  "noEngineReferences": false
+  "noEngineReferences": true
 }

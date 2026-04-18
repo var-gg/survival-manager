@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SM.Content;
 using SM.Core;
 
 namespace SM.Meta;
@@ -9,7 +8,7 @@ namespace SM.Meta;
 public sealed class StoryArchiveCatalogService
 {
     public IReadOnlyList<StoryArchiveEntryRecord> BuildCatalog(
-        StoryArchiveCatalogDefinition catalog,
+        StoryArchiveCatalogSpec catalog,
         NarrativeProgressRecord progress)
     {
         if (catalog == null || catalog.Entries.Count == 0)

@@ -1,6 +1,7 @@
 using System.Linq;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Meta.Model;

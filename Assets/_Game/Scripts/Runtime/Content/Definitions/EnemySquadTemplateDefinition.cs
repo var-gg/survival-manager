@@ -1,15 +1,9 @@
 using System.Collections.Generic;
+using SM.Core.Content;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace SM.Content.Definitions;
-
-public enum EnemySquadMemberRoleValue
-{
-    Unit = 0,
-    Captain = 1,
-    Escort = 2,
-}
 
 [System.Serializable]
 public sealed class EnemySquadMemberDefinition

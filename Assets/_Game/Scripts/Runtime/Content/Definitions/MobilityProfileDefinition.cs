@@ -1,4 +1,5 @@
 using UnityEngine;
+using SM.Core.Content;
 
 namespace SM.Content.Definitions;
 

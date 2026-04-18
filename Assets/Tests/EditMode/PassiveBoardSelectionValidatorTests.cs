@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using SM.Content.Definitions;
+using SM.Combat.Model;
+using SM.Core.Contracts;
+using SM.Core.Content;
+using SM.Core.Stats;
+using SM.Meta.Model;
 using SM.Meta.Services;
-using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
@@ -12,7 +15,7 @@ public sealed class PassiveBoardSelectionValidatorTests
     [Test]
     public void Toggle_RejectsNodeFromDifferentBoard()
     {
-        var nodesById = new Dictionary<string, PassiveNodeDefinition>
+        var nodesById = new Dictionary<string, PassiveNodeTemplate>
         {
             ["node_a"] = CreateNode("node_a", "board_alpha", 0),
             ["node_b"] = CreateNode("node_b", "board_beta", 0),
@@ -28,7 +31,7 @@ public sealed class PassiveBoardSelectionValidatorTests
     [Test]
     public void Toggle_RejectsMissingPrerequisite()
     {
-        var nodesById = new Dictionary<string, PassiveNodeDefinition>
+        var nodesById = new Dictionary<string, PassiveNodeTemplate>
         {
             ["root"] = CreateNode("root", "board_alpha", 0),
             ["locked"] = CreateNode("locked", "board_alpha", 1, prerequisiteIds: new[] { "root" }),
@@ -43,8 +46,8 @@ public sealed class PassiveBoardSelectionValidatorTests
     [Test]
     public void Toggle_RejectsMutualExclusion()
     {
-        var exclusionTag = CreateTag("tag_exclusive");
-        var nodesById = new Dictionary<string, PassiveNodeDefinition>
+        var exclusionTag = "tag_exclusive";
+        var nodesById = new Dictionary<string, PassiveNodeTemplate>
         {
             ["left"] = CreateNode("left", "board_alpha", 0, mutualExclusionTags: new[] { exclusionTag }),
             ["right"] = CreateNode("right", "board_alpha", 1, mutualExclusionTags: new[] { exclusionTag }),
@@ -59,7 +62,7 @@ public sealed class PassiveBoardSelectionValidatorTests
     [Test]
     public void Toggle_RejectsSecondKeystone()
     {
-        var nodesById = new Dictionary<string, PassiveNodeDefinition>
+        var nodesById = new Dictionary<string, PassiveNodeTemplate>
         {
             ["keystone_a"] = CreateNode("keystone_a", "board_alpha", 0, nodeKind: PassiveNodeKindValue.Keystone),
             ["keystone_b"] = CreateNode("keystone_b", "board_alpha", 1, nodeKind: PassiveNodeKindValue.Keystone),
@@ -74,7 +77,7 @@ public sealed class PassiveBoardSelectionValidatorTests
     [Test]
     public void Normalize_ClampsSelectionCap_AndDropsInvalidNodes()
     {
-        var nodesById = new Dictionary<string, PassiveNodeDefinition>();
+        var nodesById = new Dictionary<string, PassiveNodeTemplate>();
         for (var i = 0; i < 7; i++)
         {
             var nodeId = $"node_{i}";
@@ -92,38 +95,23 @@ public sealed class PassiveBoardSelectionValidatorTests
         Assert.That(result.NormalizedNodeIds, Does.Not.Contain("node_5"));
     }
 
-    private static PassiveNodeDefinition CreateNode(
+    private static PassiveNodeTemplate CreateNode(
         string id,
         string boardId,
         int depth,
         PassiveNodeKindValue nodeKind = PassiveNodeKindValue.Small,
         IReadOnlyList<string>? prerequisiteIds = null,
-        IReadOnlyList<StableTagDefinition>? mutualExclusionTags = null)
+        IReadOnlyList<string>? mutualExclusionTags = null)
     {
-        var node = ScriptableObject.CreateInstance<PassiveNodeDefinition>();
-        node.Id = id;
-        node.BoardId = boardId;
-        node.BoardDepth = depth;
-        node.NodeKind = nodeKind;
-        node.NameKey = id;
-        if (prerequisiteIds != null)
-        {
-            node.PrerequisiteNodeIds = new List<string>(prerequisiteIds);
-        }
-
-        if (mutualExclusionTags != null)
-        {
-            node.MutualExclusionTags = new List<StableTagDefinition>(mutualExclusionTags);
-        }
-
-        return node;
-    }
-
-    private static StableTagDefinition CreateTag(string id)
-    {
-        var tag = ScriptableObject.CreateInstance<StableTagDefinition>();
-        tag.Id = id;
-        tag.NameKey = id;
-        return tag;
+        return new PassiveNodeTemplate(
+            id,
+            new CombatModifierPackage(id, ModifierSource.Other, System.Array.Empty<StatModifier>()),
+            System.Array.Empty<string>(),
+            null,
+            boardId,
+            depth,
+            nodeKind,
+            prerequisiteIds,
+            mutualExclusionTags);
     }
 }

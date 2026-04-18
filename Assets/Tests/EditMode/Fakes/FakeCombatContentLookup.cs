@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Stats;
 using SM.Meta.Model;
 using SM.Unity;
@@ -15,7 +16,7 @@ namespace SM.Tests.EditMode.Fakes;
 /// </summary>
 public sealed class FakeCombatContentLookup : ICombatContentLookup
 {
-    private readonly CombatContentSnapshot _snapshot;
+    private CombatContentSnapshot _snapshot;
     private readonly FirstPlayableSliceDefinition? _firstPlayableSlice;
     private readonly Dictionary<string, UnitArchetypeDefinition> _archetypes = new(StringComparer.Ordinal);
     private readonly Dictionary<string, ItemBaseDefinition> _items = new(StringComparer.Ordinal);
@@ -196,6 +197,11 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
                 .OrderBy(chapter => chapter.StoryOrder)
                 .ThenBy(chapter => chapter.Id, StringComparer.Ordinal));
         }
+
+        if (snapshot == null)
+        {
+            _snapshot = CreateSnapshotFromFakes(firstPlayableSlice);
+        }
     }
 
     // ── Snapshot ──
@@ -370,5 +376,53 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
             AugmentCatalog: new Dictionary<string, AugmentCatalogEntry>(),
             SynergyCatalog: new Dictionary<string, SynergyTierTemplate>()
         );
+    }
+
+    private CombatContentSnapshot CreateSnapshotFromFakes(FirstPlayableSliceDefinition? firstPlayableSlice)
+    {
+        var empty = new Dictionary<string, CombatModifierPackage>();
+        return new CombatContentSnapshot(
+            Archetypes: new Dictionary<string, CombatArchetypeTemplate>(),
+            TraitPackages: empty,
+            ItemPackages: empty,
+            AffixPackages: empty,
+            AugmentPackages: _augments.ToDictionary(
+                pair => pair.Key,
+                pair => new CombatModifierPackage(pair.Key, ModifierSource.Augment, Array.Empty<StatModifier>()),
+                StringComparer.Ordinal),
+            SkillCatalog: new Dictionary<string, BattleSkillSpec>(),
+            TeamTactics: new Dictionary<string, TeamTacticTemplate>(),
+            RoleInstructions: new Dictionary<string, RoleInstructionTemplate>(),
+            PassiveNodes: _passiveNodes.ToDictionary(
+                pair => pair.Key,
+                pair => new PassiveNodeTemplate(
+                    pair.Value.Id,
+                    new CombatModifierPackage(pair.Value.Id, ModifierSource.Other, Array.Empty<StatModifier>()),
+                    Array.Empty<string>(),
+                    null,
+                    pair.Value.BoardId,
+                    pair.Value.BoardDepth,
+                    pair.Value.NodeKind,
+                    pair.Value.PrerequisiteNodeIds,
+                    pair.Value.MutualExclusionTags
+                        .Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id))
+                        .Select(tag => tag.Id)
+                        .ToArray()),
+                StringComparer.Ordinal),
+            AugmentCatalog: _augments.ToDictionary(
+                pair => pair.Key,
+                pair => new AugmentCatalogEntry(
+                    pair.Value.Id,
+                    pair.Value.Category.ToString(),
+                    pair.Value.FamilyId,
+                    pair.Value.Tier,
+                    pair.Value.IsPermanent,
+                    pair.Value.SuppressIfPermanentEquipped,
+                    pair.Value.Tags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToArray(),
+                    pair.Value.MutualExclusionTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToArray(),
+                    new CombatModifierPackage(pair.Value.Id, ModifierSource.Augment, Array.Empty<StatModifier>())),
+                StringComparer.Ordinal),
+            SynergyCatalog: new Dictionary<string, SynergyTierTemplate>(),
+            FirstPlayableSlice: firstPlayableSlice);
     }
 }
