@@ -41,6 +41,14 @@ internal sealed class NarrativeRuntimeBootstrap
                 .ToArray());
     }
 
+    internal static NarrativeRuntimeBootstrap CreateEmpty()
+    {
+        return new NarrativeRuntimeBootstrap(
+            Array.Empty<StoryEventDefinition>(),
+            Array.Empty<DialogueSequenceDefinition>(),
+            Array.Empty<HeroLoreDefinition>());
+    }
+
     internal StoryDirectorService CreateStoryDirector(NarrativeProgressRecord? initialProgress)
     {
         var assemblyService = new DialogueAssemblyService(

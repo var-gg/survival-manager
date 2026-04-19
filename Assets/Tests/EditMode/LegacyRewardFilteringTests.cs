@@ -44,7 +44,7 @@ public sealed class LegacyRewardFilteringTests
 
     private static GameSessionState CreateSession()
     {
-        var session = new GameSessionState(new FakeCombatContentLookup());
+        var session = GameSessionTestFactory.Create();
         session.BindProfile(new SaveProfile
         {
             Heroes = new List<HeroInstanceRecord>

@@ -231,7 +231,7 @@ public sealed class TownBuildHotPathTests
 
     private static GameSessionState CreateBoundSession(ICombatContentLookup? lookup = null)
     {
-        var session = new GameSessionState(lookup ?? SharedLookup);
+        var session = GameSessionTestFactory.Create(lookup ?? SharedLookup);
         // Pre-populate heroes to skip SeedDemoProfile() which requires real content data.
         var profile = new SaveProfile
         {

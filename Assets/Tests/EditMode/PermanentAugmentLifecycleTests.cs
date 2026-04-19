@@ -84,7 +84,7 @@ public sealed class PermanentAugmentLifecycleTests
             EquippedAugmentIds = new List<string> { "perm-slot-2", "perm_aug_001", "perm_aug_002" }
         });
 
-        var session = new GameSessionState(SharedLookup);
+        var session = GameSessionTestFactory.Create(SharedLookup);
         session.BindProfile(profile);
         session.SetCurrentScene(SceneNames.Town);
 
@@ -97,7 +97,7 @@ public sealed class PermanentAugmentLifecycleTests
 
     private static GameSessionState CreateBoundSession()
     {
-        var session = new GameSessionState(SharedLookup);
+        var session = GameSessionTestFactory.Create(SharedLookup);
         session.BindProfile(CreateProfile());
         session.SetCurrentScene(SceneNames.Town);
         return session;

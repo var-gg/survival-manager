@@ -52,7 +52,7 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
         try
         {
             var localization = go.AddComponent<GameLocalizationController>();
-            var session = new GameSessionState(new FakeCombatContentLookup());
+            var session = GameSessionTestFactory.Create();
             var presenter = new BattleScreenPresenter(localization, session, BattlePresentationOptions.CreateDefault());
 
             var state = presenter.BuildLoadingState();
@@ -99,7 +99,7 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
         try
         {
             var localization = go.AddComponent<GameLocalizationController>();
-            var session = new GameSessionState(new FakeCombatContentLookup());
+            var session = GameSessionTestFactory.Create();
             session.SetCurrentScene(SceneNames.Battle);
             var presenter = new BattleScreenPresenter(localization, session, BattlePresentationOptions.CreateDefault());
 
@@ -155,7 +155,7 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
         try
         {
             var localization = go.AddComponent<GameLocalizationController>();
-            var session = new GameSessionState(new FakeCombatContentLookup());
+            var session = GameSessionTestFactory.Create();
             var presenter = new BattleScreenPresenter(localization, session, BattlePresentationOptions.CreateDefault());
 
             var finishedState = presenter.BuildState(

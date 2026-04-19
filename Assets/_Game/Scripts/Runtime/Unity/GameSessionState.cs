@@ -114,9 +114,14 @@ public sealed partial class GameSessionState
     public NarrativeProgressRecord NarrativeProgress => StoryDirector.Progress;
 
     public GameSessionState(ICombatContentLookup combatContentLookup)
+        : this(combatContentLookup, NarrativeRuntimeBootstrap.LoadFromResources())
     {
-        _combatContentLookup = combatContentLookup;
-        _narrativeRuntimeBootstrap = NarrativeRuntimeBootstrap.LoadFromResources();
+    }
+
+    internal GameSessionState(ICombatContentLookup combatContentLookup, NarrativeRuntimeBootstrap narrativeRuntimeBootstrap)
+    {
+        _combatContentLookup = combatContentLookup ?? throw new ArgumentNullException(nameof(combatContentLookup));
+        _narrativeRuntimeBootstrap = narrativeRuntimeBootstrap ?? throw new ArgumentNullException(nameof(narrativeRuntimeBootstrap));
         _profileSync = new SessionProfileSync(this);
         _deploymentFlow = new SessionDeploymentFlow(this);
         _recruitmentFlow = new SessionRecruitmentFlow(this);

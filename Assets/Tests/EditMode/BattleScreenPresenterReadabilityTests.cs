@@ -19,7 +19,7 @@ public sealed class BattleScreenPresenterReadabilityTests
         try
         {
             var localization = go.AddComponent<GameLocalizationController>();
-            var presenter = new BattleScreenPresenter(localization, new GameSessionState(new FakeCombatContentLookup()), BattlePresentationOptions.CreateDefault());
+            var presenter = new BattleScreenPresenter(localization, GameSessionTestFactory.Create(), BattlePresentationOptions.CreateDefault());
             var step = new BattleSimulationStep(
                 42,
                 4.2f,

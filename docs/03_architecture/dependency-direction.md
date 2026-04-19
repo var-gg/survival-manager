@@ -90,7 +90,8 @@
 - 문서에서는 `SM.Tests`를 테스트 어셈블리 그룹의 약칭으로 쓴다.
 - 실제 asmdef는 `SM.Tests.EditMode`, `SM.Tests.EditMode.Integration`, `SM.Tests.PlayMode`다.
 - EditMode와 EditMode.Integration은 editor bootstrap과 validator 확인을 위해 `SM.Editor` 참조를 허용한다.
-- EditMode.Integration은 asset pipeline이나 editor validation을 더 강하게 요구하는 BatchOnly 성격의 테스트를 둔다.
+- 현재 BatchOnly 테스트 일부는 `SM.Tests.EditMode` 루트에 category 기반으로 남아 있다.
+- EditMode.Integration은 asset pipeline이나 editor validation을 더 강하게 요구하는 BatchOnly 성격의 테스트를 점진 이동할 reserved lane이다.
 - PlayMode는 런타임 시나리오 검증용이므로 `SM.Editor` 참조를 기본 금지한다.
 - 테스트 편의를 위해 만든 helper는 production asmdef로 올리지 않는다.
 

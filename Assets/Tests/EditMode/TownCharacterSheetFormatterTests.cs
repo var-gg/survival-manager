@@ -90,7 +90,7 @@ public sealed class TownCharacterSheetFormatterTests
 
     private static GameSessionState CreateSession(ICombatContentLookup lookup)
     {
-        var session = new GameSessionState(lookup);
+        var session = GameSessionTestFactory.Create(lookup);
         session.BindProfile(new SaveProfile
         {
             ActiveBlueprintId = "blueprint.main",

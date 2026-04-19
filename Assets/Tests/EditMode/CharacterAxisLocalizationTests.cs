@@ -205,7 +205,7 @@ public sealed class CharacterAxisLocalizationTests
             characters: new Dictionary<string, CharacterDefinition> { ["warden"] = character },
             roleInstructions: new Dictionary<string, RoleInstructionDefinition> { ["anchor"] = role });
 
-        var session = new GameSessionState(lookup);
+        var session = GameSessionTestFactory.Create(lookup);
         session.BindProfile(new SaveProfile
         {
             Heroes = new List<HeroInstanceRecord>

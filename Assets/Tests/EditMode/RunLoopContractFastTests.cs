@@ -183,7 +183,7 @@ public sealed class RunLoopContractFastTests
                 && entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
             Assert.That(rewardChoiceLedgerCount, Is.EqualTo(1));
 
-            var reloaded = new GameSessionState(fixtures.Lookup);
+            var reloaded = GameSessionTestFactory.Create(fixtures.Lookup);
             reloaded.BindProfile(CloneProfile(session.Profile));
             reloaded.SetCurrentScene(SceneNames.Town);
 
@@ -202,7 +202,7 @@ public sealed class RunLoopContractFastTests
 
     private static GameSessionState CreateBoundSession(ICombatContentLookup lookup)
     {
-        var session = new GameSessionState(lookup);
+        var session = GameSessionTestFactory.Create(lookup);
         session.BindProfile(new SaveProfile
         {
             Heroes = new List<HeroInstanceRecord>

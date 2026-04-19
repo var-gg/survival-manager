@@ -98,7 +98,7 @@ public sealed class PermanentAugmentProgressionTests
             ["perm_hunt"] = CreateAugment("perm_hunt", true, "hunt_line"),
         };
         var lookup = new FakeCombatContentLookup(firstPlayableSlice: firstPlayableSlice, augments: augments);
-        var session = new GameSessionState(lookup);
+        var session = GameSessionTestFactory.Create(lookup);
         session.BindProfile(new SaveProfile
         {
             Heroes = new List<HeroInstanceRecord>

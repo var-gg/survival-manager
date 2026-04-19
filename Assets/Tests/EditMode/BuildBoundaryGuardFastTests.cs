@@ -65,6 +65,42 @@ public sealed class BuildBoundaryGuardFastTests
         Assert.That(File.ReadLines(path).Count(), Is.LessThanOrEqualTo(2500));
     }
 
+    [Test]
+    public void FastUnitTests_UseGameSessionFactoryInsteadOfPublicSessionConstructor()
+    {
+        var allowedFactoryPath = Path.Combine("Assets", "Tests", "EditMode", "Fakes", "GameSessionTestFactory.cs")
+            .Replace('\\', '/');
+        var testRoot = Path.Combine("Assets", "Tests", "EditMode");
+        foreach (var path in Directory.EnumerateFiles(testRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            var normalizedPath = path.Replace('\\', '/');
+            if (string.Equals(normalizedPath, allowedFactoryPath, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var text = File.ReadAllText(path);
+            if (text.Contains("[Category(\"BatchOnly\")]", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var codeText = string.Join(
+                Environment.NewLine,
+                File.ReadAllLines(path)
+                    .Select(line => line.TrimStart())
+                    .Where(line => !line.StartsWith("//", StringComparison.Ordinal)
+                                   && !line.StartsWith("*", StringComparison.Ordinal)
+                                   && !line.StartsWith("///", StringComparison.Ordinal)
+                                   && !line.StartsWith("/*", StringComparison.Ordinal)));
+
+            Assert.That(
+                Regex.IsMatch(codeText, @"new\s+GameSessionState\s*\("),
+                Is.False,
+                $"{path} must use GameSessionTestFactory.Create(...) unless it is BatchOnly.");
+        }
+    }
+
     private static void AssertNoEngineReference(IReadOnlyDictionary<string, AssemblyDefinitionInfo> assemblies, string assemblyName)
     {
         Assert.That(assemblies.ContainsKey(assemblyName), Is.True, $"{assemblyName} asmdef must exist.");

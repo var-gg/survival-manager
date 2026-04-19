@@ -101,7 +101,7 @@ public sealed class SessionRealmCoordinatorTests
     [Test]
     public void SessionRealmCoordinator_StartRealm_FailsOnCorruptSaveResult()
     {
-        var sessionState = new GameSessionState(new FakeCombatContentLookup());
+        var sessionState = GameSessionTestFactory.Create();
         var repo = new TrackingSaveRepository
         {
             LoadResult = new SaveRepositoryLoadResult
@@ -131,13 +131,13 @@ public sealed class SessionRealmCoordinatorTests
 
     private static SessionRealmCoordinator CreateCoordinator()
     {
-        var sessionState = new GameSessionState(new FakeCombatContentLookup());
+        var sessionState = GameSessionTestFactory.Create();
         return new SessionRealmCoordinator(sessionState, CreatePersistenceEntryPoint());
     }
 
     private static OfflineLocalSessionAdapter CreateOfflineLocalAdapter(ISaveRepository? repository = null)
     {
-        var sessionState = new GameSessionState(new FakeCombatContentLookup());
+        var sessionState = GameSessionTestFactory.Create();
         return new OfflineLocalSessionAdapter(sessionState, CreatePersistenceEntryPoint(repository));
     }
 

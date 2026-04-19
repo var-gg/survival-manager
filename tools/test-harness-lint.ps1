@@ -9,12 +9,13 @@ param(
 .DESCRIPTION
     아래 세 가지를 검사한다:
     1. Runtime asmdef가 UnityEditor / AssetDatabase를 #if 가드 없이 참조하면 실패
-    2. [Category("BatchOnly")]가 아닌 테스트 코드에서 직접 resource/content lookup을 호출하면 실패
+    2. [Category("BatchOnly")]가 아닌 테스트 코드에서 직접 resource/content/session production bootstrap을 호출하면 실패
     3. 스크립트/문서에서 -quit를 -runTests와 같이 사용하면 실패
 #>
 
 $ErrorActionPreference = 'Continue'
 $exitCode = 0
+$RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).ProviderPath
 
 function Write-LintError {
     param([string]$Check, [string]$File, [string]$Detail)
@@ -80,11 +81,14 @@ if (-not $check1Fail) {
 }
 
 # ────────────────────────────────────────────────
-# Check 2: direct resource/content lookup outside BatchOnly tests
+# Check 2: direct resource/content/session production bootstrap outside BatchOnly tests
 # ────────────────────────────────────────────────
 
-Write-Host "`n== Check 2: direct resource/content lookup outside BatchOnly ==" -ForegroundColor Cyan
+Write-Host "`n== Check 2: direct resource/content/session production bootstrap outside BatchOnly ==" -ForegroundColor Cyan
 $check2Fail = $false
+$gameSessionFactoryAllowlist = @(
+    'Assets/Tests/EditMode/Fakes/GameSessionTestFactory.cs'
+)
 
 $testDir = Join-Path $RepoRoot 'Assets/Tests/EditMode'
 if (Test-Path $testDir) {
@@ -100,11 +104,13 @@ if (Test-Path $testDir) {
         }) -join [Environment]::NewLine
 
         $fullContent = Get-Content $file.FullName -Raw
+        $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/').Replace('\', '/')
+        $isBatchOnly = $fullContent -match '\[Category\(\s*"BatchOnly"\s*\)\]'
+        $isGameSessionFactoryAllowlisted = $gameSessionFactoryAllowlist -contains $relPath
 
         # Resources.Load / Resources.LoadAll을 코드에서 직접 사용하는 경우
         if ($codeContent -match 'Resources\.Load(All)?\s*\(') {
-            if ($fullContent -notmatch '\[Category\(\s*"BatchOnly"\s*\)\]') {
-                $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/')
+            if (-not $isBatchOnly) {
                 Write-LintError -Check 'ResourcesLoad-outside-BatchOnly' -File $relPath -Detail "Resources.Load/LoadAll found but [Category(`"BatchOnly`")] missing on class"
                 $check2Fail = $true
             }
@@ -112,8 +118,7 @@ if (Test-Path $testDir) {
 
         # new RuntimeCombatContentLookup()를 코드에서 직접 생성하는 경우
         if ($codeContent -match 'new\s+RuntimeCombatContentLookup\s*\(') {
-            if ($fullContent -notmatch '\[Category\(\s*"BatchOnly"\s*\)\]') {
-                $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/')
+            if (-not $isBatchOnly) {
                 Write-LintError -Check 'RuntimeLookup-outside-BatchOnly' -File $relPath -Detail "new RuntimeCombatContentLookup() found but [Category(`"BatchOnly`")] missing — use FakeCombatContentLookup or add [Category(`"BatchOnly`")]"
                 $check2Fail = $true
             }
@@ -121,9 +126,16 @@ if (Test-Path $testDir) {
 
         # NarrativeRuntimeBootstrap.LoadFromResources는 Resources-backed narrative catalog를 로드한다.
         if ($codeContent -match 'NarrativeRuntimeBootstrap\.LoadFromResources\s*\(') {
-            if ($fullContent -notmatch '\[Category\(\s*"BatchOnly"\s*\)\]') {
-                $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/')
+            if (-not $isBatchOnly) {
                 Write-LintError -Check 'NarrativeResources-outside-BatchOnly' -File $relPath -Detail "NarrativeRuntimeBootstrap.LoadFromResources() found but [Category(`"BatchOnly`")] missing"
+                $check2Fail = $true
+            }
+        }
+
+        # GameSessionState public constructor는 production narrative Resources bootstrap을 수행한다.
+        if ($codeContent -match 'new\s+GameSessionState\s*\(') {
+            if (-not $isBatchOnly -and -not $isGameSessionFactoryAllowlisted) {
+                Write-LintError -Check 'GameSessionState-outside-BatchOnly' -File $relPath -Detail "new GameSessionState() found outside BatchOnly — use GameSessionTestFactory.Create(...) for fast tests"
                 $check2Fail = $true
             }
         }
@@ -131,7 +143,7 @@ if (Test-Path $testDir) {
 }
 
 if (-not $check2Fail -and $exitCode -eq 0) {
-    Write-Host "  PASS: No direct resource/content lookup outside BatchOnly tests." -ForegroundColor Green
+    Write-Host "  PASS: No direct resource/content/session production bootstrap outside BatchOnly tests." -ForegroundColor Green
 }
 
 # ────────────────────────────────────────────────
