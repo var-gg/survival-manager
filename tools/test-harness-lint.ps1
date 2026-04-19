@@ -89,7 +89,7 @@ if (-not $check1Fail) {
 Write-Host "`n== Check 2: direct resource/content/session bootstrap and FastUnit authored object tokens ==" -ForegroundColor Cyan
 $check2Fail = $false
 $gameSessionFactoryAllowlist = @(
-    'Assets/Tests/EditMode/Fakes/GameSessionTestFactory.cs'
+    'Assets/Tests/EditMode/FastUnit/Fakes/GameSessionTestFactory.cs'
 )
 
 $testDir = Join-Path $RepoRoot 'Assets/Tests/EditMode'

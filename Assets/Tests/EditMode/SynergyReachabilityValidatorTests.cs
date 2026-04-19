@@ -9,7 +9,7 @@ using SM.Meta.Model;
 
 namespace SM.Tests.EditMode;
 
-[Category("FastUnit")]
+[Category("BatchOnly")]
 public sealed class SynergyReachabilityValidatorTests
 {
     [Test]

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-19
+- 최종수정일: 2026-04-20
 - 소스오브트루스: `docs/03_architecture/assembly-boundaries-and-persistence-ownership.md`
 - 관련문서:
   - `docs/03_architecture/dependency-direction.md`
@@ -52,9 +52,9 @@
 
 ## current closure scope
 
-- `SM.Meta`와 `FastUnit`은 authored content/resource/session production bootstrap을 직접 밟지 않는 쪽으로 닫는다.
+- `SM.Meta`와 `SM.Tests.FastUnit`은 authored content/resource/session production bootstrap을 직접 밟지 않는 쪽으로 닫는다.
 - `SM.Unity`는 session facade, runtime composition, content conversion, production lookup을 품는 boundary adapter다. 이 레이어를 pure/editor-free closure 내부로 설명하지 않는다.
-- `GameSessionState` public facade와 production constructor는 유지된다. FastUnit에서는 `GameSessionTestFactory`와 fake lookup을 사용하고, production bootstrap coverage는 BatchOnly 또는 runtime integration lane에서 다룬다.
+- `GameSessionState` public facade와 production constructor는 유지된다. FastUnit에서는 `SM.Tests.FastUnit`의 `GameSessionTestFactory`와 fake lookup을 사용하고, production bootstrap coverage는 BatchOnly 또는 runtime integration lane에서 다룬다.
 - persistence ownership closure는 `SM.Meta`가 persistence record/repository concrete를 알지 않는다는 뜻이지, `SM.Unity` runtime adapter가 사라졌다는 뜻이 아니다.
 
 ## asmdef cycle 사전 점검 규칙

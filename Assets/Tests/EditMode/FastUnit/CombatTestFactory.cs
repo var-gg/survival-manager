@@ -6,7 +6,7 @@ using SM.Core.Stats;
 
 namespace SM.Tests.EditMode;
 
-internal static class CombatTestFactory
+public static class CombatTestFactory
 {
     public static BattleUnitLoadout CreateUnit(
         string id,

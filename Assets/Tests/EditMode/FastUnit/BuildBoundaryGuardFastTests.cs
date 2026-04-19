@@ -26,6 +26,10 @@ public sealed class BuildBoundaryGuardFastTests
         Assert.That(assemblies["SM.Meta.Serialization"].References, Does.Not.Contain("SM.Content"));
         Assert.That(assemblies["SM.Persistence.Abstractions"].References, Does.Not.Contain("SM.Content"));
         Assert.That(assemblies["SM.Persistence.Json"].References, Does.Not.Contain("SM.Content"));
+        Assert.That(assemblies["SM.Tests.FastUnit"].References, Does.Not.Contain("SM.Editor"));
+        Assert.That(assemblies["SM.Tests.FastUnit"].References, Does.Not.Contain("Unity.Localization.Editor"));
+        Assert.That(assemblies["SM.Tests.FastUnit"].References, Does.Not.Contain("SM.Tests.EditMode"));
+        Assert.That(assemblies["SM.Tests.EditMode"].References, Does.Contain("SM.Tests.FastUnit"));
         Assert.That(assemblies["SM.Tests.PlayMode"].References, Does.Not.Contain("SM.Editor"));
 
         foreach (var productionAssembly in assemblies.Values.Where(assembly => !assembly.Name.StartsWith("SM.Tests.", StringComparison.Ordinal)))
@@ -135,9 +139,32 @@ public sealed class BuildBoundaryGuardFastTests
     }
 
     [Test]
+    public void FastUnitCategory_StaysInDedicatedAssemblyFolder()
+    {
+        var testRoot = Path.Combine("Assets", "Tests", "EditMode");
+        var fastUnitRoot = Path.Combine("Assets", "Tests", "EditMode", "FastUnit")
+            .Replace('\\', '/');
+
+        foreach (var path in Directory.EnumerateFiles(testRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            var text = File.ReadAllText(path);
+            if (!IsFastUnitTest(text))
+            {
+                continue;
+            }
+
+            var normalizedPath = path.Replace('\\', '/');
+            Assert.That(
+                normalizedPath.StartsWith(fastUnitRoot, StringComparison.Ordinal),
+                Is.True,
+                $"{path} is FastUnit and must live under the dedicated SM.Tests.FastUnit assembly folder.");
+        }
+    }
+
+    [Test]
     public void FastUnitTests_UseGameSessionFactoryInsteadOfPublicSessionConstructor()
     {
-        var allowedFactoryPath = Path.Combine("Assets", "Tests", "EditMode", "Fakes", "GameSessionTestFactory.cs")
+        var allowedFactoryPath = Path.Combine("Assets", "Tests", "EditMode", "FastUnit", "Fakes", "GameSessionTestFactory.cs")
             .Replace('\\', '/');
         var testRoot = Path.Combine("Assets", "Tests", "EditMode");
         foreach (var path in Directory.EnumerateFiles(testRoot, "*.cs", SearchOption.AllDirectories))
@@ -166,7 +193,7 @@ public sealed class BuildBoundaryGuardFastTests
     [Test]
     public void NonBatchOnlyEditModeTests_DoNotCallProductionContentBootstrap()
     {
-        var allowedFactoryPath = Path.Combine("Assets", "Tests", "EditMode", "Fakes", "GameSessionTestFactory.cs")
+        var allowedFactoryPath = Path.Combine("Assets", "Tests", "EditMode", "FastUnit", "Fakes", "GameSessionTestFactory.cs")
             .Replace('\\', '/');
         var forbiddenPatterns = new[]
         {

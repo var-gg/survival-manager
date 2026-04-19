@@ -21,6 +21,7 @@ $requiredPaths = @(
     'docs/00_governance/task-execution-pattern.md',
     'Assets/_Game',
     'Assets/Tests/EditMode',
+    'Assets/Tests/EditMode/FastUnit',
     'Assets/ThirdParty',
     'Packages/manifest.json',
     'tools/docs-policy-check.ps1'

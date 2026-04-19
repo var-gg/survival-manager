@@ -1,5 +1,5 @@
 {
-  "name": "SM.Tests.EditMode",
+  "name": "SM.Tests.FastUnit",
   "rootNamespace": "SM.Tests.EditMode",
   "references": [
     "SM.Core",
@@ -9,11 +9,8 @@
     "SM.Persistence.Abstractions",
     "SM.Persistence.Json",
     "SM.Unity",
-    "SM.Editor",
-    "SM.Tests.FastUnit",
     "SM.Meta.Serialization",
     "Unity.Localization",
-    "Unity.Localization.Editor",
     "Unity.ResourceManager"
   ],
   "includePlatforms": [

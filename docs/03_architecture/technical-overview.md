@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-19
+- 최종수정일: 2026-04-20
 - 소스오브트루스: `docs/03_architecture/technical-overview.md`
 - 관련문서:
   - `docs/03_architecture/index.md`
@@ -46,11 +46,12 @@
 - `SM.Persistence.Json`
 - `SM.Unity`
 - `SM.Editor`
+- `SM.Tests.FastUnit`
 - `SM.Tests.EditMode`
 - `SM.Tests.EditMode.Integration`
 - `SM.Tests.PlayMode`
 
-문서에서는 세 테스트 asmdef를 묶어 `SM.Tests` 테스트 어셈블리 그룹이라고 부른다.
+문서에서는 네 테스트 asmdef를 묶어 `SM.Tests` 테스트 어셈블리 그룹이라고 부른다.
 
 ## 기본 구조 원칙
 

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-19
+- 최종수정일: 2026-04-20
 - 소스오브트루스: `docs/03_architecture/unity-project-layout.md`
 - 관련문서:
   - `docs/03_architecture/technical-overview.md`
@@ -73,6 +73,7 @@ Assets/_Game/
 ```text
 Assets/Tests/
   EditMode/
+    FastUnit/
   PlayMode/
 ```
 
@@ -91,6 +92,7 @@ Assets/Tests/
 - `Assets/_Game/Scripts/Runtime/Unity/Session` -> `SM.Unity` 내부 `GameSessionState` facade 흐름 분리 경계
 - `Assets/_Game/Scripts/Runtime/Unity/UI` -> `SM.Unity` 내부 UI runtime 하위 경계
 - `Assets/_Game/Scripts/Editor` -> `SM.Editor`
+- `Assets/Tests/EditMode/FastUnit` -> `SM.Tests.FastUnit`
 - `Assets/Tests/EditMode` -> `SM.Tests.EditMode`
 - `Assets/Tests/EditMode/Integration` -> `SM.Tests.EditMode.Integration`
 - `Assets/Tests/PlayMode` -> `SM.Tests.PlayMode`

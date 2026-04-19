@@ -1,7 +1,8 @@
 # EditMode Tests
 
 - Status: draft
-- Last Updated: 2026-03-29
+- Last Updated: 2026-04-20
 - Phase: prototype
 
-EditMode tests should cover pure logic and data validation first.
+`FastUnit` tests live under `FastUnit/` in the dedicated `SM.Tests.FastUnit` asmdef.
+The EditMode root remains for `BatchOnly` and editor-facing validation tests.

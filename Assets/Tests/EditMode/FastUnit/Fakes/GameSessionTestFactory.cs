@@ -2,9 +2,9 @@ using SM.Unity;
 
 namespace SM.Tests.EditMode.Fakes;
 
-internal static class GameSessionTestFactory
+public static class GameSessionTestFactory
 {
-    internal static GameSessionState Create(ICombatContentLookup? lookup = null)
+    public static GameSessionState Create(ICombatContentLookup? lookup = null)
     {
         return new GameSessionState(
             lookup ?? new FakeCombatContentLookup(),

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-19
+- 최종수정일: 2026-04-20
 - 소스오브트루스: `docs/03_architecture/dependency-direction.md`
 - 관련문서:
   - `docs/03_architecture/coding-principles.md`
@@ -28,7 +28,7 @@
 | `SM.Persistence.Json` | JSON serializer/repository adapter | `SM.Persistence.Abstractions`, `SM.Core`, `SM.Meta` |
 | `SM.Unity` | Boot, scene/input/view orchestration | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Persistence.Abstractions`, `SM.Persistence.Json` |
 | `SM.Editor` | bootstrap, validation, editor utility | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions`, `SM.Unity` |
-| `SM.Tests` | 테스트 전용 조합 레이어 | 대상 시나리오에 필요한 runtime asmdef, EditMode/EditMode.Integration은 `SM.Editor` 추가 허용 |
+| `SM.Tests` | 테스트 전용 조합 레이어 | 대상 시나리오에 필요한 runtime asmdef, FastUnit은 `SM.Editor` 금지, EditMode/EditMode.Integration은 `SM.Editor` 추가 허용 |
 
 ## 금지 의존 관계
 
@@ -95,13 +95,14 @@
 ## 테스트 어셈블리 예외 규칙
 
 - 문서에서는 `SM.Tests`를 테스트 어셈블리 그룹의 약칭으로 쓴다.
-- 실제 asmdef는 `SM.Tests.EditMode`, `SM.Tests.EditMode.Integration`, `SM.Tests.PlayMode`다.
+- 실제 asmdef는 `SM.Tests.FastUnit`, `SM.Tests.EditMode`, `SM.Tests.EditMode.Integration`, `SM.Tests.PlayMode`다.
+- `SM.Tests.FastUnit`은 EditMode 실행을 위해 `Editor` platform target을 쓰지만 `SM.Editor`와 editor-only package 참조를 금지한다.
 - EditMode와 EditMode.Integration은 editor bootstrap과 validator 확인을 위해 `SM.Editor` 참조를 허용한다.
 - 현재 BatchOnly 테스트 일부는 `SM.Tests.EditMode` 루트에 category 기반으로 남아 있다.
 - EditMode.Integration은 asset pipeline이나 editor validation을 더 강하게 요구하는 BatchOnly 성격의 테스트를 점진 이동할 reserved lane이다.
 - PlayMode는 런타임 시나리오 검증용이므로 `SM.Editor` 참조를 기본 금지한다.
 - 테스트 편의를 위해 만든 helper는 production asmdef로 올리지 않는다.
-- `FastUnit`은 editor-free/resource-free/authored-object-free lane으로 유지한다. authored `ScriptableObject` fixture, `SM.Content.Definitions`, production content lookup, public session constructor coverage는 `BatchOnly`로 격리한다.
+- `FastUnit`은 `Assets/Tests/EditMode/FastUnit/**` 전용 asmdef의 editor-free/resource-free/authored-object-free lane으로 유지한다. authored `ScriptableObject` fixture, `SM.Content.Definitions`, production content lookup, public session constructor coverage, `SM.Editor.Validation` 직접 검증은 `BatchOnly`로 격리한다.
 
 ## AI가 흔히 만드는 잘못된 예와 바른 대안
 
