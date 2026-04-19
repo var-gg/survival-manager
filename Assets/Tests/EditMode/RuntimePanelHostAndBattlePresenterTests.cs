@@ -14,7 +14,7 @@ using UnityEngine.UIElements;
 
 namespace SM.Tests.EditMode;
 
-[Category("FastUnit")]
+[Category("BatchOnly")]
 public sealed class RuntimePanelHostAndBattlePresenterTests
 {
     [Test]

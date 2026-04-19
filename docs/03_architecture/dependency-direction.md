@@ -94,6 +94,7 @@
 - EditMode.Integration은 asset pipeline이나 editor validation을 더 강하게 요구하는 BatchOnly 성격의 테스트를 점진 이동할 reserved lane이다.
 - PlayMode는 런타임 시나리오 검증용이므로 `SM.Editor` 참조를 기본 금지한다.
 - 테스트 편의를 위해 만든 helper는 production asmdef로 올리지 않는다.
+- `FastUnit`은 editor-free/resource-free/authored-object-free lane으로 유지한다. authored `ScriptableObject` fixture, `SM.Content.Definitions`, production content lookup, public session constructor coverage는 `BatchOnly`로 격리한다.
 
 ## AI가 흔히 만드는 잘못된 예와 바른 대안
 

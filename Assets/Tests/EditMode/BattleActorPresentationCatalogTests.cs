@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
-[Category("FastUnit")]
+[Category("BatchOnly")]
 public sealed class BattleActorPresentationCatalogTests
 {
     [Test]

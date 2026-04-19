@@ -43,7 +43,7 @@ public sealed class BuildBoundaryGuardFastTests
         var forbiddenTokens = new[]
         {
             "using SM.Content",
-            "using SM.Content.Definitions",
+            string.Concat("using SM.Content", ".Definitions"),
             "UnityEngine",
             "UnityEditor"
         };
@@ -80,19 +80,12 @@ public sealed class BuildBoundaryGuardFastTests
             }
 
             var text = File.ReadAllText(path);
-            if (text.Contains("[Category(\"BatchOnly\")]", StringComparison.Ordinal))
+            if (!IsFastUnitTest(text))
             {
                 continue;
             }
 
-            var codeText = string.Join(
-                Environment.NewLine,
-                File.ReadAllLines(path)
-                    .Select(line => line.TrimStart())
-                    .Where(line => !line.StartsWith("//", StringComparison.Ordinal)
-                                   && !line.StartsWith("*", StringComparison.Ordinal)
-                                   && !line.StartsWith("///", StringComparison.Ordinal)
-                                   && !line.StartsWith("/*", StringComparison.Ordinal)));
+            var codeText = ReadCodeText(path);
 
             Assert.That(
                 Regex.IsMatch(codeText, @"new\s+GameSessionState\s*\("),
@@ -101,10 +94,59 @@ public sealed class BuildBoundaryGuardFastTests
         }
     }
 
+    [Test]
+    public void FastUnitTests_DoNotUseAuthoredUnityObjectFixtures()
+    {
+        var forbiddenTokens = new[]
+        {
+            string.Concat("ScriptableObject", ".CreateInstance"),
+            string.Concat("UnityEngine", ".Object"),
+            string.Concat("Destroy", "Immediate"),
+            string.Concat("using SM.Content", ".Definitions"),
+            string.Concat("Resources", ".Load"),
+            string.Concat("RuntimeCombat", "ContentLookup"),
+        };
+        var testRoot = Path.Combine("Assets", "Tests", "EditMode");
+        foreach (var path in Directory.EnumerateFiles(testRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            var text = File.ReadAllText(path);
+            if (!IsFastUnitTest(text))
+            {
+                continue;
+            }
+
+            var codeText = ReadCodeText(path);
+            foreach (var token in forbiddenTokens)
+            {
+                Assert.That(
+                    codeText,
+                    Does.Not.Contain(token),
+                    $"{path} is FastUnit and must not use authored Unity object fixtures or production content bootstrap token '{token}'.");
+            }
+        }
+    }
+
     private static void AssertNoEngineReference(IReadOnlyDictionary<string, AssemblyDefinitionInfo> assemblies, string assemblyName)
     {
         Assert.That(assemblies.ContainsKey(assemblyName), Is.True, $"{assemblyName} asmdef must exist.");
         Assert.That(assemblies[assemblyName].NoEngineReferences, Is.True, $"{assemblyName} must set noEngineReferences=true.");
+    }
+
+    private static bool IsFastUnitTest(string text)
+    {
+        return text.Contains("[Category(\"FastUnit\")]", StringComparison.Ordinal);
+    }
+
+    private static string ReadCodeText(string path)
+    {
+        return string.Join(
+            Environment.NewLine,
+            File.ReadAllLines(path)
+                .Select(line => line.TrimStart())
+                .Where(line => !line.StartsWith("//", StringComparison.Ordinal)
+                               && !line.StartsWith("*", StringComparison.Ordinal)
+                               && !line.StartsWith("///", StringComparison.Ordinal)
+                               && !line.StartsWith("/*", StringComparison.Ordinal)));
     }
 
     private static IEnumerable<AssemblyDefinitionInfo> LoadAssemblyDefinitions(string root)

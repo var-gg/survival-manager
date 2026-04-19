@@ -1,11 +1,11 @@
 using NUnit.Framework;
-using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Meta.Model;
 using SM.Meta.Services;
 
 namespace SM.Tests.EditMode;
 
+[Category("FastUnit")]
 public class MetaRewardPickTests
 {
     [Test]

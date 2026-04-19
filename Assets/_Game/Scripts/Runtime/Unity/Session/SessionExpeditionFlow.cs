@@ -404,6 +404,18 @@ public sealed partial class GameSessionState
 
     private List<string> GetOrderedCampaignChapterIds()
     {
+        if (_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+            && snapshot.CampaignChapters is { Count: > 0 } chapters)
+        {
+            return chapters.Values
+                .Where(chapter => !string.IsNullOrWhiteSpace(chapter.Id))
+                .OrderBy(chapter => chapter.StoryOrder)
+                .ThenBy(chapter => chapter.Id, StringComparer.Ordinal)
+                .Select(chapter => chapter.Id)
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+        }
+
         return _combatContentLookup.GetOrderedCampaignChapters()
             .Where(chapter => !string.IsNullOrWhiteSpace(chapter.Id))
             .Select(chapter => chapter.Id)
@@ -413,6 +425,28 @@ public sealed partial class GameSessionState
 
     private List<string> GetOrderedSiteIdsForChapter(string chapterId)
     {
+        if (_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+            && snapshot.CampaignChapters is { Count: > 0 } chapters
+            && snapshot.ExpeditionSites is { Count: > 0 } sites
+            && chapters.TryGetValue(chapterId, out var chapterTemplate))
+        {
+            return chapterTemplate.SiteIds
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Select(id =>
+                {
+                    var hasTemplate = sites.TryGetValue(id, out var site);
+                    return new
+                    {
+                        Id = id,
+                        Order = hasTemplate ? site.SiteOrder : int.MaxValue,
+                    };
+                })
+                .OrderBy(entry => entry.Order)
+                .ThenBy(entry => entry.Id, StringComparer.Ordinal)
+                .Select(entry => entry.Id)
+                .ToList();
+        }
+
         if (!_combatContentLookup.TryGetCampaignChapterDefinition(chapterId, out var chapter))
         {
             return new List<string>();

@@ -10,7 +10,8 @@ param(
     아래 세 가지를 검사한다:
     1. Runtime asmdef가 UnityEditor / AssetDatabase를 #if 가드 없이 참조하면 실패
     2. [Category("BatchOnly")]가 아닌 테스트 코드에서 직접 resource/content/session production bootstrap을 호출하면 실패
-    3. 스크립트/문서에서 -quit를 -runTests와 같이 사용하면 실패
+    3. [Category("FastUnit")] 테스트 코드에서 authored Unity object fixture를 사용하면 실패
+    4. 스크립트/문서에서 -quit를 -runTests와 같이 사용하면 실패
 #>
 
 $ErrorActionPreference = 'Continue'
@@ -81,10 +82,10 @@ if (-not $check1Fail) {
 }
 
 # ────────────────────────────────────────────────
-# Check 2: direct resource/content/session production bootstrap outside BatchOnly tests
+# Check 2: direct resource/content/session bootstrap and FastUnit authored object tokens
 # ────────────────────────────────────────────────
 
-Write-Host "`n== Check 2: direct resource/content/session production bootstrap outside BatchOnly ==" -ForegroundColor Cyan
+Write-Host "`n== Check 2: direct resource/content/session bootstrap and FastUnit authored object tokens ==" -ForegroundColor Cyan
 $check2Fail = $false
 $gameSessionFactoryAllowlist = @(
     'Assets/Tests/EditMode/Fakes/GameSessionTestFactory.cs'
@@ -106,6 +107,7 @@ if (Test-Path $testDir) {
         $fullContent = Get-Content $file.FullName -Raw
         $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/').Replace('\', '/')
         $isBatchOnly = $fullContent -match '\[Category\(\s*"BatchOnly"\s*\)\]'
+        $isFastUnit = $fullContent -match '\[Category\(\s*"FastUnit"\s*\)\]'
         $isGameSessionFactoryAllowlisted = $gameSessionFactoryAllowlist -contains $relPath
 
         # Resources.Load / Resources.LoadAll을 코드에서 직접 사용하는 경우
@@ -139,11 +141,28 @@ if (Test-Path $testDir) {
                 $check2Fail = $true
             }
         }
+
+        if ($isFastUnit) {
+            $fastUnitForbiddenPatterns = @(
+                @{ Check = 'ScriptableObject-in-FastUnit'; Pattern = 'ScriptableObject\.CreateInstance'; Detail = 'ScriptableObject.CreateInstance found in FastUnit — move authored-object coverage to BatchOnly or use pure fixtures' },
+                @{ Check = 'UnityObject-in-FastUnit'; Pattern = 'UnityEngine\.Object'; Detail = 'UnityEngine.Object lifecycle found in FastUnit — move authored-object coverage to BatchOnly or use pure fixtures' },
+                @{ Check = 'DestroyImmediate-in-FastUnit'; Pattern = 'DestroyImmediate'; Detail = 'DestroyImmediate found in FastUnit — move Unity object lifecycle coverage to BatchOnly' },
+                @{ Check = 'ContentDefinitions-in-FastUnit'; Pattern = 'using\s+SM\.Content\.Definitions'; Detail = 'SM.Content.Definitions import found in FastUnit — use pure snapshot/spec fixtures or BatchOnly' },
+                @{ Check = 'RuntimeLookup-token-in-FastUnit'; Pattern = 'RuntimeCombatContentLookup'; Detail = 'RuntimeCombatContentLookup token found in FastUnit — production lookup coverage belongs in BatchOnly' }
+            )
+
+            foreach ($rule in $fastUnitForbiddenPatterns) {
+                if ($codeContent -match $rule.Pattern) {
+                    Write-LintError -Check $rule.Check -File $relPath -Detail $rule.Detail
+                    $check2Fail = $true
+                }
+            }
+        }
     }
 }
 
 if (-not $check2Fail -and $exitCode -eq 0) {
-    Write-Host "  PASS: No direct resource/content/session production bootstrap outside BatchOnly tests." -ForegroundColor Green
+    Write-Host "  PASS: No direct resource/content/session bootstrap or FastUnit authored object tokens outside allowed lanes." -ForegroundColor Green
 }
 
 # ────────────────────────────────────────────────

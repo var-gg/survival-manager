@@ -496,8 +496,7 @@ public sealed partial class GameSessionState
         foreach (var loadout in Profile.HeroLoadouts)
         {
             loadout.SelectedPassiveNodeIds ??= new List<string>();
-            if (string.IsNullOrWhiteSpace(loadout.PassiveBoardId)
-                || !_combatContentLookup.TryGetPassiveBoardDefinition(loadout.PassiveBoardId, out _))
+            if (!HasPassiveBoardContent(loadout.PassiveBoardId))
             {
                 loadout.PassiveBoardId = string.Empty;
                 loadout.SelectedPassiveNodeIds = new List<string>();

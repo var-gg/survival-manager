@@ -1206,8 +1206,7 @@ public sealed partial class GameSessionState
             return Result.Fail("유닛을 찾을 수 없습니다.");
         }
 
-        if (string.IsNullOrWhiteSpace(boardId)
-            || !_combatContentLookup.TryGetPassiveBoardDefinition(boardId, out _))
+        if (!HasPassiveBoardContent(boardId))
         {
             return Result.Fail("패시브 보드를 찾을 수 없습니다.");
         }
@@ -1292,6 +1291,36 @@ public sealed partial class GameSessionState
         selection.SelectedNodeIds = loadout.SelectedPassiveNodeIds.ToList();
         SyncActiveRunIfPresent();
         return Result.Success();
+    }
+
+    private bool HasPassiveBoardContent(string boardId)
+    {
+        if (string.IsNullOrWhiteSpace(boardId))
+        {
+            return false;
+        }
+
+        if (_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+        {
+            if (snapshot.FirstPlayableSlice?.PassiveBoardIds.Contains(boardId, StringComparer.Ordinal) == true)
+            {
+                return true;
+            }
+
+            if (snapshot.PassiveNodes.Values.Any(node =>
+                    node != null && string.Equals(node.BoardId, boardId, StringComparison.Ordinal)))
+            {
+                return true;
+            }
+        }
+
+        var slice = _combatContentLookup.GetFirstPlayableSlice();
+        if (slice?.PassiveBoardIds.Contains(boardId, StringComparer.Ordinal) == true)
+        {
+            return true;
+        }
+
+        return _combatContentLookup.TryGetPassiveBoardDefinition(boardId, out _);
     }
 
     public bool ToggleExpeditionHero(string heroId) => _deploymentFlow.ToggleExpeditionHero(heroId);

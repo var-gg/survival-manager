@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
-[Category("FastUnit")]
+[Category("BatchOnly")]
 public sealed class PermanentAugmentLifecycleTests
 {
     private static readonly FakeCombatContentLookup SharedLookup = CreateLookup();
