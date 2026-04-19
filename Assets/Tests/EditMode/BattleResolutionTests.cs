@@ -94,8 +94,7 @@ public sealed class BattleResolutionTests
     }
 
     [Test]
-    [Ignore("Loop A balance timeout contract drift surfaced during 028 category closure; retune or split in a dedicated combat balance task.")]
-    public void LoopA_4v4_BattleEndsBeforeTimeout()
+    public void LoopA_4v4_AsymmetricBattleEndsBeforeTimeout()
     {
         var allies = new[]
         {
@@ -106,16 +105,17 @@ public sealed class BattleResolutionTests
         };
         var enemies = new[]
         {
-            CombatTestFactory.CreateLoopAUnit("enemy_guardian", classId: "vanguard", hp: 110f, physPower: 4f, armor: 4f, attackSpeed: 2f, moveSpeed: 1.65f, anchor: DeploymentAnchorId.FrontTop),
-            CombatTestFactory.CreateLoopAUnit("enemy_raider", classId: "duelist", hp: 72f, physPower: 8f, armor: 1f, attackSpeed: 5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontBottom),
-            CombatTestFactory.CreateLoopAUnit("enemy_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 3.2f, anchor: DeploymentAnchorId.BackTop),
-            CombatTestFactory.CreateLoopAUnit("enemy_hexer", classId: "mystic", hp: 65f, physPower: 4f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.BackBottom),
+            CombatTestFactory.CreateLoopAUnit("enemy_guardian", race: "undead", classId: "vanguard", hp: 44f, physPower: 3f, armor: 1f, attackSpeed: 2f, moveSpeed: 1.65f, anchor: DeploymentAnchorId.FrontTop),
+            CombatTestFactory.CreateLoopAUnit("enemy_raider", race: "undead", classId: "duelist", hp: 30f, physPower: 5f, armor: 0f, attackSpeed: 3.5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontBottom),
+            CombatTestFactory.CreateLoopAUnit("enemy_hunter", race: "undead", classId: "ranger", hp: 28f, physPower: 4f, armor: 0f, attackSpeed: 3.5f, moveSpeed: 1.85f, attackRange: 3.2f, anchor: DeploymentAnchorId.BackTop),
+            CombatTestFactory.CreateLoopAUnit("enemy_hexer", race: "undead", classId: "mystic", hp: 24f, physPower: 2.8f, armor: 0f, attackSpeed: 3f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.BackBottom),
         };
 
         var result = BattleResolver.Run(CombatTestFactory.CreateBattleState(allies, enemies, seed: 42), BattleSimulator.DefaultMaxSteps);
         var aliveAllies = result.FinalUnits.Count(u => u.Side == TeamSide.Ally && u.IsAlive);
         var aliveEnemies = result.FinalUnits.Count(u => u.Side == TeamSide.Enemy && u.IsAlive);
 
+        Assert.That(result.Winner, Is.EqualTo(TeamSide.Ally));
         Assert.That(aliveAllies == 0 || aliveEnemies == 0, Is.True,
             $"300 step 내에 전투 미종료. 남은 아군: {aliveAllies}, 적군: {aliveEnemies}");
         Assert.That(result.StepCount, Is.LessThan(BattleSimulator.DefaultMaxSteps),

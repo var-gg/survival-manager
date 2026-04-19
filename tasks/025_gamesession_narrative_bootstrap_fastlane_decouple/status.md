@@ -7,6 +7,12 @@
 - 상태: completed
 - 최종수정일: 2026-04-19
 
+## Historical snapshot / current-state implications
+
+- 이 문서는 025 완료 시점의 historical snapshot이다.
+- 현재 source-of-truth는 `AGENTS.md`, `docs/TESTING.md`, `docs/03_architecture/index.md`의 closure scope를 우선한다.
+- 025의 closure는 FastUnit session construction에서 hidden narrative `Resources` bootstrap을 제거했다는 뜻이며, `SM.Unity` production bootstrap이나 repo 전체가 pure/editor-free로 닫혔다는 뜻이 아니다.
+
 ## Current state
 
 - `GameSessionState(ICombatContentLookup)` public constructor가 `NarrativeRuntimeBootstrap.LoadFromResources()`를 직접 호출한다.

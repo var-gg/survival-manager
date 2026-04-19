@@ -54,6 +54,12 @@
 
 ## 변경 라우팅 Quick Reference
 
+## Editor-free closure scope
+
+- 현재 닫힌 범위는 `SM.Core`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions` 같은 pure asmdef boundary와 `FastUnit` editor-free/resource-free/authored-object-free lane이다.
+- `SM.Unity`, `SM.Unity.ContentConversion`, `RuntimeCombatContentLookup`, `NarrativeRuntimeBootstrap`, `GameSessionState` production constructor, UI/controller/scene/prefab authoring은 repo-wide pure boundary 안쪽으로 들어온 것이 아니다. 이들은 boundary adapter 또는 `BatchOnly`/PlayMode/editor-required lane으로 라우팅한다.
+- 따라서 “editor-free boundary closed”라고 쓸 때는 항상 `pure asmdef + FastUnit lane` 범위로 한정한다. repo 전체, `SM.Unity`, authored content, UI loop까지 완전 분리됐다는 뜻으로 쓰지 않는다.
+
 | 변경 유형 | 첫 위치 | 기본 검증 | 승격 기준 |
 | --- | --- | --- | --- |
 | 전투 규칙/수치/판정 | `Assets/_Game/Scripts/Runtime/Combat/**` | `test-batch-fast` | authored content나 scene 확인이 필요하면 BatchOnly/content lane |

@@ -71,6 +71,13 @@
 - `SM.Meta`는 `CombatContentSnapshot`, story/dialogue spec, reward/loot/passive template 같은 pure model만 소비한다.
 - `Assets/_Game/Scripts/Runtime/Meta/**` 소스에서 `using SM.Content`, `UnityEngine`, `UnityEditor`를 사용하지 않는다.
 
+## closure scope 해석
+
+- `No Engine References`와 forbidden dependency guard로 닫는 대상은 pure asmdef와 `FastUnit` lane이다.
+- `SM.Unity`는 `SM.Content`, `SM.Meta`, persistence adapter를 조립하는 runtime boundary adapter이므로 editor-free pure lane으로 분류하지 않는다.
+- `RuntimeCombatContentLookup`, `NarrativeRuntimeBootstrap.LoadFromResources()`, content conversion, UI/controller/scene 경로는 FastUnit 밖에서 검증한다.
+- `SM.Tests.PlayMode -> SM.Editor` 금지는 필요조건일 뿐이며, PlayMode를 FastUnit/pure lane으로 승격한다는 뜻은 아니다.
+
 ## composition root 위치
 
 - 런타임 composition root는 `Assets/_Game/Scenes/Boot.unity`와 `SM.Unity.GameBootstrap`이다.

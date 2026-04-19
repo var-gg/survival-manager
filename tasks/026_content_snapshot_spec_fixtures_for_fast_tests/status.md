@@ -7,6 +7,12 @@
 - 상태: completed
 - 최종수정일: 2026-04-19
 
+## Historical snapshot / current-state implications
+
+- 이 문서는 026 완료 시점의 historical snapshot이다.
+- 현재 source-of-truth는 `AGENTS.md`, `docs/TESTING.md`, `docs/03_architecture/index.md`의 closure scope를 우선한다.
+- 026의 closure는 `FastUnit`을 editor-free/resource-free/authored-object-free lane으로 닫았다는 뜻이다. authored content, `SM.Unity`, `BatchOnly`, UI/scene loop까지 repo-wide pure closure로 닫혔다는 뜻은 아니다.
+
 ## Current state
 
 - 025 이후 session FastUnit은 public `GameSessionState` constructor를 피하지만, 여러 FastUnit class가 authored `ScriptableObject` fixture와 `SM.Content.Definitions`를 사용했다.

@@ -29,6 +29,19 @@
 - `MonoBehaviour`, `ScriptableObject`, scene 책임이 걸리면 `unity-boundaries.md`를 추가로 연다.
 - asmdef/persistence ownership까지 걸리면 `assembly-boundaries-and-persistence-ownership.md`를 추가로 연다.
 
+## Editor-free closure scope
+
+| 범위 | 현재 판정 | 라우팅 |
+| --- | --- | --- |
+| `SM.Core`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions` | pure boundary로 닫힘 | `test-batch-fast`, boundary guard |
+| `FastUnit` test lane | editor-free/resource-free/authored-object-free로 닫힘 | fake lookup, pure fixture, class-level category |
+| `SM.Unity`, `GameSessionState`, runtime bootstrap/content lookup | boundary adapter로 유지 | FastUnit 밖, 필요 시 focused session 또는 BatchOnly |
+| authored content, `ScriptableObject`, `Resources.Load*`, content conversion | pure closure 밖 | content validation 또는 BatchOnly |
+| UI/controller/scene/prefab, PlayMode | runtime/editor integration lane | focused EditMode, PlayMode smoke, manual/editor-required |
+| `ManualLoopD` | 장시간 balance/telemetry lane | default fast closure 증거로 쓰지 않음 |
+
+아키텍처 문서에서 “editor-free closure”라고 쓸 때는 첫 두 행의 범위를 뜻한다. `SM.Unity`와 authored content/UI loop가 repo-wide pure boundary 안으로 들어왔다는 뜻으로 쓰지 않는다.
+
 ## 변경 라우팅 Quick Reference
 
 | 변경 유형 | 소유 경계 | 첫 테스트/검증 | 에디터 의존 경계 |

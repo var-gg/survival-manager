@@ -7,6 +7,12 @@
 - 상태: completed
 - 최종수정일: 2026-04-19
 
+## Historical snapshot / current-state implications
+
+- 이 문서는 029 완료 시점의 historical snapshot이다.
+- 현재 source-of-truth는 `AGENTS.md`, `docs/TESTING.md`, `docs/03_architecture/index.md`의 closure scope를 우선한다.
+- routing table의 목적은 첫 파일/첫 검증을 고르는 것이다. pure/FastUnit lane과 `SM.Unity`/content/UI adapter lane을 같은 closure 범위로 합치지 않는다.
+
 ## Current state
 
 - 시작 기준 `main`은 commit `0dacffb` 이후 028이 push된 상태다.

@@ -12,6 +12,14 @@
 
 현재 `BatchOnly` 테스트 일부는 `SM.Tests.EditMode` 루트에 category 기반으로 남아 있다. `SM.Tests.EditMode.Integration`은 장기 이동 대상이지, 현재 모든 BatchOnly 테스트의 유일한 위치는 아니다.
 
+## Editor-free closure scope
+
+현재 테스트 하네스에서 강하게 닫힌 범위는 `FastUnit` lane이다. `FastUnit`은 editor-free/resource-free/authored-object-free이고, pure fixture와 fake lookup만 사용한다.
+
+`SM.Unity`, content conversion/bootstrap, `RuntimeCombatContentLookup`, `NarrativeRuntimeBootstrap.LoadFromResources()`, public `GameSessionState` constructor, authored `ScriptableObject`, UI/controller/scene/prefab 검증은 FastUnit closure 내부가 아니다. 이들은 `BatchOnly`, PlayMode, editor-required 검증으로 라우팅한다.
+
+따라서 `test-batch-fast` green은 pure/FastUnit boundary의 강한 신호이지만, repo-wide full editor-free separation 증거로 해석하지 않는다.
+
 ## 테스트 카테고리
 
 NUnit `[Category]` 어트리뷰트로 분류한다. 클래스 수준에 적용한다.

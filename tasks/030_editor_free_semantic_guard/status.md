@@ -7,6 +7,13 @@
 - 상태: completed
 - 최종수정일: 2026-04-19
 
+## Historical snapshot / current-state implications
+
+- 이 문서는 030 완료 시점의 historical snapshot이다.
+- 현재 source-of-truth는 `AGENTS.md`, `docs/TESTING.md`, `docs/03_architecture/index.md`의 closure scope를 우선한다.
+- 030의 guard closure는 FastUnit/category/harness 회귀를 막는다는 뜻이다. `SM.Unity`, authored content conversion, UI/scene/prefab loop까지 repo-wide pure/editor-free로 닫았다는 뜻이 아니다.
+- 이후 032에서 non-BatchOnly production bootstrap guard를 보강했고, 033에서 Loop A ignored timeout contract를 FastUnit replacement로 닫았다.
+
 ## Current state
 
 - 시작 기준 `main`은 commit `3e643aa` 이후 029가 push된 상태다.
@@ -40,7 +47,7 @@
 
 ## Deferred
 
-- Loop A 4v4 timeout balance contract retune.
+- Loop A 4v4 timeout balance contract retune은 033에서 FastUnit replacement contract로 닫았다.
 - full BatchOnly backlog 수리.
 
 ## Loop budget consumed

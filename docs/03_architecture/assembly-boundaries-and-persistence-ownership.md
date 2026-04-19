@@ -50,6 +50,13 @@
 - `SM.Meta`는 변환된 pure model만 받는다.
 - `SM.Core.Content`는 authored와 runtime이 공유하는 enum/schema value만 담고, Unity type이나 repository type을 담지 않는다.
 
+## current closure scope
+
+- `SM.Meta`와 `FastUnit`은 authored content/resource/session production bootstrap을 직접 밟지 않는 쪽으로 닫는다.
+- `SM.Unity`는 session facade, runtime composition, content conversion, production lookup을 품는 boundary adapter다. 이 레이어를 pure/editor-free closure 내부로 설명하지 않는다.
+- `GameSessionState` public facade와 production constructor는 유지된다. FastUnit에서는 `GameSessionTestFactory`와 fake lookup을 사용하고, production bootstrap coverage는 BatchOnly 또는 runtime integration lane에서 다룬다.
+- persistence ownership closure는 `SM.Meta`가 persistence record/repository concrete를 알지 않는다는 뜻이지, `SM.Unity` runtime adapter가 사라졌다는 뜻이 아니다.
+
 ## asmdef cycle 사전 점검 규칙
 
 preflight에서 아래를 먼저 적는다.

@@ -7,6 +7,13 @@
 - 상태: completed
 - 최종수정일: 2026-04-19
 
+## Historical snapshot / current-state implications
+
+- 이 문서는 028 완료 시점의 historical snapshot이다.
+- 현재 source-of-truth는 `AGENTS.md`, `docs/TESTING.md`, `docs/03_architecture/index.md`의 closure scope를 우선한다.
+- 028은 uncategorized EditMode test class를 `FastUnit` 또는 `BatchOnly` lane으로 라우팅한 작업이다. `BatchOnly`와 `ManualLoopD`가 남아 있으므로 repo-wide full editor-free separation 증거가 아니다.
+- `BattleResolutionTests.LoopA_4v4_BattleEndsBeforeTimeout` ignore는 033에서 FastUnit replacement contract로 닫았다.
+
 ## Current state
 
 - 시작 기준 `main`은 commit `165fc95` 이후 clean 상태였다.
@@ -52,7 +59,7 @@
 - `ManualLoopD` 장시간 lane 재정의.
 - `StatV2AndSandboxTests` 내부 pure stat tests 추가 분리.
 - category closure guard 자동화는 030에서 수행한다.
-- `BattleResolutionTests.LoopA_4v4_BattleEndsBeforeTimeout` balance timeout contract retune.
+- `BattleResolutionTests.LoopA_4v4_BattleEndsBeforeTimeout` balance timeout contract retune은 033에서 FastUnit replacement contract로 닫았다.
 
 ## Loop budget consumed
 

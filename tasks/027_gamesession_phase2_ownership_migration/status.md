@@ -7,6 +7,12 @@
 - 상태: completed
 - 최종수정일: 2026-04-19
 
+## Historical snapshot / current-state implications
+
+- 이 문서는 027 완료 시점의 historical snapshot이다.
+- 현재 source-of-truth는 `AGENTS.md`, `docs/TESTING.md`, `docs/03_architecture/index.md`의 closure scope를 우선한다.
+- “FastUnit editor-free boundary”는 FastUnit lane과 pure fixture construction 범위를 뜻한다. `GameSessionState` public facade, production constructor, `SM.Unity.Session` adapter가 pure boundary 안으로 사라졌다는 뜻이 아니다.
+
 ## Current state
 
 - 시작 기준 `main`은 commit `515f759` 이후 clean 상태였다.
