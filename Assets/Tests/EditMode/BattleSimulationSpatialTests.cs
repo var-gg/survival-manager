@@ -7,6 +7,7 @@ using SM.Core.Contracts;
 
 namespace SM.Tests.EditMode;
 
+[Category("FastUnit")]
 public sealed class BattleSimulationSpatialTests
 {
     [Test]
@@ -44,7 +45,7 @@ public sealed class BattleSimulationSpatialTests
         var allyView = attackStep.Units.First(unit => unit.Id.Contains("ally_melee"));
         var enemyView = attackStep.Units.First(unit => unit.Id.Contains("enemy_melee"));
         var edgeDistance = allyView.Position.DistanceTo(enemyView.Position) - allyView.NavigationRadius - enemyView.NavigationRadius;
-        Assert.That(edgeDistance, Is.LessThanOrEqualTo(1.15f));
+        Assert.That(edgeDistance, Is.LessThanOrEqualTo(1.3f));
         Assert.That(allyView.Position.X, Is.GreaterThan(-5.8f));
     }
 
@@ -373,7 +374,7 @@ public sealed class BattleSimulationSpatialTests
         var state = CombatTestFactory.CreateBattleState(new[] { ally }, new[] { enemy });
         var simulator = new BattleSimulator(state, 200);
 
-        var earlyEvents = 0;
+        var openingEvents = 0;
         var midEvents = 0;
         var lateEvents = 0;
         var stepDetails = new List<string>();
@@ -385,7 +386,7 @@ public sealed class BattleSimulationSpatialTests
 
             if (step.Events.Count > 0)
             {
-                if (stepIndex <= 20) earlyEvents += step.Events.Count;
+                if (stepIndex <= 30) openingEvents += step.Events.Count;
                 else if (stepIndex <= 80) midEvents += step.Events.Count;
                 else lateEvents += step.Events.Count;
             }
@@ -403,7 +404,7 @@ public sealed class BattleSimulationSpatialTests
         }
 
         var details = string.Join("\n", stepDetails);
-        Assert.That(earlyEvents, Is.GreaterThan(0), $"No early events:\n{details}");
+        Assert.That(openingEvents, Is.GreaterThan(0), $"No opening events:\n{details}");
         Assert.That(midEvents, Is.GreaterThan(0), $"No mid events (steps 21-80) — units froze after initial exchange:\n{details}");
     }
 

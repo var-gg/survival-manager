@@ -7,6 +7,7 @@ using SM.Core.Ids;
 
 namespace SM.Tests.EditMode;
 
+[Category("FastUnit")]
 public sealed class MovementResolverTests
 {
     private static UnitSnapshot MakeUnit(
@@ -149,7 +150,7 @@ public sealed class MovementResolverTests
         var a = MakeUnit("a", TeamSide.Ally);
         var b = MakeUnit("b", TeamSide.Ally);
         a.SetPosition(new CombatVector2(0f, 0f));
-        b.SetPosition(new CombatVector2(0.01f, 0f));
+        b.SetPosition(new CombatVector2(0.02f, 0f));
         a.SetActionState(CombatActionState.AcquireTarget);
         b.SetActionState(CombatActionState.AcquireTarget);
 

@@ -11,6 +11,7 @@ using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class ContentValidationComponentTests
 {
     private readonly List<UnityEngine.Object> _ownedObjects = new();

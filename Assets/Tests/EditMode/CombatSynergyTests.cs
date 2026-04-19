@@ -3,6 +3,7 @@ using SM.Combat.Model;
 
 namespace SM.Tests.EditMode;
 
+[Category("FastUnit")]
 public sealed class CombatSynergyTests
 {
     [Test]

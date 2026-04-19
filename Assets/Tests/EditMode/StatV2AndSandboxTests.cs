@@ -14,6 +14,7 @@ using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class StatV2AndSandboxTests
 {
     [Test]

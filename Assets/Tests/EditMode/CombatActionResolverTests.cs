@@ -7,6 +7,7 @@ using SM.Core.Ids;
 
 namespace SM.Tests.EditMode;
 
+[Category("FastUnit")]
 public sealed class CombatActionResolverTests
 {
     private static UnitSnapshot CreatePositionedUnit(

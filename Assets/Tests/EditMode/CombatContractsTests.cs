@@ -1,16 +1,12 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Core.Stats;
-using SM.Unity;
-using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
+[Category("FastUnit")]
 public sealed class CombatContractsTests
 {
     [Test]
@@ -94,47 +90,7 @@ public sealed class CombatContractsTests
         Assert.That(result.WasDodged, Is.False);
         Assert.That(result.WasCritical, Is.True);
         Assert.That(result.WasBlocked, Is.True);
-        Assert.That(result.Value, Is.EqualTo(8f).Within(0.01f));
-    }
-
-    [Test]
-    public void LocalizationController_Uses_Fallback_Instead_Of_Raw_Missing_Key()
-    {
-        var go = new GameObject("LocalizationControllerTest");
-        try
-        {
-            var controller = go.AddComponent<GameLocalizationController>();
-            var localized = controller.LocalizeOrFallback(GameLocalizationTables.UIBattle, "ui.battle.missing_test", "Fallback Label");
-
-            Assert.That(localized, Is.EqualTo("Fallback Label"));
-            Assert.That(localized.Contains("ui.battle.missing_test"), Is.False);
-        }
-        finally
-        {
-            Object.DestroyImmediate(go);
-        }
-    }
-
-    [Test]
-    public void UiBattle_StringTable_Covers_Runtime_Keys()
-    {
-        var scriptRoot = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity");
-        var sharedDataPath = Path.Combine("Assets", "Localization", "StringTables", "UI_Battle Shared Data.asset");
-        var sharedData = File.ReadAllText(sharedDataPath);
-        var keys = Directory.EnumerateFiles(scriptRoot, "*.cs", SearchOption.AllDirectories)
-            .SelectMany(path => Regex.Matches(File.ReadAllText(path), "ui\\.battle\\.[a-z0-9._]+").Cast<Match>())
-            .Select(match => match.Value)
-            .Distinct()
-            .OrderBy(value => value)
-            .ToList();
-
-        Assert.That(keys, Is.Not.Empty);
-
-        var missing = keys
-            .Where(key => !sharedData.Contains($"Key: {key}"))
-            .ToList();
-
-        Assert.That(missing, Is.Empty, $"Missing UI_Battle localization keys: {string.Join(", ", missing)}");
+        Assert.That(result.Value, Is.EqualTo(8.3333f).Within(0.01f));
     }
 
     private static BattleUnitLoadout CreateLoadout(

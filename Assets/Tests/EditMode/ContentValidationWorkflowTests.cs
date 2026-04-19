@@ -12,6 +12,7 @@ using UnityEngine;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class ContentValidationWorkflowTests
 {
     private const string TempRoot = "Assets/Resources/_Game/Content/Definitions/__TestValidationTemp";

@@ -4,6 +4,7 @@ using SM.Combat.Services;
 
 namespace SM.Tests.EditMode;
 
+[Category("FastUnit")]
 public sealed class CombatTacticPriorityTests
 {
     [Test]

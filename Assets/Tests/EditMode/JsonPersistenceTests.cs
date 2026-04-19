@@ -6,6 +6,7 @@ using SM.Persistence.Json;
 
 namespace SM.Tests.EditMode;
 
+[Category("FastUnit")]
 public class JsonPersistenceTests
 {
     [Test]

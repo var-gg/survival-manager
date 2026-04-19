@@ -4,6 +4,7 @@ using SM.Core.Stats;
 
 namespace SM.Tests.EditMode;
 
+[Category("FastUnit")]
 public class CoreStatCalculationTests
 {
     [Test]

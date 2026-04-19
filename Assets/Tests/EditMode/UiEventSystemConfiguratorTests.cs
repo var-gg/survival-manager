@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class UiEventSystemConfiguratorTests
 {
     [SetUp]

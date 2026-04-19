@@ -15,6 +15,7 @@ using EntityHandle = SM.Core.Ids.EntityId;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class LoopAContractClosureTests
 {
     private const string TempRoot = "Assets/Resources/_Game/Content/Definitions/__LoopAContractTemp";

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class UiGraphicRaycastPolicyTests
 {
     [Test]

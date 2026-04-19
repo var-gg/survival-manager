@@ -6,6 +6,7 @@ using SM.Editor.SeedData;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class BalanceSweepAndBootstrapTests
 {
     [SetUp]

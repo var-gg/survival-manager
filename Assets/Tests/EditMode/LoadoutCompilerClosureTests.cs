@@ -9,6 +9,7 @@ using SM.Meta.Services;
 
 namespace SM.Tests.EditMode;
 
+[Category("FastUnit")]
 public sealed class LoadoutCompilerClosureTests
 {
     private sealed record HeroSpec(
