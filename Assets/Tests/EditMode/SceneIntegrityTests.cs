@@ -17,6 +17,7 @@ using UnityEngine.UIElements;
 
 namespace SM.Tests.EditMode;
 
+[Category("BatchOnly")]
 public sealed class SceneIntegrityTests
 {
     [OneTimeSetUp]

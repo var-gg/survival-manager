@@ -27,8 +27,8 @@
 | `SM.Persistence.Abstractions` | save contract, repository port, save model | `SM.Core`, `SM.Meta` |
 | `SM.Persistence.Json` | JSON serializer/repository adapter | `SM.Persistence.Abstractions`, `SM.Core`, `SM.Meta` |
 | `SM.Unity` | Boot, scene/input/view orchestration | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Persistence.Abstractions`, `SM.Persistence.Json` |
-| `SM.Editor` | bootstrap, validation, editor utility | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Persistence.Abstractions`, `SM.Unity` |
-| `SM.Tests` | 테스트 전용 조합 레이어 | 대상 시나리오에 필요한 runtime asmdef, EditMode는 `SM.Editor` 추가 허용 |
+| `SM.Editor` | bootstrap, validation, editor utility | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions`, `SM.Unity` |
+| `SM.Tests` | 테스트 전용 조합 레이어 | 대상 시나리오에 필요한 runtime asmdef, EditMode/EditMode.Integration은 `SM.Editor` 추가 허용 |
 
 ## 금지 의존 관계
 
@@ -88,8 +88,9 @@
 ## 테스트 어셈블리 예외 규칙
 
 - 문서에서는 `SM.Tests`를 테스트 어셈블리 그룹의 약칭으로 쓴다.
-- 실제 asmdef는 `SM.Tests.EditMode`, `SM.Tests.PlayMode`다.
-- EditMode는 editor bootstrap과 validator 확인을 위해 `SM.Editor` 참조를 허용한다.
+- 실제 asmdef는 `SM.Tests.EditMode`, `SM.Tests.EditMode.Integration`, `SM.Tests.PlayMode`다.
+- EditMode와 EditMode.Integration은 editor bootstrap과 validator 확인을 위해 `SM.Editor` 참조를 허용한다.
+- EditMode.Integration은 asset pipeline이나 editor validation을 더 강하게 요구하는 BatchOnly 성격의 테스트를 둔다.
 - PlayMode는 런타임 시나리오 검증용이므로 `SM.Editor` 참조를 기본 금지한다.
 - 테스트 편의를 위해 만든 helper는 production asmdef로 올리지 않는다.
 

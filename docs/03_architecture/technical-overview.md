@@ -47,9 +47,10 @@
 - `SM.Unity`
 - `SM.Editor`
 - `SM.Tests.EditMode`
+- `SM.Tests.EditMode.Integration`
 - `SM.Tests.PlayMode`
 
-문서에서는 두 테스트 asmdef를 묶어 `SM.Tests` 테스트 어셈블리 그룹이라고 부른다.
+문서에서는 세 테스트 asmdef를 묶어 `SM.Tests` 테스트 어셈블리 그룹이라고 부른다.
 
 ## 기본 구조 원칙
 

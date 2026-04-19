@@ -10,11 +10,11 @@
 ## Current state
 
 - 022 commit `3223b38` 이후 clean main에서 시작했다.
-- `GameSessionState.cs`는 1,894줄이다.
+- `GameSessionState.cs`는 2,048줄이다.
 - `GameSessionState`는 five flow service fields를 보유하고 public/internal entrypoint를 service object로 위임한다.
 - `Assets/_Game/Scripts/Runtime/Unity/Session/SessionDeploymentFlow.cs`를 추가했다.
 - 기존 partial helper 파일에 같은 이름의 `internal sealed` service object를 추가했다.
-- behavior migration을 피하기 위해 기존 method body는 private `*Core` entrypoint로 보존했다.
+- behavior migration을 피하기 위해 기존 method body는 private `*Core` entrypoint로 보존했다. 즉, delegating extraction은 완료했고 ownership migration은 아직 후속 작업이다.
 
 ## Acceptance matrix
 
@@ -30,4 +30,4 @@
 
 - 이번 단계는 behavior-preserving extraction이다.
 - 외부 UI/controller 호출부 migration은 만들지 않았다.
-- 다음에 더 줄일 경우 private `*Core` body를 service object 내부로 옮기는 단계로 이어가면 된다.
+- 다음에 더 줄일 경우 private `*Core` body를 service object 내부로 옮기는 ownership migration 단계로 이어가면 된다.

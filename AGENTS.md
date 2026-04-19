@@ -61,7 +61,7 @@
 **모든 에이전트는 코드 변경 후 아래 명령을 기본으로 실행한다:**
 
 ```powershell
-pwsh -File tools/unity-bridge.ps1 test-batch-fast   # FastUnit 57개, ~0.15초
+pwsh -File tools/unity-bridge.ps1 test-batch-fast   # FastUnit 카테고리만 실행, 테스트 수와 시간은 변동 가능
 ```
 
 - 이 명령은 Unity 에디터 없이 독립 실행된다.

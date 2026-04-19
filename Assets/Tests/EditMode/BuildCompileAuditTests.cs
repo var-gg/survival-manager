@@ -19,61 +19,6 @@ namespace SM.Tests.EditMode;
 public sealed class BuildCompileAuditTests
 {
     [Test]
-    public void RuntimeAssemblyDefinitions_KeepMetaAndPureLayerBoundaries()
-    {
-        var assemblies = LoadAssemblyDefinitions("Assets").ToDictionary(definition => definition.Name, StringComparer.Ordinal);
-
-        AssertNoEngineReference(assemblies, "SM.Core");
-        AssertNoEngineReference(assemblies, "SM.Combat");
-        AssertNoEngineReference(assemblies, "SM.Meta");
-        AssertNoEngineReference(assemblies, "SM.Meta.Serialization");
-        AssertNoEngineReference(assemblies, "SM.Persistence.Abstractions");
-
-        Assert.That(assemblies["SM.Meta"].References, Is.EquivalentTo(new[] { "SM.Core", "SM.Combat" }));
-        Assert.That(assemblies["SM.Meta.Serialization"].References, Does.Contain("SM.Meta"));
-        Assert.That(assemblies["SM.Meta.Serialization"].References, Does.Not.Contain("SM.Content"));
-        Assert.That(assemblies["SM.Persistence.Abstractions"].References, Does.Not.Contain("SM.Content"));
-        Assert.That(assemblies["SM.Persistence.Json"].References, Does.Not.Contain("SM.Content"));
-        Assert.That(assemblies["SM.Tests.PlayMode"].References, Does.Not.Contain("SM.Editor"));
-
-        foreach (var productionAssembly in assemblies.Values.Where(assembly => !assembly.Name.StartsWith("SM.Tests.", StringComparison.Ordinal)))
-        {
-            Assert.That(
-                productionAssembly.References.Where(reference => reference.StartsWith("SM.Tests.", StringComparison.Ordinal)),
-                Is.Empty,
-                $"{productionAssembly.Name} must not reference test assemblies.");
-        }
-    }
-
-    [Test]
-    public void MetaRuntimeSources_DoNotReferenceContentOrUnity()
-    {
-        var forbiddenTokens = new[]
-        {
-            "using SM.Content",
-            "using SM.Content.Definitions",
-            "UnityEngine",
-            "UnityEditor"
-        };
-        var metaRoot = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Meta");
-        foreach (var path in Directory.EnumerateFiles(metaRoot, "*.cs", SearchOption.AllDirectories))
-        {
-            var text = File.ReadAllText(path);
-            foreach (var token in forbiddenTokens)
-            {
-                Assert.That(text, Does.Not.Contain(token), $"{path} must stay free of {token}.");
-            }
-        }
-    }
-
-    [Test]
-    public void GameSessionState_FacadeFileStaysBelowBoundaryBudget()
-    {
-        var path = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "GameSessionState.cs");
-        Assert.That(File.ReadLines(path).Count(), Is.LessThanOrEqualTo(2500));
-    }
-
-    [Test]
     public void LoadoutCompiler_ChangesHash_WhenPassiveBoardOrPermanentAugmentChanges()
     {
         var lookup = new RuntimeCombatContentLookup();
@@ -461,42 +406,4 @@ public sealed class BuildCompileAuditTests
         }
     }
 
-    private static void AssertNoEngineReference(IReadOnlyDictionary<string, AssemblyDefinitionInfo> assemblies, string assemblyName)
-    {
-        Assert.That(assemblies.ContainsKey(assemblyName), Is.True, $"{assemblyName} asmdef must exist.");
-        Assert.That(assemblies[assemblyName].NoEngineReferences, Is.True, $"{assemblyName} must set noEngineReferences=true.");
-    }
-
-    private static IEnumerable<AssemblyDefinitionInfo> LoadAssemblyDefinitions(string root)
-    {
-        foreach (var path in Directory.EnumerateFiles(root, "*.asmdef", SearchOption.AllDirectories))
-        {
-            var json = File.ReadAllText(path);
-            var definition = JsonUtility.FromJson<AssemblyDefinitionJson>(json);
-            if (string.IsNullOrWhiteSpace(definition.name))
-            {
-                continue;
-            }
-
-            yield return new AssemblyDefinitionInfo(
-                definition.name,
-                path.Replace('\\', '/'),
-                definition.references ?? Array.Empty<string>(),
-                definition.noEngineReferences);
-        }
-    }
-
-    [Serializable]
-    private sealed class AssemblyDefinitionJson
-    {
-        public string name = string.Empty;
-        public string[] references = Array.Empty<string>();
-        public bool noEngineReferences;
-    }
-
-    private sealed record AssemblyDefinitionInfo(
-        string Name,
-        string Path,
-        IReadOnlyList<string> References,
-        bool NoEngineReferences);
 }

@@ -125,7 +125,7 @@ pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
 **`test-batch-fast`가 기본이다.** 모든 에이전트는 코드 변경 후 이 명령을 항상 실행한다.
 
 ```powershell
-# 1. 기본 (항상 실행) — 57개 FastUnit, ~0.15초, freeze 없음
+# 1. 기본 (항상 실행) — FastUnit 카테고리만, 테스트 수와 시간은 변동 가능
 pwsh -File tools/unity-bridge.ps1 test-batch-fast
 
 # 2. 커밋 전 lint (항상 실행)

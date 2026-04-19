@@ -92,6 +92,7 @@ Assets/Tests/
 - `Assets/_Game/Scripts/Runtime/Unity/UI` -> `SM.Unity` 내부 UI runtime 하위 경계
 - `Assets/_Game/Scripts/Editor` -> `SM.Editor`
 - `Assets/Tests/EditMode` -> `SM.Tests.EditMode`
+- `Assets/Tests/EditMode/Integration` -> `SM.Tests.EditMode.Integration`
 - `Assets/Tests/PlayMode` -> `SM.Tests.PlayMode`
 
 ## UI asset ownership

@@ -8,8 +8,8 @@ param(
 
 .DESCRIPTION
     아래 세 가지를 검사한다:
-    1. Runtime asmdef가 UnityEditor를 #if 가드 없이 참조하면 실패
-    2. [Category("BatchOnly")]가 아닌 테스트 코드에서 Resources.LoadAll을 호출하면 실패
+    1. Runtime asmdef가 UnityEditor / AssetDatabase를 #if 가드 없이 참조하면 실패
+    2. [Category("BatchOnly")]가 아닌 테스트 코드에서 직접 resource/content lookup을 호출하면 실패
     3. 스크립트/문서에서 -quit를 -runTests와 같이 사용하면 실패
 #>
 
@@ -28,6 +28,7 @@ function Write-LintError {
 # ────────────────────────────────────────────────
 
 Write-Host "`n== Check 1: UnityEditor in runtime assemblies ==" -ForegroundColor Cyan
+$check1Fail = $false
 
 $runtimeDirs = @(
     'Assets/_Game/Scripts/Runtime/Core',
@@ -60,24 +61,29 @@ foreach ($dir in $runtimeDirs) {
                 continue
             }
 
-            # using UnityEditor outside #if UNITY_EDITOR guard
-            if (-not $inEditorGuard -and $trimmed -match '^\s*using\s+UnityEditor') {
+            if ($trimmed.StartsWith('//') -or $trimmed.StartsWith('*') -or $trimmed.StartsWith('///') -or $trimmed.StartsWith('/*')) {
+                continue
+            }
+
+            # UnityEditor and AssetDatabase outside #if UNITY_EDITOR guard
+            if (-not $inEditorGuard -and ($trimmed -match '^\s*using\s+UnityEditor' -or $trimmed -match '\bUnityEditor\.' -or $trimmed -match '\bAssetDatabase\b')) {
                 $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/')
-                Write-LintError -Check 'UnityEditor-in-runtime' -File "$relPath`:$lineNum" -Detail "using UnityEditor without #if UNITY_EDITOR guard"
+                Write-LintError -Check 'UnityEditor-in-runtime' -File "$relPath`:$lineNum" -Detail "UnityEditor/AssetDatabase reference without #if UNITY_EDITOR guard"
+                $check1Fail = $true
             }
         }
     }
 }
 
-if ($exitCode -eq 0) {
-    Write-Host "  PASS: No unguarded UnityEditor references in runtime assemblies." -ForegroundColor Green
+if (-not $check1Fail) {
+    Write-Host "  PASS: No unguarded UnityEditor/AssetDatabase references in runtime assemblies." -ForegroundColor Green
 }
 
 # ────────────────────────────────────────────────
-# Check 2: Resources.LoadAll outside BatchOnly tests
+# Check 2: direct resource/content lookup outside BatchOnly tests
 # ────────────────────────────────────────────────
 
-Write-Host "`n== Check 2: Resources.LoadAll outside BatchOnly ==" -ForegroundColor Cyan
+Write-Host "`n== Check 2: direct resource/content lookup outside BatchOnly ==" -ForegroundColor Cyan
 $check2Fail = $false
 
 $testDir = Join-Path $RepoRoot 'Assets/Tests/EditMode'
@@ -95,11 +101,11 @@ if (Test-Path $testDir) {
 
         $fullContent = Get-Content $file.FullName -Raw
 
-        # Resources.LoadAll을 코드에서 직접 사용하는 경우
-        if ($codeContent -match 'Resources\.LoadAll') {
+        # Resources.Load / Resources.LoadAll을 코드에서 직접 사용하는 경우
+        if ($codeContent -match 'Resources\.Load(All)?\s*\(') {
             if ($fullContent -notmatch '\[Category\(\s*"BatchOnly"\s*\)\]') {
                 $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/')
-                Write-LintError -Check 'LoadAll-outside-BatchOnly' -File $relPath -Detail "Resources.LoadAll found but [Category(`"BatchOnly`")] missing on class"
+                Write-LintError -Check 'ResourcesLoad-outside-BatchOnly' -File $relPath -Detail "Resources.Load/LoadAll found but [Category(`"BatchOnly`")] missing on class"
                 $check2Fail = $true
             }
         }
@@ -112,11 +118,20 @@ if (Test-Path $testDir) {
                 $check2Fail = $true
             }
         }
+
+        # NarrativeRuntimeBootstrap.LoadFromResources는 Resources-backed narrative catalog를 로드한다.
+        if ($codeContent -match 'NarrativeRuntimeBootstrap\.LoadFromResources\s*\(') {
+            if ($fullContent -notmatch '\[Category\(\s*"BatchOnly"\s*\)\]') {
+                $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/')
+                Write-LintError -Check 'NarrativeResources-outside-BatchOnly' -File $relPath -Detail "NarrativeRuntimeBootstrap.LoadFromResources() found but [Category(`"BatchOnly`")] missing"
+                $check2Fail = $true
+            }
+        }
     }
 }
 
 if (-not $check2Fail -and $exitCode -eq 0) {
-    Write-Host "  PASS: No Resources.LoadAll usage outside BatchOnly tests." -ForegroundColor Green
+    Write-Host "  PASS: No direct resource/content lookup outside BatchOnly tests." -ForegroundColor Green
 }
 
 # ────────────────────────────────────────────────

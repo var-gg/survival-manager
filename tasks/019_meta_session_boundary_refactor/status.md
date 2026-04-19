@@ -9,6 +9,7 @@
 
 ## Current state
 
+- 이 문서는 019 완료 시점의 historical snapshot이다. 이후 020 canonical Resources 복구, 022 docs markdownlint cleanup, 023 session service object extraction이 일부 blocker와 후속 상태를 해소했다.
 - code-only refactor, asmdef guard, source guard, task/architecture/ADR 문서 갱신을 완료했다.
 - handoff 가능 상태다. 남은 항목은 후속 구조 개선 후보이며 현재 compile/test를 막지 않는다.
 
