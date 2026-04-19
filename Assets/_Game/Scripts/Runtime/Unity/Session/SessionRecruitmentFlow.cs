@@ -179,11 +179,6 @@ public sealed partial class GameSessionState
 
     public void ClearRuntimeTelemetry() => _profileSync.ClearRuntimeTelemetry();
 
-    private void ClearRuntimeTelemetryCore()
-    {
-        _runtimeTelemetryEvents.Clear();
-    }
-
     private void AppendRuntimeTelemetry(TelemetryEventRecord record)
     {
         if (record == null)
@@ -196,11 +191,6 @@ public sealed partial class GameSessionState
     }
 
     internal void RecordOperationalTelemetry(TelemetryEventRecord record) => _profileSync.RecordOperationalTelemetry(record);
-
-    private void RecordOperationalTelemetryCore(TelemetryEventRecord record)
-    {
-        AppendRuntimeTelemetry(record);
-    }
 
     private string ResolveTelemetryRunId()
     {

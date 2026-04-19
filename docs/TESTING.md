@@ -127,6 +127,13 @@ pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
 - editor sweep / file fallback이 필요한 검증은 `new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true)`를 명시적으로 사용하고 `BatchOnly`로 고정한다.
 - `tools/smoke-check.ps1`는 runtime smoke가 아니라 repo structure preflight다.
 
+`BuildBoundaryGuardFastTests`는 `test-batch-fast`에 포함되는 lightweight 경계 가드다.
+pure asmdef, Meta forbidden token, FastUnit authored-object 금지, public session constructor 금지,
+`GameSessionState.cs` line budget을 검사한다. 또한
+`Assets/_Game/Scripts/Runtime/Unity/Session/**`에서 `Resources.Load*`, `AssetDatabase`,
+`ScriptableObject`, `RuntimeCombatContentLookup`, `NarrativeRuntimeBootstrap.LoadFromResources`,
+`UnityEditor`가 직접 퍼지지 않는지와 `_session.*Core(...)` delegation budget이 다시 늘지 않는지도 본다.
+
 ## 에이전트 테스트 실행 순서
 
 **`test-batch-fast`가 기본이다.** 모든 에이전트는 코드 변경 후 이 명령을 항상 실행한다.

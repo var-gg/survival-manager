@@ -66,6 +66,46 @@ public sealed class BuildBoundaryGuardFastTests
     }
 
     [Test]
+    public void SessionRuntimeSources_DoNotOwnAssetLoadingChokePoints()
+    {
+        var forbiddenTokens = new[]
+        {
+            string.Concat("Resources", ".Load"),
+            "AssetDatabase",
+            "ScriptableObject",
+            string.Concat("RuntimeCombat", "ContentLookup"),
+            string.Concat("NarrativeRuntimeBootstrap", ".LoadFromResources"),
+            "UnityEditor"
+        };
+        var sessionRoot = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "Session");
+        foreach (var path in Directory.EnumerateFiles(sessionRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            var codeText = ReadCodeText(path);
+            foreach (var token in forbiddenTokens)
+            {
+                Assert.That(
+                    codeText,
+                    Does.Not.Contain(token),
+                    $"{path} must not introduce asset/editor loading token '{token}'. Keep those in Unity content/bootstrap choke points.");
+            }
+        }
+    }
+
+    [Test]
+    public void SessionFlowCoreDelegationBudget_DoesNotRegrow()
+    {
+        var sessionRoot = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "Session");
+        var delegationCount = Directory.EnumerateFiles(sessionRoot, "*.cs", SearchOption.AllDirectories)
+            .Select(ReadCodeText)
+            .Sum(text => Regex.Matches(text, @"_session\.\w+Core\s*\(").Count);
+
+        Assert.That(
+            delegationCount,
+            Is.LessThanOrEqualTo(30),
+            "Session service objects should not add new _session.*Core(...) ownership-delegation wrappers.");
+    }
+
+    [Test]
     public void FastUnitTests_UseGameSessionFactoryInsteadOfPublicSessionConstructor()
     {
         var allowedFactoryPath = Path.Combine("Assets", "Tests", "EditMode", "Fakes", "GameSessionTestFactory.cs")

@@ -30,24 +30,87 @@ public sealed partial class GameSessionState
 
         internal void BindProfile(SaveProfile profile) => _session.BindProfileCore(profile);
 
-        internal void AdvanceNarrative(NarrativeMoment moment, StoryMomentContext? context) =>
-            _session.AdvanceNarrativeCore(moment, context);
+        internal void AdvanceNarrative(NarrativeMoment moment, StoryMomentContext? context)
+        {
+            _session.StoryDirector.Advance(moment, context ?? StoryMomentContext.Empty);
+            _session.SyncNarrativeProgress();
+        }
 
-        internal bool TryDequeueNarrativePresentation(out StoryPresentationRequest? request) =>
-            _session.TryDequeueNarrativePresentationCore(out request);
+        internal bool TryDequeueNarrativePresentation(out StoryPresentationRequest? request)
+        {
+            var dequeued = _session.StoryDirector.TryDequeuePendingPresentation(out request);
+            _session.SyncNarrativeProgress();
+            return dequeued;
+        }
 
-        internal void ResetNarrativeRunScopedProgress() => _session.ResetNarrativeRunScopedProgressCore();
+        internal void ResetNarrativeRunScopedProgress()
+        {
+            _session.StoryDirector.ResetRunScopedProgress();
+            _session.SyncNarrativeProgress();
+        }
 
-        internal void SetCurrentScene(string sceneName) => _session.SetCurrentSceneCore(sceneName);
+        internal void SetCurrentScene(string sceneName)
+        {
+            _session.CurrentSceneName = sceneName;
+            if (string.Equals(sceneName, SceneNames.Town, StringComparison.Ordinal))
+            {
+                _session.ResetRecruitPhaseForTownEntry();
+                _session.AppendRuntimeTelemetry(_session.BuildEconomySnapshot("town_entry"));
+            }
+        }
 
-        internal bool CanManualProfileReload(out string reason) => _session.CanManualProfileReloadCore(out reason);
+        internal bool CanManualProfileReload(out string reason)
+        {
+            if (!string.Equals(_session.CurrentSceneName, SceneNames.Town, StringComparison.Ordinal))
+            {
+                reason = "프로필 재로드는 Town에서만 허용됩니다.";
+                return false;
+            }
 
-        internal void SaveDebugSnapshot(string note) => _session.SaveDebugSnapshotCore(note);
+            if (_session.HasActiveExpeditionRun)
+            {
+                reason = "진행 중인 expedition이 있어 프로필을 다시 불러올 수 없습니다.";
+                return false;
+            }
 
-        internal void ClearRuntimeTelemetry() => _session.ClearRuntimeTelemetryCore();
+            if (_session._hasPendingRewardSettlement)
+            {
+                reason = "보상 settlement가 남아 있어 프로필을 다시 불러올 수 없습니다.";
+                return false;
+            }
 
-        internal void RecordOperationalTelemetry(TelemetryEventRecord record) =>
-            _session.RecordOperationalTelemetryCore(record);
+            if (_session.IsQuickBattleSmokeActive)
+            {
+                reason = "Quick Battle smoke overlay 중에는 프로필을 다시 불러올 수 없습니다.";
+                return false;
+            }
+
+            reason = string.Empty;
+            return true;
+        }
+
+        internal void SaveDebugSnapshot(string note)
+        {
+            _session.Profile.RunSummaries.Add(new RunSummaryRecord
+            {
+                RunId = Guid.NewGuid().ToString("N"),
+                ExpeditionId = note,
+                Result = "debug-save",
+                GoldEarned = 0,
+                NodesCleared = _session.CurrentExpeditionNodeIndex,
+                CompletedAtUtc = DateTime.UtcNow.ToString("O")
+            });
+        }
+
+        internal void ClearRuntimeTelemetry()
+        {
+            _session._runtimeTelemetryEvents.Clear();
+        }
+
+        internal void RecordOperationalTelemetry(TelemetryEventRecord record)
+        {
+            _session.AppendRuntimeTelemetry(record);
+        }
     }
 
     private void SeedDemoProfile()

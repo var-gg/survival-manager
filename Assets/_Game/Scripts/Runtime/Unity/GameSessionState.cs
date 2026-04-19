@@ -223,125 +223,25 @@ public sealed partial class GameSessionState
     public void AdvanceNarrative(NarrativeMoment moment, StoryMomentContext? context = null) =>
         _profileSync.AdvanceNarrative(moment, context);
 
-    private void AdvanceNarrativeCore(NarrativeMoment moment, StoryMomentContext? context)
-    {
-        StoryDirector.Advance(moment, context ?? StoryMomentContext.Empty);
-        SyncNarrativeProgress();
-    }
-
     public bool TryDequeueNarrativePresentation(out StoryPresentationRequest? request) =>
         _profileSync.TryDequeueNarrativePresentation(out request);
 
-    private bool TryDequeueNarrativePresentationCore(out StoryPresentationRequest? request)
-    {
-        var dequeued = StoryDirector.TryDequeuePendingPresentation(out request);
-        SyncNarrativeProgress();
-        return dequeued;
-    }
-
     public void ResetNarrativeRunScopedProgress() => _profileSync.ResetNarrativeRunScopedProgress();
-
-    private void ResetNarrativeRunScopedProgressCore()
-    {
-        StoryDirector.ResetRunScopedProgress();
-        SyncNarrativeProgress();
-    }
 
     public void BeginNewExpedition() => _expeditionFlow.BeginNewExpedition();
 
-    private void BeginNewExpeditionCore()
-    {
-        IsQuickBattleSmokeActive = false;
-        QuickBattleLaneKind = CombatSandboxLaneKind.None;
-        HasActiveExpeditionRun = true;
-        CurrentExpeditionNodeIndex = 0;
-        SelectedExpeditionNodeIndex = null;
-        LastBattleVictory = false;
-        LastBattleSummary = SessionTextToken.Empty;
-        LastExpeditionEffectMessage = SessionTextToken.Empty;
-        LastRewardApplicationSummary = SessionTextToken.Empty;
-        LastPermanentUnlockSummary = SessionTextToken.Empty;
-        _lastAutomaticLootBundle = null;
-        _hasPendingRewardSettlement = false;
-        _quickBattleSeedOverride = null;
-        _compiledQuickBattleScenario = null;
-        _runtimeTelemetryEvents.Clear();
-        _resolvedExpeditionNodeIds.Clear();
-        EnsureBattleDeployReady();
-        EnsureCampaignSelection();
-        EnsureExpeditionNodes(reset: true);
-        AutoSelectNextExpeditionNode();
-        EnsureRewardChoices(reset: true);
-        ActiveRun = RunStateService.StartRun(GetExpeditionRunId(), CaptureBlueprintState(), false);
-        SyncActiveRunRecord();
-        SyncExpeditionState();
-    }
-
     public void PrepareQuickBattleSmoke() => _expeditionFlow.PrepareQuickBattleSmoke();
-
-    private void PrepareQuickBattleSmokeCore()
-    {
-        var config = LoadCombatSandboxConfig();
-        PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
-    }
 
     public void PrepareCombatSandboxDirect() => _expeditionFlow.PrepareCombatSandboxDirect();
 
-    private void PrepareCombatSandboxDirectCore()
-    {
-        var config = LoadCombatSandboxConfig();
-        PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.DirectCombatSandbox);
-    }
-
     public void PrepareTownQuickBattleSmoke() => _expeditionFlow.PrepareTownQuickBattleSmoke();
-
-    private void PrepareTownQuickBattleSmokeCore()
-    {
-        var config = LoadCombatSandboxConfig();
-        PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
-    }
 
     internal void PrepareQuickBattleSmoke(CombatSandboxConfig? quickBattleConfig) =>
         _expeditionFlow.PrepareQuickBattleSmoke(quickBattleConfig);
 
-    private void PrepareQuickBattleSmokeCore(CombatSandboxConfig? quickBattleConfig)
-    {
-        PrepareQuickBattleSmoke(quickBattleConfig, CombatSandboxLaneKind.TownIntegrationSmoke);
-    }
-
     public void RestartQuickBattle(bool advanceSeed) => _expeditionFlow.RestartQuickBattle(advanceSeed);
 
-    private void RestartQuickBattleCore(bool advanceSeed)
-    {
-        ReloadCombatSandboxConfig();
-        if (advanceSeed)
-        {
-            _quickBattleSeedOverride = (_quickBattleSeedOverride ?? ResolveConfiguredQuickBattleSeed(QuickBattleConfig)) + 1;
-        }
-
-        PrepareQuickBattleSmoke(
-            QuickBattleConfig,
-            QuickBattleLaneKind == CombatSandboxLaneKind.None
-                ? ResolveDefaultQuickBattleLane(QuickBattleConfig)
-                : QuickBattleLaneKind,
-            resetSeedOverride: !advanceSeed);
-    }
-
     public void ExitCombatSandbox() => _expeditionFlow.ExitCombatSandbox();
-
-    private void ExitCombatSandboxCore()
-    {
-        IsQuickBattleSmokeActive = false;
-        QuickBattleLaneKind = CombatSandboxLaneKind.None;
-        HasActiveExpeditionRun = false;
-        _hasPendingRewardSettlement = false;
-        _pendingRewardChoices.Clear();
-        _quickBattleSeedOverride = null;
-        _compiledQuickBattleScenario = null;
-        ActiveRun = null;
-        SyncActiveRunRecord();
-        SyncExpeditionState();
-    }
 
     internal void PrepareQuickBattleSmoke(
         CombatSandboxConfig? quickBattleConfig,
@@ -349,167 +249,17 @@ public sealed partial class GameSessionState
         bool resetSeedOverride = true) =>
         _expeditionFlow.PrepareQuickBattleSmoke(quickBattleConfig, laneKind, resetSeedOverride);
 
-    private void PrepareQuickBattleSmokeCore(
-        CombatSandboxConfig? quickBattleConfig,
-        CombatSandboxLaneKind laneKind,
-        bool resetSeedOverride = true)
-    {
-        if (!CanStartQuickBattleSmoke && !IsQuickBattleSmokeActive)
-        {
-            return;
-        }
-
-        IsQuickBattleSmokeActive = true;
-        HasActiveExpeditionRun = false;
-        LastBattleVictory = false;
-        LastBattleSummary = SessionTextToken.Empty;
-        LastExpeditionEffectMessage = SessionTextToken.Empty;
-        LastRewardApplicationSummary = SessionTextToken.Empty;
-        LastPermanentUnlockSummary = SessionTextToken.Empty;
-        _lastAutomaticLootBundle = null;
-        _hasPendingRewardSettlement = false;
-        _runtimeTelemetryEvents.Clear();
-        _pendingRewardChoices.Clear();
-        if (resetSeedOverride)
-        {
-            _quickBattleSeedOverride = null;
-        }
-
-        _compiledQuickBattleScenario = null;
-        QuickBattleConfig = quickBattleConfig;
-        QuickBattleLaneKind = laneKind;
-        EnsureBattleDeployReady();
-        EnsureRewardChoices(reset: true);
-        ActiveRun = RunStateService.StartRun("quick-battle", CaptureBlueprintState(), true);
-        SyncActiveRunRecord();
-        SyncExpeditionState();
-    }
-
     public bool TryCycleCampaignChapter(int direction) => _expeditionFlow.TryCycleCampaignChapter(direction);
-
-    private bool TryCycleCampaignChapterCore(int direction)
-    {
-        if (!CanChangeCampaignSelection)
-        {
-            return false;
-        }
-
-        var chapterIds = GetOrderedCampaignChapterIds();
-        if (chapterIds.Count <= 1)
-        {
-            return false;
-        }
-
-        EnsureCampaignSelection();
-        var currentIndex = Math.Max(0, chapterIds.FindIndex(id => string.Equals(id, Profile.CampaignProgress.SelectedChapterId, StringComparison.Ordinal)));
-        var nextIndex = WrapIndex(currentIndex + Math.Sign(direction), chapterIds.Count);
-        if (nextIndex == currentIndex)
-        {
-            return false;
-        }
-
-        Profile.CampaignProgress.SelectedChapterId = chapterIds[nextIndex];
-        var siteIds = GetOrderedSiteIdsForChapter(Profile.CampaignProgress.SelectedChapterId);
-        Profile.CampaignProgress.SelectedSiteId = siteIds.FirstOrDefault() ?? string.Empty;
-        ResetExpeditionTrackForCampaignSelection();
-        return true;
-    }
 
     public bool TryCycleCampaignSite(int direction) => _expeditionFlow.TryCycleCampaignSite(direction);
 
-    private bool TryCycleCampaignSiteCore(int direction)
-    {
-        if (!CanChangeCampaignSelection)
-        {
-            return false;
-        }
-
-        EnsureCampaignSelection();
-        var siteIds = GetOrderedSiteIdsForChapter(Profile.CampaignProgress.SelectedChapterId);
-        if (siteIds.Count <= 1)
-        {
-            return false;
-        }
-
-        var currentIndex = Math.Max(0, siteIds.FindIndex(id => string.Equals(id, Profile.CampaignProgress.SelectedSiteId, StringComparison.Ordinal)));
-        var nextIndex = WrapIndex(currentIndex + Math.Sign(direction), siteIds.Count);
-        if (nextIndex == currentIndex)
-        {
-            return false;
-        }
-
-        Profile.CampaignProgress.SelectedSiteId = siteIds[nextIndex];
-        ResetExpeditionTrackForCampaignSelection();
-        return true;
-    }
-
     public bool PrepareSelectedBattleNodeHandoff() => _expeditionFlow.PrepareSelectedBattleNodeHandoff();
-
-    private bool PrepareSelectedBattleNodeHandoffCore()
-    {
-        var selected = GetSelectedExpeditionNode();
-        if (selected == null || !selected.RequiresBattle)
-        {
-            return false;
-        }
-
-        CurrentExpeditionNodeIndex = selected.Index;
-        SelectedExpeditionNodeIndex = selected.Index;
-        EnsureCampaignSelection();
-        EnsureActiveRunNodeState(selected);
-        RestoreResolvedProgressMarkers(includeCurrentNode: false);
-        SyncActiveRunRecord();
-        SyncExpeditionState();
-        return true;
-    }
 
     public bool ResolveSelectedNodeToRewardSettlement() => _expeditionFlow.ResolveSelectedNodeToRewardSettlement();
 
-    private bool ResolveSelectedNodeToRewardSettlementCore()
-    {
-        var selected = GetSelectedExpeditionNode();
-        if (selected == null || selected.RequiresBattle)
-        {
-            return false;
-        }
-
-        CurrentExpeditionNodeIndex = selected.Index;
-        SelectedExpeditionNodeIndex = selected.Index;
-        EnsureCampaignSelection();
-        EnsureActiveRunNodeState(selected);
-        MarkNodeResolved(selected);
-        LastBattleVictory = true;
-        LastBattleSummary = BuildNodeSettlementSummaryToken(selected);
-        LastExpeditionEffectMessage = ApplyExpeditionNodeEffect(selected);
-        LastRewardApplicationSummary = SessionTextToken.Empty;
-        LastPermanentUnlockSummary = SessionTextToken.Empty;
-        _lastAutomaticLootBundle = null;
-        _hasPendingRewardSettlement = true;
-        UpdateCampaignProgressForResolvedNode(selected);
-        if (ActiveRun != null)
-        {
-            ActiveRun = ActiveRun with { LastSettlementWasVictory = true };
-        }
-
-        RestoreResolvedProgressMarkers(includeCurrentNode: true);
-        EnsureRewardChoices(reset: true);
-        SyncActiveRunIfPresent();
-        return true;
-    }
-
     public void ReloadCombatSandboxConfig() => _expeditionFlow.ReloadCombatSandboxConfig();
 
-    private void ReloadCombatSandboxConfigCore()
-    {
-        QuickBattleConfig = LoadCombatSandboxConfig();
-    }
-
     public void ReloadQuickBattleConfig() => _expeditionFlow.ReloadQuickBattleConfig();
-
-    private void ReloadQuickBattleConfigCore()
-    {
-        ReloadCombatSandboxConfig();
-    }
 
     private bool TryBuildQuickBattleCompiledScenario(out CombatSandboxCompiledScenario scenario, out string error)
     {
@@ -583,171 +333,23 @@ public sealed partial class GameSessionState
 
     public void AdvanceExpeditionNode() => _expeditionFlow.AdvanceExpeditionNode();
 
-    private void AdvanceExpeditionNodeCore()
-    {
-        ResolveSelectedExpeditionNode();
-    }
-
     public bool SelectNextExpeditionNode(int nodeIndex) => _expeditionFlow.SelectNextExpeditionNode(nodeIndex);
-
-    private bool SelectNextExpeditionNodeCore(int nodeIndex)
-    {
-        EnsureExpeditionNodes();
-        var current = GetCurrentExpeditionNode();
-        if (current == null || !current.NextNodeIndices.Contains(nodeIndex))
-        {
-            return false;
-        }
-
-        SelectedExpeditionNodeIndex = nodeIndex;
-        return true;
-    }
 
     public ExpeditionNodeViewModel? GetCurrentExpeditionNode() => _expeditionFlow.GetCurrentExpeditionNode();
 
-    private ExpeditionNodeViewModel? GetCurrentExpeditionNodeCore()
-    {
-        EnsureExpeditionNodes();
-        return CurrentExpeditionNodeIndex >= 0 && CurrentExpeditionNodeIndex < _expeditionNodes.Count
-            ? _expeditionNodes[CurrentExpeditionNodeIndex]
-            : null;
-    }
-
     public ExpeditionNodeViewModel? GetSelectedExpeditionNode() => _expeditionFlow.GetSelectedExpeditionNode();
-
-    private ExpeditionNodeViewModel? GetSelectedExpeditionNodeCore()
-    {
-        EnsureExpeditionNodes();
-        return SelectedExpeditionNodeIndex is int index && index >= 0 && index < _expeditionNodes.Count
-            ? _expeditionNodes[index]
-            : null;
-    }
 
     public IReadOnlyList<int> GetSelectableNextNodeIndices() => _expeditionFlow.GetSelectableNextNodeIndices();
 
-    private IReadOnlyList<int> GetSelectableNextNodeIndicesCore()
-    {
-        var current = GetCurrentExpeditionNode();
-        if (current == null)
-        {
-            return Array.Empty<int>();
-        }
-
-        if (!_resolvedExpeditionNodeIds.Contains(current.Id))
-        {
-            return new[] { current.Index };
-        }
-
-        return current.NextNodeIndices ?? Array.Empty<int>();
-    }
-
     public bool ResolveSelectedExpeditionNode() => _expeditionFlow.ResolveSelectedExpeditionNode();
-
-    private bool ResolveSelectedExpeditionNodeCore()
-    {
-        var selected = GetSelectedExpeditionNode();
-        if (selected == null)
-        {
-            return false;
-        }
-
-        EnsureCampaignSelection();
-        EnsureActiveRunNodeState(selected);
-        MarkNodeResolved(selected);
-        LastExpeditionEffectMessage = ApplyExpeditionNodeEffect(selected);
-        UpdateCampaignProgressForResolvedNode(selected);
-        CurrentExpeditionNodeIndex = ResolveNextActiveNodeIndex(selected.Index);
-        if (ActiveRun != null)
-        {
-            ActiveRun = ActiveRun with
-            {
-                Overlay = ActiveRun.Overlay with
-                {
-                    CurrentNodeIndex = CurrentExpeditionNodeIndex,
-                    SiteNodeIndex = CurrentExpeditionNodeIndex,
-                }
-            };
-        }
-        RestoreResolvedProgressMarkers(includeCurrentNode: CurrentExpeditionNodeIndex == selected.Index && CurrentExpeditionNodeIndex >= _expeditionNodes.Count - 1);
-        SyncActiveRunRecord();
-        SyncExpeditionState();
-        AutoSelectNextExpeditionNode();
-        return true;
-    }
 
     public void AbandonExpeditionRun() => _expeditionFlow.AbandonExpeditionRun();
 
-    private void AbandonExpeditionRunCore()
-    {
-        IsQuickBattleSmokeActive = false;
-        QuickBattleLaneKind = CombatSandboxLaneKind.None;
-        HasActiveExpeditionRun = false;
-        SelectedExpeditionNodeIndex = null;
-        LastExpeditionEffectMessage = new SessionTextToken(
-            GameLocalizationTables.UIExpedition,
-            "ui.expedition.effect.return_town",
-            "Expedition ended. Returning to Town.");
-        _hasPendingRewardSettlement = false;
-        _pendingRewardChoices.Clear();
-        ActiveRun = null;
-        SyncActiveRunRecord();
-    }
-
     public void ReturnToTownAfterReward() => _expeditionFlow.ReturnToTownAfterReward();
-
-    private void ReturnToTownAfterRewardCore()
-    {
-        ConsumePendingPermanentUnlock();
-        FinalizeRewardSettlement();
-        IsQuickBattleSmokeActive = false;
-        QuickBattleLaneKind = CombatSandboxLaneKind.None;
-        _quickBattleSeedOverride = null;
-        _compiledQuickBattleScenario = null;
-    }
 
     public void SetCurrentScene(string sceneName) => _profileSync.SetCurrentScene(sceneName);
 
-    private void SetCurrentSceneCore(string sceneName)
-    {
-        CurrentSceneName = sceneName;
-        if (string.Equals(sceneName, SceneNames.Town, StringComparison.Ordinal))
-        {
-            ResetRecruitPhaseForTownEntry();
-            AppendRuntimeTelemetry(BuildEconomySnapshot("town_entry"));
-        }
-    }
-
     public bool CanManualProfileReload(out string reason) => _profileSync.CanManualProfileReload(out reason);
-
-    private bool CanManualProfileReloadCore(out string reason)
-    {
-        if (!string.Equals(CurrentSceneName, SceneNames.Town, StringComparison.Ordinal))
-        {
-            reason = "프로필 재로드는 Town에서만 허용됩니다.";
-            return false;
-        }
-
-        if (HasActiveExpeditionRun)
-        {
-            reason = "진행 중인 expedition이 있어 프로필을 다시 불러올 수 없습니다.";
-            return false;
-        }
-
-        if (_hasPendingRewardSettlement)
-        {
-            reason = "보상 settlement가 남아 있어 프로필을 다시 불러올 수 없습니다.";
-            return false;
-        }
-
-        if (IsQuickBattleSmokeActive)
-        {
-            reason = "Quick Battle smoke overlay 중에는 프로필을 다시 불러올 수 없습니다.";
-            return false;
-        }
-
-        reason = string.Empty;
-        return true;
-    }
 
     public Result RerollRecruitOffers() => _recruitmentFlow.RerollRecruitOffers();
 
@@ -1768,315 +1370,17 @@ public sealed partial class GameSessionState
 
     public void RecordBattleAudit(BattleReplayBundle replay) => _rewardSettlementFlow.RecordBattleAudit(replay);
 
-    private void RecordBattleAuditCore(BattleReplayBundle replay)
-    {
-        Profile.MatchHeaders.Add(new MatchRecordHeader
-        {
-            MatchId = replay.Header.MatchId,
-            RunId = ActiveRun?.RunId ?? string.Empty,
-            ContentVersion = replay.Header.ContentVersion,
-            SimVersion = replay.Header.SimVersion,
-            Seed = replay.Header.Seed,
-            PlayerSnapshotHash = replay.Header.PlayerSnapshotHash,
-            EnemySnapshotHash = replay.Header.EnemySnapshotHash,
-            StartedAtUtc = replay.Header.StartedAtUtc,
-            CompletedAtUtc = replay.Header.CompletedAtUtc,
-            Winner = replay.Header.Winner.ToString(),
-            FinalStateHash = replay.Header.FinalStateHash,
-        });
-        Profile.MatchBlobs.Add(new MatchRecordBlob
-        {
-            MatchId = replay.Header.MatchId,
-            CompileVersion = replay.Input.CompileVersion,
-            CompileHash = replay.Input.CompileHash,
-            InputDigest = $"{replay.Input.TeamPosture}|{replay.Input.Allies.Count}|{replay.Input.Enemies.Count}",
-            BattleSummaryDigest = replay.BattleSummary == null
-                ? string.Empty
-                : $"{replay.BattleSummary.WinnerSideIndex}|{replay.BattleSummary.BattleDurationSeconds:0.###}|{replay.BattleSummary.UnexplainedDamageRatio:0.###}|{replay.BattleSummary.MajorEventCollisionRate:0.###}",
-            ReadabilityDigest = replay.Readability == null
-                ? string.Empty
-                : $"{replay.Readability.UnexplainedDamageRatio:0.###}|{replay.Readability.UnexplainedHealingRatio:0.###}|{string.Join(",", replay.Readability.Violations.Select(violation => violation.ToString()))}",
-            EventStream = replay.EventStream.Select(@event =>
-                $"{@event.StepIndex}|{@event.ActorId.Value}|{@event.ActionType}|{@event.LogCode}|{@event.TargetId?.Value}|{@event.Value:0.###}|{@event.EventKind}|{@event.PayloadId}|{@event.SecondaryValue:0.###}|{@event.Note}").ToList(),
-            KeyframeDigests = replay.Keyframes.Select(frame =>
-                $"{frame.StepIndex}|{frame.TimeSeconds:0.###}|{frame.StateHash}").ToList(),
-            TelemetryEvents = replay.TelemetryEvents?
-                .Select(record => $"{record.Domain}|{record.EventKind}|{record.TimeSeconds:0.###}|{record.Explain?.SourceContentId}|{record.Explain?.SourceDisplayName}|{record.StringValueA}|{record.ValueA:0.###}|{record.IntValueA}")
-                .ToList()
-                ?? new List<string>(),
-            ArtifactPaths = new List<string>
-            {
-                replay.BattleSummary != null ? "Logs/loop-d-balance" : string.Empty,
-                replay.Readability != null ? "Logs/loop-d-balance/readability_watchlist.json" : string.Empty,
-            }.Where(path => !string.IsNullOrWhiteSpace(path)).ToList(),
-        });
-
-        if (ActiveRun != null)
-        {
-            if (!string.IsNullOrWhiteSpace(ActiveRun.Overlay.LastCompileHash)
-                && !string.Equals(ActiveRun.Overlay.LastCompileHash, replay.Input.CompileHash, StringComparison.Ordinal))
-            {
-                Profile.SuspicionFlags.Add(new SuspicionFlagRecord
-                {
-                    FlagId = Guid.NewGuid().ToString("N"),
-                    RunId = ActiveRun.RunId,
-                    MatchId = replay.Header.MatchId,
-                    Reason = "compile_hash_mismatch",
-                    ExpectedHash = ActiveRun.Overlay.LastCompileHash,
-                    ObservedHash = replay.Input.CompileHash,
-                    CreatedAtUtc = DateTime.UtcNow.ToString("O"),
-                });
-            }
-
-            ActiveRun = RunStateService.CompleteBattle(ActiveRun, replay.Header.MatchId);
-            SyncActiveRunRecord();
-        }
-    }
-
     public void SaveDebugSnapshot(string note = "manual-debug-save") => _profileSync.SaveDebugSnapshot(note);
-
-    private void SaveDebugSnapshotCore(string note = "manual-debug-save")
-    {
-        Profile.RunSummaries.Add(new RunSummaryRecord
-        {
-            RunId = Guid.NewGuid().ToString("N"),
-            ExpeditionId = note,
-            Result = "debug-save",
-            GoldEarned = 0,
-            NodesCleared = CurrentExpeditionNodeIndex,
-            CompletedAtUtc = DateTime.UtcNow.ToString("O")
-        });
-    }
 
     public void SetLastBattleResult(bool victory, string summary) =>
         _rewardSettlementFlow.SetLastBattleResult(victory, summary);
 
-    private void SetLastBattleResultCore(bool victory, string summary)
-    {
-        LastBattleVictory = victory;
-        LastBattleSummary = SessionTextToken.Plain(summary);
-        LastRewardApplicationSummary = SessionTextToken.Empty;
-        LastPermanentUnlockSummary = SessionTextToken.Empty;
-        _hasPendingRewardSettlement = true;
-        if (ActiveRun != null)
-        {
-            ActiveRun = ActiveRun with { LastSettlementWasVictory = victory };
-        }
-
-        EnsureRewardChoices(reset: true);
-        SyncActiveRunIfPresent();
-    }
-
     public void MarkBattleResolved(bool victory, int stepCount, int eventCount) =>
         _rewardSettlementFlow.MarkBattleResolved(victory, stepCount, eventCount);
 
-    private void MarkBattleResolvedCore(bool victory, int stepCount, int eventCount)
-    {
-        var resolvedNode = GetSelectedExpeditionNode() ?? GetCurrentExpeditionNode();
-        var shouldCreateRewardSettlement = !IsDirectCombatSandboxLane;
-        LastBattleVictory = victory;
-        LastRewardApplicationSummary = SessionTextToken.Empty;
-        LastPermanentUnlockSummary = SessionTextToken.Empty;
-        _lastAutomaticLootBundle = null;
-        _hasPendingRewardSettlement = shouldCreateRewardSettlement;
-
-        if (resolvedNode != null && !IsQuickBattleSmokeActive)
-        {
-            CurrentExpeditionNodeIndex = resolvedNode.Index;
-            SelectedExpeditionNodeIndex = resolvedNode.Index;
-            EnsureCampaignSelection();
-            EnsureActiveRunNodeState(resolvedNode);
-        }
-
-        if (victory && ActiveRun != null && !string.IsNullOrWhiteSpace(ActiveRun.Overlay.RewardSourceId))
-        {
-            TryApplyAutomaticLoot();
-        }
-
-        if (victory && resolvedNode != null && !IsQuickBattleSmokeActive)
-        {
-            MarkNodeResolved(resolvedNode);
-            LastExpeditionEffectMessage = ApplyExpeditionNodeEffect(resolvedNode);
-            UpdateCampaignProgressForResolvedNode(resolvedNode);
-            LastBattleSummary = LastExpeditionEffectMessage.HasValue
-                ? new SessionTextToken(
-                    GameLocalizationTables.UIReward,
-                    "ui.reward.battle_summary.route_effect",
-                    "{0} / {1} steps / {2} events\nRoute: {3}\nNode Effect: {4}",
-                    SessionTextArg.Localized(
-                        GameLocalizationTables.UIReward,
-                        victory ? "ui.reward.result.victory" : "ui.reward.result.defeat",
-                        victory ? "Victory" : "Defeat"),
-                    SessionTextArg.Number(stepCount),
-                    SessionTextArg.Number(eventCount),
-                    SessionTextArg.Localized(GameLocalizationTables.UIExpedition, resolvedNode.LabelKey, resolvedNode.Id),
-                    SessionTextArg.Token(LastExpeditionEffectMessage))
-                : new SessionTextToken(
-                    GameLocalizationTables.UIReward,
-                    "ui.reward.battle_summary.route",
-                    "{0} / {1} steps / {2} events\nRoute: {3}",
-                    SessionTextArg.Localized(
-                        GameLocalizationTables.UIReward,
-                        victory ? "ui.reward.result.victory" : "ui.reward.result.defeat",
-                        victory ? "Victory" : "Defeat"),
-                    SessionTextArg.Number(stepCount),
-                    SessionTextArg.Number(eventCount),
-                    SessionTextArg.Localized(GameLocalizationTables.UIExpedition, resolvedNode.LabelKey, resolvedNode.Id));
-            RestoreResolvedProgressMarkers(includeCurrentNode: true);
-        }
-        else
-        {
-            LastBattleSummary = BuildBattleSummaryToken(victory, stepCount, eventCount);
-            if (!IsQuickBattleSmokeActive)
-            {
-                HasActiveExpeditionRun = false;
-            }
-
-            if (resolvedNode != null && !IsQuickBattleSmokeActive)
-            {
-                RestoreResolvedProgressMarkers(includeCurrentNode: false);
-            }
-        }
-
-        if (ActiveRun != null)
-        {
-            ActiveRun = ActiveRun with
-            {
-                LastSettlementWasVictory = victory,
-                Overlay = ActiveRun.Overlay with
-                {
-                    PendingRewardIds = shouldCreateRewardSettlement ? ActiveRun.Overlay.PendingRewardIds : Array.Empty<string>(),
-                    RewardSourceId = shouldCreateRewardSettlement ? ActiveRun.Overlay.RewardSourceId : string.Empty,
-                }
-            };
-        }
-
-        if (shouldCreateRewardSettlement)
-        {
-            EnsureRewardChoices(reset: true);
-        }
-        else
-        {
-            _pendingRewardChoices.Clear();
-        }
-
-        SyncActiveRunIfPresent();
-    }
-
     public bool ApplyRewardChoice(int index) => _rewardSettlementFlow.ApplyRewardChoice(index);
-
-    private bool ApplyRewardChoiceCore(int index)
-    {
-        if (index < 0 || index >= _pendingRewardChoices.Count)
-        {
-            return false;
-        }
-
-        var choice = _pendingRewardChoices[index];
-        var rewardSourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty;
-        if (HasRecordedRewardSettlement(rewardSourceId))
-        {
-            _pendingRewardChoices.Clear();
-            LastRewardApplicationSummary = new SessionTextToken(
-                GameLocalizationTables.UIReward,
-                "ui.reward.status.recovered_choice",
-                "Recovered previous reward settlement.");
-            AppendRuntimeTelemetry(RuntimeOperationalTelemetry.CreateRewardSettlementDuplicatePrevented(
-                ResolveTelemetryRunId(),
-                rewardSourceId));
-            SyncActiveRunIfPresent();
-            return true;
-        }
-
-        var timestamp = DateTime.UtcNow.ToString("O");
-        switch (choice.Kind)
-        {
-            case RewardChoiceKind.Gold:
-                ApplyLedgerBackedReward(new RewardOption(choice.PayloadId, SM.Core.Content.RewardType.Gold, choice.GoldAmount, BuildRewardChoiceSummaryKey(choice)), BuildRewardChoiceSummaryToken(choice));
-                break;
-            case RewardChoiceKind.Item:
-                Profile.Inventory.Add(new InventoryItemRecord
-                {
-                    ItemInstanceId = $"{choice.PayloadId}-{Guid.NewGuid():N}",
-                    ItemBaseId = choice.PayloadId,
-                    EquippedHeroId = string.Empty,
-                    AffixIds = new List<string>()
-                });
-                Profile.InventoryLedger.Add(new InventoryLedgerEntryRecord
-                {
-                    EntryId = Guid.NewGuid().ToString("N"),
-                    RunId = ActiveRun?.RunId ?? string.Empty,
-                    ItemInstanceId = Profile.Inventory.Last().ItemInstanceId,
-                    ItemBaseId = choice.PayloadId,
-                    ChangeKind = "reward_item",
-                    Amount = 1,
-                    CreatedAtUtc = timestamp,
-                    Summary = BuildRewardChoiceSummaryKey(choice),
-                    SourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
-                    SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId, isSettlementChoice: true),
-                });
-                Profile.RewardLedger.Add(new RewardLedgerEntryRecord
-                {
-                    EntryId = Guid.NewGuid().ToString("N"),
-                    RunId = ActiveRun?.RunId ?? string.Empty,
-                    RewardId = choice.PayloadId,
-                    RewardType = SM.Core.Content.RewardType.Item.ToString(),
-                    Amount = 1,
-                    CreatedAtUtc = timestamp,
-                    Summary = BuildRewardChoiceSummaryKey(choice),
-                    SourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
-                    SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId, isSettlementChoice: true),
-                });
-                LastRewardApplicationSummary = BuildRewardChoiceSummaryToken(choice);
-                break;
-            case RewardChoiceKind.TemporaryAugment:
-                ApplyLedgerBackedReward(new RewardOption(choice.PayloadId, SM.Core.Content.RewardType.TemporaryAugment, 1, BuildRewardChoiceSummaryKey(choice)), BuildRewardChoiceSummaryToken(choice));
-                break;
-            case RewardChoiceKind.Echo:
-                ApplyLedgerBackedReward(new RewardOption(choice.PayloadId, SM.Core.Content.RewardType.Echo, choice.EchoAmount, BuildRewardChoiceSummaryKey(choice)), BuildRewardChoiceSummaryToken(choice));
-                break;
-            case RewardChoiceKind.PermanentAugmentSlot:
-                return false;
-        }
-
-        Profile.RunSummaries.Add(new RunSummaryRecord
-        {
-            RunId = Guid.NewGuid().ToString("N"),
-            ExpeditionId = IsQuickBattleSmokeActive ? "quick-battle" : $"node-{CurrentExpeditionNodeIndex}",
-            Result = LastBattleVictory ? "victory" : "defeat",
-            GoldEarned = choice.Kind == RewardChoiceKind.Gold ? choice.GoldAmount : 0,
-            NodesCleared = CurrentExpeditionNodeIndex + 1,
-            CompletedAtUtc = DateTime.UtcNow.ToString("O"),
-            ChapterId = ActiveRun?.Overlay.ChapterId ?? Profile.CampaignProgress.SelectedChapterId,
-            SiteId = ActiveRun?.Overlay.SiteId ?? Profile.CampaignProgress.SelectedSiteId,
-        });
-
-        AppendRuntimeTelemetry(RuntimeOperationalTelemetry.CreateRewardOptionChosen(
-            ResolveTelemetryRunId(),
-            rewardSourceId,
-            choice.PayloadId,
-            Profile.Currencies.Gold,
-            Profile.Currencies.Echo));
-        AppendRuntimeTelemetry(BuildEconomySnapshot("reward_choice_applied"));
-        _pendingRewardChoices.Clear();
-        SyncActiveRunIfPresent();
-        return true;
-    }
 
     public string PreviewPermanentUnlockFromTemporaryAugment(string augmentId) =>
         _rewardSettlementFlow.PreviewPermanentUnlockFromTemporaryAugment(augmentId);
-
-    private string PreviewPermanentUnlockFromTemporaryAugmentCore(string augmentId)
-    {
-        if (string.IsNullOrWhiteSpace(augmentId)
-            || ActiveRun == null
-            || !string.IsNullOrWhiteSpace(ActiveRun.Overlay.FirstSelectedTemporaryAugmentId))
-        {
-            return string.Empty;
-        }
-
-        return ResolvePendingPermanentUnlockId(augmentId);
-    }
-
 
 }

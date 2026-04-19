@@ -28,54 +28,345 @@ public sealed partial class GameSessionState
             _session = session;
         }
 
-        internal void BeginNewExpedition() => _session.BeginNewExpeditionCore();
+        internal void BeginNewExpedition()
+        {
+            _session.IsQuickBattleSmokeActive = false;
+            _session.QuickBattleLaneKind = CombatSandboxLaneKind.None;
+            _session.HasActiveExpeditionRun = true;
+            _session.CurrentExpeditionNodeIndex = 0;
+            _session.SelectedExpeditionNodeIndex = null;
+            _session.LastBattleVictory = false;
+            _session.LastBattleSummary = SessionTextToken.Empty;
+            _session.LastExpeditionEffectMessage = SessionTextToken.Empty;
+            _session.LastRewardApplicationSummary = SessionTextToken.Empty;
+            _session.LastPermanentUnlockSummary = SessionTextToken.Empty;
+            _session._lastAutomaticLootBundle = null;
+            _session._hasPendingRewardSettlement = false;
+            _session._quickBattleSeedOverride = null;
+            _session._compiledQuickBattleScenario = null;
+            _session._runtimeTelemetryEvents.Clear();
+            _session._resolvedExpeditionNodeIds.Clear();
+            _session.EnsureBattleDeployReady();
+            _session.EnsureCampaignSelection();
+            _session.EnsureExpeditionNodes(reset: true);
+            _session.AutoSelectNextExpeditionNode();
+            _session.EnsureRewardChoices(reset: true);
+            _session.ActiveRun = RunStateService.StartRun(_session.GetExpeditionRunId(), _session.CaptureBlueprintState(), false);
+            _session.SyncActiveRunRecord();
+            _session.SyncExpeditionState();
+        }
 
-        internal void PrepareQuickBattleSmoke() => _session.PrepareQuickBattleSmokeCore();
+        internal void PrepareQuickBattleSmoke()
+        {
+            var config = LoadCombatSandboxConfig();
+            PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
+        }
 
-        internal void PrepareQuickBattleSmoke(CombatSandboxConfig? quickBattleConfig) =>
-            _session.PrepareQuickBattleSmokeCore(quickBattleConfig);
+        internal void PrepareQuickBattleSmoke(CombatSandboxConfig? quickBattleConfig)
+        {
+            PrepareQuickBattleSmoke(quickBattleConfig, CombatSandboxLaneKind.TownIntegrationSmoke);
+        }
 
         internal void PrepareQuickBattleSmoke(
             CombatSandboxConfig? quickBattleConfig,
             CombatSandboxLaneKind laneKind,
-            bool resetSeedOverride = true) =>
-            _session.PrepareQuickBattleSmokeCore(quickBattleConfig, laneKind, resetSeedOverride);
+            bool resetSeedOverride = true)
+        {
+            if (!_session.CanStartQuickBattleSmoke && !_session.IsQuickBattleSmokeActive)
+            {
+                return;
+            }
 
-        internal void PrepareCombatSandboxDirect() => _session.PrepareCombatSandboxDirectCore();
+            _session.IsQuickBattleSmokeActive = true;
+            _session.HasActiveExpeditionRun = false;
+            _session.LastBattleVictory = false;
+            _session.LastBattleSummary = SessionTextToken.Empty;
+            _session.LastExpeditionEffectMessage = SessionTextToken.Empty;
+            _session.LastRewardApplicationSummary = SessionTextToken.Empty;
+            _session.LastPermanentUnlockSummary = SessionTextToken.Empty;
+            _session._lastAutomaticLootBundle = null;
+            _session._hasPendingRewardSettlement = false;
+            _session._runtimeTelemetryEvents.Clear();
+            _session._pendingRewardChoices.Clear();
+            if (resetSeedOverride)
+            {
+                _session._quickBattleSeedOverride = null;
+            }
 
-        internal void PrepareTownQuickBattleSmoke() => _session.PrepareTownQuickBattleSmokeCore();
+            _session._compiledQuickBattleScenario = null;
+            _session.QuickBattleConfig = quickBattleConfig;
+            _session.QuickBattleLaneKind = laneKind;
+            _session.EnsureBattleDeployReady();
+            _session.EnsureRewardChoices(reset: true);
+            _session.ActiveRun = RunStateService.StartRun("quick-battle", _session.CaptureBlueprintState(), true);
+            _session.SyncActiveRunRecord();
+            _session.SyncExpeditionState();
+        }
 
-        internal void RestartQuickBattle(bool advanceSeed) => _session.RestartQuickBattleCore(advanceSeed);
+        internal void PrepareCombatSandboxDirect()
+        {
+            var config = LoadCombatSandboxConfig();
+            PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.DirectCombatSandbox);
+        }
 
-        internal void ExitCombatSandbox() => _session.ExitCombatSandboxCore();
+        internal void PrepareTownQuickBattleSmoke()
+        {
+            var config = LoadCombatSandboxConfig();
+            PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
+        }
 
-        internal bool TryCycleCampaignChapter(int direction) => _session.TryCycleCampaignChapterCore(direction);
+        internal void RestartQuickBattle(bool advanceSeed)
+        {
+            ReloadCombatSandboxConfig();
+            if (advanceSeed)
+            {
+                _session._quickBattleSeedOverride = (_session._quickBattleSeedOverride ?? ResolveConfiguredQuickBattleSeed(_session.QuickBattleConfig)) + 1;
+            }
 
-        internal bool TryCycleCampaignSite(int direction) => _session.TryCycleCampaignSiteCore(direction);
+            PrepareQuickBattleSmoke(
+                _session.QuickBattleConfig,
+                _session.QuickBattleLaneKind == CombatSandboxLaneKind.None
+                    ? ResolveDefaultQuickBattleLane(_session.QuickBattleConfig)
+                    : _session.QuickBattleLaneKind,
+                resetSeedOverride: !advanceSeed);
+        }
 
-        internal bool PrepareSelectedBattleNodeHandoff() => _session.PrepareSelectedBattleNodeHandoffCore();
+        internal void ExitCombatSandbox()
+        {
+            _session.IsQuickBattleSmokeActive = false;
+            _session.QuickBattleLaneKind = CombatSandboxLaneKind.None;
+            _session.HasActiveExpeditionRun = false;
+            _session._hasPendingRewardSettlement = false;
+            _session._pendingRewardChoices.Clear();
+            _session._quickBattleSeedOverride = null;
+            _session._compiledQuickBattleScenario = null;
+            _session.ActiveRun = null;
+            _session.SyncActiveRunRecord();
+            _session.SyncExpeditionState();
+        }
 
-        internal bool ResolveSelectedNodeToRewardSettlement() => _session.ResolveSelectedNodeToRewardSettlementCore();
+        internal bool TryCycleCampaignChapter(int direction)
+        {
+            if (!_session.CanChangeCampaignSelection)
+            {
+                return false;
+            }
 
-        internal void ReloadCombatSandboxConfig() => _session.ReloadCombatSandboxConfigCore();
+            var chapterIds = _session.GetOrderedCampaignChapterIds();
+            if (chapterIds.Count <= 1)
+            {
+                return false;
+            }
 
-        internal void ReloadQuickBattleConfig() => _session.ReloadQuickBattleConfigCore();
+            _session.EnsureCampaignSelection();
+            var currentIndex = Math.Max(0, chapterIds.FindIndex(id => string.Equals(id, _session.Profile.CampaignProgress.SelectedChapterId, StringComparison.Ordinal)));
+            var nextIndex = WrapIndex(currentIndex + Math.Sign(direction), chapterIds.Count);
+            if (nextIndex == currentIndex)
+            {
+                return false;
+            }
 
-        internal void AdvanceExpeditionNode() => _session.AdvanceExpeditionNodeCore();
+            _session.Profile.CampaignProgress.SelectedChapterId = chapterIds[nextIndex];
+            var siteIds = _session.GetOrderedSiteIdsForChapter(_session.Profile.CampaignProgress.SelectedChapterId);
+            _session.Profile.CampaignProgress.SelectedSiteId = siteIds.FirstOrDefault() ?? string.Empty;
+            _session.ResetExpeditionTrackForCampaignSelection();
+            return true;
+        }
 
-        internal bool SelectNextExpeditionNode(int nodeIndex) => _session.SelectNextExpeditionNodeCore(nodeIndex);
+        internal bool TryCycleCampaignSite(int direction)
+        {
+            if (!_session.CanChangeCampaignSelection)
+            {
+                return false;
+            }
 
-        internal ExpeditionNodeViewModel? GetCurrentExpeditionNode() => _session.GetCurrentExpeditionNodeCore();
+            _session.EnsureCampaignSelection();
+            var siteIds = _session.GetOrderedSiteIdsForChapter(_session.Profile.CampaignProgress.SelectedChapterId);
+            if (siteIds.Count <= 1)
+            {
+                return false;
+            }
 
-        internal ExpeditionNodeViewModel? GetSelectedExpeditionNode() => _session.GetSelectedExpeditionNodeCore();
+            var currentIndex = Math.Max(0, siteIds.FindIndex(id => string.Equals(id, _session.Profile.CampaignProgress.SelectedSiteId, StringComparison.Ordinal)));
+            var nextIndex = WrapIndex(currentIndex + Math.Sign(direction), siteIds.Count);
+            if (nextIndex == currentIndex)
+            {
+                return false;
+            }
 
-        internal IReadOnlyList<int> GetSelectableNextNodeIndices() => _session.GetSelectableNextNodeIndicesCore();
+            _session.Profile.CampaignProgress.SelectedSiteId = siteIds[nextIndex];
+            _session.ResetExpeditionTrackForCampaignSelection();
+            return true;
+        }
 
-        internal bool ResolveSelectedExpeditionNode() => _session.ResolveSelectedExpeditionNodeCore();
+        internal bool PrepareSelectedBattleNodeHandoff()
+        {
+            var selected = GetSelectedExpeditionNode();
+            if (selected == null || !selected.RequiresBattle)
+            {
+                return false;
+            }
 
-        internal void AbandonExpeditionRun() => _session.AbandonExpeditionRunCore();
+            _session.CurrentExpeditionNodeIndex = selected.Index;
+            _session.SelectedExpeditionNodeIndex = selected.Index;
+            _session.EnsureCampaignSelection();
+            _session.EnsureActiveRunNodeState(selected);
+            _session.RestoreResolvedProgressMarkers(includeCurrentNode: false);
+            _session.SyncActiveRunRecord();
+            _session.SyncExpeditionState();
+            return true;
+        }
 
-        internal void ReturnToTownAfterReward() => _session.ReturnToTownAfterRewardCore();
+        internal bool ResolveSelectedNodeToRewardSettlement()
+        {
+            var selected = GetSelectedExpeditionNode();
+            if (selected == null || selected.RequiresBattle)
+            {
+                return false;
+            }
+
+            _session.CurrentExpeditionNodeIndex = selected.Index;
+            _session.SelectedExpeditionNodeIndex = selected.Index;
+            _session.EnsureCampaignSelection();
+            _session.EnsureActiveRunNodeState(selected);
+            _session.MarkNodeResolved(selected);
+            _session.LastBattleVictory = true;
+            _session.LastBattleSummary = _session.BuildNodeSettlementSummaryToken(selected);
+            _session.LastExpeditionEffectMessage = _session.ApplyExpeditionNodeEffect(selected);
+            _session.LastRewardApplicationSummary = SessionTextToken.Empty;
+            _session.LastPermanentUnlockSummary = SessionTextToken.Empty;
+            _session._lastAutomaticLootBundle = null;
+            _session._hasPendingRewardSettlement = true;
+            _session.UpdateCampaignProgressForResolvedNode(selected);
+            if (_session.ActiveRun != null)
+            {
+                _session.ActiveRun = _session.ActiveRun with { LastSettlementWasVictory = true };
+            }
+
+            _session.RestoreResolvedProgressMarkers(includeCurrentNode: true);
+            _session.EnsureRewardChoices(reset: true);
+            _session.SyncActiveRunIfPresent();
+            return true;
+        }
+
+        internal void ReloadCombatSandboxConfig()
+        {
+            _session.QuickBattleConfig = LoadCombatSandboxConfig();
+        }
+
+        internal void ReloadQuickBattleConfig()
+        {
+            ReloadCombatSandboxConfig();
+        }
+
+        internal void AdvanceExpeditionNode()
+        {
+            ResolveSelectedExpeditionNode();
+        }
+
+        internal bool SelectNextExpeditionNode(int nodeIndex)
+        {
+            _session.EnsureExpeditionNodes();
+            var current = GetCurrentExpeditionNode();
+            if (current == null || !current.NextNodeIndices.Contains(nodeIndex))
+            {
+                return false;
+            }
+
+            _session.SelectedExpeditionNodeIndex = nodeIndex;
+            return true;
+        }
+
+        internal ExpeditionNodeViewModel? GetCurrentExpeditionNode()
+        {
+            _session.EnsureExpeditionNodes();
+            return _session.CurrentExpeditionNodeIndex >= 0 && _session.CurrentExpeditionNodeIndex < _session._expeditionNodes.Count
+                ? _session._expeditionNodes[_session.CurrentExpeditionNodeIndex]
+                : null;
+        }
+
+        internal ExpeditionNodeViewModel? GetSelectedExpeditionNode()
+        {
+            _session.EnsureExpeditionNodes();
+            return _session.SelectedExpeditionNodeIndex is int index && index >= 0 && index < _session._expeditionNodes.Count
+                ? _session._expeditionNodes[index]
+                : null;
+        }
+
+        internal IReadOnlyList<int> GetSelectableNextNodeIndices()
+        {
+            var current = GetCurrentExpeditionNode();
+            if (current == null)
+            {
+                return Array.Empty<int>();
+            }
+
+            if (!_session._resolvedExpeditionNodeIds.Contains(current.Id))
+            {
+                return new[] { current.Index };
+            }
+
+            return current.NextNodeIndices ?? Array.Empty<int>();
+        }
+
+        internal bool ResolveSelectedExpeditionNode()
+        {
+            var selected = GetSelectedExpeditionNode();
+            if (selected == null)
+            {
+                return false;
+            }
+
+            _session.EnsureCampaignSelection();
+            _session.EnsureActiveRunNodeState(selected);
+            _session.MarkNodeResolved(selected);
+            _session.LastExpeditionEffectMessage = _session.ApplyExpeditionNodeEffect(selected);
+            _session.UpdateCampaignProgressForResolvedNode(selected);
+            _session.CurrentExpeditionNodeIndex = _session.ResolveNextActiveNodeIndex(selected.Index);
+            if (_session.ActiveRun != null)
+            {
+                _session.ActiveRun = _session.ActiveRun with
+                {
+                    Overlay = _session.ActiveRun.Overlay with
+                    {
+                        CurrentNodeIndex = _session.CurrentExpeditionNodeIndex,
+                        SiteNodeIndex = _session.CurrentExpeditionNodeIndex,
+                    }
+                };
+            }
+
+            _session.RestoreResolvedProgressMarkers(includeCurrentNode: _session.CurrentExpeditionNodeIndex == selected.Index && _session.CurrentExpeditionNodeIndex >= _session._expeditionNodes.Count - 1);
+            _session.SyncActiveRunRecord();
+            _session.SyncExpeditionState();
+            _session.AutoSelectNextExpeditionNode();
+            return true;
+        }
+
+        internal void AbandonExpeditionRun()
+        {
+            _session.IsQuickBattleSmokeActive = false;
+            _session.QuickBattleLaneKind = CombatSandboxLaneKind.None;
+            _session.HasActiveExpeditionRun = false;
+            _session.SelectedExpeditionNodeIndex = null;
+            _session.LastExpeditionEffectMessage = new SessionTextToken(
+                GameLocalizationTables.UIExpedition,
+                "ui.expedition.effect.return_town",
+                "Expedition ended. Returning to Town.");
+            _session._hasPendingRewardSettlement = false;
+            _session._pendingRewardChoices.Clear();
+            _session.ActiveRun = null;
+            _session.SyncActiveRunRecord();
+        }
+
+        internal void ReturnToTownAfterReward()
+        {
+            _session.ConsumePendingPermanentUnlock();
+            _session.FinalizeRewardSettlement();
+            _session.IsQuickBattleSmokeActive = false;
+            _session.QuickBattleLaneKind = CombatSandboxLaneKind.None;
+            _session._quickBattleSeedOverride = null;
+            _session._compiledQuickBattleScenario = null;
+        }
 
         internal bool TryResolveCurrentEncounter(out ResolvedEncounterContext context, out string error) =>
             _session.TryResolveCurrentEncounterCore(out context, out error);
