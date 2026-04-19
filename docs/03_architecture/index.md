@@ -29,6 +29,23 @@
 - `MonoBehaviour`, `ScriptableObject`, scene 책임이 걸리면 `unity-boundaries.md`를 추가로 연다.
 - asmdef/persistence ownership까지 걸리면 `assembly-boundaries-and-persistence-ownership.md`를 추가로 연다.
 
+## 변경 라우팅 Quick Reference
+
+| 변경 유형 | 소유 경계 | 첫 테스트/검증 | 에디터 의존 경계 |
+| --- | --- | --- | --- |
+| 전투 규칙, damage, targeting, movement, status | `SM.Combat` | `test-batch-fast`, combat focused tests | editor-free |
+| 공통 id/stat/result/content schema enum | `SM.Core`, `SM.Core.Content` | `test-batch-fast` | editor-free |
+| reward, passive, loot, expedition progression rule | `SM.Meta` pure model/service | `test-batch-fast`, `MetaRewardPickTests` | editor-free unless session/UI application is in scope |
+| story/dialogue/runtime narrative decision | `SM.Meta` story/spec model | `test-batch-fast`, `StoryDirectorServiceTests` | editor-free when authored definition is not touched |
+| authored `ScriptableObject` definition/schema | `SM.Content` | `content-validate`, BatchOnly focused tests | editor-required/content lane |
+| authored definition to runtime snapshot/spec conversion | `SM.Unity.ContentConversion`, runtime bootstrap | BatchOnly focused tests, `test-harness-lint` | editor-light; `Resources.Load*` stays at choke point |
+| session orchestration and UI-facing facade | `SM.Unity.Session`, `GameSessionState` public facade | `test-batch-fast`, `GameSessionStateTests` when production path is touched | editor-light; public facade migration is separate task |
+| UI controller, presenter, view binding | `SM.Unity` presentation boundary | focused EditMode, PlayMode smoke when scene/prefab behavior matters | editor-light to editor-required |
+| save contract and serialization | `SM.Persistence.Abstractions`, `SM.Persistence.Json` | persistence focused tests, `test-batch-fast` | editor-free unless repository adapter integration is in scope |
+| docs, validation harness, guard scripts | `docs/**`, `tasks/**`, `tools/**`, `Assets/Tests/**` | docs policy/check/smoke, `test-harness-lint`, focused guard | editor-free unless Unity batch guard is being verified |
+
+라우팅 표는 첫 도착지를 고르는 기준이다. 변경이 두 경계를 동시에 건드리면 더 낮은 pure rule부터 닫고, session/content/UI 연결은 별도 단계로 올린다.
+
 ## Unity agent harness 문서
 
 - `unity-agent-harness-contract.md`: Unity repo에서 task를 어떻게 shape하고 닫는지에 대한 상위 운영 계약

@@ -52,6 +52,20 @@
 - scene/prefab/component/package 구조 편집이나 typed guardrail이 중요한 경우에만 MCP를 사용한다.
 - trivial inspect 때문에 MCP tool catalog를 먼저 훑지 않는다.
 
+## 변경 라우팅 Quick Reference
+
+| 변경 유형 | 첫 위치 | 기본 검증 | 승격 기준 |
+| --- | --- | --- | --- |
+| 전투 규칙/수치/판정 | `Assets/_Game/Scripts/Runtime/Combat/**` | `test-batch-fast` | authored content나 scene 확인이 필요하면 BatchOnly/content lane |
+| reward/passive/loot/progression 규칙 | `Assets/_Game/Scripts/Runtime/Meta/**` | `test-batch-fast` | session 적용이나 UI 표시가 필요하면 `SM.Unity.Session` |
+| narrative runtime spec/service | `SM.Meta` pure story/spec model | `test-batch-fast` | authored definition 변환이 필요하면 `SM.Unity.ContentConversion` |
+| authored content schema/definition | `Assets/_Game/Scripts/Runtime/Content/**` | `content-validate` 또는 BatchOnly focused | `SM.Meta` 직접 참조 금지, adapter 경유 |
+| authored -> runtime 변환 | `Assets/_Game/Scripts/Runtime/Unity/ContentConversion/**` | BatchOnly focused + `test-harness-lint` | `Resources.Load*`는 choke point 안에만 유지 |
+| session flow/facade | `Assets/_Game/Scripts/Runtime/Unity/Session/**`, `GameSessionState` facade | `test-batch-fast` + focused session tests | public facade 변경이나 UI migration이 필요하면 중단 후 task 분리 |
+| UI/presentation/controller | `Assets/_Game/Scripts/Runtime/Unity/**` UI/presenter 경계 | focused EditMode 또는 PlayMode smoke | gameplay truth가 필요하면 `SM.Meta`/`SM.Combat`로 내려서 분리 |
+| persistence contract/serializer | `SM.Persistence.Abstractions`, `SM.Persistence.Json` | `test-batch-fast` + persistence focused | save migration/compatibility가 필요하면 ADR/task 기록 |
+| docs/harness/guard | `docs/**`, `tasks/**`, `tools/**`, `Assets/Tests/**` | docs scripts, lint, focused guard | 구조 정책이 바뀌면 architecture docs와 task status 동시 갱신 |
+
 ## 테스트 하네스 규칙
 
 - 상세 가이드: `docs/TESTING.md`
