@@ -106,6 +106,35 @@ public sealed class BuildBoundaryGuardFastTests
     }
 
     [Test]
+    public void EditModeTestClasses_DeclareClassLevelExecutionLane()
+    {
+        var testRoot = Path.Combine("Assets", "Tests", "EditMode");
+        foreach (var path in Directory.EnumerateFiles(testRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            var codeText = ReadCodeText(path);
+            if (!ContainsTestAttribute(codeText))
+            {
+                continue;
+            }
+
+            var classMatches = Regex.Matches(
+                codeText,
+                @"(?<attributes>(?:\[[^\]]+\]\s*)*)public\s+(?:sealed\s+)?class\s+(?<name>\w+Tests)\b",
+                RegexOptions.Singleline);
+
+            foreach (Match classMatch in classMatches)
+            {
+                var attributes = classMatch.Groups["attributes"].Value;
+                var className = classMatch.Groups["name"].Value;
+                Assert.That(
+                    Regex.IsMatch(attributes, @"\[Category\(\s*""(?:FastUnit|BatchOnly|ManualLoopD)""\s*\)\]"),
+                    Is.True,
+                    $"{path} test class {className} must declare a class-level FastUnit, BatchOnly, or ManualLoopD category.");
+            }
+        }
+    }
+
+    [Test]
     public void FastUnitTests_UseGameSessionFactoryInsteadOfPublicSessionConstructor()
     {
         var allowedFactoryPath = Path.Combine("Assets", "Tests", "EditMode", "Fakes", "GameSessionTestFactory.cs")
@@ -175,6 +204,13 @@ public sealed class BuildBoundaryGuardFastTests
     private static bool IsFastUnitTest(string text)
     {
         return text.Contains("[Category(\"FastUnit\")]", StringComparison.Ordinal);
+    }
+
+    private static bool ContainsTestAttribute(string text)
+    {
+        return text.Contains("[Test]", StringComparison.Ordinal)
+               || text.Contains("[TestCase", StringComparison.Ordinal)
+               || text.Contains("[UnityTest]", StringComparison.Ordinal);
     }
 
     private static string ReadCodeText(string path)

@@ -11,7 +11,8 @@ param(
     1. Runtime asmdef가 UnityEditor / AssetDatabase를 #if 가드 없이 참조하면 실패
     2. [Category("BatchOnly")]가 아닌 테스트 코드에서 직접 resource/content/session production bootstrap을 호출하면 실패
     3. [Category("FastUnit")] 테스트 코드에서 authored Unity object fixture를 사용하면 실패
-    4. 스크립트/문서에서 -quit를 -runTests와 같이 사용하면 실패
+    4. EditMode test class가 class-level execution category를 선언하지 않으면 실패
+    5. 스크립트/문서에서 -quit를 -runTests와 같이 사용하면 실패
 #>
 
 $ErrorActionPreference = 'Continue'
@@ -109,6 +110,21 @@ if (Test-Path $testDir) {
         $isBatchOnly = $fullContent -match '\[Category\(\s*"BatchOnly"\s*\)\]'
         $isFastUnit = $fullContent -match '\[Category\(\s*"FastUnit"\s*\)\]'
         $isGameSessionFactoryAllowlisted = $gameSessionFactoryAllowlist -contains $relPath
+
+        # Test classes must declare their lane at class level. Method-level categories are not enough.
+        if ($codeContent -match '\[(?:Test|TestCase|UnityTest)\b') {
+            $classMatches = [regex]::Matches(
+                $codeContent,
+                '(?s)(?<attributes>(?:\[[^\]]+\]\s*)*)public\s+(?:sealed\s+|static\s+|partial\s+)*class\s+(?<name>\w+Tests)\b')
+
+            foreach ($classMatch in $classMatches) {
+                $attributes = $classMatch.Groups['attributes'].Value
+                if ($attributes -notmatch '\[Category\(\s*"(FastUnit|BatchOnly|ManualLoopD)"\s*\)\]') {
+                    Write-LintError -Check 'TestCategory-missing-class-level' -File $relPath -Detail "Test class $($classMatch.Groups['name'].Value) must declare class-level [Category(`"FastUnit`")], [Category(`"BatchOnly`")], or [Category(`"ManualLoopD`")]"
+                    $check2Fail = $true
+                }
+            }
+        }
 
         # Resources.Load / Resources.LoadAll을 코드에서 직접 사용하는 경우
         if ($codeContent -match 'Resources\.Load(All)?\s*\(') {

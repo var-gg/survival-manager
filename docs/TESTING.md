@@ -123,7 +123,8 @@ pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
 1. **UnityEditor-in-runtime**: Runtime asmdef 소스에서 `using UnityEditor`가 `#if UNITY_EDITOR` 가드 없이 사용되면 실패.
 2. **resource/content/session bootstrap outside BatchOnly**: `[Category("BatchOnly")]` 없는 테스트에서 `new RuntimeCombatContentLookup()`, `Resources.LoadAll`, `NarrativeRuntimeBootstrap.LoadFromResources()`, public `new GameSessionState(...)`를 호출하면 실패.
 3. **authored Unity object in FastUnit**: `[Category("FastUnit")]` 테스트에서 `ScriptableObject.CreateInstance`, `UnityEngine.Object`, `DestroyImmediate`, `using SM.Content.Definitions`, `RuntimeCombatContentLookup` token을 사용하면 실패.
-4. **quit-with-runTests**: 스크립트/문서에서 `-quit`와 `-runTests`를 같이 사용하면 실패.
+4. **test category closure**: `[Test]`, `[TestCase]`, `[UnityTest]`가 있는 EditMode test class가 class-level `FastUnit`, `BatchOnly`, `ManualLoopD` category를 선언하지 않으면 실패.
+5. **quit-with-runTests**: 스크립트/문서에서 `-quit`와 `-runTests`를 같이 사용하면 실패.
 
 추가 메모:
 - 기본 playable/runtime 경로는 `new RuntimeCombatContentLookup()`의 default mode를 사용한다.
