@@ -164,6 +164,46 @@ public sealed class BuildBoundaryGuardFastTests
     }
 
     [Test]
+    public void NonBatchOnlyEditModeTests_DoNotCallProductionContentBootstrap()
+    {
+        var allowedFactoryPath = Path.Combine("Assets", "Tests", "EditMode", "Fakes", "GameSessionTestFactory.cs")
+            .Replace('\\', '/');
+        var forbiddenPatterns = new[]
+        {
+            (Pattern: @"Resources\.Load(All)?\s*\(", Description: "Resources loading"),
+            (Pattern: string.Concat(@"new\s+RuntimeCombat", @"ContentLookup\s*\("), Description: "production combat content lookup construction"),
+            (Pattern: @"NarrativeRuntimeBootstrap\.LoadFromResources\s*\(", Description: "narrative resources bootstrap")
+        };
+        var testRoot = Path.Combine("Assets", "Tests", "EditMode");
+        foreach (var path in Directory.EnumerateFiles(testRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            var text = File.ReadAllText(path);
+            if (IsBatchOnlyTest(text))
+            {
+                continue;
+            }
+
+            var normalizedPath = path.Replace('\\', '/');
+            var codeText = ReadCodeText(path);
+            foreach (var rule in forbiddenPatterns)
+            {
+                Assert.That(
+                    Regex.IsMatch(codeText, rule.Pattern),
+                    Is.False,
+                    $"{path} must not use {rule.Description} outside BatchOnly.");
+            }
+
+            if (!string.Equals(normalizedPath, allowedFactoryPath, StringComparison.Ordinal))
+            {
+                Assert.That(
+                    Regex.IsMatch(codeText, @"new\s+GameSessionState\s*\("),
+                    Is.False,
+                    $"{path} must not call the public GameSessionState constructor outside BatchOnly.");
+            }
+        }
+    }
+
+    [Test]
     public void FastUnitTests_DoNotUseAuthoredUnityObjectFixtures()
     {
         var forbiddenTokens = new[]
@@ -173,6 +213,7 @@ public sealed class BuildBoundaryGuardFastTests
             string.Concat("Destroy", "Immediate"),
             string.Concat("using SM.Content", ".Definitions"),
             string.Concat("Resources", ".Load"),
+            string.Concat("NarrativeRuntimeBootstrap", ".LoadFromResources"),
             string.Concat("RuntimeCombat", "ContentLookup"),
         };
         var testRoot = Path.Combine("Assets", "Tests", "EditMode");
@@ -204,6 +245,11 @@ public sealed class BuildBoundaryGuardFastTests
     private static bool IsFastUnitTest(string text)
     {
         return text.Contains("[Category(\"FastUnit\")]", StringComparison.Ordinal);
+    }
+
+    private static bool IsBatchOnlyTest(string text)
+    {
+        return text.Contains("[Category(\"BatchOnly\")]", StringComparison.Ordinal);
     }
 
     private static bool ContainsTestAttribute(string text)
