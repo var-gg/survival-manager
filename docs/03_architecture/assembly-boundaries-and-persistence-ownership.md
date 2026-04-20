@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-20
+- 최종수정일: 2026-04-21
 - 소스오브트루스: `docs/03_architecture/assembly-boundaries-and-persistence-ownership.md`
 - 관련문서:
   - `docs/03_architecture/dependency-direction.md`
@@ -54,7 +54,7 @@
 
 - `SM.Meta`와 `SM.Tests.FastUnit`은 authored content/resource/session production bootstrap을 직접 밟지 않는 쪽으로 닫는다.
 - `SM.Unity`는 session facade, runtime composition, content conversion, production lookup을 품는 boundary adapter다. 이 레이어를 pure/editor-free closure 내부로 설명하지 않는다.
-- `GameSessionState` public facade와 production constructor는 유지된다. FastUnit에서는 `SM.Tests.FastUnit`의 `GameSessionTestFactory`와 fake lookup을 사용하고, production bootstrap coverage는 BatchOnly 또는 runtime integration lane에서 다룬다.
+- `GameSessionState` public facade와 production constructor는 유지된다. production narrative `Resources` bootstrap은 `GameSessionRuntimeBootstrapProvider`가 명시적 choke point로 소유하고, `GameSessionState` 본 파일은 provider에 위임한다. FastUnit에서는 `SM.Tests.FastUnit`의 `GameSessionTestFactory`와 fake lookup을 사용하고, production bootstrap coverage는 BatchOnly 또는 runtime integration lane에서 다룬다.
 - persistence ownership closure는 `SM.Meta`가 persistence record/repository concrete를 알지 않는다는 뜻이지, `SM.Unity` runtime adapter가 사라졌다는 뜻이 아니다.
 
 ## asmdef cycle 사전 점검 규칙
@@ -84,4 +84,4 @@ preflight에서 아래를 먼저 적는다.
 - `GameSessionState`, `BattleScreenController`, `RunStateService`가 persistence truth를 직접 소유하지 않도록 경계를 유지한다.
 - `SM.Meta -> SM.Persistence.Abstractions` 참조가 필요해 보이면 먼저 boundary 문서와 `dependency-direction.md`를 다시 확인한다.
 - `SM.Meta -> SM.Content` 참조는 금지한다. 누락 필드가 있으면 authored definition을 넘기지 말고 pure template/spec 필드를 추가한다.
-- `GameSessionState.cs` 본 파일은 public facade와 session field 보유를 중심으로 유지하고, 새 규칙/정산/상태전이는 `SM.Meta` 또는 `SM.Unity/Session` 하위 흐름 파일로 이동시킨다.
+- `GameSessionState.cs` 본 파일은 public facade와 session field 보유를 중심으로 유지하고, 새 규칙/정산/상태전이는 `SM.Meta` 또는 `SM.Unity/Session` 하위 흐름 파일로 이동시킨다. production narrative/bootstrap resource loading은 `GameSessionRuntimeBootstrapProvider` 같은 명시적 runtime provider에 둔다.

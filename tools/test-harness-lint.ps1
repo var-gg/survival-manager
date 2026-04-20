@@ -126,26 +126,41 @@ if (Test-Path $testDir) {
             }
         }
 
-        # Resources.Load / Resources.LoadAll을 코드에서 직접 사용하는 경우
-        if ($codeContent -match 'Resources\.Load(All)?\s*\(') {
+        $resourcesPatternFound =
+            $codeContent -match 'Resources\.Load(All)?\s*\(' -or
+            $codeContent -match 'using\s+static\s+UnityEngine\.Resources\s*;' -or
+            $codeContent -match 'using\s+\w+\s*=\s*UnityEngine\.Resources\s*;'
+
+        # Resources.Load / Resources.LoadAll 또는 alias/static-import를 코드에서 직접 사용하는 경우
+        if ($resourcesPatternFound) {
             if (-not $isBatchOnly) {
-                Write-LintError -Check 'ResourcesLoad-outside-BatchOnly' -File $relPath -Detail "Resources.Load/LoadAll found but [Category(`"BatchOnly`")] missing on class"
+                Write-LintError -Check 'ResourcesLoad-outside-BatchOnly' -File $relPath -Detail "Resources.Load/LoadAll or Resources alias/static-import found but [Category(`"BatchOnly`")] missing on class"
                 $check2Fail = $true
             }
         }
 
-        # new RuntimeCombatContentLookup()를 코드에서 직접 생성하는 경우
-        if ($codeContent -match 'new\s+RuntimeCombatContentLookup\s*\(') {
+        $runtimeLookupPatternFound =
+            $codeContent -match 'new\s+RuntimeCombatContentLookup\s*\(' -or
+            $codeContent -match '\bRuntimeCombatContentLookup\s+\w+\s*\(' -or
+            $codeContent -match 'using\s+\w+\s*=\s*SM\.Unity\.RuntimeCombatContentLookup\s*;'
+
+        # RuntimeCombatContentLookup를 코드에서 직접 생성하거나 wrapper/alias로 숨기는 경우
+        if ($runtimeLookupPatternFound) {
             if (-not $isBatchOnly) {
-                Write-LintError -Check 'RuntimeLookup-outside-BatchOnly' -File $relPath -Detail "new RuntimeCombatContentLookup() found but [Category(`"BatchOnly`")] missing — use FakeCombatContentLookup or add [Category(`"BatchOnly`")]"
+                Write-LintError -Check 'RuntimeLookup-outside-BatchOnly' -File $relPath -Detail "RuntimeCombatContentLookup construction/wrapper/alias found but [Category(`"BatchOnly`")] missing — use FakeCombatContentLookup or add [Category(`"BatchOnly`")]"
                 $check2Fail = $true
             }
         }
+
+        $narrativeResourcesPatternFound =
+            $codeContent -match 'NarrativeRuntimeBootstrap\.LoadFromResources\s*\(' -or
+            $codeContent -match 'using\s+\w+\s*=\s*SM\.Unity\.NarrativeRuntimeBootstrap\s*;' -or
+            $codeContent -match '\bNarrativeRuntimeBootstrap\s+\w+\s*\('
 
         # NarrativeRuntimeBootstrap.LoadFromResources는 Resources-backed narrative catalog를 로드한다.
-        if ($codeContent -match 'NarrativeRuntimeBootstrap\.LoadFromResources\s*\(') {
+        if ($narrativeResourcesPatternFound) {
             if (-not $isBatchOnly) {
-                Write-LintError -Check 'NarrativeResources-outside-BatchOnly' -File $relPath -Detail "NarrativeRuntimeBootstrap.LoadFromResources() found but [Category(`"BatchOnly`")] missing"
+                Write-LintError -Check 'NarrativeResources-outside-BatchOnly' -File $relPath -Detail "NarrativeRuntimeBootstrap resource bootstrap/wrapper/alias found but [Category(`"BatchOnly`")] missing"
                 $check2Fail = $true
             }
         }
@@ -161,10 +176,18 @@ if (Test-Path $testDir) {
         if ($isFastUnit) {
             $fastUnitForbiddenPatterns = @(
                 @{ Check = 'ScriptableObject-in-FastUnit'; Pattern = 'ScriptableObject\.CreateInstance'; Detail = 'ScriptableObject.CreateInstance found in FastUnit — move authored-object coverage to BatchOnly or use pure fixtures' },
+                @{ Check = 'UnityScriptableObject-in-FastUnit'; Pattern = 'UnityEngine\.ScriptableObject'; Detail = 'UnityEngine.ScriptableObject token found in FastUnit — move authored-object coverage to BatchOnly or use pure fixtures' },
+                @{ Check = 'ScriptableObject-alias-in-FastUnit'; Pattern = 'using\s+\w+\s*=\s*UnityEngine\.ScriptableObject\s*;'; Detail = 'UnityEngine.ScriptableObject alias found in FastUnit — move authored-object coverage to BatchOnly or use pure fixtures' },
                 @{ Check = 'UnityObject-in-FastUnit'; Pattern = 'UnityEngine\.Object'; Detail = 'UnityEngine.Object lifecycle found in FastUnit — move authored-object coverage to BatchOnly or use pure fixtures' },
+                @{ Check = 'UnityObject-alias-in-FastUnit'; Pattern = 'using\s+\w+\s*=\s*UnityEngine\.Object\s*;'; Detail = 'UnityEngine.Object alias found in FastUnit — move authored-object coverage to BatchOnly or use pure fixtures' },
+                @{ Check = 'UnityObjectLifecycle-in-FastUnit'; Pattern = 'Object\.(Instantiate|Destroy|DestroyImmediate)\s*\('; Detail = 'UnityEngine.Object lifecycle API found in FastUnit — move Unity object lifecycle coverage to BatchOnly' },
                 @{ Check = 'DestroyImmediate-in-FastUnit'; Pattern = 'DestroyImmediate'; Detail = 'DestroyImmediate found in FastUnit — move Unity object lifecycle coverage to BatchOnly' },
                 @{ Check = 'ContentDefinitions-in-FastUnit'; Pattern = 'using\s+SM\.Content\.Definitions'; Detail = 'SM.Content.Definitions import found in FastUnit — use pure snapshot/spec fixtures or BatchOnly' },
-                @{ Check = 'RuntimeLookup-token-in-FastUnit'; Pattern = 'RuntimeCombatContentLookup'; Detail = 'RuntimeCombatContentLookup token found in FastUnit — production lookup coverage belongs in BatchOnly' }
+                @{ Check = 'ContentDefinitions-token-in-FastUnit'; Pattern = '\bSM\.Content\.Definitions\b'; Detail = 'SM.Content.Definitions token found in FastUnit — use pure snapshot/spec fixtures or BatchOnly' },
+                @{ Check = 'ResourcesStaticImport-in-FastUnit'; Pattern = 'using\s+static\s+UnityEngine\.Resources\s*;'; Detail = 'UnityEngine.Resources static import found in FastUnit — move resource coverage to BatchOnly' },
+                @{ Check = 'ResourcesAlias-in-FastUnit'; Pattern = 'using\s+\w+\s*=\s*UnityEngine\.Resources\s*;'; Detail = 'UnityEngine.Resources alias found in FastUnit — move resource coverage to BatchOnly' },
+                @{ Check = 'RuntimeLookup-token-in-FastUnit'; Pattern = 'RuntimeCombatContentLookup'; Detail = 'RuntimeCombatContentLookup token found in FastUnit — production lookup coverage belongs in BatchOnly' },
+                @{ Check = 'RuntimeLookup-alias-in-FastUnit'; Pattern = 'using\s+\w+\s*=\s*SM\.Unity\.RuntimeCombatContentLookup\s*;'; Detail = 'RuntimeCombatContentLookup alias found in FastUnit — production lookup coverage belongs in BatchOnly' }
             )
 
             foreach ($rule in $fastUnitForbiddenPatterns) {

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-20
+- 최종수정일: 2026-04-21
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -33,9 +33,9 @@
 
 | 범위 | 현재 판정 | 라우팅 |
 | --- | --- | --- |
-| `SM.Core`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions` | pure boundary로 닫힘 | `test-batch-fast`, boundary guard |
-| `FastUnit` test lane | `SM.Tests.FastUnit` 전용 asmdef에서 editor-free/resource-free/authored-object-free로 닫힘 | fake lookup, pure fixture, class-level category, dedicated folder guard |
-| `SM.Unity`, `GameSessionState`, runtime bootstrap/content lookup | boundary adapter로 유지 | FastUnit 밖, 필요 시 focused session 또는 BatchOnly |
+| `SM.Core`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions` | pure boundary로 닫힘 | `test-batch-fast`, exact asmdef allowlist, boundary guard |
+| `FastUnit` test lane | `SM.Tests.FastUnit` 전용 asmdef에서 editor-free/resource-free/authored-object-free로 닫힘 | fake lookup, pure fixture, class-level category, dedicated folder/alias-wrapper guard |
+| `SM.Unity`, `GameSessionState`, runtime bootstrap/content lookup | boundary adapter로 유지 | `GameSessionRuntimeBootstrapProvider` production choke point, FastUnit 밖, 필요 시 focused session 또는 BatchOnly |
 | authored content, `ScriptableObject`, `Resources.Load*`, content conversion | pure closure 밖 | content validation 또는 BatchOnly |
 | UI/controller/scene/prefab, PlayMode | runtime/editor integration lane | focused EditMode, PlayMode smoke, manual/editor-required |
 | `ManualLoopD` | 장시간 balance/telemetry lane | default fast closure 증거로 쓰지 않음 |

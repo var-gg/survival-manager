@@ -114,7 +114,17 @@ public sealed partial class GameSessionState
     public NarrativeProgressRecord NarrativeProgress => StoryDirector.Progress;
 
     public GameSessionState(ICombatContentLookup combatContentLookup)
-        : this(combatContentLookup, NarrativeRuntimeBootstrap.LoadFromResources())
+        : this(combatContentLookup, GameSessionRuntimeBootstrapProvider.Resources)
+    {
+    }
+
+    internal GameSessionState(
+        ICombatContentLookup combatContentLookup,
+        GameSessionRuntimeBootstrapProvider runtimeBootstrapProvider)
+        : this(
+            combatContentLookup,
+            (runtimeBootstrapProvider ?? throw new ArgumentNullException(nameof(runtimeBootstrapProvider)))
+                .CreateNarrativeBootstrap())
     {
     }
 

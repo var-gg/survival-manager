@@ -21,10 +21,24 @@ public sealed class BuildBoundaryGuardFastTests
         AssertNoEngineReference(assemblies, "SM.Meta.Serialization");
         AssertNoEngineReference(assemblies, "SM.Persistence.Abstractions");
 
-        Assert.That(assemblies["SM.Meta"].References, Is.EquivalentTo(new[] { "SM.Core", "SM.Combat" }));
-        Assert.That(assemblies["SM.Meta.Serialization"].References, Does.Contain("SM.Meta"));
-        Assert.That(assemblies["SM.Meta.Serialization"].References, Does.Not.Contain("SM.Content"));
-        Assert.That(assemblies["SM.Persistence.Abstractions"].References, Does.Not.Contain("SM.Content"));
+        AssertAssemblyReferences(assemblies, "SM.Meta", "SM.Core", "SM.Combat");
+        AssertAssemblyReferences(assemblies, "SM.Meta.Serialization", "SM.Core", "SM.Combat", "SM.Meta");
+        AssertAssemblyReferences(assemblies, "SM.Persistence.Abstractions", "SM.Core", "SM.Meta");
+        AssertNoReferences(
+            assemblies,
+            "SM.Meta.Serialization",
+            "SM.Content",
+            "SM.Persistence.Abstractions",
+            "SM.Persistence.Json",
+            "SM.Unity",
+            "SM.Editor");
+        AssertNoReferences(
+            assemblies,
+            "SM.Persistence.Abstractions",
+            "SM.Content",
+            "SM.Persistence.Json",
+            "SM.Unity",
+            "SM.Editor");
         Assert.That(assemblies["SM.Persistence.Json"].References, Does.Not.Contain("SM.Content"));
         Assert.That(assemblies["SM.Tests.FastUnit"].References, Does.Not.Contain("SM.Editor"));
         Assert.That(assemblies["SM.Tests.FastUnit"].References, Does.Not.Contain("Unity.Localization.Editor"));
@@ -67,6 +81,23 @@ public sealed class BuildBoundaryGuardFastTests
     {
         var path = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "GameSessionState.cs");
         Assert.That(File.ReadLines(path).Count(), Is.LessThanOrEqualTo(2500));
+    }
+
+    [Test]
+    public void GameSessionState_DoesNotOwnProductionNarrativeResourcesBootstrap()
+    {
+        var gameSessionPath = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "GameSessionState.cs");
+        var providerPath = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "GameSessionRuntimeBootstrapProvider.cs");
+        var productionBootstrapToken = string.Concat("NarrativeRuntimeBootstrap", ".LoadFromResources");
+
+        Assert.That(
+            ReadCodeText(gameSessionPath),
+            Does.Not.Contain(productionBootstrapToken),
+            "GameSessionState public facade must delegate production narrative Resources bootstrap to the runtime provider.");
+        Assert.That(
+            ReadCodeText(providerPath),
+            Does.Contain(productionBootstrapToken),
+            "GameSessionRuntimeBootstrapProvider must be the explicit production narrative Resources choke point.");
     }
 
     [Test]
@@ -198,8 +229,13 @@ public sealed class BuildBoundaryGuardFastTests
         var forbiddenPatterns = new[]
         {
             (Pattern: @"Resources\.Load(All)?\s*\(", Description: "Resources loading"),
-            (Pattern: string.Concat(@"new\s+RuntimeCombat", @"ContentLookup\s*\("), Description: "production combat content lookup construction"),
-            (Pattern: @"NarrativeRuntimeBootstrap\.LoadFromResources\s*\(", Description: "narrative resources bootstrap")
+            (Pattern: @"using\s+static\s+UnityEngine\.Resources\s*;", Description: "Resources static import alias"),
+            (Pattern: @"using\s+\w+\s*=\s*UnityEngine\.Resources\s*;", Description: "Resources type alias"),
+            (Pattern: string.Concat(@"\bRuntimeCombat", @"ContentLookup\b"), Description: "production combat content lookup token"),
+            (Pattern: string.Concat(@"using\s+\w+\s*=\s*SM\.Unity\.RuntimeCombat", @"ContentLookup\s*;"), Description: "production combat content lookup alias"),
+            (Pattern: @"NarrativeRuntimeBootstrap\.LoadFromResources\s*\(", Description: "narrative resources bootstrap"),
+            (Pattern: @"using\s+\w+\s*=\s*SM\.Unity\.NarrativeRuntimeBootstrap\s*;", Description: "narrative bootstrap alias"),
+            (Pattern: @"\bNarrativeRuntimeBootstrap\s+\w+\s*\(", Description: "narrative bootstrap wrapper method signature")
         };
         var testRoot = Path.Combine("Assets", "Tests", "EditMode");
         foreach (var path in Directory.EnumerateFiles(testRoot, "*.cs", SearchOption.AllDirectories))
@@ -233,15 +269,23 @@ public sealed class BuildBoundaryGuardFastTests
     [Test]
     public void FastUnitTests_DoNotUseAuthoredUnityObjectFixtures()
     {
-        var forbiddenTokens = new[]
+        var forbiddenPatterns = new[]
         {
-            string.Concat("ScriptableObject", ".CreateInstance"),
-            string.Concat("UnityEngine", ".Object"),
-            string.Concat("Destroy", "Immediate"),
-            string.Concat("using SM.Content", ".Definitions"),
-            string.Concat("Resources", ".Load"),
-            string.Concat("NarrativeRuntimeBootstrap", ".LoadFromResources"),
-            string.Concat("RuntimeCombat", "ContentLookup"),
+            (Pattern: string.Concat("ScriptableObject", @"\.CreateInstance"), Description: "scriptable object creation API"),
+            (Pattern: string.Concat(@"UnityEngine", @"\.ScriptableObject"), Description: "Unity scriptable object token"),
+            (Pattern: string.Concat(@"using\s+\w+\s*=\s*UnityEngine", @"\.ScriptableObject\s*;"), Description: "ScriptableObject alias"),
+            (Pattern: string.Concat(@"UnityEngine", @"\.Object"), Description: "Unity object token"),
+            (Pattern: string.Concat(@"using\s+\w+\s*=\s*UnityEngine", @"\.Object\s*;"), Description: "Unity object alias"),
+            (Pattern: string.Concat(@"Object\.(?:Instantiate|Destroy|Destroy", @"Immediate)\s*\("), Description: "Unity object lifecycle API"),
+            (Pattern: string.Concat(@"Destroy", @"Immediate\s*\("), Description: "immediate Unity object destruction"),
+            (Pattern: string.Concat(@"using\s+SM\.Content", @"\.Definitions"), Description: "content definitions import"),
+            (Pattern: string.Concat(@"\bSM\.Content", @"\.Definitions\b"), Description: "content definitions token"),
+            (Pattern: string.Concat(@"Resources", @"\.Load"), Description: "resource loading call"),
+            (Pattern: @"using\s+static\s+UnityEngine\.Resources\s*;", Description: "Resources static import alias"),
+            (Pattern: @"using\s+\w+\s*=\s*UnityEngine\.Resources\s*;", Description: "Resources type alias"),
+            (Pattern: string.Concat("NarrativeRuntimeBootstrap", @"\.LoadFromResources"), Description: "narrative resources bootstrap"),
+            (Pattern: string.Concat("RuntimeCombat", @"ContentLookup"), Description: "production content lookup token"),
+            (Pattern: string.Concat(@"using\s+\w+\s*=\s*SM\.Unity\.RuntimeCombat", @"ContentLookup\s*;"), Description: "production content lookup alias"),
         };
         var testRoot = Path.Combine("Assets", "Tests", "EditMode");
         foreach (var path in Directory.EnumerateFiles(testRoot, "*.cs", SearchOption.AllDirectories))
@@ -253,20 +297,47 @@ public sealed class BuildBoundaryGuardFastTests
             }
 
             var codeText = ReadCodeText(path);
-            foreach (var token in forbiddenTokens)
+            foreach (var rule in forbiddenPatterns)
             {
                 Assert.That(
-                    codeText,
-                    Does.Not.Contain(token),
-                    $"{path} is FastUnit and must not use authored Unity object fixtures or production content bootstrap token '{token}'.");
+                    Regex.IsMatch(codeText, rule.Pattern),
+                    Is.False,
+                    $"{path} is FastUnit and must not use authored Unity object fixtures or production content bootstrap pattern '{rule.Description}'.");
             }
         }
+    }
+
+    private static void AssertAssemblyReferences(
+        IReadOnlyDictionary<string, AssemblyDefinitionInfo> assemblies,
+        string assemblyName,
+        params string[] expectedReferences)
+    {
+        Assert.That(assemblies.ContainsKey(assemblyName), Is.True, $"{assemblyName} asmdef must exist.");
+        Assert.That(
+            assemblies[assemblyName].References,
+            Is.EquivalentTo(expectedReferences),
+            $"{assemblyName} references must stay exact.");
     }
 
     private static void AssertNoEngineReference(IReadOnlyDictionary<string, AssemblyDefinitionInfo> assemblies, string assemblyName)
     {
         Assert.That(assemblies.ContainsKey(assemblyName), Is.True, $"{assemblyName} asmdef must exist.");
         Assert.That(assemblies[assemblyName].NoEngineReferences, Is.True, $"{assemblyName} must set noEngineReferences=true.");
+    }
+
+    private static void AssertNoReferences(
+        IReadOnlyDictionary<string, AssemblyDefinitionInfo> assemblies,
+        string assemblyName,
+        params string[] forbiddenReferences)
+    {
+        Assert.That(assemblies.ContainsKey(assemblyName), Is.True, $"{assemblyName} asmdef must exist.");
+        foreach (var forbiddenReference in forbiddenReferences)
+        {
+            Assert.That(
+                assemblies[assemblyName].References,
+                Does.Not.Contain(forbiddenReference),
+                $"{assemblyName} must not reference {forbiddenReference}.");
+        }
     }
 
     private static bool IsFastUnitTest(string text)

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-20
+- 최종수정일: 2026-04-21
 - 소스오브트루스: `docs/03_architecture/dependency-direction.md`
 - 관련문서:
   - `docs/03_architecture/coding-principles.md`
@@ -75,7 +75,7 @@
 
 - `No Engine References`와 forbidden dependency guard로 닫는 대상은 pure asmdef와 `FastUnit` lane이다.
 - `SM.Unity`는 `SM.Content`, `SM.Meta`, persistence adapter를 조립하는 runtime boundary adapter이므로 editor-free pure lane으로 분류하지 않는다.
-- `RuntimeCombatContentLookup`, `NarrativeRuntimeBootstrap.LoadFromResources()`, content conversion, UI/controller/scene 경로는 FastUnit 밖에서 검증한다.
+- `RuntimeCombatContentLookup`, `GameSessionRuntimeBootstrapProvider`, `NarrativeRuntimeBootstrap.LoadFromResources()`, content conversion, UI/controller/scene 경로는 FastUnit 밖에서 검증한다. production narrative `Resources` bootstrap은 `GameSessionRuntimeBootstrapProvider`가 소유하고, `GameSessionState` 본 파일은 그 provider로 위임한다.
 - `SM.Tests.PlayMode -> SM.Editor` 금지는 필요조건일 뿐이며, PlayMode를 FastUnit/pure lane으로 승격한다는 뜻은 아니다.
 
 ## composition root 위치
@@ -102,7 +102,7 @@
 - EditMode.Integration은 asset pipeline이나 editor validation을 더 강하게 요구하는 BatchOnly 성격의 테스트를 점진 이동할 reserved lane이다.
 - PlayMode는 런타임 시나리오 검증용이므로 `SM.Editor` 참조를 기본 금지한다.
 - 테스트 편의를 위해 만든 helper는 production asmdef로 올리지 않는다.
-- `FastUnit`은 `Assets/Tests/EditMode/FastUnit/**` 전용 asmdef의 editor-free/resource-free/authored-object-free lane으로 유지한다. authored `ScriptableObject` fixture, `SM.Content.Definitions`, production content lookup, public session constructor coverage, `SM.Editor.Validation` 직접 검증은 `BatchOnly`로 격리한다.
+- `FastUnit`은 `Assets/Tests/EditMode/FastUnit/**` 전용 asmdef의 editor-free/resource-free/authored-object-free lane으로 유지한다. authored `ScriptableObject` fixture, `SM.Content.Definitions`, production content lookup, public session constructor coverage, `SM.Editor.Validation` 직접 검증은 `BatchOnly`로 격리한다. alias, static import, wrapper method로 금지 경로를 숨기는 것도 같은 위반으로 본다.
 
 ## AI가 흔히 만드는 잘못된 예와 바른 대안
 

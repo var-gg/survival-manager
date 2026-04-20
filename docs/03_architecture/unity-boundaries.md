@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-04-21
 - 소스오브트루스: `docs/03_architecture/unity-boundaries.md`
 - 관련문서:
   - `docs/03_architecture/coding-principles.md`
@@ -38,7 +38,7 @@
 - Boot scene은 runtime composition root다.
 - `GameBootstrap` 같은 entrypoint가 세션 루트, persistence entrypoint, scene flow를 조립한다.
 - 다른 scene은 이미 조립된 세션을 소비하는 쪽이어야 한다.
-- `SM.Unity`, `GameSessionState`, `NarrativeRuntimeBootstrap`, `RuntimeCombatContentLookup`, `ContentConversion`은 pure asmdef boundary가 아니라 Unity-side boundary adapter다.
+- `SM.Unity`, `GameSessionState`, `GameSessionRuntimeBootstrapProvider`, `NarrativeRuntimeBootstrap`, `RuntimeCombatContentLookup`, `ContentConversion`은 pure asmdef boundary가 아니라 Unity-side boundary adapter다.
 - 이 adapter가 존재한다는 사실은 정상이다. 단, FastUnit test가 이 경로를 직접 밟으면 안 되며 `BatchOnly`, PlayMode, editor-required lane으로 라우팅한다.
 
 ## scene script 얇게 유지 규칙
