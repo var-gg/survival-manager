@@ -98,6 +98,8 @@ Assets/Tests/
 - `Assets/Tests/EditMode/Integration` -> `SM.Tests.EditMode.Integration`
 - `Assets/Tests/PlayMode` -> `SM.Tests.PlayMode`
 
+`Assets/_Game/Scripts/Runtime/Unity/ContentConversion`에는 현재 별도 asmdef를 두지 않는다. 이 폴더는 `SM.Unity` 내부 converter 경계로 유지하며, public API와 session/persistence/UI ownership을 갖지 않는다. authored asset loading, editor sweep, file fallback choke point는 `ContentDefinitionRegistry.cs`에만 둔다.
+
 ## UI asset ownership
 
 - `Assets/_Game/UI/Foundation/**`: shared token, shared theme, shared `PanelSettings`

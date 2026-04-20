@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-04-21
 - 소스오브트루스: `docs/03_architecture/sim-sweep-and-balance-kpis.md`
 - 관련문서:
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
@@ -66,6 +66,7 @@
 - smoke sweep seed ladder: `17 / 23 / 29`
 - same scenario를 두 번 build했을 때 compile hash가 같아야 한다.
 - 같은 snapshot + 같은 seed로 두 번 돌렸을 때 winner, step count, final state hash가 같아야 한다.
+- symmetric mirror 4v4 timeout/draw policy는 default smoke/FastUnit gate가 아니라 `ManualLoopD` balance review에서 별도 추적한다.
 
 ## KPI 정의
 

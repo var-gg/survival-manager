@@ -75,7 +75,7 @@
 `BuildBoundaryGuardFastTests`는 위 pure asmdef의 `noEngineReferences=true`와 핵심 참조 allowlist를 고정한다. `SM.Meta.Serialization`은 `SM.Core`, `SM.Combat`, `SM.Meta`만, `SM.Persistence.Abstractions`는 `SM.Core`, `SM.Meta`만 참조해야 한다.
 
 `SM.Content`는 authored `ScriptableObject` 정의를 포함하므로 Unity-bound assembly로 본다.
-`SM.Unity.ContentConversion`은 `SM.Content` definition을 `SM.Meta` pure spec/model로 바꾸는 composition boundary다. production narrative resource bootstrap은 `SM.Unity` 내부 `GameSessionRuntimeBootstrapProvider`가 소유하며, FastUnit은 `GameSessionTestFactory`와 empty bootstrap/fake lookup 경로를 사용한다.
+`SM.Unity.ContentConversion`은 `SM.Content` definition을 `SM.Meta` pure spec/model로 바꾸는 composition boundary다. 현재는 별도 asmdef가 아니라 `SM.Unity` 내부 converter 폴더 경계이며, guard는 public API, session/persistence/UI ownership, registry 밖 resource/editor fallback을 금지한다. production narrative resource bootstrap은 `SM.Unity` 내부 `GameSessionRuntimeBootstrapProvider`가 소유하며, FastUnit은 `GameSessionTestFactory`와 empty bootstrap/fake lookup 경로를 사용한다.
 
 ## 어떤 문서를 먼저 봐야 하는가
 

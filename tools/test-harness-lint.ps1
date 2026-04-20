@@ -205,11 +205,83 @@ if (-not $check2Fail -and $exitCode -eq 0) {
 }
 
 # ────────────────────────────────────────────────
-# Check 3: -quit combined with -runTests
+# Check 3: ContentConversion ownership boundary
 # ────────────────────────────────────────────────
 
-Write-Host "`n== Check 3: -quit with -runTests ==" -ForegroundColor Cyan
+Write-Host "`n== Check 3: ContentConversion ownership boundary ==" -ForegroundColor Cyan
 $check3Fail = $false
+
+$contentConversionDir = Join-Path $RepoRoot 'Assets/_Game/Scripts/Runtime/Unity/ContentConversion'
+if (Test-Path $contentConversionDir) {
+    $asmdefs = Get-ChildItem $contentConversionDir -Filter '*.asmdef' -Recurse -ErrorAction SilentlyContinue
+    foreach ($asmdef in $asmdefs) {
+        $relPath = $asmdef.FullName.Substring($RepoRoot.Length).TrimStart('\', '/').Replace('\', '/')
+        Write-LintError -Check 'ContentConversion-asmdef' -File $relPath -Detail 'ContentConversion is currently an internal SM.Unity folder boundary; do not add a local asmdef without updating architecture docs and guards.'
+        $check3Fail = $true
+    }
+
+    $registryRelPath = 'Assets/_Game/Scripts/Runtime/Unity/ContentConversion/ContentDefinitionRegistry.cs'
+    $conversionFiles = Get-ChildItem $contentConversionDir -Filter '*.cs' -Recurse -ErrorAction SilentlyContinue
+    foreach ($file in $conversionFiles) {
+        $lines = Get-Content $file.FullName -ErrorAction SilentlyContinue
+        if ($null -eq $lines) { continue }
+
+        $codeContent = ($lines | Where-Object {
+            $trimmed = $_.TrimStart()
+            -not $trimmed.StartsWith('//') -and -not $trimmed.StartsWith('*') -and -not $trimmed.StartsWith('///') -and -not $trimmed.StartsWith('/*')
+        }) -join [Environment]::NewLine
+        $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/').Replace('\', '/')
+
+        if ($codeContent -notmatch 'namespace\s+SM\.Unity\.ContentConversion\s*;') {
+            Write-LintError -Check 'ContentConversion-namespace' -File $relPath -Detail 'ContentConversion files must stay in namespace SM.Unity.ContentConversion.'
+            $check3Fail = $true
+        }
+
+        $forbiddenAdapterPatterns = @(
+            @{ Check = 'ContentConversion-public-api'; Pattern = '(?m)^\s*public\s+'; Detail = 'ContentConversion must not expose public API surface from the SM.Unity assembly.' },
+            @{ Check = 'ContentConversion-persistence'; Pattern = '\bSM\.Persistence\b|\bSaveProfile\b'; Detail = 'ContentConversion must not own persistence or save profile truth.' },
+            @{ Check = 'ContentConversion-session'; Pattern = '\bGameSessionState\b|\bSessionRealm\b'; Detail = 'ContentConversion must not own session facade flow.' },
+            @{ Check = 'ContentConversion-runtime-lookup'; Pattern = '\bRuntimeCombatContentLookup\b'; Detail = 'ContentConversion must not construct or own production lookup.' },
+            @{ Check = 'ContentConversion-presentation'; Pattern = '\bMonoBehaviour\b|UnityEngine\.SceneManagement|UnityEngine\.UIElements|\bUIDocument\b'; Detail = 'ContentConversion must not own scene/UI/presentation responsibilities.' }
+        )
+
+        foreach ($rule in $forbiddenAdapterPatterns) {
+            if ($codeContent -match $rule.Pattern) {
+                Write-LintError -Check $rule.Check -File $relPath -Detail $rule.Detail
+                $check3Fail = $true
+            }
+        }
+
+        if ($relPath -eq $registryRelPath) {
+            continue
+        }
+
+        $assetLoadingPatterns = @(
+            @{ Check = 'ContentConversion-resource-loading'; Pattern = 'Resources\.Load(All)?\s*\('; Detail = 'Asset loading must stay in ContentDefinitionRegistry.' },
+            @{ Check = 'ContentConversion-assetdatabase'; Pattern = '\bAssetDatabase\b'; Detail = 'Editor asset sweep must stay in ContentDefinitionRegistry.' },
+            @{ Check = 'ContentConversion-unityeditor'; Pattern = '(?m)^\s*using\s+UnityEditor\s*;'; Detail = 'UnityEditor import must stay in ContentDefinitionRegistry.' },
+            @{ Check = 'ContentConversion-file-fallback'; Pattern = 'RuntimeCombatContentFileParser'; Detail = 'File fallback parser must stay in ContentDefinitionRegistry.' }
+        )
+
+        foreach ($rule in $assetLoadingPatterns) {
+            if ($codeContent -match $rule.Pattern) {
+                Write-LintError -Check $rule.Check -File $relPath -Detail $rule.Detail
+                $check3Fail = $true
+            }
+        }
+    }
+}
+
+if (-not $check3Fail -and $exitCode -eq 0) {
+    Write-Host "  PASS: ContentConversion remains an internal SM.Unity authored-to-runtime adapter boundary." -ForegroundColor Green
+}
+
+# ────────────────────────────────────────────────
+# Check 4: -quit combined with -runTests
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 4: -quit with -runTests ==" -ForegroundColor Cyan
+$check4Fail = $false
 
 $scriptDirs = @('tools', '.github', '.codex')
 $scriptExtensions = @('*.ps1', '*.sh', '*.yml', '*.yaml')
@@ -237,13 +309,13 @@ foreach ($dir in $scriptDirs) {
             if ($codeContent -match '-runTests' -and $codeContent -match "'-quit'|`"-quit`"|\s-quit\b") {
                 $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/')
                 Write-LintError -Check 'quit-with-runTests' -File $relPath -Detail "-quit and -runTests found in executable code — -quit can terminate Unity before tests finish"
-                $check3Fail = $true
+                $check4Fail = $true
             }
         }
     }
 }
 
-if (-not $check3Fail -and $exitCode -eq 0) {
+if (-not $check4Fail -and $exitCode -eq 0) {
     Write-Host "  PASS: No -quit combined with -runTests." -ForegroundColor Green
 }
 

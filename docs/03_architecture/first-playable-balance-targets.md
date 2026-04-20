@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-04-21
 - 소스오브트루스: `docs/03_architecture/first-playable-balance-targets.md`
 - 관련문서:
   - `docs/02_design/systems/first-playable-slice.md`
@@ -27,6 +27,9 @@ suite로 고정한다.
   - `32 seeds`
   - mirrored
   - randomized start lanes
+- note:
+  - symmetric mirror 4v4 timeout/draw policy는 `ManualLoopD` balance review에서 추적한다.
+  - FastUnit의 asymmetric 4v4 종료 oracle은 battle이 deterministic하게 끝나는지 보는 회귀 테스트이며, mirror draw policy gate가 아니다.
 - gate:
   - `battleDurationP50 = 18 ~ 30`
   - `battleDurationP90 <= 38`

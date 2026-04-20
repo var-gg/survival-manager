@@ -40,6 +40,7 @@
 - 다른 scene은 이미 조립된 세션을 소비하는 쪽이어야 한다.
 - `SM.Unity`, `GameSessionState`, `GameSessionRuntimeBootstrapProvider`, `NarrativeRuntimeBootstrap`, `RuntimeCombatContentLookup`, `ContentConversion`은 pure asmdef boundary가 아니라 Unity-side boundary adapter다.
 - 이 adapter가 존재한다는 사실은 정상이다. 단, FastUnit test가 이 경로를 직접 밟으면 안 되며 `BatchOnly`, PlayMode, editor-required lane으로 라우팅한다.
+- `SM.Unity.ContentConversion`은 authored definition을 runtime spec/snapshot으로 바꾸는 내부 converter 경계이며, session facade, persistence ownership, UI/controller 책임을 소유하지 않는다.
 
 ## scene script 얇게 유지 규칙
 

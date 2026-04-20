@@ -70,6 +70,8 @@
 - `SM.Unity.ContentConversion` 또는 runtime bootstrap이 authored definition을 pure snapshot/spec로 변환한 뒤 `SM.Meta` 서비스에 넘긴다.
 - `SM.Meta`는 `CombatContentSnapshot`, story/dialogue spec, reward/loot/passive template 같은 pure model만 소비한다.
 - `Assets/_Game/Scripts/Runtime/Meta/**` 소스에서 `using SM.Content`, `UnityEngine`, `UnityEditor`를 사용하지 않는다.
+- 현재 phase에서 `SM.Unity.ContentConversion`은 별도 asmdef가 아니라 `SM.Unity` 내부 폴더 경계다. 로컬 asmdef, public API, session/persistence/UI ownership은 두지 않는다.
+- registry 밖 converter 파일은 `Resources.Load*`, `AssetDatabase`, editor file fallback을 직접 소유하지 않는다. resource/editor fallback choke point는 `ContentDefinitionRegistry`로 제한한다.
 
 ## closure scope 해석
 

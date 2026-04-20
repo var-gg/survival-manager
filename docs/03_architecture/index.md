@@ -36,9 +36,9 @@
 | `SM.Core`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions` | pure boundary로 닫힘 | `test-batch-fast`, exact asmdef allowlist, boundary guard |
 | `FastUnit` test lane | `SM.Tests.FastUnit` 전용 asmdef에서 editor-free/resource-free/authored-object-free로 닫힘 | fake lookup, pure fixture, class-level category, dedicated folder/alias-wrapper guard |
 | `SM.Unity`, `GameSessionState`, runtime bootstrap/content lookup | boundary adapter로 유지 | `GameSessionRuntimeBootstrapProvider` production choke point, FastUnit 밖, 필요 시 focused session 또는 BatchOnly |
-| authored content, `ScriptableObject`, `Resources.Load*`, content conversion | pure closure 밖 | content validation 또는 BatchOnly |
+| authored content, `ScriptableObject`, `Resources.Load*`, content conversion | pure closure 밖 | content validation 또는 BatchOnly; `ContentConversion`은 내부 converter guard로 관리 |
 | UI/controller/scene/prefab, PlayMode | runtime/editor integration lane | focused EditMode, PlayMode smoke, manual/editor-required |
-| `ManualLoopD` | 장시간 balance/telemetry lane | default fast closure 증거로 쓰지 않음 |
+| `ManualLoopD` | 장시간 balance/telemetry lane | default fast closure 증거로 쓰지 않음; symmetric mirror 4v4 policy 추적 포함 |
 
 아키텍처 문서에서 “editor-free closure”라고 쓸 때는 첫 두 행의 범위를 뜻한다. `SM.Unity`와 authored content/UI loop가 repo-wide pure boundary 안으로 들어왔다는 뜻으로 쓰지 않는다.
 
@@ -51,7 +51,7 @@
 | reward, passive, loot, expedition progression rule | `SM.Meta` pure model/service | `test-batch-fast`, `MetaRewardPickTests` | editor-free unless session/UI application is in scope |
 | story/dialogue/runtime narrative decision | `SM.Meta` story/spec model | `test-batch-fast`, `StoryDirectorServiceTests` | editor-free when authored definition is not touched |
 | authored `ScriptableObject` definition/schema | `SM.Content` | `content-validate`, BatchOnly focused tests | editor-required/content lane |
-| authored definition to runtime snapshot/spec conversion | `SM.Unity.ContentConversion`, runtime bootstrap | BatchOnly focused tests, `test-harness-lint` | editor-light; `Resources.Load*` stays at choke point |
+| authored definition to runtime snapshot/spec conversion | `SM.Unity.ContentConversion`, runtime bootstrap | BatchOnly focused tests, `test-harness-lint` | editor-light; converter는 내부 `SM.Unity` 경계, `Resources.Load*` stays at choke point |
 | session orchestration and UI-facing facade | `SM.Unity.Session`, `GameSessionState` public facade | `test-batch-fast`, `GameSessionStateTests` when production path is touched | editor-light; public facade migration is separate task |
 | UI controller, presenter, view binding | `SM.Unity` presentation boundary | focused EditMode, PlayMode smoke when scene/prefab behavior matters | editor-light to editor-required |
 | save contract and serialization | `SM.Persistence.Abstractions`, `SM.Persistence.Json` | persistence focused tests, `test-batch-fast` | editor-free unless repository adapter integration is in scope |

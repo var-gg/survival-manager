@@ -7,6 +7,13 @@
 - 상태: completed
 - 최종수정일: 2026-04-19
 
+## Historical snapshot / current-state implications
+
+- 이 문서는 033 완료 시점의 historical snapshot이다.
+- 현재 source-of-truth는 `AGENTS.md`, `docs/TESTING.md`, `docs/03_architecture/index.md`의 closure scope를 우선한다.
+- 033은 ignored FastUnit hole을 asymmetric deterministic end oracle로 닫은 작업이다. symmetric mirror 4v4 timeout/draw policy를 닫은 것이 아니다.
+- 044에서 symmetric mirror 4v4 policy probe를 explicit `ManualLoopD`로 분리해 추적한다.
+
 ## Current state
 
 - `BattleResolutionTests.LoopA_4v4_BattleEndsBeforeTimeout`는 028 이후 ignored FastUnit backlog였다.
@@ -39,7 +46,7 @@
 
 ## Deferred / debug-only
 
-- 완전 대칭 4v4 mirror battle timeout/draw 정책은 balance sweep 또는 ManualLoopD에서 별도 판단한다.
+- 완전 대칭 4v4 mirror battle timeout/draw 정책은 044의 explicit `ManualLoopD` probe와 balance sweep에서 별도 판단한다.
 - full BatchOnly backlog green은 이번 작업 범위가 아니다.
 
 ## Loop budget consumed

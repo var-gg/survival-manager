@@ -141,6 +141,68 @@ public sealed class BuildBoundaryGuardFastTests
     }
 
     [Test]
+    public void ContentConversionSources_StayInternalUnityAdapterBoundary()
+    {
+        var conversionRoot = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "ContentConversion");
+        var registryPath = Path.Combine(conversionRoot, "ContentDefinitionRegistry.cs").Replace('\\', '/');
+        var assetLoadingPatterns = new[]
+        {
+            (Pattern: @"Resources\.Load(All)?\s*\(", Description: "Resources loading"),
+            (Pattern: @"\bAssetDatabase\b", Description: "AssetDatabase"),
+            (Pattern: @"^\s*using\s+UnityEditor\s*;", Description: "UnityEditor using"),
+            (Pattern: @"RuntimeCombatContentFileParser", Description: "file fallback parser"),
+        };
+        var forbiddenAdapterPatterns = new[]
+        {
+            (Pattern: @"^\s*public\s+", Description: "public API surface"),
+            (Pattern: @"\bSM\.Persistence\b", Description: "persistence dependency"),
+            (Pattern: @"\bSaveProfile\b", Description: "save profile ownership"),
+            (Pattern: @"\bGameSessionState\b", Description: "session facade ownership"),
+            (Pattern: string.Concat(@"\bRuntimeCombat", @"ContentLookup\b"), Description: "production lookup construction"),
+            (Pattern: @"\bMonoBehaviour\b", Description: "MonoBehaviour ownership"),
+            (Pattern: @"UnityEngine\.SceneManagement", Description: "scene ownership"),
+            (Pattern: @"UnityEngine\.UIElements", Description: "UIElements ownership"),
+            (Pattern: @"\bUIDocument\b", Description: "UI document ownership"),
+        };
+
+        Assert.That(
+            Directory.EnumerateFiles(conversionRoot, "*.asmdef", SearchOption.AllDirectories),
+            Is.Empty,
+            "ContentConversion is intentionally an internal SM.Unity folder boundary, not a standalone asmdef in this phase.");
+
+        foreach (var path in Directory.EnumerateFiles(conversionRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            var normalizedPath = path.Replace('\\', '/');
+            var codeText = ReadCodeText(path);
+            Assert.That(
+                codeText,
+                Does.Contain("namespace SM.Unity.ContentConversion;"),
+                $"{path} must stay in the SM.Unity.ContentConversion namespace.");
+
+            foreach (var rule in forbiddenAdapterPatterns)
+            {
+                Assert.That(
+                    Regex.IsMatch(codeText, rule.Pattern, RegexOptions.Multiline),
+                    Is.False,
+                    $"{path} must not introduce {rule.Description}; keep ContentConversion as authored-to-runtime adapter code.");
+            }
+
+            if (string.Equals(normalizedPath, registryPath, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            foreach (var rule in assetLoadingPatterns)
+            {
+                Assert.That(
+                    Regex.IsMatch(codeText, rule.Pattern, RegexOptions.Multiline),
+                    Is.False,
+                    $"{path} must not introduce {rule.Description}; asset loading stays in ContentDefinitionRegistry.");
+            }
+        }
+    }
+
+    [Test]
     public void EditModeTestClasses_DeclareClassLevelExecutionLane()
     {
         var testRoot = Path.Combine("Assets", "Tests", "EditMode");

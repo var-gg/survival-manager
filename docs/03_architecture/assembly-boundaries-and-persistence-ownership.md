@@ -49,11 +49,13 @@
 - authored definition을 runtime rule에 넣어야 하면 `SM.Unity.ContentConversion`에서 pure spec/template/snapshot으로 변환한다.
 - `SM.Meta`는 변환된 pure model만 받는다.
 - `SM.Core.Content`는 authored와 runtime이 공유하는 enum/schema value만 담고, Unity type이나 repository type을 담지 않는다.
+- `SM.Unity.ContentConversion`은 현재 별도 asmdef가 아니라 `SM.Unity` 내부 converter 경계다. folder guard는 public API, session/persistence/UI ownership, registry 밖 resource/editor fallback을 금지한다.
 
 ## current closure scope
 
 - `SM.Meta`와 `SM.Tests.FastUnit`은 authored content/resource/session production bootstrap을 직접 밟지 않는 쪽으로 닫는다.
 - `SM.Unity`는 session facade, runtime composition, content conversion, production lookup을 품는 boundary adapter다. 이 레이어를 pure/editor-free closure 내부로 설명하지 않는다.
+- `ContentConversion` hardening은 authored-to-runtime converter 책임을 좁히는 guard이지, `SM.Unity`를 pure asmdef로 승격하거나 authored content lane을 제거한다는 뜻이 아니다.
 - `GameSessionState` public facade와 production constructor는 유지된다. production narrative `Resources` bootstrap은 `GameSessionRuntimeBootstrapProvider`가 명시적 choke point로 소유하고, `GameSessionState` 본 파일은 provider에 위임한다. FastUnit에서는 `SM.Tests.FastUnit`의 `GameSessionTestFactory`와 fake lookup을 사용하고, production bootstrap coverage는 BatchOnly 또는 runtime integration lane에서 다룬다.
 - persistence ownership closure는 `SM.Meta`가 persistence record/repository concrete를 알지 않는다는 뜻이지, `SM.Unity` runtime adapter가 사라졌다는 뜻이 아니다.
 
