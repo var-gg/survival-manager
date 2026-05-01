@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-05-02
 - 소스오브트루스: `docs/02_design/meta/character-race-class-role-archetype-taxonomy.md`
 - 관련문서:
   - `docs/02_design/deck/roster-archetype-launch-scope.md`
@@ -53,8 +53,10 @@
 ## 현재 launch floor 해석
 
 - launch floor는 `12 core archetypes`를 유지한다.
-- 이번 슬라이스에서는 `12 core characters`를 같은 id로 1:1 대응시켜 identity layer를 닫는다.
-- 이 상태는 character 수를 늘린 것이 아니라, 기존 archetype 중심 구조에 빠져 있던 캐릭터 축을 명시화한 것이다.
+- 현재 실행 `CharacterDefinition` 카탈로그는 `12 core characters + 4 specialist characters`의 16개 exact set으로 닫는다.
+- 16개 실행 캐릭터는 paid launch safe target authoring closure이며, 20명 lore registry 전체를 playable roster로 승격했다는 뜻이 아니다.
+- Relicborn core 4명(`aegis_sentinel / echo_savant / shardblade / prism_seeker`)은 `race_relicborn`과 대응 archetype asset이 닫히기 전까지 lore-only/deferred-runtime으로 둔다.
+- 이 상태는 기존 archetype 중심 구조에 빠져 있던 캐릭터 축을 명시화한 것이며, 신규 종족 runtime closure를 암시하지 않는다.
 
 ## 전투 화면 노출 규칙
 
@@ -73,6 +75,7 @@
 ## deferred
 
 - story faction
+- Relicborn runtime race/archetype/character promotion
 - portrait/voice
 - character 고유 passive/quest hook
 - same character multi-archetype 변형

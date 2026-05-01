@@ -40,6 +40,37 @@ internal static class ContentValidationPolicyCatalog
     internal static readonly HashSet<string> CanonicalClassIds =
         ClassRoleFamilyMappings.Keys.ToHashSet(StringComparer.Ordinal);
 
+    internal static readonly IReadOnlyList<string> RequiredExecutableCharacterIdsInRosterOrder = new[]
+    {
+        "warden",
+        "guardian",
+        "bulwark",
+        "slayer",
+        "raider",
+        "reaver",
+        "hunter",
+        "scout",
+        "marksman",
+        "priest",
+        "hexer",
+        "shaman",
+        "rift_stalker",
+        "bastion_penitent",
+        "pale_executor",
+        "mirror_cantor",
+    };
+
+    internal static readonly HashSet<string> RequiredExecutableCharacterIds =
+        RequiredExecutableCharacterIdsInRosterOrder.ToHashSet(StringComparer.Ordinal);
+
+    internal static readonly IReadOnlyList<string> DeferredRuntimeCharacterIds = new[]
+    {
+        "aegis_sentinel",
+        "echo_savant",
+        "shardblade",
+        "prism_seeker",
+    };
+
     internal static readonly HashSet<string> AllowedRoleFamilyTags =
         ClassRoleFamilyMappings.Values
             .Select(mapping => mapping.PlayerFacingRoleFamily)

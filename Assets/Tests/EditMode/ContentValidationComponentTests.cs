@@ -130,6 +130,26 @@ public sealed class ContentValidationComponentTests
     }
 
     [Test]
+    public void CharacterCatalogValidator_LocksExecutableCharacterCoverage()
+    {
+        var fullCatalog = ContentValidationPolicyCatalog.RequiredExecutableCharacterIdsInRosterOrder
+            .Select(id => OwnCharacter(id))
+            .ToArray();
+        var passIssues = new List<ContentValidationIssue>();
+        new CharacterCatalogValidator().Validate(new CatalogValidationContext(ToCatalog(fullCatalog)), passIssues);
+
+        Assert.That(passIssues.Select(issue => issue.Code), Does.Not.Contain("character.executable_catalog_floor"));
+
+        var missingCatalog = fullCatalog
+            .Where(character => !string.Equals(character.Id, "mirror_cantor", StringComparison.Ordinal))
+            .ToArray();
+        var issues = new List<ContentValidationIssue>();
+        new CharacterCatalogValidator().Validate(new CatalogValidationContext(ToCatalog(missingCatalog)), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("character.executable_catalog_floor"));
+    }
+
+    [Test]
     public void DefaultLocalizationShapeProvider_ReturnsExpectedFieldsForSkill()
     {
         var provider = new DefaultLocalizationShapeProvider();
@@ -240,6 +260,20 @@ public sealed class ContentValidationComponentTests
     private ValidationAssetCatalog EmptyCatalog()
     {
         return new ValidationAssetCatalog(Array.Empty<ValidationAssetDescriptor>());
+    }
+
+    private static ValidationAssetCatalog ToCatalog(IEnumerable<ScriptableObject> assets)
+    {
+        return new ValidationAssetCatalog(assets
+            .Select((asset, index) => new ValidationAssetDescriptor(asset, $"Assets/test_asset_{index}.asset", ValidationAssetSourceKind.Explicit, asset.GetType()))
+            .ToList());
+    }
+
+    private CharacterDefinition OwnCharacter(string id)
+    {
+        var character = Own(ScriptableObject.CreateInstance<CharacterDefinition>());
+        character.Id = id;
+        return character;
     }
 
     private T Own<T>(T asset) where T : UnityEngine.Object

@@ -2,7 +2,7 @@
 
 - 상태: draft
 - 소유자: repository
-- 최종수정일: 2026-04-10
+- 최종수정일: 2026-05-02
 - 소스오브트루스: `docs/02_design/deck/character-lore-registry.md`
 - 관련문서:
   - `docs/02_design/deck/hero-expansion-roadmap.md`
@@ -45,6 +45,39 @@
 | `hero_shardblade` | Shardblade | Relicborn | Duelist | F | `background` | 1 | `launch` | 중후반 전열 돌파 장치 | — |
 | `hero_prism_seeker` | Prism Seeker | Relicborn | Ranger | F | `background` | 1 | `launch` | 진실 추적자 | — |
 | `hero_mirror_cantor` | Mirror Cantor | Relicborn | Mystic | M | `support` | 3 | `launch` | 최종부 정합성 봉합자 | — |
+
+## 실행 CharacterDefinition coverage
+
+`HeroLoreDefinition`은 서사 registry이므로 20명 전원을 가진다. `CharacterDefinition`은 현재 실행 roster asset이므로 16개만 닫는다. `runtime_decision`이 `deferred-runtime`인 영웅은 lore/story registry에는 launch 후보로 남기되, `race_relicborn`과 대응 `UnitArchetypeDefinition` 4종이 authoring되기 전에는 playable/recruitable 캐릭터로 승격하지 않는다.
+
+현재 검증 기준은 아래와 같다.
+
+- `HeroLoreDefinition.HeroId`: 아래 20개 `hero_id`와 1:1로 맞춘다.
+- `CharacterDefinition.Id`: `warden / guardian / bulwark / slayer / raider / reaver / hunter / scout / marksman / priest / hexer / shaman / rift_stalker / bastion_penitent / pale_executor / mirror_cantor` 16개 exact set으로 고정한다.
+- `hero_mirror_cantor`는 lore registry에서는 Relicborn 인물이지만, 현재 실행 카탈로그에서는 Relicborn 종족 asset 없이 `mirror_cantor` specialist를 3-race safe target에 고정한다. Relicborn runtime 승격 시 race/archetype/character를 함께 migration한다.
+
+| hero_id | HeroLoreDefinition asset | CharacterDefinition.Id | CharacterDefinition asset | runtime_decision |
+| --- | --- | --- | --- | --- |
+| `hero_iron_warden` | `hero_lore_iron_warden.asset` | `warden` | `character_warden.asset` | `runtime-core` |
+| `hero_crypt_guardian` | `hero_lore_crypt_guardian.asset` | `guardian` | `character_guardian.asset` | `runtime-core` |
+| `hero_fang_bulwark` | `hero_lore_fang_bulwark.asset` | `bulwark` | `character_bulwark.asset` | `runtime-core` |
+| `hero_oath_slayer` | `hero_lore_oath_slayer.asset` | `slayer` | `character_slayer.asset` | `runtime-core` |
+| `hero_pack_raider` | `hero_lore_pack_raider.asset` | `raider` | `character_raider.asset` | `runtime-core` |
+| `hero_grave_reaver` | `hero_lore_grave_reaver.asset` | `reaver` | `character_reaver.asset` | `runtime-core` |
+| `hero_longshot_hunter` | `hero_lore_longshot_hunter.asset` | `hunter` | `character_hunter.asset` | `runtime-core` |
+| `hero_trail_scout` | `hero_lore_trail_scout.asset` | `scout` | `character_scout.asset` | `runtime-core` |
+| `hero_dread_marksman` | `hero_lore_dread_marksman.asset` | `marksman` | `character_marksman.asset` | `runtime-core` |
+| `hero_dawn_priest` | `hero_lore_dawn_priest.asset` | `priest` | `character_priest.asset` | `runtime-core` |
+| `hero_grave_hexer` | `hero_lore_grave_hexer.asset` | `hexer` | `character_hexer.asset` | `runtime-core` |
+| `hero_storm_shaman` | `hero_lore_storm_shaman.asset` | `shaman` | `character_shaman.asset` | `runtime-core` |
+| `hero_rift_stalker` | `hero_lore_rift_stalker.asset` | `rift_stalker` | `character_rift_stalker.asset` | `runtime-specialist` |
+| `hero_bastion_penitent` | `hero_lore_bastion_penitent.asset` | `bastion_penitent` | `character_bastion_penitent.asset` | `runtime-specialist` |
+| `hero_pale_executor` | `hero_lore_pale_executor.asset` | `pale_executor` | `character_pale_executor.asset` | `runtime-specialist` |
+| `hero_aegis_sentinel` | `hero_lore_aegis_sentinel.asset` | `aegis_sentinel` | 없음 | `deferred-runtime` |
+| `hero_echo_savant` | `hero_lore_echo_savant.asset` | `echo_savant` | 없음 | `deferred-runtime` |
+| `hero_shardblade` | `hero_lore_shardblade.asset` | `shardblade` | 없음 | `deferred-runtime` |
+| `hero_prism_seeker` | `hero_lore_prism_seeker.asset` | `prism_seeker` | 없음 | `deferred-runtime` |
+| `hero_mirror_cantor` | `hero_lore_mirror_cantor.asset` | `mirror_cantor` | `character_mirror_cantor.asset` | `runtime-specialist` |
 
 ## 핵심 NPC
 

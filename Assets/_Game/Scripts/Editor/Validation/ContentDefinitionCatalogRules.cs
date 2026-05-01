@@ -23,6 +23,7 @@ internal sealed class CatalogValidationContext
         Squads = catalog.OfType<EnemySquadTemplateDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Overlays = catalog.OfType<BossOverlayDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Archetypes = catalog.OfType<UnitArchetypeDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        Characters = catalog.OfType<CharacterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         PassiveBoards = catalog.OfType<PassiveBoardDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Statuses = catalog.OfType<StatusFamilyDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         CleanseProfiles = catalog.OfType<CleanseProfileDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
@@ -45,6 +46,7 @@ internal sealed class CatalogValidationContext
     internal IReadOnlyDictionary<string, EnemySquadTemplateDefinition> Squads { get; }
     internal IReadOnlyDictionary<string, BossOverlayDefinition> Overlays { get; }
     internal IReadOnlyDictionary<string, UnitArchetypeDefinition> Archetypes { get; }
+    internal IReadOnlyDictionary<string, CharacterDefinition> Characters { get; }
     internal IReadOnlyDictionary<string, PassiveBoardDefinition> PassiveBoards { get; }
     internal IReadOnlyDictionary<string, StatusFamilyDefinition> Statuses { get; }
     internal IReadOnlyDictionary<string, CleanseProfileDefinition> CleanseProfiles { get; }
@@ -90,6 +92,7 @@ internal sealed class CatalogValidationRuleRegistry
             new CampaignCatalogValidator(),
             new FirstPlayableSliceCatalogValidator(),
             new EncounterAuthoringCatalogValidator(),
+            new CharacterCatalogValidator(),
             new StatusCatalogValidator(),
             new RewardCatalogValidator(),
             new BuildLaneCoverageCatalogValidator(),
@@ -250,6 +253,43 @@ internal sealed class CampaignCatalogValidator : ICatalogValidationRule
                     ContentValidationIssueFactory.AddError(issues, "enemy_squad.member_archetype_ref", $"Enemy squad member references missing archetype '{member.ArchetypeId}'.", assetPath);
                 }
             }
+        }
+    }
+}
+
+internal sealed class CharacterCatalogValidator : ICatalogValidationRule
+{
+    public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
+    {
+        var actualIds = context.Characters.Keys.ToHashSet(StringComparer.Ordinal);
+        if (!ContentValidationPolicyCatalog.RequiredExecutableCharacterIds.SetEquals(actualIds))
+        {
+            var required = string.Join(", ", ContentValidationPolicyCatalog.RequiredExecutableCharacterIdsInRosterOrder);
+            var deferred = string.Join(", ", ContentValidationPolicyCatalog.DeferredRuntimeCharacterIds);
+            var missing = ContentValidationPolicyCatalog.RequiredExecutableCharacterIds
+                .Except(actualIds, StringComparer.Ordinal)
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+            var extra = actualIds
+                .Except(ContentValidationPolicyCatalog.RequiredExecutableCharacterIds, StringComparer.Ordinal)
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+            var drift = new List<string>();
+            if (missing.Count > 0)
+            {
+                drift.Add($"Missing [{string.Join(", ", missing)}].");
+            }
+
+            if (extra.Count > 0)
+            {
+                drift.Add($"Unexpected [{string.Join(", ", extra)}].");
+            }
+
+            ContentValidationIssueFactory.AddError(
+                issues,
+                "character.executable_catalog_floor",
+                $"Executable CharacterDefinition catalog must match the current 16-id runtime set [{required}]. {string.Join(" ", drift)} Deferred runtime ids stay lore-only until Relicborn race/archetype authoring closes: [{deferred}].",
+                ContentValidationPolicyCatalog.ReportFolderName);
         }
     }
 }

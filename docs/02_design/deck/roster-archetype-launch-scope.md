@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-05-02
 - 소스오브트루스: `docs/02_design/deck/roster-archetype-launch-scope.md`
 - 관련문서:
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
@@ -52,8 +52,10 @@
 ## character layer
 
 - launch floor의 `12 core archetypes`는 이번 단계에서 `12 core characters`와 1:1로 대응한다.
+- 현재 실행 카탈로그는 safe target specialist 4종을 포함한 `16 CharacterDefinition` exact set으로 검증한다.
 - `Character`는 story/identity layer이고, `Archetype`는 전투 패키지다.
 - 같은 race/class 조합 안에서도 이후 패스에서 다른 캐릭터를 추가할 수 있어야 하므로, archetype만으로 캐릭터를 대체하지 않는다.
+- Relicborn roadmap 4명은 4번째 race scope 변경이 승인되고 `race_relicborn`/archetype/character authoring이 함께 닫히기 전까지 이 문서의 실행 safe target에 포함하지 않는다.
 
 ## class role family
 

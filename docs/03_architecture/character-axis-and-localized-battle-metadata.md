@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-05-02
 - 소스오브트루스: `docs/03_architecture/character-axis-and-localized-battle-metadata.md`
 - 관련문서:
   - `docs/03_architecture/localization-runtime-and-content-pipeline.md`
@@ -77,6 +77,8 @@
 
 - `CharacterDefinition`은 `Race / Class / DefaultArchetype / DefaultRoleInstruction`을 모두 가져야 한다
 - `DefaultArchetype`의 race/class는 character와 일치해야 한다
+- catalog validator는 현재 실행 `CharacterDefinition` exact set을 16개로 고정한다
+- `HeroLoreDefinition.HeroId`의 `hero_*` id는 narrative registry id이며, battle metadata의 `CharacterDefinition.Id`로 직접 사용하지 않는다
 - legacy prose가 남아 있으면 localization policy에 따라 warning 또는 error가 된다
 
 ## 구현 메모

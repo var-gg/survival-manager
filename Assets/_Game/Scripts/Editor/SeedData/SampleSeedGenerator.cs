@@ -923,7 +923,7 @@ public static class SampleSeedGenerator
     {
         var result = new Dictionary<string, CharacterDefinition>(StringComparer.Ordinal);
 
-        foreach (var archetypeId in new[] { "warden", "guardian", "bulwark", "slayer", "raider", "reaver", "hunter", "scout", "marksman", "priest", "hexer", "shaman", "rift_stalker", "bastion_penitent", "pale_executor", "mirror_cantor" })
+        foreach (var archetypeId in ContentValidationPolicyCatalog.RequiredExecutableCharacterIdsInRosterOrder)
         {
             if (!archetypes.TryGetValue(archetypeId, out var archetype))
             {
