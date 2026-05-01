@@ -8,6 +8,7 @@
     "MD041": false
   },
   "ignores": [
+    "PINDOC.md",
     "Assets/ThirdParty/**"
   ]
 }

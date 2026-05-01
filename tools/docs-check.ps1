@@ -8,6 +8,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-Location $RepoRoot
+$generatedMarkdownIgnores = @('PINDOC.md')
 
 function Resolve-NpxPath {
     foreach ($commandName in @('npx.cmd', 'npx.exe', 'npx')) {
@@ -45,6 +46,16 @@ function Invoke-MarkdownLinkCheck {
     return $process.ExitCode
 }
 
+function Remove-GeneratedMarkdownTargets {
+    param(
+        [string[]]$Targets
+    )
+
+    return @($Targets | Where-Object {
+        (Split-Path -Leaf $_) -notin $generatedMarkdownIgnores
+    })
+}
+
 Write-Host '== docs-policy-check =='
 pwsh -File tools/docs-policy-check.ps1 -RepoRoot .
 
@@ -73,7 +84,7 @@ if ($Paths.Count -gt 0) {
         }
     }
 
-    $markdownTargets = $markdownTargets | Sort-Object -Unique
+    $markdownTargets = @(Remove-GeneratedMarkdownTargets -Targets $markdownTargets | Sort-Object -Unique)
     if ($markdownTargets.Count -eq 0) {
         Write-Host 'No markdown targets selected. Skipping markdownlint and link check.'
         exit 0
@@ -83,7 +94,7 @@ if ($Paths.Count -gt 0) {
     npx --yes markdownlint-cli2 @markdownTargets
 }
 else {
-    npx --yes markdownlint-cli2 "**/*.md" "#Library/**" "#Logs/**" "#.git/**"
+    npx --yes markdownlint-cli2 "**/*.md" "#Library/**" "#Logs/**" "#.git/**" "#PINDOC.md"
 }
 
 if ($LASTEXITCODE -ne 0) {
@@ -95,7 +106,7 @@ if ($Paths.Count -eq 0) {
     $markdownTargets = @()
     $markdownTargets += Get-ChildItem . -File -Filter *.md | Select-Object -ExpandProperty FullName
     $markdownTargets += Get-ChildItem docs -Recurse -File -Filter *.md | Select-Object -ExpandProperty FullName
-    $markdownTargets = $markdownTargets | Sort-Object -Unique
+    $markdownTargets = @(Remove-GeneratedMarkdownTargets -Targets $markdownTargets | Sort-Object -Unique)
 }
 
 $npxPath = Resolve-NpxPath
