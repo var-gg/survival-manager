@@ -47,6 +47,8 @@ pwsh -File tools/docs-check.ps1 -RepoRoot . -Paths <changed-md>
 pwsh -File tools/smoke-check.ps1 -RepoRoot .
 ```
 
+CI의 Node.js setup은 GitHub Actions Node 20 runtime deprecation을 피하기 위해 Node.js 24를 사용한다.
+
 `tools/docs-check.ps1`는 `tools/docs-policy-check.ps1`를 먼저 실행한 뒤
 repo-root `.markdownlint-cli2.jsonc` 설정을 사용해 markdownlint와
 markdown-link-check를 수행한다. 기본은 repo-wide이지만, 현재 운영 gate는
@@ -79,7 +81,8 @@ GitHub Actions secrets에 기대하는 환경 키:
 
 실제 값은 커밋하지 않는다.
 현재 CI는 Unity license file 기반 activation을 표준으로 둔다.
-즉, `UNITY_LICENSE` secret이 있으면 `UNITY_EMAIL` / `UNITY_PASSWORD` 없이도 Unity batch validation과 Unity Test Runner를 직접 실행한다.
+즉, `UNITY_LICENSE` secret이 있으면 `UNITY_EMAIL` / `UNITY_PASSWORD` 없이 `-manualLicenseFile`로 먼저 활성화를 시도한 뒤 Unity batch validation과 Unity Test Runner를 직접 실행한다.
+CI Linux editor에서 유효하지 않은 license file이면 해당 Unity job은 warning을 남기고 Unity 실행 단계를 skip한다.
 GameCI wrapper action은 extra Docker dependency와 activation strategy 추론을 요구하므로 현재 CI 표준 경로에서 제외한다.
 
 ## 기본 Smoke Check
@@ -128,6 +131,7 @@ runtime playable smoke로 집계하지 않는다.
 
 - Unity EditMode CI 실행에는 Unity license 관련 secrets가 필요하다:
   - `UNITY_LICENSE`
+  - CI Linux editor에서 `-manualLicenseFile`로 활성화 가능한 license file이어야 한다
 
 ### 즉시 로컬에서 실행 가능
 

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-02
+- 최종수정일: 2026-05-03
 - 소스오브트루스: `docs/05_setup/index.md`
 - 관련문서:
   - `docs/index.md`
