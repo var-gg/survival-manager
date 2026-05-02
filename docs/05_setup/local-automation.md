@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-05-03
 - 소스오브트루스: `docs/05_setup/local-automation.md`
 - 적용범위: Codex와 로컬 기여자
 
@@ -75,10 +75,11 @@ pwsh -File tools/unity-editmode-smoke.ps1 -UnityExe "C:\Program Files\Unity\Hub\
 GitHub Actions secrets에 기대하는 환경 키:
 
 - `UNITY_LICENSE`
-- `UNITY_EMAIL`
-- `UNITY_PASSWORD`
 
 실제 값은 커밋하지 않는다.
+현재 CI는 Unity license file 기반 activation을 표준으로 둔다.
+즉, `UNITY_LICENSE` secret이 있으면 `UNITY_EMAIL` / `UNITY_PASSWORD` 없이도 Unity test runner와 batch validation을 실행한다.
+`content-validation`의 UnityCI container image는 실제로 존재하는 `unityci/editor:ubuntu-6000.4.0f1-base-3` tag에 고정한다.
 
 ## 기본 Smoke Check
 
@@ -126,8 +127,6 @@ runtime playable smoke로 집계하지 않는다.
 
 - Unity EditMode CI 실행에는 Unity license 관련 secrets가 필요하다:
   - `UNITY_LICENSE`
-  - `UNITY_EMAIL`
-  - `UNITY_PASSWORD`
 
 ### 즉시 로컬에서 실행 가능
 
