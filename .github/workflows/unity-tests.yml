@@ -8,6 +8,8 @@ on:
 jobs:
   editmode-tests:
     runs-on: ubuntu-latest
+    container:
+      image: unityci/editor:ubuntu-6000.4.0f1-base-3
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
     steps:
@@ -16,15 +18,31 @@ jobs:
         with:
           lfs: false
 
+      - name: Install Unity license file
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${UNITY_LICENSE:-}" ]]; then
+            echo "::error::UNITY_LICENSE secret is required for Unity EditMode tests."
+            exit 1
+          fi
+          mkdir -p /root/.local/share/unity3d/Unity
+          printf '%s' "$UNITY_LICENSE" > /root/.local/share/unity3d/Unity/Unity_lic.ulf
+          chmod 600 /root/.local/share/unity3d/Unity/Unity_lic.ulf
+
       - name: Run EditMode scene integrity + domain tests (Unity 6000.4.0f1)
-        uses: game-ci/unity-test-runner@v4
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          unityVersion: 6000.4.0f1
-          testMode: editmode
-          projectPath: .
-          checkName: EditMode Scene Integrity Tests
-          artifactsPath: test-results/editmode
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test-results/editmode
+          /opt/unity/Editor/Unity \
+            -batchmode \
+            -nographics \
+            -projectPath . \
+            -runTests \
+            -testPlatform EditMode \
+            -testResults test-results/editmode/results.xml \
+            -logFile test-results/editmode/unity.log
 
       - name: Upload EditMode results
         if: always()
@@ -35,6 +53,8 @@ jobs:
 
   playmode-smoke:
     runs-on: ubuntu-latest
+    container:
+      image: unityci/editor:ubuntu-6000.4.0f1-base-3
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
     steps:
@@ -43,15 +63,31 @@ jobs:
         with:
           lfs: false
 
+      - name: Install Unity license file
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${UNITY_LICENSE:-}" ]]; then
+            echo "::error::UNITY_LICENSE secret is required for Unity PlayMode tests."
+            exit 1
+          fi
+          mkdir -p /root/.local/share/unity3d/Unity
+          printf '%s' "$UNITY_LICENSE" > /root/.local/share/unity3d/Unity/Unity_lic.ulf
+          chmod 600 /root/.local/share/unity3d/Unity/Unity_lic.ulf
+
       - name: Run PlayMode bootstrap + loop smoke tests (Unity 6000.4.0f1)
-        uses: game-ci/unity-test-runner@v4
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          unityVersion: 6000.4.0f1
-          testMode: playmode
-          projectPath: .
-          checkName: PlayMode First Playable Smoke Tests
-          artifactsPath: test-results/playmode
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test-results/playmode
+          /opt/unity/Editor/Unity \
+            -batchmode \
+            -nographics \
+            -projectPath . \
+            -runTests \
+            -testPlatform PlayMode \
+            -testResults test-results/playmode/results.xml \
+            -logFile test-results/playmode/unity.log
 
       - name: Upload PlayMode results
         if: always()

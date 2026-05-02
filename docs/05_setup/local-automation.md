@@ -69,8 +69,9 @@ pwsh -File tools/unity-editmode-smoke.ps1 -UnityExe "C:\Program Files\Unity\Hub\
 
 현재 CI 대상:
 
-- `game-ci/unity-test-runner@v4` 기반 EditMode smoke test
-- PlayMode placeholder job
+- `unityci/editor:ubuntu-6000.4.0f1-base-3` container 기반 EditMode test
+- `unityci/editor:ubuntu-6000.4.0f1-base-3` container 기반 PlayMode smoke test
+- `unityci/editor:ubuntu-6000.4.0f1-base-3` container 기반 content validation batch
 
 GitHub Actions secrets에 기대하는 환경 키:
 
@@ -78,8 +79,8 @@ GitHub Actions secrets에 기대하는 환경 키:
 
 실제 값은 커밋하지 않는다.
 현재 CI는 Unity license file 기반 activation을 표준으로 둔다.
-즉, `UNITY_LICENSE` secret이 있으면 `UNITY_EMAIL` / `UNITY_PASSWORD` 없이도 Unity test runner와 batch validation을 실행한다.
-`content-validation`의 UnityCI container image는 실제로 존재하는 `unityci/editor:ubuntu-6000.4.0f1-base-3` tag에 고정한다.
+즉, `UNITY_LICENSE` secret이 있으면 `UNITY_EMAIL` / `UNITY_PASSWORD` 없이도 Unity batch validation과 Unity Test Runner를 직접 실행한다.
+GameCI wrapper action은 extra Docker dependency와 activation strategy 추론을 요구하므로 현재 CI 표준 경로에서 제외한다.
 
 ## 기본 Smoke Check
 

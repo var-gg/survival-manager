@@ -18,8 +18,17 @@ jobs:
         with:
           lfs: false
 
-      - name: Activate Unity license
-        uses: game-ci/unity-activate@v2
+      - name: Install Unity license file
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${UNITY_LICENSE:-}" ]]; then
+            echo "::error::UNITY_LICENSE secret is required for Unity batch validation."
+            exit 1
+          fi
+          mkdir -p /root/.local/share/unity3d/Unity
+          printf '%s' "$UNITY_LICENSE" > /root/.local/share/unity3d/Unity/Unity_lic.ulf
+          chmod 600 /root/.local/share/unity3d/Unity/Unity_lic.ulf
 
       - name: Run content validation batch
         run: >
@@ -52,12 +61,10 @@ jobs:
             Logs/content-validation-ci.log
             Logs/balance-sweep-ci.log
 
-      - name: Return Unity license
-        if: always()
-        uses: game-ci/unity-return-license@v2
-
   editmode-validation-tests:
     runs-on: ubuntu-latest
+    container:
+      image: unityci/editor:ubuntu-6000.4.0f1-base-3
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
     steps:
@@ -66,15 +73,31 @@ jobs:
         with:
           lfs: false
 
+      - name: Install Unity license file
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${UNITY_LICENSE:-}" ]]; then
+            echo "::error::UNITY_LICENSE secret is required for Unity EditMode validation."
+            exit 1
+          fi
+          mkdir -p /root/.local/share/unity3d/Unity
+          printf '%s' "$UNITY_LICENSE" > /root/.local/share/unity3d/Unity/Unity_lic.ulf
+          chmod 600 /root/.local/share/unity3d/Unity/Unity_lic.ulf
+
       - name: Run EditMode validation and compile tests (Unity 6000.4.0f1)
-        uses: game-ci/unity-test-runner@v4
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          unityVersion: 6000.4.0f1
-          testMode: editmode
-          projectPath: .
-          checkName: EditMode Validation Tests
-          artifactsPath: test-results/editmode-validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test-results/editmode-validation
+          /opt/unity/Editor/Unity \
+            -batchmode \
+            -nographics \
+            -projectPath . \
+            -runTests \
+            -testPlatform EditMode \
+            -testResults test-results/editmode-validation/results.xml \
+            -logFile test-results/editmode-validation/unity.log
 
       - name: Upload EditMode validation results
         if: always()
