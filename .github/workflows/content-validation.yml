@@ -26,9 +26,10 @@ jobs:
             echo "::error::UNITY_LICENSE secret is required for Unity batch validation."
             exit 1
           fi
-          mkdir -p /root/.local/share/unity3d/Unity
-          printf '%s' "$UNITY_LICENSE" > /root/.local/share/unity3d/Unity/Unity_lic.ulf
-          chmod 600 /root/.local/share/unity3d/Unity/Unity_lic.ulf
+          unity_home="${HOME:-/root}"
+          mkdir -p "$unity_home/.local/share/unity3d/Unity" "$unity_home/.cache/unity3d"
+          printf '%s' "$UNITY_LICENSE" > "$unity_home/.local/share/unity3d/Unity/Unity_lic.ulf"
+          chmod 600 "$unity_home/.local/share/unity3d/Unity/Unity_lic.ulf"
 
       - name: Run content validation batch
         run: >
@@ -81,9 +82,10 @@ jobs:
             echo "::error::UNITY_LICENSE secret is required for Unity EditMode validation."
             exit 1
           fi
-          mkdir -p /root/.local/share/unity3d/Unity
-          printf '%s' "$UNITY_LICENSE" > /root/.local/share/unity3d/Unity/Unity_lic.ulf
-          chmod 600 /root/.local/share/unity3d/Unity/Unity_lic.ulf
+          unity_home="${HOME:-/root}"
+          mkdir -p "$unity_home/.local/share/unity3d/Unity" "$unity_home/.cache/unity3d"
+          printf '%s' "$UNITY_LICENSE" > "$unity_home/.local/share/unity3d/Unity/Unity_lic.ulf"
+          chmod 600 "$unity_home/.local/share/unity3d/Unity/Unity_lic.ulf"
 
       - name: Run EditMode validation and compile tests (Unity 6000.4.0f1)
         shell: bash
