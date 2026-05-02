@@ -11,6 +11,7 @@ Unity Editor와 외부 AI 클라이언트를 로컬 MCP로 연결해,
 - sandbox/tooling 브랜치 사용
 - working tree clean
 - repo에 비밀값/개인 설정 커밋 금지
+- repo embedded CoplayDev MCP package 기준 버전은 `9.6.8`
 
 ## 권장 연결 순서
 
@@ -19,6 +20,8 @@ Unity Editor와 외부 AI 클라이언트를 로컬 MCP로 연결해,
 3. Unity에서 MCP 로컬 서버를 시작한다.
 4. 외부 AI 클라이언트 설정에 `http://localhost:43157/mcp`를 등록한다.
 5. 클라이언트가 연결되면 첫 검증 시나리오를 수행한다.
+
+기존 Unity EditorPrefs에 다른 HTTP URL이 남아 있으면 Unity MCP 창에서 `http://127.0.0.1:43157`로 다시 맞춘다.
 
 ## 첫 검증 시나리오
 

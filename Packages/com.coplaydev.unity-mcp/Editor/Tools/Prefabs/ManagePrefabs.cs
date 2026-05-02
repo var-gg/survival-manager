@@ -8,13 +8,14 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MCPForUnity.Runtime.Helpers;
 
 namespace MCPForUnity.Editor.Tools.Prefabs
 {
     [McpForUnityTool("manage_prefabs", AutoRegister = false)]
     /// <summary>
-    /// Tool to manage Unity Prefabs: create, inspect, and modify prefab assets.
-    /// Uses headless editing (no UI, no dialogs) for reliable automated workflows.
+    /// Tool to manage Unity Prefabs: create, inspect, modify, and open/save/close prefab stage.
+    /// Supports both headless editing (modify_contents) and interactive prefab stage workflows.
     /// </summary>
     public static class ManagePrefabs
     {
@@ -23,7 +24,10 @@ namespace MCPForUnity.Editor.Tools.Prefabs
         private const string ACTION_GET_INFO = "get_info";
         private const string ACTION_GET_HIERARCHY = "get_hierarchy";
         private const string ACTION_MODIFY_CONTENTS = "modify_contents";
-        private const string SupportedActions = ACTION_CREATE_FROM_GAMEOBJECT + ", " + ACTION_GET_INFO + ", " + ACTION_GET_HIERARCHY + ", " + ACTION_MODIFY_CONTENTS;
+        private const string ACTION_OPEN_PREFAB_STAGE = "open_prefab_stage";
+        private const string ACTION_SAVE_PREFAB_STAGE = "save_prefab_stage";
+        private const string ACTION_CLOSE_PREFAB_STAGE = "close_prefab_stage";
+        private const string SupportedActions = ACTION_CREATE_FROM_GAMEOBJECT + ", " + ACTION_GET_INFO + ", " + ACTION_GET_HIERARCHY + ", " + ACTION_MODIFY_CONTENTS + ", " + ACTION_OPEN_PREFAB_STAGE + ", " + ACTION_SAVE_PREFAB_STAGE + ", " + ACTION_CLOSE_PREFAB_STAGE;
 
         public static object HandleCommand(JObject @params)
         {
@@ -50,6 +54,18 @@ namespace MCPForUnity.Editor.Tools.Prefabs
                         return GetHierarchy(@params);
                     case ACTION_MODIFY_CONTENTS:
                         return ModifyContents(@params);
+                    case ACTION_OPEN_PREFAB_STAGE:
+                    {
+                        string prefabPath = @params["prefabPath"]?.ToString() ?? @params["path"]?.ToString();
+                        return OpenPrefabStage(prefabPath);
+                    }
+                    case ACTION_SAVE_PREFAB_STAGE:
+                        return SavePrefabStage();
+                    case ACTION_CLOSE_PREFAB_STAGE:
+                    {
+                        bool saveBeforeClose = @params["saveBeforeClose"]?.ToObject<bool>() ?? false;
+                        return ClosePrefabStage(saveBeforeClose);
+                    }
                     default:
                         return new ErrorResponse($"Unknown action: '{action}'. Valid actions are: {SupportedActions}.");
                 }
@@ -147,7 +163,7 @@ namespace MCPForUnity.Editor.Tools.Prefabs
                     new
                     {
                         prefabPath = finalPath,
-                        instanceId = result.GetInstanceID(),
+                        instanceId = result.GetInstanceIDCompat(),
                         instanceName = result.name,
                         wasUnlinked = unlinkIfInstance && objectValidation.shouldUnlink,
                         wasReplaced = replaceExisting && fileExistedAtPath,
@@ -1219,7 +1235,7 @@ namespace MCPForUnity.Editor.Tools.Prefabs
 
             string name = transform.gameObject.name;
             string path = string.IsNullOrEmpty(parentPath) ? name : $"{parentPath}/{name}";
-            int instanceId = transform.gameObject.GetInstanceID();
+            int instanceId = transform.gameObject.GetInstanceIDCompat();
             bool activeSelf = transform.gameObject.activeSelf;
             int childCount = transform.childCount;
             var componentTypes = PrefabUtilityHelper.GetComponentTypeNames(transform.gameObject);
@@ -1258,6 +1274,144 @@ namespace MCPForUnity.Editor.Tools.Prefabs
             {
                 BuildHierarchyItemsRecursive(child, mainPrefabRoot, mainPrefabPath, path, items);
             }
+        }
+
+        #endregion
+
+        #region Prefab Stage
+
+        private static object OpenPrefabStage(string requestedPath)
+        {
+            if (string.IsNullOrWhiteSpace(requestedPath))
+            {
+                return new ErrorResponse("Either 'prefabPath' or 'path' parameter is required for open_prefab_stage.");
+            }
+
+            string sanitizedPath = AssetPathUtility.SanitizeAssetPath(requestedPath);
+            if (sanitizedPath == null)
+            {
+                return new ErrorResponse($"Invalid prefab path (path traversal detected): '{requestedPath}'.");
+            }
+
+            if (!sanitizedPath.StartsWith("Assets/", StringComparison.OrdinalIgnoreCase))
+            {
+                return new ErrorResponse($"Prefab path must be within the Assets folder. Got: '{sanitizedPath}'.");
+            }
+
+            if (!sanitizedPath.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase))
+            {
+                return new ErrorResponse($"Prefab path must end with '.prefab'. Got: '{sanitizedPath}'.");
+            }
+
+            try
+            {
+                GameObject prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(sanitizedPath);
+                if (prefabAsset == null)
+                {
+                    return new ErrorResponse($"Prefab asset not found at '{sanitizedPath}'.");
+                }
+
+                var prefabStage = PrefabStageUtility.OpenPrefab(sanitizedPath);
+                bool enteredStage = prefabStage != null
+                    && string.Equals(prefabStage.assetPath, sanitizedPath, StringComparison.OrdinalIgnoreCase)
+                    && prefabStage.prefabContentsRoot != null;
+
+                if (!enteredStage)
+                {
+                    return new ErrorResponse($"Failed to open prefab stage for '{sanitizedPath}'. PrefabStageUtility.OpenPrefab did not enter the requested prefab stage.");
+                }
+
+                return new SuccessResponse(
+                    $"Opened prefab stage for '{sanitizedPath}'.",
+                    new
+                    {
+                        prefabPath = sanitizedPath,
+                        openedPrefabPath = prefabStage.assetPath,
+                        rootName = prefabStage.prefabContentsRoot.name,
+                        enteredPrefabStage = enteredStage
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                return new ErrorResponse($"Error opening prefab stage: {e.Message}");
+            }
+        }
+
+        private static object SavePrefabStage()
+        {
+            try
+            {
+                var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+                if (prefabStage == null)
+                {
+                    return new ErrorResponse("Not currently in prefab editing mode. Open a prefab stage first with open_prefab_stage.");
+                }
+
+                if (!TrySavePrefabStage(prefabStage, out string prefabPath, out string errorMessage))
+                {
+                    return new ErrorResponse(errorMessage);
+                }
+
+                return new SuccessResponse($"Saved prefab stage changes for '{prefabPath}'.", new { prefabPath, saved = true });
+            }
+            catch (Exception e)
+            {
+                return new ErrorResponse($"Error saving prefab stage: {e.Message}");
+            }
+        }
+
+        private static object ClosePrefabStage(bool saveBeforeClose = false)
+        {
+            try
+            {
+                var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+                if (prefabStage == null)
+                {
+                    return new SuccessResponse("Not currently in prefab editing mode.");
+                }
+
+                if (saveBeforeClose)
+                {
+                    if (!TrySavePrefabStage(prefabStage, out _, out string errorMessage))
+                    {
+                        return new ErrorResponse(errorMessage);
+                    }
+                }
+
+                string prefabPath = prefabStage.assetPath;
+                StageUtility.GoToMainStage();
+                return new SuccessResponse($"Exited prefab stage for '{prefabPath}'.", new { prefabPath });
+            }
+            catch (Exception e)
+            {
+                return new ErrorResponse($"Error closing prefab stage: {e.Message}");
+            }
+        }
+
+        private static bool TrySavePrefabStage(PrefabStage prefabStage, out string prefabPath, out string errorMessage)
+        {
+            prefabPath = prefabStage.assetPath;
+            errorMessage = null;
+
+            if (prefabStage.prefabContentsRoot == null)
+            {
+                errorMessage = $"Failed to save prefab stage for '{prefabPath}'. The prefab contents root is missing.";
+                return false;
+            }
+
+            bool saved;
+            PrefabUtility.SaveAsPrefabAsset(prefabStage.prefabContentsRoot, prefabPath, out saved);
+            if (!saved)
+            {
+                errorMessage = $"Failed to save prefab stage for '{prefabPath}'. The file may be read-only or the disk may be full.";
+                return false;
+            }
+
+            prefabStage.ClearDirtiness();
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            return true;
         }
 
         #endregion

@@ -28,52 +28,19 @@ namespace MCPForUnity.Editor.Services
         /// <inheritdoc/>
         public UpdateCheckResult CheckForUpdate(string currentVersion)
         {
-            var context = CreateContext(currentVersion);
-            var cachedResult = TryGetCachedResult(context);
-            if (cachedResult != null)
-            {
-                return cachedResult;
-            }
+            bool isGitInstallation = IsGitInstallation();
+            string gitBranch = isGitInstallation ? GetGitUpdateBranch(currentVersion) : "main";
+            bool useBetaChannel = isGitInstallation && string.Equals(gitBranch, "beta", StringComparison.OrdinalIgnoreCase);
 
-            var result = FetchAndCompare(context);
-            if (result != null && result.CheckSucceeded && !string.IsNullOrEmpty(result.LatestVersion))
-            {
-                CacheFetchResult(context, result.LatestVersion);
-            }
+            string lastCheckKey = isGitInstallation
+                ? (useBetaChannel ? LastBetaCheckDateKey : LastCheckDateKey)
+                : LastAssetStoreCheckDateKey;
+            string cachedVersionKey = isGitInstallation
+                ? (useBetaChannel ? CachedBetaVersionKey : CachedVersionKey)
+                : CachedAssetStoreVersionKey;
 
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public UpdateCheckContext CreateContext(string currentVersion)
-        {
-            var sourceContext = ResolveUpdateSource(currentVersion);
-
-            return new UpdateCheckContext
-            {
-                CurrentVersion = currentVersion,
-                IsGitInstallation = sourceContext.IsGitInstallation,
-                UseGitHubSource = sourceContext.UseGitHubSource,
-                Channel = sourceContext.Channel,
-                LastCheckKey = sourceContext.UseGitHubSource
-                    ? (string.Equals(sourceContext.Channel, "beta", StringComparison.OrdinalIgnoreCase) ? LastBetaCheckDateKey : LastCheckDateKey)
-                    : LastAssetStoreCheckDateKey,
-                CachedVersionKey = sourceContext.UseGitHubSource
-                    ? (string.Equals(sourceContext.Channel, "beta", StringComparison.OrdinalIgnoreCase) ? CachedBetaVersionKey : CachedVersionKey)
-                    : CachedAssetStoreVersionKey
-            };
-        }
-
-        /// <inheritdoc/>
-        public UpdateCheckResult TryGetCachedResult(UpdateCheckContext context)
-        {
-            if (context == null)
-            {
-                return null;
-            }
-
-            string lastCheckDate = EditorPrefs.GetString(context.LastCheckKey, "");
-            string cachedLatestVersion = EditorPrefs.GetString(context.CachedVersionKey, "");
+            string lastCheckDate = EditorPrefs.GetString(lastCheckKey, "");
+            string cachedLatestVersion = EditorPrefs.GetString(cachedVersionKey, "");
 
             if (lastCheckDate == DateTime.Now.ToString("yyyy-MM-dd") && !string.IsNullOrEmpty(cachedLatestVersion))
             {
@@ -81,38 +48,26 @@ namespace MCPForUnity.Editor.Services
                 {
                     CheckSucceeded = true,
                     LatestVersion = cachedLatestVersion,
-                    UpdateAvailable = IsNewerVersion(cachedLatestVersion, context.CurrentVersion),
+                    UpdateAvailable = IsNewerVersion(cachedLatestVersion, currentVersion),
                     Message = "Using cached version check"
                 };
             }
 
-            return null;
-        }
-
-        /// <inheritdoc/>
-        public UpdateCheckResult FetchAndCompare(UpdateCheckContext context)
-        {
-            if (context == null)
-            {
-                return new UpdateCheckResult
-                {
-                    CheckSucceeded = false,
-                    UpdateAvailable = false,
-                    Message = "Update check context was not provided"
-                };
-            }
-
-            string latestVersion = context.UseGitHubSource
-                ? FetchLatestVersionFromGitHub(context.Channel)
+            string latestVersion = isGitInstallation
+                ? FetchLatestVersionFromGitHub(gitBranch)
                 : FetchLatestVersionFromAssetStoreJson();
 
             if (!string.IsNullOrEmpty(latestVersion))
             {
+                // Cache the result
+                EditorPrefs.SetString(lastCheckKey, DateTime.Now.ToString("yyyy-MM-dd"));
+                EditorPrefs.SetString(cachedVersionKey, latestVersion);
+
                 return new UpdateCheckResult
                 {
                     CheckSucceeded = true,
                     LatestVersion = latestVersion,
-                    UpdateAvailable = IsNewerVersion(latestVersion, context.CurrentVersion),
+                    UpdateAvailable = IsNewerVersion(latestVersion, currentVersion),
                     Message = "Successfully checked for updates"
                 };
             }
@@ -121,22 +76,97 @@ namespace MCPForUnity.Editor.Services
             {
                 CheckSucceeded = false,
                 UpdateAvailable = false,
-                Message = context.UseGitHubSource
+                Message = isGitInstallation
                     ? "Failed to check for updates (network issue or offline)"
                     : "Failed to check for Asset Store updates (network issue or offline)"
             };
         }
 
         /// <inheritdoc/>
-        public void CacheFetchResult(UpdateCheckContext context, string fetchedVersion)
+        public UpdateCheckResult TryGetCachedResult(string currentVersion)
         {
-            if (context == null || string.IsNullOrEmpty(fetchedVersion))
+            bool isGitInstallation = IsGitInstallation();
+            string gitBranch = isGitInstallation ? GetGitUpdateBranch(currentVersion) : "main";
+            bool useBetaChannel = isGitInstallation && string.Equals(gitBranch, "beta", StringComparison.OrdinalIgnoreCase);
+
+            string lastCheckKey = isGitInstallation
+                ? (useBetaChannel ? LastBetaCheckDateKey : LastCheckDateKey)
+                : LastAssetStoreCheckDateKey;
+            string cachedVersionKey = isGitInstallation
+                ? (useBetaChannel ? CachedBetaVersionKey : CachedVersionKey)
+                : CachedAssetStoreVersionKey;
+
+            string lastCheckDate = EditorPrefs.GetString(lastCheckKey, "");
+            string cachedLatestVersion = EditorPrefs.GetString(cachedVersionKey, "");
+
+            if (lastCheckDate == DateTime.Now.ToString("yyyy-MM-dd") && !string.IsNullOrEmpty(cachedLatestVersion))
             {
-                return;
+                return new UpdateCheckResult
+                {
+                    CheckSucceeded = true,
+                    LatestVersion = cachedLatestVersion,
+                    UpdateAvailable = IsNewerVersion(cachedLatestVersion, currentVersion),
+                    Message = "Using cached version check"
+                };
             }
 
-            EditorPrefs.SetString(context.LastCheckKey, DateTime.Now.ToString("yyyy-MM-dd"));
-            EditorPrefs.SetString(context.CachedVersionKey, fetchedVersion);
+            return null;
+        }
+
+        /// <inheritdoc/>
+        public UpdateCheckResult FetchAndCompare(string currentVersion)
+        {
+            bool isGitInstallation = IsGitInstallation();
+            string gitBranch = isGitInstallation ? GetGitUpdateBranch(currentVersion) : "main";
+            return FetchAndCompare(currentVersion, isGitInstallation, gitBranch);
+        }
+
+        /// <inheritdoc/>
+        public UpdateCheckResult FetchAndCompare(string currentVersion, bool isGitInstallation, string gitBranch)
+        {
+            string latestVersion = isGitInstallation
+                ? FetchLatestVersionFromGitHub(gitBranch)
+                : FetchLatestVersionFromAssetStoreJson();
+
+            if (!string.IsNullOrEmpty(latestVersion))
+            {
+                return new UpdateCheckResult
+                {
+                    CheckSucceeded = true,
+                    LatestVersion = latestVersion,
+                    UpdateAvailable = IsNewerVersion(latestVersion, currentVersion),
+                    Message = "Successfully checked for updates"
+                };
+            }
+
+            return new UpdateCheckResult
+            {
+                CheckSucceeded = false,
+                UpdateAvailable = false,
+                Message = isGitInstallation
+                    ? "Failed to check for updates (network issue or offline)"
+                    : "Failed to check for Asset Store updates (network issue or offline)"
+            };
+        }
+
+        /// <inheritdoc/>
+        public void CacheFetchResult(string currentVersion, string fetchedVersion)
+        {
+            if (string.IsNullOrEmpty(fetchedVersion)) return;
+
+            bool isGitInstallation = IsGitInstallation();
+            string gitBranch = isGitInstallation ? GetGitUpdateBranch(currentVersion) : "main";
+            bool useBetaChannel = isGitInstallation && string.Equals(gitBranch, "beta", StringComparison.OrdinalIgnoreCase);
+
+            string lastCheckKey = isGitInstallation
+                ? (useBetaChannel ? LastBetaCheckDateKey : LastCheckDateKey)
+                : LastAssetStoreCheckDateKey;
+            string cachedVersionKey = isGitInstallation
+                ? (useBetaChannel ? CachedBetaVersionKey : CachedVersionKey)
+                : CachedAssetStoreVersionKey;
+
+            EditorPrefs.SetString(lastCheckKey, DateTime.Now.ToString("yyyy-MM-dd"));
+            EditorPrefs.SetString(cachedVersionKey, fetchedVersion);
         }
 
         /// <inheritdoc/>
@@ -246,95 +276,55 @@ namespace MCPForUnity.Editor.Services
 
         private static bool IsPreReleaseVersion(string version)
         {
-            return !string.IsNullOrWhiteSpace(version) &&
-                   version.IndexOf('-', StringComparison.Ordinal) >= 0;
+            if (string.IsNullOrWhiteSpace(version))
+            {
+                return AssetPathUtility.IsPreReleaseVersion();
+            }
+
+            return version.IndexOf('-', StringComparison.Ordinal) >= 0;
         }
 
-        private static string InferChannelFromVersion(string currentVersion)
+        /// <inheritdoc/>
+        public string GetGitUpdateBranch(string currentVersion)
         {
+            try
+            {
+                var packageInfo = PackageInfo.FindForAssembly(typeof(PackageUpdateService).Assembly);
+                string packageId = packageInfo?.packageId ?? string.Empty;
+
+                if (packageId.IndexOf("#beta", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return "beta";
+                }
+
+                if (packageId.IndexOf("#main", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return "main";
+                }
+            }
+            catch
+            {
+                // Fall back to version-based inference below.
+            }
+
             return IsPreReleaseVersion(currentVersion) ? "beta" : "main";
         }
 
         /// <inheritdoc/>
         public virtual bool IsGitInstallation()
         {
-            try
+            // Git packages are installed via Package Manager and have a package.json in Packages/
+            // Asset Store packages are in Assets/
+            string packageRoot = AssetPathUtility.GetMcpPackageRootPath();
+
+            if (string.IsNullOrEmpty(packageRoot))
             {
-                var packageInfo = PackageInfo.FindForAssembly(typeof(PackageUpdateService).Assembly);
-                if (packageInfo != null)
-                {
-                    if (!string.IsNullOrEmpty(packageInfo.packageId))
-                    {
-                        return packageInfo.packageId.StartsWith("com.coplaydev.unity-mcp", StringComparison.OrdinalIgnoreCase) &&
-                               packageInfo.packageId.Contains("#", StringComparison.Ordinal);
-                    }
-                }
-            }
-            catch
-            {
-                // Background update checks can run off the main thread during editor load.
-                // In that path we avoid AssetDatabase-based fallbacks and simply treat the
-                // installation type as unknown.
+                return false;
             }
 
-            return false;
-        }
-
-        private static UpdateSourceContext ResolveUpdateSource(string currentVersion)
-        {
-            string channel = InferChannelFromVersion(currentVersion);
-            bool isGitInstallation = false;
-            bool useGitHubSource = false;
-
-            try
-            {
-                var packageInfo = PackageInfo.FindForAssembly(typeof(PackageUpdateService).Assembly);
-                string packageId = packageInfo?.packageId ?? string.Empty;
-                string assetPath = packageInfo?.assetPath ?? string.Empty;
-
-                if (packageId.IndexOf("#beta", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    channel = "beta";
-                    isGitInstallation = true;
-                    useGitHubSource = true;
-                }
-                else if (packageId.IndexOf("#main", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    channel = "main";
-                    isGitInstallation = true;
-                    useGitHubSource = true;
-                }
-                else if (packageId.Contains("#", StringComparison.Ordinal))
-                {
-                    isGitInstallation = true;
-                    useGitHubSource = true;
-                }
-                else if (packageId.IndexOf("file:", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                         assetPath.StartsWith("Packages/com.coplaydev.unity-mcp", StringComparison.OrdinalIgnoreCase))
-                {
-                    useGitHubSource = true;
-                }
-            }
-            catch
-            {
-                useGitHubSource = IsPreReleaseVersion(currentVersion);
-            }
-
-            return new UpdateSourceContext
-            {
-                IsGitInstallation = isGitInstallation,
-                UseGitHubSource = useGitHubSource,
-                Channel = channel
-            };
-        }
-
-        private struct UpdateSourceContext
-        {
-            public bool IsGitInstallation;
-
-            public bool UseGitHubSource;
-
-            public string Channel;
+            // If the package is in Packages/ it's a PM install (likely Git)
+            // If it's in Assets/ it's an Asset Store install
+            return packageRoot.StartsWith("Packages/", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <inheritdoc/>

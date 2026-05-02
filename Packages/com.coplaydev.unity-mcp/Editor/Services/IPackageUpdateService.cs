@@ -16,23 +16,24 @@ namespace MCPForUnity.Editor.Services
         /// Returns a cached update result if one exists for today, or null if a network fetch is needed.
         /// Main-thread only (reads EditorPrefs).
         /// </summary>
-        UpdateCheckResult TryGetCachedResult(UpdateCheckContext context);
+        UpdateCheckResult TryGetCachedResult(string currentVersion);
 
         /// <summary>
         /// Performs only the network fetch and version comparison (no EditorPrefs access).
         /// Safe to call from a background thread.
         /// </summary>
-        UpdateCheckResult FetchAndCompare(UpdateCheckContext context);
+        UpdateCheckResult FetchAndCompare(string currentVersion);
+
+        /// <summary>
+        /// Performs only the network fetch and version comparison using pre-computed installation info.
+        /// Use this overload when calling from a background thread to avoid main-thread-only API calls.
+        /// </summary>
+        UpdateCheckResult FetchAndCompare(string currentVersion, bool isGitInstallation, string gitBranch);
 
         /// <summary>
         /// Caches a successful fetch result in EditorPrefs. Must be called from the main thread.
         /// </summary>
-        void CacheFetchResult(UpdateCheckContext context, string fetchedVersion);
-
-        /// <summary>
-        /// Captures all main-thread-only state needed for a later background update fetch.
-        /// </summary>
-        UpdateCheckContext CreateContext(string currentVersion);
+        void CacheFetchResult(string currentVersion, string fetchedVersion);
 
         /// <summary>
         /// Compares two version strings to determine if the first is newer than the second
@@ -49,27 +50,15 @@ namespace MCPForUnity.Editor.Services
         bool IsGitInstallation();
 
         /// <summary>
+        /// Determines the Git branch to check for updates (e.g. "main" or "beta").
+        /// Must be called from the main thread (uses Unity PackageManager APIs).
+        /// </summary>
+        string GetGitUpdateBranch(string currentVersion);
+
+        /// <summary>
         /// Clears the cached update check data, forcing a fresh check on next request
         /// </summary>
         void ClearCache();
-    }
-
-    /// <summary>
-    /// Main-thread-captured update check inputs that can safely cross into a worker thread.
-    /// </summary>
-    public sealed class UpdateCheckContext
-    {
-        public string CurrentVersion { get; set; }
-
-        public bool IsGitInstallation { get; set; }
-
-        public bool UseGitHubSource { get; set; }
-
-        public string Channel { get; set; }
-
-        public string LastCheckKey { get; set; }
-
-        public string CachedVersionKey { get; set; }
     }
 
     /// <summary>

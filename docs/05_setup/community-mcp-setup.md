@@ -1,7 +1,7 @@
 # Community MCP 로컬 설정 가이드
 
 - 상태: draft
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-05-02
 - 소유자: repository
 
 ## 목적
@@ -40,6 +40,10 @@
 - Unity 내부에서 로컬 서버 시작
 - 프로젝트 기본 HTTP 엔드포인트: `http://localhost:43157/mcp`
 - 외부 AI 클라이언트가 해당 MCP endpoint에 연결
+
+현재 repo에는 CoplayDev `com.coplaydev.unity-mcp` `9.6.8` embedded package가 들어 있다.
+fresh EditorPrefs 기준 HTTP Local base URL도 `http://127.0.0.1:43157`로 맞춘다.
+기존 로컬 EditorPrefs가 upstream 기본값 `8080`을 저장하고 있으면 Unity MCP 창에서 URL을 다시 지정한다.
 
 이 저장소에서는 이 경로를 **로컬 tooling 전용**으로만 본다.
 즉, Unity 에디터 상태를 읽고 제한적으로 조작하는 연결이지, 런타임 기능 추가가 아니다.

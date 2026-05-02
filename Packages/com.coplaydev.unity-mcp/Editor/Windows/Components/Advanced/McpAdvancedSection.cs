@@ -25,7 +25,6 @@ namespace MCPForUnity.Editor.Windows.Components.Advanced
         private Button browseGitUrlButton;
         private Button clearGitUrlButton;
         private Toggle autoStartOnLoadToggle;
-        private Toggle autoPackageUpdateCheckToggle;
         private Toggle debugLogsToggle;
         private Toggle logRecordToggle;
         private Toggle devModeForceRefreshToggle;
@@ -48,7 +47,6 @@ namespace MCPForUnity.Editor.Windows.Components.Advanced
         public event Action OnHttpServerCommandUpdateRequested;
         public event Action OnTestConnectionRequested;
         public event Action OnPackageDeployed;
-        public event Action<bool> OnAutoPackageUpdateCheckChanged;
 
         public VisualElement Root { get; private set; }
 
@@ -70,7 +68,6 @@ namespace MCPForUnity.Editor.Windows.Components.Advanced
             browseGitUrlButton = Root.Q<Button>("browse-git-url-button");
             clearGitUrlButton = Root.Q<Button>("clear-git-url-button");
             autoStartOnLoadToggle = Root.Q<Toggle>("auto-start-on-load-toggle");
-            autoPackageUpdateCheckToggle = Root.Q<Toggle>("auto-package-update-check-toggle");
             debugLogsToggle = Root.Q<Toggle>("debug-logs-toggle");
             logRecordToggle = Root.Q<Toggle>("log-record-toggle");
             devModeForceRefreshToggle = Root.Q<Toggle>("dev-mode-force-refresh-toggle");
@@ -103,16 +100,9 @@ namespace MCPForUnity.Editor.Windows.Components.Advanced
                 if (debugLabel != null)
                     debugLabel.tooltip = debugLogsToggle.tooltip;
             }
-            if (autoPackageUpdateCheckToggle != null)
-            {
-                autoPackageUpdateCheckToggle.tooltip = "Automatically check for MCP package updates when the window opens. Disabled by default for embedded-package stability.";
-                var autoPackageUpdateLabel = autoPackageUpdateCheckToggle?.parent?.Q<Label>();
-                if (autoPackageUpdateLabel != null)
-                    autoPackageUpdateLabel.tooltip = autoPackageUpdateCheckToggle.tooltip;
-            }
             if (logRecordToggle != null)
             {
-                logRecordToggle.tooltip = "Log every MCP tool execution (tool, action, status, duration) to Assets/mcp.log.";
+                logRecordToggle.tooltip = "Log every MCP tool execution (tool, action, status, duration) to Assets/UnityMCP/Log/mcp.log.";
                 var logRecordLabel = logRecordToggle?.parent?.Q<Label>();
                 if (logRecordLabel != null)
                     logRecordLabel.tooltip = logRecordToggle.tooltip;
@@ -168,10 +158,6 @@ namespace MCPForUnity.Editor.Windows.Components.Advanced
                 if (autoStartLabel != null)
                     autoStartLabel.tooltip = autoStartOnLoadToggle.tooltip;
                 autoStartOnLoadToggle.SetValueWithoutNotify(EditorPrefs.GetBool(EditorPrefKeys.AutoStartOnLoad, false));
-            }
-            if (autoPackageUpdateCheckToggle != null)
-            {
-                autoPackageUpdateCheckToggle.SetValueWithoutNotify(EditorPrefs.GetBool(EditorPrefKeys.AutoPackageUpdateCheck, false));
             }
 
             gitUrlOverride.value = EditorPrefs.GetString(EditorPrefKeys.GitUrlOverride, "");
@@ -249,15 +235,6 @@ namespace MCPForUnity.Editor.Windows.Components.Advanced
                 autoStartOnLoadToggle.RegisterValueChangedCallback(evt =>
                 {
                     EditorPrefs.SetBool(EditorPrefKeys.AutoStartOnLoad, evt.newValue);
-                });
-            }
-
-            if (autoPackageUpdateCheckToggle != null)
-            {
-                autoPackageUpdateCheckToggle.RegisterValueChangedCallback(evt =>
-                {
-                    EditorPrefs.SetBool(EditorPrefKeys.AutoPackageUpdateCheck, evt.newValue);
-                    OnAutoPackageUpdateCheckChanged?.Invoke(evt.newValue);
                 });
             }
 
@@ -387,8 +364,6 @@ namespace MCPForUnity.Editor.Windows.Components.Advanced
             gitUrlOverride.value = EditorPrefs.GetString(EditorPrefKeys.GitUrlOverride, "");
             if (autoStartOnLoadToggle != null)
                 autoStartOnLoadToggle.value = EditorPrefs.GetBool(EditorPrefKeys.AutoStartOnLoad, false);
-            if (autoPackageUpdateCheckToggle != null)
-                autoPackageUpdateCheckToggle.value = EditorPrefs.GetBool(EditorPrefKeys.AutoPackageUpdateCheck, false);
             debugLogsToggle.value = EditorPrefs.GetBool(EditorPrefKeys.DebugLogs, false);
             if (logRecordToggle != null)
                 logRecordToggle.value = McpLogRecord.IsEnabled;

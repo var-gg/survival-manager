@@ -1,7 +1,7 @@
 # Codex 앱 Unity MCP 연결 가이드
 
 - 상태: active
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-05-02
 - 소유자: repository
 - 소스오브트루스: `docs/05_setup/codex-mcp-setup.md`
 
@@ -24,6 +24,9 @@
 헬스 체크 기준 URL:
 
 - `http://127.0.0.1:43157/health`
+
+현재 repo의 CoplayDev MCP embedded package는 `9.6.8`이다.
+기존 Unity EditorPrefs에 다른 HTTP URL이 남아 있으면 Unity MCP 창에서 위 endpoint로 다시 맞춘다.
 
 ## OpenClaw와 Codex 역할 분리
 

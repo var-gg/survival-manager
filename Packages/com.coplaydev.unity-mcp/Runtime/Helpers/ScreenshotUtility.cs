@@ -91,11 +91,7 @@ namespace MCPForUnity.Runtime.Helpers
 
             try
             {
-#if UNITY_2022_2_OR_NEWER
-                var cams = UnityEngine.Object.FindObjectsByType<Camera>(FindObjectsSortMode.None);
-#else
-                var cams = UnityEngine.Object.FindObjectsOfType<Camera>();
-#endif
+                var cams = UnityFindObjectsCompat.FindAll<Camera>();
                 return cams.FirstOrDefault();
             }
             catch
@@ -188,9 +184,8 @@ namespace MCPForUnity.Runtime.Helpers
                 tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
                 tex.Apply();
 
-                // PNG encoding API is unavailable in this Unity/profile combination.
-                // Keep MCP compiling by skipping on-disk encode and optional inline image payloads.
-                File.WriteAllBytes(result.FullPath, System.Array.Empty<byte>());
+                byte[] png = tex.EncodeToPNG();
+                File.WriteAllBytes(result.FullPath, png);
 
                 if (includeImage)
                 {
@@ -198,13 +193,14 @@ namespace MCPForUnity.Runtime.Helpers
                     if (width > targetMax || height > targetMax)
                     {
                         downscaled = DownscaleTexture(tex, targetMax);
-                        imageBase64 = string.Empty;
+                        byte[] smallPng = downscaled.EncodeToPNG();
+                        imageBase64 = System.Convert.ToBase64String(smallPng);
                         imgW = downscaled.width;
                         imgH = downscaled.height;
                     }
                     else
                     {
-                        imageBase64 = string.Empty;
+                        imageBase64 = System.Convert.ToBase64String(png);
                         imgW = width;
                         imgH = height;
                     }
@@ -258,12 +254,12 @@ namespace MCPForUnity.Runtime.Helpers
                 if (width > targetMax || height > targetMax)
                 {
                     downscaled = DownscaleTexture(tex, targetMax);
-                    string b64 = string.Empty;
+                    string b64 = System.Convert.ToBase64String(downscaled.EncodeToPNG());
                     return (b64, downscaled.width, downscaled.height);
                 }
                 else
                 {
-                    string b64 = string.Empty;
+                    string b64 = System.Convert.ToBase64String(tex.EncodeToPNG());
                     return (b64, width, height);
                 }
             }
@@ -408,7 +404,8 @@ namespace MCPForUnity.Runtime.Helpers
 
                 sheet.Apply();
 
-                string b64 = string.Empty;
+                byte[] png = sheet.EncodeToPNG();
+                string b64 = System.Convert.ToBase64String(png);
                 return (b64, sheetW, sheetH);
             }
             finally

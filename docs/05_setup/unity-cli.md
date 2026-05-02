@@ -1,7 +1,7 @@
 # Unity CLI 로컬 Fast Lane 가이드
 
 - 상태: active
-- 최종수정일: 2026-04-09
+- 최종수정일: 2026-05-02
 - 소유자: repository
 - 소스오브트루스: `docs/05_setup/unity-cli.md`
 - 관련문서:
@@ -38,18 +38,19 @@ pwsh -File tools/unity-bridge.ps1 status
 이 binary는 로컬 optional tool이다.
 CI mandatory dependency로 취급하지 않는다.
 PowerShell 설치 직후 현재 셸의 `PATH`가 갱신되지 않을 수 있으므로, bare `unity-cli`보다 wrapper 확인을 우선한다.
+설치 후 binary 자체 업데이트는 `unity-cli update --check`, `unity-cli update`로 확인한다.
 
 ## Connector Pin
 
 `Packages/manifest.json`에는 아래 connector pin을 유지한다.
 
 ```json
-"com.youngwoocho02.unity-cli-connector": "https://github.com/youngwoocho02/unity-cli.git?path=unity-connector#v0.3.5"
+"com.youngwoocho02.unity-cli-connector": "https://github.com/youngwoocho02/unity-cli.git?path=unity-connector#v0.3.15"
 ```
 
 참고:
 
-- connector `0.3.5`는 Unity `6000.0` 이상을 요구한다.
+- connector `0.3.15`는 Unity `6000.0` 이상을 요구한다.
 - connector는 `com.unity.nuget.newtonsoft-json` `3.2.1`을 선언한다.
 - 현재 project lock은 `com.unity.nuget.newtonsoft-json` `3.2.2`를 해석하고 있으므로 connector 추가 후 compile로 호환 여부를 같이 확인한다.
 
@@ -105,7 +106,7 @@ pwsh -File tools/pre-art-rc.ps1
 - `seed-content`는 `SM/Internal/Content/Generate Sample Content`를 호출한다.
 
 `console` verb는 wrapper 입력을 `-Filter`로 받지만 실제 `unity-cli`에는 `--type`으로 전달한다.
-현재 `unity-cli v0.3.5` help 기준 콘솔 필터 flag는 `--type`이다.
+현재 `unity-cli v0.3.15` help 기준 콘솔 필터 flag는 `--type`이다.
 `test-edit`, `test-play`는 `-TestFilter`를 추가로 받아 특정 namespace/class/test만 좁혀서 실행할 수 있다.
 
 wrapper로 충분하지 않을 때만 direct command를 쓴다.

@@ -45,7 +45,6 @@ namespace MCPForUnity.Editor.Windows
             { EditorPrefKeys.ProjectScopedToolsLocalHttp, EditorPrefType.Bool },
             { EditorPrefKeys.AllowLanHttpBind, EditorPrefType.Bool },
             { EditorPrefKeys.AllowInsecureRemoteHttp, EditorPrefType.Bool },
-            { EditorPrefKeys.AutoPackageUpdateCheck, EditorPrefType.Bool },
             
             // Integer prefs
             { EditorPrefKeys.UnitySocketPort, EditorPrefType.Int },

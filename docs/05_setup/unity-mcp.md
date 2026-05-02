@@ -1,7 +1,7 @@
 # Unity MCP 운영 가이드
 
 - 상태: active
-- 최종수정일: 2026-03-30
+- 최종수정일: 2026-05-02
 - 소유자: repository
 
 ## 목적
@@ -129,13 +129,17 @@ Unity가 제공하거나 Unity Editor 내부에서만 자연스럽게 쓰이는 
 
 현재 프로젝트에서는 다음을 기본안으로 둔다.
 
-- **first playable 이후 tooling branch에서 먼저 평가한다.**
+- CoplayDev `com.coplaydev.unity-mcp` embedded package는 `9.6.8`로 유지한다.
+- `Packages/manifest.json`의 git URL도 `v9.6.8` tag를 가리키게 둔다.
+- embedded package가 Unity Package Manager에서 우선되므로 실제 로드 기준은 `Packages/com.coplaydev.unity-mcp/package.json`이다.
+- HTTP Local 기본 base URL은 이 repo의 공통 endpoint인 `http://127.0.0.1:43157`로 둔다.
 
 이 말은 곧 다음을 뜻한다.
 
-- 지금 당장 main 브랜치 표준 도구로 채택하지 않는다.
-- first playable 이전에는 정책만 고정한다.
-- 실제 도입 평가는 `tooling/*` 브랜치에서 시작한다.
+- main 브랜치 런타임은 MCP에 의존하지 않는다.
+- MCP package는 local tooling dependency이며 gameplay truth가 아니다.
+- 새 write workflow나 넓은 scene/prefab 조작은 `tooling/*` 브랜치나 sandbox 범위에서 먼저 평가한다.
+- 기존 EditorPrefs가 upstream 기본값 `8080`을 저장하고 있으면 Unity MCP 창에서 `43157`로 다시 맞춘다.
 
 ## 추천 평가 순서
 
@@ -153,5 +157,5 @@ Unity MCP는 도입 가능성이 있는 **개발 가속 도구**이지만,
 
 - MCP는 editor state 가속용
 - main 런타임 비의존
-- first playable 이후 tooling branch 선평가
+- package 자체는 embedded local tooling으로 유지하되 write 확대는 tooling branch 선평가
 - Discord 외부 Codex direct flow와 Unity Assistant 내부 flow를 분리 평가

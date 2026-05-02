@@ -47,11 +47,6 @@
             </ui:VisualElement>
 
             <ui:VisualElement class="setting-row">
-                <ui:Label text="Auto Package Update Check:" class="setting-label" />
-                <ui:Toggle name="auto-package-update-check-toggle" class="setting-toggle" />
-            </ui:VisualElement>
-
-            <ui:VisualElement class="setting-row">
                 <ui:Label text="Force Fresh Install:" class="setting-label" />
                 <ui:Toggle name="dev-mode-force-refresh-toggle" class="setting-toggle" />
             </ui:VisualElement>
