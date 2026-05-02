@@ -25,7 +25,7 @@ jobs:
           set -euo pipefail
           mkdir -p test-results/editmode
           if [[ -z "${UNITY_LICENSE:-}" ]]; then
-            echo "::warning::UNITY_LICENSE secret is not configured; skipping Unity EditMode tests."
+            echo "::notice::UNITY_LICENSE secret is not configured; skipping Unity EditMode tests."
             echo "available=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -40,7 +40,7 @@ jobs:
             -logFile test-results/editmode/unity-license-activation.log; then
             echo "available=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::warning::Unity license activation failed; skipping Unity EditMode tests. Check unity-license-activation.log artifact."
+            echo "::notice::Unity license activation failed; skipping Unity EditMode tests. Check unity-license-activation.log artifact."
             echo "available=false" >> "$GITHUB_OUTPUT"
           fi
 
@@ -85,7 +85,7 @@ jobs:
           set -euo pipefail
           mkdir -p test-results/playmode
           if [[ -z "${UNITY_LICENSE:-}" ]]; then
-            echo "::warning::UNITY_LICENSE secret is not configured; skipping Unity PlayMode tests."
+            echo "::notice::UNITY_LICENSE secret is not configured; skipping Unity PlayMode tests."
             echo "available=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -100,7 +100,7 @@ jobs:
             -logFile test-results/playmode/unity-license-activation.log; then
             echo "available=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::warning::Unity license activation failed; skipping Unity PlayMode tests. Check unity-license-activation.log artifact."
+            echo "::notice::Unity license activation failed; skipping Unity PlayMode tests. Check unity-license-activation.log artifact."
             echo "available=false" >> "$GITHUB_OUTPUT"
           fi
 
