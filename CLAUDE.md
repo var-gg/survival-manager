@@ -148,7 +148,20 @@ pwsh -File tools/smoke-check.ps1 -RepoRoot .
 - `docs/**`: durable knowledge
 - `tasks/**`: live state / handoff
 - `prompts/**`, `.agents/skills/**`: agent routing asset
-- `docs/04_decisions/**`: durable decision
+- `docs/04_decisions/**`: durable decision (코드 직결 architecture만)
+- pindoc Decision/Analysis: content/governance/narrative/product 결정 (기본 위치)
+
+### 의사결정 위치 정책
+
+`AGENTS.md`의 "의사결정 기록 위치 (ADR vs pindoc Decision)" 절을 반드시 따른다. 핵심 요약:
+
+- **신규 결정 기본 위치**: pindoc Decision/Analysis (`mcp__pindoc__pindoc_artifact_propose`)
+- **git ADR 잔류 대상**: 코드 직결 architecture 결정만 (asmdef 경계, persistence schema, build/asset pipeline, runtime architecture)
+- **content/governance/narrative/product 결정**: 항상 pindoc 우선
+- **1차 brainstorm**: Analysis (`completeness: draft`)로 publish하여 사용자 검토 surface 제공 → 컨펌 후 settled 승급
+- **supersede**: pindoc은 `supersede_of` 필드, git ADR은 frontmatter `상태: superseded` + 후속 결정 URL
+
+본 정책 baseline: `pindoc://decision-doc-harness-pindoc-migration`. ADR-0024는 본 정책에 의해 supersede 처리됨.
 
 ## Unity 반복 루프 예산
 
