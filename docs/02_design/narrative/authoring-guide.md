@@ -106,7 +106,7 @@ heading + metadata + 테이블 형식:
 | Shardblade | `hero_shardblade` |
 | Prism Seeker | `hero_prism_seeker` |
 | Mirror Cantor | `hero_mirror_cantor` |
-| Aldric Sternholt | `aldric_sternholt` |
+| 단현 스턴홀트 | `aldric_sternholt` |
 | Narrator | `Narrator` |
 
 ### 감정 Alias

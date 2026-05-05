@@ -23,7 +23,7 @@
 
 ## 이벤트 스키마 표
 
-### Chapter 1: Ashen Gate
+### Chapter 1: 재의 문
 
 | story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
 | --- | --- | ---: | --- | --- | --- | --- |
@@ -36,7 +36,7 @@
 | `story_event_boss_defeat_wolfpine_trail` | `BattleResolved` | 250 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_wolfpine_trail`, `NodeIs:4` | `SetFlag:story_flag_grey_fang_defeated` | `dialogue_overlay_boss_defeat_wolfpine_trail` |
 | `story_event_unlock_rift_stalker` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_ashen_gate`, `SiteIs:site_wolfpine_trail` | `UnlockHero:hero_rift_stalker`, `SetFlag:story_flag_rift_stalker_joined` | `toast_unlock_rift_stalker` |
 
-### Chapter 2: Sunken Bastion
+### Chapter 2: 가라앉은 보루
 
 | story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
 | --- | --- | ---: | --- | --- | --- | --- |
@@ -50,7 +50,7 @@
 | `story_event_unlock_pale_executor` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_tithe_road` | `UnlockHero:hero_pale_executor`, `SetFlag:story_flag_pale_executor_joined` | `toast_unlock_pale_executor` |
 | `story_event_aldric_journal_found` | `BattleResolved` | 280 | `OncePerProfile` | `ChapterIs:chapter_sunken_bastion`, `SiteIs:site_sunken_bastion`, `NodeIs:3` | `SetFlag:story_flag_aldric_named` | `dialogue_scene_aldric_journal` |
 
-### Chapter 3: Ruined Crypts
+### Chapter 3: 무너진 묘역
 
 | story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
 | --- | --- | ---: | --- | --- | --- | --- |
@@ -66,7 +66,7 @@
 | `story_event_unlock_echo_savant` | `ExtractCommitted` | 300 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard` | `UnlockHero:hero_echo_savant`, `SetFlag:story_flag_echo_savant_joined` | `toast_unlock_echo_savant` |
 | `story_event_aldric_face_revealed` | `BattleResolved` | 520 | `OncePerProfile` | `ChapterIs:chapter_ruined_crypts`, `SiteIs:site_bone_orchard`, `NodeIs:3`, `FlagIs:story_flag_relicborn_awakened` | `SetFlag:story_flag_aldric_face_seen` | `dialogue_scene_aldric_face` |
 
-### Chapter 4: Glass Forest
+### Chapter 4: 유리의 숲
 
 | story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
 | --- | --- | ---: | --- | --- | --- | --- |
@@ -83,7 +83,7 @@
 | `story_event_clan_split` | `SiteEntered` | 130 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_starved_menagerie` | `SetFlag:story_flag_clan_split` | `dialogue_scene_clan_split` |
 | `story_event_costs_accepted` | `ExtractCommitted` | 350 | `OncePerProfile` | `ChapterIs:chapter_glass_forest`, `SiteIs:site_starved_menagerie` | `SetFlag:story_flag_costs_accepted` | `dialogue_scene_costs_accepted` |
 
-### Chapter 5: Heartforge Descent
+### Chapter 5: 심장로 Descent
 
 | story_event_id | moment | priority | once_policy | conditions | effects | presentation_key |
 | --- | --- | ---: | --- | --- | --- | --- |
@@ -129,7 +129,7 @@
 
 ## 대사 시퀀스 표
 
-### Chapter 1: Ashen Gate — Site Intro (dialogue-scene)
+### Chapter 1: 재의 문 — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -137,7 +137,7 @@
 | `dialogue_seq_ashen_gate_intro` | 1 | `hero_pack_raider` | `loc.story.ashen_gate.intro.1` | `skeptical` | 인간 불신 표출 |
 | `dialogue_seq_ashen_gate_intro` | 2 | `hero_dawn_priest` | `loc.story.ashen_gate.intro.2` | `solemn` | 재의 들판 묘사 |
 
-### Chapter 1: Ashen Gate — Boss Barks & Reactions
+### Chapter 1: 재의 문 — Boss Barks & Reactions
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -146,7 +146,7 @@
 | `dialogue_seq_boss_defeat_ashen_gate` | 0 | `hero_dawn_priest` | `loc.story.ashen_gate.boss_defeat.0` | `shock` | 성유물이 무기였다 |
 | `dialogue_seq_boss_defeat_ashen_gate` | 1 | `hero_pack_raider` | `loc.story.ashen_gate.boss_defeat.1` | `skeptical` | 인간의 신앙 의심 |
 
-### Chapter 1: Wolfpine Trail (dialogue-scene)
+### Chapter 1: 이리솔길 (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -168,7 +168,7 @@
 | `dialogue_seq_raider_totem_explanation` | 1 | `hero_pack_raider` | `loc.story.raider.totem.1` | `bitter` | 인간이 빼앗은 것의 무게 |
 | `dialogue_seq_raider_totem_explanation` | 2 | `hero_dawn_priest` | `loc.story.raider.totem.2` | `shock` | 성유물과 토템이 같은 물질 |
 
-### Chapter 1: Dawn Priest — Ashen Gate Intro
+### Chapter 1: Dawn Priest — 재의 문 Intro
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -176,7 +176,7 @@
 | `dialogue_seq_priest_ashen_gate` | 1 | `hero_dawn_priest` | `loc.story.priest.ashen_gate.1` | `grim` | 이 문은 우리가 세운 것 |
 | `dialogue_seq_priest_ashen_gate` | 2 | `hero_dawn_priest` | `loc.story.priest.ashen_gate.2` | `solemn` | 문 너머의 진실을 보겠다 |
 
-### Chapter 2: Sunken Bastion — Site Intro (dialogue-scene)
+### Chapter 2: 가라앉은 보루 — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -184,7 +184,7 @@
 | `dialogue_seq_sunken_bastion_intro` | 1 | `hero_pack_raider` | `loc.story.sunken_bastion.intro.1` | `skeptical` | 인간은 자기가 지은 것도 지키지 못한다 |
 | `dialogue_seq_sunken_bastion_intro` | 2 | `hero_dawn_priest` | `loc.story.sunken_bastion.intro.2` | `weary` | 같은 신도끼리 싸우는 현실 |
 
-### Chapter 2: Sunken Bastion — Boss Barks & Reactions
+### Chapter 2: 가라앉은 보루 — Boss Barks & Reactions
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -193,7 +193,7 @@
 | `dialogue_seq_boss_defeat_sunken_bastion` | 0 | `hero_dawn_priest` | `loc.story.sunken_bastion.boss_defeat.0` | `shock` | 성유물이 도굴품이었다 |
 | `dialogue_seq_boss_defeat_sunken_bastion` | 1 | `hero_pack_raider` | `loc.story.sunken_bastion.boss_defeat.1` | `bitter` | 80년간 감춰온 약탈 |
 
-### Chapter 2: Tithe Road — Site Intro (dialogue-scene)
+### Chapter 2: 십일조 도로 — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -201,7 +201,7 @@
 | `dialogue_seq_tithe_road_intro` | 1 | `hero_pack_raider` | `loc.story.tithe_road.intro.1` | `shock` | 자기 동족에게도 이런 짓을 |
 | `dialogue_seq_tithe_road_intro` | 2 | `hero_dawn_priest` | `loc.story.tithe_road.intro.2` | `weary` | 정화라는 이름의 폭력 |
 
-### Chapter 2: Tithe Road — Boss Barks & Reactions
+### Chapter 2: 십일조 도로 — Boss Barks & Reactions
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -229,7 +229,7 @@
 | `dialogue_seq_raider_kingdom_anger` | 1 | `hero_pack_raider` | `loc.story.raider.kingdom_anger.1` | `bitter` | 피 냄새가 돌담에 배어 있다 |
 | `dialogue_seq_raider_kingdom_anger` | 2 | `hero_dawn_priest` | `loc.story.raider.kingdom_anger.2` | `solemn` | 부정하지 않겠다 |
 
-### Chapter 3: Ruined Crypts — Site Intro (dialogue-scene)
+### Chapter 3: 무너진 묘역 — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -237,7 +237,7 @@
 | `dialogue_seq_ruined_crypts_intro` | 1 | `hero_grave_hexer` | `loc.story.ruined_crypts.intro.1` | `gentle` | 속삭임은 공격이 아니라 부름 |
 | `dialogue_seq_ruined_crypts_intro` | 2 | `hero_dawn_priest` | `loc.story.ruined_crypts.intro.2` | `grim` | 죽음의 땅이라 들었지만 |
 
-### Chapter 3: Ruined Crypts — Boss Barks & Reactions
+### Chapter 3: 무너진 묘역 — Boss Barks & Reactions
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -246,7 +246,7 @@
 | `dialogue_seq_boss_defeat_ruined_crypts` | 0 | `hero_grave_hexer` | `loc.story.ruined_crypts.boss_defeat.0` | `gentle` | 기록관이 열쇠를 넘겼다 |
 | `dialogue_seq_boss_defeat_ruined_crypts` | 1 | `hero_dawn_priest` | `loc.story.ruined_crypts.boss_defeat.1` | `solemn` | 수복자로 인정받았다 |
 
-### Chapter 3: Bone Orchard — Site Intro (dialogue-scene)
+### Chapter 3: 유골 과수원 — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -254,7 +254,7 @@
 | `dialogue_seq_bone_orchard_intro` | 1 | `hero_pack_raider` | `loc.story.bone_orchard.intro.1` | `defiant` | 뼈가 뿌리처럼 자란 나무 |
 | `dialogue_seq_bone_orchard_intro` | 2 | `hero_dawn_priest` | `loc.story.bone_orchard.intro.2` | `solemn` | 무언가 깨어나려 한다 |
 
-### Chapter 3: Bone Orchard — Boss Barks & Reactions
+### Chapter 3: 유골 과수원 — Boss Barks & Reactions
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -263,7 +263,7 @@
 | `dialogue_seq_boss_defeat_bone_orchard` | 0 | `hero_grave_hexer` | `loc.story.bone_orchard.boss_defeat.0` | `solemn` | 무지 때문이었다는 선언 |
 | `dialogue_seq_boss_defeat_bone_orchard` | 1 | `hero_dawn_priest` | `loc.story.bone_orchard.boss_defeat.1` | `weary` | 세 세력의 피해가 한눈에 |
 
-### Chapter 3: Relicborn Awakening (dialogue-scene)
+### Chapter 3: 그물 결사 각성 (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -290,7 +290,7 @@
 | `dialogue_seq_savant_awakening` | 0 | `hero_echo_savant` | `loc.story.savant.awakening.0` | `solemn` | 공명이 나를 깨웠다 |
 | `dialogue_seq_savant_awakening` | 1 | `hero_echo_savant` | `loc.story.savant.awakening.1` | `grim` | 격자의 풍화가 임계에 가깝다 |
 | `dialogue_seq_savant_awakening` | 2 | `hero_grave_hexer` | `loc.story.savant.awakening.2` | `solemn` | 기억과 공명이 같은 파장 |
-| `dialogue_seq_savant_lattice_assessment` | 0 | `hero_echo_savant` | `loc.story.savant.lattice.0` | `grim` | Heartforge는 기억을 에너지로 변환한다 |
+| `dialogue_seq_savant_lattice_assessment` | 0 | `hero_echo_savant` | `loc.story.savant.lattice.0` | `grim` | 심장로는 기억을 에너지로 변환한다 |
 | `dialogue_seq_savant_lattice_assessment` | 1 | `hero_echo_savant` | `loc.story.savant.lattice.1` | `solemn` | 부산물은 적대감 — 제어 없이 증폭된다 |
 | `dialogue_seq_savant_lattice_assessment` | 2 | `hero_dawn_priest` | `loc.story.savant.lattice.2` | `shock` | 우리 모두가 기계의 부산물에 조종당했다 |
 
@@ -311,7 +311,7 @@
 | `dialogue_seq_priest_midpoint_shock` | 1 | `hero_dawn_priest` | `loc.story.priest.midpoint.1` | `bitter` | 사제로서 무엇을 지켜왔나 |
 | `dialogue_seq_priest_midpoint_shock` | 2 | `hero_pack_raider` | `loc.story.priest.midpoint.2` | `gentle` | 부서진 것에서 새 뿌리가 난다 |
 
-### Chapter 4: Glass Forest — Site Intro (dialogue-scene)
+### Chapter 4: 유리의 숲 — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -319,7 +319,7 @@
 | `dialogue_seq_glass_forest_intro` | 1 | `hero_pack_raider` | `loc.story.glass_forest.intro.1` | `bitter` | 결정 안에 씨족 전사가 얼어 있다 |
 | `dialogue_seq_glass_forest_intro` | 2 | `hero_dawn_priest` | `loc.story.glass_forest.intro.2` | `weary` | 아름다움과 파괴가 공존한다 |
 
-### Chapter 4: Glass Forest — Boss Barks & Reactions
+### Chapter 4: 유리의 숲 — Boss Barks & Reactions
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -328,15 +328,15 @@
 | `dialogue_seq_boss_defeat_glass_forest` | 0 | `hero_echo_savant` | `loc.story.glass_forest.boss_defeat.0` | `solemn` | 도관이 열렸다 — 도난의 통로 |
 | `dialogue_seq_boss_defeat_glass_forest` | 1 | `hero_dawn_priest` | `loc.story.glass_forest.boss_defeat.1` | `bitter` | 방어 장치가 훔친 파편이었다 |
 
-### Chapter 4: Starved Menagerie — Site Intro (dialogue-scene)
+### Chapter 4: 굶주린 사육장 — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
 | `dialogue_seq_starved_menagerie_intro` | 0 | `hero_pack_raider` | `loc.story.starved_menagerie.intro.0` | `bitter` | 우리가 돌보던 짐승들 — dialogue-scene (10~20줄), Narrator 지문 포함 |
 | `dialogue_seq_starved_menagerie_intro` | 1 | `hero_grave_hexer` | `loc.story.starved_menagerie.intro.1` | `solemn` | 변이체의 잔류 기억 — 주인을 찾고 있다 |
-| `dialogue_seq_starved_menagerie_intro` | 2 | `hero_echo_savant` | `loc.story.starved_menagerie.intro.2` | `grim` | Heartforge 오염이 자연까지 |
+| `dialogue_seq_starved_menagerie_intro` | 2 | `hero_echo_savant` | `loc.story.starved_menagerie.intro.2` | `grim` | 심장로 오염이 자연까지 |
 
-### Chapter 4: Starved Menagerie — Boss Barks & Reactions
+### Chapter 4: 굶주린 사육장 — Boss Barks & Reactions
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -345,7 +345,7 @@
 | `dialogue_seq_boss_defeat_starved_menagerie` | 0 | `hero_pack_raider` | `loc.story.starved_menagerie.boss_defeat.0` | `solemn` | 공명석이 드러났다 |
 | `dialogue_seq_boss_defeat_starved_menagerie` | 1 | `hero_echo_savant` | `loc.story.starved_menagerie.boss_defeat.1` | `solemn` | 순환을 끊을 열쇠의 조각 |
 
-### Chapter 4: Pack Raider — Glass Forest Grief
+### Chapter 4: Pack Raider — 유리의 숲 Grief
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -369,7 +369,7 @@
 | `dialogue_seq_savant_resonance_adj` | 1 | `hero_echo_savant` | `loc.story.savant.resonance.1` | `gentle` | 간섭이 사라지면 맑은 의식이 돌아온다 |
 | `dialogue_seq_savant_resonance_adj` | 2 | `hero_pack_raider` | `loc.story.savant.resonance.2` | `shock` | 이것이 본래의 감각인가 |
 
-### Chapter 5: Heartforge Gate — Site Intro (dialogue-scene)
+### Chapter 5: 심장로의 문 — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -378,7 +378,7 @@
 | `dialogue_seq_heartforge_gate_intro` | 2 | `hero_pack_raider` | `loc.story.heartforge_gate.intro.2` | `solemn` | 영역의 안정은 수복으로만 온다 |
 | `dialogue_seq_heartforge_gate_intro` | 3 | `hero_grave_hexer` | `loc.story.heartforge_gate.intro.3` | `solemn` | 기억 보존과 정화가 양립하는지 확인해야 한다 |
 
-### Chapter 5: Heartforge Gate — Boss Barks & Reactions
+### Chapter 5: 심장로의 문 — Boss Barks & Reactions
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -387,7 +387,7 @@
 | `dialogue_seq_boss_defeat_heartforge_gate` | 0 | `hero_dawn_priest` | `loc.story.heartforge_gate.boss_defeat.0` | `weary` | 가장 고통스러운 기억을 넘었다 |
 | `dialogue_seq_boss_defeat_heartforge_gate` | 1 | `hero_echo_savant` | `loc.story.heartforge_gate.boss_defeat.1` | `solemn` | 정화 코드가 노출되었다 |
 
-### Chapter 5: Worldscar Depths — Site Intro (dialogue-scene)
+### Chapter 5: 세계상처 심부 — Site Intro (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -395,7 +395,7 @@
 | `dialogue_seq_worldscar_depths_intro` | 1 | `hero_dawn_priest` | `loc.story.worldscar_depths.intro.1` | `weary` | 가한 피해와 받은 피해를 동시에 본다 |
 | `dialogue_seq_worldscar_depths_intro` | 2 | `hero_pack_raider` | `loc.story.worldscar_depths.intro.2` | `solemn` | 바람의 기억도 여기 있다 |
 
-### Chapter 5: Worldscar Depths — Final Boss & Campaign Complete (dialogue-scene)
+### Chapter 5: 세계상처 심부 — Final Boss & Campaign Complete (dialogue-scene)
 
 | dialogue_seq_id | line_index | speaker_id | text_key | emote | note |
 | --- | ---: | --- | --- | --- | --- |
@@ -539,7 +539,7 @@
 | --- | --- | --- |
 | `scene_want` | 이 장면에서 누가 무엇을 원하는가 | Dawn Priest는 파편의 정체를 확인하고 싶다 |
 | `scene_block` | 누가/무엇이 그것을 막는가 | Pack Raider는 인간이 또 약탈할 것이라 불신한다 |
-| `scene_object` | 이 장면의 중심 사물 | Heartforge 파편, 토템의 진동 |
+| `scene_object` | 이 장면의 중심 사물 | 심장로 파편, 토템의 진동 |
 | `scene_changed` | 장면 후 무엇이 달라지는가 | 양측 유물이 같은 근원이라는 의심이 열린다 |
 | `forbidden_words` | 이 장면에서 금지되는 표현 | "끝내야 합니다", "그래서 ~란 말입니까" |
 

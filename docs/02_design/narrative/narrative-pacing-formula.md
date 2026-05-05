@@ -132,7 +132,7 @@ HeroJoin(S) = 1 if S in {2,3,4,5,6,7,8,9} else 0
 | `band_promise` | `0.10~0.20` | Promise | 야수족 첫 오해/동맹, specialist unlock | 36~58 | 37~100 | boss>=60 |
 | `band_rising_1` | `0.20~0.40` | Rising Action I | 인간 culpability 노출 | 44~75 | 감소 | — |
 | `band_rising_2` | `0.40~0.56` | Rising Action II | 언데드 기억, 유물 신호 | 63~88 | — | — |
-| `band_midpoint` | `0.56~0.62` | Major Reversal | Relicborn reveal | 80~96 | 강제 | 급상승 |
+| `band_midpoint` | `0.56~0.62` | Major Reversal | 그물 결사 reveal | 80~96 | 강제 | 급상승 |
 | `band_crisis` | `0.62~0.82` | Crisis | full roster mastery test | 88~94+ | — | — |
 | `band_convergence` | `0.82~0.92` | Convergence | 4세력 수렴, 결전 서약 | ~99 | — | 72~86 |
 | `band_climax` | `0.92~0.98` | Climax | 최종 적대체 직전 | 100 | 최소 | — |
@@ -171,7 +171,7 @@ BeatBudget(hero) =
 1. 네 종족에서 최소 1명의 lead를 둔다.
 2. lead tier는 chapter 1~5 전체에 재등장한다.
 3. specialist는 대부분 background/support에 머문다.
-4. Relicborn는 midpoint 이후 급부상하므로 최소 1명의 lead가 필요하다.
+4. 그물 결사는 midpoint 이후 급부상하므로 최소 1명의 lead가 필요하다.
 
 권장 lead: `hero_dawn_priest`, `hero_pack_raider`, `hero_grave_hexer`, `hero_echo_savant`.
 
@@ -187,7 +187,7 @@ OpenExternalHooks      = 1
 OpenHooksTotal         = 3
 ```
 
-- 메인 갈등은 Heartforge 봉인/정화/정지로 완결한다.
+- 메인 갈등은 심장로 봉인/정화/정지로 완결한다.
 - 금지: "진짜 최종보스는 DLC/후속작"형 엔딩.
 
 ## 장면 문법 공식
@@ -264,7 +264,7 @@ SubtextRatio(scene) =
   설정 핵심명사를 직접 말하는 줄 <= 40%
   몸/사물/감각/개인 상처로 말하는 줄 >= 60%
 
-핵심명사: Heartforge, 격자, 정화, 봉인, 순환, 질서, 공명, 기억
+핵심명사: 심장로, 격자, 정화, 봉인, 순환, 질서, 공명, 기억
 ```
 
 - 이 비율을 지키면 thesis-speech가 줄고 subtext가 늘어난다.
