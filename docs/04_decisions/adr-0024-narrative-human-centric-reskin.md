@@ -1,8 +1,10 @@
 # ADR-0024 내러티브 인간 중심 reskin과 캐릭터 IP 운영
 
-- 상태: active
+- 상태: superseded
+- 폐기일: 2026-05-05
+- 후속 결정: `pindoc://decision-doc-harness-pindoc-migration` (`http://localhost:5830/p/survival-manager/wiki/decision-doc-harness-pindoc-migration`)
 - 소유자: repository
-- 최종수정일: 2026-05-04
+- 최종수정일: 2026-05-05
 - 소스오브트루스: `docs/04_decisions/adr-0024-narrative-human-centric-reskin.md`
 - 관련문서:
   - `docs/04_decisions/adr-0007-thirdparty-asset-policy.md`
@@ -12,6 +14,27 @@
   - `docs/02_design/narrative/campaign-story-arc.md`
   - `docs/02_design/narrative/faction-conflict-matrix.md`
   - `docs/02_design/deck/character-lore-registry.md`
+
+## ⚠ 폐기 사유 (2026-05-05)
+
+본 ADR은 후속 결정 `pindoc://decision-doc-harness-pindoc-migration`에 의해 superseded 처리됐다. 핵심 사유:
+
+- **5결정 한 패키지 + retcon 금지로 잠금**: 부분 폐기 어려운 구조였다. ADR 형식이 narrative 같은 반복적 창작 작업에 retcon 잠금을 강제하는 부작용 가시화.
+- **격자/심장로 메커니즘 conceit이 검증되지 않음**: "memory→energy 변환 장치 + 그 안에 인격 잔류"가 자기모순이며, 격자가 sealing system이자 fragment이자 부산물이자 주파수까지 동시에 의미하는 일반명사 과부하. 사이클 5개 동안 retcon 금지로 잠겨 self-test 불가능했음.
+- **캐릭터 게임 장르 미스매치**: 메커니즘 우선의 narrative가 캐릭터 매력에 기여하지 않음. 서브컬쳐 캐릭터 수집 게임 정체성과 마찰.
+
+5결정 처리 (후속 Decision 본문에 명시):
+
+| 원 결정 | 처리 |
+| --- | --- |
+| 1. 4 race → 4 인간 세력 | 유지 (사실 baseline으로 흡수) |
+| 2. 영구 상실 → 회수 가능 결말 | 권장 가이드라인으로 약화 |
+| 3. 인생관 차이 = 정치 노선 | 권장으로 약화 |
+| 4. 삼국지 구조 흡수 | 폐기 |
+| 5. 인간 어둠 정직 처리 | 폐기 |
+| retcon 금지 규칙 | 폐기 (격자/심장로 메커니즘 재설계 잠금 해제) |
+
+본 ADR 본문(아래)은 historical record로 보존하되, narrative 작업의 baseline으로 참조하지 않는다. 격자/심장로 메커니즘 재설계는 별도 후속 Task `pindoc://task-harness-3-narrative-mechanism-redesign`에서 진행한다.
 
 ## 문맥
 
