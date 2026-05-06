@@ -23,7 +23,7 @@ public static class BattleP09AppearanceCatalogBuilder
     {
         EnsureFolder("Assets/Resources/_Game/Battle");
 
-        var catalog = AssetDatabase.LoadAssetAtPath<BattleP09AppearanceCatalog>(BattleP09AppearanceCatalog.AssetPath);
+        var catalog = LoadCatalog();
         if (catalog == null)
         {
             catalog = ScriptableObject.CreateInstance<BattleP09AppearanceCatalog>();
@@ -34,6 +34,11 @@ public static class BattleP09AppearanceCatalogBuilder
         EditorUtility.SetDirty(catalog);
         AssetDatabase.SaveAssets();
         return catalog;
+    }
+
+    public static BattleP09AppearanceCatalog? LoadCatalog()
+    {
+        return AssetDatabase.LoadAssetAtPath<BattleP09AppearanceCatalog>(BattleP09AppearanceCatalog.AssetPath);
     }
 
     public static IReadOnlyList<BattleP09AppearancePreset> EnsureMissingPresets()

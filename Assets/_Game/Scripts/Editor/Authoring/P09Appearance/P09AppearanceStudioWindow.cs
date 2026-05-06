@@ -233,7 +233,10 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 
     private void RefreshData(bool ensurePresets)
     {
-        _catalog = BattleP09AppearanceCatalogBuilder.EnsureCatalog();
+        _catalog = ensurePresets
+            ? BattleP09AppearanceCatalogBuilder.EnsureCatalog()
+            : BattleP09AppearanceCatalogBuilder.LoadCatalog()
+              ?? BattleP09AppearanceCatalogBuilder.EnsureCatalog();
         if (ensurePresets)
         {
             BattleP09AppearanceCatalogBuilder.EnsureMissingPresets();
