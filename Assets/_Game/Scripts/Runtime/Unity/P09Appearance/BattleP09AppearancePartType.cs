@@ -1,4 +1,5 @@
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 public enum BattleP09AppearancePartType
 {
@@ -19,4 +20,5 @@ public enum BattleP09AppearancePartType
     BustSize = 14,
     FaceEmotion = 15,
     FaceType = 16
+}
 }
