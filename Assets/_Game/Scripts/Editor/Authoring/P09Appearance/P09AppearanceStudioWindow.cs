@@ -11,6 +11,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 {
     private const string VisualPrefabPath = "Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/P09_Human_Combat_Demo Variant.prefab";
     private const string PreviewRootName = "__SM_P09AppearancePreview";
+    private const string PreviewReadableShaderName = "Hidden/SM/P09PreviewTintedUnlit";
     private const float PreviewPanelWidth = 500f;
     private const float PreviewPanelHeight = 620f;
 
@@ -488,9 +489,11 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 
     private static void ApplyPreviewReadableMaterials(Transform modelRoot, ICollection<Material> generatedMaterials)
     {
-        var previewShader = Shader.Find("Unlit/Texture")
+        var previewShader = Shader.Find(PreviewReadableShaderName)
+                            ?? Shader.Find("Sprites/Default")
+                            ?? Shader.Find("Unlit/Texture")
                             ?? Shader.Find("Unlit/Color")
-                            ?? Shader.Find("Sprites/Default");
+                            ?? Shader.Find("Universal Render Pipeline/Unlit");
         if (previewShader == null)
         {
             return;
