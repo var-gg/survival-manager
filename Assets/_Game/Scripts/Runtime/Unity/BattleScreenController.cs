@@ -16,7 +16,8 @@ using UnityEngine.InputSystem;
 using UnityEditor;
 #endif
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 public sealed class BattleScreenController : MonoBehaviour
 {
@@ -1183,4 +1184,5 @@ public sealed class BattleScreenController : MonoBehaviour
 
         _debugOverlayBackgroundTexture = null;
     }
+}
 }

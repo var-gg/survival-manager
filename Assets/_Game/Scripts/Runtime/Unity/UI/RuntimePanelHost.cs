@@ -7,7 +7,8 @@ using UnityEngine.UIElements;
 using UnityEditor;
 #endif
 
-namespace SM.Unity.UI;
+namespace SM.Unity.UI
+{
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(UIDocument))]
@@ -241,4 +242,5 @@ public sealed class RuntimePanelHost : MonoBehaviour
         fallback.clearColor = false;
         return fallback;
     }
+}
 }

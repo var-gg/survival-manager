@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: cf463e758cf02ca45bb53894a621b19a, type: 3}
   m_Name: GameFontCatalog
-  m_EditorClassIdentifier: SM.Unity:SM.Unity:GameFontCatalog
+  m_EditorClassIdentifier: SM.Unity::SM.Unity.GameFontCatalog
   sharedUiFont: {fileID: 12800000, guid: fec3e2fb6a3029b4b9b94cd06e2b0a25, type: 3}

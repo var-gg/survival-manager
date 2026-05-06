@@ -5,7 +5,8 @@ using SM.Unity.UI;
 using SM.Unity.UI.Reward;
 using UnityEngine;
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 public sealed class RewardScreenController : MonoBehaviour
 {
@@ -47,6 +48,21 @@ public sealed class RewardScreenController : MonoBehaviour
     public void Choose1() => _presenter?.Choose1();
     public void Choose2() => _presenter?.Choose2();
     public void ReturnToTown() => _presenter?.ReturnToTown();
+
+    public void EnsureRuntimeControls()
+    {
+        if (panelHost != null)
+        {
+            panelHost.EnsureReady();
+        }
+
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
+        EnsureViewReady();
+    }
 
     private bool EnsureViewReady()
     {
@@ -133,4 +149,5 @@ public sealed class RewardScreenController : MonoBehaviour
     {
         _presenter?.Refresh();
     }
+}
 }

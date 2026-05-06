@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 [CreateAssetMenu(menuName = "SM/UI/Game Font Catalog", fileName = "GameFontCatalog")]
 public sealed class GameFontCatalog : ScriptableObject
@@ -66,4 +67,5 @@ public sealed class GameFontCatalog : ScriptableObject
             ApplyFont(textMesh);
         }
     }
+}
 }

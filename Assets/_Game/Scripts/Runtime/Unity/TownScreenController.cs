@@ -5,7 +5,8 @@ using SM.Unity.UI;
 using SM.Unity.UI.Town;
 using UnityEngine;
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 public sealed class TownScreenController : MonoBehaviour
 {
@@ -168,4 +169,5 @@ public sealed class TownScreenController : MonoBehaviour
     {
         _presenter?.Refresh();
     }
+}
 }

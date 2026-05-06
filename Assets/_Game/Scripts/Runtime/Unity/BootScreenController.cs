@@ -2,7 +2,8 @@ using SM.Meta.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 public sealed class BootScreenController : MonoBehaviour
 {
@@ -100,4 +101,5 @@ public sealed class BootScreenController : MonoBehaviour
             text.text = label;
         }
     }
+}
 }
