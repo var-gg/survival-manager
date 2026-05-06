@@ -21,15 +21,26 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
     private CharacterDefinition? _selectedCharacter;
     private GameObject? _previewRoot;
 
-    [MenuItem("SM/Characters/P09 Appearance Studio")]
+    [MenuItem("SM/캐릭터/P09 외형 편집")]
     public static void Open()
     {
-        GetWindow<P09AppearanceStudioWindow>("P09 Appearance");
+        OpenWindow();
+    }
+
+    [MenuItem("SM/Characters/P09 Appearance Studio")]
+    private static void OpenLegacy()
+    {
+        OpenWindow();
+    }
+
+    private static void OpenWindow()
+    {
+        GetWindow<P09AppearanceStudioWindow>("P09 외형 편집");
     }
 
     private void OnEnable()
     {
-        RefreshData(ensurePresets: true);
+        RefreshData(ensurePresets: false);
     }
 
     private void OnDisable()
@@ -52,12 +63,12 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
     {
         using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
         {
-            if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.Width(72f)))
+            if (GUILayout.Button("새로고침", EditorStyles.toolbarButton, GUILayout.Width(72f)))
             {
                 RefreshData(ensurePresets: false);
             }
 
-            if (GUILayout.Button("Rebuild P09 Catalog", EditorStyles.toolbarButton, GUILayout.Width(132f)))
+            if (GUILayout.Button("P09 카탈로그 재생성", EditorStyles.toolbarButton, GUILayout.Width(142f)))
             {
                 RefreshData(ensurePresets: true);
             }
@@ -66,12 +77,12 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 
             using (new EditorGUI.DisabledScope(_selectedPreset == null))
             {
-                if (GUILayout.Button("Update Preview", EditorStyles.toolbarButton, GUILayout.Width(104f)))
+                if (GUILayout.Button("미리보기 갱신", EditorStyles.toolbarButton, GUILayout.Width(104f)))
                 {
                     UpdatePreview();
                 }
 
-                if (GUILayout.Button("Clear Preview", EditorStyles.toolbarButton, GUILayout.Width(92f)))
+                if (GUILayout.Button("미리보기 지우기", EditorStyles.toolbarButton, GUILayout.Width(112f)))
                 {
                     DestroyPreview();
                 }
@@ -83,7 +94,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
     {
         using (new EditorGUILayout.VerticalScope(GUILayout.Width(260f)))
         {
-            EditorGUILayout.LabelField("Characters", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("캐릭터", EditorStyles.boldLabel);
             _characterScroll = EditorGUILayout.BeginScrollView(_characterScroll);
             foreach (var character in _characters)
             {
@@ -108,7 +119,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         {
             if (_selectedCharacter == null || _selectedPreset == null)
             {
-                EditorGUILayout.HelpBox("Select a character to edit its P09 appearance preset.", MessageType.Info);
+                EditorGUILayout.HelpBox("P09 외형 프리셋을 수정할 캐릭터를 선택하세요.", MessageType.Info);
                 return;
             }
 
@@ -117,7 +128,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             EditorGUILayout.SelectableLabel(_selectedPreset.CharacterId, EditorStyles.miniLabel, GUILayout.Height(18f));
 
             EditorGUILayout.Space(6f);
-            DrawPartSection("Body", new[]
+            DrawPartSection("신체", new[]
             {
                 BattleP09AppearancePartType.Sex,
                 BattleP09AppearancePartType.FaceType,
@@ -129,7 +140,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
                 BattleP09AppearancePartType.BustSize,
             });
 
-            DrawPartSection("Equipment", new[]
+            DrawPartSection("장비", new[]
             {
                 BattleP09AppearancePartType.Head,
                 BattleP09AppearancePartType.Chest,
@@ -145,13 +156,13 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             EditorGUILayout.Space(8f);
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Ping Preset", GUILayout.Width(110f)))
+                if (GUILayout.Button("프리셋 찾기", GUILayout.Width(110f)))
                 {
                     EditorGUIUtility.PingObject(_selectedPreset);
                     Selection.activeObject = _selectedPreset;
                 }
 
-                if (GUILayout.Button("Save"))
+                if (GUILayout.Button("저장"))
                 {
                     SaveSelectedPreset(updatePreview: true);
                 }
@@ -184,15 +195,15 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         var options = _catalog.GetOptions(type, sexId).ToList();
         if (options.Count == 0)
         {
-            EditorGUILayout.LabelField(type.ToString(), "No P09 options");
+            EditorGUILayout.LabelField(GetPartLabel(type), "P09 옵션 없음");
             return;
         }
 
         var currentId = _selectedPreset.GetContentId(type);
         var currentIndex = Mathf.Max(0, options.FindIndex(option => option.ContentId == currentId));
-        var labels = options.Select(option => option.Label).ToArray();
+        var labels = options.Select(option => BuildOptionLabel(type, option)).ToArray();
         EditorGUI.BeginChangeCheck();
-        var nextIndex = EditorGUILayout.Popup(ObjectNames.NicifyVariableName(type.ToString()), currentIndex, labels);
+        var nextIndex = EditorGUILayout.Popup(GetPartLabel(type), currentIndex, labels);
         if (EditorGUI.EndChangeCheck())
         {
             _selectedPreset.SetContentId(type, options[nextIndex].ContentId);
@@ -208,11 +219,11 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         }
 
         EditorGUILayout.Space(8f);
-        EditorGUILayout.LabelField("Material Color Adjust", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("머티리얼 색상 조정", EditorStyles.boldLabel);
         var serialized = new SerializedObject(_selectedPreset);
         var property = serialized.FindProperty("materialColorOverrides");
         EditorGUI.BeginChangeCheck();
-        EditorGUILayout.PropertyField(property, includeChildren: true);
+        EditorGUILayout.PropertyField(property, new GUIContent("색상 오버라이드"), includeChildren: true);
         if (EditorGUI.EndChangeCheck())
         {
             serialized.ApplyModifiedProperties();
@@ -248,8 +259,13 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             return;
         }
 
-        _selectedPreset = BattleP09AppearanceCatalogBuilder.FindPreset(character.Id)
-                          ?? BattleP09AppearanceCatalogBuilder.EnsurePreset(character, _catalog, 0);
+        _selectedPreset = BattleP09AppearanceCatalogBuilder.FindPreset(character.Id);
+        if (_selectedPreset == null)
+        {
+            var seedIndex = Mathf.Max(0, _characters.ToList().FindIndex(item => item.Id == character.Id));
+            _selectedPreset = BattleP09AppearanceCatalogBuilder.EnsurePreset(character, _catalog, seedIndex);
+        }
+
         Selection.activeObject = _selectedPreset;
         UpdatePreview();
     }
@@ -261,12 +277,27 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             return;
         }
 
+        ConfigureSelectedPresetIdentity();
+        _selectedPreset.EnsureDefaultColorOverrides();
         EditorUtility.SetDirty(_selectedPreset);
         AssetDatabase.SaveAssets();
         if (updatePreview)
         {
             UpdatePreview();
         }
+    }
+
+    private void ConfigureSelectedPresetIdentity()
+    {
+        if (_selectedPreset == null || _selectedCharacter == null)
+        {
+            return;
+        }
+
+        var displayName = string.IsNullOrWhiteSpace(_selectedCharacter.LegacyDisplayName)
+            ? _selectedCharacter.Id
+            : _selectedCharacter.LegacyDisplayName;
+        _selectedPreset.ConfigureIdentity(_selectedCharacter.Id, displayName, _catalog);
     }
 
     private void UpdatePreview()
@@ -277,25 +308,12 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             return;
         }
 
-        if (_previewRoot == null)
-        {
-            CreatePreview();
-        }
-
+        CreatePreview();
         if (_previewRoot == null)
         {
             return;
         }
 
-        foreach (var material in _previewMaterials)
-        {
-            if (material != null)
-            {
-                DestroyImmediate(material);
-            }
-        }
-
-        _previewMaterials.Clear();
         _selectedPreset.ApplyTo(_previewRoot.transform, _previewMaterials);
         EditorUtility.SetDirty(_previewRoot);
         SceneView.RepaintAll();
@@ -340,6 +358,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 
         if (_previewRoot != null)
         {
+            ClearPreviewSelection(_previewRoot);
             DestroyImmediate(_previewRoot);
             _previewRoot = null;
         }
@@ -347,7 +366,106 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         var existing = GameObject.Find(PreviewRootName);
         if (existing != null)
         {
+            ClearPreviewSelection(existing);
             DestroyImmediate(existing);
         }
+    }
+
+    private void ClearPreviewSelection(GameObject preview)
+    {
+        var activeTransform = Selection.activeTransform;
+        if (activeTransform == null)
+        {
+            return;
+        }
+
+        if (activeTransform == preview.transform || activeTransform.IsChildOf(preview.transform))
+        {
+            Selection.activeObject = _selectedPreset;
+        }
+    }
+
+    private static string GetPartLabel(BattleP09AppearancePartType type)
+    {
+        return type switch
+        {
+            BattleP09AppearancePartType.Sex => "성별",
+            BattleP09AppearancePartType.FaceType => "얼굴 타입",
+            BattleP09AppearancePartType.HairStyle => "헤어 스타일",
+            BattleP09AppearancePartType.HairColor => "머리 색",
+            BattleP09AppearancePartType.Skin => "피부 톤",
+            BattleP09AppearancePartType.EyeColor => "눈 색",
+            BattleP09AppearancePartType.FacialHair => "수염",
+            BattleP09AppearancePartType.BustSize => "가슴 크기",
+            BattleP09AppearancePartType.Head => "머리 장비",
+            BattleP09AppearancePartType.Chest => "상의",
+            BattleP09AppearancePartType.Arm => "팔 장비",
+            BattleP09AppearancePartType.Waist => "허리 장비",
+            BattleP09AppearancePartType.Leg => "하의",
+            BattleP09AppearancePartType.Weapon => "무기",
+            BattleP09AppearancePartType.Shield => "방패",
+            _ => ObjectNames.NicifyVariableName(type.ToString())
+        };
+    }
+
+    private static string BuildOptionLabel(BattleP09AppearancePartType type, BattleP09AppearanceOption option)
+    {
+        var displayName = TranslateOptionName(type, option.DisplayName);
+        if (string.IsNullOrWhiteSpace(displayName))
+        {
+            displayName = option.MeshName;
+        }
+
+        return string.IsNullOrWhiteSpace(displayName)
+            ? $"#{option.ContentId}"
+            : $"{option.ContentId}: {displayName}";
+    }
+
+    private static string TranslateOptionName(BattleP09AppearancePartType type, string displayName)
+    {
+        if (string.IsNullOrWhiteSpace(displayName))
+        {
+            return string.Empty;
+        }
+
+        if (type == BattleP09AppearancePartType.Sex)
+        {
+            return displayName switch
+            {
+                "Male" => "남성",
+                "Female" => "여성",
+                _ => displayName
+            };
+        }
+
+        if (type == BattleP09AppearancePartType.HairColor || type == BattleP09AppearancePartType.EyeColor)
+        {
+            return displayName switch
+            {
+                "Blue" => "파랑",
+                "Brown" => "갈색",
+                "Gold" => "금색",
+                "Green" => "녹색",
+                "Ivory" => "상아색",
+                "Orange" => "주황",
+                "Pink" => "분홍",
+                "Purple" => "보라",
+                "Red" => "빨강",
+                _ => displayName
+            };
+        }
+
+        if (type == BattleP09AppearancePartType.Skin)
+        {
+            return displayName switch
+            {
+                "Bright" => "밝은 피부",
+                "Default" => "기본 피부",
+                "Dark" => "어두운 피부",
+                _ => displayName
+            };
+        }
+
+        return displayName;
     }
 }
