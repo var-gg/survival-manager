@@ -479,6 +479,14 @@ MonoBehaviour:
     m_Key: ui.battle.axis.target
     m_Metadata:
       m_Items: []
+  - m_Id: 3380253606010894
+    m_Key: ui.battle.tooltip.summary_collapse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010895
+    m_Key: ui.battle.tooltip.summary_expand
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

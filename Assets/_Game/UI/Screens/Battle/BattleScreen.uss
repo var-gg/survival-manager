@@ -85,6 +85,23 @@
     unity-font-style: bold;
 }
 
+.battle-screen .battle-shell__summary-header {
+    flex-direction: row;
+    align-items: center;
+}
+
+.battle-screen .battle-shell__summary-title {
+    flex-grow: 1;
+}
+
+.battle-screen .battle-shell__summary-toggle {
+    min-width: 68px;
+    height: 28px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 8px;
+}
+
 .battle-screen .panel {
     background-color: rgba(20, 27, 40, 0.74);
 }

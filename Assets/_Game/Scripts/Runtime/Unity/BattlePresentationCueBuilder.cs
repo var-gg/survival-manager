@@ -9,6 +9,7 @@ public sealed class BattlePresentationCueBuilder
     public IReadOnlyList<BattlePresentationCue> Build(BattleSimulationStep previousStep, BattleSimulationStep currentStep)
     {
         var cues = new List<BattlePresentationCue>();
+        var deathCueSubjects = new HashSet<string>(System.StringComparer.Ordinal);
         var previousById = previousStep.Units.ToDictionary(unit => unit.Id);
         var currentById = currentStep.Units.ToDictionary(unit => unit.Id);
 
@@ -88,7 +89,7 @@ public sealed class BattlePresentationCueBuilder
 
             if (previous.IsAlive && !current.IsAlive)
             {
-                cues.Add(new BattlePresentationCue(
+                AddDeathCue(cues, deathCueSubjects, new BattlePresentationCue(
                     BattlePresentationCueType.DeathStart,
                     currentStep.StepIndex,
                     current.Id,
@@ -153,7 +154,7 @@ public sealed class BattlePresentationCueBuilder
 
             if (eventData.EventKind == BattleEventKind.Kill && eventData.TargetId != null)
             {
-                cues.Add(new BattlePresentationCue(
+                AddDeathCue(cues, deathCueSubjects, new BattlePresentationCue(
                     BattlePresentationCueType.DeathStart,
                     currentStep.StepIndex,
                     eventData.TargetId.Value.Value,
@@ -178,6 +179,17 @@ public sealed class BattlePresentationCueBuilder
         }
 
         return cues;
+    }
+
+    private static void AddDeathCue(
+        ICollection<BattlePresentationCue> cues,
+        ISet<string> deathCueSubjects,
+        BattlePresentationCue cue)
+    {
+        if (deathCueSubjects.Add(cue.SubjectActorId))
+        {
+            cues.Add(cue);
+        }
     }
 
     private static bool IsRepositioning(BattleUnitReadModel unit)

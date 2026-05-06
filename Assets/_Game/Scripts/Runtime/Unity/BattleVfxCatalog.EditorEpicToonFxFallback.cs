@@ -18,15 +18,15 @@ public sealed partial class BattleVfxCatalog
         var catalog = CreateInstance<BattleVfxCatalog>();
         catalog.hideFlags = HideFlags.DontSave;
 
-        AddEntry(catalog, BattlePresentationCueType.WindupEnter, "Assets/Epic Toon FX/Prefabs/Interactive/Flares/Sharp/FlareSharpYellow.prefab", BattleActorSocketId.Telegraph, 1.2f, Vector3.zero, Vector3.zero, Vector3.one, false);
-        AddEntry(catalog, BattlePresentationCueType.ActionCommitBasic, "Assets/Epic Toon FX/Prefabs/Combat/Sword/Slash/SwordSlashThin/SwordSlashThinWhite.prefab", BattleActorSocketId.ProjectileOrigin, 1.4f, Vector3.zero, new Vector3(0f, 0f, 0f), Vector3.one, false);
-        AddEntry(catalog, BattlePresentationCueType.ActionCommitSkill, "Assets/Epic Toon FX/Prefabs/Combat/Missiles/Storm/StormMissile.prefab", BattleActorSocketId.ProjectileOrigin, 2.0f, Vector3.zero, Vector3.zero, Vector3.one, false);
-        AddEntry(catalog, BattlePresentationCueType.ActionCommitHeal, "Assets/Epic Toon FX/Prefabs/Interactive/Healing/HealOnce.prefab", BattleActorSocketId.Cast, 2.0f, Vector3.zero, Vector3.zero, Vector3.one, false);
-        AddEntry(catalog, BattlePresentationCueType.ImpactDamage, "Assets/Epic Toon FX/Prefabs/Combat/Explosions (Misc)/HitDustExplosion.prefab", BattleActorSocketId.Hit, 1.5f, Vector3.zero, Vector3.zero, Vector3.one, false);
-        AddEntry(catalog, BattlePresentationCueType.ImpactHeal, "Assets/Epic Toon FX/Prefabs/Interactive/Healing/HealNova.prefab", BattleActorSocketId.Head, 2.0f, Vector3.zero, Vector3.zero, Vector3.one, false);
-        AddEntry(catalog, BattlePresentationCueType.GuardEnter, "Assets/Epic Toon FX/Prefabs/Combat/Shield/ShieldSoftBlue.prefab", BattleActorSocketId.Telegraph, 2.0f, Vector3.zero, Vector3.zero, Vector3.one, false);
-        AddEntry(catalog, BattlePresentationCueType.RepositionStart, "Assets/Epic Toon FX/Prefabs/Environment/Dust/DustDirtyPoofSoft.prefab", BattleActorSocketId.FeetRing, 1.4f, Vector3.zero, Vector3.zero, Vector3.one, false);
-        AddEntry(catalog, BattlePresentationCueType.DeathStart, "Assets/Epic Toon FX/Prefabs/Combat/Explosions (Misc)/FlashExplosionRadial.prefab", BattleActorSocketId.Center, 2.0f, Vector3.zero, Vector3.zero, Vector3.one, false);
+        AddEntry(catalog, BattlePresentationCueType.WindupEnter, "Assets/Epic Toon FX/Prefabs/Combat/Magic/Charge/MagicChargeYellow.prefab", BattleActorSocketId.Telegraph, 1.1f, new Vector3(0f, 0.04f, 0f), Vector3.zero, Vector3.one * 0.58f, false);
+        AddEntry(catalog, BattlePresentationCueType.ActionCommitBasic, "Assets/Epic Toon FX/Prefabs/Combat/Sword/Slash/SwordSlashThick/SwordSlashThickWhite.prefab", BattleActorSocketId.ProjectileOrigin, 1.15f, new Vector3(0f, 0.10f, 0.05f), new Vector3(0f, 0f, 0f), Vector3.one * 0.72f, false);
+        AddEntry(catalog, BattlePresentationCueType.ActionCommitSkill, "Assets/Epic Toon FX/Prefabs/Combat/Missiles/MagicSoft/MagicMissileSoftBlue.prefab", BattleActorSocketId.ProjectileOrigin, 1.45f, new Vector3(0f, 0.08f, 0.05f), Vector3.zero, Vector3.one * 0.58f, false);
+        AddEntry(catalog, BattlePresentationCueType.ActionCommitHeal, "Assets/Epic Toon FX/Prefabs/Interactive/Healing/HealOnceBurst.prefab", BattleActorSocketId.Cast, 1.55f, new Vector3(0f, 0.08f, 0f), Vector3.zero, Vector3.one * 0.70f, false);
+        AddEntry(catalog, BattlePresentationCueType.ImpactDamage, "Assets/Epic Toon FX/Prefabs/Combat/Explosions (Misc)/TargetHitExplosion.prefab", BattleActorSocketId.Hit, 1.1f, Vector3.zero, Vector3.zero, Vector3.one * 0.58f, false);
+        AddEntry(catalog, BattlePresentationCueType.ImpactHeal, "Assets/Epic Toon FX/Prefabs/Interactive/Healing/HealNova.prefab", BattleActorSocketId.Head, 1.65f, Vector3.zero, Vector3.zero, Vector3.one * 0.62f, false);
+        AddEntry(catalog, BattlePresentationCueType.GuardEnter, "Assets/Epic Toon FX/Prefabs/Combat/Shield/ShieldSoftBlue.prefab", BattleActorSocketId.Telegraph, 1.7f, new Vector3(0f, 0.08f, 0f), Vector3.zero, Vector3.one * 0.78f, false);
+        AddEntry(catalog, BattlePresentationCueType.RepositionStart, "Assets/Epic Toon FX/Prefabs/Environment/Dust/DustDirtyPoofSoft.prefab", BattleActorSocketId.FeetRing, 1.0f, Vector3.zero, Vector3.zero, Vector3.one * 0.46f, false);
+        AddEntry(catalog, BattlePresentationCueType.DeathStart, "Assets/Epic Toon FX/Prefabs/Combat/Death/Souls/SoulGenericDeath.prefab", BattleActorSocketId.Center, 1.7f, Vector3.zero, Vector3.zero, Vector3.one * 0.62f, false);
 
         _editorEpicToonFxFallbackCatalog = catalog.HasAnyEntry() ? catalog : null;
         return _editorEpicToonFxFallbackCatalog;

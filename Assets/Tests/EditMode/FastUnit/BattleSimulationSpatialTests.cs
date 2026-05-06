@@ -491,6 +491,40 @@ public sealed class BattleSimulationSpatialTests
         Assert.That(attackEvents, Is.GreaterThan(0), "range buffer dead-zone에서 접근 후 공격 이벤트가 발생해야 한다.");
     }
 
+    [Test]
+    public void MoveForIntent_Sidesteps_Corpse_Blocking_Direct_Approach()
+    {
+        var mover = CombatTestFactory.CreateUnit("ally_pathing", anchor: DeploymentAnchorId.FrontCenter, moveSpeed: 1.9f, attackRange: 1.1f);
+        var fallen = CombatTestFactory.CreateUnit("ally_fallen", anchor: DeploymentAnchorId.FrontCenter, hp: 4f);
+        var enemy = CombatTestFactory.CreateUnit("enemy_target", race: "undead", anchor: DeploymentAnchorId.FrontCenter, hp: 40f);
+        var state = CombatTestFactory.CreateBattleState(new[] { mover, fallen }, new[] { enemy });
+        var actor = state.Allies[0];
+        var corpse = state.Allies[1];
+        var target = state.Enemies[0];
+
+        actor.SetPosition(new CombatVector2(-1.00f, 0f));
+        corpse.SetPosition(new CombatVector2(-0.25f, 0f));
+        corpse.TakeDamage(99f);
+        target.SetPosition(new CombatVector2(6.00f, 0f));
+        var before = actor.Position;
+
+        MovementResolver.MoveForIntent(state, actor, new EvaluatedAction(
+            BattleActionType.BasicAttack,
+            target,
+            null,
+            new TacticRule(0, TacticConditionType.LowestHpEnemy, 0f, BattleActionType.BasicAttack, TargetSelectorType.LowestHpEnemy),
+            new FloatRange(0.8f, 1.1f),
+            CombatActionState.Approach,
+            ReevaluationReason.None,
+            false,
+            null,
+            null));
+
+        Assert.That(actor.Position.DistanceTo(before), Is.GreaterThan(0.05f));
+        Assert.That(System.Math.Abs(actor.Position.Y), Is.GreaterThan(0.01f));
+        Assert.That(actor.Position.DistanceTo(corpse.Position), Is.GreaterThan(before.DistanceTo(corpse.Position)));
+    }
+
     private static float FindMinDistance(System.Collections.Generic.IReadOnlyList<BattleUnitReadModel> units)
     {
         var min = float.MaxValue;

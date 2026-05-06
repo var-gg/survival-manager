@@ -522,6 +522,14 @@ MonoBehaviour:
     m_Localized: Target
     m_Metadata:
       m_Items: []
+  - m_Id: 3380253606010894
+    m_Localized: Fold the summary panel to clear more of the battlefield.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606010895
+    m_Localized: Expand the summary panel.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

@@ -153,7 +153,7 @@ public sealed class BattleActorView : MonoBehaviour
 
         _animationEventBridge?.OpenCueWindow(cue);
         _animationDriver?.ConsumeCue(cue, _currentState, 1f);
-        _vfxSurface?.ConsumeCue(cue, _wrapper);
+        _vfxSurface?.ConsumeCue(cue, _wrapper, relatedWorld);
         _audioSurface?.ConsumeCue(cue, _wrapper);
 
         switch (cue.CueType)
@@ -479,7 +479,8 @@ public sealed class BattleActorView : MonoBehaviour
 
     private (Vector3 position, Vector3 scale, Quaternion rotation) ResolveBodyPose()
     {
-        var scale = _currentState.IsAlive ? Vector3.one : new Vector3(1.08f, 0.46f, 1.18f);
+        var hasAuthoredDeathPose = !_currentState.IsAlive && _animationDriver?.ActiveAnimationSet != null;
+        var scale = _currentState.IsAlive || hasAuthoredDeathPose ? Vector3.one : new Vector3(1.08f, 0.46f, 1.18f);
         var position = Vector3.zero;
 
         if (_currentState.IsAlive)
@@ -521,8 +522,15 @@ public sealed class BattleActorView : MonoBehaviour
         var rotation = ResolveFacingRotation();
         if (!_currentState.IsAlive)
         {
-            rotation *= Quaternion.Euler(0f, 0f, 78f);
-            position += new Vector3(0f, -0.34f, 0f);
+            if (hasAuthoredDeathPose)
+            {
+                position += new Vector3(0f, 0.02f, 0f);
+            }
+            else
+            {
+                rotation *= Quaternion.Euler(0f, 0f, 78f);
+                position += new Vector3(0f, -0.08f, 0f);
+            }
         }
 
         return (position, scale, rotation);
@@ -554,16 +562,16 @@ public sealed class BattleActorView : MonoBehaviour
             : feetWorld;
 
         UpdateDisc(_feetRingRenderer, _isCurrentActor || _isSelected, feetWorld, feetWorld.y, _isCurrentActor
-            ? ResolveSemanticColor(ResolveCurrentSemantic())
-            : new Color(0.42f, 0.76f, 1f, 1f), _isCurrentActor ? 1.48f : 1.30f);
+            ? WithAlpha(ResolveSemanticColor(ResolveCurrentSemantic()), 0.52f)
+            : new Color(0.42f, 0.76f, 1f, 0.42f), _isCurrentActor ? 1.18f : 1.04f);
 
         var windupVisible = _isCurrentActor && _currentState.ActionState == CombatActionState.ExecuteAction;
         var windupScale = Mathf.Lerp(0.45f, 1.18f, Mathf.Clamp01(_currentState.WindupProgress));
-        UpdateDisc(_windupRingRenderer, windupVisible, telegraphWorld, telegraphWorld.y + 0.01f, ResolveSemanticColor(ResolveCurrentSemantic()), windupScale);
+        UpdateDisc(_windupRingRenderer, windupVisible, telegraphWorld, telegraphWorld.y + 0.01f, WithAlpha(ResolveSemanticColor(ResolveCurrentSemantic()), 0.62f), windupScale);
 
-        UpdateDisc(_targetReticleRenderer, _isCurrentTarget, telegraphWorld, telegraphWorld.y + 0.01f, new Color(1f, 0.56f, 0.28f, 1f), 1.38f);
+        UpdateDisc(_targetReticleRenderer, _isCurrentTarget && _options.ShowDebugOverlay, telegraphWorld, telegraphWorld.y + 0.01f, new Color(1f, 0.56f, 0.28f, 0.46f), 1.18f);
 
-        var showFocusLine = (_isCurrentActor || _isSelected) && _focusTargetWorld.HasValue;
+        var showFocusLine = _options.ShowDebugOverlay && (_isCurrentActor || _isSelected) && _focusTargetWorld.HasValue;
         _focusLineRenderer.enabled = showFocusLine;
         if (showFocusLine)
         {
@@ -586,9 +594,10 @@ public sealed class BattleActorView : MonoBehaviour
         var feetWorld = _wrapper != null
             ? _wrapper.GetSocketWorld(BattleActorSocketId.FeetRing)
             : new Vector3(transform.position.x, GroundPlaneY, transform.position.z);
-        UpdateDisc(_homeAnchorRenderer, _isSelected, homeWorld, GroundPlaneY + 0.005f, new Color(0.86f, 0.94f, 1f, 1f), 1.06f);
+        var showDebugTelegraphs = _isSelected && _options.ShowDebugOverlay;
+        UpdateDisc(_homeAnchorRenderer, showDebugTelegraphs, homeWorld, GroundPlaneY + 0.005f, new Color(0.86f, 0.94f, 1f, 0.28f), 1.06f);
 
-        var shouldShowTether = _isSelected
+        var shouldShowTether = showDebugTelegraphs
                                && (_currentState.ActionState is CombatActionState.Reposition or CombatActionState.AdvanceToAnchor or CombatActionState.BreakContact
                                    || Vector3.Distance(homeWorld, transform.position) > 0.42f);
         _homeTetherRenderer.enabled = shouldShowTether;
@@ -599,19 +608,19 @@ public sealed class BattleActorView : MonoBehaviour
             _homeTetherRenderer.SetPosition(1, homeWorld + Vector3.up * 0.02f);
         }
 
-        var showRange = _isSelected && _currentState.PreferredRangeMax > 0.05f;
+        var showRange = showDebugTelegraphs && _currentState.PreferredRangeMax > 0.05f;
         var rangeDiameter = Mathf.Max(0.5f, _currentState.PreferredRangeMax * 2f);
         var innerDiameter = Mathf.Max(0.2f, _currentState.PreferredRangeMin * 2f);
-        UpdateDisc(_rangeOuterRenderer, showRange, feetWorld, feetWorld.y, new Color(0.40f, 0.66f, 0.92f, 1f), rangeDiameter);
-        UpdateDisc(_rangeInnerRenderer, showRange && innerDiameter > 0.21f, feetWorld, feetWorld.y + 0.002f, new Color(0.08f, 0.12f, 0.18f, 1f), innerDiameter);
+        UpdateDisc(_rangeOuterRenderer, showRange, feetWorld, feetWorld.y, new Color(0.40f, 0.66f, 0.92f, 0.18f), rangeDiameter);
+        UpdateDisc(_rangeInnerRenderer, showRange && innerDiameter > 0.21f, feetWorld, feetWorld.y + 0.002f, new Color(0.08f, 0.12f, 0.18f, 0.16f), innerDiameter);
 
-        var showGuard = _isSelected && _currentState.FrontlineGuardRadius > 0.05f && (_currentState.IsDefending || _currentState.ActionState == CombatActionState.Recover);
-        UpdateDisc(_guardRadiusRenderer, showGuard, feetWorld, feetWorld.y - 0.002f, ResolveSemanticColor(BattleActionSemantic.DefendHold), _currentState.FrontlineGuardRadius * 2f);
+        var showGuard = showDebugTelegraphs && _currentState.FrontlineGuardRadius > 0.05f && (_currentState.IsDefending || _currentState.ActionState == CombatActionState.Recover);
+        UpdateDisc(_guardRadiusRenderer, showGuard, feetWorld, feetWorld.y - 0.002f, WithAlpha(ResolveSemanticColor(BattleActionSemantic.DefendHold), 0.22f), _currentState.FrontlineGuardRadius * 2f);
 
-        var showCluster = _isSelected && _currentState.ClusterRadius > 0.05f && _focusTargetWorld.HasValue;
-        UpdateDisc(_clusterRadiusRenderer, showCluster, _focusTargetWorld ?? transform.position, GroundPlaneY - 0.004f, new Color(0.90f, 0.42f, 0.28f, 1f), _currentState.ClusterRadius * 2f);
+        var showCluster = showDebugTelegraphs && _currentState.ClusterRadius > 0.05f && _focusTargetWorld.HasValue;
+        UpdateDisc(_clusterRadiusRenderer, showCluster, _focusTargetWorld ?? transform.position, GroundPlaneY - 0.004f, new Color(0.90f, 0.42f, 0.28f, 0.20f), _currentState.ClusterRadius * 2f);
 
-        var showSlots = _isSelected && _focusTargetWorld.HasValue && _currentState.EngagementSlotCount > 0 && _currentState.EngagementSlotRadius > 0.05f;
+        var showSlots = showDebugTelegraphs && _focusTargetWorld.HasValue && _currentState.EngagementSlotCount > 0 && _currentState.EngagementSlotRadius > 0.05f;
         for (var i = 0; i < _slotMarkerRenderers.Count; i++)
         {
             var renderer = _slotMarkerRenderers[i];
@@ -1223,6 +1232,11 @@ public sealed class BattleActorView : MonoBehaviour
             BattleActionSemantic.Down => new Color(0.62f, 0.62f, 0.62f, 1f),
             _ => Color.white,
         };
+    }
+
+    private static Color WithAlpha(Color color, float alpha)
+    {
+        return new Color(color.r, color.g, color.b, alpha);
     }
 
     private static Color ResolveBaseColor(BattleUnitReadModel actor)

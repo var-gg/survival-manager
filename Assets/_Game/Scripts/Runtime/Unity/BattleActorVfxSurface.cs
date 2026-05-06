@@ -22,7 +22,7 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
         _resolvedCatalog = null;
     }
 
-    public void ConsumeCue(BattlePresentationCue cue, BattleActorWrapper wrapper)
+    public void ConsumeCue(BattlePresentationCue cue, BattleActorWrapper wrapper, Vector3? relatedWorld = null)
     {
         var resolvedCatalog = ResolveCatalog();
         BattleVfxCatalogEntry? entry = null;
@@ -40,7 +40,7 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
 
         if (hasCatalogEntry && entry != null)
         {
-            SpawnCatalogEntry(entry, wrapper);
+            SpawnCatalogEntry(entry, wrapper, relatedWorld);
         }
     }
 
@@ -64,11 +64,11 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
         return _resolvedCatalog;
     }
 
-    private void SpawnCatalogEntry(BattleVfxCatalogEntry entry, BattleActorWrapper wrapper)
+    private void SpawnCatalogEntry(BattleVfxCatalogEntry entry, BattleActorWrapper wrapper, Vector3? relatedWorld)
     {
         var socket = wrapper.GetSocketTransform(entry.SocketId);
-        var rotation = socket != null ? socket.rotation : Quaternion.identity;
         var position = socket != null ? socket.TransformPoint(entry.LocalOffset) : LastSpawnPosition + entry.LocalOffset;
+        var rotation = ResolveSpawnRotation(socket, position, relatedWorld);
         var instance = Instantiate(entry.Prefab, position, rotation * Quaternion.Euler(entry.LocalEulerAngles));
         instance.name = $"{entry.Prefab.name}_{entry.CueType}";
         instance.transform.localScale = Vector3.Scale(instance.transform.localScale, entry.LocalScale);
@@ -83,6 +83,21 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
         {
             StartCoroutine(ReleaseSpawnedVfxAfterLifetime(instance, entry.LifetimeSeconds));
         }
+    }
+
+    private static Quaternion ResolveSpawnRotation(Transform? socket, Vector3 position, Vector3? relatedWorld)
+    {
+        if (relatedWorld.HasValue)
+        {
+            var direction = relatedWorld.Value - position;
+            direction.y = 0f;
+            if (direction.sqrMagnitude > 0.0001f)
+            {
+                return Quaternion.LookRotation(direction.normalized, Vector3.up);
+            }
+        }
+
+        return socket != null ? socket.rotation : Quaternion.identity;
     }
 
     private System.Collections.IEnumerator ReleaseSpawnedVfxAfterLifetime(GameObject instance, float lifetimeSeconds)

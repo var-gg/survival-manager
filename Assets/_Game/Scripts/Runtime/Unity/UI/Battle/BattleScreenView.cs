@@ -22,6 +22,7 @@ public readonly record struct BattleScreenActions(
     Action ToggleDamageText,
     Action ToggleTeamSummary,
     Action ToggleDebugOverlay,
+    Action ToggleSummaryPanel,
     Action<float> HandleScrubberSeek);
 
 public sealed class BattleScreenView
@@ -34,7 +35,10 @@ public sealed class BattleScreenView
     private readonly VisualElement _helpStrip;
     private readonly Label _helpBodyLabel;
     private readonly Button _helpDismissButton;
+    private readonly VisualElement _summaryPanel;
     private readonly Label _summaryTitleLabel;
+    private readonly Button _summaryToggleButton;
+    private readonly VisualElement _summaryBody;
     private readonly Label _allyTitleLabel;
     private readonly Label _enemyTitleLabel;
     private readonly Label _logTitleLabel;
@@ -96,7 +100,10 @@ public sealed class BattleScreenView
         _helpStrip = Require<VisualElement>(root, "HelpStrip");
         _helpBodyLabel = Require<Label>(root, "HelpBodyLabel");
         _helpDismissButton = Require<Button>(root, "HelpDismissButton");
+        _summaryPanel = Require<VisualElement>(root, "SummaryPanel");
         _summaryTitleLabel = Require<Label>(root, "SummaryTitleLabel");
+        _summaryToggleButton = Require<Button>(root, "SummaryToggleButton");
+        _summaryBody = Require<VisualElement>(root, "SummaryBody");
         _allyTitleLabel = Require<Label>(root, "AllyTitleLabel");
         _enemyTitleLabel = Require<Label>(root, "EnemyTitleLabel");
         _logTitleLabel = Require<Label>(root, "LogTitleLabel");
@@ -145,7 +152,9 @@ public sealed class BattleScreenView
             _localeStatusLabel,
             _helpStrip,
             _helpBodyLabel,
+            _summaryPanel,
             _summaryTitleLabel,
+            _summaryBody,
             _allyTitleLabel,
             _enemyTitleLabel,
             _logTitleLabel,
@@ -176,6 +185,7 @@ public sealed class BattleScreenView
             _localeEnButton,
             _helpButton,
             _helpDismissButton,
+            _summaryToggleButton,
             _speed1Button,
             _speed2Button,
             _speed4Button,
@@ -211,6 +221,7 @@ public sealed class BattleScreenView
         _toggleDamageTextButton.clicked += actions.ToggleDamageText;
         _toggleTeamSummaryButton.clicked += actions.ToggleTeamSummary;
         _toggleDebugOverlayButton.clicked += actions.ToggleDebugOverlay;
+        _summaryToggleButton.clicked += actions.ToggleSummaryPanel;
         _seekRequested = actions.HandleScrubberSeek;
 
         _progressTrack.RegisterCallback<PointerDownEvent>(HandlePointerDown);
@@ -230,6 +241,9 @@ public sealed class BattleScreenView
         _helpDismissButton.text = state.Help.DismissLabel;
 
         _summaryTitleLabel.text = state.SummaryTitle;
+        _summaryToggleButton.text = state.SummaryToggleLabel;
+        _summaryToggleButton.tooltip = state.SummaryToggleTooltip;
+        _summaryBody.style.display = state.IsSummaryExpanded ? DisplayStyle.Flex : DisplayStyle.None;
         _allyTitleLabel.text = state.AllyTitle;
         _enemyTitleLabel.text = state.EnemyTitle;
         _logTitleLabel.text = state.LogTitle;

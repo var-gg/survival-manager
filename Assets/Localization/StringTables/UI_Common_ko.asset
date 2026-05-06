@@ -173,6 +173,14 @@ MonoBehaviour:
     m_Localized: "\uC54C \uC218 \uC5C6\uC74C"
     m_Metadata:
       m_Items: []
+  - m_Id: 36
+    m_Localized: "\uD3BC\uCE58\uAE30"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37
+    m_Localized: "\uC811\uAE30"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
