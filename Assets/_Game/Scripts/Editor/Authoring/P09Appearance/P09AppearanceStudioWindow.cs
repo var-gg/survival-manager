@@ -134,9 +134,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             foreach (var character in _characters)
             {
                 var selected = _selectedCharacter == character;
-                var label = string.IsNullOrWhiteSpace(character.LegacyDisplayName)
-                    ? character.Id
-                    : $"{character.LegacyDisplayName} [{character.Id}]";
+                var label = BattleP09AppearanceRoster.BuildAuthoringLabel(character.Id, character.LegacyDisplayName);
                 var style = selected ? EditorStyles.miniButtonMid : EditorStyles.miniButton;
                 if (GUILayout.Button(label, style))
                 {
@@ -200,8 +198,9 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             }
 
             _detailScroll = EditorGUILayout.BeginScrollView(_detailScroll);
-            EditorGUILayout.LabelField(_selectedPreset.DisplayName, EditorStyles.boldLabel);
-            EditorGUILayout.SelectableLabel(_selectedPreset.CharacterId, EditorStyles.miniLabel, GUILayout.Height(18f));
+            var characterLabel = BattleP09AppearanceRoster.BuildAuthoringLabel(_selectedCharacter.Id, _selectedCharacter.LegacyDisplayName);
+            EditorGUILayout.LabelField(characterLabel, EditorStyles.boldLabel);
+            EditorGUILayout.SelectableLabel($"콘텐츠 ID: {_selectedPreset.CharacterId}", EditorStyles.miniLabel, GUILayout.Height(18f));
 
             EditorGUILayout.Space(6f);
             DrawPartSection("신체", new[]
@@ -379,9 +378,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             return;
         }
 
-        var displayName = string.IsNullOrWhiteSpace(_selectedCharacter.LegacyDisplayName)
-            ? _selectedCharacter.Id
-            : _selectedCharacter.LegacyDisplayName;
+        var displayName = BattleP09AppearanceRoster.BuildAuthoringLabel(_selectedCharacter.Id, _selectedCharacter.LegacyDisplayName);
         _selectedPreset.ConfigureIdentity(_selectedCharacter.Id, displayName, _catalog);
     }
 
@@ -621,21 +618,9 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 
     private static Bounds CalculatePreviewBounds(Transform root)
     {
-        var renderers = root.GetComponentsInChildren<Renderer>(false)
-            .Where(renderer => renderer.enabled && renderer.gameObject.activeInHierarchy)
-            .ToArray();
-        if (renderers.Length == 0)
-        {
-            return new Bounds(Vector3.up, new Vector3(1f, 2f, 1f));
-        }
-
-        var bounds = renderers[0].bounds;
-        for (var i = 1; i < renderers.Length; i++)
-        {
-            bounds.Encapsulate(renderers[i].bounds);
-        }
-
-        return bounds;
+        return BattleP09VisualBounds.TryCalculateStableHumanoidBounds(root, out var bounds)
+            ? bounds
+            : new Bounds(Vector3.up, new Vector3(1f, 2f, 1f));
     }
 
     private static void ApplyHideFlags(Transform root)

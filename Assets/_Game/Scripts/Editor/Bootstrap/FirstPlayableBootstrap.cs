@@ -22,7 +22,15 @@ public static class FirstPlayableBootstrap
     private const string LegacyQuickBattleInspectorRestoreKey = "SM.QuickBattleRestoreInspector";
     private const string CombatSandboxConfigFolder = "Assets/_Game/Authoring/CombatSandbox";
     internal const string CombatSandboxConfigAssetPath = "Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset";
-    private static readonly (string HeroId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxAllySlots =
+    private static readonly (string ParticipantId, string DisplayName, string CharacterId, string RoleInstructionId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxAllySlots =
+    {
+        ("ally_warden", "Warden", "warden", "anchor", SM.Combat.Model.DeploymentAnchorId.FrontCenter),
+        ("ally_slayer", "Slayer", "slayer", "bruiser", SM.Combat.Model.DeploymentAnchorId.FrontBottom),
+        ("ally_hunter", "Hunter", "hunter", "carry", SM.Combat.Model.DeploymentAnchorId.BackTop),
+        ("ally_priest", "Priest", "priest", "support", SM.Combat.Model.DeploymentAnchorId.BackBottom),
+    };
+
+    private static readonly (string HeroId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxLegacyAllySlots =
     {
         ("hero-1", SM.Combat.Model.DeploymentAnchorId.FrontCenter),
         ("hero-3", SM.Combat.Model.DeploymentAnchorId.FrontBottom),
@@ -243,13 +251,17 @@ public static class FirstPlayableBootstrap
         if (string.IsNullOrWhiteSpace(config.Scenario.ScenarioId))
         {
             config.Scenario.ScenarioId = "opening_default_4unit";
-            config.Scenario.DisplayName = "Opening Default 4 Unit";
-            config.Scenario.Tags = new System.Collections.Generic.List<string> { "starter", "opening" };
-            config.Scenario.ExpectedOutcome = "Baseline direct combat sandbox lane for daily balance and readability checks.";
+            ConfigureDefaultP09ScenarioMetadata(config);
+            dirty = true;
+        }
+        else if (string.Equals(config.Scenario.ScenarioId, "opening_default_4unit", System.StringComparison.Ordinal)
+                 && (config.Scenario.Tags == null || !config.Scenario.Tags.Contains("p09")))
+        {
+            ConfigureDefaultP09ScenarioMetadata(config);
             dirty = true;
         }
 
-        if (config.LeftTeam.Members.Count == 0)
+        if (config.LeftTeam.Members.Count == 0 || IsLegacyCurrentProfileLeftTeam(config.LeftTeam))
         {
             config.LeftTeam = BuildDefaultDirectLeftTeam();
             dirty = true;
@@ -298,9 +310,9 @@ public static class FirstPlayableBootstrap
         config.Scenario = new SM.Unity.Sandbox.CombatSandboxScenarioMetadata
         {
             ScenarioId = "opening_default_4unit",
-            DisplayName = "Opening Default 4 Unit",
-            Tags = new System.Collections.Generic.List<string> { "starter", "opening" },
-            ExpectedOutcome = "Baseline direct combat sandbox lane for daily balance and readability checks.",
+            DisplayName = "P09 Default 4v4",
+            Tags = new System.Collections.Generic.List<string> { "starter", "opening", "p09" },
+            ExpectedOutcome = "Baseline P09 character-vs-character sandbox lane for daily balance and readability checks.",
         };
         config.SceneLayout = CombatSandboxAuthoringAssetUtility.EnsureDefaultSceneLayoutAsset();
         config.PreviewSettings = CombatSandboxAuthoringAssetUtility.EnsureDefaultPreviewSettingsAsset();
@@ -310,6 +322,13 @@ public static class FirstPlayableBootstrap
         config.Seed = 42;
         config.AllySlots = BuildDefaultCombatSandboxAllySlots();
         config.EnemySlots = BuildDefaultCombatSandboxEnemySlots();
+    }
+
+    private static void ConfigureDefaultP09ScenarioMetadata(SM.Unity.Sandbox.CombatSandboxConfig config)
+    {
+        config.Scenario.DisplayName = "P09 Default 4v4";
+        config.Scenario.Tags = new System.Collections.Generic.List<string> { "starter", "opening", "p09" };
+        config.Scenario.ExpectedOutcome = "Baseline P09 character-vs-character sandbox lane for daily balance and readability checks.";
     }
 
     private static bool TryAutoEnsurePrerequisites(string sceneName, string scenePath, string flowLabel, out string error)
@@ -404,19 +423,21 @@ public static class FirstPlayableBootstrap
     {
         return new SM.Unity.Sandbox.CombatSandboxTeamDefinition
         {
-            TeamId = "starter.current_profile",
-            DisplayName = "Current Local Profile",
-            SourceMode = SM.Unity.Sandbox.SandboxLoadoutSourceKind.CurrentLocalProfile,
+            TeamId = "starter.p09_allies",
+            DisplayName = "P09 Starter Allies",
+            SourceMode = SM.Unity.Sandbox.SandboxLoadoutSourceKind.AuthoredSyntheticTeam,
             TeamPosture = SM.Combat.Model.TeamPostureType.StandardAdvance,
-            ProvenanceLabel = "starter.current_profile",
-            Tags = new System.Collections.Generic.List<string> { "starter", "profile" },
+            ProvenanceLabel = "starter.p09_allies",
+            Tags = new System.Collections.Generic.List<string> { "starter", "p09", "allies" },
             Members = DefaultCombatSandboxAllySlots
                 .Select(slot => new SM.Unity.Sandbox.CombatSandboxTeamMemberDefinition
                 {
-                    MemberId = slot.HeroId,
-                    HeroId = slot.HeroId,
-                    SourceKind = SM.Unity.Sandbox.SandboxUnitSourceKind.LocalProfileHero,
+                    MemberId = slot.ParticipantId,
+                    DisplayName = slot.DisplayName,
+                    SourceKind = SM.Unity.Sandbox.SandboxUnitSourceKind.Character,
+                    CharacterId = slot.CharacterId,
                     Anchor = slot.Anchor,
+                    RoleInstructionId = slot.RoleInstructionId,
                 })
                 .ToList(),
         };
@@ -470,9 +491,28 @@ public static class FirstPlayableBootstrap
                && config.EnemySlots.Any(slot => slot != null && (!string.IsNullOrWhiteSpace(slot.CharacterId) || !string.IsNullOrWhiteSpace(slot.ArchetypeIdOverride)));
     }
 
+    private static bool IsLegacyCurrentProfileLeftTeam(SM.Unity.Sandbox.CombatSandboxTeamDefinition team)
+    {
+        if (team.SourceMode == SM.Unity.Sandbox.SandboxLoadoutSourceKind.CurrentLocalProfile)
+        {
+            return true;
+        }
+
+        if (string.Equals(team.TeamId, "starter.current_profile", System.StringComparison.Ordinal)
+            || string.Equals(team.ProvenanceLabel, "starter.current_profile", System.StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return team.Members.Any(member =>
+            member != null
+            && (member.SourceKind == SM.Unity.Sandbox.SandboxUnitSourceKind.LocalProfileHero
+                || (!string.IsNullOrWhiteSpace(member.MemberId) && member.MemberId.StartsWith("hero-", System.StringComparison.Ordinal))));
+    }
+
     private static System.Collections.Generic.List<SM.Unity.Sandbox.CombatSandboxAllySlot> BuildDefaultCombatSandboxAllySlots()
     {
-        return DefaultCombatSandboxAllySlots
+        return DefaultCombatSandboxLegacyAllySlots
             .Select(slot => new SM.Unity.Sandbox.CombatSandboxAllySlot
             {
                 HeroId = slot.HeroId,
