@@ -33,10 +33,11 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
     [SerializeField] private int facialHairId;
     [SerializeField] private int bustSizeId = 2;
     [SerializeField] private List<BattleP09MaterialColorOverride> materialColorOverrides = new();
+    [NonSerialized] private BattleP09AppearanceCatalog? fallbackCatalog;
 
     public string CharacterId => characterId;
     public string DisplayName => displayName;
-    public BattleP09AppearanceCatalog Catalog => catalog;
+    public BattleP09AppearanceCatalog Catalog => ResolveCatalog()!;
     public int SexId => sexId;
 
     public void ConfigureIdentity(string configuredCharacterId, string configuredDisplayName, BattleP09AppearanceCatalog configuredCatalog)
@@ -123,24 +124,41 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
 
     public void EnsureDefaultColorOverrides()
     {
-        EnsureColorOverride("Armor", "Armor", new Color(0.82f, 0.78f, 0.70f, 1f), new Color(0.34f, 0.27f, 0.22f, 1f), Color.white);
-        EnsureColorOverride("Weapon", "Weapon", new Color(0.78f, 0.76f, 0.72f, 1f), new Color(0.28f, 0.24f, 0.20f, 1f), Color.white);
-        EnsureColorOverride("Shield", "Shield", new Color(0.70f, 0.76f, 0.82f, 1f), new Color(0.25f, 0.26f, 0.30f, 1f), Color.white);
+        EnsureColorOverride("갑옷", "Armor", new Color(0.82f, 0.78f, 0.70f, 1f), new Color(0.34f, 0.27f, 0.22f, 1f), Color.white);
+        EnsureColorOverride("무기", "Weapon", new Color(0.78f, 0.76f, 0.72f, 1f), new Color(0.28f, 0.24f, 0.20f, 1f), Color.white);
+        EnsureColorOverride("방패", "Shield", new Color(0.70f, 0.76f, 0.82f, 1f), new Color(0.25f, 0.26f, 0.30f, 1f), Color.white);
     }
 
     public void ApplyTo(Transform modelRoot, ICollection<Material> generatedMaterials)
     {
-        if (modelRoot == null || catalog == null)
+        if (modelRoot == null)
         {
             return;
         }
 
-        ApplyRendererSelection(modelRoot);
-        ApplyHairColor(modelRoot);
-        ApplySkinColor(modelRoot);
-        ApplyEyeColor(modelRoot);
-        ApplyBustSize(modelRoot);
+        var activeCatalog = ResolveCatalog();
+        if (activeCatalog == null)
+        {
+            return;
+        }
+
+        ApplyRendererSelection(activeCatalog, modelRoot);
+        ApplyHairColor(activeCatalog, modelRoot);
+        ApplySkinColor(activeCatalog, modelRoot);
+        ApplyEyeColor(activeCatalog, modelRoot);
+        ApplyBustSize(activeCatalog, modelRoot);
         ApplyMaterialColorOverrides(modelRoot, generatedMaterials);
+    }
+
+    private BattleP09AppearanceCatalog? ResolveCatalog()
+    {
+        if (catalog != null)
+        {
+            return catalog;
+        }
+
+        fallbackCatalog ??= Resources.Load<BattleP09AppearanceCatalog>(BattleP09AppearanceCatalog.ResourcesPath);
+        return fallbackCatalog;
     }
 
     private void EnsureColorOverride(string label, string targetContains, Color main, Color second, Color third)
@@ -149,6 +167,12 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         {
             if (string.Equals(existing.TargetContains, targetContains, StringComparison.Ordinal))
             {
+                if (string.IsNullOrWhiteSpace(existing.Label)
+                    || existing.Label is "Armor" or "Weapon" or "Shield")
+                {
+                    existing.Label = label;
+                }
+
                 return;
             }
         }
@@ -163,27 +187,27 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         });
     }
 
-    private void ApplyRendererSelection(Transform modelRoot)
+    private void ApplyRendererSelection(BattleP09AppearanceCatalog activeCatalog, Transform modelRoot)
     {
         foreach (var child in modelRoot.GetComponentsInChildren<Transform>(true))
         {
-            ApplyRendererSelection(child, BattleP09AppearancePartType.Sex);
-            ApplyRendererSelection(child, BattleP09AppearancePartType.FaceType);
-            ApplyRendererSelection(child, BattleP09AppearancePartType.HairStyle);
-            ApplyRendererSelection(child, BattleP09AppearancePartType.FacialHair);
-            ApplyRendererSelection(child, BattleP09AppearancePartType.Head);
-            ApplyRendererSelection(child, BattleP09AppearancePartType.Chest);
-            ApplyRendererSelection(child, BattleP09AppearancePartType.Arm);
-            ApplyRendererSelection(child, BattleP09AppearancePartType.Waist);
-            ApplyRendererSelection(child, BattleP09AppearancePartType.Leg);
-            ApplyRendererSelection(child, BattleP09AppearancePartType.Weapon);
-            ApplyRendererSelection(child, BattleP09AppearancePartType.Shield);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.Sex);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.FaceType);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.HairStyle);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.FacialHair);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.Head);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.Chest);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.Arm);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.Waist);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.Leg);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.Weapon);
+            ApplyRendererSelection(activeCatalog, child, BattleP09AppearancePartType.Shield);
         }
     }
 
-    private void ApplyRendererSelection(Transform child, BattleP09AppearancePartType type)
+    private void ApplyRendererSelection(BattleP09AppearanceCatalog activeCatalog, Transform child, BattleP09AppearancePartType type)
     {
-        foreach (var option in catalog.GetOptions(type, sexId))
+        foreach (var option in activeCatalog.GetOptions(type, sexId))
         {
             var currentId = GetContentId(type);
             if (MatchesMeshName(child.name, option.MeshName, out var sexSpecific))
@@ -203,9 +227,9 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         }
     }
 
-    private void ApplyHairColor(Transform modelRoot)
+    private void ApplyHairColor(BattleP09AppearanceCatalog activeCatalog, Transform modelRoot)
     {
-        if (!catalog.TryGetOption(BattleP09AppearancePartType.HairColor, sexId, hairColorId, out var hairColor))
+        if (!activeCatalog.TryGetOption(BattleP09AppearancePartType.HairColor, sexId, hairColorId, out var hairColor))
         {
             return;
         }
@@ -232,9 +256,9 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         }
     }
 
-    private void ApplySkinColor(Transform modelRoot)
+    private void ApplySkinColor(BattleP09AppearanceCatalog activeCatalog, Transform modelRoot)
     {
-        if (!catalog.TryGetOption(BattleP09AppearancePartType.Skin, sexId, skinId, out var skin) || skin.Material == null)
+        if (!activeCatalog.TryGetOption(BattleP09AppearancePartType.Skin, sexId, skinId, out var skin) || skin.Material == null)
         {
             return;
         }
@@ -245,9 +269,9 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         }
     }
 
-    private void ApplyEyeColor(Transform modelRoot)
+    private void ApplyEyeColor(BattleP09AppearanceCatalog activeCatalog, Transform modelRoot)
     {
-        if (!catalog.TryGetOption(BattleP09AppearancePartType.EyeColor, sexId, eyeColorId, out var eye) || eye.Material == null)
+        if (!activeCatalog.TryGetOption(BattleP09AppearancePartType.EyeColor, sexId, eyeColorId, out var eye) || eye.Material == null)
         {
             return;
         }
@@ -266,10 +290,10 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         }
     }
 
-    private void ApplyBustSize(Transform modelRoot)
+    private void ApplyBustSize(BattleP09AppearanceCatalog activeCatalog, Transform modelRoot)
     {
         if (sexId != 2
-            || !catalog.TryGetOption(BattleP09AppearancePartType.BustSize, sexId, bustSizeId, out var bust)
+            || !activeCatalog.TryGetOption(BattleP09AppearancePartType.BustSize, sexId, bustSizeId, out var bust)
             || string.IsNullOrWhiteSpace(bust.MeshName))
         {
             return;
@@ -427,11 +451,22 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
 [Serializable]
 public sealed class BattleP09MaterialColorOverride
 {
+    [InspectorName("표시 이름")]
     public string Label = string.Empty;
+
+    [InspectorName("대상 머티리얼 이름 포함")]
     public string TargetContains = string.Empty;
+
+    [InspectorName("사용")]
     public bool Enabled = true;
+
+    [InspectorName("주 색상")]
     public Color MainColor = Color.white;
+
+    [InspectorName("보조 색상")]
     public Color SecondColor = Color.white;
+
+    [InspectorName("세 번째 색상")]
     public Color ThirdColor = Color.white;
 
     public void ApplyTo(Material material)
