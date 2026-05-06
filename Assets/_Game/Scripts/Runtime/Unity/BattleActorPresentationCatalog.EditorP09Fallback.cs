@@ -1,5 +1,7 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SM.Combat.Model;
 using UnityEditor;
 using UnityEngine;
@@ -91,32 +93,57 @@ public sealed partial class BattleActorPresentationCatalog
         catalog.SetTeamDefaultWrapper(TeamSide.Ally, primitive);
         catalog.SetTeamDefaultWrapper(TeamSide.Enemy, primitive);
 
-        var wrappers = new BattleActorWrapper[EditorP09AbstractCharacterIds.Length];
-        for (var i = 0; i < wrappers.Length; i++)
+        var appearancePresets = Resources
+            .LoadAll<BattleP09AppearancePreset>(BattleP09AppearancePreset.ResourcesFolder)
+            .Where(preset => preset != null && !string.IsNullOrWhiteSpace(preset.CharacterId))
+            .ToDictionary(preset => preset.CharacterId, StringComparer.Ordinal);
+        var wrappers = new Dictionary<string, BattleActorWrapper>(StringComparer.Ordinal);
+
+        BattleActorWrapper ResolveWrapper(string characterId, int slotIndex)
         {
-            wrappers[i] = CreateEditorP09WrapperTemplate(i, visualPrefab);
-            catalog.SetCharacterOverride(EditorP09AbstractCharacterIds[i], wrappers[i]);
-            catalog.SetArchetypeOverride(EditorP09AbstractCharacterIds[i], wrappers[i]);
+            if (wrappers.TryGetValue(characterId, out var existing))
+            {
+                return existing;
+            }
+
+            appearancePresets.TryGetValue(characterId, out var preset);
+            var wrapper = CreateEditorP09WrapperTemplate(characterId, slotIndex, visualPrefab, preset);
+            wrappers[characterId] = wrapper;
+            return wrapper;
+        }
+
+        for (var i = 0; i < EditorP09AbstractCharacterIds.Length; i++)
+        {
+            var characterId = EditorP09AbstractCharacterIds[i];
+            var wrapper = ResolveWrapper(characterId, i);
+            catalog.SetCharacterOverride(characterId, wrapper);
+            catalog.SetArchetypeOverride(characterId, wrapper);
         }
 
         for (var i = 0; i < EditorP09CanonicalCombatIds.Length; i++)
         {
-            var wrapper = wrappers[i % wrappers.Length];
+            var characterId = EditorP09CanonicalCombatIds[i];
+            var wrapper = ResolveWrapper(characterId, i);
             catalog.SetCharacterOverride(EditorP09CanonicalCombatIds[i], wrapper);
             catalog.SetArchetypeOverride(EditorP09CanonicalCombatIds[i], wrapper);
         }
 
         for (var i = 0; i < EditorP09HeroSmokeIds.Length; i++)
         {
-            catalog.SetCharacterOverride(EditorP09HeroSmokeIds[i], wrappers[(i * 2) % wrappers.Length]);
+            var characterId = EditorP09HeroSmokeIds[i];
+            catalog.SetCharacterOverride(characterId, ResolveWrapper(characterId, i * 2));
         }
 
         return catalog;
     }
 
-    private static BattleActorWrapper CreateEditorP09WrapperTemplate(int slotIndex, GameObject visualPrefab)
+    private static BattleActorWrapper CreateEditorP09WrapperTemplate(
+        string characterId,
+        int slotIndex,
+        GameObject visualPrefab,
+        BattleP09AppearancePreset? appearancePreset)
     {
-        var root = new GameObject($"BattleActor_P09_{EditorP09AbstractCharacterIds[slotIndex]}_RuntimeTemplate");
+        var root = new GameObject($"BattleActor_P09_{characterId}_RuntimeTemplate");
         root.hideFlags = HideFlags.DontSave;
 
         var wrapper = root.AddComponent<BattleActorWrapper>();
@@ -168,9 +195,17 @@ public sealed partial class BattleActorPresentationCatalog
             isVisible: false);
 
         var model = Instantiate(visualPrefab, vendorVisualSlot, false);
-        model.name = $"P09Model_{EditorP09AbstractCharacterIds[slotIndex]}";
+        model.name = $"P09Model_{characterId}";
         ApplyHideFlagsToHierarchy(model.transform, HideFlags.DontSave);
-        ApplyEditorP09RoughVariant(model, slotIndex);
+        if (appearancePreset != null)
+        {
+            var generatedMaterials = new List<Material>();
+            appearancePreset.ApplyTo(model.transform, generatedMaterials);
+        }
+        else
+        {
+            ApplyEditorP09RoughVariant(model, slotIndex);
+        }
 
         var modelScale = Vector3.one;
         var modelPosition = Vector3.zero;
@@ -206,7 +241,8 @@ public sealed partial class BattleActorPresentationCatalog
             shadowRenderer,
             modelPosition,
             Vector3.zero,
-            modelScale);
+            modelScale,
+            appearancePreset);
 
         root.SetActive(false);
         return wrapper;

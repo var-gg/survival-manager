@@ -15,6 +15,7 @@ public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
     [SerializeField] private Vector3 modelLocalPosition = Vector3.zero;
     [SerializeField] private Vector3 modelLocalEulerAngles = Vector3.zero;
     [SerializeField] private Vector3 modelLocalScale = Vector3.one;
+    [SerializeField] private BattleP09AppearancePreset appearancePreset = null!;
 
     private readonly List<Material> _materialInstances = new();
 
@@ -31,7 +32,8 @@ public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
         Renderer shadow,
         Vector3 localPosition,
         Vector3 localEulerAngles,
-        Vector3 localScale)
+        Vector3 localScale,
+        BattleP09AppearancePreset? configuredAppearancePreset = null)
     {
         visualRoot = visualRootTransform;
         vendorVisualSlot = vendorSlot;
@@ -42,6 +44,7 @@ public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
         modelLocalPosition = localPosition;
         modelLocalEulerAngles = localEulerAngles;
         modelLocalScale = localScale;
+        appearancePreset = configuredAppearancePreset!;
         ApplyModelTransform();
     }
 
@@ -70,6 +73,7 @@ public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
         }
 
         ApplyModelTransform();
+        ApplyAppearancePreset();
         EnsureReadableP09Materials();
         EnsureProxyRenderers();
         EnsureMaterial(pulseProxyRenderer, Color.clear);
@@ -138,6 +142,16 @@ public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
         p09ModelRoot.localPosition = modelLocalPosition;
         p09ModelRoot.localRotation = Quaternion.Euler(modelLocalEulerAngles);
         p09ModelRoot.localScale = modelLocalScale;
+    }
+
+    private void ApplyAppearancePreset()
+    {
+        if (p09ModelRoot == null || appearancePreset == null)
+        {
+            return;
+        }
+
+        appearancePreset.ApplyTo(p09ModelRoot, _materialInstances);
     }
 
     private void EnsureReadableP09Materials()
