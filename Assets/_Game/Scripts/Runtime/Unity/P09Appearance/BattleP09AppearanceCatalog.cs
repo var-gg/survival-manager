@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 [CreateAssetMenu(menuName = "SM/Battle/P09 Appearance Catalog", fileName = "P09AppearanceCatalog")]
 public sealed class BattleP09AppearanceCatalog : ScriptableObject
@@ -83,4 +84,5 @@ public sealed class BattleP09HairMaterialOverride
 {
     public int HairStyleId;
     public Material Material = null!;
+}
 }

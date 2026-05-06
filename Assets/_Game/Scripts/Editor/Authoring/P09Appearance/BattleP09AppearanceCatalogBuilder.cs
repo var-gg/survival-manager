@@ -89,7 +89,7 @@ public static class BattleP09AppearanceCatalogBuilder
         }
 
         var path = BuildPresetPath(characterId);
-        return AssetDatabase.LoadAssetAtPath<BattleP09AppearancePreset>(path);
+        return LoadPresetAtPath(path);
     }
 
     public static BattleP09AppearancePreset EnsurePreset(
@@ -98,9 +98,14 @@ public static class BattleP09AppearanceCatalogBuilder
         int seedIndex)
     {
         var path = BuildPresetPath(character.Id);
-        var preset = AssetDatabase.LoadAssetAtPath<BattleP09AppearancePreset>(path);
+        var preset = LoadPresetAtPath(path);
         if (preset == null)
         {
+            if (File.Exists(path))
+            {
+                throw new InvalidDataException($"P09 appearance preset exists but could not be loaded as {nameof(BattleP09AppearancePreset)}: {path}");
+            }
+
             preset = ScriptableObject.CreateInstance<BattleP09AppearancePreset>();
             AssetDatabase.CreateAsset(preset, path);
             ApplySeedDefaults(preset, catalog, seedIndex);
@@ -113,6 +118,18 @@ public static class BattleP09AppearanceCatalogBuilder
         preset.EnsureDefaultColorOverrides();
         EditorUtility.SetDirty(preset);
         return preset;
+    }
+
+    private static BattleP09AppearancePreset? LoadPresetAtPath(string path)
+    {
+        var preset = AssetDatabase.LoadAssetAtPath<BattleP09AppearancePreset>(path);
+        if (preset != null || !File.Exists(path))
+        {
+            return preset;
+        }
+
+        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+        return AssetDatabase.LoadAssetAtPath<BattleP09AppearancePreset>(path);
     }
 
     private static string BuildPresetPath(string characterId)

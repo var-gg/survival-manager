@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 [CreateAssetMenu(menuName = "SM/Battle/P09 Appearance Preset", fileName = "p09_appearance_")]
 public sealed class BattleP09AppearancePreset : ScriptableObject
@@ -484,4 +485,5 @@ public sealed class BattleP09MaterialColorOverride
             material.SetColor(propertyName, color);
         }
     }
+}
 }
