@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SM.Editor;
 
-public static class BattleMapCatalogBootstrap
+public static partial class BattleMapCatalogBootstrap
 {
     private const string CatalogPath = "Assets/Resources/_Game/Battle/BattleMapCatalog.asset";
     private const string MapPrefabPath = "Assets/_Game/Prefabs/Battle/Maps/BattleMap_Forest_Ruins_01.prefab";
@@ -100,6 +100,7 @@ public static class BattleMapCatalogBootstrap
         ClearChildren(root.transform);
         EnsurePlayableFloor(root.transform);
         EnsureWolfPineRoad(root.transform);
+        EnsureWolfPineDiorama(root.transform);
         EnsureWolfPineDressing(root.transform);
     }
 
@@ -115,7 +116,7 @@ public static class BattleMapCatalogBootstrap
 
         floor.transform.localPosition = new Vector3(0f, -1.12f, 0f);
         floor.transform.localRotation = Quaternion.identity;
-        floor.transform.localScale = new Vector3(7.5f, 1f, 5.2f);
+        floor.transform.localScale = new Vector3(12.5f, 1f, 8.2f);
         RemoveCollider(floor);
 
         var renderer = floor.GetComponent<Renderer>();
@@ -269,15 +270,21 @@ public static class BattleMapCatalogBootstrap
 
         var centers = new[]
         {
-            new Vector2(-30f, 0.35f),
-            new Vector2(-20f, 0.10f),
-            new Vector2(-10f, -0.25f),
-            new Vector2(0f, -0.10f),
-            new Vector2(10f, 0.28f),
-            new Vector2(20f, 0.16f),
-            new Vector2(30f, -0.12f),
+            new Vector2(-70f, 0.85f),
+            new Vector2(-58f, 0.62f),
+            new Vector2(-46f, 0.18f),
+            new Vector2(-34f, -0.22f),
+            new Vector2(-22f, -0.06f),
+            new Vector2(-10f, 0.34f),
+            new Vector2(0f, 0.08f),
+            new Vector2(10f, -0.26f),
+            new Vector2(22f, -0.08f),
+            new Vector2(34f, 0.32f),
+            new Vector2(46f, 0.12f),
+            new Vector2(58f, -0.34f),
+            new Vector2(70f, -0.52f),
         };
-        var halfWidths = new[] { 3.0f, 2.5f, 3.15f, 2.7f, 3.05f, 2.6f, 2.9f };
+        var halfWidths = new[] { 2.8f, 2.35f, 2.9f, 2.45f, 2.75f, 2.30f, 2.65f, 2.25f, 2.8f, 2.40f, 2.95f, 2.35f, 2.7f };
         var vertices = new Vector3[centers.Length * 2];
         var uvs = new Vector2[vertices.Length];
         for (var i = 0; i < centers.Length; i++)

@@ -9,7 +9,7 @@ namespace SM.Unity;
 [DisallowMultipleComponent]
 public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 {
-    private const string DefaultForestRuinsSkyboxPath = "Assets/Allsky/Day Sun Mid/Day Sun Mid SummerSky 3/Day Sun Mid SummerSky 3.mat";
+    private const string DefaultForestRuinsSkyboxPath = "Assets/Allsky/Anime/Anime Day/Anime Day Equirect.mat";
 
     [SerializeField] private Material skybox = null!;
     [SerializeField] private Color ambientSky = new(0.52f, 0.58f, 0.56f, 1f);
