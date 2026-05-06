@@ -11,6 +11,8 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 {
     private const string VisualPrefabPath = "Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/P09_Human_Combat_Demo Variant.prefab";
     private const string PreviewRootName = "__SM_P09AppearancePreview";
+    private const float PreviewPanelWidth = 500f;
+    private const float PreviewPanelHeight = 620f;
 
     private readonly List<Material> _previewMaterials = new();
     private Vector2 _characterScroll;
@@ -20,6 +22,10 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
     private BattleP09AppearancePreset? _selectedPreset;
     private CharacterDefinition? _selectedCharacter;
     private GameObject? _previewRoot;
+    private PreviewRenderUtility? _previewRenderer;
+    private Bounds _previewBounds;
+    private PreviewFraming _previewFraming = PreviewFraming.FullBody;
+    private float _previewYaw;
 
     [MenuItem("SM/캐릭터/P09 외형 편집")]
     public static void Open()
@@ -35,7 +41,8 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 
     private static void OpenWindow()
     {
-        GetWindow<P09AppearanceStudioWindow>("P09 외형 편집");
+        var window = GetWindow<P09AppearanceStudioWindow>("P09 외형 편집");
+        window.minSize = new Vector2(1180f, 720f);
     }
 
     private void OnEnable()
@@ -46,6 +53,8 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
     private void OnDisable()
     {
         DestroyPreview();
+        _previewRenderer?.Cleanup();
+        _previewRenderer = null;
     }
 
     private void OnGUI()
@@ -56,6 +65,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         {
             DrawCharacterList();
             DrawDetailPanel();
+            DrawPreviewPanel();
         }
     }
 
@@ -80,6 +90,30 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
                 if (GUILayout.Button("미리보기 갱신", EditorStyles.toolbarButton, GUILayout.Width(104f)))
                 {
                     UpdatePreview();
+                }
+
+                if (GUILayout.Button("앞", EditorStyles.toolbarButton, GUILayout.Width(36f)))
+                {
+                    _previewYaw = 0f;
+                    Repaint();
+                }
+
+                if (GUILayout.Button("좌", EditorStyles.toolbarButton, GUILayout.Width(36f)))
+                {
+                    _previewYaw = 90f;
+                    Repaint();
+                }
+
+                if (GUILayout.Button("우", EditorStyles.toolbarButton, GUILayout.Width(36f)))
+                {
+                    _previewYaw = -90f;
+                    Repaint();
+                }
+
+                if (GUILayout.Button("뒤", EditorStyles.toolbarButton, GUILayout.Width(36f)))
+                {
+                    _previewYaw = 180f;
+                    Repaint();
                 }
 
                 if (GUILayout.Button("미리보기 지우기", EditorStyles.toolbarButton, GUILayout.Width(112f)))
@@ -110,6 +144,47 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             }
 
             EditorGUILayout.EndScrollView();
+        }
+    }
+
+    private void DrawPreviewPanel()
+    {
+        using (new EditorGUILayout.VerticalScope(GUILayout.Width(PreviewPanelWidth)))
+        {
+            EditorGUILayout.LabelField("미리보기", EditorStyles.boldLabel);
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+            {
+                DrawPreviewFramingButton("전체", PreviewFraming.FullBody);
+                DrawPreviewFramingButton("상반신", PreviewFraming.UpperBody);
+                DrawPreviewFramingButton("얼굴", PreviewFraming.Face);
+            }
+
+            var rect = GUILayoutUtility.GetRect(
+                PreviewPanelWidth,
+                PreviewPanelHeight,
+                GUILayout.ExpandWidth(false),
+                GUILayout.ExpandHeight(true));
+            EditorGUI.DrawRect(rect, new Color(0.16f, 0.16f, 0.16f, 1f));
+            if (_previewRoot == null)
+            {
+                EditorGUI.LabelField(rect, "미리보기를 갱신하세요.", EditorStyles.centeredGreyMiniLabel);
+                return;
+            }
+
+            DrawRenderedPreview(rect);
+        }
+    }
+
+    private void DrawPreviewFramingButton(string label, PreviewFraming framing)
+    {
+        var selected = _previewFraming == framing;
+        using (new EditorGUI.DisabledScope(selected))
+        {
+            if (GUILayout.Button(label, EditorStyles.toolbarButton))
+            {
+                _previewFraming = framing;
+                Repaint();
+            }
         }
     }
 
@@ -318,8 +393,9 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         }
 
         _selectedPreset.ApplyTo(_previewRoot.transform, _previewMaterials);
-        EditorUtility.SetDirty(_previewRoot);
+        _previewBounds = CalculatePreviewBounds(_previewRoot.transform);
         SceneView.RepaintAll();
+        Repaint();
     }
 
     private void CreatePreview()
@@ -332,19 +408,19 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             return;
         }
 
-        _previewRoot = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+        _previewRoot = Instantiate(prefab);
         if (_previewRoot == null)
         {
             return;
         }
 
         _previewRoot.name = PreviewRootName;
-        _previewRoot.hideFlags = HideFlags.DontSave;
+        ApplyHideFlags(_previewRoot.transform);
         _previewRoot.transform.position = Vector3.zero;
         _previewRoot.transform.rotation = Quaternion.identity;
         _previewRoot.transform.localScale = Vector3.one;
-        Selection.activeGameObject = _previewRoot;
-        SceneView.lastActiveSceneView?.FrameSelected();
+        EnsurePreviewRenderer();
+        _previewRenderer?.AddSingleGO(_previewRoot);
     }
 
     private void DestroyPreview()
@@ -371,6 +447,99 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         {
             ClearPreviewSelection(existing);
             DestroyImmediate(existing);
+        }
+    }
+
+    private void DrawRenderedPreview(Rect rect)
+    {
+        EnsurePreviewRenderer();
+        if (_previewRenderer == null)
+        {
+            return;
+        }
+
+        _previewRenderer.BeginPreview(rect, GUIStyle.none);
+        ConfigurePreviewCamera(rect);
+        _previewRenderer.Render();
+        var texture = _previewRenderer.EndPreview();
+        GUI.DrawTexture(rect, texture, ScaleMode.StretchToFill, false);
+    }
+
+    private void EnsurePreviewRenderer()
+    {
+        if (_previewRenderer != null)
+        {
+            return;
+        }
+
+        _previewRenderer = new PreviewRenderUtility();
+        _previewRenderer.cameraFieldOfView = 24f;
+        _previewRenderer.camera.clearFlags = CameraClearFlags.Color;
+        _previewRenderer.camera.backgroundColor = new Color(0.68f, 0.79f, 0.88f, 1f);
+        _previewRenderer.camera.nearClipPlane = 0.05f;
+        _previewRenderer.camera.farClipPlane = 80f;
+        _previewRenderer.ambientColor = new Color(0.62f, 0.62f, 0.62f, 1f);
+        _previewRenderer.lights[0].intensity = 1.15f;
+        _previewRenderer.lights[0].transform.rotation = Quaternion.Euler(45f, -35f, 0f);
+        _previewRenderer.lights[1].intensity = 0.65f;
+        _previewRenderer.lights[1].transform.rotation = Quaternion.Euler(340f, 140f, 0f);
+    }
+
+    private void ConfigurePreviewCamera(Rect rect)
+    {
+        var camera = _previewRenderer!.camera;
+        var bounds = _previewBounds.size.sqrMagnitude > 0.001f
+            ? _previewBounds
+            : new Bounds(Vector3.up, new Vector3(1f, 2f, 1f));
+
+        var target = bounds.center;
+        var height = Mathf.Max(0.4f, bounds.size.y);
+        switch (_previewFraming)
+        {
+            case PreviewFraming.UpperBody:
+                target += Vector3.up * (height * 0.18f);
+                height *= 0.55f;
+                break;
+            case PreviewFraming.Face:
+                target += Vector3.up * (height * 0.38f);
+                height *= 0.26f;
+                break;
+        }
+
+        var aspect = Mathf.Max(0.25f, rect.width / Mathf.Max(1f, rect.height));
+        var verticalDistance = height * 0.5f / Mathf.Tan(camera.fieldOfView * Mathf.Deg2Rad * 0.5f);
+        var horizontalDistance = height * 0.28f / (Mathf.Tan(camera.fieldOfView * Mathf.Deg2Rad * 0.5f) * aspect);
+        var distance = Mathf.Max(verticalDistance, horizontalDistance) * 1.18f;
+        var direction = Quaternion.Euler(4f, _previewYaw, 0f) * Vector3.forward;
+        camera.transform.position = target + direction * distance;
+        camera.transform.rotation = Quaternion.LookRotation(target - camera.transform.position, Vector3.up);
+    }
+
+    private static Bounds CalculatePreviewBounds(Transform root)
+    {
+        var renderers = root.GetComponentsInChildren<Renderer>(false)
+            .Where(renderer => renderer.enabled && renderer.gameObject.activeInHierarchy)
+            .ToArray();
+        if (renderers.Length == 0)
+        {
+            return new Bounds(Vector3.up, new Vector3(1f, 2f, 1f));
+        }
+
+        var bounds = renderers[0].bounds;
+        for (var i = 1; i < renderers.Length; i++)
+        {
+            bounds.Encapsulate(renderers[i].bounds);
+        }
+
+        return bounds;
+    }
+
+    private static void ApplyHideFlags(Transform root)
+    {
+        root.gameObject.hideFlags = HideFlags.HideAndDontSave;
+        foreach (Transform child in root)
+        {
+            ApplyHideFlags(child);
         }
     }
 
@@ -470,5 +639,12 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         }
 
         return displayName;
+    }
+
+    private enum PreviewFraming
+    {
+        FullBody,
+        UpperBody,
+        Face
     }
 }
