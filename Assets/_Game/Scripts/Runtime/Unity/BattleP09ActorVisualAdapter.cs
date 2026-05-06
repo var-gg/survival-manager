@@ -6,6 +6,9 @@ namespace SM.Unity;
 
 public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
 {
+    private const float GroundShadowWorldY = -0.965f;
+    private static readonly Vector3 GroundShadowWorldScale = new(0.58f, 0.006f, 0.58f);
+
     [SerializeField] private Transform visualRoot = null!;
     [SerializeField] private Transform vendorVisualSlot = null!;
     [SerializeField] private Transform p09ModelRoot = null!;
@@ -96,8 +99,21 @@ public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
 
         if (shadowRenderer != null)
         {
-            BattlePresentationMaterialFactory.ApplyColor(shadowRenderer.sharedMaterial, state.ShadowColor);
+            ApplyGroundShadow(state.ShadowColor);
         }
+    }
+
+    private void ApplyGroundShadow(Color shadowColor)
+    {
+        if (shadowRenderer == null)
+        {
+            return;
+        }
+
+        BattlePresentationMaterialFactory.ApplyColor(shadowRenderer.sharedMaterial, shadowColor);
+        var shadow = shadowRenderer.transform;
+        shadow.SetPositionAndRotation(new Vector3(transform.position.x, GroundShadowWorldY, transform.position.z), Quaternion.identity);
+        shadow.localScale = DivideByParentScale(shadow, GroundShadowWorldScale);
     }
 
     private void OnDestroy()
@@ -276,8 +292,8 @@ public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
                 visualRoot,
                 PrimitiveType.Cylinder,
                 "GroundShadow",
-                new Vector3(0f, -1.02f, 0f),
-                new Vector3(0.58f, 0.03f, 0.58f),
+                Vector3.zero,
+                GroundShadowWorldScale,
                 new Color(0f, 0f, 0f, 0.28f),
                 isVisible: true);
         }
@@ -320,6 +336,21 @@ public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
         }
 
         renderer.sharedMaterial = BattlePresentationMaterialFactory.Create(color);
+    }
+
+    private static Vector3 DivideByParentScale(Transform child, Vector3 worldScale)
+    {
+        var parentScale = child.parent != null ? child.parent.lossyScale : Vector3.one;
+        return new Vector3(
+            worldScale.x / SafeScale(parentScale.x),
+            worldScale.y / SafeScale(parentScale.y),
+            worldScale.z / SafeScale(parentScale.z));
+    }
+
+    private static float SafeScale(float scale)
+    {
+        var abs = Mathf.Abs(scale);
+        return abs <= 0.0001f ? 1f : abs;
     }
 
     private static void DestroyPresentationObject(Object target)

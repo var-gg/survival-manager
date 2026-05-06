@@ -49,6 +49,7 @@ public sealed class BattleScreenController : MonoBehaviour
     private int _boundRootBuildCount = -1;
     private bool _battleFinishedHandled;
     private bool _settingsVisible;
+    private bool _summaryExpanded = true;
 
     private BattleTimelineController? _timeline;
     private BattlePlaybackPolicy _policy = new(BattlePlaybackMode.QuickBattle);
@@ -359,6 +360,12 @@ public sealed class BattleScreenController : MonoBehaviour
         RenderCurrentState();
     }
 
+    public void ToggleSummaryPanel()
+    {
+        _summaryExpanded = !_summaryExpanded;
+        RenderCurrentState();
+    }
+
     public void ToggleOverheadUi()
     {
         _presentationOptions.ToggleOverheadUi();
@@ -559,6 +566,7 @@ public sealed class BattleScreenController : MonoBehaviour
             ToggleDamageText,
             ToggleTeamSummary,
             ToggleDebugOverlay,
+            ToggleSummaryPanel,
             HandleScrubberSeek));
         _presenter = new BattleScreenPresenter(_localization, _root.SessionState, _presentationOptions);
         presentationController.ConfigureMetadataFormatter(_metadataFormatter);
@@ -592,7 +600,7 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
-        _view!.Render(_presenter!.BuildLoadingState(_helpState.IsVisible));
+        _view!.Render(_presenter!.BuildLoadingState(_helpState.IsVisible, _summaryExpanded));
         _view.SetScrubberInteractable(false);
     }
 
@@ -600,7 +608,7 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         if (EnsureViewReady())
         {
-            _view!.Render(_presenter!.BuildErrorState(message, _helpState.IsVisible));
+            _view!.Render(_presenter!.BuildErrorState(message, _helpState.IsVisible, _summaryExpanded));
             _view.SetScrubberInteractable(false);
         }
 
@@ -617,7 +625,7 @@ public sealed class BattleScreenController : MonoBehaviour
         var currentStep = step ?? _timeline?.CurrentStep;
         if (currentStep == null)
         {
-            _view!.Render(_presenter!.BuildLoadingState(_helpState.IsVisible));
+            _view!.Render(_presenter!.BuildLoadingState(_helpState.IsVisible, _summaryExpanded));
             _view.SetScrubberInteractable(false);
             return;
         }
@@ -641,6 +649,7 @@ public sealed class BattleScreenController : MonoBehaviour
             canPause: IsSmokeLane && _timeline != null && _policy.CanPause(_timeline.IsFinished),
             canChangeSpeed: IsSmokeLane && _timeline != null && _policy.CanControlSpeed(_timeline.IsFinished),
             showHelp: _helpState.IsVisible,
+            isSummaryExpanded: _summaryExpanded,
             selectedUnit: _metadataFormatter.BuildSelectedUnitPanel(selectedUnit));
         _view!.Render(state);
         _view.SetScrubberInteractable(IsSmokeLane && _timeline != null && _policy.CanSeek(_timeline.IsFinished));

@@ -172,6 +172,14 @@ MonoBehaviour:
     m_Localized: Unknown
     m_Metadata:
       m_Items: []
+  - m_Id: 36
+    m_Localized: Expand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 37
+    m_Localized: Collapse
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace SM.Unity;
 
@@ -33,6 +34,8 @@ internal static class BattlePresentationMaterialFactory
             return;
         }
 
+        ConfigureTransparency(material, color.a);
+
         if (material.HasProperty("_BaseColor"))
         {
             material.SetColor("_BaseColor", color);
@@ -41,6 +44,48 @@ internal static class BattlePresentationMaterialFactory
         if (material.HasProperty("_Color"))
         {
             material.SetColor("_Color", color);
+        }
+    }
+
+    private static void ConfigureTransparency(Material material, float alpha)
+    {
+        var isTransparent = alpha < 0.999f;
+        if (isTransparent)
+        {
+            material.SetOverrideTag("RenderType", "Transparent");
+            material.renderQueue = (int)RenderQueue.Transparent;
+            SetFloatIfPresent(material, "_Surface", 1f);
+            SetFloatIfPresent(material, "_Mode", 3f);
+            SetFloatIfPresent(material, "_Blend", 0f);
+            SetFloatIfPresent(material, "_SrcBlend", (float)BlendMode.SrcAlpha);
+            SetFloatIfPresent(material, "_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
+            SetFloatIfPresent(material, "_ZWrite", 0f);
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.EnableKeyword("_ALPHABLEND_ON");
+            material.DisableKeyword("_ALPHATEST_ON");
+            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+            return;
+        }
+
+        material.SetOverrideTag("RenderType", "Opaque");
+        material.renderQueue = -1;
+        SetFloatIfPresent(material, "_Surface", 0f);
+        SetFloatIfPresent(material, "_Mode", 0f);
+        SetFloatIfPresent(material, "_Blend", 0f);
+        SetFloatIfPresent(material, "_SrcBlend", (float)BlendMode.One);
+        SetFloatIfPresent(material, "_DstBlend", (float)BlendMode.Zero);
+        SetFloatIfPresent(material, "_ZWrite", 1f);
+        material.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        material.DisableKeyword("_ALPHABLEND_ON");
+        material.DisableKeyword("_ALPHATEST_ON");
+        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+    }
+
+    private static void SetFloatIfPresent(Material material, string propertyName, float value)
+    {
+        if (material.HasProperty(propertyName))
+        {
+            material.SetFloat(propertyName, value);
         }
     }
 

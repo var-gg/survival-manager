@@ -24,45 +24,50 @@
             </ui:VisualElement>
 
             <ui:VisualElement class="battle-shell__center">
-                <ui:VisualElement class="panel">
-                    <ui:Label name="SummaryTitleLabel" class="panel__title" />
-                    <ui:Label name="ResultLabel" class="panel__text battle-shell__result" />
-                    <ui:Label name="SpeedLabel" class="panel__text panel__text--muted" />
-                    <ui:Label name="StatusLabel" class="panel__text battle-shell__status" />
-                    <ui:VisualElement name="ProgressTrack" class="battle-track">
-                        <ui:VisualElement name="ProgressFill" class="battle-track__fill" />
+                <ui:VisualElement name="SummaryPanel" class="panel battle-shell__summary">
+                    <ui:VisualElement class="battle-shell__summary-header">
+                        <ui:Label name="SummaryTitleLabel" class="panel__title battle-shell__summary-title" />
+                        <ui:Button name="SummaryToggleButton" class="ui-button battle-shell__summary-toggle" />
                     </ui:VisualElement>
-
-                    <ui:VisualElement name="PlaybackActionsGroup" class="action-group">
-                        <ui:Label name="PlaybackGroupTitleLabel" class="action-group__title" />
-                        <ui:VisualElement class="action-row">
-                            <ui:Button name="Speed1Button" class="ui-button" />
-                            <ui:Button name="Speed2Button" class="ui-button" />
-                            <ui:Button name="Speed4Button" class="ui-button" />
-                            <ui:Button name="PauseButton" class="ui-button" />
-                            <ui:Button name="ReplayButton" class="ui-button" />
+                    <ui:VisualElement name="SummaryBody" class="battle-shell__summary-body">
+                        <ui:Label name="ResultLabel" class="panel__text battle-shell__result" />
+                        <ui:Label name="SpeedLabel" class="panel__text panel__text--muted" />
+                        <ui:Label name="StatusLabel" class="panel__text battle-shell__status" />
+                        <ui:VisualElement name="ProgressTrack" class="battle-track">
+                            <ui:VisualElement name="ProgressFill" class="battle-track__fill" />
                         </ui:VisualElement>
-                    </ui:VisualElement>
 
-                    <ui:VisualElement name="ContinueActionsGroup" class="action-group">
-                        <ui:Label name="ContinueGroupTitleLabel" class="action-group__title" />
-                        <ui:VisualElement class="action-row">
-                            <ui:Button name="ContinueButton" class="ui-button ui-button--accent" />
+                        <ui:VisualElement name="PlaybackActionsGroup" class="action-group">
+                            <ui:Label name="PlaybackGroupTitleLabel" class="action-group__title" />
+                            <ui:VisualElement class="action-row">
+                                <ui:Button name="Speed1Button" class="ui-button" />
+                                <ui:Button name="Speed2Button" class="ui-button" />
+                                <ui:Button name="Speed4Button" class="ui-button" />
+                                <ui:Button name="PauseButton" class="ui-button" />
+                                <ui:Button name="ReplayButton" class="ui-button" />
+                            </ui:VisualElement>
                         </ui:VisualElement>
-                    </ui:VisualElement>
 
-                    <ui:VisualElement name="SmokeActionsGroup" class="action-group action-group--debug">
-                        <ui:Label name="SmokeGroupTitleLabel" class="action-group__title" />
-                        <ui:VisualElement class="action-row">
-                            <ui:Button name="RebattleButton" class="ui-button ui-button--debug" />
-                            <ui:Button name="ReturnTownButton" class="ui-button ui-button--warning" />
+                        <ui:VisualElement name="ContinueActionsGroup" class="action-group">
+                            <ui:Label name="ContinueGroupTitleLabel" class="action-group__title" />
+                            <ui:VisualElement class="action-row">
+                                <ui:Button name="ContinueButton" class="ui-button ui-button--accent" />
+                            </ui:VisualElement>
                         </ui:VisualElement>
-                    </ui:VisualElement>
 
-                    <ui:VisualElement class="action-group">
-                        <ui:Label name="UtilityGroupTitleLabel" class="action-group__title" />
-                        <ui:VisualElement class="action-row">
-                            <ui:Button name="SettingsButton" class="ui-button" />
+                        <ui:VisualElement name="SmokeActionsGroup" class="action-group action-group--debug">
+                            <ui:Label name="SmokeGroupTitleLabel" class="action-group__title" />
+                            <ui:VisualElement class="action-row">
+                                <ui:Button name="RebattleButton" class="ui-button ui-button--debug" />
+                                <ui:Button name="ReturnTownButton" class="ui-button ui-button--warning" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+
+                        <ui:VisualElement class="action-group">
+                            <ui:Label name="UtilityGroupTitleLabel" class="action-group__title" />
+                            <ui:VisualElement class="action-row">
+                                <ui:Button name="SettingsButton" class="ui-button" />
+                            </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>

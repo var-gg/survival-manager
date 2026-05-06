@@ -9,6 +9,7 @@ public static class MovementResolver
 {
     private const float ArenaHalfWidth = 8f;
     private const float ArenaHalfHeight = 3.2f;
+    private const float ObstacleClearancePadding = 0.06f;
 
     public static float ComputeEdgeDistance(UnitSnapshot actor, UnitSnapshot target)
     {
@@ -249,8 +250,132 @@ public static class MovementResolver
         var next = CombatVector2.MoveTowards(actor.Position, targetPosition, stepDistance);
         next = ClampToLeash(state, actor, next);
         next = ClampToArena(next);
+        next = ResolveCollisionAwareStep(state, actor, targetPosition, next, stepDistance);
         actor.SetPosition(next);
         actor.SetActionState(actionState);
+    }
+
+    private static CombatVector2 ResolveCollisionAwareStep(
+        BattleState state,
+        UnitSnapshot actor,
+        CombatVector2 targetPosition,
+        CombatVector2 directNext,
+        float stepDistance)
+    {
+        if (IsClearOfNavigationObstacles(state, actor, directNext))
+        {
+            return directNext;
+        }
+
+        var forward = (targetPosition - actor.Position).Normalized;
+        if (forward.SqrLength <= 0.0001f)
+        {
+            forward = actor.Side == TeamSide.Ally
+                ? new CombatVector2(1f, 0f)
+                : new CombatVector2(-1f, 0f);
+        }
+
+        var lateral = new CombatVector2(-forward.Y, forward.X);
+        var sidePreference = ResolveSidePreference(actor);
+        var candidates = new List<CombatVector2>(12);
+        AddSteeringCandidates(candidates, state, actor, forward, lateral * sidePreference, stepDistance);
+        AddSteeringCandidates(candidates, state, actor, forward, lateral * -sidePreference, stepDistance);
+
+        if (candidates.Count == 0)
+        {
+            return actor.Position;
+        }
+
+        var best = candidates.First();
+        var bestScore = ScoreNavigationCandidate(state, actor, targetPosition, best);
+        foreach (var candidate in candidates)
+        {
+            var score = ScoreNavigationCandidate(state, actor, targetPosition, candidate);
+            if (score < bestScore)
+            {
+                best = candidate;
+                bestScore = score;
+            }
+        }
+
+        return best;
+    }
+
+    private static void AddSteeringCandidates(
+        ICollection<CombatVector2> candidates,
+        BattleState state,
+        UnitSnapshot actor,
+        CombatVector2 forward,
+        CombatVector2 lateral,
+        float stepDistance)
+    {
+        var weights = new[] { 0.45f, 0.75f, 1.10f, 1.55f };
+        foreach (var weight in weights)
+        {
+            var direction = (forward + (lateral * weight)).Normalized;
+            if (direction.SqrLength <= 0.0001f)
+            {
+                continue;
+            }
+
+            var candidate = actor.Position + (direction * stepDistance);
+            candidate = ClampToLeash(state, actor, ClampToArena(candidate));
+            candidates.Add(candidate);
+        }
+
+        var sidestepDistance = Math.Max(stepDistance, actor.NavigationRadius * 0.35f);
+        candidates.Add(ClampToLeash(state, actor, ClampToArena(actor.Position + (lateral.Normalized * sidestepDistance))));
+    }
+
+    private static float ScoreNavigationCandidate(BattleState state, UnitSnapshot actor, CombatVector2 targetPosition, CombatVector2 candidate)
+    {
+        var overlapPenalty = 0f;
+        foreach (var obstacle in state.AllUnits)
+        {
+            if (obstacle.Id == actor.Id)
+            {
+                continue;
+            }
+
+            var requiredClearance = actor.NavigationRadius + obstacle.NavigationRadius + ObstacleClearancePadding;
+            var distance = candidate.DistanceTo(obstacle.Position);
+            var overlap = Math.Max(0f, requiredClearance - distance);
+            overlapPenalty += overlap * overlap;
+        }
+
+        var targetDistance = candidate.DistanceTo(targetPosition);
+        var travelDistance = candidate.DistanceTo(actor.Position);
+        return (overlapPenalty * 120f) + targetDistance - (travelDistance * 0.05f);
+    }
+
+    private static bool IsClearOfNavigationObstacles(BattleState state, UnitSnapshot actor, CombatVector2 candidate)
+    {
+        foreach (var obstacle in state.AllUnits)
+        {
+            if (obstacle.Id == actor.Id)
+            {
+                continue;
+            }
+
+            var requiredClearance = actor.NavigationRadius + obstacle.NavigationRadius + ObstacleClearancePadding;
+            if (candidate.DistanceTo(obstacle.Position) < requiredClearance)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static float ResolveSidePreference(UnitSnapshot actor)
+    {
+        var hash = 17;
+        foreach (var ch in actor.Id.Value)
+        {
+            hash = (hash * 31) + ch;
+        }
+
+        return (hash & 1) == 0 ? 1f : -1f;
     }
 
     private static CombatVector2 ClampToLeash(BattleState state, UnitSnapshot actor, CombatVector2 position)

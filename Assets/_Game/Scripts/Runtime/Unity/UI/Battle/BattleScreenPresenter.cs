@@ -24,7 +24,7 @@ public sealed class BattleScreenPresenter
         _options = options;
     }
 
-    public BattleShellViewState BuildLoadingState(bool showHelp = false)
+    public BattleShellViewState BuildLoadingState(bool showHelp = false, bool isSummaryExpanded = true)
     {
         return CreateState(
             allyHpText: string.Empty,
@@ -42,10 +42,11 @@ public sealed class BattleScreenPresenter
             canPause: false,
             canChangeSpeed: false,
             showHelp: showHelp,
+            isSummaryExpanded: isSummaryExpanded,
             selectedUnit: BattleSelectedUnitViewState.Hidden);
     }
 
-    public BattleShellViewState BuildErrorState(string message, bool showHelp = false)
+    public BattleShellViewState BuildErrorState(string message, bool showHelp = false, bool isSummaryExpanded = true)
     {
         return CreateState(
             allyHpText: string.Empty,
@@ -64,6 +65,7 @@ public sealed class BattleScreenPresenter
             canChangeSpeed: false,
             settingsStatusText: message,
             showHelp: showHelp,
+            isSummaryExpanded: isSummaryExpanded,
             selectedUnit: BattleSelectedUnitViewState.Hidden);
     }
 
@@ -83,6 +85,7 @@ public sealed class BattleScreenPresenter
         bool canPause = false,
         bool canChangeSpeed = false,
         bool showHelp = false,
+        bool isSummaryExpanded = true,
         BattleSelectedUnitViewState? selectedUnit = null)
     {
         return CreateState(
@@ -106,6 +109,7 @@ public sealed class BattleScreenPresenter
             canChangeSpeed,
             settingsStatusText,
             showHelp,
+            isSummaryExpanded,
             selectedUnit ?? BattleSelectedUnitViewState.Hidden);
     }
 
@@ -126,6 +130,7 @@ public sealed class BattleScreenPresenter
         bool canChangeSpeed,
         string? settingsStatusText = null,
         bool showHelp = false,
+        bool isSummaryExpanded = true,
         BattleSelectedUnitViewState? selectedUnit = null)
     {
         var isSmoke = _sessionState.IsQuickBattleSmokeActive;
@@ -138,6 +143,13 @@ public sealed class BattleScreenPresenter
             Localize(GameLocalizationTables.UICommon, "ui.common.help", "Help"),
             CreateHelpState(showHelp),
             Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.summary", "Summary"),
+            isSummaryExpanded
+                ? Localize(GameLocalizationTables.UICommon, "ui.common.collapse", "Collapse")
+                : Localize(GameLocalizationTables.UICommon, "ui.common.expand", "Expand"),
+            isSummaryExpanded
+                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.summary_collapse", "Fold the summary panel to clear more of the battlefield.")
+                : Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.summary_expand", "Expand the summary panel."),
+            isSummaryExpanded,
             Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.allies", "Allies"),
             allyHpText,
             Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.enemies", "Enemies"),
