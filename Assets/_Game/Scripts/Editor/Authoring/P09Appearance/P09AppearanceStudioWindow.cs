@@ -345,6 +345,12 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             _selectedPreset = BattleP09AppearanceCatalogBuilder.EnsurePreset(character, _catalog, seedIndex);
         }
 
+        ConfigureSelectedPresetIdentity();
+        if (_selectedPreset.EnsureDefaultColorOverrides())
+        {
+            EditorUtility.SetDirty(_selectedPreset);
+        }
+
         Selection.activeObject = _selectedPreset;
         UpdatePreview();
     }
