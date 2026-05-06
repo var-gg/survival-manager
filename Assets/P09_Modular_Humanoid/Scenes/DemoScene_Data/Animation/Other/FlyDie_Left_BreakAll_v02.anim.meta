@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4a302b67d2004484dab965ea4dc71a6e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Animation/Other/FlyDie_Left_BreakAll_v02.anim
+  uploadId: 843050

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c93b56d0ca6594582a7a836ab24cad53
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/ScriptableObject/FaceType/FaceTypeEditPartData_03.asset
+  uploadId: 843050

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 63c880c9dfda443d88ba51e4e283502d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Scripts/ArmorPage.cs
+  uploadId: 843050

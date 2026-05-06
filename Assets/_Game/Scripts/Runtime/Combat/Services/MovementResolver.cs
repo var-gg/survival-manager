@@ -137,8 +137,8 @@ public static class MovementResolver
 
         var currentDistance = ComputeEdgeDistance(actor, target);
         var rangeBand = evaluated.DesiredRangeBand;
-        var approachBuffer = Math.Max(actor.Behavior.RangeHysteresis, actor.Behavior.ApproachBuffer);
-        var retreatBuffer = Math.Max(actor.Behavior.RangeHysteresis, actor.Behavior.RetreatBuffer);
+        var approachBuffer = ResolveMovementBuffer(actor.Behavior.ApproachBuffer, actor.Behavior.RangeHysteresis);
+        var retreatBuffer = ResolveMovementBuffer(actor.Behavior.RetreatBuffer, actor.Behavior.RangeHysteresis);
 
         if (currentDistance < rangeBand.ClampedMin - retreatBuffer)
         {
@@ -172,7 +172,9 @@ public static class MovementResolver
             return;
         }
 
-        actor.SetActionState(evaluated.DesiredPhase);
+        actor.SetActionState(evaluated.DesiredPhase == CombatActionState.ExecuteAction
+            ? CombatActionState.AcquireTarget
+            : evaluated.DesiredPhase);
     }
 
     public static void ResolveFormationSpacing(BattleState state)
@@ -191,6 +193,14 @@ public static class MovementResolver
 
         var centerDistance = rangeBand.Midpoint + actor.NavigationRadius + target.NavigationRadius;
         return target.Position - (directionToTarget * centerDistance);
+    }
+
+    private static float ResolveMovementBuffer(float authoredBuffer, float rangeHysteresis)
+    {
+        var safeHysteresis = Math.Max(0f, rangeHysteresis);
+        return safeHysteresis <= 0f
+            ? 0f
+            : Math.Min(Math.Max(0f, authoredBuffer), safeHysteresis);
     }
 
     private static void ResolveTeamSpacing(IReadOnlyList<UnitSnapshot> team)

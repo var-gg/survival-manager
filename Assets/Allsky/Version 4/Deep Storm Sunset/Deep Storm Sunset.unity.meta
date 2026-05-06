@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 72792b23b42c04ec1a48aeeba0707dc4
+labels:
+- AllSky
+- Skies
+- Sky
+- Skybox
+timeCreated: 1544547131
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Version 4/Deep Storm Sunset/Deep Storm Sunset.unity
+  uploadId: 679124

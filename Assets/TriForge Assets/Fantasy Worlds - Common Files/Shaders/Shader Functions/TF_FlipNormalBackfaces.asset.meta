@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ac34ec6731ca09c4bb272e16fbf2fe92
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 342958
+  packageName: Fantasy Worlds - Forests, Meadows & Dungeons - Stylized 3D Environment
+  packageVersion: 1.0.1
+  assetPath: Assets/TriForge Assets/Fantasy Worlds - Common Files/Shaders/Shader
+    Functions/TF_FlipNormalBackfaces.asset
+  uploadId: 851492

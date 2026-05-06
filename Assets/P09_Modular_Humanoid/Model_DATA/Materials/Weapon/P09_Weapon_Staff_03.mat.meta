@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 55f32698d191de14a820d492ab8c8fb9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Weapon/P09_Weapon_Staff_03.mat
+  uploadId: 843050

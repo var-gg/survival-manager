@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0e40c1e9e0e171c44992250b7126830c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Armor/P09_Male_Armor_002.mat
+  uploadId: 843050

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: bc16c90bc84bc34418c16d554a2ef43f
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Prefab/P09_Human_Variant_Female.prefab
+  uploadId: 843050

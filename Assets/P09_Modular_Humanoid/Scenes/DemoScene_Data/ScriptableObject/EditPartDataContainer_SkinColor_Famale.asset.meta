@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 60f88fe53acc44708b50f9a093412426
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/ScriptableObject/EditPartDataContainer_SkinColor_Famale.asset
+  uploadId: 843050

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 14df374125d1a9546ab023687daaf6e7
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/images/P09_Idle Render
+    Texture.mat
+  uploadId: 843050

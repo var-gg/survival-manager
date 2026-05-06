@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4e213fd30bc186e4f8a8bd104c8bedaf
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Weapon/P09_Weapon_Arrow_01.mat
+  uploadId: 843050

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SM.Combat.Model;
+using SM.Combat.Services;
 using SM.Core.Stats;
 using UnityEngine;
 
@@ -55,6 +56,9 @@ public static class BattleDebugLogWriter
         sb.AppendLine(",");
 
         WriteFinalUnits(sb, replay, finalUnitStates);
+        sb.AppendLine(",");
+
+        WriteDiagnostics(sb, replay, finalUnitStates);
         sb.AppendLine(",");
 
         WriteStats(sb, replay);
@@ -177,7 +181,7 @@ public static class BattleDebugLogWriter
             for (var i = 0; i < finalUnitStates.Count; i++)
             {
                 var u = finalUnitStates[i];
-                sb.Append($"    {{ \"id\": \"{Escape(u.Id)}\", \"name\": \"{Escape(u.Name)}\", \"side\": \"{u.Side}\", \"alive\": {(u.IsAlive ? "true" : "false")}, \"hp\": {u.CurrentHealth:0.#}, \"maxHp\": {u.MaxHealth:0.#}, \"barrier\": {u.Barrier:0.#} }}");
+                sb.Append($"    {{ \"id\": \"{Escape(u.Id)}\", \"name\": \"{Escape(u.Name)}\", \"side\": \"{u.Side}\", \"alive\": {(u.IsAlive ? "true" : "false")}, \"hp\": {u.CurrentHealth:0.#}, \"maxHp\": {u.MaxHealth:0.#}, \"barrier\": {u.Barrier:0.#}, \"state\": \"{u.ActionState}\", \"pendingAction\": \"{u.PendingActionType?.ToString() ?? string.Empty}\", \"target\": \"{Escape(u.TargetId ?? string.Empty)}\", \"x\": {u.Position.X:0.###}, \"y\": {u.Position.Y:0.###} }}");
                 if (i < finalUnitStates.Count - 1)
                 {
                     sb.Append(',');
@@ -205,6 +209,76 @@ public static class BattleDebugLogWriter
         }
 
         sb.Append("  ]");
+    }
+
+    private static void WriteDiagnostics(StringBuilder sb, BattleReplayBundle replay, IReadOnlyList<BattleUnitReadModel>? finalUnitStates)
+    {
+        var events = replay.EventStream;
+        var lastEvent = events.Count > 0
+            ? events.OrderBy(e => e.StepIndex).ThenBy(e => e.TimeSeconds).Last()
+            : null;
+        var estimatedFinalStep = replay.BattleSummary != null
+            ? (int)MathF.Round(replay.BattleSummary.BattleDurationSeconds / BattleSimulator.DefaultFixedStepSeconds)
+            : -1;
+        var lastEventStep = lastEvent?.StepIndex ?? -1;
+        var idleStepsAfterLastEvent = estimatedFinalStep >= 0 && lastEventStep >= 0
+            ? Math.Max(0, estimatedFinalStep - lastEventStep)
+            : -1;
+        var idleSecondsAfterLastEvent = replay.BattleSummary != null && lastEvent != null
+            ? Math.Max(0f, replay.BattleSummary.BattleDurationSeconds - lastEvent.TimeSeconds)
+            : -1f;
+        var aliveAllies = finalUnitStates?.Count(u => u.Side == TeamSide.Ally && u.IsAlive) ?? 0;
+        var aliveEnemies = finalUnitStates?.Count(u => u.Side == TeamSide.Enemy && u.IsAlive) ?? 0;
+        var timeoutWithLivingBothSides = replay.BattleSummary?.TimeoutOccurred == true && aliveAllies > 0 && aliveEnemies > 0;
+        var stallSuspected = timeoutWithLivingBothSides && idleSecondsAfterLastEvent >= 3f;
+
+        sb.AppendLine("  \"diagnostics\": {");
+        sb.AppendLine($"    \"estimatedFinalStep\": {estimatedFinalStep},");
+        sb.AppendLine($"    \"lastEventStep\": {lastEventStep},");
+        sb.AppendLine($"    \"lastEventTime\": {FormatNumber(lastEvent?.TimeSeconds ?? -1f)},");
+        sb.AppendLine($"    \"idleStepsAfterLastEvent\": {idleStepsAfterLastEvent},");
+        sb.AppendLine($"    \"idleSecondsAfterLastEvent\": {FormatNumber(idleSecondsAfterLastEvent)},");
+        sb.AppendLine($"    \"timeoutWithLivingBothSides\": {(timeoutWithLivingBothSides ? "true" : "false")},");
+        sb.AppendLine($"    \"stallSuspected\": {(stallSuspected ? "true" : "false")},");
+        sb.AppendLine($"    \"reason\": \"{(stallSuspected ? "timeout_after_long_no_event_window" : string.Empty)}\",");
+        sb.AppendLine($"    \"aliveAllies\": {aliveAllies},");
+        sb.AppendLine($"    \"aliveEnemies\": {aliveEnemies},");
+        sb.AppendLine("    \"aliveUnits\": [");
+        var aliveUnits = finalUnitStates?
+            .Where(u => u.IsAlive)
+            .OrderBy(u => u.Side)
+            .ThenBy(u => u.Id)
+            .ToList() ?? new List<BattleUnitReadModel>();
+        for (var i = 0; i < aliveUnits.Count; i++)
+        {
+            var u = aliveUnits[i];
+            sb.Append("      { ");
+            sb.Append($"\"id\": \"{Escape(u.Id)}\", ");
+            sb.Append($"\"name\": \"{Escape(u.Name)}\", ");
+            sb.Append($"\"side\": \"{u.Side}\", ");
+            sb.Append($"\"hp\": {FormatNumber(u.CurrentHealth)}, ");
+            sb.Append($"\"state\": \"{u.ActionState}\", ");
+            sb.Append($"\"pendingAction\": \"{u.PendingActionType?.ToString() ?? string.Empty}\", ");
+            sb.Append($"\"target\": \"{Escape(u.TargetId ?? string.Empty)}\", ");
+            sb.Append($"\"selector\": \"{Escape(u.CurrentSelector)}\", ");
+            sb.Append($"\"fallback\": \"{Escape(u.CurrentFallback)}\", ");
+            sb.Append($"\"retargetLock\": {FormatNumber(u.RetargetLockRemaining)}, ");
+            sb.Append($"\"cooldown\": {FormatNumber(u.CooldownRemaining)}, ");
+            sb.Append($"\"x\": {FormatNumber(u.Position.X)}, ");
+            sb.Append($"\"y\": {FormatNumber(u.Position.Y)}, ");
+            sb.Append($"\"preferredRangeMin\": {FormatNumber(u.PreferredRangeMin)}, ");
+            sb.Append($"\"preferredRangeMax\": {FormatNumber(u.PreferredRangeMax)}");
+            sb.Append(" }");
+            if (i < aliveUnits.Count - 1)
+            {
+                sb.Append(',');
+            }
+
+            sb.AppendLine();
+        }
+
+        sb.AppendLine("    ]");
+        sb.Append("  }");
     }
 
     private static void WriteStats(StringBuilder sb, BattleReplayBundle replay)
@@ -306,6 +380,11 @@ public static class BattleDebugLogWriter
     private static string Escape(string input)
     {
         return input.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n");
+    }
+
+    private static string FormatNumber(float value)
+    {
+        return value.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     private readonly record struct FinalUnitEntry(string Id, string Side, bool Alive);

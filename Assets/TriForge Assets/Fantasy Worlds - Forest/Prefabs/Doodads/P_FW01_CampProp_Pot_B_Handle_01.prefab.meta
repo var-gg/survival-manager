@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 15418b991cd23e74fb9ce4705b66e882
+labels:
+- Camp
+- Prop
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 342958
+  packageName: Fantasy Worlds - Forests, Meadows & Dungeons - Stylized 3D Environment
+  packageVersion: 1.0.1
+  assetPath: Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Doodads/P_FW01_CampProp_Pot_B_Handle_01.prefab
+  uploadId: 851492

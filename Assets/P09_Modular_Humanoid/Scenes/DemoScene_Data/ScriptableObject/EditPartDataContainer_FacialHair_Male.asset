@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd5c3a4c771c4d60ae99be4226218f35, type: 3}
+  m_Name: EditPartDataContainer_FacialHair_Male
+  m_EditorClassIdentifier: 
+  _type: 13
+  _sexId: 1
+  _partDataList:
+  - {fileID: 11400000, guid: fbb3e3f559d8e414fa26bf7edf841b96, type: 2}
+  - {fileID: 11400000, guid: bf5a97df0dd6a4111a7f5a2360dc4a87, type: 2}
+  - {fileID: 11400000, guid: 6f7e44de326a74907bc0cb922c5d7c7b, type: 2}
+  - {fileID: 11400000, guid: 7e72521c312054fc9815fcc476614373, type: 2}
+  - {fileID: 11400000, guid: 7879312e0e1994509b813b07d1cc929c, type: 2}
+  - {fileID: 11400000, guid: a5e914baa2e63463a90fde8408ae68ca, type: 2}
+  - {fileID: 11400000, guid: 395669b913e2841bfab42fbeba5f5cac, type: 2}
+  - {fileID: 11400000, guid: 166653ca37ef046bdaad8c382e62c425, type: 2}
+  - {fileID: 11400000, guid: 684ca4ee6541504459ae0e857ded44f8, type: 2}

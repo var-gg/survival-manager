@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3c99d4ca1bf6c4af7b3af1f70eb625a9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/ScriptableObject/HairStyle/HairStyleEditPartData_10.asset
+  uploadId: 843050

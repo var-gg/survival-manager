@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d65c1c22d790c1c4597951897e0a8adc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Animation/Other/CHECKMOVE.anim
+  uploadId: 843050

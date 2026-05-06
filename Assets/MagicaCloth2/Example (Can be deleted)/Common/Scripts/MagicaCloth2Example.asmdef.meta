@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 5bc0ea054e216f5498d1a84885db7ab1
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 242307
+  packageName: Magica Cloth 2
+  packageVersion: 2.18.1
+  assetPath: Assets/MagicaCloth2/Example (Can be deleted)/Common/Scripts/MagicaCloth2Example.asmdef
+  uploadId: 893596

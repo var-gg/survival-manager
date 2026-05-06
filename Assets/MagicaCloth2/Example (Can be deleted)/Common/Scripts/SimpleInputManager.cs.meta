@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 08208c43232950a4f8b6eae1f7919c13
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 242307
+  packageName: Magica Cloth 2
+  packageVersion: 2.18.1
+  assetPath: Assets/MagicaCloth2/Example (Can be deleted)/Common/Scripts/SimpleInputManager.cs
+  uploadId: 893596

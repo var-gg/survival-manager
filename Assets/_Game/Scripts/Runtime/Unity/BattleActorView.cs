@@ -20,6 +20,7 @@ public sealed class BattleActorView : MonoBehaviour
     private BattleActorWrapper _wrapper = null!;
     private BattleActorVisualAdapter _visualAdapter = null!;
     private BattleAnimationEventBridge? _animationEventBridge;
+    private BattleHumanoidAnimationDriver? _animationDriver;
     private BattleActorVfxSurface? _vfxSurface;
     private BattleActorAudioSurface? _audioSurface;
     private RectTransform _overlayParent = null!;
@@ -120,10 +121,14 @@ public sealed class BattleActorView : MonoBehaviour
     public void ApplyBlend(BattleUnitReadModel from, BattleUnitReadModel to, float alpha)
     {
         _currentState = to;
-        transform.position = Vector3.Lerp(ToWorldPosition(from.Position), ToWorldPosition(to.Position), Mathf.Clamp01(alpha));
+        var fromWorld = ToWorldPosition(from.Position);
+        var toWorld = ToWorldPosition(to.Position);
+        var clampedAlpha = Mathf.Clamp01(alpha);
+        transform.position = Vector3.Lerp(fromWorld, toWorld, clampedAlpha);
 
-        var displayedHealth = Mathf.Lerp(from.CurrentHealth, to.CurrentHealth, Mathf.Clamp01(alpha));
+        var displayedHealth = Mathf.Lerp(from.CurrentHealth, to.CurrentHealth, clampedAlpha);
         ApplyDisplay(to, displayedHealth);
+        _animationDriver?.ApplyState(to, 1f, paused: false, isLocomoting: Vector3.Distance(fromWorld, toWorld) > 0.015f && clampedAlpha < 0.995f);
         RefreshVisualState();
         RefreshOverlayPosition();
     }
@@ -147,6 +152,7 @@ public sealed class BattleActorView : MonoBehaviour
         }
 
         _animationEventBridge?.OpenCueWindow(cue);
+        _animationDriver?.ConsumeCue(cue, _currentState, 1f);
         _vfxSurface?.ConsumeCue(cue, _wrapper);
         _audioSurface?.ConsumeCue(cue, _wrapper);
 
@@ -228,6 +234,7 @@ public sealed class BattleActorView : MonoBehaviour
         _impactColor = Color.clear;
         _floatingColor = Color.clear;
         _animationEventBridge?.ClearTransientState(reason);
+        _animationDriver?.ClearTransientState(reason);
         _vfxSurface?.ClearTransientState(reason);
         _audioSurface?.ClearTransientState(reason);
 
@@ -242,6 +249,8 @@ public sealed class BattleActorView : MonoBehaviour
 
     public void TickTransients(float deltaTime, float playbackSpeed, bool paused)
     {
+        _animationDriver?.Tick(deltaTime, playbackSpeed, paused);
+
         if (paused)
         {
             return;
@@ -697,6 +706,13 @@ public sealed class BattleActorView : MonoBehaviour
         _renderer = _visualAdapter.PrimaryRenderer!;
         _shadowRenderer = _visualAdapter.ShadowRenderer!;
         _animationEventBridge = GetComponent<BattleAnimationEventBridge>();
+        _animationDriver = GetComponent<BattleHumanoidAnimationDriver>();
+        if (_animationDriver == null && _visualRoot != null)
+        {
+            _animationDriver = _visualRoot.GetComponentInChildren<BattleHumanoidAnimationDriver>(true);
+        }
+
+        _animationDriver?.Initialize(_wrapper, actor);
         _vfxSurface = GetComponent<BattleActorVfxSurface>();
         _audioSurface = GetComponent<BattleActorAudioSurface>();
         _baseColor = ResolveBaseColor(actor);
@@ -747,12 +763,14 @@ public sealed class BattleActorView : MonoBehaviour
         barBack.transform.localScale = new Vector3(WorldHpWidth, 0.10f, 0.07f);
         RemoveCollider(barBack);
         var backRenderer = barBack.GetComponent<Renderer>();
+        ConfigurePresentationRenderer(backRenderer);
         backRenderer.material.color = new Color(0.04f, 0.04f, 0.04f, 1f);
 
         var fill = GameObject.CreatePrimitive(PrimitiveType.Cube);
         fill.name = "WorldHpFill";
         fill.transform.SetParent(_worldInfoRoot, false);
         RemoveCollider(fill);
+        ConfigurePresentationRenderer(fill.GetComponent<Renderer>());
         _worldHpFillRoot = fill.transform;
     }
 
@@ -1014,6 +1032,7 @@ public sealed class BattleActorView : MonoBehaviour
         RemoveCollider(go);
 
         var renderer = go.GetComponent<Renderer>();
+        ConfigurePresentationRenderer(renderer);
         renderer.sharedMaterial = BattlePresentationMaterialFactory.Create(color);
         go.SetActive(false);
         return renderer;
@@ -1033,6 +1052,7 @@ public sealed class BattleActorView : MonoBehaviour
         line.textureMode = LineTextureMode.Stretch;
         line.startWidth = width;
         line.endWidth = width * 0.55f;
+        ConfigurePresentationRenderer(line);
         line.enabled = false;
         return line;
     }
@@ -1063,13 +1083,22 @@ public sealed class BattleActorView : MonoBehaviour
         go.transform.localPosition = localPosition;
         var textMesh = go.AddComponent<TextMesh>();
         textMesh.font = font;
-        textMesh.GetComponent<MeshRenderer>().material = font.material;
+        var renderer = textMesh.GetComponent<MeshRenderer>();
+        ConfigurePresentationRenderer(renderer);
+        renderer.material = font.material;
         textMesh.anchor = TextAnchor.MiddleCenter;
         textMesh.alignment = TextAlignment.Center;
         textMesh.fontSize = fontSize;
         textMesh.characterSize = characterSize;
         textMesh.color = color;
         return textMesh;
+    }
+
+    private static void ConfigurePresentationRenderer(Renderer renderer)
+    {
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        renderer.receiveShadows = false;
+        renderer.allowOcclusionWhenDynamic = false;
     }
 
     private static Text CreateOverlayText(RectTransform parent, string name, Font font, Vector2 anchoredPosition, Vector2 size, int fontSize, TextAnchor alignment)

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 36ece2ce79b44ae45a27a708761e0f07
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 242307
+  packageName: Magica Cloth 2
+  packageVersion: 2.18.1
+  assetPath: Assets/MagicaCloth2/Example (Can be deleted)/DemoScenes/HDRP/RuntimeBuild_HDRP.unity
+  uploadId: 893596

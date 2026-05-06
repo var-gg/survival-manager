@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e6b35139ccfe843a4bf5ef2df3e0f5a6
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/ScriptableObject/Arm/ArmEditPartData_02.asset
+  uploadId: 843050

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd5c3a4c771c4d60ae99be4226218f35, type: 3}
+  m_Name: EditPartDataContainer_FaceEmotion
+  m_EditorClassIdentifier: 
+  _type: 15
+  _sexId: 0
+  _partDataList:
+  - {fileID: 11400000, guid: 8a6c2996deb374eb4a24bea016308fbc, type: 2}
+  - {fileID: 11400000, guid: 7b598a9b9cd054043a682b781ec2f168, type: 2}
+  - {fileID: 11400000, guid: 3941a5bd6fab64c8dbdd8c4accbea4d9, type: 2}
+  - {fileID: 11400000, guid: 7217d328ccac44baf832cc9272970e8a, type: 2}
+  - {fileID: 11400000, guid: 9cf192439fbed4c13b2ad572d9d44f06, type: 2}
+  - {fileID: 11400000, guid: c6054a3ee6cc340cc8f5304c110d4430, type: 2}
+  - {fileID: 11400000, guid: d5d22e9a66ab44bb7af64626598fffb3, type: 2}
+  - {fileID: 11400000, guid: dea37f255c882408d979d4fce423469e, type: 2}
+  - {fileID: 11400000, guid: 8bb2078d82dab40118f8b3e5218cc49c, type: 2}
+  - {fileID: 11400000, guid: 2699d153e115f47f2a6fca4204422e94, type: 2}

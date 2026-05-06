@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd5c3a4c771c4d60ae99be4226218f35, type: 3}
+  m_Name: EditPartDataContainer_BustSize
+  m_EditorClassIdentifier: 
+  _type: 14
+  _sexId: 2
+  _partDataList:
+  - {fileID: 11400000, guid: 103888d68ed3340b1b45dc71383fd733, type: 2}
+  - {fileID: 11400000, guid: a948806fe06734a6d9ed782298eb13e2, type: 2}
+  - {fileID: 11400000, guid: 808e495a490064d07a29fca7b2be1701, type: 2}

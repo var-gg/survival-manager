@@ -7,9 +7,10 @@ using UnityEngine;
 namespace SM.Unity;
 
 [CreateAssetMenu(menuName = "SM/Battle/Battle Actor Presentation Catalog", fileName = "BattleActorPresentationCatalog")]
-public sealed class BattleActorPresentationCatalog : ScriptableObject
+public sealed partial class BattleActorPresentationCatalog : ScriptableObject
 {
     public const string ResourcesPath = "_Game/Battle/BattleActorPresentationCatalog";
+    private const float GroundPlaneY = -0.98f;
 
     [SerializeField] private BattleActorWrapper defaultPrimitiveWrapper = null!;
     [SerializeField] private BattleActorWrapper allyDefaultWrapper = null!;
@@ -77,10 +78,18 @@ public sealed class BattleActorPresentationCatalog : ScriptableObject
         }
 
         var loaded = Resources.Load<BattleActorPresentationCatalog>(ResourcesPath);
-        if (loaded != null)
+        if (loaded != null && loaded.HasAnyWrapper())
         {
             return loaded;
         }
+
+#if UNITY_EDITOR
+        var editorP09Catalog = TryCreateEditorP09FallbackCatalog();
+        if (editorP09Catalog != null)
+        {
+            return editorP09Catalog;
+        }
+#endif
 
         return CreateRuntimeFallbackCatalog();
     }
@@ -130,6 +139,15 @@ public sealed class BattleActorPresentationCatalog : ScriptableObject
         return catalog;
     }
 
+    private bool HasAnyWrapper()
+    {
+        return defaultPrimitiveWrapper != null
+               || allyDefaultWrapper != null
+               || enemyDefaultWrapper != null
+               || (characterOverrides != null && characterOverrides.Any(entry => entry.WrapperPrefab != null))
+               || (archetypeOverrides != null && archetypeOverrides.Any(entry => entry.WrapperPrefab != null));
+    }
+
     private static BattleActorWrapper CreateRuntimePrimitiveWrapperTemplate()
     {
         var root = new GameObject("BattleActor_PrimitiveWrapper_RuntimeTemplate");
@@ -139,6 +157,7 @@ public sealed class BattleActorPresentationCatalog : ScriptableObject
         root.AddComponent<BattleActorView>();
         var adapter = root.AddComponent<BattlePrimitiveActorVisualAdapter>();
         root.AddComponent<BattleAnimationEventBridge>();
+        root.AddComponent<BattleHumanoidAnimationDriver>();
         root.AddComponent<BattleActorVfxSurface>();
         root.AddComponent<BattleActorAudioSurface>();
 
@@ -146,7 +165,7 @@ public sealed class BattleActorPresentationCatalog : ScriptableObject
         var center = CreateChild(socketRig, "Center");
         center.localPosition = new Vector3(0f, 0.10f, 0f);
         var feet = CreateChild(socketRig, "Feet");
-        feet.localPosition = new Vector3(0f, -0.98f, 0f);
+        feet.localPosition = new Vector3(0f, GroundPlaneY, 0f);
         var telegraph = CreateChild(socketRig, "Telegraph");
         telegraph.localPosition = feet.localPosition;
         var cameraFocus = CreateChild(socketRig, "CameraFocus");
@@ -168,6 +187,7 @@ public sealed class BattleActorPresentationCatalog : ScriptableObject
             null,
             cameraFocus);
         adapter.ConfigureAuthoring(visualRoot, null, null, true);
+        root.SetActive(false);
         return wrapper;
     }
 

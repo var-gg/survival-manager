@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 4a79ac708dfba49f1b61351e7ecce6a4
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/UI/WeaponsList.prefab
+  uploadId: 843050

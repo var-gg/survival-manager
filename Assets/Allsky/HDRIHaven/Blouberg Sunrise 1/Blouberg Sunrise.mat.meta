@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: f4e2dfe7b841a4bf3b478d242e7e0f4a
+labels:
+- AllSky
+- Skies
+- Sky
+- Skybox
+timeCreated: 1544547131
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: -1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/HDRIHaven/Blouberg Sunrise 1/Blouberg Sunrise.mat
+  uploadId: 679124

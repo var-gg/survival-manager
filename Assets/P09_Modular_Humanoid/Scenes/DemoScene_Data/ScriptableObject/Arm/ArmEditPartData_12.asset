@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a7bfcb0fa34de594870c3458d40b4b, type: 3}
+  m_Name: ArmEditPartData_12
+  m_EditorClassIdentifier: 
+  _equipmentGroupId: 12
+  _contentId: 12
+  _displayName: Armor_012_Arm
+  _meshName: '{0}_Armor_012_Arm'
+  _femaleIcon: {fileID: 21300000, guid: 288b01a96da79074d82a491cd9b5b127, type: 3}
+  _maleIcon: {fileID: 21300000, guid: b0b7f82b5b9547c49aeca49703fd9e3e, type: 3}

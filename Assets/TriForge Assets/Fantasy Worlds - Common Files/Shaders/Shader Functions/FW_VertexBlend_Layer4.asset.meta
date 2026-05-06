@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 7ad328042df9a0f40bc6bdaa10c27df9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 342958
+  packageName: Fantasy Worlds - Forests, Meadows & Dungeons - Stylized 3D Environment
+  packageVersion: 1.0.1
+  assetPath: Assets/TriForge Assets/Fantasy Worlds - Common Files/Shaders/Shader
+    Functions/FW_VertexBlend_Layer4.asset
+  uploadId: 851492

@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: b4d5d1f859ed49f99be42e5837de4924
+timeCreated: 1729937638
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Scripts/Data/FaceEmotionData.cs
+  uploadId: 843050

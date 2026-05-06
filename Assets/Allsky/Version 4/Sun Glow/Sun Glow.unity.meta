@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: f96e03a20b0cc48eeb225c3810236d9a
+labels:
+- AllSky
+- Skies
+- Sky
+- Skybox
+timeCreated: 1544549506
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Version 4/Sun Glow/Sun Glow.unity
+  uploadId: 679124

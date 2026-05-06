@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a7bfcb0fa34de594870c3458d40b4b, type: 3}
+  m_Name: LegEditPartData_03
+  m_EditorClassIdentifier: 
+  _equipmentGroupId: 3
+  _contentId: 3
+  _displayName: Armor_003_Leg
+  _meshName: '{0}_Armor_003_Leg'
+  _femaleIcon: {fileID: 21300000, guid: c92318a1b0f855b4bb2e1825d2be6620, type: 3}
+  _maleIcon: {fileID: 21300000, guid: 74c6ee40af8dff14898fe7e023fe6f1f, type: 3}

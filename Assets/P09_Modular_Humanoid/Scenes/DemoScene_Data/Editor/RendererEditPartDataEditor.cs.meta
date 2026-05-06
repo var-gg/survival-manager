@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 2d3953b52e654b458d576db9c13aa5dd
+timeCreated: 1728897517
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Editor/RendererEditPartDataEditor.cs
+  uploadId: 843050

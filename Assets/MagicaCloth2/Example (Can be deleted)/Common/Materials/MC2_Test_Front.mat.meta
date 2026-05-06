@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e668c51d0e0125e4dbae8a37cb0d45e4
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 242307
+  packageName: Magica Cloth 2
+  packageVersion: 2.18.1
+  assetPath: Assets/MagicaCloth2/Example (Can be deleted)/Common/Materials/MC2_Test_Front.mat
+  uploadId: 893596

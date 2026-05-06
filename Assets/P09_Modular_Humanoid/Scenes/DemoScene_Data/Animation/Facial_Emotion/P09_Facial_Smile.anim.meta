@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 886adfc75243776418368438dd78c2c5
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Animation/Facial_Emotion/P09_Facial_Smile.anim
+  uploadId: 843050

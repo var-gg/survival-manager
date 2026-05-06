@@ -19,6 +19,8 @@
 현재 포함:
 
 - `coplay-client-config.example.json`: HTTP localhost 연결 예시 (`http://localhost:43157/mcp`)
+- `coplay-connection-runbook.md`: CoplayDev Unity MCP 연결과 Codex 복구 절차
+- `check-unity-mcp.ps1`: MCP health endpoint 점검 스크립트
 
 현재 repo의 CoplayDev MCP embedded package는 `9.6.8`이며, 기본 HTTP Local base URL은 `http://127.0.0.1:43157`로 맞춘다.
 
@@ -32,5 +34,6 @@
 ## 관련 문서
 
 - `docs/05_setup/community-mcp-setup.md`
+- `docs/05_setup/codex-mcp-setup.md`
 - `docs/05_setup/mcp-safety-rules.md`
 - `docs/06_production/mcp-usage-checklist.md`

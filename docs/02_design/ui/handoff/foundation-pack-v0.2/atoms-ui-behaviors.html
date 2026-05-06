@@ -1,0 +1,1903 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Atoms · UI Behaviors — Tooltip · Modal · ProgressBar · Status pill · Toast · Confirm</title>
+<meta name="viewport" content="width=1680" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Shippori+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+/* === TOKENS — Style Guide v0.2 ============================ */
+:root {
+  --bg-0:#0c1126; --bg-1:#141a35; --bg-2:#1c2243; --bg-3:#262d54;
+  --line-1:#2c3568; --line-2:#3b467f;
+  --vellum:#f5ead0; --vellum-2:#e2d4ad;
+
+  --gold-100:#ffe9a8; --gold-200:#f5d68a; --gold-300:#e6b751;
+  --gold-400:#c8932a; --gold-500:#8a6418;
+
+  --ink-1:#f5ead0; --ink-2:#d8c799; --ink-3:#9d8a5e; --ink-4:#6b5d3f;
+
+  --fam-beastkin:#7a8a52; --fam-beastkin-deep:#2e3818; --fam-beastkin-glow:#b9c980;
+  --fam-vanguard:#4a72b8; --fam-vanguard-deep:#1a2a52; --fam-vanguard-glow:#7fa3e0;
+  --fam-striker:#b6334a;  --fam-striker-deep:#5a0e1c;  --fam-striker-glow:#f08a3c;
+  --fam-ranger:#b58a36;   --fam-ranger-deep:#4d3a14;   --fam-ranger-glow:#e6c878;
+  --fam-mystic:#8a5cb8;   --fam-mystic-deep:#3a1f5a;   --fam-mystic-glow:#d4b4f0;
+
+  --rare-rare:#5b8ed1; --rare-rare-deep:#1f3b66; --rare-rare-glow:#9bbeed;
+  --rare-epic:#b561d6; --rare-epic-2:#f08a3c; --rare-epic-deep:#4a2168;
+
+  /* state colors */
+  --state-safe:#6dbf78;  --state-safe-deep:#2c5e34;
+  --state-warn:#e8a93b;  --state-warn-deep:#7a5818;
+  --state-danger:#e25548; --state-danger-deep:#7a2018;
+  --state-info:#7fa3e0;  --state-info-deep:#1a2a52;
+  --state-ko:#8a8a98;    --state-ko-deep:#3a3a48;
+  --state-injured:#b6334a;
+  --state-locked:#6b6e85;
+
+  /* HP gradient (v0.2 정식 추출) */
+  --hp-light:#f08a3c;  --hp-mid:#b6334a;  --hp-deep:#5a0e1c;
+
+  --f-ko:"Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;
+  --f-en-display:"Cinzel","Trajan Pro",serif;
+  --f-en-italic:"Cormorant Garamond","Playfair Display",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(1300px 800px at 18% -10%, #2a2050 0%, transparent 55%),
+    radial-gradient(1100px 700px at 95% 25%, #4a1a2e 0%, transparent 55%),
+    radial-gradient(900px 700px at 50% 110%, #1a2050 0%, transparent 60%),
+    var(--bg-0);
+  color:var(--ink-1);
+  font-family:var(--f-ko);
+  min-height:100vh;
+  position:relative;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 60% 40%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(245,214,138,.03) 0, transparent 1px);
+  background-size:7px 7px,11px 11px,13px 13px;
+}
+.canvas{ position:relative; z-index:1; max-width:1680px; margin:0 auto; padding:48px 40px 96px; }
+
+/* ============== HEADER ====================================== */
+.doc-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:var(--s-6); padding-bottom:var(--s-5); margin-bottom:var(--s-7); position:relative; }
+.doc-head::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:linear-gradient(to right, transparent 0%, var(--gold-400) 8%, var(--gold-200) 50%, var(--gold-400) 92%, transparent 100%); }
+.doc-head::before{ content:""; position:absolute; left:0; right:0; bottom:-3px; height:1px; background:linear-gradient(to right, transparent 0%, var(--gold-500) 30%, var(--gold-500) 70%, transparent 100%); opacity:.6; }
+.eyebrow{ font-family:var(--f-mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold-300); }
+.doc-title{ font-family:var(--f-en-display); font-weight:700; font-size:42px; letter-spacing:.06em; margin:6px 0 4px; background:linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 60%, var(--gold-500) 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 1px 0 rgba(0,0,0,.4); }
+.doc-title .flourish{ display:inline-flex; gap:4px; vertical-align:6px; margin:0 14px; }
+.doc-title .flourish i{ width:5px; height:5px; background:var(--gold-300); transform:rotate(45deg); display:inline-block; -webkit-text-fill-color:initial; }
+.doc-title .flourish i:nth-child(2){ width:8px; height:8px; background:var(--gold-200); border:1px solid var(--gold-500); }
+.doc-subtitle{ font-family:var(--f-en-italic); font-style:italic; font-weight:500; font-size:16px; color:var(--ink-2); margin-bottom:4px; }
+.doc-subtitle-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); max-width:64ch; margin:0; line-height:1.6; }
+.doc-meta{ text-align:right; font-family:var(--f-mono); font-size:11px; color:var(--ink-3); letter-spacing:.06em; }
+.doc-meta b{ color:var(--gold-200); font-weight:500; }
+
+/* section header */
+section{ margin-bottom:var(--s-7); }
+.section-head{ display:flex; align-items:baseline; gap:var(--s-4); margin-bottom:var(--s-5); }
+.section-num{ font-family:var(--f-mono); font-size:11px; color:var(--gold-400); letter-spacing:.18em; }
+.section-title{ font-family:var(--f-en-display); font-size:22px; font-weight:600; letter-spacing:.06em; color:var(--gold-200); margin:0; }
+.section-rule{ height:1px; background:linear-gradient(to right, var(--gold-400) 0%, transparent 80%); flex:1; margin-bottom:4px; }
+.section-title-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); font-weight:500; margin-left:auto; }
+.section-title-ko::before{ content:"—  "; color:var(--gold-500); }
+
+/* atom cell — common scaffold */
+.cells{ display:grid; gap:var(--s-5); }
+.cell{
+  position:relative;
+  background:linear-gradient(180deg, rgba(28,34,67,.55), rgba(14,18,38,.7));
+  border:1px solid var(--line-1);
+  padding:var(--s-5) var(--s-5) var(--s-4);
+}
+.cell::before, .cell::after{ content:""; position:absolute; width:8px; height:8px; border:1px solid var(--gold-300); }
+.cell::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.cell::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.cell-head{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--s-3); margin-bottom:var(--s-4); padding-bottom:8px; border-bottom:1px dashed var(--line-2); }
+.cell-num{ font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em; color:var(--gold-400); text-transform:uppercase; }
+.cell-title{ font-family:var(--f-en-display); font-size:13px; font-weight:600; letter-spacing:.16em; color:var(--gold-200); margin:0; text-transform:uppercase; }
+.cell-title .ko{ font-family:var(--f-ko); font-size:11px; color:var(--ink-3); font-weight:500; letter-spacing:.04em; text-transform:none; margin-left:6px; }
+.cell-meta{ font-family:var(--f-mono); font-size:9.5px; color:var(--ink-3); letter-spacing:.14em; }
+.cell-meta b{ color:var(--gold-200); font-weight:500; }
+.cell-desc{ font-family:var(--f-ko); font-size:11.5px; color:var(--ink-3); line-height:1.6; margin:0 0 var(--s-3); }
+.cell-desc b{ color:var(--gold-200); font-weight:600; }
+.cell-stage{
+  background:
+    radial-gradient(70% 60% at 50% 30%, rgba(245,214,138,.05), transparent 70%),
+    linear-gradient(180deg, #0a0d20 0%, #060814 100%);
+  border:1px solid var(--line-1);
+  padding:var(--s-5);
+  position:relative;
+  min-height:220px;
+}
+.cell-stage::before{ content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(245,214,138,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,214,138,.04) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+.stage-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:var(--s-5); align-items:start; position:relative; }
+.stage-item{ display:flex; flex-direction:column; gap:8px; align-items:center; min-height:140px; justify-content:center; position:relative; }
+.stage-item-cap{ font-family:var(--f-mono); font-size:9px; letter-spacing:.18em; color:var(--ink-3); text-align:center; text-transform:uppercase; padding-top:6px; border-top:1px dashed var(--line-2); width:100%; }
+.stage-item-cap b{ color:var(--gold-300); font-weight:500; }
+.stage-item-cap .ko{ font-family:var(--f-ko); font-size:10px; color:var(--ink-3); font-weight:500; letter-spacing:.04em; display:block; margin-top:3px; text-transform:none; }
+
+/* "anchor" — small button-y target for tooltips */
+.anchor-btn{
+  position:relative; padding:8px 14px;
+  font-family:var(--f-ko); font-size:12px; font-weight:700;
+  background:linear-gradient(180deg, rgba(245,214,138,.08), rgba(0,0,0,.25));
+  color:var(--vellum);
+  border:none; cursor:pointer;
+}
+.anchor-btn::before{ content:""; position:absolute; inset:0; border:1px solid var(--gold-500); pointer-events:none; }
+.anchor-btn::after{ content:""; position:absolute; inset:3px; border:1px solid rgba(245,214,138,.35); pointer-events:none; }
+.anchor-btn .cc{ position:absolute; width:6px; height:6px; pointer-events:none; border:1px solid var(--gold-300); }
+.anchor-btn .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.anchor-btn .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.anchor-btn .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.anchor-btn .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+/* ============== TOOLTIP ATOM ============================ */
+.tt{
+  position:relative;
+  display:inline-block;
+  font-family:var(--f-ko);
+  background:linear-gradient(180deg, #1a1f3e 0%, #0e1226 100%);
+  color:var(--vellum);
+  padding:8px 12px;
+  font-size:11.5px;
+  line-height:1.45;
+  letter-spacing:.01em;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.55)) drop-shadow(0 0 6px rgba(245,214,138,.18));
+  max-width:240px;
+  z-index:5;
+}
+.tt::before{ content:""; position:absolute; inset:0; border:1px solid var(--gold-500); pointer-events:none; }
+.tt::after{ content:""; position:absolute; inset:3px; border:1px solid rgba(245,214,138,.3); pointer-events:none; }
+.tt > .cc{ position:absolute; width:6px; height:6px; pointer-events:none; border:1px solid var(--gold-300); z-index:2; }
+.tt > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.tt > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.tt > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.tt > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+/* arrows — diamond pointer */
+.tt > .arrow{
+  position:absolute;
+  width:9px; height:9px;
+  background:#1a1f3e;
+  border-right:1px solid var(--gold-500);
+  border-bottom:1px solid var(--gold-500);
+  z-index:0;
+}
+.tt.t > .arrow{ bottom:-5px; left:50%; transform:translateX(-50%) rotate(45deg); }
+.tt.b > .arrow{ top:-5px; left:50%; transform:translateX(-50%) rotate(225deg); }
+.tt.l > .arrow{ right:-5px; top:50%; transform:translateY(-50%) rotate(-45deg); }
+.tt.r > .arrow{ left:-5px; top:50%; transform:translateY(-50%) rotate(135deg); }
+
+/* default — single line */
+.tt.default{ font-weight:500; color:var(--vellum-2); }
+
+/* rich — header + body */
+.tt.rich{ padding:0; max-width:280px; }
+.tt.rich .tt-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 12px;
+  background:linear-gradient(180deg, rgba(245,214,138,.1), rgba(0,0,0,.35));
+  border-bottom:1px solid rgba(245,214,138,.25);
+  font-family:var(--f-en-display); font-size:11px;
+  letter-spacing:.22em; color:var(--gold-200);
+  font-weight:600; text-transform:uppercase;
+}
+.tt.rich .tt-head .ko{ font-family:var(--f-ko); font-size:11px; color:var(--ink-2); letter-spacing:.04em; text-transform:none; font-weight:600; }
+.tt.rich .tt-body{ padding:8px 12px; }
+.tt.rich .tt-body p{ margin:0 0 4px; font-size:11px; line-height:1.5; color:var(--ink-2); }
+.tt.rich .tt-body p:last-child{ margin-bottom:0; }
+.tt.rich .tt-body b{ color:var(--gold-200); font-weight:600; }
+.tt.rich .tt-body u{ text-decoration:none; color:var(--state-safe); font-weight:600; }
+.tt.rich .tt-body em{ font-style:normal; color:var(--state-danger); font-weight:600; }
+.tt.rich .tt-foot{
+  font-family:var(--f-mono); font-size:9px;
+  letter-spacing:.14em; color:var(--ink-3);
+  padding:5px 12px 7px;
+  border-top:1px dashed var(--line-2);
+  display:flex; gap:8px; align-items:center;
+}
+.tt.rich .tt-foot kbd{
+  font-family:var(--f-mono); font-size:9px;
+  background:rgba(0,0,0,.6); border:1px solid var(--line-2);
+  color:var(--gold-200);
+  padding:1px 4px;
+}
+
+/* statusEffect — icon + tag + short */
+.tt.status{ padding:8px 10px; max-width:220px; --eff-c:var(--state-safe); --eff-c-deep:var(--state-safe-deep); }
+.tt.status::after{ border-color:var(--eff-c); opacity:.55; }
+.tt.status > .cc{ border-color:var(--eff-c); }
+.tt.status .row{ display:flex; align-items:center; gap:8px; }
+.tt.status .ico{
+  flex-shrink:0; width:26px; height:26px;
+  display:grid; place-items:center;
+  background:linear-gradient(180deg, var(--eff-c) 0%, var(--eff-c-deep) 100%);
+  border:1px solid var(--gold-500);
+  color:#fff8e0;
+  position:relative;
+}
+.tt.status .ico::after{ content:""; position:absolute; inset:2px; border:1px solid rgba(245,214,138,.4); pointer-events:none; }
+.tt.status .ico svg{ width:14px; height:14px; }
+.tt.status .nm{ font-family:var(--f-ko); font-size:11.5px; font-weight:700; color:var(--vellum); line-height:1.1; }
+.tt.status .nm .en{ display:block; font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3); margin-top:2px; font-weight:500; text-transform:uppercase; }
+.tt.status .dur{ margin-left:auto; font-family:var(--f-mono); font-size:10px; color:var(--gold-200); letter-spacing:.04em; padding-left:8px; border-left:1px solid var(--line-2); align-self:stretch; display:flex; align-items:center; }
+.tt.status .desc{ margin:6px 0 0; padding-top:6px; border-top:1px dashed var(--line-2); font-size:10.5px; line-height:1.45; color:var(--ink-2); }
+.tt.status .desc b{ color:var(--gold-200); font-weight:600; }
+.tt.status.buff{ --eff-c:var(--state-safe); --eff-c-deep:var(--state-safe-deep); }
+.tt.status.buff > .arrow{ border-right-color:var(--state-safe); border-bottom-color:var(--state-safe); }
+.tt.status.debuff{ --eff-c:var(--state-danger); --eff-c-deep:var(--state-danger-deep); }
+.tt.status.debuff > .arrow{ border-right-color:var(--state-danger); border-bottom-color:var(--state-danger); }
+
+/* ============== STATUS PILL ATOM ======================= */
+.spill{
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:var(--f-ko); font-size:10px; font-weight:800;
+  letter-spacing:.04em;
+  padding:3px 8px 3px 6px;
+  position:relative;
+  background:linear-gradient(180deg, var(--pill-deep, rgba(0,0,0,.6)), rgba(0,0,0,.5));
+  border:1px solid var(--pill-c, var(--gold-500));
+  color:var(--pill-c-light, var(--vellum));
+  line-height:1;
+  white-space:nowrap;
+  text-transform:uppercase;
+}
+.spill::before, .spill::after{
+  content:""; position:absolute; width:4px; height:4px;
+  border:1px solid var(--pill-c-light, var(--gold-300));
+}
+.spill::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.spill::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.spill .glyph{ width:11px; height:11px; flex-shrink:0; }
+.spill .en{ font-family:var(--f-en-display); font-size:9px; letter-spacing:.18em; font-weight:700; }
+.spill .ko-tag{ font-family:var(--f-ko); font-size:9.5px; padding-left:5px; margin-left:2px; border-left:1px solid currentColor; opacity:.75; font-weight:600; letter-spacing:0; text-transform:none; }
+.spill .dur{ margin-left:3px; padding-left:5px; border-left:1px solid currentColor; opacity:.85; font-family:var(--f-mono); font-size:9.5px; letter-spacing:.04em; font-weight:600; }
+
+.spill.down{ --pill-c:var(--state-info); --pill-c-light:var(--state-info); --pill-deep:rgba(26,42,82,.65); color:var(--rare-rare-glow); }
+.spill.guarding{ --pill-c:var(--gold-300); --pill-c-light:var(--gold-200); --pill-deep:rgba(245,214,138,.18); color:var(--gold-100); }
+.spill.windup{ --pill-c:var(--state-warn); --pill-c-light:var(--state-warn); --pill-deep:rgba(232,169,59,.2); color:var(--state-warn); }
+.spill.recovering{ --pill-c:var(--state-safe); --pill-c-light:var(--state-safe); --pill-deep:rgba(109,191,120,.15); color:var(--state-safe); }
+.spill.ko{ --pill-c:var(--state-ko); --pill-c-light:var(--state-ko); --pill-deep:rgba(58,58,72,.7); color:#cfcfd8; filter:saturate(.6); }
+.spill.injured{ --pill-c:var(--state-injured); --pill-c-light:var(--fam-striker-glow); --pill-deep:rgba(182,51,74,.2); color:var(--fam-striker-glow); }
+
+/* family-tint border modifier */
+.spill.fam-striker{ --pill-c:var(--fam-striker); }
+.spill.fam-vanguard{ --pill-c:var(--fam-vanguard); }
+.spill.fam-mystic{ --pill-c:var(--fam-mystic); }
+.spill.fam-beastkin{ --pill-c:var(--fam-beastkin); }
+.spill.fam-ranger{ --pill-c:var(--fam-ranger); }
+
+/* portrait sample for status pills */
+.portrait-sample{
+  position:relative;
+  width:160px; height:200px;
+  --frame-fam:var(--fam-striker);
+  --frame-fam-deep:var(--fam-striker-deep);
+  --frame-fam-glow:var(--fam-striker-glow);
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, var(--frame-fam-deep) 0%, transparent 70%),
+    radial-gradient(ellipse 100% 100% at 50% 100%, #0a0d20 0%, #060814 80%);
+  border:1px solid var(--gold-500);
+  overflow:hidden;
+}
+.portrait-sample::before{ content:""; position:absolute; inset:3px; border:1px solid rgba(230,183,81,.25); pointer-events:none; }
+.portrait-sample::after{ content:""; position:absolute; inset:0; box-shadow:inset 0 0 30px rgba(0,0,0,.7); pointer-events:none; }
+.portrait-sample .ribb{ position:absolute; top:3px; left:3px; right:3px; height:3px; background:linear-gradient(to right, transparent, var(--frame-fam) 30%, var(--frame-fam-glow) 50%, var(--frame-fam) 70%, transparent); box-shadow:0 0 6px var(--frame-fam-glow); }
+.portrait-sample svg.silh{ position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:140px; }
+.portrait-sample .pill-bar{
+  position:absolute; bottom:14px; left:8px; right:8px;
+  display:flex; flex-wrap:wrap; gap:4px;
+  z-index:2;
+}
+.portrait-sample .nameplate{
+  position:absolute; bottom:0; left:0; right:0;
+  padding:2px 6px;
+  background:linear-gradient(180deg, transparent, rgba(0,0,0,.85));
+  font-family:var(--f-mono); font-size:9px;
+  letter-spacing:.12em; color:var(--gold-200);
+  text-align:center;
+}
+
+/* ============== PROGRESS BAR ATOM ====================== */
+/* 공통 */
+.bar{
+  position:relative;
+  background:linear-gradient(180deg, rgba(0,0,0,.7), rgba(0,0,0,.4));
+  border:1px solid var(--gold-500);
+  overflow:hidden;
+}
+.bar::before{ content:""; position:absolute; inset:2px; border:1px solid rgba(245,214,138,.18); pointer-events:none; z-index:1; }
+.bar .fill{
+  position:absolute; top:0; bottom:0; left:0;
+  background:linear-gradient(180deg, var(--bar-light) 0%, var(--bar-mid, var(--bar-light)) 50%, var(--bar-deep) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -2px 6px rgba(0,0,0,.4), 0 0 6px var(--bar-glow, transparent);
+  transition: width .4s ease;
+}
+.bar .tick{
+  position:absolute; top:0; bottom:0; width:1px;
+  background:rgba(245,214,138,.45);
+  z-index:2;
+  pointer-events:none;
+}
+.bar .tick.major{ background:var(--gold-200); box-shadow:0 0 4px var(--gold-200); }
+
+/* HP bar — large, 25% tick + amber→wine grad */
+.bar-hp{
+  --bar-light: var(--hp-light);
+  --bar-mid:   var(--hp-mid);
+  --bar-deep:  var(--hp-deep);
+  --bar-glow:  rgba(240,138,60,.4);
+  height:18px;
+}
+.bar-hp.s-warn{ --bar-light:#e8a93b; --bar-mid:#c8932a; --bar-deep:#5a3e10; --bar-glow:rgba(232,169,59,.5); }
+.bar-hp.s-danger{ --bar-light:#e25548; --bar-mid:#7a2018; --bar-deep:#3a0a08; --bar-glow:rgba(226,85,72,.55); animation:dangerPulse 1.4s ease-in-out infinite; }
+@keyframes dangerPulse{ 0%,100%{ filter:brightness(1); } 50%{ filter:brightness(1.18); } }
+
+.bar-hp .meta{
+  position:absolute; left:8px; top:50%; transform:translateY(-50%);
+  z-index:3; font-family:var(--f-mono); font-size:10.5px;
+  font-weight:600; letter-spacing:.04em;
+  color:#fff8e0;
+  text-shadow:0 1px 0 rgba(0,0,0,.7), 0 0 4px rgba(0,0,0,.6);
+}
+.bar-hp .meta-r{
+  position:absolute; right:8px; top:50%; transform:translateY(-50%);
+  z-index:3; font-family:var(--f-mono); font-size:10.5px;
+  font-weight:500; color:rgba(255,248,224,.75);
+  letter-spacing:.04em;
+  text-shadow:0 1px 0 rgba(0,0,0,.7);
+}
+
+/* windup — medium, ring + line composite */
+.windup-row{ display:flex; align-items:center; gap:14px; }
+.windup-ring{
+  position:relative;
+  width:46px; height:46px;
+  flex-shrink:0;
+}
+.windup-ring svg{ position:absolute; inset:0; transform:rotate(-90deg); }
+.windup-ring .ring-bg{ fill:none; stroke:rgba(0,0,0,.65); stroke-width:5; }
+.windup-ring .ring-fr{ fill:none; stroke:rgba(245,214,138,.35); stroke-width:1; }
+.windup-ring .ring{
+  fill:none;
+  stroke:var(--ring-c, var(--state-warn));
+  stroke-width:5;
+  stroke-linecap:butt;
+  filter:drop-shadow(0 0 4px var(--ring-c-glow, rgba(232,169,59,.6)));
+}
+.windup-ring .num{
+  position:absolute; inset:0; display:grid; place-items:center;
+  font-family:var(--f-mono); font-size:13px;
+  color:var(--gold-100); font-weight:600;
+  letter-spacing:.04em;
+}
+.windup-line{
+  flex:1;
+}
+.windup-line .lbl{
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin-bottom:4px;
+  font-family:var(--f-mono); font-size:9.5px;
+  letter-spacing:.14em; color:var(--ink-3);
+  text-transform:uppercase;
+}
+.windup-line .lbl b{ color:var(--gold-200); font-weight:500; }
+.windup-line .lbl .ko{ font-family:var(--f-ko); color:var(--state-warn); font-weight:600; letter-spacing:0; text-transform:none; font-size:10.5px; }
+.bar-windup{
+  --bar-light: var(--state-warn);
+  --bar-mid:   #c8932a;
+  --bar-deep:  var(--state-warn-deep);
+  --bar-glow:  rgba(232,169,59,.45);
+  height:8px;
+}
+.bar-windup .fill{ animation:windupShine 2s linear infinite; background-size:200% 100%, 100% 100%; }
+@keyframes windupShine{ 0%{ box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -2px 6px rgba(0,0,0,.4), 0 0 6px rgba(232,169,59,.45); } 50%{ box-shadow: inset 0 1px 0 rgba(255,255,255,.28), inset 0 -2px 6px rgba(0,0,0,.4), 0 0 12px rgba(232,169,59,.7); } 100%{ box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -2px 6px rgba(0,0,0,.4), 0 0 6px rgba(232,169,59,.45); } }
+
+/* breakpoint — split tick at family-defined points */
+.bar-bp{
+  --bar-light: var(--frame-fam, var(--fam-mystic));
+  --bar-mid: var(--frame-fam-deep, var(--fam-mystic-deep));
+  --bar-deep: #0e1226;
+  --bar-glow: rgba(212,180,240,.4);
+  height:12px;
+}
+.bar-bp .seg{
+  position:absolute; top:0; bottom:0;
+  background:linear-gradient(180deg, var(--frame-fam-glow), var(--frame-fam-deep));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), inset 0 -2px 6px rgba(0,0,0,.4);
+}
+.bar-bp .bp-tick{
+  position:absolute; top:-3px; bottom:-3px; width:1.5px;
+  background:var(--gold-200); box-shadow:0 0 6px var(--gold-200);
+  z-index:3;
+}
+.bar-bp .bp-tick i{
+  position:absolute; left:50%; top:-7px;
+  width:8px; height:8px; transform:translateX(-50%) rotate(45deg);
+  background:linear-gradient(135deg, var(--gold-100), var(--gold-300));
+  border:1px solid var(--gold-500);
+  box-shadow:0 0 5px var(--gold-200);
+}
+.bar-bp-meta{
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin-top:8px;
+  font-family:var(--f-mono); font-size:9.5px;
+  color:var(--ink-3); letter-spacing:.14em;
+}
+.bar-bp-meta b{ color:var(--gold-200); font-weight:500; }
+.bar-bp-meta .stage{ display:inline-flex; gap:3px; align-items:center; padding:2px 6px; border:1px solid var(--gold-500); color:var(--gold-200); }
+.bar-bp-meta .stage.active{ background:rgba(245,214,138,.15); color:var(--gold-100); }
+
+/* ============== MODAL ATOM ============================= */
+.modal-stage{
+  position:relative;
+  background:
+    linear-gradient(180deg, #1a1f3e 0%, #0e1226 60%, #060814 100%);
+  border:1px solid var(--line-1);
+  height:380px;
+  overflow:hidden;
+  isolation:isolate;
+}
+.modal-stage .blur-bg{
+  position:absolute; inset:0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(74,114,184,.18), transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(182,51,74,.18), transparent 50%);
+  background-size: 60% 60%;
+}
+.modal-stage .blur-bg::before{
+  content:""; position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(245,214,138,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,214,138,.04) 1px, transparent 1px);
+  background-size:24px 24px;
+  filter:blur(2px);
+}
+.modal-stage .stage-cap{
+  position:absolute; top:8px; left:8px;
+  font-family:var(--f-mono); font-size:9.5px;
+  letter-spacing:.18em; color:var(--ink-3);
+  text-transform:uppercase;
+  z-index:1;
+}
+
+.scrim{
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,.65), rgba(0,0,0,.85));
+  backdrop-filter:blur(2px);
+}
+
+/* centered overlay modal */
+.modal{
+  position:absolute;
+  background:linear-gradient(180deg, #1c2243 0%, #0e1226 100%);
+  z-index:5;
+  filter:drop-shadow(0 16px 50px rgba(0,0,0,.7));
+}
+.modal::before{ content:""; position:absolute; inset:0; border:1px solid var(--gold-500); pointer-events:none; }
+.modal::after{ content:""; position:absolute; inset:5px; border:1px solid rgba(245,214,138,.4); pointer-events:none; }
+.modal > .cc{ position:absolute; width:14px; height:14px; pointer-events:none; z-index:3; color:var(--gold-300); filter:drop-shadow(0 0 3px rgba(245,214,138,.4)); }
+.modal > .cc.tl{ top:-3px; left:-3px; }
+.modal > .cc.tr{ top:-3px; right:-3px; transform:scaleX(-1); }
+.modal > .cc.bl{ bottom:-3px; left:-3px; transform:scaleY(-1); }
+.modal > .cc.br{ bottom:-3px; right:-3px; transform:scale(-1,-1); }
+.modal-rib{
+  position:absolute; top:5px; left:5px; right:5px;
+  height:3px;
+  background:linear-gradient(to right, transparent, var(--gold-400) 20%, var(--gold-200) 50%, var(--gold-400) 80%, transparent);
+  box-shadow:0 0 6px var(--gold-300);
+}
+.modal-gem{
+  position:absolute; top:5px; left:50%;
+  transform:translateX(-50%) translateY(-50%) rotate(45deg);
+  width:11px; height:11px;
+  background:linear-gradient(135deg, var(--gold-100), var(--gold-300));
+  border:1px solid var(--gold-500);
+  box-shadow:0 0 8px var(--gold-200), inset 0 0 3px #fff;
+}
+
+.modal.centered{
+  top:50%; left:50%; transform:translate(-50%,-50%);
+}
+.modal.size-sm{ width:320px; }
+.modal.size-md{ width:420px; }
+.modal.size-lg{ width:560px; }
+.modal.size-full{ inset:24px; transform:none; top:24px; left:24px; }
+
+.modal-head{
+  padding:14px 18px 12px 18px;
+  position:relative;
+  border-bottom:1px solid rgba(245,214,138,.22);
+}
+.modal-head .ttl{
+  font-family:var(--f-en-display); font-size:14px;
+  letter-spacing:.22em; color:var(--gold-200);
+  font-weight:700; text-transform:uppercase;
+  margin:0;
+}
+.modal-head .ttl .ko{
+  font-family:var(--f-ko); font-size:12px;
+  color:var(--ink-2); font-weight:700;
+  letter-spacing:.04em; text-transform:none;
+  margin-left:8px; padding-left:8px;
+  border-left:1px solid rgba(245,214,138,.35);
+}
+.modal-head .sub{
+  font-family:var(--f-ko); font-size:11px;
+  color:var(--ink-3); margin-top:3px; line-height:1.5;
+}
+.modal-close{
+  position:absolute; top:10px; right:10px;
+  width:26px; height:26px;
+  background:rgba(0,0,0,.5);
+  border:1px solid var(--gold-500);
+  color:var(--gold-200);
+  display:grid; place-items:center;
+  cursor:pointer; z-index:2;
+}
+.modal-close::before, .modal-close::after{
+  content:""; position:absolute; width:5px; height:5px; border:1px solid var(--gold-300);
+}
+.modal-close::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.modal-close::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.modal-close svg{ width:12px; height:12px; }
+.modal-close:hover{ color:var(--gold-100); background:rgba(245,214,138,.1); }
+/* vine flourish on close hover */
+.modal-close .vine{
+  position:absolute;
+  width:18px; height:18px;
+  pointer-events:none;
+  color:var(--gold-300);
+  opacity:0;
+  transition:opacity .25s;
+}
+.modal-close .vine.l{ left:-22px; top:50%; transform:translateY(-50%) scaleX(-1); }
+.modal-close .vine.r{ right:-22px; top:50%; transform:translateY(-50%); }
+.modal-close:hover .vine{ opacity:.85; }
+
+.modal-body{ padding:14px 18px; font-size:12.5px; color:var(--ink-2); line-height:1.6; }
+.modal-body p{ margin:0 0 8px; }
+.modal-body p:last-child{ margin-bottom:0; }
+.modal-body b{ color:var(--gold-200); font-weight:600; }
+
+.modal-foot{
+  display:flex; gap:8px; justify-content:flex-end;
+  padding:12px 14px;
+  border-top:1px dashed var(--line-2);
+  background:rgba(0,0,0,.25);
+}
+
+/* drawer (right rail) */
+.modal.drawer{ top:0; right:0; bottom:0; width:340px; transform:none; }
+.modal.drawer .modal-rib{ left:5px; right:5px; }
+
+/* bottom sheet (mobile) */
+.bsheet{
+  position:absolute; left:0; right:0; bottom:0;
+  background:linear-gradient(180deg, #1c2243 0%, #0e1226 100%);
+  border-top:1px solid var(--gold-500);
+  z-index:5;
+  filter:drop-shadow(0 -8px 30px rgba(0,0,0,.7));
+}
+.bsheet::after{ content:""; position:absolute; inset:5px 5px 0 5px; border:1px solid rgba(245,214,138,.3); border-bottom:none; pointer-events:none; }
+.bsheet .dragger{
+  position:absolute; top:7px; left:50%; transform:translateX(-50%);
+  width:36px; height:4px;
+  background:linear-gradient(to right, var(--gold-500), var(--gold-300), var(--gold-500));
+  border-radius:99px;
+}
+.bsheet .modal-head{ padding-top:20px; }
+.bsheet .modal-rib{ top:14px; left:5px; right:5px; }
+.bsheet .modal-gem{ top:14px; }
+
+/* ============== TOAST ATOM ============================= */
+.toast{
+  position:relative;
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 14px 10px 12px;
+  background:linear-gradient(180deg, #1a1f3e 0%, #0e1226 100%);
+  border:1px solid var(--toast-c, var(--gold-500));
+  filter:drop-shadow(0 8px 22px rgba(0,0,0,.55)) drop-shadow(0 0 8px var(--toast-glow, rgba(245,214,138,.2)));
+  min-width:280px; max-width:360px;
+}
+.toast::before, .toast::after{ content:""; position:absolute; width:6px; height:6px; border:1px solid var(--toast-c, var(--gold-300)); }
+.toast::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.toast::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.toast .accent{
+  position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:var(--toast-c, var(--gold-300));
+  box-shadow:0 0 8px var(--toast-glow, rgba(245,214,138,.5));
+}
+.toast .ico{
+  width:24px; height:24px; flex-shrink:0;
+  display:grid; place-items:center;
+  background:linear-gradient(180deg, var(--toast-c) 0%, var(--toast-deep) 100%);
+  border:1px solid var(--gold-500);
+  color:#fff8e0;
+  margin-top:1px;
+  position:relative;
+}
+.toast .ico::after{ content:""; position:absolute; inset:2px; border:1px solid rgba(245,214,138,.35); pointer-events:none; }
+.toast .ico svg{ width:13px; height:13px; }
+.toast .body{ flex:1; min-width:0; }
+.toast .ttl{
+  font-family:var(--f-ko); font-size:12px; font-weight:700;
+  color:var(--vellum); margin:0 0 2px; line-height:1.3;
+}
+.toast .ttl .en{
+  font-family:var(--f-mono); font-size:9px;
+  letter-spacing:.18em; color:var(--ink-3);
+  text-transform:uppercase; margin-left:6px; font-weight:500;
+}
+.toast .desc{ font-family:var(--f-ko); font-size:11px; color:var(--ink-2); line-height:1.45; margin:0; }
+.toast .desc b{ color:var(--gold-200); font-weight:600; }
+.toast .x{
+  position:absolute; top:6px; right:6px;
+  width:18px; height:18px;
+  background:transparent; border:none;
+  color:var(--ink-3); cursor:pointer;
+  display:grid; place-items:center;
+}
+.toast .x:hover{ color:var(--gold-200); }
+.toast .x svg{ width:10px; height:10px; }
+/* progress dismiss */
+.toast .timeout{
+  position:absolute; left:0; right:0; bottom:0; height:2px;
+  background:linear-gradient(to right, var(--toast-c), transparent);
+  transform-origin:left;
+}
+
+.toast.info{ --toast-c:var(--state-info); --toast-deep:var(--state-info-deep); --toast-glow:rgba(127,163,224,.35); }
+.toast.warning{ --toast-c:var(--state-warn); --toast-deep:var(--state-warn-deep); --toast-glow:rgba(232,169,59,.4); }
+.toast.success{ --toast-c:var(--state-safe); --toast-deep:var(--state-safe-deep); --toast-glow:rgba(109,191,120,.4); }
+.toast.danger{ --toast-c:var(--state-danger); --toast-deep:var(--state-danger-deep); --toast-glow:rgba(226,85,72,.45); }
+
+/* toast stack — PC top-right */
+.toast-stack-pc{
+  position:absolute; top:40px; right:24px;
+  display:flex; flex-direction:column; gap:10px;
+  z-index:10;
+}
+/* toast banner — Mobile top */
+.toast-banner-mb{
+  position:absolute; top:48px; left:14px; right:14px;
+  z-index:10;
+  display:flex; flex-direction:column; gap:8px;
+}
+.toast-banner-mb .toast{ min-width:0; max-width:none; }
+
+/* persistent indicator */
+.toast.persistent .timeout{ display:none; }
+.toast.persistent::before, .toast.persistent::after{ width:8px; height:8px; }
+.toast.persistent .accent{ width:4px; background:repeating-linear-gradient(45deg, var(--toast-c) 0 4px, transparent 4px 8px); }
+
+/* ============== CONFIRM DIALOG ATOM ============= */
+.confirm{
+  position:relative;
+  background:linear-gradient(180deg, #1c2243 0%, #0e1226 100%);
+  width:380px;
+  filter:drop-shadow(0 16px 60px rgba(0,0,0,.75));
+}
+.confirm::before{ content:""; position:absolute; inset:0; border:1px solid var(--confirm-c, var(--gold-500)); pointer-events:none; }
+.confirm::after{ content:""; position:absolute; inset:5px; border:1px solid var(--confirm-c-light, rgba(245,214,138,.4)); pointer-events:none; }
+.confirm > .cc{ position:absolute; width:14px; height:14px; pointer-events:none; z-index:3; color:var(--confirm-c-light, var(--gold-300)); filter:drop-shadow(0 0 3px var(--confirm-glow, rgba(245,214,138,.4))); }
+.confirm > .cc.tl{ top:-3px; left:-3px; }
+.confirm > .cc.tr{ top:-3px; right:-3px; transform:scaleX(-1); }
+.confirm > .cc.bl{ bottom:-3px; left:-3px; transform:scaleY(-1); }
+.confirm > .cc.br{ bottom:-3px; right:-3px; transform:scale(-1,-1); }
+
+.confirm .rib{
+  position:absolute; top:5px; left:5px; right:5px;
+  height:3px;
+  background:linear-gradient(to right, transparent, var(--confirm-c) 20%, var(--confirm-c-light) 50%, var(--confirm-c) 80%, transparent);
+  box-shadow:0 0 8px var(--confirm-glow);
+}
+.confirm .gem{
+  position:absolute; top:5px; left:50%;
+  transform:translateX(-50%) translateY(-50%) rotate(45deg);
+  width:14px; height:14px;
+  background:linear-gradient(135deg, var(--confirm-c-light), var(--confirm-c));
+  border:1px solid var(--gold-200);
+  box-shadow:0 0 12px var(--confirm-glow), inset 0 0 4px #fff;
+}
+
+.confirm .icon-block{
+  display:flex; justify-content:center;
+  padding:24px 20px 8px;
+}
+.confirm .big-icon{
+  width:54px; height:54px;
+  background:linear-gradient(180deg, var(--confirm-c) 0%, var(--confirm-deep) 100%);
+  border:1px solid var(--gold-300);
+  display:grid; place-items:center;
+  color:#fff8e0;
+  position:relative;
+  filter:drop-shadow(0 0 14px var(--confirm-glow));
+}
+.confirm .big-icon::before, .confirm .big-icon::after{
+  content:""; position:absolute; width:7px; height:7px; border:1px solid var(--gold-200);
+}
+.confirm .big-icon::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.confirm .big-icon::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.confirm .big-icon svg{ width:24px; height:24px; }
+.confirm.destructive .big-icon{ animation:emberPulse 1.6s ease-in-out infinite; }
+@keyframes emberPulse{ 0%,100%{ filter:drop-shadow(0 0 12px var(--confirm-glow)); } 50%{ filter:drop-shadow(0 0 22px var(--confirm-glow)) brightness(1.1); } }
+
+.confirm .body{
+  padding:8px 24px 18px;
+  text-align:center;
+}
+.confirm .ttl{
+  font-family:var(--f-en-display); font-size:14px;
+  letter-spacing:.22em; color:var(--gold-200);
+  font-weight:700; text-transform:uppercase;
+  margin:0 0 4px;
+}
+.confirm .ttl .ko{
+  display:block;
+  font-family:var(--f-ko); font-size:14px;
+  color:var(--vellum); margin-top:6px;
+  letter-spacing:.02em; text-transform:none;
+  font-weight:800;
+}
+.confirm .desc{
+  font-family:var(--f-ko); font-size:11.5px;
+  color:var(--ink-2); line-height:1.6;
+  margin:8px 0 0;
+}
+.confirm .desc b{ color:var(--confirm-c-light); font-weight:700; }
+
+.confirm .foot{
+  display:grid; grid-template-columns:1fr 1fr; gap:8px;
+  padding:12px 14px;
+  border-top:1px dashed var(--line-2);
+  background:rgba(0,0,0,.3);
+}
+
+.confirm.destructive{
+  --confirm-c:var(--state-danger);
+  --confirm-c-light:#f08a3c;
+  --confirm-deep:var(--state-danger-deep);
+  --confirm-glow:rgba(226,85,72,.45);
+}
+.confirm.neutral{
+  --confirm-c:var(--gold-500);
+  --confirm-c-light:var(--gold-200);
+  --confirm-deep:var(--bg-3);
+  --confirm-glow:rgba(245,214,138,.3);
+}
+
+/* ============== BUTTONS — minimal subset ============= */
+.b{
+  position:relative; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  font-family:var(--f-ko); font-weight:700; letter-spacing:.02em;
+  border:0; cursor:pointer; user-select:none;
+  background:transparent; color:var(--vellum);
+  padding:9px 16px; font-size:12px; line-height:1; white-space:nowrap;
+}
+.b .en{ font-family:var(--f-mono); font-size:9px; font-weight:500; letter-spacing:.16em; color:rgba(245,234,208,.7); margin-left:3px; padding-left:7px; border-left:1px solid rgba(245,214,138,.35); text-transform:uppercase; }
+.b .cc{ position:absolute; width:6px; height:6px; pointer-events:none; border:1px solid var(--gold-300); }
+.b .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.b .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.b .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.b .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.b .lbl{ display:inline-flex; gap:6px; align-items:center; }
+
+.b-pri{ background:linear-gradient(180deg, rgba(245,214,138,.08), rgba(0,0,0,.25)), linear-gradient(180deg, var(--fam-striker) 0%, var(--fam-striker-deep) 100%); color:var(--vellum); text-shadow:0 1px 2px rgba(0,0,0,.6); }
+.b-pri::before{ content:""; position:absolute; inset:0; border:1px solid var(--gold-500); pointer-events:none; }
+.b-pri::after{ content:""; position:absolute; inset:3px; border:1px solid var(--gold-300); box-shadow: inset 0 1px 0 rgba(255,233,168,.3), inset 0 -2px 8px rgba(0,0,0,.35); pointer-events:none; }
+.b-pri.danger{ background:linear-gradient(180deg, rgba(245,214,138,.08), rgba(0,0,0,.25)), linear-gradient(180deg, var(--state-danger) 0%, var(--state-danger-deep) 100%); }
+.b-pri.vanguard{ background:linear-gradient(180deg, rgba(245,214,138,.08), rgba(0,0,0,.25)), linear-gradient(180deg, var(--fam-vanguard) 0%, var(--fam-vanguard-deep) 100%); }
+
+.b-sec{ background:linear-gradient(180deg, rgba(245,214,138,.04), rgba(0,0,0,.25)); color:var(--ink-1); }
+.b-sec::before{ content:""; position:absolute; inset:0; border:1px solid var(--gold-500); pointer-events:none; }
+.b-sec::after{ content:""; position:absolute; inset:3px; border:1px solid rgba(245,214,138,.35); pointer-events:none; }
+
+/* ============== MOBILE FRAME ====================== */
+.mobile-wrap{
+  width:380px;
+  border-radius:32px;
+  border:1px solid var(--gold-500);
+  padding:var(--s-2);
+  background:linear-gradient(180deg, rgba(28,34,67,.65), rgba(14,18,38,.85));
+  position:relative;
+}
+.mobile-wrap::after{
+  content:""; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  width:46px; height:5px; background:#000; border-radius:99px; z-index:5;
+}
+.mobile-inner{
+  border-radius:24px;
+  background:linear-gradient(180deg, rgba(28,34,67,.65), rgba(14,18,38,.85));
+  border:1px solid var(--line-1);
+  padding-top:36px;
+  position:relative;
+  overflow:hidden;
+  height:680px;
+}
+.mobile-status{
+  position:absolute; top:0; left:0; right:0; height:36px;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0 28px;
+  font-family:var(--f-mono); font-size:11px; color:var(--vellum); font-weight:600;
+  z-index:3;
+}
+.mobile-bg{
+  position:absolute; inset:36px 0 0 0;
+  background-image:
+    radial-gradient(circle at 30% 30%, rgba(74,114,184,.18), transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(182,51,74,.12), transparent 50%);
+}
+.mobile-bg::before{
+  content:""; position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(245,214,138,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,214,138,.04) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+
+/* foot */
+.doc-foot{ margin-top:var(--s-7); padding-top:var(--s-5); border-top:1px solid var(--gold-500); display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:10.5px; color:var(--ink-3); letter-spacing:.12em; position:relative; }
+.doc-foot::before{ content:""; position:absolute; top:-2px; left:0; right:0; height:1px; background:linear-gradient(to right, transparent, var(--gold-300), transparent); }
+.doc-foot b{ color:var(--gold-200); font-weight:500; }
+
+/* row helpers */
+.row-2{ display:grid; grid-template-columns:1fr 1fr; gap:var(--s-5); }
+.row-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s-5); }
+.spacer-tt{ height:60px; }
+
+</style>
+</head>
+<body>
+
+<main class="canvas">
+
+  <!-- ============== HEADER ====================== -->
+  <header class="doc-head">
+    <div>
+      <div class="eyebrow">— ATOMS · UI BEHAVIOR LIBRARY · BUNDLE 2 —</div>
+      <h1 class="doc-title">
+        Tooltip · Modal
+        <span class="flourish"><i></i><i></i><i></i></span>
+        ProgressBar · Pill · Toast · Confirm
+      </h1>
+      <div class="doc-subtitle">Six behavior atoms — quiet, vellum, jewel-dot.</div>
+      <p class="doc-subtitle-ko">
+        UI 동작에 자주 쓰이는 atom 6개 — 상호작용·피드백 레이어 전체.
+        v0.2 톤 일관 (gold corner cap, family-tint rib, vellum cream ink, vine flourish, jewel duotone) 유지하면서
+        각 atom의 정상 / variant / state 모두 노출.
+      </p>
+    </div>
+    <div class="doc-meta">
+      <div><b>Token</b> &nbsp;Style Guide v0.2</div>
+      <div><b>Atoms</b> &nbsp;Bundle 2 · 6 items</div>
+      <div><b>Locale</b> &nbsp;ko · en</div>
+      <div><b>Rev</b> &nbsp;0.1</div>
+    </div>
+  </header>
+
+  <!-- ============== 01 · TOOLTIP =============================== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Tooltip</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">default · rich · statusEffect · 4 anchor</span>
+    </div>
+
+    <div class="cells" style="grid-template-columns:1fr 1fr;">
+
+      <!-- A · variants -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">01-A · VARIANTS</div>
+            <h3 class="cell-title">Default · Rich · Status <span class="ko">/ 변형</span></h3>
+          </div>
+          <span class="cell-meta"><b>3</b> variants</span>
+        </div>
+        <p class="cell-desc">
+          <b>default</b>는 한 줄 hint, <b>rich</b>는 header + 본문 + 단축키 footer,
+          <b>status</b>는 buff/debuff 효과 설명용 — icon + duration + 1줄 효과.
+        </p>
+
+        <div class="cell-stage">
+          <div class="stage-grid" style="grid-template-columns:1fr 1fr 1fr;">
+            <!-- default -->
+            <div class="stage-item">
+              <div class="spacer-tt"></div>
+              <div class="tt default t" style="position:relative; bottom:auto;">
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                <span>방어력 무시 · 25%</span>
+                <i class="arrow"></i>
+              </div>
+              <button class="anchor-btn" style="margin-top:18px;">
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                anchor
+              </button>
+              <div class="stage-item-cap"><b>DEFAULT</b><span class="ko">한 줄 hint · 240px max</span></div>
+            </div>
+
+            <!-- rich -->
+            <div class="stage-item">
+              <div class="tt rich t" style="position:relative;">
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                <div class="tt-head">
+                  <span>CRESCENT CUT</span>
+                  <span class="ko">월광 베기</span>
+                </div>
+                <div class="tt-body">
+                  <p>치명타 시 <u>+25%</u> 추가 피해.</p>
+                  <p>후열 적에게 <b>도약</b> · 적중 후 <em>2턴 출혈</em>.</p>
+                </div>
+                <div class="tt-foot">
+                  <kbd>Q</kbd> 사용 · <kbd>Shift</kbd> 정보
+                </div>
+                <i class="arrow"></i>
+              </div>
+              <button class="anchor-btn" style="margin-top:14px;">
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                skill
+              </button>
+              <div class="stage-item-cap"><b>RICH</b><span class="ko">header + body + footer · 280px</span></div>
+            </div>
+
+            <!-- statusEffect -->
+            <div class="stage-item">
+              <div class="tt status buff t" style="position:relative;">
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                <div class="row">
+                  <span class="ico">
+                    <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                      <path d="M7 1 L7 13 M3 5 L7 1 L11 5 M4 11 L10 11"/>
+                    </svg>
+                  </span>
+                  <span class="nm">공격력 ↑<span class="en">ATK BUFF</span></span>
+                  <span class="dur">2T</span>
+                </div>
+                <p class="desc">공격력 <b>+30%</b> · 다음 2턴 동안 지속.</p>
+                <i class="arrow"></i>
+              </div>
+              <button class="anchor-btn" style="margin-top:14px; background:linear-gradient(180deg, rgba(109,191,120,.18), rgba(0,0,0,.25));">
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                buff icon
+              </button>
+              <div class="stage-item-cap"><b>STATUS</b><span class="ko">buff · debuff 짧은 설명</span></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- B · 4 anchors -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">01-B · ANCHOR</div>
+            <h3 class="cell-title">Top · Bottom · Left · Right <span class="ko">/ 4 방향</span></h3>
+          </div>
+          <span class="cell-meta"><b>auto</b> · viewport-aware</span>
+        </div>
+        <p class="cell-desc">
+          arrow는 diamond pointer, 가장자리에서 자동 anchor 선택.
+          family-tint corner cap은 status variant에서 buff/debuff 색상 따라 변경.
+        </p>
+
+        <div class="cell-stage" style="display:grid; grid-template-columns:1fr 1fr; gap:48px 64px; padding:48px 32px;">
+
+          <!-- top -->
+          <div style="text-align:center; position:relative;">
+            <div class="tt default t" style="position:absolute; bottom:calc(100% + 12px); left:50%; transform:translateX(-50%);">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              상단에 표시 (Top)
+              <i class="arrow"></i>
+            </div>
+            <button class="anchor-btn">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              hover · TOP
+            </button>
+            <div style="font-family:var(--f-mono); font-size:9px; letter-spacing:.18em; color:var(--ink-3); margin-top:12px;">.tt.t — DEFAULT POSITION</div>
+          </div>
+
+          <!-- bottom -->
+          <div style="text-align:center; position:relative;">
+            <button class="anchor-btn">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              hover · BOTTOM
+            </button>
+            <div class="tt default b" style="position:absolute; top:calc(100% + 12px); left:50%; transform:translateX(-50%);">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              하단에 표시 (Bottom)
+              <i class="arrow"></i>
+            </div>
+            <div style="font-family:var(--f-mono); font-size:9px; letter-spacing:.18em; color:var(--ink-3); margin-top:38px;">.tt.b — VIEWPORT BOTTOM CLIP</div>
+          </div>
+
+          <!-- left -->
+          <div style="text-align:center; position:relative; display:flex; align-items:center; justify-content:flex-end; gap:14px;">
+            <div class="tt default l" style="position:relative;">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              좌측 표시
+              <i class="arrow"></i>
+            </div>
+            <button class="anchor-btn">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              LEFT
+            </button>
+          </div>
+
+          <!-- right -->
+          <div style="text-align:center; position:relative; display:flex; align-items:center; gap:14px;">
+            <button class="anchor-btn">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              RIGHT
+            </button>
+            <div class="tt default r" style="position:relative;">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              우측 표시
+              <i class="arrow"></i>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== 02 · STATUS PILL =============================== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Status Pill</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">verb-only · portrait overhead · 6 verbs</span>
+    </div>
+
+    <div class="cells" style="grid-template-columns:1fr 1fr;">
+
+      <!-- A · all verbs -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">02-A · VERBS</div>
+            <h3 class="cell-title">Down · Guarding · Windup · Recovering · KO · Injured <span class="ko">/ 6 동사</span></h3>
+          </div>
+          <span class="cell-meta"><b>10–11px</b> · verb only</span>
+        </div>
+        <p class="cell-desc">
+          짧은 동사 라벨만 — 명사 X. duration ('1T', '2T') 또는 ko-tag ('1턴') 부착 가능.
+          family-tint border modifier (<code>.fam-striker</code> 등)로 unit 정체성 유지.
+        </p>
+
+        <div class="cell-stage" style="padding:32px;">
+          <div style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <span class="spill down">
+                <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5.5 2 L5.5 9 M2.5 6 L5.5 9 L8.5 6"/></svg>
+                <span class="en">DOWN</span><span class="ko-tag">다운</span><span class="dur">1T</span>
+              </span>
+              <span class="spill guarding">
+                <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5.5 1 L9 2.5 L9 6 Q9 9 5.5 10 Q2 9 2 6 L2 2.5 Z"/></svg>
+                <span class="en">GUARDING</span><span class="ko-tag">방어</span>
+              </span>
+              <span class="spill windup">
+                <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="3.5"/><path d="M5.5 3 L5.5 5.5 L7 7"/></svg>
+                <span class="en">WINDUP</span><span class="ko-tag">차징</span><span class="dur">2T</span>
+              </span>
+              <span class="spill recovering">
+                <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5.5 1 L5.5 5 M3 3.5 L5.5 1 L8 3.5"/><path d="M2 8 L5.5 10 L9 8"/></svg>
+                <span class="en">RECOVERING</span><span class="ko-tag">회복</span><span class="dur">1T</span>
+              </span>
+              <span class="spill ko">
+                <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M3 3 L8 8 M8 3 L3 8"/></svg>
+                <span class="en">KO</span><span class="ko-tag">전투불능</span>
+              </span>
+              <span class="spill injured">
+                <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 9 L5 4 L7 7 L9 2"/></svg>
+                <span class="en">INJURED</span><span class="ko-tag">부상</span>
+              </span>
+            </div>
+
+            <div style="font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em; color:var(--ink-3); margin-top:12px;">— FAMILY-TINT MODIFIERS</div>
+
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <span class="spill guarding fam-striker">
+                <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5.5 1 L9 2.5 L9 6 Q9 9 5.5 10 Q2 9 2 6 L2 2.5 Z"/></svg>
+                <span class="en">GUARDING</span><span class="ko-tag">방어</span>
+              </span>
+              <span class="spill windup fam-vanguard">
+                <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="5.5" cy="5.5" r="3.5"/><path d="M5.5 3 L5.5 5.5 L7 7"/></svg>
+                <span class="en">WINDUP</span><span class="ko-tag">차징</span><span class="dur">2T</span>
+              </span>
+              <span class="spill recovering fam-mystic">
+                <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5.5 1 L5.5 5 M3 3.5 L5.5 1 L8 3.5"/><path d="M2 8 L5.5 10 L9 8"/></svg>
+                <span class="en">RECOVERING</span><span class="ko-tag">회복</span>
+              </span>
+              <span class="spill injured fam-beastkin">
+                <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 9 L5 4 L7 7 L9 2"/></svg>
+                <span class="en">INJURED</span><span class="ko-tag">부상</span>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- B · in context, on portrait -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">02-B · IN CONTEXT</div>
+            <h3 class="cell-title">On Portrait Overhead <span class="ko">/ 카드 위에서</span></h3>
+          </div>
+          <span class="cell-meta"><b>스택</b> 가능 · 최대 3</span>
+        </div>
+        <p class="cell-desc">
+          portrait 하단 nameplate 위에 stack — 가장 위급한 state가 우선 (KO &gt; Injured &gt; Down &gt; Windup &gt; Guarding &gt; Recovering).
+        </p>
+
+        <div class="cell-stage" style="padding:24px;">
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;">
+
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div class="portrait-sample" style="--frame-fam:var(--fam-striker); --frame-fam-deep:var(--fam-striker-deep); --frame-fam-glow:var(--fam-striker-glow);">
+                <div class="ribb"></div>
+                <svg class="silh" viewBox="0 0 140 170" fill="none">
+                  <path d="M10 170 L10 134 Q10 110 30 102 L42 96 Q52 92 58 78 Q60 70 60 64 Q60 56 70 56 Q80 56 80 64 Q80 70 82 78 Q88 92 98 96 L110 102 Q130 110 130 134 L130 170 Z" fill="#1c0e16"/>
+                  <ellipse cx="70" cy="44" rx="14" ry="18" fill="#1c0e16"/>
+                  <path d="M52 50 Q 52 20 70 20 Q 88 20 86 50 Q 80 32 76 28 Q 70 38 66 28 Q 58 36 52 50 Z" fill="#1a0a12"/>
+                  <path d="M64 90 L70 78 L76 90 L70 102 Z" fill="#f08a3c"/>
+                </svg>
+                <div class="pill-bar">
+                  <span class="spill windup fam-striker"><svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="5.5" cy="5.5" r="3.5"/><path d="M5.5 3 L5.5 5.5 L7 7"/></svg><span class="en">WINDUP</span><span class="dur">2T</span></span>
+                </div>
+                <div class="nameplate">KAEDE NOX</div>
+              </div>
+              <div style="font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3);">SINGLE · WINDUP</div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div class="portrait-sample" style="--frame-fam:var(--fam-vanguard); --frame-fam-deep:var(--fam-vanguard-deep); --frame-fam-glow:var(--fam-vanguard-glow);">
+                <div class="ribb"></div>
+                <svg class="silh" viewBox="0 0 140 170" fill="none">
+                  <path d="M10 170 L10 134 Q10 110 30 102 L42 96 Q52 92 58 78 Q60 70 60 64 Q60 56 70 56 Q80 56 80 64 Q80 70 82 78 Q88 92 98 96 L110 102 Q130 110 130 134 L130 170 Z" fill="#0e1830"/>
+                  <ellipse cx="70" cy="44" rx="14" ry="18" fill="#0e1830"/>
+                  <path d="M52 44 Q 52 22 70 22 Q 88 22 88 44 L84 46 L82 34 L70 33 L58 34 L56 46 Z" fill="#06091c"/>
+                  <path d="M64 90 L70 78 L76 90 L70 102 Z" fill="#7fa3e0"/>
+                </svg>
+                <div class="pill-bar">
+                  <span class="spill guarding"><svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5.5 1 L9 2.5 L9 6 Q9 9 5.5 10 Q2 9 2 6 L2 2.5 Z"/></svg><span class="en">GUARDING</span></span>
+                  <span class="spill recovering"><svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5.5 1 L5.5 5 M3 3.5 L5.5 1 L8 3.5"/><path d="M2 8 L5.5 10 L9 8"/></svg><span class="en">REC</span><span class="dur">1T</span></span>
+                </div>
+                <div class="nameplate">ROEN GREY</div>
+              </div>
+              <div style="font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3);">STACK · 2 STATES</div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div class="portrait-sample" style="--frame-fam:var(--fam-mystic); --frame-fam-deep:var(--fam-mystic-deep); --frame-fam-glow:var(--fam-mystic-glow); filter:grayscale(.85) brightness(.55);">
+                <div class="ribb"></div>
+                <svg class="silh" viewBox="0 0 140 170" fill="none">
+                  <path d="M10 170 L10 134 Q10 110 30 102 L42 96 Q52 92 58 78 Q60 70 60 64 Q60 56 70 56 Q80 56 80 64 Q80 70 82 78 Q88 92 98 96 L110 102 Q130 110 130 134 L130 170 Z" fill="#1c0e2c"/>
+                  <ellipse cx="70" cy="44" rx="14" ry="18" fill="#1c0e2c"/>
+                  <path d="M52 52 Q 50 12 70 12 Q 90 12 88 52 Q 86 86 80 100 L70 92 L60 100 Q 54 86 52 52 Z" fill="#1a0a26"/>
+                </svg>
+                <div class="pill-bar">
+                  <span class="spill ko"><svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 3 L8 8 M8 3 L3 8"/></svg><span class="en">KO</span><span class="ko-tag">전투불능</span></span>
+                </div>
+                <div class="nameplate" style="color:var(--ink-3);">AYUMI</div>
+              </div>
+              <div style="font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3);">CRITICAL · KO</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== 03 · PROGRESSBAR =============================== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2 class="section-title">ProgressBar</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">HP · windup · breakpoint — 3 variants</span>
+    </div>
+
+    <div class="cells" style="grid-template-columns:1fr 1fr 1fr;">
+
+      <!-- HP -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">03-A · HP</div>
+            <h3 class="cell-title">Health <span class="ko">/ 체력</span></h3>
+          </div>
+          <span class="cell-meta">large · <b>25%</b> tick</span>
+        </div>
+        <p class="cell-desc">
+          앰버 → 와인 그라디언트, 25% 단위 tick (50%는 major).
+          50% 미만 → <b>warn</b>, 25% 미만 → <b>danger</b> (ember pulse).
+        </p>
+        <div style="display:flex; flex-direction:column; gap:14px; padding-top:8px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3); margin-bottom:4px;">
+              <span><b style="color:var(--gold-200);">SAFE</b> · 88%</span>
+              <span style="color:var(--state-safe);">정상</span>
+            </div>
+            <div class="bar bar-hp">
+              <div class="fill" style="width:88%;"></div>
+              <div class="tick" style="left:25%;"></div><div class="tick major" style="left:50%;"></div><div class="tick" style="left:75%;"></div>
+              <span class="meta">2,640 / 3,000</span>
+              <span class="meta-r">HP</span>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3); margin-bottom:4px;">
+              <span><b style="color:var(--state-warn);">WARN</b> · 42%</span>
+              <span style="color:var(--state-warn);">주의</span>
+            </div>
+            <div class="bar bar-hp s-warn">
+              <div class="fill" style="width:42%;"></div>
+              <div class="tick" style="left:25%;"></div><div class="tick major" style="left:50%;"></div><div class="tick" style="left:75%;"></div>
+              <span class="meta">1,260 / 3,000</span>
+              <span class="meta-r">HP</span>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3); margin-bottom:4px;">
+              <span><b style="color:var(--state-danger);">DANGER</b> · 14%</span>
+              <span style="color:var(--state-danger);">위급 · 다음 턴 KO 가능</span>
+            </div>
+            <div class="bar bar-hp s-danger">
+              <div class="fill" style="width:14%;"></div>
+              <div class="tick" style="left:25%;"></div><div class="tick major" style="left:50%;"></div><div class="tick" style="left:75%;"></div>
+              <span class="meta">420 / 3,000</span>
+              <span class="meta-r">HP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Windup -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">03-B · WINDUP</div>
+            <h3 class="cell-title">Cast Timer <span class="ko">/ 차징</span></h3>
+          </div>
+          <span class="cell-meta">ring + line</span>
+        </div>
+        <p class="cell-desc">
+          ring counter (남은 턴) + 진행 line composite.
+          warn color (앰버) — 차징 중 살짝 pulse.
+        </p>
+        <div style="display:flex; flex-direction:column; gap:18px; padding-top:8px;">
+
+          <div class="windup-row">
+            <div class="windup-ring" style="--ring-c:var(--state-warn); --ring-c-glow:rgba(232,169,59,.6);">
+              <svg viewBox="0 0 46 46">
+                <circle class="ring-bg" cx="23" cy="23" r="18"/>
+                <circle class="ring-fr" cx="23" cy="23" r="18"/>
+                <circle class="ring" cx="23" cy="23" r="18"
+                        stroke-dasharray="113"
+                        stroke-dashoffset="42"/>
+              </svg>
+              <span class="num">2</span>
+            </div>
+            <div class="windup-line">
+              <div class="lbl"><span><b>METEOR STRIKE</b></span><span class="ko">2턴 후 발동</span></div>
+              <div class="bar bar-windup">
+                <div class="fill" style="width:62%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="windup-row">
+            <div class="windup-ring" style="--ring-c:var(--state-warn); --ring-c-glow:rgba(232,169,59,.6);">
+              <svg viewBox="0 0 46 46">
+                <circle class="ring-bg" cx="23" cy="23" r="18"/>
+                <circle class="ring-fr" cx="23" cy="23" r="18"/>
+                <circle class="ring" cx="23" cy="23" r="18"
+                        stroke-dasharray="113"
+                        stroke-dashoffset="14"/>
+              </svg>
+              <span class="num">1</span>
+            </div>
+            <div class="windup-line">
+              <div class="lbl"><span><b>OVERLOAD</b></span><span class="ko">다음 턴 발동</span></div>
+              <div class="bar bar-windup">
+                <div class="fill" style="width:88%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="windup-row" style="opacity:.55;">
+            <div class="windup-ring" style="--ring-c:var(--state-locked); --ring-c-glow:rgba(107,110,133,.4);">
+              <svg viewBox="0 0 46 46">
+                <circle class="ring-bg" cx="23" cy="23" r="18"/>
+                <circle class="ring-fr" cx="23" cy="23" r="18"/>
+                <circle class="ring" cx="23" cy="23" r="18"
+                        stroke-dasharray="113"
+                        stroke-dashoffset="113"/>
+              </svg>
+              <span class="num" style="color:var(--ink-3);">—</span>
+            </div>
+            <div class="windup-line">
+              <div class="lbl" style="color:var(--ink-3);"><span><b style="color:var(--ink-3);">CHARGING</b></span><span class="ko" style="color:var(--ink-3);">대기</span></div>
+              <div class="bar bar-windup" style="--bar-light:var(--state-locked); --bar-deep:var(--state-ko-deep); --bar-glow:transparent;">
+                <div class="fill" style="width:0%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Breakpoint -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">03-C · BREAKPOINT</div>
+            <h3 class="cell-title">Stage Bar <span class="ko">/ 단계</span></h3>
+          </div>
+          <span class="cell-meta">2/4 또는 2/3</span>
+        </div>
+        <p class="cell-desc">
+          family-tint fill, 2개 split tick으로 3 단계 구분 (예: pose / break / down).
+          현재 stage는 active label로 강조.
+        </p>
+        <div style="display:flex; flex-direction:column; gap:18px; padding-top:8px;">
+
+          <div>
+            <div style="font-family:var(--f-mono); font-size:9.5px; letter-spacing:.16em; color:var(--ink-3); margin-bottom:6px;">
+              <b style="color:var(--gold-200);">POSE BREAK</b> · 2/3 stage · MYSTIC
+            </div>
+            <div class="bar bar-bp" style="--frame-fam:var(--fam-mystic); --frame-fam-deep:var(--fam-mystic-deep); --frame-fam-glow:var(--fam-mystic-glow); --bar-glow:rgba(212,180,240,.5);">
+              <div class="seg" style="left:0; width:64%;"></div>
+              <div class="bp-tick" style="left:33.33%;"><i></i></div>
+              <div class="bp-tick" style="left:66.66%;"><i></i></div>
+            </div>
+            <div class="bar-bp-meta">
+              <span class="stage">Ⅰ POSE</span>
+              <span class="stage active">Ⅱ <span style="font-family:var(--f-ko); font-weight:600;">자세 무너짐</span></span>
+              <span class="stage">Ⅲ DOWN</span>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-family:var(--f-mono); font-size:9.5px; letter-spacing:.16em; color:var(--ink-3); margin-bottom:6px;">
+              <b style="color:var(--gold-200);">SHIELD</b> · 2/4 stage · VANGUARD
+            </div>
+            <div class="bar bar-bp" style="--frame-fam:var(--fam-vanguard); --frame-fam-deep:var(--fam-vanguard-deep); --frame-fam-glow:var(--fam-vanguard-glow); --bar-glow:rgba(127,163,224,.45);">
+              <div class="seg" style="left:0; width:38%;"></div>
+              <div class="bp-tick" style="left:25%;"><i></i></div>
+              <div class="bp-tick" style="left:75%;"><i></i></div>
+            </div>
+            <div class="bar-bp-meta">
+              <span class="stage">100%</span>
+              <span class="stage active">75%</span>
+              <span class="stage">50%</span>
+              <span class="stage">25%</span>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-family:var(--f-mono); font-size:9.5px; letter-spacing:.16em; color:var(--ink-3); margin-bottom:6px;">
+              <b style="color:var(--state-safe);">CHARGE</b> · BEASTKIN · FULL
+            </div>
+            <div class="bar bar-bp" style="--frame-fam:var(--fam-beastkin); --frame-fam-deep:var(--fam-beastkin-deep); --frame-fam-glow:var(--fam-beastkin-glow); --bar-glow:rgba(185,201,128,.55);">
+              <div class="seg" style="left:0; width:100%;"></div>
+              <div class="bp-tick" style="left:33.33%;"><i></i></div>
+              <div class="bp-tick" style="left:66.66%;"><i></i></div>
+            </div>
+            <div class="bar-bp-meta">
+              <span class="stage">Ⅰ</span>
+              <span class="stage">Ⅱ</span>
+              <span class="stage active" style="background:rgba(109,191,120,.18); border-color:var(--state-safe); color:var(--state-safe);">Ⅲ <span style="font-family:var(--f-ko); font-weight:600;">최대</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== 04 · MODAL ====================== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Modal Shell</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">centered · drawer · bottomSheet</span>
+    </div>
+
+    <div class="cells" style="grid-template-columns:2fr 1fr;">
+
+      <!-- A · centered (sm/md/lg) -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">04-A · CENTERED</div>
+            <h3 class="cell-title">PC Centered Overlay <span class="ko">/ 중앙 모달</span></h3>
+          </div>
+          <span class="cell-meta">size · sm · md · lg · full</span>
+        </div>
+        <p class="cell-desc">
+          backdrop dim + blur, gold corner cap header에 vine flourish가 close hover 시 표시.
+          rib + center gem이 family-tint 영역 표시.
+        </p>
+
+        <div class="modal-stage" style="height:340px;">
+          <div class="blur-bg"></div>
+          <div class="stage-cap">— STAGE · MODAL CENTERED · MD</div>
+          <div class="scrim"></div>
+
+          <div class="modal centered size-md">
+            <span class="cc tl">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg>
+            </span>
+            <span class="cc tr"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <span class="cc bl"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <span class="cc br"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <div class="modal-rib"></div>
+            <div class="modal-gem"></div>
+
+            <header class="modal-head">
+              <h4 class="ttl">RECRUIT DETAILS<span class="ko">영입 상세</span></h4>
+              <p class="sub">선택한 후보의 능력치, 시그니처 스킬, 영입 비용을 확인하세요.</p>
+              <button class="modal-close">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3 L9 9 M9 3 L3 9"/></svg>
+                <svg class="vine l" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M2 9 Q 9 3 16 9"/><path d="M5 11 Q 9 7 13 11"/><path d="M9 6 L10 4 L11 6 L10 8 Z" fill="currentColor"/></svg>
+                <svg class="vine r" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M2 9 Q 9 3 16 9"/><path d="M5 11 Q 9 7 13 11"/><path d="M9 6 L10 4 L11 6 L10 8 Z" fill="currentColor"/></svg>
+              </button>
+            </header>
+            <div class="modal-body">
+              <p>이 후보는 <b>Striker</b> 가문의 Rare 등급 — 시그니처 스킬은 <b>월광 베기 (Crescent Cut)</b>입니다. 4 G로 영입 후 즉시 출격 가능.</p>
+              <p>Pity 누적 17회 — Rare 천장까지 23회 남음.</p>
+            </div>
+            <footer class="modal-foot">
+              <button class="b b-sec"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="lbl">취소 <span class="en">CANCEL</span></span></button>
+              <button class="b b-pri"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="lbl">영입 <span class="en">RECRUIT</span></span></button>
+            </footer>
+          </div>
+        </div>
+
+        <!-- size scale row -->
+        <div style="display:flex; gap:12px; margin-top:14px; align-items:flex-end; padding:14px 0; border-top:1px dashed var(--line-2);">
+          <div style="text-align:center;">
+            <div style="width:80px; height:48px; background:linear-gradient(180deg, #1c2243, #0e1226); border:1px solid var(--gold-500); position:relative;">
+              <div style="position:absolute; top:0; left:0; right:0; height:2px; background:var(--gold-300); box-shadow:0 0 4px var(--gold-200);"></div>
+            </div>
+            <div style="font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3); margin-top:6px;">SM <b style="color:var(--gold-200);">320</b></div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:120px; height:64px; background:linear-gradient(180deg, #1c2243, #0e1226); border:1px solid var(--gold-500); position:relative;">
+              <div style="position:absolute; top:0; left:0; right:0; height:2px; background:var(--gold-300); box-shadow:0 0 4px var(--gold-200);"></div>
+            </div>
+            <div style="font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3); margin-top:6px;">MD <b style="color:var(--gold-200);">420</b></div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:160px; height:80px; background:linear-gradient(180deg, #1c2243, #0e1226); border:1px solid var(--gold-500); position:relative;">
+              <div style="position:absolute; top:0; left:0; right:0; height:2px; background:var(--gold-300); box-shadow:0 0 4px var(--gold-200);"></div>
+            </div>
+            <div style="font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3); margin-top:6px;">LG <b style="color:var(--gold-200);">560</b></div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:200px; height:96px; background:linear-gradient(180deg, #1c2243, #0e1226); border:1px solid var(--gold-500); position:relative;">
+              <div style="position:absolute; top:0; left:0; right:0; height:2px; background:var(--gold-300); box-shadow:0 0 4px var(--gold-200);"></div>
+            </div>
+            <div style="font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3); margin-top:6px;">FULL <b style="color:var(--gold-200);">inset 24</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B · drawer -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">04-B · DRAWER</div>
+            <h3 class="cell-title">Right Rail <span class="ko">/ 사이드 드로어</span></h3>
+          </div>
+          <span class="cell-meta">340w · slide-in</span>
+        </div>
+        <p class="cell-desc">
+          오른쪽에서 슬라이드인. 본 화면을 가리지 않으면서 컨텍스트 유지 — 인벤토리, 상세 정보 등.
+        </p>
+
+        <div class="modal-stage" style="height:340px;">
+          <div class="blur-bg"></div>
+          <div class="stage-cap">— STAGE · DRAWER</div>
+          <div class="scrim" style="background:radial-gradient(ellipse 80% 80% at 30% 50%, rgba(0,0,0,.45), rgba(0,0,0,.65));"></div>
+
+          <div class="modal drawer">
+            <span class="cc tl"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <span class="cc bl"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <div class="modal-rib"></div>
+            <div class="modal-gem"></div>
+
+            <header class="modal-head">
+              <h4 class="ttl">INVENTORY<span class="ko">인벤토리</span></h4>
+              <p class="sub">12 / 24 슬롯 사용 중</p>
+              <button class="modal-close">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3 L9 9 M9 3 L3 9"/></svg>
+              </button>
+            </header>
+            <div class="modal-body">
+              <p>드로어는 본 화면을 가리지 않고 옆에 슬라이드인 — 컨텍스트가 유지됩니다.</p>
+              <p style="font-family:var(--f-mono); font-size:10px; color:var(--ink-3); letter-spacing:.12em; padding-top:8px; border-top:1px dashed var(--line-2);">PRESS ESC TO CLOSE</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- C · bottomSheet (mobile) -->
+    <div class="cells" style="grid-template-columns:1fr; margin-top:var(--s-5);">
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">04-C · BOTTOM SHEET</div>
+            <h3 class="cell-title">Mobile Bottom Sheet <span class="ko">/ 모바일 바텀시트</span></h3>
+          </div>
+          <span class="cell-meta">dragger handle · swipe-down dismiss</span>
+        </div>
+
+        <div style="display:flex; gap:32px; align-items:flex-start;">
+          <div class="mobile-wrap">
+            <div class="mobile-inner">
+              <div class="mobile-status">
+                <span>9:41</span>
+                <span style="display:inline-flex; gap:8px; align-items:center;">
+                  <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor"><rect x="0" y="6" width="2" height="4"/><rect x="3" y="4" width="2" height="6"/><rect x="6" y="2" width="2" height="8"/><rect x="9" y="0" width="2" height="10"/></svg>
+                  <svg width="22" height="10" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width=".8"><rect x="0.5" y="0.5" width="18" height="9" rx="2"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/></svg>
+                </span>
+              </div>
+              <div class="mobile-bg"></div>
+              <div class="scrim" style="top:36px;"></div>
+
+              <div class="bsheet">
+                <div class="dragger"></div>
+                <div class="modal-rib"></div>
+                <div class="modal-gem"></div>
+
+                <header class="modal-head">
+                  <h4 class="ttl">SCOUT<span class="ko">정찰</span></h4>
+                  <p class="sub">35 Echo로 후보 풀을 갱신합니다 (1 / RUN).</p>
+                </header>
+                <div class="modal-body">
+                  <p>이번 런에 한 번만 사용할 수 있습니다.</p>
+                  <p>현재 보유: <b>88 ECHO</b></p>
+                </div>
+                <footer class="modal-foot" style="display:flex;">
+                  <button class="b b-sec" style="flex:1;"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="lbl">취소</span></button>
+                  <button class="b b-pri vanguard" style="flex:1.4;"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="lbl">정찰 시작 <span class="en">SCOUT</span></span></button>
+                </footer>
+              </div>
+            </div>
+          </div>
+
+          <div style="flex:1; padding-top:48px;">
+            <p class="cell-desc" style="margin-bottom:12px;">
+              <b>dragger</b> 핸들 = swipe-down dismiss 신호.<br>
+              backdrop tap도 dismiss — 단, destructive ConfirmDialog는 backdrop tap으로 닫히지 않음.
+            </p>
+            <p class="cell-desc">
+              top rib + center gem은 centered 모달과 동일한 ornament 언어 — 모바일이라도 시각적 계보 유지.
+            </p>
+            <ul style="margin:14px 0 0; padding-left:18px; font-family:var(--f-ko); font-size:11px; color:var(--ink-3); line-height:1.8;">
+              <li><b style="color:var(--gold-200);">handle</b> — 36×4px, 골드 그라디언트</li>
+              <li><b style="color:var(--gold-200);">scrim</b> — 1.5x dim of centered modal</li>
+              <li><b style="color:var(--gold-200);">max height</b> — 80vh (긴 본문은 내부 scroll)</li>
+              <li><b style="color:var(--gold-200);">corner cap</b> — top 2개만 (bottom 노출 X)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============== 05 · TOAST ============================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Toast</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">info · warning · success · 자동 dismiss · persistent</span>
+    </div>
+
+    <div class="cells" style="grid-template-columns:1fr 1fr;">
+
+      <!-- A · PC stack -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">05-A · PC STACK</div>
+            <h3 class="cell-title">Top-Right Stack <span class="ko">/ 우상단 스택</span></h3>
+          </div>
+          <span class="cell-meta"><b>2–4s</b> auto · max 4</span>
+        </div>
+        <p class="cell-desc">
+          accent stripe + corner cap이 type 색상으로 변경 — info (sapphire) / warning (앰버) / success (sage).
+          하단 progress bar로 자동 dismiss 표시. <b>persistent</b>는 corner cap 크기 +, accent 점선.
+        </p>
+
+        <div class="cell-stage" style="height:380px;">
+          <div class="stage-cap" style="position:absolute; top:8px; left:8px; font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em; color:var(--ink-3);">— STAGE · PC TOP-RIGHT</div>
+
+          <div class="toast-stack-pc">
+            <div class="toast success">
+              <span class="accent"></span>
+              <span class="ico">
+                <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 7 L5.5 9.5 L10 4"/></svg>
+              </span>
+              <div class="body">
+                <p class="ttl">영입 완료 <span class="en">RECRUITED</span></p>
+                <p class="desc"><b>카에데 녹스</b>가 로스터에 합류했습니다.</p>
+              </div>
+              <button class="x"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 2 L8 8 M8 2 L2 8"/></svg></button>
+              <span class="timeout" style="width:62%;"></span>
+            </div>
+
+            <div class="toast warning">
+              <span class="accent"></span>
+              <span class="ico">
+                <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 1.5 L12 11 L1 11 Z"/><path d="M6.5 5.5 L6.5 8 M6.5 9.5 L6.5 9.51"/></svg>
+              </span>
+              <div class="body">
+                <p class="ttl">위급 상태 <span class="en">CRITICAL HP</span></p>
+                <p class="desc"><b>로엔 그레이</b> HP <b>14%</b> — 다음 턴 KO 가능.</p>
+              </div>
+              <button class="x"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 2 L8 8 M8 2 L2 8"/></svg></button>
+              <span class="timeout" style="width:38%;"></span>
+            </div>
+
+            <div class="toast info">
+              <span class="accent"></span>
+              <span class="ico">
+                <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4 L6.5 4.01 M6.5 6 L6.5 9"/></svg>
+              </span>
+              <div class="body">
+                <p class="ttl">새 후보 <span class="en">NEW CANDIDATE</span></p>
+                <p class="desc">정찰 결과 <b>Rare</b> 후보 1명 등장.</p>
+              </div>
+              <button class="x"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 2 L8 8 M8 2 L2 8"/></svg></button>
+              <span class="timeout" style="width:18%;"></span>
+            </div>
+
+            <div class="toast danger persistent">
+              <span class="accent"></span>
+              <span class="ico">
+                <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="5"/><path d="M3.5 3.5 L9.5 9.5 M9.5 3.5 L3.5 9.5"/></svg>
+              </span>
+              <div class="body">
+                <p class="ttl">서버 연결 끊김 <span class="en">DISCONNECTED</span></p>
+                <p class="desc">자동 재연결 시도 중… <b>지속 표시</b> 됩니다.</p>
+              </div>
+              <button class="x"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 2 L8 8 M8 2 L2 8"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B · Mobile banner -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">05-B · MOBILE BANNER</div>
+            <h3 class="cell-title">Top Banner <span class="ko">/ 모바일 상단</span></h3>
+          </div>
+          <span class="cell-meta">stack 2 max</span>
+        </div>
+        <p class="cell-desc">
+          모바일은 우상단 stack이 화면을 침범 — 상단 banner로 변경.
+          status bar 바로 아래, 양 끝 14px margin.
+        </p>
+
+        <div style="display:flex; gap:24px; align-items:flex-start;">
+          <div class="mobile-wrap">
+            <div class="mobile-inner">
+              <div class="mobile-status">
+                <span>9:41</span>
+                <span style="display:inline-flex; gap:8px; align-items:center;">
+                  <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor"><rect x="0" y="6" width="2" height="4"/><rect x="3" y="4" width="2" height="6"/><rect x="6" y="2" width="2" height="8"/><rect x="9" y="0" width="2" height="10"/></svg>
+                  <svg width="22" height="10" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width=".8"><rect x="0.5" y="0.5" width="18" height="9" rx="2"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/></svg>
+                </span>
+              </div>
+              <div class="mobile-bg"></div>
+
+              <div class="toast-banner-mb">
+                <div class="toast success">
+                  <span class="accent"></span>
+                  <span class="ico"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7 L5.5 9.5 L10 4"/></svg></span>
+                  <div class="body">
+                    <p class="ttl">영입 완료</p>
+                    <p class="desc"><b>카에데 녹스</b> 로스터 합류</p>
+                  </div>
+                  <button class="x"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 2 L8 8 M8 2 L2 8"/></svg></button>
+                  <span class="timeout" style="width:54%;"></span>
+                </div>
+                <div class="toast warning">
+                  <span class="accent"></span>
+                  <span class="ico"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 1.5 L12 11 L1 11 Z"/><path d="M6.5 5.5 L6.5 8 M6.5 9.5 L6.5 9.51"/></svg></span>
+                  <div class="body">
+                    <p class="ttl">HP 14%</p>
+                    <p class="desc"><b>로엔 그레이</b> 다음 턴 KO 가능</p>
+                  </div>
+                  <button class="x"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 2 L8 8 M8 2 L2 8"/></svg></button>
+                  <span class="timeout" style="width:24%;"></span>
+                </div>
+              </div>
+
+              <!-- bg content stub -->
+              <div style="position:absolute; bottom:24px; left:24px; right:24px; padding:16px; background:rgba(0,0,0,.45); border:1px solid var(--line-1); font-family:var(--f-mono); font-size:10px; letter-spacing:.14em; color:var(--ink-3); text-align:center;">
+                — APP CONTENT BENEATH —
+              </div>
+            </div>
+          </div>
+
+          <div style="flex:1; padding-top:24px;">
+            <p class="cell-desc" style="margin-bottom:12px;">
+              모바일 banner는 <b>인터랙션을 막지 않음</b> — 본문 위에 살짝 떠 있음.<br>
+              swipe up으로 dismiss, tap으로 detail (route 이동).
+            </p>
+            <ul style="margin:14px 0 0; padding-left:18px; font-family:var(--f-ko); font-size:11px; color:var(--ink-3); line-height:1.8;">
+              <li><b style="color:var(--gold-200);">stack</b> — 최대 2 (오래된 것 fade out)</li>
+              <li><b style="color:var(--gold-200);">duration</b> — info/success 2.5s, warning 4s</li>
+              <li><b style="color:var(--gold-200);">persistent</b> — 사용자 dismiss 까지 유지</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== 06 · CONFIRM DIALOG ====================== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Confirm Dialog</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">destructive (wine + ember pulse) · neutral (vellum)</span>
+    </div>
+
+    <div class="cells" style="grid-template-columns:1fr 1fr;">
+
+      <!-- A · destructive -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">06-A · DESTRUCTIVE</div>
+            <h3 class="cell-title">Wine + Ember Pulse <span class="ko">/ 파괴적 액션</span></h3>
+          </div>
+          <span class="cell-meta">backdrop tap <b>X</b></span>
+        </div>
+        <p class="cell-desc">
+          되돌릴 수 없는 액션 — 와인 frame, ember pulse big icon, 본문에 결과 명확히 명시.
+          <b>Confirm 버튼은 우측 (관성 약화)</b>, danger 색상.
+        </p>
+
+        <div class="modal-stage" style="height:420px;">
+          <div class="blur-bg"></div>
+          <div class="stage-cap">— STAGE · CONFIRM DESTRUCTIVE</div>
+          <div class="scrim" style="background:radial-gradient(ellipse 80% 80% at 50% 50%, rgba(122,32,24,.35), rgba(0,0,0,.85));"></div>
+
+          <div class="confirm destructive" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+            <span class="cc tl"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <span class="cc tr"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <span class="cc bl"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <span class="cc br"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <div class="rib"></div>
+            <div class="gem"></div>
+
+            <div class="icon-block">
+              <div class="big-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                  <path d="M12 2 L22 20 L2 20 Z"/>
+                  <path d="M12 9 L12 14 M12 17 L12.01 17"/>
+                </svg>
+              </div>
+            </div>
+            <div class="body">
+              <h4 class="ttl">DISMISS HERO<span class="ko">영웅 해고</span></h4>
+              <p class="desc">
+                <b>카에데 녹스</b>를 로스터에서 제거합니다.<br>
+                보유 장비는 인벤토리로 반환되지만, <b>되돌릴 수 없습니다</b>.
+              </p>
+            </div>
+            <div class="foot">
+              <button class="b b-sec"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="lbl">취소 <span class="en">CANCEL</span></span></button>
+              <button class="b b-pri danger"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="lbl">해고 <span class="en">DISMISS</span></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B · neutral -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">06-B · NEUTRAL</div>
+            <h3 class="cell-title">Vellum <span class="ko">/ 일반 확인</span></h3>
+          </div>
+          <span class="cell-meta">backdrop tap <b>OK</b></span>
+        </div>
+        <p class="cell-desc">
+          되돌릴 수 있는 액션 — 골드 frame, vellum tone, pulse 없음.
+          backdrop tap 또는 esc로 dismiss.
+        </p>
+
+        <div class="modal-stage" style="height:420px;">
+          <div class="blur-bg"></div>
+          <div class="stage-cap">— STAGE · CONFIRM NEUTRAL</div>
+          <div class="scrim"></div>
+
+          <div class="confirm neutral" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+            <span class="cc tl"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <span class="cc tr"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <span class="cc bl"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <span class="cc br"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M0 6 L0 0 L6 0"/><path d="M1 4 Q 4 4 4 1"/><path d="M3 6 L4 5 L5 6 L4 7 Z" fill="currentColor"/></svg></span>
+            <div class="rib"></div>
+            <div class="gem"></div>
+
+            <div class="icon-block">
+              <div class="big-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9 12 L11 14 L15 9"/>
+                </svg>
+              </div>
+            </div>
+            <div class="body">
+              <h4 class="ttl">END TURN<span class="ko">턴 종료</span></h4>
+              <p class="desc">
+                현재 턴을 종료하고 다음 턴으로 진행합니다.<br>
+                <b>2명</b>의 영웅이 아직 행동하지 않았습니다.
+              </p>
+            </div>
+            <div class="foot">
+              <button class="b b-sec"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="lbl">계속 진행 <span class="en">CONTINUE</span></span></button>
+              <button class="b b-pri vanguard"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="lbl">턴 종료 <span class="en">END TURN</span></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="doc-foot">
+    <div><b>SURVIVAL MANAGER</b> · ATOMS BUNDLE 2 · INDIGO + WINE + GOLD</div>
+    <div>NEXT — Surface 2 (Battle Prep / Augment Pick) 또는 atom 묶음 추가 (Input · Tab · Slider)</div>
+  </footer>
+
+</main>
+
+</body>
+</html>

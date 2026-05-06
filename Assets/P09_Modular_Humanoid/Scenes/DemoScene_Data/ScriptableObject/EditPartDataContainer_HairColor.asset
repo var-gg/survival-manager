@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd5c3a4c771c4d60ae99be4226218f35, type: 3}
+  m_Name: EditPartDataContainer_HairColor
+  m_EditorClassIdentifier: 
+  _type: 10
+  _sexId: 0
+  _partDataList:
+  - {fileID: 11400000, guid: 7b224f90d4bd34f6ebce0f692a5d3f75, type: 2}
+  - {fileID: 11400000, guid: 6ba67e24cc0814648a915ccd761d1cac, type: 2}
+  - {fileID: 11400000, guid: 8c0901ab74ed141ffb64e1bf0d26cbab, type: 2}
+  - {fileID: 11400000, guid: 65cbf414b77be4db7b0ec723133dbc72, type: 2}
+  - {fileID: 11400000, guid: 0a630a0319ded49e08bfee8ea75a3b06, type: 2}
+  - {fileID: 11400000, guid: a186fcb6e0fbe43718a9ab8587cf7189, type: 2}
+  - {fileID: 11400000, guid: 23d553d2b349847858e2abcfdea3dc37, type: 2}
+  - {fileID: 11400000, guid: e904af918f6954a0f95a686a9880a4fc, type: 2}
+  - {fileID: 11400000, guid: d2b4470bf8da0479ab1465f7ff486984, type: 2}

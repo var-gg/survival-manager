@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 44fecc866b581654ba140cfae2b68e14
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Female_Body/P09_Female_Skin_Dark.mat
+  uploadId: 843050

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a7bfcb0fa34de594870c3458d40b4b, type: 3}
+  m_Name: HeadEditPartData_08
+  m_EditorClassIdentifier: 
+  _equipmentGroupId: 8
+  _contentId: 8
+  _displayName: Armor_008_Head
+  _meshName: '{0}_Armor_008_Head'
+  _femaleIcon: {fileID: 21300000, guid: e76b188d1463ec44ab52e32fc1ef1cf6, type: 3}
+  _maleIcon: {fileID: 21300000, guid: ae193d09cb08b49489f625c91a518ea3, type: 3}

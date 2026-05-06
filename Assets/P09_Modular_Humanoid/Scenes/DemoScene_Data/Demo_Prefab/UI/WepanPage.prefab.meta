@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 373d895327b474a0293b5812eca69470
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/UI/WepanPage.prefab
+  uploadId: 843050

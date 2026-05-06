@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 177e9f5e2673aa34185ed1189ad9132e
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Develop/BoneDoll.prefab
+  uploadId: 843050

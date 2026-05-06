@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: b5ad05145668d46e18050bd75e8b6086
+timeCreated: 1544379895
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Version 4/Cold Clouds/Cold Clouds Equirect.mat
+  uploadId: 679124

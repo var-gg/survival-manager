@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8378399d02b5e154c982bc4135e0a678
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Animation/Facial_Emotion/P09_Facial_Fierce.anim
+  uploadId: 843050

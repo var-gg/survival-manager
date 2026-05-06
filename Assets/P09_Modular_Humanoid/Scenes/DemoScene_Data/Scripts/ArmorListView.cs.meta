@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 67ee4e8a76ec4d6d885ea605641fc4e8
+timeCreated: 1730700583
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Scripts/ArmorListView.cs
+  uploadId: 843050

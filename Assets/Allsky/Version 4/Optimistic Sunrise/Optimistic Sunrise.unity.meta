@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 42eba01543b49499f9d6cc43f92a50b3
+labels:
+- AllSky
+- Skies
+- Sky
+- Skybox
+timeCreated: 1544548634
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Version 4/Optimistic Sunrise/Optimistic Sunrise.unity
+  uploadId: 679124

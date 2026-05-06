@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 17254957a35b81b40879fb3bf7e73283
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Common/Eye/P09_Eye_Bright.mat
+  uploadId: 843050

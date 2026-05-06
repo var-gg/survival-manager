@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d2dd2ddc3af840641b1ca0f5dc830b7b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Prefab/P09_Human.prefab
+  uploadId: 843050

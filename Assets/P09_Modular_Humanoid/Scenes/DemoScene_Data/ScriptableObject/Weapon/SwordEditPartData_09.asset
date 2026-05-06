@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3cc104276ed46e696a9f1ab83d42170, type: 3}
+  m_Name: SwordEditPartData_09
+  m_EditorClassIdentifier: 
+  _weaponGroupId: 2
+  _contentId: 9
+  _displayName: Staff_004
+  _meshName: Staff_004
+  _icon: {fileID: 21300000, guid: 95d8a41475c69014ab5419737f015d27, type: 3}

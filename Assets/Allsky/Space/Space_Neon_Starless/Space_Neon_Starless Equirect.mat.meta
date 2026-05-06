@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 9ca516ea9788244b1bba4abf95ef2639
+timeCreated: 1551562075
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Space/Space_Neon_Starless/Space_Neon_Starless Equirect.mat
+  uploadId: 679124

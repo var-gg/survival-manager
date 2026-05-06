@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e904af918f6954a0f95a686a9880a4fc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/ScriptableObject/HairColor/HairColorEditPartData_08.asset
+  uploadId: 843050

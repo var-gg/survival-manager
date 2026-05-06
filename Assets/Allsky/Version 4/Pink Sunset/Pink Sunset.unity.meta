@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 0bd390f30b1a14f73b6c3d262c9e437e
+labels:
+- AllSky
+- Skies
+- Sky
+- Skybox
+timeCreated: 1544548999
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Version 4/Pink Sunset/Pink Sunset.unity
+  uploadId: 679124

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5fbf1b2b78b437c8d10ba9ababffb7e, type: 3}
+  m_Name: HairColorEditPartData_06
+  m_EditorClassIdentifier: 
+  _contentId: 6
+  _displayName: 06
+  _meshName: Hair_{0:D2}
+  _icon: {fileID: 21300000, guid: f19f664122b17894fafc85430b8903d5, type: 3}
+  _material: {fileID: 2100000, guid: ef6d9a69ed8ee914989798fae2518ed2, type: 2}
+  _hairStyleMaterials:
+  - HairStyleId: 10
+    Material: {fileID: 2100000, guid: b3b5d66f030112a479880bfeb91db1ec, type: 2}

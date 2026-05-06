@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: d3cc104276ed46e696a9f1ab83d42170
+timeCreated: 1730516686
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Scripts/Data/WeaponEditPartData.cs
+  uploadId: 843050

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 62a425040a5d948f08a13e59a57b11b3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Haze/Haze_ColdIncomingSnow/Haze_ColdIncomingSnowSettings.lighting
+  uploadId: 679124

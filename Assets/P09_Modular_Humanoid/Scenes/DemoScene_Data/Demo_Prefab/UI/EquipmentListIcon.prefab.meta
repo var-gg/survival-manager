@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: b182af3105f704d4f86a04f2d1f50fbd
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/UI/EquipmentListIcon.prefab
+  uploadId: 843050

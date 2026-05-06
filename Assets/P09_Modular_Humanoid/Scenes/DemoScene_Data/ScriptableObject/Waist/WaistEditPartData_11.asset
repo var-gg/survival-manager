@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a7bfcb0fa34de594870c3458d40b4b, type: 3}
+  m_Name: WaistEditPartData_11
+  m_EditorClassIdentifier: 
+  _equipmentGroupId: 11
+  _contentId: 11
+  _displayName: Armor_011_Waist
+  _meshName: '{0}_Armor_011_Waist'
+  _femaleIcon: {fileID: 21300000, guid: be0e1d517341ff44591c33a972c67866, type: 3}
+  _maleIcon: {fileID: 21300000, guid: 229e90aaf9283a84c805b6b02c21756c, type: 3}

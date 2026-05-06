@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0cc6c36d07a414389b8e3a7567297549
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/ScriptableObject/Shield/ShieldEditPartData_01.asset
+  uploadId: 843050

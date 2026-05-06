@@ -298,18 +298,36 @@ foreach ($dir in $scriptDirs) {
             $lines = Get-Content $file.FullName -ErrorAction SilentlyContinue
             if ($null -eq $lines) { continue }
 
-            # 주석이 아닌 코드 라인에서만 -quit과 -runTests 동시 사용을 검사
-            $codeLines = $lines | Where-Object {
-                $trimmed = $_.TrimStart()
-                -not $trimmed.StartsWith('#') -and -not $trimmed.StartsWith('//') -and -not $trimmed.StartsWith('REM')
-            }
-            $codeContent = $codeLines -join ' '
+            # 주석이 아닌 연속 코드 블록에서만 -quit과 -runTests 동시 사용을 검사한다.
+            # GitHub workflow의 license activation 명령처럼 같은 파일에 안전한 -quit가 별도 step으로 있을 수 있다.
+            $blocks = New-Object System.Collections.Generic.List[string]
+            $currentBlock = New-Object System.Collections.Generic.List[string]
 
-            # 같은 코드 블록에서 -runTests와 -quit 모두 사용
-            if ($codeContent -match '-runTests' -and $codeContent -match "'-quit'|`"-quit`"|\s-quit\b") {
-                $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/')
-                Write-LintError -Check 'quit-with-runTests' -File $relPath -Detail "-quit and -runTests found in executable code — -quit can terminate Unity before tests finish"
-                $check4Fail = $true
+            foreach ($line in $lines) {
+                $trimmed = $line.TrimStart()
+                $isComment = $trimmed.StartsWith('#') -or $trimmed.StartsWith('//') -or $trimmed.StartsWith('REM')
+                if ($trimmed.Length -eq 0 -or $isComment) {
+                    if ($currentBlock.Count -gt 0) {
+                        $blocks.Add(($currentBlock -join ' '))
+                        $currentBlock.Clear()
+                    }
+                    continue
+                }
+
+                $currentBlock.Add($line)
+            }
+
+            if ($currentBlock.Count -gt 0) {
+                $blocks.Add(($currentBlock -join ' '))
+            }
+
+            foreach ($block in $blocks) {
+                if ($block -match '-runTests' -and $block -match "'-quit'|`"-quit`"|\s-quit\b") {
+                    $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/')
+                    Write-LintError -Check 'quit-with-runTests' -File $relPath -Detail "-quit and -runTests found in the same executable code block — -quit can terminate Unity before tests finish"
+                    $check4Fail = $true
+                    break
+                }
             }
         }
     }

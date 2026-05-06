@@ -17,6 +17,7 @@ public sealed class BattlePresentationController : MonoBehaviour
     [SerializeField] private Transform battleStageRoot = null!;
     [SerializeField] private RectTransform actorOverlayRoot = null!;
     [SerializeField] private BattleActorPresentationCatalog presentationCatalog = null!;
+    [SerializeField] private BattleMapCatalog battleMapCatalog = null!;
 
     private readonly Dictionary<string, BattleActorView> _actorViews = new();
     private readonly Dictionary<string, BattleUnitReadModel> _cachedFromUnitsById = new();
@@ -26,6 +27,7 @@ public sealed class BattlePresentationController : MonoBehaviour
     private readonly BattlePresentationCueBuilder _cueBuilder = new();
 
     private Camera _camera = null!;
+    private BattleStageEnvironmentAdapter? _activeEnvironmentAdapter;
     private BattlePresentationOptions _options = BattlePresentationOptions.CreateDefault();
     private BattleUnitMetadataFormatter? _metadataFormatter;
     private BattleSimulationStep? _cachedFromStep;
@@ -36,10 +38,17 @@ public sealed class BattlePresentationController : MonoBehaviour
     public bool IsPaused { get; private set; }
     public int LastCueCount { get; private set; }
     public int TotalCueCount { get; private set; }
+    public string ActiveMapId { get; private set; } = string.Empty;
+    public string ActiveMapDisplayName { get; private set; } = string.Empty;
 
     public void ConfigurePresentationCatalog(BattleActorPresentationCatalog catalog)
     {
         presentationCatalog = catalog;
+    }
+
+    public void ConfigureBattleMapCatalog(BattleMapCatalog catalog)
+    {
+        battleMapCatalog = catalog;
     }
 
     private void LateUpdate()
@@ -57,12 +66,20 @@ public sealed class BattlePresentationController : MonoBehaviour
 
     public void Initialize(BattleSimulationStep initialStep)
     {
+        Initialize(initialStep, BattleMapSelectionContext.Empty);
+    }
+
+    public void Initialize(BattleSimulationStep initialStep, BattleMapSelectionContext mapContext)
+    {
         ValidateReferences();
         _camera = Camera.main!;
         IsPaused = false;
         LastCueCount = 0;
         Clear();
-        CreateStageDecor();
+        var tacticalOverlayMode = CreateSelectedMap(mapContext);
+        CreateStageDecor(tacticalOverlayMode);
+        CreateBattleLighting();
+        _activeEnvironmentAdapter?.Apply();
         var runtimeCatalog = BattleActorPresentationCatalog.ResolveRuntimeCatalog(presentationCatalog);
 
         foreach (var actor in initialStep.Units)
@@ -70,6 +87,7 @@ public sealed class BattlePresentationController : MonoBehaviour
             var wrapperPrefab = runtimeCatalog.ResolveWrapperPrefab(actor);
             var wrapper = Instantiate(wrapperPrefab, transform);
             wrapper.name = $"BattleActor_{actor.Id}_Wrapper";
+            wrapper.gameObject.SetActive(true);
             wrapper.Configure(actor);
             var view = wrapper.GetComponent<BattleActorView>();
             if (view == null)
@@ -176,11 +194,7 @@ public sealed class BattlePresentationController : MonoBehaviour
                 continue;
             }
 
-            var targetId = id == focusActorId
-                ? focusTargetId
-                : id == selectedUnitId
-                    ? unit.TargetId ?? string.Empty
-                    : string.Empty;
+            var targetId = ResolveFacingTargetId(unit, id, selectedUnitId, focusActorId, focusTargetId);
 
             view.ApplyContext(
                 isSelected: id == selectedUnitId,
@@ -191,6 +205,26 @@ public sealed class BattlePresentationController : MonoBehaviour
         }
 
         UpdateStageReadability();
+    }
+
+    private static string ResolveFacingTargetId(
+        BattleUnitReadModel unit,
+        string actorId,
+        string selectedUnitId,
+        string focusActorId,
+        string focusTargetId)
+    {
+        if (actorId == focusActorId && !string.IsNullOrWhiteSpace(focusTargetId))
+        {
+            return focusTargetId;
+        }
+
+        if (actorId == selectedUnitId && !string.IsNullOrWhiteSpace(unit.TargetId))
+        {
+            return unit.TargetId;
+        }
+
+        return unit.TargetId ?? string.Empty;
     }
 
     public void ClearTransients(BattlePresentationCueType reason)
@@ -278,6 +312,7 @@ public sealed class BattlePresentationController : MonoBehaviour
         _cachedToStep = null;
         _selectedAnchorKey = string.Empty;
         _readabilityBoostRemaining = 0f;
+        _activeEnvironmentAdapter = null;
 
         if (battleStageRoot != null)
         {
@@ -301,9 +336,52 @@ public sealed class BattlePresentationController : MonoBehaviour
         }
     }
 
-    private void CreateStageDecor()
+    private BattleMapTacticalOverlayMode CreateSelectedMap(BattleMapSelectionContext context)
     {
+        ActiveMapId = string.Empty;
+        ActiveMapDisplayName = string.Empty;
+
         if (battleStageRoot == null)
+        {
+            return BattleMapTacticalOverlayMode.FullArena;
+        }
+
+        var runtimeCatalog = BattleMapCatalog.ResolveRuntimeCatalog(battleMapCatalog);
+        if (runtimeCatalog == null || !runtimeCatalog.TrySelectMap(context, out var map))
+        {
+            return BattleMapTacticalOverlayMode.FullArena;
+        }
+
+        var instance = Instantiate(map.Prefab, battleStageRoot);
+        instance.name = $"BattleMap_{map.MapId}";
+        instance.transform.localPosition = map.LocalPosition;
+        instance.transform.localRotation = Quaternion.Euler(map.LocalEulerAngles);
+        instance.transform.localScale = map.LocalScale;
+        var materialAdapter = instance.GetComponent<BattleMapMaterialAdapter>();
+        if (materialAdapter == null)
+        {
+            materialAdapter = instance.AddComponent<BattleMapMaterialAdapter>();
+        }
+
+        materialAdapter.Apply();
+        var environmentAdapter = instance.GetComponent<BattleStageEnvironmentAdapter>();
+        if (environmentAdapter == null)
+        {
+            environmentAdapter = instance.AddComponent<BattleStageEnvironmentAdapter>();
+            environmentAdapter.ConfigureForestRuinsDefaults();
+        }
+
+        _activeEnvironmentAdapter = environmentAdapter;
+        _activeEnvironmentAdapter?.Apply();
+
+        ActiveMapId = map.MapId;
+        ActiveMapDisplayName = map.DisplayName;
+        return map.TacticalOverlayMode;
+    }
+
+    private void CreateStageDecor(BattleMapTacticalOverlayMode tacticalOverlayMode)
+    {
+        if (battleStageRoot == null || tacticalOverlayMode == BattleMapTacticalOverlayMode.None)
         {
             return;
         }
@@ -311,38 +389,41 @@ public sealed class BattlePresentationController : MonoBehaviour
         var decorRoot = new GameObject("StageDecor");
         decorRoot.transform.SetParent(battleStageRoot, false);
 
-        var backgroundRoot = new GameObject("Background");
-        backgroundRoot.transform.SetParent(decorRoot.transform, false);
-        CreateStageBlock(
-            backgroundRoot.transform,
-            "ArenaFloor",
-            new Vector3(0f, -1.12f, 0f),
-            new Vector3(18f, 0.16f, 9.2f),
-            new Color(0.18f, 0.14f, 0.11f, 1f));
-        CreateStageBlock(
-            backgroundRoot.transform,
-            "ArenaInnerFloor",
-            new Vector3(0f, -1.04f, 0f),
-            new Vector3(14.2f, 0.04f, 6.8f),
-            new Color(0.25f, 0.21f, 0.17f, 1f));
-        CreateStageBlock(
-            backgroundRoot.transform,
-            "CenterLine",
-            new Vector3(0f, -0.99f, 0f),
-            new Vector3(0.12f, 0.01f, 6.2f),
-            new Color(0.85f, 0.68f, 0.34f, 1f));
-        CreateStageBlock(
-            backgroundRoot.transform,
-            "AllyZone",
-            new Vector3(-3.35f, -0.985f, 0f),
-            new Vector3(4.1f, 0.01f, 5.8f),
-            new Color(0.15f, 0.30f, 0.47f, 1f));
-        CreateStageBlock(
-            backgroundRoot.transform,
-            "EnemyZone",
-            new Vector3(3.35f, -0.985f, 0f),
-            new Vector3(4.1f, 0.01f, 5.8f),
-            new Color(0.42f, 0.17f, 0.15f, 1f));
+        if (tacticalOverlayMode == BattleMapTacticalOverlayMode.FullArena)
+        {
+            var backgroundRoot = new GameObject("Background");
+            backgroundRoot.transform.SetParent(decorRoot.transform, false);
+            CreateStageBlock(
+                backgroundRoot.transform,
+                "ArenaFloor",
+                new Vector3(0f, -1.12f, 0f),
+                new Vector3(18f, 0.16f, 9.2f),
+                new Color(0.18f, 0.14f, 0.11f, 1f));
+            CreateStageBlock(
+                backgroundRoot.transform,
+                "ArenaInnerFloor",
+                new Vector3(0f, -1.04f, 0f),
+                new Vector3(14.2f, 0.04f, 6.8f),
+                new Color(0.25f, 0.21f, 0.17f, 1f));
+            CreateStageBlock(
+                backgroundRoot.transform,
+                "CenterLine",
+                new Vector3(0f, -0.99f, 0f),
+                new Vector3(0.12f, 0.01f, 6.2f),
+                new Color(0.85f, 0.68f, 0.34f, 1f));
+            CreateStageBlock(
+                backgroundRoot.transform,
+                "AllyZone",
+                new Vector3(-3.35f, -0.985f, 0f),
+                new Vector3(4.1f, 0.01f, 5.8f),
+                new Color(0.15f, 0.30f, 0.47f, 1f));
+            CreateStageBlock(
+                backgroundRoot.transform,
+                "EnemyZone",
+                new Vector3(3.35f, -0.985f, 0f),
+                new Vector3(4.1f, 0.01f, 5.8f),
+                new Color(0.42f, 0.17f, 0.15f, 1f));
+        }
 
         var readabilityRoot = new GameObject("ReadabilitySurface");
         readabilityRoot.transform.SetParent(decorRoot.transform, false);
@@ -384,6 +465,56 @@ public sealed class BattlePresentationController : MonoBehaviour
         }
 
         UpdateStageReadability();
+    }
+
+    private void CreateBattleLighting()
+    {
+        if (battleStageRoot == null)
+        {
+            return;
+        }
+
+        var lightingRoot = new GameObject("BattleLighting");
+        lightingRoot.transform.SetParent(battleStageRoot, false);
+
+        var key = CreateBattleLight(
+            lightingRoot.transform,
+            "BattleKeyLight",
+            LightType.Directional,
+            Quaternion.Euler(52f, 145f, 0f),
+            new Color(1f, 0.91f, 0.76f, 1f),
+            1.25f);
+        key.shadows = LightShadows.None;
+
+        var fill = CreateBattleLight(
+            lightingRoot.transform,
+            "BattleFillLight",
+            LightType.Directional,
+            Quaternion.Euler(45f, -35f, 0f),
+            new Color(0.58f, 0.70f, 1f, 1f),
+            0.58f);
+        fill.shadows = LightShadows.None;
+
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+        RenderSettings.ambientLight = new Color(0.18f, 0.16f, 0.14f, 1f);
+    }
+
+    private static Light CreateBattleLight(
+        Transform parent,
+        string name,
+        LightType type,
+        Quaternion rotation,
+        Color color,
+        float intensity)
+    {
+        var lightGo = new GameObject(name);
+        lightGo.transform.SetParent(parent, false);
+        lightGo.transform.rotation = rotation;
+        var light = lightGo.AddComponent<Light>();
+        light.type = type;
+        light.color = color;
+        light.intensity = intensity;
+        return light;
     }
 
     private void UpdateStageReadability()

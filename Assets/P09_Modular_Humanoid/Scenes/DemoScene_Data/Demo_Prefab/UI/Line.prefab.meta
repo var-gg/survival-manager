@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 77755c949a3844992a9fe75a19ea3ac0
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/UI/Line.prefab
+  uploadId: 843050

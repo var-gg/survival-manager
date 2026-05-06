@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5c0ae742d6dc8014ca4f67e25145c99d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Animation/Facial_Emotion/P09_Facial_Damage.anim
+  uploadId: 843050

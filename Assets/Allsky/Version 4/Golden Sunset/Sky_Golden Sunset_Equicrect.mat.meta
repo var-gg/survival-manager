@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 1ba725d54381e418498d22e651dd659d
+labels:
+- AllSky
+- Skies
+- Sky
+- Skybox
+timeCreated: 1544547711
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: -1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Version 4/Golden Sunset/Sky_Golden Sunset_Equicrect.mat
+  uploadId: 679124

@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: a5d4f1df245724f20b5c14f47ec7ead6
+labels:
+- AllSky
+- Skies
+- Sky
+- Skybox
+timeCreated: 1544547711
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: -1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Version 4/Golden Sunset/Golden Sunset.mat
+  uploadId: 679124

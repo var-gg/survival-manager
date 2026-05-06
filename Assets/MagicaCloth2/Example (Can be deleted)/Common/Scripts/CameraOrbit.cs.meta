@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 1fd18111ed866534a92d0a2a59d1608d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 242307
+  packageName: Magica Cloth 2
+  packageVersion: 2.18.1
+  assetPath: Assets/MagicaCloth2/Example (Can be deleted)/Common/Scripts/CameraOrbit.cs
+  uploadId: 893596

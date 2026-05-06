@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 2c3df5b3511214f749fc7cdca2d690a7
+timeCreated: 1551562154
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Space/Space_VortexCloud_Starless/Space_VortexCloud_Starless
+    Equirect.mat
+  uploadId: 679124

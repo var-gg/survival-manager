@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 4faf32381f8644b0e988d32031abefdc
+timeCreated: 1544379895
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/HDRIHaven/Winter Lake/Winter Lake Equirect.mat
+  uploadId: 679124

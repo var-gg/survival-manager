@@ -1,0 +1,1730 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Survival Manager — Style Guide v0.2</title>
+<meta name="viewport" content="width=1440" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Shippori+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+/* ===========================================================
+   SURVIVAL MANAGER — Style Guide v0.2
+   Genshin Impact + Unicorn Overlord 톤 흡수:
+   - 따뜻한 네이비 BG (검정 X, 인디고 양피지 톤)
+   - 와인 + 골드 + 사파이어 메뉴 액센트
+   - 풍성한 곡선 ornament + 보석 인레이
+   - cream/ivory ink (양피지 위 잉크)
+   =========================================================== */
+
+:root {
+  /* === SURFACE — 따뜻한 네이비 양피지 ============================== */
+  --bg-0: #0c1126;          /* 페이지 깊은 미드나잇 인디고 */
+  --bg-1: #141a35;          /* 패널 베이스 (원신 메뉴 톤) */
+  --bg-2: #1c2243;          /* 패널 raised */
+  --bg-3: #262d54;          /* 패널 tier */
+  --line-1: #2c3568;        /* 헤어라인 — 푸른빛 */
+  --line-2: #3b467f;        /* 디바이더 */
+  --vellum: #f5ead0;        /* 양피지 ink — primary */
+  --vellum-2: #e2d4ad;      /* 양피지 muted */
+
+  /* === GOLD — 메뉴 트림 ============================================ */
+  --gold-100: #ffe9a8;      /* 글라인트 */
+  --gold-200: #f5d68a;      /* 라이트 골드 */
+  --gold-300: #e6b751;      /* 시그니처 골드 */
+  --gold-400: #c8932a;      /* 라인 골드 */
+  --gold-500: #8a6418;      /* 섀도우 골드 */
+  --gold-glow: rgba(245, 214, 138, .35);
+
+  /* === INK — 양피지 위 ============================================= */
+  --ink-1: #f5ead0;         /* primary text */
+  --ink-2: #d8c799;         /* secondary */
+  --ink-3: #9d8a5e;         /* muted */
+  --ink-4: #6b5d3f;         /* very muted */
+
+  /* === ARCHETYPE FAMILY — 안료 톤 (회색기 ↓ 채도 ↑) ================= */
+  /* 수인·언데드 — 모스/오크 */
+  --fam-beastkin: #7a8a52;
+  --fam-beastkin-deep: #2e3818;
+  --fam-beastkin-glow: #b9c980;
+
+  /* 뱅가드 — 사파이어 강철 */
+  --fam-vanguard: #4a72b8;
+  --fam-vanguard-deep: #1a2a52;
+  --fam-vanguard-glow: #7fa3e0;
+
+  /* 스트라이커 — 와인 + 엠버 (lead) */
+  --fam-striker: #b6334a;
+  --fam-striker-deep: #5a0e1c;
+  --fam-striker-glow: #f08a3c;
+
+  /* 레인저 — 숲·황토 */
+  --fam-ranger: #b58a36;
+  --fam-ranger-deep: #4d3a14;
+  --fam-ranger-glow: #e6c878;
+
+  /* 미스틱 — 자수정 + 상아 */
+  --fam-mystic: #8a5cb8;
+  --fam-mystic-deep: #3a1f5a;
+  --fam-mystic-glow: #d4b4f0;
+
+  /* === RARITY — 보석 듀얼톤 ======================================== */
+  --rare-common: #cdc4a8;
+  --rare-common-deep: #6b6248;
+  --rare-rare: #5b8ed1;
+  --rare-rare-deep: #1f3b66;
+  --rare-rare-glow: #9bbeed;
+  --rare-epic: #b561d6;
+  --rare-epic-2: #f08a3c;       /* purple→orange dueltone */
+  --rare-epic-deep: #4a2168;
+
+  /* === STATE ====================================================== */
+  --state-safe: #6dbf78;
+  --state-warn: #e8a93b;
+  --state-danger: #e25548;
+  --state-locked: #6b6e85;
+  --state-ko: #8a8a98;
+  --state-injured: #b6334a;     /* warm bruise — lead와 통일 */
+
+  /* === TYPE ======================================================= */
+  --f-ko: "Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --f-jp: "Shippori Mincho", "Yu Mincho", serif;
+  --f-en-display: "Cinzel", "Trajan Pro", serif;
+  --f-en-italic: "Cormorant Garamond", "Playfair Display", serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+  /* === SPACE (8pt) ================================================ */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px;
+  --s-4: 16px; --s-5: 24px; --s-6: 32px; --s-7: 48px;
+
+  --r-sm: 2px; --r-md: 4px; --r-lg: 6px;
+
+  /* === MOTION ===================================================== */
+  --t-snap: 200ms;
+  --e-snap: cubic-bezier(.2,.7,.2,1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  /* 원신/UO 메뉴 — 따뜻한 인디고 + 와인 글로우 BG */
+  background:
+    radial-gradient(1300px 800px at 18% -10%, #2a2050 0%, transparent 55%),
+    radial-gradient(1100px 700px at 95% 25%, #4a1a2e 0%, transparent 55%),
+    radial-gradient(900px 700px at 50% 110%, #1a2050 0%, transparent 60%),
+    var(--bg-0);
+  color: var(--ink-1);
+  font-family: var(--f-ko);
+  font-feature-settings: "ss06", "tnum";
+  line-height: 1.5;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 양피지 텍스처 노이즈 — 아주 미묘하게 */
+body::before {
+  content:"";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 60% 40%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(245,214,138,.03) 0, transparent 1px);
+  background-size: 7px 7px, 11px 11px, 13px 13px;
+}
+
+.canvas {
+  position: relative;
+  z-index: 1;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 56px 48px 96px;
+}
+
+/* ============== HEADER ========================================= */
+.doc-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-6);
+  padding-bottom: var(--s-5);
+  margin-bottom: var(--s-7);
+  position: relative;
+}
+.doc-head::after {
+  content:"";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background:
+    linear-gradient(to right,
+      transparent 0%,
+      var(--gold-400) 8%,
+      var(--gold-200) 50%,
+      var(--gold-400) 92%,
+      transparent 100%);
+}
+.doc-head::before {
+  content:"";
+  position: absolute;
+  left: 0; right: 0; bottom: -3px;
+  height: 1px;
+  background:
+    linear-gradient(to right,
+      transparent 0%,
+      var(--gold-500) 30%,
+      var(--gold-500) 70%,
+      transparent 100%);
+  opacity: .6;
+}
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold-300);
+}
+.doc-title {
+  font-family: var(--f-en-display);
+  font-weight: 700;
+  font-size: 46px;
+  letter-spacing: .06em;
+  margin: 6px 0 4px;
+  background: linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 60%, var(--gold-500) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 1px 0 rgba(0,0,0,.4);
+}
+.doc-title-flourish {
+  display: inline-block;
+  margin: 0 18px;
+  color: var(--gold-300);
+  vertical-align: 4px;
+}
+.doc-subtitle {
+  font-family: var(--f-en-italic);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--ink-2);
+  margin-bottom: 4px;
+}
+.doc-subtitle-ko {
+  font-family: var(--f-ko);
+  font-size: 14px;
+  color: var(--ink-3);
+  max-width: 56ch;
+  margin: 0;
+}
+.doc-meta {
+  text-align: right;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: .06em;
+}
+.doc-meta b { color: var(--gold-200); font-weight: 500; }
+
+/* ============== SECTION ======================================== */
+section { margin-bottom: var(--s-7); }
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-4);
+  margin-bottom: var(--s-5);
+}
+.section-num {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--gold-400);
+  letter-spacing: .18em;
+}
+.section-title {
+  font-family: var(--f-en-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  color: var(--gold-200);
+  margin: 0;
+}
+.section-title-ko {
+  font-family: var(--f-ko);
+  font-size: 13px;
+  color: var(--ink-3);
+  font-weight: 500;
+  margin-left: auto;
+  font-style: normal;
+}
+.section-title-ko::before {
+  content: "—  ";
+  color: var(--gold-500);
+}
+.section-rule {
+  height: 1px;
+  background: linear-gradient(to right, var(--gold-400) 0%, transparent 80%);
+  flex: 1;
+  margin-bottom: 4px;
+}
+
+/* ============== COLOR SWATCH =================================== */
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--s-3);
+}
+.swatch-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+.swatch {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  position: relative;
+}
+/* 작은 골드 코너 인레이 — 모든 swatch 카드에 ornament 일관 */
+.swatch::before, .swatch::after {
+  content:"";
+  position: absolute;
+  width: 10px; height: 10px;
+  border: 1px solid var(--gold-400);
+  z-index: 2;
+  pointer-events: none;
+}
+.swatch::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.swatch::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+.swatch-chip {
+  height: 92px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--s-2) var(--s-3);
+}
+.swatch-chip.split::before,
+.swatch-chip.split::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 50%;
+}
+.swatch-chip.split::before { left: 0; background: var(--chip); }
+.swatch-chip.split::after  { left: 50%; background: var(--chip-deep); }
+
+/* glow 점 — 원신 메뉴 점 같은 highlight */
+.swatch-chip.split .glow {
+  position: absolute;
+  bottom: 8px; right: 8px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--chip-glow);
+  box-shadow: 0 0 10px var(--chip-glow), 0 0 18px var(--chip-glow);
+  border: 1px solid rgba(255,255,255,.4);
+  z-index: 1;
+}
+
+.swatch-chip-label {
+  position: relative;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,.92);
+  text-shadow: 0 1px 2px rgba(0,0,0,.6);
+  letter-spacing: .04em;
+  z-index: 1;
+}
+.swatch-meta {
+  padding: var(--s-3);
+  border-top: 1px solid var(--line-1);
+  background:
+    linear-gradient(180deg, rgba(245,214,138,.04), transparent);
+}
+.swatch-name {
+  font-family: var(--f-ko);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-1);
+  margin: 0;
+}
+.swatch-name .en {
+  font-family: var(--f-en-display);
+  font-size: 10px;
+  color: var(--gold-300);
+  letter-spacing: .14em;
+  margin-left: 6px;
+  font-weight: 600;
+}
+.swatch-hex {
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  color: var(--ink-3);
+  margin-top: 2px;
+  letter-spacing: .04em;
+}
+.swatch-note {
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-top: 4px;
+}
+
+/* state strip */
+.state-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--s-3);
+}
+.state-cell {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: var(--s-3);
+  position: relative;
+}
+.state-cell::before, .state-cell::after {
+  content:"";
+  position: absolute;
+  width: 8px; height: 8px;
+  border: 1px solid var(--gold-400);
+  z-index: 2;
+}
+.state-cell::before { top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.state-cell::after  { bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+.state-dot {
+  width: 12px; height: 12px;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+  transform: rotate(45deg);
+  border: 1px solid rgba(255,255,255,.3);
+  box-shadow: 0 0 8px currentColor;
+}
+.state-name {
+  font-family: var(--f-ko);
+  font-size: 13px;
+  font-weight: 700;
+}
+.state-en {
+  font-family: var(--f-en-display);
+  font-size: 11px;
+  color: var(--gold-300);
+  letter-spacing: .12em;
+  margin-top: 4px;
+  font-weight: 600;
+}
+.state-ex {
+  height: 30px;
+  margin-top: var(--s-3);
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+}
+
+/* ============== TYPOGRAPHY ===================================== */
+.type-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr 240px;
+  gap: var(--s-5);
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: var(--s-5);
+  position: relative;
+}
+.type-grid::before, .type-grid::after {
+  content:"";
+  position: absolute;
+  width: 12px; height: 12px;
+  border: 1px solid var(--gold-400);
+}
+.type-grid::before { top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.type-grid::after  { bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+.type-grid + .type-grid { margin-top: var(--s-3); }
+.type-tag {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--gold-300);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.type-role {
+  font-family: var(--f-ko);
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 4px;
+}
+.type-spec {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: .04em;
+  line-height: 1.7;
+}
+.type-spec b { color: var(--ink-1); font-weight: 500; }
+
+.sample-display {
+  font-family: var(--f-en-display);
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  line-height: 1.05;
+  background: linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 60%, var(--gold-500) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sample-display .ko {
+  font-family: var(--f-ko);
+  font-weight: 800;
+  font-size: 44px;
+  letter-spacing: -.02em;
+  margin-left: var(--s-3);
+  background: linear-gradient(180deg, var(--vellum) 0%, var(--gold-200) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sample-ko-body {
+  font-family: var(--f-ko);
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink-1);
+  max-width: 60ch;
+}
+.sample-ko-body b { color: var(--gold-200); font-weight: 700; }
+.sample-jp {
+  font-family: var(--f-jp);
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--ink-2);
+  letter-spacing: .04em;
+}
+.sample-jp .ruby {
+  color: var(--ink-3);
+  font-size: 11px;
+  letter-spacing: .12em;
+  font-family: var(--f-jp);
+}
+.sample-mono {
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  color: var(--ink-2);
+  letter-spacing: .02em;
+}
+.sample-mono .key { color: var(--gold-300); }
+.sample-mono .num { color: var(--rare-rare-glow); }
+.sample-mono .str { color: var(--state-safe); }
+
+.mixed-block {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: var(--s-5);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-5);
+  position: relative;
+}
+.mixed-block::before, .mixed-block::after {
+  content:"";
+  position: absolute;
+  width: 12px; height: 12px;
+  border: 1px solid var(--gold-400);
+}
+.mixed-block::before { top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.mixed-block::after  { bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.mixed-block .lbl {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .16em;
+  color: var(--gold-300);
+  text-transform: uppercase;
+  margin-bottom: var(--s-2);
+}
+
+/* ============== ORNATE CARD ==================================== */
+.frame-row {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--s-6);
+  align-items: start;
+}
+
+.ornate-card {
+  --frame-fam: var(--fam-striker);
+  --frame-fam-deep: var(--fam-striker-deep);
+  --frame-fam-glow: var(--fam-striker-glow);
+  position: relative;
+  width: 320px;
+  height: 480px;
+  padding: 18px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(245,214,138,.06) 0%, transparent 60%),
+    linear-gradient(180deg, #1c1f44 0%, #141a35 50%, #0e1226 100%);
+  isolation: isolate;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,.4));
+}
+/* outer + inner gold border (이중 라인) */
+.ornate-card::before {
+  content:"";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--gold-500);
+  pointer-events: none;
+}
+.ornate-card::after {
+  content:"";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--gold-300);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.55),
+    inset 0 0 24px rgba(0,0,0,.5),
+    inset 0 0 60px rgba(245,214,138,.05);
+  pointer-events: none;
+}
+
+/* corner ornament */
+.ornate-corner {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  pointer-events: none;
+  color: var(--gold-300);
+  z-index: 3;
+  filter: drop-shadow(0 0 4px rgba(245,214,138,.3));
+}
+.ornate-corner.tl { top: -3px; left: -3px; }
+.ornate-corner.tr { top: -3px; right: -3px; transform: scaleX(-1); }
+.ornate-corner.bl { bottom: -3px; left: -3px; transform: scaleY(-1); }
+.ornate-corner.br { bottom: -3px; right: -3px; transform: scale(-1,-1); }
+
+/* family color rib — 상단 */
+.ornate-card .fam-rib {
+  position: absolute;
+  top: 6px; left: 6px; right: 6px;
+  height: 4px;
+  background: linear-gradient(to right,
+    transparent 0%,
+    var(--frame-fam-deep) 15%,
+    var(--frame-fam) 50%,
+    var(--frame-fam-deep) 85%,
+    transparent 100%);
+  z-index: 1;
+  box-shadow: 0 0 8px var(--frame-fam-glow);
+}
+/* 중앙 보석 인레이 — UO 카드 시그니처 */
+.ornate-card .gem {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%) rotate(45deg);
+  width: 14px; height: 14px;
+  background: linear-gradient(135deg, var(--frame-fam-glow), var(--frame-fam));
+  border: 1px solid var(--gold-200);
+  box-shadow: 0 0 10px var(--frame-fam-glow), inset 0 0 4px rgba(255,255,255,.5);
+  z-index: 4;
+}
+
+.portrait-window {
+  position: relative;
+  width: 100%;
+  height: 290px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, var(--frame-fam-deep) 0%, transparent 70%),
+    radial-gradient(ellipse 100% 100% at 50% 100%, #0a0d20 0%, #060814 80%);
+  border: 1px solid var(--gold-500);
+  margin-bottom: 14px;
+  overflow: hidden;
+  z-index: 1;
+}
+.portrait-window::before {
+  /* 내부 골드 인레이 라인 */
+  content:"";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(230,183,81,.25);
+  pointer-events: none;
+}
+.portrait-window::after {
+  /* 비네팅 */
+  content:"";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 60px rgba(0,0,0,.7);
+  pointer-events: none;
+}
+.portrait-silhouette {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 250px;
+}
+.portrait-tag {
+  position: absolute;
+  top: 10px; left: 10px;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: .16em;
+  color: var(--gold-200);
+  background: rgba(0,0,0,.65);
+  padding: 4px 7px;
+  border: 1px solid var(--gold-500);
+  z-index: 2;
+}
+.portrait-rarity {
+  position: absolute;
+  top: 10px; right: 10px;
+  display: flex;
+  gap: 4px;
+  z-index: 2;
+}
+.portrait-rarity i {
+  width: 11px; height: 11px;
+  background: linear-gradient(135deg, var(--rare-epic-2), var(--rare-epic));
+  transform: rotate(45deg);
+  border: 1px solid var(--gold-200);
+  box-shadow: 0 0 6px var(--rare-epic-2);
+}
+
+.ornate-name {
+  font-family: var(--f-en-display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin: 0;
+  text-align: center;
+  background: linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 70%, var(--gold-500) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 1px 2px rgba(0,0,0,.6);
+}
+.ornate-name-ko {
+  font-family: var(--f-ko);
+  font-size: 14px;
+  color: var(--vellum);
+  text-align: center;
+  margin-top: 2px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.ornate-arch {
+  text-align: center;
+  margin-top: 6px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .22em;
+  color: var(--frame-fam-glow);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.ornate-arch::before, .ornate-arch::after {
+  content:"";
+  width: 24px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold-400), transparent);
+}
+
+.ornate-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  margin-top: 14px;
+  border: 1px solid var(--gold-500);
+  background:
+    linear-gradient(180deg, rgba(245,214,138,.05) 0%, rgba(0,0,0,.3) 100%);
+}
+.ornate-stat {
+  padding: 8px 8px;
+  text-align: center;
+  border-right: 1px solid var(--gold-500);
+  position: relative;
+}
+.ornate-stat:last-child { border-right: none; }
+.ornate-stat .k {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: .18em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+}
+.ornate-stat .v {
+  font-family: var(--f-en-display);
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+/* spec column */
+.frame-spec {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: var(--s-5);
+  position: relative;
+}
+.frame-spec::before, .frame-spec::after {
+  content:"";
+  position: absolute;
+  width: 12px; height: 12px;
+  border: 1px solid var(--gold-400);
+}
+.frame-spec::before { top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.frame-spec::after  { bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.frame-spec h4 {
+  margin: 0 0 var(--s-3);
+  font-family: var(--f-en-display);
+  font-size: 14px;
+  letter-spacing: .12em;
+  color: var(--gold-300);
+  font-weight: 600;
+}
+.frame-spec ul {
+  margin: 0; padding: 0; list-style: none;
+  display: grid; gap: 12px;
+}
+.frame-spec li {
+  font-family: var(--f-ko);
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.65;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.frame-spec li b {
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  color: var(--gold-300);
+  text-transform: uppercase;
+  font-weight: 500;
+  padding-top: 2px;
+}
+.frame-spec li code {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--gold-200);
+}
+
+/* ============== HUD =========================================== */
+.hud-wrap {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: var(--s-5);
+  position: relative;
+}
+.hud-wrap::before, .hud-wrap::after {
+  content:"";
+  position: absolute;
+  width: 12px; height: 12px;
+  border: 1px solid var(--gold-400);
+}
+.hud-wrap::before { top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.hud-wrap::after  { bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+.hud-strip {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: var(--s-4);
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(28,34,67,.92), rgba(14,18,38,.92)),
+    radial-gradient(circle at 20% 50%, rgba(182,51,74,.15), transparent 60%);
+  border: 1px solid var(--gold-500);
+  padding: 12px 16px;
+  position: relative;
+}
+.hud-strip::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(245,214,138,.3);
+  pointer-events: none;
+}
+.hud-strip > * { position: relative; z-index: 1; }
+
+.hud-portrait {
+  width: 60px; height: 60px;
+  background: radial-gradient(circle at 50% 30%, var(--fam-striker-deep), #050714);
+  border: 1px solid var(--gold-300);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(0,0,0,.5);
+}
+.hud-portrait::before {
+  content:"";
+  position: absolute;
+  inset: 2px;
+  border: 1px solid rgba(245,214,138,.2);
+  pointer-events: none;
+  z-index: 2;
+}
+.hud-portrait .silhouette {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px; height: 56px;
+}
+.hud-portrait .lvl {
+  position: absolute;
+  bottom: 2px; right: 3px;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--gold-200);
+  background: rgba(0,0,0,.75);
+  padding: 0 4px;
+  letter-spacing: .04em;
+  z-index: 3;
+}
+
+.hud-mid { display: grid; gap: 6px; }
+.hud-name {
+  display: flex; align-items: baseline; gap: var(--s-3);
+  font-family: var(--f-ko);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--vellum);
+  letter-spacing: .02em;
+}
+.hud-name .arch {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .16em;
+  color: var(--fam-striker-glow);
+  text-transform: uppercase;
+}
+.hp-row {
+  display: grid;
+  grid-template-columns: 22px 1fr 100px;
+  gap: 10px;
+  align-items: center;
+}
+.hp-icon {
+  color: var(--state-danger);
+  width: 22px; height: 22px;
+  filter: drop-shadow(0 0 3px rgba(226,85,72,.5));
+}
+.hp-bar {
+  position: relative;
+  height: 16px;
+  background:
+    linear-gradient(180deg, #050714 0%, #0c1126 100%);
+  border: 1px solid var(--gold-500);
+  box-shadow: inset 0 0 6px rgba(0,0,0,.6);
+}
+.hp-bar .fill {
+  position: absolute;
+  top: 1px; bottom: 1px; left: 1px;
+  width: 68%;
+  background:
+    linear-gradient(180deg, #f08a3c 0%, #c4344a 50%, #6a1822 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,220,180,.5),
+    inset 0 -2px 0 rgba(0,0,0,.4);
+}
+.hp-bar .fill::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(255,233,168,.7), transparent);
+}
+.hp-bar .tick {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(0,0,0,.5);
+  box-shadow: 1px 0 0 rgba(245,214,138,.15);
+}
+.hp-text {
+  font-family: var(--f-en-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-align: right;
+  letter-spacing: .04em;
+  line-height: 1;
+  background: linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hp-text small {
+  font-size: 11px;
+  color: var(--ink-3);
+  font-family: var(--f-mono);
+  margin-left: 4px;
+  letter-spacing: .04em;
+  -webkit-text-fill-color: var(--ink-3);
+}
+
+.hud-right {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.state-pill {
+  font-family: var(--f-ko);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border: 1px solid currentColor;
+  color: var(--state-warn);
+  background: rgba(232,169,59,.1);
+  letter-spacing: .04em;
+  position: relative;
+}
+.state-pill::before, .state-pill::after {
+  content:"";
+  position: absolute;
+  width: 5px; height: 5px;
+  border: 1px solid currentColor;
+}
+.state-pill::before { top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.state-pill::after  { bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.state-pill .en {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: .16em;
+  margin-left: 6px;
+  opacity: .75;
+}
+.status-icon {
+  width: 30px; height: 30px;
+  border: 1px solid var(--gold-500);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(245,214,138,.06), rgba(0,0,0,.4));
+  display: grid;
+  place-items: center;
+  color: var(--gold-200);
+  position: relative;
+}
+.status-icon[data-kind="bleed"] { color: var(--state-danger); border-color: rgba(226,85,72,.6); }
+.status-icon[data-kind="guard"] { color: var(--state-safe);   border-color: rgba(109,191,120,.5); }
+.status-icon .stack {
+  position: absolute;
+  bottom: -3px; right: -3px;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  background: var(--bg-0);
+  border: 1px solid var(--gold-400);
+  color: var(--gold-100);
+  padding: 0 3px;
+  line-height: 1.5;
+}
+
+.hud-callouts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+  font-family: var(--f-ko);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.hud-callouts > div {
+  border-left: 2px solid var(--gold-400);
+  padding: 2px 0 2px 12px;
+  line-height: 1.65;
+}
+.hud-callouts b {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .16em;
+  color: var(--gold-300);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+
+/* ============== MOTION ======================================== */
+.motion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+}
+.motion-card {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  padding: var(--s-4);
+  position: relative;
+}
+.motion-card::before, .motion-card::after {
+  content:"";
+  position: absolute;
+  width: 10px; height: 10px;
+  border: 1px solid var(--gold-400);
+}
+.motion-card::before { top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.motion-card::after  { bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+.motion-card .num {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .16em;
+  color: var(--gold-400);
+}
+.motion-card .h {
+  font-family: var(--f-en-display);
+  font-size: 17px;
+  margin: 6px 0 8px;
+  letter-spacing: .06em;
+  font-weight: 600;
+  background: linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.motion-card .b {
+  font-family: var(--f-ko);
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+.motion-card .b code {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--gold-200);
+  background: rgba(245,214,138,.06);
+  padding: 1px 5px;
+  border: 1px solid var(--gold-500);
+  margin: 0 1px;
+}
+
+.doc-foot {
+  margin-top: var(--s-7);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--gold-500);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  color: var(--ink-3);
+  letter-spacing: .12em;
+  position: relative;
+}
+.doc-foot::before {
+  content:"";
+  position: absolute;
+  top: -2px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold-300), transparent);
+}
+.doc-foot b { color: var(--gold-200); font-weight: 500; }
+
+/* 헤더 flourish — 작은 마름모 그래픽 */
+.flourish {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.flourish i {
+  width: 5px; height: 5px;
+  background: var(--gold-300);
+  transform: rotate(45deg);
+  display: inline-block;
+}
+.flourish i:nth-child(2) {
+  width: 8px; height: 8px;
+  background: var(--gold-200);
+  border: 1px solid var(--gold-500);
+}
+</style>
+</head>
+<body>
+
+<main class="canvas">
+
+  <!-- ============== HEADER ===================================== -->
+  <header class="doc-head">
+    <div>
+      <div class="eyebrow">— STYLE GUIDE · V0.2 / FOUNDATION —</div>
+      <h1 class="doc-title">
+        Survival
+        <span class="doc-title-flourish">
+          <span class="flourish"><i></i><i></i><i></i></span>
+        </span>
+        Manager
+      </h1>
+      <div class="doc-subtitle">A solo-dev tactical roster, drawn in the temperament of Teyvat.</div>
+      <p class="doc-subtitle-ko">
+        원신·유니콘 오버로드의 따뜻한 인디고 양피지 메뉴 톤을 흡수.
+        다크 BG에 anime cell-shaded 캐릭터가 떠오르고, 깊은 와인·골드의 장식 프레임이 카드와 HUD를 둘러싼다.
+      </p>
+    </div>
+    <div class="doc-meta">
+      <div><b>Engine</b> &nbsp;Unity UITK</div>
+      <div><b>Locale</b> &nbsp;ko · ja · en</div>
+      <div><b>Platform</b> &nbsp;PC + Mobile</div>
+      <div><b>Rev</b> &nbsp;0.2 · 2026.05</div>
+    </div>
+  </header>
+
+  <!-- ============== 01 · ARCHETYPE FAMILY ====================== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">I · COLOR</span>
+      <h2 class="section-title">Archetype Family</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">아키타입 5종 · 안료 톤 · 카드와 상태 액센트</span>
+    </div>
+
+    <div class="swatch-grid">
+
+      <div class="swatch">
+        <div class="swatch-chip split" style="--chip:var(--fam-beastkin); --chip-deep:var(--fam-beastkin-deep); --chip-glow:var(--fam-beastkin-glow);">
+          <span class="glow"></span>
+          <span class="swatch-chip-label">moss · oak</span>
+        </div>
+        <div class="swatch-meta">
+          <p class="swatch-name">수인·언데드 <span class="en">BEASTKIN</span></p>
+          <div class="swatch-hex">#7A8A52 · #2E3818</div>
+          <div class="swatch-note">이끼·재 · 부패한 자연</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-chip split" style="--chip:var(--fam-vanguard); --chip-deep:var(--fam-vanguard-deep); --chip-glow:var(--fam-vanguard-glow);">
+          <span class="glow"></span>
+          <span class="swatch-chip-label">sapphire steel</span>
+        </div>
+        <div class="swatch-meta">
+          <p class="swatch-name">선봉 <span class="en">VANGUARD</span></p>
+          <div class="swatch-hex">#4A72B8 · #1A2A52</div>
+          <div class="swatch-note">사파이어·강철 · 기사 갑주</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-chip split" style="--chip:var(--fam-striker); --chip-deep:var(--fam-striker-deep); --chip-glow:var(--fam-striker-glow);">
+          <span class="glow"></span>
+          <span class="swatch-chip-label">wine · ember</span>
+        </div>
+        <div class="swatch-meta">
+          <p class="swatch-name">스트라이커 <span class="en">STRIKER · LEAD</span></p>
+          <div class="swatch-hex">#B6334A · #5A0E1C</div>
+          <div class="swatch-note">와인·엠버 · UI lead 액센트</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-chip split" style="--chip:var(--fam-ranger); --chip-deep:var(--fam-ranger-deep); --chip-glow:var(--fam-ranger-glow);">
+          <span class="glow"></span>
+          <span class="swatch-chip-label">amber · wheat</span>
+        </div>
+        <div class="swatch-meta">
+          <p class="swatch-name">레인저 <span class="en">RANGER</span></p>
+          <div class="swatch-hex">#B58A36 · #4D3A14</div>
+          <div class="swatch-note">호박·밀짚 · 가죽과 뼈</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-chip split" style="--chip:var(--fam-mystic); --chip-deep:var(--fam-mystic-deep); --chip-glow:var(--fam-mystic-glow);">
+          <span class="glow"></span>
+          <span class="swatch-chip-label">amethyst</span>
+        </div>
+        <div class="swatch-meta">
+          <p class="swatch-name">미스틱 <span class="en">MYSTIC</span></p>
+          <div class="swatch-hex">#8A5CB8 · #3A1F5A</div>
+          <div class="swatch-note">자수정·상아 · 마법 광채</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== 02 · RARITY ================================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">II · COLOR</span>
+      <h2 class="section-title">Rarity</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">희귀도 3단계 · 보석 듀얼톤</span>
+    </div>
+
+    <div class="swatch-grid cols-3">
+
+      <div class="swatch">
+        <div class="swatch-chip split" style="--chip:var(--rare-common); --chip-deep:var(--rare-common-deep); --chip-glow:var(--vellum);">
+          <span class="glow"></span>
+          <span class="swatch-chip-label" style="color:#1a1828;">parchment</span>
+        </div>
+        <div class="swatch-meta">
+          <p class="swatch-name">일반 <span class="en">COMMON · 1★</span></p>
+          <div class="swatch-hex">#CDC4A8 · #6B6248</div>
+          <div class="swatch-note">크림·세피아 · 프레임 single line</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-chip split" style="--chip:var(--rare-rare); --chip-deep:var(--rare-rare-deep); --chip-glow:var(--rare-rare-glow);">
+          <span class="glow"></span>
+          <span class="swatch-chip-label">sapphire</span>
+        </div>
+        <div class="swatch-meta">
+          <p class="swatch-name">희귀 <span class="en">RARE · 2★</span></p>
+          <div class="swatch-hex">#5B8ED1 · #1F3B66</div>
+          <div class="swatch-note">사파이어 · 프레임 light glow</div>
+        </div>
+      </div>
+
+      <div class="swatch">
+        <div class="swatch-chip split" style="--chip:var(--rare-epic); --chip-deep:var(--rare-epic-2); --chip-glow:#ffe0a0;">
+          <span class="glow"></span>
+          <span class="swatch-chip-label">amethyst → flame</span>
+        </div>
+        <div class="swatch-meta">
+          <p class="swatch-name">에픽 <span class="en">EPIC · 3★</span></p>
+          <div class="swatch-hex">#B561D6 · #F08A3C</div>
+          <div class="swatch-note">자수정→불꽃 듀얼톤 · 골드 corner cap 필수</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== 03 · STATE ================================= -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">III · COLOR</span>
+      <h2 class="section-title">State</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">전투·로스터 6상태</span>
+    </div>
+
+    <div class="state-strip">
+      <div class="state-cell">
+        <div><span class="state-dot" style="background:var(--state-safe); color:var(--state-safe);"></span><span class="state-name">안전</span></div>
+        <div class="state-en">SAFE · #6DBF78</div>
+        <div class="state-ex" style="background:rgba(109,191,120,.12); border:1px solid var(--state-safe); color:var(--state-safe);">SAFE</div>
+      </div>
+      <div class="state-cell">
+        <div><span class="state-dot" style="background:var(--state-warn); color:var(--state-warn);"></span><span class="state-name">경고</span></div>
+        <div class="state-en">WARN · #E8A93B</div>
+        <div class="state-ex" style="background:rgba(232,169,59,.12); border:1px solid var(--state-warn); color:var(--state-warn);">WARN</div>
+      </div>
+      <div class="state-cell">
+        <div><span class="state-dot" style="background:var(--state-danger); color:var(--state-danger);"></span><span class="state-name">위험</span></div>
+        <div class="state-en">DANGER · #E25548</div>
+        <div class="state-ex" style="background:rgba(226,85,72,.12); border:1px solid var(--state-danger); color:var(--state-danger);">DANGER</div>
+      </div>
+      <div class="state-cell">
+        <div><span class="state-dot" style="background:var(--state-locked); color:var(--state-locked); box-shadow:none;"></span><span class="state-name">잠김</span></div>
+        <div class="state-en">LOCKED · #6B6E85</div>
+        <div class="state-ex" style="background:rgba(107,110,133,.08); border:1px dashed var(--state-locked); color:var(--state-locked); filter:saturate(.4);">LOCKED</div>
+      </div>
+      <div class="state-cell">
+        <div><span class="state-dot" style="background:var(--state-ko); color:var(--state-ko); box-shadow:none;"></span><span class="state-name">전투불능</span></div>
+        <div class="state-en">KO · #8A8A98</div>
+        <div class="state-ex" style="background:rgba(138,138,152,.08); border:1px solid var(--state-ko); color:var(--state-ko); filter:grayscale(.6);">K.O.</div>
+      </div>
+      <div class="state-cell">
+        <div><span class="state-dot" style="background:var(--state-injured); color:var(--state-injured);"></span><span class="state-name">부상</span></div>
+        <div class="state-en">INJURED · #B6334A</div>
+        <div class="state-ex" style="background:rgba(182,51,74,.12); border:1px solid var(--state-injured); color:var(--state-injured);">INJURED</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== 04 · TYPOGRAPHY ============================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">IV · TYPE</span>
+      <h2 class="section-title">Typography</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">한일영 혼용 · 4 family · vellum 잉크 톤</span>
+    </div>
+
+    <div class="type-grid">
+      <div>
+        <div class="type-tag">DISPLAY</div>
+        <div class="type-role">표제·로고 · 골드 그라디언트</div>
+      </div>
+      <div>
+        <div class="sample-display">SURVIVAL <span class="ko">매니저</span></div>
+      </div>
+      <div class="type-spec">
+        <b>Cinzel</b> 700 · 56/60<br>
+        <b>Pretendard</b> 800 · 44<br>
+        ls .06em · gold gradient<br>
+        용도&nbsp;: 챕터 인트로, 모달 제목
+      </div>
+    </div>
+
+    <div class="type-grid">
+      <div>
+        <div class="type-tag">KO BODY</div>
+        <div class="type-role">본문·UI 한국어 · vellum</div>
+      </div>
+      <div>
+        <p class="sample-ko-body" style="margin:0;">
+          폐허가 된 분기점에서 우리는 다시 갈라진다. 살아남은 자만이 다음 캠프에 도착하고,
+          그곳에서 또 한 번의 선택이 기다리고 있다. <b>스트라이커</b>는 앞으로,
+          <b>레인저</b>는 정찰로. 결정은 당신의 몫이다.
+        </p>
+      </div>
+      <div class="type-spec">
+        <b>Pretendard</b> 400/600/800<br>
+        15 / 1.75<br>
+        feature&nbsp;: ss06, tnum<br>
+        용도&nbsp;: 대화·설명·로스터
+      </div>
+    </div>
+
+    <div class="type-grid">
+      <div>
+        <div class="type-tag">JP SUB</div>
+        <div class="type-role">일본어 자막 · mincho</div>
+      </div>
+      <div>
+        <p class="sample-jp" style="margin:0;">
+          <span class="ruby">ハ ル カナ ル</span><br>
+          —— 遥かなる丘の向こうに、まだ灯りが残っている。
+        </p>
+      </div>
+      <div class="type-spec">
+        <b>Shippori Mincho</b> 500/700<br>
+        16 / 1.85 · ls .04em<br>
+        용도&nbsp;: 일본어 보이스 자막,<br>분위기용 인용
+      </div>
+    </div>
+
+    <div class="type-grid">
+      <div>
+        <div class="type-tag">DEV TAG</div>
+        <div class="type-role">개발 태그·수치·키 · monospace</div>
+      </div>
+      <div>
+        <p class="sample-mono" style="margin:0;">
+          <span class="key">ECHO</span> <span class="num">15</span> &nbsp;·&nbsp;
+          <span class="key">REFIT</span> <span class="num">+12</span> &nbsp;·&nbsp;
+          <span class="key">BUCKET</span> <span class="str">"WildcardRisk"</span><br>
+          <span class="key">SYNERGY</span> race=<span class="num">2/4</span> &nbsp;class=<span class="num">2/3</span> &nbsp;tier=T1
+        </p>
+      </div>
+      <div class="type-spec">
+        <b>JetBrains Mono</b> 400/500<br>
+        12.5 / 1.6<br>
+        용도&nbsp;: 코스트, 카운터,<br>아키타입 태그, 로컬키
+      </div>
+    </div>
+
+    <div class="mixed-block" style="margin-top:var(--s-4);">
+      <div>
+        <div class="lbl">한·일·영 동시 한 화면</div>
+        <p class="sample-ko-body" style="margin:0;">
+          “이 길은 무너졌어. 우회로를 찾아야 해.”
+          <span style="display:block; margin-top:8px;" class="sample-jp">「この道は崩れている。迂回路を探そう。」</span>
+          <span class="sample-mono" style="display:block; margin-top:8px;">
+            <span class="key">DLG_ROUTE_BROKEN_001</span> &nbsp;voice=<span class="str">"jp_strk_03"</span> &nbsp;reveal=<span class="num">28</span>ms/char
+          </span>
+        </p>
+      </div>
+      <div>
+        <div class="lbl">스테이터스 수치 강조</div>
+        <div style="display:flex; align-items:baseline; gap:14px;">
+          <div style="font-family:var(--f-en-display); font-size:52px; font-weight:700; line-height:1; background:linear-gradient(180deg,var(--gold-100),var(--gold-300) 60%,var(--gold-500)); -webkit-background-clip:text; background-clip:text; color:transparent;">
+            128<span style="font-size:18px; -webkit-text-fill-color:var(--ink-3);">/180</span>
+          </div>
+          <div>
+            <div class="lbl" style="margin:0;">HP · CURRENT</div>
+            <div style="font-family:var(--f-ko); font-size:13px; color:var(--ink-2);">스트라이커 · 카에데</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== 05 · ORNATE CARD =========================== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">V · FRAME</span>
+      <h2 class="section-title">Ornate Card · Sample</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">heavy ornate · 곡선 코너 · 보석 인레이 · family 리브</span>
+    </div>
+
+    <div class="frame-row">
+
+      <div class="ornate-card">
+        <div class="fam-rib"></div>
+        <div class="gem"></div>
+
+        <!-- corner ornament: vine + diamond + flourish -->
+        <svg class="ornate-corner tl" viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+          <!-- L-bracket double line -->
+          <path d="M0 18 L0 0 L18 0" />
+          <path d="M3 22 L3 3 L22 3" opacity=".5" />
+          <!-- vine flourish -->
+          <path d="M3 12 Q 12 12 12 3" />
+          <path d="M8 18 Q 18 18 18 8" opacity=".7" />
+          <!-- diamond gem -->
+          <path d="M8 8 L11 5 L14 8 L11 11 Z" fill="currentColor" stroke="none"/>
+          <circle cx="11" cy="8" r="1" fill="#fff8e0"/>
+          <!-- petal accent -->
+          <path d="M22 22 Q 30 22 30 14" opacity=".4" />
+          <circle cx="22" cy="22" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+        <svg class="ornate-corner tr" viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+          <path d="M0 18 L0 0 L18 0" />
+          <path d="M3 22 L3 3 L22 3" opacity=".5" />
+          <path d="M3 12 Q 12 12 12 3" />
+          <path d="M8 18 Q 18 18 18 8" opacity=".7" />
+          <path d="M8 8 L11 5 L14 8 L11 11 Z" fill="currentColor" stroke="none"/>
+          <circle cx="11" cy="8" r="1" fill="#fff8e0"/>
+          <path d="M22 22 Q 30 22 30 14" opacity=".4" />
+          <circle cx="22" cy="22" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+        <svg class="ornate-corner bl" viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+          <path d="M0 18 L0 0 L18 0" />
+          <path d="M3 22 L3 3 L22 3" opacity=".5" />
+          <path d="M3 12 Q 12 12 12 3" />
+          <path d="M8 18 Q 18 18 18 8" opacity=".7" />
+          <path d="M8 8 L11 5 L14 8 L11 11 Z" fill="currentColor" stroke="none"/>
+          <circle cx="11" cy="8" r="1" fill="#fff8e0"/>
+          <path d="M22 22 Q 30 22 30 14" opacity=".4" />
+          <circle cx="22" cy="22" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+        <svg class="ornate-corner br" viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+          <path d="M0 18 L0 0 L18 0" />
+          <path d="M3 22 L3 3 L22 3" opacity=".5" />
+          <path d="M3 12 Q 12 12 12 3" />
+          <path d="M8 18 Q 18 18 18 8" opacity=".7" />
+          <path d="M8 8 L11 5 L14 8 L11 11 Z" fill="currentColor" stroke="none"/>
+          <circle cx="11" cy="8" r="1" fill="#fff8e0"/>
+          <path d="M22 22 Q 30 22 30 14" opacity=".4" />
+          <circle cx="22" cy="22" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+
+        <!-- portrait -->
+        <div class="portrait-window">
+          <span class="portrait-tag">P09 · RENDERTEXTURE</span>
+          <div class="portrait-rarity" title="EPIC"><i></i><i></i><i></i></div>
+
+          <svg class="portrait-silhouette" viewBox="0 0 200 250" fill="none">
+            <defs>
+              <linearGradient id="ulg1" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#3a1820"/>
+                <stop offset="60%" stop-color="#1c0e16"/>
+                <stop offset="100%" stop-color="#0a0510"/>
+              </linearGradient>
+              <linearGradient id="ulg2" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#f08a3c"/>
+                <stop offset="100%" stop-color="#b6334a"/>
+              </linearGradient>
+            </defs>
+            <!-- outer cape silhouette -->
+            <path d="M10 250 L10 200 Q10 160 36 142 L60 130 Q72 124 82 110 Q88 100 88 88 Q88 78 100 78 Q112 78 112 88 Q112 100 118 110 Q128 124 140 130 L164 142 Q190 160 190 200 L190 250 Z" fill="url(#ulg1)"/>
+            <!-- pauldrons (Striker family — gold/wine spike) -->
+            <path d="M30 168 Q 38 142 60 142 L62 168 Z" fill="#5a0e1c" stroke="#e6b751" stroke-width="1.2"/>
+            <path d="M170 168 Q 162 142 140 142 L138 168 Z" fill="#5a0e1c" stroke="#e6b751" stroke-width="1.2"/>
+            <!-- chest crest gem -->
+            <path d="M92 140 L100 124 L108 140 L100 152 Z" fill="url(#ulg2)" stroke="#ffe9a8" stroke-width="0.8"/>
+            <circle cx="100" cy="138" r="1.5" fill="#fff8e0"/>
+            <!-- collar -->
+            <path d="M75 130 Q100 122 125 130 L120 138 Q100 132 80 138 Z" fill="#5a0e1c" stroke="#c8932a" stroke-width="0.8"/>
+            <!-- head -->
+            <ellipse cx="100" cy="74" rx="22" ry="26" fill="url(#ulg1)"/>
+            <!-- hair: anime split bangs + side strand -->
+            <path d="M76 78 Q 74 38 100 36 Q 126 38 124 78 Q 116 60 110 54 Q 104 66 96 64 Q 88 62 86 54 Q 80 64 76 78 Z" fill="#1a0a12"/>
+            <path d="M76 78 Q 70 90 64 100 L70 86 Z" fill="#1a0a12"/>
+            <path d="M124 78 Q 130 90 136 100 L130 86 Z" fill="#1a0a12"/>
+            <!-- eye glint -->
+            <ellipse cx="92" cy="72" rx="2" ry="3" fill="#ffe9a8" opacity=".7"/>
+            <ellipse cx="108" cy="72" rx="2" ry="3" fill="#ffe9a8" opacity=".7"/>
+            <!-- highlight rim -->
+            <path d="M84 56 Q90 46 100 46" stroke="#f08a3c" stroke-width="1.4" opacity=".6" fill="none"/>
+            <!-- floor glow -->
+          </svg>
+
+          <div style="position:absolute; bottom:0; left:0; right:0; height:36px; background:linear-gradient(to top, rgba(240,138,60,.22), transparent);"></div>
+        </div>
+
+        <!-- name plate -->
+        <h3 class="ornate-name">KAEDE NOX</h3>
+        <div class="ornate-name-ko">카에데 녹스</div>
+        <div class="ornate-arch">STRIKER · 焔の刃</div>
+
+        <div class="ornate-stats">
+          <div class="ornate-stat"><div class="k">HP</div><div class="v">180</div></div>
+          <div class="ornate-stat"><div class="k">ATK</div><div class="v">42</div></div>
+          <div class="ornate-stat"><div class="k">SPD</div><div class="v">11</div></div>
+        </div>
+      </div>
+
+      <div class="frame-spec">
+        <h4>FRAME ANATOMY</h4>
+        <ul>
+          <li><b>OUTER LINE</b><span>외곽 1px <code>--gold-500</code> · 단색 hairline</span></li>
+          <li><b>INNER LINE</b><span>6px 안쪽 1px <code>--gold-300</code> · 두 라인 사이 어두운 트로프가 깊이</span></li>
+          <li><b>CORNER ORN.</b><span>네 모서리 SVG 52×52 · L-bracket + 곡선 vine + diamond gem · 원신 메뉴 톤</span></li>
+          <li><b>FAMILY RIB</b><span>상단 4px 그라디언트 + glow · 중앙에 보석 인레이 1개</span></li>
+          <li><b>RARITY MARK</b><span>우상단 다이아몬드 1~3 · EPIC=오렌지·자수정 듀얼</span></li>
+          <li><b>PORTRAIT</b><span>P09 RenderTexture · 와인+골드 안쪽 인레이 라인 + 비네팅</span></li>
+          <li><b>STAT TRIPLET</b><span>HP/ATK/SPD 골드 라인 분할 · Cinzel 24 그라디언트</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== 06 · HUD =================================== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">VI · HUD</span>
+      <h2 class="section-title">Battle HUD · Strip</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">초상 + HP + 상태 pill + 상태 아이콘 3</span>
+    </div>
+
+    <div class="hud-wrap">
+      <div class="hud-strip">
+
+        <div class="hud-portrait">
+          <svg class="silhouette" viewBox="0 0 50 56" fill="none">
+            <ellipse cx="25" cy="18" rx="10" ry="12" fill="#1c0e16"/>
+            <path d="M6 56 L6 44 Q6 32 19 30 L19 26 Q19 21 25 21 Q31 21 31 26 L31 30 Q44 32 44 44 L44 56 Z" fill="#3a1820"/>
+            <path d="M16 24 Q16 6 25 6 Q34 6 34 24 Q30 16 25 16 Q20 16 16 24 Z" fill="#0a0510"/>
+            <path d="M22 36 L25 32 L28 36 L25 40 Z" fill="#f08a3c" stroke="#ffe9a8" stroke-width=".5"/>
+            <ellipse cx="22" cy="18" rx="1.5" ry="2" fill="#ffe9a8" opacity=".6"/>
+            <ellipse cx="28" cy="18" rx="1.5" ry="2" fill="#ffe9a8" opacity=".6"/>
+          </svg>
+          <span class="lvl">LV 24</span>
+        </div>
+
+        <div class="hud-mid">
+          <div class="hud-name">
+            카에데 녹스
+            <span class="arch">STRIKER · T2</span>
+          </div>
+          <div class="hp-row">
+            <svg class="hp-icon" viewBox="0 0 22 22" fill="currentColor">
+              <path d="M11 19.5 C 6 16 2 12.5 2 8 a4 4 0 0 1 7-2.6 4 4 0 0 1 7 2.6 c 0 4.5-4 8-9 11.5 z"/>
+            </svg>
+            <div class="hp-bar">
+              <div class="fill"></div>
+              <div class="tick" style="left:25%;"></div>
+              <div class="tick" style="left:50%;"></div>
+              <div class="tick" style="left:75%;"></div>
+            </div>
+            <div class="hp-text">122<small>/180</small></div>
+          </div>
+        </div>
+
+        <div class="hud-right">
+          <span class="state-pill" style="color:var(--state-warn);">
+            윈드업 <span class="en">WINDUP</span>
+          </span>
+          <div class="status-icon" data-kind="bleed" title="출혈">
+            <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14">
+              <path d="M8 1 C 11 5 13 8 13 11 a5 5 0 1 1 -10 0 c 0-3 2-6 5-10 z"/>
+            </svg>
+            <span class="stack">×3</span>
+          </div>
+          <div class="status-icon" data-kind="guard" title="가드">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M8 1 L14 3 V8 C14 11 11 14 8 15 C5 14 2 11 2 8 V3 Z"/>
+            </svg>
+          </div>
+          <div class="status-icon" title="버프">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M3 10 L8 5 L13 10"/>
+              <path d="M3 13 L8 8 L13 13" opacity=".5"/>
+            </svg>
+            <span class="stack">×2</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-callouts">
+        <div>
+          <b>HP BAR</b>
+          엠버→와인 그라디언트 + 25% tick. 골드 1px frame과 어두운 인디고 트로프가 카드 시스템과 동일 언어
+        </div>
+        <div>
+          <b>STATE PILL</b>
+          현재 액션 단계를 한국어 + 영문 동시. 모서리에 미니 corner cap이 카드 ornament와 echo
+        </div>
+        <div>
+          <b>STATUS ICON</b>
+          30×30 골드 frame 박스. 우하단 stack 카운터는 mono 9px · 골드 보더
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== 07 · MOTION ================================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">VII · MOTION</span>
+      <h2 class="section-title">Motion · Notes Only</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">애니메이션 없음 · 텍스트 가이드</span>
+    </div>
+
+    <div class="motion-grid">
+      <div class="motion-card">
+        <div class="num">M-01</div>
+        <div class="h">Snap Modal</div>
+        <div class="b">
+          모달·드로어·toast 모두 <code>200ms</code> · <code>cubic-bezier(.2,.7,.2,1)</code> snap.
+          opacity + 4~8px translate만. shadow trail · spring · bounce 금지.
+          닫힘은 들어올 때와 동일 시간, 동일 ease-out.
+        </div>
+      </div>
+
+      <div class="motion-card">
+        <div class="num">M-02</div>
+        <div class="h">Dialogue Reveal</div>
+        <div class="b">
+          글자가 <code>28ms/char</code> 정도로 한 자씩 노출. 일본어 보이스 cadence에 sync —
+          voice 끝나면 reveal도 종료. 스킵 시 즉시 전체 노출 + 다음 prompt.
+        </div>
+      </div>
+
+      <div class="motion-card">
+        <div class="num">M-03</div>
+        <div class="h">Telegraph</div>
+        <div class="b">
+          공격 예고는 단순한 <code>ring</code> 또는 <code>beam</code>.
+          archetype family color로 깜박임 1Hz, 3펄스 후 발동.
+          파티클·잔상·스파크 없음 — silhouette만 읽히면 충분.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-foot">
+    <div><b>SURVIVAL MANAGER</b> · STYLE GUIDE V0.2 · INDIGO + WINE + GOLD</div>
+    <div>NEXT — atom · molecule libraries · component states</div>
+  </footer>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: b0adc5a7d9997b84088ac4f831a08a61
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Shader_installer/jp.lilxyzw.liltoon-1.x.x-installer.unitypackage
+  uploadId: 843050

@@ -195,17 +195,35 @@
       }
     },
     "com.youngwoocho02.unity-cli-connector": {
-      "version": "https://github.com/youngwoocho02/unity-cli.git?path=unity-connector#v0.3.15",
+      "version": "https://github.com/youngwoocho02/unity-cli.git?path=unity-connector#v0.3.18",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.2.1"
       },
-      "hash": "cf4a4a13138082a3e3f278bc11bcdc80bee269e0"
+      "hash": "886058c1bd3fd5f005cf31155fef6726260ce63c"
+    },
+    "jp.lilxyzw.liltoon": {
+      "version": "file:jp.lilxyzw.liltoon",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.unity.modules.animation": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
     },
     "com.unity.modules.assetbundle": {
       "version": "1.0.0",
       "depth": 2,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.audio": {
+      "version": "1.0.0",
+      "depth": 0,
       "source": "builtin",
       "dependencies": {}
     },
@@ -230,6 +248,12 @@
     "com.unity.modules.jsonserialize": {
       "version": "1.0.0",
       "depth": 1,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.particlesystem": {
+      "version": "1.0.0",
+      "depth": 0,
       "source": "builtin",
       "dependencies": {}
     },
@@ -277,6 +301,12 @@
         "com.unity.modules.assetbundle": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0"
       }
+    },
+    "com.unity.modules.wind": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
     }
   }
 }

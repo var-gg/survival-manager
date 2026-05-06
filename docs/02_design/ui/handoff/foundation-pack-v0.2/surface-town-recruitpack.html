@@ -1,0 +1,2070 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Surface · Town.RecruitPack — Survival Manager</title>
+<meta name="viewport" content="width=1680" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Shippori+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+/* === TOKENS — Style Guide v0.2 (그대로 인용) ============================ */
+:root {
+  --bg-0:#0c1126; --bg-1:#141a35; --bg-2:#1c2243; --bg-3:#262d54;
+  --line-1:#2c3568; --line-2:#3b467f;
+  --vellum:#f5ead0; --vellum-2:#e2d4ad;
+
+  --gold-100:#ffe9a8; --gold-200:#f5d68a; --gold-300:#e6b751;
+  --gold-400:#c8932a; --gold-500:#8a6418;
+  --gold-glow:rgba(245,214,138,.35);
+
+  --ink-1:#f5ead0; --ink-2:#d8c799; --ink-3:#9d8a5e; --ink-4:#6b5d3f;
+
+  --fam-beastkin:#7a8a52; --fam-beastkin-deep:#2e3818; --fam-beastkin-glow:#b9c980;
+  --fam-vanguard:#4a72b8; --fam-vanguard-deep:#1a2a52; --fam-vanguard-glow:#7fa3e0;
+  --fam-striker:#b6334a;  --fam-striker-deep:#5a0e1c;  --fam-striker-glow:#f08a3c;
+  --fam-ranger:#b58a36;   --fam-ranger-deep:#4d3a14;   --fam-ranger-glow:#e6c878;
+  --fam-mystic:#8a5cb8;   --fam-mystic-deep:#3a1f5a;   --fam-mystic-glow:#d4b4f0;
+
+  --rare-common:#cdc4a8; --rare-common-deep:#6b6248;
+  --rare-rare:#5b8ed1;   --rare-rare-deep:#1f3b66;   --rare-rare-glow:#9bbeed;
+  --rare-epic:#b561d6;   --rare-epic-2:#f08a3c;       --rare-epic-deep:#4a2168;
+
+  --state-safe:#6dbf78; --state-warn:#e8a93b; --state-danger:#e25548;
+  --state-locked:#6b6e85; --state-ko:#8a8a98; --state-injured:#b6334a;
+
+  --eco-gold:#e6b751;   /* gold currency */
+  --eco-echo:#7fa3e0;   /* echo currency */
+
+  --f-ko:"Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;
+  --f-jp:"Shippori Mincho","Yu Mincho",serif;
+  --f-en-display:"Cinzel","Trajan Pro",serif;
+  --f-en-italic:"Cormorant Garamond","Playfair Display",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px;
+  --r-sm:2px; --r-md:4px; --r-lg:6px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(1300px 800px at 18% -10%, #2a2050 0%, transparent 55%),
+    radial-gradient(1100px 700px at 95% 25%, #4a1a2e 0%, transparent 55%),
+    radial-gradient(900px 700px at 50% 110%, #1a2050 0%, transparent 60%),
+    var(--bg-0);
+  color:var(--ink-1);
+  font-family:var(--f-ko);
+  min-height:100vh;
+  position:relative;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 60% 40%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(245,214,138,.03) 0, transparent 1px);
+  background-size:7px 7px,11px 11px,13px 13px;
+}
+.canvas{ position:relative; z-index:1; max-width:1680px; margin:0 auto; padding:48px 40px 96px; }
+
+/* ============== HEADER ====================================== */
+.doc-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:var(--s-6); padding-bottom:var(--s-5); margin-bottom:var(--s-7); position:relative; }
+.doc-head::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:linear-gradient(to right, transparent 0%, var(--gold-400) 8%, var(--gold-200) 50%, var(--gold-400) 92%, transparent 100%); }
+.doc-head::before{ content:""; position:absolute; left:0; right:0; bottom:-3px; height:1px; background:linear-gradient(to right, transparent 0%, var(--gold-500) 30%, var(--gold-500) 70%, transparent 100%); opacity:.6; }
+.eyebrow{ font-family:var(--f-mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold-300); }
+.doc-title{ font-family:var(--f-en-display); font-weight:700; font-size:42px; letter-spacing:.06em; margin:6px 0 4px; background:linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 60%, var(--gold-500) 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 1px 0 rgba(0,0,0,.4); }
+.doc-title .flourish{ display:inline-flex; gap:4px; vertical-align:6px; margin:0 14px; }
+.doc-title .flourish i{ width:5px; height:5px; background:var(--gold-300); transform:rotate(45deg); display:inline-block; -webkit-text-fill-color:initial; }
+.doc-title .flourish i:nth-child(2){ width:8px; height:8px; background:var(--gold-200); border:1px solid var(--gold-500); }
+.doc-subtitle{ font-family:var(--f-en-italic); font-style:italic; font-weight:500; font-size:16px; color:var(--ink-2); margin-bottom:4px; }
+.doc-subtitle-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); max-width:64ch; margin:0; }
+.doc-meta{ text-align:right; font-family:var(--f-mono); font-size:11px; color:var(--ink-3); letter-spacing:.06em; }
+.doc-meta b{ color:var(--gold-200); font-weight:500; }
+
+/* section header */
+section{ margin-bottom:var(--s-7); }
+.section-head{ display:flex; align-items:baseline; gap:var(--s-4); margin-bottom:var(--s-5); }
+.section-num{ font-family:var(--f-mono); font-size:11px; color:var(--gold-400); letter-spacing:.18em; }
+.section-title{ font-family:var(--f-en-display); font-size:22px; font-weight:600; letter-spacing:.06em; color:var(--gold-200); margin:0; }
+.section-rule{ height:1px; background:linear-gradient(to right, var(--gold-400) 0%, transparent 80%); flex:1; margin-bottom:4px; }
+.section-title-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); font-weight:500; margin-left:auto; }
+.section-title-ko::before{ content:"—  "; color:var(--gold-500); }
+
+/* ============== BUTTONS (atom 인용) ====================== */
+.btn{ position:relative; display:inline-flex; align-items:center; justify-content:center; gap:8px; font-family:var(--f-ko); font-weight:700; letter-spacing:.02em; border:0; cursor:pointer; user-select:none; background:transparent; color:var(--vellum); padding:10px 20px; font-size:13.5px; line-height:1; white-space:nowrap; transition: filter .2s, transform .2s; }
+.btn .en{ font-family:var(--f-mono); font-size:9.5px; font-weight:500; letter-spacing:.18em; color:rgba(245,234,208,.7); margin-left:4px; padding-left:8px; border-left:1px solid rgba(245,214,138,.35); text-transform:uppercase; }
+.btn-md{ padding:11px 20px; min-height:42px; font-size:13.5px; }
+.btn-lg{ padding:13px 26px; min-height:48px; font-size:15px; }
+.btn-mobile{ min-height:44px; }
+.btn .cc{ position:absolute; width:8px; height:8px; pointer-events:none; z-index:2; border:1px solid var(--gold-300); }
+.btn .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.btn .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.btn .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.btn .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.btn .lbl{ position:relative; z-index:1; display:inline-flex; align-items:center; gap:8px; }
+
+.btn-primary{ background: linear-gradient(180deg, rgba(245,214,138,.08), rgba(0,0,0,.25)), linear-gradient(180deg, var(--fam-striker) 0%, var(--fam-striker-deep) 100%); color:var(--vellum); text-shadow:0 1px 2px rgba(0,0,0,.6); }
+.btn-primary::before{ content:""; position:absolute; inset:0; border:1px solid var(--gold-500); pointer-events:none; }
+.btn-primary::after{ content:""; position:absolute; inset:3px; border:1px solid var(--gold-300); box-shadow: inset 0 1px 0 rgba(255,233,168,.35), inset 0 -2px 8px rgba(0,0,0,.35); pointer-events:none; }
+.btn-primary:hover{ filter:brightness(1.08) saturate(1.05); }
+
+.btn-secondary{ background:linear-gradient(180deg, rgba(245,214,138,.04), rgba(0,0,0,.25)); color:var(--ink-1); }
+.btn-secondary::before{ content:""; position:absolute; inset:0; border:1px solid var(--gold-500); pointer-events:none; }
+.btn-secondary::after{ content:""; position:absolute; inset:3px; border:1px solid rgba(245,214,138,.35); pointer-events:none; }
+.btn-secondary:hover{ filter:brightness(1.1); }
+.btn-secondary:hover::after{ border-color:var(--gold-200); box-shadow:inset 0 0 18px rgba(245,214,138,.1); }
+
+.btn-ghost{ background:transparent; color:var(--ink-2); padding:11px 18px; }
+.btn-ghost::before{ content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:linear-gradient(to right, transparent, var(--gold-400), transparent); pointer-events:none; }
+.btn-ghost:hover{ color:var(--gold-200); }
+
+.btn-icon{ width:42px; height:42px; padding:0; color:var(--gold-200); background:linear-gradient(180deg, rgba(245,214,138,.04), rgba(0,0,0,.25)); }
+.btn-icon::before{ content:""; position:absolute; inset:0; border:1px solid var(--gold-500); pointer-events:none; }
+.btn-icon::after{ content:""; position:absolute; inset:3px; border:1px solid rgba(245,214,138,.3); pointer-events:none; }
+.btn-icon:hover{ color:var(--gold-100); }
+
+.btn[disabled]{ cursor:not-allowed; pointer-events:none; filter:saturate(.25) brightness(.75); opacity:.7; }
+
+/* button + cost (이중 가격 표시 — 카드 액션 행에서 자주 등장) */
+.btn-with-cost{ padding-right:8px; }
+.btn-with-cost .lbl-text{ padding-right:4px; }
+
+/* ============== CHIP / TAG ATOMS ============================== */
+
+/* base chip */
+.chip{
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:var(--f-mono); font-size:9.5px; font-weight:500;
+  letter-spacing:.16em; text-transform:uppercase;
+  padding:3px 8px;
+  position:relative;
+  white-space:nowrap;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(245,214,138,.35);
+  color:var(--ink-2);
+  line-height:1;
+}
+.chip::before, .chip::after{ content:""; position:absolute; width:4px; height:4px; border:1px solid var(--gold-300); }
+.chip::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.chip::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.chip i.dot{ width:5px; height:5px; transform:rotate(45deg); display:inline-block; }
+
+/* tag chip variants */
+.chip.tag-race{ /* race - subtle vellum line */
+  border-color:rgba(245,214,138,.35); color:var(--vellum-2);
+}
+.chip.tag-race i.dot{ background:var(--vellum-2); }
+
+.chip.tag-class{ /* class - family color tinted */
+  border-color:var(--frame-fam, var(--fam-striker));
+  color:var(--frame-fam-glow, var(--fam-striker-glow));
+  background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.4));
+}
+.chip.tag-class i.dot{ background:var(--frame-fam-glow, var(--fam-striker-glow)); }
+
+.chip.tag-role{ /* role - solid, more presence */
+  background:linear-gradient(180deg, rgba(245,214,138,.14), rgba(0,0,0,.4));
+  border-color:var(--gold-300);
+  color:var(--gold-100);
+}
+.chip.tag-role i.dot{ background:var(--gold-200); }
+
+/* ============== COST CHIP ATOM =============================== */
+.cost-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:var(--f-mono); font-size:11px; font-weight:600;
+  letter-spacing:.04em;
+  padding:5px 10px;
+  position:relative;
+  background:rgba(0,0,0,.55);
+  border:1px solid var(--gold-500);
+  color:var(--gold-200);
+  line-height:1;
+}
+.cost-chip::before, .cost-chip::after{ content:""; position:absolute; width:5px; height:5px; border:1px solid var(--gold-300); }
+.cost-chip::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.cost-chip::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.cost-chip .glyph{ width:11px; height:11px; flex-shrink:0; }
+.cost-chip.gold .glyph{ color:var(--eco-gold); filter:drop-shadow(0 0 3px rgba(230,183,81,.5)); }
+.cost-chip.echo{ border-color:var(--eco-echo); color:var(--rare-rare-glow); }
+.cost-chip.echo::before, .cost-chip.echo::after{ border-color:var(--rare-rare-glow); }
+.cost-chip.echo .glyph{ color:var(--eco-echo); filter:drop-shadow(0 0 3px rgba(127,163,224,.5)); }
+.cost-chip.cant{ /* not affordable */ filter:saturate(.4) brightness(.7); }
+.cost-chip .sep{ opacity:.5; padding:0 1px; }
+.cost-chip .have{ color:var(--ink-3); font-weight:500; }
+.cost-chip .have.ok{ color:var(--state-safe); }
+
+/* free chip */
+.cost-chip.free{ border-color:var(--state-safe); color:var(--state-safe); }
+.cost-chip.free::before, .cost-chip.free::after{ border-color:var(--state-safe); }
+
+/* ============== PITY PROGRESS BAR ============================ */
+.pity-bar{
+  position:relative;
+  height:14px;
+  background:linear-gradient(180deg, rgba(0,0,0,.6), rgba(0,0,0,.35));
+  border:1px solid var(--gold-500);
+}
+.pity-bar::before{ content:""; position:absolute; inset:2px; border:1px solid rgba(245,214,138,.18); pointer-events:none; }
+.pity-bar .seg{
+  position:absolute; top:0; bottom:0;
+  background:linear-gradient(180deg, var(--seg-light, #5b8ed1) 0%, var(--seg-dark, #1f3b66) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -2px 6px rgba(0,0,0,.35);
+}
+.pity-bar .seg.rare{ --seg-light:var(--rare-rare-glow); --seg-dark:var(--rare-rare-deep); }
+.pity-bar .seg.epic{ --seg-light:var(--rare-epic); --seg-dark:var(--rare-epic-deep); box-shadow: inset 0 1px 0 rgba(255,233,168,.2), inset 0 -2px 6px rgba(0,0,0,.4), 0 0 12px rgba(181,97,214,.4); }
+.pity-bar .tick{
+  position:absolute; top:-3px; bottom:-3px;
+  width:1px;
+  background:var(--gold-200);
+  box-shadow:0 0 4px var(--gold-200);
+}
+.pity-bar .tick.rare{ background:var(--rare-rare-glow); box-shadow:0 0 6px var(--rare-rare-glow); }
+.pity-bar .tick.epic{ background:var(--rare-epic-2); box-shadow:0 0 8px var(--rare-epic-2); }
+.pity-bar .tick i{
+  position:absolute; left:50%; top:-7px;
+  width:7px; height:7px;
+  background:linear-gradient(135deg, var(--gold-100), var(--gold-300));
+  border:1px solid var(--gold-500);
+  transform:translateX(-50%) rotate(45deg);
+  box-shadow:0 0 6px currentColor;
+}
+.pity-bar .tick.rare i{ background:linear-gradient(135deg, var(--rare-rare-glow), var(--rare-rare-deep)); }
+.pity-bar .tick.epic i{ background:linear-gradient(135deg, var(--rare-epic-2), var(--rare-epic-deep)); }
+
+.pity-meta{
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-family:var(--f-mono); font-size:10px;
+  color:var(--ink-3); letter-spacing:.14em;
+  margin-top:8px;
+}
+.pity-meta b{ color:var(--gold-200); font-weight:500; }
+.pity-meta .legend{ display:flex; gap:16px; }
+.pity-meta .legend span{ display:inline-flex; align-items:center; gap:5px; }
+.pity-meta .legend i{ width:6px; height:6px; transform:rotate(45deg); }
+.pity-meta .legend i.rare{ background:var(--rare-rare-glow); box-shadow:0 0 4px var(--rare-rare-glow); }
+.pity-meta .legend i.epic{ background:var(--rare-epic-2); box-shadow:0 0 4px var(--rare-epic-2); }
+
+/* ============== HEROPORTRAITCARD — MEDIUM (new variant) ===== */
+.hero-card-md{
+  --frame-fam: var(--fam-striker);
+  --frame-fam-deep: var(--fam-striker-deep);
+  --frame-fam-glow: var(--fam-striker-glow);
+
+  position:relative;
+  width:100%;
+  padding:18px 16px 16px;
+  background:
+    radial-gradient(140% 80% at 50% 0%, rgba(245,214,138,.06) 0%, transparent 60%),
+    linear-gradient(180deg, #1c1f44 0%, #141a35 50%, #0e1226 100%);
+  isolation:isolate;
+  filter:drop-shadow(0 8px 22px rgba(0,0,0,.5));
+  display:flex; flex-direction:column;
+}
+.hero-card-md::before{ content:""; position:absolute; inset:0; border:1px solid var(--gold-500); pointer-events:none; }
+.hero-card-md::after{ content:""; position:absolute; inset:5px; border:1px solid var(--gold-300); box-shadow: inset 0 0 0 1px rgba(0,0,0,.55), inset 0 0 22px rgba(0,0,0,.5), inset 0 0 50px rgba(245,214,138,.04); pointer-events:none; }
+
+/* corner ornaments — same vine + diamond, larger for md */
+.hco{ position:absolute; width:42px; height:42px; pointer-events:none; z-index:3; color:var(--gold-300); filter:drop-shadow(0 0 4px rgba(245,214,138,.3)); }
+.hco.tl{ top:-3px; left:-3px; }
+.hco.tr{ top:-3px; right:-3px; transform:scaleX(-1); }
+.hco.bl{ bottom:-3px; left:-3px; transform:scaleY(-1); }
+.hco.br{ bottom:-3px; right:-3px; transform:scale(-1,-1); }
+
+/* family rib + center gem */
+.hero-rib{
+  position:absolute; top:5px; left:5px; right:5px;
+  height:4px;
+  background:linear-gradient(to right,
+    transparent 0%, var(--frame-fam-deep) 14%, var(--frame-fam) 50%, var(--frame-fam-deep) 86%, transparent 100%);
+  z-index:1;
+  box-shadow:0 0 9px var(--frame-fam-glow);
+}
+.hero-gem{
+  position:absolute; top:0; left:50%;
+  transform:translateX(-50%) translateY(-50%) rotate(45deg);
+  width:14px; height:14px;
+  background:linear-gradient(135deg, var(--frame-fam-glow), var(--frame-fam));
+  border:1px solid var(--gold-200);
+  box-shadow:0 0 10px var(--frame-fam-glow), inset 0 0 4px rgba(255,255,255,.5);
+  z-index:4;
+}
+
+.hero-portrait-md{
+  position:relative;
+  width:100%;
+  height:200px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, var(--frame-fam-deep) 0%, transparent 70%),
+    radial-gradient(ellipse 100% 100% at 50% 100%, #0a0d20 0%, #060814 80%);
+  border:1px solid var(--gold-500);
+  margin-bottom:14px;
+  overflow:hidden;
+  z-index:1;
+}
+.hero-portrait-md::before{ content:""; position:absolute; inset:3px; border:1px solid rgba(230,183,81,.25); pointer-events:none; }
+.hero-portrait-md::after{ content:""; position:absolute; inset:0; box-shadow:inset 0 0 50px rgba(0,0,0,.7); pointer-events:none; }
+
+.hero-tag{
+  position:absolute; top:8px; left:8px;
+  font-family:var(--f-mono); font-size:8.5px;
+  letter-spacing:.16em;
+  color:var(--gold-200);
+  background:rgba(0,0,0,.7);
+  padding:3px 6px;
+  border:1px solid var(--gold-500);
+  z-index:2;
+}
+.hero-tier{ position:absolute; top:8px; right:8px; display:flex; gap:3px; z-index:2; }
+.hero-tier i{ width:9px; height:9px; transform:rotate(45deg); border:1px solid var(--gold-200); box-shadow:0 0 5px currentColor; }
+.hero-tier.parchment i{ background:linear-gradient(135deg, var(--rare-common), var(--rare-common-deep)); color:var(--vellum-2); }
+.hero-tier.sapphire  i{ background:linear-gradient(135deg, var(--rare-rare-glow), var(--rare-rare-deep)); color:var(--rare-rare-glow); }
+.hero-tier.amethyst-flame i{ background:linear-gradient(135deg, var(--rare-epic-2), var(--rare-epic)); color:var(--rare-epic-2); }
+
+.hero-silhouette{ position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); width:180px; height:220px; }
+
+.hero-name-row{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-top:0; }
+.hero-name-ko{ font-family:var(--f-ko); font-size:16px; font-weight:800; color:var(--vellum); letter-spacing:.01em; line-height:1.1; margin:0; }
+.hero-name-en{ font-family:var(--f-en-display); font-size:10px; letter-spacing:.18em; background:linear-gradient(180deg, var(--gold-100), var(--gold-300)); -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:600; margin-top:5px; line-height:1.2; }
+
+.hero-tags{ display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
+
+/* signature skill row */
+.hero-skill{
+  display:flex; align-items:flex-start; gap:10px;
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px dashed var(--line-2);
+}
+.hero-skill-icon{
+  flex-shrink:0;
+  width:30px; height:30px;
+  position:relative;
+  background:linear-gradient(180deg, var(--frame-fam) 0%, var(--frame-fam-deep) 100%);
+  display:grid; place-items:center;
+  color:var(--vellum);
+  border:1px solid var(--gold-500);
+}
+.hero-skill-icon::after{ content:""; position:absolute; inset:2px; border:1px solid rgba(245,214,138,.45); pointer-events:none; }
+.hero-skill-icon svg{ width:16px; height:16px; }
+.hero-skill-text{ flex:1; min-width:0; }
+.hero-skill-name{ font-family:var(--f-ko); font-size:12px; font-weight:700; color:var(--gold-200); letter-spacing:.02em; line-height:1.15; margin:0; }
+.hero-skill-name .en{ font-family:var(--f-mono); font-size:8.5px; letter-spacing:.16em; color:var(--ink-3); margin-left:5px; font-weight:500; text-transform:uppercase; }
+.hero-skill-summary{ font-family:var(--f-ko); font-size:11px; color:var(--ink-2); line-height:1.4; margin-top:2px; }
+.hero-skill-summary b{ color:var(--gold-200); font-weight:600; }
+.hero-skill-summary u{ color:var(--frame-fam-glow); text-decoration:none; font-weight:600; }
+
+/* recruit action row */
+.hero-action-row{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid rgba(245,214,138,.18);
+}
+.hero-action-row .recruit-btn{
+  flex:1;
+}
+
+/* ============== PROTECTED VARIANT =========================== */
+.hero-card-md.is-protected{
+  filter:drop-shadow(0 8px 28px rgba(245,214,138,.18)) drop-shadow(0 0 22px rgba(0,0,0,.6));
+  background:
+    radial-gradient(140% 80% at 50% 0%, rgba(245,214,138,.12) 0%, transparent 60%),
+    linear-gradient(180deg, #2a2050 0%, #1c1845 50%, #110d2c 100%);
+}
+.hero-card-md.is-protected::before{ border:2px solid var(--gold-300); }
+.hero-card-md.is-protected::after{ border-color:var(--gold-100); box-shadow: inset 0 0 0 1px rgba(0,0,0,.55), inset 0 0 28px rgba(245,214,138,.18), inset 0 0 60px rgba(245,214,138,.06); }
+.hero-card-md.is-protected .hco{ filter:drop-shadow(0 0 6px var(--gold-200)) drop-shadow(0 0 3px rgba(245,214,138,.6)); }
+.hero-card-md.is-protected .hero-rib{ filter:brightness(1.3) saturate(1.15); box-shadow:0 0 14px var(--frame-fam-glow), 0 0 22px rgba(245,214,138,.4); }
+.hero-card-md.is-protected .hero-gem{ box-shadow:0 0 16px var(--frame-fam-glow), 0 0 24px var(--gold-200), inset 0 0 4px #fff; }
+
+.protected-banner{
+  position:absolute;
+  top:-1px; left:50%; transform:translateX(-50%) translateY(-100%);
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px 6px;
+  font-family:var(--f-en-display); font-size:10px; font-weight:700;
+  letter-spacing:.28em; text-transform:uppercase;
+  color:var(--gold-100);
+  background:linear-gradient(180deg, var(--bg-3) 0%, var(--bg-2) 100%);
+  border:1px solid var(--gold-300);
+  border-bottom:none;
+  z-index:5;
+  white-space:nowrap;
+}
+.protected-banner::before, .protected-banner::after{ content:""; position:absolute; width:5px; height:5px; border:1px solid var(--gold-300); }
+.protected-banner::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.protected-banner::after{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.protected-banner svg{ width:12px; height:12px; color:var(--gold-200); }
+.protected-banner small{
+  font-family:var(--f-ko); font-size:9px; font-weight:700;
+  letter-spacing:.14em; color:var(--ink-2);
+  margin-left:4px; padding-left:6px;
+  border-left:1px solid var(--gold-500);
+  text-transform:none;
+}
+
+/* lock badge (top-right, on portrait) */
+.protected-lock{
+  position:absolute; top:8px; right:8px;
+  display:flex; align-items:center; gap:4px;
+  padding:3px 6px;
+  font-family:var(--f-mono); font-size:8.5px; font-weight:600;
+  letter-spacing:.16em;
+  color:var(--gold-100);
+  background:rgba(0,0,0,.85);
+  border:1px solid var(--gold-200);
+  z-index:3;
+  box-shadow:0 0 8px rgba(245,214,138,.35);
+}
+.protected-lock svg{ width:10px; height:10px; }
+.hero-card-md.is-protected .hero-tier{ top:auto; bottom:8px; right:8px; }
+
+/* ============== POOL EXHAUSTED ============================ */
+.hero-card-md.is-exhausted{
+  filter:saturate(.25) brightness(.65) drop-shadow(0 8px 22px rgba(0,0,0,.5));
+}
+.hero-card-md.is-exhausted .hero-portrait-md{
+  background:
+    repeating-linear-gradient(45deg, rgba(245,234,208,.04) 0 8px, transparent 8px 16px),
+    radial-gradient(ellipse 100% 100% at 50% 100%, #0a0d20 0%, #060814 80%);
+}
+.hero-card-md.is-exhausted .hero-silhouette{ display:none; }
+.hero-card-md.is-exhausted .hero-rib{ background:linear-gradient(to right, transparent, #4a4a55, transparent); box-shadow:none; }
+.hero-card-md.is-exhausted .hero-gem{ background:#4a4a55; box-shadow:none; border-color:#6b6e85; }
+
+.exhausted-overlay{
+  position:absolute;
+  inset:14px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center;
+  z-index:4;
+  pointer-events:none;
+  border:1px dashed rgba(245,234,208,.35);
+}
+.exhausted-overlay svg{ width:38px; height:38px; color:var(--ink-2); margin-bottom:10px; }
+.exhausted-overlay .ttl{
+  font-family:var(--f-en-display); font-size:13px;
+  letter-spacing:.32em; color:var(--ink-2);
+  font-weight:600; text-transform:uppercase;
+}
+.exhausted-overlay .ko{
+  font-family:var(--f-ko); font-size:11px;
+  color:var(--ink-3); margin-top:4px; font-weight:600;
+  letter-spacing:.04em;
+}
+.exhausted-overlay .hint{
+  font-family:var(--f-ko); font-size:10px;
+  color:var(--ink-3); margin-top:8px; line-height:1.4;
+  font-weight:500;
+}
+.exhausted-overlay .hint b{ color:var(--gold-300); }
+
+.hero-card-md.is-exhausted .hero-name-ko{ color:var(--ink-3); }
+.hero-card-md.is-exhausted .hero-skill, .hero-card-md.is-exhausted .hero-tags{ opacity:.45; }
+
+/* ============== SCOUT COOLDOWN OVERLAY ===================== */
+.scout-overlay{
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0,0,0,.55), rgba(0,0,0,.85));
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  z-index:6;
+  pointer-events:auto;
+  backdrop-filter:blur(2px);
+}
+.scout-overlay::before{ content:""; position:absolute; inset:8px; border:1px solid rgba(245,214,138,.4); pointer-events:none; }
+.scout-overlay::after{ content:""; position:absolute; inset:11px; border:1px solid rgba(245,214,138,.18); pointer-events:none; }
+.scout-overlay .lock-icon{
+  width:46px; height:46px;
+  background:linear-gradient(180deg, var(--bg-3), var(--bg-1));
+  border:1px solid var(--gold-300);
+  display:grid; place-items:center;
+  color:var(--gold-200);
+  position:relative;
+  margin-bottom:14px;
+  filter:drop-shadow(0 0 8px rgba(245,214,138,.4));
+}
+.scout-overlay .lock-icon::before, .scout-overlay .lock-icon::after{
+  content:""; position:absolute; width:7px; height:7px; border:1px solid var(--gold-200);
+}
+.scout-overlay .lock-icon::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.scout-overlay .lock-icon::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.scout-overlay .lock-icon svg{ width:22px; height:22px; }
+.scout-overlay .label{
+  font-family:var(--f-en-display); font-size:11px;
+  letter-spacing:.36em; color:var(--gold-200);
+  font-weight:700; text-transform:uppercase;
+}
+.scout-overlay .ko{
+  font-family:var(--f-ko); font-size:11px;
+  color:var(--ink-2); margin-top:4px; font-weight:600;
+  letter-spacing:.04em;
+}
+.scout-overlay .timer{
+  font-family:var(--f-mono); font-size:18px;
+  color:var(--gold-100); margin-top:14px; font-weight:600;
+  letter-spacing:.14em;
+  text-shadow:0 0 8px rgba(245,214,138,.5);
+}
+.scout-overlay .hint{
+  font-family:var(--f-ko); font-size:10px;
+  color:var(--ink-3); margin-top:8px;
+  font-weight:500; letter-spacing:.04em;
+}
+
+/* ============== SURFACE — RECRUIT PACK PANEL =============== */
+.surface{
+  position:relative;
+  background:linear-gradient(180deg, rgba(28,34,67,.85), rgba(14,18,38,.92));
+  border:1px solid var(--line-1);
+}
+.surface::before{ content:""; position:absolute; inset:0; pointer-events:none; background: radial-gradient(800px 400px at 20% 10%, rgba(74,114,184,.08), transparent 60%), radial-gradient(600px 400px at 100% 100%, rgba(182,51,74,.08), transparent 60%); }
+
+.surface-chrome{
+  display:flex; align-items:center; gap:8px;
+  padding:9px 14px;
+  background:rgba(0,0,0,.4);
+  border-bottom:1px solid var(--line-1);
+  font-family:var(--f-mono); font-size:10px;
+  color:var(--ink-3); letter-spacing:.14em;
+}
+.surface-chrome b{ color:var(--gold-300); font-weight:500; }
+.surface-chrome .dot{ width:8px; height:8px; border-radius:50%; background:var(--state-warn); box-shadow:0 0 6px var(--state-warn); }
+.surface-chrome .breadcrumb{ display:inline-flex; gap:8px; align-items:center; }
+.surface-chrome .breadcrumb span{ color:var(--ink-3); }
+.surface-chrome .breadcrumb b{ color:var(--gold-200); }
+
+.surface-body{ padding:var(--s-6) var(--s-6) var(--s-6); }
+
+/* surface header */
+.recruit-head{
+  display:flex; align-items:flex-end; justify-content:space-between; gap:var(--s-5);
+  margin-bottom:var(--s-5);
+  padding-bottom:var(--s-5);
+  position:relative;
+}
+.recruit-head::after{
+  content:""; position:absolute; left:0; right:0; bottom:0;
+  height:1px;
+  background:linear-gradient(to right, transparent 0%, var(--gold-400) 12%, var(--gold-200) 50%, var(--gold-400) 88%, transparent 100%);
+}
+.recruit-title-block{ flex:1; min-width:0; }
+.recruit-eyebrow{
+  font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.22em; color:var(--gold-300); text-transform:uppercase;
+}
+.recruit-title{
+  font-family:var(--f-en-display); font-weight:700;
+  font-size:30px;
+  margin:4px 0 4px;
+  letter-spacing:.06em;
+  background:linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 60%, var(--gold-500) 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.recruit-subtitle-ko{
+  font-family:var(--f-ko); font-size:13px; color:var(--ink-3); margin:0;
+}
+
+.recruit-pity{
+  width:380px;
+  flex-shrink:0;
+}
+.recruit-pity .ttl{
+  font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.18em; color:var(--gold-300);
+  text-transform:uppercase; margin-bottom:6px;
+  display:flex; justify-content:space-between; align-items:baseline;
+}
+.recruit-pity .ttl .ko{
+  font-family:var(--f-ko); font-size:11px;
+  color:var(--ink-3); letter-spacing:.04em; text-transform:none; font-weight:600;
+}
+
+/* run resources strip */
+.recruit-resources{
+  display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  margin-bottom:var(--s-5);
+  padding:var(--s-3) var(--s-4);
+  background:rgba(0,0,0,.3);
+  border:1px solid var(--line-1);
+  position:relative;
+}
+.recruit-resources::before, .recruit-resources::after{ content:""; position:absolute; width:8px; height:8px; border:1px solid var(--gold-300); }
+.recruit-resources::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.recruit-resources::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.recruit-resources .lbl{
+  font-family:var(--f-mono); font-size:10px; color:var(--ink-3);
+  letter-spacing:.16em; text-transform:uppercase;
+}
+.recruit-resources .sep{
+  width:1px; height:18px;
+  background:linear-gradient(180deg, transparent, var(--gold-500), transparent);
+  margin:0 4px;
+}
+
+/* card grid PC */
+.recruit-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:var(--s-4);
+}
+
+/* action row */
+.recruit-actions{
+  display:flex; align-items:center; gap:var(--s-3);
+  margin-top:var(--s-5);
+  padding:var(--s-4);
+  background:rgba(0,0,0,.3);
+  border:1px solid var(--line-1);
+  position:relative;
+}
+.recruit-actions::before, .recruit-actions::after{ content:""; position:absolute; width:8px; height:8px; border:1px solid var(--gold-300); }
+.recruit-actions::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.recruit-actions::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.recruit-actions .group-label{
+  font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.16em; color:var(--ink-3);
+  text-transform:uppercase;
+  margin-right:8px;
+}
+.recruit-actions .group-label b{ color:var(--gold-300); font-weight:500; }
+.recruit-actions .spacer{ flex:1; }
+
+/* PC layout — surface + roster rail */
+.pc-layout{
+  display:grid;
+  grid-template-columns: 1fr 280px;
+  gap:var(--s-5);
+}
+
+/* roster rail (right) */
+.roster-rail{
+  position:relative;
+  background:linear-gradient(180deg, rgba(28,34,67,.7), rgba(14,18,38,.85));
+  border:1px solid var(--line-1);
+  padding:var(--s-5) var(--s-4);
+  align-self:start;
+}
+.roster-rail::before, .roster-rail::after{ content:""; position:absolute; width:10px; height:10px; border:1px solid var(--gold-300); }
+.roster-rail::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.roster-rail::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.roster-rail h4{
+  margin:0 0 var(--s-3);
+  font-family:var(--f-en-display); font-size:13px;
+  letter-spacing:.22em; color:var(--gold-200);
+  font-weight:600; text-transform:uppercase;
+  display:flex; justify-content:space-between; align-items:baseline;
+}
+.roster-rail h4 .ko{
+  font-family:var(--f-ko); font-size:11px;
+  color:var(--ink-3); font-weight:600; letter-spacing:.04em; text-transform:none;
+}
+.roster-rail .roster-meta{
+  font-family:var(--f-mono); font-size:10px;
+  color:var(--ink-3); letter-spacing:.14em;
+  padding-bottom:var(--s-3);
+  margin-bottom:var(--s-3);
+  border-bottom:1px dashed var(--line-2);
+  display:flex; justify-content:space-between;
+}
+.roster-rail .roster-meta b{ color:var(--gold-200); font-weight:500; }
+
+/* roster mini portrait */
+.roster-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+}
+.roster-mini{
+  position:relative;
+  aspect-ratio:1/1.15;
+  background:linear-gradient(180deg, var(--mini-fam, var(--fam-striker-deep)) 0%, #0a0d20 100%);
+  border:1px solid var(--gold-500);
+  overflow:hidden;
+  cursor:pointer;
+}
+.roster-mini::before{ content:""; position:absolute; inset:2px; border:1px solid rgba(230,183,81,.25); pointer-events:none; }
+.roster-mini::after{ content:""; position:absolute; inset:0; box-shadow:inset 0 0 18px rgba(0,0,0,.7); pointer-events:none; }
+.roster-mini .rib{
+  position:absolute; top:2px; left:2px; right:2px;
+  height:2px;
+  background:var(--mini-fam-light, var(--fam-striker));
+  box-shadow:0 0 4px var(--mini-fam-light, var(--fam-striker));
+}
+.roster-mini .silhouette{ position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); width:90%; }
+.roster-mini.is-deployed::after{ box-shadow:inset 0 0 0 2px var(--gold-200), inset 0 0 18px rgba(245,214,138,.25); }
+.roster-mini.is-injured{ filter:saturate(.6); }
+.roster-mini.is-injured::after{ box-shadow:inset 0 0 0 1px var(--state-injured), inset 0 0 18px rgba(182,51,74,.3); }
+.roster-mini.is-ko{ filter:grayscale(.85) brightness(.55); }
+.roster-mini.empty{
+  background:repeating-linear-gradient(45deg, rgba(245,234,208,.04) 0 6px, transparent 6px 12px), #0a0d20;
+  border-style:dashed;
+  border-color:rgba(245,214,138,.35);
+}
+.roster-mini.empty::after{ box-shadow:none; }
+.roster-mini.empty .plus{
+  position:absolute; inset:0; display:grid; place-items:center;
+  color:var(--ink-3); font-family:var(--f-en-display); font-size:18px; font-weight:600;
+}
+
+.roster-rail-foot{
+  margin-top:var(--s-4);
+  padding-top:var(--s-3);
+  border-top:1px dashed var(--line-2);
+  font-family:var(--f-mono); font-size:9.5px;
+  letter-spacing:.14em; color:var(--ink-3);
+}
+.roster-rail-foot b{ color:var(--gold-200); font-weight:500; }
+.roster-legend{ display:flex; gap:12px; margin-top:6px; }
+.roster-legend span{ display:inline-flex; align-items:center; gap:4px; }
+.roster-legend i{ width:8px; height:8px; }
+.roster-legend i.deployed{ border:2px solid var(--gold-200); background:transparent; }
+.roster-legend i.injured{ border:1px solid var(--state-injured); background:rgba(182,51,74,.3); }
+.roster-legend i.ko{ background:#3a3a45; border:1px solid #6b6e85; }
+.roster-legend i.empty{ border:1px dashed var(--ink-3); background:transparent; }
+
+/* ============== MOBILE LAYOUT ============================ */
+.mobile-frame{
+  width:380px;
+  border-radius:32px;
+  border:1px solid var(--gold-500);
+  padding:var(--s-2);
+  background:linear-gradient(180deg, rgba(28,34,67,.65), rgba(14,18,38,.85));
+  position:relative;
+  margin:0 auto;
+}
+.mobile-frame::after{
+  content:""; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  width:46px; height:5px; background:#000; border-radius:99px; z-index:5;
+}
+.mobile-inner{
+  border-radius:24px;
+  background:linear-gradient(180deg, rgba(28,34,67,.65), rgba(14,18,38,.85));
+  border:1px solid var(--line-1);
+  padding-top:36px;
+  position:relative;
+  overflow:hidden;
+  min-height:880px;
+}
+.mobile-status{
+  position:absolute; top:0; left:0; right:0; height:36px;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0 28px;
+  font-family:var(--f-mono); font-size:11px; color:var(--vellum); font-weight:600;
+  z-index:4;
+}
+.mobile-topbar{
+  display:flex; align-items:center; gap:8px;
+  padding:var(--s-3) var(--s-4);
+  border-bottom:1px solid var(--line-1);
+  background:rgba(0,0,0,.35);
+}
+.mobile-topbar .back{ color:var(--gold-200); width:24px; height:24px; display:grid; place-items:center; }
+.mobile-topbar .ttl{
+  flex:1;
+  font-family:var(--f-en-display); font-size:14px; letter-spacing:.18em;
+  color:var(--gold-200); font-weight:600;
+  display:flex; flex-direction:column; gap:2px;
+}
+.mobile-topbar .ttl .ko{
+  font-family:var(--f-ko); font-size:11px; color:var(--ink-3);
+  font-weight:600; letter-spacing:.04em; text-transform:none;
+}
+.mobile-body{ padding:var(--s-4); padding-bottom:120px; overflow-y:auto; }
+
+.mobile-pity{
+  margin-bottom:var(--s-4);
+  padding:var(--s-3);
+  background:rgba(0,0,0,.3);
+  border:1px solid var(--line-1);
+  position:relative;
+}
+.mobile-pity::before, .mobile-pity::after{ content:""; position:absolute; width:6px; height:6px; border:1px solid var(--gold-300); }
+.mobile-pity::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.mobile-pity::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+.mobile-resources{
+  display:flex; gap:6px; flex-wrap:wrap;
+  margin-bottom:var(--s-4);
+}
+
+.mobile-cards{
+  display:flex; flex-direction:column;
+  gap:var(--s-4);
+}
+
+.mobile-action-bar{
+  position:absolute; bottom:0; left:0; right:0;
+  padding:var(--s-3) var(--s-3) calc(var(--s-3) + 14px);
+  background:linear-gradient(180deg, rgba(0,0,0,.4), rgba(0,0,0,.85));
+  border-top:1px solid var(--gold-500);
+  z-index:3;
+}
+.mobile-action-bar::before{
+  content:""; position:absolute; top:-1px; left:0; right:0; height:1px;
+  background:linear-gradient(to right, transparent, var(--gold-300), transparent);
+}
+.mobile-action-bar .row{ display:flex; gap:8px; align-items:stretch; }
+
+/* tooltip-style helpers for action group label */
+.action-mini-label{
+  font-family:var(--f-mono); font-size:9px;
+  color:var(--ink-3); letter-spacing:.16em;
+  text-transform:uppercase;
+  text-align:center;
+  margin-bottom:6px;
+}
+.action-mini-label b{ color:var(--gold-300); font-weight:500; }
+
+/* foot */
+.doc-foot{ margin-top:var(--s-7); padding-top:var(--s-5); border-top:1px solid var(--gold-500); display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:10.5px; color:var(--ink-3); letter-spacing:.12em; position:relative; }
+.doc-foot::before{ content:""; position:absolute; top:-2px; left:0; right:0; height:1px; background:linear-gradient(to right, transparent, var(--gold-300), transparent); }
+.doc-foot b{ color:var(--gold-200); font-weight:500; }
+
+/* scenario subtitle */
+.scenario-row{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:var(--s-5);
+  margin-bottom:var(--s-7);
+}
+.scenario{
+  position:relative;
+}
+.scenario-label{
+  font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.18em; color:var(--gold-300);
+  text-transform:uppercase;
+  margin-bottom:var(--s-3);
+  display:flex; align-items:center; gap:8px;
+}
+.scenario-label::after{ content:""; flex:1; height:1px; background:linear-gradient(to right, var(--gold-500), transparent); }
+.scenario-label small{
+  font-family:var(--f-ko); font-size:11px; color:var(--ink-3);
+  letter-spacing:.04em; text-transform:none; font-weight:500;
+}
+
+/* atom legend strip */
+.atom-legend{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:var(--s-4);
+  padding:var(--s-4);
+  background:rgba(0,0,0,.3);
+  border:1px solid var(--line-1);
+  position:relative;
+  margin-bottom:var(--s-5);
+}
+.atom-legend::before, .atom-legend::after{ content:""; position:absolute; width:8px; height:8px; border:1px solid var(--gold-300); }
+.atom-legend::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.atom-legend::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.atom-legend > div{ display:flex; flex-direction:column; gap:8px; }
+.atom-legend h5{
+  margin:0 0 4px;
+  font-family:var(--f-en-display); font-size:11px;
+  letter-spacing:.22em; color:var(--gold-200);
+  font-weight:600; text-transform:uppercase;
+  display:flex; justify-content:space-between; align-items:baseline;
+}
+.atom-legend h5 .ko{
+  font-family:var(--f-ko); font-size:11px;
+  color:var(--ink-3); font-weight:600;
+  letter-spacing:.04em; text-transform:none;
+}
+.atom-legend .row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.atom-legend .desc{
+  font-family:var(--f-ko); font-size:11px;
+  color:var(--ink-3); line-height:1.5;
+}
+.atom-legend .desc b{ color:var(--gold-200); font-weight:600; }
+
+</style>
+</head>
+<body>
+
+<main class="canvas">
+
+  <!-- ============== HEADER ============================== -->
+  <header class="doc-head">
+    <div>
+      <div class="eyebrow">— SURFACE 1 · TOWN.RECRUITPACK · 4-SLOT —</div>
+      <h1 class="doc-title">
+        Recruit
+        <span class="flourish"><i></i><i></i><i></i></span>
+        Pack · 01
+      </h1>
+      <div class="doc-subtitle">Standard · Standard · OnPlan · Protected — pity, refresh, scout in one breath.</div>
+      <p class="doc-subtitle-ko">
+        Atom 묶음 (Button + HeroPortraitCard sm) 위에 새 atom 3개 (Cost chip / Tag chip / pity ProgressBar)
+        + HeroPortraitCard medium variant를 도입해서 첫 surface로 조합 검증.
+      </p>
+    </div>
+    <div class="doc-meta">
+      <div><b>Token</b> &nbsp;Style Guide v0.2</div>
+      <div><b>Atoms</b> &nbsp;v0.1 + 3 new</div>
+      <div><b>Locale</b> &nbsp;ko · ja · en</div>
+      <div><b>Rev</b> &nbsp;Surface 1 · 0.1</div>
+    </div>
+  </header>
+
+  <!-- ============== ATOM LEGEND ============================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">0 · NEW ATOMS</span>
+      <h2 class="section-title">Cost Chip · Tag Chip · pity ProgressBar</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">surface 안에서 자연스럽게 도입</span>
+    </div>
+
+    <div class="atom-legend">
+      <div>
+        <h5>COST CHIP <span class="ko">/ 화폐 칩</span></h5>
+        <div class="row">
+          <span class="cost-chip free">
+            <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 5.5 L5 7 L7.5 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            FREE · 무료
+          </span>
+          <span class="cost-chip gold">
+            <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+            2 G <span class="sep">·</span> <span class="have ok">12 / 2</span>
+          </span>
+          <span class="cost-chip echo">
+            <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="5.5" cy="5.5" r="4"/><circle cx="5.5" cy="5.5" r="2"/><circle cx="5.5" cy="5.5" r=".6" fill="currentColor"/></svg>
+            35 ECHO <span class="sep">·</span> <span class="have ok">88 / 35</span>
+          </span>
+          <span class="cost-chip gold cant">
+            <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+            6 G <span class="sep">·</span> <span class="have">3 / 6</span>
+          </span>
+        </div>
+        <div class="desc">
+          버튼 안에서는 <b>cost-chip</b>이 라벨 옆에 붙어 비용 표시.
+          standalone일 때는 보유량 (have / cost)도 함께.
+        </div>
+      </div>
+
+      <div>
+        <h5>TAG CHIP <span class="ko">/ 태그 칩</span></h5>
+        <div class="row">
+          <span class="chip tag-race"><i class="dot"></i>HUMAN <span style="font-family:var(--f-ko); margin-left:4px; font-size:10px; letter-spacing:.04em; text-transform:none; color:var(--ink-2);">인간</span></span>
+          <span class="chip tag-class" style="--frame-fam:var(--fam-striker); --frame-fam-glow:var(--fam-striker-glow);"><i class="dot"></i>STRIKER</span>
+          <span class="chip tag-class" style="--frame-fam:var(--fam-vanguard); --frame-fam-glow:var(--fam-vanguard-glow);"><i class="dot"></i>VANGUARD</span>
+          <span class="chip tag-class" style="--frame-fam:var(--fam-mystic); --frame-fam-glow:var(--fam-mystic-glow);"><i class="dot"></i>MYSTIC</span>
+          <span class="chip tag-role"><i class="dot"></i>DPS</span>
+          <span class="chip tag-role"><i class="dot"></i>FRONTLINE</span>
+        </div>
+        <div class="desc">
+          Race (vellum line) → Class (family color) → Role (gold solid). 정보 우선순위와 시각 무게가 일치.
+        </div>
+      </div>
+
+      <div>
+        <h5>PITY BAR <span class="ko">/ 천장 진행</span></h5>
+        <div style="position:relative; padding-top:8px;">
+          <div class="pity-bar">
+            <div class="seg rare" style="left:0; width:42%;"></div>
+            <div class="tick rare" style="left:50%;"><i></i></div>
+            <div class="tick epic" style="left:100%;"><i></i></div>
+          </div>
+          <div class="pity-meta">
+            <span><b>17 / 40</b> Rare 천장 · <b>17 / 80</b> Epic 천장</span>
+            <span class="legend">
+              <span><i class="rare"></i>RARE</span>
+              <span><i class="epic"></i>EPIC</span>
+            </span>
+          </div>
+        </div>
+        <div class="desc">
+          한 줄에 두 단계 천장 (Rare 50%, Epic 100%) — diamond tick으로 분리.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== PC VARIANT — DEFAULT 4-CARD ================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">I · PC ≥ 1280 px</span>
+      <h2 class="section-title">Town.RecruitPack — Default</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">4-card horizontal · Roster preview rail · 2-stage refresh + scout</span>
+    </div>
+
+    <div class="pc-layout">
+
+      <!-- main surface -->
+      <div class="surface">
+        <div class="surface-chrome">
+          <span class="dot"></span>
+          <span class="breadcrumb">
+            <b>TOWN</b> <span>›</span> <b>RECRUIT HALL</b> <span>›</span> 모집 게시판
+          </span>
+          <span style="margin-left:auto; color:var(--ink-3);">DAY 12 · WEEK 02 · RUN #003</span>
+        </div>
+
+        <div class="surface-body">
+
+          <!-- header w/ pity -->
+          <div class="recruit-head">
+            <div class="recruit-title-block">
+              <div class="recruit-eyebrow">— TOWN · RECRUIT HALL · DAY 12</div>
+              <h2 class="recruit-title">Recruit Pack</h2>
+              <p class="recruit-subtitle-ko">
+                4명의 후보가 게시판에 올라와 있습니다. 한 명만 선택할 수 있어요.
+              </p>
+            </div>
+
+            <div class="recruit-pity">
+              <div class="ttl">
+                <span>PITY · 천장</span>
+                <span class="ko">17 / 80 · 다음 Rare까지 <b style="color:var(--gold-200); font-family:var(--f-mono);">23</b>회</span>
+              </div>
+              <div class="pity-bar">
+                <div class="seg rare" style="left:0; width:21.25%;"></div>
+                <div class="tick rare" style="left:50%;"><i></i></div>
+                <div class="tick epic" style="left:100%;"><i></i></div>
+              </div>
+              <div class="pity-meta">
+                <span><b>17</b> &nbsp;/&nbsp; 누적 모집 횟수</span>
+                <span class="legend">
+                  <span><i class="rare"></i>R · 40회</span>
+                  <span><i class="epic"></i>E · 80회</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- resources strip -->
+          <div class="recruit-resources">
+            <span class="lbl">RESOURCES</span>
+            <span class="cost-chip gold">
+              <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+              GOLD <span class="sep">·</span> <span class="have ok" style="color:var(--gold-100);">12</span>
+            </span>
+            <span class="cost-chip echo">
+              <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="5.5" cy="5.5" r="4"/><circle cx="5.5" cy="5.5" r="2"/><circle cx="5.5" cy="5.5" r=".6" fill="currentColor"/></svg>
+              ECHO <span class="sep">·</span> <span class="have ok" style="color:var(--rare-rare-glow);">88</span>
+            </span>
+            <span class="sep"></span>
+            <span class="lbl">REFRESH</span>
+            <span class="cost-chip free">
+              <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 5.5 L5 7 L7.5 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              FREE <span class="sep">·</span> <span class="have ok" style="color:var(--state-safe);">1 / 1</span>
+            </span>
+            <span style="font-family:var(--f-mono); font-size:10px; color:var(--ink-3); letter-spacing:.14em;">PAID NEXT &nbsp;<b style="color:var(--gold-200); font-weight:500;">2 G</b></span>
+            <span class="sep"></span>
+            <span class="lbl">SCOUT</span>
+            <span class="cost-chip echo">
+              <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5.5 1 L5.5 4 M5.5 7 L5.5 10 M1 5.5 L4 5.5 M7 5.5 L10 5.5 M2.5 2.5 L4.5 4.5 M6.5 6.5 L8.5 8.5 M2.5 8.5 L4.5 6.5 M6.5 4.5 L8.5 2.5"/></svg>
+              35 E <span class="sep">·</span> <span class="have ok" style="color:var(--state-safe);">1 / RUN</span>
+            </span>
+          </div>
+
+          <!-- 4 cards -->
+          <div class="recruit-grid">
+
+            <!-- =============== CARD 1 — STANDARD A · STRIKER · RARE =============== -->
+            <div class="hero-card-md" style="--frame-fam:var(--fam-striker); --frame-fam-deep:var(--fam-striker-deep); --frame-fam-glow:var(--fam-striker-glow);">
+              <div class="hero-rib"></div><div class="hero-gem"></div>
+
+              <svg class="hco tl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+                <path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/>
+                <path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r=".7" fill="#fff8e0"/>
+              </svg>
+              <svg class="hco tr" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+                <path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/>
+              </svg>
+              <svg class="hco bl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+                <path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/>
+              </svg>
+              <svg class="hco br" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+                <path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/>
+              </svg>
+
+              <div class="hero-portrait-md">
+                <span class="hero-tag">SLOT 01 · STD</span>
+                <div class="hero-tier sapphire" title="RARE"><i></i><i></i></div>
+                <svg class="hero-silhouette" viewBox="0 0 180 220" fill="none">
+                  <defs>
+                    <linearGradient id="g1a" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#3a1820"/><stop offset="60%" stop-color="#1c0e16"/><stop offset="100%" stop-color="#0a0510"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M10 220 L10 174 Q10 142 36 130 L54 120 Q66 116 74 100 Q78 90 78 80 Q78 70 88 70 Q98 70 98 80 Q98 90 102 100 Q110 116 122 120 L140 130 Q170 142 170 174 L170 220 Z" fill="url(#g1a)"/>
+                  <path d="M28 152 Q 36 124 56 124 L60 152 Z" fill="#5a0e1c" stroke="#e6b751" stroke-width="1"/>
+                  <path d="M152 152 Q 144 124 124 124 L120 152 Z" fill="#5a0e1c" stroke="#e6b751" stroke-width="1"/>
+                  <path d="M82 124 L88 110 L94 124 L88 138 Z" fill="#f08a3c" stroke="#ffe9a8" stroke-width=".6"/>
+                  <ellipse cx="88" cy="64" rx="18" ry="22" fill="url(#g1a)"/>
+                  <path d="M68 70 Q 66 32 88 32 Q 110 32 108 70 Q 100 50 94 42 Q 90 56 86 54 Q 80 52 78 42 Q 72 54 68 70 Z" fill="#1a0a12"/>
+                  <ellipse cx="82" cy="60" rx="1.6" ry="2.4" fill="#ffe9a8" opacity=".75"/>
+                  <ellipse cx="94" cy="60" rx="1.6" ry="2.4" fill="#ffe9a8" opacity=".75"/>
+                  <path d="M76 46 Q82 38 88 38" stroke="#f08a3c" stroke-width="1" opacity=".5" fill="none"/>
+                  <!-- weapon hint -->
+                  <path d="M150 110 L168 92 M152 112 L170 94" stroke="#e6b751" stroke-width=".7" opacity=".6"/>
+                </svg>
+                <div style="position:absolute; bottom:0; left:0; right:0; height:30px; background:linear-gradient(to top, rgba(240,138,60,.18), transparent);"></div>
+              </div>
+
+              <div class="hero-name-row">
+                <h3 class="hero-name-ko">카에데 녹스</h3>
+              </div>
+              <div class="hero-name-en">KAEDE NOX</div>
+
+              <div class="hero-tags">
+                <span class="chip tag-race"><i class="dot"></i>HUMAN</span>
+                <span class="chip tag-class" style="--frame-fam:var(--fam-striker); --frame-fam-glow:var(--fam-striker-glow);"><i class="dot"></i>STRIKER</span>
+                <span class="chip tag-role"><i class="dot"></i>DPS</span>
+              </div>
+
+              <div class="hero-skill">
+                <div class="hero-skill-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                    <path d="M8 1 L8 11 M5 4 L8 1 L11 4" />
+                    <path d="M3 13 L13 13 M5 15 L11 15"/>
+                  </svg>
+                </div>
+                <div class="hero-skill-text">
+                  <p class="hero-skill-name">월광 베기 <span class="en">CRESCENT CUT</span></p>
+                  <p class="hero-skill-summary">치명타 시 <u>+25%</u> 추가 피해 — 후열에 <b>도약</b> 가능.</p>
+                </div>
+              </div>
+
+              <div class="hero-action-row">
+                <button class="btn btn-primary btn-md recruit-btn btn-with-cost">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="lbl">
+                    <span class="lbl-text">영입</span>
+                    <span class="cost-chip gold" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35);">
+                      <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+                      4
+                    </span>
+                  </span>
+                </button>
+                <button class="btn btn-icon btn-md" aria-label="상세">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                    <circle cx="8" cy="8" r="6"/><path d="M8 5 L8 8.5 M8 11 L8.01 11"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- =============== CARD 2 — STANDARD B · BEASTKIN · COMMON =============== -->
+            <div class="hero-card-md" style="--frame-fam:var(--fam-beastkin); --frame-fam-deep:var(--fam-beastkin-deep); --frame-fam-glow:var(--fam-beastkin-glow);">
+              <div class="hero-rib"></div><div class="hero-gem"></div>
+
+              <svg class="hco tl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco tr" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco bl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco br" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+
+              <div class="hero-portrait-md">
+                <span class="hero-tag">SLOT 02 · STD</span>
+                <div class="hero-tier parchment" title="COMMON"><i></i></div>
+                <svg class="hero-silhouette" viewBox="0 0 180 220" fill="none">
+                  <defs>
+                    <linearGradient id="g2a" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#3a4222"/><stop offset="60%" stop-color="#1a200e"/><stop offset="100%" stop-color="#0a0e08"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M10 220 L10 174 Q10 142 36 130 L54 120 Q66 116 74 100 Q78 90 78 80 Q78 70 88 70 Q98 70 98 80 Q98 90 102 100 Q110 116 122 120 L140 130 Q170 142 170 174 L170 220 Z" fill="url(#g2a)"/>
+                  <!-- fur tufts on shoulders -->
+                  <path d="M28 152 Q 32 132 50 122 Q 44 134 40 148 Z" fill="#1a200e" stroke="#7a8a52" stroke-width=".5"/>
+                  <path d="M152 152 Q 148 132 130 122 Q 136 134 140 148 Z" fill="#1a200e" stroke="#7a8a52" stroke-width=".5"/>
+                  <ellipse cx="88" cy="64" rx="18" ry="22" fill="url(#g2a)"/>
+                  <!-- ears -->
+                  <path d="M68 50 L60 30 L78 42 Z" fill="#0e1408"/>
+                  <path d="M108 50 L116 30 L98 42 Z" fill="#0e1408"/>
+                  <path d="M70 48 L66 38 L74 44 Z" fill="#7a8a52" opacity=".4"/>
+                  <path d="M106 48 L110 38 L102 44 Z" fill="#7a8a52" opacity=".4"/>
+                  <!-- face -->
+                  <path d="M68 70 Q 66 36 88 36 Q 110 36 108 70 Q 96 50 88 50 Q 80 50 68 70 Z" fill="#0e1408"/>
+                  <ellipse cx="82" cy="60" rx="1.6" ry="2.4" fill="#b9c980" opacity=".75"/>
+                  <ellipse cx="94" cy="60" rx="1.6" ry="2.4" fill="#b9c980" opacity=".75"/>
+                  <path d="M86 66 Q 88 68 90 66 L88 70 Z" fill="#0a0e08" stroke="#b9c980" stroke-width=".4"/>
+                </svg>
+              </div>
+
+              <div class="hero-name-row">
+                <h3 class="hero-name-ko">테오</h3>
+              </div>
+              <div class="hero-name-en">THEO</div>
+
+              <div class="hero-tags">
+                <span class="chip tag-race"><i class="dot"></i>BEASTKIN</span>
+                <span class="chip tag-class" style="--frame-fam:var(--fam-beastkin); --frame-fam-glow:var(--fam-beastkin-glow);"><i class="dot"></i>RANGER</span>
+                <span class="chip tag-role"><i class="dot"></i>SCOUT</span>
+              </div>
+
+              <div class="hero-skill">
+                <div class="hero-skill-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                    <circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="6" opacity=".5"/>
+                    <path d="M8 1.5 L8 3 M8 13 L8 14.5 M14.5 8 L13 8 M3 8 L1.5 8"/>
+                  </svg>
+                </div>
+                <div class="hero-skill-text">
+                  <p class="hero-skill-name">동물의 감각 <span class="en">FERAL SENSE</span></p>
+                  <p class="hero-skill-summary">전투 시작 시 적의 약점 <b>1개</b> 노출 — <u>은신 무시</u>.</p>
+                </div>
+              </div>
+
+              <div class="hero-action-row">
+                <button class="btn btn-primary btn-md recruit-btn btn-with-cost">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="lbl">
+                    <span class="lbl-text">영입</span>
+                    <span class="cost-chip gold" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35);">
+                      <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+                      2
+                    </span>
+                  </span>
+                </button>
+                <button class="btn btn-icon btn-md" aria-label="상세">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                    <circle cx="8" cy="8" r="6"/><path d="M8 5 L8 8.5 M8 11 L8.01 11"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- =============== CARD 3 — ON-PLAN · VANGUARD · RARE =============== -->
+            <div class="hero-card-md" style="--frame-fam:var(--fam-vanguard); --frame-fam-deep:var(--fam-vanguard-deep); --frame-fam-glow:var(--fam-vanguard-glow);">
+              <div class="hero-rib"></div><div class="hero-gem"></div>
+
+              <svg class="hco tl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco tr" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco bl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco br" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+
+              <div class="hero-portrait-md">
+                <span class="hero-tag" style="background:rgba(74,114,184,.7); border-color:var(--rare-rare-glow); color:#fff8e0;">SLOT 03 · ON-PLAN</span>
+                <div class="hero-tier sapphire"><i></i><i></i></div>
+                <svg class="hero-silhouette" viewBox="0 0 180 220" fill="none">
+                  <defs>
+                    <linearGradient id="g3a" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#1f3260"/><stop offset="60%" stop-color="#0e1830"/><stop offset="100%" stop-color="#06091c"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M10 220 L10 174 Q10 142 36 130 L54 120 Q66 116 74 100 Q78 90 78 80 Q78 70 88 70 Q98 70 98 80 Q98 90 102 100 Q110 116 122 120 L140 130 Q170 142 170 174 L170 220 Z" fill="url(#g3a)"/>
+                  <!-- pauldron with stars -->
+                  <path d="M26 156 Q 32 124 56 124 L60 156 Z" fill="#1a2a52" stroke="#e6b751" stroke-width="1"/>
+                  <path d="M154 156 Q 148 124 124 124 L120 156 Z" fill="#1a2a52" stroke="#e6b751" stroke-width="1"/>
+                  <path d="M40 138 L42 134 L44 138 L42 142 Z" fill="#e6b751"/>
+                  <path d="M138 138 L140 134 L142 138 L140 142 Z" fill="#e6b751"/>
+                  <!-- chest crest -->
+                  <path d="M82 124 L88 110 L94 124 L88 138 Z" fill="#7fa3e0" stroke="#ffe9a8" stroke-width=".6"/>
+                  <!-- shield silhouette behind -->
+                  <path d="M58 168 L58 200 Q88 218 118 200 L118 168 Q88 158 58 168 Z" fill="#1a2a52" stroke="#e6b751" stroke-width=".7" opacity=".7"/>
+                  <ellipse cx="88" cy="64" rx="18" ry="22" fill="url(#g3a)"/>
+                  <!-- helm with crown brow -->
+                  <path d="M66 62 Q 66 32 88 32 Q 110 32 110 62 L106 64 L104 50 L88 48 L72 50 L70 64 Z" fill="#0a1230"/>
+                  <path d="M70 56 L106 56" stroke="#e6b751" stroke-width=".8"/>
+                  <!-- crown points -->
+                  <path d="M76 32 L78 24 L80 32 M86 32 L88 22 L90 32 M96 32 L98 24 L100 32" stroke="#e6b751" stroke-width=".7" fill="none"/>
+                  <ellipse cx="82" cy="60" rx="1.6" ry="2.4" fill="#9bbeed" opacity=".85"/>
+                  <ellipse cx="94" cy="60" rx="1.6" ry="2.4" fill="#9bbeed" opacity=".85"/>
+                </svg>
+                <div style="position:absolute; bottom:0; left:0; right:0; height:30px; background:linear-gradient(to top, rgba(127,163,224,.18), transparent);"></div>
+              </div>
+
+              <div class="hero-name-row">
+                <h3 class="hero-name-ko">로엔 그레이</h3>
+              </div>
+              <div class="hero-name-en">ROEN GREY</div>
+
+              <div class="hero-tags">
+                <span class="chip tag-race"><i class="dot"></i>HUMAN</span>
+                <span class="chip tag-class" style="--frame-fam:var(--fam-vanguard); --frame-fam-glow:var(--fam-vanguard-glow);"><i class="dot"></i>VANGUARD</span>
+                <span class="chip tag-role"><i class="dot"></i>FRONTLINE</span>
+              </div>
+
+              <div class="hero-skill">
+                <div class="hero-skill-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                    <path d="M8 1 L13 4 L13 9 Q 13 13 8 15 Q 3 13 3 9 L3 4 Z"/>
+                    <path d="M6 7 L8 9 L11 5"/>
+                  </svg>
+                </div>
+                <div class="hero-skill-text">
+                  <p class="hero-skill-name">방패의 서약 <span class="en">OATH OF AEGIS</span></p>
+                  <p class="hero-skill-summary">아군 후열 받는 피해 <u>-30%</u> · 도발 시 <b>1턴 무적</b>.</p>
+                </div>
+              </div>
+
+              <div class="hero-action-row">
+                <button class="btn btn-primary btn-md recruit-btn btn-with-cost" style="background:linear-gradient(180deg, rgba(245,214,138,.08), rgba(0,0,0,.25)), linear-gradient(180deg, var(--fam-vanguard) 0%, var(--fam-vanguard-deep) 100%);">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="lbl">
+                    <span class="lbl-text">영입</span>
+                    <span class="cost-chip gold" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35);">
+                      <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+                      4
+                    </span>
+                  </span>
+                </button>
+                <button class="btn btn-icon btn-md" aria-label="상세">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                    <circle cx="8" cy="8" r="6"/><path d="M8 5 L8 8.5 M8 11 L8.01 11"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- =============== CARD 4 — PROTECTED · MYSTIC · EPIC =============== -->
+            <div class="hero-card-md is-protected" style="--frame-fam:var(--fam-mystic); --frame-fam-deep:var(--fam-mystic-deep); --frame-fam-glow:var(--fam-mystic-glow);">
+              <div class="protected-banner">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><rect x="3" y="6" width="6" height="5"/><path d="M4 6 L4 4 Q 4 2 6 2 Q 8 2 8 4 L8 6"/></svg>
+                PROTECTED <small>보호 슬롯</small>
+              </div>
+              <div class="hero-rib"></div><div class="hero-gem"></div>
+
+              <svg class="hco tl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                <path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3"/>
+                <path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1" fill="#fff8e0"/>
+                <path d="M3 18 Q 6 16 9 18" opacity=".5"/>
+              </svg>
+              <svg class="hco tr" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                <path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1" fill="#fff8e0"/>
+                <path d="M3 18 Q 6 16 9 18" opacity=".5"/>
+              </svg>
+              <svg class="hco bl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                <path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1" fill="#fff8e0"/>
+                <path d="M3 18 Q 6 16 9 18" opacity=".5"/>
+              </svg>
+              <svg class="hco br" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                <path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1" fill="#fff8e0"/>
+                <path d="M3 18 Q 6 16 9 18" opacity=".5"/>
+              </svg>
+
+              <div class="hero-portrait-md">
+                <span class="hero-tag">SLOT 04 · PROTECTED</span>
+                <span class="protected-lock">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+                    <rect x="2.5" y="5" width="5" height="4"/><path d="M3.5 5 L3.5 3.5 Q 3.5 2 5 2 Q 6.5 2 6.5 3.5 L6.5 5"/>
+                  </svg>
+                  REROLL X
+                </span>
+                <svg class="hero-silhouette" viewBox="0 0 180 220" fill="none">
+                  <defs>
+                    <linearGradient id="g4a" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#3a1f5a"/><stop offset="60%" stop-color="#1c0e2c"/><stop offset="100%" stop-color="#0a0510"/>
+                    </linearGradient>
+                    <radialGradient id="g4glow" cx="50%" cy="40%" r="50%">
+                      <stop offset="0%" stop-color="#d4b4f0" stop-opacity=".55"/>
+                      <stop offset="100%" stop-color="#d4b4f0" stop-opacity="0"/>
+                    </radialGradient>
+                  </defs>
+                  <ellipse cx="88" cy="100" rx="80" ry="90" fill="url(#g4glow)"/>
+                  <path d="M10 220 L10 174 Q10 142 36 130 L54 120 Q66 116 74 100 Q78 90 78 80 Q78 70 88 70 Q98 70 98 80 Q98 90 102 100 Q110 116 122 120 L140 130 Q170 142 170 174 L170 220 Z" fill="url(#g4a)"/>
+                  <!-- robe trim -->
+                  <path d="M58 142 Q 88 154 118 142" stroke="#e6b751" stroke-width="1" fill="none"/>
+                  <path d="M48 168 Q 88 184 128 168" stroke="#e6b751" stroke-width=".7" fill="none" opacity=".7"/>
+                  <!-- staff -->
+                  <path d="M150 60 L150 200" stroke="#3a1f5a" stroke-width="3"/>
+                  <path d="M150 60 L150 200" stroke="#e6b751" stroke-width="1" opacity=".6"/>
+                  <circle cx="150" cy="56" r="6" fill="#d4b4f0" stroke="#e6b751" stroke-width=".8"/>
+                  <circle cx="150" cy="56" r="2" fill="#fff8e0"/>
+                  <!-- chest crystal -->
+                  <path d="M82 124 L88 108 L94 124 L88 140 Z" fill="#d4b4f0" stroke="#ffe9a8" stroke-width=".8"/>
+                  <circle cx="88" cy="124" r="2" fill="#fff8e0"/>
+                  <ellipse cx="88" cy="64" rx="18" ry="22" fill="url(#g4a)"/>
+                  <!-- long flowing hair -->
+                  <path d="M66 72 Q 64 22 88 22 Q 112 22 110 72 Q 108 116 96 130 L88 124 L80 130 Q 68 116 66 72 Z" fill="#1a0a26"/>
+                  <ellipse cx="82" cy="60" rx="1.6" ry="2.4" fill="#d4b4f0" opacity=".85"/>
+                  <ellipse cx="94" cy="60" rx="1.6" ry="2.4" fill="#d4b4f0" opacity=".85"/>
+                  <!-- forehead crescent -->
+                  <path d="M84 40 Q 88 36 92 40" stroke="#e6b751" stroke-width=".9" fill="none"/>
+                  <circle cx="88" cy="40" r="1" fill="#ffe9a8"/>
+                </svg>
+                <div style="position:absolute; bottom:0; left:0; right:0; height:30px; background:linear-gradient(to top, rgba(212,180,240,.22), transparent);"></div>
+              </div>
+
+              <div class="hero-name-row">
+                <h3 class="hero-name-ko">아유미</h3>
+                <div class="hero-tier amethyst-flame"><i></i><i></i><i></i></div>
+              </div>
+              <div class="hero-name-en">AYUMI</div>
+
+              <div class="hero-tags">
+                <span class="chip tag-race"><i class="dot"></i>ELF</span>
+                <span class="chip tag-class" style="--frame-fam:var(--fam-mystic); --frame-fam-glow:var(--fam-mystic-glow);"><i class="dot"></i>MYSTIC</span>
+                <span class="chip tag-role"><i class="dot"></i>BACKLINE</span>
+              </div>
+
+              <div class="hero-skill">
+                <div class="hero-skill-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                    <path d="M8 1 L8 4 M8 12 L8 15 M1 8 L4 8 M12 8 L15 8 M3 3 L5 5 M11 11 L13 13 M3 13 L5 11 M11 5 L13 3"/>
+                    <circle cx="8" cy="8" r="2.4"/>
+                  </svg>
+                </div>
+                <div class="hero-skill-text">
+                  <p class="hero-skill-name">월광의 축복 <span class="en">LUNAR BLESSING</span></p>
+                  <p class="hero-skill-summary">아군 전체 회복 <u>+20%</u> · 다음 턴 <b>침묵 면역</b>.</p>
+                </div>
+              </div>
+
+              <div class="hero-action-row">
+                <button class="btn btn-primary btn-md recruit-btn btn-with-cost" style="background:linear-gradient(180deg, rgba(245,214,138,.12), rgba(0,0,0,.25)), linear-gradient(180deg, var(--fam-mystic) 0%, var(--fam-mystic-deep) 100%);">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="lbl">
+                    <span class="lbl-text">영입</span>
+                    <span class="cost-chip gold" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35);">
+                      <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+                      8
+                    </span>
+                  </span>
+                </button>
+                <button class="btn btn-icon btn-md" aria-label="상세">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                    <circle cx="8" cy="8" r="6"/><path d="M8 5 L8 8.5 M8 11 L8.01 11"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- action row -->
+          <div class="recruit-actions">
+            <span class="group-label">REFRESH<br><b style="font-family:var(--f-ko); font-size:9px; letter-spacing:.04em; text-transform:none;">새 후보</b></span>
+
+            <button class="btn btn-secondary btn-md">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="lbl">
+                무료 갱신
+                <span class="cost-chip free" style="padding:2px 6px; font-size:10px; border:none; background:transparent; color:var(--state-safe);">
+                  <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 5.5 L5 7 L7.5 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                  1
+                </span>
+                <span class="en">FREE</span>
+              </span>
+            </button>
+
+            <button class="btn btn-secondary btn-md">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="lbl">
+                유료 갱신
+                <span class="cost-chip gold" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35); color:var(--gold-100);">
+                  <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+                  2 → 4 → 6
+                </span>
+                <span class="en">PAID</span>
+              </span>
+            </button>
+
+            <span class="spacer"></span>
+
+            <span class="group-label" style="text-align:right;">SCOUT<br><b style="font-family:var(--f-ko); font-size:9px; letter-spacing:.04em; text-transform:none;">정찰 · 1 / RUN</b></span>
+
+            <button class="btn btn-primary btn-md" style="background:linear-gradient(180deg, rgba(245,214,138,.08), rgba(0,0,0,.25)), linear-gradient(180deg, var(--fam-vanguard) 0%, var(--fam-vanguard-deep) 100%);">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="lbl">
+                정찰 갱신
+                <span class="cost-chip echo" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35);">
+                  <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="5.5" cy="5.5" r="4"/><circle cx="5.5" cy="5.5" r="2"/><circle cx="5.5" cy="5.5" r=".6" fill="currentColor"/></svg>
+                  35
+                </span>
+                <span class="en">SCOUT</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== ROSTER RAIL =================== -->
+      <div class="roster-rail">
+        <h4>
+          <span>ROSTER</span>
+          <span class="ko">로스터 · 8 / 12</span>
+        </h4>
+        <div class="roster-meta">
+          <span><b>2</b> 출격</span>
+          <span><b>1</b> 부상</span>
+          <span><b>1</b> KO</span>
+          <span><b>4</b> 빈슬롯</span>
+        </div>
+
+        <div class="roster-grid">
+          <!-- row 1 -->
+          <div class="roster-mini is-deployed" style="--mini-fam:var(--fam-striker-deep); --mini-fam-light:var(--fam-striker);">
+            <div class="rib"></div>
+            <svg class="silhouette" viewBox="0 0 60 70" fill="none">
+              <path d="M4 70 L4 56 Q4 46 14 42 L20 38 Q24 36 26 30 Q28 26 28 22 Q28 18 30 18 Q32 18 32 22 Q32 26 34 30 Q36 36 40 38 L46 42 Q56 46 56 56 L56 70 Z" fill="#1c0e16"/>
+              <ellipse cx="30" cy="20" rx="6" ry="7" fill="#1c0e16"/>
+            </svg>
+          </div>
+          <div class="roster-mini is-deployed" style="--mini-fam:var(--fam-vanguard-deep); --mini-fam-light:var(--fam-vanguard);">
+            <div class="rib"></div>
+            <svg class="silhouette" viewBox="0 0 60 70" fill="none">
+              <path d="M4 70 L4 56 Q4 46 14 42 L20 38 Q24 36 26 30 Q28 26 28 22 Q28 18 30 18 Q32 18 32 22 Q32 26 34 30 Q36 36 40 38 L46 42 Q56 46 56 56 L56 70 Z" fill="#0e1830"/>
+              <path d="M22 22 Q 22 12 30 12 Q 38 12 38 22 L36 24 L34 18 L30 17 L26 18 L24 24 Z" fill="#06091c"/>
+            </svg>
+          </div>
+          <div class="roster-mini" style="--mini-fam:var(--fam-mystic-deep); --mini-fam-light:var(--fam-mystic);">
+            <div class="rib"></div>
+            <svg class="silhouette" viewBox="0 0 60 70" fill="none">
+              <path d="M4 70 L4 56 Q4 46 14 42 L20 38 Q24 36 26 30 Q28 26 28 22 Q28 18 30 18 Q32 18 32 22 Q32 26 34 30 Q36 36 40 38 L46 42 Q56 46 56 56 L56 70 Z" fill="#1c0e2c"/>
+              <path d="M22 28 Q 20 8 30 8 Q 40 8 38 28 L34 30 L30 28 L26 30 Z" fill="#1a0a26"/>
+            </svg>
+          </div>
+          <!-- row 2 -->
+          <div class="roster-mini is-injured" style="--mini-fam:var(--fam-striker-deep); --mini-fam-light:var(--fam-striker);">
+            <div class="rib"></div>
+            <svg class="silhouette" viewBox="0 0 60 70" fill="none">
+              <path d="M4 70 L4 56 Q4 46 14 42 L20 38 Q24 36 26 30 Q28 26 28 22 Q28 18 30 18 Q32 18 32 22 Q32 26 34 30 Q36 36 40 38 L46 42 Q56 46 56 56 L56 70 Z" fill="#1c0e16"/>
+              <ellipse cx="30" cy="20" rx="6" ry="7" fill="#1c0e16"/>
+            </svg>
+          </div>
+          <div class="roster-mini" style="--mini-fam:var(--fam-ranger-deep); --mini-fam-light:var(--fam-ranger);">
+            <div class="rib"></div>
+            <svg class="silhouette" viewBox="0 0 60 70" fill="none">
+              <path d="M4 70 L4 56 Q4 46 14 42 L20 38 Q24 36 26 30 Q28 26 28 22 Q28 18 30 18 Q32 18 32 22 Q32 26 34 30 Q36 36 40 38 L46 42 Q56 46 56 56 L56 70 Z" fill="#2a1f0c"/>
+              <path d="M20 22 Q 22 8 30 8 Q 38 8 40 22 L36 24 Q 32 14 30 14 Q 28 14 24 24 Z" fill="#1a1408"/>
+            </svg>
+          </div>
+          <div class="roster-mini is-ko" style="--mini-fam:var(--fam-beastkin-deep); --mini-fam-light:var(--fam-beastkin);">
+            <div class="rib"></div>
+            <svg class="silhouette" viewBox="0 0 60 70" fill="none">
+              <path d="M4 70 L4 56 Q4 46 14 42 L20 38 Q24 36 26 30 Q28 26 28 22 Q28 18 30 18 Q32 18 32 22 Q32 26 34 30 Q36 36 40 38 L46 42 Q56 46 56 56 L56 70 Z" fill="#1a200e"/>
+              <path d="M22 14 L18 6 L26 10 Z M38 14 L42 6 L34 10 Z" fill="#0e1408"/>
+              <ellipse cx="30" cy="20" rx="6" ry="7" fill="#0e1408"/>
+            </svg>
+          </div>
+          <!-- row 3 -->
+          <div class="roster-mini" style="--mini-fam:var(--fam-vanguard-deep); --mini-fam-light:var(--fam-vanguard);">
+            <div class="rib"></div>
+            <svg class="silhouette" viewBox="0 0 60 70" fill="none">
+              <path d="M4 70 L4 56 Q4 46 14 42 L20 38 Q24 36 26 30 Q28 26 28 22 Q28 18 30 18 Q32 18 32 22 Q32 26 34 30 Q36 36 40 38 L46 42 Q56 46 56 56 L56 70 Z" fill="#0e1830"/>
+              <path d="M22 22 Q 22 12 30 12 Q 38 12 38 22 L36 24 L34 18 L30 17 L26 18 L24 24 Z" fill="#06091c"/>
+            </svg>
+          </div>
+          <div class="roster-mini" style="--mini-fam:var(--fam-striker-deep); --mini-fam-light:var(--fam-striker);">
+            <div class="rib"></div>
+            <svg class="silhouette" viewBox="0 0 60 70" fill="none">
+              <path d="M4 70 L4 56 Q4 46 14 42 L20 38 Q24 36 26 30 Q28 26 28 22 Q28 18 30 18 Q32 18 32 22 Q32 26 34 30 Q36 36 40 38 L46 42 Q56 46 56 56 L56 70 Z" fill="#1c0e16"/>
+              <ellipse cx="30" cy="20" rx="6" ry="7" fill="#1c0e16"/>
+            </svg>
+          </div>
+          <div class="roster-mini empty"><span class="plus">+</span></div>
+          <!-- row 4 -->
+          <div class="roster-mini empty"><span class="plus">+</span></div>
+          <div class="roster-mini empty"><span class="plus">+</span></div>
+          <div class="roster-mini empty"><span class="plus">+</span></div>
+        </div>
+
+        <div class="roster-rail-foot">
+          ROSTER LEGEND <b>· STATUS</b>
+          <div class="roster-legend">
+            <span><i class="deployed"></i>DEP</span>
+            <span><i class="injured"></i>INJ</span>
+            <span><i class="ko"></i>KO</span>
+            <span><i class="empty"></i>EMP</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== STATE EXPLORATIONS — POOL EXHAUSTED + COOLDOWN ===== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">II · STATES</span>
+      <h2 class="section-title">Pool Exhausted · Scout Cooldown</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">edge state — vellum ink fade + LockState overlay</span>
+    </div>
+
+    <div class="scenario-row">
+
+      <!-- Pool exhausted (단일 카드 close-up) -->
+      <div class="scenario">
+        <div class="scenario-label">CARD · POOL EXHAUSTED <small>풀 고갈 — 재모집 안내</small></div>
+        <div style="max-width:340px;">
+          <div class="hero-card-md is-exhausted" style="--frame-fam:var(--fam-ranger); --frame-fam-deep:var(--fam-ranger-deep); --frame-fam-glow:var(--fam-ranger-glow);">
+            <div class="hero-rib"></div><div class="hero-gem"></div>
+            <svg class="hco tl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+            <svg class="hco tr" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+            <svg class="hco bl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+            <svg class="hco br" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+
+            <div class="hero-portrait-md">
+              <span class="hero-tag">SLOT 02 · STD</span>
+              <div class="exhausted-overlay">
+                <svg viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                  <circle cx="19" cy="19" r="14"/>
+                  <path d="M9 28 L29 9"/>
+                  <path d="M11 11 L27 27" opacity=".4"/>
+                </svg>
+                <div class="ttl">EXHAUSTED</div>
+                <div class="ko">풀 고갈</div>
+                <div class="hint">이번 주 후보 풀이 비어있어요.<br>다음 <b>주차 갱신</b>까지 대기 또는<br><b>2 G</b>로 재모집 가능.</div>
+              </div>
+            </div>
+
+            <div class="hero-name-row">
+              <h3 class="hero-name-ko">— · —</h3>
+            </div>
+            <div class="hero-name-en">RECRUIT POOL DEPLETED</div>
+
+            <div class="hero-tags">
+              <span class="chip" style="border-color:var(--ink-4); color:var(--ink-3);"><i class="dot" style="background:var(--ink-4);"></i>EMPTY</span>
+            </div>
+
+            <div class="hero-skill" style="opacity:.45;">
+              <div class="hero-skill-icon" style="background:linear-gradient(180deg, #2a2a35, #1a1a25); color:var(--ink-3);">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 13 L13 3 M5 3 L13 3 L13 11"/></svg>
+              </div>
+              <div class="hero-skill-text">
+                <p class="hero-skill-name" style="color:var(--ink-3);">— <span class="en">UNKNOWN</span></p>
+                <p class="hero-skill-summary" style="color:var(--ink-4);">후보가 등장하면 시그니처 스킬이 표시됩니다.</p>
+              </div>
+            </div>
+
+            <div class="hero-action-row">
+              <button class="btn btn-secondary btn-md recruit-btn btn-with-cost">
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                <span class="lbl">
+                  <span class="lbl-text">재모집</span>
+                  <span class="cost-chip gold" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35);">
+                    <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+                    2
+                  </span>
+                </span>
+              </button>
+              <button class="btn btn-icon btn-md" aria-label="상세">
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                  <circle cx="8" cy="8" r="6"/><path d="M8 5 L8 8.5 M8 11 L8.01 11"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scout cooldown (LockState overlay) -->
+      <div class="scenario">
+        <div class="scenario-label">CARD · SCOUT COOLDOWN <small>정찰 사용 후 — LockState overlay</small></div>
+        <div style="max-width:340px;">
+          <div class="hero-card-md" style="--frame-fam:var(--fam-vanguard); --frame-fam-deep:var(--fam-vanguard-deep); --frame-fam-glow:var(--fam-vanguard-glow); position:relative;">
+            <!-- overlay covers ENTIRE card, not just portrait -->
+            <div class="scout-overlay">
+              <div class="lock-icon">
+                <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                  <rect x="5" y="11" width="12" height="9"/>
+                  <path d="M7 11 L7 8 Q 7 4 11 4 Q 15 4 15 8 L15 11"/>
+                  <circle cx="11" cy="15" r="1.4" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="label">SCOUT LOCKED</div>
+              <div class="ko">정찰 사용 후 잠김</div>
+              <div class="timer">NEXT RUN</div>
+              <div class="hint">이번 런에 1회 사용 — 다음 런에서 다시 사용 가능</div>
+            </div>
+
+            <div class="hero-rib"></div><div class="hero-gem"></div>
+            <svg class="hco tl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+            <svg class="hco tr" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+            <svg class="hco bl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+            <svg class="hco br" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+
+            <div class="hero-portrait-md">
+              <span class="hero-tag">SLOT 03 · ON-PLAN</span>
+              <div class="hero-tier sapphire"><i></i><i></i></div>
+              <svg class="hero-silhouette" viewBox="0 0 180 220" fill="none">
+                <path d="M10 220 L10 174 Q10 142 36 130 L54 120 Q66 116 74 100 Q78 90 78 80 Q78 70 88 70 Q98 70 98 80 Q98 90 102 100 Q110 116 122 120 L140 130 Q170 142 170 174 L170 220 Z" fill="#0e1830"/>
+                <path d="M82 124 L88 110 L94 124 L88 138 Z" fill="#7fa3e0"/>
+                <ellipse cx="88" cy="64" rx="18" ry="22" fill="#0e1830"/>
+                <path d="M66 62 Q 66 32 88 32 Q 110 32 110 62 L106 64 L104 50 L88 48 L72 50 L70 64 Z" fill="#06091c"/>
+              </svg>
+            </div>
+
+            <div class="hero-name-row">
+              <h3 class="hero-name-ko">로엔 그레이</h3>
+            </div>
+            <div class="hero-name-en">ROEN GREY</div>
+
+            <div class="hero-tags">
+              <span class="chip tag-race"><i class="dot"></i>HUMAN</span>
+              <span class="chip tag-class" style="--frame-fam:var(--fam-vanguard); --frame-fam-glow:var(--fam-vanguard-glow);"><i class="dot"></i>VANGUARD</span>
+              <span class="chip tag-role"><i class="dot"></i>FRONTLINE</span>
+            </div>
+
+            <div class="hero-skill">
+              <div class="hero-skill-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                  <path d="M8 1 L13 4 L13 9 Q 13 13 8 15 Q 3 13 3 9 L3 4 Z"/>
+                  <path d="M6 7 L8 9 L11 5"/>
+                </svg>
+              </div>
+              <div class="hero-skill-text">
+                <p class="hero-skill-name">방패의 서약 <span class="en">OATH OF AEGIS</span></p>
+                <p class="hero-skill-summary">아군 후열 받는 피해 <u>-30%</u> · 도발 시 <b>1턴 무적</b>.</p>
+              </div>
+            </div>
+
+            <div class="hero-action-row">
+              <button class="btn btn-primary btn-md recruit-btn btn-with-cost" disabled>
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                <span class="lbl">영입 <span class="en">DEPLOY</span></span>
+              </button>
+              <button class="btn btn-icon btn-md" disabled aria-label="상세">
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                  <circle cx="8" cy="8" r="6"/><path d="M8 5 L8 8.5 M8 11 L8.01 11"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== MOBILE VARIANT ============================== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">III · MOBILE &lt; 768 px</span>
+      <h2 class="section-title">Town.RecruitPack — Mobile</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">vertical scroll · 44pt action bar · 같은 4 슬롯</span>
+    </div>
+
+    <div class="mobile-frame">
+      <div class="mobile-inner">
+        <!-- status bar -->
+        <div class="mobile-status">
+          <span>9:41</span>
+          <span style="display:inline-flex; gap:8px; align-items:center;">
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor"><rect x="0" y="6" width="2" height="4"/><rect x="3" y="4" width="2" height="6"/><rect x="6" y="2" width="2" height="8"/><rect x="9" y="0" width="2" height="10"/></svg>
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 6 Q 7 1 12 6 M5 8 Q 7 6 9 8 M7 10 L7 10.01"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none" stroke="currentColor" stroke-width=".8"><rect x="0.5" y="0.5" width="18" height="9" rx="2"/><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor"/><rect x="19.5" y="3" width="2" height="4" fill="currentColor"/></svg>
+          </span>
+        </div>
+
+        <!-- topbar -->
+        <div class="mobile-topbar">
+          <div class="back">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M14 4 L7 11 L14 18"/></svg>
+          </div>
+          <div class="ttl">
+            <span>RECRUIT PACK</span>
+            <span class="ko">모집 게시판 · DAY 12</span>
+          </div>
+          <button class="btn btn-icon btn-md" style="width:36px; height:36px;" aria-label="필터">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 3 L12 3 M4 7 L10 7 M6 11 L8 11"/></svg>
+          </button>
+        </div>
+
+        <div class="mobile-body">
+
+          <!-- pity -->
+          <div class="mobile-pity">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+              <span style="font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em; color:var(--gold-300);">PITY · 천장</span>
+              <span style="font-family:var(--f-mono); font-size:11px; color:var(--gold-200); letter-spacing:.04em;">17 / 80</span>
+            </div>
+            <div class="pity-bar">
+              <div class="seg rare" style="left:0; width:21.25%;"></div>
+              <div class="tick rare" style="left:50%;"><i></i></div>
+              <div class="tick epic" style="left:100%;"><i></i></div>
+            </div>
+            <div class="pity-meta">
+              <span style="color:var(--ink-3);">다음 Rare까지 <b style="color:var(--gold-200);">23</b>회</span>
+              <span class="legend">
+                <span><i class="rare"></i>R</span><span><i class="epic"></i>E</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- resources -->
+          <div class="mobile-resources">
+            <span class="cost-chip gold" style="font-size:10px;">
+              <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+              <span style="color:var(--gold-100);">12 G</span>
+            </span>
+            <span class="cost-chip echo" style="font-size:10px;">
+              <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="5.5" cy="5.5" r="4"/><circle cx="5.5" cy="5.5" r="2"/><circle cx="5.5" cy="5.5" r=".6" fill="currentColor"/></svg>
+              <span style="color:var(--rare-rare-glow);">88 E</span>
+            </span>
+            <span class="cost-chip free" style="font-size:10px;">
+              <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 5.5 L5 7 L7.5 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              FREE 1/1
+            </span>
+            <span class="cost-chip echo" style="font-size:10px;">
+              <svg class="glyph" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5.5 1 L5.5 4 M5.5 7 L5.5 10 M1 5.5 L4 5.5 M7 5.5 L10 5.5 M2.5 2.5 L4.5 4.5 M6.5 6.5 L8.5 8.5 M2.5 8.5 L4.5 6.5 M6.5 4.5 L8.5 2.5"/></svg>
+              SCOUT 1/1
+            </span>
+          </div>
+
+          <!-- 4 cards vertical -->
+          <div class="mobile-cards">
+
+            <!-- Card 1 mobile - Standard A Striker -->
+            <div class="hero-card-md" style="--frame-fam:var(--fam-striker); --frame-fam-deep:var(--fam-striker-deep); --frame-fam-glow:var(--fam-striker-glow); padding:14px 14px 12px;">
+              <div class="hero-rib"></div><div class="hero-gem"></div>
+              <svg class="hco tl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco tr" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco bl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco br" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+
+              <div class="hero-portrait-md" style="height:160px;">
+                <span class="hero-tag">SLOT 01 · STD</span>
+                <div class="hero-tier sapphire"><i></i><i></i></div>
+                <svg class="hero-silhouette" viewBox="0 0 180 220" fill="none" style="width:150px; height:180px;">
+                  <path d="M10 220 L10 174 Q10 142 36 130 L54 120 Q66 116 74 100 Q78 90 78 80 Q78 70 88 70 Q98 70 98 80 Q98 90 102 100 Q110 116 122 120 L140 130 Q170 142 170 174 L170 220 Z" fill="#1c0e16"/>
+                  <ellipse cx="88" cy="64" rx="18" ry="22" fill="#1c0e16"/>
+                  <path d="M68 70 Q 66 32 88 32 Q 110 32 108 70 Q 100 50 94 42 Q 90 56 86 54 Q 80 52 78 42 Q 72 54 68 70 Z" fill="#1a0a12"/>
+                  <path d="M82 124 L88 110 L94 124 L88 138 Z" fill="#f08a3c"/>
+                </svg>
+              </div>
+              <div class="hero-name-row"><h3 class="hero-name-ko">카에데 녹스</h3></div>
+              <div class="hero-name-en">KAEDE NOX</div>
+              <div class="hero-tags">
+                <span class="chip tag-race"><i class="dot"></i>HUMAN</span>
+                <span class="chip tag-class" style="--frame-fam:var(--fam-striker); --frame-fam-glow:var(--fam-striker-glow);"><i class="dot"></i>STRIKER</span>
+                <span class="chip tag-role"><i class="dot"></i>DPS</span>
+              </div>
+              <div class="hero-skill">
+                <div class="hero-skill-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 1 L8 11 M5 4 L8 1 L11 4" /><path d="M3 13 L13 13 M5 15 L11 15"/></svg>
+                </div>
+                <div class="hero-skill-text">
+                  <p class="hero-skill-name">월광 베기 <span class="en">CRESCENT CUT</span></p>
+                  <p class="hero-skill-summary">치명타 시 <u>+25%</u> 추가 · 후열 <b>도약</b>.</p>
+                </div>
+              </div>
+              <div class="hero-action-row">
+                <button class="btn btn-primary btn-md btn-mobile recruit-btn">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="lbl">
+                    영입
+                    <span class="cost-chip gold" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35);">
+                      <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+                      4
+                    </span>
+                  </span>
+                </button>
+                <button class="btn btn-icon btn-md btn-mobile" aria-label="상세">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5 L8 8.5 M8 11 L8.01 11"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Card 2 mobile - exhausted (Standard B 슬롯이 풀 고갈된 시나리오) -->
+            <div class="hero-card-md is-exhausted" style="--frame-fam:var(--fam-beastkin); --frame-fam-deep:var(--fam-beastkin-deep); --frame-fam-glow:var(--fam-beastkin-glow); padding:14px 14px 12px;">
+              <div class="hero-rib"></div><div class="hero-gem"></div>
+              <svg class="hco tl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco tr" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco bl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco br" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+
+              <div class="hero-portrait-md" style="height:160px;">
+                <span class="hero-tag">SLOT 02 · STD</span>
+                <div class="exhausted-overlay" style="inset:10px;">
+                  <svg viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="width:28px; height:28px;">
+                    <circle cx="19" cy="19" r="14"/><path d="M9 28 L29 9"/>
+                  </svg>
+                  <div class="ttl" style="font-size:11px;">EXHAUSTED</div>
+                  <div class="ko">풀 고갈</div>
+                  <div class="hint">다음 주차 갱신까지<br>대기 또는 <b>2 G</b> 재모집</div>
+                </div>
+              </div>
+              <div class="hero-name-row"><h3 class="hero-name-ko">— · —</h3></div>
+              <div class="hero-name-en">POOL DEPLETED</div>
+              <div class="hero-tags">
+                <span class="chip" style="border-color:var(--ink-4); color:var(--ink-3);"><i class="dot" style="background:var(--ink-4);"></i>EMPTY</span>
+              </div>
+              <div class="hero-action-row">
+                <button class="btn btn-secondary btn-md btn-mobile recruit-btn">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="lbl">
+                    재모집
+                    <span class="cost-chip gold" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35);">
+                      <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+                      2
+                    </span>
+                  </span>
+                </button>
+                <button class="btn btn-icon btn-md btn-mobile" aria-label="상세">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5 L8 8.5 M8 11 L8.01 11"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Card 3 mobile - Vanguard On-Plan -->
+            <div class="hero-card-md" style="--frame-fam:var(--fam-vanguard); --frame-fam-deep:var(--fam-vanguard-deep); --frame-fam-glow:var(--fam-vanguard-glow); padding:14px 14px 12px;">
+              <div class="hero-rib"></div><div class="hero-gem"></div>
+              <svg class="hco tl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco tr" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco bl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+              <svg class="hco br" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3" opacity=".5"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/></svg>
+
+              <div class="hero-portrait-md" style="height:160px;">
+                <span class="hero-tag" style="background:rgba(74,114,184,.7); border-color:var(--rare-rare-glow); color:#fff8e0;">SLOT 03 · ON-PLAN</span>
+                <div class="hero-tier sapphire"><i></i><i></i></div>
+                <svg class="hero-silhouette" viewBox="0 0 180 220" fill="none" style="width:150px; height:180px;">
+                  <path d="M10 220 L10 174 Q10 142 36 130 L54 120 Q66 116 74 100 Q78 90 78 80 Q78 70 88 70 Q98 70 98 80 Q98 90 102 100 Q110 116 122 120 L140 130 Q170 142 170 174 L170 220 Z" fill="#0e1830"/>
+                  <ellipse cx="88" cy="64" rx="18" ry="22" fill="#0e1830"/>
+                  <path d="M66 62 Q 66 32 88 32 Q 110 32 110 62 L106 64 L104 50 L88 48 L72 50 L70 64 Z" fill="#06091c"/>
+                  <path d="M82 124 L88 110 L94 124 L88 138 Z" fill="#7fa3e0"/>
+                </svg>
+              </div>
+              <div class="hero-name-row"><h3 class="hero-name-ko">로엔 그레이</h3></div>
+              <div class="hero-name-en">ROEN GREY</div>
+              <div class="hero-tags">
+                <span class="chip tag-race"><i class="dot"></i>HUMAN</span>
+                <span class="chip tag-class" style="--frame-fam:var(--fam-vanguard); --frame-fam-glow:var(--fam-vanguard-glow);"><i class="dot"></i>VANGUARD</span>
+                <span class="chip tag-role"><i class="dot"></i>FRONTLINE</span>
+              </div>
+              <div class="hero-skill">
+                <div class="hero-skill-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 1 L13 4 L13 9 Q 13 13 8 15 Q 3 13 3 9 L3 4 Z"/><path d="M6 7 L8 9 L11 5"/></svg>
+                </div>
+                <div class="hero-skill-text">
+                  <p class="hero-skill-name">방패의 서약 <span class="en">OATH OF AEGIS</span></p>
+                  <p class="hero-skill-summary">후열 받는 피해 <u>-30%</u> · <b>1턴 무적</b>.</p>
+                </div>
+              </div>
+              <div class="hero-action-row">
+                <button class="btn btn-primary btn-md btn-mobile recruit-btn" style="background:linear-gradient(180deg, rgba(245,214,138,.08), rgba(0,0,0,.25)), linear-gradient(180deg, var(--fam-vanguard) 0%, var(--fam-vanguard-deep) 100%);">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="lbl">
+                    영입
+                    <span class="cost-chip gold" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35);">
+                      <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+                      4
+                    </span>
+                  </span>
+                </button>
+                <button class="btn btn-icon btn-md btn-mobile" aria-label="상세">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5 L8 8.5 M8 11 L8.01 11"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Card 4 mobile - Protected Mystic Epic -->
+            <div class="hero-card-md is-protected" style="--frame-fam:var(--fam-mystic); --frame-fam-deep:var(--fam-mystic-deep); --frame-fam-glow:var(--fam-mystic-glow); padding:14px 14px 12px; margin-top:18px;">
+              <div class="protected-banner" style="font-size:9px; padding:4px 12px;">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><rect x="3" y="6" width="6" height="5"/><path d="M4 6 L4 4 Q 4 2 6 2 Q 8 2 8 4 L8 6"/></svg>
+                PROTECTED <small>보호 슬롯</small>
+              </div>
+              <div class="hero-rib"></div><div class="hero-gem"></div>
+              <svg class="hco tl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1" fill="#fff8e0"/></svg>
+              <svg class="hco tr" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1" fill="#fff8e0"/></svg>
+              <svg class="hco bl" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1" fill="#fff8e0"/></svg>
+              <svg class="hco br" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="width:34px; height:34px;"><path d="M0 18 L0 0 L18 0"/><path d="M3 22 L3 3 L22 3"/><path d="M3 11 Q 11 11 11 3"/><path d="M9 17 L11 15 L13 17 L11 19 Z" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1" fill="#fff8e0"/></svg>
+
+              <div class="hero-portrait-md" style="height:160px;">
+                <span class="hero-tag">SLOT 04 · PROTECTED</span>
+                <span class="protected-lock" style="font-size:7.5px; padding:2px 4px;">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" style="width:8px; height:8px;">
+                    <rect x="2.5" y="5" width="5" height="4"/><path d="M3.5 5 L3.5 3.5 Q 3.5 2 5 2 Q 6.5 2 6.5 3.5 L6.5 5"/>
+                  </svg>
+                  REROLL X
+                </span>
+                <svg class="hero-silhouette" viewBox="0 0 180 220" fill="none" style="width:150px; height:180px;">
+                  <ellipse cx="88" cy="100" rx="80" ry="90" fill="rgba(212,180,240,.18)"/>
+                  <path d="M10 220 L10 174 Q10 142 36 130 L54 120 Q66 116 74 100 Q78 90 78 80 Q78 70 88 70 Q98 70 98 80 Q98 90 102 100 Q110 116 122 120 L140 130 Q170 142 170 174 L170 220 Z" fill="#1c0e2c"/>
+                  <ellipse cx="88" cy="64" rx="18" ry="22" fill="#1c0e2c"/>
+                  <path d="M66 72 Q 64 22 88 22 Q 112 22 110 72 Q 108 116 96 130 L88 124 L80 130 Q 68 116 66 72 Z" fill="#1a0a26"/>
+                  <path d="M82 124 L88 108 L94 124 L88 140 Z" fill="#d4b4f0"/>
+                </svg>
+                <div class="hero-tier amethyst-flame" style="position:absolute; bottom:8px; right:8px; top:auto;"><i></i><i></i><i></i></div>
+              </div>
+              <div class="hero-name-row"><h3 class="hero-name-ko">아유미</h3></div>
+              <div class="hero-name-en">AYUMI</div>
+              <div class="hero-tags">
+                <span class="chip tag-race"><i class="dot"></i>ELF</span>
+                <span class="chip tag-class" style="--frame-fam:var(--fam-mystic); --frame-fam-glow:var(--fam-mystic-glow);"><i class="dot"></i>MYSTIC</span>
+                <span class="chip tag-role"><i class="dot"></i>BACKLINE</span>
+              </div>
+              <div class="hero-skill">
+                <div class="hero-skill-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 1 L8 4 M8 12 L8 15 M1 8 L4 8 M12 8 L15 8 M3 3 L5 5 M11 11 L13 13 M3 13 L5 11 M11 5 L13 3"/><circle cx="8" cy="8" r="2.4"/></svg>
+                </div>
+                <div class="hero-skill-text">
+                  <p class="hero-skill-name">월광의 축복 <span class="en">LUNAR BLESSING</span></p>
+                  <p class="hero-skill-summary">전체 회복 <u>+20%</u> · <b>침묵 면역</b>.</p>
+                </div>
+              </div>
+              <div class="hero-action-row">
+                <button class="btn btn-primary btn-md btn-mobile recruit-btn" style="background:linear-gradient(180deg, rgba(245,214,138,.12), rgba(0,0,0,.25)), linear-gradient(180deg, var(--fam-mystic) 0%, var(--fam-mystic-deep) 100%);">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="lbl">
+                    영입
+                    <span class="cost-chip gold" style="padding:2px 6px; font-size:10px; border:none; background:rgba(0,0,0,.35);">
+                      <svg class="glyph" viewBox="0 0 11 11" fill="currentColor"><polygon points="5.5,1.5 9.5,5.5 5.5,9.5 1.5,5.5" stroke="#fff8e0" stroke-width=".7"/><circle cx="5.5" cy="5.5" r="1.4" fill="#fff8e0"/></svg>
+                      8
+                    </span>
+                  </span>
+                </button>
+                <button class="btn btn-icon btn-md btn-mobile" aria-label="상세">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5 L8 8.5 M8 11 L8.01 11"/></svg>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- mobile bottom action bar -->
+        <div class="mobile-action-bar">
+          <div class="action-mini-label"><b>REFRESH</b> 새 후보 · <b>SCOUT</b> 정찰 · 1 / RUN</div>
+          <div class="row">
+            <button class="btn btn-secondary btn-md btn-mobile" style="flex:1;">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="lbl">
+                <span style="display:inline-flex; flex-direction:column; gap:2px; align-items:flex-start; line-height:1;">
+                  <span style="font-size:11.5px;">무료</span>
+                  <span style="font-family:var(--f-mono); font-size:8.5px; letter-spacing:.14em; color:var(--state-safe);">FREE 1/1</span>
+                </span>
+              </span>
+            </button>
+            <button class="btn btn-secondary btn-md btn-mobile" style="flex:1;">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="lbl">
+                <span style="display:inline-flex; flex-direction:column; gap:2px; align-items:flex-start; line-height:1;">
+                  <span style="font-size:11.5px;">유료</span>
+                  <span style="font-family:var(--f-mono); font-size:8.5px; letter-spacing:.14em; color:var(--gold-200);">2 G</span>
+                </span>
+              </span>
+            </button>
+            <button class="btn btn-primary btn-md btn-mobile" style="flex:1.2; background:linear-gradient(180deg, rgba(245,214,138,.08), rgba(0,0,0,.25)), linear-gradient(180deg, var(--fam-vanguard) 0%, var(--fam-vanguard-deep) 100%);">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="lbl">
+                <span style="display:inline-flex; flex-direction:column; gap:2px; align-items:flex-start; line-height:1;">
+                  <span style="font-size:11.5px;">정찰</span>
+                  <span style="font-family:var(--f-mono); font-size:8.5px; letter-spacing:.14em; color:var(--rare-rare-glow);">35 ECHO</span>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-foot">
+    <div><b>SURVIVAL MANAGER</b> · SURFACE 1 · TOWN.RECRUITPACK · INDIGO + WINE + GOLD</div>
+    <div>NEXT — Surface 2 (Battle Prep / Augment Pick) 또는 atom 묶음 추가</div>
+  </footer>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 05146d45c19a44880a8c1236198fa5be
+timeCreated: 1544379895
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/HDRIHaven/Blue Lagoon/blue_Lagoon_16k Equirect.mat
+  uploadId: 679124

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f86089649cd6a5940a43b0191eaabf85
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Male_Body/P09_Male_Skin_Dark.mat
+  uploadId: 843050

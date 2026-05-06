@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 54d48c025ddd843e8a7289d61823128d
+timeCreated: 1551643653
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Version 4/Night MoonBurst/AllSky_Night_MoonBurst Equirect.mat
+  uploadId: 679124

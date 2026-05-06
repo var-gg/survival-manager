@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 449956f351df07e4bb8cd4ad9eac8dde
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Male_Body/P09_Male_Skin.mat
+  uploadId: 843050

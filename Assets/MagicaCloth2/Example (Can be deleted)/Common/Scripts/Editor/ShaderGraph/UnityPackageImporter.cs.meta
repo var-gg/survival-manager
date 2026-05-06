@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: dd5d6386919360640adca6564193a8f5
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 242307
+  packageName: Magica Cloth 2
+  packageVersion: 2.18.1
+  assetPath: Assets/MagicaCloth2/Example (Can be deleted)/Common/Scripts/Editor/ShaderGraph/UnityPackageImporter.cs
+  uploadId: 893596

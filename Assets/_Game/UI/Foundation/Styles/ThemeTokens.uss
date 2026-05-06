@@ -1,24 +1,132 @@
+/* =============================================================
+   Survival Manager — Theme Tokens
+   v0.2 transcribe from claude.ai/design Foundation pack:
+     docs/02_design/ui/handoff/foundation-pack-v0.2/style-guide.html
+   톤: Genshin Impact + Unicorn Overlord 흡수 (1인 인디 단순화)
+     - 따뜻한 네이비 양피지 BG (검정 X)
+     - 와인 + 골드 + 사파이어 메뉴 액센트
+     - 풍성한 곡선 ornament + 보석 인레이 (대형은 utility class에서)
+     - vellum cream ink (양피지 위 잉크)
+   ============================================================= */
 :root {
-    --color-bg: rgb(11, 15, 24);
-    --color-surface: rgb(20, 27, 40);
-    --color-surface-alt: rgb(28, 36, 52);
-    --color-panel-border: rgba(255, 255, 255, 0.08);
-    --color-text: rgb(233, 239, 247);
-    --color-text-muted: rgb(163, 177, 196);
-    --color-accent: rgb(217, 144, 61);
-    --color-accent-2: rgb(92, 162, 219);
-    --color-good: rgb(77, 176, 105);
-    --color-danger: rgb(193, 83, 71);
-    --space-1: 4px;
-    --space-2: 8px;
-    --space-3: 12px;
-    --space-4: 16px;
-    --space-5: 24px;
-    --radius-s: 6px;
-    --radius-m: 10px;
-    --radius-l: 14px;
-    --font-size-s: 12px;
-    --font-size-m: 14px;
-    --font-size-l: 18px;
-    --font-size-xl: 24px;
+    /* === SURFACE — warm navy parchment ===================== */
+    --sm-bg-0: rgb(12, 17, 38);          /* page deep midnight indigo */
+    --sm-bg-1: rgb(20, 26, 53);          /* panel base (Genshin menu tone) */
+    --sm-bg-2: rgb(28, 34, 67);          /* panel raised */
+    --sm-bg-3: rgb(38, 45, 84);          /* panel tier */
+    --sm-line-1: rgb(44, 53, 104);       /* hairline */
+    --sm-line-2: rgb(59, 70, 127);       /* divider */
+    --sm-vellum: rgb(245, 234, 208);     /* #F5EAD0 양피지 ink primary */
+    --sm-vellum-2: rgb(226, 212, 173);   /* 양피지 muted */
+
+    /* === GOLD — menu trim ladder =========================== */
+    --sm-gold-100: rgb(255, 233, 168);   /* glaint */
+    --sm-gold-200: rgb(245, 214, 138);   /* light gold */
+    --sm-gold-300: rgb(230, 183, 81);    /* signature gold (corner cap) */
+    --sm-gold-400: rgb(200, 147, 42);    /* line gold */
+    --sm-gold-500: rgb(138, 100, 24);    /* shadow gold */
+    --sm-gold-glow: rgba(245, 214, 138, 0.35);
+
+    /* === INK — on parchment ================================ */
+    --sm-ink-1: rgb(245, 234, 208);      /* primary text */
+    --sm-ink-2: rgb(216, 199, 153);      /* secondary */
+    --sm-ink-3: rgb(157, 138, 94);       /* muted */
+    --sm-ink-4: rgb(107, 93, 63);        /* very muted */
+
+    /* === ARCHETYPE FAMILY — pigment tone (saturation up) === */
+    /* Beastkin / Undead — moss / orc */
+    --sm-fam-beastkin: rgb(122, 138, 82);
+    --sm-fam-beastkin-deep: rgb(46, 56, 24);
+    --sm-fam-beastkin-glow: rgb(185, 201, 128);
+    /* Vanguard — sapphire steel */
+    --sm-fam-vanguard: rgb(74, 114, 184);
+    --sm-fam-vanguard-deep: rgb(26, 42, 82);
+    --sm-fam-vanguard-glow: rgb(127, 163, 224);
+    /* Striker — wine + ember (lead family) */
+    --sm-fam-striker: rgb(182, 51, 74);
+    --sm-fam-striker-deep: rgb(90, 14, 28);
+    --sm-fam-striker-glow: rgb(240, 138, 60);
+    /* Ranger — forest / ochre */
+    --sm-fam-ranger: rgb(181, 138, 54);
+    --sm-fam-ranger-deep: rgb(77, 58, 20);
+    --sm-fam-ranger-glow: rgb(230, 200, 120);
+    /* Mystic — amethyst + ivory */
+    --sm-fam-mystic: rgb(138, 92, 184);
+    --sm-fam-mystic-deep: rgb(58, 31, 90);
+    --sm-fam-mystic-glow: rgb(212, 180, 240);
+
+    /* === RARITY — jewel duotone ============================ */
+    --sm-rare-common: rgb(205, 196, 168);
+    --sm-rare-common-deep: rgb(107, 98, 72);
+    --sm-rare-rare: rgb(91, 142, 209);
+    --sm-rare-rare-deep: rgb(31, 59, 102);
+    --sm-rare-rare-glow: rgb(155, 190, 237);
+    --sm-rare-epic: rgb(181, 97, 214);
+    --sm-rare-epic-2: rgb(240, 138, 60);     /* purple → flame dueltone */
+    --sm-rare-epic-deep: rgb(74, 33, 104);
+
+    /* === STATE ============================================= */
+    --sm-state-safe: rgb(109, 191, 120);
+    --sm-state-warn: rgb(232, 169, 59);
+    --sm-state-danger: rgb(226, 85, 72);
+    --sm-state-locked: rgb(107, 110, 133);
+    --sm-state-ko: rgb(138, 138, 152);
+    --sm-state-injured: rgb(182, 51, 74);    /* warm bruise — lead와 통일 */
+
+    /* === SPACING — 8pt grid ================================ */
+    --sm-s-1: 4px;
+    --sm-s-2: 8px;
+    --sm-s-3: 12px;
+    --sm-s-4: 16px;
+    --sm-s-5: 24px;
+    --sm-s-6: 32px;
+    --sm-s-7: 48px;
+
+    /* === RADIUS — flat indie scope ========================= */
+    --sm-r-sm: 2px;
+    --sm-r-md: 4px;
+    --sm-r-lg: 6px;
+
+    /* === MOTION ============================================ */
+    --sm-t-snap: 200ms;
+
+    /* === FONT SIZE — 4-tier ================================ */
+    /* Korean body / display / dev tag 공용. font-family는
+       UITK Font asset reference라 token에 직접 두지 않고
+       USS rule에서 -unity-font-definition으로 wire한다. */
+    --sm-fs-s: 12px;
+    --sm-fs-m: 14px;
+    --sm-fs-l: 18px;
+    --sm-fs-xl: 24px;
+
+    /* =========================================================
+       LEGACY ALIASES — backward-compat for existing screen USS
+       기존 4 screen + Narrative USS의 var() reference가 깨지지
+       않도록 v0.2 token에 alias. v0.2 적용 = 자동 톤 swap.
+       ========================================================= */
+    --color-bg: var(--sm-bg-0);
+    --color-surface: var(--sm-bg-1);
+    --color-surface-alt: var(--sm-bg-2);
+    --color-panel-border: var(--sm-line-1);
+    --color-text: var(--sm-ink-1);
+    --color-text-muted: var(--sm-ink-3);
+    --color-accent: var(--sm-gold-300);
+    --color-accent-2: var(--sm-fam-vanguard);
+    --color-good: var(--sm-state-safe);
+    --color-danger: var(--sm-state-danger);
+
+    --space-1: var(--sm-s-1);
+    --space-2: var(--sm-s-2);
+    --space-3: var(--sm-s-3);
+    --space-4: var(--sm-s-4);
+    --space-5: var(--sm-s-5);
+
+    --radius-s: var(--sm-r-md);   /* 6 → 4 (flat indie tone) */
+    --radius-m: var(--sm-r-lg);   /* 10 → 6 */
+    --radius-l: 8px;              /* 14 → 8 */
+
+    --font-size-s: var(--sm-fs-s);
+    --font-size-m: var(--sm-fs-m);
+    --font-size-l: var(--sm-fs-l);
+    --font-size-xl: var(--sm-fs-xl);
 }

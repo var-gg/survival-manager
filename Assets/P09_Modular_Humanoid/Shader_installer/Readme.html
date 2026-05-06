@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>Readme</title>
+
+        <!-- CSS Reset -->
+        <style type="text/css">
+            *, ::before, ::after {
+                box-sizing: border-box;
+                border-style: solid;
+                border-width: 0;
+            }
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            html {
+                height: 100%;
+            }
+            body {
+                font-size: 16px;
+                line-height: 1.5;
+                -webkit-font-smoothing: antialiased;
+            }
+            main {
+                display: block;
+            }
+            ul, ol {
+                list-style: none;
+            }
+            img, picture, svg, video, canvas {
+                max-width: 100%;
+            }
+            p, h1, h2, h3, h4, h5, h6 {
+                overflow-wrap: break-word;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                line-height: 1.2;
+            }
+            #root, #__next {
+                isolation: isolate;
+            }
+        </style>
+
+        <!-- CSS Style -->
+        <style type="text/css">
+            body {
+                font: 500 16px /28px 'Inter', 'SF Pro Text', 'Helvetica', 'Roboto', 'Arial', 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Hiragino Kaku Gothic Pro', 'Yu Gothic UI', 'Meiryo', sans-serif;
+                color: #3C3C43;
+            }
+            #container {
+                max-width: 1000px;
+                background-color: #fff;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 90px;
+                padding: 24px;
+            }
+            header {
+                margin-bottom: 40px;
+            }
+            section {
+                margin-bottom: 40px;
+            }
+            h2::before, h3::before {
+                content: "#";
+                position: absolute;
+                font-weight: 500;
+                left: -1em;
+                transition: cubic-bezier(0.215, 0.61, 0.355, 1) 0.3s !important;
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            h2:hover::before, h3:hover::before {
+                color: #42b983;
+                opacity: 1;
+                transform: translateY(0px);
+            }
+            h1 {
+                position: relative;
+                font-weight: 800;
+                font-size: 32px;
+            }
+            h2 {
+                position: relative;
+                font-weight: 800;
+                font-size: 24px;
+                margin: 36px 0px;
+            }
+            h3 {
+                position: relative;
+                font-weight: 800;
+                font-size: 16px;
+            }
+            p {
+                margin: 16px 0px;
+            }
+            a {
+                color: #42b983;
+                font-weight: 800;
+                text-decoration: none;
+            }
+            h2::after {
+                position: absolute;
+                content: '';
+                background: linear-gradient(to right, #E65A5A 25%, #e2e2e2 25%);
+                width: 100%;
+                height: 4px;
+                left: 0;
+                bottom: -0.5em;
+            }
+            code {
+                background-color: #eeeeee;
+                border-color: #e0e0e0;
+                border-style: solid;
+                border-width: 2px;
+                margin: 0.4em;
+                padding: 0.1em 0.2em;
+                border-radius: 4px;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            span {
+                font-weight: 800;
+            }
+            small {
+                font-size: 12px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="container">
+
+        <header>
+            <h1>lilToon</h1>
+            <p>Feature-rich shaders for avatars</p>
+        </header>
+
+        <main>
+            <section>
+                <h2>English</h2>
+                <p>Drag and drop <span>unitypackage</span> to the Unity window to import it.</p>
+                <p><a href="https://lilxyzw.github.io/lilToon/">Documentation</a> / <a href="https://github.com/lilxyzw/lilToon/issues">Bug Report</a></p>
+            </section>
+
+            <section>
+                <h2>日本語</h2>
+                <p><span>unitypackage</span>をUnityウィンドウにドラッグ＆ドロップでインポートしてください。</p>
+                <p><a href="https://lilxyzw.github.io/lilToon/">ドキュメント</a> / <a href="https://github.com/lilxyzw/lilToon/issues">不具合報告</a></p>
+            </section>
+        </main>
+
+        <footer>
+            <small>&copy; 2020-present lilxyzw</small>
+        </footer>
+
+        </div>
+    </body>
+</html>

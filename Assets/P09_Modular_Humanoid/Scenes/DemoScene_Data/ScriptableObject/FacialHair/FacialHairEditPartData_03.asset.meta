@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7e72521c312054fc9815fcc476614373
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/ScriptableObject/FacialHair/FacialHairEditPartData_03.asset
+  uploadId: 843050

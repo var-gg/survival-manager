@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b23b04e5009d41745a0546b41faee35d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Animation/Demo_Pose/P09_Weapon_Bow_idle.anim
+  uploadId: 843050

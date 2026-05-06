@@ -1,7 +1,7 @@
 # Codex 앱 Unity MCP 연결 가이드
 
 - 상태: active
-- 최종수정일: 2026-05-02
+- 최종수정일: 2026-05-05
 - 소유자: repository
 - 소스오브트루스: `docs/05_setup/codex-mcp-setup.md`
 
@@ -88,6 +88,103 @@ Codex 세션에서는 먼저 read-only 호출로 붙는지 확인한다.
 - active scene 조회
 
 write 작업은 이 단계가 통과한 뒤에만 시작한다.
+
+## 빠른 복구 런북
+
+Codex에서 `http://127.0.0.1:43157/mcp` 전송 실패, `Unity session not available`, 또는
+`Unity plugin session ... disconnected while awaiting command_result`가 나오면 아래 순서로 좁힌다.
+
+### 1. 서버 포트와 Unity 커넥터 포트 확인
+
+```powershell
+Get-NetTCPConnection -LocalPort 43157 -State Listen -ErrorAction SilentlyContinue
+Get-NetTCPConnection -LocalPort 8090 -State Listen -ErrorAction SilentlyContinue
+pwsh -File tools/unity-bridge.ps1 status
+```
+
+- `43157` 리스너가 없으면 MCP HTTP 서버가 꺼진 상태다.
+- `8090`은 `unity-cli` connector 포트다. 이 포트가 ready이면 Unity Editor 자체는 살아 있다.
+- `43157`은 살아 있는데 `manage_packages ping`이 `Unity session not available`을 반환하면 Unity MCP 브리지가 서버에 붙지 못한 상태다.
+
+### 2. MCP HTTP 서버가 없으면 먼저 서버를 올린다
+
+Unity MCP 창의 `Start Local HTTP Server`가 기본 경로다. GUI를 쓰기 어렵다면 아래 CLI fallback을 사용한다.
+
+```powershell
+New-Item -ItemType Directory -Path Logs/MCP -Force | Out-Null
+
+Start-Process `
+  -FilePath "$env:USERPROFILE\.local\bin\uvx.exe" `
+  -ArgumentList @(
+    "--from", "mcpforunityserver==9.6.8",
+    "mcp-for-unity",
+    "--transport", "http",
+    "--http-url", "http://127.0.0.1:43157",
+    "--project-scoped-tools"
+  ) `
+  -WorkingDirectory "A:\projects\game\survival-manager" `
+  -RedirectStandardOutput "Logs/MCP/mcp-for-unity-http.stdout.log" `
+  -RedirectStandardError "Logs/MCP/mcp-for-unity-http.stderr.log" `
+  -WindowStyle Hidden
+```
+
+서버 기동 확인:
+
+```powershell
+Get-NetTCPConnection -LocalPort 43157 -State Listen -ErrorAction SilentlyContinue
+Get-Content Logs/MCP/mcp-for-unity-http.stderr.log -Tail 40
+```
+
+정상 로그에는 `Uvicorn running on http://127.0.0.1:43157`와
+`transport 'http' on http://127.0.0.1:43157/mcp`가 보인다.
+
+### 3. Unity MCP 브리지는 비동기로만 시작한다
+
+서버가 떠 있는데 Unity session이 없으면 Unity Editor 안에서 브리지를 다시 시작한다.
+이때 `GetAwaiter().GetResult()`로 기다리면 Unity main thread가 멈출 수 있으므로 사용하지 않는다.
+
+```powershell
+pwsh -File tools/unity-bridge.ps1 exec -Dangerous -Code '_ = MCPForUnity.Editor.Services.MCPServiceLocator.Bridge.StartAsync(); return "MCP bridge start scheduled";'
+```
+
+몇 초 기다린 뒤 Codex MCP에서 read-only 호출로 검증한다.
+
+- `manage_tools list_groups`
+- `manage_editor telemetry_status`
+- `manage_packages ping`
+
+정상 기준은 `manage_packages ping`이 `Package manager is available`을 반환하는 것이다.
+
+### 4. Unity connector가 멈췄으면 해당 프로젝트 인스턴스만 복구한다
+
+`pwsh -File tools/unity-bridge.ps1 status`가 timeout이거나 `Get-Process Unity`에서 `Responding=False`이면
+먼저 포커스 복구를 시도한다.
+
+```powershell
+pwsh -File tools/focus-unity.ps1
+```
+
+복구되지 않으면 `8090` 리스너를 소유한 Unity PID만 종료한다. 다른 Unity 프로젝트 인스턴스는 건드리지 않는다.
+
+```powershell
+$targetPid = (Get-NetTCPConnection -LocalPort 8090 -State Listen).OwningProcess
+Stop-Process -Id $targetPid -Force
+Start-Sleep -Seconds 5
+Start-Process "C:\Program Files\Unity\Hub\Editor\6000.4.0f1\Editor\Unity.exe" -ArgumentList @("-projectPath", "A:\projects\game\survival-manager")
+pwsh -File tools/wait-unity-ready.ps1 -MaxAttempts 18 -IntervalSeconds 10 -WarmupSeconds 10
+```
+
+Unity가 ready가 된 뒤 3단계의 비동기 브리지 시작을 다시 수행한다.
+
+### 5. 성공 판정
+
+아래가 모두 통과하면 Codex Unity MCP는 복구된 것으로 본다.
+
+- `43157`에 `python.exe` 리스너가 있다.
+- `8090`에 현재 프로젝트 Unity 리스너가 있고 `tools/unity-bridge.ps1 status`가 `ready`다.
+- MCP 서버 로그에 `Plugin registered: survival-manager`가 찍힌다.
+- `manage_tools list_groups`가 tool group 목록을 반환한다.
+- `manage_packages ping`이 `success=true`를 반환한다.
 
 ## 저장소 반영 원칙
 

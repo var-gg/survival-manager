@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 55d587ea3ec39f041ae9811c2463b9fc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Male_Body/FacialHair/P09_Male_FacialHair_05.mat
+  uploadId: 843050

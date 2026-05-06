@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: e0594306cc15b4d2ebabdb1e0c9830e5
+timeCreated: 1551642975
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Space/Space_InTheVortex/AllSky_Space_InTheVortex Equirect.mat
+  uploadId: 679124

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: cde18ddb7c04e6f4b8c47094ee99aa9f
+labels:
+- Camp
+- Container
+- Prop
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 342958
+  packageName: Fantasy Worlds - Forests, Meadows & Dungeons - Stylized 3D Environment
+  packageVersion: 1.0.1
+  assetPath: Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Doodads/P_FW_01_Sack_Group_05.prefab
+  uploadId: 851492

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ddc8df895cf414527b3c947641137ba3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Animation/UI/ChangeTransitionA.anim
+  uploadId: 843050

@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: c31c73cefa005429fb61c16cd1a8b42d
+labels:
+- AllSky
+- Skies
+- Sky
+- Skybox
+timeCreated: 1544548999
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: -1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Version 4/Pink Sunset/Pink Sunset.mat
+  uploadId: 679124

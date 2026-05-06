@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e47d6fa089e93974fbbd3b9b4280f8ee
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Weapon/P09_Weapon_Sword_05.mat
+  uploadId: 843050

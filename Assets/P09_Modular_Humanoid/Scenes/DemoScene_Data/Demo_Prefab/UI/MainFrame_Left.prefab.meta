@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8a96b0ba967d541bea55b1c3ca47f2d4
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/UI/MainFrame_Left.prefab
+  uploadId: 843050

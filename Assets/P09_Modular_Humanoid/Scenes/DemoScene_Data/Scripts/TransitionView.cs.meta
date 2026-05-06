@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: df58a87468b74cc58d92aa066ded1b4d
+timeCreated: 1729332606
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Scripts/TransitionView.cs
+  uploadId: 843050

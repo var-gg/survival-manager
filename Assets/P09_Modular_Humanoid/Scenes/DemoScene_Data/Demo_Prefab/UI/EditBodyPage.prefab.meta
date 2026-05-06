@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0b2706f2c7e404f13b9ee7be7de3b364
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/UI/EditBodyPage.prefab
+  uploadId: 843050

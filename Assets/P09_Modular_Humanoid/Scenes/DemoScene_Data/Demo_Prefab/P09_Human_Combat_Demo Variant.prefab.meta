@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f1dc1799bee114b94bffa9386aa1d4f9
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/P09_Human_Combat_Demo
+    Variant.prefab
+  uploadId: 843050

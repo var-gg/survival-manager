@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fb5a76532501b4bdebec2ab37f9bc7ba
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/ScriptableObject/EyeColor/EyeColorEditPartData_04.asset
+  uploadId: 843050

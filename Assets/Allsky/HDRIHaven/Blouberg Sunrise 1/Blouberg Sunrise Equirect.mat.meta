@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: d7e707d7c35ff4950a8ab2abbc060d2a
+timeCreated: 1544379895
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/HDRIHaven/Blouberg Sunrise 1/Blouberg Sunrise Equirect.mat
+  uploadId: 679124

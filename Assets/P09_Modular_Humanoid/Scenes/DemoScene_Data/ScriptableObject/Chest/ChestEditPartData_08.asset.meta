@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 11e3edb7834683b4f8146058e32210e9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/ScriptableObject/Chest/ChestEditPartData_08.asset
+  uploadId: 843050

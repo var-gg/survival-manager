@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3fb25f72dfb914ac18669bcb7c648722
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Animation/Facial_Emotion/P09_Fem_Facial_Emotion.controller
+  uploadId: 843050

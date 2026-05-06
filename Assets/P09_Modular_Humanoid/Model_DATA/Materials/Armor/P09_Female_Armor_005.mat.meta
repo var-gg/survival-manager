@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 514ceeb0997ac864e8589f26550af920
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Armor/P09_Female_Armor_005.mat
+  uploadId: 843050

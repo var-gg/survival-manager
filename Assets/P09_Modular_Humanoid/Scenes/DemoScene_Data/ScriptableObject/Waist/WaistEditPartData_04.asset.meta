@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a74fc0ca786834dc8bb0317aae3f04e7
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/ScriptableObject/Waist/WaistEditPartData_04.asset
+  uploadId: 843050

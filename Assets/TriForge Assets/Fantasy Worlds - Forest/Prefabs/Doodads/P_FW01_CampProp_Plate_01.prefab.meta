@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 1a55e5fd7d5750a4885b8c064c2f958b
+labels:
+- Camp
+- Prop
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 342958
+  packageName: Fantasy Worlds - Forests, Meadows & Dungeons - Stylized 3D Environment
+  packageVersion: 1.0.1
+  assetPath: Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Doodads/P_FW01_CampProp_Plate_01.prefab
+  uploadId: 851492

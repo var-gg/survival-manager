@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd5c3a4c771c4d60ae99be4226218f35, type: 3}
+  m_Name: EditPartDataContainer_EyeColor
+  m_EditorClassIdentifier: 
+  _type: 12
+  _sexId: 0
+  _partDataList:
+  - {fileID: 11400000, guid: abfe15555628f40be890a0ee031874ad, type: 2}
+  - {fileID: 11400000, guid: ee18d9fe8a4664844b48992bdad82907, type: 2}
+  - {fileID: 11400000, guid: e9e295c7e528a41feb93f56f77affc57, type: 2}
+  - {fileID: 11400000, guid: fb5a76532501b4bdebec2ab37f9bc7ba, type: 2}
+  - {fileID: 11400000, guid: b4c4d27fd2c114d969558e98870da1a5, type: 2}

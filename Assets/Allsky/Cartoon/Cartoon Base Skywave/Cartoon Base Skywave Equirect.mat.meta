@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ac776aa5700574f35ab64fff3ba6a134
+timeCreated: 1551734930
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Cartoon/Cartoon Base Skywave/Cartoon Base Skywave Equirect.mat
+  uploadId: 679124

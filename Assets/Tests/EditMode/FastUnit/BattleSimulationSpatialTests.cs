@@ -446,6 +446,51 @@ public sealed class BattleSimulationSpatialTests
         Assert.That(lastEventStep, Is.GreaterThan(30), "Events stopped too early — units likely froze after initial attacks");
     }
 
+    [Test]
+    public void LoopA_RangedDeadZone_ClosesInsteadOfPendinglessWindup()
+    {
+        var ally = CombatTestFactory.CreateLoopAUnit(
+            "ally_mystic",
+            classId: "mystic",
+            anchor: DeploymentAnchorId.BackBottom,
+            attackRange: 2.8f);
+        var enemy = CombatTestFactory.CreateLoopAUnit(
+            "enemy_mystic",
+            race: "undead",
+            classId: "mystic",
+            anchor: DeploymentAnchorId.BackBottom,
+            attackRange: 2.8f);
+        var state = CombatTestFactory.CreateBattleState(new[] { ally }, new[] { enemy });
+        state.Allies[0].SetPosition(new CombatVector2(-3.66f, -1.8f));
+        state.Enemies[0].SetPosition(new CombatVector2(0.13f, -1.8f));
+        state.Allies[0].SetActionState(CombatActionState.AcquireTarget);
+        state.Enemies[0].SetActionState(CombatActionState.AcquireTarget);
+
+        var simulator = new BattleSimulator(state, 80);
+        var attackEvents = 0;
+        for (var i = 0; i < 80 && !simulator.IsFinished; i++)
+        {
+            var step = simulator.Step();
+            var pendinglessWindups = step.Units
+                .Where(unit => unit.IsAlive
+                               && unit.ActionState == CombatActionState.ExecuteAction
+                               && unit.PendingActionType == null)
+                .Select(unit => $"{unit.Id}:{unit.ActionState}:target={unit.TargetId ?? "null"}")
+                .ToList();
+
+            Assert.That(pendinglessWindups, Is.Empty,
+                $"ActionState만 Windup/ExecuteAction인데 pending action이 없는 스톨 상태가 생김: {string.Join(", ", pendinglessWindups)}");
+
+            attackEvents += step.Events.Count(evt => evt.LogCode is BattleLogCode.BasicAttackDamage or BattleLogCode.ActiveSkillDamage);
+            if (attackEvents > 0)
+            {
+                break;
+            }
+        }
+
+        Assert.That(attackEvents, Is.GreaterThan(0), "range buffer dead-zone에서 접근 후 공격 이벤트가 발생해야 한다.");
+    }
+
     private static float FindMinDistance(System.Collections.Generic.IReadOnlyList<BattleUnitReadModel> units)
     {
         var min = float.MaxValue;

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd5c3a4c771c4d60ae99be4226218f35, type: 3}
+  m_Name: EditPartDataContainer_SkinColor_Male
+  m_EditorClassIdentifier: 
+  _type: 11
+  _sexId: 1
+  _partDataList:
+  - {fileID: 11400000, guid: 3b5ca7f040a56494b8328248357cb6f1, type: 2}
+  - {fileID: 11400000, guid: bed9dda81df6041df90bc6c31a10e3e5, type: 2}
+  - {fileID: 11400000, guid: c54eecb32632c426e8ca184db66182bc, type: 2}

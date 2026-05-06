@@ -1,7 +1,7 @@
 # Unity MCP 운영 가이드
 
 - 상태: active
-- 최종수정일: 2026-05-02
+- 최종수정일: 2026-05-05
 - 소유자: repository
 
 ## 목적
@@ -140,6 +140,16 @@ Unity가 제공하거나 Unity Editor 내부에서만 자연스럽게 쓰이는 
 - MCP package는 local tooling dependency이며 gameplay truth가 아니다.
 - 새 write workflow나 넓은 scene/prefab 조작은 `tooling/*` 브랜치나 sandbox 범위에서 먼저 평가한다.
 - 기존 EditorPrefs가 upstream 기본값 `8080`을 저장하고 있으면 Unity MCP 창에서 `43157`로 다시 맞춘다.
+
+## 연결 장애 복구 기준
+
+Codex 앱에서 Unity MCP 호출이 실패할 때는 `docs/05_setup/codex-mcp-setup.md`의 빠른 복구 런북을 따른다.
+핵심 판단 기준은 다음과 같다.
+
+- `43157` 리스너 없음: MCP HTTP 서버가 꺼진 상태다.
+- `43157` 리스너 있음, `Unity session not available`: Unity MCP 브리지가 서버에 붙지 못한 상태다.
+- `8090` ready 실패: MCP 문제가 아니라 Unity Editor 또는 `unity-cli` connector 응답 문제를 먼저 복구한다.
+- 브리지 시작은 Unity main thread를 막지 않도록 비동기 예약 방식으로 수행한다.
 
 ## 추천 평가 순서
 

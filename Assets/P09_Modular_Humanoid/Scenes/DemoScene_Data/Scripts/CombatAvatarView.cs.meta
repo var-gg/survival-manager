@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 4c344a495e2e443daf2c46e1f435ab6c
+timeCreated: 1753978335
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Scripts/CombatAvatarView.cs
+  uploadId: 843050

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 744cfbb07ac6b8c4f831386b6c8d620c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305379
+  packageName: P09_Modular_Humanoid
+  packageVersion: 2026.01.05
+  assetPath: Assets/P09_Modular_Humanoid/Model_DATA/Materials/Common/Eye/P09_Eye_Purple.mat
+  uploadId: 843050

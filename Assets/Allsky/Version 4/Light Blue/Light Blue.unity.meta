@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 8094e6bfe3ffb47d19152362a59b3249
+labels:
+- AllSky
+- Skies
+- Sky
+- Skybox
+timeCreated: 1544548237
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 10109
+  packageName: AllSky - 220+ Sky / Skybox Set
+  packageVersion: 5.2.0
+  assetPath: Assets/Allsky/Version 4/Light Blue/Light Blue.unity
+  uploadId: 679124

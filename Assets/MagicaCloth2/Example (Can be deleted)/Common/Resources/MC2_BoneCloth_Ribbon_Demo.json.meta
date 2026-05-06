@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9cb18a57f012d144480f025bca639032
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 242307
+  packageName: Magica Cloth 2
+  packageVersion: 2.18.1
+  assetPath: Assets/MagicaCloth2/Example (Can be deleted)/Common/Resources/MC2_BoneCloth_Ribbon_Demo.json
+  uploadId: 893596
