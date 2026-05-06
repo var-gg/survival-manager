@@ -393,6 +393,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         }
 
         _selectedPreset.ApplyTo(_previewRoot.transform, _previewMaterials);
+        ApplyPreviewReadableMaterials(_previewRoot.transform, _previewMaterials);
         _previewBounds = CalculatePreviewBounds(_previewRoot.transform);
         SceneView.RepaintAll();
         Repaint();
@@ -483,6 +484,100 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         _previewRenderer.lights[0].transform.rotation = Quaternion.Euler(45f, -35f, 0f);
         _previewRenderer.lights[1].intensity = 0.65f;
         _previewRenderer.lights[1].transform.rotation = Quaternion.Euler(340f, 140f, 0f);
+    }
+
+    private static void ApplyPreviewReadableMaterials(Transform modelRoot, ICollection<Material> generatedMaterials)
+    {
+        var previewShader = Shader.Find("Unlit/Texture")
+                            ?? Shader.Find("Unlit/Color")
+                            ?? Shader.Find("Sprites/Default");
+        if (previewShader == null)
+        {
+            return;
+        }
+
+        var materialCache = new Dictionary<Material, Material>();
+        foreach (var renderer in modelRoot.GetComponentsInChildren<Renderer>(false))
+        {
+            var materials = renderer.sharedMaterials;
+            var changed = false;
+            for (var i = 0; i < materials.Length; i++)
+            {
+                var source = materials[i];
+                if (source == null || source.shader == null)
+                {
+                    continue;
+                }
+
+                if (!ShouldUsePreviewReadableMaterial(source))
+                {
+                    continue;
+                }
+
+                if (!materialCache.TryGetValue(source, out var previewMaterial))
+                {
+                    previewMaterial = CreatePreviewReadableMaterial(source, previewShader);
+                    materialCache[source] = previewMaterial;
+                    generatedMaterials.Add(previewMaterial);
+                }
+
+                materials[i] = previewMaterial;
+                changed = true;
+            }
+
+            if (changed)
+            {
+                renderer.sharedMaterials = materials;
+            }
+        }
+    }
+
+    private static bool ShouldUsePreviewReadableMaterial(Material material)
+    {
+        return material.shader.name.Contains("lilToon", System.StringComparison.Ordinal)
+               || material.shader.name.StartsWith("Hidden/", System.StringComparison.Ordinal);
+    }
+
+    private static Material CreatePreviewReadableMaterial(Material source, Shader previewShader)
+    {
+        var previewMaterial = new Material(previewShader)
+        {
+            name = $"{source.name}_P09Preview",
+            hideFlags = HideFlags.DontSave,
+            renderQueue = source.renderQueue
+        };
+
+        CopyTexture(source, previewMaterial, "_MainTex", "_MainTex");
+        CopyTexture(source, previewMaterial, "_MainTex", "_BaseMap");
+        CopyColor(source, previewMaterial, "_Color", "_Color");
+        CopyColor(source, previewMaterial, "_Color", "_BaseColor");
+        return previewMaterial;
+    }
+
+    private static void CopyTexture(Material source, Material target, string sourceProperty, string targetProperty)
+    {
+        if (!source.HasProperty(sourceProperty) || !target.HasProperty(targetProperty))
+        {
+            return;
+        }
+
+        var texture = source.GetTexture(sourceProperty);
+        if (texture == null)
+        {
+            return;
+        }
+
+        target.SetTexture(targetProperty, texture);
+        target.SetTextureScale(targetProperty, source.GetTextureScale(sourceProperty));
+        target.SetTextureOffset(targetProperty, source.GetTextureOffset(sourceProperty));
+    }
+
+    private static void CopyColor(Material source, Material target, string sourceProperty, string targetProperty)
+    {
+        if (source.HasProperty(sourceProperty) && target.HasProperty(targetProperty))
+        {
+            target.SetColor(targetProperty, source.GetColor(sourceProperty));
+        }
     }
 
     private void ConfigurePreviewCamera(Rect rect)
