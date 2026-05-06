@@ -123,11 +123,25 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         };
     }
 
-    public void EnsureDefaultColorOverrides()
+    public bool EnsureDefaultColorOverrides()
     {
-        EnsureColorOverride("갑옷", "Armor", new Color(0.82f, 0.78f, 0.70f, 1f), new Color(0.34f, 0.27f, 0.22f, 1f), Color.white);
-        EnsureColorOverride("무기", "Weapon", new Color(0.78f, 0.76f, 0.72f, 1f), new Color(0.28f, 0.24f, 0.20f, 1f), Color.white);
-        EnsureColorOverride("방패", "Shield", new Color(0.70f, 0.76f, 0.82f, 1f), new Color(0.25f, 0.26f, 0.30f, 1f), Color.white);
+        var changed = false;
+        var legacyArmor = FindLegacyDefaultColorOverride("Armor");
+        var legacyWeapon = FindLegacyDefaultColorOverride("Weapon");
+        var legacyShield = FindLegacyDefaultColorOverride("Shield");
+
+        changed |= EnsureColorOverride("머리 장비", BattleP09AppearancePartType.Head, "Armor", legacyArmor, new Color(0.82f, 0.78f, 0.70f, 1f), new Color(0.34f, 0.27f, 0.22f, 1f), Color.white);
+        changed |= EnsureColorOverride("상의", BattleP09AppearancePartType.Chest, "Armor", legacyArmor, new Color(0.82f, 0.78f, 0.70f, 1f), new Color(0.34f, 0.27f, 0.22f, 1f), Color.white);
+        changed |= EnsureColorOverride("팔 장비", BattleP09AppearancePartType.Arm, "Armor", legacyArmor, new Color(0.82f, 0.78f, 0.70f, 1f), new Color(0.34f, 0.27f, 0.22f, 1f), Color.white);
+        changed |= EnsureColorOverride("허리 장비", BattleP09AppearancePartType.Waist, "Armor", legacyArmor, new Color(0.82f, 0.78f, 0.70f, 1f), new Color(0.34f, 0.27f, 0.22f, 1f), Color.white);
+        changed |= EnsureColorOverride("하의", BattleP09AppearancePartType.Leg, "Armor", legacyArmor, new Color(0.82f, 0.78f, 0.70f, 1f), new Color(0.34f, 0.27f, 0.22f, 1f), Color.white);
+        changed |= EnsureColorOverride("무기", BattleP09AppearancePartType.Weapon, "Weapon", legacyWeapon, new Color(0.78f, 0.76f, 0.72f, 1f), new Color(0.28f, 0.24f, 0.20f, 1f), Color.white);
+        changed |= EnsureColorOverride("방패", BattleP09AppearancePartType.Shield, "Shield", legacyShield, new Color(0.70f, 0.76f, 0.82f, 1f), new Color(0.25f, 0.26f, 0.30f, 1f), Color.white);
+
+        changed |= RemoveLegacyDefaultColorOverride("Armor");
+        changed |= RemoveLegacyDefaultColorOverride("Weapon");
+        changed |= RemoveLegacyDefaultColorOverride("Shield");
+        return changed;
     }
 
     public void ApplyTo(Transform modelRoot, ICollection<Material> generatedMaterials)
@@ -148,7 +162,7 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         ApplySkinColor(activeCatalog, modelRoot);
         ApplyEyeColor(activeCatalog, modelRoot);
         ApplyBustSize(activeCatalog, modelRoot);
-        ApplyMaterialColorOverrides(modelRoot, generatedMaterials);
+        ApplyMaterialColorOverrides(activeCatalog, modelRoot, generatedMaterials);
     }
 
     private BattleP09AppearanceCatalog? ResolveCatalog()
@@ -162,30 +176,87 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         return fallbackCatalog;
     }
 
-    private void EnsureColorOverride(string label, string targetContains, Color main, Color second, Color third)
+    private BattleP09MaterialColorOverride? FindLegacyDefaultColorOverride(string targetContains)
     {
         foreach (var existing in materialColorOverrides)
         {
-            if (string.Equals(existing.TargetContains, targetContains, StringComparison.Ordinal))
+            if (!existing.UsePartTarget
+                && string.Equals(existing.TargetContains, targetContains, StringComparison.Ordinal))
             {
-                if (string.IsNullOrWhiteSpace(existing.Label)
-                    || existing.Label is "Armor" or "Weapon" or "Shield")
+                return existing;
+            }
+        }
+
+        return null;
+    }
+
+    private bool EnsureColorOverride(
+        string label,
+        BattleP09AppearancePartType targetPart,
+        string targetContains,
+        BattleP09MaterialColorOverride? source,
+        Color defaultMain,
+        Color defaultSecond,
+        Color defaultThird)
+    {
+        foreach (var existing in materialColorOverrides)
+        {
+            if (existing.UsePartTarget && existing.TargetPart == targetPart)
+            {
+                var changed = false;
+                if (!string.Equals(existing.Label, label, StringComparison.Ordinal))
                 {
                     existing.Label = label;
+                    changed = true;
                 }
 
-                return;
+                if (string.IsNullOrWhiteSpace(existing.TargetContains))
+                {
+                    existing.TargetContains = targetContains;
+                    changed = true;
+                }
+
+                return changed;
             }
         }
 
         materialColorOverrides.Add(new BattleP09MaterialColorOverride
         {
             Label = label,
+            UsePartTarget = true,
+            TargetPart = targetPart,
             TargetContains = targetContains,
-            MainColor = main,
-            SecondColor = second,
-            ThirdColor = third
+            MainColor = source?.MainColor ?? defaultMain,
+            SecondColor = source?.SecondColor ?? defaultSecond,
+            ThirdColor = source?.ThirdColor ?? defaultThird
         });
+        return true;
+    }
+
+    private bool RemoveLegacyDefaultColorOverride(string targetContains)
+    {
+        for (var i = materialColorOverrides.Count - 1; i >= 0; i--)
+        {
+            var colorOverride = materialColorOverrides[i];
+            if (colorOverride.UsePartTarget
+                || !string.Equals(colorOverride.TargetContains, targetContains, StringComparison.Ordinal)
+                || !IsLegacyDefaultLabel(colorOverride.Label, targetContains))
+            {
+                continue;
+            }
+
+            materialColorOverrides.RemoveAt(i);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsLegacyDefaultLabel(string label, string targetContains)
+    {
+        return string.IsNullOrWhiteSpace(label)
+               || string.Equals(label, targetContains, StringComparison.Ordinal)
+               || label is "갑옷" or "무기" or "방패";
     }
 
     private void ApplyRendererSelection(BattleP09AppearanceCatalog activeCatalog, Transform modelRoot)
@@ -312,10 +383,14 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         }
     }
 
-    private void ApplyMaterialColorOverrides(Transform modelRoot, ICollection<Material> generatedMaterials)
+    private void ApplyMaterialColorOverrides(
+        BattleP09AppearanceCatalog activeCatalog,
+        Transform modelRoot,
+        ICollection<Material> generatedMaterials)
     {
         foreach (var renderer in modelRoot.GetComponentsInChildren<Renderer>(true))
         {
+            var rendererPart = ResolveRendererEquipmentPart(activeCatalog, renderer.transform);
             var materials = renderer.sharedMaterials;
             var changed = false;
             for (var i = 0; i < materials.Length; i++)
@@ -326,7 +401,7 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
                     continue;
                 }
 
-                var colorOverride = FindColorOverride(source.name);
+                var colorOverride = FindColorOverride(rendererPart, source.name);
                 if (colorOverride == null || !colorOverride.Enabled)
                 {
                     continue;
@@ -349,22 +424,128 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
         }
     }
 
-    private BattleP09MaterialColorOverride? FindColorOverride(string materialName)
+    private BattleP09AppearancePartType ResolveRendererEquipmentPart(BattleP09AppearanceCatalog activeCatalog, Transform child)
     {
-        foreach (var colorOverride in materialColorOverrides)
+        if (TryResolveRendererEquipmentPart(activeCatalog, child, BattleP09AppearancePartType.Head, out var part)
+            || TryResolveRendererEquipmentPart(activeCatalog, child, BattleP09AppearancePartType.Chest, out part)
+            || TryResolveRendererEquipmentPart(activeCatalog, child, BattleP09AppearancePartType.Arm, out part)
+            || TryResolveRendererEquipmentPart(activeCatalog, child, BattleP09AppearancePartType.Waist, out part)
+            || TryResolveRendererEquipmentPart(activeCatalog, child, BattleP09AppearancePartType.Leg, out part)
+            || TryResolveRendererEquipmentPart(activeCatalog, child, BattleP09AppearancePartType.Weapon, out part)
+            || TryResolveRendererEquipmentPart(activeCatalog, child, BattleP09AppearancePartType.Shield, out part))
         {
-            if (!colorOverride.Enabled || string.IsNullOrWhiteSpace(colorOverride.TargetContains))
+            return part;
+        }
+
+        return BattleP09AppearancePartType.None;
+    }
+
+    private bool TryResolveRendererEquipmentPart(
+        BattleP09AppearanceCatalog activeCatalog,
+        Transform child,
+        BattleP09AppearancePartType type,
+        out BattleP09AppearancePartType part)
+    {
+        part = BattleP09AppearancePartType.None;
+        var currentId = GetContentId(type);
+        foreach (var option in activeCatalog.GetOptions(type, sexId))
+        {
+            if (option.ContentId != currentId
+                || !MatchesMeshName(child.name, option.MeshName, out var sexSpecific)
+                || !IsSelectedSexMesh(sexSpecific))
             {
                 continue;
             }
 
-            if (materialName.Contains(colorOverride.TargetContains, StringComparison.OrdinalIgnoreCase))
+            part = type;
+            return true;
+        }
+
+        return false;
+    }
+
+    private BattleP09MaterialColorOverride? FindColorOverride(
+        BattleP09AppearancePartType rendererPart,
+        string materialName)
+    {
+        if (rendererPart != BattleP09AppearancePartType.None)
+        {
+            foreach (var colorOverride in materialColorOverrides)
+            {
+                if (!colorOverride.Enabled
+                    || !colorOverride.UsePartTarget
+                    || colorOverride.TargetPart != rendererPart
+                    || !MatchesColorTarget(colorOverride, materialName))
+                {
+                    continue;
+                }
+
+                return colorOverride;
+            }
+        }
+
+        var legacyTarget = GetLegacyColorTarget(rendererPart);
+        if (!string.IsNullOrWhiteSpace(legacyTarget))
+        {
+            foreach (var colorOverride in materialColorOverrides)
+            {
+                if (!colorOverride.Enabled
+                    || colorOverride.UsePartTarget
+                    || !string.Equals(colorOverride.TargetContains, legacyTarget, StringComparison.Ordinal)
+                    || !MatchesColorTarget(colorOverride, materialName))
+                {
+                    continue;
+                }
+
+                return colorOverride;
+            }
+        }
+
+        foreach (var colorOverride in materialColorOverrides)
+        {
+            if (!colorOverride.Enabled || colorOverride.UsePartTarget || string.IsNullOrWhiteSpace(colorOverride.TargetContains))
+            {
+                continue;
+            }
+
+            if (MatchesColorTarget(colorOverride, materialName))
             {
                 return colorOverride;
             }
         }
 
         return null;
+    }
+
+    private static string GetLegacyColorTarget(BattleP09AppearancePartType rendererPart)
+    {
+        return rendererPart switch
+        {
+            BattleP09AppearancePartType.Head
+                or BattleP09AppearancePartType.Chest
+                or BattleP09AppearancePartType.Arm
+                or BattleP09AppearancePartType.Waist
+                or BattleP09AppearancePartType.Leg => "Armor",
+            BattleP09AppearancePartType.Weapon => "Weapon",
+            BattleP09AppearancePartType.Shield => "Shield",
+            _ => string.Empty
+        };
+    }
+
+    private static bool MatchesColorTarget(BattleP09MaterialColorOverride colorOverride, string materialName)
+    {
+        return !string.IsNullOrWhiteSpace(colorOverride.TargetContains)
+               && materialName.Contains(colorOverride.TargetContains, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsSelectedSexMesh(SexSpecificMesh sexSpecific)
+    {
+        return sexSpecific switch
+        {
+            SexSpecificMesh.Male => sexId == 1,
+            SexSpecificMesh.Female => sexId == 2,
+            _ => true
+        };
     }
 
     private static void ReplaceMatchingMaterial(Renderer renderer, string materialPattern, Material replacement)
@@ -454,6 +635,12 @@ public sealed class BattleP09MaterialColorOverride
 {
     [InspectorName("표시 이름")]
     public string Label = string.Empty;
+
+    [InspectorName("장비 슬롯별 적용")]
+    public bool UsePartTarget;
+
+    [InspectorName("대상 장비 슬롯")]
+    public BattleP09AppearancePartType TargetPart = BattleP09AppearancePartType.None;
 
     [InspectorName("대상 머티리얼 이름 포함")]
     public string TargetContains = string.Empty;
