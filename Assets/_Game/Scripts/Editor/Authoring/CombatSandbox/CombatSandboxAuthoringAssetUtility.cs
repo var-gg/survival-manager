@@ -139,7 +139,7 @@ public static class CombatSandboxAuthoringAssetUtility
                 asset.Data.Notes = "Frontline stability and anti-burst regression anchor.";
             });
 
-        var currentProfile = GetOrCreateAsset<TeamLoadoutPresetAsset>(
+        _ = GetOrCreateAsset<TeamLoadoutPresetAsset>(
             TeamPresetFolder + "/team_loadout_current_profile.asset",
             asset =>
             {
@@ -157,6 +157,26 @@ public static class CombatSandboxAuthoringAssetUtility
                     new() { MemberId = "hero-7", HeroId = "hero-7", SourceKind = SandboxUnitSourceKind.LocalProfileHero, Anchor = SM.Combat.Model.DeploymentAnchorId.BackBottom },
                 };
                 asset.Source.Notes = "Uses the current local profile and deployment as the sandbox left side.";
+            });
+
+        var p09StarterAllies = GetOrCreateAsset<TeamLoadoutPresetAsset>(
+            TeamPresetFolder + "/team_loadout_p09_starter_allies.asset",
+            asset =>
+            {
+                asset.PresetId = "p09_starter_allies";
+                asset.DisplayName = "P09 Starter Allies";
+                asset.IsFavorite = true;
+                asset.Source.SourceMode = SandboxLoadoutSourceKind.AuthoredSyntheticTeam;
+                asset.Source.TeamPosture = SM.Combat.Model.TeamPostureType.StandardAdvance;
+                asset.Source.Tags = new List<string> { "starter", "p09", "allies" };
+                asset.Source.Members = new List<CombatSandboxPresetMemberSpec>
+                {
+                    new() { MemberId = "ally_warden", DisplayName = "Warden", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "warden", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontCenter, RoleInstructionId = "anchor" },
+                    new() { MemberId = "ally_slayer", DisplayName = "Slayer", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "slayer", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontBottom, RoleInstructionId = "bruiser" },
+                    new() { MemberId = "ally_hunter", DisplayName = "Hunter", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "hunter", Anchor = SM.Combat.Model.DeploymentAnchorId.BackTop, RoleInstructionId = "carry" },
+                    new() { MemberId = "ally_priest", DisplayName = "Priest", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "priest", Anchor = SM.Combat.Model.DeploymentAnchorId.BackBottom, RoleInstructionId = "support" },
+                };
+                asset.Source.Notes = "Uses authored P09 character IDs so appearance presets are visible in the combat sandbox.";
             });
 
         var observerSmoke = GetOrCreateAsset<TeamLoadoutPresetAsset>(
@@ -245,7 +265,7 @@ public static class CombatSandboxAuthoringAssetUtility
                 asset.Settings.StopOnReadabilityViolation = true;
             });
 
-        CreateScenario("opening_default_4unit", "Opening Default 4 Unit", currentProfile, observerSmoke, fixedSeed, true, "starter", "opening");
+        CreateScenario("opening_default_4unit", "P09 Default 4v4", p09StarterAllies, observerSmoke, fixedSeed, true, "starter", "opening", "p09");
         CreateScenario("endgame_glass_cannon", "Endgame Glass Cannon", endgameGlassCannon, observerSmoke, regressionBatch, true, "endgame", "burst");
         CreateScenario("endgame_fortress", "Endgame Fortress", endgameFortress, observerSmoke, fixedSeed, false, "endgame", "tank");
         CreateScenario("anti_burst_regression", "Anti Burst Regression", endgameFortress, endgameGlassCannon, regressionBatch, true, "regression", "counter", "anti_burst");

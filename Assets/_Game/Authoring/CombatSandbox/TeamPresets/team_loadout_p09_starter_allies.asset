@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: team_loadout_p09_starter_allies
+  m_EditorClassIdentifier: SM.Unity:SM.Unity.Sandbox:TeamLoadoutPresetAsset
+  PresetId: p09_starter_allies
+  DisplayName: P09 Starter Allies
+  IsFavorite: 1
+  Source:
+    SourceMode: 1
+    TeamPosture: 1
+    TeamTacticId: 
+    Tags:
+    - starter
+    - p09
+    - allies
+    Members:
+    - MemberId: ally_warden
+      SourceKind: 2
+      HeroId: 
+      DisplayName: Warden
+      ArchetypeId: 
+      CharacterId: warden
+      Anchor: 1
+      RoleInstructionId: anchor
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: ally_slayer
+      SourceKind: 2
+      HeroId: 
+      DisplayName: Slayer
+      ArchetypeId: 
+      CharacterId: slayer
+      Anchor: 2
+      RoleInstructionId: bruiser
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: ally_hunter
+      SourceKind: 2
+      HeroId: 
+      DisplayName: Hunter
+      ArchetypeId: 
+      CharacterId: hunter
+      Anchor: 3
+      RoleInstructionId: carry
+      BuildOverride: {fileID: 0}
+      Notes: 
+    - MemberId: ally_priest
+      SourceKind: 2
+      HeroId: 
+      DisplayName: Priest
+      ArchetypeId: 
+      CharacterId: priest
+      Anchor: 5
+      RoleInstructionId: support
+      BuildOverride: {fileID: 0}
+      Notes: 
+    TeamTemporaryAugmentIds: []
+    TeamPermanentAugmentIds: []
+    SnapshotAsset: {fileID: 0}
+    SnapshotJsonAsset: {fileID: 0}
+    SnapshotJson: 
+    RemoteDeck:
+      UserId: 
+      DeckId: 
+      Revision: 
+    Notes: Uses authored P09 character IDs so appearance presets are visible in the
+      combat sandbox.

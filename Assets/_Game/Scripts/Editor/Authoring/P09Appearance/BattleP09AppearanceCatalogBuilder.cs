@@ -77,7 +77,13 @@ public static class BattleP09AppearanceCatalogBuilder
             }
         }
 
-        characters.Sort((left, right) => string.CompareOrdinal(left.Id, right.Id));
+        characters.Sort((left, right) =>
+        {
+            var leftOrder = BattleP09AppearanceRoster.GetSortOrder(left.Id);
+            var rightOrder = BattleP09AppearanceRoster.GetSortOrder(right.Id);
+            var orderCompare = leftOrder.CompareTo(rightOrder);
+            return orderCompare != 0 ? orderCompare : string.CompareOrdinal(left.Id, right.Id);
+        });
         return characters;
     }
 
@@ -111,9 +117,7 @@ public static class BattleP09AppearanceCatalogBuilder
             ApplySeedDefaults(preset, catalog, seedIndex);
         }
 
-        var displayName = !string.IsNullOrWhiteSpace(character.LegacyDisplayName)
-            ? character.LegacyDisplayName
-            : character.Id;
+        var displayName = BattleP09AppearanceRoster.BuildAuthoringLabel(character.Id, character.LegacyDisplayName);
         preset.ConfigureIdentity(character.Id, displayName, catalog);
         preset.EnsureDefaultColorOverrides();
         EditorUtility.SetDirty(preset);
@@ -216,27 +220,28 @@ public static class BattleP09AppearanceCatalogBuilder
 
     private static void ApplySeedDefaults(BattleP09AppearancePreset preset, BattleP09AppearanceCatalog catalog, int seedIndex)
     {
-        preset.SetContentId(BattleP09AppearancePartType.Sex, seedIndex % 3 == 0 ? 2 : 1);
-        preset.SetContentId(BattleP09AppearancePartType.FaceType, PickContentId(catalog, BattleP09AppearancePartType.FaceType, 1, seedIndex));
-        preset.SetContentId(BattleP09AppearancePartType.HairStyle, PickContentId(catalog, BattleP09AppearancePartType.HairStyle, 1, seedIndex));
-        preset.SetContentId(BattleP09AppearancePartType.HairColor, PickContentId(catalog, BattleP09AppearancePartType.HairColor, 1, seedIndex + 2));
-        preset.SetContentId(BattleP09AppearancePartType.Skin, PickContentId(catalog, BattleP09AppearancePartType.Skin, 1, seedIndex));
-        preset.SetContentId(BattleP09AppearancePartType.EyeColor, PickContentId(catalog, BattleP09AppearancePartType.EyeColor, 1, seedIndex + 1));
-        preset.SetContentId(BattleP09AppearancePartType.FacialHair, seedIndex % 4 == 0 ? PickContentId(catalog, BattleP09AppearancePartType.FacialHair, 0, seedIndex) : 0);
+        var sexId = seedIndex % 3 == 0 ? 2 : 1;
+        preset.SetContentId(BattleP09AppearancePartType.Sex, sexId);
+        preset.SetContentId(BattleP09AppearancePartType.FaceType, PickContentId(catalog, BattleP09AppearancePartType.FaceType, 1, sexId, seedIndex));
+        preset.SetContentId(BattleP09AppearancePartType.HairStyle, PickContentId(catalog, BattleP09AppearancePartType.HairStyle, 1, sexId, seedIndex));
+        preset.SetContentId(BattleP09AppearancePartType.HairColor, PickContentId(catalog, BattleP09AppearancePartType.HairColor, 1, sexId, seedIndex + 2));
+        preset.SetContentId(BattleP09AppearancePartType.Skin, PickContentId(catalog, BattleP09AppearancePartType.Skin, 1, sexId, seedIndex));
+        preset.SetContentId(BattleP09AppearancePartType.EyeColor, PickContentId(catalog, BattleP09AppearancePartType.EyeColor, 1, sexId, seedIndex + 1));
+        preset.SetContentId(BattleP09AppearancePartType.FacialHair, seedIndex % 4 == 0 ? PickContentId(catalog, BattleP09AppearancePartType.FacialHair, 0, sexId, seedIndex) : 0);
         preset.SetContentId(BattleP09AppearancePartType.BustSize, 2);
-        preset.SetContentId(BattleP09AppearancePartType.Head, PickContentId(catalog, BattleP09AppearancePartType.Head, 0, seedIndex));
-        preset.SetContentId(BattleP09AppearancePartType.Chest, PickContentId(catalog, BattleP09AppearancePartType.Chest, 0, seedIndex + 1));
-        preset.SetContentId(BattleP09AppearancePartType.Arm, PickContentId(catalog, BattleP09AppearancePartType.Arm, 0, seedIndex + 1));
-        preset.SetContentId(BattleP09AppearancePartType.Waist, PickContentId(catalog, BattleP09AppearancePartType.Waist, 0, seedIndex + 2));
-        preset.SetContentId(BattleP09AppearancePartType.Leg, PickContentId(catalog, BattleP09AppearancePartType.Leg, 0, seedIndex + 3));
-        preset.SetContentId(BattleP09AppearancePartType.Weapon, PickContentId(catalog, BattleP09AppearancePartType.Weapon, 0, seedIndex));
-        preset.SetContentId(BattleP09AppearancePartType.Shield, PickContentId(catalog, BattleP09AppearancePartType.Shield, 0, seedIndex));
+        preset.SetContentId(BattleP09AppearancePartType.Head, PickContentId(catalog, BattleP09AppearancePartType.Head, 0, sexId, seedIndex));
+        preset.SetContentId(BattleP09AppearancePartType.Chest, PickContentId(catalog, BattleP09AppearancePartType.Chest, 0, sexId, seedIndex + 1));
+        preset.SetContentId(BattleP09AppearancePartType.Arm, PickContentId(catalog, BattleP09AppearancePartType.Arm, 0, sexId, seedIndex + 1));
+        preset.SetContentId(BattleP09AppearancePartType.Waist, PickContentId(catalog, BattleP09AppearancePartType.Waist, 0, sexId, seedIndex + 2));
+        preset.SetContentId(BattleP09AppearancePartType.Leg, PickContentId(catalog, BattleP09AppearancePartType.Leg, 0, sexId, seedIndex + 3));
+        preset.SetContentId(BattleP09AppearancePartType.Weapon, PickContentId(catalog, BattleP09AppearancePartType.Weapon, 0, sexId, seedIndex));
+        preset.SetContentId(BattleP09AppearancePartType.Shield, PickContentId(catalog, BattleP09AppearancePartType.Shield, 0, sexId, seedIndex));
     }
 
-    private static int PickContentId(BattleP09AppearanceCatalog catalog, BattleP09AppearancePartType type, int fallback, int seedIndex)
+    private static int PickContentId(BattleP09AppearanceCatalog catalog, BattleP09AppearancePartType type, int fallback, int sexId, int seedIndex)
     {
         var ids = new List<int>();
-        foreach (var option in catalog.GetOptions(type, 1))
+        foreach (var option in catalog.GetOptions(type, sexId))
         {
             ids.Add(option.ContentId);
         }

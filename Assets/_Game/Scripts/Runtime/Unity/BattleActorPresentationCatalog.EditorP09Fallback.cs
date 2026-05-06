@@ -25,26 +25,6 @@ public sealed partial class BattleActorPresentationCatalog
         "chr_0008",
     };
 
-    private static readonly string[] EditorP09CanonicalCombatIds =
-    {
-        "warden",
-        "guardian",
-        "slayer",
-        "raider",
-        "hunter",
-        "priest",
-        "hexer",
-        "scout",
-        "bulwark",
-        "reaver",
-        "marksman",
-        "shaman",
-        "bastion_penitent",
-        "mirror_cantor",
-        "pale_executor",
-        "rift_stalker",
-    };
-
     private static readonly string[] EditorP09HeroSmokeIds =
     {
         "hero-1",
@@ -120,12 +100,12 @@ public sealed partial class BattleActorPresentationCatalog
             catalog.SetArchetypeOverride(characterId, wrapper);
         }
 
-        for (var i = 0; i < EditorP09CanonicalCombatIds.Length; i++)
+        for (var i = 0; i < BattleP09AppearanceRoster.CanonicalCharacterIds.Count; i++)
         {
-            var characterId = EditorP09CanonicalCombatIds[i];
+            var characterId = BattleP09AppearanceRoster.CanonicalCharacterIds[i];
             var wrapper = ResolveWrapper(characterId, i);
-            catalog.SetCharacterOverride(EditorP09CanonicalCombatIds[i], wrapper);
-            catalog.SetArchetypeOverride(EditorP09CanonicalCombatIds[i], wrapper);
+            catalog.SetCharacterOverride(characterId, wrapper);
+            catalog.SetArchetypeOverride(characterId, wrapper);
         }
 
         for (var i = 0; i < EditorP09HeroSmokeIds.Length; i++)
@@ -317,27 +297,7 @@ public sealed partial class BattleActorPresentationCatalog
 
     private static bool TryCalculateActiveRendererBounds(GameObject root, out Bounds bounds)
     {
-        bounds = default;
-        var hasBounds = false;
-        foreach (var renderer in root.GetComponentsInChildren<Renderer>(true))
-        {
-            if (!renderer.enabled || !renderer.gameObject.activeInHierarchy)
-            {
-                continue;
-            }
-
-            if (!hasBounds)
-            {
-                bounds = renderer.bounds;
-                hasBounds = true;
-            }
-            else
-            {
-                bounds.Encapsulate(renderer.bounds);
-            }
-        }
-
-        return hasBounds;
+        return BattleP09VisualBounds.TryCalculateStableHumanoidBounds(root.transform, out bounds);
     }
 
     private static Renderer CreatePrimitiveRenderer(
