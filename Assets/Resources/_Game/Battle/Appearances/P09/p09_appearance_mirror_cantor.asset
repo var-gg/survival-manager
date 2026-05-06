@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: be14c1833dae4ff4896bf12a128b8957, type: 3}
   m_Name: p09_appearance_mirror_cantor
-  m_EditorClassIdentifier: SM.Unity:SM.Unity:BattleP09AppearancePreset
+  m_EditorClassIdentifier: SM.Unity::SM.Unity.BattleP09AppearancePreset
   characterId: mirror_cantor
   displayName: mirror_cantor
   catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
