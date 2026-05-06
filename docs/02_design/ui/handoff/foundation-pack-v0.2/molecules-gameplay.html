@@ -1,0 +1,1938 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Molecules · Gameplay — Augment · Synergy · Item · Stat · Trait · Action · Cost · Lock</title>
+<meta name="viewport" content="width=1680" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Shippori+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+/* ============== TOKENS — Style Guide v0.2 ============================ */
+:root{
+  --bg-0:#0c1126; --bg-1:#141a35; --bg-2:#1c2243; --bg-3:#262d54;
+  --line-1:#2c3568; --line-2:#3b467f;
+  --vellum:#f5ead0; --vellum-2:#e2d4ad;
+
+  --gold-100:#ffe9a8; --gold-200:#f5d68a; --gold-300:#e6b751;
+  --gold-400:#c8932a; --gold-500:#8a6418;
+
+  --ink-1:#f5ead0; --ink-2:#d8c799; --ink-3:#9d8a5e; --ink-4:#6b5d3f;
+
+  --fam-beastkin:#7a8a52; --fam-beastkin-deep:#2e3818; --fam-beastkin-glow:#b9c980;
+  --fam-vanguard:#4a72b8; --fam-vanguard-deep:#1a2a52; --fam-vanguard-glow:#7fa3e0;
+  --fam-striker:#b6334a;  --fam-striker-deep:#5a0e1c;  --fam-striker-glow:#f08a3c;
+  --fam-ranger:#b58a36;   --fam-ranger-deep:#4d3a14;   --fam-ranger-glow:#e6c878;
+  --fam-mystic:#8a5cb8;   --fam-mystic-deep:#3a1f5a;   --fam-mystic-glow:#d4b4f0;
+
+  --rare-rare:#5b8ed1; --rare-rare-deep:#1f3b66; --rare-rare-glow:#9bbeed;
+  --rare-epic:#b561d6; --rare-epic-2:#f08a3c; --rare-epic-deep:#4a2168;
+
+  /* augment buckets */
+  --bk-neutral:#8c98ad; --bk-neutral-deep:#2c3344;
+  --bk-economy:var(--gold-300); --bk-economy-deep:var(--gold-500);
+  --bk-synergy:var(--fam-mystic); --bk-synergy-deep:var(--fam-mystic-deep);
+  --bk-wild:#d2433a; --bk-wild-deep:#5a1814;
+
+  /* state */
+  --state-safe:#6dbf78; --state-safe-deep:#2c5e34;
+  --state-warn:#e8a93b; --state-warn-deep:#7a5818;
+  --state-danger:#e25548; --state-danger-deep:#7a2018;
+  --state-info:#7fa3e0;
+  --state-pos:#7fa3e0; --state-pos-deep:#1a2a52;
+  --state-neg:#b6334a; --state-neg-deep:#5a0e1c;
+  --state-locked:#6b6e85;
+
+  --hp-light:#f08a3c; --hp-mid:#b6334a; --hp-deep:#5a0e1c;
+
+  --f-ko:"Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;
+  --f-en-display:"Cinzel","Trajan Pro",serif;
+  --f-en-italic:"Cormorant Garamond","Playfair Display",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0; padding:0;}
+body{
+  background:
+    radial-gradient(1300px 800px at 18% -10%, #2a2050 0%, transparent 55%),
+    radial-gradient(1100px 700px at 95% 25%, #4a1a2e 0%, transparent 55%),
+    radial-gradient(900px 700px at 50% 110%, #1a2050 0%, transparent 60%),
+    var(--bg-0);
+  color:var(--ink-1);
+  font-family:var(--f-ko);
+  min-height:100vh; position:relative;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 60% 40%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(245,214,138,.03) 0, transparent 1px);
+  background-size:7px 7px,11px 11px,13px 13px;
+}
+.canvas{ position:relative; z-index:1; max-width:1680px; margin:0 auto; padding:48px 40px 96px; }
+
+/* HEADER */
+.doc-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:var(--s-6); padding-bottom:var(--s-5); margin-bottom:var(--s-7); position:relative; }
+.doc-head::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:linear-gradient(to right, transparent 0%, var(--gold-400) 8%, var(--gold-200) 50%, var(--gold-400) 92%, transparent 100%); }
+.doc-head::before{ content:""; position:absolute; left:0; right:0; bottom:-3px; height:1px; background:linear-gradient(to right, transparent 0%, var(--gold-500) 30%, var(--gold-500) 70%, transparent 100%); opacity:.6; }
+.eyebrow{ font-family:var(--f-mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold-300); }
+.doc-title{ font-family:var(--f-en-display); font-weight:700; font-size:38px; letter-spacing:.06em; margin:6px 0 4px; background:linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 60%, var(--gold-500) 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 1px 0 rgba(0,0,0,.4); }
+.doc-title .flourish{ display:inline-flex; gap:4px; vertical-align:6px; margin:0 14px; }
+.doc-title .flourish i{ width:5px; height:5px; background:var(--gold-300); transform:rotate(45deg); display:inline-block; -webkit-text-fill-color:initial; }
+.doc-title .flourish i:nth-child(2){ width:8px; height:8px; background:var(--gold-200); border:1px solid var(--gold-500); }
+.doc-subtitle{ font-family:var(--f-en-italic); font-style:italic; font-weight:500; font-size:16px; color:var(--ink-2); margin-bottom:4px; }
+.doc-subtitle-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); max-width:64ch; margin:0; line-height:1.6; }
+.doc-meta{ text-align:right; font-family:var(--f-mono); font-size:11px; color:var(--ink-3); letter-spacing:.06em; }
+.doc-meta b{ color:var(--gold-200); font-weight:500; }
+
+/* SECTION */
+section{ margin-bottom:var(--s-7); }
+.section-head{ display:flex; align-items:baseline; gap:var(--s-4); margin-bottom:var(--s-5); }
+.section-num{ font-family:var(--f-mono); font-size:11px; color:var(--gold-400); letter-spacing:.18em; }
+.section-title{ font-family:var(--f-en-display); font-size:22px; font-weight:600; letter-spacing:.06em; color:var(--gold-200); margin:0; }
+.section-rule{ height:1px; background:linear-gradient(to right, var(--gold-400) 0%, transparent 80%); flex:1; margin-bottom:4px; }
+.section-title-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); font-weight:500; margin-left:auto; }
+.section-title-ko::before{ content:"—  "; color:var(--gold-500); }
+
+/* CELL */
+.cells{ display:grid; gap:var(--s-5); }
+.cell{
+  position:relative;
+  background:linear-gradient(180deg, rgba(28,34,67,.55), rgba(14,18,38,.7));
+  border:1px solid var(--line-1);
+  padding:var(--s-5);
+}
+.cell::before, .cell::after{ content:""; position:absolute; width:8px; height:8px; border:1px solid var(--gold-300); }
+.cell::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.cell::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.cell-head{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--s-3); margin-bottom:var(--s-4); padding-bottom:8px; border-bottom:1px dashed var(--line-2); }
+.cell-num{ font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em; color:var(--gold-400); text-transform:uppercase; }
+.cell-title{ font-family:var(--f-en-display); font-size:13px; font-weight:600; letter-spacing:.16em; color:var(--gold-200); margin:0; text-transform:uppercase; }
+.cell-title .ko{ font-family:var(--f-ko); font-size:11px; color:var(--ink-3); font-weight:500; letter-spacing:.04em; text-transform:none; margin-left:6px; }
+.cell-meta{ font-family:var(--f-mono); font-size:9.5px; color:var(--ink-3); letter-spacing:.14em; }
+.cell-meta b{ color:var(--gold-200); font-weight:500; }
+.cell-desc{ font-family:var(--f-ko); font-size:11.5px; color:var(--ink-3); line-height:1.6; margin:0 0 var(--s-3); }
+.cell-desc b{ color:var(--gold-200); font-weight:600; }
+.cell-stage{
+  background: radial-gradient(70% 60% at 50% 30%, rgba(245,214,138,.05), transparent 70%), linear-gradient(180deg, #0a0d20 0%, #060814 100%);
+  border:1px solid var(--line-1); padding:var(--s-5); position:relative; min-height:200px;
+}
+.cell-stage::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(245,214,138,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,214,138,.04) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+.atom-tag{
+  display:inline-block; font-family:var(--f-mono); font-size:8.5px;
+  letter-spacing:.16em; color:var(--ink-3);
+  padding:2px 5px; border:1px dashed var(--line-2);
+  text-transform:uppercase;
+}
+.atom-tag b{ color:var(--gold-300); font-weight:500; }
+
+/* small subtitle */
+.row-cap{ font-family:var(--f-mono); font-size:9px; letter-spacing:.18em; color:var(--ink-3); text-transform:uppercase; margin:8px 0 6px; }
+.row-cap b{ color:var(--gold-300); font-weight:500; }
+.row-cap .ko{ font-family:var(--f-ko); color:var(--ink-2); letter-spacing:0; text-transform:none; font-weight:600; font-size:10px; margin-left:6px; }
+
+/* ============== 01 · AUGMENT CHIP =================== */
+.aug{
+  position:relative;
+  --b-c:var(--bk-neutral);
+  --b-c-deep:var(--bk-neutral-deep);
+  display:flex; flex-direction:column;
+  background:linear-gradient(180deg, rgba(28,34,67,.7), rgba(10,13,32,.85));
+  width:240px;
+  padding:12px 14px 10px;
+  font-family:var(--f-ko);
+  isolation:isolate;
+}
+.aug::before{ content:""; position:absolute; inset:0; border:1px solid var(--b-c); pointer-events:none; }
+.aug::after{ content:""; position:absolute; inset:3px; border:1px solid rgba(245,214,138,.18); pointer-events:none; }
+.aug > .cc{ position:absolute; width:6px; height:6px; pointer-events:none; border:1px solid var(--gold-300); z-index:2; }
+.aug > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.aug > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.aug > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.aug > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+/* bucket band — top */
+.aug .band{
+  position:absolute; top:3px; left:3px; right:3px; height:3px;
+  background:linear-gradient(to right, transparent, var(--b-c) 20%, var(--b-c) 80%, transparent);
+  box-shadow:0 0 6px var(--b-c);
+}
+.aug.bk-econ .band{ background:linear-gradient(to right, transparent, var(--gold-300) 20%, var(--gold-100) 50%, var(--gold-300) 80%, transparent); }
+.aug.bk-wild .band{
+  background-image:repeating-linear-gradient(45deg, var(--bk-wild) 0 4px, transparent 4px 8px);
+  background-color:rgba(210,67,58,.3);
+  box-shadow:0 0 8px rgba(210,67,58,.5);
+}
+.aug-head{
+  display:flex; align-items:center; gap:8px; margin-top:6px; margin-bottom:6px;
+}
+.aug-icon{
+  flex-shrink:0; width:30px; height:30px;
+  background:linear-gradient(180deg, var(--b-c) 0%, var(--b-c-deep) 100%);
+  border:1px solid var(--gold-500);
+  display:grid; place-items:center;
+  color:#fff8e0; position:relative;
+}
+.aug-icon::after{ content:""; position:absolute; inset:2px; border:1px solid rgba(245,214,138,.35); }
+.aug-icon svg{ width:16px; height:16px; }
+.aug-name{
+  flex:1; font-family:var(--f-ko); font-size:13px; font-weight:800; color:var(--vellum);
+  line-height:1.15;
+}
+.aug-name .en{ display:block; font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--ink-3); margin-top:2px; font-weight:500; text-transform:uppercase; }
+.aug-perm{
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.18em;
+  color:var(--gold-200); padding:2px 5px; border:1px solid var(--gold-500);
+  background:rgba(245,214,138,.12);
+  text-transform:uppercase;
+}
+.aug-temp{
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.18em;
+  color:var(--ink-3); padding:2px 5px; border:1px dashed var(--line-2);
+  text-transform:uppercase;
+}
+.aug-body{
+  font-family:var(--f-ko); font-size:11px; color:var(--ink-2); line-height:1.5;
+  padding:6px 0; border-top:1px dashed var(--line-2);
+}
+.aug-body b{ color:var(--gold-200); font-weight:700; }
+.aug-body u{ text-decoration:none; color:var(--state-safe); font-weight:700; }
+.aug-body em{ font-style:normal; color:var(--state-danger); font-weight:700; }
+.aug-foot{
+  display:flex; align-items:center; gap:6px; margin-top:6px;
+  padding-top:6px; border-top:1px dashed var(--line-2);
+}
+.bias{
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.16em;
+  padding:2px 5px;
+  background:rgba(0,0,0,.4); border:1px solid var(--line-2); color:var(--ink-3);
+  text-transform:uppercase;
+}
+.bias.on{ color:var(--state-pos); border-color:rgba(127,163,224,.5); background:rgba(74,114,184,.15); }
+.bias.flex{ color:var(--gold-200); border-color:rgba(245,214,138,.45); background:rgba(245,214,138,.08); }
+.bias.wild{ color:var(--bk-wild); border-color:rgba(210,67,58,.5); background:rgba(210,67,58,.12); }
+.aug-bucket{
+  margin-left:auto;
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.16em;
+  color:var(--b-c); text-transform:uppercase;
+}
+.aug.bk-econ{ --b-c:var(--bk-economy); --b-c-deep:var(--bk-economy-deep); }
+.aug.bk-syn{ --b-c:var(--bk-synergy); --b-c-deep:var(--bk-synergy-deep); }
+.aug.bk-wild{ --b-c:var(--bk-wild); --b-c-deep:var(--bk-wild-deep); }
+/* synergy family modifiers */
+.aug.bk-syn.fam-striker{ --b-c:var(--fam-striker); --b-c-deep:var(--fam-striker-deep); }
+.aug.bk-syn.fam-vanguard{ --b-c:var(--fam-vanguard); --b-c-deep:var(--fam-vanguard-deep); }
+.aug.bk-syn.fam-mystic{ --b-c:var(--fam-mystic); --b-c-deep:var(--fam-mystic-deep); }
+
+/* ============== 02 · SYNERGY BADGE =================== */
+.syn{
+  position:relative;
+  background:linear-gradient(180deg, rgba(28,34,67,.6), rgba(10,13,32,.85));
+  width:240px; padding:10px 12px;
+  display:flex; flex-direction:column; gap:7px;
+  --syn-c:var(--fam-striker); --syn-c-deep:var(--fam-striker-deep); --syn-c-glow:var(--fam-striker-glow);
+}
+.syn::before{ content:""; position:absolute; inset:0; border:1px solid var(--syn-c); pointer-events:none; opacity:.7; }
+.syn::after{ content:""; position:absolute; inset:3px; border:1px solid rgba(245,214,138,.16); pointer-events:none; }
+.syn > .cc{ position:absolute; width:6px; height:6px; pointer-events:none; border:1px solid var(--gold-300); z-index:2; }
+.syn > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.syn > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.syn > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.syn > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.syn-head{ display:flex; align-items:center; gap:8px; }
+.syn-ico{
+  width:28px; height:28px; flex-shrink:0;
+  background:linear-gradient(180deg, var(--syn-c) 0%, var(--syn-c-deep) 100%);
+  border:1px solid var(--gold-500);
+  display:grid; place-items:center; color:#fff8e0; position:relative;
+}
+.syn-ico::after{ content:""; position:absolute; inset:2px; border:1px solid rgba(245,214,138,.4); }
+.syn-ico svg{ width:14px; height:14px; }
+.syn-name{
+  flex:1;
+  font-family:var(--f-en-display); font-size:11.5px;
+  letter-spacing:.18em; color:var(--gold-200);
+  font-weight:700; text-transform:uppercase;
+  line-height:1;
+}
+.syn-name .ko{
+  display:block;
+  font-family:var(--f-ko); font-size:11px; color:var(--vellum);
+  letter-spacing:.04em; text-transform:none; margin-top:3px;
+  font-weight:700;
+}
+.syn-tag{
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.16em;
+  color:var(--ink-3); padding:2px 5px;
+  border:1px dashed var(--line-2);
+  text-transform:uppercase;
+}
+.syn-tag.race{ color:var(--vellum); border-color:rgba(245,234,208,.4); }
+.syn-tag.cls{ color:var(--syn-c); border-color:var(--syn-c); background:color-mix(in oklab, var(--syn-c) 12%, transparent); }
+.syn-bar{
+  position:relative; height:8px;
+  background:linear-gradient(180deg, rgba(0,0,0,.7), rgba(0,0,0,.4));
+  border:1px solid var(--gold-500);
+  overflow:visible;
+}
+.syn-bar .fill{
+  position:absolute; top:0; bottom:0; left:0;
+  background:linear-gradient(90deg, var(--syn-c-deep) 0%, var(--syn-c) 60%, var(--syn-c-glow) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), inset 0 -2px 6px rgba(0,0,0,.4), 0 0 6px var(--syn-c-glow);
+}
+.syn-bar .bp{ position:absolute; top:-2px; bottom:-2px; width:1.5px; background:var(--gold-200); box-shadow:0 0 4px var(--gold-200); z-index:2; }
+.syn-bar .bp i{
+  position:absolute; left:50%; top:-7px;
+  width:8px; height:8px; transform:translateX(-50%) rotate(45deg);
+  background:linear-gradient(135deg, var(--gold-100), var(--gold-300));
+  border:1px solid var(--gold-500); box-shadow:0 0 5px var(--gold-200);
+}
+.syn-bar .bp.active i{ background:linear-gradient(135deg, #fff, var(--gold-100)); box-shadow:0 0 10px var(--gold-100); }
+.syn-meta{ display:flex; justify-content:space-between; align-items:baseline; }
+.syn-tier{
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.16em;
+  color:var(--ink-3); text-transform:uppercase;
+}
+.syn-tier b.t1{ color:var(--syn-c-glow); font-weight:600; }
+.syn-tier b.t2{ color:var(--gold-100); font-weight:600; text-shadow:0 0 6px var(--gold-200); }
+.syn-count{
+  font-family:var(--f-mono); font-size:10px; color:var(--gold-200); font-weight:500; letter-spacing:.04em;
+}
+.syn-count b{ color:var(--vellum); font-weight:700; }
+/* state */
+.syn.inactive{ opacity:.6; --syn-c:var(--state-locked); --syn-c-deep:var(--bg-3); --syn-c-glow:#9a9eb2; }
+.syn.t1{ }
+.syn.t2 .syn-bar .fill{ background:linear-gradient(90deg, var(--syn-c-deep) 0%, var(--syn-c) 30%, var(--gold-200) 75%, var(--gold-100) 100%); box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 0 10px var(--gold-200); }
+/* family */
+.syn.fam-striker{ --syn-c:var(--fam-striker); --syn-c-deep:var(--fam-striker-deep); --syn-c-glow:var(--fam-striker-glow); }
+.syn.fam-vanguard{ --syn-c:var(--fam-vanguard); --syn-c-deep:var(--fam-vanguard-deep); --syn-c-glow:var(--fam-vanguard-glow); }
+.syn.fam-mystic{ --syn-c:var(--fam-mystic); --syn-c-deep:var(--fam-mystic-deep); --syn-c-glow:var(--fam-mystic-glow); }
+.syn.fam-beastkin{ --syn-c:var(--fam-beastkin); --syn-c-deep:var(--fam-beastkin-deep); --syn-c-glow:var(--fam-beastkin-glow); }
+.syn.fam-ranger{ --syn-c:var(--fam-ranger); --syn-c-deep:var(--fam-ranger-deep); --syn-c-glow:var(--fam-ranger-glow); }
+
+/* ============== 03 · ITEM SLOT ======================= */
+.itemslot{
+  position:relative;
+  display:flex; flex-direction:column;
+  background:linear-gradient(180deg, rgba(28,34,67,.5), rgba(10,13,32,.85));
+  --r-c:var(--gold-500); --r-c2:var(--gold-300);
+  width:200px;
+  isolation:isolate;
+}
+.itemslot::before{ content:""; position:absolute; inset:0; border:1px solid var(--r-c); pointer-events:none; }
+.itemslot::after{ content:""; position:absolute; inset:3px; border:1px solid color-mix(in oklab, var(--r-c2) 50%, transparent); pointer-events:none; }
+.itemslot > .cc{ position:absolute; width:5px; height:5px; pointer-events:none; border:1px solid var(--gold-300); z-index:2; }
+.itemslot > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.itemslot > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.itemslot > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.itemslot > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.itemslot.r-rare{ --r-c:var(--rare-rare); --r-c2:var(--rare-rare-glow); }
+.itemslot.r-epic{ --r-c:var(--rare-epic); --r-c2:var(--rare-epic-2); }
+.itemslot.r-epic::before{ border-image:linear-gradient(180deg, var(--rare-epic), var(--rare-epic-2)) 1; }
+.is-art{
+  position:relative; height:80px;
+  background:radial-gradient(circle at 50% 60%, color-mix(in oklab, var(--r-c) 32%, transparent), transparent 70%), linear-gradient(180deg, #0a0d20, #060814);
+  display:grid; place-items:center;
+}
+.is-art .glyph{ width:40px; height:40px; color:var(--r-c2); filter:drop-shadow(0 0 8px var(--r-c)); }
+.is-rar{
+  position:absolute; top:5px; right:5px;
+  font-family:var(--f-mono); font-size:8px;
+  letter-spacing:.18em; color:var(--r-c2);
+  padding:1px 4px; background:rgba(0,0,0,.55);
+  border:1px solid var(--r-c);
+  text-transform:uppercase;
+}
+.is-body{
+  padding:8px 10px;
+  border-top:1px solid color-mix(in oklab, var(--r-c) 50%, transparent);
+}
+.is-name{
+  font-family:var(--f-ko); font-size:12px; font-weight:800;
+  color:var(--vellum); line-height:1.2;
+}
+.is-name .en{
+  display:block; font-family:var(--f-mono); font-size:8.5px;
+  letter-spacing:.14em; color:var(--ink-3); margin-top:2px;
+  font-weight:500; text-transform:uppercase;
+}
+.is-affixes{
+  margin-top:6px; padding-top:6px;
+  border-top:1px dashed var(--line-2);
+  display:flex; flex-direction:column; gap:2px;
+}
+.is-aff{
+  font-family:var(--f-mono); font-size:9.5px;
+  color:var(--ink-2); letter-spacing:.02em;
+  display:flex; justify-content:space-between;
+}
+.is-aff b{ color:var(--state-safe); font-weight:600; }
+.is-aff em{ color:var(--state-danger); font-style:normal; font-weight:600; }
+.is-aff.implicit b{ color:var(--gold-200); }
+.is-aff .ko{ font-family:var(--f-ko); color:var(--ink-3); font-size:10px; font-weight:500; }
+/* sizes */
+.itemslot.sm{ width:128px; }
+.itemslot.sm .is-art{ height:60px; }
+.itemslot.sm .is-art .glyph{ width:30px; height:30px; }
+.itemslot.sm .is-name{ font-size:11px; }
+.itemslot.sm .is-affixes .is-aff{ font-size:9px; }
+.itemslot.lg{ width:240px; }
+.itemslot.lg .is-art{ height:108px; }
+.itemslot.lg .is-art .glyph{ width:54px; height:54px; }
+/* variant */
+.itemslot.drop .band-cap{
+  position:absolute; top:5px; left:5px;
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.18em;
+  color:var(--gold-200); padding:1px 5px; background:rgba(0,0,0,.55);
+  border:1px solid var(--gold-500); text-transform:uppercase;
+  z-index:2;
+}
+.itemslot.drop::after{ animation:dropPulse 1.6s ease-in-out infinite; }
+@keyframes dropPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
+.itemslot.compare{
+  display:grid; grid-template-columns:1fr auto 1fr;
+  gap:0;
+  width:auto;
+  background:none;
+  padding:0;
+}
+.itemslot.compare::before, .itemslot.compare::after{ display:none; }
+.itemslot.compare .arrow{
+  display:grid; place-items:center;
+  padding:0 8px; color:var(--gold-300);
+  font-family:var(--f-mono); font-size:14px;
+}
+
+/* ============== 04 · STAT ROW ======================= */
+.statlist{ display:flex; flex-direction:column; padding:6px 12px; }
+.stat-row{
+  display:flex; align-items:center;
+  padding:6px 0;
+  border-bottom:1px dashed var(--line-2);
+  font-family:var(--f-ko); font-size:12px;
+}
+.stat-row:last-child{ border-bottom:none; }
+.stat-lbl{ flex:1; color:var(--ink-2); font-weight:600; }
+.stat-lbl .en{ font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--ink-3); margin-left:6px; padding-left:6px; border-left:1px solid var(--line-2); text-transform:uppercase; font-weight:500; }
+.stat-val{
+  font-family:var(--f-mono); font-size:13px; font-weight:600;
+  color:var(--vellum); letter-spacing:.02em;
+  text-align:right; min-width:62px;
+}
+.stat-delta{
+  display:inline-flex; align-items:center; gap:2px;
+  margin-left:8px;
+  font-family:var(--f-mono); font-size:11px;
+  font-weight:600; letter-spacing:.04em;
+  min-width:54px; justify-content:flex-end;
+}
+.stat-delta.up{ color:var(--state-safe); }
+.stat-delta.down{ color:var(--state-danger); }
+.stat-delta.flat{ color:var(--ink-3); }
+.stat-delta svg{ width:9px; height:9px; }
+
+/* ============== 05 · TRAIT / QUIRK ROW =============== */
+.tq-row{
+  display:flex; flex-direction:column; gap:6px;
+}
+.tq{
+  position:relative;
+  display:flex; align-items:flex-start; gap:8px;
+  padding:7px 9px;
+  background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.1));
+  border-left:2px solid var(--tq-c);
+}
+.tq::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  border:1px solid var(--line-2); border-left:none;
+}
+.tq.pos{ --tq-c:var(--state-pos); }
+.tq.neg{ --tq-c:var(--state-neg); }
+.tq-sign{
+  flex-shrink:0; width:18px; height:18px;
+  display:grid; place-items:center;
+  background:linear-gradient(180deg, var(--tq-c) 0%, var(--state-pos-deep, var(--state-neg-deep)) 100%);
+  border:1px solid var(--gold-500);
+  font-family:var(--f-en-display); font-size:11px;
+  font-weight:700; color:#fff8e0;
+  text-shadow:0 1px 0 rgba(0,0,0,.5);
+  position:relative; line-height:1;
+}
+.tq.pos .tq-sign{ background:linear-gradient(180deg, var(--state-pos) 0%, var(--state-pos-deep) 100%); }
+.tq.neg .tq-sign{ background:linear-gradient(180deg, var(--state-neg) 0%, var(--state-neg-deep) 100%); }
+.tq-body{ flex:1; }
+.tq-name{
+  font-family:var(--f-ko); font-size:12px; font-weight:700;
+  color:var(--vellum); line-height:1.2;
+  display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
+}
+.tq-name .en{
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.14em;
+  color:var(--tq-c); font-weight:500; text-transform:uppercase;
+}
+.tq-desc{
+  margin:3px 0 0; font-family:var(--f-ko); font-size:10.5px;
+  color:var(--ink-2); line-height:1.45;
+}
+.tq-desc b{ color:var(--gold-200); font-weight:700; }
+.tq-desc .pos{ color:var(--state-pos); font-weight:700; }
+.tq-desc .neg{ color:var(--state-neg); font-weight:700; }
+/* inline variant */
+.tq.inline{
+  display:inline-flex;
+  padding:3px 8px 3px 6px;
+  font-size:10.5px;
+  background:linear-gradient(180deg, color-mix(in oklab, var(--tq-c) 18%, transparent), rgba(0,0,0,.2));
+  align-items:center;
+}
+.tq.inline .tq-sign{ width:14px; height:14px; font-size:9px; }
+.tq.inline .tq-name{ font-size:10.5px; }
+.tq.inline .tq-desc{ display:none; }
+
+/* ============== 06 · ACTION ROW ====================== */
+.actions{
+  display:flex; flex-wrap:wrap; gap:0;
+  background:linear-gradient(180deg, rgba(0,0,0,.4), rgba(0,0,0,.2));
+  border:1px solid var(--gold-500);
+  position:relative;
+}
+.actions > .cc{ position:absolute; width:6px; height:6px; pointer-events:none; border:1px solid var(--gold-300); z-index:2; }
+.actions > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.actions > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.actions > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.actions > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.act-btn{
+  position:relative; flex:1; min-width:110px;
+  padding:11px 12px;
+  display:flex; flex-direction:column; align-items:flex-start; gap:3px;
+  background:transparent; border:none; cursor:pointer;
+  color:var(--ink-2); font-family:var(--f-ko);
+  text-align:left;
+  border-right:1px solid color-mix(in oklab, var(--gold-500) 60%, transparent);
+}
+.act-btn:last-child{ border-right:none; }
+.act-btn:hover{ background:rgba(245,214,138,.08); color:var(--vellum); }
+.act-btn:hover .act-vine{ opacity:.6; }
+.act-btn .act-name{
+  font-family:var(--f-en-display); font-size:11px;
+  letter-spacing:.16em; font-weight:700;
+  color:var(--gold-200); text-transform:uppercase;
+  display:flex; align-items:center; gap:6px;
+}
+.act-btn .act-name svg{ width:11px; height:11px; opacity:.85; }
+.act-btn .act-ko{
+  font-family:var(--f-ko); font-size:11px; font-weight:600;
+  color:var(--vellum); letter-spacing:.02em;
+}
+.act-btn .act-cost{
+  font-family:var(--f-mono); font-size:9px;
+  letter-spacing:.14em; color:var(--ink-3);
+  margin-top:2px;
+}
+.act-btn .act-cost b{ color:var(--gold-200); font-weight:500; }
+.act-btn .act-cost .free{ color:var(--state-safe); }
+.act-btn .act-vine{
+  position:absolute; bottom:6px; right:8px;
+  width:14px; height:14px; color:var(--gold-300);
+  opacity:0; transition:opacity .25s; pointer-events:none;
+}
+.act-btn[disabled]{ opacity:.4; cursor:not-allowed; }
+.act-btn[disabled]:hover{ background:transparent; color:var(--ink-3); }
+.act-btn[disabled] .act-name{ color:var(--ink-3); }
+.act-btn[disabled] .act-ko{ color:var(--ink-3); }
+
+/* ============== 07 · COST PREVIEW ==================== */
+.cost-prev{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 10px;
+  background:linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.2));
+  border:1px solid var(--line-2);
+  position:relative;
+}
+.cost-prev::before, .cost-prev::after{ content:""; position:absolute; width:5px; height:5px; border:1px solid var(--gold-300); }
+.cost-prev::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.cost-prev::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.cchip{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 8px;
+  font-family:var(--f-mono); font-size:11px;
+  font-weight:600; letter-spacing:.04em;
+  background:linear-gradient(180deg, rgba(0,0,0,.6), rgba(0,0,0,.4));
+  border:1px solid var(--cc-c, var(--gold-500));
+  color:var(--cc-c, var(--gold-200));
+  position:relative; line-height:1;
+}
+.cchip::before, .cchip::after{ content:""; position:absolute; width:4px; height:4px; border:1px solid var(--cc-c, var(--gold-300)); }
+.cchip::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.cchip::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.cchip svg{ width:11px; height:11px; }
+.cchip.gold{ --cc-c:var(--gold-300); color:var(--gold-100); }
+.cchip.echo{ --cc-c:var(--rare-rare-glow); color:var(--rare-rare-glow); }
+.cchip.free{ --cc-c:var(--state-safe); color:var(--state-safe); }
+.cchip.have{ opacity:.65; --cc-c:var(--ink-3); color:var(--ink-2); }
+.cchip .lbl{
+  font-family:var(--f-mono); font-size:8.5px;
+  letter-spacing:.16em; color:inherit;
+  opacity:.7; padding-left:5px; margin-left:1px;
+  border-left:1px solid currentColor; text-transform:uppercase;
+}
+.cost-arrow{
+  display:inline-flex; align-items:center; gap:2px;
+  font-family:var(--f-mono); font-size:11px;
+  color:var(--gold-300);
+}
+.cost-arrow svg{ width:14px; height:8px; }
+.cost-prev .cap{
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.16em;
+  color:var(--ink-3); text-transform:uppercase; padding-right:6px; margin-right:2px;
+  border-right:1px solid var(--line-2);
+}
+
+/* ============== 08 · LOCK STATE ====================== */
+.lockcard{
+  position:relative;
+  width:200px; height:240px;
+  background:linear-gradient(180deg, #1c2243, #0e1226);
+  border:1px solid var(--line-1);
+  overflow:hidden;
+}
+.lockcard .ribb{
+  position:absolute; top:3px; left:3px; right:3px; height:3px;
+  background:linear-gradient(to right, transparent, var(--fam-vanguard) 30%, var(--fam-vanguard-glow) 50%, var(--fam-vanguard) 70%, transparent);
+  filter:blur(.3px);
+}
+.lockcard .silh{
+  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  width:140px;
+}
+.lockcard .nm{
+  position:absolute; bottom:0; left:0; right:0;
+  padding:2px 6px;
+  background:linear-gradient(180deg, transparent, rgba(0,0,0,.85));
+  font-family:var(--f-mono); font-size:9px;
+  letter-spacing:.12em; color:var(--gold-200);
+  text-align:center;
+}
+.lock-overlay{
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(20,18,30,.7), rgba(8,8,16,.92));
+  backdrop-filter:grayscale(.7) brightness(.5);
+  -webkit-backdrop-filter:grayscale(.7) brightness(.5);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:8px; padding:16px;
+  z-index:3;
+}
+.lock-overlay::before{
+  content:""; position:absolute; inset:0;
+  background-image:repeating-linear-gradient(135deg, transparent 0 6px, rgba(0,0,0,.18) 6px 7px);
+  pointer-events:none;
+}
+.lock-icon{
+  width:38px; height:38px;
+  display:grid; place-items:center;
+  background:linear-gradient(180deg, var(--lock-c) 0%, var(--lock-c-deep) 100%);
+  border:1px solid var(--gold-500);
+  color:#fff8e0;
+  position:relative;
+  filter:drop-shadow(0 0 10px var(--lock-glow));
+}
+.lock-icon::before, .lock-icon::after{ content:""; position:absolute; width:6px; height:6px; border:1px solid var(--gold-300); }
+.lock-icon::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.lock-icon::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.lock-icon svg{ width:18px; height:18px; }
+.lock-tag{
+  font-family:var(--f-en-display); font-size:10px;
+  letter-spacing:.22em; color:var(--gold-200);
+  font-weight:700; text-transform:uppercase;
+  text-shadow:0 1px 0 rgba(0,0,0,.6);
+}
+.lock-msg{
+  text-align:center;
+  font-family:var(--f-ko); font-size:11px; font-weight:700;
+  color:var(--vellum); line-height:1.4;
+  text-shadow:0 1px 2px rgba(0,0,0,.7);
+}
+.lock-hint{
+  text-align:center;
+  font-family:var(--f-mono); font-size:8.5px;
+  letter-spacing:.14em; color:var(--ink-2);
+  text-transform:uppercase; line-height:1.4;
+  padding-top:6px; margin-top:2px;
+  border-top:1px dashed rgba(245,214,138,.25); width:100%;
+}
+.lock-hint b{ color:var(--gold-200); font-weight:500; }
+.lock-overlay.chapter{ --lock-c:var(--state-locked); --lock-c-deep:var(--bg-3); --lock-glow:rgba(245,214,138,.25); }
+.lock-overlay.permanent{ --lock-c:var(--gold-300); --lock-c-deep:var(--gold-500); --lock-glow:rgba(245,214,138,.5); }
+.lock-overlay.ko{ --lock-c:#8a8a98; --lock-c-deep:#3a3a48; --lock-glow:rgba(138,138,152,.35); }
+.lock-overlay.cooldown{ --lock-c:var(--state-info); --lock-c-deep:var(--fam-vanguard-deep); --lock-glow:rgba(127,163,224,.4); }
+
+/* ============== MOBILE FRAME ====================== */
+.mobile-wrap{
+  width:380px; border-radius:32px;
+  border:1px solid var(--gold-500);
+  padding:var(--s-2);
+  background:linear-gradient(180deg, rgba(28,34,67,.65), rgba(14,18,38,.85));
+  position:relative;
+}
+.mobile-wrap::after{
+  content:""; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  width:46px; height:5px; background:#000; border-radius:99px; z-index:5;
+}
+.mobile-inner{
+  border-radius:24px;
+  background:linear-gradient(180deg, rgba(28,34,67,.65), rgba(14,18,38,.85));
+  border:1px solid var(--line-1);
+  padding-top:36px; position:relative; overflow:hidden; min-height:540px;
+}
+.mobile-status{
+  position:absolute; top:0; left:0; right:0; height:36px;
+  display:flex; justify-content:space-between; align-items:center; padding:0 28px;
+  font-family:var(--f-mono); font-size:11px; color:var(--vellum); font-weight:600; z-index:3;
+}
+.mobile-bg{
+  position:absolute; inset:36px 0 0 0;
+  background-image:
+    radial-gradient(circle at 30% 30%, rgba(74,114,184,.18), transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(182,51,74,.12), transparent 50%);
+}
+.mobile-bg::before{
+  content:""; position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(245,214,138,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,214,138,.04) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+
+/* row helpers */
+.flex-row{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; }
+.flex-col{ display:flex; flex-direction:column; gap:12px; }
+
+/* foot */
+.doc-foot{ margin-top:var(--s-7); padding-top:var(--s-5); border-top:1px solid var(--gold-500); display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:10.5px; color:var(--ink-3); letter-spacing:.12em; position:relative; }
+.doc-foot::before{ content:""; position:absolute; top:-2px; left:0; right:0; height:1px; background:linear-gradient(to right, transparent, var(--gold-300), transparent); }
+.doc-foot b{ color:var(--gold-200); font-weight:500; }
+</style>
+</head>
+<body>
+
+<main class="canvas">
+
+  <header class="doc-head">
+    <div>
+      <div class="eyebrow">— GAMEPLAY MOLECULES · BUNDLE 1 · 8 ITEMS —</div>
+      <h1 class="doc-title">
+        Augment · Synergy · Item · Stat
+        <span class="flourish"><i></i><i></i><i></i></span>
+        Trait · Action · Cost · Lock
+      </h1>
+      <div class="doc-subtitle">Combat-readout molecules — built from the atom library, tuned for the v0.2 jewel-vellum tone.</div>
+      <p class="doc-subtitle-ko">
+        실제 전투/관리 화면에서 정보를 빠르게 읽게 해주는 8개 분자. 각 분자는 atom (Button · Cost chip · Tag · ProgressBar · Status pill · Tooltip)을 인용해 조합되며,
+        v0.2 톤 (gold corner cap · family-tint rib · vellum cream ink · vine flourish · jewel duotone)을 일관 유지합니다.
+      </p>
+    </div>
+    <div class="doc-meta">
+      <div><b>Token</b> &nbsp;Style Guide v0.2</div>
+      <div><b>Molecules</b> &nbsp;Bundle 1 · 8 items</div>
+      <div><b>Cites</b> &nbsp;Atoms 1 + 2</div>
+      <div><b>Rev</b> &nbsp;0.1</div>
+    </div>
+  </header>
+
+  <!-- ============== 01 · AUGMENT CHIP ============== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Augment Chip</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">temporary · permanent · 4 buckets · bias tag</span>
+    </div>
+
+    <div class="cells" style="grid-template-columns:1.4fr 1fr;">
+
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">01-A · BUCKETS × VARIANTS</div>
+            <h3 class="cell-title">4 Bucket Color Bands <span class="ko">/ 버킷 띠 색상</span></h3>
+          </div>
+          <span class="cell-meta">
+            <span class="atom-tag"><b>cites</b> Tag chip</span>
+            &nbsp;<span class="atom-tag"><b>cites</b> Tooltip rich</span>
+          </span>
+        </div>
+        <p class="cell-desc">
+          상단 색띠로 bucket 즉식별 — <b style="color:var(--bk-neutral);">steel</b> Neutral / <b style="color:var(--bk-economy);">gold</b> Economy / <b style="color:var(--fam-mystic);">family-tint</b> Synergy / <b style="color:var(--bk-wild);">crimson hatching</b> Wildcard.
+          permanent는 골드 박스 라벨, temporary는 점선 라벨로 구분.
+        </p>
+
+        <div class="cell-stage">
+          <div class="row-cap"><b>BY BUCKET</b><span class="ko">버킷별 — 4종</span></div>
+          <div class="flex-row" style="gap:14px;">
+
+            <!-- Neutral combat · permanent -->
+            <div class="aug">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <div class="band"></div>
+              <div class="aug-head">
+                <span class="aug-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 14 L8 8 L14 14"/><path d="M5 11 L8 4 L11 11"/></svg>
+                </span>
+                <div class="aug-name">강철 자세<span class="en">IRONCLAD STANCE</span></div>
+                <span class="aug-perm">PERM</span>
+              </div>
+              <p class="aug-body">방어력 <u>+15%</u>, 첫 피격 시 <b>1턴 가드</b>.</p>
+              <div class="aug-foot">
+                <span class="bias on">ON-BOARD</span>
+                <span class="aug-bucket">NEUTRAL</span>
+              </div>
+            </div>
+
+            <!-- Economy roster · temp -->
+            <div class="aug bk-econ">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <div class="band"></div>
+              <div class="aug-head">
+                <span class="aug-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="5.5"/><path d="M6 8 Q 8 6 10 8 Q 8 10 6 8"/></svg>
+                </span>
+                <div class="aug-name">상인의 미소<span class="en">MERCHANT'S GRIN</span></div>
+                <span class="aug-temp">TEMP · 3T</span>
+              </div>
+              <p class="aug-body">전투 보상 골드 <u>+25%</u> · Shop 가격 <em>+5%</em>.</p>
+              <div class="aug-foot">
+                <span class="bias flex">FLEX</span>
+                <span class="aug-bucket">ECONOMY</span>
+              </div>
+            </div>
+
+            <!-- Synergy linked · perm · mystic -->
+            <div class="aug bk-syn fam-mystic">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <div class="band"></div>
+              <div class="aug-head">
+                <span class="aug-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 2 L11 7 L8 14 L5 7 Z"/><circle cx="8" cy="8" r="1.5"/></svg>
+                </span>
+                <div class="aug-name">달의 결속<span class="en">LUNAR BOND</span></div>
+                <span class="aug-perm">PERM</span>
+              </div>
+              <p class="aug-body"><b>Mystic</b> 2명 이상일 때 마법 피해 <u>+20%</u>.</p>
+              <div class="aug-foot">
+                <span class="bias flex">FLEX</span>
+                <span class="aug-bucket">SYNERGY</span>
+              </div>
+            </div>
+
+            <!-- Wildcard risk -->
+            <div class="aug bk-wild">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <div class="band"></div>
+              <div class="aug-head">
+                <span class="aug-icon">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 2 L14 13 L2 13 Z"/><path d="M8 6 L8 9.5 M8 11 L8.01 11"/></svg>
+                </span>
+                <div class="aug-name">광기의 도박<span class="en">MAD GAMBIT</span></div>
+                <span class="aug-temp">TEMP · 2T</span>
+              </div>
+              <p class="aug-body">치명타 확률 <u>+40%</u> · 동료 1명 <em>HP -25%</em>.</p>
+              <div class="aug-foot">
+                <span class="bias wild">WILD-ECON</span>
+                <span class="aug-bucket">WILDCARD</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row-cap" style="margin-top:18px;"><b>SYNERGY · FAMILY VARIANTS</b><span class="ko">시너지 버킷 — family tint 변형</span></div>
+          <div class="flex-row">
+            <div class="aug bk-syn fam-striker">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <div class="band"></div>
+              <div class="aug-head">
+                <span class="aug-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 13 L13 3 M9 3 L13 3 L13 7"/></svg></span>
+                <div class="aug-name">선혈의 파동<span class="en">SCARLET PULSE</span></div>
+                <span class="aug-perm">PERM</span>
+              </div>
+              <p class="aug-body"><b>Striker</b> 처치 시 다음 공격 <u>+50%</u>.</p>
+              <div class="aug-foot">
+                <span class="bias flex">FLEX</span>
+                <span class="aug-bucket">STRIKER</span>
+              </div>
+            </div>
+            <div class="aug bk-syn fam-vanguard">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <div class="band"></div>
+              <div class="aug-head">
+                <span class="aug-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2 L13 4 L13 8 Q 13 12 8 14 Q 3 12 3 8 L3 4 Z"/></svg></span>
+                <div class="aug-name">방패벽<span class="en">SHIELDWALL</span></div>
+                <span class="aug-perm">PERM</span>
+              </div>
+              <p class="aug-body"><b>Vanguard</b> 인접 시 방어 <u>+10%</u> 공유.</p>
+              <div class="aug-foot">
+                <span class="bias on">ON-BOARD</span>
+                <span class="aug-bucket">VANGUARD</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- bias detail -->
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">01-B · BIAS TAG</div>
+            <h3 class="cell-title">Three Biases <span class="ko">/ 편향 태그</span></h3>
+          </div>
+          <span class="cell-meta">3 types</span>
+        </div>
+        <p class="cell-desc">
+          <b>onBoard</b>는 현 출격 멤버에 직결, <b>flex</b>는 범용 효과,
+          <b>wildcardEcon</b>는 risk + reward 동시 동반.
+        </p>
+        <div class="cell-stage" style="display:flex; flex-direction:column; gap:18px; padding:24px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span class="bias on">ON-BOARD</span>
+            <div style="font-family:var(--f-ko); font-size:11px; color:var(--ink-2); flex:1; line-height:1.5;">
+              <b style="color:var(--state-pos);">출격 보드</b>에 영향 — formation·positioning 핵심
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span class="bias flex">FLEX</span>
+            <div style="font-family:var(--f-ko); font-size:11px; color:var(--ink-2); flex:1; line-height:1.5;">
+              <b style="color:var(--gold-200);">범용</b> — 어느 빌드에도 들어가는 안정형
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span class="bias wild">WILD-ECON</span>
+            <div style="font-family:var(--f-ko); font-size:11px; color:var(--ink-2); flex:1; line-height:1.5;">
+              <b style="color:var(--bk-wild);">고위험·고보상</b> — 자원 swap 또는 손실 동반
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== 02 · SYNERGY BADGE ============== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Synergy Badge</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">race 2/4 · class 2/3 · breakpoint absorbed</span>
+    </div>
+
+    <div class="cells" style="grid-template-columns:1fr 1fr;">
+
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">02-A · RACE — 2/4</div>
+            <h3 class="cell-title">Race Synergy <span class="ko">/ 종족 시너지</span></h3>
+          </div>
+          <span class="cell-meta"><span class="atom-tag"><b>cites</b> Breakpoint bar</span></span>
+        </div>
+        <p class="cell-desc">
+          종족은 2 / 4명 두 단계 — 2명 t1 활성, 4명 t2 발화.
+          breakpoint marker (diamond tick split)가 흡수되어 single molecule.
+        </p>
+        <div class="cell-stage" style="display:flex; flex-direction:column; gap:14px; padding:18px;">
+
+          <!-- inactive -->
+          <div class="syn inactive">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="syn-head">
+              <span class="syn-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12 L7 3 L12 12 Z M5 12 L7 8 L9 12"/></svg></span>
+              <span class="syn-name">BEASTKIN<span class="ko">수인</span></span>
+              <span class="syn-tag race">RACE</span>
+            </div>
+            <div class="syn-bar">
+              <div class="fill" style="width:18%;"></div>
+              <div class="bp" style="left:50%;"><i></i></div>
+              <div class="bp" style="left:100%;"><i></i></div>
+            </div>
+            <div class="syn-meta">
+              <span class="syn-tier">— INACTIVE</span>
+              <span class="syn-count"><b>1</b> / 2 / 4</span>
+            </div>
+          </div>
+
+          <!-- t1 active -->
+          <div class="syn t1 fam-vanguard">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="syn-head">
+              <span class="syn-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="5" r="2.5"/><path d="M2 13 Q 7 9 12 13"/></svg></span>
+              <span class="syn-name">HUMAN<span class="ko">인간</span></span>
+              <span class="syn-tag race">RACE</span>
+            </div>
+            <div class="syn-bar">
+              <div class="fill" style="width:55%;"></div>
+              <div class="bp active" style="left:50%;"><i></i></div>
+              <div class="bp" style="left:100%;"><i></i></div>
+            </div>
+            <div class="syn-meta">
+              <span class="syn-tier"><b class="t1">T1 · ACTIVE</b> · +12% ATK</span>
+              <span class="syn-count"><b>2</b> / 2 / 4</span>
+            </div>
+          </div>
+
+          <!-- t2 active -->
+          <div class="syn t2 fam-mystic">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="syn-head">
+              <span class="syn-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 1 L9 5 L13 5 L10 8 L11 12 L7 10 L3 12 L4 8 L1 5 L5 5 Z"/></svg></span>
+              <span class="syn-name">FAE<span class="ko">요정</span></span>
+              <span class="syn-tag race">RACE</span>
+            </div>
+            <div class="syn-bar">
+              <div class="fill" style="width:100%;"></div>
+              <div class="bp active" style="left:50%;"><i></i></div>
+              <div class="bp active" style="left:100%;"><i></i></div>
+            </div>
+            <div class="syn-meta">
+              <span class="syn-tier"><b class="t2">T2 · IGNITED</b> · 마법 +30% · 회복 +1</span>
+              <span class="syn-count"><b>4</b> / 2 / 4</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="cell-head">
+          <div>
+            <div class="cell-num">02-B · CLASS — 2/3</div>
+            <h3 class="cell-title">Class Synergy <span class="ko">/ 직업 시너지</span></h3>
+          </div>
+          <span class="cell-meta">family tint border</span>
+        </div>
+        <p class="cell-desc">
+          직업은 2 / 3명 — 더 빠른 활성. family color가 frame 전체에 옅게 퍼져 정체성 강화.
+        </p>
+        <div class="cell-stage" style="display:flex; flex-direction:column; gap:14px; padding:18px;">
+
+          <div class="syn t1 fam-striker">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="syn-head">
+              <span class="syn-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12 L12 2 M9 2 L12 2 L12 5"/></svg></span>
+              <span class="syn-name">STRIKER<span class="ko">스트라이커</span></span>
+              <span class="syn-tag cls">CLASS</span>
+            </div>
+            <div class="syn-bar">
+              <div class="fill" style="width:67%;"></div>
+              <div class="bp active" style="left:66.66%;"><i></i></div>
+              <div class="bp" style="left:100%;"><i></i></div>
+            </div>
+            <div class="syn-meta">
+              <span class="syn-tier"><b class="t1">T1</b> · 치명타 +15%</span>
+              <span class="syn-count"><b>2</b> / 2 / 3</span>
+            </div>
+          </div>
+
+          <div class="syn t2 fam-vanguard">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="syn-head">
+              <span class="syn-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 1 L12 3 L12 7 Q 12 11 7 13 Q 2 11 2 7 L2 3 Z"/></svg></span>
+              <span class="syn-name">VANGUARD<span class="ko">선봉</span></span>
+              <span class="syn-tag cls">CLASS</span>
+            </div>
+            <div class="syn-bar">
+              <div class="fill" style="width:100%;"></div>
+              <div class="bp active" style="left:66.66%;"><i></i></div>
+              <div class="bp active" style="left:100%;"><i></i></div>
+            </div>
+            <div class="syn-meta">
+              <span class="syn-tier"><b class="t2">T2 · IGNITED</b> · 모든 아군 도발 면역</span>
+              <span class="syn-count"><b>3</b> / 2 / 3</span>
+            </div>
+          </div>
+
+          <div class="syn inactive">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="syn-head">
+              <span class="syn-ico"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 11 L7 4 L11 11 M7 4 L7 1"/></svg></span>
+              <span class="syn-name">RANGER<span class="ko">레인저</span></span>
+              <span class="syn-tag cls" style="--syn-c:var(--fam-ranger);">CLASS</span>
+            </div>
+            <div class="syn-bar">
+              <div class="fill" style="width:0%;"></div>
+              <div class="bp" style="left:66.66%;"><i></i></div>
+              <div class="bp" style="left:100%;"><i></i></div>
+            </div>
+            <div class="syn-meta">
+              <span class="syn-tier">— INACTIVE</span>
+              <span class="syn-count"><b>0</b> / 2 / 3</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== 03 · ITEM SLOT ============== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Item Slot</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">equip / drop / compare · sm · md · lg · jewel duotone</span>
+    </div>
+
+    <div class="cell">
+      <div class="cell-head">
+        <div>
+          <div class="cell-num">03 · MATRIX</div>
+          <h3 class="cell-title">3 Variants × 3 Sizes <span class="ko">/ 변형 × 크기</span></h3>
+        </div>
+        <span class="cell-meta">
+          <span class="atom-tag"><b>cites</b> Tag chip</span>
+          &nbsp;<span class="atom-tag"><b>cites</b> Tooltip rich</span>
+        </span>
+      </div>
+      <p class="cell-desc">
+        rarity border = jewel duotone (rare sapphire / epic amethyst→flame).
+        affix line은 implicit (gold) · damage (safe) · curse (danger) 순서.
+      </p>
+
+      <div class="cell-stage">
+        <div class="row-cap"><b>EQUIP · 3 SIZES</b><span class="ko">장착됨 — 크기 비교</span></div>
+        <div class="flex-row" style="align-items:flex-end;">
+
+          <div class="itemslot sm r-rare">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="is-art">
+              <span class="is-rar">R</span>
+              <svg class="glyph" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M20 4 L25 14 L33 16 L27 22 L29 32 L20 28 L11 32 L13 22 L7 16 L15 14 Z"/></svg>
+            </div>
+            <div class="is-body">
+              <div class="is-name">은빛 부적<span class="en">SILVER WARD</span></div>
+              <div class="is-affixes">
+                <div class="is-aff"><span>+24 <span class="ko">방어</span></span><b>DEF</b></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="itemslot r-rare">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="is-art">
+              <span class="is-rar">RARE</span>
+              <svg class="glyph" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 32 L32 8 M28 8 L32 8 L32 12"/><path d="M12 28 L8 32 L8 28 Z"/></svg>
+            </div>
+            <div class="is-body">
+              <div class="is-name">월광 단검<span class="en">MOONLIT DIRK</span></div>
+              <div class="is-affixes">
+                <div class="is-aff implicit"><span>+12 <span class="ko">공격</span></span><b>ATK</b></div>
+                <div class="is-aff"><span>+18% <span class="ko">치명</span></span><b>CRIT</b></div>
+                <div class="is-aff"><span>2턴 <span class="ko">출혈</span></span><b>BLEED</b></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="itemslot lg r-epic">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="is-art">
+              <span class="is-rar">EPIC</span>
+              <svg class="glyph" viewBox="0 0 54 54" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                <path d="M27 4 L34 18 L48 22 L37 32 L40 48 L27 40 L14 48 L17 32 L6 22 L20 18 Z"/>
+                <circle cx="27" cy="26" r="4"/>
+              </svg>
+            </div>
+            <div class="is-body">
+              <div class="is-name">파멸의 왕관<span class="en">RUIN'S DIADEM</span></div>
+              <div class="is-affixes">
+                <div class="is-aff implicit"><span>+45 <span class="ko">공격</span></span><b>ATK</b></div>
+                <div class="is-aff"><span>+28% <span class="ko">마법 피해</span></span><b>MAG</b></div>
+                <div class="is-aff"><span>+1 <span class="ko">행동권</span></span><b>HASTE</b></div>
+                <div class="is-aff"><em>HP −15%</em><b>CURSE</b></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row-cap" style="margin-top:18px;"><b>DROP · 신규 획득</b><span class="ko">드롭 — 가장자리 펄스</span></div>
+        <div class="flex-row">
+          <div class="itemslot drop r-epic">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <span class="band-cap">NEW</span>
+            <div class="is-art">
+              <span class="is-rar">EPIC</span>
+              <svg class="glyph" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="20" cy="20" r="14"/><path d="M20 8 L20 32 M8 20 L32 20"/></svg>
+            </div>
+            <div class="is-body">
+              <div class="is-name">새벽의 인장<span class="en">DAWN SIGIL</span></div>
+              <div class="is-affixes">
+                <div class="is-aff"><span>+30 <span class="ko">마법</span></span><b>MAG</b></div>
+                <div class="is-aff"><span>+2 <span class="ko">정신</span></span><b>WIL</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="itemslot drop r-rare">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <span class="band-cap">NEW</span>
+            <div class="is-art">
+              <span class="is-rar">RARE</span>
+              <svg class="glyph" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 30 L20 6 L32 30 Z"/><path d="M20 14 L20 24"/></svg>
+            </div>
+            <div class="is-body">
+              <div class="is-name">강철 흉갑<span class="en">IRONPLATE</span></div>
+              <div class="is-affixes">
+                <div class="is-aff"><span>+38 <span class="ko">방어</span></span><b>DEF</b></div>
+                <div class="is-aff"><span>+15% <span class="ko">방벽</span></span><b>WARD</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row-cap" style="margin-top:18px;"><b>COMPARE</b><span class="ko">비교 — 장착 vs 획득</span></div>
+        <div class="itemslot compare">
+          <div class="itemslot r-rare" style="position:relative;">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="is-art">
+              <span class="is-rar">RARE · EQUIPPED</span>
+              <svg class="glyph" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 32 L32 8 M28 8 L32 8 L32 12"/></svg>
+            </div>
+            <div class="is-body">
+              <div class="is-name">월광 단검</div>
+              <div class="is-affixes">
+                <div class="is-aff"><span>+12 ATK</span><b>+12</b></div>
+                <div class="is-aff"><span>+18% CRIT</span><b>+18%</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 7 L12 7 M8 3 L12 7 L8 11"/></svg>
+          </div>
+          <div class="itemslot r-epic" style="position:relative;">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="is-art">
+              <span class="is-rar">EPIC · NEW</span>
+              <svg class="glyph" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 32 L32 8 M28 8 L32 8 L32 12"/><circle cx="14" cy="26" r="3"/></svg>
+            </div>
+            <div class="is-body">
+              <div class="is-name">파멸의 단검</div>
+              <div class="is-affixes">
+                <div class="is-aff"><span>+22 ATK</span><b style="color:var(--state-safe);">+10</b></div>
+                <div class="is-aff"><span>+24% CRIT</span><b style="color:var(--state-safe);">+6%</b></div>
+                <div class="is-aff"><em>HP −10%</em><em>−10%</em></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== 04 · STAT ROW + 05 · TRAIT/QUIRK side-by-side ============= -->
+  <section>
+    <div class="cells" style="grid-template-columns:1fr 1fr;">
+
+      <!-- 04 · STAT ROW -->
+      <div>
+        <div class="section-head">
+          <span class="section-num">04</span>
+          <h2 class="section-title">Stat Row</h2>
+          <div class="section-rule"></div>
+          <span class="section-title-ko">flat · withDelta</span>
+        </div>
+        <div class="cell">
+          <div class="cell-head">
+            <div>
+              <div class="cell-num">04 · TWO MODES</div>
+              <h3 class="cell-title">Label + Value (+ Delta) <span class="ko">/ 두 모드</span></h3>
+            </div>
+            <span class="cell-meta">vellum · mono</span>
+          </div>
+          <p class="cell-desc">
+            equip / aug 적용 시 <b>withDelta</b>로 변화량 노출. up/down/flat arrow + 색상.
+          </p>
+          <div class="cell-stage" style="padding:18px; min-height:0;">
+            <div class="row-cap"><b>FLAT</b><span class="ko">단순 표시</span></div>
+            <div class="statlist" style="background:rgba(0,0,0,.25); border:1px solid var(--line-2); padding:6px 14px; margin-bottom:14px;">
+              <div class="stat-row">
+                <span class="stat-lbl">공격력 <span class="en">ATK</span></span>
+                <span class="stat-val">248</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-lbl">방어력 <span class="en">DEF</span></span>
+                <span class="stat-val">112</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-lbl">치명타 <span class="en">CRIT</span></span>
+                <span class="stat-val">28%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-lbl">속도 <span class="en">SPD</span></span>
+                <span class="stat-val">94</span>
+              </div>
+            </div>
+
+            <div class="row-cap"><b>WITH DELTA</b><span class="ko">변화량 포함</span></div>
+            <div class="statlist" style="background:rgba(0,0,0,.25); border:1px solid var(--line-2); padding:6px 14px;">
+              <div class="stat-row">
+                <span class="stat-lbl">공격력 <span class="en">ATK</span></span>
+                <span class="stat-val">270</span>
+                <span class="stat-delta up">
+                  <svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 7 L4.5 2 M2 4 L4.5 2 L7 4"/></svg>
+                  +22
+                </span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-lbl">방어력 <span class="en">DEF</span></span>
+                <span class="stat-val">98</span>
+                <span class="stat-delta down">
+                  <svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 2 L4.5 7 M2 5 L4.5 7 L7 5"/></svg>
+                  −14
+                </span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-lbl">치명타 <span class="en">CRIT</span></span>
+                <span class="stat-val">42%</span>
+                <span class="stat-delta up">
+                  <svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 7 L4.5 2 M2 4 L4.5 2 L7 4"/></svg>
+                  +14%
+                </span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-lbl">속도 <span class="en">SPD</span></span>
+                <span class="stat-val">94</span>
+                <span class="stat-delta flat">— ±0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 · TRAIT / QUIRK -->
+      <div>
+        <div class="section-head">
+          <span class="section-num">05</span>
+          <h2 class="section-title">Trait / Quirk</h2>
+          <div class="section-rule"></div>
+          <span class="section-title-ko">+ trait · − quirk · inline · block</span>
+        </div>
+        <div class="cell">
+          <div class="cell-head">
+            <div>
+              <div class="cell-num">05 · POSITIVE / NEGATIVE</div>
+              <h3 class="cell-title">Trait + · Quirk − <span class="ko">/ 특성·결점</span></h3>
+            </div>
+            <span class="cell-meta">sapphire / wine</span>
+          </div>
+          <p class="cell-desc">
+            <b>trait</b> = 유닛 고유 강점 (sapphire +), <b>quirk</b> = 단점 (wine −).
+            block은 본문 포함, inline은 칩 형태로 다른 패널에 삽입 가능.
+          </p>
+
+          <div class="cell-stage" style="padding:18px; min-height:0;">
+            <div class="row-cap"><b>BLOCK</b><span class="ko">설명 포함</span></div>
+            <div class="tq-row" style="margin-bottom:14px;">
+              <div class="tq pos">
+                <span class="tq-sign">+</span>
+                <div class="tq-body">
+                  <div class="tq-name">강철 의지 <span class="en">IRON WILL</span></div>
+                  <p class="tq-desc">정신 공격 <span class="pos">면역</span> · 도발에 걸리지 않음.</p>
+                </div>
+              </div>
+              <div class="tq pos">
+                <span class="tq-sign">+</span>
+                <div class="tq-body">
+                  <div class="tq-name">민첩한 발 <span class="en">FLEET FOOT</span></div>
+                  <p class="tq-desc">속도 <b>+8</b> · 후열에서 회피 <span class="pos">+12%</span>.</p>
+                </div>
+              </div>
+              <div class="tq neg">
+                <span class="tq-sign">−</span>
+                <div class="tq-body">
+                  <div class="tq-name">옛 상처 <span class="en">OLD WOUND</span></div>
+                  <p class="tq-desc">전투 시작 시 HP <span class="neg">−10%</span> · 피격 후 1턴 <b>회복 불가</b>.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="row-cap"><b>INLINE</b><span class="ko">칩 형태 — 다른 패널에 삽입</span></div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <span class="tq pos inline">
+                <span class="tq-sign">+</span>
+                <span class="tq-name">강철 의지</span>
+              </span>
+              <span class="tq pos inline">
+                <span class="tq-sign">+</span>
+                <span class="tq-name">민첩한 발</span>
+              </span>
+              <span class="tq neg inline">
+                <span class="tq-sign">−</span>
+                <span class="tq-name">옛 상처</span>
+              </span>
+              <span class="tq neg inline">
+                <span class="tq-sign">−</span>
+                <span class="tq-name">고집</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== 06 · ACTION ROW ============== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Action Row</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">character sheet — 5 ~ 7 actions</span>
+    </div>
+
+    <div class="cell">
+      <div class="cell-head">
+        <div>
+          <div class="cell-num">06 · ACTION CLUSTER</div>
+          <h3 class="cell-title">Cycle · Refit · Retrain · Passive · Permanent <span class="ko">/ 행동 묶음</span></h3>
+        </div>
+        <span class="cell-meta"><span class="atom-tag"><b>cites</b> Button</span></span>
+      </div>
+      <p class="cell-desc">
+        character sheet 하단에 가로로 깔리는 action cluster. 각 action은 name (en + ko) + cost + hover 시 vine flourish.
+        disabled action은 명시적으로 어둡게 + reason hint.
+      </p>
+
+      <div class="cell-stage" style="padding:24px; min-height:0;">
+        <div class="row-cap"><b>FULL · ALL ENABLED</b><span class="ko">모든 액션 가능</span></div>
+        <div class="actions" style="margin-bottom:18px;">
+          <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+
+          <button class="act-btn">
+            <span class="act-name">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1.5 5.5 Q 5.5 1 9.5 5.5 Q 5.5 10 1.5 5.5"/><path d="M7.5 3 L9.5 5.5 L7.5 8"/></svg>
+              CYCLE
+            </span>
+            <span class="act-ko">영웅 교체</span>
+            <span class="act-cost"><span class="free">FREE</span></span>
+            <svg class="act-vine" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 7 Q 7 2 12 7"/><path d="M7 4 L8 2 L9 4 L8 6 Z" fill="currentColor"/></svg>
+          </button>
+
+          <button class="act-btn">
+            <span class="act-name">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="2"/><path d="M5.5 1 L5.5 2.5 M5.5 8.5 L5.5 10 M1 5.5 L2.5 5.5 M8.5 5.5 L10 5.5 M2.4 2.4 L3.4 3.4 M7.6 7.6 L8.6 8.6"/></svg>
+              REFIT
+            </span>
+            <span class="act-ko">장비 재정비</span>
+            <span class="act-cost"><b>2 G</b></span>
+            <svg class="act-vine" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 7 Q 7 2 12 7"/><path d="M7 4 L8 2 L9 4 L8 6 Z" fill="currentColor"/></svg>
+          </button>
+
+          <button class="act-btn">
+            <span class="act-name">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1 5.5 L5.5 1 L10 5.5 L5.5 10 Z"/><path d="M3.5 5.5 L7.5 5.5"/></svg>
+              RETRAIN
+            </span>
+            <span class="act-ko">재훈련</span>
+            <span class="act-cost"><b>4 G</b> + <b style="color:var(--rare-rare-glow);">10 ECHO</b></span>
+            <svg class="act-vine" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 7 Q 7 2 12 7"/><path d="M7 4 L8 2 L9 4 L8 6 Z" fill="currentColor"/></svg>
+          </button>
+
+          <button class="act-btn">
+            <span class="act-name">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5.5 1 L9 3 L9 6 Q 9 9 5.5 10 Q 2 9 2 6 L2 3 Z"/></svg>
+              PASSIVE
+            </span>
+            <span class="act-ko">패시브 보기</span>
+            <span class="act-cost">INFO</span>
+            <svg class="act-vine" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 7 Q 7 2 12 7"/><path d="M7 4 L8 2 L9 4 L8 6 Z" fill="currentColor"/></svg>
+          </button>
+
+          <button class="act-btn">
+            <span class="act-name">
+              <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5.5 1 L7 4 L10 4.5 L8 7 L8.5 10 L5.5 8.5 L2.5 10 L3 7 L1 4.5 L4 4 Z"/></svg>
+              PERMANENT
+            </span>
+            <span class="act-ko">영구 강화</span>
+            <span class="act-cost"><b style="color:var(--rare-epic);">25 SOUL</b></span>
+            <svg class="act-vine" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 7 Q 7 2 12 7"/><path d="M7 4 L8 2 L9 4 L8 6 Z" fill="currentColor"/></svg>
+          </button>
+        </div>
+
+        <div class="row-cap"><b>WITH DISABLED</b><span class="ko">조건 미충족 액션 포함</span></div>
+        <div class="actions">
+          <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+
+          <button class="act-btn">
+            <span class="act-name"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1.5 5.5 Q 5.5 1 9.5 5.5 Q 5.5 10 1.5 5.5"/></svg>CYCLE</span>
+            <span class="act-ko">영웅 교체</span>
+            <span class="act-cost"><span class="free">FREE</span></span>
+          </button>
+
+          <button class="act-btn" disabled>
+            <span class="act-name"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="5.5" cy="5.5" r="2"/></svg>REFIT</span>
+            <span class="act-ko">장비 재정비</span>
+            <span class="act-cost" style="color:var(--state-danger);">골드 부족 · 2/0</span>
+          </button>
+
+          <button class="act-btn" disabled>
+            <span class="act-name"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 5.5 L5.5 1 L10 5.5 L5.5 10 Z"/></svg>RETRAIN</span>
+            <span class="act-ko">재훈련</span>
+            <span class="act-cost" style="color:var(--ink-3);">전투 중 잠김</span>
+          </button>
+
+          <button class="act-btn">
+            <span class="act-name"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5.5 1 L9 3 L9 6 Q 9 9 5.5 10 Q 2 9 2 6 L2 3 Z"/></svg>PASSIVE</span>
+            <span class="act-ko">패시브 보기</span>
+            <span class="act-cost">INFO</span>
+          </button>
+
+          <button class="act-btn" disabled>
+            <span class="act-name"><svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5.5 1 L7 4 L10 4.5 L8 7 L8.5 10 L5.5 8.5 L2.5 10 L3 7 L1 4.5 L4 4 Z"/></svg>PERMANENT</span>
+            <span class="act-ko">영구 강화</span>
+            <span class="act-cost" style="color:var(--ink-3);">CH-3 잠금</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== 07 · COST PREVIEW + 08 · LOCK STATE ============= -->
+  <section>
+    <div class="cells" style="grid-template-columns:1fr 1.2fr;">
+
+      <!-- 07 · COST PREVIEW -->
+      <div>
+        <div class="section-head">
+          <span class="section-num">07</span>
+          <h2 class="section-title">Cost Preview</h2>
+          <div class="section-rule"></div>
+          <span class="section-title-ko">single · diff (before → after)</span>
+        </div>
+        <div class="cell">
+          <div class="cell-head">
+            <div>
+              <div class="cell-num">07 · TWO MODES</div>
+              <h3 class="cell-title">Cost Only · Diff <span class="ko">/ 비용 미리보기</span></h3>
+            </div>
+            <span class="cell-meta"><span class="atom-tag"><b>cites</b> Cost chip</span></span>
+          </div>
+          <p class="cell-desc">
+            <b>single</b>은 액션 비용만, <b>diff</b>는 변경 전 → 후 자원 변화. 부족 시 chip이 danger로 깜박.
+          </p>
+
+          <div class="cell-stage" style="padding:24px; min-height:0; display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+
+            <div class="row-cap" style="margin:0;"><b>SINGLE</b><span class="ko">비용만</span></div>
+            <div class="cost-prev">
+              <span class="cap">COST</span>
+              <span class="cchip gold">
+                <svg viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="3.5"/></svg>
+                4 <span class="lbl">G</span>
+              </span>
+            </div>
+            <div class="cost-prev">
+              <span class="cap">COST</span>
+              <span class="cchip gold">
+                <svg viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="3.5"/></svg>
+                4 <span class="lbl">G</span>
+              </span>
+              <span class="cchip echo">
+                <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5.5 1 L9.5 5.5 L5.5 10 L1.5 5.5 Z"/></svg>
+                10 <span class="lbl">ECHO</span>
+              </span>
+            </div>
+            <div class="cost-prev">
+              <span class="cap">COST</span>
+              <span class="cchip free">
+                <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 5.5 L5 7.5 L8.5 4"/></svg>
+                FREE
+              </span>
+            </div>
+
+            <div class="row-cap" style="margin:14px 0 0;"><b>DIFF</b><span class="ko">변경 전 → 후</span></div>
+            <div class="cost-prev">
+              <span class="cap">GOLD</span>
+              <span class="cchip have gold">
+                <svg viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="3.5"/></svg>
+                12
+              </span>
+              <span class="cost-arrow">
+                <svg viewBox="0 0 14 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4 L13 4 M9 1 L13 4 L9 7"/></svg>
+              </span>
+              <span class="cchip gold">
+                <svg viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="3.5"/></svg>
+                8 <span class="lbl">−4</span>
+              </span>
+            </div>
+            <div class="cost-prev">
+              <span class="cap">ECHO</span>
+              <span class="cchip have echo">
+                <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5.5 1 L9.5 5.5 L5.5 10 L1.5 5.5 Z"/></svg>
+                88
+              </span>
+              <span class="cost-arrow">
+                <svg viewBox="0 0 14 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4 L13 4 M9 1 L13 4 L9 7"/></svg>
+              </span>
+              <span class="cchip echo">
+                <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5.5 1 L9.5 5.5 L5.5 10 L1.5 5.5 Z"/></svg>
+                53 <span class="lbl">−35</span>
+              </span>
+            </div>
+            <div class="cost-prev" style="border-color:var(--state-danger);">
+              <span class="cap" style="color:var(--state-danger);">SHORT</span>
+              <span class="cchip have gold"><svg viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="3.5"/></svg>2</span>
+              <span class="cost-arrow"><svg viewBox="0 0 14 8" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 4 L13 4 M9 1 L13 4 L9 7"/></svg></span>
+              <span class="cchip" style="--cc-c:var(--state-danger); color:var(--state-danger); animation:dangerPulse 1.4s ease-in-out infinite;">
+                <svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="5.5" cy="5.5" r="3.5"/><path d="M3.5 3.5 L7.5 7.5 M7.5 3.5 L3.5 7.5"/></svg>
+                −2 <span class="lbl">부족</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 08 · LOCK STATE -->
+      <div>
+        <div class="section-head">
+          <span class="section-num">08</span>
+          <h2 class="section-title">Lock State</h2>
+          <div class="section-rule"></div>
+          <span class="section-title-ko">chapter · permanent · KO · cooldown</span>
+        </div>
+        <div class="cell">
+          <div class="cell-head">
+            <div>
+              <div class="cell-num">08 · 4 OVERLAYS</div>
+              <h3 class="cell-title">Ash Overlay + Hint <span class="ko">/ 잠금 오버레이</span></h3>
+            </div>
+            <span class="cell-meta">applies on card or panel</span>
+          </div>
+          <p class="cell-desc">
+            카드/패널 위에 ash overlay. lock icon + tag (en) + ko 메시지 + unlock hint (mono).
+            chapter (회색) · permanent (gold) · KO (gray skull) · cooldown (sapphire) 4종.
+          </p>
+
+          <div class="cell-stage" style="padding:24px; display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; align-items:start; min-height:0;">
+
+            <!-- chapter -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div class="lockcard">
+                <div class="ribb"></div>
+                <svg class="silh" viewBox="0 0 140 170" fill="none">
+                  <path d="M10 170 L10 134 Q10 110 30 102 L42 96 Q52 92 58 78 Q60 70 60 64 Q60 56 70 56 Q80 56 80 64 Q80 70 82 78 Q88 92 98 96 L110 102 Q130 110 130 134 L130 170 Z" fill="#0e1830"/>
+                  <ellipse cx="70" cy="44" rx="14" ry="18" fill="#0e1830"/>
+                </svg>
+                <div class="nm">— LOCKED —</div>
+                <div class="lock-overlay chapter">
+                  <span class="lock-icon">
+                    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="4" y="8" width="10" height="8" rx="1"/><path d="M6 8 L6 5 Q 6 2 9 2 Q 12 2 12 5 L12 8"/></svg>
+                  </span>
+                  <span class="lock-tag">CHAPTER LOCK</span>
+                  <p class="lock-msg">챕터 2에서 해금</p>
+                  <p class="lock-hint">UNLOCK · <b>CH-2 CLEAR</b></p>
+                </div>
+              </div>
+              <div class="atom-tag"><b>CHAPTER</b> · 진행 잠금</div>
+            </div>
+
+            <!-- permanent -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div class="lockcard">
+                <div class="ribb"></div>
+                <svg class="silh" viewBox="0 0 140 170" fill="none">
+                  <path d="M10 170 L10 134 Q10 110 30 102 L42 96 Q52 92 58 78 Q60 70 60 64 Q60 56 70 56 Q80 56 80 64 Q80 70 82 78 Q88 92 98 96 L110 102 Q130 110 130 134 L130 170 Z" fill="#1c0e16"/>
+                  <ellipse cx="70" cy="44" rx="14" ry="18" fill="#1c0e16"/>
+                </svg>
+                <div class="nm">PERMA · 영구 보상</div>
+                <div class="lock-overlay permanent">
+                  <span class="lock-icon">
+                    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 1 L11 6 L16 6.5 L12 10 L13 15 L9 12.5 L5 15 L6 10 L2 6.5 L7 6 Z"/></svg>
+                  </span>
+                  <span class="lock-tag">PERMANENT</span>
+                  <p class="lock-msg">25 SOUL로 영구 해금</p>
+                  <p class="lock-hint">SOUL · <b>25 / 25</b></p>
+                </div>
+              </div>
+              <div class="atom-tag"><b>PERMANENT</b> · 영구 강화</div>
+            </div>
+
+            <!-- ko hero -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div class="lockcard" style="filter:grayscale(.85) brightness(.55);">
+                <div class="ribb" style="background:linear-gradient(to right, transparent, #4a4a55 30%, #6b6e85 50%, #4a4a55 70%, transparent);"></div>
+                <svg class="silh" viewBox="0 0 140 170" fill="none">
+                  <path d="M10 170 L10 134 Q10 110 30 102 L42 96 Q52 92 58 78 Q60 70 60 64 Q60 56 70 56 Q80 56 80 64 Q80 70 82 78 Q88 92 98 96 L110 102 Q130 110 130 134 L130 170 Z" fill="#1c0e2c"/>
+                  <ellipse cx="70" cy="44" rx="14" ry="18" fill="#1c0e2c"/>
+                </svg>
+                <div class="nm" style="color:var(--ink-3);">AYUMI</div>
+                <div class="lock-overlay ko">
+                  <span class="lock-icon">
+                    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 2 Q 3 2 3 8 Q 3 12 5 13 L5 16 L7 16 L7 14 L11 14 L11 16 L13 16 L13 13 Q 15 12 15 8 Q 15 2 9 2 Z"/><circle cx="6.5" cy="8" r="1" fill="currentColor"/><circle cx="11.5" cy="8" r="1" fill="currentColor"/></svg>
+                  </span>
+                  <span class="lock-tag">KO</span>
+                  <p class="lock-msg">전투불능 — 다음 라운드 회복</p>
+                  <p class="lock-hint">RECOVER · <b>NEXT ROUND</b></p>
+                </div>
+              </div>
+              <div class="atom-tag"><b>KO HERO</b> · 전투불능 영웅</div>
+            </div>
+
+            <!-- scout cooldown -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div class="lockcard">
+                <div class="ribb" style="background:linear-gradient(to right, transparent, var(--fam-vanguard) 30%, var(--fam-vanguard-glow) 50%, var(--fam-vanguard) 70%, transparent);"></div>
+                <svg class="silh" viewBox="0 0 140 170" fill="none">
+                  <path d="M10 170 L10 134 Q10 110 30 102 L42 96 Q52 92 58 78 Q60 70 60 64 Q60 56 70 56 Q80 56 80 64 Q80 70 82 78 Q88 92 98 96 L110 102 Q130 110 130 134 L130 170 Z" fill="#0e1830"/>
+                  <ellipse cx="70" cy="44" rx="14" ry="18" fill="#0e1830"/>
+                </svg>
+                <div class="nm">SCOUT POOL</div>
+                <div class="lock-overlay cooldown">
+                  <span class="lock-icon">
+                    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="6"/><path d="M9 5 L9 9 L12 11"/></svg>
+                  </span>
+                  <span class="lock-tag">COOLDOWN</span>
+                  <p class="lock-msg">정찰 재사용 대기</p>
+                  <p class="lock-hint">NEXT · <b>2 ROUNDS</b></p>
+                </div>
+              </div>
+              <div class="atom-tag"><b>COOLDOWN</b> · 정찰 대기</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============== MOBILE COMPOSITE ============== -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">M</span>
+      <h2 class="section-title">Mobile · Composite</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">8 molecules in real context</span>
+    </div>
+
+    <div class="cell">
+      <div class="cell-head">
+        <div>
+          <div class="cell-num">M · CHARACTER SHEET</div>
+          <h3 class="cell-title">Mobile Real-Use <span class="ko">/ 모바일 실배치</span></h3>
+        </div>
+        <span class="cell-meta">all 8 molecules in single column</span>
+      </div>
+      <p class="cell-desc">
+        모바일 character sheet 한 화면에 8개 molecule이 모두 들어갔을 때 — stat row, trait, augment, synergy, item, action, cost, lock 모두 인용.
+      </p>
+
+      <div class="cell-stage" style="padding:24px; min-height:0;">
+        <div style="display:flex; gap:32px; align-items:flex-start; flex-wrap:wrap;">
+          <div class="mobile-wrap">
+            <div class="mobile-inner">
+              <div class="mobile-status">
+                <span>9:41</span>
+                <span style="display:inline-flex; gap:8px; align-items:center;">
+                  <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor"><rect x="0" y="6" width="2" height="4"/><rect x="3" y="4" width="2" height="6"/><rect x="6" y="2" width="2" height="8"/><rect x="9" y="0" width="2" height="10"/></svg>
+                </span>
+              </div>
+              <div class="mobile-bg"></div>
+
+              <div style="position:relative; padding:14px; display:flex; flex-direction:column; gap:14px;">
+
+                <!-- name strip -->
+                <div style="display:flex; align-items:center; gap:10px; padding-bottom:10px; border-bottom:1px solid var(--gold-500); position:relative;">
+                  <div style="width:46px; height:46px; background:linear-gradient(180deg, var(--fam-striker), var(--fam-striker-deep)); border:1px solid var(--gold-500); position:relative;">
+                    <span style="position:absolute; inset:2px; border:1px solid rgba(245,214,138,.4);"></span>
+                  </div>
+                  <div>
+                    <div style="font-family:var(--f-en-display); font-size:13px; letter-spacing:.18em; color:var(--gold-200); font-weight:700; line-height:1;">KAEDE NOX</div>
+                    <div style="font-family:var(--f-ko); font-size:13px; color:var(--vellum); font-weight:800; margin-top:4px;">카에데 녹스</div>
+                    <div style="display:flex; gap:4px; margin-top:5px;">
+                      <span class="syn-tag race">HUMAN</span>
+                      <span class="syn-tag cls" style="--syn-c:var(--fam-striker); color:var(--fam-striker); border-color:var(--fam-striker);">STRIKER</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- traits inline -->
+                <div>
+                  <div class="row-cap" style="margin:0 0 6px;"><b>TRAITS</b><span class="ko">특성</span></div>
+                  <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                    <span class="tq pos inline"><span class="tq-sign">+</span><span class="tq-name">강철 의지</span></span>
+                    <span class="tq pos inline"><span class="tq-sign">+</span><span class="tq-name">민첩한 발</span></span>
+                    <span class="tq neg inline"><span class="tq-sign">−</span><span class="tq-name">옛 상처</span></span>
+                  </div>
+                </div>
+
+                <!-- stats -->
+                <div>
+                  <div class="row-cap" style="margin:0 0 6px;"><b>STATS</b><span class="ko">스탯 (with delta)</span></div>
+                  <div class="statlist" style="background:rgba(0,0,0,.3); border:1px solid var(--line-2); padding:4px 12px;">
+                    <div class="stat-row">
+                      <span class="stat-lbl">공격력 <span class="en">ATK</span></span>
+                      <span class="stat-val">270</span>
+                      <span class="stat-delta up"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4.5 7 L4.5 2 M2 4 L4.5 2 L7 4"/></svg>+22</span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="stat-lbl">치명타 <span class="en">CRIT</span></span>
+                      <span class="stat-val">42%</span>
+                      <span class="stat-delta up"><svg viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4.5 7 L4.5 2 M2 4 L4.5 2 L7 4"/></svg>+14%</span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="stat-lbl">속도 <span class="en">SPD</span></span>
+                      <span class="stat-val">94</span>
+                      <span class="stat-delta flat">— ±0</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- equipped item -->
+                <div>
+                  <div class="row-cap" style="margin:0 0 6px;"><b>EQUIPPED</b><span class="ko">장착 — sm size</span></div>
+                  <div style="display:flex; gap:8px;">
+                    <div class="itemslot sm r-rare">
+                      <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                      <div class="is-art">
+                        <span class="is-rar">R</span>
+                        <svg class="glyph" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 25 L25 5 M22 5 L25 5 L25 8"/></svg>
+                      </div>
+                      <div class="is-body">
+                        <div class="is-name">월광 단검</div>
+                        <div class="is-affixes">
+                          <div class="is-aff"><span>+12</span><b>ATK</b></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="itemslot sm r-epic">
+                      <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                      <div class="is-art">
+                        <span class="is-rar">E</span>
+                        <svg class="glyph" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 3 L19 12 L28 13 L21 19 L23 28 L15 23 L7 28 L9 19 L2 13 L11 12 Z"/></svg>
+                      </div>
+                      <div class="is-body">
+                        <div class="is-name">파멸의 왕관</div>
+                        <div class="is-affixes">
+                          <div class="is-aff"><span>+45</span><b>ATK</b></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- augment chips -->
+                <div>
+                  <div class="row-cap" style="margin:0 0 6px;"><b>AUGMENTS</b><span class="ko">증강</span></div>
+                  <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div class="aug bk-syn fam-striker" style="width:100%;">
+                      <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                      <div class="band"></div>
+                      <div class="aug-head">
+                        <span class="aug-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 13 L13 3"/></svg></span>
+                        <div class="aug-name" style="font-size:12px;">선혈의 파동<span class="en">SCARLET PULSE</span></div>
+                        <span class="aug-perm">PERM</span>
+                      </div>
+                    </div>
+                    <div class="aug bk-wild" style="width:100%;">
+                      <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                      <div class="band"></div>
+                      <div class="aug-head">
+                        <span class="aug-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2 L14 13 L2 13 Z"/><path d="M8 6 L8 9.5 M8 11 L8.01 11"/></svg></span>
+                        <div class="aug-name" style="font-size:12px;">광기의 도박<span class="en">MAD GAMBIT</span></div>
+                        <span class="aug-temp">TEMP · 2T</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- cost preview -->
+                <div>
+                  <div class="row-cap" style="margin:0 0 6px;"><b>NEXT ACTION COST</b><span class="ko">다음 행동 비용</span></div>
+                  <div class="cost-prev" style="width:100%;">
+                    <span class="cap">REFIT</span>
+                    <span class="cchip have gold"><svg viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="3.5"/></svg>12</span>
+                    <span class="cost-arrow"><svg viewBox="0 0 14 8" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 4 L13 4 M9 1 L13 4 L9 7"/></svg></span>
+                    <span class="cchip gold"><svg viewBox="0 0 11 11" fill="currentColor"><circle cx="5.5" cy="5.5" r="3.5"/></svg>10 <span class="lbl">−2</span></span>
+                  </div>
+                </div>
+
+                <!-- action row -->
+                <div>
+                  <div class="row-cap" style="margin:0 0 6px;"><b>ACTIONS</b><span class="ko">행동</span></div>
+                  <div class="actions" style="display:grid; grid-template-columns:1fr 1fr; gap:0;">
+                    <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                    <button class="act-btn" style="border-right:1px solid color-mix(in oklab, var(--gold-500) 60%, transparent); border-bottom:1px solid color-mix(in oklab, var(--gold-500) 60%, transparent);">
+                      <span class="act-name">CYCLE</span>
+                      <span class="act-ko">교체</span>
+                      <span class="act-cost"><span class="free">FREE</span></span>
+                    </button>
+                    <button class="act-btn" style="border-right:none; border-bottom:1px solid color-mix(in oklab, var(--gold-500) 60%, transparent);">
+                      <span class="act-name">REFIT</span>
+                      <span class="act-ko">재정비</span>
+                      <span class="act-cost"><b>2 G</b></span>
+                    </button>
+                    <button class="act-btn" style="border-right:1px solid color-mix(in oklab, var(--gold-500) 60%, transparent);">
+                      <span class="act-name">RETRAIN</span>
+                      <span class="act-ko">재훈련</span>
+                      <span class="act-cost"><b>4 G</b></span>
+                    </button>
+                    <button class="act-btn" style="border-right:none;" disabled>
+                      <span class="act-name">PERMANENT</span>
+                      <span class="act-ko">영구</span>
+                      <span class="act-cost" style="color:var(--ink-3);">CH-3 잠금</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div style="flex:1; min-width:280px; padding-top:24px; padding-left:8px; max-width:380px;">
+            <div class="row-cap" style="margin:0 0 12px;"><b>MOBILE NOTES</b><span class="ko">모바일 적응</span></div>
+            <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:14px;">
+              <li style="font-family:var(--f-ko); font-size:11.5px; color:var(--ink-2); line-height:1.5;">
+                <b style="color:var(--gold-200);">Aug chip</b> — width:100%, en + ko 동일 line height 유지
+              </li>
+              <li style="font-family:var(--f-ko); font-size:11.5px; color:var(--ink-2); line-height:1.5;">
+                <b style="color:var(--gold-200);">Item slot</b> — 2-col grid sm size, affix 1줄만 노출 (자세히는 tap)
+              </li>
+              <li style="font-family:var(--f-ko); font-size:11.5px; color:var(--ink-2); line-height:1.5;">
+                <b style="color:var(--gold-200);">Action row</b> — 5+ action은 2×n grid로 wrap, gold border 유지
+              </li>
+              <li style="font-family:var(--f-ko); font-size:11.5px; color:var(--ink-2); line-height:1.5;">
+                <b style="color:var(--gold-200);">Cost preview</b> — full width, before/after 한 줄 fit
+              </li>
+              <li style="font-family:var(--f-ko); font-size:11.5px; color:var(--ink-2); line-height:1.5;">
+                <b style="color:var(--gold-200);">Trait inline</b> — block 형태는 모바일에서 공간 차지 ↑, inline 권장
+              </li>
+              <li style="font-family:var(--f-ko); font-size:11.5px; color:var(--ink-2); line-height:1.5;">
+                <b style="color:var(--gold-200);">Lock overlay</b> — backdrop-filter 모바일 일부 미지원, fallback rgba dim
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-foot">
+    <div><b>SURVIVAL MANAGER</b> · MOLECULES BUNDLE 1 · INDIGO + WINE + GOLD</div>
+    <div>NEXT — Surface 2 (Battle Prep / Augment Pick) 또는 molecule 묶음 추가 (Battle HUD / Drop reveal)</div>
+  </footer>
+
+</main>
+
+</body>
+</html>

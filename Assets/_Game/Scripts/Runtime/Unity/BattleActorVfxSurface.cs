@@ -4,14 +4,31 @@ namespace SM.Unity;
 
 public sealed class BattleActorVfxSurface : MonoBehaviour
 {
+    [SerializeField] private BattleVfxCatalog catalog = null!;
+
+    private BattleVfxCatalog? _resolvedCatalog;
+    private readonly System.Collections.Generic.List<GameObject> _activeSpawnedVfx = new();
+
     public int TriggerCount { get; private set; }
     public BattlePresentationCueType LastCueType { get; private set; }
     public BattleActorSocketId LastSocketId { get; private set; }
     public Vector3 LastSpawnPosition { get; private set; }
+    public string LastSpawnedPrefabName { get; private set; } = string.Empty;
+    public int ActiveSpawnedVfxCount => _activeSpawnedVfx.Count;
+
+    public void ConfigureCatalog(BattleVfxCatalog configuredCatalog)
+    {
+        catalog = configuredCatalog;
+        _resolvedCatalog = null;
+    }
 
     public void ConsumeCue(BattlePresentationCue cue, BattleActorWrapper wrapper)
     {
-        if (!TryResolveSocket(cue.CueType, out var socketId))
+        var resolvedCatalog = ResolveCatalog();
+        BattleVfxCatalogEntry? entry = null;
+        var hasCatalogEntry = resolvedCatalog != null && resolvedCatalog.TryResolve(cue.CueType, out entry);
+        var socketId = hasCatalogEntry ? entry!.SocketId : BattleActorSocketId.Center;
+        if (!hasCatalogEntry && !TryResolveSocket(cue.CueType, out socketId))
         {
             return;
         }
@@ -20,10 +37,62 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
         LastCueType = cue.CueType;
         LastSocketId = socketId;
         LastSpawnPosition = wrapper.GetSocketWorld(socketId);
+
+        if (hasCatalogEntry && entry != null)
+        {
+            SpawnCatalogEntry(entry, wrapper);
+        }
     }
 
     public void ClearTransientState(BattlePresentationCueType reason)
     {
+        for (var i = _activeSpawnedVfx.Count - 1; i >= 0; i--)
+        {
+            var instance = _activeSpawnedVfx[i];
+            if (instance != null)
+            {
+                DestroyPresentationObject(instance);
+            }
+        }
+
+        _activeSpawnedVfx.Clear();
+    }
+
+    private BattleVfxCatalog? ResolveCatalog()
+    {
+        _resolvedCatalog ??= BattleVfxCatalog.ResolveRuntimeCatalog(catalog);
+        return _resolvedCatalog;
+    }
+
+    private void SpawnCatalogEntry(BattleVfxCatalogEntry entry, BattleActorWrapper wrapper)
+    {
+        var socket = wrapper.GetSocketTransform(entry.SocketId);
+        var rotation = socket != null ? socket.rotation : Quaternion.identity;
+        var position = socket != null ? socket.TransformPoint(entry.LocalOffset) : LastSpawnPosition + entry.LocalOffset;
+        var instance = Instantiate(entry.Prefab, position, rotation * Quaternion.Euler(entry.LocalEulerAngles));
+        instance.name = $"{entry.Prefab.name}_{entry.CueType}";
+        instance.transform.localScale = Vector3.Scale(instance.transform.localScale, entry.LocalScale);
+        if (entry.ParentToSocket && socket != null)
+        {
+            instance.transform.SetParent(socket, worldPositionStays: true);
+        }
+
+        LastSpawnedPrefabName = entry.Prefab.name;
+        _activeSpawnedVfx.Add(instance);
+        if (Application.isPlaying)
+        {
+            StartCoroutine(ReleaseSpawnedVfxAfterLifetime(instance, entry.LifetimeSeconds));
+        }
+    }
+
+    private System.Collections.IEnumerator ReleaseSpawnedVfxAfterLifetime(GameObject instance, float lifetimeSeconds)
+    {
+        yield return new WaitForSeconds(lifetimeSeconds);
+        _activeSpawnedVfx.Remove(instance);
+        if (instance != null)
+        {
+            DestroyPresentationObject(instance);
+        }
     }
 
     private static bool TryResolveSocket(BattlePresentationCueType cueType, out BattleActorSocketId socketId)
@@ -55,5 +124,17 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
             or BattlePresentationCueType.RepositionStart
             or BattlePresentationCueType.RepositionStop
             or BattlePresentationCueType.DeathStart;
+    }
+
+    private static void DestroyPresentationObject(UnityEngine.Object target)
+    {
+        if (Application.isPlaying)
+        {
+            Destroy(target);
+        }
+        else
+        {
+            DestroyImmediate(target);
+        }
     }
 }

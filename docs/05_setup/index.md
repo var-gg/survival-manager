@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-03
+- 최종수정일: 2026-05-05
 - 소스오브트루스: `docs/05_setup/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -16,7 +16,7 @@
 ## 문서 목록
 
 - `asset-workflow.md`: 에셋 반입과 project-owned wrapper 기준
-- `codex-mcp-setup.md`: Codex 앱 Unity MCP 연결 기준
+- `codex-mcp-setup.md`: Codex 앱 Unity MCP 연결 기준과 빠른 복구 런북
 - `community-mcp-setup.md`: 커뮤니티 MCP 로컬 설치와 검증 절차
 - `dev-environment.md`: 개발 환경 기본 설정
 - `first-playable-bootstrap.md`: 첫 playable bootstrap 최소 실행 절차

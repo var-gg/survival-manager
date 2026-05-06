@@ -476,7 +476,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _decisiveTimeline.Clear();
         _selectedUnitId = string.Empty;
         _settingsStatusText = string.Empty;
-        presentationController.Initialize(_simulator.CurrentStep);
+        presentationController.Initialize(_simulator.CurrentStep, BuildBattleMapSelectionContext(encounter.Context));
         presentationController.ApplyOptions(_presentationOptions);
         EnsureSelectedUnit(_simulator.CurrentStep);
         presentationController.SetFocus(_simulator.CurrentStep, _selectedUnitId);
@@ -835,7 +835,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _timeline = new BattleTimelineController();
         _timeline.Initialize(_simulator, _simulator.CurrentStep, MaxBattleSteps);
 
-        presentationController.Initialize(_simulator.CurrentStep);
+        presentationController.Initialize(_simulator.CurrentStep, BuildBattleMapSelectionContext(encounter.Context));
         presentationController.ApplyOptions(_presentationOptions);
         EnsureSelectedUnit(_simulator.CurrentStep);
         presentationController.SetFocus(_simulator.CurrentStep, _selectedUnitId);
@@ -871,7 +871,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _root.SessionState.RecordBattleAudit(replay);
         if (RuntimeInstrumentation.ShouldEmitVerboseArtifacts)
         {
-            BattleDebugLogWriter.Write(replay, currentStep.Units);
+            BattleDebugLogWriter.Write(replay, result.FinalUnits);
         }
 
         _root.SessionState.MarkBattleResolved(
@@ -1103,6 +1103,15 @@ public sealed class BattleScreenController : MonoBehaviour
             SiteId = session.SelectedCampaignSiteId,
             NodeIndex = session.GetSelectedExpeditionNode()?.Index ?? session.CurrentExpeditionNodeIndex,
         };
+    }
+
+    private BattleMapSelectionContext BuildBattleMapSelectionContext(BattleContextState context)
+    {
+        return new BattleMapSelectionContext(
+            context.ChapterId,
+            context.SiteId,
+            context.EncounterId,
+            context.BattleSeed);
     }
 
     private void EnsureSelectedUnit(BattleSimulationStep step)
