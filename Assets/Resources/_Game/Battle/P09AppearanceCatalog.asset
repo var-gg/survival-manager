@@ -1,0 +1,1161 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: P09AppearanceCatalog
+  m_EditorClassIdentifier: SM.Unity:SM.Unity:BattleP09AppearanceCatalog
+  options:
+  - Type: 1
+    SexId: 0
+    ContentId: 1
+    DisplayName: Sword_001
+    MeshName: Sword_001
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 2
+    DisplayName: Sword_002
+    MeshName: Sword_002
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 3
+    DisplayName: Sword_003
+    MeshName: Sword_003
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 4
+    DisplayName: Sword_004
+    MeshName: Sword_004
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 5
+    DisplayName: Sword_005
+    MeshName: Sword_005
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 6
+    DisplayName: Staff_001
+    MeshName: Staff_001
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 7
+    DisplayName: Staff_002
+    MeshName: Staff_002
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 8
+    DisplayName: Staff_003
+    MeshName: Staff_003
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 9
+    DisplayName: Staff_004
+    MeshName: Staff_004
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 10
+    DisplayName: Bow_001
+    MeshName: Bow_001
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 11
+    DisplayName: Bow_002
+    MeshName: Bow_002
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 12
+    DisplayName: Bow_003
+    MeshName: Bow_003
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 1
+    SexId: 0
+    ContentId: 13
+    DisplayName: Bow_004
+    MeshName: Bow_004
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 2
+    SexId: 0
+    ContentId: 1
+    DisplayName: 
+    MeshName: Shield_001
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 2
+    SexId: 0
+    ContentId: 2
+    DisplayName: 
+    MeshName: Shield_002
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 2
+    SexId: 0
+    ContentId: 3
+    DisplayName: 
+    MeshName: Shield_003
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 2
+    SexId: 0
+    ContentId: 4
+    DisplayName: 
+    MeshName: Shield_004
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 2
+    SexId: 0
+    ContentId: 5
+    DisplayName: 
+    MeshName: Shield_005
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 2
+    DisplayName: Armor_002_Head
+    MeshName: '{0}_Armor_002_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 3
+    DisplayName: Armor_003_Head
+    MeshName: '{0}_Armor_003_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 4
+    DisplayName: Armor_004_Head
+    MeshName: '{0}_Armor_004_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 5
+    DisplayName: Armor_005_Head
+    MeshName: '{0}_Armor_005_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 6
+    DisplayName: Armor_006_Head
+    MeshName: '{0}_Armor_006_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 7
+    DisplayName: Armor_007_Head
+    MeshName: '{0}_Armor_007_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 8
+    DisplayName: Armor_008_Head
+    MeshName: '{0}_Armor_008_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 9
+    DisplayName: Armor_009_Head
+    MeshName: '{0}_Armor_009_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 10
+    DisplayName: Armor_010_Head
+    MeshName: '{0}_Armor_010_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 11
+    DisplayName: Armor_011_Head
+    MeshName: '{0}_Armor_011_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 3
+    SexId: 0
+    ContentId: 12
+    DisplayName: Armor_012_Head
+    MeshName: '{0}_Armor_012_Head'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 0
+    DisplayName: Body_Chest
+    MeshName: '{0}_Body_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 1
+    DisplayName: Armor_001_Chest
+    MeshName: '{0}_Armor_001_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 2
+    DisplayName: Armor_002_Chest
+    MeshName: '{0}_Armor_002_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 3
+    DisplayName: Armor_003_Chest
+    MeshName: '{0}_Armor_003_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 4
+    DisplayName: Armor_004_Chest
+    MeshName: '{0}_Armor_004_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 5
+    DisplayName: Armor_005_Chest
+    MeshName: '{0}_Armor_005_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 6
+    DisplayName: Armor_006_Chest
+    MeshName: '{0}_Armor_006_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 7
+    DisplayName: Armor_007_Chest
+    MeshName: '{0}_Armor_007_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 8
+    DisplayName: Armor_008_Chest
+    MeshName: '{0}_Armor_008_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 9
+    DisplayName: Armor_009_Chest
+    MeshName: '{0}_Armor_009_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 10
+    DisplayName: Armor_010_Chest
+    MeshName: '{0}_Armor_010_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 11
+    DisplayName: Armor_011_Chest
+    MeshName: '{0}_Armor_011_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 4
+    SexId: 0
+    ContentId: 12
+    DisplayName: Armor_012_Chest
+    MeshName: '{0}_Armor_012_Chest'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 0
+    DisplayName: Body_Arm
+    MeshName: '{0}_Body_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 1
+    DisplayName: Armor_001_Arm
+    MeshName: '{0}_Armor_001_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 2
+    DisplayName: Armor_002_Arm
+    MeshName: '{0}_Armor_002_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 3
+    DisplayName: Armor_003_Arm
+    MeshName: '{0}_Armor_003_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 4
+    DisplayName: Armor_004_Arm
+    MeshName: '{0}_Armor_004_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 5
+    DisplayName: Armor_005_Arm
+    MeshName: '{0}_Armor_005_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 6
+    DisplayName: Armor_006_Arm
+    MeshName: '{0}_Armor_006_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 7
+    DisplayName: Armor_007_Arm
+    MeshName: '{0}_Armor_007_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 8
+    DisplayName: Armor_008_Arm
+    MeshName: '{0}_Armor_008_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 9
+    DisplayName: Armor_009_Arm
+    MeshName: '{0}_Armor_009_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 10
+    DisplayName: Armor_010_Arm
+    MeshName: '{0}_Armor_010_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 11
+    DisplayName: Armor_011_Arm
+    MeshName: '{0}_Armor_011_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 5
+    SexId: 0
+    ContentId: 12
+    DisplayName: Armor_012_Arm
+    MeshName: '{0}_Armor_012_Arm'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 1
+    DisplayName: Armor_001_Waist
+    MeshName: '{0}_Armor_001_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 2
+    DisplayName: Armor_002_Waist
+    MeshName: '{0}_Armor_002_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 3
+    DisplayName: Armor_003_Waist
+    MeshName: '{0}_Armor_003_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 4
+    DisplayName: Armor_004_Waist
+    MeshName: '{0}_Armor_004_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 5
+    DisplayName: Armor_005_Waist
+    MeshName: '{0}_Armor_005_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 6
+    DisplayName: Armor_006_Waist
+    MeshName: '{0}_Armor_006_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 7
+    DisplayName: Armor_007_Waist
+    MeshName: '{0}_Armor_007_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 8
+    DisplayName: Armor_008_Waist
+    MeshName: '{0}_Armor_008_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 9
+    DisplayName: Armor_009_Waist
+    MeshName: '{0}_Armor_009_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 10
+    DisplayName: Armor_010_Waist
+    MeshName: '{0}_Armor_010_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 11
+    DisplayName: Armor_011_Waist
+    MeshName: '{0}_Armor_011_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 6
+    SexId: 0
+    ContentId: 12
+    DisplayName: Armor_012_Waist
+    MeshName: '{0}_Armor_012_Waist'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 0
+    DisplayName: Body_Leg
+    MeshName: '{0}_Body_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 1
+    DisplayName: Armor_001_Leg
+    MeshName: '{0}_Armor_001_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 2
+    DisplayName: Armor_002_Leg
+    MeshName: '{0}_Armor_002_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 3
+    DisplayName: Armor_003_Leg
+    MeshName: '{0}_Armor_003_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 4
+    DisplayName: Armor_004_Leg
+    MeshName: '{0}_Armor_004_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 5
+    DisplayName: Armor_005_Leg
+    MeshName: '{0}_Armor_005_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 6
+    DisplayName: Armor_006_Leg
+    MeshName: '{0}_Armor_006_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 7
+    DisplayName: Armor_007_Leg
+    MeshName: '{0}_Armor_007_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 8
+    DisplayName: Armor_008_Leg
+    MeshName: '{0}_Armor_008_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 9
+    DisplayName: Armor_009_Leg
+    MeshName: '{0}_Armor_009_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 10
+    DisplayName: Armor_010_Leg
+    MeshName: '{0}_Armor_010_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 11
+    DisplayName: Armor_011_Leg
+    MeshName: '{0}_Armor_011_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 7
+    SexId: 0
+    ContentId: 12
+    DisplayName: Armor_012_Leg
+    MeshName: '{0}_Armor_012_Leg'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 8
+    SexId: 0
+    ContentId: 1
+    DisplayName: Male
+    MeshName: Male
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 8
+    SexId: 0
+    ContentId: 2
+    DisplayName: Female
+    MeshName: Female
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 1
+    DisplayName: 01
+    MeshName: Hair_01
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 2
+    DisplayName: 02
+    MeshName: Hair_02
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 3
+    DisplayName: 03
+    MeshName: Hair_03
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 4
+    DisplayName: 04
+    MeshName: Hair_04
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 5
+    DisplayName: 05
+    MeshName: Hair_05
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 6
+    DisplayName: 06
+    MeshName: Hair_06
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 7
+    DisplayName: 07
+    MeshName: Hair_07
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 8
+    DisplayName: 08
+    MeshName: Hair_08
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 9
+    DisplayName: 09
+    MeshName: Hair_09
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 10
+    DisplayName: 10
+    MeshName: Hair_10
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 11
+    DisplayName: 11
+    MeshName: Hair_11
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 12
+    DisplayName: 12
+    MeshName: Hair_12
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 13
+    DisplayName: 13
+    MeshName: Hair_13
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 9
+    SexId: 0
+    ContentId: 14
+    DisplayName: 14
+    MeshName: SkinHead_{0}
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 10
+    SexId: 0
+    ContentId: 1
+    DisplayName: 01
+    MeshName: Hair_{0:D2}
+    Material: {fileID: 2100000, guid: a76bed222203cbd40bae5e61655555e9, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials:
+    - HairStyleId: 10
+      Material: {fileID: 2100000, guid: f314b482211821f4db794932cc2b8fed, type: 2}
+  - Type: 10
+    SexId: 0
+    ContentId: 2
+    DisplayName: 02
+    MeshName: Hair_{0:D2}
+    Material: {fileID: 2100000, guid: 0bfad1d1623fa2f429dc78e00166d181, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials:
+    - HairStyleId: 10
+      Material: {fileID: 2100000, guid: 875b57c15791b664a8b4a0491b25154b, type: 2}
+  - Type: 10
+    SexId: 0
+    ContentId: 3
+    DisplayName: 03
+    MeshName: Hair_{0:D2}
+    Material: {fileID: 2100000, guid: 4a95f5ef1d08d7a438fc02a8d58d25c5, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials:
+    - HairStyleId: 10
+      Material: {fileID: 2100000, guid: bda254f0d853b2b498f10249f86d4de6, type: 2}
+  - Type: 10
+    SexId: 0
+    ContentId: 4
+    DisplayName: 04
+    MeshName: Hair_{0:D2}
+    Material: {fileID: 2100000, guid: 7ce669283e9742842ab70b7f418a63bc, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials:
+    - HairStyleId: 10
+      Material: {fileID: 2100000, guid: 2c5902cffc1e5c3459482c8e7a96e226, type: 2}
+  - Type: 10
+    SexId: 0
+    ContentId: 5
+    DisplayName: 05
+    MeshName: Hair_{0:D2}
+    Material: {fileID: 2100000, guid: 931e3b538ac35f34aa05859114d827bb, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials:
+    - HairStyleId: 10
+      Material: {fileID: 2100000, guid: 4dbee84223847ae4592fa2089a6dd0b2, type: 2}
+  - Type: 10
+    SexId: 0
+    ContentId: 6
+    DisplayName: 06
+    MeshName: Hair_{0:D2}
+    Material: {fileID: 2100000, guid: ef6d9a69ed8ee914989798fae2518ed2, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials:
+    - HairStyleId: 10
+      Material: {fileID: 2100000, guid: b3b5d66f030112a479880bfeb91db1ec, type: 2}
+  - Type: 10
+    SexId: 0
+    ContentId: 7
+    DisplayName: 07
+    MeshName: Hair_{0:D2}
+    Material: {fileID: 2100000, guid: 614b6163bbc15b84b9d5f5365357d6a2, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials:
+    - HairStyleId: 10
+      Material: {fileID: 2100000, guid: db7a0822babb6aa44bcf842862886443, type: 2}
+  - Type: 10
+    SexId: 0
+    ContentId: 8
+    DisplayName: 08
+    MeshName: Hair_{0:D2}
+    Material: {fileID: 2100000, guid: e5f5a60b8d1d6894d9863b87316d0d6a, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials:
+    - HairStyleId: 10
+      Material: {fileID: 2100000, guid: 016b1e3b65c692d43b7c1628bdc57151, type: 2}
+  - Type: 10
+    SexId: 0
+    ContentId: 9
+    DisplayName: 09
+    MeshName: Hair_{0:D2}
+    Material: {fileID: 2100000, guid: e48b212da23e60f49adb3521f2778457, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials:
+    - HairStyleId: 10
+      Material: {fileID: 2100000, guid: 53ebbd29b5cc782428b85a7b49dd1ca9, type: 2}
+  - Type: 11
+    SexId: 1
+    ContentId: 1
+    DisplayName: 01
+    MeshName: 
+    Material: {fileID: 2100000, guid: 449956f351df07e4bb8cd4ad9eac8dde, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 11
+    SexId: 1
+    ContentId: 2
+    DisplayName: 02
+    MeshName: 
+    Material: {fileID: 2100000, guid: 5bd760b0c13bbff45acf7c410fac511c, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 11
+    SexId: 1
+    ContentId: 3
+    DisplayName: 03
+    MeshName: 
+    Material: {fileID: 2100000, guid: f86089649cd6a5940a43b0191eaabf85, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 11
+    SexId: 2
+    ContentId: 1
+    DisplayName: 01
+    MeshName: 
+    Material: {fileID: 2100000, guid: 91f9e83d500b0fd4b9c0c48b65c8a3fd, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 11
+    SexId: 2
+    ContentId: 2
+    DisplayName: 02
+    MeshName: 
+    Material: {fileID: 2100000, guid: 334bb063c74bd4749878fd1380704fa7, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 11
+    SexId: 2
+    ContentId: 3
+    DisplayName: 03
+    MeshName: 
+    Material: {fileID: 2100000, guid: 44fecc866b581654ba140cfae2b68e14, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 12
+    SexId: 0
+    ContentId: 1
+    DisplayName: 01
+    MeshName: _Body_Head
+    Material: {fileID: 2100000, guid: bbc0bc1770b7d734da47c9bc6c381493, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 12
+    SexId: 0
+    ContentId: 2
+    DisplayName: 02
+    MeshName: _Body_Head
+    Material: {fileID: 2100000, guid: 17254957a35b81b40879fb3bf7e73283, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 12
+    SexId: 0
+    ContentId: 3
+    DisplayName: 03
+    MeshName: _Body_Head
+    Material: {fileID: 2100000, guid: 744cfbb07ac6b8c4f831386b6c8d620c, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 12
+    SexId: 0
+    ContentId: 4
+    DisplayName: 04
+    MeshName: _Body_Head
+    Material: {fileID: 2100000, guid: c21371c5415f1e64fbc0e8e4b0b8da2b, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 12
+    SexId: 0
+    ContentId: 5
+    DisplayName: 05
+    MeshName: _Body_Head
+    Material: {fileID: 2100000, guid: 2f97cc9871b2e2a4fbccc513a81426a0, type: 2}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 13
+    SexId: 1
+    ContentId: 0
+    DisplayName: 00
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 13
+    SexId: 1
+    ContentId: 1
+    DisplayName: 01
+    MeshName: Male_FacialHair_01
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 13
+    SexId: 1
+    ContentId: 2
+    DisplayName: 02
+    MeshName: Male_FacialHair_02
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 13
+    SexId: 1
+    ContentId: 3
+    DisplayName: 03
+    MeshName: Male_FacialHair_03
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 13
+    SexId: 1
+    ContentId: 4
+    DisplayName: 04
+    MeshName: Male_FacialHair_04
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 13
+    SexId: 1
+    ContentId: 5
+    DisplayName: 05
+    MeshName: Male_FacialHair_05
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 13
+    SexId: 1
+    ContentId: 6
+    DisplayName: 06
+    MeshName: Male_FacialHair_06
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 13
+    SexId: 1
+    ContentId: 7
+    DisplayName: 07
+    MeshName: Male_FacialHair_07
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 13
+    SexId: 1
+    ContentId: 8
+    DisplayName: 08
+    MeshName: Male_FacialHair_08
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 14
+    SexId: 2
+    ContentId: 1
+    DisplayName: S
+    MeshName: bust_01_{0}
+    Material: {fileID: 0}
+    BustScale: {x: 0.85, y: 0.8, z: 0.85}
+    HairMaterials: []
+  - Type: 14
+    SexId: 2
+    ContentId: 2
+    DisplayName: M
+    MeshName: bust_01_{0}
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 14
+    SexId: 2
+    ContentId: 3
+    DisplayName: L
+    MeshName: bust_01_{0}
+    Material: {fileID: 0}
+    BustScale: {x: 1.2, y: 1.2, z: 1.2}
+    HairMaterials: []
+  - Type: 15
+    SexId: 0
+    ContentId: 1
+    DisplayName: Facial Neutoral
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 15
+    SexId: 0
+    ContentId: 2
+    DisplayName: Facial Damage
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 15
+    SexId: 0
+    ContentId: 3
+    DisplayName: Facial Failed
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 15
+    SexId: 0
+    ContentId: 4
+    DisplayName: Facial Fierce
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 15
+    SexId: 0
+    ContentId: 5
+    DisplayName: Facial Fun
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 15
+    SexId: 0
+    ContentId: 6
+    DisplayName: Facial Jito
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 15
+    SexId: 0
+    ContentId: 7
+    DisplayName: Facial Sad
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 15
+    SexId: 0
+    ContentId: 8
+    DisplayName: Facial Sharp
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 15
+    SexId: 0
+    ContentId: 9
+    DisplayName: Facial Smile
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 15
+    SexId: 0
+    ContentId: 10
+    DisplayName: Facial Surprised
+    MeshName: 
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 16
+    SexId: 0
+    ContentId: 1
+    DisplayName: 01
+    MeshName: '{0}_Face_01'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 16
+    SexId: 0
+    ContentId: 2
+    DisplayName: 02
+    MeshName: '{0}_Face_02'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []
+  - Type: 16
+    SexId: 0
+    ContentId: 3
+    DisplayName: 03
+    MeshName: '{0}_Face_03'
+    Material: {fileID: 0}
+    BustScale: {x: 1, y: 1, z: 1}
+    HairMaterials: []

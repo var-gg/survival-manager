@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: p09_appearance_priest
+  m_EditorClassIdentifier: SM.Unity:SM.Unity:BattleP09AppearancePreset
+  characterId: priest
+  displayName: priest
+  catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
+  weaponId: 9
+  shieldId: 4
+  headId: 10
+  chestId: 9
+  armId: 9
+  waistId: 11
+  legId: 11
+  sexId: 1
+  faceTypeId: 3
+  hairStyleId: 9
+  hairColorId: 2
+  skinId: 3
+  eyeColorId: 5
+  facialHairId: 8
+  bustSizeId: 2
+  materialColorOverrides:
+  - Label: Armor
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.82, g: 0.78, b: 0.7, a: 1}
+    SecondColor: {r: 0.34, g: 0.27, b: 0.22, a: 1}
+    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
+  - Label: Weapon
+    TargetContains: Weapon
+    Enabled: 1
+    MainColor: {r: 0.78, g: 0.76, b: 0.72, a: 1}
+    SecondColor: {r: 0.28, g: 0.24, b: 0.2, a: 1}
+    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
+  - Label: Shield
+    TargetContains: Shield
+    Enabled: 1
+    MainColor: {r: 0.7, g: 0.76, b: 0.82, a: 1}
+    SecondColor: {r: 0.25, g: 0.26, b: 0.3, a: 1}
+    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
