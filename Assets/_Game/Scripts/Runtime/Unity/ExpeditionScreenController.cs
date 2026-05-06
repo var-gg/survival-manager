@@ -5,7 +5,8 @@ using SM.Unity.UI;
 using SM.Unity.UI.Expedition;
 using UnityEngine;
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 public sealed class ExpeditionScreenController : MonoBehaviour
 {
@@ -149,4 +150,5 @@ public sealed class ExpeditionScreenController : MonoBehaviour
     {
         _presenter?.Refresh();
     }
+}
 }

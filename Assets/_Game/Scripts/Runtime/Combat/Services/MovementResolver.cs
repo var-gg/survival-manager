@@ -10,6 +10,10 @@ public static class MovementResolver
     private const float ArenaHalfWidth = 8f;
     private const float ArenaHalfHeight = 3.2f;
     private const float ObstacleClearancePadding = 0.06f;
+    private const float DeadObstacleRadiusScale = 0.62f;
+    private const float DeadObstacleMinimumRadius = 0.22f;
+    private const float ObstacleCorridorPadding = 0.18f;
+    private const float ObstacleDetourPadding = 0.28f;
 
     public static float ComputeEdgeDistance(UnitSnapshot actor, UnitSnapshot target)
     {
@@ -182,6 +186,7 @@ public static class MovementResolver
     {
         ResolveTeamSpacing(state.Allies);
         ResolveTeamSpacing(state.Enemies);
+        ResolveDeadObstacleSpacing(state);
     }
 
     private static CombatVector2 ResolveDesiredPosition(UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
@@ -278,6 +283,12 @@ public static class MovementResolver
         var lateral = new CombatVector2(-forward.Y, forward.X);
         var sidePreference = ResolveSidePreference(actor);
         var candidates = new List<CombatVector2>(12);
+        var primaryBlocker = FindPrimaryBlockingObstacle(state, actor, targetPosition, forward);
+        if (primaryBlocker != null)
+        {
+            AddDetourCandidates(candidates, state, actor, targetPosition, forward, lateral, primaryBlocker, sidePreference, stepDistance);
+        }
+
         AddSteeringCandidates(candidates, state, actor, forward, lateral * sidePreference, stepDistance);
         AddSteeringCandidates(candidates, state, actor, forward, lateral * -sidePreference, stepDistance);
 
@@ -330,6 +341,7 @@ public static class MovementResolver
     private static float ScoreNavigationCandidate(BattleState state, UnitSnapshot actor, CombatVector2 targetPosition, CombatVector2 candidate)
     {
         var overlapPenalty = 0f;
+        var closestClearance = float.MaxValue;
         foreach (var obstacle in state.AllUnits)
         {
             if (obstacle.Id == actor.Id)
@@ -337,15 +349,22 @@ public static class MovementResolver
                 continue;
             }
 
-            var requiredClearance = actor.NavigationRadius + obstacle.NavigationRadius + ObstacleClearancePadding;
+            var requiredClearance = actor.NavigationRadius + ResolveNavigationObstacleRadius(obstacle) + ObstacleClearancePadding;
             var distance = candidate.DistanceTo(obstacle.Position);
             var overlap = Math.Max(0f, requiredClearance - distance);
             overlapPenalty += overlap * overlap;
+            closestClearance = Math.Min(closestClearance, distance - requiredClearance);
         }
 
+        var forward = (targetPosition - actor.Position).Normalized;
+        var progress = forward.SqrLength <= 0.0001f
+            ? 0f
+            : CombatVector2.Dot(candidate - actor.Position, forward);
+        var backtrackPenalty = progress < 0f ? Math.Abs(progress) * 4f : 0f;
+        var clearancePenalty = closestClearance < 0.08f ? (0.08f - closestClearance) * 18f : 0f;
         var targetDistance = candidate.DistanceTo(targetPosition);
         var travelDistance = candidate.DistanceTo(actor.Position);
-        return (overlapPenalty * 120f) + targetDistance - (travelDistance * 0.05f);
+        return (overlapPenalty * 420f) + clearancePenalty + backtrackPenalty + targetDistance - (travelDistance * 0.05f) - (progress * 0.18f);
     }
 
     private static bool IsClearOfNavigationObstacles(BattleState state, UnitSnapshot actor, CombatVector2 candidate)
@@ -357,7 +376,7 @@ public static class MovementResolver
                 continue;
             }
 
-            var requiredClearance = actor.NavigationRadius + obstacle.NavigationRadius + ObstacleClearancePadding;
+            var requiredClearance = actor.NavigationRadius + ResolveNavigationObstacleRadius(obstacle) + ObstacleClearancePadding;
             if (candidate.DistanceTo(obstacle.Position) < requiredClearance)
             {
                 return false;
@@ -365,6 +384,158 @@ public static class MovementResolver
         }
 
         return true;
+    }
+
+    private static void AddDetourCandidates(
+        ICollection<CombatVector2> candidates,
+        BattleState state,
+        UnitSnapshot actor,
+        CombatVector2 targetPosition,
+        CombatVector2 forward,
+        CombatVector2 lateral,
+        UnitSnapshot primaryBlocker,
+        float sidePreference,
+        float stepDistance)
+    {
+        var relative = primaryBlocker.Position - actor.Position;
+        var currentSide = CombatVector2.Dot(relative, lateral);
+        var preferredSide = Math.Abs(currentSide) > 0.05f
+            ? MathF.Sign(currentSide)
+            : sidePreference;
+        AddDetourCandidatesForSide(candidates, state, actor, targetPosition, forward, lateral, primaryBlocker, preferredSide, stepDistance);
+        AddDetourCandidatesForSide(candidates, state, actor, targetPosition, forward, lateral, primaryBlocker, -preferredSide, stepDistance);
+    }
+
+    private static void AddDetourCandidatesForSide(
+        ICollection<CombatVector2> candidates,
+        BattleState state,
+        UnitSnapshot actor,
+        CombatVector2 targetPosition,
+        CombatVector2 forward,
+        CombatVector2 lateral,
+        UnitSnapshot blocker,
+        float side,
+        float stepDistance)
+    {
+        var requiredClearance = actor.NavigationRadius + ResolveNavigationObstacleRadius(blocker) + ObstacleDetourPadding;
+        var sideVector = lateral * side;
+        var anchors = new[]
+        {
+            blocker.Position + (sideVector * requiredClearance) + (forward * (actor.NavigationRadius * 0.45f)),
+            blocker.Position + (sideVector * (requiredClearance + actor.SeparationRadius * 0.35f)) + (forward * (actor.NavigationRadius * 0.2f)),
+            targetPosition + (sideVector * Math.Max(actor.SeparationRadius, requiredClearance * 0.55f)),
+        };
+
+        foreach (var anchor in anchors)
+        {
+            var direction = (anchor - actor.Position).Normalized;
+            if (direction.SqrLength <= 0.0001f)
+            {
+                continue;
+            }
+
+            candidates.Add(ClampToLeash(state, actor, ClampToArena(actor.Position + (direction * stepDistance))));
+        }
+
+        var sidestep = Math.Max(stepDistance, actor.NavigationRadius * 0.48f);
+        candidates.Add(ClampToLeash(state, actor, ClampToArena(actor.Position + (sideVector.Normalized * sidestep))));
+    }
+
+    private static UnitSnapshot? FindPrimaryBlockingObstacle(
+        BattleState state,
+        UnitSnapshot actor,
+        CombatVector2 targetPosition,
+        CombatVector2 forward)
+    {
+        var path = targetPosition - actor.Position;
+        var pathLength = path.Length;
+        if (pathLength <= 0.0001f || forward.SqrLength <= 0.0001f)
+        {
+            return null;
+        }
+
+        UnitSnapshot? best = null;
+        var bestProjection = float.MaxValue;
+        foreach (var obstacle in state.AllUnits)
+        {
+            if (obstacle.Id == actor.Id)
+            {
+                continue;
+            }
+
+            var toObstacle = obstacle.Position - actor.Position;
+            var projection = CombatVector2.Dot(toObstacle, forward);
+            if (projection <= 0.01f || projection >= pathLength + ResolveNavigationObstacleRadius(obstacle))
+            {
+                continue;
+            }
+
+            var closest = actor.Position + (forward * projection);
+            var corridorClearance = actor.NavigationRadius + ResolveNavigationObstacleRadius(obstacle) + ObstacleCorridorPadding;
+            if (closest.DistanceTo(obstacle.Position) >= corridorClearance)
+            {
+                continue;
+            }
+
+            if (projection < bestProjection
+                || (Math.Abs(projection - bestProjection) <= 0.001f && best != null && string.CompareOrdinal(obstacle.Id.Value, best.Id.Value) < 0))
+            {
+                best = obstacle;
+                bestProjection = projection;
+            }
+        }
+
+        return best;
+    }
+
+    private static void ResolveDeadObstacleSpacing(BattleState state)
+    {
+        var aliveUnits = state.AllUnits
+            .Where(unit => unit.IsAlive)
+            .OrderBy(unit => unit.Id.Value, StringComparer.Ordinal)
+            .ToList();
+        var deadUnits = state.AllUnits
+            .Where(unit => !unit.IsAlive)
+            .OrderBy(unit => unit.Id.Value, StringComparer.Ordinal)
+            .ToList();
+
+        foreach (var alive in aliveUnits)
+        {
+            foreach (var dead in deadUnits)
+            {
+                var minDistance = alive.NavigationRadius + ResolveNavigationObstacleRadius(dead) + ObstacleClearancePadding;
+                var delta = alive.Position - dead.Position;
+                var distance = delta.Length;
+                if (distance >= minDistance)
+                {
+                    continue;
+                }
+
+                var direction = distance <= 0.0001f
+                    ? ResolveStableAvoidanceDirection(alive, dead)
+                    : delta.Normalized;
+                alive.SetPosition(ClampToArena(alive.Position + (direction * (minDistance - distance))));
+            }
+        }
+    }
+
+    private static CombatVector2 ResolveStableAvoidanceDirection(UnitSnapshot actor, UnitSnapshot obstacle)
+    {
+        var forward = actor.Side == TeamSide.Ally
+            ? new CombatVector2(-0.35f, 0f)
+            : new CombatVector2(0.35f, 0f);
+        var lateral = ResolveSidePreference(actor) > 0f
+            ? new CombatVector2(0f, 1f)
+            : new CombatVector2(0f, -1f);
+        var obstacleBias = ResolveSidePreference(obstacle) > 0f ? 0.35f : -0.35f;
+        return (forward + (lateral * (1f + obstacleBias))).Normalized;
+    }
+
+    private static float ResolveNavigationObstacleRadius(UnitSnapshot obstacle)
+    {
+        return obstacle.IsAlive
+            ? obstacle.NavigationRadius
+            : Math.Max(DeadObstacleMinimumRadius, obstacle.NavigationRadius * DeadObstacleRadiusScale);
     }
 
     private static float ResolveSidePreference(UnitSnapshot actor)

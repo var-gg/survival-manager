@@ -93,7 +93,7 @@ public static class FirstPlayableRuntimeSceneBinder
                 break;
 
             case SceneNames.Reward:
-                ValidateScreenScene<RewardScreenController>(scene, "RewardRuntimePanelHost", "RewardScreenController", _ => { });
+                ValidateScreenScene<RewardScreenController>(scene, "RewardRuntimePanelHost", "RewardScreenController", controller => controller.EnsureRuntimeControls());
                 break;
         }
     }

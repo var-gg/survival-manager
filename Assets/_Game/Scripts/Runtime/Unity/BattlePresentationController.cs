@@ -6,7 +6,8 @@ using SM.Unity.UI.Battle;
 using Unity.Profiling;
 using UnityEngine;
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 public sealed class BattlePresentationController : MonoBehaviour
 {
@@ -601,4 +602,5 @@ public sealed class BattlePresentationController : MonoBehaviour
         cachedStep = step;
         return cache;
     }
+}
 }

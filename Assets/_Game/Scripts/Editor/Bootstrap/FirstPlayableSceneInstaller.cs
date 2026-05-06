@@ -202,6 +202,7 @@ public static class FirstPlayableSceneInstaller
         UiGraphicRaycastPolicy.ApplyToScene(scene);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
+        RewriteSerializedScriptReferences(scene.path);
     }
 
     private static void EnsureBuildSettings()
@@ -209,6 +210,65 @@ public static class FirstPlayableSceneInstaller
         EditorBuildSettings.scenes = OrderedSceneNames
             .Select(name => new EditorBuildSettingsScene($"{ScenesRoot}/{name}.unity", true))
             .ToArray();
+    }
+
+    private static void RewriteSerializedScriptReferences(string scenePath)
+    {
+        if (string.IsNullOrWhiteSpace(scenePath) || !File.Exists(scenePath))
+        {
+            return;
+        }
+
+        var replacements = new Dictionary<string, string>
+        {
+            ["SM.Unity::SM.Unity.GameBootstrap"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/GameBootstrap.cs"),
+            ["SM.Unity::SM.Unity.BootScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BootScreenController.cs"),
+            ["SM.Unity::SM.Unity.TownScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/TownScreenController.cs"),
+            ["SM.Unity::SM.Unity.ExpeditionScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/ExpeditionScreenController.cs"),
+            ["SM.Unity::SM.Unity.RewardScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/RewardScreenController.cs"),
+            ["SM.Unity::SM.Unity.BattleScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BattleScreenController.cs"),
+            ["SM.Unity::SM.Unity.BattlePresentationController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BattlePresentationController.cs"),
+            ["SM.Unity::SM.Unity.BattleCameraController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BattleCameraController.cs"),
+            ["SM.Unity::SM.Unity.UI.RuntimePanelHost"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/UI/RuntimePanelHost.cs"),
+        };
+
+        var text = File.ReadAllText(scenePath);
+        var original = text;
+        foreach (var replacement in replacements)
+        {
+            var identifier = System.Text.RegularExpressions.Regex.Escape(replacement.Key);
+            var pattern = $@"(?m)m_Script:\s*\{{fileID:\s*\d+\}}(?<tail>\r?\n\s*m_Name:\s*\r?\n\s*m_EditorClassIdentifier:\s*{identifier})";
+            var scriptReference = $"m_Script: {{fileID: 11500000, guid: {replacement.Value}, type: 3}}";
+            text = System.Text.RegularExpressions.Regex.Replace(text, pattern, $"{scriptReference}${{tail}}");
+        }
+
+        if (text == original)
+        {
+            return;
+        }
+
+        File.WriteAllText(scenePath, text, new System.Text.UTF8Encoding(false));
+        AssetDatabase.ImportAsset(scenePath, ImportAssetOptions.ForceUpdate);
+    }
+
+    private static string ResolveScriptGuid(string scriptPath)
+    {
+        var metaPath = $"{scriptPath}.meta";
+        if (!File.Exists(metaPath))
+        {
+            throw new System.InvalidOperationException($"Missing script meta file '{metaPath}'.");
+        }
+
+        foreach (var line in File.ReadLines(metaPath))
+        {
+            const string prefix = "guid: ";
+            if (line.StartsWith(prefix, System.StringComparison.Ordinal))
+            {
+                return line[prefix.Length..].Trim();
+            }
+        }
+
+        throw new System.InvalidOperationException($"Missing guid in '{metaPath}'.");
     }
 
     private static void ValidateSavedSceneContracts()

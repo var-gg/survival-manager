@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 public sealed class BattleCameraController : MonoBehaviour
 {
@@ -430,4 +431,5 @@ public sealed class BattleCameraController : MonoBehaviour
         var groundHit = cameraPos + t * forward;
         return new Vector3(groundHit.x - cameraPos.x, 0f, groundHit.z - cameraPos.z);
     }
+}
 }

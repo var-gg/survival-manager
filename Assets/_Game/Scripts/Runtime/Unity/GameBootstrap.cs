@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 public sealed class GameBootstrap : MonoBehaviour
 {
@@ -86,4 +87,5 @@ public sealed class GameBootstrap : MonoBehaviour
     {
         FindAnyObjectByType<BootScreenController>()?.Refresh();
     }
+}
 }
