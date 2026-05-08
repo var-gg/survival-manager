@@ -10,7 +10,7 @@
   - `docs/02_design/combat/targeting-and-ai-vocabulary.md`
   - `docs/02_design/combat/summon-ownership-and-deployables.md`
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
-  - `docs/02_design/combat/skill-catalog-v1.md` (deprecated, audit log)
+  - `docs/02_design/systems/launch-floor-content-matrix.md`
   - `docs/02_design/meta/retrain-contract.md`
   - `docs/03_architecture/content-authoring-and-balance-data.md`
 

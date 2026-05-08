@@ -4,7 +4,7 @@
 > subject 페이지의 `prompt` fence는 캐릭터/스킬/환경 **개별 명세**만 담는다.
 > 일관성의 진짜 anchor는 ref 이미지가 아니라 **subject 페이지의 정밀한 명세 텍스트**다.
 
-```
+```text
 === ART STYLE (엄수) ===
 Stylized Japanese fantasy gacha-banner character illustration — magnetic, glamorous, top-tier mobile RPG / console JRPG splash art aesthetic.
 

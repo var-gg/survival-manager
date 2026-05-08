@@ -28,7 +28,7 @@ python -m playwright install chromium
 
 ## 호출
 
-```
+```text
 /game-image-gen 단린 portrait_full default
 ```
 
@@ -74,7 +74,7 @@ python art-pipeline/scripts/upload_subject.py {subject.md} --keep-browser-open
 ### 캐릭터 자산 7 cycle 표준 순서 + REFs
 
 | 순서 | variant | refs frontmatter |
-|---:|---|---|
+| ---: | --- | --- |
 | 1 | `portrait_full_default` | `[hero_X]` (P09 anchor만) |
 | 2 | `face_emotion_sheet` | `[hero_X, hero_X:portrait_full]` |
 | 3 | `face_combat_state_sheet` | `[hero_X, hero_X:portrait_full, hero_X:portrait_face_default]` |

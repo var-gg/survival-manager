@@ -8,7 +8,7 @@
   - `docs/02_design/combat/resource-cadence-loadout.md`
   - `docs/02_design/combat/targeting-and-ai-vocabulary.md`
   - `docs/02_design/combat/skill-authoring-schema.md`
-  - `docs/02_design/combat/skill-catalog-v1.md` (deprecated, audit log)
+  - `docs/02_design/systems/launch-floor-content-matrix.md`
   - `docs/02_design/combat/stat-system-and-power-budget.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
 
@@ -74,7 +74,7 @@ effect descriptor, targeting, presentation hook, learn source의 세부 schema�
 
 - template type는 skill의 전달 방식과 shape를 잠그는 authoring schema다.
 - target selector, fallback, hysteresis는 freeform score bias가 아니라 `TargetRule`과 `BehaviorProfile` data로 잠근다.
-- role packet과 seed catalog는 `skill-catalog-v1.md`를 따른다.
+- launch floor role anchor와 seed catalog는 `launch-floor-content-matrix.md`와 `skill-authoring-schema.md`를 따른다.
 
 ## class skill family
 

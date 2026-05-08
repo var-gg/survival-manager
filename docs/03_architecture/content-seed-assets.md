@@ -8,7 +8,9 @@
   - `docs/03_architecture/content-loading-contract.md`
   - `docs/03_architecture/content-loading-strategy.md`
   - `docs/03_architecture/content-authoring-model.md`
-  - `docs/02_design/combat/skill-catalog-v1.md` (deprecated, audit log)
+  - `docs/02_design/combat/skill-authoring-schema.md`
+  - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
+  - `docs/02_design/systems/launch-floor-content-matrix.md`
   - `docs/02_design/meta/affix-pool-v1.md`
   - `docs/02_design/meta/augment-catalog-v1.md`
 
@@ -51,5 +53,6 @@ runtime truth는 committed asset이며, full catalog source-of-truth는 Markdown
 ## catalog와 live subset 경계
 
 - `SampleSeedGenerator`는 committed live subset repair 용도다.
-- `skill-catalog-v1.md`, `affix-pool-v1.md`, `augment-catalog-v1.md`는 full design catalog를 소유한다.
+- skill 설계 기준은 `skill-authoring-schema.md`, `skill-taxonomy-and-damage-model.md`, `launch-floor-content-matrix.md`가 나눠 소유한다.
+- `affix-pool-v1.md`, `augment-catalog-v1.md`는 full design catalog를 소유한다.
 - generator가 full catalog를 모두 asset으로 내려야 하는 것은 아니다.
