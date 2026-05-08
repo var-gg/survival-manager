@@ -218,6 +218,7 @@ public sealed class BattlePresentationCueBuilder
             eventData.ActionType,
             eventData.Value,
             subjectAnchor,
-            BattlePresentationAnchorId.Cast));
+            BattlePresentationAnchorId.Cast,
+            eventData.Note));
     }
 }

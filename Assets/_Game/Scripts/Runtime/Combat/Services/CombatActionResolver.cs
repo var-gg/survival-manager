@@ -38,6 +38,10 @@ public static class CombatActionResolver
                     state.RegisterDamage(actor, target);
                     target.TakeDamage(attackResult.Value);
                     target.GainEnergyFromDirectHitTaken();
+                    if (target.IsAlive)
+                    {
+                        MovementResolver.ApplyKnockback(state, actor, target, attackResult.WasCritical);
+                    }
                     BattleTelemetryRecorder.RecordImpact(
                         state,
                         TelemetryEventKind.DamageApplied,
@@ -120,6 +124,10 @@ public static class CombatActionResolver
                         state.RegisterDamage(actor, target);
                         target.TakeDamage(skillResult.Value);
                         target.GainEnergyFromDirectHitTaken();
+                        if (target.IsAlive)
+                        {
+                            MovementResolver.ApplyKnockback(state, actor, target, skillResult.WasCritical);
+                        }
                         BattleTelemetryRecorder.RecordImpact(
                             state,
                             TelemetryEventKind.DamageApplied,
