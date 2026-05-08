@@ -86,6 +86,7 @@ public sealed class BattleActorView : MonoBehaviour
     private Color _accentColor = Color.clear;
     private Color _impactColor = Color.clear;
     private Color _floatingColor = Color.clear;
+    private float _floatingScale = 1f;
 
     public void Initialize(
         BattleUnitReadModel actor,
@@ -182,8 +183,17 @@ public sealed class BattleActorView : MonoBehaviour
                 StartActionCue(BattleActionSemantic.HealSupport, 0.22f, ResolveSemanticColor(BattleActionSemantic.HealSupport), relatedWorld);
                 break;
             case BattlePresentationCueType.ImpactDamage:
-                StartImpactCue(0.24f, new Color(1f, 0.32f, 0.28f, 1f), $"-{Mathf.CeilToInt(cue.Magnitude)}");
+            {
+                var isCrit = !string.IsNullOrEmpty(cue.Note) && cue.Note.Contains("crit", System.StringComparison.Ordinal);
+                var damageColor = isCrit
+                    ? new Color(1f, 0.85f, 0.25f, 1f)
+                    : new Color(1f, 0.32f, 0.28f, 1f);
+                var damageLabel = isCrit
+                    ? $"CRIT! -{Mathf.CeilToInt(cue.Magnitude)}"
+                    : $"-{Mathf.CeilToInt(cue.Magnitude)}";
+                StartImpactCue(0.24f, damageColor, damageLabel, isCrit ? 1.4f : 1f);
                 break;
+            }
             case BattlePresentationCueType.ImpactHeal:
                 StartImpactCue(0.24f, new Color(0.38f, 1f, 0.54f, 1f), $"+{Mathf.CeilToInt(cue.Magnitude)}");
                 break;
@@ -650,6 +660,7 @@ public sealed class BattleActorView : MonoBehaviour
         {
             _floatingText.text = string.Empty;
             _floatingText.color = Color.clear;
+            _floatingText.rectTransform.localScale = Vector3.one;
             return;
         }
 
@@ -657,6 +668,7 @@ public sealed class BattleActorView : MonoBehaviour
         _floatingText.text = _floatingMessage;
         _floatingText.rectTransform.anchoredPosition = Vector2.Lerp(new Vector2(0f, 8f), new Vector2(0f, 44f), progress);
         _floatingText.color = new Color(_floatingColor.r, _floatingColor.g, _floatingColor.b, 1f - progress);
+        _floatingText.rectTransform.localScale = Vector3.one * _floatingScale;
     }
 
     private void StartActionCue(BattleActionSemantic semantic, float duration, Color color, Vector3? relatedWorld)
@@ -673,7 +685,7 @@ public sealed class BattleActorView : MonoBehaviour
         }
     }
 
-    private void StartImpactCue(float duration, Color color, string floatingText)
+    private void StartImpactCue(float duration, Color color, string floatingText, float scale = 1f)
     {
         _impactCueTimer = duration;
         _impactCueDuration = duration;
@@ -685,6 +697,7 @@ public sealed class BattleActorView : MonoBehaviour
             _floatingDuration = _floatingTimer;
             _floatingMessage = floatingText;
             _floatingColor = color;
+            _floatingScale = scale;
         }
     }
 
@@ -866,7 +879,7 @@ public sealed class BattleActorView : MonoBehaviour
 
         _floatingText = floatingGo.AddComponent<Text>();
         _floatingText.font = font;
-        _floatingText.fontSize = 25;
+        _floatingText.fontSize = 34;
         _floatingText.alignment = TextAnchor.MiddleCenter;
         _floatingText.color = Color.clear;
         AddOutline(_floatingText, new Color(0f, 0f, 0f, 0.92f));
