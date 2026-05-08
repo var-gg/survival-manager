@@ -51,6 +51,8 @@ public sealed class BattleScreenController : MonoBehaviour
     private bool _battleFinishedHandled;
     private bool _settingsVisible;
     private bool _summaryExpanded = true;
+    private bool _unitDetailVisible;
+    private BattleUnitDetailTab _unitDetailTab = BattleUnitDetailTab.Overview;
 
     private BattleTimelineController? _timeline;
     private BattlePlaybackPolicy _policy = new(BattlePlaybackMode.QuickBattle);
@@ -367,6 +369,29 @@ public sealed class BattleScreenController : MonoBehaviour
         RenderCurrentState();
     }
 
+    public void SelectRosterUnit(string unitId)
+    {
+        SelectUnit(unitId, openDetail: false, snapCamera: true);
+    }
+
+    public void OpenRosterUnitDetail(string unitId)
+    {
+        SelectUnit(unitId, openDetail: true, snapCamera: true);
+    }
+
+    public void CloseUnitDetail()
+    {
+        _unitDetailVisible = false;
+        RenderCurrentState();
+    }
+
+    public void SelectUnitDetailTab(BattleUnitDetailTab tab)
+    {
+        _unitDetailTab = tab;
+        _unitDetailVisible = true;
+        RenderCurrentState();
+    }
+
     public void ToggleOverheadUi()
     {
         _presentationOptions.ToggleOverheadUi();
@@ -434,6 +459,30 @@ public sealed class BattleScreenController : MonoBehaviour
         }
     }
 
+    private void SelectUnit(string unitId, bool openDetail, bool snapCamera)
+    {
+        var currentStep = _timeline?.CurrentStep;
+        if (currentStep == null || currentStep.Units.All(unit => unit.Id != unitId))
+        {
+            return;
+        }
+
+        _selectedUnitId = unitId;
+        if (openDetail)
+        {
+            _unitDetailVisible = true;
+            _unitDetailTab = BattleUnitDetailTab.Overview;
+        }
+
+        presentationController.SetFocus(currentStep, _selectedUnitId);
+        if (snapCamera && cameraController != null)
+        {
+            cameraController.SnapToSuggestedFrame(_cameraFramingPolicy.BuildUnitFocusFrame(currentStep, _selectedUnitId));
+        }
+
+        RenderCurrentState(currentStep);
+    }
+
     private void RefreshAfterSeek(BattlePresentationCueType resetReason = BattlePresentationCueType.SeekSnapshotApplied, bool bootstrapCamera = false)
     {
         if (_timeline == null)
@@ -483,6 +532,8 @@ public sealed class BattleScreenController : MonoBehaviour
         _recentLogs.Clear();
         _decisiveTimeline.Clear();
         _selectedUnitId = string.Empty;
+        _unitDetailVisible = false;
+        _unitDetailTab = BattleUnitDetailTab.Overview;
         _settingsStatusText = string.Empty;
         presentationController.Initialize(_simulator.CurrentStep, BuildBattleMapSelectionContext(encounter.Context));
         presentationController.ApplyOptions(_presentationOptions);
@@ -568,7 +619,11 @@ public sealed class BattleScreenController : MonoBehaviour
             ToggleTeamSummary,
             ToggleDebugOverlay,
             ToggleSummaryPanel,
-            HandleScrubberSeek));
+            HandleScrubberSeek,
+            SelectRosterUnit,
+            OpenRosterUnitDetail,
+            CloseUnitDetail,
+            SelectUnitDetailTab));
         _presenter = new BattleScreenPresenter(_localization, _root.SessionState, _presentationOptions);
         presentationController.ConfigureMetadataFormatter(_metadataFormatter);
         _boundRootBuildCount = panelHost.RootBuildCount;
@@ -634,6 +689,11 @@ public sealed class BattleScreenController : MonoBehaviour
         var isFinished = _timeline?.IsFinished ?? currentStep.IsFinished;
         EnsureSelectedUnit(currentStep);
         var selectedUnit = currentStep.Units.FirstOrDefault(unit => unit.Id == _selectedUnitId);
+        var selectedUnitState = _metadataFormatter.BuildSelectedUnitPanel(
+            selectedUnit,
+            _unitDetailVisible,
+            _unitDetailTab,
+            selectedUnit != null ? BuildSelectedUnitRecord(selectedUnit.Id) : string.Empty);
         var state = _presenter!.BuildState(
             currentStep,
             _recentLogs,
@@ -651,7 +711,7 @@ public sealed class BattleScreenController : MonoBehaviour
             canChangeSpeed: IsSmokeLane && _timeline != null && _policy.CanControlSpeed(_timeline.IsFinished),
             showHelp: _helpState.IsVisible,
             isSummaryExpanded: _summaryExpanded,
-            selectedUnit: _metadataFormatter.BuildSelectedUnitPanel(selectedUnit));
+            selectedUnit: selectedUnitState);
         _view!.Render(state);
         _view.SetScrubberInteractable(IsSmokeLane && _timeline != null && _policy.CanSeek(_timeline.IsFinished));
     }
@@ -790,6 +850,8 @@ public sealed class BattleScreenController : MonoBehaviour
         _totalEventCount = 0;
         _selectedUnitId = string.Empty;
         _settingsVisible = false;
+        _unitDetailVisible = false;
+        _unitDetailTab = BattleUnitDetailTab.Overview;
         _settingsStatusText = string.Empty;
         _recentLogs.Clear();
         _decisiveTimeline.Clear();
@@ -931,6 +993,31 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             _recentLogs.RemoveAt(0);
         }
+    }
+
+    private string BuildSelectedUnitRecord(string unitId)
+    {
+        var lines = _recentLogs
+            .Where(eventData => string.Equals(eventData.ActorId.Value, unitId, StringComparison.Ordinal)
+                                || string.Equals(eventData.TargetId?.Value, unitId, StringComparison.Ordinal))
+            .TakeLast(8)
+            .Select(eventData =>
+            {
+                var isActor = string.Equals(eventData.ActorId.Value, unitId, StringComparison.Ordinal);
+                var subject = isActor
+                    ? Localize(GameLocalizationTables.UIBattle, "ui.battle.record.actor", "Acted")
+                    : Localize(GameLocalizationTables.UIBattle, "ui.battle.record.target", "Received");
+                var target = string.IsNullOrWhiteSpace(eventData.TargetName)
+                    ? string.Empty
+                    : $" -> {eventData.TargetName}";
+                var value = Mathf.Abs(eventData.Value) > 0.01f ? $" {eventData.Value:0.#}" : string.Empty;
+                return $"{eventData.TimeSeconds:0.0}s  {subject}: {BattleReadabilityFormatter.BuildShortEventVerb(eventData)}{value}{target}";
+            })
+            .ToList();
+
+        return lines.Count == 0
+            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.detail.record.empty", "No notable personal events yet.")
+            : string.Join("\n", lines);
     }
 
     private string Localize(string table, string key, string fallback, params object[] args)

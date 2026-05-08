@@ -60,11 +60,18 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <ui:VisualElement name="SelectedUnitPanel" class="panel battle-shell__selected-unit sm-bs-unit-detail-panel">
-            <ui:VisualElement name="UnitDetailPanel" class="sm-bs-unit-detail-content">
+        <ui:VisualElement name="SelectedUnitPanel" class="sm-bs-unit-detail-backdrop">
+            <ui:VisualElement name="UnitDetailPanel" class="panel battle-shell__selected-unit sm-bs-unit-detail-panel sm-vellum-card">
                 <ui:VisualElement class="sm-bs-unit-detail-header">
                     <ui:Image name="SelectedUnitPortraitImage" class="sm-bs-unit-portrait" />
                     <ui:Label name="SelectedUnitHeaderLabel" class="panel__title sm-bs-section-title sm-bs-unit-detail-title" />
+                    <ui:Button name="UnitDetailCloseButton" class="ui-button sm-bs-control-btn sm-bs-unit-detail-close" text="X" />
+                </ui:VisualElement>
+                <ui:VisualElement name="UnitDetailTabs" class="sm-bs-unit-detail-tabs">
+                    <ui:Button name="UnitDetailOverviewTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
+                    <ui:Button name="UnitDetailSkillsTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
+                    <ui:Button name="UnitDetailStatusTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
+                    <ui:Button name="UnitDetailRecordTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
                 </ui:VisualElement>
                 <ui:Label name="SelectedUnitBodyLabel" class="panel__text battle-shell__selected-body sm-bs-unit-detail-body" />
                 <ui:VisualElement name="SkillPresentationSlots" class="sm-bs-skill-slots">

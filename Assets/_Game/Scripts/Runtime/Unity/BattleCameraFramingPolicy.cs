@@ -25,6 +25,20 @@ public sealed class BattleCameraFramingPolicy
         return BuildFrame(points, isBootstrap: false);
     }
 
+    public BattleCameraSuggestedFrame BuildUnitFocusFrame(BattleSimulationStep step, string selectedUnitId)
+    {
+        var selected = step.Units.FirstOrDefault(unit => unit.Id == selectedUnitId);
+        if (selected == null)
+        {
+            return BuildPassiveFrame(step, selectedUnitId);
+        }
+
+        var points = new List<Vector3> { ToWorld(selected.Position) };
+        AddUnitPoint(step, points, selected.TargetId);
+        var frame = BuildFrame(points, isBootstrap: true);
+        return new BattleCameraSuggestedFrame(frame.GroundCenter, Mathf.Clamp(frame.ZoomHeight, 4.8f, 6.4f), true);
+    }
+
     private static BattleCameraSuggestedFrame BuildFrame(IReadOnlyList<Vector3> points, bool isBootstrap)
     {
         if (points.Count == 0)

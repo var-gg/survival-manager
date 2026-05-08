@@ -24,7 +24,11 @@ public readonly record struct BattleScreenActions(
     Action ToggleTeamSummary,
     Action ToggleDebugOverlay,
     Action ToggleSummaryPanel,
-    Action<float> HandleScrubberSeek);
+    Action<float> HandleScrubberSeek,
+    Action<string> SelectRosterUnit,
+    Action<string> OpenRosterUnitDetail,
+    Action CloseUnitDetail,
+    Action<BattleUnitDetailTab> SelectUnitDetailTab);
 
 public sealed class BattleScreenView
 {
@@ -89,7 +93,13 @@ public sealed class BattleScreenView
     private readonly VisualElement _selectedUnitPanel;
     private readonly Image _selectedUnitPortraitImage;
     private readonly Label _selectedUnitHeaderLabel;
+    private readonly Button _unitDetailCloseButton;
+    private readonly Button _unitDetailOverviewTab;
+    private readonly Button _unitDetailSkillsTab;
+    private readonly Button _unitDetailStatusTab;
+    private readonly Button _unitDetailRecordTab;
     private readonly Label _selectedUnitBodyLabel;
+    private readonly VisualElement _skillPresentationSlots;
     private readonly VisualElement _signatureActiveSlot;
     private readonly Image _signatureActiveIcon;
     private readonly Label _signatureActiveLabel;
@@ -98,11 +108,16 @@ public sealed class BattleScreenView
     private readonly Label _flexActiveLabel;
 
     private Action<float>? _seekRequested;
+    private BattleScreenActions? _actions;
     private bool _isDragging;
     private bool _scrubberInteractable = true;
     private int _blockingPointerDepth;
+    private int _rosterPointerDepth;
+    private int _pointerBlockFrame = -1;
 
-    public bool IsPointerOverBlockingUi => _blockingPointerDepth > 0;
+    public bool IsPointerOverBlockingUi => _blockingPointerDepth > 0
+                                           || _rosterPointerDepth > 0
+                                           || _pointerBlockFrame == Time.frameCount;
 
     public BattleScreenView(VisualElement root)
     {
@@ -163,7 +178,13 @@ public sealed class BattleScreenView
         _selectedUnitPanel = Require<VisualElement>(root, "SelectedUnitPanel");
         _selectedUnitPortraitImage = Require<Image>(root, "SelectedUnitPortraitImage");
         _selectedUnitHeaderLabel = Require<Label>(root, "SelectedUnitHeaderLabel");
+        _unitDetailCloseButton = Require<Button>(root, "UnitDetailCloseButton");
+        _unitDetailOverviewTab = Require<Button>(root, "UnitDetailOverviewTab");
+        _unitDetailSkillsTab = Require<Button>(root, "UnitDetailSkillsTab");
+        _unitDetailStatusTab = Require<Button>(root, "UnitDetailStatusTab");
+        _unitDetailRecordTab = Require<Button>(root, "UnitDetailRecordTab");
         _selectedUnitBodyLabel = Require<Label>(root, "SelectedUnitBodyLabel");
+        _skillPresentationSlots = Require<VisualElement>(root, "SkillPresentationSlots");
         _signatureActiveSlot = Require<VisualElement>(root, "SignatureActiveSlot");
         _signatureActiveIcon = Require<Image>(root, "SignatureActiveIcon");
         _signatureActiveLabel = Require<Label>(root, "SignatureActiveLabel");
@@ -208,6 +229,7 @@ public sealed class BattleScreenView
             _selectedUnitPortraitImage,
             _selectedUnitHeaderLabel,
             _selectedUnitBodyLabel,
+            _skillPresentationSlots,
             _signatureActiveSlot,
             _signatureActiveIcon,
             _signatureActiveLabel,
@@ -233,6 +255,11 @@ public sealed class BattleScreenView
             _progressTrack,
             _settingsPanel,
             _selectedUnitPanel,
+            _unitDetailCloseButton,
+            _unitDetailOverviewTab,
+            _unitDetailSkillsTab,
+            _unitDetailStatusTab,
+            _unitDetailRecordTab,
             _toggleOverheadButton,
             _toggleDamageTextButton,
             _toggleTeamSummaryButton,
@@ -241,6 +268,7 @@ public sealed class BattleScreenView
 
     public void Bind(BattleScreenActions actions)
     {
+        _actions = actions;
         _localeKoButton.clicked += actions.SelectKorean;
         _localeEnButton.clicked += actions.SelectEnglish;
         _helpButton.clicked += actions.ToggleHelp;
@@ -259,6 +287,11 @@ public sealed class BattleScreenView
         _toggleTeamSummaryButton.clicked += actions.ToggleTeamSummary;
         _toggleDebugOverlayButton.clicked += actions.ToggleDebugOverlay;
         _summaryToggleButton.clicked += actions.ToggleSummaryPanel;
+        _unitDetailCloseButton.clicked += actions.CloseUnitDetail;
+        _unitDetailOverviewTab.clicked += () => actions.SelectUnitDetailTab(BattleUnitDetailTab.Overview);
+        _unitDetailSkillsTab.clicked += () => actions.SelectUnitDetailTab(BattleUnitDetailTab.Skills);
+        _unitDetailStatusTab.clicked += () => actions.SelectUnitDetailTab(BattleUnitDetailTab.Status);
+        _unitDetailRecordTab.clicked += () => actions.SelectUnitDetailTab(BattleUnitDetailTab.Record);
         _seekRequested = actions.HandleScrubberSeek;
 
         _progressTrack.RegisterCallback<PointerDownEvent>(HandlePointerDown);
@@ -353,7 +386,17 @@ public sealed class BattleScreenView
         _selectedUnitPortraitImage.image = selectedUnit.Portrait;
         _selectedUnitPortraitImage.style.display = selectedUnit.Portrait != null ? DisplayStyle.Flex : DisplayStyle.None;
         _selectedUnitHeaderLabel.text = selectedUnit.Header;
-        _selectedUnitBodyLabel.text = selectedUnit.Body;
+        _unitDetailOverviewTab.text = selectedUnit.OverviewTabLabel;
+        _unitDetailSkillsTab.text = selectedUnit.SkillsTabLabel;
+        _unitDetailStatusTab.text = selectedUnit.StatusTabLabel;
+        _unitDetailRecordTab.text = selectedUnit.RecordTabLabel;
+        UpdateDetailTab(_unitDetailOverviewTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Overview);
+        UpdateDetailTab(_unitDetailSkillsTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Skills);
+        UpdateDetailTab(_unitDetailStatusTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Status);
+        UpdateDetailTab(_unitDetailRecordTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Record);
+        _selectedUnitBodyLabel.text = ResolveDetailBody(selectedUnit);
+        _selectedUnitBodyLabel.style.display = selectedUnit.ActiveTab == BattleUnitDetailTab.Skills ? DisplayStyle.None : DisplayStyle.Flex;
+        _skillPresentationSlots.style.display = selectedUnit.ActiveTab == BattleUnitDetailTab.Skills ? DisplayStyle.Flex : DisplayStyle.None;
         RenderSkillSlot(_signatureActiveSlot, _signatureActiveIcon, _signatureActiveLabel, selectedUnit.SkillSlots, 0);
         RenderSkillSlot(_flexActiveSlot, _flexActiveIcon, _flexActiveLabel, selectedUnit.SkillSlots, 1);
 
@@ -379,8 +422,9 @@ public sealed class BattleScreenView
         _progressFill.style.width = Length.Percent(Mathf.Clamp01(normalized) * 100f);
     }
 
-    private static void RenderRoster(VisualElement container, IReadOnlyList<BattleRosterUnitViewState>? roster, bool isEnemy)
+    private void RenderRoster(VisualElement container, IReadOnlyList<BattleRosterUnitViewState>? roster, bool isEnemy)
     {
+        _rosterPointerDepth = 0;
         container.Clear();
         if (roster == null)
         {
@@ -394,6 +438,8 @@ public sealed class BattleScreenView
             row.AddToClassList(isEnemy ? "sm-bs-roster-unit--enemy" : "sm-bs-roster-unit--ally");
             row.EnableInClassList("sm-bs-roster-unit--selected", unit.IsSelected);
             row.EnableInClassList("sm-bs-roster-unit--down", !unit.IsAlive);
+            SetRosterBlocking(row);
+            row.RegisterCallback<PointerDownEvent>(evt => HandleRosterPointerDown(evt, unit.UnitId));
 
             if (unit.Portrait != null)
             {
@@ -432,6 +478,41 @@ public sealed class BattleScreenView
             row.Add(meta);
             container.Add(row);
         }
+    }
+
+    private void HandleRosterPointerDown(PointerDownEvent evt, string unitId)
+    {
+        if (evt.button != 0 || string.IsNullOrWhiteSpace(unitId))
+        {
+            return;
+        }
+
+        _pointerBlockFrame = Time.frameCount;
+        if (evt.clickCount >= 2)
+        {
+            _actions?.OpenRosterUnitDetail(unitId);
+        }
+        else
+        {
+            _actions?.SelectRosterUnit(unitId);
+        }
+
+        evt.StopPropagation();
+    }
+
+    private static string ResolveDetailBody(BattleSelectedUnitViewState selectedUnit)
+    {
+        return selectedUnit.ActiveTab switch
+        {
+            BattleUnitDetailTab.Status => selectedUnit.StatusBody,
+            BattleUnitDetailTab.Record => selectedUnit.CombatRecordBody,
+            _ => selectedUnit.Body
+        };
+    }
+
+    private static void UpdateDetailTab(Button button, bool isActive)
+    {
+        button.EnableInClassList("sm-bs-unit-detail-tab--active", isActive);
     }
 
     private static VisualElement BuildRosterPortrait(Texture2D texture, bool isEnemy)
@@ -560,6 +641,13 @@ public sealed class BattleScreenView
             element.RegisterCallback<PointerEnterEvent>(_ => _blockingPointerDepth++);
             element.RegisterCallback<PointerLeaveEvent>(_ => _blockingPointerDepth = Math.Max(0, _blockingPointerDepth - 1));
         }
+    }
+
+    private void SetRosterBlocking(VisualElement element)
+    {
+        element.pickingMode = PickingMode.Position;
+        element.RegisterCallback<PointerEnterEvent>(_ => _rosterPointerDepth++);
+        element.RegisterCallback<PointerLeaveEvent>(_ => _rosterPointerDepth = Math.Max(0, _rosterPointerDepth - 1));
     }
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement
