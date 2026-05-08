@@ -392,12 +392,9 @@ public sealed class BattleScreenView
 
             if (unit.Portrait != null)
             {
-                var portrait = new Image
-                {
-                    image = unit.Portrait,
-                    scaleMode = ScaleMode.ScaleAndCrop
-                };
+                var portrait = new VisualElement();
                 portrait.AddToClassList("sm-bs-roster-portrait");
+                portrait.style.backgroundImage = new StyleBackground(unit.Portrait);
                 row.Add(portrait);
             }
             else
