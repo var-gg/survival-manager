@@ -128,10 +128,10 @@
 
 .battle-screen .sm-bs-layout {
     position: absolute;
-    top: 116px;
+    top: 174px;
     left: 12px;
     right: 12px;
-    bottom: 142px;
+    bottom: 252px;
 }
 
 .battle-screen .sm-bs-center {
@@ -162,13 +162,15 @@
 .battle-screen .sm-bs-threat-strip {
     position: absolute;
     top: 64px;
-    left: 184px;
-    right: 184px;
-    height: 46px;
+    left: 112px;
+    right: 112px;
+    height: 96px;
     flex-direction: row;
     align-items: center;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
 }
 
 .battle-screen .sm-bs-threat-strip > .sm-family-tint-rib,
@@ -185,31 +187,31 @@
     left: 12px;
     right: 12px;
     bottom: 12px;
-    min-height: 120px;
-    max-height: 126px;
+    min-height: 230px;
+    max-height: 236px;
     flex-direction: row;
     align-items: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-left: 14px;
+    padding-right: 14px;
 }
 
 .battle-screen .sm-bs-strip-header {
-    width: 140px;
-    min-width: 128px;
+    width: 164px;
+    min-width: 148px;
 }
 
 .battle-screen .sm-bs-rail-title {
     color: var(--sm-gold-200);
-    font-size: 12px;
+    font-size: 13px;
     -unity-font-style: bold;
 }
 
 .battle-screen .sm-bs-rail-summary {
-    margin-top: 4px;
+    margin-top: 6px;
     color: var(--sm-ink-1);
-    font-size: 10px;
+    font-size: 11px;
     white-space: normal;
 }
 
@@ -220,11 +222,11 @@
 }
 
 .battle-screen .sm-bs-roster-unit {
-    margin-right: 8px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 6px;
-    padding-right: 6px;
+    margin-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
     flex-direction: row;
     align-items: center;
     background-color: rgba(245, 234, 208, 0.08);
@@ -240,18 +242,18 @@
 
 .battle-screen .sm-bs-roster-list--ally .sm-bs-roster-unit {
     flex-grow: 1;
-    min-width: 108px;
-    max-width: 168px;
-    min-height: 86px;
+    min-width: 220px;
+    max-width: 286px;
+    min-height: 178px;
 }
 
 .battle-screen .sm-bs-roster-list--enemy .sm-bs-roster-unit {
     flex-grow: 1;
-    min-width: 92px;
-    max-width: 142px;
-    min-height: 34px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    min-width: 196px;
+    max-width: 292px;
+    min-height: 72px;
+    padding-top: 7px;
+    padding-bottom: 7px;
 }
 
 .battle-screen .sm-bs-roster-unit--enemy {
@@ -270,24 +272,27 @@
 }
 
 .battle-screen .sm-bs-roster-portrait {
-    width: 58px;
-    height: 58px;
-    min-width: 58px;
-    margin-right: 8px;
+    width: 116px;
+    height: 150px;
+    min-width: 116px;
+    margin-right: 12px;
     background-color: rgba(31, 25, 19, 0.82);
     border-width: 1px;
     border-color: rgba(218, 187, 118, 0.54);
     -unity-background-scale-mode: scale-and-crop;
+    overflow: hidden;
     -unity-text-align: middle-center;
     color: var(--sm-gold-200);
     -unity-font-style: bold;
+    font-size: 22px;
 }
 
 .battle-screen .sm-bs-roster-list--enemy .sm-bs-roster-portrait {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
-    margin-right: 6px;
+    width: 58px;
+    height: 58px;
+    min-width: 58px;
+    margin-right: 10px;
+    font-size: 16px;
 }
 
 .battle-screen .sm-bs-roster-portrait--missing {
@@ -300,7 +305,7 @@
 
 .battle-screen .sm-bs-roster-name {
     color: var(--sm-ink-0);
-    font-size: 10px;
+    font-size: 12px;
     -unity-font-style: bold;
     white-space: nowrap;
     overflow: hidden;
@@ -308,23 +313,23 @@
 }
 
 .battle-screen .sm-bs-roster-status {
-    margin-top: 2px;
+    margin-top: 5px;
     color: var(--sm-ink-2);
-    font-size: 9px;
+    font-size: 11px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .battle-screen .sm-bs-roster-hp-track {
-    margin-top: 5px;
-    height: 5px;
+    margin-top: 12px;
+    height: 8px;
     background-color: rgba(245, 234, 208, 0.10);
 }
 
 .battle-screen .sm-bs-roster-list--enemy .sm-bs-roster-hp-track {
-    height: 3px;
-    margin-top: 3px;
+    height: 5px;
+    margin-top: 7px;
 }
 
 .battle-screen .sm-bs-roster-hp-fill {
@@ -367,7 +372,7 @@
 .battle-screen .sm-bs-control-bar {
     width: 440px;
     min-width: 400px;
-    height: 86px;
+    height: 96px;
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
@@ -466,7 +471,7 @@
 
 .battle-screen .sm-bs-unit-detail-panel {
     position: absolute;
-    top: 116px;
+    top: 174px;
     right: 12px;
     width: 318px;
     max-height: 560px;
