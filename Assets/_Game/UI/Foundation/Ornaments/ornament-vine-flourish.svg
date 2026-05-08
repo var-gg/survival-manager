@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Survival Manager : Button hover vine flourish
+  source: docs/02_design/ui/handoff/foundation-pack-v0.2/atoms-button-herocard.html (.btn-vine class)
+  default orientation: left side. right uses USS scale -1 1 to mirror.
+  fill / stroke = white (FFFFFF). USS tints via -unity-background-image-tint-color (gold token).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" fill="none"
+     stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round">
+  <path d="M14 7 L4 7"/>
+  <path d="M4 7 Q 1 7 1 4 Q 1 1 4 1"/>
+  <circle cx="2.6" cy="2.6" r="1.2" fill="#FFFFFF"/>
+</svg>

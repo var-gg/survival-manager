@@ -60,7 +60,11 @@ public static class BattleReadModelBuilder
                     unit.Definition.ArchetypeId,
                     unit.Definition.CharacterId,
                     unit.Definition.RoleInstructionId,
-                    unit.Definition.RoleTag);
+                    unit.Definition.RoleTag,
+                    unit.Definition.EffectiveSignatureActive?.Id ?? string.Empty,
+                    unit.Definition.EffectiveSignatureActive?.Name ?? string.Empty,
+                    unit.Definition.EffectiveFlexActive?.Id ?? string.Empty,
+                    unit.Definition.EffectiveFlexActive?.Name ?? string.Empty);
             })
             .ToList();
 

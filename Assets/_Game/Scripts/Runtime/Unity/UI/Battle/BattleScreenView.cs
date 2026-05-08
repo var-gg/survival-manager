@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -44,6 +45,8 @@ public sealed class BattleScreenView
     private readonly Label _logTitleLabel;
     private readonly VisualElement _allySummaryPanel;
     private readonly VisualElement _enemySummaryPanel;
+    private readonly VisualElement _allyRosterList;
+    private readonly VisualElement _enemyRosterList;
     private readonly Label _allyHpLabel;
     private readonly Label _enemyHpLabel;
     private readonly Label _logLabel;
@@ -79,8 +82,15 @@ public sealed class BattleScreenView
     private readonly Button _toggleDebugOverlayButton;
     private readonly Label _settingsStatusLabel;
     private readonly VisualElement _selectedUnitPanel;
+    private readonly Image _selectedUnitPortraitImage;
     private readonly Label _selectedUnitHeaderLabel;
     private readonly Label _selectedUnitBodyLabel;
+    private readonly VisualElement _signatureActiveSlot;
+    private readonly Image _signatureActiveIcon;
+    private readonly Label _signatureActiveLabel;
+    private readonly VisualElement _flexActiveSlot;
+    private readonly Image _flexActiveIcon;
+    private readonly Label _flexActiveLabel;
 
     private Action<float>? _seekRequested;
     private bool _isDragging;
@@ -109,6 +119,8 @@ public sealed class BattleScreenView
         _logTitleLabel = Require<Label>(root, "LogTitleLabel");
         _allySummaryPanel = Require<VisualElement>(root, "AllySummaryPanel");
         _enemySummaryPanel = Require<VisualElement>(root, "EnemySummaryPanel");
+        _allyRosterList = Require<VisualElement>(root, "AllyRosterList");
+        _enemyRosterList = Require<VisualElement>(root, "EnemyRosterList");
         _allyHpLabel = Require<Label>(root, "AllyHpLabel");
         _enemyHpLabel = Require<Label>(root, "EnemyHpLabel");
         _logLabel = Require<Label>(root, "LogLabel");
@@ -144,8 +156,18 @@ public sealed class BattleScreenView
         _toggleDebugOverlayButton = Require<Button>(root, "ToggleDebugOverlayButton");
         _settingsStatusLabel = Require<Label>(root, "SettingsStatusLabel");
         _selectedUnitPanel = Require<VisualElement>(root, "SelectedUnitPanel");
+        _selectedUnitPortraitImage = Require<Image>(root, "SelectedUnitPortraitImage");
         _selectedUnitHeaderLabel = Require<Label>(root, "SelectedUnitHeaderLabel");
         _selectedUnitBodyLabel = Require<Label>(root, "SelectedUnitBodyLabel");
+        _signatureActiveSlot = Require<VisualElement>(root, "SignatureActiveSlot");
+        _signatureActiveIcon = Require<Image>(root, "SignatureActiveIcon");
+        _signatureActiveLabel = Require<Label>(root, "SignatureActiveLabel");
+        _flexActiveSlot = Require<VisualElement>(root, "FlexActiveSlot");
+        _flexActiveIcon = Require<Image>(root, "FlexActiveIcon");
+        _flexActiveLabel = Require<Label>(root, "FlexActiveLabel");
+        _selectedUnitPortraitImage.scaleMode = ScaleMode.ScaleAndCrop;
+        _signatureActiveIcon.scaleMode = ScaleMode.ScaleAndCrop;
+        _flexActiveIcon.scaleMode = ScaleMode.ScaleAndCrop;
 
         SetNonBlocking(
             _titleLabel,
@@ -160,6 +182,8 @@ public sealed class BattleScreenView
             _logTitleLabel,
             _allySummaryPanel,
             _enemySummaryPanel,
+            _allyRosterList,
+            _enemyRosterList,
             _allyHpLabel,
             _enemyHpLabel,
             _logLabel,
@@ -176,9 +200,15 @@ public sealed class BattleScreenView
             _debugSettingsSection,
             _settingsDebugTitleLabel,
             _settingsStatusLabel,
-            _selectedUnitPanel,
+            _selectedUnitPortraitImage,
             _selectedUnitHeaderLabel,
-            _selectedUnitBodyLabel);
+            _selectedUnitBodyLabel,
+            _signatureActiveSlot,
+            _signatureActiveIcon,
+            _signatureActiveLabel,
+            _flexActiveSlot,
+            _flexActiveIcon,
+            _flexActiveLabel);
 
         SetBlocking(
             _localeKoButton,
@@ -196,6 +226,8 @@ public sealed class BattleScreenView
             _returnTownButton,
             _settingsButton,
             _progressTrack,
+            _settingsPanel,
+            _selectedUnitPanel,
             _toggleOverheadButton,
             _toggleDamageTextButton,
             _toggleTeamSummaryButton,
@@ -293,6 +325,8 @@ public sealed class BattleScreenView
 
         _allySummaryPanel.style.display = state.ShowTeamSummary ? DisplayStyle.Flex : DisplayStyle.None;
         _enemySummaryPanel.style.display = state.ShowTeamSummary ? DisplayStyle.Flex : DisplayStyle.None;
+        RenderRoster(_allyRosterList, state.AllyRoster, isEnemy: false);
+        RenderRoster(_enemyRosterList, state.EnemyRoster, isEnemy: true);
 
         _settingsPanel.style.display = state.Settings.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
         _settingsTitleLabel.text = state.Settings.Title;
@@ -311,8 +345,12 @@ public sealed class BattleScreenView
 
         var selectedUnit = state.SelectedUnit ?? BattleSelectedUnitViewState.Hidden;
         _selectedUnitPanel.style.display = selectedUnit.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
+        _selectedUnitPortraitImage.image = selectedUnit.Portrait;
+        _selectedUnitPortraitImage.style.display = selectedUnit.Portrait != null ? DisplayStyle.Flex : DisplayStyle.None;
         _selectedUnitHeaderLabel.text = selectedUnit.Header;
         _selectedUnitBodyLabel.text = selectedUnit.Body;
+        RenderSkillSlot(_signatureActiveSlot, _signatureActiveIcon, _signatureActiveLabel, selectedUnit.SkillSlots, 0);
+        RenderSkillSlot(_flexActiveSlot, _flexActiveIcon, _flexActiveLabel, selectedUnit.SkillSlots, 1);
 
         if (!_isDragging)
         {
@@ -334,6 +372,87 @@ public sealed class BattleScreenView
         }
 
         _progressFill.style.width = Length.Percent(Mathf.Clamp01(normalized) * 100f);
+    }
+
+    private static void RenderRoster(VisualElement container, IReadOnlyList<BattleRosterUnitViewState>? roster, bool isEnemy)
+    {
+        container.Clear();
+        if (roster == null)
+        {
+            return;
+        }
+
+        foreach (var unit in roster)
+        {
+            var row = new VisualElement();
+            row.AddToClassList("sm-bs-roster-unit");
+            row.AddToClassList(isEnemy ? "sm-bs-roster-unit--enemy" : "sm-bs-roster-unit--ally");
+            row.EnableInClassList("sm-bs-roster-unit--selected", unit.IsSelected);
+            row.EnableInClassList("sm-bs-roster-unit--down", !unit.IsAlive);
+
+            if (unit.Portrait != null)
+            {
+                var portrait = new Image
+                {
+                    image = unit.Portrait,
+                    scaleMode = ScaleMode.ScaleAndCrop
+                };
+                portrait.AddToClassList("sm-bs-roster-portrait");
+                row.Add(portrait);
+            }
+            else
+            {
+                var fallback = new Label(BuildInitial(unit.DisplayName));
+                fallback.AddToClassList("sm-bs-roster-portrait");
+                fallback.AddToClassList("sm-bs-roster-portrait--missing");
+                row.Add(fallback);
+            }
+
+            var meta = new VisualElement();
+            meta.AddToClassList("sm-bs-roster-meta");
+
+            var name = new Label(unit.DisplayName);
+            name.AddToClassList("sm-bs-roster-name");
+            meta.Add(name);
+
+            var status = new Label(unit.StatusText);
+            status.AddToClassList("sm-bs-roster-status");
+            meta.Add(status);
+
+            var track = new VisualElement();
+            track.AddToClassList("sm-bs-roster-hp-track");
+            var fill = new VisualElement();
+            fill.AddToClassList("sm-bs-roster-hp-fill");
+            fill.style.width = Length.Percent(Mathf.Clamp01(unit.HealthNormalized) * 100f);
+            track.Add(fill);
+            meta.Add(track);
+
+            row.Add(meta);
+            container.Add(row);
+        }
+    }
+
+    private static void RenderSkillSlot(
+        VisualElement slot,
+        Image icon,
+        Label label,
+        IReadOnlyList<BattleSkillSlotViewState>? slots,
+        int index)
+    {
+        var state = slots != null && index >= 0 && index < slots.Count ? slots[index] : null;
+        var hasState = state != null;
+        var hasIcon = state?.Icon != null;
+        slot.EnableInClassList("sm-bs-skill-slot--missing", !hasIcon);
+        icon.image = state?.Icon;
+        icon.style.display = hasIcon ? DisplayStyle.Flex : DisplayStyle.None;
+        label.text = hasState
+            ? $"{state!.SlotLabel}\n{state.SkillName}"
+            : string.Empty;
+    }
+
+    private static string BuildInitial(string value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "?" : value.Trim()[0].ToString();
     }
 
     private void HandlePointerDown(PointerDownEvent evt)

@@ -1051,15 +1051,15 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             if (evt.EventKind == BattleEventKind.Kill)
             {
-                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.TargetName} down");
+                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.TargetName} went down");
             }
             else if (evt.LogCode == BattleLogCode.ActiveSkillHeal)
             {
-                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.ActorName} heal {evt.TargetName} +{evt.Value:0}");
+                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.ActorName} restored {evt.TargetName} for {evt.Value:0}");
             }
             else if (evt.ActionType == BattleActionType.ActiveSkill && evt.Value > 0)
             {
-                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.ActorName} skill {evt.TargetName} -{evt.Value:0}");
+                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.ActorName} used a skill on {evt.TargetName} for {evt.Value:0}");
             }
         }
     }

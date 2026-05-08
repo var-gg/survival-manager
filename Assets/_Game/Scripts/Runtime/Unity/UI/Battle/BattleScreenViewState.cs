@@ -1,6 +1,17 @@
+using System.Collections.Generic;
 using SM.Unity.UI;
+using UnityEngine;
 
 namespace SM.Unity.UI.Battle;
+
+public sealed record BattleRosterUnitViewState(
+    string UnitId,
+    string DisplayName,
+    string StatusText,
+    float HealthNormalized,
+    bool IsAlive,
+    bool IsSelected,
+    Texture2D? Portrait);
 
 public sealed record BattleSettingsViewState(
     bool IsVisible,
@@ -70,4 +81,6 @@ public sealed record BattleShellViewState(
     bool ShowTeamSummary,
     bool CanContinue,
     BattleSettingsViewState Settings,
+    IReadOnlyList<BattleRosterUnitViewState>? AllyRoster = null,
+    IReadOnlyList<BattleRosterUnitViewState>? EnemyRoster = null,
     BattleSelectedUnitViewState? SelectedUnit = null);

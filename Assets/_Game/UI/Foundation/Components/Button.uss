@@ -1,0 +1,515 @@
+/* =============================================================
+ * Button.uss
+ * Survival Manager - Button atom
+ * source: docs/02_design/ui/handoff/foundation-pack-v0.2/atoms-button-herocard.html (line 186-475)
+ * matrix: variant 5 x size 3 (+mobile) x state 5
+ *
+ * USS 제약 워크어라운드:
+ *   - linear-gradient → 단색 (family token 활용)
+ *   - ::before/::after → child VisualElement (.sm-btn__outline, .sm-btn__inset)
+ *   - box-shadow → border-color 변경으로 시각적 대체
+ *   - text-shadow → -unity-text-outline-* 또는 생략
+ *   - filter brightness → opacity / 색상 직접 변경
+ *   - @keyframes spin → C# scheduler에서 rotate 매 프레임 (런타임 단계)
+ *   - @keyframes wine-pulse → C# tween 또는 추후 USS animation 시도
+ * ============================================================= */
+
+/* === base ==================================================== */
+.sm-btn {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    -unity-font-style: bold;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--sm-vellum);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 13px;
+    white-space: nowrap;
+    min-height: 40px;
+    transition-property: color, scale, opacity, background-color, border-color, translate;
+    transition-duration: 120ms, 120ms, 120ms, 120ms, 120ms, 120ms;
+    transition-timing-function: ease-out;
+}
+
+/* === sizes =================================================== */
+.sm-btn--sm {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 14px;
+    padding-right: 14px;
+    font-size: 12px;
+    min-height: 32px;
+}
+
+.sm-btn--md {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 13px;
+    min-height: 40px;
+}
+
+.sm-btn--lg {
+    padding-top: 13px;
+    padding-bottom: 13px;
+    padding-left: 26px;
+    padding-right: 26px;
+    font-size: 15px;
+    min-height: 48px;
+}
+
+.sm-btn--mobile {
+    min-height: 44px;
+    padding-left: 22px;
+    padding-right: 22px;
+}
+
+/* === outline + inset (::before / ::after 대체) =============== */
+.sm-btn__outline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-500);
+    border-right-color: var(--sm-gold-500);
+    border-top-color: var(--sm-gold-500);
+    border-bottom-color: var(--sm-gold-500);
+}
+
+.sm-btn__inset {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+    transition-property: border-left-color, border-right-color, border-top-color, border-bottom-color;
+    transition-duration: 120ms;
+    transition-timing-function: ease-out;
+}
+
+/* === corner cap (8x8 L-bracket) ============================= */
+.sm-btn__cap {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+.sm-btn__cap--tl {
+    top: -1px;
+    left: -1px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+}
+
+.sm-btn__cap--tr {
+    top: -1px;
+    right: -1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+}
+
+.sm-btn__cap--bl {
+    bottom: -1px;
+    left: -1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+}
+
+.sm-btn__cap--br {
+    bottom: -1px;
+    right: -1px;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+}
+
+/* === vine flourish (hover-revealed) ======================== */
+.sm-btn__vine {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    /* Unity 6.3+ built-in Vector Graphics module (UI Toolkit SVG support).
+       package install no longer required for 6000.4.0f1. */
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Ornaments/ornament-vine-flourish.svg");
+    -unity-background-image-tint-color: var(--sm-gold-200);
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 120ms;
+    transition-timing-function: ease-out;
+}
+
+.sm-btn__vine--left {
+    left: -7px;
+    top: 50%;
+    translate: 0 -50%;
+}
+
+.sm-btn__vine--right {
+    right: -7px;
+    top: 50%;
+    translate: 0 -50%;
+    scale: -1 1;
+}
+
+.sm-btn:hover > .sm-btn__vine {
+    opacity: 0.85;
+}
+
+/* === ember tick (destructive only) ========================= */
+.sm-btn__ember {
+    position: absolute;
+    display: none;
+    top: -3px;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background-color: var(--sm-fam-striker-glow);
+    rotate: 45deg;
+    translate: -50% 0;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.sm-btn--destructive .sm-btn__ember {
+    display: flex;
+}
+
+/* === spinner (loading only) ================================ */
+.sm-btn__spinner {
+    position: absolute;
+    display: none;
+    left: 50%;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    margin-left: -9px;
+    margin-top: -9px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Ornaments/icon-spinner-arc.svg");
+    -unity-background-image-tint-color: var(--sm-gold-200);
+}
+
+.sm-btn--loading .sm-btn__spinner {
+    display: flex;
+}
+
+.sm-btn--loading .sm-btn__label {
+    visibility: hidden;
+}
+
+/* === label =================================================== */
+.sm-btn__label {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+}
+
+.sm-btn__label-ko {
+    font-size: 13px;
+    color: var(--sm-vellum);
+    -unity-font-style: bold;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.sm-btn--sm .sm-btn__label-ko {
+    font-size: 12px;
+}
+
+.sm-btn--lg .sm-btn__label-ko {
+    font-size: 15px;
+}
+
+.sm-btn__label-en {
+    font-size: 9px;
+    color: rgba(245, 234, 208, 0.7);
+    margin-left: 4px;
+    padding-left: 8px;
+    border-left-width: 1px;
+    border-left-color: rgba(245, 214, 138, 0.35);
+}
+
+/* ============================================================ */
+/* === VARIANTS ================================================ */
+/* ============================================================ */
+
+/* --- PRIMARY (gold cap + family fill) ---------------------- */
+.sm-btn--primary {
+    background-color: var(--sm-fam-striker);
+}
+
+.sm-btn--primary:hover {
+    background-color: var(--sm-fam-striker-glow);
+}
+
+.sm-btn--primary:hover > .sm-btn__inset {
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.sm-btn--primary:active {
+    translate: 0 1px;
+    opacity: 0.92;
+}
+
+/* --- SECONDARY (vellum line on dark) ----------------------- */
+.sm-btn--secondary {
+    background-color: rgba(0, 0, 0, 0.25);
+    color: var(--sm-vellum);
+}
+
+.sm-btn--secondary > .sm-btn__inset {
+    border-left-color: rgba(245, 214, 138, 0.35);
+    border-right-color: rgba(245, 214, 138, 0.35);
+    border-top-color: rgba(245, 214, 138, 0.35);
+    border-bottom-color: rgba(245, 214, 138, 0.35);
+}
+
+.sm-btn--secondary:hover > .sm-btn__inset {
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.sm-btn--secondary:active {
+    translate: 0 1px;
+    opacity: 0.92;
+}
+
+/* --- DESTRUCTIVE (wine + ember tick) ----------------------- */
+.sm-btn--destructive {
+    background-color: var(--sm-fam-striker-deep);
+    color: var(--sm-vellum);
+}
+
+.sm-btn--destructive > .sm-btn__outline {
+    border-left-color: var(--sm-fam-striker-deep);
+    border-right-color: var(--sm-fam-striker-deep);
+    border-top-color: var(--sm-fam-striker-deep);
+    border-bottom-color: var(--sm-fam-striker-deep);
+}
+
+.sm-btn--destructive > .sm-btn__inset {
+    border-left-color: var(--sm-fam-striker-glow);
+    border-right-color: var(--sm-fam-striker-glow);
+    border-top-color: var(--sm-fam-striker-glow);
+    border-bottom-color: var(--sm-fam-striker-glow);
+}
+
+.sm-btn--destructive > .sm-btn__cap {
+    border-left-color: var(--sm-fam-striker-glow);
+    border-right-color: var(--sm-fam-striker-glow);
+    border-top-color: var(--sm-fam-striker-glow);
+    border-bottom-color: var(--sm-fam-striker-glow);
+}
+
+.sm-btn--destructive:hover {
+    background-color: var(--sm-fam-striker-glow);
+}
+
+.sm-btn--destructive:active {
+    translate: 0 1px;
+    opacity: 0.92;
+}
+
+/* --- GHOST (line only) ------------------------------------- */
+.sm-btn--ghost {
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--sm-ink-2);
+    padding-left: 18px;
+    padding-right: 18px;
+}
+
+.sm-btn--ghost > .sm-btn__outline {
+    border-top-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--sm-gold-400);
+}
+
+.sm-btn--ghost > .sm-btn__inset {
+    display: none;
+}
+
+.sm-btn--ghost > .sm-btn__cap {
+    display: none;
+}
+
+.sm-btn--ghost:hover {
+    color: var(--sm-gold-200);
+}
+
+.sm-btn--ghost:hover > .sm-btn__outline {
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.sm-btn--ghost:active {
+    translate: 0 1px;
+    opacity: 0.92;
+}
+
+/* --- ICON (square) ----------------------------------------- */
+.sm-btn--icon {
+    background-color: rgba(0, 0, 0, 0.25);
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    width: 40px;
+    height: 40px;
+    color: var(--sm-gold-200);
+}
+
+.sm-btn--icon.sm-btn--sm {
+    width: 32px;
+    height: 32px;
+    min-height: 32px;
+}
+
+.sm-btn--icon.sm-btn--lg {
+    width: 48px;
+    height: 48px;
+    min-height: 48px;
+}
+
+.sm-btn--icon.sm-btn--mobile {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+}
+
+.sm-btn--icon:hover {
+    color: var(--sm-gold-100);
+}
+
+.sm-btn--icon:hover > .sm-btn__inset {
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.sm-btn--icon:active {
+    translate: 0 1px;
+    opacity: 0.92;
+}
+
+/* === disabled state ========================================== */
+.sm-btn--disabled,
+.sm-btn:disabled {
+    opacity: 0.4;
+}
+
+.sm-btn--disabled .sm-btn__vine,
+.sm-btn:disabled .sm-btn__vine {
+    opacity: 0;
+}
+
+/* ============================================================ */
+/* === FAMILY TINT SLOTS (override .sm-btn--primary fill) ===== */
+/* ============================================================ */
+
+.sm-btn--fam-beastkin.sm-btn--primary {
+    background-color: var(--sm-fam-beastkin);
+}
+
+.sm-btn--fam-beastkin.sm-btn--primary:hover {
+    background-color: var(--sm-fam-beastkin-glow);
+}
+
+.sm-btn--fam-vanguard.sm-btn--primary {
+    background-color: var(--sm-fam-vanguard);
+}
+
+.sm-btn--fam-vanguard.sm-btn--primary:hover {
+    background-color: var(--sm-fam-vanguard-glow);
+}
+
+.sm-btn--fam-striker.sm-btn--primary {
+    background-color: var(--sm-fam-striker);
+}
+
+.sm-btn--fam-striker.sm-btn--primary:hover {
+    background-color: var(--sm-fam-striker-glow);
+}
+
+.sm-btn--fam-ranger.sm-btn--primary {
+    background-color: var(--sm-fam-ranger);
+}
+
+.sm-btn--fam-ranger.sm-btn--primary:hover {
+    background-color: var(--sm-fam-ranger-glow);
+}
+
+.sm-btn--fam-mystic.sm-btn--primary {
+    background-color: var(--sm-fam-mystic);
+}
+
+.sm-btn--fam-mystic.sm-btn--primary:hover {
+    background-color: var(--sm-fam-mystic-glow);
+}
+
+/* ember tick family tint */
+.sm-btn--fam-beastkin .sm-btn__ember {
+    background-color: var(--sm-fam-beastkin-glow);
+}
+
+.sm-btn--fam-vanguard .sm-btn__ember {
+    background-color: var(--sm-fam-vanguard-glow);
+}
+
+.sm-btn--fam-striker .sm-btn__ember {
+    background-color: var(--sm-fam-striker-glow);
+}
+
+.sm-btn--fam-ranger .sm-btn__ember {
+    background-color: var(--sm-fam-ranger-glow);
+}
+
+.sm-btn--fam-mystic .sm-btn__ember {
+    background-color: var(--sm-fam-mystic-glow);
+}

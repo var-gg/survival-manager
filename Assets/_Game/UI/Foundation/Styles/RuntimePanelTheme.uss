@@ -348,3 +348,352 @@
 .battle-shell__status {
     color: var(--color-text-muted);
 }
+
+/* =============================================================
+   v0.2 FOUNDATION UTILITY CLASSES
+   claude.ai/design Foundation pack v0.2 mock 톤(JRPG + 원신 +
+   유니콘 오버로드)을 atom/molecule level에 일관 적용하기 위한
+   utility class 묶음.
+   소스오브트루스: docs/02_design/ui/handoff/foundation-pack-v0.2/
+   ============================================================= */
+
+/* --- Vellum 카드 --- */
+/* 양피지 위 잉크 톤. card / panel / modal body에 base로 적용 */
+.sm-vellum-card {
+    background-color: var(--sm-bg-1);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-1);
+    border-right-color: var(--sm-line-1);
+    border-top-color: var(--sm-line-1);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+    color: var(--sm-ink-1);
+    padding-left: var(--sm-s-3);
+    padding-right: var(--sm-s-3);
+    padding-top: var(--sm-s-3);
+    padding-bottom: var(--sm-s-3);
+}
+
+/* --- Ornate frame: gold corner cap이 들어가는 큰 frame --- */
+/* card / panel header 등 강조 surface에. Gold line 강조. */
+.sm-ornate-frame {
+    background-color: var(--sm-bg-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-500);
+    border-right-color: var(--sm-gold-500);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-500);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+}
+
+/* --- Gold corner cap (L-bracket) --- */
+/* card / button 모서리에 작은 gold L-bracket overlay.
+   기본 single-bracket: border-top + border-left만 두고 나머지는 0
+   으로 L 모양. position 별 modifier로 4 방향 처리.
+   사용: 부모에 position:relative 또는 absolute,
+   <ve class="sm-corner-cap sm-corner-cap--tl" /> 식 4개 자식으로. */
+.sm-corner-cap {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+.sm-corner-cap--tl {
+    top: -1px;
+    left: -1px;
+    border-top-width: 2px;
+    border-left-width: 2px;
+}
+
+.sm-corner-cap--tr {
+    top: -1px;
+    right: -1px;
+    border-top-width: 2px;
+    border-right-width: 2px;
+}
+
+.sm-corner-cap--bl {
+    bottom: -1px;
+    left: -1px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+}
+
+.sm-corner-cap--br {
+    bottom: -1px;
+    right: -1px;
+    border-bottom-width: 2px;
+    border-right-width: 2px;
+}
+
+/* 작은 diamond gem inlay — corner cap 안쪽에 함께 배치하면
+   L-bracket + diamond accent 조합. transform rotate로 45도. */
+.sm-diamond-inlay {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background-color: var(--sm-gold-200);
+    rotate: 45deg;
+}
+
+.sm-diamond-inlay--tl {
+    top: 4px;
+    left: 4px;
+}
+
+.sm-diamond-inlay--tr {
+    top: 4px;
+    right: 4px;
+}
+
+.sm-diamond-inlay--bl {
+    bottom: 4px;
+    left: 4px;
+}
+
+.sm-diamond-inlay--br {
+    bottom: 4px;
+    right: 4px;
+}
+
+/* --- Vine flourish on hover --- */
+/* primary button hover 시 좌우 양쪽 부드럽게 reveal.
+   Unity USS는 ::before 미지원. children VisualElement에
+   class를 주고 transition opacity로 처리. */
+.sm-vine-flourish {
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: var(--sm-t-snap);
+    transition-timing-function: ease-out;
+}
+
+.sm-vine-flourish-host:hover .sm-vine-flourish {
+    opacity: 1;
+}
+
+/* --- Family-tint rib --- */
+/* card 상단 띠. archetype 가족 색을 띠로 표시.
+   children에 <ve class="sm-family-tint-rib sm-family-tint-rib--vanguard" />
+   식으로 modifier class 적용. */
+.sm-family-tint-rib {
+    height: 4px;
+    width: 100%;
+}
+
+.sm-family-tint-rib--beastkin {
+    background-color: var(--sm-fam-beastkin);
+}
+
+.sm-family-tint-rib--vanguard {
+    background-color: var(--sm-fam-vanguard);
+}
+
+.sm-family-tint-rib--striker {
+    background-color: var(--sm-fam-striker);
+}
+
+.sm-family-tint-rib--ranger {
+    background-color: var(--sm-fam-ranger);
+}
+
+.sm-family-tint-rib--mystic {
+    background-color: var(--sm-fam-mystic);
+}
+
+/* --- Jewel duotone — rarity --- */
+/* tier dot / item slot border / portrait frame에 적용.
+   common(parchment) / rare(sapphire) / epic(amethyst→flame). */
+.sm-jewel-common {
+    background-color: var(--sm-rare-common);
+    border-left-color: var(--sm-rare-common-deep);
+    border-right-color: var(--sm-rare-common-deep);
+    border-top-color: var(--sm-rare-common-deep);
+    border-bottom-color: var(--sm-rare-common-deep);
+}
+
+.sm-jewel-rare {
+    background-color: var(--sm-rare-rare);
+    border-left-color: var(--sm-rare-rare-deep);
+    border-right-color: var(--sm-rare-rare-deep);
+    border-top-color: var(--sm-rare-rare-deep);
+    border-bottom-color: var(--sm-rare-rare-deep);
+}
+
+.sm-jewel-epic {
+    background-color: var(--sm-rare-epic);
+    border-left-color: var(--sm-rare-epic-deep);
+    border-right-color: var(--sm-rare-epic-deep);
+    border-top-color: var(--sm-rare-epic-deep);
+    border-bottom-color: var(--sm-rare-epic-deep);
+}
+
+/* --- State overlay --- */
+/* card / portrait에 상태 표시 overlay. */
+.sm-state-locked-overlay {
+    background-color: rgba(107, 110, 133, 0.55);
+}
+
+.sm-state-ko-overlay {
+    background-color: rgba(138, 138, 152, 0.62);
+}
+
+.sm-state-injured-overlay {
+    background-color: rgba(182, 51, 74, 0.18);
+}
+
+.sm-state-selected-glow {
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+/* --- Headline --- */
+/* SURVIVAL · MANAGER 식 메타 헤드라인. Cinzel display 톤. */
+.sm-headline {
+    font-size: 32px;
+    -unity-font-style: bold;
+    color: var(--sm-gold-200);
+    letter-spacing: 4px;
+}
+
+.sm-headline--lg {
+    font-size: 46px;
+}
+
+/* --- Eyebrow caption --- */
+/* 헤드라인 위 작은 dev tag (mono). */
+.sm-eyebrow {
+    font-size: 11px;
+    color: var(--sm-gold-300);
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+}
+
+/* =============================================================
+   ORNATE DETAIL — 이중 라인 / 스티치 / vine
+   USS만으로 가능한 한도에서 mock의 frame 정교화 흡수.
+   Unity USS는 border-image / box-shadow 미지원이라
+   inner element를 child로 두는 layering 패턴.
+   본격 ornate(SVG vine flourish, gradient corner glow, embossed
+   relief)는 별도 image asset 필요 (5/8 cycle 후 본격).
+   ============================================================= */
+
+/* --- Double gold line --- */
+/* ornate-frame 안쪽에 한 줄 더. 부모에 sm-ornate-frame 두고
+   바로 안쪽 child VisualElement에 sm-inner-line. 1px gap. */
+.sm-inner-line {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-500);
+    border-right-color: var(--sm-gold-500);
+    border-top-color: var(--sm-gold-500);
+    border-bottom-color: var(--sm-gold-500);
+}
+
+/* --- Stitched hairline --- */
+/* 양피지 위 스티치 hint. divider 또는 panel 가장자리에. */
+.sm-stitch-h {
+    height: 1px;
+    background-color: var(--sm-gold-500);
+    opacity: 0.55;
+}
+
+.sm-stitch-h--accent {
+    background-color: var(--sm-gold-300);
+    opacity: 0.85;
+}
+
+.sm-stitch-v {
+    width: 1px;
+    background-color: var(--sm-gold-500);
+    opacity: 0.55;
+}
+
+.sm-stitch-v--accent {
+    width: 1px;
+    background-color: var(--sm-gold-300);
+    opacity: 0.85;
+}
+
+/* --- Vine flourish placeholder --- */
+/* 진짜 vine curve는 SVG asset 필요. USS 한도에서 단순화:
+   thin gold line 양쪽 + 가운데 작은 diamond. parent에 두고
+   children으로 line + dot 4개 layout. 임시 ornament. */
+.sm-vine-line {
+    height: 1px;
+    background-color: var(--sm-gold-300);
+    opacity: 0.7;
+}
+
+.sm-vine-dot {
+    width: 3px;
+    height: 3px;
+    background-color: var(--sm-gold-200);
+    rotate: 45deg;
+}
+
+/* --- Center gem inlay (family-tint rib 위 보조) --- */
+/* family-tint-rib 중앙에 작은 gem. 4px diamond + family color. */
+.sm-rib-gem {
+    width: 6px;
+    height: 6px;
+    background-color: var(--sm-gold-200);
+    rotate: 45deg;
+}
+
+/* --- Inset shadow placeholder --- */
+/* 진짜 inner shadow는 USS 미지원. inner element를 어둡게 두고
+   가장자리만 살짝 비치게. card 깊이감 hint. */
+.sm-inner-shade {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(0, 0, 0, 0.18);
+    border-right-color: rgba(0, 0, 0, 0.18);
+    border-top-color: rgba(0, 0, 0, 0.28);
+    border-bottom-color: rgba(0, 0, 0, 0.10);
+}
+
+/* --- Gradient stripe (linear emulation) --- */
+/* USS는 gradient 미지원. 단색 layered 분할로 emulation.
+   3 child element로 gold-100 / gold-200 / gold-300 단계 — 또는
+   반복 사용. 임시. */
+.sm-stripe-gold-100 { background-color: var(--sm-gold-100); }
+.sm-stripe-gold-200 { background-color: var(--sm-gold-200); }
+.sm-stripe-gold-300 { background-color: var(--sm-gold-300); }
+.sm-stripe-gold-400 { background-color: var(--sm-gold-400); }
+.sm-stripe-gold-500 { background-color: var(--sm-gold-500); }
