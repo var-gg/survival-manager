@@ -128,7 +128,7 @@
 
 .battle-screen .sm-bs-layout {
     position: absolute;
-    top: 174px;
+    top: 188px;
     left: 12px;
     right: 12px;
     bottom: 252px;
@@ -164,7 +164,7 @@
     top: 64px;
     left: 112px;
     right: 112px;
-    height: 96px;
+    height: 112px;
     flex-direction: row;
     align-items: center;
     padding-top: 10px;
@@ -242,16 +242,16 @@
 
 .battle-screen .sm-bs-roster-list--ally .sm-bs-roster-unit {
     flex-grow: 1;
-    min-width: 220px;
-    max-width: 286px;
-    min-height: 178px;
+    min-width: 236px;
+    max-width: 314px;
+    min-height: 184px;
 }
 
 .battle-screen .sm-bs-roster-list--enemy .sm-bs-roster-unit {
     flex-grow: 1;
     min-width: 196px;
     max-width: 292px;
-    min-height: 72px;
+    min-height: 92px;
     padding-top: 7px;
     padding-bottom: 7px;
 }
@@ -272,9 +272,10 @@
 }
 
 .battle-screen .sm-bs-roster-portrait {
-    width: 116px;
-    height: 150px;
-    min-width: 116px;
+    position: relative;
+    width: 128px;
+    height: 152px;
+    min-width: 128px;
     margin-right: 12px;
     background-color: rgba(31, 25, 19, 0.82);
     border-width: 1px;
@@ -288,11 +289,23 @@
 }
 
 .battle-screen .sm-bs-roster-list--enemy .sm-bs-roster-portrait {
-    width: 58px;
-    height: 58px;
-    min-width: 58px;
+    width: 64px;
+    height: 76px;
+    min-width: 64px;
     margin-right: 10px;
     font-size: 16px;
+}
+
+.battle-screen .sm-bs-roster-portrait-image {
+    position: absolute;
+}
+
+.battle-screen .sm-bs-roster-portrait-initial {
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+    color: var(--sm-gold-200);
+    -unity-font-style: bold;
+    font-size: 22px;
 }
 
 .battle-screen .sm-bs-roster-portrait--missing {
@@ -471,7 +484,7 @@
 
 .battle-screen .sm-bs-unit-detail-panel {
     position: absolute;
-    top: 174px;
+    top: 188px;
     right: 12px;
     width: 318px;
     max-height: 560px;
