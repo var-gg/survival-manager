@@ -30,6 +30,39 @@ public enum BattlePresentationCueType
     SeekSnapshotApplied = 14,
 }
 
+public enum BattleAnimationSemantic
+{
+    None = 0,
+    HitLight = 1,
+    HitHeavy = 2,
+    CriticalImpact = 3,
+    Dodge = 4,
+    BlockImpact = 5,
+    DashEngage = 6,
+    BackstepDisengage = 7,
+    LateralStrafe = 8,
+    Knockdown = 9,
+    Death = 10,
+}
+
+public enum BattleAnimationDirection
+{
+    Any = 0,
+    Forward = 1,
+    Backward = 2,
+    Left = 3,
+    Right = 4,
+    Lateral = 5,
+}
+
+public enum BattleAnimationIntensity
+{
+    Any = 0,
+    Light = 1,
+    Medium = 2,
+    Heavy = 3,
+}
+
 public sealed record BattlePresentationCue(
     BattlePresentationCueType CueType,
     int StepIndex,
@@ -39,4 +72,7 @@ public sealed record BattlePresentationCue(
     float Magnitude = 0f,
     BattlePresentationAnchorId SubjectAnchor = BattlePresentationAnchorId.Feet,
     BattlePresentationAnchorId RelatedAnchor = BattlePresentationAnchorId.Center,
-    string Note = "");
+    string Note = "",
+    BattleAnimationSemantic AnimationSemantic = BattleAnimationSemantic.None,
+    BattleAnimationDirection AnimationDirection = BattleAnimationDirection.Any,
+    BattleAnimationIntensity AnimationIntensity = BattleAnimationIntensity.Any);

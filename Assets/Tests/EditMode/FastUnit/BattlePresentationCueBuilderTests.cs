@@ -52,6 +52,57 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
+    public void Build_MapsImpactNotes_ToAnimationSemantics()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally),
+            CreateUnit("enemy_dodge", TeamSide.Enemy),
+            CreateUnit("enemy_block", TeamSide.Enemy),
+            CreateUnit("enemy_crit", TeamSide.Enemy),
+        });
+        var current = CreateStep(
+            units: previous.Units,
+            events: new[]
+            {
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_dodge"), "Enemy Dodge", 0f, Note: "dodge"),
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_block"), "Enemy Block", 4f, Note: "block"),
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_crit"), "Enemy Crit", 22f, Note: "crit"),
+            });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        Assert.That(FindImpact(cues, "enemy_dodge").AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.Dodge));
+        Assert.That(FindImpact(cues, "enemy_dodge").AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Light));
+        Assert.That(FindImpact(cues, "enemy_block").AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BlockImpact));
+        Assert.That(FindImpact(cues, "enemy_crit").AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.CriticalImpact));
+        Assert.That(FindImpact(cues, "enemy_crit").AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Heavy));
+    }
+
+    [Test]
+    public void Build_MapsBreakContact_ToBackstepAnimationSemantic()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.AcquireTarget, position: new CombatVector2(0f, 0f)),
+            CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1f, 0f)),
+        });
+        var current = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.BreakContact, position: new CombatVector2(-0.75f, 0f)),
+            CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1f, 0f)),
+        });
+
+        var cue = new BattlePresentationCueBuilder()
+            .Build(previous, current)
+            .Single(candidate => candidate.CueType == BattlePresentationCueType.RepositionStart && candidate.SubjectActorId == "ally");
+
+        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BackstepDisengage));
+        Assert.That(cue.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Backward));
+        Assert.That(cue.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
+    }
+
+    [Test]
     public void Build_EmitsSingleDeathCue_WhenKillEventAndStateTransitionOverlap()
     {
         var previous = CreateStep(units: new[]
@@ -78,6 +129,11 @@ public sealed class BattlePresentationCueBuilderTests
         Assert.That(deathCues, Has.Count.EqualTo(1));
     }
 
+    private static BattlePresentationCue FindImpact(IEnumerable<BattlePresentationCue> cues, string subjectActorId)
+    {
+        return cues.Single(cue => cue.CueType == BattlePresentationCueType.ImpactDamage && cue.SubjectActorId == subjectActorId);
+    }
+
     private static BattleSimulationStep CreateStep(IReadOnlyList<BattleUnitReadModel>? units = null, IReadOnlyList<BattleEvent>? events = null)
     {
         return new BattleSimulationStep(
@@ -102,7 +158,8 @@ public sealed class BattlePresentationCueBuilderTests
         CombatActionState actionState = CombatActionState.AcquireTarget,
         BattleActionType? pendingActionType = BattleActionType.BasicAttack,
         string selector = "LowestHpEnemy",
-        bool isAlive = true)
+        bool isAlive = true,
+        CombatVector2? position = null)
     {
         return new BattleUnitReadModel(
             Id: id,
@@ -111,7 +168,7 @@ public sealed class BattlePresentationCueBuilderTests
             Anchor: side == TeamSide.Ally ? DeploymentAnchorId.FrontCenter : DeploymentAnchorId.BackCenter,
             RaceId: "human",
             ClassId: "vanguard",
-            Position: side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f),
+            Position: position ?? (side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f)),
             CurrentHealth: isAlive ? 20f : 0f,
             MaxHealth: 20f,
             IsAlive: isAlive,

@@ -80,6 +80,7 @@ public sealed class BattleActorView : MonoBehaviour
     private float _accentDuration;
     private float _guardCueTimer;
     private float _repositionCueTimer;
+    private float _repositionCueDuration;
     private float _floatingTimer;
     private float _floatingDuration;
     private string _floatingMessage = string.Empty;
@@ -87,6 +88,9 @@ public sealed class BattleActorView : MonoBehaviour
     private Color _impactColor = Color.clear;
     private Color _floatingColor = Color.clear;
     private float _floatingScale = 1f;
+    private BattleAnimationSemantic _activeAnimationSemantic = BattleAnimationSemantic.None;
+    private BattleAnimationDirection _activeAnimationDirection = BattleAnimationDirection.Any;
+    private BattleAnimationIntensity _activeAnimationIntensity = BattleAnimationIntensity.Any;
     private Quaternion _lastAliveRotation = Quaternion.identity;
 
     public void Initialize(
@@ -130,7 +134,7 @@ public sealed class BattleActorView : MonoBehaviour
         var fromWorld = ToWorldPosition(from.Position);
         var toWorld = ToWorldPosition(to.Position);
         var clampedAlpha = Mathf.Clamp01(alpha);
-        transform.position = Vector3.Lerp(fromWorld, toWorld, clampedAlpha);
+        transform.position = ResolvePresentationPosition(from, to, fromWorld, toWorld, clampedAlpha);
 
         var displayedHealth = Mathf.Lerp(from.CurrentHealth, to.CurrentHealth, clampedAlpha);
         ApplyDisplay(to, displayedHealth);
@@ -162,6 +166,7 @@ public sealed class BattleActorView : MonoBehaviour
         _vfxSurface?.ConsumeCue(cue, _wrapper, relatedWorld);
         _audioSurface?.ConsumeCue(cue, _wrapper);
 
+        var animationSemantic = ResolveAnimationSemantic(cue);
         switch (cue.CueType)
         {
             case BattlePresentationCueType.WindupEnter:
@@ -185,14 +190,14 @@ public sealed class BattleActorView : MonoBehaviour
                 break;
             case BattlePresentationCueType.ImpactDamage:
             {
-                var isCrit = !string.IsNullOrEmpty(cue.Note) && cue.Note.Contains("crit", System.StringComparison.Ordinal);
-                var damageColor = isCrit
-                    ? new Color(1f, 0.85f, 0.25f, 1f)
-                    : new Color(1f, 0.32f, 0.28f, 1f);
-                var damageLabel = isCrit
-                    ? $"CRIT! -{Mathf.CeilToInt(cue.Magnitude)}"
-                    : $"-{Mathf.CeilToInt(cue.Magnitude)}";
-                StartImpactCue(0.24f, damageColor, damageLabel, isCrit ? 1.4f : 1f);
+                _activeAnimationSemantic = animationSemantic;
+                _activeAnimationDirection = cue.AnimationDirection;
+                _activeAnimationIntensity = cue.AnimationIntensity;
+                StartImpactCue(
+                    ResolveImpactDuration(cue, animationSemantic),
+                    ResolveImpactColor(cue, animationSemantic),
+                    ResolveImpactLabel(cue, animationSemantic),
+                    ResolveImpactScale(animationSemantic));
                 break;
             }
             case BattlePresentationCueType.ImpactHeal:
@@ -208,15 +213,23 @@ public sealed class BattleActorView : MonoBehaviour
                 _guardCueTimer = 0.10f;
                 break;
             case BattlePresentationCueType.RepositionStart:
-                _repositionCueTimer = 0.36f;
+                _activeAnimationSemantic = animationSemantic;
+                _activeAnimationDirection = cue.AnimationDirection;
+                _activeAnimationIntensity = cue.AnimationIntensity;
+                _repositionCueTimer = ResolveRepositionCueDuration(animationSemantic);
+                _repositionCueDuration = _repositionCueTimer;
                 _accentColor = ResolveSemanticColor(BattleActionSemantic.Reposition);
                 _accentTimer = 0.18f;
                 _accentDuration = 0.18f;
                 break;
             case BattlePresentationCueType.RepositionStop:
                 _repositionCueTimer = 0.10f;
+                _repositionCueDuration = 0.10f;
                 break;
             case BattlePresentationCueType.DeathStart:
+                _activeAnimationSemantic = BattleAnimationSemantic.Death;
+                _activeAnimationDirection = BattleAnimationDirection.Any;
+                _activeAnimationIntensity = BattleAnimationIntensity.Heavy;
                 _impactCueTimer = 0.42f;
                 _impactCueDuration = 0.42f;
                 _impactColor = new Color(0.58f, 0.58f, 0.58f, 1f);
@@ -241,10 +254,14 @@ public sealed class BattleActorView : MonoBehaviour
         _accentDuration = 0f;
         _guardCueTimer = 0f;
         _repositionCueTimer = 0f;
+        _repositionCueDuration = 0f;
         _floatingTimer = 0f;
         _floatingDuration = 0f;
         _floatingMessage = string.Empty;
         _activeSemantic = BattleActionSemantic.None;
+        _activeAnimationSemantic = BattleAnimationSemantic.None;
+        _activeAnimationDirection = BattleAnimationDirection.Any;
+        _activeAnimationIntensity = BattleAnimationIntensity.Any;
         _accentColor = Color.clear;
         _impactColor = Color.clear;
         _floatingColor = Color.clear;
@@ -278,6 +295,13 @@ public sealed class BattleActorView : MonoBehaviour
         _guardCueTimer = Mathf.Max(0f, _guardCueTimer - scaledDelta);
         _repositionCueTimer = Mathf.Max(0f, _repositionCueTimer - scaledDelta);
         _floatingTimer = Mathf.Max(0f, _floatingTimer - scaledDelta);
+        if (_impactCueTimer <= 0f && _repositionCueTimer <= 0f)
+        {
+            _activeAnimationSemantic = BattleAnimationSemantic.None;
+            _activeAnimationDirection = BattleAnimationDirection.Any;
+            _activeAnimationIntensity = BattleAnimationIntensity.Any;
+        }
+
         RefreshVisualState();
     }
 
@@ -505,8 +529,7 @@ public sealed class BattleActorView : MonoBehaviour
             }
             else if (_currentState.ActionState is CombatActionState.Reposition or CombatActionState.AdvanceToAnchor or CombatActionState.BreakContact)
             {
-                scale = new Vector3(0.96f, 1.02f, 1.10f);
-                position += new Vector3(0f, -0.04f, -0.08f);
+                ApplyMovementPose(ref position, ref scale, ResolveActiveMovementSemantic(), 0.55f);
             }
         }
 
@@ -527,9 +550,14 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_impactCueTimer > 0f && _impactCueDuration > 0f)
         {
-            var impact = Mathf.Sin((1f - (_impactCueTimer / _impactCueDuration)) * Mathf.PI) * 0.14f;
-            position += new Vector3(0f, 0f, -impact);
-            scale = Vector3.Lerp(scale, new Vector3(1.05f, 0.92f, 1.06f), impact);
+            var impact = Mathf.Sin((1f - (_impactCueTimer / _impactCueDuration)) * Mathf.PI);
+            ApplyImpactPose(ref position, ref scale, impact);
+        }
+
+        if (_repositionCueTimer > 0f && _repositionCueDuration > 0f)
+        {
+            var movementPulse = Mathf.Sin((1f - (_repositionCueTimer / _repositionCueDuration)) * Mathf.PI);
+            ApplyMovementPose(ref position, ref scale, ResolveActiveMovementSemantic(), movementPulse);
         }
 
         var rotation = ResolveFacingRotation();
@@ -547,6 +575,86 @@ public sealed class BattleActorView : MonoBehaviour
         }
 
         return (position, scale, rotation);
+    }
+
+    private BattleAnimationSemantic ResolveActiveMovementSemantic()
+    {
+        return _activeAnimationSemantic switch
+        {
+            BattleAnimationSemantic.DashEngage
+                or BattleAnimationSemantic.BackstepDisengage
+                or BattleAnimationSemantic.LateralStrafe => _activeAnimationSemantic,
+            _ when _currentState.ActionState == CombatActionState.BreakContact => BattleAnimationSemantic.BackstepDisengage,
+            _ when _currentState.ActionState == CombatActionState.AdvanceToAnchor => BattleAnimationSemantic.DashEngage,
+            _ => BattleAnimationSemantic.LateralStrafe,
+        };
+    }
+
+    private void ApplyMovementPose(ref Vector3 position, ref Vector3 scale, BattleAnimationSemantic semantic, float weight)
+    {
+        var t = Mathf.Clamp01(weight);
+        var intensity = ResolveAnimationIntensityMultiplier();
+        switch (semantic)
+        {
+            case BattleAnimationSemantic.DashEngage:
+                position += new Vector3(0f, -0.04f * t, -0.16f * t * intensity);
+                scale = Vector3.Lerp(scale, new Vector3(0.94f, 1.04f, 1.16f), Mathf.Clamp01(0.45f * t * intensity));
+                break;
+            case BattleAnimationSemantic.BackstepDisengage:
+                position += new Vector3(0f, -0.04f * t, 0.14f * t * intensity);
+                scale = Vector3.Lerp(scale, new Vector3(1.08f, 0.96f, 0.96f), Mathf.Clamp01(0.38f * t * intensity));
+                break;
+            case BattleAnimationSemantic.LateralStrafe:
+                position += new Vector3(ResolveLateralSign() * 0.14f * t * intensity, -0.03f * t, -0.04f * t);
+                scale = Vector3.Lerp(scale, new Vector3(1.06f, 0.98f, 1.08f), Mathf.Clamp01(0.36f * t * intensity));
+                break;
+            default:
+                position += new Vector3(0f, -0.04f * t, -0.08f * t);
+                scale = Vector3.Lerp(scale, new Vector3(0.96f, 1.02f, 1.10f), 0.40f * t);
+                break;
+        }
+    }
+
+    private void ApplyImpactPose(ref Vector3 position, ref Vector3 scale, float pulse)
+    {
+        var t = Mathf.Clamp01(pulse);
+        var intensity = ResolveAnimationIntensityMultiplier();
+        switch (_activeAnimationSemantic)
+        {
+            case BattleAnimationSemantic.Dodge:
+                position += new Vector3(ResolveLateralSign() * 0.18f * t * intensity, 0.04f * t, 0f);
+                scale = Vector3.Lerp(scale, new Vector3(0.96f, 1.04f, 1.02f), 0.22f * t);
+                break;
+            case BattleAnimationSemantic.BlockImpact:
+                position += new Vector3(0f, -0.02f * t, -0.07f * t * intensity);
+                scale = Vector3.Lerp(scale, new Vector3(1.12f, 0.94f, 1.08f), Mathf.Clamp01(0.28f * t * intensity));
+                break;
+            case BattleAnimationSemantic.CriticalImpact:
+            case BattleAnimationSemantic.HitHeavy:
+            case BattleAnimationSemantic.Knockdown:
+                position += new Vector3(0f, -0.03f * t, -0.24f * t * intensity);
+                scale = Vector3.Lerp(scale, new Vector3(1.12f, 0.86f, 1.16f), Mathf.Clamp01(0.34f * t * intensity));
+                break;
+            default:
+                position += new Vector3(0f, 0f, -0.14f * t);
+                scale = Vector3.Lerp(scale, new Vector3(1.05f, 0.92f, 1.06f), 0.24f * t);
+                break;
+        }
+    }
+
+    private float ResolveLateralSign()
+    {
+        return _activeAnimationDirection == BattleAnimationDirection.Left ? -1f : 1f;
+    }
+
+    private float ResolveAnimationIntensityMultiplier()
+    {
+        return _activeAnimationIntensity switch
+        {
+            BattleAnimationIntensity.Light => 0.72f,
+            BattleAnimationIntensity.Heavy => 1.22f,
+            _ => 1f,
+        };
     }
 
     private Quaternion ResolveFacingRotation()
@@ -709,6 +817,67 @@ public sealed class BattleActorView : MonoBehaviour
             _floatingColor = color;
             _floatingScale = scale;
         }
+    }
+
+    private static float ResolveImpactDuration(BattlePresentationCue cue, BattleAnimationSemantic semantic)
+    {
+        return semantic switch
+        {
+            BattleAnimationSemantic.CriticalImpact or BattleAnimationSemantic.HitHeavy or BattleAnimationSemantic.Knockdown => 0.34f,
+            BattleAnimationSemantic.Dodge => 0.22f,
+            BattleAnimationSemantic.BlockImpact => 0.28f,
+            _ when cue.AnimationIntensity == BattleAnimationIntensity.Heavy => 0.30f,
+            _ => 0.24f,
+        };
+    }
+
+    private static Color ResolveImpactColor(BattlePresentationCue cue, BattleAnimationSemantic semantic)
+    {
+        return semantic switch
+        {
+            BattleAnimationSemantic.Dodge => new Color(0.48f, 0.88f, 1f, 1f),
+            BattleAnimationSemantic.BlockImpact => new Color(0.42f, 0.72f, 1f, 1f),
+            BattleAnimationSemantic.CriticalImpact or BattleAnimationSemantic.Knockdown => new Color(1f, 0.85f, 0.25f, 1f),
+            BattleAnimationSemantic.HitHeavy => new Color(1f, 0.46f, 0.24f, 1f),
+            _ when cue.AnimationIntensity == BattleAnimationIntensity.Heavy => new Color(1f, 0.52f, 0.22f, 1f),
+            _ => new Color(1f, 0.32f, 0.28f, 1f),
+        };
+    }
+
+    private static string ResolveImpactLabel(BattlePresentationCue cue, BattleAnimationSemantic semantic)
+    {
+        var amount = Mathf.Max(0, Mathf.CeilToInt(cue.Magnitude));
+        return semantic switch
+        {
+            BattleAnimationSemantic.Dodge => "MISS",
+            BattleAnimationSemantic.BlockImpact when amount > 0 => $"BLOCK -{amount}",
+            BattleAnimationSemantic.BlockImpact => "BLOCK",
+            BattleAnimationSemantic.CriticalImpact => $"CRIT! -{amount}",
+            BattleAnimationSemantic.Knockdown => $"BREAK! -{amount}",
+            _ => $"-{amount}",
+        };
+    }
+
+    private static float ResolveImpactScale(BattleAnimationSemantic semantic)
+    {
+        return semantic switch
+        {
+            BattleAnimationSemantic.CriticalImpact or BattleAnimationSemantic.Knockdown => 1.45f,
+            BattleAnimationSemantic.HitHeavy => 1.25f,
+            BattleAnimationSemantic.Dodge or BattleAnimationSemantic.BlockImpact => 0.95f,
+            _ => 1f,
+        };
+    }
+
+    private static float ResolveRepositionCueDuration(BattleAnimationSemantic semantic)
+    {
+        return semantic switch
+        {
+            BattleAnimationSemantic.DashEngage => 0.42f,
+            BattleAnimationSemantic.BackstepDisengage => 0.34f,
+            BattleAnimationSemantic.LateralStrafe => 0.36f,
+            _ => 0.36f,
+        };
     }
 
     private string BuildStatusLine(BattleUnitReadModel actor)
@@ -1191,6 +1360,45 @@ public sealed class BattleActorView : MonoBehaviour
         return new Vector3(position.X, 0f, position.Y);
     }
 
+    private static Vector3 ResolvePresentationPosition(
+        BattleUnitReadModel from,
+        BattleUnitReadModel to,
+        Vector3 fromWorld,
+        Vector3 toWorld,
+        float clampedAlpha)
+    {
+        if (clampedAlpha <= 0f)
+        {
+            return fromWorld;
+        }
+
+        if (clampedAlpha >= 0.995f)
+        {
+            return toWorld;
+        }
+
+        var distance = Vector3.Distance(fromWorld, toWorld);
+        if (distance <= 0.015f)
+        {
+            return toWorld;
+        }
+
+        var alpha = ShouldEasePresentationMove(from, to, distance)
+            ? Mathf.SmoothStep(0f, 1f, clampedAlpha)
+            : clampedAlpha;
+        return Vector3.LerpUnclamped(fromWorld, toWorld, alpha);
+    }
+
+    private static bool ShouldEasePresentationMove(BattleUnitReadModel from, BattleUnitReadModel to, float distance)
+    {
+        return distance >= 0.35f || IsPresentationRepositionState(from.ActionState) || IsPresentationRepositionState(to.ActionState);
+    }
+
+    private static bool IsPresentationRepositionState(CombatActionState state)
+    {
+        return state is CombatActionState.Reposition or CombatActionState.AdvanceToAnchor or CombatActionState.BreakContact;
+    }
+
     private static void AddOutline(Graphic graphic, Color color)
     {
         var outline = graphic.gameObject.AddComponent<Outline>();
@@ -1251,6 +1459,48 @@ public sealed class BattleActorView : MonoBehaviour
             _ when cue.ActionType == BattleActionType.WaitDefend => BattleActionSemantic.DefendHold,
             _ => BattleActionSemantic.None
         };
+    }
+
+    private static BattleAnimationSemantic ResolveAnimationSemantic(BattlePresentationCue cue)
+    {
+        if (cue.AnimationSemantic != BattleAnimationSemantic.None)
+        {
+            return cue.AnimationSemantic;
+        }
+
+        if (HasCueNote(cue, "dodge"))
+        {
+            return BattleAnimationSemantic.Dodge;
+        }
+
+        if (HasCueNote(cue, "block"))
+        {
+            return BattleAnimationSemantic.BlockImpact;
+        }
+
+        if (HasCueNote(cue, "knockdown"))
+        {
+            return BattleAnimationSemantic.Knockdown;
+        }
+
+        if (HasCueNote(cue, "crit"))
+        {
+            return BattleAnimationSemantic.CriticalImpact;
+        }
+
+        return cue.CueType switch
+        {
+            BattlePresentationCueType.ImpactDamage => BattleAnimationSemantic.HitLight,
+            BattlePresentationCueType.RepositionStart => BattleAnimationSemantic.LateralStrafe,
+            BattlePresentationCueType.DeathStart => BattleAnimationSemantic.Death,
+            _ => BattleAnimationSemantic.None,
+        };
+    }
+
+    private static bool HasCueNote(BattlePresentationCue cue, string token)
+    {
+        return !string.IsNullOrEmpty(cue.Note)
+               && cue.Note.Contains(token, System.StringComparison.OrdinalIgnoreCase);
     }
 
     private static float EvaluatePulse(float timer, float duration)

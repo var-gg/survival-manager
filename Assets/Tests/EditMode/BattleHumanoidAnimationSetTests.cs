@@ -238,6 +238,64 @@ public sealed class BattleHumanoidAnimationSetTests
         }
     }
 
+    [Test]
+    public void ResolveCueClip_PrefersSemanticVariantPoolBeforeLegacyFallback()
+    {
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var dodge = CreateClip("dodge");
+        var hit = CreateClip("hit");
+        var dashGeneric = CreateClip("dash_generic");
+        var dashForward = CreateClip("dash_forward");
+
+        try
+        {
+            SetField(set, "hits", new[] { hit });
+            SetField(set, "variants", new[]
+            {
+                new BattleHumanoidAnimationVariant(BattleAnimationSemantic.Dodge, dodge, intensity: BattleAnimationIntensity.Light),
+                new BattleHumanoidAnimationVariant(BattleAnimationSemantic.DashEngage, dashGeneric),
+                new BattleHumanoidAnimationVariant(
+                    BattleAnimationSemantic.DashEngage,
+                    dashForward,
+                    BattleAnimationDirection.Forward,
+                    BattleAnimationIntensity.Medium),
+            });
+
+            Assert.That(set.TryResolveCueClip(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.ImpactDamage,
+                    7,
+                    "enemy",
+                    AnimationSemantic: BattleAnimationSemantic.Dodge,
+                    AnimationIntensity: BattleAnimationIntensity.Light),
+                CreateUnit(CombatActionState.Recover),
+                out var dodgeClip), Is.True);
+            Assert.That(dodgeClip, Is.SameAs(dodge));
+
+            Assert.That(set.TryResolveCueClip(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.RepositionStart,
+                    8,
+                    "ally",
+                    AnimationSemantic: BattleAnimationSemantic.DashEngage,
+                    AnimationDirection: BattleAnimationDirection.Forward,
+                    AnimationIntensity: BattleAnimationIntensity.Medium),
+                CreateUnit(CombatActionState.Reposition),
+                out var dashClip), Is.True);
+            Assert.That(dashClip, Is.SameAs(dashForward));
+
+            Assert.That(set.TryResolveCueClip(
+                new BattlePresentationCue(BattlePresentationCueType.ImpactDamage, 9, "enemy"),
+                CreateUnit(CombatActionState.Recover),
+                out var fallbackHitClip), Is.True);
+            Assert.That(fallbackHitClip, Is.SameAs(hit));
+        }
+        finally
+        {
+            Destroy(set, dodge, hit, dashGeneric, dashForward);
+        }
+    }
+
     private static BattleUnitReadModel CreateUnit(
         CombatActionState state,
         bool isAlive = true,
