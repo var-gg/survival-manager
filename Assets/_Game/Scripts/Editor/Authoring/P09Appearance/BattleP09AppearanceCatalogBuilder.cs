@@ -47,16 +47,16 @@ public static class BattleP09AppearanceCatalogBuilder
         EnsureFolder(BattleP09AppearancePreset.AssetFolder);
 
         var presets = new List<BattleP09AppearancePreset>();
-        var characters = LoadCharacters();
-        for (var i = 0; i < characters.Count; i++)
+        var characterIds = BattleP09AppearanceRoster.CanonicalCharacterIds;
+        for (var i = 0; i < characterIds.Count; i++)
         {
-            var character = characters[i];
-            if (string.IsNullOrWhiteSpace(character.Id))
+            var characterId = characterIds[i];
+            if (string.IsNullOrWhiteSpace(characterId))
             {
                 continue;
             }
 
-            var preset = EnsurePreset(character, catalog, i);
+            var preset = EnsurePreset(characterId, string.Empty, catalog, i);
             presets.Add(preset);
         }
 
@@ -103,7 +103,16 @@ public static class BattleP09AppearanceCatalogBuilder
         BattleP09AppearanceCatalog catalog,
         int seedIndex)
     {
-        var path = BuildPresetPath(character.Id);
+        return EnsurePreset(character.Id, character.LegacyDisplayName, catalog, seedIndex);
+    }
+
+    private static BattleP09AppearancePreset EnsurePreset(
+        string characterId,
+        string displayName,
+        BattleP09AppearanceCatalog catalog,
+        int seedIndex)
+    {
+        var path = BuildPresetPath(characterId);
         var preset = LoadPresetAtPath(path);
         if (preset == null)
         {
@@ -117,8 +126,8 @@ public static class BattleP09AppearanceCatalogBuilder
             ApplySeedDefaults(preset, catalog, seedIndex);
         }
 
-        var displayName = BattleP09AppearanceRoster.BuildAuthoringLabel(character.Id, character.LegacyDisplayName);
-        preset.ConfigureIdentity(character.Id, displayName, catalog);
+        var resolvedDisplayName = BattleP09AppearanceRoster.BuildPresetDisplayName(characterId, displayName);
+        preset.ConfigureIdentity(characterId, resolvedDisplayName, catalog);
         preset.EnsureDefaultColorOverrides();
         EditorUtility.SetDirty(preset);
         return preset;

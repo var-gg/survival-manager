@@ -437,7 +437,36 @@ public sealed class BattleP09AppearancePreset : ScriptableObject
             return part;
         }
 
+        if (IsHairRenderer(child))
+        {
+            return BattleP09AppearancePartType.HairColor;
+        }
+
         return BattleP09AppearancePartType.None;
+    }
+
+    private static bool IsHairRenderer(Transform child)
+    {
+        if (child.name.Contains("Hair", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var renderer = child.GetComponent<Renderer>();
+        if (renderer == null)
+        {
+            return false;
+        }
+
+        foreach (var material in renderer.sharedMaterials)
+        {
+            if (material != null && material.name.Contains("Hair", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private bool TryResolveRendererEquipmentPart(
@@ -657,12 +686,24 @@ public sealed class BattleP09MaterialColorOverride
     [InspectorName("세 번째 색상")]
     public Color ThirdColor = Color.white;
 
+    [InspectorName("발광 색상 사용")]
+    public bool UseEmissionColor;
+
+    [InspectorName("발광 색상")]
+    public Color EmissionColor = Color.black;
+
     public void ApplyTo(Material material)
     {
         SetColorIfPresent(material, "_Color", MainColor);
         SetColorIfPresent(material, "_BaseColor", MainColor);
         SetColorIfPresent(material, "_Color2nd", SecondColor);
         SetColorIfPresent(material, "_Color3rd", ThirdColor);
+
+        if (UseEmissionColor)
+        {
+            SetColorIfPresent(material, "_EmissionColor", EmissionColor);
+            material.EnableKeyword("_EMISSION");
+        }
     }
 
     private static void SetColorIfPresent(Material material, string propertyName, Color color)
