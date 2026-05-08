@@ -4,6 +4,14 @@ using UnityEngine;
 
 namespace SM.Unity.UI.Battle;
 
+public enum BattleUnitDetailTab
+{
+    Overview = 0,
+    Skills = 1,
+    Status = 2,
+    Record = 3,
+}
+
 public sealed record BattleRosterUnitViewState(
     string UnitId,
     string DisplayName,

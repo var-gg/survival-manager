@@ -18,7 +18,14 @@ public sealed record BattleSelectedUnitViewState(
     string Body,
     Texture2D? Portrait = null,
     string UnitId = "",
-    IReadOnlyList<BattleSkillSlotViewState>? SkillSlots = null)
+    IReadOnlyList<BattleSkillSlotViewState>? SkillSlots = null,
+    BattleUnitDetailTab ActiveTab = BattleUnitDetailTab.Overview,
+    string OverviewTabLabel = "Overview",
+    string SkillsTabLabel = "Skills",
+    string StatusTabLabel = "Status",
+    string RecordTabLabel = "Record",
+    string StatusBody = "",
+    string CombatRecordBody = "")
 {
     public static BattleSelectedUnitViewState Hidden { get; } = new(false, string.Empty, string.Empty);
 }
@@ -60,7 +67,11 @@ public sealed class BattleUnitMetadataFormatter
             subtitle);
     }
 
-    public BattleSelectedUnitViewState BuildSelectedUnitPanel(BattleUnitReadModel? unit)
+    public BattleSelectedUnitViewState BuildSelectedUnitPanel(
+        BattleUnitReadModel? unit,
+        bool isVisible = true,
+        BattleUnitDetailTab activeTab = BattleUnitDetailTab.Overview,
+        string combatRecordBody = "")
     {
         if (unit == null)
         {
@@ -97,12 +108,37 @@ public sealed class BattleUnitMetadataFormatter
         }
 
         return new BattleSelectedUnitViewState(
-            true,
+            isVisible,
             $"{Localize(GameLocalizationTables.UIBattle, "ui.battle.selected.header", "Selected Unit")}: {character}",
             builder.ToString().TrimEnd(),
             _portraitResolver.Resolve(unit),
             unit.Id,
-            BuildSkillSlots(unit));
+            BuildSkillSlots(unit),
+            activeTab,
+            AxisLabel("ui.battle.detail.tab.overview", "개요", "Overview"),
+            AxisLabel("ui.battle.detail.tab.skills", "스킬", "Skills"),
+            AxisLabel("ui.battle.detail.tab.status", "상태", "Status"),
+            AxisLabel("ui.battle.detail.tab.record", "전투기록", "Record"),
+            BuildStatusDetail(unit),
+            string.IsNullOrWhiteSpace(combatRecordBody)
+                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.detail.record.empty", "No notable personal events yet.")
+                : combatRecordBody);
+    }
+
+    private string BuildStatusDetail(BattleUnitReadModel unit)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.hp", "HP", "HP")}: {Mathf.Max(0f, unit.CurrentHealth):0} / {Mathf.Max(1f, unit.MaxHealth):0}");
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.state", "상태", "State")}: {BattleReadabilityFormatter.BuildPlayerFacingState(unit)}");
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.cooldown", "쿨다운", "Cooldown")}: {Mathf.Max(0f, unit.CooldownRemaining):0.0}s");
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.windup", "시전 진행", "Windup")}: {Mathf.RoundToInt(Mathf.Clamp01(unit.WindupProgress) * 100f)}%");
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.role", "역할", "Role")}: {_contentText.GetRoleName(unit.RoleInstructionId, unit.RoleTag)}");
+
+        var statusIds = unit.StatusIds ?? Array.Empty<string>();
+        builder.AppendLine(statusIds.Count == 0
+            ? $"{AxisLabel("ui.battle.axis.effects", "효과", "Effects")}: {Localize(GameLocalizationTables.UICommon, "ui.common.none", "None")}"
+            : $"{AxisLabel("ui.battle.axis.effects", "효과", "Effects")}: {string.Join(", ", statusIds)}");
+        return builder.ToString().TrimEnd();
     }
 
     private IReadOnlyList<BattleSkillSlotViewState> BuildSkillSlots(BattleUnitReadModel unit)

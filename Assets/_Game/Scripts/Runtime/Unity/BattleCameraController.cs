@@ -113,6 +113,13 @@ public sealed class BattleCameraController : MonoBehaviour
         }
     }
 
+    public void SnapToSuggestedFrame(BattleCameraSuggestedFrame frame)
+    {
+        _suggestedFrame = frame;
+        ApplySuggestedFrame(frame, snap: true);
+        NotifyManualInteraction();
+    }
+
     public void NotifyManualInteraction()
     {
         _lastManualInteractionAt = Time.unscaledTime;

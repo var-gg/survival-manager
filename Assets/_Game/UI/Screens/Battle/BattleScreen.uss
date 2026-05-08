@@ -482,17 +482,28 @@
     display: none;
 }
 
-.battle-screen .sm-bs-unit-detail-panel {
+.battle-screen .sm-bs-unit-detail-backdrop {
     position: absolute;
-    top: 188px;
-    right: 12px;
-    width: 318px;
-    max-height: 560px;
-    z-index: 5;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    padding-left: 12px;
-    padding-right: 12px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 8;
+    align-items: flex-end;
+    justify-content: center;
+    padding-right: 28px;
+    background-color: rgba(7, 8, 10, 0.20);
+}
+
+.battle-screen .sm-bs-unit-detail-panel {
+    position: relative;
+    width: 432px;
+    max-height: 660px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    padding-left: 14px;
+    padding-right: 14px;
+    margin-bottom: 112px;
 }
 
 .battle-screen .sm-bs-unit-detail-header {
@@ -517,12 +528,41 @@
     white-space: normal;
 }
 
+.battle-screen .sm-bs-unit-detail-close {
+    min-width: 34px;
+    width: 34px;
+    height: 30px;
+    margin-left: 8px;
+}
+
+.battle-screen .sm-bs-unit-detail-tabs {
+    flex-direction: row;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.battle-screen .sm-bs-unit-detail-tab {
+    flex-grow: 1;
+    min-width: 0;
+    margin-right: 6px;
+    font-size: 11px;
+}
+
+.battle-screen .sm-bs-unit-detail-tab--active {
+    background-color: rgba(230, 183, 81, 0.26);
+    color: var(--sm-gold-100);
+    border-left-color: rgba(230, 183, 81, 0.78);
+    border-right-color: rgba(230, 183, 81, 0.78);
+    border-top-color: rgba(230, 183, 81, 0.78);
+    border-bottom-color: rgba(230, 183, 81, 0.78);
+}
+
 .battle-screen .sm-bs-unit-detail-body {
     white-space: normal;
     -unity-text-align: upper-left;
     color: var(--sm-ink-1);
-    font-size: 11px;
-    line-height: 15px;
+    font-size: 12px;
+    line-height: 16px;
 }
 
 .battle-screen .sm-bs-skill-slots {
