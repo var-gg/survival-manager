@@ -88,6 +88,26 @@ public sealed class CharacterAxisLocalizationTests
     }
 
     [Test]
+    public void ContentTextResolver_UsesDefinedP09LabelForAppearanceOnlyCharacter()
+    {
+        var lookup = new FakeCombatContentLookup();
+        var go = new GameObject("P09LabelResolver");
+        try
+        {
+            var localization = go.AddComponent<GameLocalizationController>();
+            var resolver = new ContentTextResolver(localization, lookup);
+
+            Assert.That(
+                resolver.GetCharacterName("hero_dawn_priest", "priest"),
+                Is.EqualTo("단린 (丹麟) / Dawn Priest"));
+        }
+        finally
+        {
+            Object.DestroyImmediate(go);
+        }
+    }
+
+    [Test]
     public void BattleUnitMetadataFormatter_BuildsAxisSummaryFromCharacterHierarchy()
     {
         var race = ScriptableObject.CreateInstance<RaceDefinition>();

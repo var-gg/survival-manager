@@ -82,10 +82,11 @@ namespace SM.Content.Definitions
     public enum AugmentOfferBucketValue
     {
         LegacyDerived = 0,
-        NeutralCombat = 1,
-        EconomyRoster = 2,
-        SynergyLinked = 3,
-        WildcardRisk = 4,
+        HeroRewrite = 1,
+        TacticalRewrite = 2,
+        ScalingEngine = 3,
+        EconomyAndLoot = 4,
+        SynergyPact = 5,
     }
 
     public enum AugmentRiskRewardClassValue

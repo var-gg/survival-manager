@@ -7,6 +7,7 @@ using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Editor.SeedData;
 using SM.Editor.Validation;
+using SM.Unity;
 using UnityEditor;
 using UnityEngine;
 
@@ -160,6 +161,32 @@ public sealed class ContentValidationWorkflowTests
     }
 
     [Test]
+    public void ContentDefinitionValidator_FlagsFirstPlayableFlexPoolDrift()
+    {
+        EnsureFolder(TempRoot);
+        var slice = CreateTempAsset<FirstPlayableSliceDefinitionAsset>("first_playable_slice_drift.asset", asset =>
+        {
+            asset.SignaturePassiveCap = 8;
+            asset.SignaturePassiveIds = Enumerable.Range(1, 8).Select(index => $"signature_passive_{index}").ToList();
+            asset.FlexActiveCap = 8;
+            asset.FlexActiveIds = Enumerable.Range(1, 8).Select(index => $"flex_active_{index}").ToList();
+            asset.FlexPassiveCap = 8;
+            asset.FlexPassiveIds = Enumerable.Range(1, 8).Select(index => $"flex_passive_{index}").ToList();
+        });
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+
+        var report = ContentDefinitionValidator.BuildValidationReport(new[] { slice });
+        var codes = report.Issues.Select(issue => issue.Code).ToHashSet(StringComparer.Ordinal);
+
+        Assert.That(codes, Contains.Item("first_playable.flex_active_cap"));
+        Assert.That(codes, Contains.Item("first_playable.flex_active_count"));
+        Assert.That(codes, Contains.Item("first_playable.flex_passive_cap"));
+        Assert.That(codes, Contains.Item("first_playable.flex_passive_count"));
+    }
+
+    [Test]
     public void ContentDefinitionValidator_FlagsDeepSchemaContractDrift()
     {
         EnsureFolder(TempRoot);
@@ -272,7 +299,7 @@ public sealed class ContentValidationWorkflowTests
             asset.NameKey = "content.augment.temp_schema.name";
             asset.DescriptionKey = "content.augment.temp_schema.desc";
             asset.FamilyId = "augment_temp_schema";
-            asset.OfferBucket = AugmentOfferBucketValue.SynergyLinked;
+            asset.OfferBucket = AugmentOfferBucketValue.SynergyPact;
             asset.RiskRewardClass = AugmentRiskRewardClassValue.RiskReward;
             asset.BudgetScore = -1f;
             asset.ProtectionTags.Add(rangerTag);
@@ -332,6 +359,28 @@ public sealed class ContentValidationWorkflowTests
         Assert.That(codes, Contains.Item("status.rule_stack_cap"));
         Assert.That(codes, Contains.Item("archetype.locked_signature_active"));
         Assert.That(codes, Contains.Item("archetype.flex_support_pool"));
+    }
+
+    [Test]
+    public void AugmentAssets_ExposeV1BucketDistribution()
+    {
+        const string root = "Assets/Resources/_Game/Content/Definitions/Augments";
+        var augments = Directory.EnumerateFiles(root, "augment_*.asset", SearchOption.TopDirectoryOnly)
+            .Where(path => !Path.GetFileNameWithoutExtension(path).StartsWith("augment_perm_", StringComparison.Ordinal))
+            .Select(AssetDatabase.LoadAssetAtPath<AugmentDefinition>)
+            .Where(augment => augment != null)
+            .ToList();
+
+        Assert.That(augments, Has.Count.EqualTo(24));
+        Assert.That(augments.All(augment => augment.OfferBucket != AugmentOfferBucketValue.LegacyDerived), Is.True);
+        Assert.That(augments.Count(augment => augment.OfferBucket == AugmentOfferBucketValue.HeroRewrite), Is.EqualTo(5));
+        Assert.That(augments.Count(augment => augment.OfferBucket == AugmentOfferBucketValue.TacticalRewrite), Is.EqualTo(7));
+        Assert.That(augments.Count(augment => augment.OfferBucket == AugmentOfferBucketValue.ScalingEngine), Is.EqualTo(4));
+        Assert.That(augments.Count(augment => augment.OfferBucket == AugmentOfferBucketValue.EconomyAndLoot), Is.EqualTo(5));
+        Assert.That(augments.Count(augment => augment.OfferBucket == AugmentOfferBucketValue.SynergyPact), Is.EqualTo(3));
+        Assert.That(augments.Where(augment => augment.OfferBucket == AugmentOfferBucketValue.SynergyPact)
+            .All(augment => augment.BuildBiasTags.Count > 0), Is.True);
+        Assert.That(augments.All(augment => augment.Tags.Any(tag => tag != null && tag.Id == "volatile_run")), Is.True);
     }
 
     [Test]

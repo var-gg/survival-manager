@@ -23,42 +23,42 @@ MonoBehaviour:
     - starter
     - observer_smoke
     Members:
-    - MemberId: enemy_guardian
-      SourceKind: 2
+    - MemberId: enemy_grey_fang
+      SourceKind: 1
       HeroId: 
-      DisplayName: Enemy Guardian
-      ArchetypeId: 
-      CharacterId: guardian
+      DisplayName: 회조 (灰爪) / Grey Fang
+      ArchetypeId: reaver
+      CharacterId: npc_grey_fang
       Anchor: 0
       RoleInstructionId: 
       BuildOverride: {fileID: 0}
       Notes: 
-    - MemberId: enemy_raider
-      SourceKind: 2
+    - MemberId: enemy_silent_moon
+      SourceKind: 1
       HeroId: 
-      DisplayName: Enemy Raider
-      ArchetypeId: 
-      CharacterId: raider
+      DisplayName: 침월 (沉月) / Silent Moon
+      ArchetypeId: hexer
+      CharacterId: npc_silent_moon
       Anchor: 2
       RoleInstructionId: 
       BuildOverride: {fileID: 0}
       Notes: 
-    - MemberId: enemy_hunter
-      SourceKind: 2
+    - MemberId: enemy_lyra_sternfeld
+      SourceKind: 1
       HeroId: 
-      DisplayName: Enemy Hunter
-      ArchetypeId: 
-      CharacterId: hunter
+      DisplayName: 선영 (宣英) / Lyra Sternfeld
+      ArchetypeId: priest
+      CharacterId: npc_lyra_sternfeld
       Anchor: 3
       RoleInstructionId: 
       BuildOverride: {fileID: 0}
       Notes: 
-    - MemberId: enemy_hexer
-      SourceKind: 2
+    - MemberId: enemy_black_vellum
+      SourceKind: 1
       HeroId: 
-      DisplayName: Enemy Hexer
-      ArchetypeId: 
-      CharacterId: hexer
+      DisplayName: 흑지 (黑紙) / Black Vellum
+      ArchetypeId: shaman
+      CharacterId: npc_black_vellum
       Anchor: 5
       RoleInstructionId: 
       BuildOverride: {fileID: 0}

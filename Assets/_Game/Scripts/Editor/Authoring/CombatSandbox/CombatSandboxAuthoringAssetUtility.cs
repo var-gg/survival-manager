@@ -171,10 +171,10 @@ public static class CombatSandboxAuthoringAssetUtility
                 asset.Source.Tags = new List<string> { "starter", "p09", "allies" };
                 asset.Source.Members = new List<CombatSandboxPresetMemberSpec>
                 {
-                    new() { MemberId = "ally_warden", DisplayName = "Warden", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "warden", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontCenter, RoleInstructionId = "anchor" },
-                    new() { MemberId = "ally_slayer", DisplayName = "Slayer", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "slayer", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontBottom, RoleInstructionId = "bruiser" },
-                    new() { MemberId = "ally_hunter", DisplayName = "Hunter", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "hunter", Anchor = SM.Combat.Model.DeploymentAnchorId.BackTop, RoleInstructionId = "carry" },
-                    new() { MemberId = "ally_priest", DisplayName = "Priest", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "priest", Anchor = SM.Combat.Model.DeploymentAnchorId.BackBottom, RoleInstructionId = "support" },
+                    new() { MemberId = "ally_dawn_priest", DisplayName = "단린 (丹麟) / Dawn Priest", SourceKind = SandboxUnitSourceKind.Archetype, ArchetypeId = "priest", CharacterId = "hero_dawn_priest", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontCenter, RoleInstructionId = "support" },
+                    new() { MemberId = "ally_pack_raider", DisplayName = "이빨바람 / Pack Raider", SourceKind = SandboxUnitSourceKind.Archetype, ArchetypeId = "raider", CharacterId = "hero_pack_raider", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontBottom, RoleInstructionId = "bruiser" },
+                    new() { MemberId = "ally_echo_savant", DisplayName = "공한 (空閑) / Echo Savant", SourceKind = SandboxUnitSourceKind.Archetype, ArchetypeId = "marksman", CharacterId = "hero_echo_savant", Anchor = SM.Combat.Model.DeploymentAnchorId.BackTop, RoleInstructionId = "carry" },
+                    new() { MemberId = "ally_grave_hexer", DisplayName = "묵향 (墨香) / Grave Hexer", SourceKind = SandboxUnitSourceKind.Archetype, ArchetypeId = "hexer", CharacterId = "hero_grave_hexer", Anchor = SM.Combat.Model.DeploymentAnchorId.BackBottom, RoleInstructionId = "support" },
                 };
                 asset.Source.Notes = "Uses authored P09 character IDs so appearance presets are visible in the combat sandbox.";
             });
@@ -190,10 +190,10 @@ public static class CombatSandboxAuthoringAssetUtility
                 asset.Source.Tags = new List<string> { "starter", "observer_smoke" };
                 asset.Source.Members = new List<CombatSandboxPresetMemberSpec>
                 {
-                    new() { MemberId = "enemy_guardian", DisplayName = "Enemy Guardian", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "guardian", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontTop },
-                    new() { MemberId = "enemy_raider", DisplayName = "Enemy Raider", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "raider", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontBottom },
-                    new() { MemberId = "enemy_hunter", DisplayName = "Enemy Hunter", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "hunter", Anchor = SM.Combat.Model.DeploymentAnchorId.BackTop },
-                    new() { MemberId = "enemy_hexer", DisplayName = "Enemy Hexer", SourceKind = SandboxUnitSourceKind.Character, CharacterId = "hexer", Anchor = SM.Combat.Model.DeploymentAnchorId.BackBottom },
+                    new() { MemberId = "enemy_grey_fang", DisplayName = "회조 (灰爪) / Grey Fang", SourceKind = SandboxUnitSourceKind.Archetype, ArchetypeId = "reaver", CharacterId = "npc_grey_fang", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontTop },
+                    new() { MemberId = "enemy_silent_moon", DisplayName = "침월 (沉月) / Silent Moon", SourceKind = SandboxUnitSourceKind.Archetype, ArchetypeId = "hexer", CharacterId = "npc_silent_moon", Anchor = SM.Combat.Model.DeploymentAnchorId.FrontBottom },
+                    new() { MemberId = "enemy_lyra_sternfeld", DisplayName = "선영 (宣英) / Lyra Sternfeld", SourceKind = SandboxUnitSourceKind.Archetype, ArchetypeId = "priest", CharacterId = "npc_lyra_sternfeld", Anchor = SM.Combat.Model.DeploymentAnchorId.BackTop },
+                    new() { MemberId = "enemy_black_vellum", DisplayName = "흑지 (黑紙) / Black Vellum", SourceKind = SandboxUnitSourceKind.Archetype, ArchetypeId = "shaman", CharacterId = "npc_black_vellum", Anchor = SM.Combat.Model.DeploymentAnchorId.BackBottom },
                 };
                 asset.Source.Notes = "Baseline enemy lane shared by the starter scenarios.";
             });

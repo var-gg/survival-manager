@@ -28,23 +28,24 @@ MonoBehaviour:
     ExpectedOutcome: Baseline direct combat sandbox lane for daily balance and readability
       checks.
   LeftTeam:
-    TeamId: starter.current_profile
-    DisplayName: Current Local Profile
-    SourceMode: 0
+    TeamId: starter.p09_allies
+    DisplayName: P09 Starter Allies
+    SourceMode: 1
     TeamPosture: 1
     TeamTacticId: 
     Tags:
     - starter
-    - profile
+    - p09
+    - allies
     Members:
-    - MemberId: hero-1
-      SourceKind: 0
-      HeroId: hero-1
-      DisplayName: 
-      ArchetypeId: 
-      CharacterId: 
+    - MemberId: ally_dawn_priest
+      SourceKind: 1
+      HeroId: 
+      DisplayName: 단린 (丹麟) / Dawn Priest
+      ArchetypeId: priest
+      CharacterId: hero_dawn_priest
       Anchor: 1
-      RoleInstructionId: 
+      RoleInstructionId: support
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -62,14 +63,14 @@ MonoBehaviour:
         RetrainCount: 0
         Notes: 
       Notes: 
-    - MemberId: hero-3
-      SourceKind: 0
-      HeroId: hero-3
-      DisplayName: 
-      ArchetypeId: 
-      CharacterId: 
+    - MemberId: ally_pack_raider
+      SourceKind: 1
+      HeroId: 
+      DisplayName: 이빨바람 / Pack Raider
+      ArchetypeId: raider
+      CharacterId: hero_pack_raider
       Anchor: 2
-      RoleInstructionId: 
+      RoleInstructionId: bruiser
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -87,14 +88,14 @@ MonoBehaviour:
         RetrainCount: 0
         Notes: 
       Notes: 
-    - MemberId: hero-5
-      SourceKind: 0
-      HeroId: hero-5
-      DisplayName: 
-      ArchetypeId: 
-      CharacterId: 
+    - MemberId: ally_echo_savant
+      SourceKind: 1
+      HeroId: 
+      DisplayName: 공한 (空閑) / Echo Savant
+      ArchetypeId: marksman
+      CharacterId: hero_echo_savant
       Anchor: 3
-      RoleInstructionId: 
+      RoleInstructionId: carry
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -112,14 +113,14 @@ MonoBehaviour:
         RetrainCount: 0
         Notes: 
       Notes: 
-    - MemberId: hero-7
-      SourceKind: 0
-      HeroId: hero-7
-      DisplayName: 
-      ArchetypeId: 
-      CharacterId: 
+    - MemberId: ally_grave_hexer
+      SourceKind: 1
+      HeroId: 
+      DisplayName: 묵향 (墨香) / Grave Hexer
+      ArchetypeId: hexer
+      CharacterId: hero_grave_hexer
       Anchor: 5
-      RoleInstructionId: 
+      RoleInstructionId: support
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -143,7 +144,7 @@ MonoBehaviour:
       UserId: 
       DeckId: 
       Revision: 
-    ProvenanceLabel: starter.current_profile
+    ProvenanceLabel: starter.p09_allies
     Notes: 
   RightTeam:
     TeamId: starter.observer_smoke
@@ -155,12 +156,12 @@ MonoBehaviour:
     - starter
     - observer_smoke
     Members:
-    - MemberId: enemy_guardian
-      SourceKind: 2
+    - MemberId: enemy_grey_fang
+      SourceKind: 1
       HeroId: 
-      DisplayName: Enemy Guardian
-      ArchetypeId: 
-      CharacterId: guardian
+      DisplayName: 회조 (灰爪) / Grey Fang
+      ArchetypeId: reaver
+      CharacterId: npc_grey_fang
       Anchor: 0
       RoleInstructionId: 
       BuildOverride:
@@ -180,12 +181,12 @@ MonoBehaviour:
         RetrainCount: 0
         Notes: 
       Notes: 
-    - MemberId: enemy_raider
-      SourceKind: 2
+    - MemberId: enemy_silent_moon
+      SourceKind: 1
       HeroId: 
-      DisplayName: Enemy Raider
-      ArchetypeId: 
-      CharacterId: raider
+      DisplayName: 침월 (沉月) / Silent Moon
+      ArchetypeId: hexer
+      CharacterId: npc_silent_moon
       Anchor: 2
       RoleInstructionId: 
       BuildOverride:
@@ -205,12 +206,12 @@ MonoBehaviour:
         RetrainCount: 0
         Notes: 
       Notes: 
-    - MemberId: enemy_hunter
-      SourceKind: 2
+    - MemberId: enemy_lyra_sternfeld
+      SourceKind: 1
       HeroId: 
-      DisplayName: Enemy Hunter
-      ArchetypeId: 
-      CharacterId: hunter
+      DisplayName: 선영 (宣英) / Lyra Sternfeld
+      ArchetypeId: priest
+      CharacterId: npc_lyra_sternfeld
       Anchor: 3
       RoleInstructionId: 
       BuildOverride:
@@ -230,12 +231,12 @@ MonoBehaviour:
         RetrainCount: 0
         Notes: 
       Notes: 
-    - MemberId: enemy_hexer
-      SourceKind: 2
+    - MemberId: enemy_black_vellum
+      SourceKind: 1
       HeroId: 
-      DisplayName: Enemy Hexer
-      ArchetypeId: 
-      CharacterId: hexer
+      DisplayName: 흑지 (黑紙) / Black Vellum
+      ArchetypeId: shaman
+      CharacterId: npc_black_vellum
       Anchor: 5
       RoleInstructionId: 
       BuildOverride:
@@ -294,40 +295,40 @@ MonoBehaviour:
     Anchor: 5
     RoleInstructionIdOverride: 
   EnemySlots:
-  - ParticipantId: enemy_guardian
-    DisplayName: Enemy Guardian
-    CharacterId: guardian
-    ArchetypeIdOverride: 
+  - ParticipantId: enemy_grey_fang
+    DisplayName: 회조 (灰爪) / Grey Fang
+    CharacterId: npc_grey_fang
+    ArchetypeIdOverride: reaver
     Anchor: 0
     PositiveTraitId: 
     NegativeTraitId: 
     RoleInstructionId: 
     RoleTag: auto
     TemporaryAugmentIds: []
-  - ParticipantId: enemy_raider
-    DisplayName: Enemy Raider
-    CharacterId: raider
-    ArchetypeIdOverride: 
+  - ParticipantId: enemy_silent_moon
+    DisplayName: 침월 (沉月) / Silent Moon
+    CharacterId: npc_silent_moon
+    ArchetypeIdOverride: hexer
     Anchor: 2
     PositiveTraitId: 
     NegativeTraitId: 
     RoleInstructionId: 
     RoleTag: auto
     TemporaryAugmentIds: []
-  - ParticipantId: enemy_hunter
-    DisplayName: Enemy Hunter
-    CharacterId: hunter
-    ArchetypeIdOverride: 
+  - ParticipantId: enemy_lyra_sternfeld
+    DisplayName: 선영 (宣英) / Lyra Sternfeld
+    CharacterId: npc_lyra_sternfeld
+    ArchetypeIdOverride: priest
     Anchor: 3
     PositiveTraitId: 
     NegativeTraitId: 
     RoleInstructionId: 
     RoleTag: auto
     TemporaryAugmentIds: []
-  - ParticipantId: enemy_hexer
-    DisplayName: Enemy Hexer
-    CharacterId: hexer
-    ArchetypeIdOverride: 
+  - ParticipantId: enemy_black_vellum
+    DisplayName: 흑지 (黑紙) / Black Vellum
+    CharacterId: npc_black_vellum
+    ArchetypeIdOverride: shaman
     Anchor: 5
     PositiveTraitId: 
     NegativeTraitId: 

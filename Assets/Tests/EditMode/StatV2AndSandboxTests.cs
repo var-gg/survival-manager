@@ -55,8 +55,8 @@ public sealed class StatV2AndSandboxTests
         Assert.That(CountAssets("Items"), Is.EqualTo(36));
         Assert.That(CountAssets("PassiveBoards"), Is.EqualTo(4));
         Assert.That(CountAssets("PassiveNodes"), Is.EqualTo(72));
-        Assert.That(CountAugments(isPermanent: false), Is.EqualTo(18));
-        Assert.That(CountAugments(isPermanent: true), Is.EqualTo(9));
+        Assert.That(CountAugments(isPermanent: false), Is.EqualTo(24));
+        Assert.That(CountAugments(isPermanent: true), Is.EqualTo(12));
         Assert.That(CountSynergyFamilies(), Is.EqualTo(7));
     }
 

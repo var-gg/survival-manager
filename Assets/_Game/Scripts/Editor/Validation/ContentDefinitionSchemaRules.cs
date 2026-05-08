@@ -406,9 +406,9 @@ internal sealed class AugmentSchemaRule : DefinitionSchemaRule<AugmentDefinition
             ContentValidationIssueFactory.AddError(issues, "augment.bias_tag_overlap", "Augment build bias tags and protection tags must not overlap.", assetPath);
         }
 
-        if (augment.OfferBucket == AugmentOfferBucketValue.SynergyLinked && augment.BuildBiasTags.Count == 0)
+        if (augment.OfferBucket == AugmentOfferBucketValue.SynergyPact && augment.BuildBiasTags.Count == 0)
         {
-            ContentValidationIssueFactory.AddError(issues, "augment.offer_metadata", "Synergy-linked augments must define at least one build bias tag.", assetPath);
+            ContentValidationIssueFactory.AddError(issues, "augment.offer_metadata", "SynergyPact augments must define at least one build bias tag.", assetPath);
         }
 
         if (augment.MutualExclusionTags.Select(tag => tag == null ? string.Empty : tag.Id).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct().Count()

@@ -24,42 +24,42 @@ MonoBehaviour:
     - p09
     - allies
     Members:
-    - MemberId: ally_warden
-      SourceKind: 2
+    - MemberId: ally_dawn_priest
+      SourceKind: 1
       HeroId: 
-      DisplayName: Warden
-      ArchetypeId: 
-      CharacterId: warden
+      DisplayName: 단린 (丹麟) / Dawn Priest
+      ArchetypeId: priest
+      CharacterId: hero_dawn_priest
       Anchor: 1
-      RoleInstructionId: anchor
+      RoleInstructionId: support
       BuildOverride: {fileID: 0}
       Notes: 
-    - MemberId: ally_slayer
-      SourceKind: 2
+    - MemberId: ally_pack_raider
+      SourceKind: 1
       HeroId: 
-      DisplayName: Slayer
-      ArchetypeId: 
-      CharacterId: slayer
+      DisplayName: 이빨바람 / Pack Raider
+      ArchetypeId: raider
+      CharacterId: hero_pack_raider
       Anchor: 2
       RoleInstructionId: bruiser
       BuildOverride: {fileID: 0}
       Notes: 
-    - MemberId: ally_hunter
-      SourceKind: 2
+    - MemberId: ally_echo_savant
+      SourceKind: 1
       HeroId: 
-      DisplayName: Hunter
-      ArchetypeId: 
-      CharacterId: hunter
+      DisplayName: 공한 (空閑) / Echo Savant
+      ArchetypeId: marksman
+      CharacterId: hero_echo_savant
       Anchor: 3
       RoleInstructionId: carry
       BuildOverride: {fileID: 0}
       Notes: 
-    - MemberId: ally_priest
-      SourceKind: 2
+    - MemberId: ally_grave_hexer
+      SourceKind: 1
       HeroId: 
-      DisplayName: Priest
-      ArchetypeId: 
-      CharacterId: priest
+      DisplayName: 묵향 (墨香) / Grave Hexer
+      ArchetypeId: hexer
+      CharacterId: hero_grave_hexer
       Anchor: 5
       RoleInstructionId: support
       BuildOverride: {fileID: 0}

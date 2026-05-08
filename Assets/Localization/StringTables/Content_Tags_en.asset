@@ -234,6 +234,46 @@ MonoBehaviour:
     m_Localized: Magical
     m_Metadata:
       m_Items: []
+  - m_Id: 744315500000001
+    m_Localized: Class Bound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000002
+    m_Localized: Combat Finisher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000003
+    m_Localized: Economy Loot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000004
+    m_Localized: Hero Bound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000005
+    m_Localized: Permanent Unlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000006
+    m_Localized: Role Bound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000007
+    m_Localized: Stat Light
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000008
+    m_Localized: Synergy Bound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000009
+    m_Localized: Volatile Run
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000010
+    m_Localized: Wildcard Risk
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -10,10 +10,10 @@ public static class BattleEncounterPlans
         return new BattleEncounterPlan(
             new[]
             {
-                CreateEnemy("enemy_guardian", "Enemy Guardian", "guardian", DeploymentAnchorId.FrontTop),
-                CreateEnemy("enemy_raider", "Enemy Raider", "raider", DeploymentAnchorId.FrontBottom),
-                CreateEnemy("enemy_hunter", "Enemy Hunter", "hunter", DeploymentAnchorId.BackTop),
-                CreateEnemy("enemy_hexer", "Enemy Hexer", "hexer", DeploymentAnchorId.BackBottom),
+                CreateEnemy("enemy_grey_fang", "회조 (灰爪) / Grey Fang", "reaver", "npc_grey_fang", DeploymentAnchorId.FrontTop),
+                CreateEnemy("enemy_silent_moon", "침월 (沉月) / Silent Moon", "hexer", "npc_silent_moon", DeploymentAnchorId.FrontBottom),
+                CreateEnemy("enemy_lyra_sternfeld", "선영 (宣英) / Lyra Sternfeld", "priest", "npc_lyra_sternfeld", DeploymentAnchorId.BackTop),
+                CreateEnemy("enemy_black_vellum", "흑지 (黑紙) / Black Vellum", "shaman", "npc_black_vellum", DeploymentAnchorId.BackBottom),
             },
             TeamPostureType.StandardAdvance);
     }
@@ -22,6 +22,7 @@ public static class BattleEncounterPlans
         string id,
         string displayName,
         string archetypeId,
+        string characterId,
         DeploymentAnchorId anchor)
     {
         return new BattleParticipantSpec(
@@ -32,6 +33,7 @@ public static class BattleEncounterPlans
             string.Empty,
             string.Empty,
             System.Array.Empty<BattleEquippedItemSpec>(),
-            System.Array.Empty<string>());
+            System.Array.Empty<string>(),
+            CharacterId: characterId);
     }
 }

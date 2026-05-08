@@ -103,7 +103,7 @@ public sealed class LoopAContractClosureTests
             asset.DescriptionKey = "content.augment.loop_a_slot_delta.desc";
             asset.FamilyId = "augment_loop_a_slot_delta";
             asset.RiskRewardClass = AugmentRiskRewardClassValue.Neutral;
-            asset.OfferBucket = AugmentOfferBucketValue.NeutralCombat;
+            asset.OfferBucket = AugmentOfferBucketValue.TacticalRewrite;
             asset.RosterSlotDelta = 1;
         }));
 
