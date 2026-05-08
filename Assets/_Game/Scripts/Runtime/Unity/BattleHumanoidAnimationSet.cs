@@ -17,6 +17,118 @@ public enum BattleHumanoidAnimationStance
     Gun = 8,
 }
 
+[Serializable]
+public sealed class BattleHumanoidAnimationVariant
+{
+    [SerializeField] private BattleAnimationSemantic semantic = BattleAnimationSemantic.None;
+    [SerializeField] private BattleAnimationDirection direction = BattleAnimationDirection.Any;
+    [SerializeField] private BattleAnimationIntensity intensity = BattleAnimationIntensity.Any;
+    [SerializeField] private BattleHumanoidAnimationStance stance = BattleHumanoidAnimationStance.Default;
+    [SerializeField] private float weight = 1f;
+    [SerializeField] private AnimationClip clip = null!;
+
+    public BattleHumanoidAnimationVariant()
+    {
+    }
+
+    public BattleHumanoidAnimationVariant(
+        BattleAnimationSemantic semantic,
+        AnimationClip clip,
+        BattleAnimationDirection direction = BattleAnimationDirection.Any,
+        BattleAnimationIntensity intensity = BattleAnimationIntensity.Any,
+        BattleHumanoidAnimationStance stance = BattleHumanoidAnimationStance.Default,
+        float weight = 1f)
+    {
+        this.semantic = semantic;
+        this.clip = clip;
+        this.direction = direction;
+        this.intensity = intensity;
+        this.stance = stance;
+        this.weight = weight;
+    }
+
+    public AnimationClip? Clip => clip;
+
+    public float EffectiveWeight => Mathf.Max(0f, weight);
+
+    public bool TryScore(
+        BattleHumanoidAnimationStance requestedStance,
+        BattlePresentationCue cue,
+        out int score)
+    {
+        score = 0;
+        if (clip == null
+            || semantic == BattleAnimationSemantic.None
+            || semantic != cue.AnimationSemantic
+            || EffectiveWeight <= 0f)
+        {
+            return false;
+        }
+
+        var stanceScore = ScoreStance(requestedStance);
+        if (stanceScore < 0)
+        {
+            return false;
+        }
+
+        var directionScore = ScoreDirection(cue.AnimationDirection);
+        if (directionScore < 0)
+        {
+            return false;
+        }
+
+        var intensityScore = ScoreIntensity(cue.AnimationIntensity);
+        if (intensityScore < 0)
+        {
+            return false;
+        }
+
+        score = 10 + stanceScore + directionScore + intensityScore;
+        return true;
+    }
+
+    private int ScoreStance(BattleHumanoidAnimationStance requestedStance)
+    {
+        if (stance == requestedStance)
+        {
+            return 3;
+        }
+
+        return stance == BattleHumanoidAnimationStance.Default ? 1 : -1;
+    }
+
+    private int ScoreDirection(BattleAnimationDirection requestedDirection)
+    {
+        if (direction == BattleAnimationDirection.Any || requestedDirection == BattleAnimationDirection.Any)
+        {
+            return 1;
+        }
+
+        if (direction == requestedDirection)
+        {
+            return 3;
+        }
+
+        if (direction == BattleAnimationDirection.Lateral
+            && requestedDirection is BattleAnimationDirection.Left or BattleAnimationDirection.Right)
+        {
+            return 2;
+        }
+
+        return -1;
+    }
+
+    private int ScoreIntensity(BattleAnimationIntensity requestedIntensity)
+    {
+        if (intensity == BattleAnimationIntensity.Any || requestedIntensity == BattleAnimationIntensity.Any)
+        {
+            return 1;
+        }
+
+        return intensity == requestedIntensity ? 3 : -1;
+    }
+}
+
 [CreateAssetMenu(menuName = "SM/Battle/Humanoid Animation Set", fileName = "BattleHumanoidAnimationSet")]
 public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
 {
@@ -34,6 +146,7 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
     [SerializeField] private AnimationClip[] damagingSkills = Array.Empty<AnimationClip>();
     [SerializeField] private AnimationClip[] healSkills = Array.Empty<AnimationClip>();
     [SerializeField] private AnimationClip[] hits = Array.Empty<AnimationClip>();
+    [SerializeField] private BattleHumanoidAnimationVariant[] variants = Array.Empty<BattleHumanoidAnimationVariant>();
 
     public BattleHumanoidAnimationStance Stance => stance;
 
@@ -105,6 +218,12 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
     private AnimationClip? ResolveCueClip(BattlePresentationCue cue, BattleUnitReadModel state)
     {
         var seed = ResolveCueSeed(cue);
+        var semanticClip = ResolveSemanticVariantClip(cue, seed);
+        if (semanticClip != null)
+        {
+            return semanticClip;
+        }
+
         return cue.CueType switch
         {
             BattlePresentationCueType.WindupEnter => PickVariant(windups, seed),
@@ -118,6 +237,62 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
             BattlePresentationCueType.DeathStart => FirstNonNull(death, idle),
             _ => null,
         };
+    }
+
+    private AnimationClip? ResolveSemanticVariantClip(BattlePresentationCue cue, int seed)
+    {
+        if (cue.AnimationSemantic == BattleAnimationSemantic.None || variants == null || variants.Length == 0)
+        {
+            return null;
+        }
+
+        var bestScore = -1;
+        var totalWeight = 0f;
+        for (var i = 0; i < variants.Length; i++)
+        {
+            var variant = variants[i];
+            if (variant == null || !variant.TryScore(stance, cue, out var score))
+            {
+                continue;
+            }
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                totalWeight = variant.EffectiveWeight;
+            }
+            else if (score == bestScore)
+            {
+                totalWeight += variant.EffectiveWeight;
+            }
+        }
+
+        if (bestScore < 0 || totalWeight <= 0f)
+        {
+            return null;
+        }
+
+        var roll = (PositiveModulo(seed, 1000003) / 1000003f) * totalWeight;
+        AnimationClip? fallback = null;
+        for (var i = 0; i < variants.Length; i++)
+        {
+            var variant = variants[i];
+            if (variant == null
+                || !variant.TryScore(stance, cue, out var score)
+                || score != bestScore)
+            {
+                continue;
+            }
+
+            fallback = variant.Clip;
+            roll -= variant.EffectiveWeight;
+            if (roll <= 0f)
+            {
+                return variant.Clip;
+            }
+        }
+
+        return fallback;
     }
 
     private AnimationClip? ResolveSkillClip(BattlePresentationCue cue, BattleUnitReadModel state, int seed)
@@ -176,7 +351,8 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
                || HasAnyClip(basicAttacks)
                || HasAnyClip(damagingSkills)
                || HasAnyClip(healSkills)
-               || HasAnyClip(hits);
+               || HasAnyClip(hits)
+               || HasAnyClip(variants);
     }
 
     private static bool HasAnyClip(AnimationClip[]? clips)
@@ -197,6 +373,24 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
         return false;
     }
 
+    private static bool HasAnyClip(BattleHumanoidAnimationVariant[]? animationVariants)
+    {
+        if (animationVariants == null)
+        {
+            return false;
+        }
+
+        foreach (var variant in animationVariants)
+        {
+            if (variant?.Clip != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static int ResolveCueSeed(BattlePresentationCue cue)
     {
         unchecked
@@ -206,6 +400,10 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
             hash = hash * 31 + (int)cue.CueType;
             hash = hash * 31 + StableHash(cue.SubjectActorId);
             hash = hash * 31 + StableHash(cue.RelatedActorId ?? string.Empty);
+            hash = hash * 31 + (int)cue.AnimationSemantic;
+            hash = hash * 31 + (int)cue.AnimationDirection;
+            hash = hash * 31 + (int)cue.AnimationIntensity;
+            hash = hash * 31 + StableHash(cue.Note);
             return hash;
         }
     }
