@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-05-08
 - 소스오브트루스: `docs/02_design/meta/synergy-and-augment-taxonomy.md`
 - 관련문서:
   - `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
@@ -32,21 +32,25 @@
 
 ## augment bucket
 
-### `NeutralCombat`
+### `HeroRewrite`
 
-- front/back / tempo / burst / sustain 같은 폭넓은 전투 레버
+- 특정 hero/archetype 또는 정체성 축을 run 한정으로 바꾸는 레버
 
-### `EconomyRoster`
+### `TacticalRewrite`
 
-- recruit, reroll, retrain, bench, loot value 같은 운영 레버
+- 배치, 역할, 기동, 보호, target priority 같은 전술 운용 레버
 
-### `SynergyLinked`
+### `ScalingEngine`
 
-- 현재 팀 조합과 tag count를 밀어주는 레버
+- encounter가 진행될수록 build 고점과 성장감을 만드는 레버
 
-### `WildcardRisk`
+### `EconomyAndLoot`
 
-- 큰 고점과 리스크를 같이 주는 방향 강제 레버
+- recruit, reroll, retrain, bench, loot value, recovery 같은 운영 레버
+
+### `SynergyPact`
+
+- 현재 팀 조합과 tag count를 밀어주는 레버. `BuildBiasTags`를 반드시 가진다.
 
 ## augment offer rule
 

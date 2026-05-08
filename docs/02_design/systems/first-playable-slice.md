@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-05-08
 - 소스오브트루스: `docs/02_design/systems/first-playable-slice.md`
 - 관련문서:
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
@@ -22,8 +22,8 @@ Loop D에서 실제로 밸런스하고 검증하는 V1 playable subset을 cap과
 - `FlexPassive = 20`
 - `Affix = 24`
 - `SynergyFamily = 7` (race 3 + class 4)
-- `TemporaryAugment = 12`
-- `PermanentAugment = 4`
+- `TemporaryAugment = 24`
+- `PermanentAugment = 1` (live equip candidate slot; authored candidates are larger than live slice)
 - `PassiveBoard = 4` (class board)
 
 ## synergy grammar
@@ -47,7 +47,7 @@ Loop D에서 실제로 밸런스하고 검증하는 V1 playable subset을 cap과
     `support_swift`, `support_executioner`, `support_brutal`, `support_longshot`,
     `support_hunter_mark`, `support_piercing`, `support_echo`, `support_lingering`,
     `support_siphon`
-- `ParkingLotContentIds`는 live subset에서 빠진 augment reserve만 보관한다.
+- `ParkingLotContentIds`는 live subset에서 빠진 permanent candidate와 content reserve만 보관한다.
   battle reward나 recruit/flex pool을 통해 live subset 우회 경로로 쓰지 않는다.
 
 ## first playable recruit set
@@ -101,5 +101,5 @@ debug/dev menu도 same filter를 따르되, `ParkingLotContentIds`는 별도 ins
 - slice pressure는 skill, augment, synergy family에 집중된다.
 - current skill 분류의 canonical source는 authored `LockedSignature*`가 아니라 compiled slot이다.
 - synergy family는 7로 고정. schema capacity는 넓어도 live subset은 7이다.
-- augment는 temporary 12 + permanent 4 = 16으로 고정.
+- augment는 temporary 24 + live permanent 1로 고정한다. authored permanent candidate catalog는 12개지만 live slice 승격과 equip slot truth는 분리한다.
 - class synergy는 `2 / 3` grammar로 동작하며, class 4-piece는 live subset에 없다.

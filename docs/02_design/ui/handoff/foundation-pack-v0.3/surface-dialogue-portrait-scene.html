@@ -1,0 +1,1519 @@
+<!doctype html>
+<html lang="ko">
+<head>
+
+
+<meta charset="utf-8" />
+<title>Surface · Dialogue.PortraitScene v0.1 — Survival Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Shippori+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+:root{
+  --bg-0:#0c1126; --bg-1:#141a35; --bg-2:#1c2243; --bg-3:#262d54;
+  --line-1:#2c3568; --line-2:#3b467f;
+  --vellum:#f5ead0; --vellum-2:#e2d4ad; --vellum-3:#c9b88a;
+  --parchment:#efe2bf; --parchment-deep:#c9b88a; --parchment-shadow:#7a6a3e;
+  --gold-100:#ffe9a8; --gold-200:#f5d68a; --gold-300:#e6b751;
+  --gold-400:#c8932a; --gold-500:#8a6418;
+  --ink-1:#f5ead0; --ink-2:#d8c799; --ink-3:#9d8a5e; --ink-4:#6b5d3f;
+  --ink-parchment:#3d2f12; --ink-parchment-soft:#6b5530;
+  --fam-vanguard:#4a72b8; --fam-vanguard-deep:#1a2a52; --fam-vanguard-glow:#7fa3e0;
+  --fam-striker:#b6334a; --fam-striker-deep:#5a0e1c; --fam-striker-glow:#f08a3c;
+  --fam-mystic:#8a5cb8; --fam-mystic-deep:#3a1f5a; --fam-mystic-glow:#d4b4f0;
+  --fam-mystic-2:#6b3fa0; --fam-mystic-2-deep:#2a1248;
+  --fam-ranger:#b58a36; --fam-ranger-deep:#4d3a14; --fam-ranger-glow:#e6c878;
+  --fam-beastkin:#7d8a3e; --fam-beastkin-deep:#2c3414; --fam-beastkin-glow:#bcc870;
+  --f-ko:"Pretendard",system-ui,sans-serif;
+  --f-jp:"Shippori Mincho","Yu Mincho",serif;
+  --f-en-display:"Cinzel",serif;
+  --f-en-italic:"Cormorant Garamond",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0; padding:0; height:100%;}
+body{
+  background:
+    radial-gradient(1300px 800px at 18% -10%, #2a2050 0%, transparent 55%),
+    radial-gradient(1100px 700px at 95% 25%, #4a1a2e 0%, transparent 55%),
+    radial-gradient(900px 700px at 50% 110%, #1a2050 0%, transparent 60%),
+    var(--bg-0);
+  color:var(--ink-1);
+  font-family:var(--f-ko);
+  min-height:100vh;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 60% 40%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(245,214,138,.03) 0, transparent 1px);
+  background-size:7px 7px,11px 11px,13px 13px;
+}
+.canvas{ position:relative; z-index:1; max-width:1840px; margin:0 auto; padding:48px 32px 96px; }
+
+/* Header */
+.doc-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:32px; padding-bottom:24px; margin-bottom:48px; position:relative; }
+.doc-head::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:linear-gradient(to right, transparent 0%, var(--gold-400) 8%, var(--gold-200) 50%, var(--gold-400) 92%, transparent 100%); }
+.eyebrow{ font-family:var(--f-mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold-300); }
+.doc-title{ font-family:var(--f-en-display); font-weight:700; font-size:34px; letter-spacing:.06em; margin:6px 0 4px;
+  background:linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 60%, var(--gold-500) 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent; }
+.doc-title .flourish{ display:inline-flex; gap:4px; vertical-align:6px; margin:0 14px; }
+.doc-title .flourish i{ width:5px; height:5px; background:var(--gold-300); transform:rotate(45deg); display:inline-block; -webkit-text-fill-color:initial; }
+.doc-title .flourish i:nth-child(2){ width:8px; height:8px; background:var(--gold-200); border:1px solid var(--gold-500); }
+.doc-subtitle{ font-family:var(--f-en-italic); font-style:italic; font-size:15px; color:var(--ink-2); }
+.doc-subtitle-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); max-width:78ch; line-height:1.6; margin:4px 0 0; }
+.doc-meta{ text-align:right; font-family:var(--f-mono); font-size:11px; color:var(--ink-3); letter-spacing:.06em; }
+.doc-meta b{ color:var(--gold-200); font-weight:500; }
+
+/* Section */
+section{ margin-bottom:56px; }
+.section-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:24px; }
+.section-num{ font-family:var(--f-mono); font-size:11px; color:var(--gold-400); letter-spacing:.18em; }
+.section-title{ font-family:var(--f-en-display); font-size:22px; font-weight:600; letter-spacing:.06em; color:var(--gold-200); margin:0; }
+.section-rule{ height:1px; background:linear-gradient(to right, var(--gold-400) 0%, transparent 80%); flex:1; margin-bottom:4px; }
+.section-title-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); font-weight:500; margin-left:auto; }
+.section-title-ko::before{ content:"—  "; color:var(--gold-500); }
+
+.state-tag{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.18em;
+  color:var(--gold-300); text-transform:uppercase;
+  padding:5px 10px; border:1px dashed var(--line-2);
+  width:fit-content; margin-bottom:14px;
+}
+.state-tag .num{ color:var(--gold-200); font-weight:600; }
+.state-tag .ko{ font-family:var(--f-ko); color:var(--vellum); letter-spacing:.04em; font-size:11px; font-weight:700; text-transform:none; }
+.state-tag .cite{ font-family:var(--f-mono); font-size:9px; color:var(--ink-4); letter-spacing:.12em; padding-left:8px; border-left:1px dashed var(--line-2); margin-left:4px; }
+
+.cell{
+  position:relative;
+  background:linear-gradient(180deg, rgba(28,34,67,.55), rgba(14,18,38,.7));
+  border:1px solid var(--line-1);
+  padding:24px;
+  margin-bottom:32px;
+}
+.cell::before, .cell::after{ content:""; position:absolute; width:8px; height:8px; border:1px solid var(--gold-300); }
+.cell::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.cell::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+/* ============================================================
+   ARTBOARD (PC 1920x1080 / Mobile 380x760 displayed)
+   ============================================================ */
+.artboard{
+  position:relative;
+  background:
+    radial-gradient(60% 50% at 30% 30%, rgba(74,114,184,.16), transparent 70%),
+    radial-gradient(50% 40% at 80% 80%, rgba(138,92,184,.14), transparent 70%),
+    linear-gradient(180deg, #0a0d20 0%, #060814 100%);
+  border:1px solid var(--gold-500);
+  isolation:isolate; overflow:hidden;
+}
+.artboard > .cc{ position:absolute; width:14px; height:14px; pointer-events:none; border:1px solid var(--gold-300); z-index:6; }
+.artboard > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.artboard > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.artboard > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.artboard > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.artboard::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(245,214,138,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,214,138,.025) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+
+/* PC artboard size — scaled down to fit (1920x1080 → 1280x720) */
+.artboard.pc{
+  width:1280px; height:720px;
+  margin:0 auto;
+}
+
+/* Scene art placeholder layer */
+.scene-bg{
+  position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(74,114,184,.18), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 30% 70%, rgba(138,92,184,.14), transparent 70%),
+    linear-gradient(180deg, rgba(20,26,53,.4) 0%, rgba(10,13,32,.7) 100%);
+  overflow:hidden;
+}
+.scene-bg::after{
+  content:""; position:absolute; inset:0;
+  background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.55) 100%);
+}
+.scene-bg .scene-tag{
+  position:absolute; top:16px; left:16px;
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em;
+  color:var(--ink-3); text-transform:uppercase;
+  padding:4px 8px; background:rgba(0,0,0,.45); border:1px dashed var(--line-2);
+}
+.scene-bg .scene-cross{
+  position:absolute; inset:0; opacity:.06;
+  background-image:
+    linear-gradient(45deg, var(--vellum) 1px, transparent 1px),
+    linear-gradient(-45deg, var(--vellum) 1px, transparent 1px);
+  background-size:80px 80px;
+}
+
+/* ============================================================
+   PORTRAIT BUST (PortraitFrame molecule citation)
+   ============================================================ */
+.bust{
+  position:absolute; bottom:30%;
+  width:240px; height:340px;
+  z-index:2;
+  transition:opacity .3s ease, transform .3s ease;
+}
+.bust.left{ left:64px; }
+.bust.right{ right:64px; }
+.bust.center{ left:50%; transform:translateX(-50%); }
+.bust.dim{ opacity:.45; filter:saturate(.6) brightness(.7); }
+.bust.dim::after{ content:""; position:absolute; inset:0; background:rgba(8,12,28,.35); pointer-events:none; z-index:5; }
+
+.bust-frame{
+  position:absolute; inset:0;
+  background:
+    linear-gradient(180deg, rgba(58,31,90,.55), rgba(28,12,52,.75));
+  border:1px solid var(--bust-c, var(--fam-mystic));
+  isolation:isolate;
+}
+.bust-frame::before{ content:""; position:absolute; inset:4px; border:1px solid rgba(245,214,138,.18); pointer-events:none; }
+.bust-frame::after{ content:""; position:absolute; inset:8px; border:1px solid rgba(245,214,138,.08); pointer-events:none; }
+
+/* family rib left */
+.bust .rib{
+  position:absolute; left:0; top:0; bottom:0; width:6px;
+  background:linear-gradient(180deg, var(--bust-c) 0%, var(--bust-c-deep) 100%);
+  z-index:3;
+}
+.bust .rib-r{
+  position:absolute; right:0; top:0; bottom:0; width:6px;
+  background:linear-gradient(180deg, var(--bust-c-deep) 0%, var(--bust-c) 100%);
+  z-index:3;
+}
+
+/* corner caps */
+.bust .cc{ position:absolute; width:14px; height:14px; pointer-events:none; z-index:4; }
+.bust .cc::before, .bust .cc::after{ content:""; position:absolute; background:var(--gold-300); }
+.bust .cc::before{ width:14px; height:1.5px; }
+.bust .cc::after{ width:1.5px; height:14px; }
+.bust .cc.tl{ top:-1px; left:-1px; }
+.bust .cc.tl::before, .bust .cc.tl::after{ top:0; left:0; }
+.bust .cc.tr{ top:-1px; right:-1px; }
+.bust .cc.tr::before, .bust .cc.tr::after{ top:0; right:0; }
+.bust .cc.bl{ bottom:-1px; left:-1px; }
+.bust .cc.bl::before, .bust .cc.bl::after{ bottom:0; left:0; }
+.bust .cc.br{ bottom:-1px; right:-1px; }
+.bust .cc.br::before, .bust .cc.br::after{ bottom:0; right:0; }
+.bust .cc i{
+  position:absolute; width:6px; height:6px;
+  background:linear-gradient(135deg, var(--gold-100), var(--gold-400));
+  border:1px solid var(--gold-500); transform:rotate(45deg);
+}
+.bust .cc.tl i{ top:8px; left:8px; }
+.bust .cc.tr i{ top:8px; right:8px; }
+.bust .cc.bl i{ bottom:8px; left:8px; }
+.bust .cc.br i{ bottom:8px; right:8px; }
+
+/* silhouette */
+.bust-art{
+  position:absolute; inset:8px; z-index:1; overflow:hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(212,180,240,.22), transparent 70%),
+    linear-gradient(180deg, rgba(58,31,90,.6) 0%, rgba(28,12,52,.85) 100%);
+}
+.bust-art svg{ position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:88%; height:96%; opacity:.85; }
+
+/* P09 RenderTexture tag */
+.bust .p09{
+  position:absolute; top:6px; right:6px; z-index:5;
+  font-family:var(--f-mono); font-size:8px; letter-spacing:.14em;
+  color:var(--gold-200); text-transform:uppercase;
+  padding:2px 5px; background:rgba(0,0,0,.6); border:1px solid rgba(245,214,138,.4);
+}
+
+/* speaker name plate at bust foot */
+.bust .nameplate{
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:-26px; z-index:6;
+  display:flex; flex-direction:column; align-items:center; gap:1px;
+  padding:6px 14px;
+  background:linear-gradient(180deg, rgba(28,34,67,.95), rgba(14,18,38,.98));
+  border:1px solid var(--bust-c);
+  white-space:nowrap;
+}
+.bust .nameplate::before, .bust .nameplate::after{ content:""; position:absolute; width:5px; height:5px; border:1px solid var(--gold-300); }
+.bust .nameplate::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.bust .nameplate::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.bust .nameplate .ko{ font-family:var(--f-ko); font-weight:800; font-size:14px; color:var(--vellum); letter-spacing:.04em; }
+.bust .nameplate .en{ font-family:var(--f-en-display); font-size:9px; letter-spacing:.18em; color:var(--bust-c); font-weight:600; }
+
+/* focus state — gold ring + glow */
+.bust.focus{
+  filter:drop-shadow(0 0 18px rgba(230,183,81,.35));
+  animation:focusPulse 3s ease-in-out infinite;
+}
+@keyframes focusPulse{ 0%,100%{ filter:drop-shadow(0 0 18px rgba(230,183,81,.35)); } 50%{ filter:drop-shadow(0 0 28px rgba(230,183,81,.55)); } }
+.bust.focus .bust-frame{ border-color:var(--gold-200); box-shadow: 0 0 0 1px var(--gold-300), inset 0 0 32px rgba(230,183,81,.18); }
+.bust.focus .nameplate{ border-color:var(--gold-300); }
+
+/* family color sets */
+.bust.mystic{ --bust-c:var(--fam-mystic); --bust-c-deep:var(--fam-mystic-deep); --bust-c-glow:var(--fam-mystic-glow); }
+.bust.mystic2{ --bust-c:var(--fam-mystic-2); --bust-c-deep:var(--fam-mystic-2-deep); --bust-c-glow:var(--fam-mystic-glow); }
+.bust.beastkin{ --bust-c:var(--fam-beastkin); --bust-c-deep:var(--fam-beastkin-deep); --bust-c-glow:var(--fam-beastkin-glow); }
+
+/* ============================================================
+   DIALOGUE BOX (DialogueBox molecule citation)
+   ============================================================ */
+.dbox{
+  position:absolute; left:48px; right:48px; bottom:32px;
+  height:200px; z-index:7;
+  background:
+    linear-gradient(180deg, var(--parchment) 0%, var(--parchment-deep) 100%);
+  color:var(--ink-parchment);
+  border:1px solid var(--gold-500);
+  isolation:isolate;
+  display:flex; flex-direction:column;
+}
+.dbox::before{ content:""; position:absolute; inset:5px; border:1px solid rgba(122,106,62,.45); pointer-events:none; }
+.dbox::after{ content:""; position:absolute; inset:9px; border:1px solid rgba(122,106,62,.2); pointer-events:none; }
+.dbox .grain{
+  position:absolute; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(122,106,62,.06) 0, transparent 1.5px),
+    radial-gradient(circle at 70% 30%, rgba(122,106,62,.04) 0, transparent 1.5px),
+    radial-gradient(circle at 28% 70%, rgba(122,106,62,.05) 0, transparent 1.5px);
+  background-size:9px 9px, 13px 13px, 11px 11px;
+}
+.dbox > .cc{ position:absolute; width:18px; height:18px; pointer-events:none; z-index:4; }
+.dbox > .cc::before, .dbox > .cc::after{ content:""; position:absolute; background:var(--gold-300); }
+.dbox > .cc::before{ width:18px; height:1.5px; }
+.dbox > .cc::after{ width:1.5px; height:18px; }
+.dbox > .cc.tl{ top:-1px; left:-1px; }
+.dbox > .cc.tl::before, .dbox > .cc.tl::after{ top:0; left:0; }
+.dbox > .cc.tr{ top:-1px; right:-1px; }
+.dbox > .cc.tr::before, .dbox > .cc.tr::after{ top:0; right:0; }
+.dbox > .cc.bl{ bottom:-1px; left:-1px; }
+.dbox > .cc.bl::before, .dbox > .cc.bl::after{ bottom:0; left:0; }
+.dbox > .cc.br{ bottom:-1px; right:-1px; }
+.dbox > .cc.br::before, .dbox > .cc.br::after{ bottom:0; right:0; }
+.dbox > .cc i{
+  position:absolute; width:8px; height:8px; transform:rotate(45deg);
+  background:linear-gradient(135deg, var(--gold-100), var(--gold-400));
+  border:1px solid var(--gold-500);
+}
+.dbox > .cc.tl i{ top:10px; left:10px; }
+.dbox > .cc.tr i{ top:10px; right:10px; }
+.dbox > .cc.bl i{ bottom:10px; left:10px; }
+.dbox > .cc.br i{ bottom:10px; right:10px; }
+
+/* Dialogue header */
+.dbox-head{
+  position:relative; z-index:1;
+  display:flex; align-items:center; gap:14px;
+  padding:14px 22px 10px;
+  border-bottom:1px solid rgba(122,106,62,.35);
+}
+.dbox-name{ display:flex; flex-direction:column; gap:2px; min-width:120px; }
+.dbox-name .ko{
+  font-family:var(--f-ko); font-weight:800; font-size:18px;
+  color:var(--ink-parchment); letter-spacing:.04em;
+}
+.dbox-name .en{
+  font-family:var(--f-en-display); font-size:10px; letter-spacing:.18em;
+  color:var(--name-c, var(--fam-mystic-deep)); font-weight:700;
+  text-transform:uppercase;
+}
+.dbox-name .jp{
+  font-family:var(--f-jp); font-size:11px; color:var(--ink-parchment-soft);
+  letter-spacing:.12em; margin-top:2px;
+}
+
+/* family color tag pill on header right */
+.dbox-fam{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:3px 8px;
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.16em;
+  text-transform:uppercase;
+  background:linear-gradient(180deg, var(--fam-c, var(--fam-mystic)) 0%, var(--fam-c-d, var(--fam-mystic-deep)) 100%);
+  color:var(--vellum);
+  border:1px solid var(--gold-500);
+}
+.dbox-fam i{ width:5px; height:5px; transform:rotate(45deg); background:var(--gold-200); border:1px solid var(--gold-500); display:inline-block; }
+
+/* inline VoicePlayer (sm replay) */
+.vplayer{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 10px;
+  background:rgba(0,0,0,.18); border:1px solid var(--parchment-shadow);
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.12em;
+  color:var(--ink-parchment); text-transform:uppercase;
+}
+.vplayer .bars{ display:inline-flex; align-items:flex-end; gap:2px; height:14px; }
+.vplayer .bars i{ width:2px; background:var(--ink-parchment); display:inline-block; }
+.vplayer .bars i:nth-child(1){ height:5px; }
+.vplayer .bars i:nth-child(2){ height:10px; }
+.vplayer .bars i:nth-child(3){ height:7px; }
+.vplayer .bars i:nth-child(4){ height:12px; }
+.vplayer .bars i:nth-child(5){ height:6px; }
+.vplayer.playing .bars i{ animation:bar 1s ease-in-out infinite; }
+.vplayer.playing .bars i:nth-child(1){ animation-delay:0s; }
+.vplayer.playing .bars i:nth-child(2){ animation-delay:.12s; }
+.vplayer.playing .bars i:nth-child(3){ animation-delay:.24s; }
+.vplayer.playing .bars i:nth-child(4){ animation-delay:.36s; }
+.vplayer.playing .bars i:nth-child(5){ animation-delay:.48s; }
+@keyframes bar{ 0%,100%{ transform:scaleY(.4); } 50%{ transform:scaleY(1.2); } }
+.vplayer.paused .bars i{ height:8px; }
+.vplayer .lbl{ color:var(--ink-parchment-soft); }
+
+.dbox-time{
+  margin-left:auto;
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.14em;
+  color:var(--ink-parchment-soft); text-transform:uppercase;
+}
+.dbox-time b{ color:var(--ink-parchment); font-weight:600; }
+
+/* Dialogue body */
+.dbox-body{
+  position:relative; z-index:1;
+  flex:1; padding:14px 26px 16px;
+  display:flex; flex-direction:column; gap:6px;
+  overflow:hidden;
+}
+.dbox-text-ko{
+  font-family:var(--f-ko); font-size:18px; line-height:1.65;
+  color:var(--ink-parchment); font-weight:500;
+  letter-spacing:.005em;
+  text-wrap:pretty;
+}
+.dbox-text-jp{
+  font-family:var(--f-jp); font-size:13px; line-height:1.5;
+  color:var(--ink-parchment-soft); font-weight:500;
+  letter-spacing:.06em;
+}
+.caret{
+  display:inline-block; width:2px; height:20px;
+  background:var(--ink-parchment); vertical-align:-3px; margin-left:2px;
+  animation:caret 1.05s steps(1) infinite;
+}
+@keyframes caret{ 50%{ opacity:0; } }
+
+/* Next prompt corner (idle state) */
+.next-prompt{
+  position:absolute; right:18px; bottom:14px; z-index:2;
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:var(--f-en-display); font-size:10px; letter-spacing:.22em;
+  color:var(--ink-parchment-soft); font-weight:700; text-transform:uppercase;
+}
+.next-prompt .arrow{
+  width:14px; height:14px; position:relative;
+  display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid var(--ink-parchment-soft);
+  animation:nextPulse 1.4s ease-in-out infinite;
+}
+.next-prompt .arrow svg{ width:8px; height:8px; }
+@keyframes nextPulse{ 0%,100%{ opacity:.55; transform:translateY(0); } 50%{ opacity:1; transform:translateY(2px); } }
+.next-prompt .kbd{
+  padding:2px 5px; border:1px dashed var(--parchment-shadow);
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.12em;
+}
+
+/* Auto-advance progress ring under next prompt */
+.auto-ring{
+  position:absolute; right:18px; bottom:14px; z-index:2;
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--f-en-display); font-size:10px; letter-spacing:.22em;
+  color:var(--fam-vanguard-deep); font-weight:700; text-transform:uppercase;
+}
+.auto-ring .ring{
+  width:18px; height:18px; position:relative; display:inline-block;
+}
+.auto-ring .ring svg{ width:18px; height:18px; transform:rotate(-90deg); }
+.auto-ring .ring circle{ fill:none; stroke-width:2; }
+.auto-ring .ring .bg-t{ stroke:rgba(122,106,62,.3); }
+.auto-ring .ring .fg{
+  stroke:var(--fam-vanguard);
+  stroke-dasharray:50.27; stroke-dashoffset:35;
+  animation:ringFill 2.4s linear infinite;
+}
+@keyframes ringFill{ 0%{ stroke-dashoffset:50.27; } 100%{ stroke-dashoffset:0; } }
+.auto-ring .speed{
+  font-family:var(--f-mono); font-size:9px;
+  background:rgba(74,114,184,.2); padding:2px 5px;
+  border:1px solid var(--fam-vanguard);
+  letter-spacing:.1em; color:var(--fam-vanguard-deep);
+}
+
+/* ============================================================
+   CHOICE PROMPT LIST (new mini-molecule)
+   ============================================================ */
+.choices{
+  position:absolute; left:0; right:0; bottom:14px; z-index:2;
+  display:flex; flex-direction:column; gap:8px;
+  padding:0 26px;
+}
+.choice{
+  position:relative;
+  display:flex; align-items:center; gap:14px;
+  padding:11px 16px;
+  background:rgba(245,234,208,.4);
+  border:1px solid var(--parchment-shadow);
+  cursor:pointer; transition:all .18s ease;
+}
+.choice::before, .choice::after{ content:""; position:absolute; width:5px; height:5px; border:1px solid var(--parchment-shadow); }
+.choice::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.choice::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.choice .cid{
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.14em;
+  color:var(--ink-parchment-soft); text-transform:uppercase;
+  padding:2px 6px; border:1px dashed var(--parchment-shadow);
+  flex-shrink:0;
+}
+.choice .label-ko{
+  font-family:var(--f-ko); font-weight:600; font-size:14px;
+  color:var(--ink-parchment); letter-spacing:.01em; flex:1;
+}
+.choice .label-jp{
+  font-family:var(--f-jp); font-size:11px; color:var(--ink-parchment-soft);
+  letter-spacing:.06em;
+}
+.choice .arrow{
+  font-family:var(--f-mono); font-size:11px; color:var(--ink-parchment-soft);
+}
+.choice:hover{
+  background:rgba(245,234,208,.7); border-color:var(--gold-500);
+  transform:translateX(2px);
+}
+.choice.hi{
+  background:linear-gradient(90deg, rgba(245,214,138,.35), rgba(245,234,208,.5));
+  border-color:var(--gold-300);
+}
+
+/* ============================================================
+   HUD STRIP (top-right)
+   ============================================================ */
+.hud{
+  position:absolute; top:16px; right:16px; z-index:8;
+  display:flex; align-items:center; gap:8px;
+}
+.hud-btn{
+  position:relative;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 11px; min-height:34px;
+  background:rgba(0,0,0,.55); border:1px solid var(--gold-500);
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.14em;
+  color:var(--ink-2); text-transform:uppercase; cursor:pointer;
+}
+.hud-btn::before, .hud-btn::after{ content:""; position:absolute; width:4px; height:4px; border:1px solid var(--gold-300); }
+.hud-btn::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.hud-btn::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.hud-btn:hover{ border-color:var(--gold-300); color:var(--gold-100); }
+.hud-btn .ko{ font-family:var(--f-ko); font-size:11px; font-weight:700; color:var(--vellum); letter-spacing:.04em; text-transform:none; }
+.hud-btn svg{ width:13px; height:13px; }
+
+/* skip with hold ring */
+.hud-skip{ overflow:hidden; }
+.hud-skip .hold{
+  position:absolute; left:0; top:0; bottom:0; width:0;
+  background:linear-gradient(90deg, rgba(230,183,81,.3), rgba(230,183,81,.5));
+  pointer-events:none;
+}
+.hud-skip.holding .hold{ animation:skipHold .35s linear forwards; }
+@keyframes skipHold{ to{ width:100%; } }
+
+/* AutoAdvanceToggle */
+.auto-toggle{
+  position:relative;
+  display:inline-flex; align-items:center;
+  background:rgba(0,0,0,.55); border:1px solid var(--gold-500);
+  height:34px; overflow:hidden;
+}
+.auto-toggle::before, .auto-toggle::after{ content:""; position:absolute; width:4px; height:4px; border:1px solid var(--gold-300); }
+.auto-toggle::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.auto-toggle::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.auto-opt{
+  padding:0 11px; height:100%;
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.14em;
+  color:var(--ink-3); cursor:pointer; text-transform:uppercase;
+}
+.auto-opt + .auto-opt{ border-left:1px solid var(--gold-500); }
+.auto-opt .ko{ font-family:var(--f-ko); font-size:10.5px; font-weight:700; color:var(--vellum); text-transform:none; }
+.auto-opt.active.manual{
+  background:linear-gradient(180deg, rgba(245,214,138,.25), rgba(138,100,24,.2));
+  color:var(--gold-100);
+  box-shadow: inset 0 1px 0 rgba(245,214,138,.3);
+}
+.auto-opt.active.manual .ko{ color:var(--gold-100); }
+.auto-opt.active.auto{
+  background:linear-gradient(180deg, rgba(74,114,184,.4), rgba(26,42,82,.5));
+  color:var(--fam-vanguard-glow);
+  box-shadow: inset 0 1px 0 rgba(127,163,224,.3);
+}
+.auto-opt.active.auto .ko{ color:var(--vellum); }
+.auto-opt .speed{
+  padding:1px 4px; background:rgba(0,0,0,.4); border:1px solid var(--fam-vanguard);
+  font-size:8.5px; color:var(--fam-vanguard-glow);
+}
+
+/* ============================================================
+   BACKLOG DRAWER (PC right) / MODAL (Mobile fullscreen)
+   ============================================================ */
+.backlog{
+  position:absolute; top:0; right:0; bottom:0; z-index:9;
+  width:340px;
+  background:linear-gradient(180deg, rgba(20,26,53,.97), rgba(10,13,32,.98));
+  border-left:1px solid var(--gold-500);
+  display:flex; flex-direction:column;
+}
+.backlog::before{ content:""; position:absolute; top:0; bottom:0; left:-3px; width:3px; background:linear-gradient(to bottom, transparent, var(--gold-300), transparent); opacity:.6; }
+.backlog-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  border-bottom:1px solid var(--line-2);
+}
+.backlog-head .title{
+  font-family:var(--f-en-display); font-size:13px; font-weight:700;
+  letter-spacing:.18em; color:var(--gold-200); text-transform:uppercase;
+}
+.backlog-head .title .ko{
+  display:block; font-family:var(--f-ko); font-size:10px;
+  color:var(--ink-3); font-weight:500; letter-spacing:.04em;
+  text-transform:none; margin-top:2px;
+}
+.backlog-close{
+  width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center;
+  background:transparent; border:1px solid var(--line-2); color:var(--ink-2); cursor:pointer;
+  font-family:var(--f-mono); font-size:11px;
+}
+.backlog-close:hover{ border-color:var(--gold-300); color:var(--gold-100); }
+
+.backlog-list{
+  flex:1; overflow:hidden; position:relative;
+  padding:10px 0;
+}
+.backlog-list::before{
+  content:""; position:absolute; top:10px; left:0; right:0; height:18px;
+  background:linear-gradient(to bottom, rgba(20,26,53,.97), transparent);
+  pointer-events:none; z-index:2;
+}
+.backlog-list::after{
+  content:""; position:absolute; bottom:10px; left:0; right:0; height:18px;
+  background:linear-gradient(to top, rgba(10,13,32,.98), transparent);
+  pointer-events:none; z-index:2;
+}
+.backlog-line{
+  position:relative;
+  display:flex; flex-direction:column; gap:3px;
+  padding:9px 18px 9px 22px;
+  border-left:2px solid var(--ln-c, var(--fam-mystic));
+  margin:0 12px 6px;
+  background:linear-gradient(90deg, rgba(0,0,0,.25), transparent 60%);
+}
+.backlog-line .who{
+  display:flex; align-items:center; gap:6px;
+  font-family:var(--f-en-display); font-size:9.5px; letter-spacing:.18em;
+  color:var(--ln-c, var(--fam-mystic)); font-weight:700; text-transform:uppercase;
+}
+.backlog-line .who .ko{
+  font-family:var(--f-ko); font-size:11px; color:var(--vellum); font-weight:700;
+  letter-spacing:.04em; text-transform:none;
+}
+.backlog-line .who .replay{
+  margin-left:auto;
+  font-family:var(--f-mono); font-size:8px; letter-spacing:.12em;
+  color:var(--ink-3); padding:1px 4px; border:1px dashed var(--line-2);
+  cursor:pointer;
+}
+.backlog-line .preview{
+  font-family:var(--f-ko); font-size:11.5px; line-height:1.55;
+  color:var(--ink-2); font-weight:400;
+}
+.backlog-line .ts{
+  font-family:var(--f-mono); font-size:8.5px; color:var(--ink-4); letter-spacing:.1em;
+}
+.backlog-line.mystic{ --ln-c:var(--fam-mystic-glow); }
+.backlog-line.mystic2{ --ln-c:var(--fam-mystic); }
+.backlog-line.beastkin{ --ln-c:var(--fam-beastkin-glow); }
+.backlog-line.narration{ --ln-c:var(--ink-3); }
+.backlog-line.narration .preview{ font-style:italic; color:var(--ink-3); }
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+.artboard.m{
+  width:380px; height:760px;
+  margin:0 auto;
+}
+.artboard.m .scene-bg .scene-cross{ background-size:50px 50px; }
+.artboard.m .bust{
+  width:130px; height:185px;
+  bottom:42%;
+}
+.artboard.m .bust.left{ left:18px; }
+.artboard.m .bust.right{ right:18px; }
+.artboard.m .bust.center{ left:50%; transform:translateX(-50%); }
+.artboard.m .bust .nameplate{ bottom:-22px; padding:4px 9px; }
+.artboard.m .bust .nameplate .ko{ font-size:11px; }
+.artboard.m .bust .nameplate .en{ font-size:7.5px; letter-spacing:.14em; }
+.artboard.m .bust .p09{ font-size:7px; padding:1px 4px; }
+.artboard.m .bust .cc{ width:9px; height:9px; }
+.artboard.m .bust .cc::before{ width:9px; }
+.artboard.m .bust .cc::after{ height:9px; }
+.artboard.m .bust .cc i{ width:4px; height:4px; }
+.artboard.m .bust .cc.tl i{ top:5px; left:5px; }
+.artboard.m .bust .cc.tr i{ top:5px; right:5px; }
+.artboard.m .bust .cc.bl i{ bottom:5px; left:5px; }
+.artboard.m .bust .cc.br i{ bottom:5px; right:5px; }
+
+/* mobile dbox (bottom 40%) */
+.artboard.m .dbox{
+  left:8px; right:8px; bottom:60px;
+  height:44%;
+}
+.artboard.m .dbox-head{ padding:11px 14px 8px; gap:10px; }
+.artboard.m .dbox-name{ min-width:auto; }
+.artboard.m .dbox-name .ko{ font-size:14px; }
+.artboard.m .dbox-name .en{ font-size:8.5px; }
+.artboard.m .dbox-name .jp{ font-size:9.5px; }
+.artboard.m .dbox-fam{ font-size:8px; padding:2px 6px; }
+.artboard.m .vplayer{ font-size:8px; padding:3px 6px; gap:4px; }
+.artboard.m .vplayer .bars{ height:10px; }
+.artboard.m .dbox-time{ font-size:8.5px; }
+.artboard.m .dbox-body{ padding:11px 16px 14px; }
+.artboard.m .dbox-text-ko{ font-size:13.5px; line-height:1.55; }
+.artboard.m .dbox-text-jp{ font-size:10px; }
+.artboard.m .next-prompt{ right:12px; bottom:10px; font-size:9px; }
+.artboard.m .auto-ring{ right:12px; bottom:10px; font-size:9px; }
+.artboard.m .choices{ padding:0 14px; gap:6px; bottom:10px; }
+.artboard.m .choice{ padding:9px 12px; gap:9px; min-height:44px; }
+.artboard.m .choice .cid{ font-size:8.5px; }
+.artboard.m .choice .label-ko{ font-size:12.5px; }
+.artboard.m .choice .label-jp{ font-size:9.5px; }
+.artboard.m .dbox > .cc{ width:11px; height:11px; }
+.artboard.m .dbox > .cc::before{ width:11px; }
+.artboard.m .dbox > .cc::after{ height:11px; }
+.artboard.m .dbox > .cc i{ width:5px; height:5px; }
+.artboard.m .dbox > .cc.tl i{ top:6px; left:6px; }
+.artboard.m .dbox > .cc.tr i{ top:6px; right:6px; }
+.artboard.m .dbox > .cc.bl i{ bottom:6px; left:6px; }
+.artboard.m .dbox > .cc.br i{ bottom:6px; right:6px; }
+.artboard.m .dbox::before{ inset:4px; }
+.artboard.m .dbox::after{ inset:7px; }
+
+/* bottom sheet drag affordance */
+.dbox-grip{
+  position:absolute; top:5px; left:50%; transform:translateX(-50%);
+  width:40px; height:3px; background:rgba(122,106,62,.45);
+  border-radius:99px;
+}
+
+/* mobile HUD top — safe area inset */
+.artboard.m .hud{
+  top:34px; right:8px; left:8px;
+  justify-content:space-between;
+  background:linear-gradient(180deg, rgba(0,0,0,.55), transparent);
+  padding:8px;
+}
+.artboard.m .hud-btn{ min-height:40px; min-width:40px; padding:5px 8px; font-size:8.5px; }
+.artboard.m .hud-btn .ko{ font-size:10px; }
+.artboard.m .auto-toggle{ height:40px; }
+.artboard.m .auto-opt{ padding:0 9px; min-width:44px; justify-content:center; font-size:8.5px; }
+.artboard.m .auto-opt .ko{ font-size:9.5px; }
+.artboard.m .hud-grp{ display:inline-flex; gap:6px; }
+
+/* mobile status bar */
+.m-status{
+  position:absolute; top:0; left:0; right:0; height:30px; z-index:10;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0 22px;
+  font-family:var(--f-mono); font-size:11px; color:var(--vellum); font-weight:600;
+  background:linear-gradient(180deg, rgba(0,0,0,.55), transparent);
+}
+.m-status .island{ width:90px; height:24px; background:#000; border-radius:99px; position:absolute; left:50%; transform:translateX(-50%); top:6px; }
+
+/* mobile backlog fullscreen modal */
+.artboard.m .backlog{
+  width:100%;
+  background:linear-gradient(180deg, rgba(10,13,32,.99), rgba(6,8,20,1));
+  border-left:none;
+  border-top:1px solid var(--gold-500);
+}
+.artboard.m .backlog-head{ padding:36px 18px 14px; }
+
+/* utility */
+.row{ display:flex; gap:24px; flex-wrap:wrap; }
+
+.doc-foot{ margin-top:64px; padding-top:24px; border-top:1px solid var(--gold-500); display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:10.5px; color:var(--ink-3); letter-spacing:.12em; position:relative; }
+.doc-foot::before{ content:""; position:absolute; top:-2px; left:0; right:0; height:1px; background:linear-gradient(to right, transparent, var(--gold-300), transparent); }
+.doc-foot b{ color:var(--gold-200); font-weight:500; }
+</style>
+</head>
+<body>
+
+<main class="canvas">
+
+  <header class="doc-head">
+    <div>
+      <div class="eyebrow">— SURFACE · DIALOGUE.PORTRAITSCENE · NARRATIVE LAYER —</div>
+      <h1 class="doc-title">
+        Dialogue
+        <span class="flourish"><i></i><i></i><i></i></span>
+        Portrait Scene
+      </h1>
+      <div class="doc-subtitle">VN-style narrative layer — 1–3 PortraitFrame busts, vellum DialogueBox, BacklogList drawer.</div>
+      <p class="doc-subtitle-ko">
+        v0.2 Foundation pack 토큰 + Narrative+Battle molecule (PortraitFrame · DialogueBox · VoicePlayer · BacklogList · AutoAdvanceToggle) 인용.
+        chapter beat / town event / battle pre·post / reward post-cut에서 호출. KO 본문 + JP 음성 더빙.
+      </p>
+    </div>
+    <div class="doc-meta">
+      <div><b>Token</b> &nbsp;Style Guide v0.2</div>
+      <div><b>Cite</b> &nbsp;PortraitFrame · DialogueBox · VoicePlayer · BacklogList · AutoToggle</div>
+      <div><b>States</b> &nbsp;5 × (PC + Mobile)</div>
+      <div><b>Rev</b> &nbsp;0.1</div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       PC ARTBOARDS
+       ============================================================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">PC</span>
+      <h2 class="section-title">Desktop · 1920 × 1080 ref · displayed 1280 × 720</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">5 state — idle · typing · completed · auto · backlog</span>
+    </div>
+
+    <!-- STATE 1 · IDLE -->
+    <div class="cell">
+      <span class="state-tag"><span class="num">PC-01</span> · IDLE <span class="ko">기본 — 텍스트 노출 완료, Next pulse</span><span class="cite">Cite: PortraitFrame.bust.focus + DialogueBox + VoicePlayer.paused</span></span>
+      <div class="artboard pc">
+        <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+
+        <!-- BG layer -->
+        <div class="scene-bg">
+          <div class="scene-cross"></div>
+          <span class="scene-tag">BG · scene_art_placeholder · NIGHT_TEMPLE</span>
+        </div>
+
+        <!-- HUD -->
+        <div class="hud">
+          <button class="hud-btn hud-skip">
+            <span class="hold"></span>
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2 L9 6.5 L3 11 Z"/><path d="M10 2 L10 11"/></svg>
+            <span class="ko">스킵</span>SKIP
+          </button>
+          <div class="auto-toggle">
+            <span class="auto-opt manual active"><span class="ko">수동</span>MANUAL</span>
+            <span class="auto-opt auto"><span class="ko">자동</span>AUTO <span class="speed">1.5×</span></span>
+          </div>
+          <button class="hud-btn">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5"/><path d="M5 4 L9 6.5 L5 9 Z" fill="currentColor"/></svg>
+            REPLAY
+          </button>
+          <button class="hud-btn">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3 L11 3 M2 6.5 L11 6.5 M2 10 L11 10"/></svg>
+            <span class="ko">대화록</span>BACKLOG
+          </button>
+          <button class="hud-btn">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="2"/><path d="M6.5 1 L6.5 3 M6.5 10 L6.5 12 M1 6.5 L3 6.5 M10 6.5 L12 6.5 M2.5 2.5 L4 4 M9 9 L10.5 10.5 M2.5 10.5 L4 9 M9 4 L10.5 2.5"/></svg>
+          </button>
+        </div>
+
+        <!-- BUSTS · 묵향 left dim, 단린 right focus -->
+        <div class="bust left mystic2 dim">
+          <div class="bust-frame"></div>
+          <div class="bust-art">
+            <svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet">
+              <ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.4)"/>
+              <path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(106,63,160,.6)"/>
+              <path d="M28 95 L 22 110 M 78 95 L 72 110" stroke="rgba(212,180,240,.4)" stroke-width="1.5" fill="none"/>
+              <circle cx="50" cy="55" r="4" fill="rgba(212,180,240,.7)"/>
+            </svg>
+          </div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+          <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">묵향</span><span class="en">GRAVE HEXER</span></div>
+        </div>
+
+        <div class="bust right mystic focus">
+          <div class="bust-frame"></div>
+          <div class="bust-art">
+            <svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet">
+              <ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.6)"/>
+              <path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(138,92,184,.7)"/>
+              <path d="M50 60 L 50 100 M 38 80 L 62 80" stroke="rgba(245,214,138,.7)" stroke-width="1.5" fill="none"/>
+              <circle cx="50" cy="38" r="2" fill="rgba(245,214,138,.9)"/>
+              <path d="M40 26 Q 50 18 60 26" stroke="rgba(245,214,138,.6)" stroke-width="1" fill="none"/>
+            </svg>
+          </div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+          <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">단린</span><span class="en">DAWN PRIEST</span></div>
+        </div>
+
+        <!-- DIALOGUE BOX -->
+        <div class="dbox" style="--name-c:var(--fam-mystic-deep); --fam-c:var(--fam-mystic); --fam-c-d:var(--fam-mystic-deep);">
+          <span class="grain"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+          <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+
+          <div class="dbox-head">
+            <div class="dbox-name">
+              <span class="ko">단린</span>
+              <span class="en">DAWN PRIEST</span>
+              <span class="jp">ダンリン</span>
+            </div>
+            <span class="dbox-fam"><i></i> MYSTIC</span>
+            <span class="vplayer paused">
+              <span class="bars"><i></i><i></i><i></i><i></i><i></i></span>
+              <span class="lbl">VOICE · 0:00 / 0:04</span>
+            </span>
+            <span class="dbox-time"><b>CH-2</b> · BEAT 14 · LINE 042</span>
+          </div>
+
+          <div class="dbox-body">
+            <p class="dbox-text-ko">…마지막 종이 울리기 전에, 우리는 결정을 내려야 해. 이 길은 더 이상 두 갈래가 아니야.</p>
+            <p class="dbox-text-jp">…最後の鐘が鳴る前に、決めなければ。この道はもう、二股ではない。</p>
+            <span class="next-prompt">
+              <span class="kbd">SPACE</span>
+              NEXT
+              <span class="arrow"><svg viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2 L4 5 L6 2 M2 5 L4 7"/></svg></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 2 · TYPING -->
+    <div class="cell">
+      <span class="state-tag"><span class="num">PC-02</span> · TYPING <span class="ko">텍스트 reveal 진행 — caret + voice playing</span><span class="cite">Cite: VoicePlayer.playing + caret cadence 32ms/char</span></span>
+      <div class="artboard pc">
+        <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+        <div class="scene-bg"><div class="scene-cross"></div><span class="scene-tag">BG · scene_art_placeholder · NIGHT_TEMPLE</span></div>
+
+        <div class="hud">
+          <button class="hud-btn hud-skip"><span class="hold"></span><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2 L9 6.5 L3 11 Z"/><path d="M10 2 L10 11"/></svg><span class="ko">스킵</span>SKIP</button>
+          <div class="auto-toggle">
+            <span class="auto-opt manual active"><span class="ko">수동</span>MANUAL</span>
+            <span class="auto-opt auto"><span class="ko">자동</span>AUTO <span class="speed">1.5×</span></span>
+          </div>
+          <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5"/><path d="M5 4 L9 6.5 L5 9 Z" fill="currentColor"/></svg>REPLAY</button>
+          <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3 L11 3 M2 6.5 L11 6.5 M2 10 L11 10"/></svg><span class="ko">대화록</span>BACKLOG</button>
+          <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="2"/></svg></button>
+        </div>
+
+        <div class="bust left mystic2 focus">
+          <div class="bust-frame"></div>
+          <div class="bust-art">
+            <svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet">
+              <ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.5)"/>
+              <path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(106,63,160,.7)"/>
+              <path d="M28 95 L 22 110 M 78 95 L 72 110" stroke="rgba(212,180,240,.5)" stroke-width="1.5" fill="none"/>
+              <circle cx="50" cy="55" r="4" fill="rgba(212,180,240,.8)"/>
+              <path d="M44 30 Q 50 22 56 30" stroke="rgba(212,180,240,.5)" stroke-width="1" fill="none"/>
+            </svg>
+          </div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+          <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">묵향</span><span class="en">GRAVE HEXER</span></div>
+        </div>
+
+        <div class="bust right mystic dim">
+          <div class="bust-frame"></div>
+          <div class="bust-art">
+            <svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet">
+              <ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.4)"/>
+              <path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(138,92,184,.55)"/>
+            </svg>
+          </div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+          <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">단린</span><span class="en">DAWN PRIEST</span></div>
+        </div>
+
+        <div class="dbox" style="--name-c:var(--fam-mystic-2-deep); --fam-c:var(--fam-mystic-2); --fam-c-d:var(--fam-mystic-2-deep);">
+          <span class="grain"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+          <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <div class="dbox-head">
+            <div class="dbox-name"><span class="ko">묵향</span><span class="en">GRAVE HEXER</span><span class="jp">ムッキャン</span></div>
+            <span class="dbox-fam"><i></i> MYSTIC</span>
+            <span class="vplayer playing"><span class="bars"><i></i><i></i><i></i><i></i><i></i></span><span class="lbl">VOICE · 0:01 / 0:05</span></span>
+            <span class="dbox-time"><b>CH-2</b> · BEAT 14 · LINE 043</span>
+          </div>
+          <div class="dbox-body">
+            <p class="dbox-text-ko">…네 결정에 어떤 신도 축복을 주지 않을 거다, 단린. 이 종이 울리면, 우리 모두는 거기서<span class="caret"></span></p>
+            <p class="dbox-text-jp" style="opacity:.55;">…お前の決断に、どの神も祝福は…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 3 · COMPLETED (CHOICE) -->
+    <div class="cell">
+      <span class="state-tag"><span class="num">PC-03</span> · COMPLETED <span class="ko">선택지 노출 — ChoicePromptList 3-row</span><span class="cite">Cite: Button(ghost) + new ChoicePromptList mini-molecule</span></span>
+      <div class="artboard pc">
+        <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+        <div class="scene-bg"><div class="scene-cross"></div><span class="scene-tag">BG · scene_art_placeholder · NIGHT_TEMPLE</span></div>
+
+        <div class="hud">
+          <button class="hud-btn hud-skip"><span class="hold"></span><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2 L9 6.5 L3 11 Z"/><path d="M10 2 L10 11"/></svg><span class="ko">스킵</span>SKIP</button>
+          <div class="auto-toggle">
+            <span class="auto-opt manual active"><span class="ko">수동</span>MANUAL · PAUSED</span>
+            <span class="auto-opt auto"><span class="ko">자동</span>AUTO</span>
+          </div>
+          <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5"/><path d="M5 4 L9 6.5 L5 9 Z" fill="currentColor"/></svg>REPLAY</button>
+          <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3 L11 3 M2 6.5 L11 6.5 M2 10 L11 10"/></svg><span class="ko">대화록</span>BACKLOG</button>
+          <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="2"/></svg></button>
+        </div>
+
+        <!-- 3-character beat: 묵향 left, 이빨바람 center, 단린 right -->
+        <div class="bust left mystic2 dim">
+          <div class="bust-frame"></div>
+          <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.4)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(106,63,160,.6)"/></svg></div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">묵향</span><span class="en">GRAVE HEXER</span></div>
+        </div>
+
+        <div class="bust center beastkin dim" style="bottom:35%; width:200px; height:280px;">
+          <div class="bust-frame"></div>
+          <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(188,200,112,.45)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(125,138,62,.7)"/><path d="M40 18 L 36 8 L 42 14 Z M 60 18 L 64 8 L 58 14 Z" fill="rgba(188,200,112,.7)"/></svg></div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">이빨바람</span><span class="en">PACK RAIDER</span></div>
+        </div>
+
+        <div class="bust right mystic focus">
+          <div class="bust-frame"></div>
+          <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.6)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(138,92,184,.7)"/><path d="M50 60 L 50 100 M 38 80 L 62 80" stroke="rgba(245,214,138,.7)" stroke-width="1.5" fill="none"/></svg></div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">단린</span><span class="en">DAWN PRIEST</span></div>
+        </div>
+
+        <div class="dbox" style="height:230px; --fam-c:var(--fam-mystic); --fam-c-d:var(--fam-mystic-deep);">
+          <span class="grain"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+          <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+
+          <div class="dbox-head">
+            <div class="dbox-name"><span class="ko">단린</span><span class="en">DAWN PRIEST · CHOICE</span></div>
+            <span class="dbox-fam" style="background:linear-gradient(180deg, var(--gold-300), var(--gold-500));"><i></i> CHOICE · 선택</span>
+            <span class="dbox-time"><b>CH-2</b> · BEAT 14 · BRANCH 03</span>
+          </div>
+
+          <div class="choices">
+            <button class="choice hi">
+              <span class="cid">CH02-B14-A</span>
+              <div style="display:flex; flex-direction:column; gap:1px; flex:1;">
+                <span class="label-ko">종이 울리기 전에 봉인을 끊는다</span>
+                <span class="label-jp">鐘が鳴る前に封を解く</span>
+              </div>
+              <span class="arrow">▶</span>
+            </button>
+            <button class="choice">
+              <span class="cid">CH02-B14-B</span>
+              <div style="display:flex; flex-direction:column; gap:1px; flex:1;">
+                <span class="label-ko">묵향의 충고를 받아들인다</span>
+                <span class="label-jp">ムッキャンの忠告に従う</span>
+              </div>
+              <span class="arrow">▶</span>
+            </button>
+            <button class="choice">
+              <span class="cid">CH02-B14-C</span>
+              <div style="display:flex; flex-direction:column; gap:1px; flex:1;">
+                <span class="label-ko">침묵하고 일행을 떠난다</span>
+                <span class="label-jp">沈黙して、一行を離れる</span>
+              </div>
+              <span class="arrow">▶</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 4 · AUTO-ADVANCE -->
+    <div class="cell">
+      <span class="state-tag"><span class="num">PC-04</span> · AUTO-ADVANCE <span class="ko">자동 진행 ON — ring fill + voice playing</span><span class="cite">Cite: AutoAdvanceToggle.auto + voice progress ring</span></span>
+      <div class="artboard pc">
+        <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+        <div class="scene-bg"><div class="scene-cross"></div><span class="scene-tag">BG · scene_art_placeholder · NIGHT_TEMPLE</span></div>
+
+        <div class="hud">
+          <button class="hud-btn hud-skip"><span class="hold"></span><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2 L9 6.5 L3 11 Z"/><path d="M10 2 L10 11"/></svg><span class="ko">스킵</span>SKIP</button>
+          <div class="auto-toggle">
+            <span class="auto-opt manual"><span class="ko">수동</span>MANUAL</span>
+            <span class="auto-opt auto active"><span class="ko">자동</span>AUTO <span class="speed">1.5×</span></span>
+          </div>
+          <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5"/><path d="M5 4 L9 6.5 L5 9 Z" fill="currentColor"/></svg>REPLAY</button>
+          <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3 L11 3 M2 6.5 L11 6.5 M2 10 L11 10"/></svg><span class="ko">대화록</span>BACKLOG</button>
+          <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="2"/></svg></button>
+        </div>
+
+        <div class="bust left mystic2 dim">
+          <div class="bust-frame"></div>
+          <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.4)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(106,63,160,.6)"/></svg></div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">묵향</span><span class="en">GRAVE HEXER</span></div>
+        </div>
+
+        <div class="bust right mystic focus">
+          <div class="bust-frame"></div>
+          <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.6)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(138,92,184,.7)"/><path d="M50 60 L 50 100" stroke="rgba(245,214,138,.7)" stroke-width="1.5" fill="none"/></svg></div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">단린</span><span class="en">DAWN PRIEST</span></div>
+        </div>
+
+        <div class="dbox" style="--fam-c:var(--fam-mystic); --fam-c-d:var(--fam-mystic-deep);">
+          <span class="grain"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+          <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <div class="dbox-head">
+            <div class="dbox-name"><span class="ko">단린</span><span class="en">DAWN PRIEST</span><span class="jp">ダンリン</span></div>
+            <span class="dbox-fam"><i></i> MYSTIC</span>
+            <span class="vplayer playing"><span class="bars"><i></i><i></i><i></i><i></i><i></i></span><span class="lbl">VOICE · 0:03 / 0:04</span></span>
+            <span class="dbox-time"><b>CH-2</b> · BEAT 14 · LINE 044</span>
+          </div>
+          <div class="dbox-body">
+            <p class="dbox-text-ko">…네 말이 옳다. 이 종소리 안에 모든 답이 있어.</p>
+            <p class="dbox-text-jp">…お前の言う通りだ。この鐘音に全ての答えがある。</p>
+            <span class="auto-ring">
+              <span class="ring">
+                <svg viewBox="0 0 18 18">
+                  <circle class="bg-t" cx="9" cy="9" r="8"/>
+                  <circle class="fg" cx="9" cy="9" r="8"/>
+                </svg>
+              </span>
+              AUTO-NEXT
+              <span class="speed">1.5×</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 5 · BACKLOG -->
+    <div class="cell">
+      <span class="state-tag"><span class="num">PC-05</span> · BACKLOG OPEN <span class="ko">대화록 drawer — 6 line + family-tint rule</span><span class="cite">Cite: BacklogList.drawer + family-tint border-left</span></span>
+      <div class="artboard pc">
+        <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+        <div class="scene-bg" style="filter:brightness(.6);"><div class="scene-cross"></div><span class="scene-tag">BG · scene_art_placeholder · DIMMED</span></div>
+
+        <div class="hud" style="right:356px;">
+          <button class="hud-btn hud-skip"><span class="hold"></span><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2 L9 6.5 L3 11 Z"/><path d="M10 2 L10 11"/></svg><span class="ko">스킵</span>SKIP</button>
+          <div class="auto-toggle">
+            <span class="auto-opt manual active"><span class="ko">수동</span>MANUAL</span>
+            <span class="auto-opt auto"><span class="ko">자동</span>AUTO</span>
+          </div>
+          <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5"/><path d="M5 4 L9 6.5 L5 9 Z" fill="currentColor"/></svg>REPLAY</button>
+        </div>
+
+        <div class="bust left mystic2" style="opacity:.4;">
+          <div class="bust-frame"></div>
+          <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.3)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(106,63,160,.5)"/></svg></div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">묵향</span><span class="en">GRAVE HEXER</span></div>
+        </div>
+
+        <div class="bust right mystic" style="opacity:.4;">
+          <div class="bust-frame"></div>
+          <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.4)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(138,92,184,.55)"/></svg></div>
+          <span class="rib"></span><span class="rib-r"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <span class="p09">P09 · RT</span>
+          <div class="nameplate"><span class="ko">단린</span><span class="en">DAWN PRIEST</span></div>
+        </div>
+
+        <div class="dbox" style="right:356px; --fam-c:var(--fam-mystic); --fam-c-d:var(--fam-mystic-deep); opacity:.5;">
+          <span class="grain"></span>
+          <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+          <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+          <div class="dbox-head">
+            <div class="dbox-name"><span class="ko">단린</span><span class="en">DAWN PRIEST</span></div>
+            <span class="dbox-fam"><i></i> MYSTIC</span>
+            <span class="dbox-time"><b>CH-2</b> · BEAT 14 · LINE 044</span>
+          </div>
+          <div class="dbox-body">
+            <p class="dbox-text-ko">…네 말이 옳다. 이 종소리 안에 모든 답이 있어.</p>
+          </div>
+        </div>
+
+        <!-- BACKLOG -->
+        <aside class="backlog">
+          <div class="backlog-head">
+            <div class="title">Backlog<span class="ko">대화록 · BACKLOG · 直近6行</span></div>
+            <button class="backlog-close">×</button>
+          </div>
+          <div class="backlog-list">
+            <div class="backlog-line narration">
+              <span class="who">NARRATION<span class="ko">상황</span><span class="replay">—</span></span>
+              <p class="preview">밤이 깊어지고, 텅 빈 종이 한 차례 흔들렸다.</p>
+              <span class="ts">CH-2 · 14 · L038 · 22:41</span>
+            </div>
+            <div class="backlog-line mystic">
+              <span class="who">DAWN PRIEST<span class="ko">단린</span><span class="replay">▶ REPLAY</span></span>
+              <p class="preview">너희가 이 길을 함께 걷겠다고, 정말 그렇게 말했나?</p>
+              <span class="ts">CH-2 · 14 · L039 · 22:42</span>
+            </div>
+            <div class="backlog-line beastkin">
+              <span class="who">PACK RAIDER<span class="ko">이빨바람</span><span class="replay">▶ REPLAY</span></span>
+              <p class="preview">…피의 맛은 잊을 수 없다, 단린. 너만큼은 안다.</p>
+              <span class="ts">CH-2 · 14 · L040 · 22:43</span>
+            </div>
+            <div class="backlog-line mystic2">
+              <span class="who">GRAVE HEXER<span class="ko">묵향</span><span class="replay">▶ REPLAY</span></span>
+              <p class="preview">바보들. 이 종은 우리 셋 모두를 위한 것이 아니다.</p>
+              <span class="ts">CH-2 · 14 · L041 · 22:44</span>
+            </div>
+            <div class="backlog-line mystic">
+              <span class="who">DAWN PRIEST<span class="ko">단린</span><span class="replay">▶ REPLAY</span></span>
+              <p class="preview">…마지막 종이 울리기 전에, 우리는 결정을 내려야 해.</p>
+              <span class="ts">CH-2 · 14 · L042 · 22:45</span>
+            </div>
+            <div class="backlog-line mystic2">
+              <span class="who">GRAVE HEXER<span class="ko">묵향</span><span class="replay">▶ REPLAY</span></span>
+              <p class="preview">…네 결정에 어떤 신도 축복을 주지 않을 거다, 단린.</p>
+              <span class="ts">CH-2 · 14 · L043 · 22:46</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============================================================
+       MOBILE ARTBOARDS
+       ============================================================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">M</span>
+      <h2 class="section-title">Mobile · 1080 × 1920 ref · displayed 380 × 760</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">5 state — 44pt touch · safe-area inset · bottom sheet drag</span>
+    </div>
+
+    <div class="cell">
+      <div class="row" style="justify-content:center;">
+
+        <!-- M-01 IDLE -->
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <span class="state-tag"><span class="num">M-01</span> · IDLE</span>
+          <div class="artboard m">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="m-status"><span>9:41</span><span class="island"></span><span>NAR</span></div>
+            <div class="scene-bg"><div class="scene-cross"></div><span class="scene-tag">BG · NIGHT_TEMPLE</span></div>
+
+            <div class="hud">
+              <button class="hud-btn hud-skip"><span class="hold"></span><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2 L9 6.5 L3 11 Z"/><path d="M10 2 L10 11"/></svg><span class="ko">스킵</span></button>
+              <div class="hud-grp">
+                <div class="auto-toggle">
+                  <span class="auto-opt manual active"><span class="ko">수동</span></span>
+                  <span class="auto-opt auto"><span class="ko">자동</span></span>
+                </div>
+                <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3 L11 3 M2 6.5 L11 6.5 M2 10 L11 10"/></svg></button>
+                <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="2"/></svg></button>
+              </div>
+            </div>
+
+            <div class="bust left mystic2 dim">
+              <div class="bust-frame"></div>
+              <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.4)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(106,63,160,.6)"/></svg></div>
+              <span class="rib"></span><span class="rib-r"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <span class="p09">P09</span>
+              <div class="nameplate"><span class="ko">묵향</span><span class="en">HEXER</span></div>
+            </div>
+
+            <div class="bust right mystic focus">
+              <div class="bust-frame"></div>
+              <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.6)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(138,92,184,.7)"/><path d="M50 60 L 50 100" stroke="rgba(245,214,138,.7)" stroke-width="1.5" fill="none"/></svg></div>
+              <span class="rib"></span><span class="rib-r"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <span class="p09">P09</span>
+              <div class="nameplate"><span class="ko">단린</span><span class="en">PRIEST</span></div>
+            </div>
+
+            <div class="dbox" style="--fam-c:var(--fam-mystic); --fam-c-d:var(--fam-mystic-deep);">
+              <span class="grain"></span><span class="dbox-grip"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+              <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <div class="dbox-head">
+                <div class="dbox-name"><span class="ko">단린</span><span class="en">DAWN PRIEST</span></div>
+                <span class="dbox-fam"><i></i> MYSTIC</span>
+                <span class="vplayer paused"><span class="bars"><i></i><i></i><i></i><i></i><i></i></span></span>
+              </div>
+              <div class="dbox-body">
+                <p class="dbox-text-ko">…마지막 종이 울리기 전에, 우리는 결정을 내려야 해.</p>
+                <p class="dbox-text-jp">…最後の鐘が鳴る前に、決めなければ。</p>
+                <span class="next-prompt"><span class="kbd">TAP</span>NEXT<span class="arrow"><svg viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2 L4 5 L6 2"/></svg></span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M-02 TYPING -->
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <span class="state-tag"><span class="num">M-02</span> · TYPING</span>
+          <div class="artboard m">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="m-status"><span>9:41</span><span class="island"></span><span>NAR</span></div>
+            <div class="scene-bg"><div class="scene-cross"></div><span class="scene-tag">BG · NIGHT_TEMPLE</span></div>
+
+            <div class="hud">
+              <button class="hud-btn hud-skip"><span class="hold"></span><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2 L9 6.5 L3 11 Z"/><path d="M10 2 L10 11"/></svg><span class="ko">스킵</span></button>
+              <div class="hud-grp">
+                <div class="auto-toggle">
+                  <span class="auto-opt manual active"><span class="ko">수동</span></span>
+                  <span class="auto-opt auto"><span class="ko">자동</span></span>
+                </div>
+                <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3 L11 3 M2 6.5 L11 6.5 M2 10 L11 10"/></svg></button>
+                <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="2"/></svg></button>
+              </div>
+            </div>
+
+            <div class="bust left mystic2 focus">
+              <div class="bust-frame"></div>
+              <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.5)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(106,63,160,.7)"/></svg></div>
+              <span class="rib"></span><span class="rib-r"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <span class="p09">P09</span>
+              <div class="nameplate"><span class="ko">묵향</span><span class="en">HEXER</span></div>
+            </div>
+
+            <div class="bust right mystic dim">
+              <div class="bust-frame"></div>
+              <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.4)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(138,92,184,.55)"/></svg></div>
+              <span class="rib"></span><span class="rib-r"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <span class="p09">P09</span>
+              <div class="nameplate"><span class="ko">단린</span><span class="en">PRIEST</span></div>
+            </div>
+
+            <div class="dbox" style="--fam-c:var(--fam-mystic-2); --fam-c-d:var(--fam-mystic-2-deep);">
+              <span class="grain"></span><span class="dbox-grip"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+              <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <div class="dbox-head">
+                <div class="dbox-name"><span class="ko">묵향</span><span class="en">GRAVE HEXER</span></div>
+                <span class="dbox-fam"><i></i> MYSTIC</span>
+                <span class="vplayer playing"><span class="bars"><i></i><i></i><i></i><i></i><i></i></span></span>
+              </div>
+              <div class="dbox-body">
+                <p class="dbox-text-ko">…네 결정에 어떤 신도 축복을 주지 않을 거다, 단린. 이 종이 울리면<span class="caret"></span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M-03 COMPLETED CHOICE -->
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <span class="state-tag"><span class="num">M-03</span> · CHOICE</span>
+          <div class="artboard m">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="m-status"><span>9:41</span><span class="island"></span><span>NAR</span></div>
+            <div class="scene-bg"><div class="scene-cross"></div><span class="scene-tag">BG · CHOICE</span></div>
+
+            <div class="hud">
+              <button class="hud-btn hud-skip"><span class="hold"></span><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2 L9 6.5 L3 11 Z"/></svg><span class="ko">스킵</span></button>
+              <div class="hud-grp">
+                <div class="auto-toggle">
+                  <span class="auto-opt manual active"><span class="ko">수동</span></span>
+                  <span class="auto-opt auto"><span class="ko">자동</span></span>
+                </div>
+                <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3 L11 3 M2 6.5 L11 6.5 M2 10 L11 10"/></svg></button>
+                <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="2"/></svg></button>
+              </div>
+            </div>
+
+            <div class="bust left mystic2 dim">
+              <div class="bust-frame"></div>
+              <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.4)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(106,63,160,.6)"/></svg></div>
+              <span class="rib"></span><span class="rib-r"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <span class="p09">P09</span>
+              <div class="nameplate"><span class="ko">묵향</span><span class="en">HEXER</span></div>
+            </div>
+
+            <div class="bust right mystic focus">
+              <div class="bust-frame"></div>
+              <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.6)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(138,92,184,.7)"/></svg></div>
+              <span class="rib"></span><span class="rib-r"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <span class="p09">P09</span>
+              <div class="nameplate"><span class="ko">단린</span><span class="en">PRIEST</span></div>
+            </div>
+
+            <div class="dbox" style="height:48%; --fam-c:var(--fam-mystic); --fam-c-d:var(--fam-mystic-deep);">
+              <span class="grain"></span><span class="dbox-grip"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+              <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <div class="dbox-head">
+                <div class="dbox-name"><span class="ko">단린</span><span class="en">CHOICE</span></div>
+                <span class="dbox-fam" style="background:linear-gradient(180deg, var(--gold-300), var(--gold-500));"><i></i> 선택</span>
+              </div>
+              <div class="choices">
+                <button class="choice hi">
+                  <span class="cid">A</span>
+                  <span class="label-ko" style="font-size:12.5px;">봉인을 끊는다</span>
+                  <span class="arrow">▶</span>
+                </button>
+                <button class="choice">
+                  <span class="cid">B</span>
+                  <span class="label-ko" style="font-size:12.5px;">묵향의 충고에 따른다</span>
+                  <span class="arrow">▶</span>
+                </button>
+                <button class="choice">
+                  <span class="cid">C</span>
+                  <span class="label-ko" style="font-size:12.5px;">침묵하고 떠난다</span>
+                  <span class="arrow">▶</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M-04 AUTO -->
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <span class="state-tag"><span class="num">M-04</span> · AUTO</span>
+          <div class="artboard m">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="m-status"><span>9:41</span><span class="island"></span><span>AUTO</span></div>
+            <div class="scene-bg"><div class="scene-cross"></div><span class="scene-tag">BG · NIGHT_TEMPLE</span></div>
+
+            <div class="hud">
+              <button class="hud-btn hud-skip"><span class="hold"></span><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 2 L9 6.5 L3 11 Z"/></svg><span class="ko">스킵</span></button>
+              <div class="hud-grp">
+                <div class="auto-toggle">
+                  <span class="auto-opt manual"><span class="ko">수동</span></span>
+                  <span class="auto-opt auto active"><span class="ko">자동</span></span>
+                </div>
+                <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3 L11 3 M2 6.5 L11 6.5 M2 10 L11 10"/></svg></button>
+                <button class="hud-btn"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="2"/></svg></button>
+              </div>
+            </div>
+
+            <div class="bust left mystic2 dim">
+              <div class="bust-frame"></div>
+              <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.4)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(106,63,160,.6)"/></svg></div>
+              <span class="rib"></span><span class="rib-r"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <span class="p09">P09</span>
+              <div class="nameplate"><span class="ko">묵향</span><span class="en">HEXER</span></div>
+            </div>
+
+            <div class="bust right mystic focus">
+              <div class="bust-frame"></div>
+              <div class="bust-art"><svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMax meet"><ellipse cx="50" cy="32" rx="18" ry="22" fill="rgba(212,180,240,.6)"/><path d="M22 110 Q 22 72 35 60 L 65 60 Q 78 72 78 110 Z" fill="rgba(138,92,184,.7)"/></svg></div>
+              <span class="rib"></span><span class="rib-r"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span><span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <span class="p09">P09</span>
+              <div class="nameplate"><span class="ko">단린</span><span class="en">PRIEST</span></div>
+            </div>
+
+            <div class="dbox" style="--fam-c:var(--fam-mystic); --fam-c-d:var(--fam-mystic-deep);">
+              <span class="grain"></span><span class="dbox-grip"></span>
+              <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+              <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+              <div class="dbox-head">
+                <div class="dbox-name"><span class="ko">단린</span><span class="en">DAWN PRIEST</span></div>
+                <span class="dbox-fam"><i></i> MYSTIC</span>
+                <span class="vplayer playing"><span class="bars"><i></i><i></i><i></i><i></i><i></i></span></span>
+              </div>
+              <div class="dbox-body">
+                <p class="dbox-text-ko">…네 말이 옳다. 이 종소리 안에 모든 답이 있어.</p>
+                <p class="dbox-text-jp">…お前の言う通りだ。</p>
+                <span class="auto-ring">
+                  <span class="ring"><svg viewBox="0 0 18 18"><circle class="bg-t" cx="9" cy="9" r="8"/><circle class="fg" cx="9" cy="9" r="8"/></svg></span>
+                  AUTO <span class="speed">1.5×</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M-05 BACKLOG FULLSCREEN -->
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <span class="state-tag"><span class="num">M-05</span> · BACKLOG FS</span>
+          <div class="artboard m">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+            <div class="m-status" style="z-index:11;"><span>9:41</span><span class="island"></span><span>LOG</span></div>
+
+            <aside class="backlog">
+              <div class="backlog-head">
+                <div class="title">Backlog<span class="ko">대화록 · 직전 6행</span></div>
+                <button class="backlog-close">×</button>
+              </div>
+              <div class="backlog-list">
+                <div class="backlog-line narration">
+                  <span class="who">NARRATION<span class="ko">상황</span></span>
+                  <p class="preview">밤이 깊어지고, 텅 빈 종이 한 차례 흔들렸다.</p>
+                  <span class="ts">L038 · 22:41</span>
+                </div>
+                <div class="backlog-line mystic">
+                  <span class="who">DAWN PRIEST<span class="ko">단린</span><span class="replay">▶</span></span>
+                  <p class="preview">너희가 이 길을 함께 걷겠다고, 정말 그렇게 말했나?</p>
+                  <span class="ts">L039 · 22:42</span>
+                </div>
+                <div class="backlog-line beastkin">
+                  <span class="who">PACK RAIDER<span class="ko">이빨바람</span><span class="replay">▶</span></span>
+                  <p class="preview">…피의 맛은 잊을 수 없다, 단린.</p>
+                  <span class="ts">L040 · 22:43</span>
+                </div>
+                <div class="backlog-line mystic2">
+                  <span class="who">GRAVE HEXER<span class="ko">묵향</span><span class="replay">▶</span></span>
+                  <p class="preview">바보들. 이 종은 우리 셋 모두를 위한 것이 아니다.</p>
+                  <span class="ts">L041 · 22:44</span>
+                </div>
+                <div class="backlog-line mystic">
+                  <span class="who">DAWN PRIEST<span class="ko">단린</span><span class="replay">▶</span></span>
+                  <p class="preview">…마지막 종이 울리기 전에, 결정을 내려야 해.</p>
+                  <span class="ts">L042 · 22:45</span>
+                </div>
+                <div class="backlog-line mystic2">
+                  <span class="who">GRAVE HEXER<span class="ko">묵향</span><span class="replay">▶</span></span>
+                  <p class="preview">…네 결정에 어떤 신도 축복을 주지 않을 거다.</p>
+                  <span class="ts">L043 · 22:46</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-foot">
+    <div><b>SURVIVAL MANAGER</b> · SURFACE · DIALOGUE.PORTRAITSCENE · v0.1</div>
+    <div>NEXT — Battle.PreCut · Reward.PostCut · Settings panel</div>
+  </footer>
+
+</main>
+
+</body>
+</html>

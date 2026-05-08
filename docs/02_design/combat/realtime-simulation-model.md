@@ -39,6 +39,7 @@
 - `Windup`
 - `Recovery`
 - `Reposition`
+- `SecurePosition`
 - `Retreat`
 - `Dead`
 

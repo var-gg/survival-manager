@@ -8,7 +8,7 @@
   - `docs/02_design/combat/resource-cadence-loadout.md`
   - `docs/02_design/combat/targeting-and-ai-vocabulary.md`
   - `docs/02_design/combat/skill-authoring-schema.md`
-  - `docs/02_design/combat/skill-catalog-v1.md`
+  - `docs/02_design/combat/skill-catalog-v1.md` (deprecated, audit log)
   - `docs/02_design/combat/stat-system-and-power-budget.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
 

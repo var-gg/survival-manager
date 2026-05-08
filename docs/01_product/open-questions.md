@@ -23,8 +23,8 @@
 - races: 3
 - classes: 4
 - recruit archetypes: 12
-- temporary augments: 12 (NeutralCombat 3, EconomyRoster 3, SynergyLinked 3, WildcardRisk 3)
-- permanent augments: 4
+- temporary augments: 24 (HeroRewrite 5, TacticalRewrite 7, ScalingEngine 4, EconomyAndLoot 5, SynergyPact 3)
+- permanent augment live slot: 1 (authored candidates 12)
 - permanent augment equip slot: 1
 - equipment slots: 3
 - 권장 identity 기반: Human / Beastkin / Undead + Vanguard / Duelist / Ranger / Mystic

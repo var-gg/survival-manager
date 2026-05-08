@@ -43,7 +43,7 @@
 | `hero_bastion_penitent` | 참회벽 | Bastion Penitent | 솔라룸 | Vanguard | F | `background` | 1 | `launch` | 솔라룸 내부 균열의 증거 | `hook_penitent_family` |
 | `hero_pale_executor` | 백집행 (白執行) | Pale Executor | 회상 결사 | Ranger | M | `background` | 1 | `launch` | 회상 결사 실용주의의 흑백 | `hook_executor_dual_loyalty` |
 | `hero_aegis_sentinel` | 방진 (方陣) | Aegis Sentinel | 그물 결사 | Vanguard | M | `support` | 3 | `launch` | 그물 결사의 문지기 | — |
-| `hero_echo_savant` | 공한 (空閑) | Echo Savant | 그물 결사 | Mystic | M | `lead` | 6 | `launch` | 그물 결사 측 주연 시점 | `hook_memory_custody` |
+| `hero_echo_savant` | 공한 (空閑) | Echo Savant | 그물 결사 | Ranger | M | `lead` | 6 | `launch` | 그물 결사 측 주연 시점 | `hook_memory_custody` |
 | `hero_shardblade` | 편검 (片劍) | Shardblade | 그물 결사 | Duelist | F | `background` | 1 | `launch` | 중후반 전열 돌파 장치 | `hook_shardblade_secret_oath` |
 | `hero_prism_seeker` | 광로 (光路) | Prism Seeker | 그물 결사 | Ranger | F | `background` | 1 | `launch` | 진실 추적자 | `hook_prism_outside_curiosity` |
 | `hero_mirror_cantor` | 명음 (明音) | Mirror Cantor | 그물 결사 | Mystic | M | `support` | 3 | `launch` | 최종부 정합성 봉합자 | — |

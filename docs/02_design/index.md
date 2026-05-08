@@ -35,7 +35,6 @@
 - `combat/skill-authoring-schema.md`: effect descriptor, targeting, presentation hook, learn source schema
 - `combat/unit-blueprint-schema.md`: unit blueprint budget/rarity/counter governance schema
 - `combat/counter-system-topology.md`: 8-lane threat/answer topology와 answer semantics
-- `combat/skill-catalog-v1.md`: role packet 기반 skill seed catalog
 - `combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`: keyword catalog, flex passive modifier compatibility, weapon/class restriction
 - `combat/encounter-catalog-and-scaling.md`: encounter/squad/boss overlay/threat grammar
 - `combat/status-effects-cc-and-cleanse-taxonomy.md`: launch floor status, cleanse, DR 규칙
@@ -49,7 +48,6 @@
 - `combat/mobility-contract.md`: dash/roll/blink 공통 schema 기준
 - `combat/combat-mechanics-glossary.md`: crit/dodge/block/energy/summon 용어집
 - `combat/hero-traits.md`: recruit trait/quirk와 token 정책
-- `combat/synergy-system.md`: race/class synergy 설계
 - `combat/battle-playback-contract.md`: 플레이백 정책, seek, 스크러버, 리플레이 계약
 
 ## meta 문서
@@ -119,3 +117,11 @@
 - `ui/battle-observer-ui.md`: 전투 관전자 UI 기준
 - `ui/town-character-sheet-ui.md`: Town 5-panel character sheet IA
 - `ui/localization-policy.md`: 플레이어 노출 텍스트와 localization table 정책
+- `ui/handoff/README.md`: Claude Design HTML/CSS handoff 운영 기준과 Unity UITK 변환 규칙
+
+## 비활성 문서 (deprecated)
+
+다음 문서는 deprecated 상태이며 active SoT로 쓰지 않는다. audit log 목적으로만 보존된다.
+
+- `combat/synergy-system.md`: 시너지 시스템 (deprecated 2026-05-06; 본문에 대체 SoT 4건 명시)
+- `combat/skill-catalog-v1.md`: skill catalog v1 (deprecated 2026-05-06; 본문에 대체 SoT 3건 명시)

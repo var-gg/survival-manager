@@ -1,14 +1,28 @@
 # 시너지 시스템
 
-- 상태: active
+- 상태: deprecated
+- deprecated 일자: 2026-05-06
 - 소유자: repository
 - 최종수정일: 2026-03-30
-- 소스오브트루스: `docs/02_design/combat/synergy-system.md`
+- 소스오브트루스: 없음 (아래 대체 SoT 참조)
+- 대체 SoT:
+  - `docs/02_design/meta/synergy-and-augment-taxonomy.md` — synergy/augment 역할 경계, 2/4·2/3 threshold, rarity
+  - `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md` — race 2/4 + class 2/3 breakpoint, soft counter
+  - `docs/02_design/meta/synergy-family-catalog.md` — 7 family exact payload
+  - `docs/02_design/systems/launch-floor-content-matrix.md` — 12 archetype × race/class 자리수
 - 관련문서:
-  - `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
-  - `docs/02_design/systems/launch-content-scope-and-balance.md`
+  - `docs/04_decisions/adr-0024-narrative-human-centric-reskin.md`
+  - pindoc Decision: [고유명사 ID/Label 분리 baseline](http://localhost:5830/p/survival-manager/wiki/고유명사-id-label-분리-모든-layer-baseline)
 
-## 목적
+## deprecation 사유
+
+본 문서의 MVP 규칙(class synergy `2 / 4`)이 Loop C 이후 확정된 다른 SoT 4 문서(taxonomy / breakpoints / family-catalog / launch-floor-content-matrix)의 `2 / 3`과 충돌한다. 또한 race 종족명(Human / Beastkin / Undead)을 본문에 직접 노출해 ADR-0024 narrative reskin의 4 인간 세력 baseline과 어휘가 어긋난다. structural layer(breakpoint 숫자)와 presentation layer(race 표시명)가 한 문서에 섞여 있어 retcon보다 deprecate가 적절하다는 판단이다.
+
+신규 작업은 위 대체 SoT 4 문서를 참조한다. 본 문서는 audit log로만 보존한다.
+
+---
+
+## 목적 (deprecated)
 
 이 문서는 prototype 기준의 시너지 축과 MVP 범위를 설명한다.
 paid launch 기준의 breakpoint와 soft counter 숫자는 별도 launch 문서가 소유한다.

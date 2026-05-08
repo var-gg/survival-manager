@@ -3,7 +3,7 @@
 - 상태: active
 - 소유자: repository
 - 최종수정일: 2026-05-04
-- 리드 시점 캐릭터: 단린 (丹麟, Dawn Priest — 솔라룸 미스틱), 이빨바람 (Pack Raider — 이리솔 부족 듀얼리스트), 묵향 (墨香, Grave Hexer — 회상 결사 미스틱), 공한 (空閑, Echo Savant — 그물 결사 미스틱)
+- 리드 시점 캐릭터: 단린 (丹麟, Dawn Priest — 솔라룸 미스틱), 이빨바람 (Pack Raider — 이리솔 부족 듀얼리스트), 묵향 (墨香, Grave Hexer — 회상 결사 미스틱), 공한 (空閑, Echo Savant — 그물 결사 의례 사수/Ranger)
 - 소스오브트루스: `docs/02_design/narrative/campaign-story-arc.md`
 - 관련문서:
   - `docs/02_design/narrative/world-building-bible.md`

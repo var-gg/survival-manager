@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-05-08
 - 소스오브트루스: `docs/02_design/meta/augment-system.md`
 - 관련문서:
   - `docs/02_design/meta/synergy-and-augment-taxonomy.md`
@@ -19,19 +19,20 @@ bucket taxonomy와 offer protection은 별도 문서가 소유하고, 이 문서
 
 ### temporary augment
 
-first playable은 12개의 temporary augment를 둔다.
+V1 prototype first playable은 24개의 temporary augment를 둔다. 이 풀은 기존 4 bucket 문법을 대체하는 5개 player-facing bucket으로 노출한다.
 
-- NeutralCombat 3 (Frontline Doctrine, Kiting Manual, Battlefield Momentum)
-- EconomyRoster 3 (Efficient Training, Backup Crew, Salvager)
-- SynergyLinked 3 (Banner of Vanguard, Duel Protocol, Arcane Loop)
-- WildcardRisk 3 (Blood Price, Glass Arsenal, Oath of Attrition)
+- HeroRewrite 5
+- TacticalRewrite 7
+- ScalingEngine 4
+- EconomyAndLoot 5
+- SynergyPact 3
 
 temporary augment는 run 중에만 적용되는 강화이며, run overlay가 소유한다.
 compiled battle snapshot에는 반영되지 않고 run overlay로만 적용된다.
 
 ### permanent augment
 
-first playable은 4개의 permanent augment를 둔다.
+현재 first playable live path는 permanent augment equip slot 1을 둔다. authored catalog에는 12개 permanent candidate가 있으나 live slice는 한 번에 1개만 노출하고, 나머지는 progression/parking lot 후보로 둔다.
 
 - Citadel Doctrine (HoldLine)
 - Guardian Detail (ProtectCarry)
@@ -69,10 +70,11 @@ augment는 아래 두 방향을 모두 허용한다.
 
 ### augment bucket
 
-- `NeutralCombat`
-- `EconomyRoster`
-- `SynergyLinked`
-- `WildcardRisk`
+- `HeroRewrite`
+- `TacticalRewrite`
+- `ScalingEngine`
+- `EconomyAndLoot`
+- `SynergyPact`
 
 작은 stat buff만 가진 augment를 양산하지 않는다.
 
@@ -109,8 +111,8 @@ augment는 아래 두 방향을 모두 허용한다.
 
 ## launch 기준 연결
 
-- first playable은 temporary 12 / permanent 4다.
-- paid launch floor는 temporary 18 / permanent 9다.
-- paid launch safe target은 temporary 24 / permanent 12다.
+- V1 prototype first playable은 temporary 24 / live permanent equip slot 1이다.
+- authored permanent candidate catalog는 12개까지 존재하지만, live slice와 equip truth는 slot 1 기준으로 유지한다.
+- paid launch floor / safe target 확장은 별도 catalog expansion task에서 재산정한다.
 - source별 power budget은 `docs/02_design/meta/item-passive-augment-budget.md`를 따른다.
 - v1 catalog와 live subset 범위는 `augment-catalog-v1.md`를 따른다.
