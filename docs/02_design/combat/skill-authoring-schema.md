@@ -10,7 +10,7 @@
   - `docs/02_design/combat/targeting-and-ai-vocabulary.md`
   - `docs/02_design/combat/summon-ownership-and-deployables.md`
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
-  - `docs/02_design/combat/skill-catalog-v1.md`
+  - `docs/02_design/combat/skill-catalog-v1.md` (deprecated, audit log)
   - `docs/02_design/meta/retrain-contract.md`
   - `docs/03_architecture/content-authoring-and-balance-data.md`
 
@@ -88,6 +88,8 @@ Action = Slot + Template + EffectDescriptors + TargetRule + Presentation Hooks
 | `LearnSource` | recruit / retrain / item / augment provenance |
 
 ## tag layer
+
+`Enums.cs`의 `SkillKind / SkillDelivery / SkillTargetRule`은 closed compile-visible taxonomy로 cadence와 arbitration을 잠근다. 아래 tag layer는 그 위에 얹는 free annotation으로, search / restriction / synergy 해석에 쓰되 compile arbitration은 바꾸지 않는다.
 
 ### delivery
 

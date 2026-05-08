@@ -8,7 +8,7 @@
   - `docs/03_architecture/content-loading-contract.md`
   - `docs/03_architecture/content-loading-strategy.md`
   - `docs/03_architecture/content-authoring-model.md`
-  - `docs/02_design/combat/skill-catalog-v1.md`
+  - `docs/02_design/combat/skill-catalog-v1.md` (deprecated, audit log)
   - `docs/02_design/meta/affix-pool-v1.md`
   - `docs/02_design/meta/augment-catalog-v1.md`
 

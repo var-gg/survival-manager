@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-05-08
 - 소스오브트루스: `docs/02_design/systems/launch-content-scope-and-balance.md`
 - 관련문서:
   - `docs/01_product/vision.md`
@@ -32,12 +32,14 @@
 | equippables | MVP 문서 비소유 | 36 | 42~54 |
 | passive boards | MVP 문서 비소유 | 4 | 4 |
 | passive nodes | MVP 문서 비소유 | 72 | 96 전후 |
-| temporary augments | 12 | 18 | 24 |
-| permanent augments | MVP 문서 비소유 | 9 | 12 |
+| temporary augments | 24 | 18 | 24 |
+| permanent augments | live slot 1 / authored candidates 12 | 9 | 12 |
 | permanent augment equip slots | 1 | 1~2 | 데이터 모델 3, 운용 1~3 |
 | equipment slots | 3 | 3 | 3 |
 | synergy families | 7 | 7 | 7 |
 | synergy breakpoints | MVP 문서 참조 | race `2 / 4`, class `2 / 3` | race `2 / 4`, class `2 / 3` |
+
+temporary augment는 GPT Pro P0 dial pass 이후 V1 prototype에서 먼저 safe target 규모인 24개를 실험한다. paid launch floor 숫자는 출시 최소선 비교 기준으로 남기며, 현재 prototype live pool이 이 항목에서는 floor를 초과한다.
 
 ## 현재 패스에서 고정하는 핵심
 
@@ -61,7 +63,7 @@
 
 ## 출시 기준 한 줄 요약
 
-- paid launch safe target = `16 archetypes / 40~48 skills / 42~54 equippables / 96 passive nodes / 24 temporary augments / 12 permanent augments`
+- paid launch safe target = `16 archetypes / 40~48 skills / 42~54 equippables / 96 passive nodes / 24 temporary augments / 12 authored permanent augment candidates`
 - skill loadout = `6-slot topology + 2 visible active`
 - synergy family = `3 races + 4 classes`, race `2 / 4`, class `2 / 3`
 - baseline counter swing = 평균 `10~15%`
@@ -83,7 +85,7 @@
 2. `SkillDefinitionAsset`, `BasicAttackDefinition`, `PassiveDefinition`, `MobilityDefinition`, `UnitArchetypeDefinition`을 Loop A 기준으로 확장한다.
 3. `LoadoutCompiler`가 6-slot compile 계약과 energy/ownership metadata를 carry-through 하도록 유지한다.
 4. validator와 headless/editor smoke 기준으로 authoring drift를 막는다.
-5. 실제 16 archetype / 24 augment / 96 passive node authoring은 후속 패스에서 채운다.
+5. 실제 16 archetype / 96 passive node authoring은 후속 패스에서 채운다. temporary augment는 V1 prototype 24개 live pool을 먼저 닫고, offer/schedule quality pass에서 재검증한다.
 
 ## passive board count split
 

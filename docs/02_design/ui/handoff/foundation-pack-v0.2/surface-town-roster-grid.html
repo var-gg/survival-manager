@@ -1,0 +1,1308 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Town.RosterGrid — Survival Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Shippori+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+:root{
+  --bg-0:#0c1126; --bg-1:#141a35; --bg-2:#1c2243; --bg-3:#262d54;
+  --line-1:#2c3568; --line-2:#3b467f;
+  --vellum:#f5ead0; --vellum-2:#e2d4ad; --vellum-3:#c9b88a;
+  --parchment:#efe2bf; --parchment-deep:#c9b88a; --parchment-shadow:#7a6a3e;
+  --gold-100:#ffe9a8; --gold-200:#f5d68a; --gold-300:#e6b751;
+  --gold-400:#c8932a; --gold-500:#8a6418;
+  --ink-1:#f5ead0; --ink-2:#d8c799; --ink-3:#9d8a5e; --ink-4:#6b5d3f;
+  --ink-parchment:#3d2f12; --ink-parchment-soft:#6b5530;
+  --fam-beastkin:#7a8a52; --fam-beastkin-deep:#2e3818; --fam-beastkin-glow:#b9c980;
+  --fam-vanguard:#4a72b8; --fam-vanguard-deep:#1a2a52; --fam-vanguard-glow:#7fa3e0;
+  --fam-striker:#b6334a;  --fam-striker-deep:#5a0e1c;  --fam-striker-glow:#f08a3c;
+  --fam-ranger:#b58a36;   --fam-ranger-deep:#4d3a14;   --fam-ranger-glow:#e6c878;
+  --fam-mystic:#8a5cb8;   --fam-mystic-deep:#3a1f5a;   --fam-mystic-glow:#d4b4f0;
+  --rare-rare:#5b8ed1; --rare-epic:#b561d6; --rare-epic-2:#f08a3c;
+  --state-safe:#6dbf78; --state-warn:#e8a93b; --state-danger:#e25548;
+  --f-ko:"Pretendard",system-ui,sans-serif;
+  --f-jp:"Shippori Mincho","Yu Mincho",serif;
+  --f-en-display:"Cinzel",serif;
+  --f-en-italic:"Cormorant Garamond",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0; padding:0;}
+body{
+  background:
+    radial-gradient(1300px 800px at 18% -10%, #2a2050 0%, transparent 55%),
+    radial-gradient(1100px 700px at 95% 25%, #4a1a2e 0%, transparent 55%),
+    radial-gradient(900px 700px at 50% 110%, #1a2050 0%, transparent 60%),
+    var(--bg-0);
+  color:var(--ink-1);
+  font-family:var(--f-ko);
+  min-height:100vh; position:relative;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 60% 40%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(245,214,138,.03) 0, transparent 1px);
+  background-size:7px 7px,11px 11px,13px 13px;
+}
+.canvas{ position:relative; z-index:1; max-width:1680px; margin:0 auto; padding:48px 40px 96px; }
+
+/* HEADER */
+.doc-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:32px; padding-bottom:24px; margin-bottom:48px; position:relative; }
+.doc-head::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:linear-gradient(to right, transparent 0%, var(--gold-400) 8%, var(--gold-200) 50%, var(--gold-400) 92%, transparent 100%); }
+.eyebrow{ font-family:var(--f-mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold-300); }
+.doc-title{ font-family:var(--f-en-display); font-weight:700; font-size:38px; letter-spacing:.06em; margin:6px 0 4px; background:linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 60%, var(--gold-500) 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.doc-title .flourish{ display:inline-flex; gap:4px; vertical-align:6px; margin:0 14px; }
+.doc-title .flourish i{ width:5px; height:5px; background:var(--gold-300); transform:rotate(45deg); display:inline-block; -webkit-text-fill-color:initial; }
+.doc-title .flourish i:nth-child(2){ width:8px; height:8px; background:var(--gold-200); border:1px solid var(--gold-500); }
+.doc-subtitle{ font-family:var(--f-en-italic); font-style:italic; font-weight:500; font-size:16px; color:var(--ink-2); }
+.doc-subtitle-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); max-width:64ch; line-height:1.6; margin:4px 0 0; }
+.doc-meta{ text-align:right; font-family:var(--f-mono); font-size:11px; color:var(--ink-3); letter-spacing:.06em; }
+.doc-meta b{ color:var(--gold-200); font-weight:500; }
+
+section{ margin-bottom:48px; }
+.section-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:24px; }
+.section-num{ font-family:var(--f-mono); font-size:11px; color:var(--gold-400); letter-spacing:.18em; }
+.section-title{ font-family:var(--f-en-display); font-size:22px; font-weight:600; letter-spacing:.06em; color:var(--gold-200); margin:0; }
+.section-rule{ height:1px; background:linear-gradient(to right, var(--gold-400) 0%, transparent 80%); flex:1; margin-bottom:4px; }
+.section-title-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); font-weight:500; margin-left:auto; }
+.section-title-ko::before{ content:"—  "; color:var(--gold-500); }
+
+.cell{
+  position:relative;
+  background:linear-gradient(180deg, rgba(28,34,67,.55), rgba(14,18,38,.7));
+  border:1px solid var(--line-1);
+  padding:24px;
+  margin-bottom:32px;
+}
+.cell::before, .cell::after{ content:""; position:absolute; width:8px; height:8px; border:1px solid var(--gold-300); }
+.cell::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.cell::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.state-tag{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.18em;
+  color:var(--gold-300); text-transform:uppercase;
+  padding:5px 10px; border:1px dashed var(--line-2);
+  width:fit-content; margin-bottom:14px;
+}
+.state-tag .num{ color:var(--gold-200); font-weight:600; }
+.state-tag .ko{ font-family:var(--f-ko); color:var(--vellum); letter-spacing:.04em; font-size:11px; font-weight:700; text-transform:none; }
+
+/* ============== ROSTER SCREEN ============== */
+.screen{
+  position:relative;
+  width:1280px;
+  background:linear-gradient(180deg, #0a0d20 0%, #060814 100%);
+  border:1px solid var(--gold-500);
+  isolation:isolate;
+  display:grid;
+  grid-template-columns:220px 1fr 280px;
+  gap:0;
+}
+.screen::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(245,214,138,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,214,138,.03) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+.screen > .cc{ position:absolute; width:12px; height:12px; pointer-events:none; border:1px solid var(--gold-300); z-index:5; }
+.screen > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.screen > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.screen > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.screen > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+/* === HEADER STRIP === */
+.scr-head{
+  grid-column: 1 / -1;
+  padding:18px 24px;
+  border-bottom:1px solid var(--gold-500);
+  display:flex; justify-content:space-between; align-items:center; gap:24px;
+  background:linear-gradient(180deg, rgba(28,34,67,.6), rgba(14,18,38,.4));
+  position:relative; z-index:1;
+}
+.scr-tabs{
+  display:flex; align-items:baseline; gap:6px;
+  font-family:var(--f-en-display); font-size:11px; letter-spacing:.22em;
+  text-transform:uppercase;
+}
+.scr-tabs span{ padding:4px 10px; color:var(--ink-3); cursor:pointer; }
+.scr-tabs span.active{
+  background:linear-gradient(180deg, rgba(245,214,138,.15), rgba(138,100,24,.1));
+  color:var(--gold-100); border:1px solid var(--gold-300);
+  box-shadow: inset 0 1px 0 rgba(245,214,138,.25);
+  position:relative;
+}
+.scr-tabs span.active::before, .scr-tabs span.active::after{ content:""; position:absolute; width:4px; height:4px; border:1px solid var(--gold-300); }
+.scr-tabs span.active::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.scr-tabs span.active::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.scr-tabs span .ko{ font-family:var(--f-ko); margin-left:5px; font-size:11px; font-weight:700; letter-spacing:0; text-transform:none; }
+.scr-tabs span.active .ko{ color:var(--vellum); }
+
+.count-block{
+  display:flex; align-items:baseline; gap:14px;
+}
+.count-num{
+  font-family:var(--f-en-display); font-weight:800;
+  font-size:36px; letter-spacing:.04em;
+  color:var(--gold-100);
+  display:flex; align-items:baseline; gap:6px;
+}
+.count-num .now{
+  background:linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 80%, var(--gold-500) 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.count-num .sep{ color:var(--gold-500); font-size:24px; font-weight:600; }
+.count-num .max{ color:var(--ink-3); font-size:24px; font-weight:600; }
+.count-meta{
+  display:flex; flex-direction:column; gap:2px;
+  padding-left:14px; border-left:1px solid var(--gold-500);
+}
+.count-meta .lbl{
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.2em;
+  color:var(--gold-300); text-transform:uppercase;
+}
+.count-meta .ko{
+  font-family:var(--f-ko); font-size:13px; font-weight:800; color:var(--vellum);
+  letter-spacing:.02em;
+}
+
+.filter-row{
+  display:flex; gap:6px; align-items:center; flex-wrap:wrap;
+}
+.tag-chip{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px;
+  background:rgba(0,0,0,.5);
+  border:1px solid var(--tc, var(--line-2));
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.14em;
+  color:var(--tc-text, var(--ink-2));
+  cursor:pointer; text-transform:uppercase;
+  position:relative;
+}
+.tag-chip::before, .tag-chip::after{ content:""; position:absolute; width:3px; height:3px; border:1px solid var(--gold-400); opacity:.6; }
+.tag-chip::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.tag-chip::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.tag-chip .gem{ width:6px; height:6px; transform:rotate(45deg); background:var(--tc, var(--line-2)); border:1px solid rgba(245,214,138,.3); }
+.tag-chip .ko{ font-family:var(--f-ko); color:var(--vellum); font-weight:700; letter-spacing:.02em; font-size:10.5px; text-transform:none; }
+.tag-chip.race{ --tc:var(--vellum-3); --tc-text:var(--vellum-2); }
+.tag-chip.cls.s{ --tc:var(--fam-striker); --tc-text:var(--fam-striker-glow); }
+.tag-chip.cls.v{ --tc:var(--fam-vanguard); --tc-text:var(--fam-vanguard-glow); }
+.tag-chip.cls.m{ --tc:var(--fam-mystic); --tc-text:var(--fam-mystic-glow); }
+.tag-chip.cls.r{ --tc:var(--fam-ranger); --tc-text:var(--fam-ranger-glow); }
+.tag-chip.cls.b{ --tc:var(--fam-beastkin); --tc-text:var(--fam-beastkin-glow); }
+.tag-chip.role{
+  background:linear-gradient(180deg, var(--gold-300), var(--gold-500));
+  color:#0c1126; border-color:var(--gold-500);
+  font-weight:700;
+}
+.tag-chip.role .ko{ color:#0c1126; }
+.tag-chip.active{
+  box-shadow: inset 0 1px 0 rgba(245,214,138,.3), 0 0 8px color-mix(in oklab, var(--tc) 50%, transparent);
+}
+.tag-chip:not(.active):not(.role){ opacity:.55; }
+
+.recruit-link{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 14px;
+  background:linear-gradient(180deg, rgba(245,214,138,.15), rgba(138,100,24,.08));
+  border:1px solid var(--gold-300);
+  font-family:var(--f-en-display); font-size:11px; letter-spacing:.22em;
+  color:var(--gold-100); font-weight:700;
+  cursor:pointer; text-transform:uppercase;
+  position:relative;
+}
+.recruit-link::before, .recruit-link::after{ content:""; position:absolute; width:5px; height:5px; border:1px solid var(--gold-300); }
+.recruit-link::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.recruit-link::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.recruit-link .ko{ font-family:var(--f-ko); color:var(--vellum); font-weight:800; letter-spacing:0; font-size:12px; text-transform:none; }
+.recruit-link .pulse-dot{
+  width:8px; height:8px; border-radius:99px;
+  background:var(--gold-200);
+  box-shadow: 0 0 8px var(--gold-200);
+  animation:pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
+
+/* === LEFT RAIL · SYNERGY PREVIEW === */
+.rail-left{
+  padding:18px;
+  border-right:1px solid var(--gold-500);
+  background:linear-gradient(180deg, rgba(20,26,53,.5), rgba(10,13,32,.7));
+  position:relative; z-index:1;
+}
+.rail-head{
+  font-family:var(--f-en-display); font-size:11px; letter-spacing:.22em;
+  color:var(--gold-200); font-weight:700; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:14px; padding-bottom:8px;
+  border-bottom:1px dashed var(--line-2);
+}
+.rail-head .ko{ font-family:var(--f-ko); color:var(--vellum); font-size:11px; letter-spacing:0; text-transform:none; font-weight:800; }
+.rail-head::after{ content:""; flex:1; height:1px; background:linear-gradient(to right, var(--gold-500), transparent); }
+
+.syn-block{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+.syn-block .lbl{
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.18em;
+  color:var(--ink-3); text-transform:uppercase;
+}
+.syn-block .lbl b{ color:var(--gold-300); font-weight:500; }
+
+/* SynergyBadge - inline atom citation */
+.syn-badge{
+  display:flex; align-items:center; gap:8px;
+  padding:7px 9px;
+  background:linear-gradient(180deg, color-mix(in oklab, var(--sb-c, var(--line-2)) 25%, transparent), transparent);
+  border-left:2px solid var(--sb-c, var(--line-2));
+  position:relative;
+}
+.syn-badge::before{ content:""; position:absolute; top:0; right:0; width:4px; height:4px; border-top:1px solid var(--gold-500); border-right:1px solid var(--gold-500); }
+.syn-badge::after{ content:""; position:absolute; bottom:0; right:0; width:4px; height:4px; border-bottom:1px solid var(--gold-500); border-right:1px solid var(--gold-500); }
+.syn-badge .nm{
+  flex:1; display:flex; flex-direction:column; gap:1px;
+}
+.syn-badge .nm .en{
+  font-family:var(--f-en-display); font-size:10px; letter-spacing:.16em;
+  color:var(--sb-c, var(--ink-3)); font-weight:700; text-transform:uppercase;
+}
+.syn-badge .nm .ko{
+  font-family:var(--f-ko); font-size:11px; font-weight:800;
+  color:var(--vellum);
+}
+.syn-badge .ct{
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.06em;
+  color:var(--vellum); font-weight:600;
+}
+.syn-badge .ct b{ color:var(--sb-c); font-weight:700; }
+/* breakpoint ticks */
+.syn-bp{
+  display:flex; gap:3px; align-items:center;
+  margin-top:5px;
+}
+.syn-bp i{
+  width:14px; height:5px; background:rgba(0,0,0,.4);
+  border:1px solid var(--line-2); position:relative;
+}
+.syn-bp i.on{
+  background:linear-gradient(90deg, var(--sb-c), color-mix(in oklab, var(--sb-c) 60%, var(--gold-200)));
+  border-color:var(--gold-500);
+  box-shadow:0 0 5px var(--sb-c);
+}
+.syn-bp i.bp::after{
+  content:""; position:absolute; top:-2px; right:-2px;
+  width:5px; height:5px;
+  background:var(--gold-200); border:1px solid var(--gold-500);
+  transform:rotate(45deg);
+}
+.syn-bp .at{
+  font-family:var(--f-mono); font-size:9px; color:var(--ink-3);
+  letter-spacing:.06em; margin-left:auto;
+}
+.syn-bp .at b{ color:var(--gold-200); font-weight:500; }
+
+.syn-badge.race-human{ --sb-c:var(--vellum-3); }
+.syn-badge.race-beast{ --sb-c:var(--fam-beastkin-glow); }
+.syn-badge.race-fae{ --sb-c:var(--fam-mystic-glow); }
+.syn-badge.race-undead{ --sb-c:var(--ink-3); }
+.syn-badge.cls-vanguard{ --sb-c:var(--fam-vanguard-glow); }
+.syn-badge.cls-striker{ --sb-c:var(--fam-striker-glow); }
+.syn-badge.cls-mystic{ --sb-c:var(--fam-mystic-glow); }
+.syn-badge.cls-ranger{ --sb-c:var(--fam-ranger-glow); }
+
+/* floating quick battle */
+.quick-battle{
+  position:absolute; left:18px; bottom:18px; right:18px;
+  padding:12px 14px;
+  background:linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.3));
+  border:1px solid var(--line-2);
+  display:flex; align-items:center; gap:10px;
+  cursor:pointer; position:relative;
+}
+.quick-battle::before, .quick-battle::after{ content:""; position:absolute; width:5px; height:5px; border:1px solid var(--gold-400); opacity:.6; }
+.quick-battle::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.quick-battle::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.quick-battle:hover{ border-color:var(--gold-300); }
+.quick-battle .ic{
+  width:24px; height:24px; flex-shrink:0;
+  background:linear-gradient(180deg, rgba(245,214,138,.18), rgba(138,100,24,.08));
+  border:1px solid var(--gold-500);
+  display:grid; place-items:center; color:var(--gold-200);
+}
+.quick-battle .ic svg{ width:14px; height:14px; }
+.quick-battle .lb{ flex:1; }
+.quick-battle .ko{ font-family:var(--f-ko); font-size:12px; color:var(--vellum); font-weight:800; }
+.quick-battle .en{ font-family:var(--f-en-display); font-size:9px; letter-spacing:.18em; color:var(--ink-3); text-transform:uppercase; }
+
+/* === GRID CENTER === */
+.grid-center{
+  padding:18px; position:relative; z-index:1;
+}
+.grid-cap{
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em;
+  color:var(--ink-3); text-transform:uppercase;
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:12px;
+}
+.grid-cap b{ color:var(--gold-300); font-weight:500; }
+.grid-cap .ko{ font-family:var(--f-ko); color:var(--vellum); font-weight:700; letter-spacing:0; text-transform:none; font-size:11px; }
+.grid-cap .right{ margin-left:auto; }
+
+.hero-grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:10px;
+}
+
+/* HeroPortraitCard sm — atom citation */
+.hpc{
+  position:relative;
+  width:100%; aspect-ratio:160/220;
+  background:linear-gradient(180deg, var(--hp-c-deep, var(--bg-2)) 0%, #060814 80%);
+  border:1px solid var(--hp-c, var(--line-2));
+  isolation:isolate;
+  cursor:pointer;
+  transition:transform .15s ease;
+  display:flex; flex-direction:column;
+}
+.hpc:hover{ transform:translateY(-2px); }
+.hpc::before{ content:""; position:absolute; inset:3px; border:1px solid rgba(245,214,138,.18); pointer-events:none; z-index:1; }
+.hpc > .cc{ position:absolute; width:6px; height:6px; pointer-events:none; border:1px solid var(--gold-300); z-index:3; }
+.hpc > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.hpc > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.hpc > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.hpc > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+/* family rib + center gem */
+.hpc .rib{
+  position:relative;
+  height:5px; flex-shrink:0;
+  background:linear-gradient(90deg, var(--hp-c-deep) 0%, var(--hp-c) 50%, var(--hp-c-deep) 100%);
+  border-bottom:1px solid var(--gold-500);
+}
+.hpc .rib::after{
+  content:""; position:absolute; top:50%; left:50%;
+  width:6px; height:6px; transform:translate(-50%,-50%) rotate(45deg);
+  background:linear-gradient(135deg, var(--hp-c-glow), var(--hp-c-deep));
+  border:1px solid var(--gold-500);
+  z-index:4;
+}
+/* portrait area */
+.hpc .pa{
+  flex:1; position:relative;
+  background:radial-gradient(60% 70% at 50% 35%, color-mix(in oklab, var(--hp-c) 50%, transparent), transparent 70%), linear-gradient(180deg, var(--hp-c-deep), #060814);
+  display:grid; place-items:center; overflow:hidden;
+}
+.hpc .pa .silh{ width:80%; height:auto; opacity:.85; filter:drop-shadow(0 0 8px var(--hp-c)); }
+/* role badge top-left */
+.hpc .role{
+  position:absolute; top:8px; left:8px;
+  font-family:var(--f-mono); font-size:8px;
+  background:rgba(0,0,0,.7); color:var(--gold-200);
+  border:1px solid var(--gold-500);
+  padding:1px 4px; letter-spacing:.12em; text-transform:uppercase; z-index:3;
+}
+.hpc .lvl{
+  position:absolute; top:8px; right:8px;
+  font-family:var(--f-mono); font-size:8.5px;
+  background:rgba(0,0,0,.7); color:var(--vellum);
+  border:1px solid var(--gold-500);
+  padding:1px 4px; letter-spacing:.04em; z-index:3; font-weight:600;
+}
+.hpc .lvl b{ color:var(--gold-100); font-weight:700; }
+/* nameplate */
+.hpc .np{
+  padding:6px 8px 7px;
+  background:linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.85));
+  border-top:1px solid var(--hp-c);
+  display:flex; flex-direction:column; gap:1px;
+  position:relative; z-index:2;
+}
+.hpc .np .ko{
+  font-family:var(--f-ko); font-size:11.5px; font-weight:800;
+  color:var(--vellum); line-height:1.2;
+  margin-top:5px;
+}
+.hpc .np .en{
+  font-family:var(--f-en-display); font-size:8.5px; letter-spacing:.18em;
+  color:var(--gold-200); font-weight:600; text-transform:uppercase;
+}
+.hpc .np .hp{
+  height:3px; background:rgba(0,0,0,.5);
+  border:1px solid var(--gold-500);
+  margin-top:5px; position:relative; overflow:hidden;
+}
+.hpc .np .hp i{
+  position:absolute; top:0; bottom:0; left:0;
+  background:linear-gradient(90deg, var(--state-warn), var(--fam-striker));
+}
+.hpc .np .hp.full i{ background:linear-gradient(90deg, var(--state-safe), var(--state-warn)); }
+.hpc .np .hp.low i{ background:linear-gradient(90deg, var(--state-danger), var(--fam-striker)); }
+/* family colors */
+.hpc.fam-striker{ --hp-c:var(--fam-striker); --hp-c-deep:var(--fam-striker-deep); --hp-c-glow:var(--fam-striker-glow); }
+.hpc.fam-vanguard{ --hp-c:var(--fam-vanguard); --hp-c-deep:var(--fam-vanguard-deep); --hp-c-glow:var(--fam-vanguard-glow); }
+.hpc.fam-mystic{ --hp-c:var(--fam-mystic); --hp-c-deep:var(--fam-mystic-deep); --hp-c-glow:var(--fam-mystic-glow); }
+.hpc.fam-ranger{ --hp-c:var(--fam-ranger); --hp-c-deep:var(--fam-ranger-deep); --hp-c-glow:var(--fam-ranger-glow); }
+.hpc.fam-beastkin{ --hp-c:var(--fam-beastkin); --hp-c-deep:var(--fam-beastkin-deep); --hp-c-glow:var(--fam-beastkin-glow); }
+/* SELECTED state */
+.hpc.selected{
+  outline:1px solid var(--gold-200);
+  outline-offset:2px;
+  box-shadow: 0 0 0 1px var(--gold-500), 0 0 24px color-mix(in oklab, var(--hp-c) 70%, transparent);
+}
+.hpc.selected::after{
+  content:""; position:absolute; inset:-3px;
+  border:1px solid var(--gold-200); pointer-events:none;
+  animation:selBreathe 2s ease-in-out infinite;
+  z-index:0;
+}
+@keyframes selBreathe{ 0%,100%{ opacity:.55; inset:-3px; } 50%{ opacity:1; inset:-5px; } }
+/* selected gold corner caps stronger */
+.hpc.selected > .cc{ width:9px; height:9px; border-color:var(--gold-100); }
+/* KO */
+.hpc.ko{
+  filter:saturate(.2) brightness(.55);
+}
+.hpc.ko .pa{ background:linear-gradient(180deg, #1a1a1f, #060608); }
+.hpc.ko .pa .silh{ filter:none; opacity:.4; }
+.hpc.ko::after{
+  content:""; position:absolute; inset:0;
+  background:repeating-linear-gradient(45deg, rgba(0,0,0,.45) 0 4px, rgba(0,0,0,.2) 4px 8px);
+  pointer-events:none; z-index:2;
+}
+.hpc.ko .ko-stamp{
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%) rotate(-12deg);
+  font-family:var(--f-en-display); font-size:18px; letter-spacing:.32em;
+  color:var(--state-danger); font-weight:800;
+  border:2px solid var(--state-danger);
+  padding:4px 14px;
+  background:rgba(0,0,0,.7);
+  z-index:5;
+}
+/* INJURED */
+.hpc.injured .pa{
+  background:radial-gradient(60% 70% at 50% 35%, rgba(232,169,59,.25), transparent 70%), linear-gradient(180deg, var(--hp-c-deep), #2a1408);
+}
+.hpc.injured::after{
+  content:""; position:absolute; inset:0;
+  background:radial-gradient(50% 40% at 50% 60%, rgba(232,169,59,.18), transparent 70%);
+  pointer-events:none; z-index:2;
+}
+.hpc.injured .badge{
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  font-family:var(--f-en-display); font-size:9px; letter-spacing:.22em;
+  color:var(--state-warn); font-weight:700;
+  background:rgba(0,0,0,.65);
+  border:1px solid var(--state-warn);
+  padding:3px 8px;
+  text-transform:uppercase; z-index:5;
+  display:flex; flex-direction:column; align-items:center; gap:1px;
+}
+.hpc.injured .badge .ko{ font-family:var(--f-ko); color:var(--vellum); font-size:9.5px; letter-spacing:0; font-weight:800; }
+/* DIM (filter inactive) */
+.hpc.dim{ filter:saturate(.2) brightness(.4); }
+
+/* === RIGHT RAIL · SELECTED INFO === */
+.rail-right{
+  padding:18px;
+  border-left:1px solid var(--gold-500);
+  background:linear-gradient(180deg, rgba(20,26,53,.5), rgba(10,13,32,.7));
+  position:relative; z-index:1;
+}
+.sel-empty{
+  font-family:var(--f-ko); font-size:11.5px;
+  color:var(--ink-3); padding:32px 14px; text-align:center;
+  border:1px dashed var(--line-2);
+  display:flex; flex-direction:column; gap:6px;
+}
+.sel-empty .en{
+  font-family:var(--f-en-display); font-size:9.5px; letter-spacing:.22em;
+  color:var(--ink-4); text-transform:uppercase;
+}
+.sel-card{ display:flex; flex-direction:column; gap:14px; }
+.sel-port{
+  position:relative; aspect-ratio: 200/240;
+  background:radial-gradient(60% 70% at 50% 35%, color-mix(in oklab, var(--hp-c) 50%, transparent), transparent 70%), linear-gradient(180deg, var(--hp-c-deep), #060814);
+  border:1px solid var(--hp-c);
+  --hp-c:var(--fam-striker); --hp-c-deep:var(--fam-striker-deep); --hp-c-glow:var(--fam-striker-glow);
+  display:grid; place-items:center;
+}
+.sel-port::before, .sel-port::after{ content:""; position:absolute; width:7px; height:7px; border:1px solid var(--gold-300); }
+.sel-port::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.sel-port::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.sel-port .silh{ width:80%; opacity:.9; filter:drop-shadow(0 0 8px var(--hp-c)); }
+.sel-port .role{
+  position:absolute; top:8px; left:8px;
+  font-family:var(--f-mono); font-size:8.5px;
+  background:rgba(0,0,0,.7); color:var(--gold-200);
+  border:1px solid var(--gold-500);
+  padding:1px 5px; letter-spacing:.14em; text-transform:uppercase;
+}
+.sel-port .lvl{
+  position:absolute; top:8px; right:8px;
+  font-family:var(--f-mono); font-size:9px;
+  background:rgba(0,0,0,.7); color:var(--gold-100);
+  border:1px solid var(--gold-500);
+  padding:1px 5px; font-weight:700;
+}
+.sel-name .ko{
+  font-family:var(--f-ko); font-size:18px; font-weight:800;
+  color:var(--vellum); line-height:1.2;
+}
+.sel-name .en{
+  font-family:var(--f-en-display); font-size:11px; letter-spacing:.22em;
+  color:var(--fam-striker-glow); font-weight:700; text-transform:uppercase;
+  margin-top:2px;
+}
+.sel-name .jp{
+  font-family:var(--f-jp); font-size:10px; color:var(--ink-3);
+  margin-top:2px;
+}
+.sel-tags{ display:flex; flex-wrap:wrap; gap:5px; }
+.sel-stats{
+  display:grid; grid-template-columns:1fr 1fr; gap:6px 10px;
+  padding:10px 12px;
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--line-2);
+  position:relative;
+}
+.sel-stats::before, .sel-stats::after{ content:""; position:absolute; width:4px; height:4px; border:1px solid var(--gold-400); }
+.sel-stats::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.sel-stats::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.sel-stat-row{
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.1em;
+}
+.sel-stat-row .lbl{ color:var(--ink-3); text-transform:uppercase; }
+.sel-stat-row .val{ color:var(--vellum); font-weight:600; font-size:11px; }
+.sel-stat-row .val b{ color:var(--gold-100); font-weight:700; }
+.sel-actions{ display:flex; flex-direction:column; gap:6px; }
+.sel-btn{
+  padding:10px 12px; min-height:42px;
+  font-family:var(--f-en-display); font-size:10.5px; letter-spacing:.22em;
+  font-weight:700; text-transform:uppercase;
+  border:1px solid var(--gold-500); background:rgba(0,0,0,.35); color:var(--ink-2);
+  cursor:pointer; position:relative;
+  display:flex; align-items:center; gap:10px;
+}
+.sel-btn::before, .sel-btn::after{ content:""; position:absolute; width:5px; height:5px; border:1px solid var(--gold-300); }
+.sel-btn::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.sel-btn::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.sel-btn .ko{ font-family:var(--f-ko); color:var(--vellum); font-weight:800; font-size:13px; letter-spacing:0; text-transform:none; min-width:60px; }
+.sel-btn.primary{
+  background:linear-gradient(180deg, rgba(245,214,138,.18), rgba(138,100,24,.18));
+  border-color:var(--gold-300); color:var(--gold-100);
+}
+.sel-btn.primary .ko{ color:var(--gold-100); }
+
+/* ============== MOBILE ============== */
+.mobile-wrap{
+  width:380px; border-radius:32px;
+  border:1px solid var(--gold-500);
+  padding:8px;
+  background:linear-gradient(180deg, rgba(28,34,67,.65), rgba(14,18,38,.85));
+  position:relative;
+}
+.mobile-wrap::after{
+  content:""; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  width:46px; height:5px; background:#000; border-radius:99px; z-index:5;
+}
+.mobile-inner{
+  border-radius:24px;
+  background:linear-gradient(180deg, #0a0d20 0%, #060814 100%);
+  border:1px solid var(--line-1);
+  padding-top:36px; position:relative; overflow:hidden;
+  height:760px; display:flex; flex-direction:column;
+}
+.mobile-inner::before{
+  content:""; position:absolute; inset:36px 0 0 0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(245,214,138,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,214,138,.03) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+.mobile-status{
+  position:absolute; top:0; left:0; right:0; height:36px;
+  display:flex; justify-content:space-between; align-items:center; padding:0 28px;
+  font-family:var(--f-mono); font-size:11px; color:var(--vellum); font-weight:600; z-index:5;
+}
+.m-head{
+  padding:14px 16px; border-bottom:1px solid var(--gold-500);
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  position:relative; z-index:1;
+}
+.m-head .count-num{ font-size:24px; }
+.m-head .count-num .sep, .m-head .count-num .max{ font-size:16px; }
+.m-head .filter-icon{
+  width:36px; height:36px; display:grid; place-items:center;
+  background:rgba(0,0,0,.5); border:1px solid var(--gold-500);
+  position:relative; cursor:pointer;
+}
+.m-head .filter-icon::before, .m-head .filter-icon::after{ content:""; position:absolute; width:4px; height:4px; border:1px solid var(--gold-300); }
+.m-head .filter-icon::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.m-head .filter-icon::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.m-head .filter-icon svg{ width:14px; height:14px; color:var(--gold-200); }
+.m-head .filter-icon .badge{
+  position:absolute; top:-3px; right:-3px;
+  width:14px; height:14px; border-radius:99px;
+  background:linear-gradient(180deg, var(--gold-200), var(--gold-500));
+  color:#0c1126; font-family:var(--f-mono); font-size:9px; font-weight:700;
+  display:grid; place-items:center;
+  border:1px solid var(--gold-500);
+}
+.m-grid{
+  flex:1; padding:14px; overflow-y:auto; position:relative; z-index:1;
+  display:grid; grid-template-columns:1fr 1fr; gap:8px; align-content:start;
+}
+.m-tab{
+  display:flex; justify-content:space-around; align-items:center;
+  padding:8px 0;
+  background:linear-gradient(180deg, rgba(20,26,53,.85), rgba(10,13,32,.95));
+  border-top:1px solid var(--gold-500);
+  position:relative; z-index:2;
+}
+.m-tab-item{
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:5px 8px;
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.12em;
+  color:var(--ink-3); text-transform:uppercase;
+  cursor:pointer; flex:1; position:relative;
+}
+.m-tab-item svg{ width:16px; height:16px; }
+.m-tab-item .ko{
+  font-family:var(--f-ko); font-size:9.5px; letter-spacing:0; text-transform:none; font-weight:700;
+}
+.m-tab-item.active{ color:var(--gold-100); }
+.m-tab-item.active::before{
+  content:""; position:absolute; top:-1px; left:20%; right:20%; height:2px;
+  background:linear-gradient(to right, transparent, var(--gold-200), transparent);
+}
+.m-tab-item.active .ko{ color:var(--vellum); }
+.m-recruit-fab{
+  position:absolute; right:14px; bottom:62px;
+  width:48px; height:48px;
+  background:linear-gradient(180deg, rgba(245,214,138,.25), rgba(138,100,24,.15));
+  border:1px solid var(--gold-300);
+  display:grid; place-items:center;
+  cursor:pointer;
+  box-shadow:0 0 16px rgba(245,214,138,.18);
+  z-index:3;
+}
+.m-recruit-fab::before, .m-recruit-fab::after{ content:""; position:absolute; width:6px; height:6px; border:1px solid var(--gold-300); }
+.m-recruit-fab::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.m-recruit-fab::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.m-recruit-fab svg{ width:18px; height:18px; color:var(--gold-100); }
+.m-recruit-fab .pulse-dot{
+  position:absolute; top:5px; right:5px;
+  width:8px; height:8px; border-radius:99px;
+  background:var(--gold-100);
+  box-shadow:0 0 8px var(--gold-100);
+  animation:pulse 1.4s ease-in-out infinite;
+}
+
+.doc-foot{ margin-top:48px; padding-top:24px; border-top:1px solid var(--gold-500); display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:10.5px; color:var(--ink-3); letter-spacing:.12em; position:relative; }
+.doc-foot::before{ content:""; position:absolute; top:-2px; left:0; right:0; height:1px; background:linear-gradient(to right, transparent, var(--gold-300), transparent); }
+.doc-foot b{ color:var(--gold-200); font-weight:500; }
+</style>
+</head>
+<body>
+
+<main class="canvas">
+
+  <header class="doc-head">
+    <div>
+      <div class="eyebrow">— SURFACE · TOWN.ROSTERGRID · P0 ENTRY PANEL —</div>
+      <h1 class="doc-title">Town<span class="flourish"><i></i><i></i><i></i></span>RosterGrid</h1>
+      <div class="doc-subtitle">12-hero overview — header count + family-tinted filter chips + 4×3 portrait grid + synergy preview rail.</div>
+      <p class="doc-subtitle-ko">P0. atom (HeroPortraitCard sm · Tag chip · SynergyBadge) 인용. 4 state — default · selected · mixed (KO + injured) · filter applied.</p>
+    </div>
+    <div class="doc-meta">
+      <div><b>Token</b> &nbsp;Style Guide v0.2</div>
+      <div><b>Surface</b> &nbsp;Town.RosterGrid</div>
+      <div><b>States</b> &nbsp;4 · PC + Mobile</div>
+      <div><b>Rev</b> &nbsp;0.1</div>
+    </div>
+  </header>
+
+  <!-- ============================ PC ============================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">PC</span>
+      <h2 class="section-title">Desktop · 1280w</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">left rail (synergy) · grid 4×3 · right rail (selected info)</span>
+    </div>
+
+    <!-- STATE 01 · DEFAULT -->
+    <div class="cell">
+      <span class="state-tag"><span class="num">STATE 01</span> · DEFAULT <span class="ko">기본 — 12/12 모두 가용</span></span>
+
+      <div class="screen">
+        <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+
+        <!-- header strip -->
+        <div class="scr-head">
+          <div style="display:flex; align-items:center; gap:24px;">
+            <div class="scr-tabs">
+              <span class="active">ROSTER<span class="ko">로스터</span></span>
+              <span>SQUAD<span class="ko">분대</span></span>
+              <span>RECRUIT<span class="ko">모집</span></span>
+              <span>SITE<span class="ko">시설</span></span>
+            </div>
+            <div class="count-block">
+              <div class="count-num"><span class="now">12</span><span class="sep">/</span><span class="max">12</span></div>
+              <div class="count-meta"><span class="lbl">— HEROES</span><span class="ko">영웅 · 정원</span></div>
+            </div>
+          </div>
+          <div class="filter-row">
+            <span class="tag-chip race active"><span class="gem"></span>HUMAN<span class="ko">인간</span></span>
+            <span class="tag-chip race active"><span class="gem"></span>BEASTKIN<span class="ko">수인</span></span>
+            <span class="tag-chip race active"><span class="gem"></span>FAE<span class="ko">요정</span></span>
+            <span class="tag-chip cls v active"><span class="gem"></span>VANGUARD<span class="ko">선봉</span></span>
+            <span class="tag-chip cls s active"><span class="gem"></span>STRIKER<span class="ko">강타</span></span>
+            <span class="tag-chip cls m active"><span class="gem"></span>MYSTIC<span class="ko">신비</span></span>
+            <span class="tag-chip cls r active"><span class="gem"></span>RANGER<span class="ko">유격</span></span>
+            <span class="recruit-link"><span class="pulse-dot"></span>RECRUIT<span class="ko">모집</span></span>
+          </div>
+        </div>
+
+        <!-- left rail · synergy -->
+        <div class="rail-left" style="position:relative; min-height:740px;">
+          <div class="rail-head">SYNERGY<span class="ko">시너지</span></div>
+
+          <div class="syn-block">
+            <span class="lbl"><b>RACE</b> · 종족</span>
+            <div class="syn-badge race-human">
+              <div class="nm"><span class="en">HUMAN</span><span class="ko">인간 ×4</span></div>
+              <span class="ct"><b>4</b>/4</span>
+            </div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on"></i><i class="on bp"></i><span class="at">T2 <b>+12% DEF</b></span></div>
+
+            <div class="syn-badge race-beast" style="margin-top:6px;">
+              <div class="nm"><span class="en">BEASTKIN</span><span class="ko">수인 ×4</span></div>
+              <span class="ct"><b>4</b>/4</span>
+            </div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on"></i><i class="on bp"></i><span class="at">T2 <b>+15% SPD</b></span></div>
+
+            <div class="syn-badge race-fae" style="margin-top:6px;">
+              <div class="nm"><span class="en">FAE</span><span class="ko">요정 ×4</span></div>
+              <span class="ct"><b>4</b>/4</span>
+            </div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on"></i><i class="on bp"></i><span class="at">T2 <b>+10% MAG</b></span></div>
+          </div>
+
+          <div class="syn-block">
+            <span class="lbl"><b>CLASS</b> · 직업</span>
+            <div class="syn-badge cls-vanguard">
+              <div class="nm"><span class="en">VANGUARD</span><span class="ko">선봉 ×3</span></div>
+              <span class="ct"><b>3</b>/3</span>
+            </div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on bp"></i><span class="at">T2 <b>+20% TAUNT</b></span></div>
+
+            <div class="syn-badge cls-striker" style="margin-top:6px;">
+              <div class="nm"><span class="en">STRIKER</span><span class="ko">강타 ×3</span></div>
+              <span class="ct"><b>3</b>/3</span>
+            </div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on bp"></i><span class="at">T2 <b>+25% CRIT</b></span></div>
+
+            <div class="syn-badge cls-mystic" style="margin-top:6px;">
+              <div class="nm"><span class="en">MYSTIC</span><span class="ko">신비 ×3</span></div>
+              <span class="ct"><b>3</b>/3</span>
+            </div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on bp"></i><span class="at">T2 <b>+30% CD</b></span></div>
+
+            <div class="syn-badge cls-ranger" style="margin-top:6px;">
+              <div class="nm"><span class="en">RANGER</span><span class="ko">유격 ×3</span></div>
+              <span class="ct"><b>3</b>/3</span>
+            </div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on bp"></i><span class="at">T2 <b>+18% RNG</b></span></div>
+          </div>
+
+          <div class="quick-battle">
+            <span class="ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 11 L11 3 M9 3 L11 3 L11 5"/><path d="M3 3 L5 5 M9 9 L11 11"/></svg></span>
+            <span class="lb"><span class="ko">빠른 전투</span><br><span class="en">QUICK BATTLE · SMOKE</span></span>
+          </div>
+        </div>
+
+        <!-- center grid -->
+        <div class="grid-center">
+          <div class="grid-cap"><b>ALL</b><span class="ko">전체 · 12장</span><span class="right">DAY 14 · CH-2</span></div>
+          <div class="hero-grid">
+            <!-- 12 heroes -->
+            <div class="hpc fam-striker">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">STK</span><span class="lvl">L<b>14</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">KAEDE</span><span class="ko">카에데</span><span class="hp full"><i style="width:92%;"></i></span></div>
+            </div>
+            <div class="hpc fam-vanguard">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">VAN</span><span class="lvl">L<b>13</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">REIN</span><span class="ko">레인</span><span class="hp full"><i style="width:88%;"></i></span></div>
+            </div>
+            <div class="hpc fam-mystic">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">MYS</span><span class="lvl">L<b>12</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">AYUMI</span><span class="ko">아유미</span><span class="hp full"><i style="width:96%;"></i></span></div>
+            </div>
+            <div class="hpc fam-ranger">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">RNG</span><span class="lvl">L<b>15</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">SORA</span><span class="ko">소라</span><span class="hp full"><i style="width:78%;"></i></span></div>
+            </div>
+            <div class="hpc fam-beastkin">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">VAN</span><span class="lvl">L<b>11</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0e1208"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">RIN</span><span class="ko">린</span><span class="hp full"><i style="width:84%;"></i></span></div>
+            </div>
+            <div class="hpc fam-vanguard">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">VAN</span><span class="lvl">L<b>10</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">HARU</span><span class="ko">하루</span><span class="hp full"><i style="width:90%;"></i></span></div>
+            </div>
+            <div class="hpc fam-striker">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">STK</span><span class="lvl">L<b>09</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">YUMI</span><span class="ko">유미</span><span class="hp full"><i style="width:72%;"></i></span></div>
+            </div>
+            <div class="hpc fam-mystic">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">MYS</span><span class="lvl">L<b>13</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">NOA</span><span class="ko">노아</span><span class="hp full"><i style="width:94%;"></i></span></div>
+            </div>
+            <div class="hpc fam-ranger">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">RNG</span><span class="lvl">L<b>11</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">TORU</span><span class="ko">토루</span><span class="hp full"><i style="width:86%;"></i></span></div>
+            </div>
+            <div class="hpc fam-striker">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">STK</span><span class="lvl">L<b>08</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">MIO</span><span class="ko">미오</span><span class="hp full"><i style="width:80%;"></i></span></div>
+            </div>
+            <div class="hpc fam-beastkin">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">RNG</span><span class="lvl">L<b>12</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0e1208"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">KAI</span><span class="ko">카이</span><span class="hp full"><i style="width:74%;"></i></span></div>
+            </div>
+            <div class="hpc fam-mystic">
+              <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+              <span class="rib"></span>
+              <span class="role">MYS</span><span class="lvl">L<b>14</b></span>
+              <div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div>
+              <div class="np"><span class="en">RUI</span><span class="ko">루이</span><span class="hp full"><i style="width:88%;"></i></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- right rail · empty (no selection) -->
+        <div class="rail-right">
+          <div class="rail-head">SELECTED<span class="ko">선택</span></div>
+          <div class="sel-empty">
+            <span class="en">— NO HERO SELECTED —</span>
+            <span>카드를 클릭하여 빠른 정보 확인</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 02 · ONE SELECTED -->
+    <div class="cell">
+      <span class="state-tag"><span class="num">STATE 02</span> · ONE SELECTED <span class="ko">하나 선택 — gold halo + 우측 rail 활성</span></span>
+
+      <div class="screen">
+        <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+
+        <div class="scr-head">
+          <div style="display:flex; align-items:center; gap:24px;">
+            <div class="scr-tabs">
+              <span class="active">ROSTER<span class="ko">로스터</span></span>
+              <span>SQUAD<span class="ko">분대</span></span>
+              <span>RECRUIT<span class="ko">모집</span></span>
+              <span>SITE<span class="ko">시설</span></span>
+            </div>
+            <div class="count-block">
+              <div class="count-num"><span class="now">12</span><span class="sep">/</span><span class="max">12</span></div>
+              <div class="count-meta"><span class="lbl">— SELECTED 1</span><span class="ko">선택 1명</span></div>
+            </div>
+          </div>
+          <div class="filter-row">
+            <span class="tag-chip race active"><span class="gem"></span>ALL<span class="ko">전체</span></span>
+            <span class="recruit-link"><span class="pulse-dot"></span>RECRUIT<span class="ko">모집</span></span>
+          </div>
+        </div>
+
+        <div class="rail-left" style="position:relative; min-height:740px;">
+          <div class="rail-head">SYNERGY<span class="ko">시너지</span></div>
+          <div class="syn-block">
+            <span class="lbl"><b>RACE / CLASS</b></span>
+            <div class="syn-badge race-human"><div class="nm"><span class="en">HUMAN ×4</span><span class="ko">인간</span></div><span class="ct"><b>4</b>/4</span></div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on"></i><i class="on bp"></i><span class="at">T2</span></div>
+            <div class="syn-badge cls-striker" style="margin-top:6px;"><div class="nm"><span class="en">STRIKER ×3</span><span class="ko">강타</span></div><span class="ct"><b>3</b>/3</span></div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on bp"></i><span class="at">T2</span></div>
+          </div>
+          <div class="quick-battle">
+            <span class="ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11 L11 3 M9 3 L11 3 L11 5"/></svg></span>
+            <span class="lb"><span class="ko">빠른 전투</span><br><span class="en">QUICK BATTLE</span></span>
+          </div>
+        </div>
+
+        <div class="grid-center">
+          <div class="grid-cap"><b>ALL</b><span class="ko">전체 · 1 선택됨</span><span class="right">CLICK A CARD</span></div>
+          <div class="hero-grid">
+            <div class="hpc fam-striker"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>14</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">KAEDE</span><span class="ko">카에데</span><span class="hp full"><i style="width:92%;"></i></span></div></div>
+            <div class="hpc fam-vanguard"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>13</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">REIN</span><span class="ko">레인</span><span class="hp full"><i style="width:88%;"></i></span></div></div>
+            <div class="hpc fam-mystic"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>12</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">AYUMI</span><span class="ko">아유미</span><span class="hp full"><i style="width:96%;"></i></span></div></div>
+            <div class="hpc fam-ranger"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>15</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">SORA</span><span class="ko">소라</span><span class="hp full"><i style="width:78%;"></i></span></div></div>
+            <div class="hpc fam-beastkin"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>11</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0e1208"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">RIN</span><span class="ko">린</span><span class="hp full"><i style="width:84%;"></i></span></div></div>
+            <!-- selected -->
+            <div class="hpc fam-striker selected"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>09</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">YUMI</span><span class="ko">유미</span><span class="hp full"><i style="width:72%;"></i></span></div></div>
+            <div class="hpc fam-vanguard"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>10</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">HARU</span><span class="ko">하루</span><span class="hp full"><i style="width:90%;"></i></span></div></div>
+            <div class="hpc fam-mystic"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>13</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">NOA</span><span class="ko">노아</span><span class="hp full"><i style="width:94%;"></i></span></div></div>
+            <div class="hpc fam-ranger"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>11</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">TORU</span><span class="ko">토루</span><span class="hp full"><i style="width:86%;"></i></span></div></div>
+            <div class="hpc fam-striker"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>08</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">MIO</span><span class="ko">미오</span><span class="hp full"><i style="width:80%;"></i></span></div></div>
+            <div class="hpc fam-beastkin"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>12</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0e1208"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">KAI</span><span class="ko">카이</span><span class="hp full"><i style="width:74%;"></i></span></div></div>
+            <div class="hpc fam-mystic"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>14</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">RUI</span><span class="ko">루이</span><span class="hp full"><i style="width:88%;"></i></span></div></div>
+          </div>
+        </div>
+
+        <!-- right rail · selected -->
+        <div class="rail-right">
+          <div class="rail-head">SELECTED<span class="ko">선택</span></div>
+          <div class="sel-card">
+            <div class="sel-port">
+              <span class="role">STK · 강타</span><span class="lvl">L 09</span>
+              <svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg>
+            </div>
+            <div class="sel-name">
+              <div class="ko">유미 카게</div>
+              <div class="en">YUMI · KAGE</div>
+              <div class="jp">弓美 影</div>
+            </div>
+            <div class="sel-tags">
+              <span class="tag-chip race active"><span class="gem"></span>HUMAN<span class="ko">인간</span></span>
+              <span class="tag-chip cls s active"><span class="gem"></span>STRIKER<span class="ko">강타</span></span>
+              <span class="tag-chip role">DPS</span>
+            </div>
+            <div class="sel-stats">
+              <div class="sel-stat-row"><span class="lbl">HP</span><span class="val"><b>184</b>/210</span></div>
+              <div class="sel-stat-row"><span class="lbl">ATK</span><span class="val"><b>62</b></span></div>
+              <div class="sel-stat-row"><span class="lbl">DEF</span><span class="val"><b>34</b></span></div>
+              <div class="sel-stat-row"><span class="lbl">SPD</span><span class="val"><b>48</b></span></div>
+              <div class="sel-stat-row"><span class="lbl">CRIT</span><span class="val"><b>22%</b></span></div>
+              <div class="sel-stat-row"><span class="lbl">EVA</span><span class="val"><b>14%</b></span></div>
+            </div>
+            <div class="sel-actions">
+              <button class="sel-btn primary"><span class="ko">상세 보기</span><span class="en" style="margin-left:auto;">DETAIL</span></button>
+              <button class="sel-btn"><span class="ko">분대 추가</span><span class="en" style="margin-left:auto;">ASSIGN</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 03 · MIXED -->
+    <div class="cell">
+      <span class="state-tag"><span class="num">STATE 03</span> · MIXED <span class="ko">10 default + 1 KO + 1 INJURED</span></span>
+
+      <div class="screen">
+        <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+
+        <div class="scr-head">
+          <div style="display:flex; align-items:center; gap:24px;">
+            <div class="scr-tabs"><span class="active">ROSTER<span class="ko">로스터</span></span><span>SQUAD<span class="ko">분대</span></span><span>RECRUIT<span class="ko">모집</span></span><span>SITE<span class="ko">시설</span></span></div>
+            <div class="count-block">
+              <div class="count-num"><span class="now" style="color:var(--state-warn);">10</span><span class="sep">/</span><span class="max">12</span></div>
+              <div class="count-meta"><span class="lbl">— READY · 1 KO · 1 INJ</span><span class="ko">출전 가능 · 사망 1 · 부상 1</span></div>
+            </div>
+          </div>
+          <div class="filter-row">
+            <span class="tag-chip race active"><span class="gem"></span>ALL<span class="ko">전체</span></span>
+            <span class="recruit-link"><span class="pulse-dot"></span>RECRUIT<span class="ko">모집</span></span>
+          </div>
+        </div>
+
+        <div class="rail-left" style="position:relative; min-height:740px;">
+          <div class="rail-head">SYNERGY<span class="ko">시너지</span></div>
+          <div class="syn-block">
+            <span class="lbl"><b>EFFECTIVE</b> · 출전 기준</span>
+            <div class="syn-badge race-human"><div class="nm"><span class="en">HUMAN ×3</span><span class="ko">인간</span></div><span class="ct"><b>3</b>/4</span></div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on"></i><i class="bp"></i><span class="at">T1.5</span></div>
+            <div class="syn-badge cls-striker" style="margin-top:6px;"><div class="nm"><span class="en">STRIKER ×2</span><span class="ko">강타</span></div><span class="ct"><b>2</b>/3</span></div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="bp"></i><span class="at">T1</span></div>
+          </div>
+          <div class="quick-battle">
+            <span class="ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11 L11 3 M9 3 L11 3 L11 5"/></svg></span>
+            <span class="lb"><span class="ko">빠른 전투</span><br><span class="en">QUICK BATTLE</span></span>
+          </div>
+        </div>
+
+        <div class="grid-center">
+          <div class="grid-cap"><b>ALL · MIXED</b><span class="ko">전체 · 일부 사망/부상</span><span class="right">DAY 14 AFTER 2-7</span></div>
+          <div class="hero-grid">
+            <div class="hpc fam-striker"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>14</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">KAEDE</span><span class="ko">카에데</span><span class="hp full"><i style="width:92%;"></i></span></div></div>
+            <!-- INJURED -->
+            <div class="hpc fam-vanguard injured"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>13</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><span class="badge"><span>INJURED</span><span class="ko">부상 · 3일</span></span><div class="np"><span class="en">REIN</span><span class="ko">레인</span><span class="hp low"><i style="width:24%;"></i></span></div></div>
+            <div class="hpc fam-mystic"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>12</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">AYUMI</span><span class="ko">아유미</span><span class="hp full"><i style="width:96%;"></i></span></div></div>
+            <div class="hpc fam-ranger"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>15</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">SORA</span><span class="ko">소라</span><span class="hp full"><i style="width:78%;"></i></span></div></div>
+            <div class="hpc fam-beastkin"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>11</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0e1208"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">RIN</span><span class="ko">린</span><span class="hp full"><i style="width:84%;"></i></span></div></div>
+            <!-- KO -->
+            <div class="hpc fam-striker ko"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>09</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><span class="ko-stamp">KO</span><div class="np"><span class="en">YUMI</span><span class="ko">유미 — 사망</span><span class="hp"><i style="width:0%;"></i></span></div></div>
+            <div class="hpc fam-vanguard"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>10</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">HARU</span><span class="ko">하루</span><span class="hp full"><i style="width:90%;"></i></span></div></div>
+            <div class="hpc fam-mystic"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>13</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">NOA</span><span class="ko">노아</span><span class="hp full"><i style="width:94%;"></i></span></div></div>
+            <div class="hpc fam-ranger"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>11</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">TORU</span><span class="ko">토루</span><span class="hp full"><i style="width:86%;"></i></span></div></div>
+            <div class="hpc fam-striker"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>08</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">MIO</span><span class="ko">미오</span><span class="hp full"><i style="width:80%;"></i></span></div></div>
+            <div class="hpc fam-beastkin"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>12</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0e1208"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">KAI</span><span class="ko">카이</span><span class="hp full"><i style="width:74%;"></i></span></div></div>
+            <div class="hpc fam-mystic"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>14</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">RUI</span><span class="ko">루이</span><span class="hp full"><i style="width:88%;"></i></span></div></div>
+          </div>
+        </div>
+
+        <div class="rail-right">
+          <div class="rail-head">CASUALTIES<span class="ko">손실</span></div>
+          <div class="sel-card">
+            <div style="padding:10px 12px; background:rgba(226,85,72,.1); border-left:2px solid var(--state-danger); position:relative;">
+              <div style="font-family:var(--f-en-display); font-size:10px; letter-spacing:.18em; color:var(--state-danger); font-weight:700; text-transform:uppercase;">— FALLEN</div>
+              <div style="font-family:var(--f-ko); font-size:13px; color:var(--vellum); font-weight:800; margin-top:3px;">유미 카게</div>
+              <div style="font-family:var(--f-mono); font-size:9.5px; color:var(--ink-3); margin-top:2px;">CH-2 · 2-7 · DAY 14</div>
+            </div>
+            <div style="padding:10px 12px; background:rgba(232,169,59,.1); border-left:2px solid var(--state-warn); position:relative;">
+              <div style="font-family:var(--f-en-display); font-size:10px; letter-spacing:.18em; color:var(--state-warn); font-weight:700; text-transform:uppercase;">— INJURED · 3 DAYS</div>
+              <div style="font-family:var(--f-ko); font-size:13px; color:var(--vellum); font-weight:800; margin-top:3px;">레인</div>
+              <div style="font-family:var(--f-mono); font-size:9.5px; color:var(--ink-3); margin-top:2px;">RECOVERY · DAY 17</div>
+            </div>
+            <div style="padding:8px 12px; border-top:1px dashed var(--line-2); margin-top:6px;">
+              <div style="font-family:var(--f-mono); font-size:9px; color:var(--ink-3); letter-spacing:.14em; text-transform:uppercase;">— ROSTER STATUS</div>
+              <div style="display:flex; justify-content:space-between; margin-top:5px; font-family:var(--f-mono); font-size:11px;">
+                <span style="color:var(--state-safe);">READY · <b>10</b></span>
+                <span style="color:var(--state-warn);">INJ · <b>1</b></span>
+                <span style="color:var(--state-danger);">KO · <b>1</b></span>
+              </div>
+            </div>
+            <button class="sel-btn primary" style="margin-top:6px;"><span class="ko">치료실</span><span class="en" style="margin-left:auto;">INFIRMARY</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 04 · FILTER APPLIED -->
+    <div class="cell">
+      <span class="state-tag"><span class="num">STATE 04</span> · FILTER APPLIED <span class="ko">선봉만 — 비활성 dim, 활성 family-tint 강조</span></span>
+
+      <div class="screen">
+        <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+
+        <div class="scr-head">
+          <div style="display:flex; align-items:center; gap:24px;">
+            <div class="scr-tabs"><span class="active">ROSTER<span class="ko">로스터</span></span><span>SQUAD<span class="ko">분대</span></span><span>RECRUIT<span class="ko">모집</span></span><span>SITE<span class="ko">시설</span></span></div>
+            <div class="count-block">
+              <div class="count-num"><span class="now" style="color:var(--fam-vanguard-glow);">3</span><span class="sep">/</span><span class="max">12</span></div>
+              <div class="count-meta"><span class="lbl">— FILTERED · VANGUARD</span><span class="ko">필터 · 선봉만</span></div>
+            </div>
+          </div>
+          <div class="filter-row">
+            <span class="tag-chip cls v active"><span class="gem"></span>VANGUARD<span class="ko">선봉</span></span>
+            <span class="tag-chip cls s"><span class="gem"></span>STRIKER</span>
+            <span class="tag-chip cls m"><span class="gem"></span>MYSTIC</span>
+            <span class="tag-chip cls r"><span class="gem"></span>RANGER</span>
+            <span class="recruit-link"><span class="pulse-dot"></span>RECRUIT<span class="ko">모집</span></span>
+          </div>
+        </div>
+
+        <div class="rail-left" style="position:relative; min-height:740px;">
+          <div class="rail-head">SYNERGY<span class="ko">시너지</span></div>
+          <div class="syn-block">
+            <span class="lbl"><b>VANGUARD ONLY</b></span>
+            <div class="syn-badge cls-vanguard"><div class="nm"><span class="en">VANGUARD ×3</span><span class="ko">선봉</span></div><span class="ct"><b>3</b>/3</span></div>
+            <div class="syn-bp"><i class="on"></i><i class="on bp"></i><i class="on bp"></i><span class="at">T2 <b>+20% TAUNT</b></span></div>
+          </div>
+          <div class="syn-block">
+            <span class="lbl"><b>HIDDEN</b> · 9</span>
+            <div style="font-family:var(--f-ko); font-size:11px; color:var(--ink-3); padding:8px 10px; border:1px dashed var(--line-2);">9명 숨겨짐 — 다른 직업</div>
+          </div>
+          <div class="quick-battle">
+            <span class="ic"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11 L11 3 M9 3 L11 3 L11 5"/></svg></span>
+            <span class="lb"><span class="ko">빠른 전투</span><br><span class="en">QUICK BATTLE</span></span>
+          </div>
+        </div>
+
+        <div class="grid-center">
+          <div class="grid-cap"><b>VANGUARD</b><span class="ko">선봉 · 3장 활성</span><span class="right">9 DIMMED</span></div>
+          <div class="hero-grid">
+            <div class="hpc fam-striker dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>14</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">KAEDE</span><span class="ko">카에데</span></div></div>
+            <!-- VAN -->
+            <div class="hpc fam-vanguard"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>13</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">REIN</span><span class="ko">레인</span><span class="hp full"><i style="width:88%;"></i></span></div></div>
+            <div class="hpc fam-mystic dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>12</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">AYUMI</span><span class="ko">아유미</span></div></div>
+            <div class="hpc fam-ranger dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>15</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">SORA</span><span class="ko">소라</span></div></div>
+            <!-- VAN -->
+            <div class="hpc fam-beastkin"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>11</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0e1208"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">RIN</span><span class="ko">린</span><span class="hp full"><i style="width:84%;"></i></span></div></div>
+            <div class="hpc fam-striker dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>09</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">YUMI</span><span class="ko">유미</span></div></div>
+            <!-- VAN -->
+            <div class="hpc fam-vanguard"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>10</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">HARU</span><span class="ko">하루</span><span class="hp full"><i style="width:90%;"></i></span></div></div>
+            <div class="hpc fam-mystic dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>13</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">NOA</span><span class="ko">노아</span></div></div>
+            <div class="hpc fam-ranger dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>11</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">TORU</span><span class="ko">토루</span></div></div>
+            <div class="hpc fam-striker dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>08</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">MIO</span><span class="ko">미오</span></div></div>
+            <div class="hpc fam-beastkin dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>12</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0e1208"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">KAI</span><span class="ko">카이</span></div></div>
+            <div class="hpc fam-mystic dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>14</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">RUI</span><span class="ko">루이</span></div></div>
+          </div>
+        </div>
+
+        <div class="rail-right">
+          <div class="rail-head">FILTER<span class="ko">필터</span></div>
+          <div class="sel-card">
+            <div style="padding:10px 12px; background:rgba(74,114,184,.12); border-left:2px solid var(--fam-vanguard); position:relative;">
+              <div style="font-family:var(--f-en-display); font-size:10px; letter-spacing:.18em; color:var(--fam-vanguard-glow); font-weight:700; text-transform:uppercase;">— ACTIVE FILTER</div>
+              <div style="font-family:var(--f-ko); font-size:13px; color:var(--vellum); font-weight:800; margin-top:3px;">선봉 · Vanguard</div>
+              <div style="font-family:var(--f-mono); font-size:9.5px; color:var(--ink-3); margin-top:2px;">3 / 12 SHOWN</div>
+            </div>
+            <div style="padding:8px 12px; border-top:1px dashed var(--line-2);">
+              <div style="font-family:var(--f-mono); font-size:9px; color:var(--ink-3); letter-spacing:.14em; text-transform:uppercase; margin-bottom:6px;">— SUMMARY</div>
+              <div style="display:flex; flex-direction:column; gap:4px; font-family:var(--f-mono); font-size:10.5px; color:var(--vellum);">
+                <div style="display:flex; justify-content:space-between;"><span>AVG LVL</span><span><b style="color:var(--gold-200);">11.3</b></span></div>
+                <div style="display:flex; justify-content:space-between;"><span>TOTAL HP</span><span><b style="color:var(--gold-200);">624</b></span></div>
+                <div style="display:flex; justify-content:space-between;"><span>AVG DEF</span><span><b style="color:var(--gold-200);">62</b></span></div>
+              </div>
+            </div>
+            <button class="sel-btn"><span class="ko">필터 해제</span><span class="en" style="margin-left:auto;">CLEAR</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ MOBILE ============================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">M</span>
+      <h2 class="section-title">Mobile · &lt;768px</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">2-col scroll · bottom tab nav</span>
+    </div>
+
+    <div class="cell" style="padding:32px;">
+      <div style="display:flex; gap:32px; flex-wrap:wrap; justify-content:center;">
+
+        <!-- M-01 DEFAULT -->
+        <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+          <span class="state-tag"><span class="num">M-01</span> · DEFAULT</span>
+          <div class="mobile-wrap">
+            <div class="mobile-inner">
+              <div class="mobile-status"><span>9:41</span><span>ROSTER</span></div>
+              <div class="m-head">
+                <div class="count-block">
+                  <div class="count-num"><span class="now">12</span><span class="sep">/</span><span class="max">12</span></div>
+                  <div class="count-meta"><span class="lbl">— HEROES</span><span class="ko">영웅</span></div>
+                </div>
+                <div class="filter-icon">
+                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3 L12 3 M4 7 L10 7 M6 11 L8 11"/></svg>
+                </div>
+              </div>
+              <div class="m-grid">
+                <div class="hpc fam-striker"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>14</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">KAEDE</span><span class="ko">카에데</span><span class="hp full"><i style="width:92%;"></i></span></div></div>
+                <div class="hpc fam-vanguard"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>13</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">REIN</span><span class="ko">레인</span><span class="hp full"><i style="width:88%;"></i></span></div></div>
+                <div class="hpc fam-mystic selected"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>12</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">AYUMI</span><span class="ko">아유미</span><span class="hp full"><i style="width:96%;"></i></span></div></div>
+                <div class="hpc fam-ranger"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>15</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">SORA</span><span class="ko">소라</span><span class="hp full"><i style="width:78%;"></i></span></div></div>
+                <div class="hpc fam-beastkin"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>11</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0e1208"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">RIN</span><span class="ko">린</span><span class="hp full"><i style="width:84%;"></i></span></div></div>
+                <div class="hpc fam-striker injured"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>09</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><span class="badge"><span style="font-size:8px;">INJ</span><span class="ko" style="font-size:9px;">부상</span></span><div class="np"><span class="en">YUMI</span><span class="ko">유미</span><span class="hp low"><i style="width:24%;"></i></span></div></div>
+                <div class="hpc fam-vanguard"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>10</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">HARU</span><span class="ko">하루</span><span class="hp full"><i style="width:90%;"></i></span></div></div>
+                <div class="hpc fam-mystic"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>13</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">NOA</span><span class="ko">노아</span><span class="hp full"><i style="width:94%;"></i></span></div></div>
+                <div class="hpc fam-ranger"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>11</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">TORU</span><span class="ko">토루</span><span class="hp full"><i style="width:86%;"></i></span></div></div>
+                <div class="hpc fam-striker"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>08</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">MIO</span><span class="ko">미오</span><span class="hp full"><i style="width:80%;"></i></span></div></div>
+              </div>
+              <div class="m-recruit-fab">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 3 L9 15 M3 9 L15 9"/></svg>
+                <span class="pulse-dot"></span>
+              </div>
+              <div class="m-tab">
+                <div class="m-tab-item active"><svg viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg><span class="ko">로스터</span></div>
+                <div class="m-tab-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="6" r="3"/><path d="M2 14 Q 4 10 8 10 Q 12 10 14 14"/></svg><span class="ko">분대</span></div>
+                <div class="m-tab-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2 L10 6 L14 6.5 L11 10 L12 14 L8 11.5 L4 14 L5 10 L2 6.5 L6 6 Z"/></svg><span class="ko">모집</span></div>
+                <div class="m-tab-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 13 L2 7 L8 3 L14 7 L14 13 Z"/><path d="M6 13 L6 9 L10 9 L10 13"/></svg><span class="ko">시설</span></div>
+                <div class="m-tab-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="2" width="10" height="12"/><path d="M5 5 L11 5 M5 8 L11 8 M5 11 L9 11"/></svg><span class="ko">상세</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M-02 FILTER -->
+        <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+          <span class="state-tag"><span class="num">M-02</span> · FILTER · VAN</span>
+          <div class="mobile-wrap">
+            <div class="mobile-inner">
+              <div class="mobile-status"><span>9:41</span><span>ROSTER · FILTERED</span></div>
+              <div class="m-head">
+                <div class="count-block">
+                  <div class="count-num"><span class="now" style="color:var(--fam-vanguard-glow);">3</span><span class="sep">/</span><span class="max">12</span></div>
+                  <div class="count-meta"><span class="lbl">— VANGUARD</span><span class="ko">선봉</span></div>
+                </div>
+                <div class="filter-icon">
+                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3 L12 3 M4 7 L10 7 M6 11 L8 11"/></svg>
+                  <span class="badge">1</span>
+                </div>
+              </div>
+              <div style="padding:8px 14px; border-bottom:1px dashed var(--line-2); position:relative; z-index:1; display:flex; gap:5px; flex-wrap:wrap;">
+                <span class="tag-chip cls v active"><span class="gem"></span>VAN<span class="ko">선봉</span></span>
+              </div>
+              <div class="m-grid">
+                <div class="hpc fam-striker dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>14</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">KAEDE</span><span class="ko">카에데</span></div></div>
+                <div class="hpc fam-vanguard"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>13</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">REIN</span><span class="ko">레인</span><span class="hp full"><i style="width:88%;"></i></span></div></div>
+                <div class="hpc fam-mystic dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>12</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">AYUMI</span><span class="ko">아유미</span></div></div>
+                <div class="hpc fam-ranger dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">RNG</span><span class="lvl">L<b>15</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#150e04"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">SORA</span><span class="ko">소라</span></div></div>
+                <div class="hpc fam-beastkin"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>11</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0e1208"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">RIN</span><span class="ko">린</span><span class="hp full"><i style="width:84%;"></i></span></div></div>
+                <div class="hpc fam-striker dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">STK</span><span class="lvl">L<b>09</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#100612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">YUMI</span><span class="ko">유미</span></div></div>
+                <div class="hpc fam-vanguard"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">VAN</span><span class="lvl">L<b>10</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0e1a"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">HARU</span><span class="ko">하루</span><span class="hp full"><i style="width:90%;"></i></span></div></div>
+                <div class="hpc fam-mystic dim"><span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span><span class="rib"></span><span class="role">MYS</span><span class="lvl">L<b>13</b></span><div class="pa"><svg class="silh" viewBox="0 0 160 200" fill="#0a0612"><ellipse cx="80" cy="58" rx="28" ry="36"/><path d="M30 200 L30 150 Q30 116 60 102 L80 92 L100 102 Q130 116 130 150 L130 200 Z"/></svg></div><div class="np"><span class="en">NOA</span><span class="ko">노아</span></div></div>
+              </div>
+              <div class="m-recruit-fab">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 3 L9 15 M3 9 L15 9"/></svg>
+              </div>
+              <div class="m-tab">
+                <div class="m-tab-item active"><svg viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg><span class="ko">로스터</span></div>
+                <div class="m-tab-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="6" r="3"/><path d="M2 14 Q 4 10 8 10 Q 12 10 14 14"/></svg><span class="ko">분대</span></div>
+                <div class="m-tab-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2 L10 6 L14 6.5 L11 10 L12 14 L8 11.5 L4 14 L5 10 L2 6.5 L6 6 Z"/></svg><span class="ko">모집</span></div>
+                <div class="m-tab-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 13 L2 7 L8 3 L14 7 L14 13 Z"/></svg><span class="ko">시설</span></div>
+                <div class="m-tab-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="2" width="10" height="12"/><path d="M5 5 L11 5 M5 8 L11 8"/></svg><span class="ko">상세</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-foot">
+    <div><b>SURVIVAL MANAGER</b> · SURFACE · TOWN.ROSTERGRID</div>
+    <div>NEXT — Surface · Town.RecruitPack 또는 Battle Prep</div>
+  </footer>
+
+</main>
+
+</body>
+</html>

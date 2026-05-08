@@ -1,15 +1,26 @@
 # skill catalog v1
 
-- 상태: active
+- 상태: deprecated
+- deprecated 일자: 2026-05-06
 - 소유자: repository
 - 최종수정일: 2026-04-01
-- 소스오브트루스: `docs/02_design/combat/skill-catalog-v1.md`
+- 소스오브트루스: 없음 (아래 대체 SoT 참조)
+- 대체 SoT:
+  - `docs/02_design/systems/launch-floor-content-matrix.md` — 12 archetype별 Loop A slot anchor (`skill_warden_utility`, `skill_guardian_core` 등)
+  - `docs/02_design/combat/skill-authoring-schema.md` — skill 필수 필드, template, tag layer 관계
+  - `docs/02_design/combat/skill-taxonomy-and-damage-model.md` — skill kind / delivery / target rule taxonomy + 데미지 수식
 - 관련문서:
-  - `docs/02_design/combat/skill-authoring-schema.md`
-  - `docs/02_design/meta/retrain-contract.md`
-  - `docs/03_architecture/content-seed-assets.md`
+  - pindoc Decision: [고유명사 ID/Label 분리 baseline](http://localhost:5830/p/survival-manager/wiki/고유명사-id-label-분리-모든-layer-baseline)
 
-## 목적
+## deprecation 사유
+
+본 문서의 7-packet seed(`guardian / bruiser / duelist / ranger / arcanist / support / occult`)와 `launch-floor-content-matrix.md`의 12 archetype Loop A anchor(`skill_warden_utility` 등)가 다른 namespace를 쓴다. matrix가 V1 launch floor 기준이라 본 문서의 packet seed는 archetype anchor와 1:1 매칭되지 않는다.
+
+12 archetype 기준 새 catalog는 narrative reskin이 settled된 뒤 별도 Task로 propose한다(ID는 보존, presentation layer만 reskin). 본 문서는 audit log로만 보존한다.
+
+---
+
+## 목적 (deprecated)
 
 이 문서는 full skill catalog 후보와 role packet 기준 seed set을 기록한다.
 

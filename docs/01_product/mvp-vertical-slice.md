@@ -27,8 +27,8 @@
 - recruit archetypes: 12
 - synergy families: 7 (race 3 + class 4)
 - synergy grammar: race `2 / 4`, class `2 / 3`
-- temporary augments: 12
-- permanent augments: 4
+- temporary augments: 24
+- permanent augment live slot: 1 (authored candidates 12)
 - permanent augment equip slot: 1
 - passive boards: 4
 - equipment slots per character: 3

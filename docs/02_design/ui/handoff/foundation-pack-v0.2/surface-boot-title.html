@@ -1,0 +1,1140 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Boot.Title — Survival Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Shippori+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+:root{
+  --bg-0:#0c1126; --bg-1:#141a35; --bg-2:#1c2243; --bg-3:#262d54;
+  --line-1:#2c3568; --line-2:#3b467f;
+  --vellum:#f5ead0; --vellum-2:#e2d4ad; --vellum-3:#c9b88a;
+  --parchment:#efe2bf; --parchment-deep:#c9b88a; --parchment-shadow:#7a6a3e;
+  --gold-100:#ffe9a8; --gold-200:#f5d68a; --gold-300:#e6b751;
+  --gold-400:#c8932a; --gold-500:#8a6418;
+  --ink-1:#f5ead0; --ink-2:#d8c799; --ink-3:#9d8a5e; --ink-4:#6b5d3f;
+  --ink-parchment:#3d2f12; --ink-parchment-soft:#6b5530;
+  --fam-vanguard:#4a72b8; --fam-vanguard-deep:#1a2a52; --fam-vanguard-glow:#7fa3e0;
+  --fam-striker:#b6334a; --fam-striker-deep:#5a0e1c; --fam-striker-glow:#f08a3c;
+  --fam-mystic:#8a5cb8; --fam-mystic-deep:#3a1f5a; --fam-mystic-glow:#d4b4f0;
+  --fam-ranger:#b58a36; --fam-ranger-deep:#4d3a14; --fam-ranger-glow:#e6c878;
+  --rare-rare:#5b8ed1; --rare-epic:#b561d6; --rare-epic-2:#f08a3c;
+  --f-ko:"Pretendard",system-ui,sans-serif;
+  --f-jp:"Shippori Mincho","Yu Mincho",serif;
+  --f-en-display:"Cinzel",serif;
+  --f-en-italic:"Cormorant Garamond",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0; padding:0; height:100%;}
+body{
+  background:
+    radial-gradient(1300px 800px at 18% -10%, #2a2050 0%, transparent 55%),
+    radial-gradient(1100px 700px at 95% 25%, #4a1a2e 0%, transparent 55%),
+    radial-gradient(900px 700px at 50% 110%, #1a2050 0%, transparent 60%),
+    var(--bg-0);
+  color:var(--ink-1);
+  font-family:var(--f-ko);
+  min-height:100vh; position:relative;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 60% 40%, rgba(245,214,138,.03) 0, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(245,214,138,.03) 0, transparent 1px);
+  background-size:7px 7px,11px 11px,13px 13px;
+}
+.canvas{ position:relative; z-index:1; max-width:1680px; margin:0 auto; padding:48px 40px 96px; }
+
+/* HEADER */
+.doc-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:32px; padding-bottom:24px; margin-bottom:48px; position:relative; }
+.doc-head::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:linear-gradient(to right, transparent 0%, var(--gold-400) 8%, var(--gold-200) 50%, var(--gold-400) 92%, transparent 100%); }
+.doc-head::before{ content:""; position:absolute; left:0; right:0; bottom:-3px; height:1px; background:linear-gradient(to right, transparent 0%, var(--gold-500) 30%, var(--gold-500) 70%, transparent 100%); opacity:.6; }
+.eyebrow{ font-family:var(--f-mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold-300); }
+.doc-title{ font-family:var(--f-en-display); font-weight:700; font-size:38px; letter-spacing:.06em; margin:6px 0 4px; background:linear-gradient(180deg, var(--gold-100) 0%, var(--gold-300) 60%, var(--gold-500) 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.doc-title .flourish{ display:inline-flex; gap:4px; vertical-align:6px; margin:0 14px; }
+.doc-title .flourish i{ width:5px; height:5px; background:var(--gold-300); transform:rotate(45deg); display:inline-block; -webkit-text-fill-color:initial; }
+.doc-title .flourish i:nth-child(2){ width:8px; height:8px; background:var(--gold-200); border:1px solid var(--gold-500); }
+.doc-subtitle{ font-family:var(--f-en-italic); font-style:italic; font-weight:500; font-size:16px; color:var(--ink-2); }
+.doc-subtitle-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); max-width:64ch; line-height:1.6; margin:4px 0 0; }
+.doc-meta{ text-align:right; font-family:var(--f-mono); font-size:11px; color:var(--ink-3); letter-spacing:.06em; }
+.doc-meta b{ color:var(--gold-200); font-weight:500; }
+
+/* SECTION */
+section{ margin-bottom:48px; }
+.section-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:24px; }
+.section-num{ font-family:var(--f-mono); font-size:11px; color:var(--gold-400); letter-spacing:.18em; }
+.section-title{ font-family:var(--f-en-display); font-size:22px; font-weight:600; letter-spacing:.06em; color:var(--gold-200); margin:0; }
+.section-rule{ height:1px; background:linear-gradient(to right, var(--gold-400) 0%, transparent 80%); flex:1; margin-bottom:4px; }
+.section-title-ko{ font-family:var(--f-ko); font-size:13px; color:var(--ink-3); font-weight:500; margin-left:auto; }
+.section-title-ko::before{ content:"—  "; color:var(--gold-500); }
+
+.cell{
+  position:relative;
+  background:linear-gradient(180deg, rgba(28,34,67,.55), rgba(14,18,38,.7));
+  border:1px solid var(--line-1);
+  padding:24px;
+  margin-bottom:32px;
+}
+.cell::before, .cell::after{ content:""; position:absolute; width:8px; height:8px; border:1px solid var(--gold-300); }
+.cell::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.cell::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.cell-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:16px; padding-bottom:8px; border-bottom:1px dashed var(--line-2); }
+.cell-num{ font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em; color:var(--gold-400); text-transform:uppercase; }
+.cell-title{ font-family:var(--f-en-display); font-size:13px; font-weight:600; letter-spacing:.16em; color:var(--gold-200); margin:0; text-transform:uppercase; }
+.cell-title .ko{ font-family:var(--f-ko); font-size:11px; color:var(--ink-3); font-weight:500; letter-spacing:.04em; text-transform:none; margin-left:6px; }
+.cell-meta{ font-family:var(--f-mono); font-size:9.5px; color:var(--ink-3); letter-spacing:.14em; }
+
+/* ===================== TITLE SCREEN ===================== */
+.title-screen{
+  position:relative;
+  width:1280px; height:760px;
+  background:
+    radial-gradient(70% 60% at 50% 30%, rgba(245,214,138,.05), transparent 70%),
+    linear-gradient(180deg, #0a0d20 0%, #060814 100%);
+  border:1px solid var(--gold-500);
+  display:grid;
+  grid-template-columns:60% 40%;
+  isolation:isolate;
+  overflow:hidden;
+}
+.title-screen::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(245,214,138,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,214,138,.03) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+.title-screen > .cc{ position:absolute; width:14px; height:14px; pointer-events:none; border:1px solid var(--gold-300); z-index:5; }
+.title-screen > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.title-screen > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.title-screen > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.title-screen > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+/* === TITLE ART PANEL === */
+.art-panel{
+  position:relative;
+  padding:48px 56px;
+  display:flex; flex-direction:column; justify-content:center;
+  background:
+    radial-gradient(60% 50% at 30% 30%, rgba(74,114,184,.12), transparent 70%),
+    radial-gradient(50% 40% at 80% 80%, rgba(182,51,74,.1), transparent 70%);
+  border-right:1px solid var(--gold-500);
+}
+.art-frame{
+  position:relative;
+  background:
+    linear-gradient(180deg, var(--parchment) 0%, var(--parchment-deep) 100%);
+  color:var(--ink-parchment);
+  padding:64px 56px 56px;
+  border:1px solid var(--gold-500);
+  isolation:isolate;
+}
+.art-frame::before{ content:""; position:absolute; inset:6px; border:1px solid rgba(122,106,62,.5); pointer-events:none; }
+.art-frame::after{ content:""; position:absolute; inset:11px; border:1px solid rgba(122,106,62,.25); pointer-events:none; }
+/* parchment grain */
+.art-frame .grain{
+  position:absolute; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(122,106,62,.08) 0, transparent 1.5px),
+    radial-gradient(circle at 70% 30%, rgba(122,106,62,.06) 0, transparent 1.5px),
+    radial-gradient(circle at 28% 70%, rgba(122,106,62,.07) 0, transparent 1.5px),
+    radial-gradient(circle at 85% 78%, rgba(122,106,62,.05) 0, transparent 1.5px);
+  background-size:9px 9px, 13px 13px, 11px 11px, 17px 17px;
+}
+/* corner caps gold (outer) */
+.art-frame > .cc{ position:absolute; width:24px; height:24px; pointer-events:none; z-index:3; }
+.art-frame > .cc::before, .art-frame > .cc::after{
+  content:""; position:absolute; background:var(--gold-300);
+}
+.art-frame > .cc::before{ width:24px; height:1.5px; }
+.art-frame > .cc::after{ width:1.5px; height:24px; }
+.art-frame > .cc.tl{ top:-1px; left:-1px; }
+.art-frame > .cc.tl::before{ top:0; left:0; }
+.art-frame > .cc.tl::after{ top:0; left:0; }
+.art-frame > .cc.tr{ top:-1px; right:-1px; }
+.art-frame > .cc.tr::before{ top:0; right:0; }
+.art-frame > .cc.tr::after{ top:0; right:0; }
+.art-frame > .cc.bl{ bottom:-1px; left:-1px; }
+.art-frame > .cc.bl::before{ bottom:0; left:0; }
+.art-frame > .cc.bl::after{ bottom:0; left:0; }
+.art-frame > .cc.br{ bottom:-1px; right:-1px; }
+.art-frame > .cc.br::before{ bottom:0; right:0; }
+.art-frame > .cc.br::after{ bottom:0; right:0; }
+/* gold diamond gem at each corner */
+.art-frame > .cc i{
+  position:absolute; width:8px; height:8px;
+  background:linear-gradient(135deg, var(--gold-100), var(--gold-400));
+  border:1px solid var(--gold-500);
+  transform:rotate(45deg);
+}
+.art-frame > .cc.tl i{ top:14px; left:14px; }
+.art-frame > .cc.tr i{ top:14px; right:14px; }
+.art-frame > .cc.bl i{ bottom:14px; left:14px; }
+.art-frame > .cc.br i{ bottom:14px; right:14px; }
+/* vine on each side */
+.art-frame > .vine{
+  position:absolute; pointer-events:none; color:var(--gold-500); opacity:.55; z-index:2;
+}
+.art-frame > .vine.t{ top:-2px; left:50%; transform:translateX(-50%); width:140px; height:18px; }
+.art-frame > .vine.b{ bottom:-2px; left:50%; transform:translateX(-50%) rotate(180deg); width:140px; height:18px; }
+.art-frame > .vine.l{ left:-9px; top:50%; transform:translateY(-50%) rotate(-90deg); width:120px; height:18px; }
+.art-frame > .vine.r{ right:-9px; top:50%; transform:translateY(-50%) rotate(90deg); width:120px; height:18px; }
+
+.art-tag{
+  position:relative; z-index:1;
+  font-family:var(--f-en-display); font-size:11px; letter-spacing:.32em;
+  color:var(--ink-parchment-soft); font-weight:600; text-align:center;
+  text-transform:uppercase;
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  margin-bottom:18px;
+}
+.art-tag::before, .art-tag::after{
+  content:""; height:1px; flex:1; max-width:60px;
+  background:linear-gradient(to right, transparent, rgba(122,106,62,.7), transparent);
+}
+.art-headline{
+  position:relative; z-index:1;
+  font-family:var(--f-en-display); font-weight:800;
+  font-size:62px; line-height:1; letter-spacing:.04em;
+  text-align:center;
+  background:linear-gradient(180deg, #2a1f08 0%, #6b4a14 60%, #1a1004 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 1px 0 rgba(245,214,138,.3);
+  margin:0;
+}
+.art-headline .dot{
+  display:inline-flex; gap:5px; vertical-align:14px;
+  margin:0 14px;
+  -webkit-text-fill-color:initial;
+}
+.art-headline .dot i{
+  width:9px; height:9px; transform:rotate(45deg);
+  background:linear-gradient(135deg, var(--gold-200), var(--gold-500));
+  border:1px solid var(--gold-500);
+  display:inline-block;
+}
+.art-headline .dot i.lg{ width:12px; height:12px; background:linear-gradient(135deg, var(--gold-100), var(--gold-300)); }
+.art-headline-ko{
+  position:relative; z-index:1;
+  font-family:var(--f-ko); font-weight:800;
+  font-size:22px; letter-spacing:.18em;
+  text-align:center; color:var(--ink-parchment);
+  margin:18px 0 0;
+}
+.art-headline-jp{
+  position:relative; z-index:1;
+  font-family:var(--f-jp); font-weight:500;
+  font-size:14px; letter-spacing:.24em;
+  text-align:center; color:var(--ink-parchment-soft);
+  margin:8px 0 0;
+}
+.art-sub{
+  position:relative; z-index:1;
+  font-family:var(--f-en-italic); font-style:italic; font-weight:500;
+  font-size:16px; letter-spacing:.02em;
+  text-align:center; color:var(--ink-parchment-soft);
+  margin:32px 0 0;
+  text-wrap:pretty;
+}
+.art-sub::before, .art-sub::after{ content:"\2014"; margin:0 10px; color:rgba(122,106,62,.6); }
+
+/* mark (small wax-seal-style emblem under headline) */
+.art-mark{
+  position:relative; z-index:1;
+  display:flex; justify-content:center; margin-top:24px;
+}
+.art-mark svg{ width:40px; height:40px; color:var(--ink-parchment); opacity:.55; }
+
+/* === ACTION MENU PANEL === */
+.menu-panel{
+  position:relative;
+  padding:48px 40px;
+  display:flex; flex-direction:column;
+  background:
+    radial-gradient(60% 60% at 80% 30%, rgba(58,31,90,.18), transparent 70%),
+    linear-gradient(180deg, rgba(20,26,53,.85), rgba(10,13,32,.95));
+}
+.menu-eyebrow{
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.32em;
+  color:var(--gold-300); text-transform:uppercase;
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:20px;
+}
+.menu-eyebrow::after{ content:""; flex:1; height:1px; background:linear-gradient(to right, var(--gold-400), transparent); }
+
+.menu-stack{ display:flex; flex-direction:column; gap:14px; }
+
+/* === BUTTON (atom citation: Button atom v0.1) === */
+.btn{
+  position:relative;
+  display:flex; align-items:center;
+  padding:16px 22px; min-height:64px;
+  font-family:var(--f-en-display); font-size:13px; letter-spacing:.22em;
+  font-weight:700; text-transform:uppercase;
+  cursor:pointer; user-select:none;
+  border:1px solid var(--gold-500);
+  background:rgba(0,0,0,.35);
+  color:var(--ink-2);
+  transition:all .18s ease;
+  isolation:isolate;
+}
+.btn .ko{
+  font-family:var(--f-ko); font-weight:800; font-size:15px; letter-spacing:.06em;
+  color:var(--vellum); text-transform:none; margin-right:14px;
+  min-width:80px;
+}
+.btn .en{ flex:1; }
+.btn .accel{
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.14em;
+  color:var(--ink-3); padding:2px 6px; border:1px dashed var(--line-2);
+  text-transform:uppercase; margin-left:auto;
+}
+/* corner caps */
+.btn > .cc{ position:absolute; width:7px; height:7px; pointer-events:none; border:1px solid var(--gold-300); }
+.btn > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.btn > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.btn > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.btn > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+/* vine flourish on hover */
+.btn .vine{
+  position:absolute; left:50%; transform:translateX(-50%);
+  pointer-events:none; color:var(--gold-300); opacity:0;
+  transition:opacity .25s ease;
+  width:80px; height:10px;
+}
+.btn .vine.t{ top:-3px; }
+.btn .vine.b{ bottom:-3px; transform:translateX(-50%) rotate(180deg); }
+.btn:hover .vine{ opacity:.7; }
+
+/* primary */
+.btn.primary{
+  background:
+    linear-gradient(180deg, rgba(245,214,138,.18) 0%, rgba(138,100,24,.18) 100%);
+  border-color:var(--gold-300);
+  color:var(--gold-100);
+  box-shadow: inset 0 1px 0 rgba(245,214,138,.25), 0 0 24px rgba(245,214,138,.06);
+}
+.btn.primary .ko{ color:var(--gold-100); }
+.btn.primary::before{
+  content:""; position:absolute; inset:2px;
+  border:1px solid rgba(245,214,138,.32);
+  pointer-events:none;
+}
+.btn.primary.hl{
+  box-shadow: inset 0 1px 0 rgba(245,214,138,.35), 0 0 32px rgba(245,214,138,.18);
+  animation:pulseGlow 2.4s ease-in-out infinite;
+}
+@keyframes pulseGlow{ 0%,100%{ box-shadow: inset 0 1px 0 rgba(245,214,138,.35), 0 0 32px rgba(245,214,138,.16); } 50%{ box-shadow: inset 0 1px 0 rgba(245,214,138,.45), 0 0 48px rgba(245,214,138,.26); } }
+.btn.primary .vine{ color:var(--gold-200); opacity:.5; }
+
+/* secondary */
+.btn.secondary{
+  background: linear-gradient(180deg, rgba(28,34,67,.6), rgba(14,18,38,.7));
+  border-color:var(--gold-500);
+  color:var(--vellum);
+}
+.btn.secondary:hover{ border-color:var(--gold-300); }
+
+/* ghost */
+.btn.ghost{
+  background:transparent;
+  border-color:var(--line-2);
+  color:var(--ink-2);
+  min-height:48px;
+  padding:10px 22px;
+  font-size:11px;
+}
+.btn.ghost .ko{ color:var(--ink-1); font-size:13px; }
+.btn.ghost > .cc{ border-color:var(--ink-3); }
+.btn.ghost:hover{ border-color:var(--gold-500); color:var(--vellum); }
+.btn.ghost.sm{ min-height:36px; padding:6px 16px; font-size:10px; }
+.btn.ghost.sm .ko{ font-size:11px; min-width:60px; }
+
+/* disabled */
+.btn.disabled{
+  cursor:not-allowed;
+  filter:saturate(.3) brightness(.6);
+  border-color:var(--line-2);
+  color:var(--ink-3);
+  background:rgba(0,0,0,.25);
+}
+.btn.disabled .ko{ color:var(--ink-3); }
+.btn.disabled::before{ display:none; }
+.btn.disabled .vine{ display:none; }
+.btn.disabled .accel{ opacity:.5; }
+
+/* === LAST SAVE SUMMARY === */
+.last-save{
+  position:relative;
+  margin-top:14px;
+  padding:14px 16px 14px 18px;
+  background:linear-gradient(180deg, rgba(74,114,184,.12), rgba(26,42,82,.18));
+  border-left:2px solid var(--fam-vanguard);
+  display:flex; flex-direction:column; gap:8px;
+}
+.last-save::before{ content:""; position:absolute; top:0; right:0; width:4px; height:4px; border-top:1px solid var(--gold-500); border-right:1px solid var(--gold-500); }
+.last-save::after{ content:""; position:absolute; bottom:0; right:0; width:4px; height:4px; border-bottom:1px solid var(--gold-500); border-right:1px solid var(--gold-500); }
+.ls-head{ display:flex; justify-content:space-between; align-items:baseline; }
+.ls-tag{
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.18em;
+  color:var(--fam-vanguard-glow); text-transform:uppercase;
+}
+.ls-time{ font-family:var(--f-mono); font-size:8.5px; color:var(--ink-3); letter-spacing:.1em; }
+.ls-chapter{
+  font-family:var(--f-en-display); font-size:13px; letter-spacing:.16em;
+  color:var(--fam-vanguard-glow); font-weight:700;
+}
+.ls-chapter .ko{
+  font-family:var(--f-ko); color:var(--vellum); font-size:13px; font-weight:800;
+  margin-left:8px; letter-spacing:.04em;
+}
+.ls-meta{
+  display:flex; justify-content:space-between; align-items:center;
+}
+.ls-day{
+  font-family:var(--f-mono); font-size:10.5px; color:var(--gold-200);
+  letter-spacing:.12em;
+}
+.ls-day b{ color:var(--gold-100); font-weight:600; font-size:13px; }
+.ls-party{ display:flex; gap:5px; }
+.ls-dot{
+  width:18px; height:18px; position:relative;
+  background:linear-gradient(180deg, var(--ls-c), var(--ls-c-d));
+  border:1px solid var(--gold-500);
+}
+.ls-dot::before{ content:""; position:absolute; inset:1px; border:1px solid rgba(245,214,138,.25); }
+.ls-dot.s{ --ls-c:var(--fam-striker); --ls-c-d:var(--fam-striker-deep); }
+.ls-dot.v{ --ls-c:var(--fam-vanguard); --ls-c-d:var(--fam-vanguard-deep); }
+.ls-dot.m{ --ls-c:var(--fam-mystic); --ls-c-d:var(--fam-mystic-deep); }
+.ls-dot.r{ --ls-c:var(--fam-ranger); --ls-c-d:var(--fam-ranger-deep); }
+
+/* === NO SAVE HINT === */
+.no-save-hint{
+  margin-top:10px; padding:8px 12px;
+  border-left:2px solid var(--ink-3);
+  background:rgba(0,0,0,.25);
+  font-family:var(--f-ko); font-size:11.5px;
+  color:var(--ink-3); display:flex; align-items:center; gap:8px;
+}
+.no-save-hint svg{ width:14px; height:14px; flex-shrink:0; opacity:.7; }
+.no-save-hint .en{
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.14em;
+  color:var(--ink-4); text-transform:uppercase; margin-left:auto;
+}
+
+/* === LOADING === */
+.loading-card{
+  margin-top:14px; padding:14px 18px;
+  background:linear-gradient(180deg, rgba(245,214,138,.1), rgba(138,100,24,.05));
+  border:1px solid var(--gold-500);
+  position:relative;
+  display:flex; align-items:center; gap:14px;
+}
+.loading-card::before{ content:""; position:absolute; inset:2px; border:1px solid rgba(245,214,138,.25); pointer-events:none; }
+.loading-card > .cc{ position:absolute; width:5px; height:5px; pointer-events:none; border:1px solid var(--gold-300); }
+.loading-card > .cc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.loading-card > .cc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.loading-card > .cc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.loading-card > .cc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.spinner{
+  width:22px; height:22px; flex-shrink:0; position:relative;
+}
+.spinner svg{ width:100%; height:100%; animation:spin 1.4s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.loading-text{
+  display:flex; flex-direction:column; gap:2px;
+}
+.loading-text .ko{
+  font-family:var(--f-ko); font-size:12.5px; font-weight:700;
+  color:var(--gold-100);
+}
+.loading-text .en{
+  font-family:var(--f-en-display); font-size:9.5px; letter-spacing:.22em;
+  color:var(--gold-200); text-transform:uppercase;
+}
+.loading-progress{
+  flex:1; margin-left:14px;
+  height:3px; background:rgba(0,0,0,.4); border:1px solid var(--gold-500);
+  position:relative; overflow:hidden;
+}
+.loading-progress::after{
+  content:""; position:absolute; top:0; bottom:0; width:30%;
+  background:linear-gradient(to right, transparent, var(--gold-200), transparent);
+  animation:loaderSweep 1.6s ease-in-out infinite;
+}
+@keyframes loaderSweep{ 0%{ left:-30%; } 100%{ left:100%; } }
+
+/* === FOOTER (PC right-bottom) === */
+.tfoot{
+  margin-top:auto; padding-top:24px;
+  display:flex; justify-content:space-between; align-items:flex-end;
+}
+.build-info{
+  font-family:var(--f-mono); font-size:10px; color:var(--ink-3);
+  letter-spacing:.14em; line-height:1.6;
+}
+.build-info b{ color:var(--gold-200); font-weight:500; }
+.build-info .row{ display:flex; gap:8px; }
+
+/* locale pill — jewel duotone tier */
+.locale-pill{
+  display:inline-flex; align-items:center;
+  background:rgba(0,0,0,.55);
+  border:1px solid var(--gold-500); position:relative;
+}
+.locale-pill::before, .locale-pill::after{ content:""; position:absolute; width:4px; height:4px; border:1px solid var(--gold-300); }
+.locale-pill::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.locale-pill::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+.locale-opt{
+  padding:6px 12px;
+  font-family:var(--f-en-display); font-size:9.5px; letter-spacing:.22em;
+  color:var(--ink-3); cursor:pointer; font-weight:700;
+  text-transform:uppercase; position:relative;
+}
+.locale-opt + .locale-opt{ border-left:1px solid var(--gold-500); }
+.locale-opt.active.ko{
+  background:linear-gradient(180deg, var(--parchment), var(--parchment-deep));
+  color:var(--ink-parchment);
+  box-shadow: inset 0 1px 0 rgba(245,214,138,.3);
+}
+.locale-opt.active.en{
+  background:linear-gradient(180deg, var(--rare-rare), #1f3b66);
+  color:var(--vellum);
+  box-shadow: inset 0 1px 0 rgba(245,214,138,.3);
+}
+.locale-opt.active.ja{
+  background:linear-gradient(180deg, var(--rare-epic), var(--fam-mystic-deep));
+  color:var(--vellum);
+  box-shadow: inset 0 1px 0 rgba(245,214,138,.3);
+}
+
+/* ===================== STATE LABELS ===================== */
+.state-grid{ display:grid; grid-template-columns:1fr; gap:32px; }
+.state-row{
+  display:flex; flex-direction:column; gap:14px;
+}
+.state-tag{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.18em;
+  color:var(--gold-300); text-transform:uppercase;
+  padding:5px 10px; border:1px dashed var(--line-2);
+  width:fit-content;
+}
+.state-tag .num{ color:var(--gold-200); font-weight:600; }
+.state-tag .ko{ font-family:var(--f-ko); color:var(--vellum); letter-spacing:.04em; font-size:11px; font-weight:700; text-transform:none; }
+
+/* ===================== MOBILE FRAME ===================== */
+.mobile-wrap{
+  width:380px; border-radius:32px;
+  border:1px solid var(--gold-500);
+  padding:8px;
+  background:linear-gradient(180deg, rgba(28,34,67,.65), rgba(14,18,38,.85));
+  position:relative;
+}
+.mobile-wrap::after{
+  content:""; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  width:46px; height:5px; background:#000; border-radius:99px; z-index:5;
+}
+.mobile-inner{
+  border-radius:24px;
+  background:
+    radial-gradient(60% 50% at 30% 20%, rgba(74,114,184,.12), transparent 70%),
+    radial-gradient(50% 40% at 80% 80%, rgba(182,51,74,.08), transparent 70%),
+    linear-gradient(180deg, #0a0d20 0%, #060814 100%);
+  border:1px solid var(--line-1);
+  padding-top:36px; position:relative; overflow:hidden;
+  height:760px;
+  display:flex; flex-direction:column;
+}
+.mobile-inner::before{
+  content:""; position:absolute; inset:36px 0 0 0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(245,214,138,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,214,138,.03) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+.mobile-status{
+  position:absolute; top:0; left:0; right:0; height:36px;
+  display:flex; justify-content:space-between; align-items:center; padding:0 28px;
+  font-family:var(--f-mono); font-size:11px; color:var(--vellum); font-weight:600; z-index:5;
+}
+.mobile-art{
+  position:relative; height:40vh; min-height:300px;
+  padding:18px;
+  display:flex; align-items:center; justify-content:center;
+  border-bottom:1px solid var(--gold-500);
+}
+.mobile-art .art-frame{
+  padding:30px 18px 26px;
+}
+.mobile-art .art-headline{ font-size:28px; }
+.mobile-art .art-headline .dot i{ width:5px; height:5px; }
+.mobile-art .art-headline .dot i.lg{ width:7px; height:7px; }
+.mobile-art .art-headline-ko{ font-size:13px; margin-top:10px; }
+.mobile-art .art-headline-jp{ font-size:9px; margin-top:5px; }
+.mobile-art .art-sub{ font-size:11px; margin-top:14px; }
+.mobile-art .art-tag{ font-size:8.5px; margin-bottom:10px; }
+.mobile-art .art-mark{ margin-top:12px; }
+.mobile-art .art-mark svg{ width:24px; height:24px; }
+.mobile-art .art-frame > .cc{ width:14px; height:14px; }
+.mobile-art .art-frame > .cc::before{ width:14px; }
+.mobile-art .art-frame > .cc::after{ height:14px; }
+.mobile-art .art-frame > .cc i{ width:5px; height:5px; }
+.mobile-art .art-frame > .cc.tl i{ top:7px; left:7px; }
+.mobile-art .art-frame > .cc.tr i{ top:7px; right:7px; }
+.mobile-art .art-frame > .cc.bl i{ bottom:7px; left:7px; }
+.mobile-art .art-frame > .cc.br i{ bottom:7px; right:7px; }
+
+.mobile-menu{
+  flex:1; padding:20px 18px 14px; display:flex; flex-direction:column; gap:10px;
+  position:relative; z-index:1;
+}
+.mobile-menu .btn{ min-height:54px; padding:12px 16px; }
+.mobile-menu .btn.ghost{ min-height:42px; padding:8px 16px; }
+.mobile-menu .btn.ghost.sm{ min-height:32px; padding:5px 14px; font-size:9.5px; }
+.mobile-foot{
+  padding:10px 18px 18px;
+  display:flex; justify-content:space-between; align-items:flex-end;
+  border-top:1px dashed var(--line-2);
+}
+
+.doc-foot{ margin-top:48px; padding-top:24px; border-top:1px solid var(--gold-500); display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:10.5px; color:var(--ink-3); letter-spacing:.12em; position:relative; }
+.doc-foot::before{ content:""; position:absolute; top:-2px; left:0; right:0; height:1px; background:linear-gradient(to right, transparent, var(--gold-300), transparent); }
+.doc-foot b{ color:var(--gold-200); font-weight:500; }
+</style>
+</head>
+<body>
+
+<main class="canvas">
+
+  <header class="doc-head">
+    <div>
+      <div class="eyebrow">— SURFACE · BOOT.TITLE · GAME ENTRY —</div>
+      <h1 class="doc-title">
+        Boot
+        <span class="flourish"><i></i><i></i><i></i></span>
+        Title
+      </h1>
+      <div class="doc-subtitle">First-frame title card — vellum ornate frame + gold corner gem + 4-button menu stack.</div>
+      <p class="doc-subtitle-ko">
+        진입 화면. PC는 좌측 title art (60%) / 우측 menu (40%) 양분, Mobile은 상단 art (40vh) / 하단 menu vertical.
+        atom (Button v0.1) 인용. 3 state — Default · No save · Loading.
+      </p>
+    </div>
+    <div class="doc-meta">
+      <div><b>Token</b> &nbsp;Style Guide v0.2</div>
+      <div><b>Surface</b> &nbsp;Boot.Title</div>
+      <div><b>States</b> &nbsp;3 · PC + Mobile</div>
+      <div><b>Rev</b> &nbsp;0.1</div>
+    </div>
+  </header>
+
+  <!-- ============================ PC ============================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">PC</span>
+      <h2 class="section-title">Desktop · 1280 × 760</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">3 state — default · no save · loading</span>
+    </div>
+
+    <div class="state-grid">
+
+      <!-- STATE 1 · DEFAULT -->
+      <div class="state-row">
+        <span class="state-tag"><span class="num">STATE 01</span> · DEFAULT <span class="ko">기본 — 이어하기 highlighted</span></span>
+        <div class="cell" style="padding:32px;">
+          <div class="title-screen">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+
+            <!-- ART PANEL -->
+            <div class="art-panel">
+              <div class="art-frame">
+                <span class="grain"></span>
+                <span class="cc tl"><i></i></span>
+                <span class="cc tr"><i></i></span>
+                <span class="cc bl"><i></i></span>
+                <span class="cc br"><i></i></span>
+                <svg class="vine t" viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 115 1 140 9"/><path d="M65 6 L70 1 L75 6 L70 11 Z" fill="currentColor"/></svg>
+                <svg class="vine b" viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 115 1 140 9"/><path d="M65 6 L70 1 L75 6 L70 11 Z" fill="currentColor"/></svg>
+                <svg class="vine l" viewBox="0 0 120 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 105 4 120 9"/></svg>
+                <svg class="vine r" viewBox="0 0 120 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 105 4 120 9"/></svg>
+
+                <div class="art-tag">CHAPTER ZERO · A SOLO RUN</div>
+                <h2 class="art-headline">
+                  SURVIVAL
+                  <span class="dot"><i></i><i class="lg"></i><i></i></span>
+                  MANAGER
+                </h2>
+                <div class="art-headline-ko">생존 매니저</div>
+                <div class="art-headline-jp">サバイバル · マネージャー</div>
+
+                <div class="art-mark">
+                  <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4">
+                    <circle cx="20" cy="20" r="14"/>
+                    <circle cx="20" cy="20" r="9"/>
+                    <path d="M20 6 L22 13 L29 13 L23.5 17 L25.5 24 L20 19.5 L14.5 24 L16.5 17 L11 13 L18 13 Z" fill="currentColor" opacity=".6"/>
+                  </svg>
+                </div>
+
+                <p class="art-sub">a solo-dev sentai roster, drawn in the temperament of Teyvat</p>
+              </div>
+            </div>
+
+            <!-- MENU PANEL -->
+            <div class="menu-panel">
+              <div class="menu-eyebrow">— MAIN MENU · 主メニュー</div>
+
+              <div class="menu-stack">
+                <button class="btn primary hl">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg class="vine t" viewBox="0 0 80 10" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 5 Q 20 1 40 5 Q 60 9 80 5"/><path d="M37 3 L40 0 L43 3 L40 6 Z" fill="currentColor"/></svg>
+                  <svg class="vine b" viewBox="0 0 80 10" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 5 Q 20 1 40 5 Q 60 9 80 5"/></svg>
+                  <span class="ko">이어하기</span>
+                  <span class="en">Continue</span>
+                  <span class="accel">ENTER</span>
+                </button>
+
+                <!-- last save summary -->
+                <div class="last-save">
+                  <div class="ls-head">
+                    <span class="ls-tag">— LAST SAVE</span>
+                    <span class="ls-time">2일 전 · 22:47</span>
+                  </div>
+                  <div class="ls-chapter">CH-2 · Hollow Bell <span class="ko">텅 빈 종</span></div>
+                  <div class="ls-meta">
+                    <span class="ls-day"><b>DAY 14</b> · STAGE 2-7 · CLEAR 62%</span>
+                    <div class="ls-party">
+                      <span class="ls-dot s"></span>
+                      <span class="ls-dot v"></span>
+                      <span class="ls-dot m"></span>
+                      <span class="ls-dot r"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="btn secondary">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg class="vine t" viewBox="0 0 80 10" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 5 Q 20 1 40 5 Q 60 9 80 5"/></svg>
+                  <span class="ko">새 게임</span>
+                  <span class="en">New Game</span>
+                  <span class="accel">N</span>
+                </button>
+
+                <button class="btn ghost">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">설정</span>
+                  <span class="en">Settings</span>
+                  <span class="accel">S</span>
+                </button>
+
+                <button class="btn ghost sm">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">종료</span>
+                  <span class="en">Quit</span>
+                  <span class="accel">ESC</span>
+                </button>
+              </div>
+
+              <div class="tfoot">
+                <div class="build-info">
+                  <div class="row"><b>BUILD</b> 0.0.1-alpha</div>
+                  <div class="row" style="color:var(--ink-4);">© SOLO-DEV · 2025</div>
+                </div>
+                <span class="locale-pill">
+                  <span class="locale-opt active ko">KO</span>
+                  <span class="locale-opt en">EN</span>
+                  <span class="locale-opt ja">JA</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATE 2 · NO SAVE -->
+      <div class="state-row">
+        <span class="state-tag"><span class="num">STATE 02</span> · NO SAVE <span class="ko">저장 없음 — 이어하기 disabled</span></span>
+        <div class="cell" style="padding:32px;">
+          <div class="title-screen">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+
+            <div class="art-panel">
+              <div class="art-frame">
+                <span class="grain"></span>
+                <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+                <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+                <svg class="vine t" viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 115 1 140 9"/><path d="M65 6 L70 1 L75 6 L70 11 Z" fill="currentColor"/></svg>
+                <svg class="vine b" viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 115 1 140 9"/><path d="M65 6 L70 1 L75 6 L70 11 Z" fill="currentColor"/></svg>
+                <svg class="vine l" viewBox="0 0 120 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 105 4 120 9"/></svg>
+                <svg class="vine r" viewBox="0 0 120 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 105 4 120 9"/></svg>
+                <div class="art-tag">FRESH START · NO SAVE FOUND</div>
+                <h2 class="art-headline">SURVIVAL<span class="dot"><i></i><i class="lg"></i><i></i></span>MANAGER</h2>
+                <div class="art-headline-ko">생존 매니저</div>
+                <div class="art-headline-jp">サバイバル · マネージャー</div>
+                <div class="art-mark">
+                  <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="9"/><path d="M20 6 L22 13 L29 13 L23.5 17 L25.5 24 L20 19.5 L14.5 24 L16.5 17 L11 13 L18 13 Z" fill="currentColor" opacity=".6"/></svg>
+                </div>
+                <p class="art-sub">a solo-dev sentai roster, drawn in the temperament of Teyvat</p>
+              </div>
+            </div>
+
+            <div class="menu-panel">
+              <div class="menu-eyebrow">— MAIN MENU · 主メニュー</div>
+
+              <div class="menu-stack">
+                <button class="btn primary disabled">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">이어하기</span>
+                  <span class="en">Continue</span>
+                  <span class="accel">—</span>
+                </button>
+
+                <div class="no-save-hint">
+                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="5.5"/><path d="M7 4 L7 7.5 M7 9.5 L7 10.2"/></svg>
+                  저장된 게임 없음 — 새 게임에서 시작하세요
+                  <span class="en">NO SAVE</span>
+                </div>
+
+                <button class="btn primary hl">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg class="vine t" viewBox="0 0 80 10" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 5 Q 20 1 40 5 Q 60 9 80 5"/><path d="M37 3 L40 0 L43 3 L40 6 Z" fill="currentColor"/></svg>
+                  <svg class="vine b" viewBox="0 0 80 10" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 5 Q 20 1 40 5 Q 60 9 80 5"/></svg>
+                  <span class="ko">새 게임</span>
+                  <span class="en">New Game</span>
+                  <span class="accel">N</span>
+                </button>
+
+                <button class="btn ghost">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">설정</span>
+                  <span class="en">Settings</span>
+                  <span class="accel">S</span>
+                </button>
+
+                <button class="btn ghost sm">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">종료</span>
+                  <span class="en">Quit</span>
+                  <span class="accel">ESC</span>
+                </button>
+              </div>
+
+              <div class="tfoot">
+                <div class="build-info">
+                  <div class="row"><b>BUILD</b> 0.0.1-alpha</div>
+                  <div class="row" style="color:var(--ink-4);">© SOLO-DEV · 2025</div>
+                </div>
+                <span class="locale-pill">
+                  <span class="locale-opt active ko">KO</span>
+                  <span class="locale-opt en">EN</span>
+                  <span class="locale-opt ja">JA</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATE 3 · LOADING -->
+      <div class="state-row">
+        <span class="state-tag"><span class="num">STATE 03</span> · LOADING <span class="ko">불러오는 중 — spinner + sweep</span></span>
+        <div class="cell" style="padding:32px;">
+          <div class="title-screen">
+            <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+
+            <div class="art-panel">
+              <div class="art-frame">
+                <span class="grain"></span>
+                <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+                <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+                <svg class="vine t" viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 115 1 140 9"/><path d="M65 6 L70 1 L75 6 L70 11 Z" fill="currentColor"/></svg>
+                <svg class="vine b" viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 115 1 140 9"/><path d="M65 6 L70 1 L75 6 L70 11 Z" fill="currentColor"/></svg>
+                <svg class="vine l" viewBox="0 0 120 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 105 4 120 9"/></svg>
+                <svg class="vine r" viewBox="0 0 120 18" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 9 Q 25 1 50 9 Q 70 16 90 9 Q 105 4 120 9"/></svg>
+                <div class="art-tag">RESUMING · CHAPTER TWO</div>
+                <h2 class="art-headline">SURVIVAL<span class="dot"><i></i><i class="lg"></i><i></i></span>MANAGER</h2>
+                <div class="art-headline-ko">생존 매니저</div>
+                <div class="art-headline-jp">サバイバル · マネージャー</div>
+                <div class="art-mark">
+                  <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="9"/><path d="M20 6 L22 13 L29 13 L23.5 17 L25.5 24 L20 19.5 L14.5 24 L16.5 17 L11 13 L18 13 Z" fill="currentColor" opacity=".6"/></svg>
+                </div>
+                <p class="art-sub">a solo-dev sentai roster, drawn in the temperament of Teyvat</p>
+              </div>
+            </div>
+
+            <div class="menu-panel">
+              <div class="menu-eyebrow">— MAIN MENU · 主メニュー</div>
+
+              <div class="menu-stack" style="opacity:.4; pointer-events:none;">
+                <button class="btn primary">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">이어하기</span>
+                  <span class="en">Continue</span>
+                  <span class="accel">ENTER</span>
+                </button>
+
+                <button class="btn secondary">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">새 게임</span>
+                  <span class="en">New Game</span>
+                  <span class="accel">N</span>
+                </button>
+
+                <button class="btn ghost">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">설정</span>
+                  <span class="en">Settings</span>
+                  <span class="accel">S</span>
+                </button>
+              </div>
+
+              <div class="loading-card">
+                <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                <span class="spinner">
+                  <svg viewBox="0 0 22 22" fill="none">
+                    <circle cx="11" cy="11" r="9" stroke="rgba(245,214,138,.2)" stroke-width="2"/>
+                    <path d="M11 2 A 9 9 0 0 1 20 11" stroke="var(--gold-200)" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <div class="loading-text">
+                  <span class="ko">불러오는 중...</span>
+                  <span class="en">LOADING · CH-2 · DAY 14</span>
+                </div>
+                <div class="loading-progress"></div>
+              </div>
+
+              <div class="tfoot">
+                <div class="build-info">
+                  <div class="row"><b>BUILD</b> 0.0.1-alpha</div>
+                  <div class="row" style="color:var(--ink-4);">© SOLO-DEV · 2025</div>
+                </div>
+                <span class="locale-pill">
+                  <span class="locale-opt active ko">KO</span>
+                  <span class="locale-opt en">EN</span>
+                  <span class="locale-opt ja">JA</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ MOBILE ============================ -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">M</span>
+      <h2 class="section-title">Mobile · &lt;768px</h2>
+      <div class="section-rule"></div>
+      <span class="section-title-ko">상단 art (40vh) / 하단 menu vertical</span>
+    </div>
+
+    <div class="cell" style="padding:32px;">
+      <div style="display:flex; gap:32px; flex-wrap:wrap; justify-content:center;">
+
+        <!-- M · DEFAULT -->
+        <div style="display:flex; flex-direction:column; gap:14px; align-items:center;">
+          <span class="state-tag"><span class="num">M-01</span> · DEFAULT</span>
+          <div class="mobile-wrap">
+            <div class="mobile-inner">
+              <div class="mobile-status"><span>9:41</span><span>BOOT</span></div>
+
+              <div class="mobile-art">
+                <div class="art-frame">
+                  <span class="grain"></span>
+                  <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+                  <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+                  <div class="art-tag">CH-0 · SOLO RUN</div>
+                  <h2 class="art-headline">SURVIVAL<span class="dot"><i></i><i class="lg"></i><i></i></span>MANAGER</h2>
+                  <div class="art-headline-ko">생존 매니저</div>
+                  <div class="art-headline-jp">サバイバル</div>
+                  <div class="art-mark"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="9"/><path d="M20 6 L22 13 L29 13 L23.5 17 L25.5 24 L20 19.5 L14.5 24 L16.5 17 L11 13 L18 13 Z" fill="currentColor" opacity=".6"/></svg></div>
+                </div>
+              </div>
+
+              <div class="mobile-menu">
+                <button class="btn primary hl">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">이어하기</span><span class="en">Continue</span>
+                </button>
+                <div class="last-save" style="margin-top:0;">
+                  <div class="ls-head"><span class="ls-tag">— LAST SAVE</span><span class="ls-time">2일 전</span></div>
+                  <div class="ls-chapter" style="font-size:11.5px;">CH-2 · Hollow Bell <span class="ko">텅 빈 종</span></div>
+                  <div class="ls-meta">
+                    <span class="ls-day"><b>DAY 14</b> · 2-7</span>
+                    <div class="ls-party">
+                      <span class="ls-dot s" style="width:14px; height:14px;"></span>
+                      <span class="ls-dot v" style="width:14px; height:14px;"></span>
+                      <span class="ls-dot m" style="width:14px; height:14px;"></span>
+                      <span class="ls-dot r" style="width:14px; height:14px;"></span>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn secondary">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">새 게임</span><span class="en">New Game</span>
+                </button>
+                <button class="btn ghost">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">설정</span><span class="en">Settings</span>
+                </button>
+                <button class="btn ghost sm">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">종료</span><span class="en">Quit</span>
+                </button>
+              </div>
+
+              <div class="mobile-foot">
+                <div class="build-info"><div class="row"><b>BUILD</b> 0.0.1-α</div></div>
+                <span class="locale-pill">
+                  <span class="locale-opt active ko" style="padding:4px 9px; font-size:8.5px;">KO</span>
+                  <span class="locale-opt en" style="padding:4px 9px; font-size:8.5px;">EN</span>
+                  <span class="locale-opt ja" style="padding:4px 9px; font-size:8.5px;">JA</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M · NO SAVE -->
+        <div style="display:flex; flex-direction:column; gap:14px; align-items:center;">
+          <span class="state-tag"><span class="num">M-02</span> · NO SAVE</span>
+          <div class="mobile-wrap">
+            <div class="mobile-inner">
+              <div class="mobile-status"><span>9:41</span><span>BOOT</span></div>
+
+              <div class="mobile-art">
+                <div class="art-frame">
+                  <span class="grain"></span>
+                  <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+                  <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+                  <div class="art-tag">FRESH START</div>
+                  <h2 class="art-headline">SURVIVAL<span class="dot"><i></i><i class="lg"></i><i></i></span>MANAGER</h2>
+                  <div class="art-headline-ko">생존 매니저</div>
+                  <div class="art-headline-jp">サバイバル</div>
+                  <div class="art-mark"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="9"/><path d="M20 6 L22 13 L29 13 L23.5 17 L25.5 24 L20 19.5 L14.5 24 L16.5 17 L11 13 L18 13 Z" fill="currentColor" opacity=".6"/></svg></div>
+                </div>
+              </div>
+
+              <div class="mobile-menu">
+                <button class="btn primary disabled">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">이어하기</span><span class="en">Continue</span>
+                </button>
+                <div class="no-save-hint">
+                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="5.5"/><path d="M7 4 L7 7.5 M7 9.5 L7 10.2"/></svg>
+                  저장된 게임 없음
+                  <span class="en">NONE</span>
+                </div>
+                <button class="btn primary hl">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <svg class="vine t" viewBox="0 0 80 10" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 5 Q 20 1 40 5 Q 60 9 80 5"/></svg>
+                  <span class="ko">새 게임</span><span class="en">New Game</span>
+                </button>
+                <button class="btn ghost">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">설정</span><span class="en">Settings</span>
+                </button>
+                <button class="btn ghost sm">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">종료</span><span class="en">Quit</span>
+                </button>
+              </div>
+
+              <div class="mobile-foot">
+                <div class="build-info"><div class="row"><b>BUILD</b> 0.0.1-α</div></div>
+                <span class="locale-pill">
+                  <span class="locale-opt active ko" style="padding:4px 9px; font-size:8.5px;">KO</span>
+                  <span class="locale-opt en" style="padding:4px 9px; font-size:8.5px;">EN</span>
+                  <span class="locale-opt ja" style="padding:4px 9px; font-size:8.5px;">JA</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M · LOADING -->
+        <div style="display:flex; flex-direction:column; gap:14px; align-items:center;">
+          <span class="state-tag"><span class="num">M-03</span> · LOADING</span>
+          <div class="mobile-wrap">
+            <div class="mobile-inner">
+              <div class="mobile-status"><span>9:41</span><span>LOAD</span></div>
+
+              <div class="mobile-art">
+                <div class="art-frame">
+                  <span class="grain"></span>
+                  <span class="cc tl"><i></i></span><span class="cc tr"><i></i></span>
+                  <span class="cc bl"><i></i></span><span class="cc br"><i></i></span>
+                  <div class="art-tag">RESUMING · CH-2</div>
+                  <h2 class="art-headline">SURVIVAL<span class="dot"><i></i><i class="lg"></i><i></i></span>MANAGER</h2>
+                  <div class="art-headline-ko">생존 매니저</div>
+                  <div class="art-headline-jp">サバイバル</div>
+                  <div class="art-mark"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="9"/><path d="M20 6 L22 13 L29 13 L23.5 17 L25.5 24 L20 19.5 L14.5 24 L16.5 17 L11 13 L18 13 Z" fill="currentColor" opacity=".6"/></svg></div>
+                </div>
+              </div>
+
+              <div class="mobile-menu" style="opacity:.4; pointer-events:none;">
+                <button class="btn primary">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">이어하기</span><span class="en">Continue</span>
+                </button>
+                <button class="btn secondary">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">새 게임</span><span class="en">New Game</span>
+                </button>
+                <button class="btn ghost">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="ko">설정</span><span class="en">Settings</span>
+                </button>
+              </div>
+
+              <div style="padding:0 18px 14px;">
+                <div class="loading-card">
+                  <span class="cc tl"></span><span class="cc tr"></span><span class="cc bl"></span><span class="cc br"></span>
+                  <span class="spinner">
+                    <svg viewBox="0 0 22 22" fill="none">
+                      <circle cx="11" cy="11" r="9" stroke="rgba(245,214,138,.2)" stroke-width="2"/>
+                      <path d="M11 2 A 9 9 0 0 1 20 11" stroke="var(--gold-200)" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <div class="loading-text">
+                    <span class="ko" style="font-size:11.5px;">불러오는 중...</span>
+                    <span class="en" style="font-size:8.5px;">CH-2 · DAY 14</span>
+                  </div>
+                </div>
+                <div class="loading-progress" style="margin-top:6px;"></div>
+              </div>
+
+              <div class="mobile-foot">
+                <div class="build-info"><div class="row"><b>BUILD</b> 0.0.1-α</div></div>
+                <span class="locale-pill">
+                  <span class="locale-opt active ko" style="padding:4px 9px; font-size:8.5px;">KO</span>
+                  <span class="locale-opt en" style="padding:4px 9px; font-size:8.5px;">EN</span>
+                  <span class="locale-opt ja" style="padding:4px 9px; font-size:8.5px;">JA</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-foot">
+    <div><b>SURVIVAL MANAGER</b> · SURFACE · BOOT.TITLE</div>
+    <div>NEXT — Surface 2 (Battle Prep) 또는 Settings panel</div>
+  </footer>
+
+</main>
+
+</body>
+</html>
