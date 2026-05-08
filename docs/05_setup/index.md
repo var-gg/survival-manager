@@ -16,6 +16,7 @@
 ## 문서 목록
 
 - `asset-workflow.md`: 에셋 반입과 project-owned wrapper 기준
+- `claude-mcp-setup.md`: Claude Code 클라이언트의 Unity MCP 등록 기준 (project-scoped `.mcp.json`)
 - `codex-mcp-setup.md`: Codex 앱 Unity MCP 연결 기준과 빠른 복구 런북
 - `community-mcp-setup.md`: 커뮤니티 MCP 로컬 설치와 검증 절차
 - `dev-environment.md`: 개발 환경 기본 설정

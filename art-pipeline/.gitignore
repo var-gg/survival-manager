@@ -1,0 +1,10 @@
+output/
+inbox/
+working/
+postprocess/__pycache__/
+scripts/__pycache__/
+postprocess/*.pyc
+scripts/*.pyc
+*.egg-info/
+.venv/
+*.tmp.png

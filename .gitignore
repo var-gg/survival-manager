@@ -36,7 +36,13 @@ Thumbs.db
 *.bak
 *.log
 
+# Claude Design handoff local/transient files
+docs/02_design/ui/handoff/**/_local/
+docs/02_design/ui/handoff/**/*.crdownload
+docs/02_design/ui/handoff/**/*.download
+
 # Local agent / Unity transient artifacts
+.mcp.json
 .claude/
 Saves/
 TestResults-Batch.xml
@@ -46,3 +52,5 @@ Assets/UI Toolkit/
 Assets/UI Toolkit.meta
 Assets/Tests/EditMode/Temp/
 Assets/Tests/EditMode/Temp.meta
+art-pipeline/output/
+art-pipeline/**/__pycache__/

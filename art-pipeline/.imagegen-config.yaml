@@ -1,0 +1,20 @@
+# game-image-gen 자동화 설정
+# upload_subject.py가 art-pipeline/ 루트에서 이 파일을 읽음 (없으면 DEFAULT_CONFIG 사용)
+
+# ChatGPT 게임 프로젝트 URL (사용자가 셋업한 GPT 프로젝트)
+chatgpt_project_url: https://chatgpt.com/g/g-p-69c7aa09d1588191a8dd5bd93db389ba/project
+
+# Playwright 영구 user_data_dir — vargg-webtoon comic-imagegen과 공유.
+# 같은 ChatGPT 로그인 세션 재사용 (vargg쪽이 이미 로그인되어 있어 supervision 불필요).
+# 단 vargg 쪽이 동시 실행 중이면 chrome 락 충돌 가능 — 동시 실행 금지.
+user_data_dir: ~/.claude/comic-imagegen/chrome-user-data
+
+# 이미지 생성 폴링 타임아웃 (초). ChatGPT가 느릴 때를 대비.
+default_timeout: 240
+
+# 첫 실행은 false 권장 (로그인 UI 보여야 함). 세션 저장 후 true 가능.
+headless_default: false
+
+# 브라우저 창을 작업표시줄로 최소화 (포커스 훔치지 않음).
+# Windows에서 --start-minimized 플래그가 무시되는 경우가 있어 PID-scoped Win32 ShowWindow로 보강.
+start_minimized_default: true
