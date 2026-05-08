@@ -186,6 +186,52 @@ public static class MovementResolver
         ResolveTeamSpacing(state.Enemies);
     }
 
+    public static void ApplyKnockback(BattleState state, UnitSnapshot actor, UnitSnapshot target, bool isCritical)
+    {
+        if (!target.IsAlive)
+        {
+            return;
+        }
+
+        var direction = (target.Position - actor.Position).Normalized;
+        if (direction.SqrLength <= 0.0001f)
+        {
+            direction = actor.Side == TeamSide.Ally
+                ? new CombatVector2(1f, 0f)
+                : new CombatVector2(-1f, 0f);
+        }
+
+        var angleRoll = KnockbackRoll(state, actor, target, "kb:angle");
+        var angle = (angleRoll - 0.5f) * (MathF.PI * 0.5f);
+        var cos = MathF.Cos(angle);
+        var sin = MathF.Sin(angle);
+        var rotated = new CombatVector2(
+            (direction.X * cos) - (direction.Y * sin),
+            (direction.X * sin) + (direction.Y * cos));
+
+        var distRoll = KnockbackRoll(state, actor, target, "kb:dist");
+        var stabilityFactor = MathF.Max(0.2f, 1f - target.Behavior.Stability);
+        var critFactor = isCritical ? 1.6f : 1f;
+        var distance = 0.18f * stabilityFactor * (0.6f + (distRoll * 0.6f)) * critFactor;
+
+        var next = ClampToArena(ClampToLeash(state, target, target.Position + (rotated * distance)));
+        target.SetPosition(next);
+    }
+
+    private static float KnockbackRoll(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)
+    {
+        unchecked
+        {
+            var hash = state.Seed;
+            hash = (hash * 397) ^ state.StepIndex;
+            hash = (hash * 397) ^ actor.Id.Value.GetHashCode();
+            hash = (hash * 397) ^ target.Id.Value.GetHashCode();
+            hash = (hash * 397) ^ context.GetHashCode();
+            var remainder = Math.Abs(hash % 10000);
+            return remainder / 10000f;
+        }
+    }
+
     private static CombatVector2 ResolveDesiredPosition(UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
     {
         var directionToTarget = (target.Position - actor.Position).Normalized;
