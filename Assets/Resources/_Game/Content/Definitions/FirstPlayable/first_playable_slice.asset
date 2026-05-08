@@ -15,11 +15,11 @@ MonoBehaviour:
   UnitBlueprintCap: 12
   SignatureActiveCap: 12
   SignaturePassiveCap: 8
-  FlexActiveCap: 8
-  FlexPassiveCap: 8
+  FlexActiveCap: 12
+  FlexPassiveCap: 20
   AffixCap: 24
   SynergyFamilyCap: 7
-  TemporaryAugmentCap: 12
+  TemporaryAugmentCap: 24
   PermanentAugmentCap: 1
   PassiveBoardCap: 4
   RequireAllThreatPatternsCovered: 1
@@ -83,21 +83,37 @@ MonoBehaviour:
   FlexActiveIds:
   - skill_guardian_utility
   - skill_warden_utility
+  - skill_bulwark_utility
   - skill_slayer_utility
   - skill_raider_utility
   - skill_reaver_utility
   - skill_hunter_utility
   - skill_marksman_utility
   - skill_scout_utility
+  - skill_minor_heal
+  - skill_hexer_utility
+  - skill_shaman_utility
   FlexPassiveIds:
   - skill_vanguard_support_1
   - skill_vanguard_support_2
   - support_guarded
   - support_anchored
+  - support_purifying
   - skill_duelist_support_1
   - skill_duelist_support_2
   - support_executioner
   - support_brutal
+  - support_swift
+  - skill_ranger_support_1
+  - skill_ranger_support_2
+  - support_longshot
+  - support_hunter_mark
+  - support_piercing
+  - skill_mystic_support_1
+  - skill_mystic_support_2
+  - support_echo
+  - support_lingering
+  - support_siphon
   AffixIds:
   - affix_blessed
   - affix_bracing
@@ -135,15 +151,27 @@ MonoBehaviour:
   - augment_gold_barrage
   - augment_gold_bastion
   - augment_gold_fury
+  - augment_gold_haste
   - augment_gold_mending
   - augment_gold_pack
   - augment_gold_pact
+  - augment_gold_ward
   - augment_platinum_catacomb
+  - augment_platinum_clarity
   - augment_platinum_hinterland
   - augment_platinum_overrun
   - augment_platinum_reckoning
   - augment_platinum_surge
+  - augment_platinum_tenacity
   - augment_platinum_wall
+  - augment_silver_clarity
+  - augment_silver_focus
+  - augment_silver_guard
+  - augment_silver_hex
+  - augment_silver_hunt
+  - augment_silver_reach
+  - augment_silver_stride
+  - augment_silver_ward
   PermanentAugmentIds:
   - augment_perm_legacy_blade
   PassiveBoardIds:
@@ -160,28 +188,6 @@ MonoBehaviour:
   - augment_perm_legacy_oath
   - augment_perm_legacy_scope
   - augment_perm_legacy_signal
-  - augment_silver_focus
-  - augment_silver_guard
-  - augment_silver_hex
-  - augment_silver_hunt
-  - augment_silver_stride
-  - augment_silver_ward
-  - skill_bulwark_utility
-  - skill_hexer_utility
-  - skill_minor_heal
-  - skill_mystic_support_1
-  - skill_mystic_support_2
-  - skill_ranger_support_1
-  - skill_ranger_support_2
-  - skill_shaman_utility
-  - support_echo
-  - support_hunter_mark
-  - support_lingering
-  - support_longshot
-  - support_piercing
-  - support_purifying
-  - support_siphon
-  - support_swift
   SynergyGrammar:
   - FamilyId: synergy_beastkin
     FamilyType: 0

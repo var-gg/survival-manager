@@ -16,6 +16,8 @@ internal sealed record ArchetypeBuildLaneExpectation(
 internal static class FirstPlayableAuthoringContract
 {
     internal const int LiveSignaturePassiveCap = 8;
+    internal const int LiveFlexActiveCap = 12;
+    internal const int LiveFlexPassiveCap = 20;
 
     internal static readonly IReadOnlyList<string> RequiredPassiveBoardIds = new[]
     {

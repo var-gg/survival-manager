@@ -184,10 +184,26 @@ public static class FirstPlayableSliceGenerator
     private static void EnsureDefaultSliceContracts(FirstPlayableSliceDefinitionAsset asset)
     {
         asset.SignaturePassiveCap = FirstPlayableAuthoringContract.LiveSignaturePassiveCap;
+        asset.FlexActiveCap = FirstPlayableAuthoringContract.LiveFlexActiveCap;
+        asset.FlexPassiveCap = FirstPlayableAuthoringContract.LiveFlexPassiveCap;
         if (asset.SignaturePassiveIds.Count > FirstPlayableAuthoringContract.LiveSignaturePassiveCap)
         {
             asset.SignaturePassiveIds = asset.SignaturePassiveIds
                 .Take(FirstPlayableAuthoringContract.LiveSignaturePassiveCap)
+                .ToList();
+        }
+
+        if (asset.FlexActiveIds.Count > FirstPlayableAuthoringContract.LiveFlexActiveCap)
+        {
+            asset.FlexActiveIds = asset.FlexActiveIds
+                .Take(FirstPlayableAuthoringContract.LiveFlexActiveCap)
+                .ToList();
+        }
+
+        if (asset.FlexPassiveIds.Count > FirstPlayableAuthoringContract.LiveFlexPassiveCap)
+        {
+            asset.FlexPassiveIds = asset.FlexPassiveIds
+                .Take(FirstPlayableAuthoringContract.LiveFlexPassiveCap)
                 .ToList();
         }
 

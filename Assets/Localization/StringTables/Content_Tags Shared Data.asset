@@ -231,6 +231,46 @@ MonoBehaviour:
     m_Key: content.tag.magical.name
     m_Metadata:
       m_Items: []
+  - m_Id: 744315500000001
+    m_Key: content.tag.class_bound.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000002
+    m_Key: content.tag.combat_finisher.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000003
+    m_Key: content.tag.economy_loot.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000004
+    m_Key: content.tag.hero_bound.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000005
+    m_Key: content.tag.permanent_unlock.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000006
+    m_Key: content.tag.role_bound.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000007
+    m_Key: content.tag.stat_light.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000008
+    m_Key: content.tag.synergy_bound.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000009
+    m_Key: content.tag.volatile_run.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 744315500000010
+    m_Key: content.tag.wildcard_risk.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

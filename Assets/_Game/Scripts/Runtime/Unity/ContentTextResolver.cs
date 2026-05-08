@@ -82,6 +82,11 @@ public sealed class ContentTextResolver
             return Localize(ContentLocalizationTables.Characters, character.NameKey, fallback, characterId);
         }
 
+        if (BattleP09AppearanceRoster.TryGetDefinedDisplayName(characterId, out var p09DisplayName))
+        {
+            return p09DisplayName;
+        }
+
         return !string.IsNullOrWhiteSpace(fallbackArchetypeId)
             ? GetArchetypeName(fallbackArchetypeId)
             : characterId;

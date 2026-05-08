@@ -29,6 +29,27 @@ internal sealed class FirstPlayableSliceCatalogValidator : ICatalogValidationRul
             ContentValidationIssueFactory.AddError(issues, "first_playable.signature_passive_count", $"SignaturePassiveIds must stay at exact live count {FirstPlayableAuthoringContract.LiveSignaturePassiveCap}.", assetPath, nameof(FirstPlayableSliceDefinitionAsset.SignaturePassiveIds));
         }
 
+        ValidateExactLiveCount(
+            issues,
+            assetPath,
+            "flex_active",
+            "FlexActive",
+            nameof(FirstPlayableSliceDefinitionAsset.FlexActiveCap),
+            nameof(FirstPlayableSliceDefinitionAsset.FlexActiveIds),
+            slice.FlexActiveCap,
+            slice.FlexActiveIds.Count,
+            FirstPlayableAuthoringContract.LiveFlexActiveCap);
+        ValidateExactLiveCount(
+            issues,
+            assetPath,
+            "flex_passive",
+            "FlexPassive",
+            nameof(FirstPlayableSliceDefinitionAsset.FlexPassiveCap),
+            nameof(FirstPlayableSliceDefinitionAsset.FlexPassiveIds),
+            slice.FlexPassiveCap,
+            slice.FlexPassiveIds.Count,
+            FirstPlayableAuthoringContract.LiveFlexPassiveCap);
+
         var boardIds = slice.PassiveBoardIds
             .Where(id => !string.IsNullOrWhiteSpace(id))
             .Distinct(StringComparer.Ordinal)
@@ -93,6 +114,28 @@ internal sealed class FirstPlayableSliceCatalogValidator : ICatalogValidationRul
         foreach (var id in ids.Where(id => !string.IsNullOrWhiteSpace(id)))
         {
             target.Add(id);
+        }
+    }
+
+    private static void ValidateExactLiveCount(
+        ICollection<ContentValidationIssue> issues,
+        string assetPath,
+        string codePrefix,
+        string fieldLabel,
+        string capFieldName,
+        string idsFieldName,
+        int actualCap,
+        int actualCount,
+        int expectedCount)
+    {
+        if (actualCap != expectedCount)
+        {
+            ContentValidationIssueFactory.AddError(issues, $"first_playable.{codePrefix}_cap", $"{fieldLabel}Cap must stay at {expectedCount}.", assetPath, capFieldName);
+        }
+
+        if (actualCount != expectedCount)
+        {
+            ContentValidationIssueFactory.AddError(issues, $"first_playable.{codePrefix}_count", $"{fieldLabel}Ids must stay at exact live count {expectedCount}.", assetPath, idsFieldName);
         }
     }
 }

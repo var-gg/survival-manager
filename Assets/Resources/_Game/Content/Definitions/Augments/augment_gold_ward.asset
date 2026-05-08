@@ -43,11 +43,13 @@ MonoBehaviour:
   FamilyId: rare
   Tier: 1
   OfferWeight: 1
-  OfferBucket: 0
+  OfferBucket: 2
   RiskRewardClass: 0
   BudgetScore: 0
   SuppressIfPermanentEquipped: 0
-  Tags: []
+  Tags:
+  - {fileID: 11400000, guid: 5ad728f6634c49f387842ad547541788, type: 2}
+  - {fileID: 11400000, guid: 4ec14a30d2324d6a906286f1d4e8d230, type: 2}
   BuildBiasTags: []
   ProtectionTags: []
   MutualExclusionTags: []

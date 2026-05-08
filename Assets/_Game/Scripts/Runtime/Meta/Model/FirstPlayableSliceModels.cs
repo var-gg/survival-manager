@@ -11,11 +11,11 @@ public sealed class FirstPlayableSliceDefinition
     public int UnitBlueprintCap = 12;
     public int SignatureActiveCap = 12;
     public int SignaturePassiveCap = 12;
-    public int FlexActiveCap = 8;
-    public int FlexPassiveCap = 8;
+    public int FlexActiveCap = 12;
+    public int FlexPassiveCap = 20;
     public int AffixCap = 24;
     public int SynergyFamilyCap = 7;
-    public int TemporaryAugmentCap = 12;
+    public int TemporaryAugmentCap = 24;
     public int PermanentAugmentCap = 1;
     public int PassiveBoardCap = 4;
 

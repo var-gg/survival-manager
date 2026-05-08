@@ -39,17 +39,21 @@ MonoBehaviour:
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  Category: 0
+  Category: 1
   FamilyId: ward_line
   Tier: 2
   OfferWeight: 1
-  OfferBucket: 0
+  OfferBucket: 5
   RiskRewardClass: 0
   BudgetScore: 0
   SuppressIfPermanentEquipped: 0
   Tags:
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
-  BuildBiasTags: []
+  - {fileID: 11400000, guid: 1afe16444d244d6f860e8eac0af6f7d5, type: 2}
+  - {fileID: 11400000, guid: 4ec14a30d2324d6a906286f1d4e8d230, type: 2}
+  BuildBiasTags:
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
   ProtectionTags: []
   MutualExclusionTags: []
   RequiresTags: []

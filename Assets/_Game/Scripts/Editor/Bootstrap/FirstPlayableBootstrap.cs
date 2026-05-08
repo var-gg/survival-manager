@@ -22,12 +22,12 @@ public static class FirstPlayableBootstrap
     private const string LegacyQuickBattleInspectorRestoreKey = "SM.QuickBattleRestoreInspector";
     private const string CombatSandboxConfigFolder = "Assets/_Game/Authoring/CombatSandbox";
     internal const string CombatSandboxConfigAssetPath = "Assets/_Game/Authoring/CombatSandbox/combat_sandbox_active.asset";
-    private static readonly (string ParticipantId, string DisplayName, string CharacterId, string RoleInstructionId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxAllySlots =
+    private static readonly (string ParticipantId, string DisplayName, string ArchetypeId, string CharacterId, string RoleInstructionId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxAllySlots =
     {
-        ("ally_warden", "Warden", "warden", "anchor", SM.Combat.Model.DeploymentAnchorId.FrontCenter),
-        ("ally_slayer", "Slayer", "slayer", "bruiser", SM.Combat.Model.DeploymentAnchorId.FrontBottom),
-        ("ally_hunter", "Hunter", "hunter", "carry", SM.Combat.Model.DeploymentAnchorId.BackTop),
-        ("ally_priest", "Priest", "priest", "support", SM.Combat.Model.DeploymentAnchorId.BackBottom),
+        ("ally_dawn_priest", "단린 (丹麟) / Dawn Priest", "priest", "hero_dawn_priest", "support", SM.Combat.Model.DeploymentAnchorId.FrontCenter),
+        ("ally_pack_raider", "이빨바람 / Pack Raider", "raider", "hero_pack_raider", "bruiser", SM.Combat.Model.DeploymentAnchorId.FrontBottom),
+        ("ally_echo_savant", "공한 (空閑) / Echo Savant", "marksman", "hero_echo_savant", "carry", SM.Combat.Model.DeploymentAnchorId.BackTop),
+        ("ally_grave_hexer", "묵향 (墨香) / Grave Hexer", "hexer", "hero_grave_hexer", "support", SM.Combat.Model.DeploymentAnchorId.BackBottom),
     };
 
     private static readonly (string HeroId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxLegacyAllySlots =
@@ -38,12 +38,12 @@ public static class FirstPlayableBootstrap
         ("hero-7", SM.Combat.Model.DeploymentAnchorId.BackBottom),
     };
 
-    private static readonly (string ParticipantId, string DisplayName, string CharacterId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxEnemySlots =
+    private static readonly (string ParticipantId, string DisplayName, string ArchetypeId, string CharacterId, SM.Combat.Model.DeploymentAnchorId Anchor)[] DefaultCombatSandboxEnemySlots =
     {
-        ("enemy_guardian", "Enemy Guardian", "guardian", SM.Combat.Model.DeploymentAnchorId.FrontTop),
-        ("enemy_raider", "Enemy Raider", "raider", SM.Combat.Model.DeploymentAnchorId.FrontBottom),
-        ("enemy_hunter", "Enemy Hunter", "hunter", SM.Combat.Model.DeploymentAnchorId.BackTop),
-        ("enemy_hexer", "Enemy Hexer", "hexer", SM.Combat.Model.DeploymentAnchorId.BackBottom),
+        ("enemy_grey_fang", "회조 (灰爪) / Grey Fang", "reaver", "npc_grey_fang", SM.Combat.Model.DeploymentAnchorId.FrontTop),
+        ("enemy_silent_moon", "침월 (沉月) / Silent Moon", "hexer", "npc_silent_moon", SM.Combat.Model.DeploymentAnchorId.FrontBottom),
+        ("enemy_lyra_sternfeld", "선영 (宣英) / Lyra Sternfeld", "priest", "npc_lyra_sternfeld", SM.Combat.Model.DeploymentAnchorId.BackTop),
+        ("enemy_black_vellum", "흑지 (黑紙) / Black Vellum", "shaman", "npc_black_vellum", SM.Combat.Model.DeploymentAnchorId.BackBottom),
     };
 
     static FirstPlayableBootstrap()
@@ -434,7 +434,8 @@ public static class FirstPlayableBootstrap
                 {
                     MemberId = slot.ParticipantId,
                     DisplayName = slot.DisplayName,
-                    SourceKind = SM.Unity.Sandbox.SandboxUnitSourceKind.Character,
+                    SourceKind = SM.Unity.Sandbox.SandboxUnitSourceKind.Archetype,
+                    ArchetypeId = slot.ArchetypeId,
                     CharacterId = slot.CharacterId,
                     Anchor = slot.Anchor,
                     RoleInstructionId = slot.RoleInstructionId,
@@ -458,7 +459,8 @@ public static class FirstPlayableBootstrap
                 {
                     MemberId = slot.ParticipantId,
                     DisplayName = slot.DisplayName,
-                    SourceKind = SM.Unity.Sandbox.SandboxUnitSourceKind.Character,
+                    SourceKind = SM.Unity.Sandbox.SandboxUnitSourceKind.Archetype,
+                    ArchetypeId = slot.ArchetypeId,
                     CharacterId = slot.CharacterId,
                     Anchor = slot.Anchor,
                 })
@@ -530,7 +532,7 @@ public static class FirstPlayableBootstrap
                 ParticipantId = slot.ParticipantId,
                 DisplayName = slot.DisplayName,
                 CharacterId = slot.CharacterId,
-                ArchetypeIdOverride = string.Empty,
+                ArchetypeIdOverride = slot.ArchetypeId,
                 Anchor = slot.Anchor,
                 RoleInstructionId = string.Empty,
             })
