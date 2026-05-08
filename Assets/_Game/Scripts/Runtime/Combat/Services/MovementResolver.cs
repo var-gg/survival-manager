@@ -10,8 +10,6 @@ public static class MovementResolver
     private const float ArenaHalfWidth = 8f;
     private const float ArenaHalfHeight = 3.2f;
     private const float ObstacleClearancePadding = 0.06f;
-    private const float DeadObstacleRadiusScale = 0.62f;
-    private const float DeadObstacleMinimumRadius = 0.22f;
     private const float ObstacleCorridorPadding = 0.18f;
     private const float ObstacleDetourPadding = 0.28f;
 
@@ -186,7 +184,6 @@ public static class MovementResolver
     {
         ResolveTeamSpacing(state.Allies);
         ResolveTeamSpacing(state.Enemies);
-        ResolveDeadObstacleSpacing(state);
     }
 
     private static CombatVector2 ResolveDesiredPosition(UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
@@ -344,12 +341,12 @@ public static class MovementResolver
         var closestClearance = float.MaxValue;
         foreach (var obstacle in state.AllUnits)
         {
-            if (obstacle.Id == actor.Id)
+            if (obstacle.Id == actor.Id || !obstacle.IsAlive)
             {
                 continue;
             }
 
-            var requiredClearance = actor.NavigationRadius + ResolveNavigationObstacleRadius(obstacle) + ObstacleClearancePadding;
+            var requiredClearance = actor.NavigationRadius + obstacle.NavigationRadius + ObstacleClearancePadding;
             var distance = candidate.DistanceTo(obstacle.Position);
             var overlap = Math.Max(0f, requiredClearance - distance);
             overlapPenalty += overlap * overlap;
@@ -371,12 +368,12 @@ public static class MovementResolver
     {
         foreach (var obstacle in state.AllUnits)
         {
-            if (obstacle.Id == actor.Id)
+            if (obstacle.Id == actor.Id || !obstacle.IsAlive)
             {
                 continue;
             }
 
-            var requiredClearance = actor.NavigationRadius + ResolveNavigationObstacleRadius(obstacle) + ObstacleClearancePadding;
+            var requiredClearance = actor.NavigationRadius + obstacle.NavigationRadius + ObstacleClearancePadding;
             if (candidate.DistanceTo(obstacle.Position) < requiredClearance)
             {
                 return false;
@@ -417,7 +414,7 @@ public static class MovementResolver
         float side,
         float stepDistance)
     {
-        var requiredClearance = actor.NavigationRadius + ResolveNavigationObstacleRadius(blocker) + ObstacleDetourPadding;
+        var requiredClearance = actor.NavigationRadius + blocker.NavigationRadius + ObstacleDetourPadding;
         var sideVector = lateral * side;
         var anchors = new[]
         {
@@ -458,20 +455,20 @@ public static class MovementResolver
         var bestProjection = float.MaxValue;
         foreach (var obstacle in state.AllUnits)
         {
-            if (obstacle.Id == actor.Id)
+            if (obstacle.Id == actor.Id || !obstacle.IsAlive)
             {
                 continue;
             }
 
             var toObstacle = obstacle.Position - actor.Position;
             var projection = CombatVector2.Dot(toObstacle, forward);
-            if (projection <= 0.01f || projection >= pathLength + ResolveNavigationObstacleRadius(obstacle))
+            if (projection <= 0.01f || projection >= pathLength + obstacle.NavigationRadius)
             {
                 continue;
             }
 
             var closest = actor.Position + (forward * projection);
-            var corridorClearance = actor.NavigationRadius + ResolveNavigationObstacleRadius(obstacle) + ObstacleCorridorPadding;
+            var corridorClearance = actor.NavigationRadius + obstacle.NavigationRadius + ObstacleCorridorPadding;
             if (closest.DistanceTo(obstacle.Position) >= corridorClearance)
             {
                 continue;
@@ -486,56 +483,6 @@ public static class MovementResolver
         }
 
         return best;
-    }
-
-    private static void ResolveDeadObstacleSpacing(BattleState state)
-    {
-        var aliveUnits = state.AllUnits
-            .Where(unit => unit.IsAlive)
-            .OrderBy(unit => unit.Id.Value, StringComparer.Ordinal)
-            .ToList();
-        var deadUnits = state.AllUnits
-            .Where(unit => !unit.IsAlive)
-            .OrderBy(unit => unit.Id.Value, StringComparer.Ordinal)
-            .ToList();
-
-        foreach (var alive in aliveUnits)
-        {
-            foreach (var dead in deadUnits)
-            {
-                var minDistance = alive.NavigationRadius + ResolveNavigationObstacleRadius(dead) + ObstacleClearancePadding;
-                var delta = alive.Position - dead.Position;
-                var distance = delta.Length;
-                if (distance >= minDistance)
-                {
-                    continue;
-                }
-
-                var direction = distance <= 0.0001f
-                    ? ResolveStableAvoidanceDirection(alive, dead)
-                    : delta.Normalized;
-                alive.SetPosition(ClampToArena(alive.Position + (direction * (minDistance - distance))));
-            }
-        }
-    }
-
-    private static CombatVector2 ResolveStableAvoidanceDirection(UnitSnapshot actor, UnitSnapshot obstacle)
-    {
-        var forward = actor.Side == TeamSide.Ally
-            ? new CombatVector2(-0.35f, 0f)
-            : new CombatVector2(0.35f, 0f);
-        var lateral = ResolveSidePreference(actor) > 0f
-            ? new CombatVector2(0f, 1f)
-            : new CombatVector2(0f, -1f);
-        var obstacleBias = ResolveSidePreference(obstacle) > 0f ? 0.35f : -0.35f;
-        return (forward + (lateral * (1f + obstacleBias))).Normalized;
-    }
-
-    private static float ResolveNavigationObstacleRadius(UnitSnapshot obstacle)
-    {
-        return obstacle.IsAlive
-            ? obstacle.NavigationRadius
-            : Math.Max(DeadObstacleMinimumRadius, obstacle.NavigationRadius * DeadObstacleRadiusScale);
     }
 
     private static float ResolveSidePreference(UnitSnapshot actor)

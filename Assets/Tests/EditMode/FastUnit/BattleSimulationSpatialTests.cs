@@ -492,7 +492,7 @@ public sealed class BattleSimulationSpatialTests
     }
 
     [Test]
-    public void MoveForIntent_Sidesteps_Corpse_Blocking_Direct_Approach()
+    public void MoveForIntent_PassesThroughCorpse_OnDirectApproach()
     {
         var mover = CombatTestFactory.CreateUnit("ally_pathing", anchor: DeploymentAnchorId.FrontCenter, moveSpeed: 1.9f, attackRange: 1.1f);
         var fallen = CombatTestFactory.CreateUnit("ally_fallen", anchor: DeploymentAnchorId.FrontCenter, hp: 4f);
@@ -521,12 +521,12 @@ public sealed class BattleSimulationSpatialTests
             null));
 
         Assert.That(actor.Position.DistanceTo(before), Is.GreaterThan(0.05f));
-        Assert.That(System.Math.Abs(actor.Position.Y), Is.GreaterThan(0.01f));
-        Assert.That(actor.Position.DistanceTo(corpse.Position), Is.GreaterThan(before.DistanceTo(corpse.Position)));
+        Assert.That(System.Math.Abs(actor.Position.Y), Is.LessThan(0.01f));
+        Assert.That(actor.Position.X, Is.GreaterThan(before.X));
     }
 
     [Test]
-    public void LoopA_Melee_DetoursAroundCorpse_AndStillAttacks()
+    public void LoopA_Melee_AdvancesPastCorpse_AndStillAttacks()
     {
         var mover = CombatTestFactory.CreateUnit("ally_detour", anchor: DeploymentAnchorId.FrontCenter, moveSpeed: 1.9f, attackRange: 1.1f, attackCooldown: 0.6f);
         var fallen = CombatTestFactory.CreateUnit("ally_detour_fallen", anchor: DeploymentAnchorId.FrontCenter, hp: 4f);
@@ -543,6 +543,7 @@ public sealed class BattleSimulationSpatialTests
         target.SetPosition(new CombatVector2(3.0f, 0f));
         target.SetActionState(CombatActionState.AcquireTarget);
 
+        var startX = actor.Position.X;
         var simulator = new BattleSimulator(state, 100);
         var attackEvents = 0;
         BattleSimulationStep latest = simulator.CurrentStep;
@@ -557,8 +558,8 @@ public sealed class BattleSimulationSpatialTests
         }
 
         var actorView = latest.Units.First(unit => unit.Id.Contains("ally_detour"));
-        Assert.That(attackEvents, Is.GreaterThan(0), $"Corpse detour failed; actor=({actorView.Position.X:F2},{actorView.Position.Y:F2}) target=({target.Position.X:F2},{target.Position.Y:F2})");
-        Assert.That(System.Math.Abs(actorView.Position.Y), Is.GreaterThan(0.05f), "Actor should visibly route around the corpse instead of treadmilling on the center line.");
+        Assert.That(attackEvents, Is.GreaterThan(0), $"Attack failed; actor=({actorView.Position.X:F2},{actorView.Position.Y:F2}) target=({target.Position.X:F2},{target.Position.Y:F2})");
+        Assert.That(actorView.Position.X, Is.GreaterThan(startX + 0.4f), "Actor should advance toward target rather than treadmilling at the corpse.");
     }
 
     private static float FindMinDistance(System.Collections.Generic.IReadOnlyList<BattleUnitReadModel> units)
