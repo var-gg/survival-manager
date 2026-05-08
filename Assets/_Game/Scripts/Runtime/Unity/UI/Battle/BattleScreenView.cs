@@ -28,6 +28,11 @@ public readonly record struct BattleScreenActions(
 
 public sealed class BattleScreenView
 {
+    private const float AllyRosterPortraitWidth = 128f;
+    private const float AllyRosterPortraitHeight = 152f;
+    private const float EnemyRosterPortraitWidth = 64f;
+    private const float EnemyRosterPortraitHeight = 76f;
+
     private readonly Label _titleLabel;
     private readonly Label _localeStatusLabel;
     private readonly Button _localeKoButton;
@@ -392,16 +397,16 @@ public sealed class BattleScreenView
 
             if (unit.Portrait != null)
             {
-                var portrait = new VisualElement();
-                portrait.AddToClassList("sm-bs-roster-portrait");
-                portrait.style.backgroundImage = new StyleBackground(unit.Portrait);
-                row.Add(portrait);
+                row.Add(BuildRosterPortrait(unit.Portrait, isEnemy));
             }
             else
             {
-                var fallback = new Label(BuildInitial(unit.DisplayName));
+                var fallback = new VisualElement();
                 fallback.AddToClassList("sm-bs-roster-portrait");
                 fallback.AddToClassList("sm-bs-roster-portrait--missing");
+                var initial = new Label(BuildInitial(unit.DisplayName));
+                initial.AddToClassList("sm-bs-roster-portrait-initial");
+                fallback.Add(initial);
                 row.Add(fallback);
             }
 
@@ -427,6 +432,48 @@ public sealed class BattleScreenView
             row.Add(meta);
             container.Add(row);
         }
+    }
+
+    private static VisualElement BuildRosterPortrait(Texture2D texture, bool isEnemy)
+    {
+        var frameWidth = isEnemy ? EnemyRosterPortraitWidth : AllyRosterPortraitWidth;
+        var frameHeight = isEnemy ? EnemyRosterPortraitHeight : AllyRosterPortraitHeight;
+        var frame = new VisualElement();
+        frame.AddToClassList("sm-bs-roster-portrait");
+
+        var image = new Image
+        {
+            image = texture,
+            scaleMode = ScaleMode.StretchToFill,
+            pickingMode = PickingMode.Ignore
+        };
+        image.AddToClassList("sm-bs-roster-portrait-image");
+        ApplyCoverFit(image, texture, frameWidth, frameHeight);
+        frame.Add(image);
+        return frame;
+    }
+
+    private static void ApplyCoverFit(Image image, Texture texture, float frameWidth, float frameHeight)
+    {
+        var sourceAspect = texture.width > 0 && texture.height > 0
+            ? texture.width / (float)texture.height
+            : 1f;
+        var frameAspect = frameWidth / frameHeight;
+        var renderWidth = frameWidth;
+        var renderHeight = frameHeight;
+        if (sourceAspect > frameAspect)
+        {
+            renderWidth = frameHeight * sourceAspect;
+        }
+        else
+        {
+            renderHeight = frameWidth / sourceAspect;
+        }
+
+        image.style.width = renderWidth;
+        image.style.height = renderHeight;
+        image.style.left = (frameWidth - renderWidth) * 0.5f;
+        image.style.top = (frameHeight - renderHeight) * 0.5f;
     }
 
     private static void RenderSkillSlot(

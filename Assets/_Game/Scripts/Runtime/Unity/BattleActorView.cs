@@ -12,6 +12,10 @@ public sealed class BattleActorView : MonoBehaviour
 {
     private const float OverlayHeight = 2.3f;
     private const float WorldHpWidth = 1.3f;
+    private const float OverlayScreenWidth = 148f;
+    private const float OverlayScreenHeight = 44f;
+    private const float OverlayHpWidth = 118f;
+    private const float OverlayHpHeight = 8f;
     private const float GroundPlaneY = -0.98f;
     private const float TelegraphDiscThickness = 0.008f;
 
@@ -325,9 +329,7 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_overlayRoot != null && _overlayParent != null)
         {
-            var anchorWorldPosition = _wrapper != null
-                ? _wrapper.GetSocketWorld(BattleActorSocketId.Hud)
-                : transform.position + Vector3.up * OverlayHeight;
+            var anchorWorldPosition = ResolveOverlayAnchorWorld();
             var viewport = _camera.WorldToViewportPoint(anchorWorldPosition);
             var isVisible = viewport.z > 0f
                             && viewport.x >= 0f && viewport.x <= 1f
@@ -412,8 +414,8 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_stateText != null)
         {
-            _stateText.text = metadata.Subtitle;
-            _stateText.color = actor.IsAlive ? new Color(0.88f, 0.92f, 1f, 1f) : new Color(0.68f, 0.68f, 0.68f, 1f);
+            _stateText.text = BuildOverlayStatusLine(actor);
+            _stateText.color = actor.IsAlive ? new Color(0.92f, 0.94f, 0.86f, 1f) : new Color(0.68f, 0.68f, 0.68f, 1f);
         }
 
         if (_worldNameText != null && _worldNameShadowText != null)
@@ -691,6 +693,35 @@ public sealed class BattleActorView : MonoBehaviour
         return BattleReadabilityFormatter.BuildPlayerFacingState(actor);
     }
 
+    private string BuildOverlayStatusLine(BattleUnitReadModel actor)
+    {
+        var status = BuildStatusLine(actor);
+        var targetSeparator = status.IndexOf(" -> ");
+        if (targetSeparator >= 0)
+        {
+            status = status[..targetSeparator];
+        }
+
+        const int maxLength = 18;
+        return status.Length <= maxLength
+            ? status
+            : status[..(maxLength - 3)] + "...";
+    }
+
+    private Vector3 ResolveOverlayAnchorWorld()
+    {
+        if (_wrapper == null)
+        {
+            return transform.position + Vector3.up * OverlayHeight;
+        }
+
+        var hud = _wrapper.GetSocketWorld(BattleActorSocketId.Hud);
+        var head = _wrapper.GetSocketWorld(BattleActorSocketId.Head);
+        var center = _wrapper.GetSocketWorld(BattleActorSocketId.Center);
+        var clampedY = Mathf.Min(hud.y, Mathf.Lerp(center.y, head.y, 0.96f) + 0.08f);
+        return new Vector3(hud.x, clampedY, hud.z);
+    }
+
     private void ConfigurePresentationWrapper(BattleUnitReadModel actor)
     {
         _wrapper = GetComponent<BattleActorWrapper>();
@@ -790,12 +821,14 @@ public sealed class BattleActorView : MonoBehaviour
         overlayGo.transform.SetParent(_overlayParent, false);
 
         _overlayRoot = overlayGo.GetComponent<RectTransform>();
-        _overlayRoot.sizeDelta = new Vector2(231f, 117f);
+        _overlayRoot.sizeDelta = new Vector2(OverlayScreenWidth, OverlayScreenHeight);
         _overlayBackground = overlayGo.GetComponent<Image>();
+        _overlayBackground.color = Color.clear;
+        _overlayBackground.enabled = false;
         _overlayBackground.raycastTarget = false;
 
-        _nameText = CreateOverlayText(_overlayRoot, "NameText", font, new Vector2(0f, -6f), new Vector2(219f, 51f), 21, TextAnchor.MiddleCenter);
-        _stateText = CreateOverlayText(_overlayRoot, "StateText", font, new Vector2(0f, -51f), new Vector2(219f, 33f), 18, TextAnchor.MiddleCenter);
+        _nameText = CreateOverlayText(_overlayRoot, "NameText", font, new Vector2(0f, -3f), new Vector2(OverlayScreenWidth, 16f), 12, TextAnchor.MiddleCenter);
+        _stateText = CreateOverlayText(_overlayRoot, "StateText", font, new Vector2(0f, -3f), new Vector2(OverlayScreenWidth, 16f), 12, TextAnchor.MiddleCenter);
 
         var barBackGo = new GameObject("HpBarBack", typeof(RectTransform));
         barBackGo.transform.SetParent(_overlayRoot, false);
@@ -804,11 +837,11 @@ public sealed class BattleActorView : MonoBehaviour
         barBackRect.anchorMin = new Vector2(0.5f, 0f);
         barBackRect.anchorMax = new Vector2(0.5f, 0f);
         barBackRect.pivot = new Vector2(0.5f, 0f);
-        barBackRect.anchoredPosition = new Vector2(0f, 6f);
-        barBackRect.sizeDelta = new Vector2(177f, 18f);
+        barBackRect.anchoredPosition = new Vector2(0f, 7f);
+        barBackRect.sizeDelta = new Vector2(OverlayHpWidth, OverlayHpHeight);
 
         var barBackImage = barBackGo.AddComponent<Image>();
-        barBackImage.color = new Color(0.04f, 0.04f, 0.04f, 0.92f);
+        barBackImage.color = new Color(0.04f, 0.04f, 0.04f, 0.86f);
         barBackImage.raycastTarget = false;
 
         var fillGo = new GameObject("HpBarFill", typeof(RectTransform));
@@ -828,12 +861,12 @@ public sealed class BattleActorView : MonoBehaviour
         floatingRect.anchorMin = new Vector2(0.5f, 0.5f);
         floatingRect.anchorMax = new Vector2(0.5f, 0.5f);
         floatingRect.pivot = new Vector2(0.5f, 0.5f);
-        floatingRect.anchoredPosition = new Vector2(0f, 12f);
-        floatingRect.sizeDelta = new Vector2(234f, 51f);
+        floatingRect.anchoredPosition = new Vector2(0f, 20f);
+        floatingRect.sizeDelta = new Vector2(OverlayScreenWidth, 42f);
 
         _floatingText = floatingGo.AddComponent<Text>();
         _floatingText.font = font;
-        _floatingText.fontSize = 36;
+        _floatingText.fontSize = 25;
         _floatingText.alignment = TextAnchor.MiddleCenter;
         _floatingText.color = Color.clear;
         AddOutline(_floatingText, new Color(0f, 0f, 0f, 0.92f));
@@ -992,12 +1025,12 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_overlayBackground != null)
         {
-            _overlayBackground.enabled = _options.ShowOverheadUi;
+            _overlayBackground.enabled = false;
         }
 
         if (_nameText != null)
         {
-            _nameText.enabled = _options.ShowOverheadUi;
+            _nameText.enabled = false;
         }
 
         if (_stateText != null)
