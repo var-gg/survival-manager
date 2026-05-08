@@ -42,7 +42,11 @@ public sealed record BattleUnitReadModel(
     string ArchetypeId = "",
     string CharacterId = "",
     string RoleInstructionId = "",
-    string RoleTag = "");
+    string RoleTag = "",
+    string SignatureActiveId = "",
+    string SignatureActiveName = "",
+    string FlexActiveId = "",
+    string FlexActiveName = "");
 
 public sealed record BattleSimulationStep(
     int StepIndex,

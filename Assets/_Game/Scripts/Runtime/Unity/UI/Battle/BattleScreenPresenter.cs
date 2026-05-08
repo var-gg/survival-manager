@@ -7,12 +7,13 @@ namespace SM.Unity.UI.Battle;
 
 public sealed class BattleScreenPresenter
 {
-    private const int MaxVisibleLogs = 5;
+    private const int MaxVisibleLogs = 3;
     private const int MaxVisibleDecisive = 3;
 
     private readonly GameLocalizationController _localization;
     private readonly GameSessionState _sessionState;
     private readonly BattlePresentationOptions _options;
+    private readonly BattleUnitPortraitResolver _portraitResolver = new();
 
     public BattleScreenPresenter(
         GameLocalizationController localization,
@@ -43,6 +44,8 @@ public sealed class BattleScreenPresenter
             canChangeSpeed: false,
             showHelp: showHelp,
             isSummaryExpanded: isSummaryExpanded,
+            allyRoster: null,
+            enemyRoster: null,
             selectedUnit: BattleSelectedUnitViewState.Hidden);
     }
 
@@ -66,6 +69,8 @@ public sealed class BattleScreenPresenter
             settingsStatusText: message,
             showHelp: showHelp,
             isSummaryExpanded: isSummaryExpanded,
+            allyRoster: null,
+            enemyRoster: null,
             selectedUnit: BattleSelectedUnitViewState.Hidden);
     }
 
@@ -88,6 +93,7 @@ public sealed class BattleScreenPresenter
         bool isSummaryExpanded = true,
         BattleSelectedUnitViewState? selectedUnit = null)
     {
+        var selectedState = selectedUnit ?? BattleSelectedUnitViewState.Hidden;
         return CreateState(
             BuildTeamSummary(
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.hp.allies", "Allies"),
@@ -110,7 +116,9 @@ public sealed class BattleScreenPresenter
             settingsStatusText,
             showHelp,
             isSummaryExpanded,
-            selectedUnit ?? BattleSelectedUnitViewState.Hidden);
+            BuildRoster(step, TeamSide.Ally, selectedState.UnitId),
+            BuildRoster(step, TeamSide.Enemy, selectedState.UnitId),
+            selectedState);
     }
 
     private BattleShellViewState CreateState(
@@ -131,6 +139,8 @@ public sealed class BattleScreenPresenter
         string? settingsStatusText = null,
         bool showHelp = false,
         bool isSummaryExpanded = true,
+        IReadOnlyList<BattleRosterUnitViewState>? allyRoster = null,
+        IReadOnlyList<BattleRosterUnitViewState>? enemyRoster = null,
         BattleSelectedUnitViewState? selectedUnit = null)
     {
         var isSmoke = _sessionState.IsQuickBattleSmokeActive;
@@ -154,7 +164,7 @@ public sealed class BattleScreenPresenter
             allyHpText,
             Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.enemies", "Enemies"),
             enemyHpText,
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.log", "Log"),
+            Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.feed", "Battle Feed"),
             logText,
             resultText,
             playbackText,
@@ -216,14 +226,33 @@ public sealed class BattleScreenPresenter
                 string.IsNullOrWhiteSpace(settingsStatusText)
                     ? Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.title", "Battle View Settings")
                     : settingsStatusText),
+            allyRoster,
+            enemyRoster,
             selectedUnit ?? BattleSelectedUnitViewState.Hidden);
+    }
+
+    private IReadOnlyList<BattleRosterUnitViewState> BuildRoster(BattleSimulationStep step, TeamSide side, string selectedUnitId)
+    {
+        return step.Units
+            .Where(unit => unit.Side == side)
+            .OrderBy(unit => unit.Anchor)
+            .ThenBy(unit => unit.Name)
+            .Select(unit => new BattleRosterUnitViewState(
+                unit.Id,
+                unit.Name,
+                BattleReadabilityFormatter.BuildPlayerFacingState(unit),
+                unit.MaxHealth > 0f ? UnityEngine.Mathf.Clamp01(unit.CurrentHealth / unit.MaxHealth) : 0f,
+                unit.IsAlive,
+                string.Equals(unit.Id, selectedUnitId, System.StringComparison.Ordinal),
+                _portraitResolver.Resolve(unit)))
+            .ToList();
     }
 
     private HelpStripViewState CreateHelpState(bool showHelp)
     {
         var helpBody = _sessionState.IsDirectCombatSandboxLane
-            ? "Read the battle through the summary, recent log, and selected unit panel. Combat Sandbox stays inside battle: replay the same seed, roll a new seed, or exit the sandbox."
-            : "Read the battle through the summary, recent log, and selected unit panel. Continue unlocks after the battle resolves.";
+            ? "Watch the battlefield, portrait strip, and short battle feed. Use pause, replay, speed, and settings to inspect the run."
+            : "Watch the battlefield, portrait strip, and short battle feed. Continue unlocks after the battle resolves.";
         return new HelpStripViewState(
             showHelp,
             Localize(
@@ -371,26 +400,28 @@ public sealed class BattleScreenPresenter
     {
         if (step.IsFinished && decisiveTimeline.Count > 0)
         {
-            var decisive = decisiveTimeline.TakeLast(MaxVisibleDecisive);
-            var recent = recentLogs.TakeLast(2).Select(BuildLogLine);
-            return string.Join("\n", decisive.Concat(recent));
+            return string.Join("\n", decisiveTimeline.TakeLast(MaxVisibleDecisive).Select(line => $"* {line}"));
         }
 
-        return string.Join("\n", recentLogs.TakeLast(MaxVisibleLogs).Select(BuildLogLine));
+        var feed = recentLogs.TakeLast(MaxVisibleLogs).Select(BuildLogLine).ToList();
+        return feed.Count == 0
+            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.empty", "Watching for key moments...")
+            : string.Join("\n", feed);
     }
 
     private string BuildLogLine(BattleEvent eventData)
     {
         var source = string.IsNullOrWhiteSpace(eventData.ActorName) ? "?" : eventData.ActorName;
         var target = string.IsNullOrWhiteSpace(eventData.TargetName) ? "?" : eventData.TargetName;
+        var time = eventData.TimeSeconds;
         return eventData.LogCode switch
         {
-            BattleLogCode.BasicAttackDamage => Localize(GameLocalizationTables.UIBattle, "ui.battle.log.basic_attack", "[{0}] {1} hit {2} -{3:0}", eventData.StepIndex, source, target, eventData.Value),
-            BattleLogCode.ActiveSkillHeal => Localize(GameLocalizationTables.UIBattle, "ui.battle.log.heal", "[{0}] {1} heal {2} +{3:0}", eventData.StepIndex, source, target, eventData.Value),
-            BattleLogCode.ActiveSkillDamage => Localize(GameLocalizationTables.UIBattle, "ui.battle.log.skill", "[{0}] {1} skill {2} -{3:0}", eventData.StepIndex, source, target, eventData.Value),
-            BattleLogCode.WaitDefend => Localize(GameLocalizationTables.UIBattle, "ui.battle.log.guard", "[{0}] {1} guard", eventData.StepIndex, source),
-            BattleLogCode.Generic when eventData.EventKind == BattleEventKind.Kill => Localize(GameLocalizationTables.UIBattle, "ui.battle.log.down", "[{0}] {1} down", eventData.StepIndex, target),
-            _ => Localize(GameLocalizationTables.UIBattle, "ui.battle.log.generic", "[{0}] {1} {2}", eventData.StepIndex, source, BattleReadabilityFormatter.BuildShortEventVerb(eventData))
+            BattleLogCode.BasicAttackDamage => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.basic_attack", "{0:0.0}s | {1} hit {2} for {3:0}", time, source, target, eventData.Value),
+            BattleLogCode.ActiveSkillHeal => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.heal", "{0:0.0}s | {1} restored {2} for {3:0}", time, source, target, eventData.Value),
+            BattleLogCode.ActiveSkillDamage => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.skill", "{0:0.0}s | {1} used a skill on {2} for {3:0}", time, source, target, eventData.Value),
+            BattleLogCode.WaitDefend => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.guard", "{0:0.0}s | {1} held guard", time, source),
+            BattleLogCode.Generic when eventData.EventKind == BattleEventKind.Kill => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.down", "{0:0.0}s | {1} went down", time, target),
+            _ => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.generic", "{0:0.0}s | {1} {2}", time, source, BattleReadabilityFormatter.BuildShortEventVerb(eventData))
         };
     }
 

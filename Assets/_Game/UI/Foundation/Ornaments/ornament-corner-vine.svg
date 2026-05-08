@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Survival Manager : HeroPortraitCard corner ornament
+  source: docs/02_design/ui/handoff/foundation-pack-v0.2/atoms-button-herocard.html (.hco class)
+  default orientation: top-left (tl). other corners use USS scale to mirror.
+  fill / stroke = white (FFFFFF). USS tints via -unity-background-image-tint-color (gold token).
+  Unity VectorGraphics does not support SVG currentColor keyword.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34" fill="none"
+     stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round">
+  <path d="M0 14 L0 0 L14 0"/>
+  <path d="M3 18 L3 3 L18 3" opacity="0.5"/>
+  <path d="M3 9 Q 9 9 9 3"/>
+  <path d="M7 14 L9 12 L11 14 L9 16 Z" fill="#FFFFFF" stroke="none"/>
+  <circle cx="9" cy="14" r="0.7" fill="#fff8e0"/>
+</svg>

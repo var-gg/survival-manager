@@ -1,0 +1,61 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
+    <!--
+      Survival Manager : HeroPortraitCard small variant template
+      source: docs/02_design/ui/handoff/foundation-pack-v0.2/atoms-button-herocard.html
+      footprint: 230 x 280 px (portrait window 160 px tall for P09 silhouette)
+      modifier class wiring (root element):
+        state:  sm-hpc..default, sm-hpc..selected, sm-hpc..ko, sm-hpc..injured
+        family: sm-hpc..fam-{beastkin, vanguard, striker, ranger, mystic}
+        rare:   sm-hpc..rare-common, sm-hpc..rare-rare, sm-hpc..rare-epic
+      runtime override (C# side):
+        silhouette : RenderTexture (P09 plus lilToon) wired as backgroundImage
+        name-ko / name-en / archetype-text : hero data binding
+      NOTE: BEM modifier in actual class uses double-dash. comment uses double-dot to avoid XML invalid sequence.
+    -->
+    <Style src="HeroPortraitCard.uss" />
+    <ui:VisualElement name="HeroPortraitCard" class="sm-hpc sm-hpc--default sm-hpc--fam-mystic sm-hpc--rare-epic">
+        <ui:VisualElement name="outline" class="sm-hpc__outline" picking-mode="Ignore" />
+        <ui:VisualElement name="inset" class="sm-hpc__inset" picking-mode="Ignore" />
+
+        <ui:VisualElement name="rib" class="sm-hpc__rib" picking-mode="Ignore" />
+        <ui:VisualElement name="gem" class="sm-hpc__gem" picking-mode="Ignore" />
+
+        <ui:VisualElement name="cornament-tl" class="sm-hpc__cornament sm-hpc__cornament--tl" picking-mode="Ignore" />
+        <ui:VisualElement name="cornament-tr" class="sm-hpc__cornament sm-hpc__cornament--tr" picking-mode="Ignore" />
+        <ui:VisualElement name="cornament-bl" class="sm-hpc__cornament sm-hpc__cornament--bl" picking-mode="Ignore" />
+        <ui:VisualElement name="cornament-br" class="sm-hpc__cornament sm-hpc__cornament--br" picking-mode="Ignore" />
+
+        <ui:VisualElement name="portrait" class="sm-hpc__portrait">
+            <ui:VisualElement name="portrait-inset" class="sm-hpc__portrait-inset" picking-mode="Ignore" />
+            <ui:VisualElement name="silhouette" class="sm-hpc__silhouette" picking-mode="Ignore" />
+            <ui:VisualElement name="portrait-glow" class="sm-hpc__portrait-glow" picking-mode="Ignore" />
+            <ui:Label name="tag" class="sm-hpc__tag" text="P09" picking-mode="Ignore" />
+
+            <ui:VisualElement name="tier" class="sm-hpc__tier" picking-mode="Ignore">
+                <ui:VisualElement class="sm-hpc__tier-jewel sm-hpc__tier-jewel--1" />
+                <ui:VisualElement class="sm-hpc__tier-jewel sm-hpc__tier-jewel--2" />
+                <ui:VisualElement class="sm-hpc__tier-jewel sm-hpc__tier-jewel--3" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="ko-banner" class="sm-hpc__ko-banner" picking-mode="Ignore">
+                <ui:Label class="sm-hpc__ko-banner-en" text="K.O." />
+                <ui:Label class="sm-hpc__ko-banner-ko" text="전투 불능" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="injury-pill" class="sm-hpc__injury-pill" picking-mode="Ignore">
+                <ui:Label class="sm-hpc__injury-pill-ko" text="부상" />
+                <ui:Label class="sm-hpc__injury-pill-en" text="INJURED" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:Label name="name-ko" class="sm-hpc__name-ko" text="단린" />
+        <ui:Label name="name-en" class="sm-hpc__name-en" text="DAWN PRIEST" />
+
+        <ui:VisualElement name="archetype-chip" class="sm-hpc__archetype-chip">
+            <ui:VisualElement class="sm-hpc__archetype-chip-cap sm-hpc__archetype-chip-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-hpc__archetype-chip-cap sm-hpc__archetype-chip-cap--br" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-hpc__archetype-jewel" picking-mode="Ignore" />
+            <ui:Label name="archetype-text" class="sm-hpc__archetype-text" text="MYSTIC" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

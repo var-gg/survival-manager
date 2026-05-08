@@ -1,13 +1,24 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using SM.Combat.Model;
+using UnityEngine;
 
 namespace SM.Unity.UI.Battle;
+
+public sealed record BattleSkillSlotViewState(
+    string SlotLabel,
+    string SkillName,
+    string SkillId,
+    Texture2D? Icon);
 
 public sealed record BattleSelectedUnitViewState(
     bool IsVisible,
     string Header,
-    string Body)
+    string Body,
+    Texture2D? Portrait = null,
+    string UnitId = "",
+    IReadOnlyList<BattleSkillSlotViewState>? SkillSlots = null)
 {
     public static BattleSelectedUnitViewState Hidden { get; } = new(false, string.Empty, string.Empty);
 }
@@ -20,6 +31,7 @@ public sealed class BattleUnitMetadataFormatter
 {
     private readonly GameLocalizationController _localization;
     private readonly ContentTextResolver _contentText;
+    private readonly BattleUnitPortraitResolver _portraitResolver = new();
 
     public BattleUnitMetadataFormatter(
         GameLocalizationController localization,
@@ -87,7 +99,88 @@ public sealed class BattleUnitMetadataFormatter
         return new BattleSelectedUnitViewState(
             true,
             $"{Localize(GameLocalizationTables.UIBattle, "ui.battle.selected.header", "Selected Unit")}: {character}",
-            builder.ToString().TrimEnd());
+            builder.ToString().TrimEnd(),
+            _portraitResolver.Resolve(unit),
+            unit.Id,
+            BuildSkillSlots(unit));
+    }
+
+    private IReadOnlyList<BattleSkillSlotViewState> BuildSkillSlots(BattleUnitReadModel unit)
+    {
+        return new[]
+        {
+            BuildSkillSlot(
+                AxisLabel("ui.battle.skill.signature_active", "고유 액티브", "Signature"),
+                unit.SignatureActiveId,
+                unit.SignatureActiveName,
+                unit.CharacterId),
+            BuildSkillSlot(
+                AxisLabel("ui.battle.skill.flex_active", "교체 액티브", "Flex"),
+                unit.FlexActiveId,
+                unit.FlexActiveName,
+                unit.CharacterId),
+        };
+    }
+
+    private BattleSkillSlotViewState BuildSkillSlot(string slotLabel, string skillId, string skillName, string characterId)
+    {
+        var resolvedName = ResolveSkillDisplayName(skillId, skillName);
+        var icon = _portraitResolver.ResolveSkillIcon(characterId, skillId);
+        return new BattleSkillSlotViewState(slotLabel, resolvedName, skillId, icon);
+    }
+
+    private string ResolveSkillDisplayName(string skillId, string skillName)
+    {
+        if (IsResolvedSkillDisplayName(skillName, skillId))
+        {
+            return skillName;
+        }
+
+        if (string.IsNullOrWhiteSpace(skillId))
+        {
+            return Localize(GameLocalizationTables.UIBattle, "ui.battle.skill.empty", "Empty");
+        }
+
+        var localized = _contentText.GetSkillName(skillId);
+        return IsResolvedSkillDisplayName(localized, skillId)
+            ? localized
+            : BuildReadableSkillFallback(skillId);
+    }
+
+    private static bool IsResolvedSkillDisplayName(string value, string skillId)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        if (string.Equals(value, skillId, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return !value.StartsWith("content.skill.", StringComparison.Ordinal);
+    }
+
+    private static string BuildReadableSkillFallback(string skillId)
+    {
+        var token = skillId.Trim();
+        if (token.StartsWith("skill_", StringComparison.Ordinal))
+        {
+            token = token["skill_".Length..];
+        }
+        else if (token.StartsWith("support_", StringComparison.Ordinal))
+        {
+            token = token["support_".Length..];
+        }
+
+        var words = BattleReadabilityFormatter.HumanizeToken(token, skillId).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        for (var i = 0; i < words.Length; i++)
+        {
+            words[i] = char.ToUpperInvariant(words[i][0]) + words[i][1..];
+        }
+
+        return string.Join(" ", words);
     }
 
     private string ResolveTarget(BattleUnitReadModel unit)

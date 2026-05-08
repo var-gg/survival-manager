@@ -1,0 +1,37 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd">
+    <!--
+      Survival Manager : Button atom template
+      source: docs/02_design/ui/handoff/foundation-pack-v0.2/atoms-button-herocard.html
+      structure: variant 5 (primary, secondary, destructive, ghost, icon) x size 3 (sm, md, lg, plus mobile) x state 5 (default, hover, active, disabled, loading)
+      modifier class wiring (root element):
+        variant: sm-btn..primary, sm-btn..secondary, sm-btn..destructive, sm-btn..ghost, sm-btn..icon
+        size:    sm-btn..sm, sm-btn..md, sm-btn..lg, sm-btn..mobile
+        state:   sm-btn..loading (label hide plus spinner show), sm-btn..disabled (or VisualElement.SetEnabled false)
+        family:  sm-btn..fam-{beastkin, vanguard, striker, ranger, mystic} (family tint slot, optional)
+      label override:
+        sm-btn__label-ko / text  : Korean primary
+        sm-btn__label-en / text  : English subscript (uppercase)
+      NOTE: BEM modifier in actual class uses double-dash. comment uses double-dot to avoid XML invalid sequence.
+    -->
+    <Style src="Button.uss" />
+    <ui:VisualElement name="Button" class="sm-btn sm-btn--primary sm-btn--md sm-btn--fam-striker">
+        <ui:VisualElement name="outline" class="sm-btn__outline" picking-mode="Ignore" />
+        <ui:VisualElement name="inset" class="sm-btn__inset" picking-mode="Ignore" />
+
+        <ui:VisualElement name="cap-tl" class="sm-btn__cap sm-btn__cap--tl" picking-mode="Ignore" />
+        <ui:VisualElement name="cap-tr" class="sm-btn__cap sm-btn__cap--tr" picking-mode="Ignore" />
+        <ui:VisualElement name="cap-bl" class="sm-btn__cap sm-btn__cap--bl" picking-mode="Ignore" />
+        <ui:VisualElement name="cap-br" class="sm-btn__cap sm-btn__cap--br" picking-mode="Ignore" />
+
+        <ui:VisualElement name="vine-left" class="sm-btn__vine sm-btn__vine--left" picking-mode="Ignore" />
+        <ui:VisualElement name="vine-right" class="sm-btn__vine sm-btn__vine--right" picking-mode="Ignore" />
+
+        <ui:VisualElement name="ember" class="sm-btn__ember" picking-mode="Ignore" />
+        <ui:VisualElement name="spinner" class="sm-btn__spinner" picking-mode="Ignore" />
+
+        <ui:VisualElement name="label" class="sm-btn__label" picking-mode="Ignore">
+            <ui:Label name="label-ko" class="sm-btn__label-ko" text="확인" />
+            <ui:Label name="label-en" class="sm-btn__label-en" text="CONFIRM" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

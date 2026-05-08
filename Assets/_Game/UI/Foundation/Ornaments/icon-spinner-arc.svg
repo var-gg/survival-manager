@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Survival Manager : Button loading spinner
+  source: docs/02_design/ui/handoff/foundation-pack-v0.2/atoms-button-herocard.html (.btn-spin class)
+  arc 75 percent (full opacity) plus 25 percent (faded). rotation via C# tween or USS animation.
+  fill / stroke = white (FFFFFF). USS tints via -unity-background-image-tint-color.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" fill="none"
+     stroke="#FFFFFF" stroke-width="2" stroke-linecap="round">
+  <path d="M9 2 a7 7 0 0 1 7 7"/>
+  <path d="M9 2 a7 7 0 0 0 -7 7" opacity="0.25"/>
+</svg>

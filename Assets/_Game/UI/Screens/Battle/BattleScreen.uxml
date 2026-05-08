@@ -1,106 +1,146 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:VisualElement name="BattleScreenRoot" class="screen battle-screen">
-        <ui:VisualElement class="screen__topbar screen__toolbar">
-            <ui:Label name="TitleLabel" class="screen__title" />
-            <ui:VisualElement class="screen__locale">
-                <ui:Label name="LocaleStatusLabel" class="screen__locale-status" />
-                <ui:Button name="LocaleKoButton" class="ui-button" />
-                <ui:Button name="LocaleEnButton" class="ui-button" />
-                <ui:Button name="HelpButton" class="ui-button" />
+    <ui:VisualElement name="BattleScreenRoot" class="screen battle-screen sm-bs-shell">
+        <ui:VisualElement name="TopChrome" class="screen__topbar screen__toolbar sm-bs-topbar">
+            <ui:Label name="TitleLabel" class="screen__title sm-bs-title" />
+
+            <ui:VisualElement name="SummaryPanel" class="battle-shell__summary sm-bs-top-status">
+                <ui:VisualElement class="battle-shell__summary-header sm-bs-summary-header">
+                    <ui:Label name="SummaryTitleLabel" class="panel__title battle-shell__summary-title sm-bs-section-title" />
+                    <ui:Button name="SummaryToggleButton" class="ui-button battle-shell__summary-toggle sm-bs-control-btn sm-bs-control-btn--small" />
+                </ui:VisualElement>
+                <ui:VisualElement name="SummaryBody" class="battle-shell__summary-body sm-bs-summary-body">
+                    <ui:VisualElement name="StatusHeadline" class="sm-bs-status-headline">
+                        <ui:Label name="ResultLabel" class="panel__text battle-shell__result sm-bs-result" />
+                        <ui:Label name="StatusLabel" class="panel__text battle-shell__status sm-bs-status-text" />
+                        <ui:Label name="SpeedLabel" class="panel__text panel__text--muted sm-bs-speed" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ProgressTrack" class="battle-track sm-bs-progress-track">
+                        <ui:VisualElement name="ProgressFill" class="battle-track__fill sm-bs-progress-fill" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
+
+            <ui:Button name="SettingsButton" class="ui-button sm-bs-control-btn sm-bs-settings-entry" />
         </ui:VisualElement>
 
-        <ui:VisualElement name="HelpStrip" class="help-strip">
+        <ui:VisualElement name="HelpStrip" class="help-strip sm-bs-help-strip">
             <ui:Label name="HelpBodyLabel" class="panel__text help-strip__body" />
-            <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss" />
+            <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss sm-bs-control-btn" />
         </ui:VisualElement>
 
-        <ui:VisualElement class="battle-shell__main">
-            <ui:VisualElement class="battle-shell__side">
-                <ui:VisualElement class="panel" name="AllySummaryPanel">
-                    <ui:Label name="AllyTitleLabel" class="panel__title" />
-                    <ui:Label name="AllyHpLabel" class="panel__text" />
-                </ui:VisualElement>
+        <ui:VisualElement name="EnemySummaryPanel" class="sm-bs-threat-strip sm-vellum-card">
+            <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--striker" />
+            <ui:VisualElement class="sm-bs-strip-header">
+                <ui:Label name="EnemyTitleLabel" class="panel__title sm-bs-rail-title" />
+                <ui:Label name="EnemyHpLabel" class="panel__text sm-bs-rail-summary" />
             </ui:VisualElement>
+            <ui:VisualElement name="EnemyRosterList" class="sm-bs-roster-list sm-bs-roster-list--enemy" />
+        </ui:VisualElement>
 
-            <ui:VisualElement class="battle-shell__center">
-                <ui:VisualElement name="SummaryPanel" class="panel battle-shell__summary">
-                    <ui:VisualElement class="battle-shell__summary-header">
-                        <ui:Label name="SummaryTitleLabel" class="panel__title battle-shell__summary-title" />
-                        <ui:Button name="SummaryToggleButton" class="ui-button battle-shell__summary-toggle" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="SummaryBody" class="battle-shell__summary-body">
-                        <ui:Label name="ResultLabel" class="panel__text battle-shell__result" />
-                        <ui:Label name="SpeedLabel" class="panel__text panel__text--muted" />
-                        <ui:Label name="StatusLabel" class="panel__text battle-shell__status" />
-                        <ui:VisualElement name="ProgressTrack" class="battle-track">
-                            <ui:VisualElement name="ProgressFill" class="battle-track__fill" />
-                        </ui:VisualElement>
-
-                        <ui:VisualElement name="PlaybackActionsGroup" class="action-group">
-                            <ui:Label name="PlaybackGroupTitleLabel" class="action-group__title" />
-                            <ui:VisualElement class="action-row">
-                                <ui:Button name="Speed1Button" class="ui-button" />
-                                <ui:Button name="Speed2Button" class="ui-button" />
-                                <ui:Button name="Speed4Button" class="ui-button" />
-                                <ui:Button name="PauseButton" class="ui-button" />
-                                <ui:Button name="ReplayButton" class="ui-button" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-
-                        <ui:VisualElement name="ContinueActionsGroup" class="action-group">
-                            <ui:Label name="ContinueGroupTitleLabel" class="action-group__title" />
-                            <ui:VisualElement class="action-row">
-                                <ui:Button name="ContinueButton" class="ui-button ui-button--accent" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-
-                        <ui:VisualElement name="SmokeActionsGroup" class="action-group action-group--debug">
-                            <ui:Label name="SmokeGroupTitleLabel" class="action-group__title" />
-                            <ui:VisualElement class="action-row">
-                                <ui:Button name="RebattleButton" class="ui-button ui-button--debug" />
-                                <ui:Button name="ReturnTownButton" class="ui-button ui-button--warning" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-
-                        <ui:VisualElement class="action-group">
-                            <ui:Label name="UtilityGroupTitleLabel" class="action-group__title" />
-                            <ui:VisualElement class="action-row">
-                                <ui:Button name="SettingsButton" class="ui-button" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                    </ui:VisualElement>
+        <ui:VisualElement name="BattleShellMain" class="battle-shell__main sm-bs-layout">
+            <ui:VisualElement name="CenterSummary" class="battle-shell__center sm-bs-center">
+                <ui:VisualElement name="BattleStage" class="sm-bs-stage">
+                    <ui:VisualElement class="sm-bs-floor-halo sm-bs-floor-halo--ally" />
+                    <ui:VisualElement class="sm-bs-stage-line" />
+                    <ui:VisualElement class="sm-bs-floor-halo sm-bs-floor-halo--enemy" />
                 </ui:VisualElement>
 
-                <ui:VisualElement class="panel">
-                    <ui:Label name="LogTitleLabel" class="panel__title" />
-                    <ui:Label name="LogLabel" class="panel__text" />
+                <ui:VisualElement name="CompactLog" class="panel sm-bs-event-feed sm-vellum-card">
+                    <ui:Label name="LogTitleLabel" class="panel__title sm-bs-section-title" />
+                    <ui:Label name="LogLabel" class="panel__text sm-bs-log-text" />
                 </ui:VisualElement>
-            </ui:VisualElement>
 
-            <ui:VisualElement class="battle-shell__side">
-                <ui:VisualElement class="panel battle-shell__selected-unit" name="SelectedUnitPanel">
-                    <ui:Label name="SelectedUnitHeaderLabel" class="panel__title" />
-                    <ui:Label name="SelectedUnitBodyLabel" class="panel__text battle-shell__selected-body" />
-                </ui:VisualElement>
-                <ui:VisualElement class="panel" name="EnemySummaryPanel">
-                    <ui:Label name="EnemyTitleLabel" class="panel__title" />
-                    <ui:Label name="EnemyHpLabel" class="panel__text" />
+                <ui:VisualElement name="TurnOrderStrip" class="sm-bs-turn-order">
+                    <ui:VisualElement class="sm-bs-turn-order__slot sm-bs-turn-order__slot--active" />
+                    <ui:VisualElement class="sm-bs-turn-order__slot" />
+                    <ui:VisualElement class="sm-bs-turn-order__slot" />
+                    <ui:VisualElement class="sm-bs-turn-order__slot" />
+                    <ui:VisualElement class="sm-bs-turn-order__slot sm-bs-turn-order__slot--enemy" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <ui:VisualElement name="SettingsPanel" class="panel battle-settings">
-            <ui:Label name="SettingsTitleLabel" class="panel__title" />
-            <ui:Label name="SettingsDisplayTitleLabel" class="action-group__title" />
-            <ui:Button name="ToggleOverheadButton" class="ui-button" />
-            <ui:Button name="ToggleDamageTextButton" class="ui-button" />
-            <ui:Button name="ToggleTeamSummaryButton" class="ui-button" />
-            <ui:VisualElement name="DebugSettingsSection" class="battle-settings__section action-group action-group--debug">
-                <ui:Label name="SettingsDebugTitleLabel" class="action-group__title" />
-                <ui:Button name="ToggleDebugOverlayButton" class="ui-button ui-button--debug" />
+        <ui:VisualElement name="SelectedUnitPanel" class="panel battle-shell__selected-unit sm-bs-unit-detail-panel">
+            <ui:VisualElement name="UnitDetailPanel" class="sm-bs-unit-detail-content">
+                <ui:VisualElement class="sm-bs-unit-detail-header">
+                    <ui:Image name="SelectedUnitPortraitImage" class="sm-bs-unit-portrait" />
+                    <ui:Label name="SelectedUnitHeaderLabel" class="panel__title sm-bs-section-title sm-bs-unit-detail-title" />
+                </ui:VisualElement>
+                <ui:Label name="SelectedUnitBodyLabel" class="panel__text battle-shell__selected-body sm-bs-unit-detail-body" />
+                <ui:VisualElement name="SkillPresentationSlots" class="sm-bs-skill-slots">
+                    <ui:VisualElement name="SignatureActiveSlot" class="sm-bs-skill-slot sm-bs-skill-slot--signature">
+                        <ui:Image name="SignatureActiveIcon" class="sm-bs-skill-icon" />
+                        <ui:Label name="SignatureActiveLabel" class="sm-bs-skill-label" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="FlexActiveSlot" class="sm-bs-skill-slot sm-bs-skill-slot--flex">
+                        <ui:Image name="FlexActiveIcon" class="sm-bs-skill-icon" />
+                        <ui:Label name="FlexActiveLabel" class="sm-bs-skill-label" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:Label name="SettingsStatusLabel" class="panel__text panel__text--muted" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="AllySummaryPanel" class="sm-bs-ally-strip sm-vellum-card">
+            <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--mystic" />
+            <ui:VisualElement class="sm-bs-strip-header">
+                <ui:Label name="AllyTitleLabel" class="panel__title sm-bs-rail-title" />
+                <ui:Label name="AllyHpLabel" class="panel__text sm-bs-rail-summary" />
+            </ui:VisualElement>
+            <ui:VisualElement name="AllyRosterList" class="sm-bs-roster-list sm-bs-roster-list--ally" />
+
+            <ui:VisualElement name="ControlBar" class="sm-bs-control-bar">
+                <ui:VisualElement name="PlaybackActionsGroup" class="action-group sm-bs-control-group">
+                    <ui:Label name="PlaybackGroupTitleLabel" class="action-group__title sm-bs-control-title" />
+                    <ui:VisualElement class="action-row sm-bs-control-row">
+                        <ui:Button name="Speed1Button" class="ui-button sm-bs-control-btn" />
+                        <ui:Button name="Speed2Button" class="ui-button sm-bs-control-btn" />
+                        <ui:Button name="Speed4Button" class="ui-button sm-bs-control-btn" />
+                        <ui:Button name="PauseButton" class="ui-button sm-bs-control-btn sm-bs-control-btn--primary" />
+                        <ui:Button name="ReplayButton" class="ui-button sm-bs-control-btn" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement name="ContinueActionsGroup" class="action-group sm-bs-control-group">
+                    <ui:Label name="ContinueGroupTitleLabel" class="action-group__title sm-bs-control-title" />
+                    <ui:VisualElement class="action-row sm-bs-control-row">
+                        <ui:Button name="ContinueButton" class="ui-button ui-button--accent sm-bs-control-btn sm-bs-control-btn--primary" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="action-group sm-bs-control-group sm-bs-utility-group">
+                    <ui:Label name="UtilityGroupTitleLabel" class="action-group__title sm-bs-control-title" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="SettingsPanel" class="panel battle-settings sm-bs-settings-panel sm-vellum-card">
+            <ui:Label name="SettingsTitleLabel" class="panel__title sm-bs-section-title" />
+            <ui:VisualElement class="sm-bs-settings-section">
+                <ui:Label name="LocaleStatusLabel" class="screen__locale-status sm-bs-settings-status" />
+                <ui:VisualElement class="screen__locale sm-bs-settings-actions">
+                    <ui:Button name="LocaleKoButton" class="ui-button sm-bs-control-btn" />
+                    <ui:Button name="LocaleEnButton" class="ui-button sm-bs-control-btn" />
+                    <ui:Button name="HelpButton" class="ui-button sm-bs-control-btn" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:Label name="SettingsDisplayTitleLabel" class="action-group__title sm-bs-control-title" />
+            <ui:Button name="ToggleOverheadButton" class="ui-button sm-bs-control-btn" />
+            <ui:Button name="ToggleDamageTextButton" class="ui-button sm-bs-control-btn" />
+            <ui:Button name="ToggleTeamSummaryButton" class="ui-button sm-bs-control-btn" />
+
+            <ui:VisualElement name="DebugSettingsSection" class="battle-settings__section action-group action-group--debug sm-bs-control-group--debug">
+                <ui:Label name="SettingsDebugTitleLabel" class="action-group__title sm-bs-control-title" />
+                <ui:Button name="ToggleDebugOverlayButton" class="ui-button ui-button--debug sm-bs-control-btn sm-bs-control-btn--debug" />
+                <ui:VisualElement name="SmokeActionsGroup" class="action-group action-group--debug sm-bs-control-group sm-bs-control-group--debug">
+                    <ui:Label name="SmokeGroupTitleLabel" class="action-group__title sm-bs-control-title" />
+                    <ui:VisualElement class="action-row sm-bs-control-row">
+                        <ui:Button name="RebattleButton" class="ui-button ui-button--debug sm-bs-control-btn sm-bs-control-btn--debug" />
+                        <ui:Button name="ReturnTownButton" class="ui-button ui-button--warning sm-bs-control-btn sm-bs-control-btn--warning" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label name="SettingsStatusLabel" class="panel__text panel__text--muted sm-bs-settings-status" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
