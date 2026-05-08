@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
@@ -14,18 +15,21 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
     private const string PreviewReadableShaderName = "Hidden/SM/P09PreviewTintedUnlit";
     private const float PreviewPanelWidth = 500f;
     private const float PreviewPanelHeight = 620f;
+    private const float LargeSurfaceLuminanceFloor = 0.45f;
+    private const float MediumSurfaceLuminanceFloor = 0.25f;
 
     private readonly List<Material> _previewMaterials = new();
     private Vector2 _characterScroll;
     private Vector2 _detailScroll;
-    private IReadOnlyList<CharacterDefinition> _characters = new List<CharacterDefinition>();
+    private IReadOnlyList<AppearanceEntry> _entries = new List<AppearanceEntry>();
     private BattleP09AppearanceCatalog _catalog = null!;
     private BattleP09AppearancePreset? _selectedPreset;
-    private CharacterDefinition? _selectedCharacter;
+    private AppearanceEntry? _selectedEntry;
     private GameObject? _previewRoot;
     private PreviewRenderUtility? _previewRenderer;
     private Bounds _previewBounds;
     private PreviewFraming _previewFraming = PreviewFraming.FullBody;
+    private PreviewMaterialMode _previewMaterialMode = PreviewMaterialMode.QuibliLook;
     private float _previewYaw;
 
     [MenuItem("SM/캐릭터/P09 외형 편집")]
@@ -131,14 +135,14 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         {
             EditorGUILayout.LabelField("캐릭터", EditorStyles.boldLabel);
             _characterScroll = EditorGUILayout.BeginScrollView(_characterScroll);
-            foreach (var character in _characters)
+            foreach (var entry in _entries)
             {
-                var selected = _selectedCharacter == character;
-                var label = BattleP09AppearanceRoster.BuildAuthoringLabel(character.Id, character.LegacyDisplayName);
+                var selected = _selectedEntry == entry;
+                var label = BattleP09AppearanceRoster.BuildAuthoringLabel(entry.CharacterId, entry.DisplayName);
                 var style = selected ? EditorStyles.miniButtonMid : EditorStyles.miniButton;
                 if (GUILayout.Button(label, style))
                 {
-                    SelectCharacter(character);
+                    SelectEntry(entry);
                 }
             }
 
@@ -156,6 +160,10 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
                 DrawPreviewFramingButton("전체", PreviewFraming.FullBody);
                 DrawPreviewFramingButton("상반신", PreviewFraming.UpperBody);
                 DrawPreviewFramingButton("얼굴", PreviewFraming.Face);
+                GUILayout.Space(8f);
+                DrawPreviewMaterialModeButton("P09+룩", PreviewMaterialMode.QuibliLook, 66f);
+                DrawPreviewMaterialModeButton("원본진단", PreviewMaterialMode.Source, 74f);
+                DrawPreviewMaterialModeButton("식별", PreviewMaterialMode.Readable);
             }
 
             var rect = GUILayoutUtility.GetRect(
@@ -187,18 +195,31 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         }
     }
 
+    private void DrawPreviewMaterialModeButton(string label, PreviewMaterialMode mode, float width = 58f)
+    {
+        var selected = _previewMaterialMode == mode;
+        using (new EditorGUI.DisabledScope(selected))
+        {
+            if (GUILayout.Button(label, EditorStyles.toolbarButton, GUILayout.Width(width)))
+            {
+                _previewMaterialMode = mode;
+                UpdatePreview();
+            }
+        }
+    }
+
     private void DrawDetailPanel()
     {
         using (new EditorGUILayout.VerticalScope())
         {
-            if (_selectedCharacter == null || _selectedPreset == null)
+            if (_selectedEntry == null || _selectedPreset == null)
             {
                 EditorGUILayout.HelpBox("P09 외형 프리셋을 수정할 캐릭터를 선택하세요.", MessageType.Info);
                 return;
             }
 
             _detailScroll = EditorGUILayout.BeginScrollView(_detailScroll);
-            var characterLabel = BattleP09AppearanceRoster.BuildAuthoringLabel(_selectedCharacter.Id, _selectedCharacter.LegacyDisplayName);
+            var characterLabel = BattleP09AppearanceRoster.BuildAuthoringLabel(_selectedEntry.CharacterId, _selectedEntry.DisplayName);
             EditorGUILayout.LabelField(characterLabel, EditorStyles.boldLabel);
             EditorGUILayout.SelectableLabel($"콘텐츠 ID: {_selectedPreset.CharacterId}", EditorStyles.miniLabel, GUILayout.Height(18f));
 
@@ -299,11 +320,93 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         var property = serialized.FindProperty("materialColorOverrides");
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(property, new GUIContent("색상 오버라이드"), includeChildren: true);
+        DrawColorReadabilityWarnings(property);
         if (EditorGUI.EndChangeCheck())
         {
             serialized.ApplyModifiedProperties();
             SaveSelectedPreset(updatePreview: true);
         }
+    }
+
+    private static void DrawColorReadabilityWarnings(SerializedProperty overridesProperty)
+    {
+        if (overridesProperty == null || !overridesProperty.isArray)
+        {
+            return;
+        }
+
+        var warnings = new List<string>();
+        for (var i = 0; i < overridesProperty.arraySize; i++)
+        {
+            var element = overridesProperty.GetArrayElementAtIndex(i);
+            var enabled = element.FindPropertyRelative("Enabled")?.boolValue ?? true;
+            var usePartTarget = element.FindPropertyRelative("UsePartTarget")?.boolValue ?? false;
+            if (!enabled || !usePartTarget)
+            {
+                continue;
+            }
+
+            var targetPartProperty = element.FindPropertyRelative("TargetPart");
+            var mainColorProperty = element.FindPropertyRelative("MainColor");
+            if (targetPartProperty == null || mainColorProperty == null)
+            {
+                continue;
+            }
+
+            var targetPart = (BattleP09AppearancePartType)targetPartProperty.enumValueIndex;
+            if (!TryGetReadableSurfaceFloor(targetPart, out var floor))
+            {
+                continue;
+            }
+
+            var mainColor = mainColorProperty.colorValue;
+            var luminance = CalculateLuminance(mainColor);
+            if (luminance >= floor)
+            {
+                continue;
+            }
+
+            var label = element.FindPropertyRelative("Label")?.stringValue;
+            if (string.IsNullOrWhiteSpace(label))
+            {
+                label = GetPartLabel(targetPart);
+            }
+
+            warnings.Add($"{label}: 주 색상 밝기 {luminance:0.00} < 권장 {floor:0.00}");
+        }
+
+        if (warnings.Count == 0)
+        {
+            return;
+        }
+
+        EditorGUILayout.HelpBox(
+            "큰 의상 면적의 MainColor가 너무 어두우면 P09 텍스처 디테일이 검은 단색처럼 압축됩니다.\n" + string.Join("\n", warnings),
+            MessageType.Warning);
+    }
+
+    private static bool TryGetReadableSurfaceFloor(BattleP09AppearancePartType part, out float floor)
+    {
+        switch (part)
+        {
+            case BattleP09AppearancePartType.Head:
+            case BattleP09AppearancePartType.Chest:
+            case BattleP09AppearancePartType.Arm:
+                floor = LargeSurfaceLuminanceFloor;
+                return true;
+            case BattleP09AppearancePartType.Waist:
+            case BattleP09AppearancePartType.Leg:
+                floor = MediumSurfaceLuminanceFloor;
+                return true;
+            default:
+                floor = 0f;
+                return false;
+        }
+    }
+
+    private static float CalculateLuminance(Color color)
+    {
+        return (0.2126f * color.r) + (0.7152f * color.g) + (0.0722f * color.b);
     }
 
     private void RefreshData(bool ensurePresets)
@@ -317,35 +420,80 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             BattleP09AppearanceCatalogBuilder.EnsureMissingPresets();
         }
 
-        _characters = BattleP09AppearanceCatalogBuilder.LoadCharacters();
-        if (_selectedCharacter != null)
+        _entries = LoadEntries();
+        if (_selectedEntry != null)
         {
-            SelectCharacter(_characters.FirstOrDefault(character => character.Id == _selectedCharacter.Id));
+            SelectEntry(_entries.FirstOrDefault(entry => entry.CharacterId == _selectedEntry.CharacterId));
         }
-        else if (_characters.Count > 0)
+        else if (_entries.Count > 0)
         {
-            SelectCharacter(_characters[0]);
+            SelectEntry(_entries[0]);
         }
     }
 
-    private void SelectCharacter(CharacterDefinition? character)
+    private IReadOnlyList<AppearanceEntry> LoadEntries()
     {
-        _selectedCharacter = character;
+        var result = new List<AppearanceEntry>();
+        var seenCharacterIds = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var character in BattleP09AppearanceCatalogBuilder.LoadCharacters())
+        {
+            if (string.IsNullOrWhiteSpace(character.Id)
+                || !BattleP09AppearanceRoster.HasDefinedLabel(character.Id)
+                || !seenCharacterIds.Add(character.Id))
+            {
+                continue;
+            }
+
+            result.Add(new AppearanceEntry(character.Id, character.LegacyDisplayName, character, null));
+        }
+
+        foreach (var guid in AssetDatabase.FindAssets("t:BattleP09AppearancePreset", new[] { BattleP09AppearancePreset.AssetFolder }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            var preset = AssetDatabase.LoadAssetAtPath<BattleP09AppearancePreset>(path);
+            if (preset == null
+                || string.IsNullOrWhiteSpace(preset.CharacterId)
+                || !BattleP09AppearanceRoster.HasDefinedLabel(preset.CharacterId)
+                || !seenCharacterIds.Add(preset.CharacterId))
+            {
+                continue;
+            }
+
+            result.Add(new AppearanceEntry(preset.CharacterId, preset.DisplayName, null, preset));
+        }
+
+        result.Sort((left, right) =>
+        {
+            var orderCompare = BattleP09AppearanceRoster.GetSortOrder(left.CharacterId)
+                .CompareTo(BattleP09AppearanceRoster.GetSortOrder(right.CharacterId));
+            return orderCompare != 0 ? orderCompare : string.CompareOrdinal(left.CharacterId, right.CharacterId);
+        });
+        return result;
+    }
+
+    private void SelectEntry(AppearanceEntry? entry)
+    {
+        _selectedEntry = entry;
         _selectedPreset = null;
-        if (character == null)
+        if (entry == null)
         {
             return;
         }
 
-        _selectedPreset = BattleP09AppearanceCatalogBuilder.FindPreset(character.Id);
+        _selectedPreset = entry.Preset ?? BattleP09AppearanceCatalogBuilder.FindPreset(entry.CharacterId);
         if (_selectedPreset == null)
         {
-            var seedIndex = Mathf.Max(0, _characters.ToList().FindIndex(item => item.Id == character.Id));
-            _selectedPreset = BattleP09AppearanceCatalogBuilder.EnsurePreset(character, _catalog, seedIndex);
+            if (entry.Character == null)
+            {
+                return;
+            }
+
+            var seedIndex = Mathf.Max(0, _entries.ToList().FindIndex(item => item.CharacterId == entry.CharacterId));
+            _selectedPreset = BattleP09AppearanceCatalogBuilder.EnsurePreset(entry.Character, _catalog, seedIndex);
         }
 
         ConfigureSelectedPresetIdentity();
-        if (_selectedPreset.EnsureDefaultColorOverrides())
+        if (entry.Character != null && _selectedPreset.EnsureDefaultColorOverrides())
         {
             EditorUtility.SetDirty(_selectedPreset);
         }
@@ -362,7 +510,11 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         }
 
         ConfigureSelectedPresetIdentity();
-        _selectedPreset.EnsureDefaultColorOverrides();
+        if (_selectedEntry?.Character != null)
+        {
+            _selectedPreset.EnsureDefaultColorOverrides();
+        }
+
         EditorUtility.SetDirty(_selectedPreset);
         AssetDatabase.SaveAssets();
         if (updatePreview)
@@ -373,13 +525,13 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 
     private void ConfigureSelectedPresetIdentity()
     {
-        if (_selectedPreset == null || _selectedCharacter == null)
+        if (_selectedPreset == null || _selectedEntry == null)
         {
             return;
         }
 
-        var displayName = BattleP09AppearanceRoster.BuildAuthoringLabel(_selectedCharacter.Id, _selectedCharacter.LegacyDisplayName);
-        _selectedPreset.ConfigureIdentity(_selectedCharacter.Id, displayName, _catalog);
+        var displayName = BattleP09AppearanceRoster.BuildPresetDisplayName(_selectedEntry.CharacterId, _selectedEntry.DisplayName);
+        _selectedPreset.ConfigureIdentity(_selectedEntry.CharacterId, displayName, _catalog);
     }
 
     private void UpdatePreview()
@@ -397,7 +549,8 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         }
 
         _selectedPreset.ApplyTo(_previewRoot.transform, _previewMaterials);
-        ApplyPreviewReadableMaterials(_previewRoot.transform, _previewMaterials);
+        P09PreviewPoseUtility.TryApplyDefaultIdlePose(_previewRoot, _selectedPreset.SexId);
+        ApplyPreviewMaterialMode(_previewRoot.transform, _previewMaterials);
         _previewBounds = CalculatePreviewBounds(_previewRoot.transform);
         SceneView.RepaintAll();
         Repaint();
@@ -464,6 +617,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         }
 
         _previewRenderer.BeginPreview(rect, GUIStyle.none);
+        ConfigurePreviewLighting();
         ConfigurePreviewCamera(rect);
         _previewRenderer.Render();
         var texture = _previewRenderer.EndPreview();
@@ -488,6 +642,49 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         _previewRenderer.lights[0].transform.rotation = Quaternion.Euler(45f, -35f, 0f);
         _previewRenderer.lights[1].intensity = 0.65f;
         _previewRenderer.lights[1].transform.rotation = Quaternion.Euler(340f, 140f, 0f);
+    }
+
+    private void ConfigurePreviewLighting()
+    {
+        if (_previewRenderer == null)
+        {
+            return;
+        }
+
+        if (_previewMaterialMode == PreviewMaterialMode.QuibliLook)
+        {
+            _previewRenderer.camera.backgroundColor = new Color(0.68f, 0.79f, 0.88f, 1f);
+            _previewRenderer.ambientColor = new Color(0.54f, 0.58f, 0.62f, 1f);
+            _previewRenderer.lights[0].intensity = 1.35f;
+            _previewRenderer.lights[0].transform.rotation = Quaternion.Euler(38f, -32f, 0f);
+            _previewRenderer.lights[1].intensity = 0.78f;
+            _previewRenderer.lights[1].transform.rotation = Quaternion.Euler(330f, 142f, 0f);
+            return;
+        }
+
+        _previewRenderer.camera.backgroundColor = new Color(0.68f, 0.79f, 0.88f, 1f);
+        _previewRenderer.ambientColor = new Color(0.62f, 0.62f, 0.62f, 1f);
+        _previewRenderer.lights[0].intensity = 1.15f;
+        _previewRenderer.lights[0].transform.rotation = Quaternion.Euler(45f, -35f, 0f);
+        _previewRenderer.lights[1].intensity = 0.65f;
+        _previewRenderer.lights[1].transform.rotation = Quaternion.Euler(340f, 140f, 0f);
+    }
+
+    private void ApplyPreviewMaterialMode(Transform modelRoot, ICollection<Material> generatedMaterials)
+    {
+        switch (_previewMaterialMode)
+        {
+            case PreviewMaterialMode.Source:
+                return;
+            case PreviewMaterialMode.QuibliLook:
+                // PreviewRenderUtility does not reliably render P09's Hidden/lilToon or Quibli URP shaders.
+                // Use a texture-preserving editor preview material; Quibli remains a runtime camera/post-process look.
+                ApplyPreviewReadableMaterials(modelRoot, generatedMaterials);
+                return;
+            default:
+                ApplyPreviewReadableMaterials(modelRoot, generatedMaterials);
+                return;
+        }
     }
 
     private static void ApplyPreviewReadableMaterials(Transform modelRoot, ICollection<Material> generatedMaterials)
@@ -736,4 +933,17 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         UpperBody,
         Face
     }
+
+    private enum PreviewMaterialMode
+    {
+        QuibliLook,
+        Source,
+        Readable
+    }
+
+    private sealed record AppearanceEntry(
+        string CharacterId,
+        string DisplayName,
+        CharacterDefinition? Character,
+        BattleP09AppearancePreset? Preset);
 }
