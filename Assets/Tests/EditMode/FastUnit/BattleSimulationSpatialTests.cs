@@ -45,7 +45,7 @@ public sealed class BattleSimulationSpatialTests
         var allyView = attackStep.Units.First(unit => unit.Id.Contains("ally_melee"));
         var enemyView = attackStep.Units.First(unit => unit.Id.Contains("enemy_melee"));
         var edgeDistance = allyView.Position.DistanceTo(enemyView.Position) - allyView.NavigationRadius - enemyView.NavigationRadius;
-        Assert.That(edgeDistance, Is.LessThanOrEqualTo(1.3f));
+        Assert.That(edgeDistance, Is.LessThanOrEqualTo(1.5f));
         Assert.That(allyView.Position.X, Is.GreaterThan(-5.8f));
     }
 

@@ -212,7 +212,7 @@ public static class MovementResolver
         var distRoll = KnockbackRoll(state, actor, target, "kb:dist");
         var stabilityFactor = MathF.Max(0.2f, 1f - target.Behavior.Stability);
         var critFactor = isCritical ? 1.6f : 1f;
-        var distance = 0.18f * stabilityFactor * (0.6f + (distRoll * 0.6f)) * critFactor;
+        var distance = 0.28f * stabilityFactor * (0.6f + (distRoll * 0.6f)) * critFactor;
 
         var next = ClampToArena(ClampToLeash(state, target, target.Position + (rotated * distance)));
         target.SetPosition(next);

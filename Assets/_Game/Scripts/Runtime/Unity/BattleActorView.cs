@@ -87,6 +87,7 @@ public sealed class BattleActorView : MonoBehaviour
     private Color _impactColor = Color.clear;
     private Color _floatingColor = Color.clear;
     private float _floatingScale = 1f;
+    private Quaternion _lastAliveRotation = Quaternion.identity;
 
     public void Initialize(
         BattleUnitReadModel actor,
@@ -550,6 +551,13 @@ public sealed class BattleActorView : MonoBehaviour
 
     private Quaternion ResolveFacingRotation()
     {
+        if (!_currentState.IsAlive)
+        {
+            var idHash = _currentState.Id != null ? _currentState.Id.GetHashCode() : 0;
+            var deathYaw = ((idHash & 0xff) / 255f * 60f) - 30f;
+            return _lastAliveRotation * Quaternion.Euler(0f, deathYaw, 0f);
+        }
+
         var fallbackDirection = _currentState.Side == TeamSide.Ally ? Vector3.right : Vector3.left;
         var targetWorld = _focusTargetWorld ?? (Vector3?)null;
         var direction = targetWorld.HasValue
@@ -561,7 +569,9 @@ public sealed class BattleActorView : MonoBehaviour
             direction = fallbackDirection;
         }
 
-        return Quaternion.LookRotation(direction.normalized, Vector3.up);
+        var rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+        _lastAliveRotation = rotation;
+        return rotation;
     }
 
     private void UpdateFocusTelegraphs()
