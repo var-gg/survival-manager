@@ -53,6 +53,14 @@ public static class RuntimePanelAssetRegistry
                     0);
                 return true;
 
+            case SceneNames.Atlas:
+                descriptor = new RuntimePanelScreenDescriptor(
+                    "AtlasRuntimePanelHost",
+                    "Assets/_Game/UI/Screens/Atlas/AtlasScreen.uxml",
+                    "Assets/_Game/UI/Screens/Atlas/AtlasScreen.uss",
+                    0);
+                return true;
+
             case SceneNames.Battle:
                 descriptor = new RuntimePanelScreenDescriptor(
                     "BattleRuntimePanelHost",

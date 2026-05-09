@@ -6,6 +6,7 @@
     "SM.Content",
     "SM.Combat",
     "SM.Meta",
+    "SM.Atlas",
     "SM.Persistence.Abstractions",
     "SM.Persistence.Json",
     "SM.Unity",

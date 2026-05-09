@@ -88,6 +88,10 @@ public static class FirstPlayableRuntimeSceneBinder
                 ValidateScreenScene<ExpeditionScreenController>(scene, "ExpeditionRuntimePanelHost", "ExpeditionScreenController", controller => controller.EnsureRuntimeControls());
                 break;
 
+            case SceneNames.Atlas:
+                ValidateScreenScene<UI.Atlas.AtlasScreenController>(scene, "AtlasRuntimePanelHost", "AtlasScreenController", controller => controller.EnsureRuntimeControls());
+                break;
+
             case SceneNames.Battle:
                 ValidateBattle(scene);
                 break;
