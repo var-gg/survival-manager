@@ -15,7 +15,7 @@ MonoBehaviour:
   characterId: npc_silent_moon
   displayName: "\uCE68\uC6D4 (\u6C89\u6708) / Silent Moon"
   catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
-  weaponId: 2
+  weaponId: 7
   shieldId: 0
   headId: 8
   chestId: 8

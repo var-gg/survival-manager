@@ -15,8 +15,8 @@ MonoBehaviour:
   characterId: shaman
   displayName: shaman
   catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
-  weaponId: 1
-  shieldId: 4
+  weaponId: 6
+  shieldId: 0
   headId: 4
   chestId: 1
   armId: 1

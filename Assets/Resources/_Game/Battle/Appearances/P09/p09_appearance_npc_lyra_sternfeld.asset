@@ -15,7 +15,7 @@ MonoBehaviour:
   characterId: npc_lyra_sternfeld
   displayName: "\uC120\uC601 (\u5BA3\u82F1) / Lyra Sternfeld"
   catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
-  weaponId: 4
+  weaponId: 9
   shieldId: 0
   headId: 7
   chestId: 7

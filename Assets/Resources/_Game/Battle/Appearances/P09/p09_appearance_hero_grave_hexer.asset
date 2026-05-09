@@ -15,7 +15,7 @@ MonoBehaviour:
   characterId: hero_grave_hexer
   displayName: "\uBB35\uD5A5 (\u58A8\u9999) / Grave Hexer"
   catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
-  weaponId: 2
+  weaponId: 7
   shieldId: 0
   headId: 9
   chestId: 9

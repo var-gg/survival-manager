@@ -101,13 +101,3 @@ MonoBehaviour:
     ThirdColor: {r: 0.3529412, g: 0.22745098, b: 0.14509805, a: 1}
     UseEmissionColor: 0
     EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-  - Label: "\uBC29\uD328"
-    UsePartTarget: 1
-    TargetPart: 2
-    TargetContains: Shield
-    Enabled: 1
-    MainColor: {r: 0.7, g: 0.76, b: 0.82, a: 1}
-    SecondColor: {r: 0.25, g: 0.26, b: 0.3, a: 1}
-    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
-    UseEmissionColor: 0
-    EmissionColor: {r: 0, g: 0, b: 0, a: 1}

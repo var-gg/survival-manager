@@ -563,7 +563,7 @@ public static class P09DetailPreservingPaletteTool
             new PaletteSpec(
                 "hero_grave_hexer",
                 "묵향 (墨香) / Grave Hexer",
-                2, 2, 8, 5, 1, 1, 0, 2, 9, 2, 0,
+                2, 2, 8, 5, 1, 1, 0, 2, 9, 7, 0,
                 "#66635F",
                 new[]
                 {
@@ -595,7 +595,7 @@ public static class P09DetailPreservingPaletteTool
             new PaletteSpec(
                 "npc_lyra_sternfeld",
                 "선영 (宣英) / Lyra Sternfeld",
-                2, 2, 7, 3, 1, 1, 0, 2, 7, 4, 0,
+                2, 2, 7, 3, 1, 1, 0, 2, 7, 9, 0,
                 "#77716A",
                 new[]
                 {
@@ -626,7 +626,7 @@ public static class P09DetailPreservingPaletteTool
             new PaletteSpec(
                 "npc_black_vellum",
                 "흑지 (黑紙) / Black Vellum",
-                2, 2, 9, 1, 1, 1, 0, 2, 9, 2, 0,
+                2, 2, 9, 1, 1, 1, 0, 2, 9, 7, 0,
                 "#6A6864",
                 new[]
                 {
@@ -642,7 +642,7 @@ public static class P09DetailPreservingPaletteTool
             new PaletteSpec(
                 "npc_silent_moon",
                 "침월 (沉月) / Silent Moon",
-                2, 2, 9, 8, 1, 1, 0, 2, 8, 2, 0,
+                2, 2, 9, 8, 1, 1, 0, 2, 8, 7, 0,
                 "#746A64",
                 new[]
                 {

@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: hunter
   catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
   weaponId: 10
-  shieldId: 5
+  shieldId: 0
   headId: 6
   chestId: 5
   armId: 5
