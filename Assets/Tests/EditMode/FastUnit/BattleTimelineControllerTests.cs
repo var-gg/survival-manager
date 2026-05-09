@@ -59,6 +59,32 @@ public sealed class BattleTimelineControllerTests
     }
 
     [Test]
+    public void TryAdvance_WhenPaused_PreservesCurrentBlendAlpha()
+    {
+        var (_, timeline) = CreateTimeline();
+        var fixedStep = timeline.FixedStepSeconds;
+
+        var advanced = timeline.TryAdvance(
+            fixedStep + (fixedStep * 0.4f),
+            out _,
+            out _,
+            out var alphaBeforePause);
+        timeline.SetPaused(true);
+
+        var stepped = timeline.TryAdvance(
+            fixedStep * 5f,
+            out _,
+            out _,
+            out var pausedAlpha);
+
+        Assert.That(advanced, Is.True);
+        Assert.That(timeline.CurrentIndex, Is.EqualTo(1));
+        Assert.That(stepped, Is.False);
+        Assert.That(pausedAlpha, Is.EqualTo(alphaBeforePause).Within(0.001f));
+        Assert.That(pausedAlpha, Is.LessThan(0.995f));
+    }
+
+    [Test]
     public void SeekToStep_Forward_Records_Steps()
     {
         var (_, timeline) = CreateTimeline();
