@@ -88,11 +88,13 @@ public sealed class AtlasScreenView
             button.EnableInClassList("is-route", tile.IsRouteNode);
             button.EnableInClassList("is-anchor", tile.IsSigilAnchor);
             button.EnableInClassList("has-sigil", !string.IsNullOrWhiteSpace(tile.PlacedSigilName));
+            button.EnableInClassList("has-aura", tile.AuraCategories.Count > 0);
+            button.EnableInClassList("has-overlap", tile.AuraCategories.Count > 1);
             AtlasHexOverlayBinder.ApplyTileLayout(button, tile);
 
             var auraLayer = new VisualElement { name = "atlas-hex-aura" };
             auraLayer.AddToClassList("atlas-hex-aura");
-            foreach (var aura in DistinctAuraCategories(tile))
+            foreach (var aura in tile.AuraCategories)
             {
                 var swatch = new VisualElement();
                 swatch.AddToClassList("atlas-aura-swatch");
@@ -101,7 +103,13 @@ public sealed class AtlasScreenView
             }
 
             button.Add(auraLayer);
-            button.Add(new Label(ToNodeGlyph(tile.Kind)) { name = "atlas-hex-glyph" });
+            var tokenRow = new VisualElement { name = "atlas-hex-token-row" };
+            tokenRow.AddToClassList("atlas-hex-token-row");
+            AddBadge(tokenRow, tile.TypeChip);
+            AddBadge(tokenRow, tile.RewardFamilyChip);
+            AddBadge(tokenRow, tile.DifficultyChip);
+            button.Add(tokenRow);
+
             button.Add(new Label(tile.Label) { name = "atlas-hex-label" });
             if (!string.IsNullOrWhiteSpace(tile.PlacedSigilName))
             {
@@ -110,13 +118,9 @@ public sealed class AtlasScreenView
 
             var chipRow = new VisualElement { name = "atlas-hex-chip-row" };
             chipRow.AddToClassList("atlas-hex-chip-row");
-            foreach (var chip in tile.Chips)
+            foreach (var chip in tile.ModifierChips)
             {
-                var chipElement = new Label(chip.Label) { tooltip = chip.Tooltip };
-                chipElement.AddToClassList("atlas-chip");
-                chipElement.AddToClassList(ToCategoryClass(chip.Category));
-                chipElement.EnableInClassList("is-capped", chip.IsCapped);
-                chipRow.Add(chipElement);
+                AddBadge(chipRow, chip);
             }
 
             button.Add(chipRow);
@@ -131,7 +135,7 @@ public sealed class AtlasScreenView
         {
             var button = new Button(() => SigilSelected?.Invoke(sigil.SigilId))
             {
-                text = $"{sigil.DisplayName}  R{sigil.Radius}\n{sigil.CategorySummary}",
+                text = $"{sigil.DisplayName}  반경 {sigil.Radius}\n{sigil.CategorySummary}",
                 tooltip = sigil.SigilId,
             };
             button.AddToClassList("atlas-sigil-button");
@@ -180,44 +184,21 @@ public sealed class AtlasScreenView
         return element;
     }
 
-    private static string ToNodeGlyph(AtlasNodeKind kind)
+    private static void AddBadge(VisualElement row, AtlasHexBadgeViewState badge)
     {
-        return kind switch
+        if (string.IsNullOrWhiteSpace(badge.Label))
         {
-            AtlasNodeKind.Skirmish => "SK",
-            AtlasNodeKind.Elite => "EL",
-            AtlasNodeKind.Boss => "BO",
-            AtlasNodeKind.Extract => "EX",
-            AtlasNodeKind.Reward => "RW",
-            AtlasNodeKind.Event => "EV",
-            AtlasNodeKind.SigilAnchor => "SG",
-            _ => "..",
-        };
-    }
-
-    private static string ToCategoryClass(AtlasModifierCategory category)
-    {
-        return category switch
-        {
-            AtlasModifierCategory.RewardBias => "atlas-chip--reward",
-            AtlasModifierCategory.ThreatPressure => "atlas-chip--threat",
-            AtlasModifierCategory.AffinityBoost => "atlas-chip--affinity",
-            _ => "atlas-chip--neutral",
-        };
-    }
-
-    private static AtlasModifierCategory[] DistinctAuraCategories(AtlasHexTileViewState tile)
-    {
-        var categories = new System.Collections.Generic.List<AtlasModifierCategory>();
-        foreach (var chip in tile.Chips)
-        {
-            if (!categories.Contains(chip.Category))
-            {
-                categories.Add(chip.Category);
-            }
+            return;
         }
 
-        return categories.ToArray();
+        var element = new Label(badge.Label) { tooltip = badge.Tooltip };
+        element.AddToClassList("atlas-chip");
+        foreach (var className in badge.CssClass.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+        {
+            element.AddToClassList(className);
+        }
+
+        row.Add(element);
     }
 
     private static string ToAuraClass(AtlasModifierCategory category)

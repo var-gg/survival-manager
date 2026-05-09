@@ -104,7 +104,7 @@ public sealed class AtlasScreenPresenter
 
         var routeNodeIds = selectedRoute.NodeIds.ToHashSet(StringComparer.Ordinal);
         return new AtlasScreenViewState(
-            _region.DisplayName,
+            AtlasReadabilityFormatter.FormatRegionTitle(_region.DisplayName),
             BuildPlacementSummary(resolution.FindNode(selectedNode.NodeId)),
             _region.Nodes
                 .OrderBy(node => node.Hex.R)
@@ -113,7 +113,7 @@ public sealed class AtlasScreenPresenter
                 .ToArray(),
             _region.SigilPool.Select(BuildSigilPoolItem).ToArray(),
             _region.Routes.Select(route => BuildRoute(route, resolution)).ToArray(),
-            BuildPreview(preview));
+            BuildPreview(preview, selectedNode, selectedStack));
     }
 
     private void SeedDefaultPlacement()
@@ -140,41 +140,69 @@ public sealed class AtlasScreenPresenter
 
         return new AtlasHexTileViewState(
             node.NodeId,
-            node.Label,
+            AtlasReadabilityFormatter.FormatNodeLabel(node.Label),
             node.Hex,
             node.Kind,
             string.Equals(node.NodeId, _selectedNodeId, StringComparison.Ordinal),
             routeNodeIds.Contains(node.NodeId),
             _region.SigilAnchors.Contains(node.Hex),
-            placedSigil?.DisplayName ?? string.Empty,
-            (stack?.ResolvedModifiers ?? Array.Empty<AtlasResolvedModifier>()).Select(BuildChip).ToArray());
+            placedSigil == null ? string.Empty : AtlasReadabilityFormatter.FormatSigilName(placedSigil.DisplayName),
+            AtlasReadabilityFormatter.BuildTypeBadge(node.Kind),
+            AtlasReadabilityFormatter.BuildRewardBadge(node.RewardFamily),
+            BuildModifierBadges(stack),
+            AtlasReadabilityFormatter.BuildDifficultyBadge(node, stack),
+            BuildAuraCategories(stack));
     }
 
-    private AtlasModifierChipViewState BuildChip(AtlasResolvedModifier modifier)
+    private static IReadOnlyList<AtlasHexBadgeViewState> BuildModifierBadges(AtlasNodeModifierStack? stack)
     {
-        var label = modifier.Category switch
+        var modifiers = (stack?.ResolvedModifiers ?? Array.Empty<AtlasResolvedModifier>())
+            .OrderByDescending(modifier => modifier.Percent)
+            .ThenBy(modifier => modifier.Category)
+            .Take(2)
+            .Select(BuildModifierBadge)
+            .ToArray();
+        return modifiers.Length == 0
+            ? new[] { new AtlasHexBadgeViewState("영향 없음", "이 hex에는 현재 적용된 각인 영향이 없습니다.", "atlas-chip--modifier-neutral") }
+            : modifiers;
+    }
+
+    private static AtlasHexBadgeViewState BuildModifierBadge(AtlasResolvedModifier modifier)
+    {
+        var cssClass = modifier.Category switch
         {
-            AtlasModifierCategory.RewardBias => "Reward",
-            AtlasModifierCategory.ThreatPressure => "Threat",
-            AtlasModifierCategory.AffinityBoost => "Affinity",
-            _ => modifier.Category.ToString(),
+            AtlasModifierCategory.RewardBias => "atlas-chip--reward",
+            AtlasModifierCategory.ThreatPressure => "atlas-chip--threat",
+            AtlasModifierCategory.AffinityBoost => "atlas-chip--affinity",
+            _ => "atlas-chip--modifier-neutral",
         };
         var isCapped = modifier.SameCategoryCapped || modifier.HardCapped;
-        var cap = isCapped ? " capped" : string.Empty;
-        return new AtlasModifierChipViewState(
-            $"{label} +{modifier.Percent}%",
-            modifier.Category,
-            modifier.Percent,
-            isCapped,
-            $"{modifier.Label}: +{modifier.Percent}%{cap}");
+        var cap = isCapped ? " / cap 적용" : string.Empty;
+        var sourceNames = string.Join(", ", modifier.Sources
+            .Select(source => AtlasReadabilityFormatter.FormatSigilName(source.DisplayName))
+            .Distinct(StringComparer.Ordinal));
+        return new AtlasHexBadgeViewState(
+            AtlasReadabilityFormatter.FormatModifierChipLabel(modifier.Category, modifier.Percent),
+            $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)}: {AtlasReadabilityFormatter.FormatModifierLabel(modifier.Label)} +{modifier.Percent}% ({sourceNames}){cap}",
+            isCapped ? $"{cssClass} is-capped" : cssClass);
+    }
+
+    private static IReadOnlyList<AtlasModifierCategory> BuildAuraCategories(AtlasNodeModifierStack? stack)
+    {
+        return (stack?.ResolvedModifiers ?? Array.Empty<AtlasResolvedModifier>())
+            .Select(modifier => modifier.Category)
+            .Distinct()
+            .OrderBy(category => category)
+            .ToArray();
     }
 
     private AtlasSigilPoolItemViewState BuildSigilPoolItem(AtlasSigilDefinition sigil)
     {
-        var summary = string.Join(", ", sigil.Modifiers.Select(modifier => $"{modifier.Category} +{modifier.Percent}%"));
+        var summary = string.Join(", ", sigil.Modifiers.Select(modifier =>
+            $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)} +{modifier.Percent}%"));
         return new AtlasSigilPoolItemViewState(
             sigil.SigilId,
-            sigil.DisplayName,
+            AtlasReadabilityFormatter.FormatSigilName(sigil.DisplayName),
             sigil.Radius,
             summary,
             string.Equals(sigil.SigilId, _selectedSigilId, StringComparison.Ordinal),
@@ -188,39 +216,42 @@ public sealed class AtlasScreenPresenter
         var threat = routeStacks.Sum(stack => stack.ThreatPressurePercent);
         return new AtlasRouteCandidateViewState(
             route.RouteId,
-            route.Label,
-            $"Reward +{reward}% / Threat +{threat}%",
+            AtlasReadabilityFormatter.BuildRouteLabel(route, reward, threat),
+            AtlasReadabilityFormatter.BuildRouteSummary(route.NodeIds, reward, threat),
             string.Equals(route.RouteId, _selectedRouteId, StringComparison.Ordinal));
     }
 
-    private static AtlasPreviewPanelViewState BuildPreview(AtlasNodePreview preview)
+    private static AtlasPreviewPanelViewState BuildPreview(
+        AtlasNodePreview preview,
+        AtlasRegionNode selectedNode,
+        AtlasNodeModifierStack selectedStack)
     {
         var modifiers = preview.ModifierStack.Count == 0
-            ? "No sigil modifiers"
+            ? "적용된 각인 효과가 없습니다."
             : string.Join("\n", preview.ModifierStack.Select(modifier =>
-                $"{modifier.Category}: +{modifier.Percent}% from {string.Join(", ", modifier.Sources.Select(source => source.SigilId).Distinct(StringComparer.Ordinal))}"));
+            {
+                var sources = string.Join(", ", modifier.Sources
+                    .Select(source => AtlasReadabilityFormatter.FormatSigilName(source.DisplayName))
+                    .Distinct(StringComparer.Ordinal));
+                var cap = modifier.SameCategoryCapped || modifier.HardCapped ? " (cap 적용)" : string.Empty;
+                return $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)} +{modifier.Percent}% - {sources}{cap}";
+            }));
         var recommended = string.Join("\n", preview.RecommendedCharacters.Select(character =>
-            $"{character.DisplayName} - {character.Role} ({character.Reason})"));
+            $"{AtlasReadabilityFormatter.FormatCharacterName(character.CharacterId, character.DisplayName)} - {AtlasReadabilityFormatter.FormatRole(character.Role)} ({AtlasReadabilityFormatter.FormatRecommendationReason(character.Reason)})"));
 
         return new AtlasPreviewPanelViewState(
-            preview.NodeLabel,
-            preview.JudgementLine,
-            preview.EnemyPreview,
+            AtlasReadabilityFormatter.FormatNodeLabel(preview.NodeLabel),
+            AtlasReadabilityFormatter.BuildJudgementLine(selectedNode, selectedStack),
+            AtlasReadabilityFormatter.FormatEnemyPreview(preview.EnemyPreview),
             modifiers,
-            preview.RewardPreview,
+            AtlasReadabilityFormatter.BuildRewardPreview(selectedNode, selectedStack),
             recommended,
-            preview.SigilAugmentBoundaryNote,
+            AtlasReadabilityFormatter.FormatBoundaryNote(),
             $"NodeOverlayHash={preview.NodeOverlayHash[..12]} / BattleContextHash={preview.BattleContextHash[..12]} / input=runId>chapterId>siteId>nodeIndex>encounterId>NodeOverlayHash>squadSnapshotId");
     }
 
     private string BuildPlacementSummary(AtlasNodeModifierStack? selectedStack)
     {
-        var placed = _placements
-            .OrderBy(placement => placement.SigilId, StringComparer.Ordinal)
-            .Select(placement => $"{placement.SigilId}@{placement.AnchorHex}");
-        var affecting = selectedStack == null
-            ? "none"
-            : string.Join(", ", AtlasContextHasher.SortedSigilIds(selectedStack.Influences));
-        return $"Placed {_placements.Count}/2 sigils: {string.Join(" | ", placed)}. Selected node affecting sigils: {affecting}.";
+        return AtlasReadabilityFormatter.BuildPlacementSummary(_placements, _region.SigilPool, selectedStack);
     }
 }

@@ -105,6 +105,10 @@
     padding: 4px;
 }
 
+.atlas-hex.has-aura {
+    border-color: rgba(245, 204, 112, 0.34);
+}
+
 .atlas-hex.is-route {
     border-color: rgba(255, 255, 255, 0.46);
 }
@@ -118,16 +122,21 @@
     background-color: rgb(51, 61, 48);
 }
 
+.atlas-hex.has-overlap {
+    border-width: 2px;
+    border-color: rgb(255, 196, 128);
+}
+
 .atlas-hex-aura {
     position: absolute;
-    left: 3px;
-    right: 3px;
-    top: 3px;
-    bottom: 3px;
+    left: 2px;
+    right: 2px;
+    top: 2px;
+    bottom: 2px;
     flex-direction: row;
     border-radius: 6px;
     overflow: hidden;
-    opacity: 0.52;
+    opacity: 0.66;
 }
 
 .atlas-aura-swatch {
@@ -135,15 +144,15 @@
 }
 
 .atlas-aura--reward {
-    background-color: rgba(225, 193, 95, 0.34);
+    background-color: rgba(236, 188, 72, 0.44);
 }
 
 .atlas-aura--threat {
-    background-color: rgba(211, 111, 105, 0.34);
+    background-color: rgba(221, 92, 112, 0.44);
 }
 
 .atlas-aura--affinity {
-    background-color: rgba(111, 173, 213, 0.34);
+    background-color: rgba(88, 199, 186, 0.42);
 }
 
 .atlas-aura--neutral {
@@ -182,10 +191,16 @@
     background-color: rgb(45, 65, 72);
 }
 
-#atlas-hex-glyph {
-    font-size: 11px;
-    unity-font-style: bold;
-    color: rgb(245, 204, 112);
+.atlas-hex.has-overlap .atlas-hex-aura {
+    border-width: 1px;
+    border-color: rgba(255, 205, 130, 0.62);
+    opacity: 0.82;
+}
+
+.atlas-hex-token-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
 }
 
 #atlas-hex-label {
@@ -215,6 +230,14 @@
     color: rgb(14, 18, 20);
 }
 
+.atlas-chip--type {
+    background-color: rgb(207, 216, 207);
+}
+
+.atlas-chip--reward-family {
+    background-color: rgb(191, 176, 128);
+}
+
 .atlas-chip--reward {
     background-color: rgb(225, 193, 95);
 }
@@ -224,7 +247,25 @@
 }
 
 .atlas-chip--affinity {
-    background-color: rgb(111, 173, 213);
+    background-color: rgb(88, 199, 186);
+}
+
+.atlas-chip--modifier-neutral {
+    background-color: rgba(214, 220, 220, 0.64);
+    color: rgb(48, 53, 54);
+}
+
+.atlas-chip--difficulty-safe {
+    background-color: rgb(109, 184, 127);
+}
+
+.atlas-chip--difficulty-risk {
+    background-color: rgb(231, 178, 83);
+}
+
+.atlas-chip--difficulty-high {
+    background-color: rgb(219, 98, 105);
+    color: rgb(255, 249, 240);
 }
 
 .atlas-chip.is-capped {

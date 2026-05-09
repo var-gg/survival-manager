@@ -3,12 +3,10 @@ using SM.Atlas.Model;
 
 namespace SM.Unity.UI.Atlas;
 
-public sealed record AtlasModifierChipViewState(
+public sealed record AtlasHexBadgeViewState(
     string Label,
-    AtlasModifierCategory Category,
-    int Percent,
-    bool IsCapped,
-    string Tooltip);
+    string Tooltip,
+    string CssClass);
 
 public sealed record AtlasHexTileViewState(
     string NodeId,
@@ -19,7 +17,11 @@ public sealed record AtlasHexTileViewState(
     bool IsRouteNode,
     bool IsSigilAnchor,
     string PlacedSigilName,
-    IReadOnlyList<AtlasModifierChipViewState> Chips);
+    AtlasHexBadgeViewState TypeChip,
+    AtlasHexBadgeViewState RewardFamilyChip,
+    IReadOnlyList<AtlasHexBadgeViewState> ModifierChips,
+    AtlasHexBadgeViewState DifficultyChip,
+    IReadOnlyList<AtlasModifierCategory> AuraCategories);
 
 public sealed record AtlasSigilPoolItemViewState(
     string SigilId,
