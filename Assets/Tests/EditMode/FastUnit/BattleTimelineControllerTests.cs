@@ -59,6 +59,22 @@ public sealed class BattleTimelineControllerTests
     }
 
     [Test]
+    public void ConfiguredStartupHold_DelaysFirstStepOnly()
+    {
+        var (_, timeline) = CreateTimeline();
+        var fixedStep = timeline.FixedStepSeconds;
+        timeline.ConfigureStartupHold(0.5f);
+
+        var held = timeline.TryAdvance(0.49f, out _, out _, out var heldAlpha);
+        var stepped = timeline.TryAdvance(0.01f + fixedStep + 0.001f, out _, out var current, out _);
+
+        Assert.That(held, Is.False);
+        Assert.That(heldAlpha, Is.EqualTo(0f).Within(0.001f));
+        Assert.That(stepped, Is.True);
+        Assert.That(current!.StepIndex, Is.EqualTo(1));
+    }
+
+    [Test]
     public void TryAdvance_WhenPaused_PreservesCurrentBlendAlpha()
     {
         var (_, timeline) = CreateTimeline();

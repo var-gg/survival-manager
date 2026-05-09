@@ -527,6 +527,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _simulator = new BattleSimulator(newState, MaxBattleSteps);
 
         _timeline!.Reset(_simulator, _simulator.CurrentStep, MaxBattleSteps);
+        _timeline.ConfigureStartupHold(BattlePresentationController.StartupHoldSeconds);
         _battleFinishedHandled = false;
         _totalEventCount = 0;
         _recentLogs.Clear();
@@ -906,6 +907,7 @@ public sealed class BattleScreenController : MonoBehaviour
                 : BattlePlaybackMode.InGame);
         _timeline = new BattleTimelineController();
         _timeline.Initialize(_simulator, _simulator.CurrentStep, MaxBattleSteps);
+        _timeline.ConfigureStartupHold(BattlePresentationController.StartupHoldSeconds);
 
         presentationController.Initialize(_simulator.CurrentStep, BuildBattleMapSelectionContext(encounter.Context));
         presentationController.ApplyOptions(_presentationOptions);

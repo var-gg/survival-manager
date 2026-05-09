@@ -199,6 +199,47 @@ public sealed class BattleHumanoidAnimationSetTests
     }
 
     [Test]
+    public void ResolveLoopClip_UsesRelaxedIdleForNonCombatPresentationPhases()
+    {
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var relaxed = CreateClip("relaxed_idle");
+        var combat = CreateClip("combat_idle");
+        var move = CreateClip("move");
+
+        try
+        {
+            SetField(set, "relaxedIdle", relaxed);
+            SetField(set, "idle", combat);
+            SetField(set, "move", move);
+
+            Assert.That(set.TryResolveLoopClip(
+                CreateUnit(CombatActionState.AcquireTarget),
+                isLocomoting: false,
+                BattleActorPresentationPhase.RelaxedIdle,
+                out var relaxedClip), Is.True);
+            Assert.That(relaxedClip, Is.SameAs(relaxed));
+
+            Assert.That(set.TryResolveLoopClip(
+                CreateUnit(CombatActionState.AcquireTarget),
+                isLocomoting: false,
+                BattleActorPresentationPhase.CombatReady,
+                out var combatClip), Is.True);
+            Assert.That(combatClip, Is.SameAs(combat));
+
+            Assert.That(set.TryResolveLoopClip(
+                CreateUnit(CombatActionState.AcquireTarget),
+                isLocomoting: true,
+                BattleActorPresentationPhase.ResolvedIdle,
+                out var resolvedClip), Is.True);
+            Assert.That(resolvedClip, Is.SameAs(relaxed));
+        }
+        finally
+        {
+            Destroy(set, relaxed, combat, move);
+        }
+    }
+
+    [Test]
     public void ResolveCueClip_MapsBattleCueSemanticsToConfiguredVariants()
     {
         var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();

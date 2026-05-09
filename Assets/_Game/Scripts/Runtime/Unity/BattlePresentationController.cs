@@ -14,6 +14,9 @@ public sealed class BattlePresentationController : MonoBehaviour
     private static readonly ProfilerMarker SetBlendMarker = new("SM.BattlePresentationController.SetBlend");
     private const float ReadabilityBoostDuration = 1.8f;
     private const float SelectionPickRadiusPixels = 72f;
+    public const float StartupIdleSeconds = 0.28f;
+    public const float StartupStanceSeconds = 0.34f;
+    public const float StartupHoldSeconds = StartupIdleSeconds + StartupStanceSeconds;
 
     [SerializeField] private Transform battleStageRoot = null!;
     [SerializeField] private RectTransform actorOverlayRoot = null!;
@@ -35,6 +38,7 @@ public sealed class BattlePresentationController : MonoBehaviour
     private BattleSimulationStep? _cachedToStep;
     private string _selectedAnchorKey = string.Empty;
     private float _readabilityBoostRemaining;
+    private float _startupElapsedSeconds;
 
     public bool IsPaused { get; private set; }
     public int LastCueCount { get; private set; }
@@ -76,6 +80,7 @@ public sealed class BattlePresentationController : MonoBehaviour
         _camera = Camera.main!;
         IsPaused = false;
         LastCueCount = 0;
+        _startupElapsedSeconds = 0f;
         Clear();
         var tacticalOverlayMode = CreateSelectedMap(mapContext);
         CreateStageDecor(tacticalOverlayMode);
@@ -146,6 +151,11 @@ public sealed class BattlePresentationController : MonoBehaviour
             }
         }
 
+        if (currentStep.StepIndex > 0 || currentStep.IsFinished)
+        {
+            _startupElapsedSeconds = StartupHoldSeconds;
+        }
+
         SetBlend(previousStep, currentStep, 0f);
     }
 
@@ -169,6 +179,7 @@ public sealed class BattlePresentationController : MonoBehaviour
             var fromState = fromById.TryGetValue(id, out var resolvedFrom)
                 ? resolvedFrom
                 : toState;
+            view.ApplyPresentationPhase(ResolvePresentationPhase(toStep));
             view.ApplyBlend(fromState, toState, alpha);
         }
     }
@@ -250,6 +261,9 @@ public sealed class BattlePresentationController : MonoBehaviour
         if (!paused)
         {
             _readabilityBoostRemaining = Mathf.Max(0f, _readabilityBoostRemaining - (deltaTime * playbackSpeed));
+            _startupElapsedSeconds = Mathf.Min(
+                StartupHoldSeconds,
+                _startupElapsedSeconds + (Mathf.Max(0f, deltaTime) * Mathf.Max(0.05f, playbackSpeed)));
         }
 
         foreach (var view in _actorViews.Values)
@@ -258,6 +272,21 @@ public sealed class BattlePresentationController : MonoBehaviour
         }
 
         UpdateStageReadability();
+    }
+
+    private BattleActorPresentationPhase ResolvePresentationPhase(BattleSimulationStep step)
+    {
+        if (step.IsFinished)
+        {
+            return BattleActorPresentationPhase.ResolvedIdle;
+        }
+
+        if (step.StepIndex == 0 && _startupElapsedSeconds < StartupIdleSeconds)
+        {
+            return BattleActorPresentationPhase.RelaxedIdle;
+        }
+
+        return BattleActorPresentationPhase.CombatReady;
     }
 
     public bool TryPickActor(Vector2 screenPosition, out string actorId)

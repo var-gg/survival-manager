@@ -18,7 +18,19 @@ public static class BattleReadModelBuilder
             .ThenBy(unit => unit.Definition.Name)
             .Select(unit =>
             {
-                var target = state.FindUnit(unit.CurrentTargetId) ?? state.FindUnit(unit.PendingTargetId);
+                var useResolvedPose = isFinished && unit.IsAlive;
+                var target = useResolvedPose
+                    ? null
+                    : state.FindUnit(unit.CurrentTargetId) ?? state.FindUnit(unit.PendingTargetId);
+                var position = useResolvedPose
+                    ? MovementResolver.ResolveBattleResolvedPosition(state, unit)
+                    : unit.Position;
+                var actionState = useResolvedPose
+                    ? CombatActionState.AcquireTarget
+                    : unit.ActionState;
+                var pendingActionType = useResolvedPose
+                    ? null
+                    : unit.PendingActionType;
                 return new BattleUnitReadModel(
                     unit.Id.Value,
                     unit.Definition.Name,
@@ -26,19 +38,19 @@ public static class BattleReadModelBuilder
                     unit.Anchor,
                     unit.Definition.RaceId,
                     unit.Definition.ClassId,
-                    unit.Position,
+                    position,
                     unit.CurrentHealth,
                     unit.MaxHealth,
                     unit.IsAlive,
-                    unit.ActionState,
-                    unit.PendingActionType,
+                    actionState,
+                    pendingActionType,
                     target?.Id.Value,
                     target?.Definition.Name,
-                    unit.WindupProgress,
-                    unit.CooldownRemaining,
+                    useResolvedPose ? 0f : unit.WindupProgress,
+                    useResolvedPose ? 0f : unit.CooldownRemaining,
                     unit.CurrentEnergy,
                     unit.MaxEnergy,
-                    unit.IsDefending,
+                    useResolvedPose ? false : unit.IsDefending,
                     unit.Barrier,
                     unit.Statuses.Select(status => status.StatusId).ToList(),
                     unit.HeadAnchorHeight,

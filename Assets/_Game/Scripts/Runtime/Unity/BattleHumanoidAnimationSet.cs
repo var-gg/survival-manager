@@ -135,6 +135,7 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
     public const string ResourcesPath = "_Game/Battle/BattleHumanoidAnimationSet";
 
     [SerializeField] private BattleHumanoidAnimationStance stance = BattleHumanoidAnimationStance.Default;
+    [SerializeField] private AnimationClip relaxedIdle = null!;
     [SerializeField] private AnimationClip idle = null!;
     [SerializeField] private AnimationClip move = null!;
     [SerializeField] private AnimationClip guardLoop = null!;
@@ -157,7 +158,16 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
 
     public bool TryResolveLoopClip(BattleUnitReadModel state, bool isLocomoting, out AnimationClip clip)
     {
-        clip = ResolveLoopClip(state, isLocomoting)!;
+        return TryResolveLoopClip(state, isLocomoting, BattleActorPresentationPhase.CombatReady, out clip);
+    }
+
+    public bool TryResolveLoopClip(
+        BattleUnitReadModel state,
+        bool isLocomoting,
+        BattleActorPresentationPhase presentationPhase,
+        out AnimationClip clip)
+    {
+        clip = ResolveLoopClip(state, isLocomoting, presentationPhase)!;
         return clip != null;
     }
 
@@ -187,11 +197,19 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
 #endif
     }
 
-    private AnimationClip? ResolveLoopClip(BattleUnitReadModel state, bool isLocomoting)
+    private AnimationClip? ResolveLoopClip(
+        BattleUnitReadModel state,
+        bool isLocomoting,
+        BattleActorPresentationPhase presentationPhase)
     {
         if (!state.IsAlive || state.ActionState == CombatActionState.Dead)
         {
             return death != null ? death : idle;
+        }
+
+        if (presentationPhase is BattleActorPresentationPhase.RelaxedIdle or BattleActorPresentationPhase.ResolvedIdle)
+        {
+            return FirstNonNull(relaxedIdle, idle);
         }
 
         if (isLocomoting)
@@ -341,7 +359,8 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
 
     private bool HasAnyClip()
     {
-        return idle != null
+        return relaxedIdle != null
+               || idle != null
                || move != null
                || guardLoop != null
                || guardEnter != null

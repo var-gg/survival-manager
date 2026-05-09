@@ -17,6 +17,7 @@ public sealed partial class BattleHumanoidAnimationSet
         }
 
         var idleClip = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/HumanM@CombatIdle01.fbx");
+        var relaxedIdleClip = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Idles/HumanM@Idle01.fbx");
         var moveClip = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Forward.fbx")
                        ?? LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Forward.fbx");
 
@@ -28,6 +29,7 @@ public sealed partial class BattleHumanoidAnimationSet
         var set = CreateInstance<BattleHumanoidAnimationSet>();
         set.hideFlags = HideFlags.DontSave;
         set.stance = BattleHumanoidAnimationStance.Default;
+        set.relaxedIdle = relaxedIdleClip ?? idleClip!;
         set.idle = idleClip!;
         set.move = moveClip!;
         set.guardLoop = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Shield/HumanM@BlockShield01 - Loop.fbx") ?? idleClip!;

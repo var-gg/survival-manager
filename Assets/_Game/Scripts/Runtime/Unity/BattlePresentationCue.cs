@@ -68,6 +68,13 @@ public enum BattleAnimationIntensity
     Heavy = 3,
 }
 
+public enum BattleActorPresentationPhase
+{
+    RelaxedIdle = 0,
+    CombatReady = 1,
+    ResolvedIdle = 2,
+}
+
 public sealed record BattlePresentationCue(
     BattlePresentationCueType CueType,
     int StepIndex,

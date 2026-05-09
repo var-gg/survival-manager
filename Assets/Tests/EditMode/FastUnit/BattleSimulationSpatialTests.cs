@@ -186,6 +186,43 @@ public sealed class BattleSimulationSpatialTests
     }
 
     [Test]
+    public void FinishedReadModel_ReturnsLivingBacklineToHomePocket()
+    {
+        var frontline = CombatTestFactory.CreateUnit(
+            "ally_frontline",
+            classId: "vanguard",
+            anchor: DeploymentAnchorId.FrontCenter,
+            hp: 80f,
+            attackRange: 1.2f);
+        var ranger = CombatTestFactory.CreateUnit(
+            "ally_ranger",
+            classId: "ranger",
+            anchor: DeploymentAnchorId.BackTop,
+            hp: 40f,
+            attackRange: 3.2f);
+        var enemy = CombatTestFactory.CreateUnit(
+            "enemy_fallen",
+            race: "undead",
+            classId: "vanguard",
+            anchor: DeploymentAnchorId.FrontCenter,
+            hp: 1f);
+        var state = CombatTestFactory.CreateBattleState(new[] { frontline, ranger }, new[] { enemy });
+        state.Allies[0].SetPosition(new CombatVector2(0.45f, 0f));
+        state.Allies[1].SetPosition(new CombatVector2(0.30f, 0.05f));
+        state.Enemies[0].TakeDamage(99f);
+
+        var finished = BattleReadModelBuilder.BuildStep(state, new BattleEvent[0], true, TeamSide.Ally);
+
+        var frontlineView = finished.Units.First(unit => unit.Id.Contains("ally_frontline"));
+        var rangerView = finished.Units.First(unit => unit.Id.Contains("ally_ranger"));
+        Assert.That(rangerView.Position.X, Is.LessThan(frontlineView.Position.X - 0.25f));
+        Assert.That(rangerView.TargetId, Is.Null);
+        Assert.That(rangerView.PendingActionType, Is.Null);
+        Assert.That(rangerView.ActionState, Is.EqualTo(CombatActionState.AcquireTarget));
+        Assert.That(rangerView.IsDefending, Is.False);
+    }
+
+    [Test]
     public void RangedBasicAttack_CancelsCommit_WhenTargetIsInsidePreferredMinimum()
     {
         var ranger = CombatTestFactory.CreateUnit(
