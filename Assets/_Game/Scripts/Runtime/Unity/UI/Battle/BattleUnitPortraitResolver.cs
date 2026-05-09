@@ -17,9 +17,9 @@ internal sealed class BattleUnitPortraitResolver
             return null;
         }
 
-        foreach (var faceId in EnumerateFaceIds(unit))
+        foreach (var assetStem in EnumeratePortraitAssetStems(unit))
         {
-            var texture = Load(unit.CharacterId, faceId);
+            var texture = LoadRaw(unit.CharacterId, assetStem);
             if (texture != null)
             {
                 return texture;
@@ -48,19 +48,6 @@ internal sealed class BattleUnitPortraitResolver
         return null;
     }
 
-    private Texture2D? Load(string characterId, string faceId)
-    {
-        var key = $"{characterId}:{faceId}";
-        if (_cache.TryGetValue(key, out var cached))
-        {
-            return cached;
-        }
-
-        var texture = Resources.Load<Texture2D>($"{BasePath}/{characterId}/portrait_face_{faceId}");
-        _cache[key] = texture;
-        return texture;
-    }
-
     private Texture2D? LoadRaw(string characterId, string assetStem)
     {
         var key = $"{characterId}:{assetStem}";
@@ -72,6 +59,17 @@ internal sealed class BattleUnitPortraitResolver
         var texture = Resources.Load<Texture2D>($"{BasePath}/{characterId}/{assetStem}");
         _cache[key] = texture;
         return texture;
+    }
+
+    private static IEnumerable<string> EnumeratePortraitAssetStems(BattleUnitReadModel unit)
+    {
+        foreach (var faceId in EnumerateFaceIds(unit))
+        {
+            yield return $"portrait_face_{faceId}";
+        }
+
+        yield return "portrait_stance_idle";
+        yield return "portrait_full";
     }
 
     private static IEnumerable<string> EnumerateFaceIds(BattleUnitReadModel unit)
@@ -131,6 +129,41 @@ internal sealed class BattleUnitPortraitResolver
             else if (string.Equals(skillId, "support_purifying", StringComparison.Ordinal))
             {
                 yield return "ash_purification";
+            }
+        }
+        else if (string.Equals(characterId, "hero_pack_raider", StringComparison.Ordinal))
+        {
+            if (string.Equals(skillId, "skill_raider_core", StringComparison.Ordinal)
+                || string.Equals(skillId, "skill_scout_utility", StringComparison.Ordinal))
+            {
+                yield return "wind_read";
+            }
+            else if (string.Equals(skillId, "skill_raider_utility", StringComparison.Ordinal)
+                || string.Equals(skillId, "skill_power_strike", StringComparison.Ordinal)
+                || string.Equals(skillId, "skill_reaver_utility", StringComparison.Ordinal)
+                || string.Equals(skillId, "skill_slayer_utility", StringComparison.Ordinal))
+            {
+                yield return "fang_strike";
+            }
+            else if (string.Equals(skillId, "support_brutal", StringComparison.Ordinal))
+            {
+                yield return "pack_position";
+            }
+        }
+        else if (string.Equals(characterId, "hero_grave_hexer", StringComparison.Ordinal))
+        {
+            if (string.Equals(skillId, "skill_hexer_core", StringComparison.Ordinal))
+            {
+                yield return "time_distance";
+            }
+            else if (string.Equals(skillId, "skill_hexer_utility", StringComparison.Ordinal)
+                || string.Equals(skillId, "skill_minor_heal", StringComparison.Ordinal))
+            {
+                yield return "memory_project";
+            }
+            else if (string.Equals(skillId, "skill_shaman_utility", StringComparison.Ordinal))
+            {
+                yield return "voice_scar";
             }
         }
 
