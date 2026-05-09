@@ -258,6 +258,8 @@ public static class BattleTelemetryRecorder
             TimeSeconds = state.ElapsedSeconds,
             Actor = BuildEntityRef(actor),
             Explain = BuildSpawnExplain(actor),
+            ValueA = actor.Position.X,
+            ValueB = actor.Position.Y,
         });
     }
 
