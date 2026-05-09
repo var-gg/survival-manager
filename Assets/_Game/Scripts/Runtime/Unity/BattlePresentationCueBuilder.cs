@@ -29,6 +29,7 @@ public sealed class BattlePresentationCueBuilder
 
             if (previous.ActionState != CombatActionState.ExecuteAction && current.ActionState == CombatActionState.ExecuteAction)
             {
+                var windupAnimation = ResolveBasicAttackWindupAnimation(current);
                 cues.Add(new BattlePresentationCue(
                     BattlePresentationCueType.WindupEnter,
                     currentStep.StepIndex,
@@ -37,7 +38,11 @@ public sealed class BattlePresentationCueBuilder
                     current.PendingActionType,
                     current.WindupProgress,
                     BattlePresentationAnchorId.Cast,
-                    BattlePresentationAnchorId.Center));
+                    BattlePresentationAnchorId.Center,
+                    windupAnimation.Note,
+                    windupAnimation.Semantic,
+                    windupAnimation.Direction,
+                    windupAnimation.Intensity));
             }
 
             if (!string.Equals(previous.TargetId, current.TargetId, System.StringComparison.Ordinal)
@@ -499,6 +504,34 @@ public sealed class BattlePresentationCueBuilder
                 BattleAnimationDirection.Forward,
                 BattleAnimationIntensity.Medium,
                 eventData.Note);
+        }
+
+        return BattleAnimationCueDescriptor.None;
+    }
+
+    private static BattleAnimationCueDescriptor ResolveBasicAttackWindupAnimation(BattleUnitReadModel actor)
+    {
+        if (actor.PendingActionType != BattleActionType.BasicAttack)
+        {
+            return BattleAnimationCueDescriptor.None;
+        }
+
+        if (IsBowBasicAttacker(actor))
+        {
+            return new BattleAnimationCueDescriptor(
+                BattleAnimationSemantic.BowDraw,
+                BattleAnimationDirection.Forward,
+                BattleAnimationIntensity.Medium,
+                "windup_bow");
+        }
+
+        if (IsProjectileBasicAttacker(actor))
+        {
+            return new BattleAnimationCueDescriptor(
+                BattleAnimationSemantic.ProjectileWindup,
+                BattleAnimationDirection.Forward,
+                BattleAnimationIntensity.Medium,
+                "windup_projectile");
         }
 
         return BattleAnimationCueDescriptor.None;

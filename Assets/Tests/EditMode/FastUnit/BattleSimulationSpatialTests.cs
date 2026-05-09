@@ -128,6 +128,53 @@ public sealed class BattleSimulationSpatialTests
     }
 
     [Test]
+    public void RangedBasicAttack_CancelsCommit_WhenTargetIsInsidePreferredMinimum()
+    {
+        var ranger = CombatTestFactory.CreateUnit(
+            "ally_ranger",
+            classId: "ranger",
+            anchor: DeploymentAnchorId.BackCenter,
+            moveSpeed: 1.8f,
+            attackRange: 3.2f,
+            attackWindup: 0.1f,
+            attackCooldown: 0.5f);
+        var enemy = CombatTestFactory.CreateUnit(
+            "enemy_pursuer",
+            race: "undead",
+            classId: "duelist",
+            anchor: DeploymentAnchorId.FrontCenter,
+            moveSpeed: 1.7f,
+            attackRange: 1.2f);
+
+        var state = CombatTestFactory.CreateBattleState(new[] { ranger }, new[] { enemy });
+        var rangerState = state.Allies[0];
+        var enemyState = state.Enemies[0];
+        var tooCloseEdgeDistance = rangerState.Behavior.PreferredRangeMin - rangerState.Behavior.RetreatBuffer - 0.05f;
+        rangerState.SetPosition(new CombatVector2(0f, 0f));
+        enemyState.SetPosition(new CombatVector2(rangerState.NavigationRadius + enemyState.NavigationRadius + tooCloseEdgeDistance, 0f));
+        rangerState.BeginWindup(BattleActionType.BasicAttack, enemyState.Id, null);
+
+        var simulator = new BattleSimulator(state, 20);
+        var step = simulator.Step();
+        var rangerAttack = step.Events.FirstOrDefault(evt =>
+            evt.ActorName == "ally_ranger"
+            && evt.LogCode == BattleLogCode.BasicAttackDamage);
+        var allyView = step.Units.First(unit => unit.Id.Contains("ally_ranger"));
+        var enemyView = step.Units.First(unit => unit.Id.Contains("enemy_pursuer"));
+        var edgeDistance = allyView.Position.DistanceTo(enemyView.Position) - allyView.NavigationRadius - enemyView.NavigationRadius;
+
+        Assert.That(edgeDistance, Is.LessThan(2.0f));
+        Assert.That(rangerAttack, Is.Null);
+        Assert.That(allyView.ActionState, Is.EqualTo(CombatActionState.AcquireTarget));
+        Assert.That(allyView.PendingActionType, Is.Null);
+
+        var nextStep = simulator.Step();
+        var nextAllyView = nextStep.Units.First(unit => unit.Id.Contains("ally_ranger"));
+        Assert.That(nextAllyView.ActionState, Is.EqualTo(CombatActionState.BreakContact));
+        Assert.That(nextAllyView.PendingActionType, Is.Null);
+    }
+
+    [Test]
     public void Healer_Supports_Lowest_Health_Ally()
     {
         var healSkill = new SkillDefinition("heal", "Heal", SkillKind.Heal, 4f, 3f);

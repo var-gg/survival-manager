@@ -132,6 +132,38 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
+    public void Build_MapsRangerBasicAttackWindup_ToBowDrawAnimationSemantic()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", classId: "ranger", archetypeId: "marksman"),
+            CreateUnit("enemy", TeamSide.Enemy),
+        });
+        var current = CreateStep(units: new[]
+        {
+            CreateUnit(
+                "ally",
+                TeamSide.Ally,
+                targetId: "enemy",
+                actionState: CombatActionState.ExecuteAction,
+                classId: "ranger",
+                preferredRangeMin: 2.3f,
+                preferredRangeMax: 3.2f,
+                archetypeId: "marksman"),
+            CreateUnit("enemy", TeamSide.Enemy),
+        });
+
+        var cue = new BattlePresentationCueBuilder()
+            .Build(previous, current)
+            .Single(candidate => candidate.CueType == BattlePresentationCueType.WindupEnter && candidate.SubjectActorId == "ally");
+
+        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BowDraw));
+        Assert.That(cue.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
+        Assert.That(cue.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
+        Assert.That(cue.Note, Is.EqualTo("windup_bow"));
+    }
+
+    [Test]
     public void Build_MapsMysticBasicAttack_ToProjectileCastAnimationSemantic()
     {
         var units = new[]
@@ -160,6 +192,38 @@ public sealed class BattlePresentationCueBuilderTests
         Assert.That(commit.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.ProjectileCast));
         Assert.That(commit.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
         Assert.That(commit.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
+    }
+
+    [Test]
+    public void Build_MapsMysticBasicAttackWindup_ToProjectileWindupAnimationSemantic()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", classId: "mystic", archetypeId: "hexer"),
+            CreateUnit("enemy", TeamSide.Enemy),
+        });
+        var current = CreateStep(units: new[]
+        {
+            CreateUnit(
+                "ally",
+                TeamSide.Ally,
+                targetId: "enemy",
+                actionState: CombatActionState.ExecuteAction,
+                classId: "mystic",
+                preferredRangeMin: 2.1f,
+                preferredRangeMax: 2.9f,
+                archetypeId: "hexer"),
+            CreateUnit("enemy", TeamSide.Enemy),
+        });
+
+        var cue = new BattlePresentationCueBuilder()
+            .Build(previous, current)
+            .Single(candidate => candidate.CueType == BattlePresentationCueType.WindupEnter && candidate.SubjectActorId == "ally");
+
+        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.ProjectileWindup));
+        Assert.That(cue.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
+        Assert.That(cue.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
+        Assert.That(cue.Note, Is.EqualTo("windup_projectile"));
     }
 
     [Test]
