@@ -166,6 +166,7 @@ public sealed class BattleSimulator
         }
 
         MovementResolver.ResolveFormationSpacing(State);
+        State.ActivityTelemetry.RecordStep(State);
         State.AdvanceStep();
 
         foreach (var stepEvent in stepEvents)
@@ -195,7 +196,8 @@ public sealed class BattleSimulator
             State.ElapsedSeconds,
             _events.ToList(),
             CurrentStep.Units,
-            State.TelemetryEvents.ToList());
+            State.TelemetryEvents.ToList(),
+            State.ActivityTelemetry.BuildSnapshot(State));
     }
 
     private bool TryAdvanceSpawn(UnitSnapshot actor)

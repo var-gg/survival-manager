@@ -33,6 +33,7 @@ public static class TargetScoringService
     public static UnitSnapshot? SelectTarget(BattleState state, UnitSnapshot actor, TargetRule? authoredRule)
     {
         var rule = authoredRule ?? new TargetRule();
+        var context = state.GetTacticContext(actor.Side);
         actor.SetTargetDebugState(rule.PrimarySelector, rule.FallbackPolicy);
 
         if (rule.Domain == TargetDomain.Self || rule.PrimarySelector == TargetSelector.Self)
@@ -64,24 +65,28 @@ public static class TargetScoringService
 
         var selected = rule.PrimarySelector switch
         {
-            TargetSelector.NearestReachableEnemy => candidates.OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
+            TargetSelector.NearestReachableEnemy => candidates
+                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
+                .ThenBy(target => target.Id.Value)
+                .FirstOrDefault(),
             TargetSelector.NearestFrontlineEnemy => candidates
                 .Where(target => target.Behavior.FormationLine == FormationLine.Frontline)
-                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target))
+                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
                 .ThenBy(target => target.Id.Value)
                 .FirstOrDefault() ?? ResolveFallback(state, actor, CloneRuleWithFallback(rule, TargetFallbackPolicy.NearestReachableEnemy), candidates),
-            TargetSelector.LowestCurrentHpEnemy => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
-            TargetSelector.LowestHpPercentEnemy => candidates.OrderBy(target => target.HealthRatio).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
-            TargetSelector.LowestEhpEnemy => candidates.OrderBy(target => EstimateEhpAgainst(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
+            TargetSelector.LowestCurrentHpEnemy => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
+            TargetSelector.LowestHpPercentEnemy => candidates.OrderBy(target => target.HealthRatio).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
+            TargetSelector.LowestEhpEnemy => candidates.OrderBy(target => EstimateEhpAgainst(actor, target)).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => target.Id.Value).FirstOrDefault(),
             TargetSelector.MarkedEnemy => candidates.FirstOrDefault(target => target.HasStatus("marked")) ?? ResolveFallback(state, actor, rule, candidates),
             TargetSelector.LargestEnemyCluster => candidates
                 .OrderByDescending(target => CountClusterTargets(candidates, target.Position, Math.Max(0.1f, rule.ClusterRadius)))
+                .ThenBy(target => ResolveTacticTargetBias(state, actor, target, context))
                 .ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target))
                 .ThenBy(target => target.Id.Value)
                 .FirstOrDefault(),
             TargetSelector.BacklineExposedEnemy => candidates
                 .Where(target => IsBacklineExposedEnemy(state, target))
-                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target))
+                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
                 .ThenBy(target => target.Id.Value)
                 .FirstOrDefault() ?? ResolveFallback(state, actor, rule, candidates),
             TargetSelector.LowestCurrentHpAlly => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
@@ -90,12 +95,12 @@ public static class TargetScoringService
             TargetSelector.NearestInjuredAlly => candidates.Where(target => target.CurrentHealth < target.MaxHealth).OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault() ?? ResolveFallback(state, actor, rule, candidates),
             TargetSelector.EmptyPointNearSelf => actor,
             TargetSelector.EmptyPointNearTarget => currentTarget,
-            _ => ResolveFallback(state, actor, rule, candidates),
+            _ => ResolveFallback(state, actor, rule, candidates, context),
         };
 
         return IsValidCandidate(state, actor, selected, rule)
             ? selected
-            : ResolveFallback(state, actor, rule, candidates);
+            : ResolveFallback(state, actor, rule, candidates, context);
     }
 
     internal static float ComputeExposureScore(BattleState state, UnitSnapshot target)
@@ -198,8 +203,10 @@ public static class TargetScoringService
         BattleState state,
         UnitSnapshot actor,
         TargetRule rule,
-        IEnumerable<UnitSnapshot> candidates)
+        IEnumerable<UnitSnapshot> candidates,
+        TacticContext? context = null)
     {
+        context ??= state.GetTacticContext(actor.Side);
         return rule.FallbackPolicy switch
         {
             TargetFallbackPolicy.Abort => null,
@@ -208,17 +215,39 @@ public static class TargetScoringService
                 : null,
             TargetFallbackPolicy.NearestReachableEnemy => candidates
                 .Where(target => target.Side != actor.Side)
-                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target))
+                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
                 .ThenBy(target => target.Id.Value)
                 .FirstOrDefault(),
             TargetFallbackPolicy.LowestCurrentHpEnemy => candidates
                 .Where(target => target.Side != actor.Side)
                 .OrderBy(target => target.CurrentHealth)
+                .ThenBy(target => ResolveTacticTargetBias(state, actor, target, context))
                 .ThenBy(target => target.Id.Value)
                 .FirstOrDefault(),
             TargetFallbackPolicy.Self => actor,
             _ => null,
         };
+    }
+
+    private static float ResolveTacticTargetBias(BattleState state, UnitSnapshot actor, UnitSnapshot target, TacticContext context)
+    {
+        if (target.Side == actor.Side)
+        {
+            return 0f;
+        }
+
+        var currentFocus = state.GetOpponents(target.Side)
+            .Count(unit => unit.IsAlive
+                           && unit.Id != actor.Id
+                           && (unit.CurrentTargetId == target.Id || unit.PendingTargetId == target.Id));
+        var switchPenalty = actor.CurrentTargetId != null && actor.CurrentTargetId != target.Id
+            ? context.TargetSwitchPenalty * 0.15f
+            : 0f;
+        var focusBias = context.FocusModeBias >= 0f
+            ? -context.FocusModeBias * currentFocus * 0.35f
+            : MathF.Abs(context.FocusModeBias) * currentFocus * 0.55f;
+        var flankBias = MathF.Abs(context.FlankBias) * (target.Behavior.FormationLine == FormationLine.Backline ? -0.08f : 0f);
+        return switchPenalty + focusBias + flankBias;
     }
 
     private static float ResolveAcquireRange(UnitSnapshot actor, TargetRule rule)

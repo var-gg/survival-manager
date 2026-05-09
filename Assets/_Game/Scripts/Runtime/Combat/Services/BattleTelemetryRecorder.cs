@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Contracts;
@@ -52,6 +53,8 @@ public static class BattleTelemetryRecorder
             IntValueA = (int)winner,
             BoolValueA = timeoutOccurred,
         });
+
+        RecordActivityTelemetrySnapshot(state);
     }
 
     public static void RecordActionStarted(BattleState state, UnitSnapshot actor, EvaluatedAction evaluated)
@@ -71,6 +74,7 @@ public static class BattleTelemetryRecorder
 
     public static void RecordActionResolved(BattleState state, UnitSnapshot actor, UnitSnapshot? target, BattleActionType actionType, BattleSkillSpec? skill, float value)
     {
+        state.ActivityTelemetry.RecordActionResolved(actor, target, actionType);
         var explain = BuildActionExplain(actor, actionType, skill, actor.PendingDecisionReason, ResolveActionSalience(actionType, skill));
         state.AddTelemetry(new TelemetryEventRecord
         {
@@ -92,6 +96,7 @@ public static class BattleTelemetryRecorder
             return;
         }
 
+        state.ActivityTelemetry.RecordTargetEvent(state, actor, previousTarget, nextTarget);
         var eventKind = previousTarget == null || string.IsNullOrWhiteSpace(previousTarget.Id.Value)
             ? TelemetryEventKind.TargetAcquired
             : string.Equals(previousTarget.Id.Value, nextTarget.Id.Value, StringComparison.Ordinal)
@@ -157,6 +162,30 @@ public static class BattleTelemetryRecorder
             IntValueA = actor.PositioningIntentRevision,
             StringValueA = actor.PositioningIntent.ToString(),
             StringValueB = actor.PositioningReplanReason.ToString(),
+        });
+    }
+
+    public static void RecordPostAttackReposition(BattleState state, UnitSnapshot actor, UnitSnapshot target, float movedDistance, string note)
+    {
+        state.ActivityTelemetry.RecordPostAttackReposition();
+        state.AddTelemetry(new TelemetryEventRecord
+        {
+            Domain = TelemetryDomain.Combat,
+            EventKind = TelemetryEventKind.PostAttackRepositioned,
+            TimeSeconds = state.ElapsedSeconds,
+            Actor = BuildEntityRef(actor),
+            Target = BuildEntityRef(target),
+            Explain = new ExplainStamp
+            {
+                SourceKind = ExplainedSourceKind.SystemRule,
+                SourceContentId = state.GetTeamTactic(actor.Side).Id,
+                SourceDisplayName = state.GetTeamTactic(actor.Side).DisplayName,
+                ReasonCode = DecisionReasonCode.MaintainRangeBand,
+                Salience = SalienceClass.Ambient,
+            },
+            ValueA = movedDistance,
+            ValueB = MovementResolver.ComputeEdgeDistance(actor, target),
+            StringValueA = note,
         });
     }
 
@@ -263,6 +292,22 @@ public static class BattleTelemetryRecorder
         });
     }
 
+    public static void RecordActivityTelemetrySnapshot(BattleState state)
+    {
+        var snapshot = state.ActivityTelemetry.BuildSnapshot(state);
+        AddMetric(state, "MeanPairwiseDistanceByTeam", snapshot.MeanPairwiseDistanceByTeam.TryGetValue(TeamSide.Ally, out var allyMean) ? allyMean : 0f,
+            snapshot.MeanPairwiseDistanceByTeam.TryGetValue(TeamSide.Enemy, out var enemyMean) ? enemyMean : 0f);
+        AddMetric(state, "YSpreadStdByRow", 0f, 0f, Serialize(snapshot.YSpreadStdByRow));
+        AddMetric(state, "TargetEntropy", snapshot.TargetEntropy);
+        AddMetric(state, "FocusHeatPerTarget", 0f, 0f, Serialize(snapshot.FocusHeatPerTarget));
+        AddMetric(state, "OverfocusEvents", snapshot.OverfocusEvents);
+        AddMetric(state, "TankAbsorbedFocusHeat", snapshot.TankAbsorbedFocusHeat);
+        AddMetric(state, "StationaryBetweenAttacksRatio", snapshot.StationaryBetweenAttacksRatio);
+        AddMetric(state, "PostAttackRepositionCount", snapshot.PostAttackRepositionCount);
+        AddMetric(state, "TargetSwitchCount", snapshot.TargetSwitchCount);
+        AddMetric(state, "ReplayHash", 0f, 0f, snapshot.ReplayHash);
+    }
+
     public static TelemetryEntityRef? BuildEntityRef(UnitSnapshot? unit)
     {
         if (unit == null)
@@ -330,6 +375,36 @@ public static class BattleTelemetryRecorder
     public static float GetSalienceWeight(SalienceClass salience)
     {
         return SalienceWeights.TryGetValue(salience, out var weight) ? weight : 0f;
+    }
+
+    private static void AddMetric(BattleState state, string metricId, float valueA, float valueB = 0f, string valueText = "")
+    {
+        state.AddTelemetry(new TelemetryEventRecord
+        {
+            Domain = TelemetryDomain.Combat,
+            EventKind = TelemetryEventKind.ActivityMetricRecorded,
+            TimeSeconds = state.ElapsedSeconds,
+            Explain = new ExplainStamp
+            {
+                SourceKind = ExplainedSourceKind.SystemRule,
+                SourceContentId = "activity_telemetry_v1",
+                SourceDisplayName = "Activity Telemetry V1",
+                ReasonCode = DecisionReasonCode.DefaultCadence,
+                Salience = SalienceClass.Ambient,
+            },
+            ValueA = valueA,
+            ValueB = valueB,
+            StringValueA = metricId,
+            StringValueB = valueText,
+        });
+    }
+
+    private static string Serialize<TKey>(IReadOnlyDictionary<TKey, float> values)
+        where TKey : notnull
+    {
+        return string.Join(";", values
+            .OrderBy(pair => Convert.ToString(pair.Key, CultureInfo.InvariantCulture), StringComparer.Ordinal)
+            .Select(pair => $"{Convert.ToString(pair.Key, CultureInfo.InvariantCulture)}={pair.Value.ToString("0.###", CultureInfo.InvariantCulture)}"));
     }
 
     private static ExplainStamp BuildActionExplain(UnitSnapshot actor, BattleActionType actionType, BattleSkillSpec? skill, DecisionReasonCode reasonCode, SalienceClass salience)

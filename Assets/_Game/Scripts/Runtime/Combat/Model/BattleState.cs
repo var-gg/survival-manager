@@ -10,6 +10,9 @@ public sealed class BattleState
     private readonly Dictionary<string, HashSet<string>> _damageContributorsByVictim = new();
     private readonly HashSet<string> _scheduledOwnerDeaths = new();
     private readonly Dictionary<string, float> _ownedEntityDespawnTimers = new();
+    private int _tacticContextStep = -1;
+    private TacticContext? _allyTacticContext;
+    private TacticContext? _enemyTacticContext;
 
     public BattleState(
         IReadOnlyList<UnitSnapshot> allies,
@@ -18,12 +21,16 @@ public sealed class BattleState
         TeamPostureType enemyPosture,
         float fixedStepSeconds,
         int seed,
-        TelemetryContext? telemetryContext = null)
+        TelemetryContext? telemetryContext = null,
+        TeamTacticProfile? allyTactic = null,
+        TeamTacticProfile? enemyTactic = null)
     {
         Allies = allies;
         Enemies = enemies;
-        AllyPosture = allyPosture;
-        EnemyPosture = enemyPosture;
+        AllyTactic = allyTactic ?? TacticContext.DefaultProfile(allyPosture);
+        EnemyTactic = enemyTactic ?? TacticContext.DefaultProfile(enemyPosture);
+        AllyPosture = AllyTactic.Posture;
+        EnemyPosture = EnemyTactic.Posture;
         FixedStepSeconds = fixedStepSeconds;
         Seed = seed;
         TelemetryContext = telemetryContext;
@@ -33,9 +40,12 @@ public sealed class BattleState
     public IReadOnlyList<UnitSnapshot> Enemies { get; }
     public TeamPostureType AllyPosture { get; }
     public TeamPostureType EnemyPosture { get; }
+    public TeamTacticProfile AllyTactic { get; }
+    public TeamTacticProfile EnemyTactic { get; }
     public float FixedStepSeconds { get; }
     public int Seed { get; }
     public TelemetryContext? TelemetryContext { get; }
+    public BattleActivityTelemetryAccumulator ActivityTelemetry { get; } = new();
     public int StepIndex { get; private set; }
     public float ElapsedSeconds { get; private set; }
     private readonly List<TelemetryEventRecord> _telemetryEvents = new();
@@ -48,6 +58,26 @@ public sealed class BattleState
     public IEnumerable<UnitSnapshot> GetTeam(TeamSide side) => side == TeamSide.Ally ? Allies : Enemies;
     public IEnumerable<UnitSnapshot> GetOpponents(TeamSide side) => side == TeamSide.Ally ? Enemies : Allies;
     public TeamPostureType GetPosture(TeamSide side) => side == TeamSide.Ally ? AllyPosture : EnemyPosture;
+    public TeamTacticProfile GetTeamTactic(TeamSide side) => side == TeamSide.Ally ? AllyTactic : EnemyTactic;
+
+    public TacticContext GetTacticContext(TeamSide side)
+    {
+        if (_tacticContextStep != StepIndex)
+        {
+            _allyTacticContext = null;
+            _enemyTacticContext = null;
+            _tacticContextStep = StepIndex;
+        }
+
+        if (side == TeamSide.Ally)
+        {
+            _allyTacticContext ??= TacticContext.Create(TeamSide.Ally, AllyTactic, StepIndex);
+            return _allyTacticContext;
+        }
+
+        _enemyTacticContext ??= TacticContext.Create(TeamSide.Enemy, EnemyTactic, StepIndex);
+        return _enemyTacticContext;
+    }
 
     public UnitSnapshot? FindUnitById(string? id)
     {
@@ -146,5 +176,8 @@ public sealed class BattleState
     {
         StepIndex++;
         ElapsedSeconds += FixedStepSeconds;
+        _allyTacticContext = null;
+        _enemyTacticContext = null;
+        _tacticContextStep = StepIndex;
     }
 }
