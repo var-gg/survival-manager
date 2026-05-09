@@ -127,7 +127,13 @@ public sealed class BattleSimulator
                             || (inRangeBand && MovementResolver.IsInActionRange(actor, evaluated.Target, actor.AttackRange + ActionRangeTolerance));
             var canBeginAction = evaluated.Target.Side == actor.Side
                                  || evaluated.DesiredPhase == CombatActionState.ExecuteAction;
+            var actionRangeReady = evaluated.Target.Side == actor.Side
+                                   || MovementResolver.IsInActionRange(
+                                       actor,
+                                       evaluated.Target,
+                                       ResolveEvaluatedActionRange(actor, evaluated) + MovementResolver.ActionStartRangeTolerance);
             if (canBeginAction
+                && actionRangeReady
                 && inRangeBand
                 && slotReady
                 && evaluated.Mobility == null)
@@ -247,6 +253,11 @@ public sealed class BattleSimulator
 
         stepEvents.AddRange(CombatActionResolver.Resolve(State, actor));
         return true;
+    }
+
+    private static float ResolveEvaluatedActionRange(UnitSnapshot actor, EvaluatedAction evaluated)
+    {
+        return evaluated.Skill?.Range ?? actor.AttackRange;
     }
 
     private static bool ShouldCancelPendingBasicAttackForPreferredMinimum(UnitSnapshot actor, UnitSnapshot target, float desiredRange)
