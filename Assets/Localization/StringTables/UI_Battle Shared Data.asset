@@ -487,6 +487,238 @@ MonoBehaviour:
     m_Key: ui.battle.tooltip.summary_expand
     m_Metadata:
       m_Items: []
+  - m_Id: 3380253606011000
+    m_Key: ui.battle.axis.attack_speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011001
+    m_Key: ui.battle.axis.basic_attack_interval
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011002
+    m_Key: ui.battle.axis.cooldown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011003
+    m_Key: ui.battle.axis.energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011004
+    m_Key: ui.battle.axis.fallback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011005
+    m_Key: ui.battle.axis.footprint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011006
+    m_Key: ui.battle.axis.hp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011007
+    m_Key: ui.battle.axis.position
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011008
+    m_Key: ui.battle.axis.positioning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011009
+    m_Key: ui.battle.axis.shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011010
+    m_Key: ui.battle.axis.skill_haste
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011011
+    m_Key: ui.battle.axis.tactic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011012
+    m_Key: ui.battle.axis.windup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011013
+    m_Key: ui.battle.detail.record.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011014
+    m_Key: ui.battle.detail.status.battle_scoped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011015
+    m_Key: ui.battle.detail.status.permanent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011016
+    m_Key: ui.battle.detail.tab.equipment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011017
+    m_Key: ui.battle.detail.tab.overview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011018
+    m_Key: ui.battle.detail.tab.record
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011019
+    m_Key: ui.battle.detail.tab.skills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011020
+    m_Key: ui.battle.detail.tab.stats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011021
+    m_Key: ui.battle.detail.tab.status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011022
+    m_Key: ui.battle.detail.tab.tactic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011023
+    m_Key: ui.battle.equipment.accessory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011024
+    m_Key: ui.battle.equipment.armor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011025
+    m_Key: ui.battle.equipment.offhand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011026
+    m_Key: ui.battle.equipment.pending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011027
+    m_Key: ui.battle.equipment.weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011028
+    m_Key: ui.battle.feed.basic_attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011029
+    m_Key: ui.battle.feed.down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011030
+    m_Key: ui.battle.feed.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011031
+    m_Key: ui.battle.feed.generic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011032
+    m_Key: ui.battle.feed.guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011033
+    m_Key: ui.battle.feed.heal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011034
+    m_Key: ui.battle.feed.skill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011035
+    m_Key: ui.battle.panel.feed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011036
+    m_Key: ui.battle.record.actor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011037
+    m_Key: ui.battle.record.target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011038
+    m_Key: ui.battle.skill.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011039
+    m_Key: ui.battle.skill.flex_active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011040
+    m_Key: ui.battle.skill.flex_passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011041
+    m_Key: ui.battle.skill.signature_active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011042
+    m_Key: ui.battle.skill.signature_passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011043
+    m_Key: ui.battle.status.barrier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011044
+    m_Key: ui.battle.status.cooldown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011045
+    m_Key: ui.battle.status.downed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011046
+    m_Key: ui.battle.tactic.dial.back_spacing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011047
+    m_Key: ui.battle.tactic.dial.combat_pace
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011048
+    m_Key: ui.battle.tactic.dial.compactness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011049
+    m_Key: ui.battle.tactic.dial.depth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011050
+    m_Key: ui.battle.tactic.dial.flank_bias
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011051
+    m_Key: ui.battle.tactic.dial.focus_bias
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011052
+    m_Key: ui.battle.tactic.dial.front_spacing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011053
+    m_Key: ui.battle.tactic.dial.line_spacing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011054
+    m_Key: ui.battle.tactic.dial.protect_carry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011055
+    m_Key: ui.battle.tactic.dial.role_range
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011056
+    m_Key: ui.battle.tactic.dial.switch_penalty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011057
+    m_Key: ui.battle.tactic.dial.width
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

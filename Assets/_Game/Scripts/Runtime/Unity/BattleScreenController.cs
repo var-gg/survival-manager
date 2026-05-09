@@ -65,6 +65,7 @@ public sealed class BattleScreenController : MonoBehaviour
     private InputAction _restartAction = null!;
     private InputAction _cycleUnitAction = null!;
     private InputAction _togglePauseAction = null!;
+    private InputAction _closeOverlayAction = null!;
     private GUIStyle? _debugOverlayStyle;
     private GUIStyle? _debugOverlayBackgroundStyle;
     private GUIStyle? _debugOverlaySmallStyle;
@@ -690,11 +691,16 @@ public sealed class BattleScreenController : MonoBehaviour
         var isFinished = _timeline?.IsFinished ?? currentStep.IsFinished;
         EnsureSelectedUnit(currentStep);
         var selectedUnit = currentStep.Units.FirstOrDefault(unit => unit.Id == _selectedUnitId);
+        var selectedTeamUnits = selectedUnit == null
+            ? Array.Empty<BattleUnitReadModel>()
+            : currentStep.Units.Where(unit => unit.Side == selectedUnit.Side).ToArray();
         var selectedUnitState = _metadataFormatter.BuildSelectedUnitPanel(
             selectedUnit,
             _unitDetailVisible,
             _unitDetailTab,
-            selectedUnit != null ? BuildSelectedUnitRecord(selectedUnit.Id) : string.Empty);
+            selectedUnit != null ? BuildSelectedUnitRecord(selectedUnit.Id) : string.Empty,
+            selectedUnit != null ? ResolveTeamTactic(selectedUnit.Side) : null,
+            selectedTeamUnits);
         var state = _presenter!.BuildState(
             currentStep,
             _recentLogs,
@@ -735,12 +741,14 @@ public sealed class BattleScreenController : MonoBehaviour
         _restartAction = new InputAction("Restart", InputActionType.Button, "<Keyboard>/f5");
         _cycleUnitAction = new InputAction("CycleUnit", InputActionType.Button, "<Keyboard>/tab");
         _togglePauseAction = new InputAction("TogglePause", InputActionType.Button, "<Keyboard>/space");
+        _closeOverlayAction = new InputAction("CloseOverlay", InputActionType.Button, "<Keyboard>/escape");
 
         _toggleDebugAction.Enable();
         _stepOnceAction.Enable();
         _restartAction.Enable();
         _cycleUnitAction.Enable();
         _togglePauseAction.Enable();
+        _closeOverlayAction.Enable();
         _inputActionsInitialized = true;
     }
 
@@ -752,6 +760,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _restartAction?.Dispose();
         _cycleUnitAction?.Dispose();
         _togglePauseAction?.Dispose();
+        _closeOverlayAction?.Dispose();
     }
 
     private void HandleKeyboardShortcuts()
@@ -787,6 +796,18 @@ public sealed class BattleScreenController : MonoBehaviour
         if (IsSmokeLane && _togglePauseAction.WasPressedThisFrame())
         {
             TogglePause();
+        }
+
+        if (_closeOverlayAction.WasPressedThisFrame())
+        {
+            if (_unitDetailVisible)
+            {
+                CloseUnitDetail();
+            }
+            else if (_settingsVisible)
+            {
+                ToggleSettingsPanel();
+            }
         }
     }
 
@@ -1020,6 +1041,21 @@ public sealed class BattleScreenController : MonoBehaviour
         return lines.Count == 0
             ? Localize(GameLocalizationTables.UIBattle, "ui.battle.detail.record.empty", "No notable personal events yet.")
             : string.Join("\n", lines);
+    }
+
+    private TeamTacticProfile? ResolveTeamTactic(TeamSide side)
+    {
+        if (_simulator != null)
+        {
+            return _simulator.State.GetTeamTactic(side);
+        }
+
+        if (side == TeamSide.Ally)
+        {
+            return _compiledSnapshot?.TeamTactic;
+        }
+
+        return _enemyLoadouts.FirstOrDefault(loadout => loadout.TeamTactic != null)?.TeamTactic;
     }
 
     private string Localize(string table, string key, string fallback, params object[] args)
