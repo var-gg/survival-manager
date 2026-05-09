@@ -29,6 +29,25 @@ internal sealed class BattleUnitPortraitResolver
         return null;
     }
 
+    public Texture2D? ResolveFullBody(BattleUnitReadModel unit)
+    {
+        if (string.IsNullOrWhiteSpace(unit.CharacterId))
+        {
+            return null;
+        }
+
+        foreach (var assetStem in EnumerateFullBodyAssetStems(unit))
+        {
+            var texture = LoadRaw(unit.CharacterId, assetStem);
+            if (texture != null)
+            {
+                return texture;
+            }
+        }
+
+        return Resolve(unit);
+    }
+
     public Texture2D? ResolveSkillIcon(string characterId, string skillId)
     {
         if (string.IsNullOrWhiteSpace(characterId) || string.IsNullOrWhiteSpace(skillId))
@@ -70,6 +89,30 @@ internal sealed class BattleUnitPortraitResolver
 
         yield return "portrait_stance_idle";
         yield return "portrait_full";
+    }
+
+    private static IEnumerable<string> EnumerateFullBodyAssetStems(BattleUnitReadModel unit)
+    {
+        if (!unit.IsAlive || unit.CurrentHealth <= 0f)
+        {
+            yield return "portrait_stance_downed";
+        }
+
+        if (unit.WindupProgress > 0.01f)
+        {
+            yield return unit.PendingActionType == BattleActionType.ActiveSkill
+                ? "portrait_stance_cast"
+                : "portrait_stance_attack";
+        }
+
+        if (unit.IsDefending || HasStatus(unit.StatusIds ?? Array.Empty<string>(), "guard"))
+        {
+            yield return "portrait_stance_guard";
+        }
+
+        yield return "portrait_full";
+        yield return "portrait_full_body";
+        yield return "portrait_stance_idle";
     }
 
     private static IEnumerable<string> EnumerateFaceIds(BattleUnitReadModel unit)

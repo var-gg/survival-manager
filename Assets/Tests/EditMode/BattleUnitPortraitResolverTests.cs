@@ -21,6 +21,19 @@ public sealed class BattleUnitPortraitResolverTests
         Assert.That(portrait!.name, Is.EqualTo("portrait_face_serious"));
     }
 
+    [TestCase("hero_dawn_priest")]
+    [TestCase("hero_pack_raider")]
+    [TestCase("hero_grave_hexer")]
+    public void ResolveFullBody_PrefersFullPortrait_ForPromotedBattleCharacters(string characterId)
+    {
+        var resolver = new BattleUnitPortraitResolver();
+
+        var portrait = resolver.ResolveFullBody(CreateUnit(characterId));
+
+        Assert.That(portrait, Is.Not.Null);
+        Assert.That(portrait!.name, Is.EqualTo("portrait_full"));
+    }
+
     [TestCase("hero_dawn_priest", "skill_priest_core", "skill_icon_sigil_shield")]
     [TestCase("hero_dawn_priest", "skill_minor_heal", "skill_icon_platinum_aegis")]
     [TestCase("hero_pack_raider", "skill_raider_core", "skill_icon_wind_read")]

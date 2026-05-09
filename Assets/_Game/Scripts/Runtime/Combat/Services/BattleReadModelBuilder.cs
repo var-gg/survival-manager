@@ -79,7 +79,17 @@ public static class BattleReadModelBuilder
                     unit.PositioningIntentRevision,
                     unit.AttackSpeed,
                     unit.AttackCooldown,
-                    unit.SkillHaste);
+                    unit.SkillHaste,
+                    unit.Definition.EffectiveSignaturePassive.Id,
+                    unit.Definition.EffectiveSignaturePassive.Name,
+                    unit.Definition.EffectiveFlexPassive.Id,
+                    unit.Definition.EffectiveFlexPassive.Name,
+                    unit.Definition.RuleChains
+                        .SelectMany(chain => chain.Rules)
+                        .OrderBy(rule => rule.Priority)
+                        .ThenBy(rule => rule.ConditionType)
+                        .Select(FormatTacticRule)
+                        .ToList());
             })
             .ToList();
 
@@ -90,5 +100,13 @@ public static class BattleReadModelBuilder
             events,
             isFinished,
             winner);
+    }
+
+    private static string FormatTacticRule(TacticRule rule)
+    {
+        var skillSuffix = string.IsNullOrWhiteSpace(rule.SkillId)
+            ? string.Empty
+            : $" skill={rule.SkillId}";
+        return $"P{rule.Priority:000} {rule.ConditionType} -> {rule.ActionType} / {rule.TargetSelector} threshold={rule.Threshold:0.##}{skillSuffix}";
     }
 }

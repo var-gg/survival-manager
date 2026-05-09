@@ -63,25 +63,59 @@
         <ui:VisualElement name="SelectedUnitPanel" class="sm-bs-unit-detail-backdrop">
             <ui:VisualElement name="UnitDetailPanel" class="panel battle-shell__selected-unit sm-bs-unit-detail-panel sm-vellum-card">
                 <ui:VisualElement class="sm-bs-unit-detail-header">
-                    <ui:Image name="SelectedUnitPortraitImage" class="sm-bs-unit-portrait" />
                     <ui:Label name="SelectedUnitHeaderLabel" class="panel__title sm-bs-section-title sm-bs-unit-detail-title" />
-                    <ui:Button name="UnitDetailCloseButton" class="ui-button sm-bs-control-btn sm-bs-unit-detail-close" text="X" />
+                    <ui:Button name="UnitDetailCloseButton" class="ui-button sm-bs-control-btn sm-bs-unit-detail-close" />
                 </ui:VisualElement>
                 <ui:VisualElement name="UnitDetailTabs" class="sm-bs-unit-detail-tabs">
                     <ui:Button name="UnitDetailOverviewTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
+                    <ui:Button name="UnitDetailStatsTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
                     <ui:Button name="UnitDetailSkillsTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
+                    <ui:Button name="UnitDetailEquipmentTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
+                    <ui:Button name="UnitDetailTacticTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
                     <ui:Button name="UnitDetailStatusTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
                     <ui:Button name="UnitDetailRecordTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
                 </ui:VisualElement>
-                <ui:Label name="SelectedUnitBodyLabel" class="panel__text battle-shell__selected-body sm-bs-unit-detail-body" />
-                <ui:VisualElement name="SkillPresentationSlots" class="sm-bs-skill-slots">
-                    <ui:VisualElement name="SignatureActiveSlot" class="sm-bs-skill-slot sm-bs-skill-slot--signature">
-                        <ui:Image name="SignatureActiveIcon" class="sm-bs-skill-icon" />
-                        <ui:Label name="SignatureActiveLabel" class="sm-bs-skill-label" />
+                <ui:VisualElement name="UnitDetailContent" class="sm-bs-unit-detail-content">
+                    <ui:VisualElement name="UnitDetailIllustrationPane" class="sm-bs-unit-illustration-pane">
+                        <ui:Image name="SelectedUnitPortraitImage" class="sm-bs-unit-portrait" />
+                        <ui:VisualElement name="SelectedUnitAilmentTint" class="sm-bs-unit-ailment-tint" />
+                        <ui:VisualElement class="sm-bs-unit-vitals">
+                            <ui:VisualElement class="sm-bs-unit-vital-track">
+                                <ui:VisualElement name="SelectedUnitHpFill" class="sm-bs-unit-hp-fill" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="sm-bs-unit-vital-track sm-bs-unit-vital-track--shield">
+                                <ui:VisualElement name="SelectedUnitShieldFill" class="sm-bs-unit-shield-fill" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="FlexActiveSlot" class="sm-bs-skill-slot sm-bs-skill-slot--flex">
-                        <ui:Image name="FlexActiveIcon" class="sm-bs-skill-icon" />
-                        <ui:Label name="FlexActiveLabel" class="sm-bs-skill-label" />
+                    <ui:VisualElement name="UnitDetailTabBody" class="sm-bs-unit-tab-body">
+                        <ui:VisualElement name="UnitDetailOverviewContent" class="sm-bs-unit-tab-content">
+                            <ui:VisualElement name="OverviewCoreStats" class="sm-bs-stat-grid sm-bs-stat-grid--overview" />
+                            <ui:VisualElement name="OverviewFormationGrid" class="sm-bs-anchor-grid" />
+                            <ui:VisualElement name="OverviewTacticDials" class="sm-bs-dial-grid sm-bs-dial-grid--overview" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="UnitDetailStatsContent" class="sm-bs-unit-tab-content">
+                            <ui:VisualElement name="StatsList" class="sm-bs-stat-list" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="UnitDetailSkillsContent" class="sm-bs-unit-tab-content">
+                            <ui:VisualElement name="SkillPresentationSlots" class="sm-bs-skill-slots" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="UnitDetailEquipmentContent" class="sm-bs-unit-tab-content">
+                            <ui:VisualElement name="EquipmentSlots" class="sm-bs-equipment-grid" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="UnitDetailTacticContent" class="sm-bs-unit-tab-content">
+                            <ui:VisualElement name="TacticDials" class="sm-bs-dial-grid" />
+                            <ui:VisualElement name="TacticPriorityList" class="sm-bs-tactic-list" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="UnitDetailStatusContent" class="sm-bs-unit-tab-content">
+                            <ui:Label name="StatusPermanentTitle" class="sm-bs-subtitle" />
+                            <ui:VisualElement name="StatusPermanentGrid" class="sm-bs-status-chip-grid" />
+                            <ui:Label name="StatusBattleScopedTitle" class="sm-bs-subtitle" />
+                            <ui:VisualElement name="StatusBattleGrid" class="sm-bs-status-chip-grid" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="UnitDetailRecordContent" class="sm-bs-unit-tab-content">
+                            <ui:Label name="SelectedUnitBodyLabel" class="panel__text battle-shell__selected-body sm-bs-unit-detail-body" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

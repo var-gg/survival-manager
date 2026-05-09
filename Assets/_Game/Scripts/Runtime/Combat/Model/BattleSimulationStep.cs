@@ -52,7 +52,12 @@ public sealed record BattleUnitReadModel(
     int PositioningIntentRevision = 0,
     float AttackSpeed = 0f,
     float BasicAttackCooldown = 0f,
-    float SkillHaste = 0f);
+    float SkillHaste = 0f,
+    string SignaturePassiveId = "",
+    string SignaturePassiveName = "",
+    string FlexPassiveId = "",
+    string FlexPassiveName = "",
+    IReadOnlyList<string>? TacticRuleSummaries = null);
 
 public sealed record BattleSimulationStep(
     int StepIndex,

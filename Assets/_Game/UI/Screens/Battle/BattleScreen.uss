@@ -491,35 +491,68 @@
     z-index: 8;
     align-items: flex-end;
     justify-content: center;
-    padding-right: 28px;
+    padding-right: 24px;
     background-color: rgba(7, 8, 10, 0.20);
 }
 
 .battle-screen .sm-bs-unit-detail-panel {
     position: relative;
-    width: 432px;
-    max-height: 660px;
+    width: 760px;
+    min-width: 720px;
+    max-width: 960px;
+    height: 660px;
+    min-height: 540px;
+    max-height: 720px;
     padding-top: 14px;
     padding-bottom: 14px;
     padding-left: 14px;
     padding-right: 14px;
-    margin-bottom: 112px;
+    margin-bottom: 72px;
+}
+
+.battle-screen .sm-bs-unit-detail-backdrop--mobile {
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+
+.battle-screen .sm-bs-unit-detail-backdrop--mobile .sm-bs-unit-detail-panel {
+    width: 100%;
+    min-width: 0;
+    height: 75%;
+    min-height: 0;
+    margin-bottom: 0;
+}
+
+.battle-screen .sm-bs-unit-detail-backdrop--mobile .sm-bs-unit-detail-content {
+    flex-direction: column;
+}
+
+.battle-screen .sm-bs-unit-detail-backdrop--mobile .sm-bs-unit-illustration-pane {
+    width: 100%;
+    min-width: 0;
+    height: 180px;
+    margin-right: 0;
+    margin-bottom: 10px;
 }
 
 .battle-screen .sm-bs-unit-detail-header {
     flex-direction: row;
     align-items: center;
-    min-height: 72px;
+    min-height: 36px;
 }
 
 .battle-screen .sm-bs-unit-portrait {
-    width: 66px;
-    height: 66px;
-    border-radius: 6px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
     border-width: 1px;
     border-color: rgba(218, 187, 118, 0.72);
     background-color: rgba(31, 25, 19, 0.82);
-    margin-right: 10px;
     -unity-background-scale-mode: scale-and-crop;
 }
 
@@ -537,13 +570,13 @@
 
 .battle-screen .sm-bs-unit-detail-tabs {
     flex-direction: row;
+    flex-wrap: wrap;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
 .battle-screen .sm-bs-unit-detail-tab {
-    flex-grow: 1;
-    min-width: 0;
+    min-width: 86px;
     margin-right: 6px;
     font-size: 11px;
 }
@@ -565,15 +598,206 @@
     line-height: 16px;
 }
 
-.battle-screen .sm-bs-skill-slots {
-    margin-top: 10px;
+.battle-screen .sm-bs-unit-detail-content {
+    flex-grow: 1;
+    flex-direction: row;
+    min-height: 0;
+}
+
+.battle-screen .sm-bs-unit-illustration-pane {
+    position: relative;
+    width: 40%;
+    min-width: 292px;
+    margin-right: 14px;
+    background-color: rgba(31, 25, 19, 0.70);
+    border-width: 1px;
+    border-color: rgba(218, 187, 118, 0.44);
+    overflow: hidden;
+}
+
+.battle-screen .sm-bs-unit-ailment-tint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(120, 56, 74, 0.22);
+}
+
+.battle-screen .sm-bs-unit-vitals {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+}
+
+.battle-screen .sm-bs-unit-vital-track {
+    height: 9px;
+    margin-top: 4px;
+    background-color: rgba(4, 8, 10, 0.72);
+    border-width: 1px;
+    border-color: rgba(245, 234, 208, 0.18);
+}
+
+.battle-screen .sm-bs-unit-vital-track--shield {
+    height: 5px;
+}
+
+.battle-screen .sm-bs-unit-hp-fill {
+    height: 100%;
+    background-color: rgba(166, 220, 154, 0.92);
+}
+
+.battle-screen .sm-bs-unit-shield-fill {
+    height: 100%;
+    background-color: rgba(118, 168, 230, 0.82);
+}
+
+.battle-screen .sm-bs-unit-tab-body {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.battle-screen .sm-bs-unit-tab-content {
+    flex-grow: 1;
+}
+
+.battle-screen .sm-bs-stat-grid,
+.battle-screen .sm-bs-stat-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.battle-screen .sm-bs-stat-row {
+    width: 48%;
+    min-height: 34px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 7px;
+    padding-right: 7px;
+    background-color: rgba(245, 234, 208, 0.07);
+    border-width: 1px;
+    border-color: rgba(230, 183, 81, 0.20);
+}
+
+.battle-screen .sm-bs-stat-row--compact {
+    width: 48%;
+    min-height: 32px;
+}
+
+.battle-screen .sm-bs-stat-label {
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.battle-screen .sm-bs-stat-value {
+    margin-top: 2px;
+    color: var(--sm-ink-0);
+    font-size: 12px;
+    -unity-font-style: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.battle-screen .sm-bs-stat-category,
+.battle-screen .sm-bs-subtitle,
+.battle-screen .sm-bs-tactic-header {
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 5px;
+    color: var(--sm-gold-200);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.battle-screen .sm-bs-anchor-grid {
+    width: 174px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.battle-screen .sm-bs-anchor-cell {
+    width: 52px;
+    height: 32px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    -unity-text-align: middle-center;
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    background-color: rgba(245, 234, 208, 0.06);
+    border-width: 1px;
+    border-color: rgba(245, 234, 208, 0.15);
+}
+
+.battle-screen .sm-bs-anchor-cell--occupied {
+    color: var(--sm-ink-0);
+    border-color: rgba(230, 183, 81, 0.36);
+}
+
+.battle-screen .sm-bs-anchor-cell--home {
+    color: var(--sm-gold-100);
+    background-color: rgba(230, 183, 81, 0.25);
+    border-color: rgba(230, 183, 81, 0.78);
+}
+
+.battle-screen .sm-bs-dial-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.battle-screen .sm-bs-dial-row {
+    width: 48%;
+    margin-right: 6px;
+    margin-bottom: 8px;
+}
+
+.battle-screen .sm-bs-dial-header {
     flex-direction: row;
 }
 
-.battle-screen .sm-bs-skill-slot {
+.battle-screen .sm-bs-dial-label {
     flex-grow: 1;
-    min-height: 48px;
+    color: var(--sm-ink-1);
+    font-size: 10px;
+}
+
+.battle-screen .sm-bs-dial-value {
+    min-width: 34px;
+    color: var(--sm-gold-100);
+    font-size: 10px;
+    -unity-text-align: middle-right;
+}
+
+.battle-screen .sm-bs-dial-track {
+    height: 5px;
+    margin-top: 3px;
+    background-color: rgba(245, 234, 208, 0.10);
+}
+
+.battle-screen .sm-bs-dial-fill {
+    height: 100%;
+    background-color: rgba(230, 183, 81, 0.78);
+}
+
+.battle-screen .sm-bs-skill-slots {
+    margin-top: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.battle-screen .sm-bs-skill-slot {
+    width: 48%;
+    min-height: 58px;
     margin-right: 6px;
+    margin-bottom: 6px;
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 6px;
@@ -621,6 +845,127 @@
     color: var(--sm-ink-1);
     font-size: 10px;
     white-space: normal;
+}
+
+.battle-screen .sm-bs-skill-icon--missing,
+.battle-screen .sm-bs-status-chip-icon--missing {
+    -unity-text-align: middle-center;
+    color: var(--sm-gold-200);
+    -unity-font-style: bold;
+}
+
+.battle-screen .sm-bs-equipment-grid,
+.battle-screen .sm-bs-status-chip-grid,
+.battle-screen .sm-bs-tactic-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.battle-screen .sm-bs-equipment-slot {
+    width: 48%;
+    min-height: 64px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+    background-color: rgba(245, 234, 208, 0.06);
+    border-width: 1px;
+    border-color: rgba(230, 183, 81, 0.22);
+}
+
+.battle-screen .sm-bs-equipment-slot--placeholder {
+    opacity: 0.72;
+}
+
+.battle-screen .sm-bs-equipment-label {
+    color: var(--sm-gold-100);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.battle-screen .sm-bs-equipment-item {
+    margin-top: 6px;
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    white-space: normal;
+}
+
+.battle-screen .sm-bs-tactic-row {
+    width: 100%;
+    flex-direction: row;
+    margin-bottom: 5px;
+}
+
+.battle-screen .sm-bs-tactic-key {
+    width: 74px;
+    color: var(--sm-gold-100);
+    font-size: 10px;
+}
+
+.battle-screen .sm-bs-tactic-value {
+    flex-grow: 1;
+    color: var(--sm-ink-1);
+    font-size: 10px;
+    white-space: normal;
+}
+
+.battle-screen .sm-bs-status-chip {
+    position: relative;
+    width: 112px;
+    min-height: 62px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: rgba(245, 234, 208, 0.07);
+    border-width: 1px;
+    border-color: rgba(230, 183, 81, 0.24);
+}
+
+.battle-screen .sm-bs-status-chip--permanent {
+    border-left-width: 3px;
+    border-left-color: var(--sm-gold-300);
+}
+
+.battle-screen .sm-bs-status-chip-icon {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    background-color: rgba(31, 25, 19, 0.82);
+    border-width: 1px;
+    border-color: rgba(218, 187, 118, 0.40);
+}
+
+.battle-screen .sm-bs-status-chip-label {
+    margin-top: 4px;
+    color: var(--sm-ink-1);
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.battle-screen .sm-bs-status-chip-stack {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    color: var(--sm-gold-100);
+    font-size: 10px;
+    -unity-font-style: bold;
+}
+
+.battle-screen .sm-bs-status-chip-ring {
+    height: 3px;
+    margin-top: 4px;
+    background-color: rgba(230, 183, 81, 0.78);
+}
+
+.battle-screen .sm-bs-empty-line {
+    color: var(--sm-ink-2);
+    font-size: 11px;
 }
 
 .battle-screen .sm-bs-settings-panel {

@@ -7,9 +7,12 @@ namespace SM.Unity.UI.Battle;
 public enum BattleUnitDetailTab
 {
     Overview = 0,
-    Skills = 1,
-    Status = 2,
-    Record = 3,
+    Stats = 1,
+    Skills = 2,
+    Equipment = 3,
+    Tactic = 4,
+    Status = 5,
+    Record = 6,
 }
 
 public sealed record BattleRosterUnitViewState(
