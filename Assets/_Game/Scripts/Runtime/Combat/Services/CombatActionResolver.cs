@@ -52,6 +52,7 @@ public static class CombatActionResolver
                 var preImpactStep = MovementResolver.TryApplyBasicAttackPreImpactStep(state, actor, target);
                 var attackResult = HitResolutionService.ResolveBasicAttack(state, actor, target);
                 var attackNote = ComposeNote(attackResult.Note, preImpactStep.NoteToken);
+                var postAttackReposition = PostAttackRepositionResult.None;
                 actor.GainEnergyFromBasicAttackResolved();
                 if (attackResult.Value > 0f)
                 {
@@ -72,9 +73,21 @@ public static class CombatActionResolver
                         attackResult.Value,
                         attackResult.MitigationValue,
                         attackNote);
+                    if (target.IsAlive)
+                    {
+                        postAttackReposition = MovementResolver.TryApplyPostAttackReposition(state, actor, target);
+                        if (postAttackReposition.Moved)
+                        {
+                            attackNote = ComposeNote(attackNote, postAttackReposition.NoteToken);
+                        }
+                    }
                 }
 
                 actor.StartRecovery();
+                if (postAttackReposition.Moved)
+                {
+                    BattleTelemetryRecorder.RecordPostAttackReposition(state, actor, target, postAttackReposition.MovedDistance, postAttackReposition.NoteToken);
+                }
                 BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.BasicAttack, null, attackResult.Value);
                 events.Add(BuildEvent(
                     state,

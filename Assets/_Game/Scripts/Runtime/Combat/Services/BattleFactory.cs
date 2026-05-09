@@ -37,7 +37,15 @@ public static class BattleFactory
             return new UnitSnapshot(new EntityId($"enemy_{index}_{merged.Id}"), TeamSide.Enemy, merged, formation.AnchorPosition, formation.SpawnPosition);
         }).ToList();
 
-        var state = new BattleState(allies, enemies, allyTactic.Posture, enemyTactic.Posture, fixedStepSeconds, seed);
+        var state = new BattleState(
+            allies,
+            enemies,
+            allyTactic.Posture,
+            enemyTactic.Posture,
+            fixedStepSeconds,
+            seed,
+            allyTactic: allyTactic,
+            enemyTactic: enemyTactic);
         RecordFormationTelemetry(state, resolved, TeamSide.Ally, allyTactic);
         RecordFormationTelemetry(state, resolved, TeamSide.Enemy, enemyTactic);
         return state;

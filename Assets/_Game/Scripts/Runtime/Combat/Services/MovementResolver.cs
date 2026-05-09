@@ -15,6 +15,8 @@ public static class MovementResolver
     private const float ObstacleDetourPadding = 0.28f;
     private const float PreImpactRangeTolerance = 0.12f;
     private const float BacklineMaxLaneOffset = 1.1f;
+    private const float BaseLaneGap = 1.8f;
+    private const float BaseRowGap = 2.1f;
     internal const float ActionStartRangeTolerance = 0.12f;
 
     public static float ComputeEdgeDistance(UnitSnapshot actor, UnitSnapshot target)
@@ -35,9 +37,24 @@ public static class MovementResolver
 
     public static CombatVector2 ResolveHomePosition(BattleState state, UnitSnapshot actor)
     {
+        var context = state.GetTacticContext(actor.Side);
+        var intent = ResolvePostureHomePosition(state, actor, context);
+        return ResolveBestZoneCandidate(
+            state,
+            actor,
+            null,
+            new FloatRange(0f, 0f),
+            intent,
+            intent,
+            context,
+            "home");
+    }
+
+    private static CombatVector2 ResolvePostureHomePosition(BattleState state, UnitSnapshot actor, TacticContext context)
+    {
         var direction = actor.Side == TeamSide.Ally ? 1f : -1f;
         var weakLane = ResolveWeakLane(state, actor.Side);
-        var posture = state.GetPosture(actor.Side);
+        var posture = context.Posture;
 
         var xOffset = posture switch
         {
@@ -167,6 +184,75 @@ public static class MovementResolver
         return new BasicAttackPreImpactStepResult(profile.Profile, movedDistance, BasicAttackActionProfileResolver.ToNoteToken(profile.Profile));
     }
 
+    internal static PostAttackRepositionResult TryApplyPostAttackReposition(BattleState state, UnitSnapshot actor, UnitSnapshot target)
+    {
+        if (!actor.IsAlive || !target.IsAlive || actor.IsRooted)
+        {
+            return PostAttackRepositionResult.None;
+        }
+
+        var profile = BasicAttackActionProfileResolver.Resolve(actor);
+        if (profile.Profile == BasicAttackActionProfile.StationaryStrike)
+        {
+            if (ShouldUseSideAnchoredRangedPosition(actor, actor.PreferredRangeBand))
+            {
+                var maintainRangeDesired = ResolveDesiredPosition(state, actor, target, actor.PreferredRangeBand);
+                var next = CombatVector2.MoveTowards(actor.Position, maintainRangeDesired, Math.Max(0.01f, actor.MoveSpeed * state.FixedStepSeconds));
+                next = ResolveCollisionAwareStep(state, actor, maintainRangeDesired, ClampToArena(ClampToLeash(state, actor, next)), Math.Max(0.01f, actor.MoveSpeed * state.FixedStepSeconds));
+                var moved = actor.Position.DistanceTo(next);
+                if (moved > 0.01f)
+                {
+                    actor.SetPosition(next);
+                    return new PostAttackRepositionResult(true, moved, "post_attack_maintain_range");
+                }
+            }
+
+            return PostAttackRepositionResult.None;
+        }
+
+        var context = state.GetTacticContext(actor.Side);
+        var probability = TacticContext.Clamp01(0.25f + (0.20f * context.Width) + (0.15f * context.FlankBias) - (0.20f * context.Compactness));
+        var roll = ResolveDeterministic01(state, actor, target, "post_attack_reposition", 0);
+        if (roll > probability)
+        {
+            return PostAttackRepositionResult.None;
+        }
+
+        var away = actor.Position - target.Position;
+        var awayDirection = away.SqrLength <= 0.0001f
+            ? (actor.Side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f))
+            : away.Normalized;
+        var lateral = new CombatVector2(-awayDirection.Y, awayDirection.X);
+        var lateralSign = ResolveDeterministic01(state, actor, target, "post_attack_lateral", 0) >= 0.5f ? 1f : -1f;
+        if (Math.Abs(context.FlankBias) > 0.05f)
+        {
+            lateralSign = MathF.Sign(context.FlankBias);
+        }
+
+        var lateralDistance = Lerp(0.15f, 0.35f, TacticContext.Clamp01(context.Width));
+        lateralDistance *= actor.Definition.ClassId switch
+        {
+            "vanguard" => 0.55f,
+            "duelist" => 1.25f,
+            _ => 1f,
+        };
+        var desired = actor.Position + (lateral * lateralSign * lateralDistance) + (awayDirection * 0.10f);
+        var nextPosition = ResolveCollisionAwareStep(
+            state,
+            actor,
+            desired,
+            ClampToArena(ClampToLeash(state, actor, desired)),
+            lateralDistance + 0.10f);
+        var movedDistance = actor.Position.DistanceTo(nextPosition);
+        if (movedDistance <= 0.01f)
+        {
+            return PostAttackRepositionResult.None;
+        }
+
+        actor.SetPosition(nextPosition);
+        return new PostAttackRepositionResult(true, movedDistance, "post_attack_reposition");
+    }
+
     public static void MoveForIntent(BattleState state, UnitSnapshot actor, EvaluatedAction evaluated)
     {
         if (evaluated.ActionType == BattleActionType.WaitDefend || evaluated.Target == null)
@@ -276,9 +362,9 @@ public static class MovementResolver
         {
             var hash = state.Seed;
             hash = (hash * 397) ^ state.StepIndex;
-            hash = (hash * 397) ^ actor.Id.Value.GetHashCode();
-            hash = (hash * 397) ^ target.Id.Value.GetHashCode();
-            hash = (hash * 397) ^ context.GetHashCode();
+            hash = (hash * 397) ^ StableHash(actor.Id.Value);
+            hash = (hash * 397) ^ StableHash(target.Id.Value);
+            hash = (hash * 397) ^ StableHash(context);
             var remainder = Math.Abs(hash % 10000);
             return remainder / 10000f;
         }
@@ -286,11 +372,27 @@ public static class MovementResolver
 
     private static CombatVector2 ResolveDesiredPosition(BattleState state, UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
     {
+        var context = state.GetTacticContext(actor.Side);
+        var intent = ResolveRawDesiredPosition(state, actor, target, rangeBand, context);
+        var home = ResolvePostureHomePosition(state, actor, context);
+        return ResolveBestZoneCandidate(
+            state,
+            actor,
+            target,
+            rangeBand,
+            intent,
+            home,
+            context,
+            "desired");
+    }
+
+    private static CombatVector2 ResolveRawDesiredPosition(BattleState state, UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand, TacticContext context)
+    {
         var centerDistance = rangeBand.Midpoint + actor.NavigationRadius + target.NavigationRadius;
         if (ShouldUseSideAnchoredRangedPosition(actor, rangeBand))
         {
             var sideDirection = actor.Side == TeamSide.Ally ? -1f : 1f;
-            var home = ResolveHomePosition(state, actor);
+            var home = ResolvePostureHomePosition(state, actor, context);
             var laneOffset = Math.Clamp(home.Y - target.Position.Y, -BacklineMaxLaneOffset, BacklineMaxLaneOffset);
             return new CombatVector2(target.Position.X + (sideDirection * centerDistance), target.Position.Y + laneOffset);
         }
@@ -302,6 +404,168 @@ public static class MovementResolver
         }
 
         return target.Position - (directionToTarget * centerDistance);
+    }
+
+    private static CombatVector2 ResolveBestZoneCandidate(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot? target,
+        FloatRange rangeBand,
+        CombatVector2 intent,
+        CombatVector2 home,
+        TacticContext context,
+        string intentId)
+    {
+        var candidates = BuildZoneCandidates(state, actor, intent, context).ToList();
+        var best = candidates.First();
+        var bestScore = ScoreZoneCandidate(state, actor, target, rangeBand, best, intent, home, context, intentId, 0);
+        for (var i = 1; i < candidates.Count; i++)
+        {
+            var score = ScoreZoneCandidate(state, actor, target, rangeBand, candidates[i], intent, home, context, intentId, i);
+            if (score < bestScore)
+            {
+                best = candidates[i];
+                bestScore = score;
+            }
+        }
+
+        return best;
+    }
+
+    private static IEnumerable<CombatVector2> BuildZoneCandidates(BattleState state, UnitSnapshot actor, CombatVector2 intent, TacticContext context)
+    {
+        var zoneWidth = context.ResolveZoneWidth(BaseLaneGap, ResolveQuirkSpread(actor));
+        var zoneDepth = context.ResolveZoneDepth(BaseRowGap, ResolvePostureDepth(context.Posture, actor));
+        var forward = actor.Side == TeamSide.Ally ? new CombatVector2(1f, 0f) : new CombatVector2(-1f, 0f);
+        var lateral = new CombatVector2(0f, 1f);
+        var offsets = new[]
+        {
+            CombatVector2.Zero,
+            lateral * (zoneWidth * 0.45f),
+            lateral * (-zoneWidth * 0.45f),
+            forward * (zoneDepth * 0.42f),
+            forward * (-zoneDepth * 0.42f),
+            (forward * (zoneDepth * 0.32f)) + (lateral * (zoneWidth * 0.32f)),
+            (forward * (zoneDepth * 0.32f)) + (lateral * (-zoneWidth * 0.32f)),
+            (forward * (-zoneDepth * 0.24f)) + (lateral * (zoneWidth * 0.28f)),
+            (forward * (-zoneDepth * 0.24f)) + (lateral * (-zoneWidth * 0.28f)),
+        };
+
+        foreach (var offset in offsets)
+        {
+            yield return ClampToArena(ClampToLeash(state, actor, intent + offset));
+        }
+    }
+
+    private static float ScoreZoneCandidate(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot? target,
+        FloatRange rangeBand,
+        CombatVector2 candidate,
+        CombatVector2 intent,
+        CombatVector2 home,
+        TacticContext context,
+        string intentId,
+        int candidateIndex)
+    {
+        var distanceToIntent = candidate.DistanceTo(intent);
+        var collisionPenalty = ResolveCollisionPenalty(state, actor, candidate);
+        var lanePreference = ResolveLanePreference(actor, candidate, home, context);
+        var targetAccess = target == null ? 0f : ResolveTargetAccess(actor, target, candidate, rangeBand);
+        var rolePenalty = ResolveRolePenalty(actor, candidate, home, context);
+        var tieBreak = ResolveDeterministic01(state, actor, target, intentId, candidateIndex) * 0.0001f;
+        return distanceToIntent + collisionPenalty + lanePreference + targetAccess + rolePenalty + tieBreak;
+    }
+
+    private static float ResolveCollisionPenalty(BattleState state, UnitSnapshot actor, CombatVector2 candidate)
+    {
+        var penalty = 0f;
+        foreach (var obstacle in state.AllUnits)
+        {
+            if (obstacle.Id == actor.Id || !obstacle.IsAlive)
+            {
+                continue;
+            }
+
+            var requiredClearance = actor.NavigationRadius + obstacle.NavigationRadius + ObstacleClearancePadding;
+            var overlap = Math.Max(0f, requiredClearance - candidate.DistanceTo(obstacle.Position));
+            penalty += overlap * overlap * 12f;
+        }
+
+        return penalty;
+    }
+
+    private static float ResolveLanePreference(UnitSnapshot actor, CombatVector2 candidate, CombatVector2 home, TacticContext context)
+    {
+        var preferredLane = home.Y + (context.FlankBias * actor.Anchor.LaneIndex() * 0.24f);
+        var laneWeight = actor.Behavior.FormationLine == SM.Core.Contracts.FormationLine.Backline ? 0.18f : 0.28f;
+        return MathF.Abs(candidate.Y - preferredLane) * laneWeight;
+    }
+
+    private static float ResolveTargetAccess(UnitSnapshot actor, UnitSnapshot target, CombatVector2 candidate, FloatRange rangeBand)
+    {
+        var centerDistance = candidate.DistanceTo(target.Position);
+        var edgeDistance = Math.Max(0f, centerDistance - actor.NavigationRadius - target.NavigationRadius);
+        var rangeMiss = edgeDistance > rangeBand.ClampedMax
+            ? edgeDistance - rangeBand.ClampedMax
+            : Math.Max(0f, rangeBand.ClampedMin - edgeDistance);
+        return rangeMiss * 0.65f;
+    }
+
+    private static float ResolveRolePenalty(UnitSnapshot actor, CombatVector2 candidate, CombatVector2 home, TacticContext context)
+    {
+        var forward = actor.Side == TeamSide.Ally ? 1f : -1f;
+        var forwardDelta = (candidate.X - home.X) * forward;
+        var penalty = actor.Behavior.FormationLine switch
+        {
+            SM.Core.Contracts.FormationLine.Frontline => Math.Max(0f, -forwardDelta - 0.15f) * 0.34f,
+            SM.Core.Contracts.FormationLine.Backline => Math.Max(0f, forwardDelta - 0.20f) * 0.46f,
+            _ => Math.Abs(forwardDelta) * 0.08f,
+        };
+
+        if (context.ProtectCarryBias > 0f && actor.Behavior.FormationLine == SM.Core.Contracts.FormationLine.Backline)
+        {
+            penalty += MathF.Abs(candidate.Y) * context.ProtectCarryBias * 0.12f;
+        }
+
+        return penalty;
+    }
+
+    private static float ResolveQuirkSpread(UnitSnapshot actor)
+    {
+        return actor.Definition.RoleVariant switch
+        {
+            RoleVariantTag.Diver or RoleVariantTag.Harrier or RoleVariantTag.Executioner => 0.12f,
+            RoleVariantTag.Sniper or RoleVariantTag.Battery => 0.06f,
+            RoleVariantTag.Peeler => -0.08f,
+            _ => actor.Definition.ClassId switch
+            {
+                "duelist" => 0.08f,
+                "ranger" => 0.06f,
+                "vanguard" => -0.05f,
+                _ => 0f,
+            },
+        };
+    }
+
+    private static float ResolvePostureDepth(TeamPostureType posture, UnitSnapshot actor)
+    {
+        var postureDepth = posture switch
+        {
+            TeamPostureType.HoldLine => -0.05f,
+            TeamPostureType.ProtectCarry => actor.Anchor.IsBackRow() ? -0.08f : 0.02f,
+            TeamPostureType.CollapseWeakSide => 0.04f,
+            TeamPostureType.AllInBackline => 0.12f,
+            _ => 0f,
+        };
+
+        return postureDepth + (actor.Definition.RoleVariant switch
+        {
+            RoleVariantTag.Diver or RoleVariantTag.Executioner => 0.05f,
+            RoleVariantTag.Sniper or RoleVariantTag.Battery => -0.04f,
+            _ => 0f,
+        });
     }
 
     private static bool ShouldUseSideAnchoredRangedPosition(UnitSnapshot actor, FloatRange rangeBand)
@@ -642,6 +906,45 @@ public static class MovementResolver
             Math.Clamp(position.Y, -ArenaHalfHeight, ArenaHalfHeight));
     }
 
+    private static float Lerp(float from, float to, float t)
+    {
+        return from + ((to - from) * TacticContext.Clamp01(t));
+    }
+
+    private static float ResolveDeterministic01(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot? target,
+        string intentId,
+        int candidateIndex)
+    {
+        unchecked
+        {
+            var hash = state.Seed;
+            hash = (hash * 397) ^ state.StepIndex;
+            hash = (hash * 397) ^ StableHash(actor.Id.Value);
+            hash = (hash * 397) ^ StableHash(target?.Id.Value ?? string.Empty);
+            hash = (hash * 397) ^ StableHash(intentId);
+            hash = (hash * 397) ^ candidateIndex;
+            var normalized = Math.Abs(hash % 10000);
+            return normalized / 9999f;
+        }
+    }
+
+    private static int StableHash(string value)
+    {
+        unchecked
+        {
+            var hash = 17;
+            foreach (var ch in value)
+            {
+                hash = (hash * 31) + ch;
+            }
+
+            return hash;
+        }
+    }
+
     private static int ResolveWeakLane(BattleState state, TeamSide side)
     {
         var enemies = state.GetOpponents(side).Where(unit => unit.IsAlive).ToList();
@@ -667,4 +970,12 @@ internal readonly record struct BasicAttackPreImpactStepResult(
     {
         return new BasicAttackPreImpactStepResult(profile, 0f, string.Empty);
     }
+}
+
+internal readonly record struct PostAttackRepositionResult(
+    bool Moved,
+    float MovedDistance,
+    string NoteToken)
+{
+    public static PostAttackRepositionResult None => new(false, 0f, string.Empty);
 }

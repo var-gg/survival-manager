@@ -8,4 +8,5 @@ public sealed record BattleResult(
     float DurationSeconds,
     IReadOnlyList<BattleEvent> Events,
     IReadOnlyList<BattleUnitReadModel> FinalUnits,
-    IReadOnlyList<TelemetryEventRecord>? TelemetryEvents = null);
+    IReadOnlyList<TelemetryEventRecord>? TelemetryEvents = null,
+    BattleActivityTelemetrySnapshot? ActivityTelemetry = null);

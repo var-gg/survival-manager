@@ -9,7 +9,6 @@ public static class EngagementSlotService
     private const float MaxMeleeCombatReach = 1.6f;
     private const float MaxMeleeRangeThreshold = 1.8f;
     private const float MeleeRangeBuffer = 0.25f;
-    private const float SlotSpreadDegrees = 160f;
     private const float MinDesiredEdgeDistance = 0.55f;
     private const float MinOverflowRadiusScale = 0.45f;
     private const float ArenaHalfWidth = 8f;
@@ -28,7 +27,10 @@ public static class EngagementSlotService
             return PositioningIntentKind.MaintainRange;
         }
 
-        var roll = PositiveModulo(state.Seed + StableHash(actor.Id.Value) + StableHash(target.Id.Value), 100);
+        var context = state.GetTacticContext(actor.Side);
+        var flankBias = MathF.Abs(context.FlankBias);
+        var roll = PositiveModulo(state.Seed + StableHash(actor.Id.Value) + StableHash(target.Id.Value) + (state.StepIndex * 17), 100);
+        var flankThreshold = 45 + (int)MathF.Round(flankBias * 20f);
         return actor.Definition.ClassId switch
         {
             "duelist" when roll < 34 => PositioningIntentKind.FlankLeft,
@@ -37,9 +39,9 @@ public static class EngagementSlotService
             "vanguard" when roll < 55 => PositioningIntentKind.Frontline,
             "vanguard" when roll < 78 => PositioningIntentKind.FlankLeft,
             "vanguard" => PositioningIntentKind.FlankRight,
-            _ when roll < 45 => PositioningIntentKind.Frontline,
-            _ when roll < 70 => PositioningIntentKind.FlankLeft,
-            _ when roll < 95 => PositioningIntentKind.FlankRight,
+            _ when roll < 100 - flankThreshold => PositioningIntentKind.Frontline,
+            _ when roll < 100 - (flankThreshold / 2) => PositioningIntentKind.FlankLeft,
+            _ when roll < 98 => PositioningIntentKind.FlankRight,
             _ => PositioningIntentKind.BacklineDive,
         };
     }
@@ -56,6 +58,14 @@ public static class EngagementSlotService
             return null;
         }
 
+        if (actor.EngagementSlot is { } existing
+            && existing.TargetId == target.Id
+            && IsSlotStillClear(state, actor, existing))
+        {
+            return existing;
+        }
+
+        var context = state.GetTacticContext(actor.Side);
         var attackers = state.GetOpponents(target.Side)
             .Where(unit => unit.IsAlive && (unit.Id == actor.Id || unit.CurrentTargetId == target.Id || unit.PendingTargetId == target.Id))
             .OrderBy(unit => unit.Id.Value, StringComparer.Ordinal)
@@ -82,8 +92,8 @@ public static class EngagementSlotService
         var isOverflow = actorIndex >= slotCount;
         var ringOffset = actorIndex / slotCount;
         var slotIndex = actorIndex % slotCount;
-        var spreadDegrees = ResolveSpreadDegrees(intent, slotCount);
-        var centerDegrees = ResolveCenterDegrees(actor.Side, intent);
+        var spreadDegrees = ResolveSpreadDegrees(intent, slotCount, context);
+        var centerDegrees = ResolveCenterDegrees(actor.Side, intent, context);
         var startDegrees = centerDegrees - (spreadDegrees * 0.5f);
         var stepDegrees = slotCount == 1 ? 0f : spreadDegrees / (slotCount - 1);
         var angleDegrees = startDegrees + (stepDegrees * slotIndex);
@@ -96,30 +106,71 @@ public static class EngagementSlotService
         return new EngagementSlotAssignment(target.Id, slotIndex, position, isOverflow);
     }
 
-    private static float ResolveSpreadDegrees(PositioningIntentKind intent, int slotCount)
+    private static bool IsSlotStillClear(BattleState state, UnitSnapshot actor, EngagementSlotAssignment slot)
+    {
+        if (MathF.Abs(slot.Position.X) > ArenaHalfWidth || MathF.Abs(slot.Position.Y) > ArenaHalfHeight)
+        {
+            return false;
+        }
+
+        var target = state.FindUnit(slot.TargetId);
+        if (target == null || !target.IsAlive)
+        {
+            return false;
+        }
+
+        foreach (var obstacle in state.AllUnits)
+        {
+            if (obstacle.Id == actor.Id || !obstacle.IsAlive)
+            {
+                continue;
+            }
+
+            var clearance = actor.NavigationRadius + obstacle.NavigationRadius + 0.03f;
+            if (slot.Position.DistanceTo(obstacle.Position) < clearance)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static float ResolveSpreadDegrees(PositioningIntentKind intent, int slotCount, TacticContext context)
     {
         if (slotCount == 1)
         {
             return 0f;
         }
 
-        return intent switch
+        var frontlineSpread = Lerp(140f, 210f, context.FrontSpacingBias);
+        var flankSpread = Lerp(28f, 58f, TacticContext.Clamp01(context.Width));
+        var compactPenalty = context.Compactness * 35f;
+        var spread = intent switch
         {
-            PositioningIntentKind.FlankLeft or PositioningIntentKind.FlankRight => 36f,
-            PositioningIntentKind.BacklineDive => 54f,
-            _ => SlotSpreadDegrees,
+            PositioningIntentKind.FlankLeft or PositioningIntentKind.FlankRight => flankSpread - (compactPenalty * 0.35f),
+            PositioningIntentKind.BacklineDive => MathF.Max(flankSpread, 54f) - (compactPenalty * 0.25f),
+            _ => frontlineSpread - compactPenalty,
         };
+        return Math.Clamp(spread, 18f, 230f);
     }
 
-    private static float ResolveCenterDegrees(TeamSide actorSide, PositioningIntentKind intent)
+    private static float ResolveCenterDegrees(TeamSide actorSide, PositioningIntentKind intent, TacticContext context)
     {
-        return intent switch
+        var center = intent switch
         {
             PositioningIntentKind.FlankLeft => actorSide == TeamSide.Ally ? 125f : 55f,
             PositioningIntentKind.FlankRight => actorSide == TeamSide.Ally ? 235f : -55f,
             PositioningIntentKind.BacklineDive => actorSide == TeamSide.Ally ? 0f : 180f,
             _ => actorSide == TeamSide.Ally ? 180f : 0f,
         };
+        var sideSign = actorSide == TeamSide.Ally ? 1f : -1f;
+        return center + (context.FlankBias * sideSign * 20f);
+    }
+
+    private static float Lerp(float from, float to, float t)
+    {
+        return from + ((to - from) * TacticContext.Clamp01(t));
     }
 
     private static int StableHash(string value)
