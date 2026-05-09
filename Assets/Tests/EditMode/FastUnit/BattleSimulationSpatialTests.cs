@@ -588,6 +588,31 @@ public sealed class BattleSimulationSpatialTests
                                                         && record.StringValueB is nameof(ReevaluationReason.Cadence) or nameof(ReevaluationReason.TargetMoved)), Is.True);
     }
 
+    [Test]
+    public void LoopA_DeathTelemetry_CapturesFallenPositionDispersion()
+    {
+        var allies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("ally_top", classId: "duelist", anchor: DeploymentAnchorId.FrontTop, hp: 45f, physPower: 16f, attackRange: 1.25f),
+            CombatTestFactory.CreateLoopAUnit("ally_bottom", classId: "duelist", anchor: DeploymentAnchorId.FrontBottom, hp: 45f, physPower: 16f, attackRange: 1.25f),
+        };
+        var enemies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("enemy_top", race: "undead", classId: "duelist", anchor: DeploymentAnchorId.FrontTop, hp: 12f, physPower: 1f, armor: 0f, attackRange: 1.2f),
+            CombatTestFactory.CreateLoopAUnit("enemy_bottom", race: "undead", classId: "duelist", anchor: DeploymentAnchorId.FrontBottom, hp: 12f, physPower: 1f, armor: 0f, attackRange: 1.2f),
+        };
+        var state = CombatTestFactory.CreateBattleState(allies, enemies, seed: 29);
+        var result = new BattleSimulator(state, 180).RunToEnd();
+
+        var enemyDeathPositions = result.TelemetryEvents
+            .Where(record => record.EventKind == TelemetryEventKind.UnitDied && record.Actor?.SideIndex == 1)
+            .Select(record => new CombatVector2(record.ValueA, record.ValueB))
+            .ToList();
+
+        Assert.That(enemyDeathPositions, Has.Count.GreaterThanOrEqualTo(2));
+        Assert.That(ComputePositionDispersion(enemyDeathPositions), Is.GreaterThan(0.1f));
+    }
+
     private static float FindMinDistance(System.Collections.Generic.IReadOnlyList<BattleUnitReadModel> units)
     {
         var min = float.MaxValue;
@@ -614,5 +639,19 @@ public sealed class BattleSimulationSpatialTests
         var minY = units.Min(unit => unit.Position.Y);
         var maxY = units.Max(unit => unit.Position.Y);
         return (maxX - minX) * (maxY - minY);
+    }
+
+    private static float ComputePositionDispersion(System.Collections.Generic.IReadOnlyList<CombatVector2> positions)
+    {
+        var maxDistance = 0f;
+        for (var i = 0; i < positions.Count; i++)
+        {
+            for (var j = i + 1; j < positions.Count; j++)
+            {
+                maxDistance = System.Math.Max(maxDistance, positions[i].DistanceTo(positions[j]));
+            }
+        }
+
+        return maxDistance;
     }
 }
