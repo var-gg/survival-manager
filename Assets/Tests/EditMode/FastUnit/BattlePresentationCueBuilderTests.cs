@@ -57,6 +57,7 @@ public sealed class BattlePresentationCueBuilderTests
         var previous = CreateStep(units: new[]
         {
             CreateUnit("ally", TeamSide.Ally),
+            CreateUnit("enemy_miss", TeamSide.Enemy),
             CreateUnit("enemy_dodge", TeamSide.Enemy),
             CreateUnit("enemy_block", TeamSide.Enemy),
             CreateUnit("enemy_crit", TeamSide.Enemy),
@@ -65,6 +66,7 @@ public sealed class BattlePresentationCueBuilderTests
             units: previous.Units,
             events: new[]
             {
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_miss"), "Enemy Miss", 0f, Note: "miss_range"),
                 new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_dodge"), "Enemy Dodge", 0f, Note: "dodge"),
                 new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_block"), "Enemy Block", 4f, Note: "block"),
                 new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_crit"), "Enemy Crit", 22f, Note: "crit"),
@@ -72,6 +74,7 @@ public sealed class BattlePresentationCueBuilderTests
 
         var cues = new BattlePresentationCueBuilder().Build(previous, current);
 
+        Assert.That(FindImpact(cues, "enemy_miss").AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.Miss));
         Assert.That(FindImpact(cues, "enemy_dodge").AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.Dodge));
         Assert.That(FindImpact(cues, "enemy_dodge").AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Light));
         Assert.That(FindImpact(cues, "enemy_block").AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BlockImpact));

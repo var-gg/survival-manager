@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SM.Combat.Model;
 using SM.Unity;
 using UnityEngine;
 
@@ -110,6 +111,75 @@ public sealed class BattleVfxCatalogTests
         finally
         {
             Object.DestroyImmediate(catalog);
+            Object.DestroyImmediate(root);
+        }
+    }
+
+    [Test]
+    public void Surface_SkipsBasicAttackWindupMagicCharge()
+    {
+        var root = new GameObject("Wrapper");
+        var prefab = new GameObject("WindupMagicChargePrefab");
+        var catalog = ScriptableObject.CreateInstance<BattleVfxCatalog>();
+
+        try
+        {
+            var telegraph = new GameObject("Telegraph").transform;
+            telegraph.SetParent(root.transform, false);
+
+            var wrapper = root.AddComponent<BattleActorWrapper>();
+            wrapper.ConfigureAuthoring(
+                root.transform,
+                root.transform,
+                null,
+                null,
+                null,
+                null,
+                null,
+                telegraph,
+                null,
+                null,
+                null);
+
+            catalog.SetEntry(
+                BattlePresentationCueType.WindupEnter,
+                prefab,
+                BattleActorSocketId.Telegraph,
+                0.5f,
+                Vector3.zero,
+                Vector3.zero,
+                Vector3.one,
+                parentToSocket: false);
+
+            var surface = root.AddComponent<BattleActorVfxSurface>();
+            surface.ConfigureCatalog(catalog);
+
+            surface.ConsumeCue(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.WindupEnter,
+                    1,
+                    "actor",
+                    ActionType: BattleActionType.BasicAttack),
+                wrapper);
+
+            Assert.That(surface.TriggerCount, Is.EqualTo(0));
+            Assert.That(surface.ActiveSpawnedVfxCount, Is.EqualTo(0));
+
+            surface.ConsumeCue(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.WindupEnter,
+                    2,
+                    "actor",
+                    ActionType: BattleActionType.ActiveSkill),
+                wrapper);
+
+            Assert.That(surface.TriggerCount, Is.EqualTo(1));
+            Assert.That(surface.LastSpawnedPrefabName, Is.EqualTo(prefab.name));
+        }
+        finally
+        {
+            Object.DestroyImmediate(catalog);
+            Object.DestroyImmediate(prefab);
             Object.DestroyImmediate(root);
         }
     }
