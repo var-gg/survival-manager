@@ -691,7 +691,12 @@ public sealed class LoadoutCompiler
                 .Append(resolvedTeamTactic.FrontSpacingBias.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                 .Append(resolvedTeamTactic.BackSpacingBias.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                 .Append(resolvedTeamTactic.ProtectCarryBias.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
-                .Append(resolvedTeamTactic.TargetSwitchPenalty.ToString("0.###", CultureInfo.InvariantCulture)).Append('|');
+                .Append(resolvedTeamTactic.TargetSwitchPenalty.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(resolvedTeamTactic.Compactness.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(resolvedTeamTactic.Width.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(resolvedTeamTactic.Depth.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(resolvedTeamTactic.LineSpacing.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                .Append(resolvedTeamTactic.FlankBias.ToString("0.###", CultureInfo.InvariantCulture)).Append('|');
         }
 
         foreach (var unit in units.OrderBy(unit => unit.Id, StringComparer.Ordinal))
@@ -824,6 +829,11 @@ public sealed class LoadoutCompiler
             $"backSpacingBias:{profile.BackSpacingBias.ToString("0.###", CultureInfo.InvariantCulture)}",
             $"protectCarryBias:{profile.ProtectCarryBias.ToString("0.###", CultureInfo.InvariantCulture)}",
             $"targetSwitchPenalty:{profile.TargetSwitchPenalty.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"compactness:{profile.Compactness.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"width:{profile.Width.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"depth:{profile.Depth.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"lineSpacing:{profile.LineSpacing.ToString("0.###", CultureInfo.InvariantCulture)}",
+            $"flankBias:{profile.FlankBias.ToString("0.###", CultureInfo.InvariantCulture)}",
         };
     }
 

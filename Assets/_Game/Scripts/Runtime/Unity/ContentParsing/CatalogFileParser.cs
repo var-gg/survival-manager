@@ -30,6 +30,11 @@ internal static class CatalogFileParser
             definition.BackSpacingBias = ExtractFloat(lines, "BackSpacingBias:");
             definition.ProtectCarryBias = ExtractFloat(lines, "ProtectCarryBias:");
             definition.TargetSwitchPenalty = ExtractFloat(lines, "TargetSwitchPenalty:");
+            definition.Compactness = ExtractFloatOrDefault(lines, "Compactness:", 0.5f);
+            definition.Width = ExtractFloatOrDefault(lines, "Width:", 1f);
+            definition.Depth = ExtractFloatOrDefault(lines, "Depth:", 1f);
+            definition.LineSpacing = ExtractFloatOrDefault(lines, "LineSpacing:", 1f);
+            definition.FlankBias = ExtractFloatOrDefault(lines, "FlankBias:", 0f);
             definition.CompileTags = ParseReferenceList(lines, "CompileTags:", guidToPath, stableTags);
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
             return definition;
@@ -55,6 +60,12 @@ internal static class CatalogFileParser
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
             return definition;
         }, guidToPath);
+    }
+
+    private static float ExtractFloatOrDefault(string[] lines, string key, float fallback)
+    {
+        var value = ExtractValue(lines, key);
+        return string.IsNullOrWhiteSpace(value) ? fallback : ParseFloat(value);
     }
 
     internal static Dictionary<string, PassiveNodeDefinition> LoadPassiveNodes(
