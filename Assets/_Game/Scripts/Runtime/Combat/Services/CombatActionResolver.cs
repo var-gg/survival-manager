@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Contracts;
 
@@ -165,6 +166,23 @@ public static class CombatActionResolver
                         return events;
                     }
 
+                    if (skill != null
+                        && skill.AreaEffectFamily != BattleAreaEffectFamily.SingleTarget
+                        && skill.AreaRadius > 0f)
+                    {
+                        ResolveAreaSkillDamage(state, actor, target, skill, events);
+                        actor.StartRecovery(actor.ResolveActionCooldown(skill.Id));
+                        BattleTelemetryRecorder.RecordActionResolved(
+                            state,
+                            actor,
+                            target,
+                            BattleActionType.ActiveSkill,
+                            skill,
+                            events.Where(evt => evt.ActorId == actor.Id && evt.ActionType == BattleActionType.ActiveSkill).Sum(evt => evt.Value));
+                        StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
+                        break;
+                    }
+
                     var skillResult = skill != null
                         ? HitResolutionService.ResolveSkillDamage(state, actor, target, skill)
                         : HitResolutionService.ResolveBasicAttack(state, actor, target);
@@ -216,6 +234,77 @@ public static class CombatActionResolver
         }
 
         return events;
+    }
+
+    private static void ResolveAreaSkillDamage(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot primaryTarget,
+        BattleSkillSpec skill,
+        List<BattleEvent> events)
+    {
+        var selection = EffectMembershipSampler.ResolveAoeSkill(state, actor, primaryTarget, skill);
+        var affectedCount = selection.Hits.Count;
+        var caughtTargets = new List<UnitSnapshot>();
+        foreach (var hit in selection.Hits)
+        {
+            var target = state.FindUnitById(hit.TargetUnitId);
+            if (target == null || !target.IsAlive)
+            {
+                continue;
+            }
+
+            var result = HitResolutionService.ResolveSkillDamage(state, actor, target, skill);
+            var punishCluster = skill.PunishCluster && affectedCount >= 3
+                ? 1f + Math.Min(0.15f, 0.05f * Math.Max(0, affectedCount - 2))
+                : 1f;
+            var resolvedValue = result.Value * hit.DamageMultiplier * punishCluster;
+            if (resolvedValue > 0f)
+            {
+                state.RegisterDamage(actor, target);
+                target.TakeDamage(resolvedValue);
+                target.GainEnergyFromDirectHitTaken();
+                caughtTargets.Add(target);
+                BattleTelemetryRecorder.RecordImpact(
+                    state,
+                    TelemetryEventKind.DamageApplied,
+                    actor,
+                    target,
+                    BattleActionType.ActiveSkill,
+                    skill,
+                    resolvedValue,
+                    result.MitigationValue,
+                    result.Note,
+                    $"{skill.AreaEffectFamily}:{selection.Candidate.CandidateId}:x{hit.DamageMultiplier:0.##}");
+            }
+
+            events.Add(BuildEvent(
+                state,
+                actor,
+                BattleActionType.ActiveSkill,
+                BattleLogCode.ActiveSkillDamage,
+                target,
+                resolvedValue,
+                result.MitigationValue,
+                ComposeNote(result.Note, $"{skill.AreaEffectFamily}:{hit.ChainIndex}")));
+        }
+
+        if (caughtTargets.Count >= 3)
+        {
+            var severity = Math.Clamp((caughtTargets.Count - 2) / 3f, 0f, 1f);
+            foreach (var target in caughtTargets)
+            {
+                if (state.ApplyGroupDispersalLock(target, selection.Candidate.Center, severity, caughtTargets.Count))
+                {
+                    state.ActivityTelemetry.RecordKnockbackDispersalEvent();
+                }
+            }
+        }
+
+        foreach (var dead in caughtTargets.Where(target => !target.IsAlive).OrderBy(target => target.Id.Value))
+        {
+            events.AddRange(ResolveKillAndAssist(state, actor, dead, BattleActionType.ActiveSkill, skill));
+        }
     }
 
     private static bool IsOutOfImpactRange(UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec? skill)

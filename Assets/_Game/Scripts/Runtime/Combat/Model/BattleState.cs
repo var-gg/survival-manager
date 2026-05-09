@@ -10,6 +10,7 @@ public sealed class BattleState
     private readonly Dictionary<string, HashSet<string>> _damageContributorsByVictim = new();
     private readonly HashSet<string> _scheduledOwnerDeaths = new();
     private readonly Dictionary<string, float> _ownedEntityDespawnTimers = new();
+    private readonly Dictionary<string, GroupDispersalLockState> _groupDispersalLocks = new();
     private int _tacticContextStep = -1;
     private TacticContext? _allyTacticContext;
     private TacticContext? _enemyTacticContext;
@@ -48,6 +49,9 @@ public sealed class BattleState
     public BattleActivityTelemetryAccumulator ActivityTelemetry { get; } = new();
     public int StepIndex { get; private set; }
     public float ElapsedSeconds { get; private set; }
+    public EffectPositionSnapshot? EffectPositionSnapshot { get; private set; }
+    public int EffectPositionSnapshotStep { get; private set; } = -1;
+    public IEnumerable<GroupDispersalLockState> ActiveGroupDispersalLocks => _groupDispersalLocks.Values;
     private readonly List<TelemetryEventRecord> _telemetryEvents = new();
     public IReadOnlyList<TelemetryEventRecord> TelemetryEvents => _telemetryEvents;
 
@@ -94,6 +98,40 @@ public sealed class BattleState
         {
             _telemetryEvents.Add(record);
         }
+    }
+
+    public void SetEffectPositionSnapshot(EffectPositionSnapshot snapshot)
+    {
+        EffectPositionSnapshot = snapshot;
+        EffectPositionSnapshotStep = snapshot.StepIndex;
+    }
+
+    public bool ApplyGroupDispersalLock(UnitSnapshot unit, CombatVector2 center, float severity, int affectedCount = 3)
+    {
+        if (unit == null || !unit.IsAlive)
+        {
+            return false;
+        }
+
+        var safeSeverity = System.Math.Clamp(severity, 0f, 1f);
+        var duration = System.Math.Min(1.8f, 0.75f + (0.25f * System.Math.Max(0, affectedCount - 2)) + (0.25f * safeSeverity));
+        var until = ElapsedSeconds + duration;
+        if (_groupDispersalLocks.TryGetValue(unit.Id.Value, out var existing)
+            && existing.DispersedUntilSeconds >= until - 0.001f)
+        {
+            return false;
+        }
+
+        _groupDispersalLocks[unit.Id.Value] = new GroupDispersalLockState(unit.Id.Value, center, until, safeSeverity);
+        unit.RequestReevaluation(ReevaluationReason.TargetMoved);
+        return true;
+    }
+
+    public bool IsUnderGroupDispersalLock(UnitSnapshot unit)
+    {
+        return unit != null
+               && _groupDispersalLocks.TryGetValue(unit.Id.Value, out var state)
+               && state.DispersedUntilSeconds > ElapsedSeconds;
     }
 
     public void RegisterDamage(UnitSnapshot attacker, UnitSnapshot victim)
@@ -164,6 +202,17 @@ public sealed class BattleState
         }
     }
 
+    public void AdvanceGroupDispersalLocks()
+    {
+        foreach (var key in _groupDispersalLocks
+                     .Where(pair => pair.Value.DispersedUntilSeconds <= ElapsedSeconds)
+                     .Select(pair => pair.Key)
+                     .ToList())
+        {
+            _groupDispersalLocks.Remove(key);
+        }
+    }
+
     public void DespawnNonRosterEntities()
     {
         foreach (var unit in AllUnits.Where(unit => unit.IsAlive && unit.EntityKind is not CombatEntityKind.RosterUnit))
@@ -176,6 +225,8 @@ public sealed class BattleState
     {
         StepIndex++;
         ElapsedSeconds += FixedStepSeconds;
+        EffectPositionSnapshot = null;
+        EffectPositionSnapshotStep = -1;
         _allyTacticContext = null;
         _enemyTacticContext = null;
         _tacticContextStep = StepIndex;

@@ -17,6 +17,21 @@ public sealed record BattleActivityTelemetrySnapshot(
     float StationaryBetweenAttacksRatio,
     int PostAttackRepositionCount,
     int TargetSwitchCount,
+    float ClusterCohesionIndex,
+    IReadOnlyDictionary<string, float> BuffCoverageHistogramByType,
+    IReadOnlyDictionary<string, float> BuffEfficacyBonusByType,
+    int ClusterBuffOvercapEvents,
+    int BuffMissedByDistanceCount,
+    float AoeCandidateClusterScore,
+    IReadOnlyDictionary<string, float> AoeCatchCountHistogram,
+    int CleaveCatchCount,
+    int ChainJumpCount,
+    int KnockbackDispersalEvents,
+    float ReclusterLatencyMs,
+    float FocusDamageContribution,
+    float BuffValueContribution,
+    float AoeCostTaken,
+    float ClusterTradeoffNetValue,
     string ReplayHash);
 
 public sealed class BattleActivityTelemetryAccumulator
@@ -28,14 +43,30 @@ public sealed class BattleActivityTelemetryAccumulator
     private readonly Dictionary<string, float> _focusHeatPerTarget = new(StringComparer.Ordinal);
     private readonly Dictionary<string, int> _targetCommitCounts = new(StringComparer.Ordinal);
     private readonly Dictionary<string, CombatVector2> _lastAttackPositionByActor = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, float> _buffCoverageHistogramByType = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, float> _buffEfficacyBonusByType = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, float> _aoeCatchCountHistogram = new(StringComparer.Ordinal);
 
     private int _stationaryAttackIntervals;
     private int _totalAttackIntervals;
+    private int _clusterTradeoffSamples;
 
     public int OverfocusEvents { get; private set; }
     public float TankAbsorbedFocusHeat { get; private set; }
     public int PostAttackRepositionCount { get; private set; }
     public int TargetSwitchCount { get; private set; }
+    public float ClusterCohesionIndex { get; private set; }
+    public int ClusterBuffOvercapEvents { get; private set; }
+    public int BuffMissedByDistanceCount { get; private set; }
+    public float AoeCandidateClusterScore { get; private set; }
+    public int CleaveCatchCount { get; private set; }
+    public int ChainJumpCount { get; private set; }
+    public int KnockbackDispersalEvents { get; private set; }
+    public float ReclusterLatencyMs { get; private set; }
+    public float FocusDamageContribution { get; private set; }
+    public float BuffValueContribution { get; private set; }
+    public float AoeCostTaken { get; private set; }
+    public float ClusterTradeoffNetValue { get; private set; }
 
     public void RecordStep(BattleState state)
     {
@@ -110,6 +141,49 @@ public sealed class BattleActivityTelemetryAccumulator
         PostAttackRepositionCount++;
     }
 
+    public void RecordFocusDamageContribution(float value)
+    {
+        var contribution = Math.Max(0f, value);
+        FocusDamageContribution += contribution;
+        ClusterTradeoffNetValue += contribution;
+    }
+
+    public void RecordKnockbackDispersalEvent()
+    {
+        KnockbackDispersalEvents++;
+    }
+
+    public void RecordClusterTradeoff(ClusterTradeoffTelemetryFrame frame)
+    {
+        _clusterTradeoffSamples++;
+        ClusterCohesionIndex += frame.ClusterCohesionIndex;
+        ClusterBuffOvercapEvents += frame.ClusterBuffOvercapEvents;
+        BuffMissedByDistanceCount += frame.BuffMissedByDistanceCount;
+        AoeCandidateClusterScore += frame.AoeCandidateClusterScore;
+        CleaveCatchCount += frame.CleaveCatchCount;
+        ChainJumpCount += frame.ChainJumpCount;
+        KnockbackDispersalEvents += frame.KnockbackDispersalEvents;
+        ReclusterLatencyMs += frame.ReclusterLatencyMs;
+        BuffValueContribution += frame.BuffValueContribution;
+        AoeCostTaken += frame.AoeCostTaken;
+        ClusterTradeoffNetValue += frame.ClusterTradeoffNetValue;
+
+        foreach (var pair in frame.BuffCoverageHistogramByType)
+        {
+            Increment(_buffCoverageHistogramByType, pair.Key, pair.Value);
+        }
+
+        foreach (var pair in frame.BuffEfficacyBonusByType)
+        {
+            Increment(_buffEfficacyBonusByType, pair.Key, pair.Value);
+        }
+
+        foreach (var pair in frame.AoeCatchCountHistogram)
+        {
+            Increment(_aoeCatchCountHistogram, pair.Key, pair.Value);
+        }
+    }
+
     public BattleActivityTelemetrySnapshot BuildSnapshot(BattleState state)
     {
         var meanPairwise = new Dictionary<TeamSide, float>
@@ -140,6 +214,21 @@ public sealed class BattleActivityTelemetryAccumulator
             stationaryRatio,
             PostAttackRepositionCount,
             TargetSwitchCount,
+            ResolveSampleMean(ClusterCohesionIndex),
+            ResolveSampleDictionary(_buffCoverageHistogramByType),
+            ResolveSampleDictionary(_buffEfficacyBonusByType),
+            ClusterBuffOvercapEvents,
+            BuffMissedByDistanceCount,
+            ResolveSampleMean(AoeCandidateClusterScore),
+            ResolveSampleDictionary(_aoeCatchCountHistogram),
+            CleaveCatchCount,
+            ChainJumpCount,
+            KnockbackDispersalEvents,
+            ResolveSampleMean(ReclusterLatencyMs),
+            FocusDamageContribution,
+            BuffValueContribution,
+            AoeCostTaken,
+            ClusterTradeoffNetValue,
             string.Empty);
         return snapshot with { ReplayHash = ComputeReplayHash(state, snapshot) };
     }
@@ -230,7 +319,19 @@ public sealed class BattleActivityTelemetryAccumulator
             .Append(Format(snapshot.TankAbsorbedFocusHeat)).Append('|')
             .Append(Format(snapshot.StationaryBetweenAttacksRatio)).Append('|')
             .Append(snapshot.PostAttackRepositionCount).Append('|')
-            .Append(snapshot.TargetSwitchCount).Append('|');
+            .Append(snapshot.TargetSwitchCount).Append('|')
+            .Append(Format(snapshot.ClusterCohesionIndex)).Append('|')
+            .Append(snapshot.ClusterBuffOvercapEvents).Append('|')
+            .Append(snapshot.BuffMissedByDistanceCount).Append('|')
+            .Append(Format(snapshot.AoeCandidateClusterScore)).Append('|')
+            .Append(snapshot.CleaveCatchCount).Append('|')
+            .Append(snapshot.ChainJumpCount).Append('|')
+            .Append(snapshot.KnockbackDispersalEvents).Append('|')
+            .Append(Format(snapshot.ReclusterLatencyMs)).Append('|')
+            .Append(Format(snapshot.FocusDamageContribution)).Append('|')
+            .Append(Format(snapshot.BuffValueContribution)).Append('|')
+            .Append(Format(snapshot.AoeCostTaken)).Append('|')
+            .Append(Format(snapshot.ClusterTradeoffNetValue)).Append('|');
 
         foreach (var pair in snapshot.MeanPairwiseDistanceByTeam.OrderBy(pair => pair.Key))
         {
@@ -245,6 +346,21 @@ public sealed class BattleActivityTelemetryAccumulator
         foreach (var pair in snapshot.FocusHeatPerTarget.OrderBy(pair => pair.Key, StringComparer.Ordinal))
         {
             builder.Append(pair.Key).Append('=').Append(Format(pair.Value)).Append('|');
+        }
+
+        foreach (var pair in snapshot.BuffCoverageHistogramByType.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+        {
+            builder.Append("buff_cov:").Append(pair.Key).Append('=').Append(Format(pair.Value)).Append('|');
+        }
+
+        foreach (var pair in snapshot.BuffEfficacyBonusByType.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+        {
+            builder.Append("buff_bonus:").Append(pair.Key).Append('=').Append(Format(pair.Value)).Append('|');
+        }
+
+        foreach (var pair in snapshot.AoeCatchCountHistogram.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+        {
+            builder.Append("aoe_catch:").Append(pair.Key).Append('=').Append(Format(pair.Value)).Append('|');
         }
 
         foreach (var unit in state.AllUnits.OrderBy(unit => unit.Id.Value, StringComparer.Ordinal))
@@ -280,6 +396,19 @@ public sealed class BattleActivityTelemetryAccumulator
     private static string Format(float value)
     {
         return value.ToString("0.###", CultureInfo.InvariantCulture);
+    }
+
+    private float ResolveSampleMean(float sum)
+    {
+        return _clusterTradeoffSamples <= 0 ? 0f : sum / _clusterTradeoffSamples;
+    }
+
+    private Dictionary<string, float> ResolveSampleDictionary(IReadOnlyDictionary<string, float> source)
+    {
+        var divisor = Math.Max(1, _clusterTradeoffSamples);
+        return source
+            .OrderBy(pair => pair.Key, StringComparer.Ordinal)
+            .ToDictionary(pair => pair.Key, pair => pair.Value / divisor, StringComparer.Ordinal);
     }
 
     private static void Increment<TKey>(IDictionary<TKey, float> dictionary, TKey key, float value)

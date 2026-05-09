@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Stats;
 
@@ -45,7 +46,8 @@ public static class HitResolutionService
             BattleActionType.ActiveSkill,
             skill.DamageType,
             basePower,
-            skill.CanCrit);
+            skill.CanCrit,
+            skill);
     }
 
     public static float ResolveSupportValue(UnitSnapshot actor, BattleSkillSpec? skill)
@@ -70,7 +72,8 @@ public static class HitResolutionService
         BattleActionType actionType,
         DamageType damageType,
         float basePower,
-        bool canCrit)
+        bool canCrit,
+        BattleSkillSpec? skill = null)
     {
         if (ShouldAvoid(state, actor, target, actionType))
         {
@@ -92,11 +95,41 @@ public static class HitResolutionService
 
         var mitigation = damageType == DamageType.Magical ? target.Resist : target.Armor;
         var reductionFactor = 1f - (mitigation / (mitigation + ArmorScalingK));
-        var resolved = Math.Max(1f, powerAfterCrit * reductionFactor * target.GetIncomingDamageMultiplier());
+        var baseResolved = Math.Max(1f, powerAfterCrit * reductionFactor * target.GetIncomingDamageMultiplier());
+        var focusMultiplier = ResolveFocusDamageMultiplier(state, actor, target, skill);
+        var resolved = Math.Max(1f, baseResolved * focusMultiplier);
+        state.ActivityTelemetry.RecordFocusDamageContribution(resolved - baseResolved);
         var note = blocked
             ? critical ? "crit+block" : "block"
             : critical ? "crit" : string.Empty;
         return new HitResolutionResult(resolved, false, critical, blocked, mitigation, note);
+    }
+
+    private static float ResolveFocusDamageMultiplier(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec? skill)
+    {
+        if (target.Side == actor.Side)
+        {
+            return 1f;
+        }
+
+        var committed = state.GetOpponents(target.Side)
+            .Count(unit => unit.IsAlive
+                           && (unit.Id == actor.Id || unit.CurrentTargetId == target.Id || unit.PendingTargetId == target.Id));
+        var focusCount = Math.Min(4, Math.Max(1, committed));
+        if (focusCount <= 1)
+        {
+            return 1f;
+        }
+
+        var context = state.GetTacticContext(actor.Side);
+        var focusLink = 0.035f + (0.015f * Math.Max(0f, context.FocusModeBias));
+        var cap = skill?.AllowsEliteFocusCap == true
+            ? 0.30f
+            : target.HasStatus("marked")
+                ? 0.20f
+                : 0.15f;
+        var bonus = Math.Min(cap, focusLink * Math.Max(0, focusCount - 1));
+        return 1f + bonus;
     }
 
     private static bool ShouldAvoid(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleActionType actionType)
@@ -115,11 +148,25 @@ public static class HitResolutionService
         {
             var hash = state.Seed;
             hash = (hash * 397) ^ state.StepIndex;
-            hash = (hash * 397) ^ actor.Id.Value.GetHashCode();
-            hash = (hash * 397) ^ target.Id.Value.GetHashCode();
-            hash = (hash * 397) ^ context.GetHashCode();
+            hash = (hash * 397) ^ StableHash(actor.Id.Value);
+            hash = (hash * 397) ^ StableHash(target.Id.Value);
+            hash = (hash * 397) ^ StableHash(context);
             var remainder = Math.Abs(hash % 10000);
             return remainder / 10000f;
+        }
+    }
+
+    private static int StableHash(string value)
+    {
+        unchecked
+        {
+            var hash = 17;
+            foreach (var ch in value)
+            {
+                hash = (hash * 31) + ch;
+            }
+
+            return hash;
         }
     }
 }

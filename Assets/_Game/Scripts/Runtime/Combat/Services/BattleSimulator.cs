@@ -48,6 +48,7 @@ public sealed class BattleSimulator
         {
             unit.AdvanceTime(State.FixedStepSeconds);
         }
+        State.AdvanceGroupDispersalLocks();
 
         StatusResolutionService.AdvanceStatuses(State, stepEvents);
         State.ScheduleOwnedEntityDespawnIfOwnerDead();
@@ -166,6 +167,7 @@ public sealed class BattleSimulator
         }
 
         MovementResolver.ResolveFormationSpacing(State);
+        State.ActivityTelemetry.RecordClusterTradeoff(EffectMembershipSampler.SampleStep(State));
         State.ActivityTelemetry.RecordStep(State);
         State.AdvanceStep();
 
