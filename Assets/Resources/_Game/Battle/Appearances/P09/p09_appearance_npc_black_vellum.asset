@@ -15,7 +15,7 @@ MonoBehaviour:
   characterId: npc_black_vellum
   displayName: "\uD751\uC9C0 (\u9ED1\u7D19) / Black Vellum"
   catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
-  weaponId: 2
+  weaponId: 7
   shieldId: 0
   headId: 9
   chestId: 9

@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: scout
   catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
   weaponId: 13
-  shieldId: 3
+  shieldId: 0
   headId: 3
   chestId: 0
   armId: 0
