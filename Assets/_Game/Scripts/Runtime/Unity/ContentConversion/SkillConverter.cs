@@ -123,7 +123,8 @@ internal static class SkillConverter
             CloneTargetRule(authored?.TargetRule) ?? new TargetRule(),
             authored?.Lane ?? ActionLane.Primary,
             authored?.LockRule ?? ActionLockRule.SoftCommit,
-            CloneEffects(authored?.Effects));
+            CloneEffects(authored?.Effects),
+            ResolveBasicAttackActionProfile(definition));
     }
 
     internal static BattlePassiveSpec BuildPassiveSpec(
@@ -235,6 +236,32 @@ internal static class SkillConverter
             IsPersistent = profile.IsPersistent,
             Inheritance = profile.Inheritance,
         };
+    }
+
+    private static BasicAttackActionProfile ResolveBasicAttackActionProfile(UnitArchetypeDefinition definition)
+    {
+        var tag = $"{definition.LockedAttackProfileId} {definition.LockedAttackProfileTag}".ToLowerInvariant();
+        if (tag.Contains("dash", StringComparison.Ordinal))
+        {
+            return BasicAttackActionProfile.DashStrike;
+        }
+
+        if (tag.Contains("lunge", StringComparison.Ordinal))
+        {
+            return BasicAttackActionProfile.LungeStrike;
+        }
+
+        if (tag.Contains("step", StringComparison.Ordinal) || tag.Contains("advance", StringComparison.Ordinal))
+        {
+            return BasicAttackActionProfile.StepInStrike;
+        }
+
+        if (tag.Contains("stationary", StringComparison.Ordinal) || tag.Contains("stand", StringComparison.Ordinal))
+        {
+            return BasicAttackActionProfile.StationaryStrike;
+        }
+
+        return BasicAttackActionProfile.Auto;
     }
 
     private static RecruitSkillFallback ResolveRecruitSkillFallback(SkillDefinitionAsset skill)

@@ -180,6 +180,9 @@ public sealed class BattleActorView : MonoBehaviour
                 _accentDuration = 0.18f;
                 break;
             case BattlePresentationCueType.ActionCommitBasic:
+                _activeAnimationSemantic = animationSemantic;
+                _activeAnimationDirection = cue.AnimationDirection;
+                _activeAnimationIntensity = cue.AnimationIntensity;
                 StartActionCue(BattleActionSemantic.BasicAttack, 0.20f, ResolveSemanticColor(BattleActionSemantic.BasicAttack), relatedWorld);
                 break;
             case BattlePresentationCueType.ActionCommitSkill:
@@ -1435,13 +1438,22 @@ public sealed class BattleActorView : MonoBehaviour
 
     private float ResolveLungeDistance()
     {
-        return ResolveCurrentSemantic() switch
+        var baseDistance = ResolveCurrentSemantic() switch
         {
             BattleActionSemantic.BasicAttack => 0.34f,
             BattleActionSemantic.DamagingSkill => 0.24f,
             BattleActionSemantic.HealSupport => 0.16f,
             _ => 0.18f,
         };
+
+        if (ResolveCurrentSemantic() != BattleActionSemantic.BasicAttack)
+        {
+            return baseDistance;
+        }
+
+        return _activeAnimationSemantic == BattleAnimationSemantic.DashEngage
+            ? baseDistance * ResolveAnimationIntensityMultiplier()
+            : baseDistance;
     }
 
     private BattleActionSemantic ResolveCurrentSemantic()

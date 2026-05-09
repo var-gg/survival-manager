@@ -100,6 +100,15 @@ public static class CompiledSkillSlots
     }
 }
 
+public enum BasicAttackActionProfile
+{
+    Auto = 0,
+    StationaryStrike = 1,
+    StepInStrike = 2,
+    LungeStrike = 3,
+    DashStrike = 4,
+}
+
 public sealed record BattleBasicAttackSpec(
     string Id,
     string Name,
@@ -107,7 +116,10 @@ public sealed record BattleBasicAttackSpec(
     TargetRule? TargetRuleData = null,
     ActionLane Lane = ActionLane.Primary,
     ActionLockRule LockRule = ActionLockRule.SoftCommit,
-    IReadOnlyList<EffectDescriptor>? EffectDescriptors = null);
+    IReadOnlyList<EffectDescriptor>? EffectDescriptors = null,
+    BasicAttackActionProfile ActionProfile = BasicAttackActionProfile.Auto,
+    float ContactRange = 0f,
+    float PreImpactStepDistance = 0f);
 
 public sealed record BattlePassiveSpec(
     string Id,

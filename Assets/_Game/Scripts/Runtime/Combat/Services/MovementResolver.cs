@@ -12,6 +12,7 @@ public static class MovementResolver
     private const float ObstacleClearancePadding = 0.06f;
     private const float ObstacleCorridorPadding = 0.18f;
     private const float ObstacleDetourPadding = 0.28f;
+    private const float PreImpactRangeTolerance = 0.12f;
 
     public static float ComputeEdgeDistance(UnitSnapshot actor, UnitSnapshot target)
     {
@@ -115,6 +116,52 @@ public static class MovementResolver
             default:
                 return null;
         }
+    }
+
+    internal static BasicAttackPreImpactStepResult TryApplyBasicAttackPreImpactStep(BattleState state, UnitSnapshot actor, UnitSnapshot target)
+    {
+        if (actor.IsRooted)
+        {
+            return BasicAttackPreImpactStepResult.None(BasicAttackActionProfileResolver.Resolve(actor).Profile);
+        }
+
+        var profile = BasicAttackActionProfileResolver.Resolve(actor);
+        if (!profile.AllowsPreImpactStep)
+        {
+            return BasicAttackPreImpactStepResult.None(profile.Profile);
+        }
+
+        var distance = ComputeEdgeDistance(actor, target);
+        if (distance <= profile.ContactRange + 0.05f || distance > profile.LogicalRange + PreImpactRangeTolerance)
+        {
+            return BasicAttackPreImpactStepResult.None(profile.Profile);
+        }
+
+        var direction = (target.Position - actor.Position).Normalized;
+        if (direction.SqrLength <= 0.0001f)
+        {
+            direction = actor.Side == TeamSide.Ally
+                ? new CombatVector2(1f, 0f)
+                : new CombatVector2(-1f, 0f);
+        }
+
+        var travel = Math.Min(profile.PreImpactStepDistance, Math.Max(0f, distance - profile.ContactRange));
+        if (travel <= 0.01f)
+        {
+            return BasicAttackPreImpactStepResult.None(profile.Profile);
+        }
+
+        var desired = actor.Position + (direction * travel);
+        var next = ClampToLeash(state, actor, ClampToArena(desired));
+        next = ResolveCollisionAwareStep(state, actor, desired, next, travel);
+        var movedDistance = actor.Position.DistanceTo(next);
+        if (movedDistance <= 0.01f)
+        {
+            return BasicAttackPreImpactStepResult.None(profile.Profile);
+        }
+
+        actor.SetPosition(next);
+        return new BasicAttackPreImpactStepResult(profile.Profile, movedDistance, BasicAttackActionProfileResolver.ToNoteToken(profile.Profile));
     }
 
     public static void MoveForIntent(BattleState state, UnitSnapshot actor, EvaluatedAction evaluated)
@@ -581,5 +628,18 @@ public static class MovementResolver
         }
 
         return top < bottom ? 1 : -1;
+    }
+}
+
+internal readonly record struct BasicAttackPreImpactStepResult(
+    BasicAttackActionProfile Profile,
+    float MovedDistance,
+    string NoteToken)
+{
+    public bool Moved => MovedDistance > 0.01f;
+
+    public static BasicAttackPreImpactStepResult None(BasicAttackActionProfile profile)
+    {
+        return new BasicAttackPreImpactStepResult(profile, 0f, string.Empty);
     }
 }
