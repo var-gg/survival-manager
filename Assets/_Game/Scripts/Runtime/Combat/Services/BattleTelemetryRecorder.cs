@@ -320,6 +320,8 @@ public static class BattleTelemetryRecorder
         AddMetric(state, "BuffValueContribution", snapshot.BuffValueContribution);
         AddMetric(state, "AOECostTaken", snapshot.AoeCostTaken);
         AddMetric(state, "ClusterTradeoffNetValue", snapshot.ClusterTradeoffNetValue);
+        AddMetric(state, "HandednessSlotPreferenceHitRatio", snapshot.HandednessSlotPreferenceHitRatio);
+        AddMetric(state, "HandednessLateralResetSideHistogram", 0f, 0f, Serialize(snapshot.HandednessLateralResetSideHistogram));
         AddMetric(state, "ReplayHash", 0f, 0f, snapshot.ReplayHash);
     }
 

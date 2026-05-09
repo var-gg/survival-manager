@@ -181,7 +181,7 @@ public static class MovementResolver
         }
 
         actor.SetPosition(next);
-        return new BasicAttackPreImpactStepResult(profile.Profile, movedDistance, BasicAttackActionProfileResolver.ToNoteToken(profile.Profile));
+        return new BasicAttackPreImpactStepResult(profile.Profile, movedDistance, BasicAttackActionProfileResolver.ToNoteToken(profile));
     }
 
     internal static PostAttackRepositionResult TryApplyPostAttackReposition(BattleState state, UnitSnapshot actor, UnitSnapshot target)
@@ -223,12 +223,6 @@ public static class MovementResolver
             ? (actor.Side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f))
             : away.Normalized;
         var lateral = new CombatVector2(-awayDirection.Y, awayDirection.X);
-        var lateralSign = ResolveDeterministic01(state, actor, target, "post_attack_lateral", 0) >= 0.5f ? 1f : -1f;
-        if (Math.Abs(context.FlankBias) > 0.05f)
-        {
-            lateralSign = MathF.Sign(context.FlankBias);
-        }
-
         var lateralDistance = Lerp(0.15f, 0.35f, TacticContext.Clamp01(context.Width));
         lateralDistance *= actor.Definition.ClassId switch
         {
@@ -236,6 +230,8 @@ public static class MovementResolver
             "duelist" => 1.25f,
             _ => 1f,
         };
+        var lateralChoice = ResolvePostAttackLateralChoice(state, actor, target, lateral, lateralDistance);
+        var lateralSign = lateralChoice.Sign;
         var desired = actor.Position + (lateral * lateralSign * lateralDistance) + (awayDirection * 0.10f);
         var nextPosition = ResolveCollisionAwareStep(
             state,
@@ -250,7 +246,72 @@ public static class MovementResolver
         }
 
         actor.SetPosition(nextPosition);
-        return new PostAttackRepositionResult(true, movedDistance, "post_attack_reposition");
+        state.ActivityTelemetry.RecordHandednessLateralReset(lateralChoice.Label);
+        return new PostAttackRepositionResult(true, movedDistance, $"post_attack_reposition+{lateralChoice.Label}");
+    }
+
+    public static (int Sign, string Label) ResolvePostAttackLateralChoice(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot target,
+        CombatVector2 lateral,
+        float lateralDistance)
+    {
+        var preferredSign = HandednessDecisionService.ResolvePreferredSideSign(actor.Definition.DominantHand, actor.Side);
+        if (preferredSign == 0)
+        {
+            var ambidextrousSign = HandednessDecisionService.ResolveAmbidextrousLeastCrowdedSign(state, actor, lateral, lateralDistance);
+            return (ambidextrousSign, "hand_ambidextrous_least_crowded");
+        }
+
+        var preferredClear = IsLateralResetClear(state, actor, target, lateral, preferredSign, lateralDistance);
+        var oppositeClear = IsLateralResetClear(state, actor, target, lateral, -preferredSign, lateralDistance);
+        if (preferredClear && !oppositeClear)
+        {
+            return (preferredSign, $"hand_{HandednessDecisionService.ResolveHandLabel(actor.Definition.DominantHand)}_preferred");
+        }
+
+        if (!preferredClear && oppositeClear)
+        {
+            return (-preferredSign, $"hand_{HandednessDecisionService.ResolveHandLabel(actor.Definition.DominantHand)}_opposite_clear");
+        }
+
+        if (preferredClear && oppositeClear)
+        {
+            var roll = ResolveDeterministic01(state, actor, target, "post_attack_handedness_lateral", 0);
+            return roll < 0.65f
+                ? (preferredSign, $"hand_{HandednessDecisionService.ResolveHandLabel(actor.Definition.DominantHand)}_weighted")
+                : (-preferredSign, "hand_stable_hash_weighted");
+        }
+
+        var fallbackSign = HandednessDecisionService.ResolveStableSign(state, actor, "post_attack_lateral_blocked");
+        return (fallbackSign, "hand_blocked_hash");
+    }
+
+    private static bool IsLateralResetClear(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot target,
+        CombatVector2 lateral,
+        int lateralSign,
+        float lateralDistance)
+    {
+        var candidate = ClampToArena(ClampToLeash(state, actor, actor.Position + (lateral * lateralSign * lateralDistance)));
+        foreach (var obstacle in state.AllUnits)
+        {
+            if (obstacle.Id == actor.Id || obstacle.Id == target.Id || !obstacle.IsAlive)
+            {
+                continue;
+            }
+
+            var requiredClearance = actor.NavigationRadius + obstacle.NavigationRadius + ObstacleClearancePadding;
+            if (candidate.DistanceTo(obstacle.Position) < requiredClearance)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static void MoveForIntent(BattleState state, UnitSnapshot actor, EvaluatedAction evaluated)

@@ -151,6 +151,7 @@ public sealed partial class GameSessionState
             FlexPassiveId = preview.FlexPassiveId,
             RecruitTier = preview.Metadata.Tier,
             RecruitSource = source,
+            DominantHand = DominantHandDistributionService.ResolveGenerated(heroId, archetype.Class.Id),
             RetrainState = new UnitRetrainState(),
             EconomyFootprint = new UnitEconomyFootprint
             {

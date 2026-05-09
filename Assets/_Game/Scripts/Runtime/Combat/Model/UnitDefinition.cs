@@ -87,7 +87,8 @@ public record BattleUnitLoadout(
     ContentGovernanceSummary? Governance = null,
     string ArchetypeId = "",
     string CharacterId = "",
-    string RoleInstructionId = "")
+    string RoleInstructionId = "",
+    DominantHand DominantHand = DominantHand.Right)
 {
     public IReadOnlyList<TacticRule> Tactics => RuleChains.SelectMany(chain => chain.Rules).ToList();
 

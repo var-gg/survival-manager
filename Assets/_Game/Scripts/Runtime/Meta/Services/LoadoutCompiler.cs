@@ -209,6 +209,8 @@ public sealed class LoadoutCompiler
 
             var roleVariant = ResolveRoleVariant(archetype, roleInstruction);
             artifacts.CompileTags.Add($"role_variant:{roleVariant}");
+            var dominantHand = ResolveDominantHand(hero, archetype, content);
+            artifacts.CompileTags.Add($"dominant_hand:{dominantHand}");
 
             compiled.Add(new BattleUnitLoadout(
                 hero.Id,
@@ -248,7 +250,8 @@ public sealed class LoadoutCompiler
                 archetype.Governance,
                 archetype.Id,
                 hero.CharacterId,
-                roleSelection.Id));
+                roleSelection.Id,
+                dominantHand));
 
             compileProvenance.AddRange(artifacts.Provenance);
         }
@@ -667,6 +670,23 @@ public sealed class LoadoutCompiler
         };
     }
 
+    private static DominantHand ResolveDominantHand(
+        HeroRecord hero,
+        CombatArchetypeTemplate archetype,
+        CombatContentSnapshot content)
+    {
+        if (!string.IsNullOrWhiteSpace(hero.CharacterId)
+            && content.Characters != null
+            && content.Characters.TryGetValue(hero.CharacterId, out var character))
+        {
+            return character.DominantHand;
+        }
+
+        return hero.DominantHand != DominantHand.Right
+            ? hero.DominantHand
+            : archetype.DefaultDominantHand;
+    }
+
     private static string ComputeCompileHash(
         IReadOnlyList<BattleUnitLoadout> units,
         IReadOnlyList<CombatModifierPackage> teamPackages,
@@ -704,6 +724,7 @@ public sealed class LoadoutCompiler
             sb.Append(unit.Id).Append(':')
                 .Append(unit.ArchetypeId).Append(':')
                 .Append(unit.CharacterId).Append(':')
+                .Append(unit.DominantHand).Append(':')
                 .Append(unit.PreferredAnchor).Append(':')
                 .Append(unit.RoleInstructionId).Append(':')
                 .Append(unit.RoleTag).Append(':')

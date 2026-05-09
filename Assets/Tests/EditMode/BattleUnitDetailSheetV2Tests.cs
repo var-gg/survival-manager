@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 using SM.Tests.EditMode.Fakes;
 using SM.Unity;
 using SM.Unity.UI.Battle;
@@ -59,6 +60,10 @@ public sealed class BattleUnitDetailSheetV2Tests
                 BattleStatLineCategory.Movement,
                 BattleStatLineCategory.Targeting,
             }));
+            var handLine = selected.StatLines!.Single(line => line.Label == "Dominant Hand");
+            Assert.That(handLine.Value, Is.EqualTo("Left"));
+            Assert.That(handLine.Tooltip, Does.Contain("does not change damage"));
+            Assert.That(handLine.Tooltip, Does.Not.Contain("0."));
             Assert.That(selected.SkillSlots!.Count, Is.EqualTo(4));
             Assert.That(selected.StatusEffects!.First().Section, Is.EqualTo(BattleStatusEffectSection.Permanent));
             Assert.That(selected.StatusEffects.Any(chip => chip.Section == BattleStatusEffectSection.BattleScoped && chip.StatusId == "marked"), Is.True);
@@ -126,6 +131,7 @@ public sealed class BattleUnitDetailSheetV2Tests
             SignaturePassiveName: "Purifying",
             FlexPassiveId: "support_brutal",
             FlexPassiveName: "Brutal",
-            TacticRuleSummaries: new[] { "P010 EnemyInRange -> BasicAttack / NearestEnemy threshold=0" });
+            TacticRuleSummaries: new[] { "P010 EnemyInRange -> BasicAttack / NearestEnemy threshold=0" },
+            DominantHand: DominantHand.Left);
     }
 }

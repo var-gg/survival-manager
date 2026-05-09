@@ -89,7 +89,8 @@ public static class BattleReadModelBuilder
                         .OrderBy(rule => rule.Priority)
                         .ThenBy(rule => rule.ConditionType)
                         .Select(FormatTacticRule)
-                        .ToList());
+                        .ToList(),
+                    unit.Definition.DominantHand);
             })
             .ToList();
 

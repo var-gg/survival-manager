@@ -48,6 +48,7 @@ public enum BattleAnimationSemantic
     ProjectileCast = 13,
     BowDraw = 14,
     ProjectileWindup = 15,
+    GuardPose = 16,
 }
 
 public enum BattleAnimationDirection

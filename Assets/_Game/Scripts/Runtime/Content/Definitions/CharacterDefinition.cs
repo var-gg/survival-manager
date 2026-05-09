@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Serialization;
+using SM.Core.Contracts;
 
 namespace SM.Content.Definitions
 {
@@ -13,6 +14,7 @@ namespace SM.Content.Definitions
         public ClassDefinition Class;
         public UnitArchetypeDefinition DefaultArchetype;
         public RoleInstructionDefinition DefaultRoleInstruction;
+        public DominantHand DominantHand = DominantHand.Right;
 
         [FormerlySerializedAs("DisplayName")]
         [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;

@@ -909,7 +909,8 @@ public sealed class CombatSandboxScenarioCompiler
             hero.RecruitSource,
             hero.RetrainState?.Clone() ?? new UnitRetrainState(),
             hero.EconomyFootprint?.Clone() ?? new UnitEconomyFootprint(),
-            hero.CharacterId);
+            hero.CharacterId,
+            hero.DominantHand);
     }
 
     private static HeroLoadoutState CreateHeroLoadoutState(HeroLoadoutRecord loadout)

@@ -16,7 +16,8 @@ public sealed record HeroRecord(
     RecruitOfferSource RecruitSource = RecruitOfferSource.RecruitPhase,
     UnitRetrainState? RetrainState = null,
     UnitEconomyFootprint? EconomyFootprint = null,
-    string CharacterId = "")
+    string CharacterId = "",
+    DominantHand DominantHand = DominantHand.Right)
 {
     public UnitRetrainState EffectiveRetrainState => RetrainState ?? new UnitRetrainState();
 

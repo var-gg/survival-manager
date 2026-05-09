@@ -24,7 +24,8 @@ public sealed record BattleParticipantSpec(
     string RoleTag = "auto",
     string OpeningIntent = "opening:standard",
     string CharacterId = "",
-    string RoleInstructionId = "");
+    string RoleInstructionId = "",
+    DominantHand DominantHand = DominantHand.Right);
 
 public sealed record BattleEncounterPlan(
     IReadOnlyList<BattleParticipantSpec> EnemyParticipants,
@@ -68,7 +69,8 @@ public sealed record CombatArchetypeTemplate(
     CombatEntityKind EntityKind = CombatEntityKind.RosterUnit,
     OwnershipLink? Ownership = null,
     SummonProfile? SummonProfile = null,
-    ContentGovernanceSummary? Governance = null);
+    ContentGovernanceSummary? Governance = null,
+    DominantHand DefaultDominantHand = DominantHand.Right);
 
 public sealed record TeamTacticTemplate(
     string Id,
@@ -83,7 +85,8 @@ public sealed record CharacterTemplate(
     string RaceId,
     string ClassId,
     string DefaultArchetypeId,
-    string DefaultRoleInstructionId);
+    string DefaultRoleInstructionId,
+    DominantHand DominantHand = DominantHand.Right);
 
 public sealed record PassiveNodeTemplate(
     string Id,
