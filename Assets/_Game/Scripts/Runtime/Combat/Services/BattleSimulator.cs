@@ -125,7 +125,12 @@ public sealed class BattleSimulator
                             || evaluated.SlotAssignment == null
                             || actor.Position.DistanceTo(evaluated.SlotAssignment.Position) <= Math.Max(SlotArrivalThreshold, actor.SeparationRadius * SlotArrivalRadiusScale)
                             || (inRangeBand && MovementResolver.IsInActionRange(actor, evaluated.Target, actor.AttackRange + ActionRangeTolerance));
-            if (inRangeBand && slotReady && evaluated.Mobility == null)
+            var canBeginAction = evaluated.Target.Side == actor.Side
+                                 || evaluated.DesiredPhase == CombatActionState.ExecuteAction;
+            if (canBeginAction
+                && inRangeBand
+                && slotReady
+                && evaluated.Mobility == null)
             {
                 if (evaluated.ActionType == BattleActionType.BasicAttack && !StatusResolutionService.CanUseBasicAttack(actor))
                 {
@@ -227,6 +232,14 @@ public sealed class BattleSimulator
             return false;
         }
 
+        if (ShouldCancelPendingBasicAttackForPreferredMinimum(actor, target, desiredRange))
+        {
+            actor.ClearTarget(applySwitchDelay: false);
+            actor.SetCurrentTarget(target.Id);
+            actor.SetActionState(CombatActionState.AcquireTarget);
+            return false;
+        }
+
         if (actor.ActionTimerRemaining > 0f)
         {
             return false;
@@ -234,6 +247,41 @@ public sealed class BattleSimulator
 
         stepEvents.AddRange(CombatActionResolver.Resolve(State, actor));
         return true;
+    }
+
+    private static bool ShouldCancelPendingBasicAttackForPreferredMinimum(UnitSnapshot actor, UnitSnapshot target, float desiredRange)
+    {
+        if (actor.PendingActionType != BattleActionType.BasicAttack || actor.IsRooted)
+        {
+            return false;
+        }
+
+        var profile = BasicAttackActionProfileResolver.Resolve(actor);
+        var preferredMinimum = ResolvePendingBasicAttackPreferredMinimum(actor, desiredRange);
+        if (profile.Profile != BasicAttackActionProfile.StationaryStrike || preferredMinimum < 1.8f)
+        {
+            return false;
+        }
+
+        var edgeDistance = MovementResolver.ComputeEdgeDistance(actor, target);
+        return edgeDistance < preferredMinimum - ResolvePendingActionRetreatBuffer(actor);
+    }
+
+    private static float ResolvePendingBasicAttackPreferredMinimum(UnitSnapshot actor, float desiredRange)
+    {
+        var preferredMinimum = actor.Behavior.PreferredRangeMin > 0f
+            ? actor.Behavior.PreferredRangeMin
+            : actor.PreferredRangeBand.ClampedMin;
+
+        return Math.Min(Math.Max(0f, preferredMinimum), Math.Max(0.4f, desiredRange));
+    }
+
+    private static float ResolvePendingActionRetreatBuffer(UnitSnapshot actor)
+    {
+        var safeHysteresis = Math.Max(0f, actor.Behavior.RangeHysteresis);
+        return safeHysteresis <= 0f
+            ? 0f
+            : Math.Min(Math.Max(0f, actor.Behavior.RetreatBuffer), safeHysteresis);
     }
 
     private void HandleDefendOrReposition(UnitSnapshot actor, List<BattleEvent> stepEvents)

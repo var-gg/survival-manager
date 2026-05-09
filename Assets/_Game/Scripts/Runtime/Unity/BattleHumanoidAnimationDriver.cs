@@ -11,6 +11,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     [SerializeField] private Animator animator = null!;
     [SerializeField] private BattleHumanoidAnimationSet animationSet = null!;
     [SerializeField] private bool disableRootMotion = true;
+    [SerializeField] private bool clearRuntimeAnimatorController = true;
     [SerializeField] private bool forceAlwaysAnimate;
     [SerializeField, Min(0.02f)] private float minimumOneShotSeconds = 0.12f;
 
@@ -200,6 +201,11 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         if (disableRootMotion)
         {
             animator.applyRootMotion = false;
+        }
+
+        if (clearRuntimeAnimatorController && animator.runtimeAnimatorController != null)
+        {
+            animator.runtimeAnimatorController = null;
         }
 
         animator.cullingMode = forceAlwaysAnimate

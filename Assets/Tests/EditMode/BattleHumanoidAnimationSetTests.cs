@@ -2,6 +2,7 @@ using System.Reflection;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Unity;
+using UnityEditor;
 using UnityEngine;
 
 namespace SM.Tests.EditMode;
@@ -37,13 +38,17 @@ public sealed class BattleHumanoidAnimationSetTests
         var visualRoot = new GameObject("VisualRoot").transform;
         var vendorSlot = new GameObject("VendorVisualSlot").transform;
         var model = new GameObject("HumanoidModel");
+        var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(
+            "Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Animation/Demo_Pose/Combat_idle.controller");
+        Assert.That(controller, Is.Not.Null);
 
         try
         {
             visualRoot.SetParent(root.transform, false);
             vendorSlot.SetParent(visualRoot, false);
             model.transform.SetParent(vendorSlot, false);
-            model.AddComponent<Animator>();
+            var animator = model.AddComponent<Animator>();
+            animator.runtimeAnimatorController = controller;
 
             SetField(set, "idle", idle);
             SetField(set, "basicAttacks", new[] { basic });
@@ -58,6 +63,7 @@ public sealed class BattleHumanoidAnimationSetTests
             driver.Initialize(wrapper, unit);
 
             Assert.That(driver.CurrentLoopClip, Is.SameAs(idle));
+            Assert.That(animator.runtimeAnimatorController, Is.Null);
 
             driver.ConsumeCue(
                 new BattlePresentationCue(BattlePresentationCueType.ActionCommitBasic, 1, "ally", ActionType: BattleActionType.BasicAttack),
@@ -294,6 +300,93 @@ public sealed class BattleHumanoidAnimationSetTests
         {
             Destroy(set, dodge, hit, dashGeneric, dashForward);
         }
+    }
+
+    [Test]
+    public void ResolveCueClip_MapsRangedWindupSemanticsToConfiguredVariants()
+    {
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var genericWindup = CreateClip("generic_windup");
+        var bowDraw = CreateClip("bow_draw");
+        var projectileWindup = CreateClip("projectile_windup");
+
+        try
+        {
+            SetField(set, "windups", new[] { genericWindup });
+            SetField(set, "variants", new[]
+            {
+                new BattleHumanoidAnimationVariant(
+                    BattleAnimationSemantic.BowDraw,
+                    bowDraw,
+                    BattleAnimationDirection.Forward,
+                    BattleAnimationIntensity.Medium),
+                new BattleHumanoidAnimationVariant(
+                    BattleAnimationSemantic.ProjectileWindup,
+                    projectileWindup,
+                    BattleAnimationDirection.Forward,
+                    BattleAnimationIntensity.Medium),
+            });
+
+            Assert.That(set.TryResolveCueClip(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.WindupEnter,
+                    2,
+                    "ally_ranger",
+                    AnimationSemantic: BattleAnimationSemantic.BowDraw,
+                    AnimationDirection: BattleAnimationDirection.Forward,
+                    AnimationIntensity: BattleAnimationIntensity.Medium),
+                CreateUnit(CombatActionState.ExecuteAction, pendingActionType: BattleActionType.BasicAttack),
+                out var bowDrawClip), Is.True);
+            Assert.That(bowDrawClip, Is.SameAs(bowDraw));
+
+            Assert.That(set.TryResolveCueClip(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.WindupEnter,
+                    3,
+                    "ally_mystic",
+                    AnimationSemantic: BattleAnimationSemantic.ProjectileWindup,
+                    AnimationDirection: BattleAnimationDirection.Forward,
+                    AnimationIntensity: BattleAnimationIntensity.Medium),
+                CreateUnit(CombatActionState.ExecuteAction, pendingActionType: BattleActionType.BasicAttack),
+                out var projectileWindupClip), Is.True);
+            Assert.That(projectileWindupClip, Is.SameAs(projectileWindup));
+        }
+        finally
+        {
+            Destroy(set, genericWindup, bowDraw, projectileWindup);
+        }
+    }
+
+    [Test]
+    public void EditorKevinFallback_ResolvesBowDrawAndBowShotClips()
+    {
+        var set = BattleHumanoidAnimationSet.ResolveRuntimeSet(null);
+
+        Assert.That(set, Is.Not.Null);
+        Assert.That(set!.TryResolveCueClip(
+            new BattlePresentationCue(
+                BattlePresentationCueType.WindupEnter,
+                11,
+                "ally_ranger",
+                AnimationSemantic: BattleAnimationSemantic.BowDraw,
+                AnimationDirection: BattleAnimationDirection.Forward,
+                AnimationIntensity: BattleAnimationIntensity.Medium),
+            CreateUnit(CombatActionState.ExecuteAction, pendingActionType: BattleActionType.BasicAttack),
+            out var drawClip), Is.True);
+        Assert.That(drawClip.name, Does.Contain("BowShot"));
+
+        Assert.That(set.TryResolveCueClip(
+            new BattlePresentationCue(
+                BattlePresentationCueType.ActionCommitBasic,
+                12,
+                "ally_ranger",
+                ActionType: BattleActionType.BasicAttack,
+                AnimationSemantic: BattleAnimationSemantic.BowShot,
+                AnimationDirection: BattleAnimationDirection.Forward,
+                AnimationIntensity: BattleAnimationIntensity.Medium),
+            CreateUnit(CombatActionState.ExecuteAction, pendingActionType: BattleActionType.BasicAttack),
+            out var shotClip), Is.True);
+        Assert.That(shotClip.name, Does.Contain("BowShot"));
     }
 
     private static BattleUnitReadModel CreateUnit(
