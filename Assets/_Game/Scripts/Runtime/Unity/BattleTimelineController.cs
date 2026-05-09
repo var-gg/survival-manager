@@ -73,7 +73,14 @@ public sealed class BattleTimelineController
             return false;
         }
 
-        if (IsPaused || IsFinished || _simulator.IsFinished && _currentIndex >= FurthestIndex)
+        var fixedStep = Math.Max(0.0001f, FixedStepSeconds);
+        if (IsPaused)
+        {
+            alpha = ResolveBlendAlpha(fixedStep);
+            return false;
+        }
+
+        if (IsFinished || _simulator.IsFinished && _currentIndex >= FurthestIndex)
         {
             alpha = 1f;
             return false;
@@ -112,10 +119,14 @@ public sealed class BattleTimelineController
             currentStep = CurrentStep!;
         }
 
-        var fixedStep = Math.Max(0.0001f, FixedStepSeconds);
-        alpha = IsFinished ? 1f : Math.Min(1f, Math.Max(0f, _stepAccumulator / fixedStep));
+        alpha = IsFinished ? 1f : ResolveBlendAlpha(fixedStep);
 
         return stepped;
+    }
+
+    private float ResolveBlendAlpha(float fixedStep)
+    {
+        return Math.Min(1f, Math.Max(0f, _stepAccumulator / fixedStep));
     }
 
     public void SeekToStep(int targetIndex)
