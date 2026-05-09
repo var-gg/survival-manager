@@ -13,6 +13,7 @@ public static class MovementResolver
     private const float ObstacleCorridorPadding = 0.18f;
     private const float ObstacleDetourPadding = 0.28f;
     private const float PreImpactRangeTolerance = 0.12f;
+    internal const float ActionStartRangeTolerance = 0.12f;
 
     public static float ComputeEdgeDistance(UnitSnapshot actor, UnitSnapshot target)
     {
@@ -215,7 +216,9 @@ public static class MovementResolver
             }
         }
 
-        if (currentDistance > rangeBand.ClampedMax + approachBuffer)
+        if (currentDistance > rangeBand.ClampedMax + approachBuffer
+            || (evaluated.DesiredPhase == CombatActionState.Approach
+                && currentDistance > rangeBand.ClampedMax + ActionStartRangeTolerance))
         {
             var desiredPosition = ResolveDesiredPosition(actor, target, rangeBand);
             MoveTowards(state, actor, desiredPosition, evaluated.SlotAssignment != null ? CombatActionState.SecurePosition : CombatActionState.Approach);

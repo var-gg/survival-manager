@@ -368,7 +368,8 @@ public static class TacticEvaluator
         }
 
         var distance = MovementResolver.ComputeEdgeDistance(actor, target);
-        if (distance > rangeBand.ClampedMax + actor.Behavior.ApproachBuffer)
+        var actionStartBuffer = Math.Min(actor.Behavior.ApproachBuffer, MovementResolver.ActionStartRangeTolerance);
+        if (distance > rangeBand.ClampedMax + actionStartBuffer)
         {
             return CombatActionState.Approach;
         }

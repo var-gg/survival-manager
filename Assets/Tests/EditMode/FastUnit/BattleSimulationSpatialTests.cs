@@ -175,6 +175,60 @@ public sealed class BattleSimulationSpatialTests
     }
 
     [Test]
+    public void ContentLikeBacklineFight_DoesNotDegradeIntoRangeMissLoop()
+    {
+        var allies = new[]
+        {
+            CombatTestFactory.CreateUnit("ally_dawn_priest", classId: "mystic", anchor: DeploymentAnchorId.FrontCenter, hp: 18f, attack: 3f, defense: 2f, speed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, attackWindup: 0.22f, attackCooldown: 1f, leashDistance: 4.8f),
+            CombatTestFactory.CreateUnit("ally_pack_raider", classId: "duelist", anchor: DeploymentAnchorId.FrontBottom, hp: 19f, attack: 8f, defense: 1f, speed: 5f, moveSpeed: 2.05f, attackRange: 1.3f, attackWindup: 0.22f, attackCooldown: 0.85f, leashDistance: 5.2f),
+            CombatTestFactory.CreateUnit("ally_echo_savant", classId: "ranger", anchor: DeploymentAnchorId.BackTop, hp: 18f, attack: 7f, defense: 2f, speed: 5f, moveSpeed: 1.85f, attackRange: 3.2f, attackWindup: 0.17f, attackCooldown: 0.48f, leashDistance: 8f),
+            CombatTestFactory.CreateUnit("ally_grave_hexer", classId: "mystic", anchor: DeploymentAnchorId.BackBottom, hp: 17f, attack: 4f, defense: 2f, speed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, attackWindup: 0.22f, attackCooldown: 1f, leashDistance: 4.8f),
+        };
+        var enemies = new[]
+        {
+            CombatTestFactory.CreateUnit("enemy_grey_fang", race: "undead", classId: "duelist", anchor: DeploymentAnchorId.FrontTop, hp: 21f, attack: 7f, defense: 2f, speed: 5f, moveSpeed: 2.05f, attackRange: 1.3f, attackWindup: 0.22f, attackCooldown: 0.45f, leashDistance: 10f),
+            CombatTestFactory.CreateUnit("enemy_silent_moon", race: "undead", classId: "mystic", anchor: DeploymentAnchorId.FrontBottom, hp: 17f, attack: 4f, defense: 2f, speed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, attackWindup: 0.22f, attackCooldown: 1f, leashDistance: 4.8f),
+            CombatTestFactory.CreateUnit("enemy_lyra_sternfeld", race: "undead", classId: "mystic", anchor: DeploymentAnchorId.BackTop, hp: 18f, attack: 3f, defense: 2f, speed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, attackWindup: 0.22f, attackCooldown: 1f, leashDistance: 4.8f),
+            CombatTestFactory.CreateUnit("enemy_black_vellum", race: "undead", classId: "mystic", anchor: DeploymentAnchorId.BackBottom, hp: 18f, attack: 3f, defense: 2f, speed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, attackWindup: 0.22f, attackCooldown: 0.55f, leashDistance: 8f),
+        };
+
+        var simulator = new BattleSimulator(CombatTestFactory.CreateBattleState(allies, enemies, seed: 42), BattleSimulator.DefaultMaxSteps);
+        var positiveDamageAfterOpening = 0;
+        var missRangeAfterOpening = 0;
+        var consecutiveRangeMisses = 0;
+        var maxConsecutiveRangeMisses = 0;
+
+        while (!simulator.IsFinished)
+        {
+            var step = simulator.Step();
+            foreach (var evt in step.Events.Where(evt => evt.LogCode is BattleLogCode.BasicAttackDamage or BattleLogCode.ActiveSkillDamage))
+            {
+                if (evt.StepIndex >= 60 && evt.Value > 0f)
+                {
+                    positiveDamageAfterOpening++;
+                    consecutiveRangeMisses = 0;
+                    continue;
+                }
+
+                if (evt.StepIndex >= 60 && evt.Note == "miss_range")
+                {
+                    missRangeAfterOpening++;
+                    consecutiveRangeMisses++;
+                    maxConsecutiveRangeMisses = System.Math.Max(maxConsecutiveRangeMisses, consecutiveRangeMisses);
+                    continue;
+                }
+
+                consecutiveRangeMisses = 0;
+            }
+        }
+
+        Assert.That(positiveDamageAfterOpening, Is.GreaterThan(0),
+            $"opening 이후 전부 range miss로 굳으면 안 됨. missAfterOpening={missRangeAfterOpening}, maxMissStreak={maxConsecutiveRangeMisses}");
+        Assert.That(maxConsecutiveRangeMisses, Is.LessThan(30),
+            $"range miss가 장시간 반복됨. missAfterOpening={missRangeAfterOpening}, positiveAfterOpening={positiveDamageAfterOpening}");
+    }
+
+    [Test]
     public void Healer_Supports_Lowest_Health_Ally()
     {
         var healSkill = new SkillDefinition("heal", "Heal", SkillKind.Heal, 4f, 3f);
