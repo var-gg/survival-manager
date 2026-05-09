@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: behavior_vanguard
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:BehaviorProfileDefinition
   FormationLine: 0
-  RangeDiscipline: 1
+  RangeDiscipline: 0
   ReevaluationInterval: 0.42
   RangeHysteresis: 0.16
   PreferredRangeMin: 0

@@ -725,23 +725,111 @@ public static class SampleSeedGenerator
     {
         return new[]
         {
-            ("vanguard", 0.42f, 0.16f, 0.04f, 0.05f, 0.34f, 0.82f, 0.02f, 0.28f, 0.38f, 0.88f, 1.0f),
-            ("duelist", 0.30f, 0.22f, 0.22f, 0.24f, 0.72f, 0.58f, 0.08f, 0.12f, 0.18f, 0.62f, 1.15f),
-            ("ranger", 0.24f, 0.28f, 0.72f, 0.84f, 0.58f, 0.74f, 0.12f, 0.04f, 0.12f, 0.34f, 1.5f),
-            ("mystic", 0.28f, 0.30f, 0.68f, 0.78f, 0.50f, 0.84f, 0.06f, 0.06f, 0.18f, 0.45f, 1.35f),
-        }.ToDictionary(tuple => tuple.Item1, tuple => CreateAsset<BehaviorProfileDefinition>($"{ResourcesRoot}/BehaviorProfiles/behavior_{tuple.Item1}.asset", asset =>
+            (
+                Id: "vanguard",
+                FormationLine: FormationLine.Frontline,
+                RangeDiscipline: RangeDiscipline.Collapse,
+                PreferredRangeMin: 0.6f,
+                PreferredRangeMax: 1.15f,
+                ApproachBuffer: 0.25f,
+                RetreatBuffer: 0.2f,
+                ChaseLeashMeters: 5.0f,
+                FrontlineGuardRadius: 3.0f,
+                ReevaluationInterval: 0.42f,
+                RangeHysteresis: 0.16f,
+                RetreatBias: 0.04f,
+                MaintainRangeBias: 0.05f,
+                Opportunism: 0.34f,
+                Discipline: 0.82f,
+                DodgeChance: 0.02f,
+                BlockChance: 0.28f,
+                BlockMitigation: 0.38f,
+                Stability: 0.88f,
+                BlockCooldownSeconds: 1.0f),
+            (
+                Id: "duelist",
+                FormationLine: FormationLine.Frontline,
+                RangeDiscipline: RangeDiscipline.HoldBand,
+                PreferredRangeMin: 0.55f,
+                PreferredRangeMax: 1.25f,
+                ApproachBuffer: 0.28f,
+                RetreatBuffer: 0.25f,
+                ChaseLeashMeters: 5.5f,
+                FrontlineGuardRadius: 2.2f,
+                ReevaluationInterval: 0.30f,
+                RangeHysteresis: 0.22f,
+                RetreatBias: 0.22f,
+                MaintainRangeBias: 0.24f,
+                Opportunism: 0.72f,
+                Discipline: 0.58f,
+                DodgeChance: 0.08f,
+                BlockChance: 0.12f,
+                BlockMitigation: 0.18f,
+                Stability: 0.62f,
+                BlockCooldownSeconds: 1.15f),
+            (
+                Id: "ranger",
+                FormationLine: FormationLine.Backline,
+                RangeDiscipline: RangeDiscipline.KiteBackward,
+                PreferredRangeMin: 2.75f,
+                PreferredRangeMax: 3.2f,
+                ApproachBuffer: 0.45f,
+                RetreatBuffer: 0.3f,
+                ChaseLeashMeters: 6.5f,
+                FrontlineGuardRadius: 1.5f,
+                ReevaluationInterval: 0.24f,
+                RangeHysteresis: 0.28f,
+                RetreatBias: 0.72f,
+                MaintainRangeBias: 0.84f,
+                Opportunism: 0.58f,
+                Discipline: 0.74f,
+                DodgeChance: 0.12f,
+                BlockChance: 0.04f,
+                BlockMitigation: 0.12f,
+                Stability: 0.34f,
+                BlockCooldownSeconds: 1.5f),
+            (
+                Id: "mystic",
+                FormationLine: FormationLine.Backline,
+                RangeDiscipline: RangeDiscipline.AnchorNearFrontline,
+                PreferredRangeMin: 2.25f,
+                PreferredRangeMax: 2.8f,
+                ApproachBuffer: 0.4f,
+                RetreatBuffer: 0.25f,
+                ChaseLeashMeters: 6.0f,
+                FrontlineGuardRadius: 1.8f,
+                ReevaluationInterval: 0.28f,
+                RangeHysteresis: 0.30f,
+                RetreatBias: 0.68f,
+                MaintainRangeBias: 0.78f,
+                Opportunism: 0.50f,
+                Discipline: 0.84f,
+                DodgeChance: 0.06f,
+                BlockChance: 0.06f,
+                BlockMitigation: 0.18f,
+                Stability: 0.45f,
+                BlockCooldownSeconds: 1.35f),
+        }.ToDictionary(tuple => tuple.Id, tuple => CreateAsset<BehaviorProfileDefinition>($"{ResourcesRoot}/BehaviorProfiles/behavior_{tuple.Id}.asset", asset =>
         {
-            asset.ReevaluationInterval = tuple.Item2;
-            asset.RangeHysteresis = tuple.Item3;
-            asset.RetreatBias = tuple.Item4;
-            asset.MaintainRangeBias = tuple.Item5;
-            asset.Opportunism = tuple.Item6;
-            asset.Discipline = tuple.Item7;
-            asset.DodgeChance = tuple.Item8;
-            asset.BlockChance = tuple.Item9;
-            asset.BlockMitigation = tuple.Item10;
-            asset.Stability = tuple.Item11;
-            asset.BlockCooldownSeconds = tuple.Item12;
+            asset.FormationLine = tuple.FormationLine;
+            asset.RangeDiscipline = tuple.RangeDiscipline;
+            asset.PreferredRangeMin = tuple.PreferredRangeMin;
+            asset.PreferredRangeMax = tuple.PreferredRangeMax;
+            asset.ApproachBuffer = tuple.ApproachBuffer;
+            asset.RetreatBuffer = tuple.RetreatBuffer;
+            asset.ChaseLeashMeters = tuple.ChaseLeashMeters;
+            asset.FrontlineGuardRadius = tuple.FrontlineGuardRadius;
+            asset.ReevaluationInterval = tuple.ReevaluationInterval;
+            asset.RangeHysteresis = tuple.RangeHysteresis;
+            asset.RetreatBias = tuple.RetreatBias;
+            asset.MaintainRangeBias = tuple.MaintainRangeBias;
+            asset.Opportunism = tuple.Opportunism;
+            asset.Discipline = tuple.Discipline;
+            asset.DodgeChance = tuple.DodgeChance;
+            asset.BlockChance = tuple.BlockChance;
+            asset.BlockMitigation = tuple.BlockMitigation;
+            asset.Stability = tuple.Stability;
+            asset.BlockCooldownSeconds = tuple.BlockCooldownSeconds;
         }));
     }
 

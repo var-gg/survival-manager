@@ -155,7 +155,7 @@ internal sealed class ArchetypeConverter
                 Mathf.Max(0.32f, collisionRadius * 0.8f),
                 Mathf.Max(0.72f, collisionRadius + 0.24f),
                 attackRange,
-                new FloatRange(Mathf.Max(2.3f, attackRange - 0.65f), Mathf.Max(2.8f, attackRange + 0.15f)),
+                new FloatRange(Mathf.Max(2.75f, attackRange - 0.45f), Mathf.Max(2.8f, attackRange + 0.15f)),
                 3,
                 Mathf.Max(1.5f, attackRange * 0.7f),
                 BodySizeCategory.Small,
@@ -220,8 +220,8 @@ internal sealed class ArchetypeConverter
         {
             "vanguard" => new BehaviorProfile(0.25f, 0.16f, 0.04f, 0.05f, 0.34f, 0.82f, 0.02f, 0.28f, 0.38f, 0.88f, 1f, FormationLine.Frontline, RangeDiscipline.Collapse, 0.6f, 1.15f, 0.25f, 0.2f, 5f, 0f, 3f),
             "duelist" => new BehaviorProfile(0.25f, 0.22f, 0.22f, 0.24f, 0.72f, 0.58f, 0.08f, 0.12f, 0.18f, 0.62f, 1.15f, FormationLine.Frontline, RangeDiscipline.HoldBand, 0.55f, 1.25f, 0.28f, 0.25f, 5.5f, 0.2f, 2.2f),
-            "ranger" => new BehaviorProfile(0.25f, 0.28f, 0.72f, 0.84f, 0.58f, 0.74f, 0.12f, 0.04f, 0.12f, 0.34f, 1.5f, FormationLine.Backline, RangeDiscipline.KiteBackward, 2.3f, 3.1f, 0.45f, 0.3f, 6.5f, 0.35f, 1.5f),
-            "mystic" => new BehaviorProfile(0.25f, 0.3f, 0.68f, 0.78f, 0.5f, 0.84f, 0.06f, 0.06f, 0.18f, 0.45f, 1.35f, FormationLine.Backline, RangeDiscipline.AnchorNearFrontline, 2.1f, 2.9f, 0.4f, 0.25f, 6f, 0.3f, 1.8f),
+            "ranger" => new BehaviorProfile(0.25f, 0.28f, 0.72f, 0.84f, 0.58f, 0.74f, 0.12f, 0.04f, 0.12f, 0.34f, 1.5f, FormationLine.Backline, RangeDiscipline.KiteBackward, 2.75f, 3.2f, 0.45f, 0.3f, 6.5f, 0.35f, 1.5f),
+            "mystic" => new BehaviorProfile(0.25f, 0.3f, 0.68f, 0.78f, 0.5f, 0.84f, 0.06f, 0.06f, 0.18f, 0.45f, 1.35f, FormationLine.Backline, RangeDiscipline.AnchorNearFrontline, 2.25f, 2.8f, 0.4f, 0.25f, 6f, 0.3f, 1.8f),
             _ => new BehaviorProfile(0.25f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f, FormationLine.Midline, RangeDiscipline.HoldBand, 1f, 2f, 0.4f, 0.25f, 5f, 0.25f, 2.5f),
         } : new BehaviorProfile(0.25f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f, FormationLine.Midline, RangeDiscipline.HoldBand, 1f, 2f, 0.4f, 0.25f, 5f, 0.25f, 2.5f);
     }

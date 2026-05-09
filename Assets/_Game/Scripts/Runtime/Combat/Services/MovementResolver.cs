@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 
 namespace SM.Combat.Services;
 
@@ -13,6 +14,7 @@ public static class MovementResolver
     private const float ObstacleCorridorPadding = 0.18f;
     private const float ObstacleDetourPadding = 0.28f;
     private const float PreImpactRangeTolerance = 0.12f;
+    private const float BacklineMaxLaneOffset = 1.1f;
     internal const float ActionStartRangeTolerance = 0.12f;
 
     public static float ComputeEdgeDistance(UnitSnapshot actor, UnitSnapshot target)
@@ -220,7 +222,7 @@ public static class MovementResolver
             || (evaluated.DesiredPhase == CombatActionState.Approach
                 && currentDistance > rangeBand.ClampedMax + ActionStartRangeTolerance))
         {
-            var desiredPosition = ResolveDesiredPosition(actor, target, rangeBand);
+            var desiredPosition = ResolveDesiredPosition(state, actor, target, rangeBand);
             MoveTowards(state, actor, desiredPosition, evaluated.SlotAssignment != null ? CombatActionState.SecurePosition : CombatActionState.Approach);
             return;
         }
@@ -282,16 +284,36 @@ public static class MovementResolver
         }
     }
 
-    private static CombatVector2 ResolveDesiredPosition(UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
+    private static CombatVector2 ResolveDesiredPosition(BattleState state, UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
     {
+        var centerDistance = rangeBand.Midpoint + actor.NavigationRadius + target.NavigationRadius;
+        if (ShouldUseSideAnchoredRangedPosition(actor, rangeBand))
+        {
+            var sideDirection = actor.Side == TeamSide.Ally ? -1f : 1f;
+            var home = ResolveHomePosition(state, actor);
+            var laneOffset = Math.Clamp(home.Y - target.Position.Y, -BacklineMaxLaneOffset, BacklineMaxLaneOffset);
+            return new CombatVector2(target.Position.X + (sideDirection * centerDistance), target.Position.Y + laneOffset);
+        }
+
         var directionToTarget = (target.Position - actor.Position).Normalized;
         if (directionToTarget.SqrLength <= 0.0001f)
         {
             directionToTarget = actor.Side == TeamSide.Ally ? new CombatVector2(1f, 0f) : new CombatVector2(-1f, 0f);
         }
 
-        var centerDistance = rangeBand.Midpoint + actor.NavigationRadius + target.NavigationRadius;
         return target.Position - (directionToTarget * centerDistance);
+    }
+
+    private static bool ShouldUseSideAnchoredRangedPosition(UnitSnapshot actor, FloatRange rangeBand)
+    {
+        if (actor.Behavior.FormationLine != FormationLine.Backline)
+        {
+            return false;
+        }
+
+        return actor.Behavior.RangeDiscipline is RangeDiscipline.KiteBackward or RangeDiscipline.AnchorNearFrontline or RangeDiscipline.SideStepHold
+               || rangeBand.ClampedMin >= 1.8f
+               || actor.AttackRange >= 2.2f;
     }
 
     private static float ResolveMovementBuffer(float authoredBuffer, float rangeHysteresis)

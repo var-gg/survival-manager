@@ -4,6 +4,7 @@ using SM.Combat.Model;
 using CoreEntityId = SM.Core.Ids.EntityId;
 using SM.Unity;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SM.Tests.EditMode;
 
@@ -62,6 +63,60 @@ public sealed class BattlePresentationTransientSurfaceTests
 
             Assert.That(controllerGo.GetComponentsInChildren<BattleActorVfxSurface>().Sum(surface => surface.TriggerCount), Is.EqualTo(vfxCount));
             Assert.That(controllerGo.GetComponentsInChildren<BattleActorAudioSurface>().Sum(surface => surface.TriggerCount), Is.EqualTo(audioCount));
+        }
+        finally
+        {
+            Object.DestroyImmediate(catalog);
+            Object.DestroyImmediate(templateRoot.gameObject);
+            Object.DestroyImmediate(controllerGo);
+            Object.DestroyImmediate(overlayGo);
+            Object.DestroyImmediate(stageGo);
+            Object.DestroyImmediate(cameraGo);
+        }
+    }
+
+    [Test]
+    public void ImpactDamage_ShowsFloatingCombatText_EvenWhenOverheadUiIsHidden()
+    {
+        var cameraGo = new GameObject("MainCamera");
+        var stageGo = new GameObject("StageRoot");
+        var overlayGo = new GameObject("OverlayRoot", typeof(RectTransform));
+        var controllerGo = new GameObject("BattlePresentationRoot");
+        var templateRoot = CreateWrapperTemplate("Template");
+        var catalog = ScriptableObject.CreateInstance<BattleActorPresentationCatalog>();
+
+        try
+        {
+            cameraGo.tag = "MainCamera";
+            cameraGo.AddComponent<Camera>();
+
+            var controller = controllerGo.AddComponent<BattlePresentationController>();
+            SetField(controller, "battleStageRoot", stageGo.transform);
+            SetField(controller, "actorOverlayRoot", overlayGo.GetComponent<RectTransform>());
+            catalog.SetDefaultWrapper(templateRoot);
+            controller.ConfigurePresentationCatalog(catalog);
+
+            var options = BattlePresentationOptions.CreateDefault();
+            options.ToggleOverheadUi();
+            controller.ApplyOptions(options);
+
+            var initial = CreateStep(0, 20f, true, CombatActionState.AcquireTarget, System.Array.Empty<BattleEvent>());
+            var current = CreateStep(1, 12f, true, CombatActionState.Recover, new[]
+            {
+                new BattleEvent(1, 0.1f, new CoreEntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new CoreEntityId("enemy"), "Enemy", 8f)
+            });
+
+            controller.Initialize(initial);
+            controller.ApplyOptions(options);
+            controller.AdvanceStep(initial, current);
+            controller.SetBlend(initial, current, 1f);
+
+            var damageText = overlayGo.GetComponentsInChildren<Text>(true)
+                .FirstOrDefault(text => text.name == "FloatingText" && text.text == "-8");
+
+            Assert.That(damageText, Is.Not.Null);
+            Assert.That(damageText!.gameObject.activeInHierarchy, Is.True);
+            Assert.That(damageText.fontSize, Is.GreaterThanOrEqualTo(40));
         }
         finally
         {

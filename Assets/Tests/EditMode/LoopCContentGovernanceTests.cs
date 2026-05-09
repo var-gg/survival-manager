@@ -6,6 +6,7 @@ using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Content.Definitions;
 using SM.Core.Content;
+using SM.Core.Contracts;
 using SM.Editor.SeedData;
 using SM.Editor.Validation;
 using UnityEditor;
@@ -145,6 +146,21 @@ public sealed class LoopCContentGovernanceTests
         Assert.That(LoopCContentGovernance.ToRecruitTier(ContentRarity.Epic), Is.EqualTo(SM.Core.Contracts.RecruitTier.Epic));
     }
 
+    [Test]
+    public void CanonicalBehaviorProfiles_PreserveCombatRoleFormationIntent()
+    {
+        var vanguard = LoadAssetAtPath<BehaviorProfileDefinition>("Assets/Resources/_Game/Content/Definitions/BehaviorProfiles/behavior_vanguard.asset");
+        var ranger = LoadAssetAtPath<BehaviorProfileDefinition>("Assets/Resources/_Game/Content/Definitions/BehaviorProfiles/behavior_ranger.asset");
+        var mystic = LoadAssetAtPath<BehaviorProfileDefinition>("Assets/Resources/_Game/Content/Definitions/BehaviorProfiles/behavior_mystic.asset");
+
+        Assert.That(vanguard.RangeDiscipline, Is.EqualTo(RangeDiscipline.Collapse));
+        Assert.That(ranger.FormationLine, Is.EqualTo(FormationLine.Backline));
+        Assert.That(ranger.RangeDiscipline, Is.EqualTo(RangeDiscipline.KiteBackward));
+        Assert.That(ranger.PreferredRangeMin, Is.GreaterThanOrEqualTo(2.7f));
+        Assert.That(mystic.FormationLine, Is.EqualTo(FormationLine.Backline));
+        Assert.That(mystic.RangeDiscipline, Is.EqualTo(RangeDiscipline.AnchorNearFrontline));
+    }
+
     private static void CollectBudgetCardMissing<T>(
         ICollection<string> missing,
         Func<T, BudgetCard?> selector,
@@ -168,6 +184,13 @@ public sealed class LoopCContentGovernanceTests
             .Select(AssetDatabase.LoadAssetAtPath<T>)
             .Where(asset => asset != null)
             .ToList()!;
+    }
+
+    private static T LoadAssetAtPath<T>(string path) where T : ScriptableObject
+    {
+        var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+        Assert.That(asset, Is.Not.Null, path);
+        return asset!;
     }
 
     private static void AssertLoopCCodesMissing(params string[] codes)

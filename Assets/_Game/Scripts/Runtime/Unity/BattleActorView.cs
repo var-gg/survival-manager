@@ -16,6 +16,8 @@ public sealed class BattleActorView : MonoBehaviour
     private const float OverlayScreenHeight = 44f;
     private const float OverlayHpWidth = 118f;
     private const float OverlayHpHeight = 8f;
+    private const float FloatingTextMinDuration = 0.72f;
+    private const float FloatingTextDurationScale = 2.4f;
     private const float GroundPlaneY = -0.98f;
     private const float TelegraphDiscThickness = 0.008f;
     internal const float TravelTraceDistanceThreshold = 0.35f;
@@ -393,7 +395,7 @@ public sealed class BattleActorView : MonoBehaviour
             var isVisible = viewport.z > 0f
                             && viewport.x >= 0f && viewport.x <= 1f
                             && viewport.y >= 0f && viewport.y <= 1f;
-            _overlayRoot.gameObject.SetActive(_options.ShowOverheadUi && isVisible);
+            _overlayRoot.gameObject.SetActive(isVisible && ShouldShowOverlayRoot());
             if (isVisible)
             {
                 var screenPosition = RectTransformUtility.WorldToScreenPoint(_camera, anchorWorldPosition);
@@ -811,7 +813,7 @@ public sealed class BattleActorView : MonoBehaviour
 
         var progress = 1f - (_floatingTimer / _floatingDuration);
         _floatingText.text = _floatingMessage;
-        _floatingText.rectTransform.anchoredPosition = Vector2.Lerp(new Vector2(0f, 8f), new Vector2(0f, 44f), progress);
+        _floatingText.rectTransform.anchoredPosition = Vector2.Lerp(new Vector2(0f, 18f), new Vector2(0f, 68f), progress);
         _floatingText.color = new Color(_floatingColor.r, _floatingColor.g, _floatingColor.b, 1f - progress);
         _floatingText.rectTransform.localScale = Vector3.one * _floatingScale;
     }
@@ -838,11 +840,19 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_options.ShowDamageText)
         {
-            _floatingTimer = duration * 1.45f;
+            if (_floatingRoutine != null)
+            {
+                StopCoroutine(_floatingRoutine);
+                _floatingRoutine = null;
+            }
+
+            _floatingTimer = Mathf.Max(FloatingTextMinDuration, duration * FloatingTextDurationScale);
             _floatingDuration = _floatingTimer;
             _floatingMessage = floatingText;
             _floatingColor = color;
             _floatingScale = scale;
+            UpdateFloatingText();
+            RefreshVisibility();
         }
     }
 
@@ -1083,13 +1093,16 @@ public sealed class BattleActorView : MonoBehaviour
         floatingRect.anchorMin = new Vector2(0.5f, 0.5f);
         floatingRect.anchorMax = new Vector2(0.5f, 0.5f);
         floatingRect.pivot = new Vector2(0.5f, 0.5f);
-        floatingRect.anchoredPosition = new Vector2(0f, 20f);
-        floatingRect.sizeDelta = new Vector2(OverlayScreenWidth, 42f);
+        floatingRect.anchoredPosition = new Vector2(0f, 28f);
+        floatingRect.sizeDelta = new Vector2(OverlayScreenWidth * 1.7f, 64f);
 
         _floatingText = floatingGo.AddComponent<Text>();
         _floatingText.font = font;
-        _floatingText.fontSize = 34;
+        _floatingText.fontSize = 40;
         _floatingText.alignment = TextAnchor.MiddleCenter;
+        _floatingText.fontStyle = FontStyle.Bold;
+        _floatingText.horizontalOverflow = HorizontalWrapMode.Overflow;
+        _floatingText.verticalOverflow = VerticalWrapMode.Overflow;
         _floatingText.color = Color.clear;
         AddOutline(_floatingText, new Color(0f, 0f, 0f, 0.92f));
 
@@ -1148,8 +1161,8 @@ public sealed class BattleActorView : MonoBehaviour
         }
 
         var rect = _floatingText.rectTransform;
-        var start = new Vector2(0f, 8f);
-        var end = new Vector2(0f, 44f);
+        var start = new Vector2(0f, 18f);
+        var end = new Vector2(0f, 68f);
         _floatingText.text = message;
         _floatingText.color = color;
 
@@ -1242,7 +1255,7 @@ public sealed class BattleActorView : MonoBehaviour
     {
         if (_overlayRoot != null)
         {
-            _overlayRoot.gameObject.SetActive(_options.ShowOverheadUi);
+            _overlayRoot.gameObject.SetActive(ShouldShowOverlayRoot());
         }
 
         if (_overlayBackground != null)
@@ -1269,6 +1282,11 @@ public sealed class BattleActorView : MonoBehaviour
         {
             _floatingText.enabled = _options.ShowDamageText;
         }
+    }
+
+    private bool ShouldShowOverlayRoot()
+    {
+        return _options.ShowOverheadUi || (_options.ShowDamageText && _floatingTimer > 0f);
     }
 
     private void RestartCoroutine(ref Coroutine? routine, IEnumerator next)
