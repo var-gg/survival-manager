@@ -7,9 +7,9 @@
 
         <ui:VisualElement name="atlas-content" class="atlas-content">
             <ui:VisualElement class="atlas-left-rail">
-                <ui:Label text="Sigils" class="atlas-section-title" />
+                <ui:Label text="각인석" class="atlas-section-title" />
                 <ui:VisualElement name="atlas-sigil-pool" class="atlas-sigil-pool" />
-                <ui:Label text="Routes" class="atlas-section-title" />
+                <ui:Label text="경로" class="atlas-section-title" />
                 <ui:VisualElement name="atlas-route-list" class="atlas-route-list" />
             </ui:VisualElement>
 
@@ -21,16 +21,16 @@
                 <ui:Label name="atlas-preview-title" class="atlas-preview-title" />
                 <ui:Label name="atlas-preview-judgement" class="atlas-judgement" />
 
-                <ui:Label text="Enemy" class="atlas-preview-label" />
+                <ui:Label text="적 정보" class="atlas-preview-label" />
                 <ui:Label name="atlas-preview-enemy" class="atlas-preview-body" />
 
-                <ui:Label text="Modifiers" class="atlas-preview-label" />
+                <ui:Label text="각인 효과" class="atlas-preview-label" />
                 <ui:Label name="atlas-preview-modifiers" class="atlas-preview-body" />
 
-                <ui:Label text="Reward" class="atlas-preview-label" />
+                <ui:Label text="보상" class="atlas-preview-label" />
                 <ui:Label name="atlas-preview-reward" class="atlas-preview-body" />
 
-                <ui:Label text="Recommended" class="atlas-preview-label" />
+                <ui:Label text="추천 캐릭터" class="atlas-preview-label" />
                 <ui:Label name="atlas-preview-recommendations" class="atlas-preview-body" />
 
                 <ui:Label name="atlas-boundary-note" class="atlas-boundary-note" />
