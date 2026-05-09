@@ -44,6 +44,8 @@ public enum BattleAnimationSemantic
     Knockdown = 9,
     Death = 10,
     Miss = 11,
+    BowShot = 12,
+    ProjectileCast = 13,
 }
 
 public enum BattleAnimationDirection

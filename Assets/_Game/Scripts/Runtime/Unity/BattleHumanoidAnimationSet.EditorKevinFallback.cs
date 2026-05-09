@@ -50,6 +50,11 @@ public sealed partial class BattleHumanoidAnimationSet
             LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/HumanM@CombatDamage01.fbx"),
             LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Spellcasting/HumanM@CastingDamage01.fbx"));
         set.variants = NonNullVariants(
+            MakeVariant(BattleAnimationSemantic.BowShot, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Bow/HumanM@BowShot01 - Release.fbx"),
+            MakeVariant(BattleAnimationSemantic.BowShot, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Bow/HumanM@BowShot01_Up - Release.fbx"),
+            MakeVariant(BattleAnimationSemantic.BowShot, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Bow/HumanM@BowShot01_Down - Release.fbx"),
+            MakeVariant(BattleAnimationSemantic.ProjectileCast, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Spellcasting/MagicAttacks/Directional/HumanM@MagicAttackDirect1H01_R - Cast.fbx"),
+            MakeVariant(BattleAnimationSemantic.ProjectileCast, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Spellcasting/MagicAttacks/Special/HumanM@SpecialMagicAttack01 - Cast.fbx"),
             MakeVariant(BattleAnimationSemantic.Dodge, BattleAnimationDirection.Any, BattleAnimationIntensity.Light, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/HumanM@Dodge01.fbx"),
             MakeVariant(BattleAnimationSemantic.Dodge, BattleAnimationDirection.Any, BattleAnimationIntensity.Light, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/HumanM@Roll01.fbx"),
             MakeVariant(BattleAnimationSemantic.Dodge, BattleAnimationDirection.Any, BattleAnimationIntensity.Light, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Spellcasting/HumanM@CastingDodge01.fbx"),

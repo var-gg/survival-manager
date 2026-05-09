@@ -35,7 +35,10 @@ public sealed partial class BattleVfxCatalog : ScriptableObject
     {
         foreach (var candidate in entries)
         {
-            if (candidate != null && candidate.CueType == cueType && candidate.Prefab != null)
+            if (candidate != null
+                && candidate.CueType == cueType
+                && candidate.AnimationSemantic == BattleAnimationSemantic.None
+                && candidate.Prefab != null)
             {
                 entry = candidate;
                 return true;
@@ -46,6 +49,26 @@ public sealed partial class BattleVfxCatalog : ScriptableObject
         return false;
     }
 
+    public bool TryResolve(BattlePresentationCue cue, out BattleVfxCatalogEntry entry)
+    {
+        if (cue.AnimationSemantic != BattleAnimationSemantic.None)
+        {
+            foreach (var candidate in entries)
+            {
+                if (candidate != null
+                    && candidate.CueType == cue.CueType
+                    && candidate.AnimationSemantic == cue.AnimationSemantic
+                    && candidate.Prefab != null)
+                {
+                    entry = candidate;
+                    return true;
+                }
+            }
+        }
+
+        return TryResolve(cue.CueType, out entry);
+    }
+
     public void SetEntry(
         BattlePresentationCueType cueType,
         GameObject prefab,
@@ -54,9 +77,10 @@ public sealed partial class BattleVfxCatalog : ScriptableObject
         Vector3 localOffset,
         Vector3 localEulerAngles,
         Vector3 localScale,
-        bool parentToSocket)
+        bool parentToSocket,
+        BattleAnimationSemantic animationSemantic = BattleAnimationSemantic.None)
     {
-        var existing = entries.Find(entry => entry.CueType == cueType);
+        var existing = entries.Find(entry => entry.CueType == cueType && entry.AnimationSemantic == animationSemantic);
         if (existing == null)
         {
             entries.Add(new BattleVfxCatalogEntry(
@@ -67,11 +91,12 @@ public sealed partial class BattleVfxCatalog : ScriptableObject
                 localOffset,
                 localEulerAngles,
                 localScale,
-                parentToSocket));
+                parentToSocket,
+                animationSemantic));
             return;
         }
 
-        existing.Configure(prefab, socketId, lifetimeSeconds, localOffset, localEulerAngles, localScale, parentToSocket);
+        existing.Configure(prefab, socketId, lifetimeSeconds, localOffset, localEulerAngles, localScale, parentToSocket, animationSemantic);
     }
 
     private bool HasAnyEntry()
@@ -99,6 +124,7 @@ public sealed class BattleVfxCatalogEntry
     [SerializeField] private Vector3 localEulerAngles = Vector3.zero;
     [SerializeField] private Vector3 localScale = Vector3.one;
     [SerializeField] private bool parentToSocket;
+    [SerializeField] private BattleAnimationSemantic animationSemantic = BattleAnimationSemantic.None;
 
     public BattleVfxCatalogEntry(
         BattlePresentationCueType cueType,
@@ -108,10 +134,11 @@ public sealed class BattleVfxCatalogEntry
         Vector3 localOffset,
         Vector3 localEulerAngles,
         Vector3 localScale,
-        bool parentToSocket)
+        bool parentToSocket,
+        BattleAnimationSemantic animationSemantic = BattleAnimationSemantic.None)
     {
         this.cueType = cueType;
-        Configure(prefab, socketId, lifetimeSeconds, localOffset, localEulerAngles, localScale, parentToSocket);
+        Configure(prefab, socketId, lifetimeSeconds, localOffset, localEulerAngles, localScale, parentToSocket, animationSemantic);
     }
 
     public BattlePresentationCueType CueType => cueType;
@@ -122,6 +149,7 @@ public sealed class BattleVfxCatalogEntry
     public Vector3 LocalEulerAngles => localEulerAngles;
     public Vector3 LocalScale => localScale;
     public bool ParentToSocket => parentToSocket;
+    public BattleAnimationSemantic AnimationSemantic => animationSemantic;
 
     public void Configure(
         GameObject configuredPrefab,
@@ -130,7 +158,8 @@ public sealed class BattleVfxCatalogEntry
         Vector3 configuredLocalOffset,
         Vector3 configuredLocalEulerAngles,
         Vector3 configuredLocalScale,
-        bool configuredParentToSocket)
+        bool configuredParentToSocket,
+        BattleAnimationSemantic configuredAnimationSemantic = BattleAnimationSemantic.None)
     {
         prefab = configuredPrefab;
         socketId = configuredSocketId;
@@ -139,5 +168,6 @@ public sealed class BattleVfxCatalogEntry
         localEulerAngles = configuredLocalEulerAngles;
         localScale = configuredLocalScale == Vector3.zero ? Vector3.one : configuredLocalScale;
         parentToSocket = configuredParentToSocket;
+        animationSemantic = configuredAnimationSemantic;
     }
 }

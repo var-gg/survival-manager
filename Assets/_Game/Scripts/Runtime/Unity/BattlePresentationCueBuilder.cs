@@ -122,7 +122,8 @@ public sealed class BattlePresentationCueBuilder
             {
                 case BattleLogCode.BasicAttackDamage:
                 {
-                    var attackAnimation = ResolveBasicAttackCommitAnimation(eventData);
+                    currentById.TryGetValue(eventData.ActorId.Value, out var actor);
+                    var attackAnimation = ResolveBasicAttackCommitAnimation(eventData, actor);
                     cues.Add(new BattlePresentationCue(
                         BattlePresentationCueType.ActionCommitBasic,
                         currentStep.StepIndex,
@@ -453,7 +454,7 @@ public sealed class BattlePresentationCueBuilder
             eventData.Note);
     }
 
-    private static BattleAnimationCueDescriptor ResolveBasicAttackCommitAnimation(BattleEvent eventData)
+    private static BattleAnimationCueDescriptor ResolveBasicAttackCommitAnimation(BattleEvent eventData, BattleUnitReadModel? actor = null)
     {
         if (HasNote(eventData, "profile_dash"))
         {
@@ -482,13 +483,52 @@ public sealed class BattlePresentationCueBuilder
                 eventData.Note);
         }
 
+        if (actor != null && IsBowBasicAttacker(actor))
+        {
+            return new BattleAnimationCueDescriptor(
+                BattleAnimationSemantic.BowShot,
+                BattleAnimationDirection.Forward,
+                BattleAnimationIntensity.Medium,
+                eventData.Note);
+        }
+
+        if (actor != null && IsProjectileBasicAttacker(actor))
+        {
+            return new BattleAnimationCueDescriptor(
+                BattleAnimationSemantic.ProjectileCast,
+                BattleAnimationDirection.Forward,
+                BattleAnimationIntensity.Medium,
+                eventData.Note);
+        }
+
         return BattleAnimationCueDescriptor.None;
+    }
+
+    private static bool IsBowBasicAttacker(BattleUnitReadModel actor)
+    {
+        return IsTag(actor.ClassId, "ranger")
+               || IsTag(actor.ArchetypeId, "hunter")
+               || IsTag(actor.ArchetypeId, "scout")
+               || IsTag(actor.ArchetypeId, "marksman")
+               || IsTag(actor.ArchetypeId, "rift_stalker");
+    }
+
+    private static bool IsProjectileBasicAttacker(BattleUnitReadModel actor)
+    {
+        return IsTag(actor.ClassId, "mystic")
+               || actor.PreferredRangeMin >= 1.8f
+               || actor.PreferredRangeMax >= 2.4f;
     }
 
     private static bool HasNote(BattleEvent eventData, string token)
     {
         return !string.IsNullOrEmpty(eventData.Note)
                && eventData.Note.Contains(token, System.StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsTag(string value, string expected)
+    {
+        return string.Equals(value, expected, System.StringComparison.Ordinal);
     }
 
     private static bool IsPreImpactProfileEvent(BattleEvent eventData)

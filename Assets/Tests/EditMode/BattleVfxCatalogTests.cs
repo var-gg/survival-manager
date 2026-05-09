@@ -116,6 +116,65 @@ public sealed class BattleVfxCatalogTests
     }
 
     [Test]
+    public void Catalog_ResolvesSemanticSpecificEntryBeforeGenericCueEntry()
+    {
+        var genericPrefab = new GameObject("GenericBasicAttackPrefab");
+        var bowPrefab = new GameObject("BowShotPrefab");
+        var catalog = ScriptableObject.CreateInstance<BattleVfxCatalog>();
+
+        try
+        {
+            catalog.SetEntry(
+                BattlePresentationCueType.ActionCommitBasic,
+                genericPrefab,
+                BattleActorSocketId.ProjectileOrigin,
+                0.5f,
+                Vector3.zero,
+                Vector3.zero,
+                Vector3.one,
+                parentToSocket: false);
+
+            catalog.SetEntry(
+                BattlePresentationCueType.ActionCommitBasic,
+                bowPrefab,
+                BattleActorSocketId.ProjectileOrigin,
+                0.5f,
+                Vector3.zero,
+                Vector3.zero,
+                Vector3.one,
+                parentToSocket: false,
+                animationSemantic: BattleAnimationSemantic.BowShot);
+
+            var hasBowEntry = catalog.TryResolve(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.ActionCommitBasic,
+                    1,
+                    "actor",
+                    AnimationSemantic: BattleAnimationSemantic.BowShot),
+                out var bowEntry);
+            var hasGenericEntry = catalog.TryResolve(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.ActionCommitBasic,
+                    1,
+                    "actor"),
+                out var genericEntry);
+
+            Assert.That(hasBowEntry, Is.True);
+            Assert.That(bowEntry.Prefab, Is.SameAs(bowPrefab));
+            Assert.That(bowEntry.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BowShot));
+            Assert.That(hasGenericEntry, Is.True);
+            Assert.That(genericEntry.Prefab, Is.SameAs(genericPrefab));
+            Assert.That(genericEntry.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.None));
+        }
+        finally
+        {
+            Object.DestroyImmediate(catalog);
+            Object.DestroyImmediate(bowPrefab);
+            Object.DestroyImmediate(genericPrefab);
+        }
+    }
+
+    [Test]
     public void Surface_SkipsBasicAttackWindupMagicCharge()
     {
         var root = new GameObject("Wrapper");
