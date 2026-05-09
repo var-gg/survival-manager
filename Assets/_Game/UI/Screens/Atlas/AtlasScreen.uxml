@@ -1,0 +1,41 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="atlas-root" class="atlas-root">
+        <ui:VisualElement class="atlas-topbar">
+            <ui:Label name="atlas-region-title" class="atlas-title" />
+            <ui:Label name="atlas-placement-summary" class="atlas-summary" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="atlas-content" class="atlas-content">
+            <ui:VisualElement class="atlas-left-rail">
+                <ui:Label text="Sigils" class="atlas-section-title" />
+                <ui:VisualElement name="atlas-sigil-pool" class="atlas-sigil-pool" />
+                <ui:Label text="Routes" class="atlas-section-title" />
+                <ui:VisualElement name="atlas-route-list" class="atlas-route-list" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="atlas-board-pane">
+                <ui:VisualElement name="atlas-board" class="atlas-board" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="atlas-preview">
+                <ui:Label name="atlas-preview-title" class="atlas-preview-title" />
+                <ui:Label name="atlas-preview-judgement" class="atlas-judgement" />
+
+                <ui:Label text="Enemy" class="atlas-preview-label" />
+                <ui:Label name="atlas-preview-enemy" class="atlas-preview-body" />
+
+                <ui:Label text="Modifiers" class="atlas-preview-label" />
+                <ui:Label name="atlas-preview-modifiers" class="atlas-preview-body" />
+
+                <ui:Label text="Reward" class="atlas-preview-label" />
+                <ui:Label name="atlas-preview-reward" class="atlas-preview-body" />
+
+                <ui:Label text="Recommended" class="atlas-preview-label" />
+                <ui:Label name="atlas-preview-recommendations" class="atlas-preview-body" />
+
+                <ui:Label name="atlas-boundary-note" class="atlas-boundary-note" />
+                <ui:Label name="atlas-debug-hash" class="atlas-debug-hash" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

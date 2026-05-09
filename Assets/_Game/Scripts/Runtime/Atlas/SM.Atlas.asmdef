@@ -1,0 +1,14 @@
+{
+  "name": "SM.Atlas",
+  "rootNamespace": "SM.Atlas",
+  "references": ["SM.Core", "SM.Content"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}
