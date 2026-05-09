@@ -109,6 +109,16 @@ public enum BasicAttackActionProfile
     DashStrike = 4,
 }
 
+public enum BattleAreaEffectFamily
+{
+    SingleTarget = 0,
+    GroundAoe = 1,
+    PrimarySplash = 2,
+    CleaveCone = 3,
+    Chain = 4,
+    KnockbackWave = 5,
+}
+
 public sealed record BattleBasicAttackSpec(
     string Id,
     string Name,
@@ -183,7 +193,11 @@ public record BattleSkillSpec(
     IReadOnlyList<string>? RecruitNativeTags = null,
     IReadOnlyList<string>? RecruitPlanTags = null,
     IReadOnlyList<string>? RecruitScoutTags = null,
-    ContentGovernanceSummary? Governance = null)
+    ContentGovernanceSummary? Governance = null,
+    BattleAreaEffectFamily AreaEffectFamily = BattleAreaEffectFamily.SingleTarget,
+    float AreaRadius = 0f,
+    bool PunishCluster = false,
+    bool AllowsEliteFocusCap = false)
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
 

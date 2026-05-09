@@ -305,6 +305,21 @@ public static class BattleTelemetryRecorder
         AddMetric(state, "StationaryBetweenAttacksRatio", snapshot.StationaryBetweenAttacksRatio);
         AddMetric(state, "PostAttackRepositionCount", snapshot.PostAttackRepositionCount);
         AddMetric(state, "TargetSwitchCount", snapshot.TargetSwitchCount);
+        AddMetric(state, "ClusterCohesionIndex", snapshot.ClusterCohesionIndex);
+        AddMetric(state, "BuffCoverageHistogramByType", 0f, 0f, Serialize(snapshot.BuffCoverageHistogramByType));
+        AddMetric(state, "BuffEfficacyBonusByType", 0f, 0f, Serialize(snapshot.BuffEfficacyBonusByType));
+        AddMetric(state, "ClusterBuffOvercapEvents", snapshot.ClusterBuffOvercapEvents);
+        AddMetric(state, "BuffMissedByDistanceCount", snapshot.BuffMissedByDistanceCount);
+        AddMetric(state, "AOECandidateClusterScore", snapshot.AoeCandidateClusterScore);
+        AddMetric(state, "AOECatchCountHistogram", 0f, 0f, Serialize(snapshot.AoeCatchCountHistogram));
+        AddMetric(state, "CleaveCatchCount", snapshot.CleaveCatchCount);
+        AddMetric(state, "ChainJumpCount", snapshot.ChainJumpCount);
+        AddMetric(state, "KnockbackDispersalEvents", snapshot.KnockbackDispersalEvents);
+        AddMetric(state, "ReclusterLatencyMs", snapshot.ReclusterLatencyMs);
+        AddMetric(state, "FocusDamageContribution", snapshot.FocusDamageContribution);
+        AddMetric(state, "BuffValueContribution", snapshot.BuffValueContribution);
+        AddMetric(state, "AOECostTaken", snapshot.AoeCostTaken);
+        AddMetric(state, "ClusterTradeoffNetValue", snapshot.ClusterTradeoffNetValue);
         AddMetric(state, "ReplayHash", 0f, 0f, snapshot.ReplayHash);
     }
 

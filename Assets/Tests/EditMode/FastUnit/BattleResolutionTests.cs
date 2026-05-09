@@ -228,6 +228,7 @@ public sealed class BattleResolutionTests
             armor: 0f,
             attackSpeed: attackSpeed,
             attackCooldown: 0.9f,
+            attackRange: 8f,
             energy: new EnergyProfile(0f, 0f));
         var target = CombatTestFactory.CreateLoopAUnit(
             "target",

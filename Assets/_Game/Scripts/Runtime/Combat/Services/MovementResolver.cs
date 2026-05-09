@@ -434,8 +434,9 @@ public static class MovementResolver
 
     private static IEnumerable<CombatVector2> BuildZoneCandidates(BattleState state, UnitSnapshot actor, CombatVector2 intent, TacticContext context)
     {
-        var zoneWidth = context.ResolveZoneWidth(BaseLaneGap, ResolveQuirkSpread(actor));
-        var zoneDepth = context.ResolveZoneDepth(BaseRowGap, ResolvePostureDepth(context.Posture, actor));
+        var compactness = state.IsUnderGroupDispersalLock(actor) ? 0f : context.Compactness;
+        var zoneWidth = BaseLaneGap * TacticContext.Clamp(0.55f + (0.45f * context.Width) - (0.25f * compactness) + ResolveQuirkSpread(actor), 0.45f, 1.35f);
+        var zoneDepth = BaseRowGap * TacticContext.Clamp(0.35f + (0.45f * context.Depth) - (0.15f * compactness) + ResolvePostureDepth(context.Posture, actor), 0.35f, 1.20f);
         var forward = actor.Side == TeamSide.Ally ? new CombatVector2(1f, 0f) : new CombatVector2(-1f, 0f);
         var lateral = new CombatVector2(0f, 1f);
         var offsets = new[]
