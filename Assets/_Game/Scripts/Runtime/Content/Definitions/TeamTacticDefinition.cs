@@ -18,6 +18,11 @@ namespace SM.Content.Definitions
         public float BackSpacingBias = 0f;
         public float ProtectCarryBias = 0f;
         public float TargetSwitchPenalty = 0f;
+        public float Compactness = 0.5f;
+        public float Width = 1f;
+        public float Depth = 1f;
+        public float LineSpacing = 1f;
+        public float FlankBias = 0f;
         public List<StableTagDefinition> CompileTags = new();
 
         [FormerlySerializedAs("DisplayName")]

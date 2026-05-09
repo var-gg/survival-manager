@@ -14,7 +14,12 @@ public record TeamTacticProfile(
     float FrontSpacingBias = 0f,
     float BackSpacingBias = 0f,
     float ProtectCarryBias = 0f,
-    float TargetSwitchPenalty = 0f);
+    float TargetSwitchPenalty = 0f,
+    float Compactness = 0.5f,
+    float Width = 1f,
+    float Depth = 1f,
+    float LineSpacing = 1f,
+    float FlankBias = 0f);
 
 public record SlotRoleInstruction(
     DeploymentAnchorId Anchor,

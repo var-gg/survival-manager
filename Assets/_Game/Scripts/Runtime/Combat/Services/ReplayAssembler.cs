@@ -113,8 +113,15 @@ public static class ReplayAssembler
     {
         var builder = string.Join("|", units
             .OrderBy(unit => unit.Id, StringComparer.Ordinal)
-            .Select(unit => $"{unit.Id}:{unit.RaceId}:{unit.ClassId}:{unit.PreferredAnchor}:{unit.RoleTag}:{unit.Footprint?.NavigationRadius:0.###}:{unit.Footprint?.SeparationRadius:0.###}:{unit.Footprint?.PreferredRangeBand.ClampedMin:0.###}:{unit.Footprint?.PreferredRangeBand.ClampedMax:0.###}:{unit.Behavior?.DodgeChance:0.###}:{unit.Behavior?.BlockChance:0.###}:{unit.Mobility?.Style}:{unit.Mobility?.Purpose}:{unit.Mobility?.Distance:0.###}:{unit.PreferredDistance:0.###}:{unit.ProtectRadius:0.###}:{string.Join(",", unit.CompileTags ?? Array.Empty<string>())}:{string.Join(",", unit.Skills.Select(skill => $"{skill.Id}:{skill.SlotKind}:{skill.BaseCooldownSeconds:0.###}:{skill.CastWindupSeconds:0.###}"))}"));
+            .Select(unit => $"{unit.Id}:{unit.RaceId}:{unit.ClassId}:{unit.PreferredAnchor}:{unit.RoleTag}:{FormatTeamTactic(unit.TeamTactic)}:{unit.Footprint?.NavigationRadius:0.###}:{unit.Footprint?.SeparationRadius:0.###}:{unit.Footprint?.PreferredRangeBand.ClampedMin:0.###}:{unit.Footprint?.PreferredRangeBand.ClampedMax:0.###}:{unit.Behavior?.DodgeChance:0.###}:{unit.Behavior?.BlockChance:0.###}:{unit.Mobility?.Style}:{unit.Mobility?.Purpose}:{unit.Mobility?.Distance:0.###}:{unit.PreferredDistance:0.###}:{unit.ProtectRadius:0.###}:{string.Join(",", unit.CompileTags ?? Array.Empty<string>())}:{string.Join(",", unit.Skills.Select(skill => $"{skill.Id}:{skill.SlotKind}:{skill.BaseCooldownSeconds:0.###}:{skill.CastWindupSeconds:0.###}"))}"));
         return ComputeHash(builder);
+    }
+
+    private static string FormatTeamTactic(TeamTacticProfile? tactic)
+    {
+        return tactic == null
+            ? "none"
+            : $"{tactic.Id}:{tactic.Posture}:{tactic.Compactness:0.###}:{tactic.Width:0.###}:{tactic.Depth:0.###}:{tactic.LineSpacing:0.###}:{tactic.FlankBias:0.###}:{tactic.ProtectCarryBias:0.###}";
     }
 
     private static string ComputeFinalStateHash(BattleResult result)

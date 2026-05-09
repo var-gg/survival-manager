@@ -26,7 +26,12 @@ internal static class CatalogEntryConverter
                 definition.FrontSpacingBias,
                 definition.BackSpacingBias,
                 definition.ProtectCarryBias,
-                definition.TargetSwitchPenalty));
+                definition.TargetSwitchPenalty,
+                definition.Compactness,
+                definition.Width,
+                definition.Depth,
+                definition.LineSpacing,
+                definition.FlankBias));
     }
 
     internal static RoleInstructionTemplate BuildRoleInstructionTemplate(RoleInstructionDefinition definition)
