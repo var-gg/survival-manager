@@ -7,6 +7,7 @@ namespace SM.Unity;
 public sealed class BattlePresentationCueBuilder
 {
     private const float HeavyImpactDamageThreshold = 16f;
+    private const float DisplacementTraceDistanceThreshold = 0.35f;
 
     public IReadOnlyList<BattlePresentationCue> Build(BattleSimulationStep previousStep, BattleSimulationStep currentStep)
     {
@@ -14,6 +15,10 @@ public sealed class BattlePresentationCueBuilder
         var deathCueSubjects = new HashSet<string>(System.StringComparer.Ordinal);
         var previousById = previousStep.Units.ToDictionary(unit => unit.Id);
         var currentById = currentStep.Units.ToDictionary(unit => unit.Id);
+        var preImpactEventsByActorId = currentStep.Events
+            .Where(IsPreImpactProfileEvent)
+            .GroupBy(eventData => eventData.ActorId.Value, System.StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.First(), System.StringComparer.Ordinal);
 
         foreach (var current in currentStep.Units)
         {
@@ -79,6 +84,7 @@ public sealed class BattlePresentationCueBuilder
                     current.Id,
                     current.TargetId,
                     current.PendingActionType,
+                    movement.Distance,
                     Note: movement.Note,
                     AnimationSemantic: movement.Semantic,
                     AnimationDirection: movement.Direction,
@@ -106,6 +112,8 @@ public sealed class BattlePresentationCueBuilder
                     AnimationSemantic: BattleAnimationSemantic.Death,
                     AnimationIntensity: BattleAnimationIntensity.Heavy));
             }
+
+            TryAddPreImpactDisplacementTraceCue(cues, preImpactEventsByActorId, previous, current, currentStep.StepIndex);
         }
 
         foreach (var eventData in currentStep.Events)
@@ -228,6 +236,7 @@ public sealed class BattlePresentationCueBuilder
             return BattleAnimationCueDescriptor.None;
         }
 
+        var distance = (float)System.Math.Sqrt(distanceSquared);
         var intensity = distanceSquared >= 1.44f
             ? BattleAnimationIntensity.Heavy
             : BattleAnimationIntensity.Medium;
@@ -238,7 +247,8 @@ public sealed class BattlePresentationCueBuilder
                 BattleAnimationSemantic.BackstepDisengage,
                 BattleAnimationDirection.Backward,
                 intensity,
-                "break_contact");
+                "break_contact",
+                distance);
         }
 
         if (!string.IsNullOrWhiteSpace(current.TargetId)
@@ -258,7 +268,8 @@ public sealed class BattlePresentationCueBuilder
                         BattleAnimationSemantic.BackstepDisengage,
                         BattleAnimationDirection.Backward,
                         intensity,
-                        "move_away");
+                        "move_away",
+                        distance);
                 }
 
                 if (System.Math.Abs(dot) < 0.55f)
@@ -267,7 +278,8 @@ public sealed class BattlePresentationCueBuilder
                         BattleAnimationSemantic.LateralStrafe,
                         cross >= 0f ? BattleAnimationDirection.Right : BattleAnimationDirection.Left,
                         intensity,
-                        "lateral");
+                        "lateral",
+                        distance);
                 }
 
                 if (dot > 0.25f)
@@ -276,14 +288,61 @@ public sealed class BattlePresentationCueBuilder
                         BattleAnimationSemantic.DashEngage,
                         BattleAnimationDirection.Forward,
                         intensity,
-                        "engage");
+                        "engage",
+                        distance);
                 }
             }
         }
 
         return current.ActionState == CombatActionState.AdvanceToAnchor
-            ? new BattleAnimationCueDescriptor(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, intensity, "advance")
-            : new BattleAnimationCueDescriptor(BattleAnimationSemantic.LateralStrafe, BattleAnimationDirection.Lateral, intensity, "reposition");
+            ? new BattleAnimationCueDescriptor(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, intensity, "advance", distance)
+            : new BattleAnimationCueDescriptor(BattleAnimationSemantic.LateralStrafe, BattleAnimationDirection.Lateral, intensity, "reposition", distance);
+    }
+
+    private static void TryAddPreImpactDisplacementTraceCue(
+        ICollection<BattlePresentationCue> cues,
+        IReadOnlyDictionary<string, BattleEvent> preImpactEventsByActorId,
+        BattleUnitReadModel previous,
+        BattleUnitReadModel current,
+        int stepIndex)
+    {
+        if (IsRepositioning(previous) || IsRepositioning(current))
+        {
+            return;
+        }
+
+        if (!preImpactEventsByActorId.TryGetValue(current.Id, out var eventData))
+        {
+            return;
+        }
+
+        var deltaX = current.Position.X - previous.Position.X;
+        var deltaY = current.Position.Y - previous.Position.Y;
+        var distance = (float)System.Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+        if (distance < DisplacementTraceDistanceThreshold)
+        {
+            return;
+        }
+
+        var animation = ResolveBasicAttackCommitAnimation(eventData);
+        if (animation.Semantic == BattleAnimationSemantic.None)
+        {
+            return;
+        }
+
+        cues.Add(new BattlePresentationCue(
+            BattlePresentationCueType.RepositionStart,
+            stepIndex,
+            current.Id,
+            eventData.TargetId?.Value,
+            eventData.ActionType,
+            distance,
+            BattlePresentationAnchorId.Feet,
+            BattlePresentationAnchorId.Center,
+            ComposeCueNote("trace_preimpact", eventData.Note),
+            animation.Semantic,
+            animation.Direction,
+            animation.Intensity));
     }
 
     private static float NormalizedDot(float ax, float ay, float bx, float by)
@@ -432,6 +491,30 @@ public sealed class BattlePresentationCueBuilder
                && eventData.Note.Contains(token, System.StringComparison.OrdinalIgnoreCase);
     }
 
+    private static bool IsPreImpactProfileEvent(BattleEvent eventData)
+    {
+        return eventData.ActionType == BattleActionType.BasicAttack
+               && eventData.LogCode == BattleLogCode.BasicAttackDamage
+               && (HasNote(eventData, "profile_stepin")
+                   || HasNote(eventData, "profile_lunge")
+                   || HasNote(eventData, "profile_dash"));
+    }
+
+    private static string ComposeCueNote(string left, string right)
+    {
+        if (string.IsNullOrWhiteSpace(left))
+        {
+            return right;
+        }
+
+        if (string.IsNullOrWhiteSpace(right))
+        {
+            return left;
+        }
+
+        return $"{left} {right}";
+    }
+
     private readonly struct BattleAnimationCueDescriptor
     {
         public static readonly BattleAnimationCueDescriptor None = new(
@@ -444,12 +527,14 @@ public sealed class BattlePresentationCueBuilder
             BattleAnimationSemantic semantic,
             BattleAnimationDirection direction,
             BattleAnimationIntensity intensity,
-            string note)
+            string note,
+            float distance = 0f)
         {
             Semantic = semantic;
             Direction = direction;
             Intensity = intensity;
             Note = note;
+            Distance = distance;
         }
 
         public BattleAnimationSemantic Semantic { get; }
@@ -459,5 +544,7 @@ public sealed class BattlePresentationCueBuilder
         public BattleAnimationIntensity Intensity { get; }
 
         public string Note { get; }
+
+        public float Distance { get; }
     }
 }
