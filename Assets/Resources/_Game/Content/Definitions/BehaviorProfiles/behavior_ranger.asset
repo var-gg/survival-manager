@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2296af7359eeac3468c7004ce258bf55, type: 3}
   m_Name: behavior_ranger
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:BehaviorProfileDefinition
-  FormationLine: 0
-  RangeDiscipline: 1
+  FormationLine: 2
+  RangeDiscipline: 2
   ReevaluationInterval: 0.24
   RangeHysteresis: 0.28
-  PreferredRangeMin: 0
-  PreferredRangeMax: 0
-  ApproachBuffer: 0.4
-  RetreatBuffer: 0.25
-  ChaseLeashMeters: 5
+  PreferredRangeMin: 2.75
+  PreferredRangeMax: 3.2
+  ApproachBuffer: 0.45
+  RetreatBuffer: 0.3
+  ChaseLeashMeters: 6.5
   RetreatAtHpPercent: 0
   RetreatBias: 0.72
   MaintainRangeBias: 0.84
@@ -31,4 +31,4 @@ MonoBehaviour:
   BlockMitigation: 0.12
   Stability: 0.34
   BlockCooldownSeconds: 1.5
-  FrontlineGuardRadius: 2.5
+  FrontlineGuardRadius: 1.5

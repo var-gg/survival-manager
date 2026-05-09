@@ -15,7 +15,7 @@ MonoBehaviour:
   NavigationRadius: 0.34
   SeparationRadius: 0.74
   CombatReach: 3.2
-  PreferredRangeMin: 2.55
+  PreferredRangeMin: 2.75
   PreferredRangeMax: 3.35
   EngagementSlotCount: 3
   EngagementSlotRadius: 2.2

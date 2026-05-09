@@ -128,6 +128,64 @@ public sealed class BattleSimulationSpatialTests
     }
 
     [Test]
+    public void BacklineRanger_AttacksFromReadablePocketBehindFrontline()
+    {
+        var frontline = CombatTestFactory.CreateUnit(
+            "ally_frontline",
+            classId: "vanguard",
+            anchor: DeploymentAnchorId.FrontCenter,
+            hp: 80f,
+            moveSpeed: 1.7f,
+            attackRange: 1.2f,
+            attackCooldown: 0.8f);
+        var ranger = CombatTestFactory.CreateUnit(
+            "ally_ranger",
+            classId: "ranger",
+            anchor: DeploymentAnchorId.BackTop,
+            hp: 40f,
+            moveSpeed: 1.85f,
+            attackRange: 3.2f,
+            attackWindup: 0.1f,
+            attackCooldown: 0.5f);
+        var enemy = CombatTestFactory.CreateUnit(
+            "enemy_vanguard",
+            race: "undead",
+            classId: "vanguard",
+            anchor: DeploymentAnchorId.FrontCenter,
+            hp: 120f,
+            moveSpeed: 1.2f,
+            attackRange: 1.2f,
+            attackCooldown: 1.0f);
+
+        var state = CombatTestFactory.CreateBattleState(new[] { frontline, ranger }, new[] { enemy });
+        var simulator = new BattleSimulator(state, 180);
+
+        while (!simulator.IsFinished)
+        {
+            var step = simulator.Step();
+            var rangerAttack = step.Events.FirstOrDefault(evt =>
+                evt.ActorName == "ally_ranger"
+                && evt.LogCode == BattleLogCode.BasicAttackDamage
+                && evt.TargetId != null);
+            if (rangerAttack == null)
+            {
+                continue;
+            }
+
+            var rangerView = step.Units.First(unit => unit.Id.Contains("ally_ranger"));
+            var frontlineView = step.Units.First(unit => unit.Id.Contains("ally_frontline"));
+            var targetView = step.Units.First(unit => unit.Id == rangerAttack.TargetId!.Value.Value);
+            var edgeDistance = rangerView.Position.DistanceTo(targetView.Position) - rangerView.NavigationRadius - targetView.NavigationRadius;
+
+            Assert.That(edgeDistance, Is.GreaterThanOrEqualTo(2.65f));
+            Assert.That(rangerView.Position.X, Is.LessThan(frontlineView.Position.X - 0.35f));
+            return;
+        }
+
+        Assert.Fail("ranger produced no basic attack event.");
+    }
+
+    [Test]
     public void RangedBasicAttack_CancelsCommit_WhenTargetIsInsidePreferredMinimum()
     {
         var ranger = CombatTestFactory.CreateUnit(
@@ -163,7 +221,7 @@ public sealed class BattleSimulationSpatialTests
         var enemyView = step.Units.First(unit => unit.Id.Contains("enemy_pursuer"));
         var edgeDistance = allyView.Position.DistanceTo(enemyView.Position) - allyView.NavigationRadius - enemyView.NavigationRadius;
 
-        Assert.That(edgeDistance, Is.LessThan(2.0f));
+        Assert.That(edgeDistance, Is.LessThan(rangerState.Behavior.PreferredRangeMin));
         Assert.That(rangerAttack, Is.Null);
         Assert.That(allyView.ActionState, Is.EqualTo(CombatActionState.AcquireTarget));
         Assert.That(allyView.PendingActionType, Is.Null);

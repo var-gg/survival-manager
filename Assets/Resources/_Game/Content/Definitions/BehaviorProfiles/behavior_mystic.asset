@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2296af7359eeac3468c7004ce258bf55, type: 3}
   m_Name: behavior_mystic
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:BehaviorProfileDefinition
-  FormationLine: 0
-  RangeDiscipline: 1
+  FormationLine: 2
+  RangeDiscipline: 4
   ReevaluationInterval: 0.28
   RangeHysteresis: 0.3
-  PreferredRangeMin: 0
-  PreferredRangeMax: 0
+  PreferredRangeMin: 2.25
+  PreferredRangeMax: 2.8
   ApproachBuffer: 0.4
   RetreatBuffer: 0.25
-  ChaseLeashMeters: 5
+  ChaseLeashMeters: 6
   RetreatAtHpPercent: 0
   RetreatBias: 0.68
   MaintainRangeBias: 0.78
@@ -31,4 +31,4 @@ MonoBehaviour:
   BlockMitigation: 0.18
   Stability: 0.45
   BlockCooldownSeconds: 1.35
-  FrontlineGuardRadius: 2.5
+  FrontlineGuardRadius: 1.8
