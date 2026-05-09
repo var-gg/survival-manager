@@ -167,12 +167,12 @@ public sealed class CombatActionResolverTests
             classId: "ranger",
             physPower: 8f,
             armor: 0f,
-            attackRange: 3.2f);
+            attackRange: 5.6f);
         var target = CreatePositionedUnit("enemy_target", TeamSide.Enemy, hp: 40f, armor: 0f);
         var state = CreateState(new[] { actor }, new[] { target });
 
         actor.SetPosition(new CombatVector2(0f, 0f));
-        target.SetPosition(new CombatVector2(actor.NavigationRadius + target.NavigationRadius + 2.8f, 0f));
+        target.SetPosition(new CombatVector2(actor.NavigationRadius + target.NavigationRadius + 5.2f, 0f));
         var before = actor.Position;
         var profile = BasicAttackActionProfileResolver.Resolve(actor);
 

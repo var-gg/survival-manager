@@ -202,22 +202,12 @@ public sealed class BattlePresentationCueBuilder
         {
             foreach (var winner in currentStep.Units.Where(unit => unit.IsAlive))
             {
-                previousById.TryGetValue(winner.Id, out var previousWinner);
-                var resolvedMovement = previousWinner == null
-                    ? BattleAnimationCueDescriptor.None
-                    : ResolveBattleResolvedMovement(previousWinner, winner);
                 cues.Add(new BattlePresentationCue(
                     BattlePresentationCueType.BattleResolved,
                     currentStep.StepIndex,
                     winner.Id,
                     ActionType: winner.PendingActionType,
-                    Magnitude: resolvedMovement.Distance,
-                    Note: resolvedMovement.Semantic == BattleAnimationSemantic.None
-                        ? "battle_resolved"
-                        : ComposeCueNote("battle_resolved", resolvedMovement.Note),
-                    AnimationSemantic: resolvedMovement.Semantic,
-                    AnimationDirection: resolvedMovement.Direction,
-                    AnimationIntensity: resolvedMovement.Intensity));
+                    Note: "battle_resolved"));
             }
         }
 
@@ -314,37 +304,6 @@ public sealed class BattlePresentationCueBuilder
         return current.ActionState == CombatActionState.AdvanceToAnchor
             ? new BattleAnimationCueDescriptor(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, intensity, "advance", distance)
             : new BattleAnimationCueDescriptor(BattleAnimationSemantic.LateralStrafe, BattleAnimationDirection.Lateral, intensity, "reposition", distance);
-    }
-
-    private static BattleAnimationCueDescriptor ResolveBattleResolvedMovement(
-        BattleUnitReadModel previous,
-        BattleUnitReadModel current)
-    {
-        var deltaX = current.Position.X - previous.Position.X;
-        var deltaY = current.Position.Y - previous.Position.Y;
-        var distanceSquared = (deltaX * deltaX) + (deltaY * deltaY);
-        if (distanceSquared < 0.0025f)
-        {
-            return BattleAnimationCueDescriptor.None;
-        }
-
-        var distance = (float)System.Math.Sqrt(distanceSquared);
-        var retreatingToHome = current.Side == TeamSide.Ally
-            ? deltaX < -0.05f
-            : deltaX > 0.05f;
-        return retreatingToHome
-            ? new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.BackstepDisengage,
-                BattleAnimationDirection.Backward,
-                BattleAnimationIntensity.Medium,
-                "return_home",
-                distance)
-            : new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.LateralStrafe,
-                deltaY >= 0f ? BattleAnimationDirection.Right : BattleAnimationDirection.Left,
-                BattleAnimationIntensity.Medium,
-                "settle_formation",
-                distance);
     }
 
     private static void TryAddPreImpactDisplacementTraceCue(
@@ -590,8 +549,7 @@ public sealed class BattlePresentationCueBuilder
 
     private static bool IsProjectileBasicAttacker(BattleUnitReadModel actor)
     {
-        return IsTag(actor.ClassId, "mystic")
-               || actor.PreferredRangeMin >= 1.8f
+        return actor.PreferredRangeMin >= 1.8f
                || actor.PreferredRangeMax >= 2.4f;
     }
 

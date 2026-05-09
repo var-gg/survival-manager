@@ -99,7 +99,7 @@ public sealed class MovementResolverTests
     {
         var vanguard = MakeUnit("vanguard", TeamSide.Ally, attackRange: 1.2f);
         var duelist = MakeUnit("duelist", TeamSide.Ally, classId: "duelist", attackRange: 1.25f);
-        var ranger = MakeUnit("ranger", TeamSide.Ally, classId: "ranger", attackRange: 3.2f);
+        var ranger = MakeUnit("ranger", TeamSide.Ally, classId: "ranger", attackRange: 5.6f);
 
         Assert.That(BasicAttackActionProfileResolver.Resolve(vanguard).Profile, Is.EqualTo(BasicAttackActionProfile.StepInStrike));
         Assert.That(BasicAttackActionProfileResolver.Resolve(duelist).Profile, Is.EqualTo(BasicAttackActionProfile.LungeStrike));
@@ -128,7 +128,7 @@ public sealed class MovementResolverTests
     [Test]
     public void BasicAttackProfiles_HaveDistinctLogicalRangeContactAndPreImpactBudgets()
     {
-        var stationary = MakeUnit("stationary", TeamSide.Ally, classId: "ranger", attackRange: 3.2f);
+        var stationary = MakeUnit("stationary", TeamSide.Ally, classId: "ranger", attackRange: 5.6f);
         var stepIn = MakeUnit("step", TeamSide.Ally, classId: "vanguard", attackRange: 1.3f);
         var lunge = MakeUnit("lunge", TeamSide.Ally, classId: "duelist", attackRange: 1.3f);
         var dash = MakeUnit(

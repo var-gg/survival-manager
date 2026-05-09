@@ -46,7 +46,7 @@ MonoBehaviour:
   PreferredTeamPosture: 2
   RoleTag: support
   RoleFamilyTag: mystic
-  PrimaryWeaponFamilyTag: focus
+  PrimaryWeaponFamilyTag: shield
   RecruitTier: 0
   BudgetCard:
     Domain: 0
@@ -263,9 +263,9 @@ MonoBehaviour:
         RetargetLockMode: 3
       Profile: {fileID: 0}
       Effects: []
-  FootprintProfile: {fileID: 11400000, guid: a4440be1dcd4a5f4fa739e807da0f2ed, type: 2}
-  BehaviorProfile: {fileID: 11400000, guid: fb9fc401a4d91e242b0fe3a2654c3488, type: 2}
-  MobilityProfile: {fileID: 11400000, guid: 7c6ff8e645a78474a8cc9e6813ae9e56, type: 2}
+  FootprintProfile: {fileID: 11400000, guid: b07c3ef2049972e4ab998768a91f4e02, type: 2}
+  BehaviorProfile: {fileID: 11400000, guid: 07c1e9da8c03c204e9851ccbb5f54987, type: 2}
+  MobilityProfile: {fileID: 11400000, guid: 0d01521760a55c841835084a49d9fb8e, type: 2}
   BaseMaxHealth: 18
   BaseArmor: 2
   BaseResist: 0
@@ -279,7 +279,7 @@ MonoBehaviour:
   BaseSpeed: 4
   BaseHealPower: 5
   BaseMoveSpeed: 1.7
-  BaseAttackRange: 2.8
+  BaseAttackRange: 1.3
   BaseMaxEnergy: 100
   BaseStartingEnergy: 10
   BaseSkillHaste: 0
@@ -300,6 +300,6 @@ MonoBehaviour:
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
   BaseAttackCooldown: 1
-  BaseLeashDistance: 4.8
+  BaseLeashDistance: 5.2
   BaseTargetSwitchDelay: 0.4
   legacyDisplayName: 

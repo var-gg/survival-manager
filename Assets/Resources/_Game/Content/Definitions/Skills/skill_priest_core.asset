@@ -19,10 +19,10 @@ MonoBehaviour:
   Kind: 0
   SlotKind: 0
   DamageType: 1
-  Delivery: 1
+  Delivery: 0
   TargetRule: 2
   Power: 3.8
-  Range: 2.8
+  Range: 1.3
   RangeMin: 0
   RangeMax: -1
   Radius: 0

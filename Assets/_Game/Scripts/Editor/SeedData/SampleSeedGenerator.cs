@@ -705,7 +705,7 @@ public static class SampleSeedGenerator
         {
             ("vanguard", 0.58f, 0.82f, 1.25f, 0.9f, 1.25f, 5, 1.3f, BodySizeCategoryValue.Large, 2.15f),
             ("duelist", 0.45f, 0.68f, 1.3f, 0.95f, 1.45f, 6, 1.3f, BodySizeCategoryValue.Medium, 2.0f),
-            ("ranger", 0.34f, 0.74f, 3.2f, 2.55f, 3.35f, 3, 2.2f, BodySizeCategoryValue.Small, 1.92f),
+            ("ranger", 0.34f, 0.74f, 5.6f, 5.0f, 5.8f, 3, 3.9f, BodySizeCategoryValue.Small, 1.92f),
             ("mystic", 0.34f, 0.78f, 2.8f, 2.35f, 3.15f, 3, 2.0f, BodySizeCategoryValue.Small, 1.96f),
         }.ToDictionary(tuple => tuple.Item1, tuple => CreateAsset<FootprintProfileDefinition>($"{ResourcesRoot}/FootprintProfiles/footprint_{tuple.Item1}.asset", asset =>
         {
@@ -771,11 +771,11 @@ public static class SampleSeedGenerator
                 Id: "ranger",
                 FormationLine: FormationLine.Backline,
                 RangeDiscipline: RangeDiscipline.KiteBackward,
-                PreferredRangeMin: 2.75f,
-                PreferredRangeMax: 3.2f,
-                ApproachBuffer: 0.45f,
-                RetreatBuffer: 0.3f,
-                ChaseLeashMeters: 6.5f,
+                PreferredRangeMin: 5.0f,
+                PreferredRangeMax: 5.8f,
+                ApproachBuffer: 0.55f,
+                RetreatBuffer: 0.35f,
+                ChaseLeashMeters: 10.5f,
                 FrontlineGuardRadius: 1.5f,
                 ReevaluationInterval: 0.24f,
                 RangeHysteresis: 0.28f,
@@ -860,7 +860,7 @@ public static class SampleSeedGenerator
         return new[]
         {
             ("skill_power_strike", "Power Strike", "강타", "Heavy melee strike.", "강한 근접 일격.", SkillKindValue.Strike, 3f, 1f),
-            ("skill_precision_shot", "Precision Shot", "정밀 사격", "Focused ranged shot.", "집중된 원거리 사격.", SkillKindValue.Strike, 2f, 2f),
+            ("skill_precision_shot", "Precision Shot", "정밀 사격", "Focused ranged shot.", "집중된 원거리 사격.", SkillKindValue.Strike, 2f, 5.6f),
             ("skill_minor_heal", "Minor Heal", "소회복", "Small targeted heal.", "단일 대상 소회복.", SkillKindValue.Heal, 4f, 2f),
         }.ToDictionary(tuple => tuple.Item1, tuple => CreateAsset<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/{tuple.Item1}.asset", a =>
         {
@@ -930,7 +930,7 @@ public static class SampleSeedGenerator
         result["raider"] = CreateArchetype("raider", "Raider", races["beastkin"], classes["duelist"], traitPools["raider"], skills["skill_power_strike"], footprintProfiles["duelist"], behaviorProfiles["duelist"], mobilityProfiles["duelist"], 19, 8, 1, 5, 0, DeploymentAnchorValue.FrontTop, TeamPostureTypeValue.CollapseWeakSide);
         result["hunter"] = CreateArchetype("hunter", "Hunter", races["human"], classes["ranger"], traitPools["hunter"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 18, 6, 2, 5, 0, DeploymentAnchorValue.BackTop, TeamPostureTypeValue.StandardAdvance);
         result["scout"] = CreateArchetype("scout", "Scout", races["beastkin"], classes["ranger"], traitPools["scout"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 17, 5, 2, 6, 0, DeploymentAnchorValue.BackBottom, TeamPostureTypeValue.CollapseWeakSide);
-        result["priest"] = CreateArchetype("priest", "Priest", races["human"], classes["mystic"], traitPools["priest"], skills["skill_minor_heal"], footprintProfiles["mystic"], behaviorProfiles["mystic"], mobilityProfiles["mystic"], 18, 3, 2, 4, 5, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.ProtectCarry);
+        result["priest"] = CreateArchetype("priest", "Priest", races["human"], classes["mystic"], traitPools["priest"], skills["skill_minor_heal"], footprintProfiles["vanguard"], behaviorProfiles["vanguard"], mobilityProfiles["vanguard"], 18, 3, 2, 4, 5, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.ProtectCarry);
         result["hexer"] = CreateArchetype("hexer", "Hexer", races["undead"], classes["mystic"], traitPools["hexer"], skills["skill_minor_heal"], footprintProfiles["mystic"], behaviorProfiles["mystic"], mobilityProfiles["mystic"], 17, 4, 2, 4, 4, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.AllInBackline);
         result["rift_stalker"] = CreateArchetype("rift_stalker", "Rift Stalker", races["beastkin"], classes["ranger"], traitPools["rift_stalker"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 18, 6, 2, 6, 0, DeploymentAnchorValue.BackBottom, TeamPostureTypeValue.CollapseWeakSide, ArchetypeScopeValue.Specialist);
         result["bastion_penitent"] = CreateArchetype("bastion_penitent", "Bastion Penitent", races["human"], classes["vanguard"], traitPools["bastion_penitent"], skills["skill_power_strike"], footprintProfiles["vanguard"], behaviorProfiles["vanguard"], mobilityProfiles["vanguard"], 27, 4, 5, 2, 0, DeploymentAnchorValue.FrontCenter, TeamPostureTypeValue.ProtectCarry, ArchetypeScopeValue.Specialist);
@@ -965,6 +965,7 @@ public static class SampleSeedGenerator
                 "vanguard" => "shield",
                 "duelist" => "blade",
                 "ranger" => "bow",
+                "mystic" when id == "priest" => "shield",
                 "mystic" => "focus",
                 _ => "general"
             };
@@ -986,16 +987,18 @@ public static class SampleSeedGenerator
             };
             a.BaseAttackRange = @class.Id switch
             {
-                "ranger" => 3.2f,
+                "ranger" => 5.6f,
+                "mystic" when id == "priest" => 1.3f,
                 "mystic" => 2.8f,
                 _ => 1.3f
             };
-            a.BaseAggroRadius = @class.Id == "ranger" ? 8f : 7.2f;
+            a.BaseAggroRadius = @class.Id == "ranger" ? 10f : 7.2f;
             a.BaseAttackWindup = @class.Id == "ranger" ? 0.18f : 0.22f;
             a.BaseAttackCooldown = @class.Id == "duelist" ? 0.85f : 1.0f;
             a.BaseLeashDistance = @class.Id switch
             {
-                "ranger" => 4.6f,
+                "ranger" => 10.5f,
+                "mystic" when id == "priest" => 5.2f,
                 "mystic" => 4.8f,
                 _ => 5.2f
             };
@@ -1131,14 +1134,15 @@ public static class SampleSeedGenerator
                 "duelist" => "striker",
                 _ => definition.ClassId
             };
-            asset.FootprintProfile = footprintProfiles[definition.ClassId];
-            asset.BehaviorProfile = behaviorProfiles[definition.ClassId];
-            asset.MobilityProfile = mobilityProfiles[definition.ClassId];
+            asset.FootprintProfile = definition.Id == "priest" ? footprintProfiles["vanguard"] : footprintProfiles[definition.ClassId];
+            asset.BehaviorProfile = definition.Id == "priest" ? behaviorProfiles["vanguard"] : behaviorProfiles[definition.ClassId];
+            asset.MobilityProfile = definition.Id == "priest" ? mobilityProfiles["vanguard"] : mobilityProfiles[definition.ClassId];
             asset.PrimaryWeaponFamilyTag = definition.ClassId switch
             {
                 "vanguard" => "shield",
                 "duelist" => "blade",
                 "ranger" => "bow",
+                "mystic" when definition.Id == "priest" => "shield",
                 "mystic" => "focus",
                 _ => asset.PrimaryWeaponFamilyTag
             };
