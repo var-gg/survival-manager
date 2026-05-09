@@ -137,6 +137,29 @@ public static class BattleTelemetryRecorder
         });
     }
 
+    public static void RecordPositioningIntent(BattleState state, UnitSnapshot actor, UnitSnapshot? target)
+    {
+        state.AddTelemetry(new TelemetryEventRecord
+        {
+            Domain = TelemetryDomain.Combat,
+            EventKind = TelemetryEventKind.PositioningIntentUpdated,
+            TimeSeconds = state.ElapsedSeconds,
+            Actor = BuildEntityRef(actor),
+            Target = BuildEntityRef(target),
+            Explain = new ExplainStamp
+            {
+                SourceKind = ExplainedSourceKind.SystemRule,
+                SourceContentId = actor.Definition.Id,
+                SourceDisplayName = actor.Definition.Name,
+                ReasonCode = ResolveDecisionReasonFromReplan(actor.PositioningReplanReason),
+                Salience = SalienceClass.Ambient,
+            },
+            IntValueA = actor.PositioningIntentRevision,
+            StringValueA = actor.PositioningIntent.ToString(),
+            StringValueB = actor.PositioningReplanReason.ToString(),
+        });
+    }
+
     public static void RecordImpact(
         BattleState state,
         TelemetryEventKind eventKind,
@@ -287,6 +310,13 @@ public static class BattleTelemetryRecorder
             return DecisionReasonCode.BurstDuringCrowdControl;
         }
 
+        if (evaluated.PositioningIntent is PositioningIntentKind.FlankLeft
+            or PositioningIntentKind.FlankRight
+            or PositioningIntentKind.BacklineDive)
+        {
+            return DecisionReasonCode.PunishExposedBackline;
+        }
+
         if (actor.Behavior.RangeDiscipline is RangeDiscipline.HoldBand or RangeDiscipline.KiteBackward)
         {
             return DecisionReasonCode.MaintainRangeBand;
@@ -309,6 +339,16 @@ public static class BattleTelemetryRecorder
             SourceDisplayName = actionType == BattleActionType.BasicAttack ? actor.EffectiveBasicAttack.Name : skill?.Name ?? "Active Skill",
             ReasonCode = reasonCode,
             Salience = salience,
+        };
+    }
+
+    private static DecisionReasonCode ResolveDecisionReasonFromReplan(ReevaluationReason reason)
+    {
+        return reason switch
+        {
+            ReevaluationReason.TookHit or ReevaluationReason.RangeBreak or ReevaluationReason.TargetMoved => DecisionReasonCode.MaintainRangeBand,
+            ReevaluationReason.TargetLost or ReevaluationReason.SlotLost => DecisionReasonCode.CounterThreatLane,
+            _ => DecisionReasonCode.DefaultCadence,
         };
     }
 

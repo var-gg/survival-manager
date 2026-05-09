@@ -554,6 +554,40 @@ public sealed class BattleSimulationSpatialTests
         Assert.That(actorView.Position.X, Is.GreaterThan(startX + 0.4f), "Actor should advance toward target rather than treadmilling at the corpse.");
     }
 
+    [Test]
+    public void LoopA_PositioningIntent_RecordsTelemetryAndAreaOracle()
+    {
+        var allies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("ally_duelist_a", classId: "duelist", anchor: DeploymentAnchorId.FrontTop, hp: 30f, physPower: 6f, attackRange: 1.2f),
+            CombatTestFactory.CreateLoopAUnit("ally_duelist_b", classId: "duelist", anchor: DeploymentAnchorId.FrontBottom, hp: 30f, physPower: 6f, attackRange: 1.2f),
+            CombatTestFactory.CreateLoopAUnit("ally_vanguard", classId: "vanguard", anchor: DeploymentAnchorId.FrontCenter, hp: 45f, physPower: 4f, attackRange: 1.2f),
+        };
+        var target = CombatTestFactory.CreateLoopAUnit(
+            "enemy_anchor",
+            race: "undead",
+            classId: "vanguard",
+            anchor: DeploymentAnchorId.FrontCenter,
+            hp: 120f,
+            physPower: 1f,
+            attackRange: 1.2f);
+        var state = CombatTestFactory.CreateBattleState(allies, new[] { target }, seed: 23);
+        var simulator = new BattleSimulator(state, 120);
+
+        BattleSimulationStep latest = simulator.CurrentStep;
+        for (var i = 0; i < 45 && !simulator.IsFinished; i++)
+        {
+            latest = simulator.Step();
+        }
+
+        var allyViews = latest.Units.Where(unit => unit.Side == TeamSide.Ally && unit.IsAlive).ToList();
+        Assert.That(allyViews.Any(unit => unit.PositioningIntent is PositioningIntentKind.FlankLeft or PositioningIntentKind.FlankRight or PositioningIntentKind.BacklineDive), Is.True);
+        Assert.That(ComputeOccupiedArea(allyViews), Is.GreaterThan(0.35f));
+        Assert.That(state.TelemetryEvents.Any(record => record.EventKind == TelemetryEventKind.PositioningIntentUpdated), Is.True);
+        Assert.That(state.TelemetryEvents.Any(record => record.EventKind == TelemetryEventKind.PositioningIntentUpdated
+                                                        && record.StringValueB is nameof(ReevaluationReason.Cadence) or nameof(ReevaluationReason.TargetMoved)), Is.True);
+    }
+
     private static float FindMinDistance(System.Collections.Generic.IReadOnlyList<BattleUnitReadModel> units)
     {
         var min = float.MaxValue;
@@ -566,5 +600,19 @@ public sealed class BattleSimulationSpatialTests
         }
 
         return min;
+    }
+
+    private static float ComputeOccupiedArea(System.Collections.Generic.IReadOnlyList<BattleUnitReadModel> units)
+    {
+        if (units.Count == 0)
+        {
+            return 0f;
+        }
+
+        var minX = units.Min(unit => unit.Position.X);
+        var maxX = units.Max(unit => unit.Position.X);
+        var minY = units.Min(unit => unit.Position.Y);
+        var maxY = units.Max(unit => unit.Position.Y);
+        return (maxX - minX) * (maxY - minY);
     }
 }

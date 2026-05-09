@@ -46,7 +46,10 @@ public sealed record BattleUnitReadModel(
     string SignatureActiveId = "",
     string SignatureActiveName = "",
     string FlexActiveId = "",
-    string FlexActiveName = "");
+    string FlexActiveName = "",
+    PositioningIntentKind PositioningIntent = PositioningIntentKind.None,
+    ReevaluationReason PositioningReplanReason = ReevaluationReason.None,
+    int PositioningIntentRevision = 0);
 
 public sealed record BattleSimulationStep(
     int StepIndex,

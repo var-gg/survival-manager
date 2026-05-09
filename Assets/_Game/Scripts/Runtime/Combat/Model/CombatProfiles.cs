@@ -39,6 +39,17 @@ public enum ReevaluationReason
     SkillReady = 5,
     MobilityReady = 6,
     RangeBreak = 7,
+    TargetMoved = 8,
+}
+
+public enum PositioningIntentKind
+{
+    None = 0,
+    Frontline = 1,
+    FlankLeft = 2,
+    FlankRight = 3,
+    BacklineDive = 4,
+    MaintainRange = 5,
 }
 
 public readonly record struct FloatRange(float Min, float Max)

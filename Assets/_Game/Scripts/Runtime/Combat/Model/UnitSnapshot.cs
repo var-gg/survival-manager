@@ -86,6 +86,9 @@ public sealed class UnitSnapshot
     public TargetSelector CurrentTargetSelector { get; private set; } = TargetSelector.CurrentTarget;
     public TargetFallbackPolicy CurrentFallbackPolicy { get; private set; } = TargetFallbackPolicy.KeepCurrentIfStillValid;
     public DecisionReasonCode PendingDecisionReason { get; private set; } = DecisionReasonCode.DefaultCadence;
+    public PositioningIntentKind PositioningIntent { get; private set; } = PositioningIntentKind.None;
+    public ReevaluationReason PositioningReplanReason { get; private set; } = ReevaluationReason.None;
+    public int PositioningIntentRevision { get; private set; }
     public bool IsAlive => CurrentHealth > 0f;
     public bool IsDefending { get; private set; }
     public bool NeedsReevaluation => PendingReevaluationReason != ReevaluationReason.None || ReevaluationRemaining <= 0f;
@@ -495,10 +498,18 @@ public sealed class UnitSnapshot
         var changed = EngagementSlot?.TargetId != slot?.TargetId
                       || EngagementSlot?.SlotIndex != slot?.SlotIndex
                       || EngagementSlot?.IsOverflow != slot?.IsOverflow;
+        var moved = !changed
+                    && EngagementSlot != null
+                    && slot != null
+                    && EngagementSlot.Position.DistanceTo(slot.Position) > Math.Max(0.1f, NavigationRadius * 0.2f);
         EngagementSlot = slot;
         if (changed)
         {
             RequestReevaluation(slot == null ? ReevaluationReason.SlotLost : ReevaluationReason.Cadence);
+        }
+        else if (moved)
+        {
+            RequestReevaluation(ReevaluationReason.TargetMoved);
         }
     }
 
@@ -571,6 +582,34 @@ public sealed class UnitSnapshot
         }
 
         ReevaluationRemaining = 0f;
+        MarkPositioningReplan(reason);
+    }
+
+    public bool SetPositioningIntent(PositioningIntentKind intent, ReevaluationReason replanReason)
+    {
+        var normalizedReason = replanReason == ReevaluationReason.None
+            ? PositioningReplanReason
+            : replanReason;
+        if (PositioningIntent == intent && PositioningReplanReason == normalizedReason)
+        {
+            return false;
+        }
+
+        PositioningIntent = intent;
+        PositioningReplanReason = normalizedReason;
+        PositioningIntentRevision++;
+        return true;
+    }
+
+    private void MarkPositioningReplan(ReevaluationReason reason)
+    {
+        if (reason == ReevaluationReason.None)
+        {
+            return;
+        }
+
+        PositioningReplanReason = reason;
+        PositioningIntentRevision++;
     }
 
     public void ConsumeReevaluation()

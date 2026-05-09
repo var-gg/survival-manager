@@ -113,6 +113,11 @@ public sealed class BattleSimulator
             var previousTarget = State.FindUnit(actor.CurrentTargetId);
             actor.SetCurrentTarget(evaluated.Target.Id);
             BattleTelemetryRecorder.RecordTargetEvent(State, actor, previousTarget, evaluated.Target, reasonCode);
+            if (actor.SetPositioningIntent(evaluated.PositioningIntent, evaluated.ReevaluationReason))
+            {
+                BattleTelemetryRecorder.RecordPositioningIntent(State, actor, evaluated.Target);
+            }
+
             actor.SetEngagementSlot(evaluated.SlotAssignment);
 
             var inRangeBand = MovementResolver.IsWithinRangeBand(actor, evaluated.Target, evaluated.DesiredRangeBand, actor.Behavior.RangeHysteresis);
