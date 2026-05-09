@@ -13,7 +13,7 @@ namespace SM.Content.Definitions
         public float RangeHysteresis = 0.25f;
         public float PreferredRangeMin = 0f;
         public float PreferredRangeMax = 0f;
-        public float ApproachBuffer = 0.4f;
+        public float ApproachBuffer = 0.3f;
         public float RetreatBuffer = 0.25f;
         public float ChaseLeashMeters = 5f;
         public float RetreatAtHpPercent = 0f;

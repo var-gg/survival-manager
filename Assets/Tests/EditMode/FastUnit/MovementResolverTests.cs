@@ -19,7 +19,8 @@ public sealed class MovementResolverTests
         float attackRange = 1.2f,
         float moveSpeed = 1.9f,
         BehaviorProfile? behavior = null,
-        FootprintProfile? footprint = null)
+        FootprintProfile? footprint = null,
+        BattleBasicAttackSpec? basicAttack = null)
     {
         var loadout = CombatTestFactory.CreateLoopAUnit(
             id,
@@ -29,7 +30,8 @@ public sealed class MovementResolverTests
             attackRange: attackRange,
             moveSpeed: moveSpeed,
             behavior: behavior,
-            footprint: footprint);
+            footprint: footprint,
+            basicAttack: basicAttack);
         return new UnitSnapshot(
             new EntityId(id),
             side,
@@ -104,6 +106,76 @@ public sealed class MovementResolverTests
         var rangedProfile = BasicAttackActionProfileResolver.Resolve(ranger);
         Assert.That(rangedProfile.Profile, Is.EqualTo(BasicAttackActionProfile.StationaryStrike));
         Assert.That(rangedProfile.ContactRange, Is.EqualTo(rangedProfile.LogicalRange).Within(0.001f));
+    }
+
+    [Test]
+    public void MeleeFootprint_DefaultsMatchCombatMeterBaseline()
+    {
+        var vanguard = MakeUnit("vanguard", TeamSide.Ally, classId: "vanguard", attackRange: 1.3f);
+        var duelist = MakeUnit("duelist", TeamSide.Ally, classId: "duelist", attackRange: 1.3f);
+
+        Assert.That(vanguard.NavigationRadius, Is.InRange(0.42f, 0.5f));
+        Assert.That(vanguard.CombatReach, Is.LessThanOrEqualTo(0.68f));
+        Assert.That(vanguard.PreferredRangeBand.ClampedMin, Is.EqualTo(0.6f).Within(0.001f));
+        Assert.That(vanguard.Footprint.EngagementSlotRadius, Is.EqualTo(0.95f).Within(0.001f));
+
+        Assert.That(duelist.NavigationRadius, Is.InRange(0.38f, 0.44f));
+        Assert.That(duelist.CombatReach, Is.LessThanOrEqualTo(0.58f));
+        Assert.That(duelist.PreferredRangeBand.ClampedMin, Is.EqualTo(0.55f).Within(0.001f));
+        Assert.That(duelist.Footprint.EngagementSlotRadius, Is.EqualTo(0.9f).Within(0.001f));
+    }
+
+    [Test]
+    public void BasicAttackProfiles_HaveDistinctLogicalRangeContactAndPreImpactBudgets()
+    {
+        var stationary = MakeUnit("stationary", TeamSide.Ally, classId: "ranger", attackRange: 3.2f);
+        var stepIn = MakeUnit("step", TeamSide.Ally, classId: "vanguard", attackRange: 1.3f);
+        var lunge = MakeUnit("lunge", TeamSide.Ally, classId: "duelist", attackRange: 1.3f);
+        var dash = MakeUnit(
+            "dash",
+            TeamSide.Ally,
+            classId: "duelist",
+            attackRange: 1.8f,
+            basicAttack: new BattleBasicAttackSpec(
+                "dash:basic",
+                "Dash Basic",
+                ActionProfile: BasicAttackActionProfile.DashStrike));
+
+        var stationaryProfile = BasicAttackActionProfileResolver.Resolve(stationary);
+        var stepProfile = BasicAttackActionProfileResolver.Resolve(stepIn);
+        var lungeProfile = BasicAttackActionProfileResolver.Resolve(lunge);
+        var dashProfile = BasicAttackActionProfileResolver.Resolve(dash);
+
+        Assert.That(stationaryProfile.ContactRange, Is.EqualTo(stationaryProfile.LogicalRange).Within(0.001f));
+        Assert.That(stationaryProfile.PreImpactStepDistance, Is.Zero);
+
+        Assert.That(stepProfile.ContactRange, Is.EqualTo(0.6f).Within(0.001f));
+        Assert.That(lungeProfile.ContactRange, Is.EqualTo(0.52f).Within(0.001f));
+        Assert.That(dashProfile.ContactRange, Is.EqualTo(0.68f).Within(0.001f));
+
+        Assert.That(stepProfile.PreImpactStepDistance, Is.GreaterThan(0.65f));
+        Assert.That(lungeProfile.PreImpactStepDistance, Is.GreaterThan(stepProfile.PreImpactStepDistance));
+        Assert.That(dashProfile.PreImpactStepDistance, Is.GreaterThan(lungeProfile.PreImpactStepDistance));
+    }
+
+    [Test]
+    public void EngagementSlot_MeleeBaselinePlacesAttackerAtReadableContactEdge()
+    {
+        var actor = MakeUnit("actor", TeamSide.Ally, classId: "duelist", attackRange: 1.3f);
+        var target = MakeUnit("target", TeamSide.Enemy, classId: "vanguard", attackRange: 1.3f);
+        var state = MakeState(new[] { actor }, new[] { target });
+        actor.SetCurrentTarget(target.Id);
+
+        var slot = EngagementSlotService.Resolve(
+            state,
+            actor,
+            target,
+            actor.PreferredRangeBand,
+            PositioningIntentKind.Frontline);
+
+        Assert.That(slot, Is.Not.Null);
+        var edgeDistance = slot!.Position.DistanceTo(target.Position) - actor.NavigationRadius - target.NavigationRadius;
+        Assert.That(edgeDistance, Is.InRange(0.55f, 0.72f));
     }
 
     // ── IsWithinRangeBand ──

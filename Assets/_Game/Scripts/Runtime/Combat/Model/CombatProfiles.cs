@@ -150,21 +150,21 @@ public static class CombatProfileDefaults
         return classId switch
         {
             "vanguard" => new FootprintProfile(
-                MathF.Max(0.45f, safeCollision + 0.1f),
-                MathF.Max(0.65f, safeCollision + 0.22f),
-                MathF.Min(1.4f, safeRange),
-                new FloatRange(0.9f, 1.25f),
+                MathF.Max(0.42f, safeCollision - 0.04f),
+                MathF.Max(0.7f, safeCollision + 0.2f),
+                MathF.Min(0.68f, safeRange),
+                new FloatRange(0.6f, 1.15f),
                 5,
-                1.3f,
+                0.95f,
                 maxHealth >= 25f || safeCollision >= 0.55f ? BodySizeCategory.Large : BodySizeCategory.Medium,
                 2.15f),
             "duelist" => new FootprintProfile(
-                MathF.Max(0.4f, safeCollision),
-                MathF.Max(0.62f, safeCollision + 0.18f),
-                MathF.Min(1.3f, safeRange),
-                new FloatRange(0.95f, 1.45f),
+                MathF.Max(0.38f, safeCollision - 0.1f),
+                MathF.Max(0.62f, safeCollision + 0.12f),
+                MathF.Min(0.58f, safeRange),
+                new FloatRange(0.55f, 1.25f),
                 6,
-                1.3f,
+                0.9f,
                 BodySizeCategory.Medium,
                 2f),
             "ranger" => new FootprintProfile(
@@ -186,12 +186,12 @@ public static class CombatProfileDefaults
                 BodySizeCategory.Small,
                 1.96f),
             _ => new FootprintProfile(
-                MathF.Max(0.4f, safeCollision),
-                MathF.Max(0.64f, safeCollision + 0.2f),
-                MathF.Min(1.3f, safeRange),
-                new FloatRange(MathF.Max(0.9f, safeRange - 0.2f), safeRange),
+                MathF.Max(0.4f, safeCollision - 0.05f),
+                MathF.Max(0.65f, safeCollision + 0.15f),
+                MathF.Min(0.65f, safeRange),
+                new FloatRange(MathF.Min(0.65f, MathF.Max(0.55f, safeRange - 0.65f)), safeRange),
                 4,
-                1.2f,
+                0.95f,
                 BodySizeCategory.Medium,
                 2f),
         };
@@ -226,8 +226,8 @@ public static class CombatProfileDefaults
 
         return classId switch
         {
-            "vanguard" => new BehaviorProfile(0.25f, 0.16f, 0.04f, 0.05f, 0.34f, 0.82f, 0.02f, 0.28f, 0.38f, 0.88f, 1f, FormationLine.Frontline, RangeDiscipline.Collapse, 0.9f, 1.25f, 0.4f, 0.2f, 5f, 0f, 3f),
-            "duelist" => new BehaviorProfile(0.25f, 0.22f, 0.22f, 0.24f, 0.72f, 0.58f, 0.08f, 0.12f, 0.18f, 0.62f, 1.15f, FormationLine.Frontline, RangeDiscipline.HoldBand, 0.95f, 1.45f, 0.4f, 0.25f, 5.5f, 0.2f, 2.2f),
+            "vanguard" => new BehaviorProfile(0.25f, 0.16f, 0.04f, 0.05f, 0.34f, 0.82f, 0.02f, 0.28f, 0.38f, 0.88f, 1f, FormationLine.Frontline, RangeDiscipline.Collapse, 0.6f, 1.15f, 0.25f, 0.2f, 5f, 0f, 3f),
+            "duelist" => new BehaviorProfile(0.25f, 0.22f, 0.22f, 0.24f, 0.72f, 0.58f, 0.08f, 0.12f, 0.18f, 0.62f, 1.15f, FormationLine.Frontline, RangeDiscipline.HoldBand, 0.55f, 1.25f, 0.28f, 0.25f, 5.5f, 0.2f, 2.2f),
             "ranger" => new BehaviorProfile(0.25f, 0.28f, 0.72f, 0.84f, 0.58f, 0.74f, 0.12f, 0.04f, 0.12f, 0.34f, 1.5f, FormationLine.Backline, RangeDiscipline.KiteBackward, 2.3f, 3.1f, 0.45f, 0.3f, 6.5f, 0.35f, 1.5f),
             "mystic" => new BehaviorProfile(0.25f, 0.3f, 0.68f, 0.78f, 0.5f, 0.84f, 0.06f, 0.06f, 0.18f, 0.45f, 1.35f, FormationLine.Backline, RangeDiscipline.AnchorNearFrontline, 2.1f, 2.9f, 0.4f, 0.25f, 6f, 0.3f, 1.8f),
             _ => new BehaviorProfile(0.25f, 0.2f, 0.15f, 0.15f, 0.5f, 0.5f, 0.04f, 0.08f, 0.2f, 0.5f, 1.2f, FormationLine.Midline, RangeDiscipline.HoldBand, 1f, 2f, 0.4f, 0.25f, 5f, 0.25f, 2.5f),

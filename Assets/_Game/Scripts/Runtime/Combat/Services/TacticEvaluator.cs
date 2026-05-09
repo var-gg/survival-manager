@@ -20,8 +20,8 @@ public sealed record EvaluatedAction(
 
 public static class TacticEvaluator
 {
-    private const float MeleeSlotRangeMin = 0.75f;
-    private const float MeleeSlotRangeMax = 0.95f;
+    private const float MeleeSlotRangeMin = 0.55f;
+    private const float MeleeSlotRangeMax = 0.85f;
     private const float SupportMaxRangeFloor = 1.4f;
     private const float SupportRangeShrink = 0.8f;
 
