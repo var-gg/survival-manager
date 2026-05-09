@@ -64,7 +64,10 @@ public static class BattleReadModelBuilder
                     unit.Definition.EffectiveSignatureActive?.Id ?? string.Empty,
                     unit.Definition.EffectiveSignatureActive?.Name ?? string.Empty,
                     unit.Definition.EffectiveFlexActive?.Id ?? string.Empty,
-                    unit.Definition.EffectiveFlexActive?.Name ?? string.Empty);
+                    unit.Definition.EffectiveFlexActive?.Name ?? string.Empty,
+                    unit.PositioningIntent,
+                    unit.PositioningReplanReason,
+                    unit.PositioningIntentRevision);
             })
             .ToList();
 

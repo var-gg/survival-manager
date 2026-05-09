@@ -14,12 +14,14 @@ public sealed class EngagementSlotServiceTests
         string id,
         TeamSide side,
         DeploymentAnchorId anchor = DeploymentAnchorId.FrontCenter,
+        string classId = "vanguard",
         float attackRange = 1.2f,
         BehaviorProfile? behavior = null,
         FootprintProfile? footprint = null)
     {
         var loadout = CombatTestFactory.CreateLoopAUnit(
             id,
+            classId: classId,
             anchor: anchor,
             attackRange: attackRange,
             behavior: behavior,
@@ -34,12 +36,12 @@ public sealed class EngagementSlotServiceTests
         return unit;
     }
 
-    private static BattleState MakeState(UnitSnapshot[] allies, UnitSnapshot[] enemies)
+    private static BattleState MakeState(UnitSnapshot[] allies, UnitSnapshot[] enemies, int seed = 7)
     {
         return new BattleState(
             allies, enemies,
             TeamPostureType.StandardAdvance, TeamPostureType.StandardAdvance,
-            BattleSimulator.DefaultFixedStepSeconds, 7);
+            BattleSimulator.DefaultFixedStepSeconds, seed);
     }
 
     // ── RequiresSlotting ──
@@ -179,5 +181,59 @@ public sealed class EngagementSlotServiceTests
         var slot = EngagementSlotService.Resolve(state, ranged, target, rangedBand);
 
         Assert.That(slot, Is.Null, "Ranged unit should not get engagement slot");
+    }
+
+    [Test]
+    public void PositioningIntent_IsSeedDeterministic_AndCanAlterSlotArc()
+    {
+        var attacker = MakeUnit("duelist_attacker", TeamSide.Ally, classId: "duelist", attackRange: 1.2f);
+        var target = MakeUnit("target", TeamSide.Enemy, attackRange: 1.2f);
+        attacker.SetPosition(new CombatVector2(-2f, 0f));
+        target.SetPosition(new CombatVector2(0f, 0f));
+        attacker.SetCurrentTarget(target.Id);
+        var band = new FloatRange(0.8f, 1.2f);
+
+        var intentA = EngagementSlotService.ResolvePositioningIntent(MakeState(new[] { attacker }, new[] { target }, seed: 11), attacker, target, band);
+        var intentA2 = EngagementSlotService.ResolvePositioningIntent(MakeState(new[] { attacker }, new[] { target }, seed: 11), attacker, target, band);
+        var intentB = EngagementSlotService.ResolvePositioningIntent(MakeState(new[] { attacker }, new[] { target }, seed: 51), attacker, target, band);
+
+        Assert.That(intentA2, Is.EqualTo(intentA));
+        Assert.That(intentB, Is.Not.EqualTo(intentA));
+
+        var state = MakeState(new[] { attacker }, new[] { target }, seed: 11);
+        var front = EngagementSlotService.Resolve(state, attacker, target, band, PositioningIntentKind.Frontline);
+        var back = EngagementSlotService.Resolve(state, attacker, target, band, PositioningIntentKind.BacklineDive);
+        Assert.That(front, Is.Not.Null);
+        Assert.That(back, Is.Not.Null);
+        Assert.That(front!.Position.X, Is.LessThan(target.Position.X));
+        Assert.That(back!.Position.X, Is.GreaterThan(target.Position.X));
+    }
+
+    [Test]
+    public void SlotPositionMoveAndSlotLoss_RecordReplanReasons()
+    {
+        var attacker = MakeUnit("attacker", TeamSide.Ally, attackRange: 1.2f);
+        var target = MakeUnit("target", TeamSide.Enemy, attackRange: 1.2f);
+        attacker.SetPosition(new CombatVector2(-2f, 0f));
+        target.SetPosition(new CombatVector2(0f, 0f));
+        attacker.SetCurrentTarget(target.Id);
+        var state = MakeState(new[] { attacker }, new[] { target });
+        var band = new FloatRange(0.8f, 1.2f);
+
+        var slot = EngagementSlotService.Resolve(state, attacker, target, band, PositioningIntentKind.Frontline);
+        Assert.That(slot, Is.Not.Null);
+        attacker.SetEngagementSlot(slot);
+
+        var shifted = slot! with { Position = slot.Position + new CombatVector2(0.35f, 0f) };
+        attacker.SetEngagementSlot(shifted);
+        Assert.That(attacker.PositioningReplanReason, Is.EqualTo(ReevaluationReason.TargetMoved));
+
+        attacker.SetEngagementSlot(null);
+        Assert.That(attacker.PositioningReplanReason, Is.EqualTo(ReevaluationReason.SlotLost));
+
+        var evaluated = TacticEvaluator.Evaluate(state, attacker);
+        Assert.That(evaluated.Target, Is.EqualTo(target));
+        Assert.That(evaluated.SlotAssignment, Is.Not.Null);
+        Assert.That(evaluated.PositioningIntent, Is.Not.EqualTo(PositioningIntentKind.None));
     }
 }

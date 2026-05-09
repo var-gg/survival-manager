@@ -15,7 +15,8 @@ public sealed record EvaluatedAction(
     ReevaluationReason ReevaluationReason,
     bool RequiresEngagementSlot,
     EngagementSlotAssignment? SlotAssignment,
-    MobilityDecision? Mobility);
+    MobilityDecision? Mobility,
+    PositioningIntentKind PositioningIntent = PositioningIntentKind.None);
 
 public static class TacticEvaluator
 {
@@ -142,11 +143,12 @@ public static class TacticEvaluator
 
         var rangeBand = ResolveLoopARangeBand(actor, skill, BattleActionType.ActiveSkill);
         var requiresSlot = target.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, rangeBand);
-        var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, target, rangeBand) : null;
+        var positioningIntent = EngagementSlotService.ResolvePositioningIntent(state, actor, target, rangeBand);
+        var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, target, rangeBand, positioningIntent) : null;
         return new EvaluatedAction(
             BattleActionType.ActiveSkill, target, skill, fallbackRule, rangeBand,
             ResolvePhase(actor, target, rangeBand, slotAssignment, null),
-            reevaluationReason, requiresSlot, slotAssignment, null);
+            reevaluationReason, requiresSlot, slotAssignment, null, positioningIntent);
     }
 
     private static EvaluatedAction TryBasicAttack(
@@ -158,11 +160,12 @@ public static class TacticEvaluator
         if (basicTarget != null)
         {
             var requiresSlot = basicTarget.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, baseRangeBand);
-            var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, basicTarget, baseRangeBand) : null;
+            var positioningIntent = EngagementSlotService.ResolvePositioningIntent(state, actor, basicTarget, baseRangeBand);
+            var slotAssignment = requiresSlot ? EngagementSlotService.Resolve(state, actor, basicTarget, baseRangeBand, positioningIntent) : null;
             return new EvaluatedAction(
                 BattleActionType.BasicAttack, basicTarget, null, fallbackRule, baseRangeBand,
                 ResolvePhase(actor, basicTarget, baseRangeBand, slotAssignment, null),
-                reevaluationReason, requiresSlot, slotAssignment, null);
+                reevaluationReason, requiresSlot, slotAssignment, null, positioningIntent);
         }
 
         return new EvaluatedAction(
@@ -193,8 +196,11 @@ public static class TacticEvaluator
 
             var rangeBand = ResolveLegacyRangeBand(actor, skill, rule.ActionType);
             var requiresSlot = target != null && target.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, rangeBand);
+            var positioningIntent = target != null
+                ? EngagementSlotService.ResolvePositioningIntent(state, actor, target, rangeBand)
+                : PositioningIntentKind.None;
             var slotAssignment = requiresSlot && target != null
-                ? EngagementSlotService.Resolve(state, actor, target, rangeBand)
+                ? EngagementSlotService.Resolve(state, actor, target, rangeBand, positioningIntent)
                 : null;
             var mobility = target != null && target.Side != actor.Side
                 ? MovementResolver.BuildMobilityDecision(actor, target, rangeBand)
@@ -209,7 +215,8 @@ public static class TacticEvaluator
                 reevaluationReason,
                 requiresSlot,
                 slotAssignment,
-                mobility);
+                mobility,
+                positioningIntent);
         }
 
         var fallbackRule = new TacticRule(999, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self, null);

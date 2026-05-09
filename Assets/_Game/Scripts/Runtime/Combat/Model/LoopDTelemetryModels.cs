@@ -58,6 +58,7 @@ public enum TelemetryEventKind
     RewardOptionsPresented = 38,
     RewardOptionChosen = 39,
     EconomySnapshot = 40,
+    PositioningIntentUpdated = 41,
 }
 
 public enum ExplainedSourceKind
