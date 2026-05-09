@@ -121,6 +121,10 @@ public sealed class BattlePresentationTransientSurfaceTests
             Assert.That(ally, Is.Not.Null);
             Assert.That(ally!.position.x, Is.LessThan(-0.90f));
 
+            controller.TickTransients(0.50f, 8f, paused: true);
+            controller.SetBlend(initial, current, 1f);
+            Assert.That(ally.position.x, Is.LessThan(-0.90f));
+
             controller.TickTransients(0.08f, 8f, paused: false);
             controller.SetBlend(initial, current, 1f);
             Assert.That(ally.position.x, Is.GreaterThan(-0.95f));
@@ -132,6 +136,11 @@ public sealed class BattlePresentationTransientSurfaceTests
 
             controller.AdvanceStep(initial, current);
             controller.ClearTransients(BattlePresentationCueType.SeekSnapshotApplied);
+            controller.SetBlend(initial, current, 1f);
+            Assert.That(ally.position.x, Is.EqualTo(-0.34f).Within(0.001f));
+
+            controller.AdvanceStep(initial, current);
+            controller.ClearTransients(BattlePresentationCueType.PlaybackReset);
             controller.SetBlend(initial, current, 1f);
             Assert.That(ally.position.x, Is.EqualTo(-0.34f).Within(0.001f));
         }
