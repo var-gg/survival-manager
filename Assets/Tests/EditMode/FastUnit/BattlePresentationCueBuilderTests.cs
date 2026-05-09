@@ -101,6 +101,36 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
+    public void Build_EmitsPreImpactDisplacementTraceCue_WhenProfileAttackMovesInsideOneTick()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.ExecuteAction, position: new CombatVector2(0f, 0f)),
+            CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1.2f, 0f)),
+        });
+        var current = CreateStep(
+            units: new[]
+            {
+                CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.Recover, position: new CombatVector2(0.66f, 0f)),
+                CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1.2f, 0f)),
+            },
+            events: new[]
+            {
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f, Note: "profile_lunge"),
+            });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        var trace = cues.Single(cue => cue.CueType == BattlePresentationCueType.RepositionStart && cue.SubjectActorId == "ally");
+        Assert.That(trace.Magnitude, Is.EqualTo(0.66f).Within(0.001f));
+        Assert.That(trace.Note, Does.Contain("trace_preimpact"));
+        Assert.That(trace.Note, Does.Contain("profile_lunge"));
+        Assert.That(trace.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.DashEngage));
+        Assert.That(trace.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
+        Assert.That(trace.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
+    }
+
+    [Test]
     public void Build_MapsBreakContact_ToBackstepAnimationSemantic()
     {
         var previous = CreateStep(units: new[]

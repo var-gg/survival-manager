@@ -74,6 +74,78 @@ public sealed class BattlePresentationTransientSurfaceTests
         }
     }
 
+    [Test]
+    public void OneTickDisplacementTrace_HoldsVisibleTravelIndependentOfPlaybackSpeed_AndClearsOnSnapshot()
+    {
+        var cameraGo = new GameObject("MainCamera");
+        var stageGo = new GameObject("StageRoot");
+        var overlayGo = new GameObject("OverlayRoot", typeof(RectTransform));
+        var controllerGo = new GameObject("BattlePresentationRoot");
+        var templateRoot = CreateWrapperTemplate("Template");
+        var catalog = ScriptableObject.CreateInstance<BattleActorPresentationCatalog>();
+
+        try
+        {
+            cameraGo.tag = "MainCamera";
+            cameraGo.AddComponent<Camera>();
+
+            var controller = controllerGo.AddComponent<BattlePresentationController>();
+            SetField(controller, "battleStageRoot", stageGo.transform);
+            SetField(controller, "actorOverlayRoot", overlayGo.GetComponent<RectTransform>());
+            catalog.SetDefaultWrapper(templateRoot);
+            controller.ConfigurePresentationCatalog(catalog);
+
+            var initial = CreateStep(
+                0,
+                20f,
+                true,
+                CombatActionState.ExecuteAction,
+                System.Array.Empty<BattleEvent>(),
+                new CombatVector2(-1f, 0f));
+            var current = CreateStep(
+                1,
+                12f,
+                true,
+                CombatActionState.Recover,
+                new[]
+                {
+                    new BattleEvent(1, 0.1f, new CoreEntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new CoreEntityId("enemy"), "Enemy", 8f, Note: "profile_lunge"),
+                },
+                new CombatVector2(-0.34f, 0f));
+
+            controller.Initialize(initial);
+            controller.AdvanceStep(initial, current);
+            controller.SetBlend(initial, current, 1f);
+
+            var ally = controllerGo.transform.Find("BattleActor_ally_Wrapper");
+            Assert.That(ally, Is.Not.Null);
+            Assert.That(ally!.position.x, Is.LessThan(-0.90f));
+
+            controller.TickTransients(0.08f, 8f, paused: false);
+            controller.SetBlend(initial, current, 1f);
+            Assert.That(ally.position.x, Is.GreaterThan(-0.95f));
+            Assert.That(ally.position.x, Is.LessThan(-0.40f));
+
+            controller.TickTransients(1f, 8f, paused: false);
+            controller.SetBlend(initial, current, 1f);
+            Assert.That(ally.position.x, Is.EqualTo(-0.34f).Within(0.001f));
+
+            controller.AdvanceStep(initial, current);
+            controller.ClearTransients(BattlePresentationCueType.SeekSnapshotApplied);
+            controller.SetBlend(initial, current, 1f);
+            Assert.That(ally.position.x, Is.EqualTo(-0.34f).Within(0.001f));
+        }
+        finally
+        {
+            Object.DestroyImmediate(catalog);
+            Object.DestroyImmediate(templateRoot.gameObject);
+            Object.DestroyImmediate(controllerGo);
+            Object.DestroyImmediate(overlayGo);
+            Object.DestroyImmediate(stageGo);
+            Object.DestroyImmediate(cameraGo);
+        }
+    }
+
     private static BattleActorWrapper CreateWrapperTemplate(string name)
     {
         var root = new GameObject(name);
@@ -139,14 +211,20 @@ public sealed class BattlePresentationTransientSurfaceTests
         return wrapper;
     }
 
-    private static BattleSimulationStep CreateStep(int stepIndex, float enemyHealth, bool enemyAlive, CombatActionState allyState, BattleEvent[] events)
+    private static BattleSimulationStep CreateStep(
+        int stepIndex,
+        float enemyHealth,
+        bool enemyAlive,
+        CombatActionState allyState,
+        BattleEvent[] events,
+        CombatVector2? allyPosition = null)
     {
         return new BattleSimulationStep(
             stepIndex,
             stepIndex * 0.1f,
             new[]
             {
-                new BattleUnitReadModel("ally", "Ally", TeamSide.Ally, DeploymentAnchorId.FrontCenter, "human", "vanguard", new CombatVector2(-1f, 0f), 20f, 20f, true, allyState, BattleActionType.BasicAttack, "enemy", "Enemy", allyState == CombatActionState.ExecuteAction ? 0.4f : 0f, 0f, 0f, 100f, false, ArchetypeId: "warden", CharacterId: "ally"),
+                new BattleUnitReadModel("ally", "Ally", TeamSide.Ally, DeploymentAnchorId.FrontCenter, "human", "vanguard", allyPosition ?? new CombatVector2(-1f, 0f), 20f, 20f, true, allyState, BattleActionType.BasicAttack, "enemy", "Enemy", allyState == CombatActionState.ExecuteAction ? 0.4f : 0f, 0f, 0f, 100f, false, ArchetypeId: "warden", CharacterId: "ally"),
                 new BattleUnitReadModel("enemy", "Enemy", TeamSide.Enemy, DeploymentAnchorId.BackCenter, "human", "vanguard", new CombatVector2(1f, 0f), enemyHealth, 20f, enemyAlive, enemyAlive ? CombatActionState.AcquireTarget : CombatActionState.Dead, BattleActionType.BasicAttack, "ally", "Ally", 0f, 0f, 0f, 100f, false, ArchetypeId: "guardian", CharacterId: "enemy"),
             },
             events,

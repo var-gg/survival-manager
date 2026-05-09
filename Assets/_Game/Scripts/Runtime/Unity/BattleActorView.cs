@@ -18,6 +18,9 @@ public sealed class BattleActorView : MonoBehaviour
     private const float OverlayHpHeight = 8f;
     private const float GroundPlaneY = -0.98f;
     private const float TelegraphDiscThickness = 0.008f;
+    internal const float TravelTraceDistanceThreshold = 0.35f;
+    internal const float TravelTraceMinDuration = 0.16f;
+    internal const float TravelTraceMaxDuration = 0.34f;
 
     private Camera _camera = null!;
     private BattlePresentationController _owner = null!;
@@ -92,6 +95,13 @@ public sealed class BattleActorView : MonoBehaviour
     private BattleAnimationDirection _activeAnimationDirection = BattleAnimationDirection.Any;
     private BattleAnimationIntensity _activeAnimationIntensity = BattleAnimationIntensity.Any;
     private Quaternion _lastAliveRotation = Quaternion.identity;
+    private bool _hasPendingTravelTrace;
+    private BattleAnimationSemantic _pendingTravelTraceSemantic = BattleAnimationSemantic.None;
+    private float _pendingTravelTraceDistance;
+    private float _travelTraceTimer;
+    private float _travelTraceDuration;
+    private Vector3 _travelTraceFromWorld;
+    private Vector3 _travelTraceToWorld;
 
     public void Initialize(
         BattleUnitReadModel actor,
@@ -134,11 +144,15 @@ public sealed class BattleActorView : MonoBehaviour
         var fromWorld = ToWorldPosition(from.Position);
         var toWorld = ToWorldPosition(to.Position);
         var clampedAlpha = Mathf.Clamp01(alpha);
-        transform.position = ResolvePresentationPosition(from, to, fromWorld, toWorld, clampedAlpha);
+        var distance = Vector3.Distance(fromWorld, toWorld);
+        TryStartPendingTravelTrace(fromWorld, toWorld, distance);
+
+        var presentationPosition = ResolvePresentationPosition(from, to, fromWorld, toWorld, clampedAlpha);
+        transform.position = ResolveTravelTracePosition(fromWorld, toWorld, clampedAlpha, presentationPosition);
 
         var displayedHealth = Mathf.Lerp(from.CurrentHealth, to.CurrentHealth, clampedAlpha);
         ApplyDisplay(to, displayedHealth);
-        _animationDriver?.ApplyState(to, 1f, paused: false, isLocomoting: Vector3.Distance(fromWorld, toWorld) > 0.015f && clampedAlpha < 0.995f);
+        _animationDriver?.ApplyState(to, 1f, paused: false, isLocomoting: distance > 0.015f && clampedAlpha < 0.995f);
         RefreshVisualState();
         RefreshOverlayPosition();
     }
@@ -219,6 +233,7 @@ public sealed class BattleActorView : MonoBehaviour
                 _activeAnimationSemantic = animationSemantic;
                 _activeAnimationDirection = cue.AnimationDirection;
                 _activeAnimationIntensity = cue.AnimationIntensity;
+                PrepareTravelTrace(cue, animationSemantic);
                 _repositionCueTimer = ResolveRepositionCueDuration(animationSemantic);
                 _repositionCueDuration = _repositionCueTimer;
                 _accentColor = ResolveSemanticColor(BattleActionSemantic.Reposition);
@@ -258,6 +273,11 @@ public sealed class BattleActorView : MonoBehaviour
         _guardCueTimer = 0f;
         _repositionCueTimer = 0f;
         _repositionCueDuration = 0f;
+        _travelTraceTimer = 0f;
+        _travelTraceDuration = 0f;
+        _hasPendingTravelTrace = false;
+        _pendingTravelTraceSemantic = BattleAnimationSemantic.None;
+        _pendingTravelTraceDistance = 0f;
         _floatingTimer = 0f;
         _floatingDuration = 0f;
         _floatingMessage = string.Empty;
@@ -291,6 +311,7 @@ public sealed class BattleActorView : MonoBehaviour
             return;
         }
 
+        _travelTraceTimer = Mathf.Max(0f, _travelTraceTimer - deltaTime);
         var scaledDelta = deltaTime * playbackSpeed;
         _actionCueTimer = Mathf.Max(0f, _actionCueTimer - scaledDelta);
         _impactCueTimer = Mathf.Max(0f, _impactCueTimer - scaledDelta);
@@ -1396,6 +1417,82 @@ public sealed class BattleActorView : MonoBehaviour
             ? Mathf.SmoothStep(0f, 1f, clampedAlpha)
             : clampedAlpha;
         return Vector3.LerpUnclamped(fromWorld, toWorld, alpha);
+    }
+
+    internal static float ResolveTravelTraceDuration(float distance, BattleAnimationSemantic semantic)
+    {
+        var baseDuration = semantic switch
+        {
+            BattleAnimationSemantic.DashEngage => 0.22f,
+            BattleAnimationSemantic.BackstepDisengage => 0.20f,
+            BattleAnimationSemantic.LateralStrafe => 0.18f,
+            _ => TravelTraceMinDuration,
+        };
+        var distanceBonus = Mathf.Clamp(distance - TravelTraceDistanceThreshold, 0f, 1.4f) * 0.06f;
+        return Mathf.Clamp(baseDuration + distanceBonus, TravelTraceMinDuration, TravelTraceMaxDuration);
+    }
+
+    internal static float ResolveTravelTraceAlpha(float timelineAlpha, float traceTimer, float traceDuration)
+    {
+        var clampedTimelineAlpha = Mathf.Clamp01(timelineAlpha);
+        if (traceTimer <= 0f || traceDuration <= 0f)
+        {
+            return clampedTimelineAlpha;
+        }
+
+        var traceProgress = 1f - Mathf.Clamp01(traceTimer / traceDuration);
+        var traceAlpha = Mathf.SmoothStep(0f, 1f, traceProgress);
+        return Mathf.Min(clampedTimelineAlpha, traceAlpha);
+    }
+
+    private void PrepareTravelTrace(BattlePresentationCue cue, BattleAnimationSemantic semantic)
+    {
+        if (cue.Magnitude < TravelTraceDistanceThreshold)
+        {
+            return;
+        }
+
+        _hasPendingTravelTrace = true;
+        _pendingTravelTraceSemantic = semantic;
+        _pendingTravelTraceDistance = cue.Magnitude;
+    }
+
+    private void TryStartPendingTravelTrace(Vector3 fromWorld, Vector3 toWorld, float distance)
+    {
+        if (!_hasPendingTravelTrace)
+        {
+            return;
+        }
+
+        _hasPendingTravelTrace = false;
+        if (distance < TravelTraceDistanceThreshold)
+        {
+            return;
+        }
+
+        _travelTraceFromWorld = fromWorld;
+        _travelTraceToWorld = toWorld;
+        _travelTraceDuration = ResolveTravelTraceDuration(Mathf.Max(distance, _pendingTravelTraceDistance), _pendingTravelTraceSemantic);
+        _travelTraceTimer = _travelTraceDuration;
+    }
+
+    private Vector3 ResolveTravelTracePosition(Vector3 fromWorld, Vector3 toWorld, float timelineAlpha, Vector3 fallbackPosition)
+    {
+        if (_travelTraceTimer <= 0f
+            || _travelTraceDuration <= 0f
+            || !IsActiveTravelTraceFor(fromWorld, toWorld))
+        {
+            return fallbackPosition;
+        }
+
+        var traceAlpha = ResolveTravelTraceAlpha(timelineAlpha, _travelTraceTimer, _travelTraceDuration);
+        return Vector3.LerpUnclamped(_travelTraceFromWorld, _travelTraceToWorld, traceAlpha);
+    }
+
+    private bool IsActiveTravelTraceFor(Vector3 fromWorld, Vector3 toWorld)
+    {
+        return (_travelTraceFromWorld - fromWorld).sqrMagnitude <= 0.0001f
+               && (_travelTraceToWorld - toWorld).sqrMagnitude <= 0.0001f;
     }
 
     private static bool ShouldEasePresentationMove(BattleUnitReadModel from, BattleUnitReadModel to, float distance)
