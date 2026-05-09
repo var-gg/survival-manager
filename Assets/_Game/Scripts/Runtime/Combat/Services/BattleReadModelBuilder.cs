@@ -67,7 +67,10 @@ public static class BattleReadModelBuilder
                     unit.Definition.EffectiveFlexActive?.Name ?? string.Empty,
                     unit.PositioningIntent,
                     unit.PositioningReplanReason,
-                    unit.PositioningIntentRevision);
+                    unit.PositioningIntentRevision,
+                    unit.AttackSpeed,
+                    unit.AttackCooldown,
+                    unit.SkillHaste);
             })
             .ToList();
 

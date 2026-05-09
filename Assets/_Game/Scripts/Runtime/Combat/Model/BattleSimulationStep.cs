@@ -49,7 +49,10 @@ public sealed record BattleUnitReadModel(
     string FlexActiveName = "",
     PositioningIntentKind PositioningIntent = PositioningIntentKind.None,
     ReevaluationReason PositioningReplanReason = ReevaluationReason.None,
-    int PositioningIntentRevision = 0);
+    int PositioningIntentRevision = 0,
+    float AttackSpeed = 0f,
+    float BasicAttackCooldown = 0f,
+    float SkillHaste = 0f);
 
 public sealed record BattleSimulationStep(
     int StepIndex,

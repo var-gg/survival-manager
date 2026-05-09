@@ -2,6 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
+using SM.Core.Contracts;
 
 namespace SM.Tests.EditMode;
 
@@ -145,6 +146,63 @@ public sealed class BattleResolutionTests
     }
 
     [Test]
+    public void AttackSpeed_ScalesBasicCooldown_WithoutChangingSkillCooldown()
+    {
+        var flex = new BattleSkillSpec(
+            "flex_strike",
+            "Flex Strike",
+            SkillKind.Strike,
+            1f,
+            1.2f,
+            SlotKind: CompiledSkillSlots.UtilityActive,
+            ResolvedSlotKind: ActionSlotKind.FlexActive,
+            ActivationModel: ActivationModel.Cooldown,
+            BaseCooldownSeconds: 3f);
+        var fast = CombatTestFactory.CreateLoopAUnit(
+            "fast",
+            attackSpeed: 6f,
+            attackCooldown: 0.9f,
+            flexActive: flex);
+        var target = CombatTestFactory.CreateLoopAUnit("target", race: "undead", hp: 200f);
+        var state = CombatTestFactory.CreateBattleState(new[] { fast }, new[] { target });
+        var actor = state.Allies[0];
+
+        Assert.That(actor.AuthoredAttackCooldown, Is.EqualTo(0.9f).Within(0.001f));
+        Assert.That(actor.BasicAttackCooldownScale, Is.EqualTo(2f).Within(0.001f));
+        Assert.That(actor.AttackCooldown, Is.EqualTo(0.45f).Within(0.001f));
+        Assert.That(actor.ResolveActionCooldown(null), Is.EqualTo(0.45f).Within(0.001f));
+        Assert.That(actor.ResolveActionCooldown(flex.Id), Is.EqualTo(3f).Within(0.001f));
+    }
+
+    [Test]
+    public void FasterAttackSpeed_ProducesMoreBasicAttacksInSameDuration()
+    {
+        var slowCount = CountBasicAttacksForSpeed(3f);
+        var fastCount = CountBasicAttacksForSpeed(5f);
+
+        Assert.That(fastCount, Is.GreaterThan(slowCount));
+        Assert.That(fastCount, Is.GreaterThanOrEqualTo(slowCount + 2));
+    }
+
+    [Test]
+    public void ReadModel_ExposesCadenceStats_ForMetadata()
+    {
+        var unit = CombatTestFactory.CreateLoopAUnit(
+            "fast",
+            attackSpeed: 6f,
+            attackCooldown: 0.9f,
+            skillHaste: 0.25f);
+        var target = CombatTestFactory.CreateLoopAUnit("target", race: "undead", hp: 200f);
+        var state = CombatTestFactory.CreateBattleState(new[] { unit }, new[] { target });
+        var step = BattleReadModelBuilder.BuildStep(state, System.Array.Empty<BattleEvent>(), false, null);
+        var readModel = step.Units.Single(view => view.Id == state.Allies[0].Id.Value);
+
+        Assert.That(readModel.AttackSpeed, Is.EqualTo(6f).Within(0.001f));
+        Assert.That(readModel.BasicAttackCooldown, Is.EqualTo(0.45f).Within(0.001f));
+        Assert.That(readModel.SkillHaste, Is.EqualTo(0.25f).Within(0.001f));
+    }
+
+    [Test]
     public void HealerDoesNotOutHealSingleAttacker()
     {
         // Hexer: HealPower=4, skill PowerFlat=4 → heal 8 HP
@@ -158,5 +216,35 @@ public sealed class BattleResolutionTests
 
         Assert.That(result.FinalUnits.Any(u => !u.IsAlive), Is.True,
             "1v1 raider vs hexer: 300 step 내에 누군가 죽어야 힐러가 공격을 상쇄하지 못하는 것");
+    }
+
+    private static int CountBasicAttacksForSpeed(float attackSpeed)
+    {
+        var attacker = CombatTestFactory.CreateLoopAUnit(
+            "attacker",
+            classId: "duelist",
+            hp: 500f,
+            physPower: 1f,
+            armor: 0f,
+            attackSpeed: attackSpeed,
+            attackCooldown: 0.9f,
+            energy: new EnergyProfile(0f, 0f));
+        var target = CombatTestFactory.CreateLoopAUnit(
+            "target",
+            race: "undead",
+            classId: "vanguard",
+            hp: 500f,
+            physPower: 0f,
+            armor: 0f,
+            attackSpeed: 3f,
+            attackCooldown: 2f,
+            energy: new EnergyProfile(0f, 0f));
+        var state = CombatTestFactory.CreateBattleState(new[] { attacker }, new[] { target }, seed: 37);
+        var attackerId = state.Allies[0].Id.Value;
+        var result = BattleResolver.Run(state, 120);
+        return result.Events.Count(evt =>
+            evt.ActorId.Value == attackerId
+            && evt.ActionType == BattleActionType.BasicAttack
+            && evt.LogCode == BattleLogCode.BasicAttackDamage);
     }
 }
