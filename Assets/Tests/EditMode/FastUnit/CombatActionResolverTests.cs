@@ -96,6 +96,28 @@ public sealed class CombatActionResolverTests
     }
 
     [Test]
+    public void BasicAttack_TargetLeavesRangeDuringWindup_ProducesMissWithoutDamage()
+    {
+        var actor = CreatePositionedUnit("ally_attacker", TeamSide.Ally, physPower: 8f);
+        var target = CreatePositionedUnit("enemy_target", TeamSide.Enemy, hp: 40f, armor: 0f);
+        var state = CreateState(new[] { actor }, new[] { target });
+
+        var hpBefore = target.CurrentHealth;
+        var energyBefore = actor.CurrentEnergy;
+        actor.BeginWindup(BattleActionType.BasicAttack, target.Id, null);
+        target.SetPosition(new CombatVector2(5f, 0f));
+
+        var events = CombatActionResolver.Resolve(state, actor);
+
+        var attackEvent = events.Single(e => e.LogCode == BattleLogCode.BasicAttackDamage);
+        Assert.That(attackEvent.Value, Is.EqualTo(0f));
+        Assert.That(attackEvent.Note, Is.EqualTo("miss_range"));
+        Assert.That(target.CurrentHealth, Is.EqualTo(hpBefore));
+        Assert.That(actor.CurrentEnergy, Is.EqualTo(energyBefore));
+        Assert.That(actor.ActionState, Is.EqualTo(CombatActionState.Recover));
+    }
+
+    [Test]
     public void BasicAttack_KillingBlow_ProducesKillEvent_AndGrantsKillEnergy()
     {
         var actor = CreatePositionedUnit("ally_killer", TeamSide.Ally, physPower: 50f);
@@ -219,6 +241,40 @@ public sealed class CombatActionResolverTests
 
         Assert.That(target.IsAlive, Is.False, "Target should be dead from high power");
         Assert.That(events.Any(e => e.EventKind == BattleEventKind.Kill), Is.True, "Should produce kill event");
+    }
+
+    [Test]
+    public void ActiveSkill_Damage_TargetLeavesRangeDuringWindup_ProducesMissWithoutDamage()
+    {
+        var strikeSkill = new BattleSkillSpec(
+            "strike_skill",
+            "Test Strike",
+            SkillKind.Strike,
+            50f,
+            1.2f,
+            ResolvedSlotKind: ActionSlotKind.FlexActive,
+            ActivationModel: ActivationModel.Cooldown,
+            Lane: ActionLane.Primary,
+            LockRule: ActionLockRule.HardCommit,
+            BaseCooldownSeconds: 1.2f,
+            TargetRuleData: new TargetRule());
+
+        var actor = CreatePositionedUnit("ally_striker", TeamSide.Ally, physPower: 10f, flexActive: strikeSkill);
+        var target = CreatePositionedUnit("enemy_target", TeamSide.Enemy, hp: 40f, armor: 0f);
+        var state = CreateState(new[] { actor }, new[] { target });
+
+        var hpBefore = target.CurrentHealth;
+        actor.BeginWindup(BattleActionType.ActiveSkill, target.Id, strikeSkill.Id);
+        target.SetPosition(new CombatVector2(5f, 0f));
+
+        var events = CombatActionResolver.Resolve(state, actor);
+
+        var damageEvent = events.Single(e => e.LogCode == BattleLogCode.ActiveSkillDamage);
+        Assert.That(damageEvent.Value, Is.EqualTo(0f));
+        Assert.That(damageEvent.Note, Is.EqualTo("miss_range"));
+        Assert.That(target.CurrentHealth, Is.EqualTo(hpBefore));
+        Assert.That(actor.CooldownRemaining, Is.GreaterThan(0f));
+        Assert.That(actor.ActionState, Is.EqualTo(CombatActionState.Recover));
     }
 
     // ── Assist Energy ──

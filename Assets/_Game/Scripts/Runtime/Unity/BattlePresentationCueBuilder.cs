@@ -325,6 +325,15 @@ public sealed class BattlePresentationCueBuilder
 
     private static BattleAnimationCueDescriptor ResolveImpactAnimation(BattleEvent eventData)
     {
+        if (HasNote(eventData, "miss"))
+        {
+            return new BattleAnimationCueDescriptor(
+                BattleAnimationSemantic.Miss,
+                BattleAnimationDirection.Any,
+                BattleAnimationIntensity.Light,
+                eventData.Note);
+        }
+
         if (HasNote(eventData, "dodge"))
         {
             return new BattleAnimationCueDescriptor(

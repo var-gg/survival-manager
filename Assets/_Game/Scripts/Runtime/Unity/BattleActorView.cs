@@ -621,6 +621,9 @@ public sealed class BattleActorView : MonoBehaviour
         var intensity = ResolveAnimationIntensityMultiplier();
         switch (_activeAnimationSemantic)
         {
+            case BattleAnimationSemantic.Miss:
+                scale = Vector3.Lerp(scale, new Vector3(0.98f, 1.02f, 1.02f), 0.16f * t);
+                break;
             case BattleAnimationSemantic.Dodge:
                 position += new Vector3(ResolveLateralSign() * 0.18f * t * intensity, 0.04f * t, 0f);
                 scale = Vector3.Lerp(scale, new Vector3(0.96f, 1.04f, 1.02f), 0.22f * t);
@@ -823,6 +826,7 @@ public sealed class BattleActorView : MonoBehaviour
     {
         return semantic switch
         {
+            BattleAnimationSemantic.Miss => 0.20f,
             BattleAnimationSemantic.CriticalImpact or BattleAnimationSemantic.HitHeavy or BattleAnimationSemantic.Knockdown => 0.34f,
             BattleAnimationSemantic.Dodge => 0.22f,
             BattleAnimationSemantic.BlockImpact => 0.28f,
@@ -835,6 +839,7 @@ public sealed class BattleActorView : MonoBehaviour
     {
         return semantic switch
         {
+            BattleAnimationSemantic.Miss => new Color(0.82f, 0.88f, 0.92f, 1f),
             BattleAnimationSemantic.Dodge => new Color(0.48f, 0.88f, 1f, 1f),
             BattleAnimationSemantic.BlockImpact => new Color(0.42f, 0.72f, 1f, 1f),
             BattleAnimationSemantic.CriticalImpact or BattleAnimationSemantic.Knockdown => new Color(1f, 0.85f, 0.25f, 1f),
@@ -849,7 +854,8 @@ public sealed class BattleActorView : MonoBehaviour
         var amount = Mathf.Max(0, Mathf.CeilToInt(cue.Magnitude));
         return semantic switch
         {
-            BattleAnimationSemantic.Dodge => "MISS",
+            BattleAnimationSemantic.Miss => "MISS",
+            BattleAnimationSemantic.Dodge => "DODGE",
             BattleAnimationSemantic.BlockImpact when amount > 0 => $"BLOCK -{amount}",
             BattleAnimationSemantic.BlockImpact => "BLOCK",
             BattleAnimationSemantic.CriticalImpact => $"CRIT! -{amount}",
@@ -864,7 +870,7 @@ public sealed class BattleActorView : MonoBehaviour
         {
             BattleAnimationSemantic.CriticalImpact or BattleAnimationSemantic.Knockdown => 1.45f,
             BattleAnimationSemantic.HitHeavy => 1.25f,
-            BattleAnimationSemantic.Dodge or BattleAnimationSemantic.BlockImpact => 0.95f,
+            BattleAnimationSemantic.Miss or BattleAnimationSemantic.Dodge or BattleAnimationSemantic.BlockImpact => 0.95f,
             _ => 1f,
         };
     }
@@ -1466,6 +1472,11 @@ public sealed class BattleActorView : MonoBehaviour
         if (cue.AnimationSemantic != BattleAnimationSemantic.None)
         {
             return cue.AnimationSemantic;
+        }
+
+        if (HasCueNote(cue, "miss"))
+        {
+            return BattleAnimationSemantic.Miss;
         }
 
         if (HasCueNote(cue, "dodge"))

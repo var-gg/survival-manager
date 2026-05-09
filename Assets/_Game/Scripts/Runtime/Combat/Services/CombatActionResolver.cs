@@ -7,6 +7,9 @@ namespace SM.Combat.Services;
 
 public static class CombatActionResolver
 {
+    private const float ImpactRangeTolerance = 0.12f;
+    private const string RangeMissNote = "miss_range";
+
     public static IReadOnlyList<BattleEvent> Resolve(BattleState state, UnitSnapshot actor)
     {
         var events = new List<BattleEvent>();
@@ -28,6 +31,21 @@ public static class CombatActionResolver
                 {
                     actor.ClearTarget(applySwitchDelay: true);
                     actor.SetActionState(CombatActionState.AcquireTarget);
+                    return events;
+                }
+
+                if (IsOutOfImpactRange(actor, target, null))
+                {
+                    actor.StartRecovery();
+                    BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.BasicAttack, null, 0f);
+                    events.Add(BuildEvent(
+                        state,
+                        actor,
+                        BattleActionType.BasicAttack,
+                        BattleLogCode.BasicAttackDamage,
+                        target,
+                        0f,
+                        note: RangeMissNote));
                     return events;
                 }
 
@@ -116,6 +134,22 @@ public static class CombatActionResolver
                 }
                 else
                 {
+                    var shouldRevalidateImpactRange = skill == null || skill.Kind is SkillKind.Strike or SkillKind.Debuff;
+                    if (shouldRevalidateImpactRange && IsOutOfImpactRange(actor, target, skill))
+                    {
+                        actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
+                        BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.ActiveSkill, skill, 0f);
+                        events.Add(BuildEvent(
+                            state,
+                            actor,
+                            BattleActionType.ActiveSkill,
+                            BattleLogCode.ActiveSkillDamage,
+                            target,
+                            0f,
+                            note: RangeMissNote));
+                        return events;
+                    }
+
                     var skillResult = skill != null
                         ? HitResolutionService.ResolveSkillDamage(state, actor, target, skill)
                         : HitResolutionService.ResolveBasicAttack(state, actor, target);
@@ -167,6 +201,12 @@ public static class CombatActionResolver
         }
 
         return events;
+    }
+
+    private static bool IsOutOfImpactRange(UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec? skill)
+    {
+        var range = actor.ResolveActionRange(skill?.Id);
+        return !MovementResolver.IsInActionRange(actor, target, range + ImpactRangeTolerance);
     }
 
     internal static BattleEvent BuildEvent(

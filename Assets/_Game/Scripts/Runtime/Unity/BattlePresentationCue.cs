@@ -43,6 +43,7 @@ public enum BattleAnimationSemantic
     LateralStrafe = 8,
     Knockdown = 9,
     Death = 10,
+    Miss = 11,
 }
 
 public enum BattleAnimationDirection

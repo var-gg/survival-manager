@@ -1,3 +1,4 @@
+using SM.Combat.Model;
 using UnityEngine;
 
 namespace SM.Unity;
@@ -24,6 +25,12 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
 
     public void ConsumeCue(BattlePresentationCue cue, BattleActorWrapper wrapper, Vector3? relatedWorld = null)
     {
+        if (cue.CueType == BattlePresentationCueType.WindupEnter
+            && cue.ActionType != BattleActionType.ActiveSkill)
+        {
+            return;
+        }
+
         var resolvedCatalog = ResolveCatalog();
         BattleVfxCatalogEntry? entry = null;
         var hasCatalogEntry = resolvedCatalog != null && resolvedCatalog.TryResolve(cue.CueType, out entry);
