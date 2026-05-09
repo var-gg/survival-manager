@@ -90,6 +90,9 @@ public sealed class BattleUnitMetadataFormatter
         builder.AppendLine($"{AxisLabel("ui.battle.axis.anchor", "홈 앵커", "Home Anchor")}: {LocalizeAnchor(unit.Anchor)}");
         builder.AppendLine($"{AxisLabel("ui.battle.axis.range", "선호 사거리", "Preferred Range")}: {FormatRange(unit)}");
         builder.AppendLine($"{AxisLabel("ui.battle.axis.slot", "교전 슬롯", "Engage Slot")}: {unit.EngagementSlotCount} @ {unit.EngagementSlotRadius:0.0}m");
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.attack_speed", "공격 속도", "Attack Speed")}: {unit.AttackSpeed:0.0}");
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.basic_attack_interval", "기본공격 간격", "Basic Attack Interval")}: {unit.BasicAttackCooldown:0.00}s");
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.skill_haste", "스킬 가속", "Skill Haste")}: {unit.SkillHaste:0.##}");
         builder.AppendLine($"{AxisLabel("ui.battle.axis.targeting", "타게팅", "Targeting")}: {FormatSelector(unit.CurrentSelector)} / {FormatFallback(unit.CurrentFallback)}");
 
         if (unit.RetargetLockRemaining > 0.01f)
@@ -131,6 +134,7 @@ public sealed class BattleUnitMetadataFormatter
         builder.AppendLine($"{AxisLabel("ui.battle.axis.hp", "HP", "HP")}: {Mathf.Max(0f, unit.CurrentHealth):0} / {Mathf.Max(1f, unit.MaxHealth):0}");
         builder.AppendLine($"{AxisLabel("ui.battle.axis.state", "상태", "State")}: {BattleReadabilityFormatter.BuildPlayerFacingState(unit)}");
         builder.AppendLine($"{AxisLabel("ui.battle.axis.cooldown", "쿨다운", "Cooldown")}: {Mathf.Max(0f, unit.CooldownRemaining):0.0}s");
+        builder.AppendLine($"{AxisLabel("ui.battle.axis.basic_attack_interval", "기본공격 간격", "Basic Attack Interval")}: {unit.BasicAttackCooldown:0.00}s");
         builder.AppendLine($"{AxisLabel("ui.battle.axis.windup", "시전 진행", "Windup")}: {Mathf.RoundToInt(Mathf.Clamp01(unit.WindupProgress) * 100f)}%");
         builder.AppendLine($"{AxisLabel("ui.battle.axis.role", "역할", "Role")}: {_contentText.GetRoleName(unit.RoleInstructionId, unit.RoleTag)}");
 

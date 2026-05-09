@@ -16,6 +16,7 @@ public sealed class UnitSnapshot
     private const float EnergyPerAssist = 8f;
     private const float DirectHitEnergyIcdSeconds = 0.35f;
     private const float InterruptedSignatureRefund = 50f;
+    private const float AttackSpeedBaseline = 3f;
 
     private readonly List<AppliedStatusState> _statuses = new();
     private bool _pendingSignatureEnergySpent;
@@ -131,7 +132,9 @@ public sealed class UnitSnapshot
     public float CombatReach => Footprint.CombatReach;
     public float HeadAnchorHeight => Footprint.HeadAnchorHeight;
     public float RepositionCooldown => Math.Max(0f, Stats.Get(StatKey.RepositionCooldown));
-    public float AttackCooldown => Math.Max(0.1f, Stats.Get(StatKey.AttackCooldown));
+    public float AuthoredAttackCooldown => Math.Max(0.1f, Stats.Get(StatKey.AttackCooldown));
+    public float BasicAttackCooldownScale => Math.Clamp(AttackSpeed / AttackSpeedBaseline, 0.25f, 3f);
+    public float AttackCooldown => Math.Max(0.1f, AuthoredAttackCooldown / BasicAttackCooldownScale);
     public float LeashDistance => Math.Max(0.5f, Stats.Get(StatKey.LeashDistance));
     public float TargetSwitchDelay => Math.Max(0f, Stats.Get(StatKey.TargetSwitchDelay));
     public float Attack => PhysPower;
