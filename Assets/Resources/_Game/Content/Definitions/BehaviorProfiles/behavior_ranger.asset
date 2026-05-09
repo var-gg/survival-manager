@@ -16,11 +16,11 @@ MonoBehaviour:
   RangeDiscipline: 2
   ReevaluationInterval: 0.24
   RangeHysteresis: 0.28
-  PreferredRangeMin: 2.75
-  PreferredRangeMax: 3.2
-  ApproachBuffer: 0.45
-  RetreatBuffer: 0.3
-  ChaseLeashMeters: 6.5
+  PreferredRangeMin: 5
+  PreferredRangeMax: 5.8
+  ApproachBuffer: 0.55
+  RetreatBuffer: 0.35
+  ChaseLeashMeters: 10.5
   RetreatAtHpPercent: 0
   RetreatBias: 0.72
   MaintainRangeBias: 0.84

@@ -278,7 +278,7 @@ MonoBehaviour:
   BaseSpeed: 5
   BaseHealPower: 0
   BaseMoveSpeed: 1.85
-  BaseAttackRange: 3.2
+  BaseAttackRange: 5.6
   BaseMaxEnergy: 100
   BaseStartingEnergy: 10
   BaseSkillHaste: 0
@@ -290,7 +290,7 @@ MonoBehaviour:
   BaseCritMultiplier: 0
   BasePhysPen: 0
   BaseMagPen: 0
-  BaseAggroRadius: 8
+  BaseAggroRadius: 10
   BasePreferredDistance: 0
   BaseProtectRadius: 0
   BaseAttackWindup: 0.18
@@ -299,6 +299,6 @@ MonoBehaviour:
   BaseCollisionRadius: 0.5
   BaseRepositionCooldown: 0
   BaseAttackCooldown: 1
-  BaseLeashDistance: 4.6
+  BaseLeashDistance: 10.5
   BaseTargetSwitchDelay: 0.3
   legacyDisplayName: 

@@ -96,7 +96,7 @@ public sealed class BattleSimulationSpatialTests
             classId: "ranger",
             anchor: DeploymentAnchorId.BackCenter,
             moveSpeed: 1.8f,
-            attackRange: 3.2f,
+            attackRange: 5.6f,
             attackWindup: 0.1f,
             attackCooldown: 0.5f);
         var enemy = CombatTestFactory.CreateUnit(
@@ -124,7 +124,7 @@ public sealed class BattleSimulationSpatialTests
         Assert.That(attackStep, Is.Not.Null);
         var allyView = attackStep.Units.First(unit => unit.Id.Contains("ally_ranger"));
         var enemyView = attackStep.Units.First(unit => unit.Id.Contains("enemy_vanguard"));
-        Assert.That(allyView.Position.DistanceTo(enemyView.Position), Is.GreaterThan(2.2f));
+        Assert.That(allyView.Position.DistanceTo(enemyView.Position), Is.GreaterThan(4.8f));
     }
 
     [Test]
@@ -144,7 +144,7 @@ public sealed class BattleSimulationSpatialTests
             anchor: DeploymentAnchorId.BackTop,
             hp: 40f,
             moveSpeed: 1.85f,
-            attackRange: 3.2f,
+            attackRange: 5.6f,
             attackWindup: 0.1f,
             attackCooldown: 0.5f);
         var enemy = CombatTestFactory.CreateUnit(
@@ -177,7 +177,7 @@ public sealed class BattleSimulationSpatialTests
             var targetView = step.Units.First(unit => unit.Id == rangerAttack.TargetId!.Value.Value);
             var edgeDistance = rangerView.Position.DistanceTo(targetView.Position) - rangerView.NavigationRadius - targetView.NavigationRadius;
 
-            Assert.That(edgeDistance, Is.GreaterThanOrEqualTo(2.65f));
+            Assert.That(edgeDistance, Is.GreaterThanOrEqualTo(4.8f));
             Assert.That(rangerView.Position.X, Is.LessThan(frontlineView.Position.X - 0.35f));
             return;
         }
@@ -186,7 +186,7 @@ public sealed class BattleSimulationSpatialTests
     }
 
     [Test]
-    public void FinishedReadModel_ReturnsLivingBacklineToHomePocket()
+    public void FinishedReadModel_KeepsLivingUnitsAtLastPositionButReturnsToIdle()
     {
         var frontline = CombatTestFactory.CreateUnit(
             "ally_frontline",
@@ -199,7 +199,7 @@ public sealed class BattleSimulationSpatialTests
             classId: "ranger",
             anchor: DeploymentAnchorId.BackTop,
             hp: 40f,
-            attackRange: 3.2f);
+            attackRange: 5.6f);
         var enemy = CombatTestFactory.CreateUnit(
             "enemy_fallen",
             race: "undead",
@@ -215,7 +215,10 @@ public sealed class BattleSimulationSpatialTests
 
         var frontlineView = finished.Units.First(unit => unit.Id.Contains("ally_frontline"));
         var rangerView = finished.Units.First(unit => unit.Id.Contains("ally_ranger"));
-        Assert.That(rangerView.Position.X, Is.LessThan(frontlineView.Position.X - 0.25f));
+        Assert.That(frontlineView.Position.X, Is.EqualTo(0.45f).Within(0.001f));
+        Assert.That(frontlineView.Position.Y, Is.EqualTo(0f).Within(0.001f));
+        Assert.That(rangerView.Position.X, Is.EqualTo(0.30f).Within(0.001f));
+        Assert.That(rangerView.Position.Y, Is.EqualTo(0.05f).Within(0.001f));
         Assert.That(rangerView.TargetId, Is.Null);
         Assert.That(rangerView.PendingActionType, Is.Null);
         Assert.That(rangerView.ActionState, Is.EqualTo(CombatActionState.AcquireTarget));
@@ -230,7 +233,7 @@ public sealed class BattleSimulationSpatialTests
             classId: "ranger",
             anchor: DeploymentAnchorId.BackCenter,
             moveSpeed: 1.8f,
-            attackRange: 3.2f,
+            attackRange: 5.6f,
             attackWindup: 0.1f,
             attackCooldown: 0.5f);
         var enemy = CombatTestFactory.CreateUnit(
@@ -272,11 +275,41 @@ public sealed class BattleSimulationSpatialTests
     [Test]
     public void ContentLikeBacklineFight_DoesNotDegradeIntoRangeMissLoop()
     {
+        var priestMeleeFootprint = new FootprintProfile(
+            0.58f,
+            0.82f,
+            1.25f,
+            new FloatRange(0.9f, 1.25f),
+            5,
+            1.3f,
+            BodySizeCategory.Large,
+            2.15f);
+        var priestMeleeBehavior = new BehaviorProfile(
+            0.42f,
+            0.16f,
+            0.04f,
+            0.05f,
+            0.34f,
+            0.82f,
+            0.02f,
+            0.28f,
+            0.38f,
+            0.88f,
+            1f,
+            FormationLine.Frontline,
+            RangeDiscipline.Collapse,
+            0.6f,
+            1.15f,
+            0.25f,
+            0.2f,
+            5f,
+            0f,
+            3f);
         var allies = new[]
         {
-            CombatTestFactory.CreateUnit("ally_dawn_priest", classId: "mystic", anchor: DeploymentAnchorId.FrontCenter, hp: 18f, attack: 3f, defense: 2f, speed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, attackWindup: 0.22f, attackCooldown: 1f, leashDistance: 4.8f),
+            CombatTestFactory.CreateUnit("ally_dawn_priest", classId: "mystic", anchor: DeploymentAnchorId.FrontCenter, hp: 18f, attack: 3f, defense: 2f, speed: 4f, moveSpeed: 1.7f, attackRange: 1.3f, attackWindup: 0.22f, attackCooldown: 1f, leashDistance: 5.2f, footprint: priestMeleeFootprint, behavior: priestMeleeBehavior),
             CombatTestFactory.CreateUnit("ally_pack_raider", classId: "duelist", anchor: DeploymentAnchorId.FrontBottom, hp: 19f, attack: 8f, defense: 1f, speed: 5f, moveSpeed: 2.05f, attackRange: 1.3f, attackWindup: 0.22f, attackCooldown: 0.85f, leashDistance: 5.2f),
-            CombatTestFactory.CreateUnit("ally_echo_savant", classId: "ranger", anchor: DeploymentAnchorId.BackTop, hp: 18f, attack: 7f, defense: 2f, speed: 5f, moveSpeed: 1.85f, attackRange: 3.2f, attackWindup: 0.17f, attackCooldown: 0.48f, leashDistance: 8f),
+            CombatTestFactory.CreateUnit("ally_echo_savant", classId: "ranger", anchor: DeploymentAnchorId.BackTop, hp: 18f, attack: 7f, defense: 2f, speed: 5f, moveSpeed: 1.85f, attackRange: 5.6f, attackWindup: 0.17f, attackCooldown: 0.48f, leashDistance: 10.5f),
             CombatTestFactory.CreateUnit("ally_grave_hexer", classId: "mystic", anchor: DeploymentAnchorId.BackBottom, hp: 17f, attack: 4f, defense: 2f, speed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, attackWindup: 0.22f, attackCooldown: 1f, leashDistance: 4.8f),
         };
         var enemies = new[]

@@ -22,7 +22,7 @@ MonoBehaviour:
   Delivery: 2
   TargetRule: 2
   Power: 2
-  Range: 2
+  Range: 5.6
   RangeMin: 0
   RangeMax: -1
   Radius: 0

@@ -32,12 +32,12 @@ public sealed class BattleResolutionTests
         var allies = new[]
         {
             CombatTestFactory.CreateUnit("ally_tank", classId: "vanguard", anchor: DeploymentAnchorId.FrontCenter),
-            CombatTestFactory.CreateUnit("ally_ranger", classId: "ranger", anchor: DeploymentAnchorId.BackCenter, attackRange: 3.2f, moveSpeed: 1.8f)
+            CombatTestFactory.CreateUnit("ally_ranger", classId: "ranger", anchor: DeploymentAnchorId.BackCenter, attackRange: 5.6f, moveSpeed: 1.8f)
         };
         var enemies = new[]
         {
             CombatTestFactory.CreateUnit("enemy_tank", race: "undead", classId: "vanguard", anchor: DeploymentAnchorId.FrontCenter),
-            CombatTestFactory.CreateUnit("enemy_ranger", race: "beastkin", classId: "ranger", anchor: DeploymentAnchorId.BackCenter, attackRange: 3.2f, moveSpeed: 1.8f)
+            CombatTestFactory.CreateUnit("enemy_ranger", race: "beastkin", classId: "ranger", anchor: DeploymentAnchorId.BackCenter, attackRange: 5.6f, moveSpeed: 1.8f)
         };
 
         var resultA = BattleResolver.Run(CombatTestFactory.CreateBattleState(allies, enemies, seed: 19), 160);
@@ -74,14 +74,14 @@ public sealed class BattleResolutionTests
         {
             CombatTestFactory.CreateLoopAUnit("ally_guardian", classId: "vanguard", hp: 110f, physPower: 4f, armor: 4f, attackSpeed: 2f, moveSpeed: 1.65f, anchor: DeploymentAnchorId.FrontTop),
             CombatTestFactory.CreateLoopAUnit("ally_raider", classId: "duelist", hp: 72f, physPower: 8f, armor: 1f, attackSpeed: 5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontBottom),
-            CombatTestFactory.CreateLoopAUnit("ally_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 3.2f, anchor: DeploymentAnchorId.BackTop),
+            CombatTestFactory.CreateLoopAUnit("ally_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 5.6f, anchor: DeploymentAnchorId.BackTop),
             CombatTestFactory.CreateLoopAUnit("ally_hexer", classId: "mystic", hp: 65f, physPower: 4f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.BackBottom),
         };
         var enemies = new[]
         {
             CombatTestFactory.CreateLoopAUnit("enemy_guardian", classId: "vanguard", hp: 110f, physPower: 4f, armor: 4f, attackSpeed: 2f, moveSpeed: 1.65f, anchor: DeploymentAnchorId.FrontTop),
             CombatTestFactory.CreateLoopAUnit("enemy_raider", classId: "duelist", hp: 72f, physPower: 8f, armor: 1f, attackSpeed: 5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontBottom),
-            CombatTestFactory.CreateLoopAUnit("enemy_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 3.2f, anchor: DeploymentAnchorId.BackTop),
+            CombatTestFactory.CreateLoopAUnit("enemy_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 5.6f, anchor: DeploymentAnchorId.BackTop),
             CombatTestFactory.CreateLoopAUnit("enemy_hexer", classId: "mystic", hp: 65f, physPower: 4f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.BackBottom),
         };
 
@@ -101,14 +101,14 @@ public sealed class BattleResolutionTests
         {
             CombatTestFactory.CreateLoopAUnit("ally_guardian", classId: "vanguard", hp: 110f, physPower: 4f, armor: 4f, attackSpeed: 2f, moveSpeed: 1.65f, anchor: DeploymentAnchorId.FrontTop),
             CombatTestFactory.CreateLoopAUnit("ally_raider", classId: "duelist", hp: 72f, physPower: 8f, armor: 1f, attackSpeed: 5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontBottom),
-            CombatTestFactory.CreateLoopAUnit("ally_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 3.2f, anchor: DeploymentAnchorId.BackTop),
+            CombatTestFactory.CreateLoopAUnit("ally_hunter", classId: "ranger", hp: 68f, physPower: 6f, armor: 2f, attackSpeed: 5f, moveSpeed: 1.85f, attackRange: 5.6f, anchor: DeploymentAnchorId.BackTop),
             CombatTestFactory.CreateLoopAUnit("ally_hexer", classId: "mystic", hp: 65f, physPower: 4f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.BackBottom),
         };
         var enemies = new[]
         {
             CombatTestFactory.CreateLoopAUnit("enemy_guardian", race: "undead", classId: "vanguard", hp: 44f, physPower: 3f, armor: 1f, attackSpeed: 2f, moveSpeed: 1.65f, anchor: DeploymentAnchorId.FrontTop),
             CombatTestFactory.CreateLoopAUnit("enemy_raider", race: "undead", classId: "duelist", hp: 30f, physPower: 5f, armor: 0f, attackSpeed: 3.5f, moveSpeed: 2.05f, anchor: DeploymentAnchorId.FrontBottom),
-            CombatTestFactory.CreateLoopAUnit("enemy_hunter", race: "undead", classId: "ranger", hp: 28f, physPower: 4f, armor: 0f, attackSpeed: 3.5f, moveSpeed: 1.85f, attackRange: 3.2f, anchor: DeploymentAnchorId.BackTop),
+            CombatTestFactory.CreateLoopAUnit("enemy_hunter", race: "undead", classId: "ranger", hp: 28f, physPower: 4f, armor: 0f, attackSpeed: 3.5f, moveSpeed: 1.85f, attackRange: 5.6f, anchor: DeploymentAnchorId.BackTop),
             CombatTestFactory.CreateLoopAUnit("enemy_hexer", race: "undead", classId: "mystic", hp: 24f, physPower: 2.8f, armor: 0f, attackSpeed: 3f, moveSpeed: 1.7f, attackRange: 2.8f, anchor: DeploymentAnchorId.BackBottom),
         };
 

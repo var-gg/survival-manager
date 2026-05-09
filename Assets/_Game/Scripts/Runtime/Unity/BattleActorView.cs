@@ -266,12 +266,6 @@ public sealed class BattleActorView : MonoBehaviour
                 _impactColor = new Color(0.58f, 0.58f, 0.58f, 1f);
                 break;
             case BattlePresentationCueType.BattleResolved:
-                _activeAnimationSemantic = animationSemantic;
-                _activeAnimationDirection = cue.AnimationDirection;
-                _activeAnimationIntensity = cue.AnimationIntensity;
-                PrepareTravelTrace(cue, animationSemantic);
-                _repositionCueTimer = ResolveRepositionCueDuration(animationSemantic);
-                _repositionCueDuration = _repositionCueTimer;
                 _accentColor = new Color(0.92f, 0.76f, 0.38f, 1f);
                 _accentTimer = 0.22f;
                 _accentDuration = 0.22f;

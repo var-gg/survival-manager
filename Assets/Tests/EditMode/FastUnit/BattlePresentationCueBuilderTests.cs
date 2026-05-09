@@ -110,8 +110,8 @@ public sealed class BattlePresentationCueBuilderTests
                 TeamSide.Ally,
                 targetId: "enemy",
                 classId: "ranger",
-                preferredRangeMin: 2.3f,
-                preferredRangeMax: 3.2f,
+                preferredRangeMin: 5.0f,
+                preferredRangeMax: 5.8f,
                 archetypeId: "marksman"),
             CreateUnit("enemy", TeamSide.Enemy),
         };
@@ -147,8 +147,8 @@ public sealed class BattlePresentationCueBuilderTests
                 targetId: "enemy",
                 actionState: CombatActionState.ExecuteAction,
                 classId: "ranger",
-                preferredRangeMin: 2.3f,
-                preferredRangeMax: 3.2f,
+                preferredRangeMin: 5.0f,
+                preferredRangeMax: 5.8f,
                 archetypeId: "marksman"),
             CreateUnit("enemy", TeamSide.Enemy),
         });
@@ -224,6 +224,35 @@ public sealed class BattlePresentationCueBuilderTests
         Assert.That(cue.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
         Assert.That(cue.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
         Assert.That(cue.Note, Is.EqualTo("windup_projectile"));
+    }
+
+    [Test]
+    public void Build_TreatsMeleeRangeMysticBasicAttack_AsNonProjectile()
+    {
+        var units = new[]
+        {
+            CreateUnit(
+                "ally",
+                TeamSide.Ally,
+                targetId: "enemy",
+                classId: "mystic",
+                preferredRangeMin: 0.6f,
+                preferredRangeMax: 1.3f,
+                archetypeId: "priest"),
+            CreateUnit("enemy", TeamSide.Enemy),
+        };
+        var previous = CreateStep(units: units);
+        var current = CreateStep(
+            units: units,
+            events: new[]
+            {
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f),
+            });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        var commit = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
+        Assert.That(commit.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.None));
     }
 
     [Test]
@@ -387,7 +416,7 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
-    public void Build_EmitsBattleResolvedCue_WithReturnHomeTrace()
+    public void Build_EmitsBattleResolvedCue_WithoutForcedMovementTrace()
     {
         var previous = CreateStep(units: new[]
         {
@@ -410,10 +439,9 @@ public sealed class BattlePresentationCueBuilderTests
             .Build(previous, current)
             .Single(candidate => candidate.CueType == BattlePresentationCueType.BattleResolved && candidate.SubjectActorId == "ally");
 
-        Assert.That(cue.Magnitude, Is.GreaterThan(1f));
-        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BackstepDisengage));
-        Assert.That(cue.Note, Does.Contain("battle_resolved"));
-        Assert.That(cue.Note, Does.Contain("return_home"));
+        Assert.That(cue.Magnitude, Is.EqualTo(0f));
+        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.None));
+        Assert.That(cue.Note, Is.EqualTo("battle_resolved"));
     }
 
     private static BattlePresentationCue FindImpact(IEnumerable<BattlePresentationCue> cues, string subjectActorId)

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:FootprintProfileDefinition
   NavigationRadius: 0.34
   SeparationRadius: 0.74
-  CombatReach: 3.2
-  PreferredRangeMin: 2.75
-  PreferredRangeMax: 3.35
+  CombatReach: 5.6
+  PreferredRangeMin: 5
+  PreferredRangeMax: 5.8
   EngagementSlotCount: 3
-  EngagementSlotRadius: 2.2
+  EngagementSlotRadius: 3.9
   BodySizeCategory: 0
   HeadAnchorHeight: 1.92

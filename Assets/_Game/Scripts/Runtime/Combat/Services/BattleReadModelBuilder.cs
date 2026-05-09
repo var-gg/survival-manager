@@ -22,9 +22,6 @@ public static class BattleReadModelBuilder
                 var target = useResolvedPose
                     ? null
                     : state.FindUnit(unit.CurrentTargetId) ?? state.FindUnit(unit.PendingTargetId);
-                var position = useResolvedPose
-                    ? MovementResolver.ResolveBattleResolvedPosition(state, unit)
-                    : unit.Position;
                 var actionState = useResolvedPose
                     ? CombatActionState.AcquireTarget
                     : unit.ActionState;
@@ -38,7 +35,7 @@ public static class BattleReadModelBuilder
                     unit.Anchor,
                     unit.Definition.RaceId,
                     unit.Definition.ClassId,
-                    position,
+                    unit.Position,
                     unit.CurrentHealth,
                     unit.MaxHealth,
                     unit.IsAlive,
