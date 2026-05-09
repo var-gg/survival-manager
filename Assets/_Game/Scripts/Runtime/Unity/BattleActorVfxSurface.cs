@@ -33,7 +33,7 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
 
         var resolvedCatalog = ResolveCatalog();
         BattleVfxCatalogEntry? entry = null;
-        var hasCatalogEntry = resolvedCatalog != null && resolvedCatalog.TryResolve(cue.CueType, out entry);
+        var hasCatalogEntry = resolvedCatalog != null && resolvedCatalog.TryResolve(cue, out entry);
         var socketId = hasCatalogEntry ? entry!.SocketId : BattleActorSocketId.Center;
         if (!hasCatalogEntry && !TryResolveSocket(cue.CueType, out socketId))
         {

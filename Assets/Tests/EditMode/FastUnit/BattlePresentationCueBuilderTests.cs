@@ -101,6 +101,68 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
+    public void Build_MapsRangerBasicAttack_ToBowShotAnimationSemantic()
+    {
+        var units = new[]
+        {
+            CreateUnit(
+                "ally",
+                TeamSide.Ally,
+                targetId: "enemy",
+                classId: "ranger",
+                preferredRangeMin: 2.3f,
+                preferredRangeMax: 3.2f,
+                archetypeId: "marksman"),
+            CreateUnit("enemy", TeamSide.Enemy),
+        };
+        var previous = CreateStep(units: units);
+        var current = CreateStep(
+            units: units,
+            events: new[]
+            {
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f),
+            });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        var commit = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
+        Assert.That(commit.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BowShot));
+        Assert.That(commit.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
+        Assert.That(commit.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
+    }
+
+    [Test]
+    public void Build_MapsMysticBasicAttack_ToProjectileCastAnimationSemantic()
+    {
+        var units = new[]
+        {
+            CreateUnit(
+                "ally",
+                TeamSide.Ally,
+                targetId: "enemy",
+                classId: "mystic",
+                preferredRangeMin: 2.1f,
+                preferredRangeMax: 2.9f,
+                archetypeId: "hexer"),
+            CreateUnit("enemy", TeamSide.Enemy),
+        };
+        var previous = CreateStep(units: units);
+        var current = CreateStep(
+            units: units,
+            events: new[]
+            {
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f),
+            });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        var commit = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
+        Assert.That(commit.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.ProjectileCast));
+        Assert.That(commit.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
+        Assert.That(commit.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
+    }
+
+    [Test]
     public void Build_EmitsPreImpactDisplacementTraceCue_WhenProfileAttackMovesInsideOneTick()
     {
         var previous = CreateStep(units: new[]
@@ -295,7 +357,11 @@ public sealed class BattlePresentationCueBuilderTests
         BattleActionType? pendingActionType = BattleActionType.BasicAttack,
         string selector = "LowestHpEnemy",
         bool isAlive = true,
-        CombatVector2? position = null)
+        CombatVector2? position = null,
+        string classId = "vanguard",
+        float preferredRangeMin = 0f,
+        float preferredRangeMax = 0f,
+        string archetypeId = "")
     {
         return new BattleUnitReadModel(
             Id: id,
@@ -303,7 +369,7 @@ public sealed class BattlePresentationCueBuilderTests
             Side: side,
             Anchor: side == TeamSide.Ally ? DeploymentAnchorId.FrontCenter : DeploymentAnchorId.BackCenter,
             RaceId: "human",
-            ClassId: "vanguard",
+            ClassId: classId,
             Position: position ?? (side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f)),
             CurrentHealth: isAlive ? 20f : 0f,
             MaxHealth: 20f,
@@ -318,6 +384,9 @@ public sealed class BattlePresentationCueBuilderTests
             MaxEnergy: 100f,
             IsDefending: isDefending,
             CurrentSelector: selector,
-            CurrentFallback: "KeepCurrentIfStillValid");
+            CurrentFallback: "KeepCurrentIfStillValid",
+            PreferredRangeMin: preferredRangeMin,
+            PreferredRangeMax: preferredRangeMax,
+            ArchetypeId: archetypeId);
     }
 }
