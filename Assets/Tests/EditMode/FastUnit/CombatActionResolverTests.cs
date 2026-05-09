@@ -19,6 +19,9 @@ public sealed class CombatActionResolverTests
         float armor = 2f,
         BattleSkillSpec? signatureActive = null,
         BattleSkillSpec? flexActive = null,
+        string classId = "vanguard",
+        float attackRange = 1.2f,
+        BattleBasicAttackSpec? basicAttack = null,
         CombatEntityKind entityKind = CombatEntityKind.RosterUnit,
         OwnershipLink? ownership = null,
         SummonProfile? summonProfile = null)
@@ -26,11 +29,14 @@ public sealed class CombatActionResolverTests
         var loadout = CombatTestFactory.CreateLoopAUnit(
             id,
             anchor: anchor,
+            classId: classId,
             hp: hp,
             physPower: physPower,
             armor: armor,
+            attackRange: attackRange,
             signatureActive: signatureActive,
             flexActive: flexActive,
+            basicAttack: basicAttack,
             entityKind: entityKind,
             ownership: ownership,
             summonProfile: summonProfile);
@@ -115,6 +121,74 @@ public sealed class CombatActionResolverTests
         Assert.That(target.CurrentHealth, Is.EqualTo(hpBefore));
         Assert.That(actor.CurrentEnergy, Is.EqualTo(energyBefore));
         Assert.That(actor.ActionState, Is.EqualTo(CombatActionState.Recover));
+    }
+
+    [Test]
+    public void BasicAttack_LungeProfileStepsIntoContactBeforeDamage()
+    {
+        var basicAttack = new BattleBasicAttackSpec(
+            "ally_lunge:basic",
+            "Lunge Basic",
+            ActionProfile: BasicAttackActionProfile.LungeStrike);
+        var actor = CreatePositionedUnit(
+            "ally_lunge",
+            TeamSide.Ally,
+            classId: "duelist",
+            physPower: 8f,
+            armor: 0f,
+            attackRange: 1.25f,
+            basicAttack: basicAttack);
+        var target = CreatePositionedUnit("enemy_target", TeamSide.Enemy, hp: 40f, armor: 0f);
+        var state = CreateState(new[] { actor }, new[] { target });
+
+        actor.SetPosition(new CombatVector2(0f, 0f));
+        target.SetPosition(new CombatVector2(actor.NavigationRadius + target.NavigationRadius + 1.20f, 0f));
+        var profile = BasicAttackActionProfileResolver.Resolve(actor);
+        var beforeX = actor.Position.X;
+        var beforeEdge = MovementResolver.ComputeEdgeDistance(actor, target);
+
+        actor.BeginWindup(BattleActionType.BasicAttack, target.Id, null);
+        actor.FinishWindup();
+        var events = CombatActionResolver.Resolve(state, actor);
+
+        var attackEvent = events.Single(e => e.LogCode == BattleLogCode.BasicAttackDamage);
+        Assert.That(beforeEdge, Is.GreaterThan(profile.ContactRange + 0.2f));
+        Assert.That(actor.Position.X, Is.GreaterThan(beforeX + 0.45f), "Lunge profile should move the attacker toward contact before hit resolution.");
+        Assert.That(attackEvent.Value, Is.GreaterThan(0f));
+        Assert.That(attackEvent.Note, Does.Contain("profile_lunge"));
+    }
+
+    [Test]
+    public void BasicAttack_RangedAutoProfileDoesNotStepIntoContact()
+    {
+        var actor = CreatePositionedUnit(
+            "ally_ranger",
+            TeamSide.Ally,
+            classId: "ranger",
+            physPower: 8f,
+            armor: 0f,
+            attackRange: 3.2f);
+        var target = CreatePositionedUnit("enemy_target", TeamSide.Enemy, hp: 40f, armor: 0f);
+        var state = CreateState(new[] { actor }, new[] { target });
+
+        actor.SetPosition(new CombatVector2(0f, 0f));
+        target.SetPosition(new CombatVector2(actor.NavigationRadius + target.NavigationRadius + 2.8f, 0f));
+        var before = actor.Position;
+        var profile = BasicAttackActionProfileResolver.Resolve(actor);
+
+        actor.BeginWindup(BattleActionType.BasicAttack, target.Id, null);
+        actor.FinishWindup();
+        var events = CombatActionResolver.Resolve(state, actor);
+
+        var attackEvent = events.Single(e => e.LogCode == BattleLogCode.BasicAttackDamage);
+        Assert.That(profile.Profile, Is.EqualTo(BasicAttackActionProfile.StationaryStrike));
+        Assert.That(profile.ContactRange, Is.EqualTo(profile.LogicalRange).Within(0.001f));
+        Assert.That(actor.Position.X, Is.EqualTo(before.X).Within(0.001f));
+        Assert.That(actor.Position.Y, Is.EqualTo(before.Y).Within(0.001f));
+        Assert.That(attackEvent.Value, Is.GreaterThan(0f));
+        Assert.That(attackEvent.Note, Does.Not.Contain("profile_lunge"));
+        Assert.That(attackEvent.Note, Does.Not.Contain("profile_stepin"));
+        Assert.That(attackEvent.Note, Does.Not.Contain("profile_dash"));
     }
 
     [Test]

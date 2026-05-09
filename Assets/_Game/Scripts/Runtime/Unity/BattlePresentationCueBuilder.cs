@@ -113,6 +113,8 @@ public sealed class BattlePresentationCueBuilder
             switch (eventData.LogCode)
             {
                 case BattleLogCode.BasicAttackDamage:
+                {
+                    var attackAnimation = ResolveBasicAttackCommitAnimation(eventData);
                     cues.Add(new BattlePresentationCue(
                         BattlePresentationCueType.ActionCommitBasic,
                         currentStep.StepIndex,
@@ -121,9 +123,14 @@ public sealed class BattlePresentationCueBuilder
                         eventData.ActionType,
                         eventData.Value,
                         BattlePresentationAnchorId.Cast,
-                        BattlePresentationAnchorId.Center));
+                        BattlePresentationAnchorId.Center,
+                        eventData.Note,
+                        attackAnimation.Semantic,
+                        attackAnimation.Direction,
+                        attackAnimation.Intensity));
                     TryAddTargetCue(cues, currentById, BattlePresentationCueType.ImpactDamage, currentStep.StepIndex, eventData);
                     break;
+                }
 
                 case BattleLogCode.ActiveSkillDamage:
                     cues.Add(new BattlePresentationCue(
@@ -385,6 +392,38 @@ public sealed class BattlePresentationCueBuilder
             BattleAnimationDirection.Backward,
             BattleAnimationIntensity.Medium,
             eventData.Note);
+    }
+
+    private static BattleAnimationCueDescriptor ResolveBasicAttackCommitAnimation(BattleEvent eventData)
+    {
+        if (HasNote(eventData, "profile_dash"))
+        {
+            return new BattleAnimationCueDescriptor(
+                BattleAnimationSemantic.DashEngage,
+                BattleAnimationDirection.Forward,
+                BattleAnimationIntensity.Heavy,
+                eventData.Note);
+        }
+
+        if (HasNote(eventData, "profile_lunge"))
+        {
+            return new BattleAnimationCueDescriptor(
+                BattleAnimationSemantic.DashEngage,
+                BattleAnimationDirection.Forward,
+                BattleAnimationIntensity.Medium,
+                eventData.Note);
+        }
+
+        if (HasNote(eventData, "profile_stepin"))
+        {
+            return new BattleAnimationCueDescriptor(
+                BattleAnimationSemantic.DashEngage,
+                BattleAnimationDirection.Forward,
+                BattleAnimationIntensity.Light,
+                eventData.Note);
+        }
+
+        return BattleAnimationCueDescriptor.None;
     }
 
     private static bool HasNote(BattleEvent eventData, string token)

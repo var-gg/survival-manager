@@ -83,6 +83,24 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
+    public void Build_MapsBasicAttackProfileNote_ToCommitAnimationSemantic()
+    {
+        var previous = CreateStep();
+        var current = CreateStep(events: new[]
+        {
+            new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f, Note: "profile_lunge"),
+        });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        var commit = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
+        Assert.That(commit.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.DashEngage));
+        Assert.That(commit.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
+        Assert.That(commit.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
+        Assert.That(commit.Note, Is.EqualTo("profile_lunge"));
+    }
+
+    [Test]
     public void Build_MapsBreakContact_ToBackstepAnimationSemantic()
     {
         var previous = CreateStep(units: new[]

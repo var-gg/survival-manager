@@ -14,6 +14,7 @@ public sealed class MovementResolverTests
         string id,
         TeamSide side,
         DeploymentAnchorId anchor = DeploymentAnchorId.FrontCenter,
+        string classId = "vanguard",
         float hp = 20f,
         float attackRange = 1.2f,
         float moveSpeed = 1.9f,
@@ -22,6 +23,7 @@ public sealed class MovementResolverTests
     {
         var loadout = CombatTestFactory.CreateLoopAUnit(
             id,
+            classId: classId,
             anchor: anchor,
             hp: hp,
             attackRange: attackRange,
@@ -88,6 +90,20 @@ public sealed class MovementResolverTests
 
         target.SetPosition(new CombatVector2(navRadii + 2.0f, 0f));
         Assert.That(MovementResolver.IsInActionRange(actor, target, 1.2f), Is.False, "Should be out of range");
+    }
+
+    [Test]
+    public void BasicAttackProfileResolver_ClassifiesMeleeAndRangedAutoProfiles()
+    {
+        var vanguard = MakeUnit("vanguard", TeamSide.Ally, attackRange: 1.2f);
+        var duelist = MakeUnit("duelist", TeamSide.Ally, classId: "duelist", attackRange: 1.25f);
+        var ranger = MakeUnit("ranger", TeamSide.Ally, classId: "ranger", attackRange: 3.2f);
+
+        Assert.That(BasicAttackActionProfileResolver.Resolve(vanguard).Profile, Is.EqualTo(BasicAttackActionProfile.StepInStrike));
+        Assert.That(BasicAttackActionProfileResolver.Resolve(duelist).Profile, Is.EqualTo(BasicAttackActionProfile.LungeStrike));
+        var rangedProfile = BasicAttackActionProfileResolver.Resolve(ranger);
+        Assert.That(rangedProfile.Profile, Is.EqualTo(BasicAttackActionProfile.StationaryStrike));
+        Assert.That(rangedProfile.ContactRange, Is.EqualTo(rangedProfile.LogicalRange).Within(0.001f));
     }
 
     // ── IsWithinRangeBand ──

@@ -49,7 +49,9 @@ public static class CombatActionResolver
                     return events;
                 }
 
+                var preImpactStep = MovementResolver.TryApplyBasicAttackPreImpactStep(state, actor, target);
                 var attackResult = HitResolutionService.ResolveBasicAttack(state, actor, target);
+                var attackNote = ComposeNote(attackResult.Note, preImpactStep.NoteToken);
                 actor.GainEnergyFromBasicAttackResolved();
                 if (attackResult.Value > 0f)
                 {
@@ -69,7 +71,7 @@ public static class CombatActionResolver
                         null,
                         attackResult.Value,
                         attackResult.MitigationValue,
-                        attackResult.Note);
+                        attackNote);
                 }
 
                 actor.StartRecovery();
@@ -82,7 +84,7 @@ public static class CombatActionResolver
                     target,
                     attackResult.Value,
                     attackResult.MitigationValue,
-                    attackResult.Note));
+                    attackNote));
                 if (!target.IsAlive)
                 {
                     events.AddRange(ResolveKillAndAssist(state, actor, target, BattleActionType.BasicAttack, null));
@@ -207,6 +209,21 @@ public static class CombatActionResolver
     {
         var range = actor.ResolveActionRange(skill?.Id);
         return !MovementResolver.IsInActionRange(actor, target, range + ImpactRangeTolerance);
+    }
+
+    private static string ComposeNote(string left, string right)
+    {
+        if (string.IsNullOrWhiteSpace(left))
+        {
+            return right;
+        }
+
+        if (string.IsNullOrWhiteSpace(right))
+        {
+            return left;
+        }
+
+        return $"{left}+{right}";
     }
 
     internal static BattleEvent BuildEvent(
