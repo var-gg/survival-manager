@@ -18,7 +18,7 @@ MonoBehaviour:
   RangeHysteresis: 0.16
   PreferredRangeMin: 0
   PreferredRangeMax: 0
-  ApproachBuffer: 0.4
+  ApproachBuffer: 0.25
   RetreatBuffer: 0.25
   ChaseLeashMeters: 5
   RetreatAtHpPercent: 0

@@ -49,6 +49,45 @@ public sealed class BattleSimulationSpatialTests
         Assert.That(allyView.Position.X, Is.GreaterThan(-5.8f));
     }
 
+    [TestCase(7)]
+    [TestCase(23)]
+    [TestCase(29)]
+    public void LoopA_MeleeBasicAttack_ResolvesAtReadableContactGap_AcrossSeeds(int seed)
+    {
+        var allies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("ally_vanguard", classId: "vanguard", anchor: DeploymentAnchorId.FrontTop, hp: 70f, physPower: 4f, attackRange: 1.3f),
+            CombatTestFactory.CreateLoopAUnit("ally_duelist", classId: "duelist", anchor: DeploymentAnchorId.FrontBottom, hp: 55f, physPower: 5f, attackRange: 1.3f),
+        };
+        var enemies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("enemy_vanguard", race: "undead", classId: "vanguard", anchor: DeploymentAnchorId.FrontTop, hp: 70f, physPower: 4f, attackRange: 1.3f),
+            CombatTestFactory.CreateLoopAUnit("enemy_duelist", race: "undead", classId: "duelist", anchor: DeploymentAnchorId.FrontBottom, hp: 55f, physPower: 5f, attackRange: 1.3f),
+        };
+        var state = CombatTestFactory.CreateBattleState(allies, enemies, seed: seed);
+        var simulator = new BattleSimulator(state, 140);
+
+        while (!simulator.IsFinished)
+        {
+            var step = simulator.Step();
+            var basic = step.Events.FirstOrDefault(evt => evt.LogCode == BattleLogCode.BasicAttackDamage && evt.TargetId != null);
+            if (basic == null)
+            {
+                continue;
+            }
+
+            var actor = step.Units.First(unit => unit.Id == basic.ActorId.Value);
+            var target = step.Units.First(unit => unit.Id == basic.TargetId.GetValueOrDefault().Value);
+            var edgeDistance = actor.Position.DistanceTo(target.Position) - actor.NavigationRadius - target.NavigationRadius;
+
+            Assert.That(edgeDistance, Is.InRange(0.35f, 0.75f),
+                $"seed={seed} actor={actor.Id} target={target.Id} note={basic.Note}");
+            return;
+        }
+
+        Assert.Fail($"seed={seed} produced no basic attack event.");
+    }
+
     [Test]
     public void Ranged_Unit_Maintains_Spacing_While_Attacking()
     {

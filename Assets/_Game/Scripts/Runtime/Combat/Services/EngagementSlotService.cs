@@ -10,7 +10,7 @@ public static class EngagementSlotService
     private const float MaxMeleeRangeThreshold = 1.8f;
     private const float MeleeRangeBuffer = 0.25f;
     private const float SlotSpreadDegrees = 160f;
-    private const float MinDesiredEdgeDistance = 0.85f;
+    private const float MinDesiredEdgeDistance = 0.55f;
     private const float MinOverflowRadiusScale = 0.45f;
     private const float ArenaHalfWidth = 8f;
     private const float ArenaHalfHeight = 3.2f;

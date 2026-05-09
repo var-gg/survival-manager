@@ -15,6 +15,12 @@ public readonly record struct ResolvedBasicAttackActionProfile(
 public static class BasicAttackActionProfileResolver
 {
     private const float RangedRangeThreshold = 2.05f;
+    private const float StepInContactRange = 0.6f;
+    private const float LungeContactRange = 0.52f;
+    private const float DashContactRange = 0.68f;
+    private const float StepInPreImpactDistance = 0.68f;
+    private const float LungePreImpactDistance = 0.82f;
+    private const float DashPreImpactDistance = 1.18f;
 
     public static ResolvedBasicAttackActionProfile Resolve(UnitSnapshot actor)
     {
@@ -75,11 +81,11 @@ public static class BasicAttackActionProfileResolver
 
         var defaultContact = profile switch
         {
-            BasicAttackActionProfile.StepInStrike => 0.78f,
-            BasicAttackActionProfile.LungeStrike => 0.68f,
-            BasicAttackActionProfile.DashStrike => 0.88f,
+            BasicAttackActionProfile.StepInStrike => StepInContactRange,
+            BasicAttackActionProfile.LungeStrike => LungeContactRange,
+            BasicAttackActionProfile.DashStrike => DashContactRange,
             BasicAttackActionProfile.StationaryStrike => logicalRange,
-            _ => IsRangedBasic(actor, logicalRange) ? logicalRange : 0.78f,
+            _ => IsRangedBasic(actor, logicalRange) ? logicalRange : StepInContactRange,
         };
 
         return Math.Clamp(defaultContact, 0.15f, logicalRange);
@@ -98,9 +104,9 @@ public static class BasicAttackActionProfileResolver
 
         var defaultStep = profile switch
         {
-            BasicAttackActionProfile.StepInStrike => 0.46f,
-            BasicAttackActionProfile.LungeStrike => 0.72f,
-            BasicAttackActionProfile.DashStrike => 1.12f,
+            BasicAttackActionProfile.StepInStrike => StepInPreImpactDistance,
+            BasicAttackActionProfile.LungeStrike => LungePreImpactDistance,
+            BasicAttackActionProfile.DashStrike => DashPreImpactDistance,
             _ => 0f,
         };
 
