@@ -10,7 +10,7 @@ namespace SM.Unity;
 
 public sealed class BattleActorView : MonoBehaviour
 {
-    private const float OverlayHeight = 2.3f;
+    private const float OverlayHeight = 1.58f;
     private const float WorldHpWidth = 1.3f;
     private const float OverlayScreenWidth = 148f;
     private const float OverlayScreenHeight = 44f;
@@ -104,6 +104,7 @@ public sealed class BattleActorView : MonoBehaviour
     private float _travelTraceDuration;
     private Vector3 _travelTraceFromWorld;
     private Vector3 _travelTraceToWorld;
+    private BattleActorPresentationPhase _presentationPhase = BattleActorPresentationPhase.CombatReady;
 
     public void Initialize(
         BattleUnitReadModel actor,
@@ -140,6 +141,11 @@ public sealed class BattleActorView : MonoBehaviour
         RefreshVisibility();
     }
 
+    public void ApplyPresentationPhase(BattleActorPresentationPhase phase)
+    {
+        _presentationPhase = phase;
+    }
+
     public void ApplyBlend(BattleUnitReadModel from, BattleUnitReadModel to, float alpha)
     {
         _currentState = to;
@@ -154,7 +160,12 @@ public sealed class BattleActorView : MonoBehaviour
 
         var displayedHealth = Mathf.Lerp(from.CurrentHealth, to.CurrentHealth, clampedAlpha);
         ApplyDisplay(to, displayedHealth);
-        _animationDriver?.ApplyState(to, 1f, paused: false, isLocomoting: distance > 0.015f && clampedAlpha < 0.995f);
+        _animationDriver?.ApplyState(
+            to,
+            1f,
+            paused: false,
+            isLocomoting: distance > 0.015f && clampedAlpha < 0.995f,
+            _presentationPhase);
         RefreshVisualState();
         RefreshOverlayPosition();
     }
@@ -253,6 +264,17 @@ public sealed class BattleActorView : MonoBehaviour
                 _impactCueTimer = 0.42f;
                 _impactCueDuration = 0.42f;
                 _impactColor = new Color(0.58f, 0.58f, 0.58f, 1f);
+                break;
+            case BattlePresentationCueType.BattleResolved:
+                _activeAnimationSemantic = animationSemantic;
+                _activeAnimationDirection = cue.AnimationDirection;
+                _activeAnimationIntensity = cue.AnimationIntensity;
+                PrepareTravelTrace(cue, animationSemantic);
+                _repositionCueTimer = ResolveRepositionCueDuration(animationSemantic);
+                _repositionCueDuration = _repositionCueTimer;
+                _accentColor = new Color(0.92f, 0.76f, 0.38f, 1f);
+                _accentTimer = 0.22f;
+                _accentDuration = 0.22f;
                 break;
         }
 
@@ -813,7 +835,7 @@ public sealed class BattleActorView : MonoBehaviour
 
         var progress = 1f - (_floatingTimer / _floatingDuration);
         _floatingText.text = _floatingMessage;
-        _floatingText.rectTransform.anchoredPosition = Vector2.Lerp(new Vector2(0f, 18f), new Vector2(0f, 68f), progress);
+        _floatingText.rectTransform.anchoredPosition = Vector2.Lerp(new Vector2(0f, 8f), new Vector2(0f, 42f), progress);
         _floatingText.color = new Color(_floatingColor.r, _floatingColor.g, _floatingColor.b, 1f - progress);
         _floatingText.rectTransform.localScale = Vector3.one * _floatingScale;
     }
@@ -950,7 +972,13 @@ public sealed class BattleActorView : MonoBehaviour
         var hud = _wrapper.GetSocketWorld(BattleActorSocketId.Hud);
         var head = _wrapper.GetSocketWorld(BattleActorSocketId.Head);
         var center = _wrapper.GetSocketWorld(BattleActorSocketId.Center);
-        var clampedY = Mathf.Min(hud.y, Mathf.Lerp(center.y, head.y, 0.96f) + 0.08f);
+
+        if (_currentState != null && !_currentState.IsAlive)
+        {
+            return new Vector3(hud.x, Mathf.Lerp(center.y, head.y, 0.28f), hud.z);
+        }
+
+        var clampedY = Mathf.Min(hud.y, Mathf.Lerp(center.y, head.y, 0.72f) + 0.04f);
         return new Vector3(hud.x, clampedY, hud.z);
     }
 
@@ -1161,8 +1189,8 @@ public sealed class BattleActorView : MonoBehaviour
         }
 
         var rect = _floatingText.rectTransform;
-        var start = new Vector2(0f, 18f);
-        var end = new Vector2(0f, 68f);
+        var start = new Vector2(0f, 8f);
+        var end = new Vector2(0f, 42f);
         _floatingText.text = message;
         _floatingText.color = color;
 

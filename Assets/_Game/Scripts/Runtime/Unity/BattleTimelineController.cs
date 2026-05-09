@@ -11,6 +11,8 @@ public sealed class BattleTimelineController
 
     private BattleSimulator _simulator = null!;
     private float _stepAccumulator;
+    private float _startupHoldSeconds;
+    private float _startupHoldRemaining;
     private int _currentIndex;
 
     public bool IsPaused { get; private set; }
@@ -45,6 +47,7 @@ public sealed class BattleTimelineController
         _recordedSteps.Add(initialStep);
         _currentIndex = 0;
         _stepAccumulator = 0f;
+        _startupHoldRemaining = _startupHoldSeconds;
         IsPaused = false;
         IsFinished = false;
         PlaybackSpeed = 1f;
@@ -53,6 +56,12 @@ public sealed class BattleTimelineController
     public void Reset(BattleSimulator simulator, BattleSimulationStep initialStep, int maxSteps)
     {
         Initialize(simulator, initialStep, maxSteps);
+    }
+
+    public void ConfigureStartupHold(float seconds)
+    {
+        _startupHoldSeconds = Math.Max(0f, seconds);
+        _startupHoldRemaining = _currentIndex == 0 ? _startupHoldSeconds : 0f;
     }
 
     /// <summary>
@@ -87,7 +96,20 @@ public sealed class BattleTimelineController
         }
 
         var stepped = false;
-        _stepAccumulator += deltaTime * PlaybackSpeed;
+        var scaledDeltaTime = Math.Max(0f, deltaTime) * PlaybackSpeed;
+        if (_startupHoldRemaining > 0f && _currentIndex == 0 && FurthestIndex == 0 && !_simulator.IsFinished)
+        {
+            var consumed = Math.Min(_startupHoldRemaining, scaledDeltaTime);
+            _startupHoldRemaining -= consumed;
+            scaledDeltaTime -= consumed;
+            if (scaledDeltaTime <= 0f)
+            {
+                alpha = 0f;
+                return false;
+            }
+        }
+
+        _stepAccumulator += scaledDeltaTime;
 
         while (_stepAccumulator >= FixedStepSeconds)
         {
@@ -132,6 +154,7 @@ public sealed class BattleTimelineController
     public void SeekToStep(int targetIndex)
     {
         targetIndex = Math.Max(0, Math.Min(targetIndex, MaxPossibleSteps));
+        _startupHoldRemaining = targetIndex == 0 ? _startupHoldSeconds : 0f;
 
         // Backward seek: instant (data already recorded)
         if (targetIndex <= FurthestIndex)
@@ -192,6 +215,7 @@ public sealed class BattleTimelineController
     {
         if (IsFinished && _currentIndex >= FurthestIndex) return;
 
+        _startupHoldRemaining = 0f;
         if (_currentIndex < FurthestIndex)
         {
             _currentIndex++;

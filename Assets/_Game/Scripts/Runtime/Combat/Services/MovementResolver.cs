@@ -56,6 +56,11 @@ public static class MovementResolver
         return actor.AnchorPosition + new CombatVector2(xOffset, yOffset);
     }
 
+    public static CombatVector2 ResolveBattleResolvedPosition(BattleState state, UnitSnapshot actor)
+    {
+        return ClampToArena(ResolveHomePosition(state, actor));
+    }
+
     public static MobilityDecision? BuildMobilityDecision(UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
     {
         if (actor.Mobility is not { IsEnabled: true } mobility)

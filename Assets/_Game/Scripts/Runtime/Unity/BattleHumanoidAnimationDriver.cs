@@ -27,6 +27,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     private float _playbackSpeed = 1f;
     private bool _lastIsLocomoting;
     private bool _isHoldingTerminalPose;
+    private BattleActorPresentationPhase _lastPresentationPhase = BattleActorPresentationPhase.CombatReady;
 
     public BattleHumanoidAnimationSet? AnimationSet => animationSet;
     public BattleHumanoidAnimationSet? ActiveAnimationSet => ResolveAnimationSet();
@@ -41,7 +42,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _resolvedAnimationSet = null;
         if (_lastState != null)
         {
-            ApplyState(_lastState, _playbackSpeed, paused: false, _lastIsLocomoting);
+            ApplyState(_lastState, _playbackSpeed, paused: false, _lastIsLocomoting, _lastPresentationPhase);
         }
     }
 
@@ -60,8 +61,19 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 
     public void ApplyState(BattleUnitReadModel state, float playbackSpeed, bool paused, bool isLocomoting)
     {
+        ApplyState(state, playbackSpeed, paused, isLocomoting, BattleActorPresentationPhase.CombatReady);
+    }
+
+    public void ApplyState(
+        BattleUnitReadModel state,
+        float playbackSpeed,
+        bool paused,
+        bool isLocomoting,
+        BattleActorPresentationPhase presentationPhase)
+    {
         _lastState = state;
         _lastIsLocomoting = isLocomoting;
+        _lastPresentationPhase = presentationPhase;
         _playbackSpeed = ResolvePlaybackSpeed(playbackSpeed);
 
         var activeSet = ResolveAnimationSet();
@@ -87,7 +99,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
             return;
         }
 
-        if (_oneShotRemaining <= 0f && activeSet.TryResolveLoopClip(state, isLocomoting, out var loopClip))
+        if (_oneShotRemaining <= 0f && activeSet.TryResolveLoopClip(state, isLocomoting, presentationPhase, out var loopClip))
         {
             PlayLoop(loopClip);
         }
@@ -148,7 +160,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         StopOneShot();
         if (_lastState != null)
         {
-            ApplyState(_lastState, _playbackSpeed, paused: false, _lastIsLocomoting);
+            ApplyState(_lastState, _playbackSpeed, paused: false, _lastIsLocomoting, _lastPresentationPhase);
         }
     }
 
@@ -158,7 +170,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         StopOneShot();
         if (_lastState != null)
         {
-            ApplyState(_lastState, _playbackSpeed, paused: false, _lastIsLocomoting);
+            ApplyState(_lastState, _playbackSpeed, paused: false, _lastIsLocomoting, _lastPresentationPhase);
         }
     }
 

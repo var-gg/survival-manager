@@ -386,6 +386,36 @@ public sealed class BattlePresentationCueBuilderTests
         Assert.That(deathCues, Has.Count.EqualTo(1));
     }
 
+    [Test]
+    public void Build_EmitsBattleResolvedCue_WithReturnHomeTrace()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, actionState: CombatActionState.Recover, position: new CombatVector2(0.8f, 0f)),
+            CreateUnit("enemy", TeamSide.Enemy, isAlive: false),
+        });
+        var current = new BattleSimulationStep(
+            StepIndex: 2,
+            TimeSeconds: 0.2f,
+            Units: new[]
+            {
+                CreateUnit("ally", TeamSide.Ally, pendingActionType: null, position: new CombatVector2(-1.1f, 0.1f)),
+                CreateUnit("enemy", TeamSide.Enemy, isAlive: false),
+            },
+            Events: new List<BattleEvent>(),
+            IsFinished: true,
+            Winner: TeamSide.Ally);
+
+        var cue = new BattlePresentationCueBuilder()
+            .Build(previous, current)
+            .Single(candidate => candidate.CueType == BattlePresentationCueType.BattleResolved && candidate.SubjectActorId == "ally");
+
+        Assert.That(cue.Magnitude, Is.GreaterThan(1f));
+        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BackstepDisengage));
+        Assert.That(cue.Note, Does.Contain("battle_resolved"));
+        Assert.That(cue.Note, Does.Contain("return_home"));
+    }
+
     private static BattlePresentationCue FindImpact(IEnumerable<BattlePresentationCue> cues, string subjectActorId)
     {
         return cues.Single(cue => cue.CueType == BattlePresentationCueType.ImpactDamage && cue.SubjectActorId == subjectActorId);
