@@ -32,6 +32,8 @@ public sealed record BattleActivityTelemetrySnapshot(
     float BuffValueContribution,
     float AoeCostTaken,
     float ClusterTradeoffNetValue,
+    float HandednessSlotPreferenceHitRatio,
+    IReadOnlyDictionary<string, float> HandednessLateralResetSideHistogram,
     string ReplayHash);
 
 public sealed class BattleActivityTelemetryAccumulator
@@ -46,10 +48,13 @@ public sealed class BattleActivityTelemetryAccumulator
     private readonly Dictionary<string, float> _buffCoverageHistogramByType = new(StringComparer.Ordinal);
     private readonly Dictionary<string, float> _buffEfficacyBonusByType = new(StringComparer.Ordinal);
     private readonly Dictionary<string, float> _aoeCatchCountHistogram = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, float> _handednessLateralResetSideHistogram = new(StringComparer.Ordinal);
 
     private int _stationaryAttackIntervals;
     private int _totalAttackIntervals;
     private int _clusterTradeoffSamples;
+    private int _handednessSlotPreferenceSamples;
+    private int _handednessSlotPreferenceHits;
 
     public int OverfocusEvents { get; private set; }
     public float TankAbsorbedFocusHeat { get; private set; }
@@ -153,6 +158,30 @@ public sealed class BattleActivityTelemetryAccumulator
         KnockbackDispersalEvents++;
     }
 
+    public void RecordHandednessSlotPreference(bool preferenceHit, bool hasPreference)
+    {
+        if (!hasPreference)
+        {
+            return;
+        }
+
+        _handednessSlotPreferenceSamples++;
+        if (preferenceHit)
+        {
+            _handednessSlotPreferenceHits++;
+        }
+    }
+
+    public void RecordHandednessLateralReset(string label)
+    {
+        if (string.IsNullOrWhiteSpace(label))
+        {
+            return;
+        }
+
+        Increment(_handednessLateralResetSideHistogram, label, 1f);
+    }
+
     public void RecordClusterTradeoff(ClusterTradeoffTelemetryFrame frame)
     {
         _clusterTradeoffSamples++;
@@ -229,6 +258,12 @@ public sealed class BattleActivityTelemetryAccumulator
             BuffValueContribution,
             AoeCostTaken,
             ClusterTradeoffNetValue,
+            _handednessSlotPreferenceSamples <= 0
+                ? 0f
+                : (float)_handednessSlotPreferenceHits / _handednessSlotPreferenceSamples,
+            _handednessLateralResetSideHistogram
+                .OrderBy(pair => pair.Key, StringComparer.Ordinal)
+                .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal),
             string.Empty);
         return snapshot with { ReplayHash = ComputeReplayHash(state, snapshot) };
     }
@@ -332,6 +367,7 @@ public sealed class BattleActivityTelemetryAccumulator
             .Append(Format(snapshot.BuffValueContribution)).Append('|')
             .Append(Format(snapshot.AoeCostTaken)).Append('|')
             .Append(Format(snapshot.ClusterTradeoffNetValue)).Append('|');
+        builder.Append(Format(snapshot.HandednessSlotPreferenceHitRatio)).Append('|');
 
         foreach (var pair in snapshot.MeanPairwiseDistanceByTeam.OrderBy(pair => pair.Key))
         {
@@ -363,9 +399,15 @@ public sealed class BattleActivityTelemetryAccumulator
             builder.Append("aoe_catch:").Append(pair.Key).Append('=').Append(Format(pair.Value)).Append('|');
         }
 
+        foreach (var pair in snapshot.HandednessLateralResetSideHistogram.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+        {
+            builder.Append("hand_reset:").Append(pair.Key).Append('=').Append(Format(pair.Value)).Append('|');
+        }
+
         foreach (var unit in state.AllUnits.OrderBy(unit => unit.Id.Value, StringComparer.Ordinal))
         {
             builder.Append(unit.Id.Value).Append(':')
+                .Append(unit.Definition.DominantHand).Append(':')
                 .Append(Format(unit.CurrentHealth)).Append(':')
                 .Append(Format(unit.Barrier)).Append(':')
                 .Append(unit.IsAlive).Append(':')

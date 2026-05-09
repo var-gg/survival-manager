@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 using SM.Meta.Model;
 
 namespace SM.Meta.Services;
@@ -109,9 +110,27 @@ public static class BattleSetupBuilder
             archetype.Governance,
             archetype.Id,
             string.IsNullOrWhiteSpace(participant.CharacterId) ? archetype.Id : participant.CharacterId,
-            roleInstructionId);
+            roleInstructionId,
+            ResolveDominantHand(participant, content, archetype));
         error = string.Empty;
         return true;
+    }
+
+    private static DominantHand ResolveDominantHand(
+        BattleParticipantSpec participant,
+        CombatContentSnapshot content,
+        CombatArchetypeTemplate archetype)
+    {
+        if (!string.IsNullOrWhiteSpace(participant.CharacterId)
+            && content.Characters != null
+            && content.Characters.TryGetValue(participant.CharacterId, out var character))
+        {
+            return character.DominantHand;
+        }
+
+        return participant.DominantHand != DominantHand.Right
+            ? participant.DominantHand
+            : archetype.DefaultDominantHand;
     }
 
     private static string ResolveRoleInstructionId(BattleParticipantSpec participant, CombatContentSnapshot content)

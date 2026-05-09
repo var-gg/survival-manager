@@ -1,5 +1,6 @@
 using System;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 
 namespace SM.Combat.Services;
 
@@ -7,7 +8,10 @@ public readonly record struct ResolvedBasicAttackActionProfile(
     BasicAttackActionProfile Profile,
     float LogicalRange,
     float ContactRange,
-    float PreImpactStepDistance)
+    float PreImpactStepDistance,
+    int StepInArcSign,
+    string LungeEntrySide,
+    string WeaponTrailSide)
 {
     public bool AllowsPreImpactStep => PreImpactStepDistance > 0.01f && ContactRange < LogicalRange - 0.05f;
 }
@@ -31,7 +35,10 @@ public static class BasicAttackActionProfileResolver
             : authored.ActionProfile;
         var contactRange = ResolveContactRange(actor, authored, profile, logicalRange);
         var stepDistance = ResolvePreImpactStepDistance(authored, profile, logicalRange, contactRange);
-        return new ResolvedBasicAttackActionProfile(profile, logicalRange, contactRange, stepDistance);
+        var arcSign = ResolveArcSign(actor);
+        var entrySide = arcSign >= 0 ? "right" : "left";
+        var trailSide = ResolveTrailSide(actor, authored.WeaponHandedness);
+        return new ResolvedBasicAttackActionProfile(profile, logicalRange, contactRange, stepDistance, arcSign, entrySide, trailSide);
     }
 
     public static string ToNoteToken(BasicAttackActionProfile profile)
@@ -44,6 +51,15 @@ public static class BasicAttackActionProfileResolver
             BasicAttackActionProfile.StationaryStrike => "profile_stationary",
             _ => string.Empty,
         };
+    }
+
+    public static string ToNoteToken(ResolvedBasicAttackActionProfile profile)
+    {
+        var baseToken = ToNoteToken(profile.Profile);
+        var arcToken = profile.StepInArcSign >= 0 ? "StepInArcSign:right" : "StepInArcSign:left";
+        return string.IsNullOrWhiteSpace(baseToken)
+            ? $"{arcToken}+LungeEntrySide:{profile.LungeEntrySide}+WeaponTrailSide:{profile.WeaponTrailSide}"
+            : $"{baseToken}+{arcToken}+LungeEntrySide:{profile.LungeEntrySide}+WeaponTrailSide:{profile.WeaponTrailSide}";
     }
 
     private static BasicAttackActionProfile InferProfile(UnitSnapshot actor, float logicalRange)
@@ -111,5 +127,42 @@ public static class BasicAttackActionProfileResolver
         };
 
         return Math.Clamp(defaultStep, 0f, Math.Max(0f, logicalRange - contactRange));
+    }
+
+    private static int ResolveArcSign(UnitSnapshot actor)
+    {
+        var preferred = HandednessDecisionService.ResolvePreferredSideSign(actor.Definition.DominantHand, actor.Side);
+        return preferred == 0
+            ? (StableHash(actor.Id.Value) % 2 == 0 ? 1 : -1)
+            : preferred;
+    }
+
+    private static string ResolveTrailSide(UnitSnapshot actor, WeaponHandednessProfile profile)
+    {
+        if (profile == WeaponHandednessProfile.DualWield)
+        {
+            return "dual";
+        }
+
+        return actor.Definition.DominantHand switch
+        {
+            DominantHand.Left => "left",
+            DominantHand.Ambidextrous => "ambidextrous",
+            _ => "right",
+        };
+    }
+
+    private static int StableHash(string value)
+    {
+        unchecked
+        {
+            var hash = 23;
+            foreach (var ch in value)
+            {
+                hash = (hash * 31) + ch;
+            }
+
+            return hash;
+        }
     }
 }

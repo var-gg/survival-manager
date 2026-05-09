@@ -96,14 +96,114 @@ public static class EngagementSlotService
         var centerDegrees = ResolveCenterDegrees(actor.Side, intent, context);
         var startDegrees = centerDegrees - (spreadDegrees * 0.5f);
         var stepDegrees = slotCount == 1 ? 0f : spreadDegrees / (slotCount - 1);
+        var radius = ringRadius + (ringOffset * Math.Max(MinOverflowRadiusScale, actor.SeparationRadius));
+        var selected = ResolveSlotCandidate(
+            state,
+            actor,
+            target,
+            context,
+            startDegrees,
+            stepDegrees,
+            slotIndex,
+            slotCount,
+            radius);
+        state.ActivityTelemetry.RecordHandednessSlotPreference(selected.PreferenceHit, selected.HasPreference);
+        return new EngagementSlotAssignment(target.Id, selected.SlotIndex, selected.Position, isOverflow);
+    }
+
+    private static (int SlotIndex, CombatVector2 Position, bool PreferenceHit, bool HasPreference) ResolveSlotCandidate(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot target,
+        TacticContext context,
+        float startDegrees,
+        float stepDegrees,
+        int preferredSlotIndex,
+        int slotCount,
+        float radius)
+    {
+        var handSign = HandednessDecisionService.ResolvePreferredSideSign(actor.Definition.DominantHand, actor.Side);
+        var handWeight = HandednessDecisionService.ResolveHandednessSlotWeight(actor, context);
+        if (handSign == 0 || handWeight <= 0f)
+        {
+            return (preferredSlotIndex, BuildSlotPosition(target, startDegrees, stepDegrees, preferredSlotIndex, radius), true, false);
+        }
+
+        var bestScore = float.NegativeInfinity;
+        var bestSlotIndex = preferredSlotIndex;
+        var bestPosition = BuildSlotPosition(target, startDegrees, stepDegrees, preferredSlotIndex, radius);
+        var bestPreferenceHit = false;
+        var found = false;
+
+        for (var candidateIndex = 0; candidateIndex < slotCount; candidateIndex++)
+        {
+            var position = BuildSlotPosition(target, startDegrees, stepDegrees, candidateIndex, radius);
+            if (!IsCandidateClear(state, actor, position))
+            {
+                continue;
+            }
+
+            var angleRadians = (startDegrees + (stepDegrees * candidateIndex)) * (MathF.PI / 180f);
+            var candidateSideSign = MathF.Sin(angleRadians) >= 0f ? 1 : -1;
+            var handScore = candidateSideSign == handSign ? handWeight : -handWeight;
+            var baseScore = -MathF.Abs(candidateIndex - preferredSlotIndex) * 0.035f;
+            var score = baseScore + handScore;
+            if (score <= bestScore)
+            {
+                continue;
+            }
+
+            bestScore = score;
+            bestSlotIndex = candidateIndex;
+            bestPosition = position;
+            bestPreferenceHit = handSign == 0 || candidateSideSign == handSign;
+            found = true;
+        }
+
+        if (!found)
+        {
+            var angleRadians = (startDegrees + (stepDegrees * preferredSlotIndex)) * (MathF.PI / 180f);
+            var candidateSideSign = MathF.Sin(angleRadians) >= 0f ? 1 : -1;
+            bestPreferenceHit = handSign == 0 || candidateSideSign == handSign;
+        }
+
+        return (bestSlotIndex, bestPosition, bestPreferenceHit, handSign != 0);
+    }
+
+    private static CombatVector2 BuildSlotPosition(UnitSnapshot target, float startDegrees, float stepDegrees, int slotIndex, float radius)
+    {
         var angleDegrees = startDegrees + (stepDegrees * slotIndex);
         var angleRadians = angleDegrees * (MathF.PI / 180f);
-        var radius = ringRadius + (ringOffset * Math.Max(MinOverflowRadiusScale, actor.SeparationRadius));
         var position = target.Position + new CombatVector2(MathF.Cos(angleRadians), MathF.Sin(angleRadians)) * radius;
-        position = new CombatVector2(
+        return new CombatVector2(
             Math.Clamp(position.X, -ArenaHalfWidth, ArenaHalfWidth),
             Math.Clamp(position.Y, -ArenaHalfHeight, ArenaHalfHeight));
-        return new EngagementSlotAssignment(target.Id, slotIndex, position, isOverflow);
+    }
+
+    private static bool IsCandidateClear(BattleState state, UnitSnapshot actor, CombatVector2 position)
+    {
+        foreach (var obstacle in state.AllUnits)
+        {
+            if (obstacle.Id == actor.Id || !obstacle.IsAlive)
+            {
+                continue;
+            }
+
+            var clearance = actor.NavigationRadius + obstacle.NavigationRadius + 0.03f;
+            if (position.DistanceTo(obstacle.Position) < clearance)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static float ResolveCandidateCrowding(BattleState state, UnitSnapshot actor, CombatVector2 position)
+    {
+        return state.AllUnits
+            .Where(unit => unit.IsAlive && unit.Id != actor.Id)
+            .Sum(unit => 1f / MathF.Max(0.05f, position.DistanceTo(unit.Position)));
     }
 
     private static bool IsSlotStillClear(BattleState state, UnitSnapshot actor, EngagementSlotAssignment slot)

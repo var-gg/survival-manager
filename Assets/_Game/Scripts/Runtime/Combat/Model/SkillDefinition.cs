@@ -129,7 +129,8 @@ public sealed record BattleBasicAttackSpec(
     IReadOnlyList<EffectDescriptor>? EffectDescriptors = null,
     BasicAttackActionProfile ActionProfile = BasicAttackActionProfile.Auto,
     float ContactRange = 0f,
-    float PreImpactStepDistance = 0f);
+    float PreImpactStepDistance = 0f,
+    WeaponHandednessProfile WeaponHandedness = WeaponHandednessProfile.OneHand);
 
 public sealed record BattlePassiveSpec(
     string Id,

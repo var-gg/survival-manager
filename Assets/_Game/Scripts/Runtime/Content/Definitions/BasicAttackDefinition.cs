@@ -15,6 +15,7 @@ namespace SM.Content.Definitions
         public DamageTypeValue DamageType = DamageTypeValue.Physical;
         public ActionLane Lane = ActionLane.Primary;
         public ActionLockRule LockRule = ActionLockRule.SoftCommit;
+        public WeaponHandednessProfile WeaponHandedness = WeaponHandednessProfile.OneHand;
         public TargetRule TargetRule = new();
         public List<EffectDescriptor> Effects = new()
         {

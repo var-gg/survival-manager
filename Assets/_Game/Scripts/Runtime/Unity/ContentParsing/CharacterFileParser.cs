@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using SM.Content.Definitions;
 using SM.Core.Content;
+using SM.Core.Contracts;
 using UnityEngine;
 using static SM.Unity.ContentParsing.YamlFieldExtractor;
 
@@ -27,6 +28,7 @@ internal static class CharacterFileParser
             definition.Class = ResolveReference(lines, "Class:", guidToPath, classes);
             definition.DefaultArchetype = ResolveReference(lines, "DefaultArchetype:", guidToPath, archetypes);
             definition.DefaultRoleInstruction = ResolveReference(lines, "DefaultRoleInstruction:", guidToPath, roleInstructions);
+            definition.DominantHand = (DominantHand)ExtractInt(lines, "DominantHand:");
             if (definition.DefaultRoleInstruction == null
                 && definition.DefaultArchetype != null
                 && !string.IsNullOrWhiteSpace(definition.DefaultArchetype.RoleTag))

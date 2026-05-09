@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 using UnityEngine;
 
 namespace SM.Unity.UI.Battle;
@@ -194,6 +195,15 @@ public sealed class BattleUnitMetadataFormatter
             Line("ui.battle.axis.character", "캐릭터", "Character", character, BattleStatLineCategory.Vital),
             Line("ui.battle.axis.role_family", "역할군", "Role Family", roleFamily, BattleStatLineCategory.Vital),
             Line("ui.battle.axis.role", "역할", "Role", $"{role} / {roleFamily}", BattleStatLineCategory.Vital),
+            Line(
+                "ui.battle.axis.dominant_hand",
+                "손잡이",
+                "Dominant Hand",
+                FormatDominantHand(unit.DominantHand),
+                BattleStatLineCategory.Movement,
+                "ui.battle.tooltip.dominant_hand",
+                "교전 진입 방향과 평타 후 복귀 방향만 설명합니다. 피해나 방어 수치는 바꾸지 않습니다.",
+                "Explains entry side and post-attack reset direction only. It does not change damage or defense numbers."),
             Line("ui.battle.axis.hp", "HP", "HP", $"{Mathf.Max(0f, unit.CurrentHealth):0} / {Mathf.Max(1f, unit.MaxHealth):0}", BattleStatLineCategory.Vital),
             Line("ui.battle.axis.shield", "보호막", "Shield", $"{Mathf.Max(0f, unit.Barrier):0}", BattleStatLineCategory.Defense),
             Line("ui.battle.axis.state", "상태", "State", BattleReadabilityFormatter.BuildPlayerFacingState(unit), BattleStatLineCategory.Defense),
@@ -221,6 +231,21 @@ public sealed class BattleUnitMetadataFormatter
     {
         var label = AxisLabel(key, koFallback, enFallback);
         return new BattleStatLine(label, value, label, category);
+    }
+
+    private BattleStatLine Line(
+        string key,
+        string koFallback,
+        string enFallback,
+        string value,
+        BattleStatLineCategory category,
+        string tooltipKey,
+        string koTooltipFallback,
+        string enTooltipFallback)
+    {
+        var label = AxisLabel(key, koFallback, enFallback);
+        var tooltip = AxisLabel(tooltipKey, koTooltipFallback, enTooltipFallback);
+        return new BattleStatLine(label, value, tooltip, category);
     }
 
     private string BuildOverviewBody(
@@ -607,6 +632,16 @@ public sealed class BattleUnitMetadataFormatter
         }
 
         return $"{unit.PreferredRangeMin:0.0} - {unit.PreferredRangeMax:0.0}m";
+    }
+
+    private string FormatDominantHand(DominantHand hand)
+    {
+        return hand switch
+        {
+            DominantHand.Left => AxisLabel("ui.battle.hand.left", "왼손", "Left"),
+            DominantHand.Ambidextrous => AxisLabel("ui.battle.hand.ambidextrous", "양손잡이", "Ambidextrous"),
+            _ => AxisLabel("ui.battle.hand.right", "오른손", "Right"),
+        };
     }
 
     private string FormatSelector(string selector)

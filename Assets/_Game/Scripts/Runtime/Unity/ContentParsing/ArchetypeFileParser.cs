@@ -45,6 +45,7 @@ internal static class ArchetypeFileParser
             definition.BaseMaxHealth = ExtractFloat(lines, "BaseMaxHealth:");
             definition.RoleFamilyTag = ExtractValue(lines, "RoleFamilyTag:");
             definition.PrimaryWeaponFamilyTag = ExtractValue(lines, "PrimaryWeaponFamilyTag:");
+            definition.DefaultDominantHand = (DominantHand)ExtractInt(lines, "DefaultDominantHand:");
             definition.RecruitTier = (RecruitTier)ExtractInt(lines, "RecruitTier:");
             definition.BudgetCard = ParseBudgetCard(lines, "BudgetCard:") ?? definition.BudgetCard;
             definition.IsRecruitable = ExtractBool(lines, "IsRecruitable:");
@@ -331,6 +332,7 @@ internal static class ArchetypeFileParser
             DamageType = (DamageTypeValue)ExtractInt(basicAttackLines, "DamageType:"),
             Lane = (ActionLane)ExtractInt(basicAttackLines, "Lane:"),
             LockRule = (ActionLockRule)ExtractInt(basicAttackLines, "LockRule:"),
+            WeaponHandedness = (WeaponHandednessProfile)ExtractInt(basicAttackLines, "WeaponHandedness:"),
             TargetRule = ParseTargetRule(basicAttackLines, "TargetRule:", 6),
             Effects = ParseEffectDescriptors(basicAttackLines, "Effects:", 6)
         };

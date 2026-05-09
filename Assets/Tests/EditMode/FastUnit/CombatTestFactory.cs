@@ -178,6 +178,7 @@ public static class CombatTestFactory
             Energy: energy ?? new EnergyProfile(100f, 10f),
             EntityKind: entityKind,
             Ownership: ownership,
-            SummonProfile: summonProfile);
+            SummonProfile: summonProfile,
+            DominantHand: DominantHand.Ambidextrous);
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Combat.Services;
 using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Core.Contracts;
@@ -124,7 +125,9 @@ internal static class SkillConverter
             authored?.Lane ?? ActionLane.Primary,
             authored?.LockRule ?? ActionLockRule.SoftCommit,
             CloneEffects(authored?.Effects),
-            ResolveBasicAttackActionProfile(definition));
+            ResolveBasicAttackActionProfile(definition),
+            WeaponHandedness: authored?.WeaponHandedness
+                              ?? HandednessDecisionService.ResolveWeaponProfile(definition.PrimaryWeaponFamilyTag));
     }
 
     internal static BattlePassiveSpec BuildPassiveSpec(

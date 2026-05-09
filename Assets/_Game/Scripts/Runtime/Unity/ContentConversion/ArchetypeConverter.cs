@@ -109,7 +109,8 @@ internal sealed class ArchetypeConverter
             CombatEntityKind.RosterUnit,
             null,
             null,
-            BuildGovernanceSummary(definition.BudgetCard));
+            BuildGovernanceSummary(definition.BudgetCard),
+            definition.DefaultDominantHand);
     }
 
     internal static FootprintProfile BuildFootprintProfile(UnitArchetypeDefinition definition)

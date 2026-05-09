@@ -158,6 +158,7 @@ public sealed partial class GameSessionState
                 FlexPassiveId = archetype?.Loadout?.FlexPassive?.Id ?? string.Empty,
                 RecruitTier = archetype?.RecruitTier ?? RecruitTier.Common,
                 RecruitSource = RecruitOfferSource.DirectGrant,
+                DominantHand = DominantHandDistributionService.ResolveGenerated(heroId, archetype?.Class.Id ?? string.Empty),
                 RetrainState = new UnitRetrainState(),
                 EconomyFootprint = new UnitEconomyFootprint(),
                 EquippedItemIds = equippedItems
@@ -465,7 +466,8 @@ public sealed partial class GameSessionState
                 hero.RecruitSource,
                 hero.RetrainState?.Clone() ?? new UnitRetrainState(),
                 hero.EconomyFootprint?.Clone() ?? new UnitEconomyFootprint(),
-                hero.CharacterId);
+                hero.CharacterId,
+                hero.DominantHand);
         }
     }
 

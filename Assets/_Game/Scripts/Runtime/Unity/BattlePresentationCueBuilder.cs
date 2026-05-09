@@ -61,21 +61,29 @@ public sealed class BattlePresentationCueBuilder
 
             if (!previous.IsDefending && current.IsDefending)
             {
+                var guardDirection = ResolveHandednessAnimationDirection(current);
                 cues.Add(new BattlePresentationCue(
                     BattlePresentationCueType.GuardEnter,
                     currentStep.StepIndex,
                     current.Id,
                     current.TargetId,
-                    BattleActionType.WaitDefend));
+                    BattleActionType.WaitDefend,
+                    Note: $"guard_hand_{current.DominantHand}",
+                    AnimationSemantic: BattleAnimationSemantic.GuardPose,
+                    AnimationDirection: guardDirection));
             }
             else if (previous.IsDefending && !current.IsDefending)
             {
+                var guardDirection = ResolveHandednessAnimationDirection(current);
                 cues.Add(new BattlePresentationCue(
                     BattlePresentationCueType.GuardExit,
                     currentStep.StepIndex,
                     current.Id,
                     current.TargetId,
-                    BattleActionType.WaitDefend));
+                    BattleActionType.WaitDefend,
+                    Note: $"guard_hand_{current.DominantHand}",
+                    AnimationSemantic: BattleAnimationSemantic.GuardPose,
+                    AnimationDirection: guardDirection));
             }
 
             var wasRepositioning = IsRepositioning(previous);
@@ -398,11 +406,12 @@ public sealed class BattlePresentationCueBuilder
 
     private static BattleAnimationCueDescriptor ResolveImpactAnimation(BattleEvent eventData)
     {
+        var handednessDirection = ResolveHandednessAnimationDirection(eventData.Note);
         if (HasNote(eventData, "miss"))
         {
             return new BattleAnimationCueDescriptor(
                 BattleAnimationSemantic.Miss,
-                BattleAnimationDirection.Any,
+                handednessDirection,
                 BattleAnimationIntensity.Light,
                 eventData.Note);
         }
@@ -430,7 +439,7 @@ public sealed class BattlePresentationCueBuilder
         {
             return new BattleAnimationCueDescriptor(
                 BattleAnimationSemantic.BlockImpact,
-                BattleAnimationDirection.Any,
+                handednessDirection,
                 isCrit ? BattleAnimationIntensity.Heavy : BattleAnimationIntensity.Medium,
                 eventData.Note);
         }
@@ -439,7 +448,7 @@ public sealed class BattlePresentationCueBuilder
         {
             return new BattleAnimationCueDescriptor(
                 BattleAnimationSemantic.CriticalImpact,
-                BattleAnimationDirection.Backward,
+                handednessDirection == BattleAnimationDirection.Any ? BattleAnimationDirection.Backward : handednessDirection,
                 BattleAnimationIntensity.Heavy,
                 eventData.Note);
         }
@@ -448,16 +457,48 @@ public sealed class BattlePresentationCueBuilder
         {
             return new BattleAnimationCueDescriptor(
                 BattleAnimationSemantic.HitHeavy,
-                BattleAnimationDirection.Backward,
+                handednessDirection == BattleAnimationDirection.Any ? BattleAnimationDirection.Backward : handednessDirection,
                 BattleAnimationIntensity.Heavy,
                 eventData.Note);
         }
 
         return new BattleAnimationCueDescriptor(
             BattleAnimationSemantic.HitLight,
-            BattleAnimationDirection.Backward,
+            handednessDirection == BattleAnimationDirection.Any ? BattleAnimationDirection.Backward : handednessDirection,
             BattleAnimationIntensity.Medium,
             eventData.Note);
+    }
+
+    private static BattleAnimationDirection ResolveHandednessAnimationDirection(BattleUnitReadModel unit)
+    {
+        return unit.DominantHand switch
+        {
+            SM.Core.Contracts.DominantHand.Left => BattleAnimationDirection.Left,
+            SM.Core.Contracts.DominantHand.Right => BattleAnimationDirection.Right,
+            _ => BattleAnimationDirection.Lateral,
+        };
+    }
+
+    private static BattleAnimationDirection ResolveHandednessAnimationDirection(string note)
+    {
+        if (string.IsNullOrWhiteSpace(note))
+        {
+            return BattleAnimationDirection.Any;
+        }
+
+        if (note.Contains("WeaponTrailSide:left", System.StringComparison.OrdinalIgnoreCase)
+            || note.Contains("StepInArcSign:left", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return BattleAnimationDirection.Left;
+        }
+
+        if (note.Contains("WeaponTrailSide:right", System.StringComparison.OrdinalIgnoreCase)
+            || note.Contains("StepInArcSign:right", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return BattleAnimationDirection.Right;
+        }
+
+        return BattleAnimationDirection.Any;
     }
 
     private static BattleAnimationCueDescriptor ResolveBasicAttackCommitAnimation(BattleEvent eventData, BattleUnitReadModel? actor = null)

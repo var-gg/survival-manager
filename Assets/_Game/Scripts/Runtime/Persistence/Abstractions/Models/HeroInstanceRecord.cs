@@ -20,6 +20,7 @@ public sealed class HeroInstanceRecord
     public string FlexPassiveId = string.Empty;
     public RecruitTier RecruitTier = RecruitTier.Common;
     public RecruitOfferSource RecruitSource = RecruitOfferSource.RecruitPhase;
+    public DominantHand DominantHand = DominantHand.Right;
     public UnitRetrainState RetrainState = new();
     public UnitEconomyFootprint EconomyFootprint = new();
     public List<string> EquippedItemIds = new();

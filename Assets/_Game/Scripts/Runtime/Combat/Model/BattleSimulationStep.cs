@@ -57,7 +57,8 @@ public sealed record BattleUnitReadModel(
     string SignaturePassiveName = "",
     string FlexPassiveId = "",
     string FlexPassiveName = "",
-    IReadOnlyList<string>? TacticRuleSummaries = null);
+    IReadOnlyList<string>? TacticRuleSummaries = null,
+    DominantHand DominantHand = DominantHand.Right);
 
 public sealed record BattleSimulationStep(
     int StepIndex,

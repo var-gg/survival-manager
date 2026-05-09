@@ -23,6 +23,7 @@ namespace SM.Content.Definitions
         public string RoleTag = "auto";
         public string RoleFamilyTag = string.Empty;
         public string PrimaryWeaponFamilyTag = string.Empty;
+        public DominantHand DefaultDominantHand = DominantHand.Right;
         public RecruitTier RecruitTier = RecruitTier.Common;
         public BudgetCard BudgetCard = new();
         public bool IsRecruitable = true;
