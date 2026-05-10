@@ -26,6 +26,26 @@ public sealed class Atlas3DEnvironmentTests
     }
 
     [Test]
+    public void HexDiscMesh_FacesUpAndAcceptsTopDownRaycasts()
+    {
+        var go = new GameObject("AtlasHexDiscProbe");
+        try
+        {
+            var collider = go.AddComponent<MeshCollider>();
+            collider.sharedMesh = AtlasHexWorldMapper.CreateHexDiscMesh();
+            Physics.SyncTransforms();
+
+            Assert.That(collider.sharedMesh.normals, Is.All.Matches<Vector3>(normal => normal.y > 0.9f));
+            Assert.That(Physics.Raycast(new Vector3(0f, 2f, 0f), Vector3.down, out var hit, 5f), Is.True);
+            Assert.That(hit.collider, Is.EqualTo(collider));
+        }
+        finally
+        {
+            Object.DestroyImmediate(go);
+        }
+    }
+
+    [Test]
     public void LeylinePlan_CoversAllNineteenHexesInStableOrder()
     {
         var region = AtlasGrayboxDataFactory.CreateRegion();

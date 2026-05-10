@@ -44,9 +44,10 @@ public static class AtlasHexWorldMapper
         for (var i = 0; i < 6; i++)
         {
             var offset = i * 3;
+            var next = i == 5 ? 1 : i + 2;
             triangles[offset] = 0;
-            triangles[offset + 1] = i + 1;
-            triangles[offset + 2] = i == 5 ? 1 : i + 2;
+            triangles[offset + 1] = next;
+            triangles[offset + 2] = i + 1;
         }
 
         var mesh = new Mesh
@@ -75,11 +76,11 @@ public static class AtlasHexWorldMapper
             var next = i == 5 ? 0 : i + 1;
             var offset = i * 6;
             triangles[offset] = i;
-            triangles[offset + 1] = next;
-            triangles[offset + 2] = 6 + i;
+            triangles[offset + 1] = 6 + i;
+            triangles[offset + 2] = next;
             triangles[offset + 3] = next;
-            triangles[offset + 4] = 6 + next;
-            triangles[offset + 5] = 6 + i;
+            triangles[offset + 4] = 6 + i;
+            triangles[offset + 5] = 6 + next;
         }
 
         var mesh = new Mesh
