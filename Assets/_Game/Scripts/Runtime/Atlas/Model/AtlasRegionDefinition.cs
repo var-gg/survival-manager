@@ -27,14 +27,6 @@ public enum AtlasHexDirection
     SouthEast = 5,
 }
 
-public enum AtlasRegionLayer
-{
-    Outer = 0,
-    Middle = 1,
-    Inner = 2,
-    Core = 3,
-}
-
 public sealed record AtlasRegionNode(
     string NodeId,
     AtlasHexCoordinate Hex,
@@ -43,8 +35,7 @@ public sealed record AtlasRegionNode(
     string EnemyPreview,
     string RewardFamily,
     string AnswerLane,
-    int SiteNodeIndex = -1,
-    AtlasRegionLayer Layer = AtlasRegionLayer.Outer);
+    int SiteNodeIndex = -1);
 
 public sealed record AtlasCharacterPreview(
     string CharacterId,
@@ -79,18 +70,4 @@ public sealed record AtlasRegionDefinition(
     IReadOnlyList<AtlasStageCandidate> StageCandidates,
     IReadOnlyList<SigilAnchorSlot> SigilAnchorSlots,
     string AnchorSlotVersion = "anchor_slots_v2_19hex",
-    string FootprintProfileVersion = "footprint_profiles_v2_shape_category")
-{
-    public AtlasRegionLayer ResolveLayer(string nodeId)
-    {
-        foreach (var node in Nodes)
-        {
-            if (string.Equals(node.NodeId, nodeId, System.StringComparison.Ordinal))
-            {
-                return node.Layer;
-            }
-        }
-
-        throw new System.ArgumentException($"Atlas node '{nodeId}' was not found.", nameof(nodeId));
-    }
-}
+    string FootprintProfileVersion = "footprint_profiles_v2_shape_category");

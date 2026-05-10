@@ -7,7 +7,7 @@ namespace SM.Atlas.Services;
 
 public sealed class AtlasNodePreviewBuilder
 {
-    private const string BoundaryNote = "Sigil creates node RewardBias only; it never grants named augment buckets directly.";
+    private const string BoundaryNote = "Sigil changes node reward, threat, and affinity surfaces only.";
 
     public AtlasNodePreview Build(
         AtlasRegionDefinition region,
@@ -18,7 +18,6 @@ public sealed class AtlasNodePreviewBuilder
         string chapterId,
         string siteId,
         string encounterId,
-        string traversalMode,
         string cycleSalt,
         string squadSnapshotId)
     {
@@ -29,7 +28,6 @@ public sealed class AtlasNodePreviewBuilder
             siteId,
             node.SiteNodeIndex >= 0 ? node.SiteNodeIndex : 0,
             encounterId,
-            traversalMode,
             stageCandidatePathHash,
             nodeOverlayHash,
             squadSnapshotId);

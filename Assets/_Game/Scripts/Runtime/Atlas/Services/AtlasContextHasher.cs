@@ -84,7 +84,6 @@ public static class AtlasContextHasher
         string siteId,
         int nodeIndex,
         string encounterId,
-        string traversalMode,
         string stageCandidatePathHash,
         string nodeOverlayHash,
         string squadSnapshotId)
@@ -97,7 +96,6 @@ public static class AtlasContextHasher
             siteId,
             nodeIndex.ToString(System.Globalization.CultureInfo.InvariantCulture),
             encounterId,
-            traversalMode,
             stageCandidatePathHash,
             nodeOverlayHash,
             squadSnapshotId);

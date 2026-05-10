@@ -94,7 +94,6 @@
     min-width: 340px;
     min-height: 520px;
     margin-right: 12px;
-    position: relative;
 }
 
 .atlas-board {
@@ -121,33 +120,32 @@
     bottom: 0;
 }
 
-.atlas-layer-band {
+.atlas-layer-focus {
     position: absolute;
     border-width: 1px;
     border-radius: 18px;
-    background-color: rgba(0, 0, 0, 0);
-    opacity: 0.34;
+    opacity: 0.24;
 }
 
-.atlas-layer-band.is-current {
-    border-width: 2px;
-    opacity: 0.76;
+.atlas-layer-focus--stage-1 {
+    border-color: rgba(118, 218, 236, 0.54);
+    background-color: rgba(118, 218, 236, 0.025);
 }
 
-.atlas-layer--outer {
-    border-color: rgba(91, 220, 238, 0.34);
+.atlas-layer-focus--stage-2 {
+    border-color: rgba(245, 204, 112, 0.52);
+    background-color: rgba(245, 204, 112, 0.030);
 }
 
-.atlas-layer--middle {
-    border-color: rgba(238, 187, 78, 0.40);
+.atlas-layer-focus--stage-3 {
+    border-color: rgba(218, 112, 216, 0.50);
+    background-color: rgba(218, 112, 216, 0.025);
 }
 
-.atlas-layer--inner {
-    border-color: rgba(231, 95, 196, 0.46);
-}
-
-.atlas-layer--core {
-    border-color: rgba(255, 255, 255, 0.58);
+.atlas-layer-focus--stage-4,
+.atlas-layer-focus--stage-5 {
+    border-color: rgba(255, 255, 255, 0.46);
+    background-color: rgba(255, 255, 255, 0.020);
 }
 
 .atlas-hex-hit-zone {
@@ -391,14 +389,24 @@
     width: 22px;
     height: 22px;
     border-radius: 11px;
+    border-width: 1px;
+    border-color: rgba(245, 204, 112, 0.34);
+    background-color: rgba(245, 204, 112, 0.08);
+}
+
+.atlas-anchor-marker.is-active {
+    width: 26px;
+    height: 26px;
+    border-radius: 13px;
     border-width: 2px;
-    border-color: rgba(245, 204, 112, 0.88);
-    background-color: rgba(245, 204, 112, 0.20);
+    border-color: rgba(245, 204, 112, 0.94);
+    background-color: rgba(245, 204, 112, 0.30);
 }
 
 .atlas-anchor-marker.is-future {
     border-color: rgba(255, 255, 255, 0.30);
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.05);
+    opacity: 0.30;
 }
 
 .atlas-preview {
@@ -474,39 +482,6 @@
     min-width: 0;
     min-height: 430px;
     margin: 8px 0;
-}
-
-.atlas-traversal-mode-strip {
-    min-height: 38px;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(16, 19, 20, 0.58);
-    border-width: 1px;
-    border-color: rgba(255, 218, 138, 0.18);
-    border-radius: 8px;
-    margin-top: 10px;
-    padding: 6px 8px;
-}
-
-.atlas-traversal-mode,
-.atlas-traversal-policy {
-    min-width: 150px;
-    height: 24px;
-    margin-left: 4px;
-    margin-right: 4px;
-    border-radius: 6px;
-    border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.14);
-    background-color: rgba(40, 47, 53, 0.70);
-    color: rgb(226, 232, 226);
-    font-size: 12px;
-    unity-font-style: bold;
-}
-
-.atlas-traversal-policy {
-    color: rgb(176, 190, 181);
-    unity-font-style: normal;
 }
 
 .atlas-spine-progress-strip {

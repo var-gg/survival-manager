@@ -44,22 +44,6 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         public string AnchorHighlightState { get; }
     }
 
-    public readonly struct LayerBandEntry
-    {
-        public LayerBandEntry(AtlasRegionLayer layer, float radiusScale, Color color, bool isCurrent)
-        {
-            Layer = layer;
-            RadiusScale = radiusScale;
-            Color = color;
-            IsCurrent = isCurrent;
-        }
-
-        public AtlasRegionLayer Layer { get; }
-        public float RadiusScale { get; }
-        public Color Color { get; }
-        public bool IsCurrent { get; }
-    }
-
     [SerializeField] private Transform auraRoot = null!;
 
     public static IReadOnlyList<AuraEntry> BuildAuraPlan(AtlasScreenViewState state)
@@ -70,7 +54,7 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         }
 
         return state.Tiles
-            .Where(tile => tile.AuraCategories.Count > 0 || tile.HasOverlapPulse || tile.IsCurrentStageCandidate || tile.AnchorHighlightState is "current" or "future")
+            .Where(tile => tile.AuraCategories.Count > 0 || tile.HasOverlapPulse || tile.IsCurrentStageCandidate || tile.AnchorHighlightState is "active" or "current" or "future")
             .OrderBy(tile => tile.Hex.R)
             .ThenBy(tile => tile.Hex.Q)
             .Select(tile => new AuraEntry(
@@ -82,23 +66,6 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
                 tile.IsCurrentStageCandidate,
                 tile.IsSigilAnchor,
                 tile.AnchorHighlightState))
-            .ToArray();
-    }
-
-    public static IReadOnlyList<LayerBandEntry> BuildLayerPlan(AtlasScreenViewState state)
-    {
-        if (state == null)
-        {
-            throw new ArgumentNullException(nameof(state));
-        }
-
-        return state.LayerBands
-            .OrderByDescending(layer => layer.Layer)
-            .Select(layer => new LayerBandEntry(
-                layer.Layer,
-                ResolveLayerRadiusScale(layer.Layer),
-                ResolveLayerColor(layer.Layer, layer.IsCurrent),
-                layer.IsCurrent))
             .ToArray();
     }
 
@@ -129,11 +96,6 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         ClearChildren(auraRoot);
 
         var shader = Shader.Find("SM/Atlas/SigilAuraRing") ?? Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Standard");
-        foreach (var layer in BuildLayerPlan(state))
-        {
-            CreateLayerOutline(layer, shader, ringMesh);
-        }
-
         foreach (var entry in BuildAuraPlan(state))
         {
             CreateAura(entry, shader, discMesh, ringMesh, categoryMaterialResolver, overlapMaterial);
@@ -169,10 +131,20 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
     {
         for (var i = 0; i < entry.Categories.Count; i++)
         {
+            var shape = entry.Shapes.ElementAtOrDefault(i);
+            var shapeGo = new GameObject($"Aura_{entry.NodeId}_{entry.Categories[i]}_{shape}_Surface");
+            shapeGo.transform.SetParent(auraRoot, false);
+            shapeGo.transform.position = entry.WorldPosition + Vector3.up * (0.048f + i * 0.004f);
+            ApplyShapeTransform(shapeGo.transform, shape, i);
+            AssignMesh(shapeGo, CreateFootprintShapeMesh(shape, discMesh));
+            AssignMaterial(
+                shapeGo,
+                categoryMaterialResolver?.Invoke(entry.Categories[i]) ?? CreateAuraMaterial(shader, ResolveCategoryColor(entry.Categories[i]), 0.72f + i * 0.16f));
+
             var go = new GameObject($"Aura_{entry.NodeId}_{entry.Categories[i]}");
             go.transform.SetParent(auraRoot, false);
             go.transform.position = entry.WorldPosition + Vector3.up * (0.055f + i * 0.006f);
-            ApplyShapeTransform(go.transform, entry.Shapes.ElementAtOrDefault(i), i);
+            ApplyShapeTransform(go.transform, shape, i);
             AssignMesh(go, ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius * 1.06f, 0.050f));
             AssignMaterial(
                 go,
@@ -184,7 +156,7 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
             CreateOutline(entry, shader, ringMesh, $"StageCandidate_{entry.NodeId}", new Color(1.00f, 0.92f, 0.45f, 0.34f), 1.18f, 0.12f);
         }
 
-        if (entry.IsSigilAnchor && entry.AnchorHighlightState == "current")
+        if (entry.IsSigilAnchor && entry.AnchorHighlightState is "active" or "current")
         {
             CreateOutline(entry, shader, ringMesh, $"AnchorCurrent_{entry.NodeId}", new Color(1.00f, 0.78f, 0.22f, 0.42f), 0.72f, 0.10f);
         }
@@ -216,6 +188,69 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         };
     }
 
+    private static Mesh CreateFootprintShapeMesh(AtlasFootprintShape shape, Mesh? discMesh)
+    {
+        return shape switch
+        {
+            AtlasFootprintShape.Lane => CreateRectangleMesh(0.42f, 0.76f),
+            AtlasFootprintShape.ScoutArc => CreateFanMesh(0.82f, 78f, 6),
+            _ => discMesh ?? AtlasHexWorldMapper.CreateHexDiscMesh(AtlasHexWorldMapper.HexRadius * 0.72f),
+        };
+    }
+
+    private static Mesh CreateRectangleMesh(float halfWidth, float halfLength)
+    {
+        var vertices = new[]
+        {
+            new Vector3(-halfWidth, 0f, -halfLength),
+            new Vector3(halfWidth, 0f, -halfLength),
+            new Vector3(halfWidth, 0f, halfLength),
+            new Vector3(-halfWidth, 0f, halfLength),
+        };
+        var mesh = new Mesh
+        {
+            name = "AtlasLaneFootprint",
+            vertices = vertices,
+            triangles = new[] { 0, 1, 2, 0, 2, 3 },
+        };
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        return mesh;
+    }
+
+    private static Mesh CreateFanMesh(float radius, float angleDegrees, int segments)
+    {
+        var safeSegments = Math.Max(2, segments);
+        var vertices = new Vector3[safeSegments + 2];
+        var triangles = new int[safeSegments * 3];
+        vertices[0] = Vector3.zero;
+        for (var i = 0; i <= safeSegments; i++)
+        {
+            var t = i / (float)safeSegments;
+            var angle = Mathf.Deg2Rad * Mathf.Lerp(-angleDegrees * 0.5f, angleDegrees * 0.5f, t);
+            vertices[i + 1] = new Vector3(Mathf.Sin(angle) * radius, 0f, Mathf.Cos(angle) * radius);
+            if (i >= safeSegments)
+            {
+                continue;
+            }
+
+            var offset = i * 3;
+            triangles[offset] = 0;
+            triangles[offset + 1] = i + 1;
+            triangles[offset + 2] = i + 2;
+        }
+
+        var mesh = new Mesh
+        {
+            name = "AtlasScoutArcFootprint",
+            vertices = vertices,
+            triangles = triangles,
+        };
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        return mesh;
+    }
+
     private void CreateOutline(AuraEntry entry, Shader shader, Mesh? ringMesh, string name, Color color, float scale, float yOffset)
     {
         var go = new GameObject(name);
@@ -224,39 +259,6 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         go.transform.localScale = Vector3.one * scale;
         AssignMesh(go, ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius, 0.035f));
         AssignMaterial(go, CreateAuraMaterial(shader, color, scale));
-    }
-
-    private void CreateLayerOutline(LayerBandEntry layer, Shader shader, Mesh? ringMesh)
-    {
-        var go = new GameObject($"LayerOutline_{layer.Layer}");
-        go.transform.SetParent(auraRoot, false);
-        go.transform.position = Vector3.up * (0.032f + (int)layer.Layer * 0.004f);
-        go.transform.localScale = Vector3.one * layer.RadiusScale;
-        AssignMesh(go, ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius, 0.030f));
-        AssignMaterial(go, CreateAuraMaterial(shader, layer.Color, layer.IsCurrent ? 1.6f : 0.45f));
-    }
-
-    private static float ResolveLayerRadiusScale(AtlasRegionLayer layer)
-    {
-        return layer switch
-        {
-            AtlasRegionLayer.Outer => 4.20f,
-            AtlasRegionLayer.Middle => 2.82f,
-            AtlasRegionLayer.Inner => 1.62f,
-            _ => 0.72f,
-        };
-    }
-
-    private static Color ResolveLayerColor(AtlasRegionLayer layer, bool isCurrent)
-    {
-        var alpha = isCurrent ? 0.34f : 0.16f;
-        return layer switch
-        {
-            AtlasRegionLayer.Outer => new Color(0.36f, 0.86f, 0.94f, alpha),
-            AtlasRegionLayer.Middle => new Color(0.95f, 0.70f, 0.30f, alpha),
-            AtlasRegionLayer.Inner => new Color(0.92f, 0.34f, 0.78f, alpha),
-            _ => new Color(1.00f, 1.00f, 1.00f, alpha + 0.08f),
-        };
     }
 
     private static void AssignMesh(GameObject go, Mesh mesh)
