@@ -13,7 +13,7 @@ public sealed class AtlasNodePreviewBuilder
         AtlasRegionDefinition region,
         AtlasRegionNode node,
         AtlasNodeModifierStack stack,
-        AtlasRouteCandidate route,
+        string stageCandidatePathHash,
         string runId,
         string chapterId,
         string siteId,
@@ -21,13 +21,14 @@ public sealed class AtlasNodePreviewBuilder
         string cycleSalt,
         string squadSnapshotId)
     {
-        var nodeOverlayHash = AtlasContextHasher.BuildNodeOverlayHash(region.RegionId, node, route.RouteId, cycleSalt, stack.Influences);
+        var nodeOverlayHash = AtlasContextHasher.BuildNodeOverlayHash(region.RegionId, node, cycleSalt, stack.Influences);
         var battleContextHash = AtlasContextHasher.BuildBattleContextHash(
             runId,
             chapterId,
             siteId,
             node.SiteNodeIndex >= 0 ? node.SiteNodeIndex : 0,
             encounterId,
+            stageCandidatePathHash,
             nodeOverlayHash,
             squadSnapshotId);
 
@@ -40,7 +41,7 @@ public sealed class AtlasNodePreviewBuilder
             BoundaryNote,
             stack.ResolvedModifiers,
             Recommend(region.Roster, node, stack),
-            route.RouteId,
+            stageCandidatePathHash,
             nodeOverlayHash,
             battleContextHash);
     }

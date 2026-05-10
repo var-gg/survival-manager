@@ -73,6 +73,29 @@ public static class AtlasReadabilityFormatter
         };
     }
 
+    public static string FormatSigilCardLabel(AtlasSigilDefinition definition)
+    {
+        var displayName = FormatSigilName(definition.DisplayName);
+        var category = definition.SigilCategory switch
+        {
+            AtlasModifierCategory.RewardBias => "보상 군집",
+            AtlasModifierCategory.ThreatPressure => "위험 통로",
+            AtlasModifierCategory.AffinityBoost => "정찰 부채꼴",
+            _ => FormatModifierCategory(definition.SigilCategory),
+        };
+        var variant = definition.FootprintProfileId switch
+        {
+            "RewardBias.Cluster.Dense" => "좁고 강함",
+            "RewardBias.Cluster.Wide" => "넓고 약함",
+            "ThreatPressure.Lane.Hard" => "짧고 강함",
+            "ThreatPressure.Lane.Long" => "길고 약함",
+            "AffinityBoost.ScoutArc.Deep" => "깊게 읽음",
+            "AffinityBoost.ScoutArc.Wide" => "넓게 읽음",
+            _ => "기본형",
+        };
+        return $"{displayName} — {category} ({variant})";
+    }
+
     public static string FormatModifierCategory(AtlasModifierCategory category)
     {
         return category switch
@@ -257,30 +280,6 @@ public static class AtlasReadabilityFormatter
             : $"{family} 계열 기본 보상";
     }
 
-    public static string BuildRouteLabel(AtlasRouteCandidate route, int rewardPercent, int threatPercent)
-    {
-        var title = route.RouteId switch
-        {
-            "route_west_reward" => "서쪽 보상 길",
-            "route_center_greed" => "중앙 욕망 길",
-            "route_east_safe" => "동쪽 안전 길",
-            _ => HumanizeToken(route.Label),
-        };
-        var hint = route.RouteId switch
-        {
-            "route_west_reward" => "보상 우선",
-            "route_center_greed" => "탱커 빌드용",
-            "route_east_safe" => "안전 진입",
-            _ => "유연 선택",
-        };
-        return $"{title} — {BuildRewardDensity(rewardPercent)} / {BuildThreatDensity(threatPercent)} ({hint})";
-    }
-
-    public static string BuildRouteSummary(IReadOnlyList<string> nodeIds, int rewardPercent, int threatPercent)
-    {
-        return $"노드 {nodeIds.Count.ToString(CultureInfo.InvariantCulture)}개 / 보상 +{rewardPercent.ToString(CultureInfo.InvariantCulture)}% / 위험 +{threatPercent.ToString(CultureInfo.InvariantCulture)}%";
-    }
-
     public static AtlasHexBadgeViewState BuildTypeBadge(AtlasNodeKind kind)
     {
         var full = FormatNodeKind(kind);
@@ -293,6 +292,9 @@ public static class AtlasReadabilityFormatter
             AtlasNodeKind.Reward => "보상",
             AtlasNodeKind.Event => "사건",
             AtlasNodeKind.SigilAnchor => "각인",
+            AtlasNodeKind.Cache => "보관",
+            AtlasNodeKind.ScoutVantage => "정찰",
+            AtlasNodeKind.Echo => "메아",
             _ => "일반",
         };
         return new AtlasHexBadgeViewState(label, $"노드 타입: {full}", "atlas-chip--type");
@@ -321,17 +323,41 @@ public static class AtlasReadabilityFormatter
         return "각인은 노드의 보상 가중·위협 압력·인연 보정만 바꾸며, 이름 있는 augment나 augment bucket을 직접 주지 않습니다.";
     }
 
+    public static string FormatSpineStageLabel(int stageIndex)
+    {
+        return stageIndex switch
+        {
+            1 => "진입",
+            2 => "교전",
+            3 => "단서",
+            4 => "보스",
+            5 => "추출",
+            _ => $"Stage {stageIndex.ToString(CultureInfo.InvariantCulture)}",
+        };
+    }
+
+    public static string BuildCandidateSummary(AtlasRegionNode node, AtlasNodeModifierStack? stack)
+    {
+        var reward = (stack?.RewardBiasPercent ?? 0) > 0 ? $"보상 +{stack!.RewardBiasPercent.ToString(CultureInfo.InvariantCulture)}%" : "기본 보상";
+        var threat = (stack?.ThreatPressurePercent ?? 0) > 0 ? $"위험 +{stack!.ThreatPressurePercent.ToString(CultureInfo.InvariantCulture)}%" : "위험 낮음";
+        return $"{FormatNodeKind(node.Kind)} / {reward} / {threat}";
+    }
+
     public static string BuildPlacementSummary(
         IReadOnlyList<AtlasPlacedSigil> placements,
         IReadOnlyList<AtlasSigilDefinition> sigilPool,
+        IReadOnlyList<SigilAnchorSlot> anchorSlots,
         AtlasNodeModifierStack? selectedStack)
     {
+        var anchorsById = anchorSlots.ToDictionary(slot => slot.AnchorId, StringComparer.Ordinal);
         var placed = placements
             .OrderBy(placement => placement.SigilId, StringComparer.Ordinal)
+            .ThenBy(placement => placement.AnchorId, StringComparer.Ordinal)
             .Select(placement =>
             {
                 var sigil = sigilPool.FirstOrDefault(candidate => string.Equals(candidate.SigilId, placement.SigilId, StringComparison.Ordinal));
-                return $"{FormatSigilName(sigil?.DisplayName ?? placement.SigilId)}@{FormatCoordinate(placement.AnchorHex)}";
+                var anchor = anchorsById.TryGetValue(placement.AnchorId, out var slot) ? FormatAnchorRole(slot) : FormatCoordinate(placement.AnchorHex);
+                return $"{FormatSigilName(sigil?.DisplayName ?? placement.SigilId)}@{anchor}";
             });
         var affecting = selectedStack == null || selectedStack.Influences.Count == 0
             ? "없음"
@@ -340,6 +366,18 @@ public static class AtlasReadabilityFormatter
                 .Select(influence => FormatSigilName(influence.DisplayName))
                 .Distinct(StringComparer.Ordinal));
         return $"각인 배치 {placements.Count.ToString(CultureInfo.InvariantCulture)}/2: {string.Join(" | ", placed)}. 선택 노드 영향: {affecting}.";
+    }
+
+    public static string FormatAnchorRole(SigilAnchorSlot slot)
+    {
+        var role = slot.AnchorRole switch
+        {
+            "Approach" => "진입 앵커",
+            "Pressure" => "압박 앵커",
+            "Evidence" => "단서 앵커",
+            _ => HumanizeToken(slot.AnchorRole),
+        };
+        return $"{role}/{slot.StageBand}";
     }
 
     public static string FormatCoordinate(AtlasHexCoordinate hex)
@@ -369,29 +407,10 @@ public static class AtlasReadabilityFormatter
             AtlasNodeKind.Reward => "보상",
             AtlasNodeKind.Event => "사건",
             AtlasNodeKind.SigilAnchor => "각인 슬롯",
+            AtlasNodeKind.Cache => "보관함",
+            AtlasNodeKind.ScoutVantage => "정찰 지점",
+            AtlasNodeKind.Echo => "메아리",
             _ => "일반",
-        };
-    }
-
-    private static string BuildRewardDensity(int rewardPercent)
-    {
-        return rewardPercent switch
-        {
-            >= 85 => "보상 매우 풍부",
-            >= 45 => "보상 풍부",
-            > 0 => "보상 보통",
-            _ => "보상 낮음",
-        };
-    }
-
-    private static string BuildThreatDensity(int threatPercent)
-    {
-        return threatPercent switch
-        {
-            >= 85 => "위험 강함",
-            >= 35 => "위험 보통",
-            > 0 => "위험 약함",
-            _ => "위험 낮음",
         };
     }
 

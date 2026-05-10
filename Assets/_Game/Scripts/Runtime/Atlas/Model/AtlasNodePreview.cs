@@ -18,6 +18,6 @@ public sealed record AtlasNodePreview(
     string SigilAugmentBoundaryNote,
     IReadOnlyList<AtlasResolvedModifier> ModifierStack,
     IReadOnlyList<AtlasRecommendedCharacter> RecommendedCharacters,
-    string RouteId,
+    string StageCandidatePathHash,
     string NodeOverlayHash,
     string BattleContextHash);

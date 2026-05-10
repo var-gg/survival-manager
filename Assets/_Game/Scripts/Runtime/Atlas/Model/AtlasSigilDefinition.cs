@@ -9,6 +9,13 @@ public enum AtlasModifierCategory
     AffinityBoost = 2,
 }
 
+public enum AtlasFootprintShape
+{
+    Cluster = 0,
+    Lane = 1,
+    ScoutArc = 2,
+}
+
 public sealed record AtlasSigilModifier(
     AtlasModifierCategory Category,
     string Label,
@@ -19,11 +26,21 @@ public sealed record AtlasSigilDefinition(
     string DisplayName,
     int Radius,
     string ColorToken,
-    IReadOnlyList<AtlasSigilModifier> Modifiers);
+    IReadOnlyList<AtlasSigilModifier> Modifiers,
+    AtlasModifierCategory SigilCategory = AtlasModifierCategory.RewardBias,
+    string FootprintProfileId = "RewardBias.Cluster.Wide",
+    int PotencyTier = 1,
+    string FalloffProfileId = "falloff_100_70_40");
 
 public sealed record AtlasPlacedSigil(
     string SigilId,
-    AtlasHexCoordinate AnchorHex);
+    AtlasHexCoordinate AnchorHex,
+    string AnchorId = "");
+
+public sealed record AtlasFootprintCell(
+    AtlasHexCoordinate Hex,
+    int CellIndex,
+    int FalloffPercent);
 
 public sealed record AtlasSigilInfluence(
     string SigilId,
@@ -34,7 +51,10 @@ public sealed record AtlasSigilInfluence(
     AtlasModifierCategory Category,
     string Label,
     int RawPercent,
-    int EffectivePercent);
+    int EffectivePercent,
+    string AnchorId = "",
+    string FootprintProfileId = "",
+    AtlasFootprintShape FootprintShape = AtlasFootprintShape.Cluster);
 
 public sealed record AtlasResolvedModifier(
     AtlasModifierCategory Category,

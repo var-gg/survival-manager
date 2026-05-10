@@ -51,8 +51,8 @@ public static class AtlasGrayboxAuthoringAssetUtility
         EditorSceneManager.SaveScene(scene, AtlasScenePath);
         PatchSerializedScriptReferences(
             AtlasScenePath,
-            ("SM.Unity::SM.Unity.UI.Atlas.AtlasScreenController", "AtlasScreenController"),
-            ("SM.Unity::SM.Unity.Atlas.Atlas3DSceneController", "Atlas3DSceneController"));
+            ("SM.Unity::SM.Unity.UI.Atlas.AtlasScreenController", "Assets/_Game/Scripts/Runtime/Unity/UI/Atlas/AtlasScreenController.cs"),
+            ("SM.Unity::SM.Unity.Atlas.Atlas3DSceneController", "Assets/_Game/Scripts/Runtime/Unity/Atlas/Atlas3DSceneController.cs"));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log("[AtlasGraybox] Atlas 3D scene rebuilt.");
@@ -430,13 +430,17 @@ public static class AtlasGrayboxAuthoringAssetUtility
         }
     }
 
-    private static void PatchSerializedScriptReferences(string assetPath, params (string EditorClassIdentifier, string ClassName)[] fixups)
+    private static void PatchSerializedScriptReferences(string assetPath, params (string EditorClassIdentifier, string ScriptPath)[] fixups)
     {
         var lines = File.ReadAllLines(assetPath);
         var changed = false;
-        foreach (var (editorClassIdentifier, className) in fixups)
+        foreach (var (editorClassIdentifier, scriptPath) in fixups)
         {
-            var scriptFileId = FindEmbeddedMonoScriptFileId(lines, className);
+            var scriptGuid = AssetDatabase.AssetPathToGUID(scriptPath);
+            if (string.IsNullOrWhiteSpace(scriptGuid))
+            {
+                throw new InvalidOperationException($"MonoScript asset at {scriptPath} was not found.");
+            }
 
             for (var i = 0; i < lines.Length; i++)
             {
@@ -453,7 +457,7 @@ public static class AtlasGrayboxAuthoringAssetUtility
                         continue;
                     }
 
-                    lines[j] = $"  m_Script: {{fileID: {scriptFileId}}}";
+                    lines[j] = $"  m_Script: {{fileID: 11500000, guid: {scriptGuid}, type: 3}}";
                     changed = true;
                     break;
                 }
@@ -464,29 +468,6 @@ public static class AtlasGrayboxAuthoringAssetUtility
         {
             File.WriteAllLines(assetPath, lines);
         }
-    }
-
-    private static string FindEmbeddedMonoScriptFileId(string[] lines, string className)
-    {
-        for (var i = 0; i < lines.Length; i++)
-        {
-            if (!lines[i].StartsWith("--- !u!115 &", StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            var marker = lines[i]["--- !u!115 &".Length..].Trim();
-            var searchEnd = Math.Min(lines.Length, i + 18);
-            for (var j = i + 1; j < searchEnd; j++)
-            {
-                if (lines[j].Trim() == $"m_ClassName: {className}")
-                {
-                    return marker;
-                }
-            }
-        }
-
-        throw new InvalidOperationException($"Embedded MonoScript block for {className} was not found in Atlas scene YAML.");
     }
 
     private static GameObject EnsureRootObject(string name)

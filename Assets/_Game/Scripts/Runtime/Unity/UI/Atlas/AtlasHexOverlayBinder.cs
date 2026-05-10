@@ -21,6 +21,41 @@ public static class AtlasHexOverlayBinder
         tile.tooltip = $"{state.Label} ({state.Hex})";
     }
 
+    public static void ApplyBadgeLayout(VisualElement badge, AtlasHexTileViewState state)
+    {
+        var x = OriginX + (state.Hex.Q * TileWidth) + (state.Hex.R * TileWidth * 0.5f);
+        var y = OriginY + (state.Hex.R * TileHeight);
+        badge.style.left = x + 20f;
+        badge.style.top = y + 8f;
+    }
+
+    public static void ApplyHitZoneLayout(VisualElement hitZone, AtlasHexTileViewState state)
+    {
+        var x = OriginX + (state.Hex.Q * TileWidth) + (state.Hex.R * TileWidth * 0.5f);
+        var y = OriginY + (state.Hex.R * TileHeight);
+        hitZone.style.left = x;
+        hitZone.style.top = y;
+        hitZone.style.width = TileWidth;
+        hitZone.style.height = TileHeight;
+        hitZone.tooltip = $"{state.Label} ({state.Hex})";
+    }
+
+    public static void ApplyChipLayout(VisualElement row, AtlasHexTileViewState state)
+    {
+        var x = OriginX + (state.Hex.Q * TileWidth) + (state.Hex.R * TileWidth * 0.5f);
+        var y = OriginY + (state.Hex.R * TileHeight);
+        row.style.left = x + 8f;
+        row.style.top = y + 38f;
+    }
+
+    public static void ApplyAnchorLayout(VisualElement marker, AtlasHexTileViewState state)
+    {
+        var x = OriginX + (state.Hex.Q * TileWidth) + (state.Hex.R * TileWidth * 0.5f);
+        var y = OriginY + (state.Hex.R * TileHeight);
+        marker.style.left = x + 32f;
+        marker.style.top = y + 24f;
+    }
+
     public static string ToKindClass(AtlasNodeKind kind)
     {
         return kind switch
@@ -32,6 +67,9 @@ public static class AtlasHexOverlayBinder
             AtlasNodeKind.Reward => "atlas-hex--reward",
             AtlasNodeKind.Event => "atlas-hex--event",
             AtlasNodeKind.SigilAnchor => "atlas-hex--anchor",
+            AtlasNodeKind.Cache => "atlas-hex--reward",
+            AtlasNodeKind.ScoutVantage => "atlas-hex--event",
+            AtlasNodeKind.Echo => "atlas-hex--event",
             _ => "atlas-hex--normal",
         };
     }
