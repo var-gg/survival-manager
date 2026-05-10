@@ -20,7 +20,7 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
             IReadOnlyList<AtlasFootprintShape> shapes,
             bool isStageCandidate,
             bool isSigilAnchor,
-            string anchorHighlightState)
+            AtlasAnchorVisibilityState anchorVisibilityState)
         {
             NodeId = nodeId;
             Hex = hex;
@@ -30,7 +30,7 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
             IsOverlap = categories.Count > 1;
             IsStageCandidate = isStageCandidate;
             IsSigilAnchor = isSigilAnchor;
-            AnchorHighlightState = anchorHighlightState;
+            AnchorVisibilityState = anchorVisibilityState;
         }
 
         public string NodeId { get; }
@@ -41,7 +41,7 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         public bool IsOverlap { get; }
         public bool IsStageCandidate { get; }
         public bool IsSigilAnchor { get; }
-        public string AnchorHighlightState { get; }
+        public AtlasAnchorVisibilityState AnchorVisibilityState { get; }
     }
 
     [SerializeField] private Transform auraRoot = null!;
@@ -54,7 +54,10 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         }
 
         return state.Tiles
-            .Where(tile => tile.AuraCategories.Count > 0 || tile.HasOverlapPulse || tile.IsCurrentStageCandidate || tile.AnchorHighlightState is "active" or "current" or "future")
+            .Where(tile => tile.AuraCategories.Count > 0
+                           || tile.HasOverlapPulse
+                           || tile.StageBadgeVisibility == AtlasStageBadgeVisibility.Highlighted
+                           || tile.AnchorVisibilityState is AtlasAnchorVisibilityState.Active or AtlasAnchorVisibilityState.Future)
             .OrderBy(tile => tile.Hex.R)
             .ThenBy(tile => tile.Hex.Q)
             .Select(tile => new AuraEntry(
@@ -63,9 +66,9 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
                 AtlasHexWorldMapper.ToWorld(tile.Hex),
                 tile.AuraCategories,
                 tile.AuraShapes,
-                tile.IsCurrentStageCandidate,
+                tile.StageBadgeVisibility == AtlasStageBadgeVisibility.Highlighted,
                 tile.IsSigilAnchor,
-                tile.AnchorHighlightState))
+                tile.AnchorVisibilityState))
             .ToArray();
     }
 
@@ -156,12 +159,14 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
             CreateOutline(entry, shader, ringMesh, $"StageCandidate_{entry.NodeId}", new Color(1.00f, 0.92f, 0.45f, 0.34f), 1.18f, 0.12f);
         }
 
-        if (entry.IsSigilAnchor && entry.AnchorHighlightState is "active" or "current")
+        if (entry.IsSigilAnchor && entry.AnchorVisibilityState == AtlasAnchorVisibilityState.Active)
         {
+            CreateAnchorPillar(entry, shader, new Color(1.00f, 0.78f, 0.22f, 0.88f), 1.0f, 0.64f);
             CreateOutline(entry, shader, ringMesh, $"AnchorCurrent_{entry.NodeId}", new Color(1.00f, 0.78f, 0.22f, 0.42f), 0.72f, 0.10f);
         }
-        else if (entry.IsSigilAnchor && entry.AnchorHighlightState == "future")
+        else if (entry.IsSigilAnchor && entry.AnchorVisibilityState == AtlasAnchorVisibilityState.Future)
         {
+            CreateAnchorPillar(entry, shader, new Color(0.82f, 0.86f, 0.90f, 0.26f), 0.50f, 0.32f);
             CreateOutline(entry, shader, ringMesh, $"AnchorFuture_{entry.NodeId}", new Color(0.82f, 0.86f, 0.90f, 0.18f), 0.68f, 0.10f);
         }
 
@@ -259,6 +264,28 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         go.transform.localScale = Vector3.one * scale;
         AssignMesh(go, ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius, 0.035f));
         AssignMaterial(go, CreateAuraMaterial(shader, color, scale));
+    }
+
+    private void CreateAnchorPillar(AuraEntry entry, Shader shader, Color color, float widthScale, float height)
+    {
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        go.name = $"AnchorPillar_{entry.NodeId}_{entry.AnchorVisibilityState}";
+        go.transform.SetParent(auraRoot, false);
+        go.transform.position = entry.WorldPosition + Vector3.up * (0.10f + height * 0.5f);
+        go.transform.localScale = new Vector3(0.085f * widthScale, height * 0.5f, 0.085f * widthScale);
+        AssignMaterial(go, CreateAuraMaterial(shader, color, entry.AnchorVisibilityState == AtlasAnchorVisibilityState.Active ? 1.10f : 0.35f));
+        var collider = go.GetComponent<Collider>();
+        if (collider != null)
+        {
+            if (Application.isPlaying)
+            {
+                Destroy(collider);
+            }
+            else
+            {
+                DestroyImmediate(collider);
+            }
+        }
     }
 
     private static void AssignMesh(GameObject go, Mesh mesh)

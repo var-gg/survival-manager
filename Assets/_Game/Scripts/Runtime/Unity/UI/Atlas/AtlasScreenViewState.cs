@@ -8,6 +8,13 @@ public sealed record AtlasHexBadgeViewState(
     string Tooltip,
     string CssClass);
 
+public enum AtlasStageBadgeVisibility
+{
+    Resolved = 0,
+    Faded = 1,
+    Highlighted = 2,
+}
+
 public sealed record AtlasHexTileViewState(
     string NodeId,
     string Label,
@@ -17,7 +24,8 @@ public sealed record AtlasHexTileViewState(
     bool IsCurrentStageCandidate,
     bool IsSigilAnchor,
     string StageCandidateBadge,
-    string AnchorHighlightState,
+    AtlasAnchorVisibilityState AnchorVisibilityState,
+    AtlasStageBadgeVisibility StageBadgeVisibility,
     bool CanEnter,
     string LockReason,
     string PlacedSigilName,

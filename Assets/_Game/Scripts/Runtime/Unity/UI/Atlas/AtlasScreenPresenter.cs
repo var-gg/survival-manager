@@ -181,6 +181,7 @@ public sealed class AtlasScreenPresenter
             slot != null,
             stageCandidate?.CandidateBadge ?? string.Empty,
             ResolveAnchorHighlightState(slot),
+            ResolveStageBadgeVisibility(stageCandidate),
             canEnter,
             AtlasSpineProgressionService.ResolveLockReason(_region, node.NodeId, _siteSpineIndex, _bossResolved),
             placedSigil == null ? string.Empty : AtlasReadabilityFormatter.FormatSigilCardLabel(placedSigil),
@@ -319,7 +320,7 @@ public sealed class AtlasScreenPresenter
                     .Select(source => AtlasReadabilityFormatter.FormatSigilName(source.DisplayName))
                     .Distinct(StringComparer.Ordinal));
                 var cap = modifier.SameCategoryCapped || modifier.HardCapped ? " (cap 적용)" : string.Empty;
-                return $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)} +{modifier.Percent.ToString(CultureInfo.InvariantCulture)}% - {sources}{cap}";
+                return $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)} {AtlasReadabilityFormatter.FormatModifierIntensity(modifier.Category, modifier.Percent)} - {sources}{cap}";
             }));
         var recommended = string.Join("\n", preview.RecommendedCharacters.Select(character =>
             $"{AtlasReadabilityFormatter.FormatCharacterName(character.CharacterId, character.DisplayName)} - {AtlasReadabilityFormatter.FormatRole(character.Role)} ({AtlasReadabilityFormatter.FormatRecommendationReason(character.Reason)})"));
@@ -345,38 +346,68 @@ public sealed class AtlasScreenPresenter
         return _bossResolved ? AtlasSpineProgressionService.ExtractStageIndex : Math.Min(_siteSpineIndex + 1, AtlasSpineProgressionService.BossStageIndex);
     }
 
-    private string ResolveAnchorHighlightState(SigilAnchorSlot? slot)
+    private AtlasAnchorVisibilityState ResolveAnchorHighlightState(SigilAnchorSlot? slot)
     {
         if (slot == null)
         {
-            return string.Empty;
+            return AtlasAnchorVisibilityState.Inactive;
         }
 
-        var currentCandidates = AtlasSpineProgressionService.CurrentCandidates(_region, _siteSpineIndex, _bossResolved)
-            .Select(candidate => candidate.HexId)
-            .ToHashSet(StringComparer.Ordinal);
-        if (slot.CoveragePreview.Any(currentCandidates.Contains))
+        var stageRange = ResolveStageBandRange(slot.StageBand);
+        var currentStage = _siteSpineIndex + 1;
+        if (currentStage >= stageRange.MinStage && currentStage <= stageRange.MaxStage)
         {
-            return "active";
+            return AtlasAnchorVisibilityState.Active;
         }
 
-        return ResolveStageBandEnd(slot.StageBand) > _siteSpineIndex ? "future" : "inactive";
+        return stageRange.MinStage > _siteSpineIndex
+            ? AtlasAnchorVisibilityState.Future
+            : AtlasAnchorVisibilityState.Inactive;
     }
 
-    private static int ResolveStageBandEnd(string stageBand)
+    private AtlasStageBadgeVisibility ResolveStageBadgeVisibility(AtlasStageCandidate? candidate)
+    {
+        if (candidate == null)
+        {
+            return AtlasStageBadgeVisibility.Resolved;
+        }
+
+        var currentStage = ResolveCurrentStageIndex();
+        if (candidate.SiteStageIndex == currentStage)
+        {
+            return AtlasStageBadgeVisibility.Highlighted;
+        }
+
+        return candidate.SiteStageIndex > currentStage
+            ? AtlasStageBadgeVisibility.Faded
+            : AtlasStageBadgeVisibility.Resolved;
+    }
+
+    private static (int MinStage, int MaxStage) ResolveStageBandRange(string stageBand)
     {
         if (string.IsNullOrWhiteSpace(stageBand))
         {
-            return 0;
+            return (0, 0);
         }
 
         var tokens = stageBand.Split('_', StringSplitOptions.RemoveEmptyEntries);
-        var end = tokens.LastOrDefault() ?? string.Empty;
-        return end switch
+        var stages = tokens
+            .Skip(1)
+            .Select(ParseStageToken)
+            .Where(stage => stage > 0)
+            .ToArray();
+        return stages.Length == 0
+            ? (0, 0)
+            : (stages.Min(), stages.Max());
+    }
+
+    private static int ParseStageToken(string token)
+    {
+        return token switch
         {
             "boss" => AtlasSpineProgressionService.BossStageIndex,
             "extract" => AtlasSpineProgressionService.ExtractStageIndex,
-            _ when int.TryParse(end, NumberStyles.Integer, CultureInfo.InvariantCulture, out var stage) => stage,
+            _ when int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var stage) => stage,
             _ => 0,
         };
     }

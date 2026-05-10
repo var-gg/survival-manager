@@ -124,7 +124,12 @@
     position: absolute;
     border-width: 1px;
     border-radius: 18px;
-    opacity: 0.24;
+    opacity: 0.05;
+}
+
+.atlas-layer-focus.is-pulsing,
+.atlas-layer-focus:hover {
+    opacity: 0.30;
 }
 
 .atlas-layer-focus--stage-1 {
@@ -373,8 +378,22 @@
     color: rgb(18, 19, 18);
 }
 
+.atlas-stage-badge.is-faded {
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    border-color: rgba(255, 255, 255, 0.28);
+    background-color: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.36);
+    opacity: 0.30;
+}
+
 .atlas-stage-badge.is-locked {
     opacity: 0.42;
+}
+
+.atlas-stage-badge.is-faded.is-locked {
+    opacity: 0.30;
 }
 
 .atlas-hex-chip-overlay {
