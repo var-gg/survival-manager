@@ -31,7 +31,10 @@ public static class AtlasGrayboxAuthoringAssetUtility
 
     public static void EnsureAtlasScene()
     {
-        RebuildAtlasScene();
+        if (!File.Exists(AtlasScenePath) || !File.Exists(AtlasPrefabPath))
+        {
+            RebuildAtlasScene();
+        }
     }
 
     public static void RebuildAtlasScene()
