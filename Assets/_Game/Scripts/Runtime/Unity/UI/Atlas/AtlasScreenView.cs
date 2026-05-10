@@ -10,9 +10,11 @@ public sealed class AtlasScreenView
     private readonly VisualElement _content;
     private readonly VisualElement _boardPane;
     private readonly VisualElement _board;
+    private readonly VisualElement _layerOverlay;
     private readonly VisualElement _candidateOverlay;
     private readonly VisualElement _sigilPool;
     private readonly VisualElement _stageCandidateList;
+    private readonly VisualElement _traversalModeStrip;
     private readonly VisualElement _spineProgressStrip;
     private readonly Label _regionTitle;
     private readonly Label _placementSummary;
@@ -31,9 +33,11 @@ public sealed class AtlasScreenView
         _content = Require<VisualElement>("atlas-content");
         _boardPane = Require<VisualElement>("atlas-board-pane");
         _board = Require<VisualElement>("atlas-board");
+        _layerOverlay = Require<VisualElement>("atlas-layer-overlay");
         _candidateOverlay = Require<VisualElement>("atlas-stage-candidate-overlay");
         _sigilPool = Require<VisualElement>("atlas-sigil-pool");
         _stageCandidateList = Require<VisualElement>("atlas-stage-candidate-list");
+        _traversalModeStrip = Require<VisualElement>("atlas-traversal-mode-strip");
         _spineProgressStrip = Require<VisualElement>("atlas-spine-progress-strip");
         _regionTitle = Require<Label>("atlas-region-title");
         _placementSummary = Require<Label>("atlas-placement-summary");
@@ -49,6 +53,7 @@ public sealed class AtlasScreenView
         _boardPane.pickingMode = PickingMode.Position;
         _board.pickingMode = PickingMode.Ignore;
         _board.style.display = DisplayStyle.None;
+        _layerOverlay.pickingMode = PickingMode.Ignore;
         _candidateOverlay.pickingMode = PickingMode.Position;
         _root.RegisterCallback<GeometryChangedEvent>(evt =>
         {
@@ -66,6 +71,7 @@ public sealed class AtlasScreenView
         _placementSummary.text = state.PlacementSummary;
         RenderBoard(state);
         RenderSigilPool(state);
+        RenderTraversalMode(state.TraversalMode);
         RenderSpineProgress(state);
         RenderStageCandidates(state);
         RenderPreview(state.Preview);
@@ -76,7 +82,9 @@ public sealed class AtlasScreenView
     {
         // The 3D Atlas scene renders hex geometry and aura rings. UITK keeps the center as a transparent spacer so panels float over the world.
         _board.Clear();
+        _layerOverlay.Clear();
         _candidateOverlay.Clear();
+        RenderLayerVisualization(state);
         foreach (var tile in state.Tiles)
         {
             RenderHexHitZone(tile);
@@ -84,6 +92,37 @@ public sealed class AtlasScreenView
             RenderAnchorMarker(tile);
             RenderHexChips(tile);
         }
+    }
+
+    private void RenderLayerVisualization(AtlasScreenViewState state)
+    {
+        foreach (var layer in state.LayerBands)
+        {
+            var band = new VisualElement
+            {
+                tooltip = $"{layer.Label} layer / {layer.NodeCount} hex",
+            };
+            band.AddToClassList("atlas-layer-band");
+            band.AddToClassList(AtlasHexOverlayBinder.ToLayerClass(layer.Layer));
+            band.EnableInClassList("is-current", layer.IsCurrent);
+            AtlasHexOverlayBinder.ApplyLayerBandLayout(band, layer.Layer);
+            _layerOverlay.Add(band);
+        }
+    }
+
+    private void RenderTraversalMode(AtlasTraversalModeViewState traversalMode)
+    {
+        _traversalModeStrip.Clear();
+        var mode = new Label($"{traversalMode.Label} / 각인 {traversalMode.ActiveSigilCount}/{traversalMode.ActiveSigilCap}")
+        {
+            tooltip = traversalMode.Mode.ToString(),
+        };
+        mode.AddToClassList("atlas-traversal-mode");
+        _traversalModeStrip.Add(mode);
+
+        var policy = new Label(traversalMode.WeaknessContractLabel);
+        policy.AddToClassList("atlas-traversal-policy");
+        _traversalModeStrip.Add(policy);
     }
 
     private void RenderSigilPool(AtlasScreenViewState state)
@@ -185,6 +224,7 @@ public sealed class AtlasScreenView
             tooltip = string.IsNullOrWhiteSpace(tile.LockReason) ? tile.Label : tile.LockReason,
         };
         hitZone.AddToClassList("atlas-hex-hit-zone");
+        hitZone.AddToClassList(AtlasHexOverlayBinder.ToLayerClass(tile.Layer));
         hitZone.EnableInClassList("is-current", tile.IsCurrentStageCandidate);
         hitZone.EnableInClassList("is-selected", tile.IsSelected);
         hitZone.EnableInClassList("is-locked", !tile.CanEnter);

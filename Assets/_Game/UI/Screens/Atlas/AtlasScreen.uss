@@ -94,6 +94,7 @@
     min-width: 340px;
     min-height: 520px;
     margin-right: 12px;
+    position: relative;
 }
 
 .atlas-board {
@@ -109,6 +110,44 @@
     right: 0;
     top: 0;
     bottom: 0;
+}
+
+.atlas-layer-overlay {
+    flex-grow: 1;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.atlas-layer-band {
+    position: absolute;
+    border-width: 1px;
+    border-radius: 18px;
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 0.34;
+}
+
+.atlas-layer-band.is-current {
+    border-width: 2px;
+    opacity: 0.76;
+}
+
+.atlas-layer--outer {
+    border-color: rgba(91, 220, 238, 0.34);
+}
+
+.atlas-layer--middle {
+    border-color: rgba(238, 187, 78, 0.40);
+}
+
+.atlas-layer--inner {
+    border-color: rgba(231, 95, 196, 0.46);
+}
+
+.atlas-layer--core {
+    border-color: rgba(255, 255, 255, 0.58);
 }
 
 .atlas-hex-hit-zone {
@@ -435,6 +474,39 @@
     min-width: 0;
     min-height: 430px;
     margin: 8px 0;
+}
+
+.atlas-traversal-mode-strip {
+    min-height: 38px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(16, 19, 20, 0.58);
+    border-width: 1px;
+    border-color: rgba(255, 218, 138, 0.18);
+    border-radius: 8px;
+    margin-top: 10px;
+    padding: 6px 8px;
+}
+
+.atlas-traversal-mode,
+.atlas-traversal-policy {
+    min-width: 150px;
+    height: 24px;
+    margin-left: 4px;
+    margin-right: 4px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.14);
+    background-color: rgba(40, 47, 53, 0.70);
+    color: rgb(226, 232, 226);
+    font-size: 12px;
+    unity-font-style: bold;
+}
+
+.atlas-traversal-policy {
+    color: rgb(176, 190, 181);
+    unity-font-style: normal;
 }
 
 .atlas-spine-progress-strip {

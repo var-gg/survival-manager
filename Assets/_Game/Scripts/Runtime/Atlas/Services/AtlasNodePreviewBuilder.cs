@@ -18,6 +18,7 @@ public sealed class AtlasNodePreviewBuilder
         string chapterId,
         string siteId,
         string encounterId,
+        string traversalMode,
         string cycleSalt,
         string squadSnapshotId)
     {
@@ -28,6 +29,7 @@ public sealed class AtlasNodePreviewBuilder
             siteId,
             node.SiteNodeIndex >= 0 ? node.SiteNodeIndex : 0,
             encounterId,
+            traversalMode,
             stageCandidatePathHash,
             nodeOverlayHash,
             squadSnapshotId);

@@ -8,9 +8,21 @@ namespace SM.Editor;
 public static class AtlasSandboxBootstrap
 {
     private const string AtlasScenePath = "Assets/_Game/Scenes/Atlas.unity";
+    private const string AtlasLegacyScenePath = "Assets/_Game/Scenes/AtlasLegacy19.unity";
 
     [MenuItem("SM/Atlas테스트", false, 4)]
     public static void PlayAtlasGraybox()
+    {
+        PlayAtlasGraybox(legacy: false);
+    }
+
+    [MenuItem("SM/Atlas테스트 (V1 19hex)", false, 5)]
+    public static void PlayAtlasLegacyGraybox()
+    {
+        PlayAtlasGraybox(legacy: true);
+    }
+
+    private static void PlayAtlasGraybox(bool legacy)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode)
         {
@@ -20,8 +32,17 @@ public static class AtlasSandboxBootstrap
 
         try
         {
-            AtlasGrayboxAuthoringAssetUtility.EnsureAtlasScene();
-            EditorSceneManager.OpenScene(AtlasScenePath, OpenSceneMode.Single);
+            if (legacy)
+            {
+                AtlasGrayboxAuthoringAssetUtility.EnsureLegacyAtlasScene();
+                EditorSceneManager.OpenScene(AtlasLegacyScenePath, OpenSceneMode.Single);
+            }
+            else
+            {
+                AtlasGrayboxAuthoringAssetUtility.EnsureAtlasScene();
+                EditorSceneManager.OpenScene(AtlasScenePath, OpenSceneMode.Single);
+            }
+
             EditorApplication.EnterPlaymode();
         }
         catch (System.Exception ex)

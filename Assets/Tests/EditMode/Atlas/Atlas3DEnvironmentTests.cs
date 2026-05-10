@@ -46,15 +46,15 @@ public sealed class Atlas3DEnvironmentTests
     }
 
     [Test]
-    public void LeylinePlan_CoversAllNineteenHexesInStableOrder()
+    public void LeylinePlan_CoversAllThirtySevenHexesInStableOrder()
     {
         var region = AtlasGrayboxDataFactory.CreateRegion();
         var plan = AtlasHexLeylineRenderer.BuildPlan(region);
 
-        Assert.That(plan.Count, Is.EqualTo(19));
-        Assert.That(plan.Select(entry => entry.NodeId).Distinct().Count(), Is.EqualTo(19));
-        Assert.That(plan.First().Hex.R, Is.EqualTo(-2));
-        Assert.That(plan.Last().Hex.R, Is.EqualTo(2));
+        Assert.That(plan.Count, Is.EqualTo(37));
+        Assert.That(plan.Select(entry => entry.NodeId).Distinct().Count(), Is.EqualTo(37));
+        Assert.That(plan.First().Hex.R, Is.EqualTo(-3));
+        Assert.That(plan.Last().Hex.R, Is.EqualTo(3));
     }
 
     [Test]
@@ -62,9 +62,12 @@ public sealed class Atlas3DEnvironmentTests
     {
         var state = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion()).Build();
         var plan = AtlasSigilAuraVFXController.BuildAuraPlan(state);
+        var layerPlan = AtlasSigilAuraVFXController.BuildLayerPlan(state);
 
         Assert.That(plan.Count, Is.GreaterThan(0));
         Assert.That(plan.Count(entry => entry.IsOverlap), Is.GreaterThan(0));
+        Assert.That(layerPlan.Count, Is.EqualTo(4));
+        Assert.That(layerPlan.Count(entry => entry.IsCurrent), Is.EqualTo(1));
         Assert.That(AtlasSigilAuraVFXController.ResolveCategoryColor(AtlasModifierCategory.RewardBias).a, Is.GreaterThan(0f));
         Assert.That(AtlasSigilAuraVFXController.ResolveOverlapColor().r, Is.GreaterThan(0.9f));
     }
@@ -83,7 +86,8 @@ public sealed class Atlas3DEnvironmentTests
         Assert.That(board.pickingMode, Is.EqualTo(PickingMode.Ignore));
         Assert.That(board.style.display.value, Is.EqualTo(DisplayStyle.None));
         Assert.That(board.childCount, Is.EqualTo(0));
-        Assert.That(root.Query<Button>(className: "atlas-hex-hit-zone").ToList().Count, Is.EqualTo(19));
+        Assert.That(root.Query<Button>(className: "atlas-hex-hit-zone").ToList().Count, Is.EqualTo(37));
+        Assert.That(root.Query<VisualElement>(className: "atlas-layer-band").ToList().Count, Is.EqualTo(4));
     }
 
     [Test]
@@ -93,7 +97,7 @@ public sealed class Atlas3DEnvironmentTests
         var plan = AtlasCharacterStandeePresenter.BuildPlan(region);
 
         Assert.That(plan.Count, Is.EqualTo(4));
-        Assert.That(plan.Select(entry => entry.NodeId), Has.Member("hex_m2_1"));
+        Assert.That(plan.Select(entry => entry.NodeId), Has.Member("hex_m3_1"));
         Assert.That(plan, Is.All.Matches<AtlasCharacterStandeePresenter.StandeeEntry>(entry =>
             entry.Scale is >= 0.70f and <= 0.85f));
     }
@@ -104,11 +108,13 @@ public sealed class Atlas3DEnvironmentTests
         var content = new VisualElement { name = "atlas-content" };
         var boardPane = new VisualElement { name = "atlas-board-pane" };
         boardPane.Add(new VisualElement { name = "atlas-board" });
+        boardPane.Add(new VisualElement { name = "atlas-layer-overlay" });
         boardPane.Add(new VisualElement { name = "atlas-stage-candidate-overlay" });
         content.Add(new VisualElement { name = "atlas-sigil-pool" });
         content.Add(boardPane);
         content.Add(new VisualElement { name = "atlas-stage-candidate-list" });
         root.Add(content);
+        root.Add(new VisualElement { name = "atlas-traversal-mode-strip" });
         root.Add(new VisualElement { name = "atlas-spine-progress-strip" });
         root.Add(new Label { name = "atlas-region-title" });
         root.Add(new Label { name = "atlas-placement-summary" });
