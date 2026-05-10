@@ -12,6 +12,10 @@ public sealed class AtlasScreenController : MonoBehaviour
     private AtlasScreenView _view = null!;
     private int _viewRootBuildCount = -1;
 
+    public event System.Action<AtlasScreenViewState>? ViewStateRendered;
+
+    public AtlasScreenViewState? CurrentState { get; private set; }
+
     public void EnsureRuntimeControls()
     {
         ResolvePanelHost();
@@ -85,6 +89,39 @@ public sealed class AtlasScreenController : MonoBehaviour
             return;
         }
 
-        _view.Render(_presenter.Build());
+        CurrentState = _presenter.Build();
+        _view.Render(CurrentState);
+        ViewStateRendered?.Invoke(CurrentState);
+    }
+
+    public bool SelectTileFromWorld(string nodeId)
+    {
+        if (string.IsNullOrWhiteSpace(nodeId))
+        {
+            return false;
+        }
+
+        ResolvePanelHost();
+        panelHost.EnsureReady();
+        EnsureView();
+
+        var state = _presenter.Build();
+        var tile = state.Tiles.FirstOrDefault(candidate => candidate.NodeId == nodeId);
+        if (tile == null)
+        {
+            return false;
+        }
+
+        if (tile.IsSigilAnchor)
+        {
+            _presenter.PlaceSelectedSigil(nodeId);
+        }
+        else
+        {
+            _presenter.SelectNode(nodeId);
+        }
+
+        Render();
+        return true;
     }
 }
