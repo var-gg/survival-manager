@@ -14,28 +14,44 @@ public sealed record AtlasHexTileViewState(
     AtlasHexCoordinate Hex,
     AtlasNodeKind Kind,
     bool IsSelected,
-    bool IsRouteNode,
+    bool IsCurrentStageCandidate,
     bool IsSigilAnchor,
+    string StageCandidateBadge,
+    string AnchorHighlightState,
+    bool CanEnter,
+    string LockReason,
     string PlacedSigilName,
     AtlasHexBadgeViewState TypeChip,
     AtlasHexBadgeViewState RewardFamilyChip,
     IReadOnlyList<AtlasHexBadgeViewState> ModifierChips,
     AtlasHexBadgeViewState DifficultyChip,
-    IReadOnlyList<AtlasModifierCategory> AuraCategories);
+    IReadOnlyList<AtlasModifierCategory> AuraCategories,
+    IReadOnlyList<AtlasFootprintShape> AuraShapes,
+    bool HasOverlapPulse);
 
 public sealed record AtlasSigilPoolItemViewState(
     string SigilId,
     string DisplayName,
-    int Radius,
     string CategorySummary,
     bool IsSelected,
     bool IsPlaced);
 
-public sealed record AtlasRouteCandidateViewState(
-    string RouteId,
+public sealed record AtlasSpineStageViewState(
+    int StageIndex,
+    string Label,
+    bool IsCompleted,
+    bool IsCurrent,
+    bool IsLocked);
+
+public sealed record AtlasStageCandidateViewState(
+    string HexId,
+    string Badge,
     string Label,
     string Summary,
-    bool IsSelected);
+    bool IsCurrentStage,
+    bool CanEnter,
+    bool IsSelected,
+    string LockReason);
 
 public sealed record AtlasPreviewPanelViewState(
     string Title,
@@ -52,5 +68,6 @@ public sealed record AtlasScreenViewState(
     string PlacementSummary,
     IReadOnlyList<AtlasHexTileViewState> Tiles,
     IReadOnlyList<AtlasSigilPoolItemViewState> SigilPool,
-    IReadOnlyList<AtlasRouteCandidateViewState> Routes,
+    IReadOnlyList<AtlasSpineStageViewState> SpineStages,
+    IReadOnlyList<AtlasStageCandidateViewState> StageCandidates,
     AtlasPreviewPanelViewState Preview);

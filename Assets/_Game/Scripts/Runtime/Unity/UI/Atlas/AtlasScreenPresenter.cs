@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
@@ -14,25 +15,31 @@ public sealed class AtlasScreenPresenter
     private const string EncounterId = "encounter_graybox";
     private const string CycleSalt = "cycle_2026_05_p2";
     private const string SquadSnapshotId = "squad:dawn|pack|echo|grave";
+    private const string TraversalMode = "CampaignFirstClear";
 
     private readonly AtlasNodePreviewBuilder _previewBuilder = new();
     private readonly List<AtlasPlacedSigil> _placements = new();
+    private readonly List<string> _stageCandidatePath = new();
     private readonly AtlasRegionDefinition _region;
     private string _selectedSigilId;
     private string _selectedNodeId;
-    private string _selectedRouteId;
+    private int _siteSpineIndex;
+    private bool _bossResolved;
 
     public AtlasScreenPresenter(AtlasRegionDefinition region)
     {
         _region = region ?? throw new ArgumentNullException(nameof(region));
         _selectedSigilId = _region.SigilPool.FirstOrDefault()?.SigilId ?? string.Empty;
-        _selectedRouteId = _region.Routes.FirstOrDefault()?.RouteId ?? string.Empty;
-        _selectedNodeId = _region.Routes.FirstOrDefault()?.NodeIds.FirstOrDefault()
+        _selectedNodeId = AtlasSpineProgressionService.CurrentCandidates(_region, _siteSpineIndex, _bossResolved)
+                              .FirstOrDefault()?.HexId
                           ?? _region.Nodes.FirstOrDefault()?.NodeId
                           ?? string.Empty;
 
         SeedDefaultPlacement();
     }
+
+    public int SiteSpineIndex => _siteSpineIndex;
+    public bool BossResolved => _bossResolved;
 
     public void SelectSigil(string sigilId)
     {
@@ -44,25 +51,36 @@ public sealed class AtlasScreenPresenter
 
     public void SelectNode(string nodeId)
     {
-        if (_region.Nodes.Any(node => string.Equals(node.NodeId, nodeId, StringComparison.Ordinal)))
+        if (!_region.Nodes.Any(node => string.Equals(node.NodeId, nodeId, StringComparison.Ordinal)))
         {
-            _selectedNodeId = nodeId;
+            return;
         }
-    }
 
-    public void SelectRoute(string routeId)
-    {
-        if (_region.Routes.Any(route => string.Equals(route.RouteId, routeId, StringComparison.Ordinal)))
+        _selectedNodeId = nodeId;
+        var candidate = AtlasSpineProgressionService.FindCandidate(_region, nodeId);
+        if (candidate == null || !AtlasSpineProgressionService.CanEnterStoryCandidate(_region, nodeId, _siteSpineIndex, _bossResolved))
         {
-            _selectedRouteId = routeId;
-            _selectedNodeId = _region.Routes.First(route => route.RouteId == routeId).NodeIds.FirstOrDefault() ?? _selectedNodeId;
+            return;
         }
+
+        if (candidate.SiteStageIndex is >= 1 and <= 3 && !_stageCandidatePath.Contains(nodeId, StringComparer.Ordinal))
+        {
+            _stageCandidatePath.Add(nodeId);
+        }
+
+        if (candidate.SiteStageIndex == AtlasSpineProgressionService.BossStageIndex)
+        {
+            _bossResolved = true;
+        }
+
+        _siteSpineIndex = AtlasSpineProgressionService.AdvanceSpineIndex(candidate, _siteSpineIndex);
     }
 
     public void PlaceSelectedSigil(string nodeId)
     {
         var node = _region.Nodes.FirstOrDefault(candidate => string.Equals(candidate.NodeId, nodeId, StringComparison.Ordinal));
-        if (node == null || !_region.SigilAnchors.Contains(node.Hex) || string.IsNullOrWhiteSpace(_selectedSigilId))
+        var slot = _region.SigilAnchorSlots.FirstOrDefault(candidate => string.Equals(candidate.HexId, nodeId, StringComparison.Ordinal));
+        if (node == null || slot == null || string.IsNullOrWhiteSpace(_selectedSigilId))
         {
             SelectNode(nodeId);
             return;
@@ -70,31 +88,33 @@ public sealed class AtlasScreenPresenter
 
         _placements.RemoveAll(placement =>
             string.Equals(placement.SigilId, _selectedSigilId, StringComparison.Ordinal)
-            || placement.AnchorHex.Equals(node.Hex));
+            || string.Equals(placement.AnchorId, slot.AnchorId, StringComparison.Ordinal));
 
         if (_placements.Count >= 2)
         {
             _placements.RemoveAt(0);
         }
 
-        _placements.Add(new AtlasPlacedSigil(_selectedSigilId, node.Hex));
+        _placements.Add(new AtlasPlacedSigil(_selectedSigilId, node.Hex, slot.AnchorId));
         _selectedNodeId = nodeId;
     }
 
     public AtlasScreenViewState Build()
     {
         var resolution = SigilPropagationService.Resolve(_region, _placements);
-        var selectedRoute = _region.Routes.FirstOrDefault(route => route.RouteId == _selectedRouteId)
-                            ?? _region.Routes.First();
         var selectedNode = _region.Nodes.FirstOrDefault(node => node.NodeId == _selectedNodeId)
-                           ?? _region.Nodes.First(node => selectedRoute.NodeIds.Contains(node.NodeId));
+                           ?? _region.Nodes.First();
         var selectedStack = resolution.FindNode(selectedNode.NodeId)
                             ?? new AtlasNodeModifierStack(selectedNode.NodeId, selectedNode.Hex, Array.Empty<AtlasSigilInfluence>(), Array.Empty<AtlasResolvedModifier>());
+        var selectedCandidate = AtlasSpineProgressionService.FindCandidate(_region, selectedNode.NodeId);
+        var stageCandidatePath = AtlasSpineProgressionService.StageCandidatePath(_stageCandidatePath, selectedCandidate);
+        var stageCandidatePathHash = AtlasContextHasher.BuildStageCandidatePathHash(stageCandidatePath);
+        var sigilSnapshotHash = AtlasContextHasher.BuildSigilSnapshotHash(_region, SiteId, TraversalMode, _placements, CycleSalt);
         var preview = _previewBuilder.Build(
             _region,
             selectedNode,
             selectedStack,
-            selectedRoute,
+            stageCandidatePathHash,
             RunId,
             ChapterId,
             SiteId,
@@ -102,41 +122,54 @@ public sealed class AtlasScreenPresenter
             CycleSalt,
             SquadSnapshotId);
 
-        var routeNodeIds = selectedRoute.NodeIds.ToHashSet(StringComparer.Ordinal);
         return new AtlasScreenViewState(
             AtlasReadabilityFormatter.FormatRegionTitle(_region.DisplayName),
-            BuildPlacementSummary(resolution.FindNode(selectedNode.NodeId)),
+            BuildPlacementSummary(resolution.FindNode(selectedNode.NodeId), sigilSnapshotHash),
             _region.Nodes
                 .OrderBy(node => node.Hex.R)
                 .ThenBy(node => node.Hex.Q)
-                .Select(node => BuildTile(node, resolution, routeNodeIds))
+                .Select(node => BuildTile(node, resolution))
                 .ToArray(),
             _region.SigilPool.Select(BuildSigilPoolItem).ToArray(),
-            _region.Routes.Select(route => BuildRoute(route, resolution)).ToArray(),
-            BuildPreview(preview, selectedNode, selectedStack));
+            BuildSpineStages(),
+            BuildStageCandidates(resolution),
+            BuildPreview(preview, selectedNode, selectedStack, stageCandidatePathHash));
     }
 
     private void SeedDefaultPlacement()
     {
-        if (_region.SigilPool.Count < 2 || _region.SigilAnchors.Count < 2)
+        if (_region.SigilPool.Count < 2 || _region.SigilAnchorSlots.Count < 2)
         {
             return;
         }
 
-        _placements.Add(new AtlasPlacedSigil("sigil_beast_spoils", _region.SigilAnchors[1]));
-        _placements.Add(new AtlasPlacedSigil("sigil_flank_pressure", _region.SigilAnchors[2]));
+        AddDefaultPlacement("sigil_beast_spoils", "anchor_middle_pressure");
+        AddDefaultPlacement("sigil_flank_pressure", "anchor_inner_evidence");
     }
 
-    private AtlasHexTileViewState BuildTile(
-        AtlasRegionNode node,
-        AtlasSigilResolution resolution,
-        HashSet<string> routeNodeIds)
+    private void AddDefaultPlacement(string sigilId, string anchorId)
+    {
+        var slot = _region.SigilAnchorSlots.FirstOrDefault(candidate => candidate.AnchorId == anchorId);
+        var node = slot == null ? null : _region.Nodes.FirstOrDefault(candidate => candidate.NodeId == slot.HexId);
+        if (node != null)
+        {
+            _placements.Add(new AtlasPlacedSigil(sigilId, node.Hex, anchorId));
+        }
+    }
+
+    private AtlasHexTileViewState BuildTile(AtlasRegionNode node, AtlasSigilResolution resolution)
     {
         var stack = resolution.FindNode(node.NodeId);
         var placed = _placements.FirstOrDefault(placement => placement.AnchorHex.Equals(node.Hex));
         var placedSigil = string.IsNullOrWhiteSpace(placed?.SigilId)
             ? null
             : _region.SigilPool.FirstOrDefault(sigil => sigil.SigilId == placed.SigilId);
+        var stageCandidate = AtlasSpineProgressionService.FindCandidate(_region, node.NodeId);
+        var isCurrentStage = stageCandidate != null
+                             && stageCandidate.SiteStageIndex == ResolveCurrentStageIndex();
+        var canEnter = stageCandidate == null
+                       || AtlasSpineProgressionService.CanEnterStoryCandidate(_region, node.NodeId, _siteSpineIndex, _bossResolved);
+        var slot = _region.SigilAnchorSlots.FirstOrDefault(anchor => string.Equals(anchor.HexId, node.NodeId, StringComparison.Ordinal));
 
         return new AtlasHexTileViewState(
             node.NodeId,
@@ -144,14 +177,20 @@ public sealed class AtlasScreenPresenter
             node.Hex,
             node.Kind,
             string.Equals(node.NodeId, _selectedNodeId, StringComparison.Ordinal),
-            routeNodeIds.Contains(node.NodeId),
-            _region.SigilAnchors.Contains(node.Hex),
-            placedSigil == null ? string.Empty : AtlasReadabilityFormatter.FormatSigilName(placedSigil.DisplayName),
+            isCurrentStage,
+            slot != null,
+            stageCandidate?.CandidateBadge ?? string.Empty,
+            ResolveAnchorHighlightState(slot),
+            canEnter,
+            AtlasSpineProgressionService.ResolveLockReason(_region, node.NodeId, _siteSpineIndex, _bossResolved),
+            placedSigil == null ? string.Empty : AtlasReadabilityFormatter.FormatSigilCardLabel(placedSigil),
             AtlasReadabilityFormatter.BuildTypeBadge(node.Kind),
             AtlasReadabilityFormatter.BuildRewardBadge(node.RewardFamily),
             BuildModifierBadges(stack),
             AtlasReadabilityFormatter.BuildDifficultyBadge(node, stack),
-            BuildAuraCategories(stack));
+            BuildAuraCategories(stack),
+            BuildAuraShapes(stack),
+            (stack?.ResolvedModifiers.Select(modifier => modifier.Category).Distinct().Count() ?? 0) > 1);
     }
 
     private static IReadOnlyList<AtlasHexBadgeViewState> BuildModifierBadges(AtlasNodeModifierStack? stack)
@@ -163,7 +202,7 @@ public sealed class AtlasScreenPresenter
             .Select(BuildModifierBadge)
             .ToArray();
         return modifiers.Length == 0
-            ? new[] { new AtlasHexBadgeViewState("영향 없음", "이 hex에는 현재 적용된 각인 영향이 없습니다.", "atlas-chip--modifier-neutral") }
+            ? Array.Empty<AtlasHexBadgeViewState>()
             : modifiers;
     }
 
@@ -183,7 +222,7 @@ public sealed class AtlasScreenPresenter
             .Distinct(StringComparer.Ordinal));
         return new AtlasHexBadgeViewState(
             AtlasReadabilityFormatter.FormatModifierChipLabel(modifier.Category, modifier.Percent),
-            $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)}: {AtlasReadabilityFormatter.FormatModifierLabel(modifier.Label)} +{modifier.Percent}% ({sourceNames}){cap}",
+            $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)}: {AtlasReadabilityFormatter.FormatModifierLabel(modifier.Label)} +{modifier.Percent.ToString(CultureInfo.InvariantCulture)}% ({sourceNames}){cap}",
             isCapped ? $"{cssClass} is-capped" : cssClass);
     }
 
@@ -196,35 +235,68 @@ public sealed class AtlasScreenPresenter
             .ToArray();
     }
 
+    private static IReadOnlyList<AtlasFootprintShape> BuildAuraShapes(AtlasNodeModifierStack? stack)
+    {
+        return (stack?.Influences ?? Array.Empty<AtlasSigilInfluence>())
+            .Select(influence => influence.FootprintShape)
+            .Distinct()
+            .OrderBy(shape => shape)
+            .ToArray();
+    }
+
     private AtlasSigilPoolItemViewState BuildSigilPoolItem(AtlasSigilDefinition sigil)
     {
         var summary = string.Join(", ", sigil.Modifiers.Select(modifier =>
-            $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)} +{modifier.Percent}%"));
+            $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)} +{modifier.Percent.ToString(CultureInfo.InvariantCulture)}%"));
         return new AtlasSigilPoolItemViewState(
             sigil.SigilId,
-            AtlasReadabilityFormatter.FormatSigilName(sigil.DisplayName),
-            sigil.Radius,
+            AtlasReadabilityFormatter.FormatSigilCardLabel(sigil),
             summary,
             string.Equals(sigil.SigilId, _selectedSigilId, StringComparison.Ordinal),
             _placements.Any(placement => string.Equals(placement.SigilId, sigil.SigilId, StringComparison.Ordinal)));
     }
 
-    private AtlasRouteCandidateViewState BuildRoute(AtlasRouteCandidate route, AtlasSigilResolution resolution)
+    private IReadOnlyList<AtlasSpineStageViewState> BuildSpineStages()
     {
-        var routeStacks = route.NodeIds.Select(id => resolution.FindNode(id)).Where(stack => stack != null).Cast<AtlasNodeModifierStack>().ToArray();
-        var reward = routeStacks.Sum(stack => stack.RewardBiasPercent);
-        var threat = routeStacks.Sum(stack => stack.ThreatPressurePercent);
-        return new AtlasRouteCandidateViewState(
-            route.RouteId,
-            AtlasReadabilityFormatter.BuildRouteLabel(route, reward, threat),
-            AtlasReadabilityFormatter.BuildRouteSummary(route.NodeIds, reward, threat),
-            string.Equals(route.RouteId, _selectedRouteId, StringComparison.Ordinal));
+        return Enumerable.Range(1, 5)
+            .Select(stage => new AtlasSpineStageViewState(
+                stage,
+                AtlasReadabilityFormatter.FormatSpineStageLabel(stage),
+                stage <= _siteSpineIndex || (stage == 5 && _bossResolved),
+                stage == ResolveCurrentStageIndex(),
+                stage == AtlasSpineProgressionService.BossStageIndex && _siteSpineIndex < 3
+                || stage == AtlasSpineProgressionService.ExtractStageIndex && !_bossResolved))
+            .ToArray();
+    }
+
+    private IReadOnlyList<AtlasStageCandidateViewState> BuildStageCandidates(AtlasSigilResolution resolution)
+    {
+        return _region.StageCandidates
+            .OrderBy(candidate => candidate.SiteStageIndex)
+            .ThenBy(candidate => candidate.CandidateBadge, StringComparer.Ordinal)
+            .Select(candidate =>
+            {
+                var node = _region.Nodes.First(item => item.NodeId == candidate.HexId);
+                var stack = resolution.FindNode(node.NodeId);
+                var canEnter = AtlasSpineProgressionService.CanEnterStoryCandidate(_region, node.NodeId, _siteSpineIndex, _bossResolved);
+                return new AtlasStageCandidateViewState(
+                    node.NodeId,
+                    candidate.CandidateBadge,
+                    AtlasReadabilityFormatter.FormatNodeLabel(node.Label),
+                    AtlasReadabilityFormatter.BuildCandidateSummary(node, stack),
+                    candidate.SiteStageIndex == ResolveCurrentStageIndex(),
+                    canEnter,
+                    string.Equals(node.NodeId, _selectedNodeId, StringComparison.Ordinal),
+                    AtlasSpineProgressionService.ResolveLockReason(_region, node.NodeId, _siteSpineIndex, _bossResolved));
+            })
+            .ToArray();
     }
 
     private static AtlasPreviewPanelViewState BuildPreview(
         AtlasNodePreview preview,
         AtlasRegionNode selectedNode,
-        AtlasNodeModifierStack selectedStack)
+        AtlasNodeModifierStack selectedStack,
+        string stageCandidatePathHash)
     {
         var modifiers = preview.ModifierStack.Count == 0
             ? "적용된 각인 효과가 없습니다."
@@ -234,7 +306,7 @@ public sealed class AtlasScreenPresenter
                     .Select(source => AtlasReadabilityFormatter.FormatSigilName(source.DisplayName))
                     .Distinct(StringComparer.Ordinal));
                 var cap = modifier.SameCategoryCapped || modifier.HardCapped ? " (cap 적용)" : string.Empty;
-                return $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)} +{modifier.Percent}% - {sources}{cap}";
+                return $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)} +{modifier.Percent.ToString(CultureInfo.InvariantCulture)}% - {sources}{cap}";
             }));
         var recommended = string.Join("\n", preview.RecommendedCharacters.Select(character =>
             $"{AtlasReadabilityFormatter.FormatCharacterName(character.CharacterId, character.DisplayName)} - {AtlasReadabilityFormatter.FormatRole(character.Role)} ({AtlasReadabilityFormatter.FormatRecommendationReason(character.Reason)})"));
@@ -247,11 +319,38 @@ public sealed class AtlasScreenPresenter
             AtlasReadabilityFormatter.BuildRewardPreview(selectedNode, selectedStack),
             recommended,
             AtlasReadabilityFormatter.FormatBoundaryNote(),
-            $"NodeOverlayHash={preview.NodeOverlayHash[..12]} / BattleContextHash={preview.BattleContextHash[..12]} / input=runId>chapterId>siteId>nodeIndex>encounterId>NodeOverlayHash>squadSnapshotId");
+            $"NodeOverlayHash={preview.NodeOverlayHash[..12]} / BattleContextHash={preview.BattleContextHash[..12]} / stageCandidatePathHash={stageCandidatePathHash[..12]} / input=runId>chapterId>siteId>nodeIndex>encounterId>stageCandidatePathHash>NodeOverlayHash>squadSnapshotId");
     }
 
-    private string BuildPlacementSummary(AtlasNodeModifierStack? selectedStack)
+    private string BuildPlacementSummary(AtlasNodeModifierStack? selectedStack, string sigilSnapshotHash)
     {
-        return AtlasReadabilityFormatter.BuildPlacementSummary(_placements, _region.SigilPool, selectedStack);
+        return $"{AtlasReadabilityFormatter.BuildPlacementSummary(_placements, _region.SigilPool, _region.SigilAnchorSlots, selectedStack)} SigilSnapshotHash={sigilSnapshotHash[..12]}.";
+    }
+
+    private int ResolveCurrentStageIndex()
+    {
+        return _bossResolved ? AtlasSpineProgressionService.ExtractStageIndex : Math.Min(_siteSpineIndex + 1, AtlasSpineProgressionService.BossStageIndex);
+    }
+
+    private string ResolveAnchorHighlightState(SigilAnchorSlot? slot)
+    {
+        if (slot == null)
+        {
+            return string.Empty;
+        }
+
+        var currentCandidates = AtlasSpineProgressionService.CurrentCandidates(_region, _siteSpineIndex, _bossResolved)
+            .Select(candidate => candidate.HexId)
+            .ToHashSet(StringComparer.Ordinal);
+        if (slot.CoveragePreview.Any(currentCandidates.Contains))
+        {
+            return "current";
+        }
+
+        var futureCandidates = _region.StageCandidates
+            .Where(candidate => candidate.SiteStageIndex > ResolveCurrentStageIndex())
+            .Select(candidate => candidate.HexId)
+            .ToHashSet(StringComparer.Ordinal);
+        return slot.CoveragePreview.Any(futureCandidates.Contains) ? "future" : "hidden";
     }
 }

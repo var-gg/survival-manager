@@ -12,6 +12,19 @@ public enum AtlasNodeKind
     Reward = 5,
     Event = 6,
     SigilAnchor = 7,
+    Cache = 8,
+    ScoutVantage = 9,
+    Echo = 10,
+}
+
+public enum AtlasHexDirection
+{
+    East = 0,
+    NorthEast = 1,
+    NorthWest = 2,
+    West = 3,
+    SouthWest = 4,
+    SouthEast = 5,
 }
 
 public sealed record AtlasRegionNode(
@@ -31,10 +44,21 @@ public sealed record AtlasCharacterPreview(
     string AnswerLane,
     IReadOnlyList<string> Affinities);
 
-public sealed record AtlasRouteCandidate(
-    string RouteId,
-    string Label,
-    IReadOnlyList<string> NodeIds);
+public sealed record AtlasStageCandidate(
+    int SiteStageIndex,
+    string CandidateBadge,
+    string HexId,
+    IReadOnlyList<string> ConnectedFromStageHexes);
+
+public sealed record SigilAnchorSlot(
+    string AnchorId,
+    string HexId,
+    string LayerId,
+    string StageBand,
+    string AnchorRole,
+    AtlasHexDirection OrientationToCore,
+    IReadOnlyList<string> CoveragePreview,
+    IReadOnlyList<string> ValidInTraversalModes);
 
 public sealed record AtlasRegionDefinition(
     string RegionId,
@@ -43,4 +67,7 @@ public sealed record AtlasRegionDefinition(
     IReadOnlyList<AtlasHexCoordinate> SigilAnchors,
     IReadOnlyList<AtlasSigilDefinition> SigilPool,
     IReadOnlyList<AtlasCharacterPreview> Roster,
-    IReadOnlyList<AtlasRouteCandidate> Routes);
+    IReadOnlyList<AtlasStageCandidate> StageCandidates,
+    IReadOnlyList<SigilAnchorSlot> SigilAnchorSlots,
+    string AnchorSlotVersion = "anchor_slots_v2_19hex",
+    string FootprintProfileVersion = "footprint_profiles_v2_shape_category");

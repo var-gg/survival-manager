@@ -31,24 +31,25 @@ public sealed class AtlasReadabilityTests
     }
 
     [Test]
-    public void Presenter_BuildsRouteLabelsAndFourChipTypesWithoutChangingHashes()
+    public void Presenter_BuildsStageHierarchyAndFourChipTypesWithoutLegacyRoutes()
     {
         var presenter = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion());
         var state = presenter.Build();
 
-        Assert.That(state.Routes.Select(route => route.Label), Has.Some.Contains("서쪽 보상 길"));
-        Assert.That(state.Routes.Select(route => route.Label), Has.Some.Contains("중앙 욕망 길"));
-        Assert.That(state.Routes.Select(route => route.Label), Has.None.Contains("Reward +"));
+        Assert.That(state.SpineStages.Select(stage => stage.Label), Is.EqualTo(new[] { "진입", "교전", "단서", "보스", "추출" }));
+        Assert.That(state.StageCandidates.Count(candidate => candidate.Badge is "1A" or "1B"), Is.EqualTo(2));
+        Assert.That(state.SigilPool.Select(sigil => sigil.DisplayName), Has.None.Contains("반경"));
         Assert.That(state.Tiles, Is.All.Matches<AtlasHexTileViewState>(tile =>
             !string.IsNullOrWhiteSpace(tile.TypeChip.Label)
             && !string.IsNullOrWhiteSpace(tile.RewardFamilyChip.Label)
             && !string.IsNullOrWhiteSpace(tile.DifficultyChip.Label)
-            && tile.ModifierChips.Count is >= 1 and <= 2));
+            && tile.ModifierChips.Count is <= 2));
         Assert.That(state.Tiles.SelectMany(tile => tile.ModifierChips).Select(chip => chip.Label), Has.None.Contains("RewardBias"));
         Assert.That(state.Tiles.SelectMany(tile => tile.ModifierChips).Select(chip => chip.Label), Has.None.Contains("ThreatPressure"));
         Assert.That(state.Tiles.Count(tile => tile.AuraCategories.Count > 1), Is.GreaterThan(0));
         Assert.That(state.Preview.DebugHashLine, Does.Contain("NodeOverlayHash="));
         Assert.That(state.Preview.DebugHashLine, Does.Contain("BattleContextHash="));
+        Assert.That(state.Preview.DebugHashLine, Does.Contain("stageCandidatePathHash="));
     }
 
     [Test]

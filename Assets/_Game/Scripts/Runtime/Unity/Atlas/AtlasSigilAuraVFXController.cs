@@ -12,20 +12,36 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
 {
     public readonly struct AuraEntry
     {
-        public AuraEntry(string nodeId, AtlasHexCoordinate hex, Vector3 worldPosition, IReadOnlyList<AtlasModifierCategory> categories)
+        public AuraEntry(
+            string nodeId,
+            AtlasHexCoordinate hex,
+            Vector3 worldPosition,
+            IReadOnlyList<AtlasModifierCategory> categories,
+            IReadOnlyList<AtlasFootprintShape> shapes,
+            bool isStageCandidate,
+            bool isSigilAnchor,
+            string anchorHighlightState)
         {
             NodeId = nodeId;
             Hex = hex;
             WorldPosition = worldPosition;
             Categories = categories;
+            Shapes = shapes;
             IsOverlap = categories.Count > 1;
+            IsStageCandidate = isStageCandidate;
+            IsSigilAnchor = isSigilAnchor;
+            AnchorHighlightState = anchorHighlightState;
         }
 
         public string NodeId { get; }
         public AtlasHexCoordinate Hex { get; }
         public Vector3 WorldPosition { get; }
         public IReadOnlyList<AtlasModifierCategory> Categories { get; }
+        public IReadOnlyList<AtlasFootprintShape> Shapes { get; }
         public bool IsOverlap { get; }
+        public bool IsStageCandidate { get; }
+        public bool IsSigilAnchor { get; }
+        public string AnchorHighlightState { get; }
     }
 
     [SerializeField] private Transform auraRoot = null!;
@@ -38,10 +54,18 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         }
 
         return state.Tiles
-            .Where(tile => tile.AuraCategories.Count > 0)
+            .Where(tile => tile.AuraCategories.Count > 0 || tile.HasOverlapPulse || tile.IsCurrentStageCandidate || tile.AnchorHighlightState is "current" or "future")
             .OrderBy(tile => tile.Hex.R)
             .ThenBy(tile => tile.Hex.Q)
-            .Select(tile => new AuraEntry(tile.NodeId, tile.Hex, AtlasHexWorldMapper.ToWorld(tile.Hex), tile.AuraCategories))
+            .Select(tile => new AuraEntry(
+                tile.NodeId,
+                tile.Hex,
+                AtlasHexWorldMapper.ToWorld(tile.Hex),
+                tile.AuraCategories,
+                tile.AuraShapes,
+                tile.IsCurrentStageCandidate,
+                tile.IsSigilAnchor,
+                tile.AnchorHighlightState))
             .ToArray();
     }
 
@@ -110,11 +134,25 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
             var go = new GameObject($"Aura_{entry.NodeId}_{entry.Categories[i]}");
             go.transform.SetParent(auraRoot, false);
             go.transform.position = entry.WorldPosition + Vector3.up * (0.055f + i * 0.006f);
-            go.transform.localScale = Vector3.one * (1f + i * 0.035f);
+            ApplyShapeTransform(go.transform, entry.Shapes.ElementAtOrDefault(i), i);
             AssignMesh(go, ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius * 1.06f, 0.050f));
             AssignMaterial(
                 go,
                 categoryMaterialResolver?.Invoke(entry.Categories[i]) ?? CreateAuraMaterial(shader, ResolveCategoryColor(entry.Categories[i]), 0.9f + i * 0.2f));
+        }
+
+        if (entry.IsStageCandidate)
+        {
+            CreateOutline(entry, shader, ringMesh, $"StageCandidate_{entry.NodeId}", new Color(1.00f, 0.92f, 0.45f, 0.34f), 1.18f, 0.12f);
+        }
+
+        if (entry.IsSigilAnchor && entry.AnchorHighlightState == "current")
+        {
+            CreateOutline(entry, shader, ringMesh, $"AnchorCurrent_{entry.NodeId}", new Color(1.00f, 0.78f, 0.22f, 0.42f), 0.72f, 0.10f);
+        }
+        else if (entry.IsSigilAnchor && entry.AnchorHighlightState == "future")
+        {
+            CreateOutline(entry, shader, ringMesh, $"AnchorFuture_{entry.NodeId}", new Color(0.82f, 0.86f, 0.90f, 0.18f), 0.68f, 0.10f);
         }
 
         if (!entry.IsOverlap)
@@ -128,6 +166,26 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         overlap.transform.localScale = Vector3.one * 1.10f;
         AssignMesh(overlap, ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius * 1.10f, 0.045f));
         AssignMaterial(overlap, overlapMaterial ?? CreateAuraMaterial(shader, ResolveOverlapColor(), 1.35f));
+    }
+
+    private static void ApplyShapeTransform(Transform transform, AtlasFootprintShape shape, int index)
+    {
+        transform.localScale = shape switch
+        {
+            AtlasFootprintShape.Lane => new Vector3(0.58f + index * 0.04f, 1f, 1.34f + index * 0.05f),
+            AtlasFootprintShape.ScoutArc => new Vector3(1.28f + index * 0.04f, 1f, 0.72f + index * 0.03f),
+            _ => Vector3.one * (1f + index * 0.035f),
+        };
+    }
+
+    private void CreateOutline(AuraEntry entry, Shader shader, Mesh? ringMesh, string name, Color color, float scale, float yOffset)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(auraRoot, false);
+        go.transform.position = entry.WorldPosition + Vector3.up * yOffset;
+        go.transform.localScale = Vector3.one * scale;
+        AssignMesh(go, ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius, 0.035f));
+        AssignMaterial(go, CreateAuraMaterial(shader, color, scale));
     }
 
     private static void AssignMesh(GameObject go, Mesh mesh)

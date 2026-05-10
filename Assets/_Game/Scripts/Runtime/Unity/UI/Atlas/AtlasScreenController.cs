@@ -65,9 +65,14 @@ public sealed class AtlasScreenController : MonoBehaviour
             _presenter.SelectSigil(sigilId);
             Render();
         };
-        _view.RouteSelected += routeId =>
+        _view.AnchorSelected += hexId =>
         {
-            _presenter.SelectRoute(routeId);
+            _presenter.PlaceSelectedSigil(hexId);
+            Render();
+        };
+        _view.StageCandidateSelected += hexId =>
+        {
+            _presenter.SelectNode(hexId);
             Render();
         };
     }

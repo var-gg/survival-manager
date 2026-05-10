@@ -57,12 +57,12 @@
 }
 
 .atlas-sigil-pool,
-.atlas-route-list {
+.atlas-stage-candidate-list {
     margin-bottom: 14px;
 }
 
 .atlas-sigil-button,
-.atlas-route-button {
+.atlas-stage-candidate-button {
     min-height: 54px;
     margin-bottom: 6px;
     border-radius: 6px;
@@ -75,9 +75,13 @@
 }
 
 .atlas-sigil-button.is-selected,
-.atlas-route-button.is-selected {
+.atlas-stage-candidate-button.is-selected {
     border-color: rgb(245, 204, 112);
     background-color: rgb(63, 59, 45);
+}
+
+.atlas-stage-candidate-button.is-locked {
+    opacity: 0.46;
 }
 
 .atlas-sigil-button.is-placed {
@@ -96,6 +100,44 @@
     flex-grow: 1;
     position: relative;
     display: none;
+}
+
+.atlas-stage-candidate-overlay {
+    flex-grow: 1;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.atlas-hex-hit-zone {
+    position: absolute;
+    border-width: 0;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0);
+    color: rgba(0, 0, 0, 0);
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0);
+}
+
+.atlas-hex-hit-zone:hover {
+    border-width: 1px;
+    border-color: rgba(255, 231, 145, 0.34);
+    background-color: rgba(255, 231, 145, 0.06);
+}
+
+.atlas-hex-hit-zone.is-current {
+    border-width: 1px;
+    border-color: rgba(255, 231, 145, 0.22);
+}
+
+.atlas-hex-hit-zone.is-selected {
+    border-width: 2px;
+    border-color: rgba(255, 238, 180, 0.58);
+}
+
+.atlas-hex-hit-zone.is-locked {
+    opacity: 0.58;
 }
 
 .atlas-hex {
@@ -276,6 +318,50 @@
     border-color: rgb(255, 255, 255);
 }
 
+.atlas-stage-badge {
+    position: absolute;
+    width: 44px;
+    height: 24px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgba(255, 231, 145, 0.82);
+    background-color: rgba(24, 28, 29, 0.72);
+    color: rgb(255, 231, 145);
+    font-size: 12px;
+    unity-font-style: bold;
+}
+
+.atlas-stage-badge.is-current {
+    background-color: rgba(245, 204, 112, 0.84);
+    color: rgb(18, 19, 18);
+}
+
+.atlas-stage-badge.is-locked {
+    opacity: 0.42;
+}
+
+.atlas-hex-chip-overlay {
+    position: absolute;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 92px;
+}
+
+.atlas-anchor-marker {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    border-width: 2px;
+    border-color: rgba(245, 204, 112, 0.88);
+    background-color: rgba(245, 204, 112, 0.20);
+}
+
+.atlas-anchor-marker.is-future {
+    border-color: rgba(255, 255, 255, 0.30);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
 .atlas-preview {
     width: 360px;
     min-width: 330px;
@@ -349,4 +435,45 @@
     min-width: 0;
     min-height: 430px;
     margin: 8px 0;
+}
+
+.atlas-spine-progress-strip {
+    min-height: 50px;
+    flex-direction: row;
+    justify-content: center;
+    background-color: rgba(16, 19, 20, 0.62);
+    border-width: 1px;
+    border-color: rgba(255, 218, 138, 0.22);
+    border-radius: 8px;
+    margin-top: 10px;
+    padding: 8px;
+}
+
+.atlas-spine-stage {
+    min-width: 82px;
+    height: 32px;
+    margin-left: 4px;
+    margin-right: 4px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.16);
+    background-color: rgba(40, 47, 53, 0.70);
+    color: rgb(196, 206, 198);
+    font-size: 12px;
+    unity-font-style: bold;
+}
+
+.atlas-spine-stage.is-current {
+    border-color: rgb(245, 204, 112);
+    background-color: rgba(92, 74, 38, 0.90);
+    color: rgb(255, 238, 190);
+}
+
+.atlas-spine-stage.is-completed {
+    border-color: rgba(95, 173, 126, 0.76);
+    color: rgb(176, 223, 173);
+}
+
+.atlas-spine-stage.is-locked {
+    opacity: 0.48;
 }

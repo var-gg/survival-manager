@@ -9,12 +9,13 @@
             <ui:VisualElement class="atlas-left-rail">
                 <ui:Label text="각인석" class="atlas-section-title" />
                 <ui:VisualElement name="atlas-sigil-pool" class="atlas-sigil-pool" />
-                <ui:Label text="경로" class="atlas-section-title" />
-                <ui:VisualElement name="atlas-route-list" class="atlas-route-list" />
+                <ui:Label text="현재 단계 후보" class="atlas-section-title" />
+                <ui:VisualElement name="atlas-stage-candidate-list" class="atlas-stage-candidate-list" />
             </ui:VisualElement>
 
             <ui:VisualElement name="atlas-board-pane" class="atlas-board-pane">
                 <ui:VisualElement name="atlas-board" class="atlas-board" />
+                <ui:VisualElement name="atlas-stage-candidate-overlay" class="atlas-stage-candidate-overlay" />
             </ui:VisualElement>
 
             <ui:VisualElement class="atlas-preview">
@@ -37,5 +38,7 @@
                 <ui:Label name="atlas-debug-hash" class="atlas-debug-hash" />
             </ui:VisualElement>
         </ui:VisualElement>
+
+        <ui:VisualElement name="atlas-spine-progress-strip" class="atlas-spine-progress-strip" />
     </ui:VisualElement>
 </ui:UXML>

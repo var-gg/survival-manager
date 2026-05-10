@@ -79,10 +79,11 @@ public sealed class Atlas3DEnvironmentTests
         var boardPane = root.Q<VisualElement>("atlas-board-pane");
         var board = root.Q<VisualElement>("atlas-board");
 
-        Assert.That(boardPane.pickingMode, Is.EqualTo(PickingMode.Ignore));
+        Assert.That(boardPane.pickingMode, Is.EqualTo(PickingMode.Position));
         Assert.That(board.pickingMode, Is.EqualTo(PickingMode.Ignore));
         Assert.That(board.style.display.value, Is.EqualTo(DisplayStyle.None));
         Assert.That(board.childCount, Is.EqualTo(0));
+        Assert.That(root.Query<Button>(className: "atlas-hex-hit-zone").ToList().Count, Is.EqualTo(19));
     }
 
     [Test]
@@ -103,10 +104,12 @@ public sealed class Atlas3DEnvironmentTests
         var content = new VisualElement { name = "atlas-content" };
         var boardPane = new VisualElement { name = "atlas-board-pane" };
         boardPane.Add(new VisualElement { name = "atlas-board" });
+        boardPane.Add(new VisualElement { name = "atlas-stage-candidate-overlay" });
         content.Add(new VisualElement { name = "atlas-sigil-pool" });
         content.Add(boardPane);
-        content.Add(new VisualElement { name = "atlas-route-list" });
+        content.Add(new VisualElement { name = "atlas-stage-candidate-list" });
         root.Add(content);
+        root.Add(new VisualElement { name = "atlas-spine-progress-strip" });
         root.Add(new Label { name = "atlas-region-title" });
         root.Add(new Label { name = "atlas-placement-summary" });
         root.Add(new Label { name = "atlas-preview-title" });

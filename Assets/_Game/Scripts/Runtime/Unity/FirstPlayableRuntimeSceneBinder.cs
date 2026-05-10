@@ -89,7 +89,7 @@ public static class FirstPlayableRuntimeSceneBinder
                 break;
 
             case SceneNames.Atlas:
-                ValidateScreenScene<UI.Atlas.AtlasScreenController>(scene, "AtlasRuntimePanelHost", "AtlasScreenController", controller => controller.EnsureRuntimeControls());
+                ValidateAtlas(scene);
                 break;
 
             case SceneNames.Battle:
@@ -136,6 +136,28 @@ public static class FirstPlayableRuntimeSceneBinder
         host.EnsureReady();
     }
 
+    private static void ValidateAtlas(Scene scene)
+    {
+        var hostGo = ResolveGameObject(scene, "AtlasRuntimePanelHost");
+        var controllerGo = ResolveGameObject(scene, "AtlasScreenController");
+        if (hostGo == null || controllerGo == null)
+        {
+            UnityEngine.Debug.LogError($"[FirstPlayableRuntimeSceneBinder] Scene '{scene.name}' is missing Atlas runtime objects. Repair via SM/Internal/Recovery/Repair First Playable Scenes.");
+            return;
+        }
+
+        var host = hostGo.GetComponent<RuntimePanelHost>() ?? hostGo.AddComponent<RuntimePanelHost>();
+        var controller = controllerGo.GetComponent<UI.Atlas.AtlasScreenController>() ?? controllerGo.AddComponent<UI.Atlas.AtlasScreenController>();
+        var environment = ResolveGameObject(scene, "AtlasRegionWolfpineTrail");
+        if (environment != null && environment.GetComponent<Atlas.Atlas3DSceneController>() == null)
+        {
+            environment.AddComponent<Atlas.Atlas3DSceneController>();
+        }
+
+        host.EnsureReady();
+        controller.EnsureRuntimeControls();
+    }
+
     private static void ValidateScreenScene<TController>(
         Scene scene,
         string hostName,
@@ -170,12 +192,17 @@ public static class FirstPlayableRuntimeSceneBinder
 
     private static T? ResolveComponent<T>(Scene scene, string objectName) where T : Component
     {
+        return ResolveGameObject(scene, objectName)?.GetComponent<T>();
+    }
+
+    private static GameObject? ResolveGameObject(Scene scene, string objectName)
+    {
         foreach (var root in scene.GetRootGameObjects())
         {
             var match = root.GetComponentsInChildren<Transform>(true).FirstOrDefault(transform => transform.name == objectName);
             if (match != null)
             {
-                return match.GetComponent<T>();
+                return match.gameObject;
             }
         }
 
