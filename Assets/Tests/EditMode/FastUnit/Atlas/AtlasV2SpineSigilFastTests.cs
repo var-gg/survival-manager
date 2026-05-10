@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
 using SM.Unity.UI.Atlas;
+using UnityEngine.UIElements;
 
 namespace SM.Tests.EditMode;
 
@@ -90,22 +91,61 @@ public sealed class AtlasV2SpineSigilFastTests
     }
 
     [Test]
-    public void AnchorVisibility_StageBandClassification()
+    public void AnchorVisibilityState_StageBandClassification()
     {
         var presenter = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion());
         var initial = presenter.Build();
 
-        Assert.That(FindAnchorState(initial, "hex_m1_m1"), Is.EqualTo("active"));
-        Assert.That(FindAnchorState(initial, "hex_0_1"), Is.EqualTo("future"));
-        Assert.That(FindAnchorState(initial, "hex_1_m2"), Is.EqualTo("future"));
+        Assert.That(FindAnchorState(initial, "hex_m1_m1"), Is.EqualTo(AtlasAnchorVisibilityState.Active));
+        Assert.That(FindAnchorState(initial, "hex_0_1"), Is.EqualTo(AtlasAnchorVisibilityState.Future));
+        Assert.That(FindAnchorState(initial, "hex_1_m2"), Is.EqualTo(AtlasAnchorVisibilityState.Future));
 
         presenter.SelectNode("hex_m2_1");
+        var stageTwo = presenter.Build();
+
+        Assert.That(FindAnchorState(stageTwo, "hex_m1_m1"), Is.EqualTo(AtlasAnchorVisibilityState.Active));
+        Assert.That(FindAnchorState(stageTwo, "hex_0_1"), Is.EqualTo(AtlasAnchorVisibilityState.Active));
+        Assert.That(FindAnchorState(stageTwo, "hex_1_m2"), Is.EqualTo(AtlasAnchorVisibilityState.Future));
+
         presenter.SelectNode("hex_m1_2");
         var stageThree = presenter.Build();
 
-        Assert.That(FindAnchorState(stageThree, "hex_m1_m1"), Is.EqualTo("inactive"));
-        Assert.That(FindAnchorState(stageThree, "hex_0_1"), Is.EqualTo("active"));
-        Assert.That(FindAnchorState(stageThree, "hex_1_m2"), Is.EqualTo("active"));
+        Assert.That(FindAnchorState(stageThree, "hex_m1_m1"), Is.EqualTo(AtlasAnchorVisibilityState.Inactive));
+        Assert.That(FindAnchorState(stageThree, "hex_0_1"), Is.EqualTo(AtlasAnchorVisibilityState.Active));
+        Assert.That(FindAnchorState(stageThree, "hex_1_m2"), Is.EqualTo(AtlasAnchorVisibilityState.Active));
+    }
+
+    [Test]
+    public void StageBadgeVisibility_PerSpineIndex()
+    {
+        var presenter = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion());
+        var initial = presenter.Build();
+
+        Assert.That(FindStageBadgeState(initial, "1A"), Is.EqualTo(AtlasStageBadgeVisibility.Highlighted));
+        Assert.That(FindStageBadgeState(initial, "1B"), Is.EqualTo(AtlasStageBadgeVisibility.Highlighted));
+        Assert.That(FindStageBadgeState(initial, "2A"), Is.EqualTo(AtlasStageBadgeVisibility.Faded));
+        Assert.That(FindStageBadgeState(initial, "보스"), Is.EqualTo(AtlasStageBadgeVisibility.Faded));
+
+        presenter.SelectNode("hex_m2_1");
+        var stageTwo = presenter.Build();
+
+        Assert.That(FindStageBadgeState(stageTwo, "1A"), Is.EqualTo(AtlasStageBadgeVisibility.Resolved));
+        Assert.That(FindStageBadgeState(stageTwo, "2A"), Is.EqualTo(AtlasStageBadgeVisibility.Highlighted));
+        Assert.That(FindStageBadgeState(stageTwo, "3A"), Is.EqualTo(AtlasStageBadgeVisibility.Faded));
+    }
+
+    [Test]
+    public void LayerOverlay_DefaultHidden()
+    {
+        var root = CreateAtlasRoot();
+        var view = new AtlasScreenView(root);
+        view.Render(new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion()).Build());
+
+        var layer = root.Q<VisualElement>(className: "atlas-layer-focus");
+
+        Assert.That(layer, Is.Not.Null);
+        Assert.That(layer!.ClassListContains("is-pulsing"), Is.False);
+        Assert.That(layer.style.opacity.value, Is.LessThanOrEqualTo(0.051f));
     }
 
     [Test]
@@ -153,9 +193,55 @@ public sealed class AtlasV2SpineSigilFastTests
         }
     }
 
-    private static string FindAnchorState(AtlasScreenViewState state, string nodeId)
+    [Test]
+    public void JudgementLabel_NoDirectPercentInMain()
     {
-        return state.Tiles.Single(tile => tile.NodeId == nodeId).AnchorHighlightState;
+        var state = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion()).Build();
+        var visibleText = string.Join("\n",
+            state.Preview.JudgementLine,
+            state.Preview.ModifierStack,
+            state.Preview.RewardPreview,
+            string.Join("\n", state.StageCandidates.Select(candidate => candidate.Summary)),
+            string.Join("\n", state.Tiles.SelectMany(tile => tile.ModifierChips).Select(chip => chip.Label)));
+        var directNumberPattern = new Regex(@"[+]\d|%", RegexOptions.CultureInvariant);
+
+        Assert.That(directNumberPattern.IsMatch(visibleText), Is.False, visibleText);
+    }
+
+    private static AtlasAnchorVisibilityState FindAnchorState(AtlasScreenViewState state, string nodeId)
+    {
+        return state.Tiles.Single(tile => tile.NodeId == nodeId).AnchorVisibilityState;
+    }
+
+    private static AtlasStageBadgeVisibility FindStageBadgeState(AtlasScreenViewState state, string badge)
+    {
+        return state.Tiles.Single(tile => tile.StageCandidateBadge == badge).StageBadgeVisibility;
+    }
+
+    private static VisualElement CreateAtlasRoot()
+    {
+        var root = new VisualElement { name = "atlas-root" };
+        var content = new VisualElement { name = "atlas-content" };
+        var boardPane = new VisualElement { name = "atlas-board-pane" };
+        boardPane.Add(new VisualElement { name = "atlas-board" });
+        boardPane.Add(new VisualElement { name = "atlas-layer-overlay" });
+        boardPane.Add(new VisualElement { name = "atlas-stage-candidate-overlay" });
+        content.Add(new VisualElement { name = "atlas-sigil-pool" });
+        content.Add(boardPane);
+        content.Add(new VisualElement { name = "atlas-stage-candidate-list" });
+        root.Add(content);
+        root.Add(new VisualElement { name = "atlas-spine-progress-strip" });
+        root.Add(new Label { name = "atlas-region-title" });
+        root.Add(new Label { name = "atlas-placement-summary" });
+        root.Add(new Label { name = "atlas-preview-title" });
+        root.Add(new Label { name = "atlas-preview-judgement" });
+        root.Add(new Label { name = "atlas-preview-enemy" });
+        root.Add(new Label { name = "atlas-preview-modifiers" });
+        root.Add(new Label { name = "atlas-preview-reward" });
+        root.Add(new Label { name = "atlas-preview-recommendations" });
+        root.Add(new Label { name = "atlas-boundary-note" });
+        root.Add(new Label { name = "atlas-debug-hash" });
+        return root;
     }
 
     private static AtlasRegionDefinition CreateSingleNodeRegion()

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using SM.Atlas.Model;
 using UnityEngine.UIElements;
 
 namespace SM.Unity.UI.Atlas;
@@ -25,6 +26,7 @@ public sealed class AtlasScreenView
     private readonly Label _recommendations;
     private readonly Label _boundary;
     private readonly Label _hash;
+    private int? _lastLayerStageIndex;
 
     public AtlasScreenView(VisualElement root)
     {
@@ -51,7 +53,7 @@ public sealed class AtlasScreenView
         _boardPane.pickingMode = PickingMode.Position;
         _board.pickingMode = PickingMode.Ignore;
         _board.style.display = DisplayStyle.None;
-        _layerOverlay.pickingMode = PickingMode.Ignore;
+        _layerOverlay.pickingMode = PickingMode.Position;
         _candidateOverlay.pickingMode = PickingMode.Position;
         _root.RegisterCallback<GeometryChangedEvent>(evt =>
         {
@@ -81,7 +83,12 @@ public sealed class AtlasScreenView
         _board.Clear();
         _layerOverlay.Clear();
         _candidateOverlay.Clear();
-        RenderLayerFocus(state);
+        var currentLayerStage = state.SpineStages.FirstOrDefault(stage => stage.IsCurrent)?.StageIndex;
+        var shouldPulseLayer = _lastLayerStageIndex.HasValue
+                               && currentLayerStage.HasValue
+                               && _lastLayerStageIndex.Value != currentLayerStage.Value;
+        RenderLayerFocus(state, shouldPulseLayer);
+        _lastLayerStageIndex = currentLayerStage;
         foreach (var tile in state.Tiles)
         {
             RenderHexHitZone(tile);
@@ -162,13 +169,22 @@ public sealed class AtlasScreenView
             return;
         }
 
+        if (tile.StageBadgeVisibility == AtlasStageBadgeVisibility.Resolved)
+        {
+            return;
+        }
+
+        var text = tile.StageBadgeVisibility == AtlasStageBadgeVisibility.Highlighted
+            ? tile.StageCandidateBadge
+            : tile.CanEnter ? "•" : "🔒";
         var badge = new Button(() => StageCandidateSelected?.Invoke(tile.NodeId))
         {
-            text = tile.StageCandidateBadge,
+            text = text,
             tooltip = string.IsNullOrWhiteSpace(tile.LockReason) ? tile.Label : tile.LockReason,
         };
         badge.AddToClassList("atlas-stage-badge");
-        badge.EnableInClassList("is-current", tile.IsCurrentStageCandidate);
+        badge.EnableInClassList("is-current", tile.StageBadgeVisibility == AtlasStageBadgeVisibility.Highlighted);
+        badge.EnableInClassList("is-faded", tile.StageBadgeVisibility == AtlasStageBadgeVisibility.Faded);
         badge.EnableInClassList("is-locked", !tile.CanEnter);
         AtlasHexOverlayBinder.ApplyBadgeLayout(badge, tile);
         _candidateOverlay.Add(badge);
@@ -200,7 +216,7 @@ public sealed class AtlasScreenView
 
     private void RenderAnchorMarker(AtlasHexTileViewState tile)
     {
-        if (!tile.IsSigilAnchor || tile.AnchorHighlightState is "inactive" or "hidden")
+        if (!tile.IsSigilAnchor || tile.AnchorVisibilityState == AtlasAnchorVisibilityState.Inactive)
         {
             return;
         }
@@ -210,13 +226,13 @@ public sealed class AtlasScreenView
             tooltip = tile.PlacedSigilName,
         };
         marker.AddToClassList("atlas-anchor-marker");
-        marker.EnableInClassList("is-active", tile.AnchorHighlightState is "active" or "current");
-        marker.EnableInClassList("is-future", tile.AnchorHighlightState == "future");
+        marker.EnableInClassList("is-active", tile.AnchorVisibilityState == AtlasAnchorVisibilityState.Active);
+        marker.EnableInClassList("is-future", tile.AnchorVisibilityState == AtlasAnchorVisibilityState.Future);
         AtlasHexOverlayBinder.ApplyAnchorLayout(marker, tile);
         _candidateOverlay.Add(marker);
     }
 
-    private void RenderLayerFocus(AtlasScreenViewState state)
+    private void RenderLayerFocus(AtlasScreenViewState state, bool shouldPulse)
     {
         var currentStage = state.SpineStages.FirstOrDefault(stage => stage.IsCurrent);
         if (currentStage == null)
@@ -227,6 +243,25 @@ public sealed class AtlasScreenView
         var layer = new VisualElement();
         layer.AddToClassList("atlas-layer-focus");
         layer.AddToClassList($"atlas-layer-focus--stage-{currentStage.StageIndex}");
+        layer.EnableInClassList("is-pulsing", shouldPulse);
+        layer.style.opacity = shouldPulse ? 0.30f : 0.05f;
+        layer.RegisterCallback<MouseEnterEvent>(_ => layer.style.opacity = 0.30f);
+        layer.RegisterCallback<MouseLeaveEvent>(_ =>
+        {
+            if (!layer.ClassListContains("is-pulsing"))
+            {
+                layer.style.opacity = 0.05f;
+            }
+        });
+        if (shouldPulse)
+        {
+            layer.schedule.Execute(() =>
+            {
+                layer.RemoveFromClassList("is-pulsing");
+                layer.style.opacity = 0.05f;
+            }).StartingIn(3500);
+        }
+
         AtlasHexOverlayBinder.ApplyLayerFocusLayout(layer, currentStage.StageIndex);
         _layerOverlay.Add(layer);
     }

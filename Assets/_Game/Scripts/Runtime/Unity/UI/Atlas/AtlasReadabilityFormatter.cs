@@ -130,7 +130,18 @@ public static class AtlasReadabilityFormatter
             AtlasModifierCategory.AffinityBoost => "인연",
             _ => FormatModifierCategory(category),
         };
-        return $"{prefix} +{percent.ToString(CultureInfo.InvariantCulture)}%";
+        return $"{prefix} {FormatModifierIntensity(category, percent)}";
+    }
+
+    public static string FormatModifierIntensity(AtlasModifierCategory category, int percent)
+    {
+        return category switch
+        {
+            AtlasModifierCategory.RewardBias => RemoveCategoryPrefix(FormatRewardBiasLabel(percent), "보상 "),
+            AtlasModifierCategory.ThreatPressure => RemoveCategoryPrefix(FormatThreatPressureLabel(percent), "위험 "),
+            AtlasModifierCategory.AffinityBoost => percent >= 41 ? "강함" : percent >= 21 ? "보통" : "낮음",
+            _ => "보통",
+        };
     }
 
     public static string FormatModifierLabel(string label)
@@ -278,10 +289,8 @@ public static class AtlasReadabilityFormatter
 
     public static string BuildJudgementLine(AtlasRegionNode node, AtlasNodeModifierStack stack)
     {
-        var risk = ResolveDifficultyLabel(node, stack);
-        var reward = stack.RewardBiasPercent > 0
-            ? $"보상 +{stack.RewardBiasPercent.ToString(CultureInfo.InvariantCulture)}%"
-            : "기본 보상";
+        var risk = FormatThreatPressureLabel(stack.ThreatPressurePercent, node.Kind);
+        var reward = FormatRewardBiasLabel(stack.RewardBiasPercent);
         var answer = FormatAnswerLane(node.AnswerLane);
         return $"{risk} / {reward} / {answer} 권장";
     }
@@ -289,9 +298,7 @@ public static class AtlasReadabilityFormatter
     public static string BuildRewardPreview(AtlasRegionNode node, AtlasNodeModifierStack stack)
     {
         var family = FormatRewardFamily(node.RewardFamily);
-        return stack.RewardBiasPercent > 0
-            ? $"{family} 계열 보상에 보상 가중 +{stack.RewardBiasPercent.ToString(CultureInfo.InvariantCulture)}%"
-            : $"{family} 계열 기본 보상";
+        return $"{family} 계열 {FormatRewardBiasLabel(stack.RewardBiasPercent)}";
     }
 
     public static AtlasHexBadgeViewState BuildTypeBadge(AtlasNodeKind kind)
@@ -325,8 +332,8 @@ public static class AtlasReadabilityFormatter
         var label = ResolveDifficultyLabel(node, stack);
         var cssClass = label switch
         {
-            "고위험" => "atlas-chip--difficulty-high",
-            "위험" => "atlas-chip--difficulty-risk",
+            "위험 매우 높음" or "위험 높음" => "atlas-chip--difficulty-high",
+            "위험 보통" => "atlas-chip--difficulty-risk",
             _ => "atlas-chip--difficulty-safe",
         };
         return new AtlasHexBadgeViewState(label, $"난이도: {label}", cssClass);
@@ -352,8 +359,8 @@ public static class AtlasReadabilityFormatter
 
     public static string BuildCandidateSummary(AtlasRegionNode node, AtlasNodeModifierStack? stack)
     {
-        var reward = (stack?.RewardBiasPercent ?? 0) > 0 ? $"보상 +{stack!.RewardBiasPercent.ToString(CultureInfo.InvariantCulture)}%" : "기본 보상";
-        var threat = (stack?.ThreatPressurePercent ?? 0) > 0 ? $"위험 +{stack!.ThreatPressurePercent.ToString(CultureInfo.InvariantCulture)}%" : "위험 낮음";
+        var reward = FormatRewardBiasLabel(stack?.RewardBiasPercent ?? 0);
+        var threat = FormatThreatPressureLabel(stack?.ThreatPressurePercent ?? 0, node.Kind);
         return $"{FormatNodeKind(node.Kind)} / {reward} / {threat}";
     }
 
@@ -401,13 +408,41 @@ public static class AtlasReadabilityFormatter
 
     private static string ResolveDifficultyLabel(AtlasRegionNode node, AtlasNodeModifierStack? stack)
     {
-        var threat = stack?.ThreatPressurePercent ?? 0;
-        if (threat >= 32 || node.Kind == AtlasNodeKind.Boss)
+        return FormatThreatPressureLabel(stack?.ThreatPressurePercent ?? 0, node.Kind);
+    }
+
+    private static string FormatRewardBiasLabel(int percent)
+    {
+        return percent switch
         {
-            return "고위험";
+            >= 61 => "보상 매우 풍부",
+            >= 41 => "보상 풍부",
+            >= 21 => "보상 보통",
+            _ => "보상 낮음",
+        };
+    }
+
+    private static string FormatThreatPressureLabel(int percent, AtlasNodeKind kind = AtlasNodeKind.Normal)
+    {
+        if (kind == AtlasNodeKind.Boss)
+        {
+            return "위험 매우 높음";
         }
 
-        return threat >= 15 || node.Kind == AtlasNodeKind.Elite ? "위험" : "안전";
+        return percent switch
+        {
+            >= 46 => "위험 매우 높음",
+            >= 31 => "위험 높음",
+            >= 16 => "위험 보통",
+            _ => "위험 낮음",
+        };
+    }
+
+    private static string RemoveCategoryPrefix(string value, string prefix)
+    {
+        return value.StartsWith(prefix, StringComparison.Ordinal)
+            ? value[prefix.Length..]
+            : value;
     }
 
     private static string FormatNodeKind(AtlasNodeKind kind)

@@ -27,6 +27,13 @@ public enum AtlasHexDirection
     SouthEast = 5,
 }
 
+public enum AtlasAnchorVisibilityState
+{
+    Inactive = 0,
+    Future = 1,
+    Active = 2,
+}
+
 public sealed record AtlasRegionNode(
     string NodeId,
     AtlasHexCoordinate Hex,
