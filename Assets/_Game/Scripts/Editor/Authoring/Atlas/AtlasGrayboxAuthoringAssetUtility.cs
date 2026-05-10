@@ -80,8 +80,8 @@ public static class AtlasGrayboxAuthoringAssetUtility
         go.tag = "MainCamera";
         go.transform.position = new Vector3(-4.75f, 6.70f, -6.85f);
         go.transform.rotation = Quaternion.LookRotation(new Vector3(4.75f, -5.80f, 6.85f).normalized, Vector3.up);
-        camera.clearFlags = CameraClearFlags.Skybox;
-        camera.backgroundColor = new Color(0.10f, 0.12f, 0.14f, 1f);
+        camera.clearFlags = CameraClearFlags.SolidColor;
+        camera.backgroundColor = new Color(0.44f, 0.49f, 0.45f, 1f);
         camera.orthographic = false;
         camera.fieldOfView = 38f;
         camera.nearClipPlane = 0.1f;
@@ -162,7 +162,7 @@ public static class AtlasGrayboxAuthoringAssetUtility
             "MossPlateau",
             new Vector3(0f, -0.12f, 0f),
             new Vector3(8.8f, 0.18f, 5.8f),
-            LoadOrCreateMaterial("M_Atlas_Wolfpine_Moss", new Color(0.23f, 0.34f, 0.20f, 1f)));
+            LoadOrCreateMaterial("M_Atlas_Wolfpine_Moss", new Color(0.38f, 0.52f, 0.30f, 1f)));
         ground.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
 
         CreatePrimitiveRenderer(
@@ -171,14 +171,14 @@ public static class AtlasGrayboxAuthoringAssetUtility
             "CliffDrop_FogPlane",
             new Vector3(1.1f, -0.55f, 2.80f),
             new Vector3(8.2f, 0.10f, 1.6f),
-            LoadOrCreateMaterial("M_Atlas_FoggedCliff", new Color(0.35f, 0.42f, 0.42f, 0.50f)));
+            LoadOrCreateMaterial("M_Atlas_FoggedCliff", new Color(0.54f, 0.58f, 0.54f, 0.62f)));
         CreatePrimitiveRenderer(
             terrainRoot.transform,
             PrimitiveType.Cube,
             "WarmStream",
             new Vector3(-2.15f, -0.035f, -0.42f),
             new Vector3(0.18f, 0.025f, 5.2f),
-            LoadOrCreateMaterial("M_Atlas_Stream", new Color(0.17f, 0.44f, 0.47f, 0.76f)));
+            LoadOrCreateMaterial("M_Atlas_Stream", new Color(0.24f, 0.58f, 0.64f, 0.80f)));
 
         var mapPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(BattleForestMapPrefabPath);
         if (mapPrefab != null)
@@ -228,8 +228,8 @@ public static class AtlasGrayboxAuthoringAssetUtility
             new Vector3(0.4f, 0f, -2.6f),
             new Vector3(1.4f, 0f, 2.3f),
         };
-        var trunk = LoadOrCreateMaterial("M_Atlas_TreeTrunk", new Color(0.26f, 0.15f, 0.08f, 1f));
-        var needle = LoadOrCreateMaterial("M_Atlas_PineNeedle", new Color(0.09f, 0.23f, 0.15f, 1f));
+        var trunk = LoadOrCreateMaterial("M_Atlas_TreeTrunk", new Color(0.34f, 0.22f, 0.13f, 1f));
+        var needle = LoadOrCreateMaterial("M_Atlas_PineNeedle", new Color(0.16f, 0.36f, 0.24f, 1f));
         for (var i = 0; i < placements.Length; i++)
         {
             var root = CreateChild(parent, $"WolfpineTree_{i:00}");
@@ -241,7 +241,7 @@ public static class AtlasGrayboxAuthoringAssetUtility
 
     private static void CreateRocksAndRuins(Transform parent)
     {
-        var rock = LoadOrCreateMaterial("M_Atlas_WarmRock", new Color(0.36f, 0.34f, 0.29f, 1f));
+        var rock = LoadOrCreateMaterial("M_Atlas_WarmRock", new Color(0.52f, 0.49f, 0.42f, 1f));
         var gold = LoadOrCreateMaterial("M_Atlas_SigilStoneGlow", new Color(0.88f, 0.63f, 0.26f, 1f), "SM/Atlas/HexLeyLine");
         foreach (var position in new[] { new Vector3(-1.8f, 0f, -1.6f), new Vector3(0.9f, 0f, 1.3f), new Vector3(2.5f, 0f, -0.8f) })
         {
@@ -259,17 +259,17 @@ public static class AtlasGrayboxAuthoringAssetUtility
     private static void EnsureGoldenHourLighting()
     {
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-        RenderSettings.ambientLight = new Color(0.42f, 0.36f, 0.30f, 1f);
+        RenderSettings.ambientLight = new Color(0.70f, 0.62f, 0.52f, 1f);
         RenderSettings.fog = true;
-        RenderSettings.fogColor = new Color(0.46f, 0.48f, 0.44f, 1f);
+        RenderSettings.fogColor = new Color(0.60f, 0.64f, 0.58f, 1f);
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogDensity = 0.015f;
+        RenderSettings.fogDensity = 0.009f;
 
         var lightGo = EnsureRootObject("GoldenHour Directional Light");
         var light = EnsureComponent<Light>(lightGo);
         light.type = LightType.Directional;
-        light.color = new Color(1.00f, 0.66f, 0.38f, 1f);
-        light.intensity = 1.25f;
+        light.color = new Color(1.00f, 0.72f, 0.45f, 1f);
+        light.intensity = 1.65f;
         light.shadows = LightShadows.Soft;
         lightGo.transform.rotation = Quaternion.Euler(42f, -34f, 0f);
 
@@ -397,6 +397,14 @@ public static class AtlasGrayboxAuthoringAssetUtility
         var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(path);
         if (mesh != null)
         {
+            var refreshed = factory();
+            mesh.Clear();
+            mesh.vertices = refreshed.vertices;
+            mesh.triangles = refreshed.triangles;
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+            UnityEngine.Object.DestroyImmediate(refreshed);
+            EditorUtility.SetDirty(mesh);
             return mesh;
         }
 
