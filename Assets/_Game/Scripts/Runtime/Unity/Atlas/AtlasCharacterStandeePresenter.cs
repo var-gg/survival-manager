@@ -29,10 +29,10 @@ public sealed class AtlasCharacterStandeePresenter : MonoBehaviour
 
     private static readonly (string CharacterId, string NodeId, Color Accent)[] DefaultPlacements =
     {
-        ("hero_dawn_priest", "hex_m3_1", new Color(0.95f, 0.78f, 0.38f, 1f)),
-        ("hero_pack_raider", "hex_m2_2", new Color(0.82f, 0.36f, 0.23f, 1f)),
-        ("hero_echo_savant", "hex_m1_0", new Color(0.58f, 0.50f, 0.95f, 1f)),
-        ("hero_grave_hexer", "hex_0_0", new Color(0.62f, 0.76f, 0.88f, 1f)),
+        ("hero_dawn_priest", "hex_m2_1", new Color(0.95f, 0.78f, 0.38f, 1f)),
+        ("hero_pack_raider", "hex_m1_2", new Color(0.82f, 0.36f, 0.23f, 1f)),
+        ("hero_echo_savant", "hex_0_m1", new Color(0.58f, 0.50f, 0.95f, 1f)),
+        ("hero_grave_hexer", "hex_1_0", new Color(0.62f, 0.76f, 0.88f, 1f)),
     };
 
     [SerializeField] private Transform standeeRoot = null!;

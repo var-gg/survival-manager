@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
@@ -89,72 +90,72 @@ public sealed class AtlasV2SpineSigilFastTests
     }
 
     [Test]
-    public void RegionLayer_HasExpectedThirtySevenHexComposition()
+    public void AnchorVisibility_StageBandClassification()
     {
-        var region = AtlasGrayboxDataFactory.CreateRegion();
+        var presenter = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion());
+        var initial = presenter.Build();
 
-        Assert.That(region.Nodes.Count, Is.EqualTo(37));
-        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Outer), Is.EqualTo(18));
-        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Middle), Is.EqualTo(12));
-        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Inner), Is.EqualTo(6));
-        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Core), Is.EqualTo(1));
+        Assert.That(FindAnchorState(initial, "hex_m1_m1"), Is.EqualTo("active"));
+        Assert.That(FindAnchorState(initial, "hex_0_1"), Is.EqualTo("future"));
+        Assert.That(FindAnchorState(initial, "hex_1_m2"), Is.EqualTo("future"));
+
+        presenter.SelectNode("hex_m2_1");
+        presenter.SelectNode("hex_m1_2");
+        var stageThree = presenter.Build();
+
+        Assert.That(FindAnchorState(stageThree, "hex_m1_m1"), Is.EqualTo("inactive"));
+        Assert.That(FindAnchorState(stageThree, "hex_0_1"), Is.EqualTo("active"));
+        Assert.That(FindAnchorState(stageThree, "hex_1_m2"), Is.EqualTo("active"));
     }
 
     [Test]
-    public void AnchorSlotLayerDistribution_HasExpectedTwelveAnchors()
+    public void StageCandidateSurface_NoMoreThanFour()
     {
-        var region = AtlasGrayboxDataFactory.CreateRegion();
+        var presenter = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion());
 
-        Assert.That(region.SigilAnchorSlots.Count, Is.EqualTo(12));
-        Assert.That(region.SigilAnchorSlots.Count(slot => slot.LayerId == AtlasRegionLayer.Outer.ToString()), Is.EqualTo(6));
-        Assert.That(region.SigilAnchorSlots.Count(slot => slot.LayerId == AtlasRegionLayer.Middle.ToString()), Is.EqualTo(4));
-        Assert.That(region.SigilAnchorSlots.Count(slot => slot.LayerId == AtlasRegionLayer.Inner.ToString()), Is.EqualTo(2));
-        Assert.That(region.SigilAnchorSlots.Count(slot => slot.LayerId == AtlasRegionLayer.Core.ToString()), Is.Zero);
+        Assert.That(presenter.Build().StageCandidates.Count, Is.LessThanOrEqualTo(4));
+
+        presenter.SelectNode("hex_m2_1");
+        Assert.That(presenter.Build().StageCandidates.Count, Is.LessThanOrEqualTo(4));
     }
 
     [Test]
-    public void TraversalMode_ActiveSigilCap()
+    public void WeaknessContractStub_NotPresentInOnePhaseScope()
     {
-        var region = AtlasGrayboxDataFactory.CreateRegion();
-        var placements = region.SigilPool
-            .Take(4)
-            .Zip(region.SigilAnchorSlots.Take(4), (sigil, slot) =>
-            {
-                var node = region.Nodes.Single(item => item.NodeId == slot.HexId);
-                return new AtlasPlacedSigil(sigil.SigilId, node.Hex, slot.AnchorId);
-            })
-            .ToArray();
+        var state = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion()).Build();
+        var visibleText = string.Join("\n",
+            state.RegionTitle,
+            state.PlacementSummary,
+            state.Preview.JudgementLine,
+            state.Preview.ModifierStack,
+            state.Preview.RewardPreview,
+            state.Preview.BoundaryNote,
+            string.Join("\n", state.SigilPool.Select(item => $"{item.DisplayName}\n{item.CategorySummary}")));
 
-        Assert.That(AtlasTraversalContext.ForMode(TraversalMode.CampaignFirstClear).ActiveSigilCap, Is.EqualTo(2));
-        Assert.That(AtlasTraversalContext.ForMode(TraversalMode.CampaignResume).ActiveSigilCap, Is.EqualTo(2));
-        Assert.That(AtlasTraversalContext.ForMode(TraversalMode.Revisit).ActiveSigilCap, Is.EqualTo(2));
-        Assert.That(AtlasTraversalContext.ForMode(TraversalMode.EndlessRegion).ActiveSigilCap, Is.EqualTo(3));
-        Assert.Throws<InvalidOperationException>(() => SigilPropagationService.Resolve(region, placements.Take(3).ToArray(), AtlasTraversalContext.ForMode(TraversalMode.CampaignFirstClear)));
-        Assert.DoesNotThrow(() => SigilPropagationService.Resolve(region, placements.Take(3).ToArray(), AtlasTraversalContext.ForMode(TraversalMode.EndlessRegion)));
-        Assert.Throws<InvalidOperationException>(() => SigilPropagationService.Resolve(region, placements, AtlasTraversalContext.ForMode(TraversalMode.EndlessRegion)));
+        Assert.That(visibleText, Does.Not.Contain("augment"));
+        Assert.That(visibleText, Does.Not.Contain("Augment"));
+        Assert.That(visibleText, Does.Not.Contain("contract"));
+        Assert.That(visibleText, Does.Not.Contain("Contract"));
+        Assert.That(visibleText, Does.Not.Contain("계약"));
+        Assert.That(visibleText, Does.Not.Contain("마침"));
     }
 
     [Test]
-    public void StageCandidate_LayerAssignment()
+    public void SigilCardLabel_NoDirectPercentInMain()
     {
-        var region = AtlasGrayboxDataFactory.CreateRegion();
-        var nodes = region.Nodes.ToDictionary(node => node.NodeId, StringComparer.Ordinal);
+        var state = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion()).Build();
+        var directNumberPattern = new Regex(@"[+]\d|%", RegexOptions.CultureInvariant);
 
-        Assert.That(region.StageCandidates.Where(candidate => candidate.SiteStageIndex == 1).Select(candidate => nodes[candidate.HexId].Layer), Is.All.EqualTo(AtlasRegionLayer.Outer));
-        Assert.That(region.StageCandidates.Where(candidate => candidate.SiteStageIndex == 3).Select(candidate => nodes[candidate.HexId].Layer), Is.All.EqualTo(AtlasRegionLayer.Inner));
-        Assert.That(nodes[region.StageCandidates.Single(candidate => candidate.SiteStageIndex == 4).HexId].Layer, Is.EqualTo(AtlasRegionLayer.Core));
+        foreach (var item in state.SigilPool)
+        {
+            Assert.That(directNumberPattern.IsMatch(item.DisplayName), Is.False, item.DisplayName);
+            Assert.That(directNumberPattern.IsMatch(item.CategorySummary), Is.False, item.CategorySummary);
+        }
     }
 
-    [Test]
-    public void LegacyNineteenHexRegion_PreservedForV1Smoke()
+    private static string FindAnchorState(AtlasScreenViewState state, string nodeId)
     {
-        var legacy = AtlasGrayboxDataFactory.CreateLegacyNineteenHexRegion();
-        var current = AtlasGrayboxDataFactory.CreateRegion();
-
-        Assert.That(legacy.RegionId, Is.Not.EqualTo(current.RegionId));
-        Assert.That(legacy.Nodes.Count, Is.EqualTo(19));
-        Assert.That(legacy.SigilAnchorSlots.Count, Is.EqualTo(3));
-        Assert.That(legacy.AnchorSlotVersion, Does.Contain("legacy"));
+        return state.Tiles.Single(tile => tile.NodeId == nodeId).AnchorHighlightState;
     }
 
     private static AtlasRegionDefinition CreateSingleNodeRegion()

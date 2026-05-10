@@ -14,7 +14,6 @@ public sealed class AtlasScreenView
     private readonly VisualElement _candidateOverlay;
     private readonly VisualElement _sigilPool;
     private readonly VisualElement _stageCandidateList;
-    private readonly VisualElement _traversalModeStrip;
     private readonly VisualElement _spineProgressStrip;
     private readonly Label _regionTitle;
     private readonly Label _placementSummary;
@@ -37,7 +36,6 @@ public sealed class AtlasScreenView
         _candidateOverlay = Require<VisualElement>("atlas-stage-candidate-overlay");
         _sigilPool = Require<VisualElement>("atlas-sigil-pool");
         _stageCandidateList = Require<VisualElement>("atlas-stage-candidate-list");
-        _traversalModeStrip = Require<VisualElement>("atlas-traversal-mode-strip");
         _spineProgressStrip = Require<VisualElement>("atlas-spine-progress-strip");
         _regionTitle = Require<Label>("atlas-region-title");
         _placementSummary = Require<Label>("atlas-placement-summary");
@@ -71,7 +69,6 @@ public sealed class AtlasScreenView
         _placementSummary.text = state.PlacementSummary;
         RenderBoard(state);
         RenderSigilPool(state);
-        RenderTraversalMode(state.TraversalMode);
         RenderSpineProgress(state);
         RenderStageCandidates(state);
         RenderPreview(state.Preview);
@@ -84,7 +81,7 @@ public sealed class AtlasScreenView
         _board.Clear();
         _layerOverlay.Clear();
         _candidateOverlay.Clear();
-        RenderLayerVisualization(state);
+        RenderLayerFocus(state);
         foreach (var tile in state.Tiles)
         {
             RenderHexHitZone(tile);
@@ -92,37 +89,6 @@ public sealed class AtlasScreenView
             RenderAnchorMarker(tile);
             RenderHexChips(tile);
         }
-    }
-
-    private void RenderLayerVisualization(AtlasScreenViewState state)
-    {
-        foreach (var layer in state.LayerBands)
-        {
-            var band = new VisualElement
-            {
-                tooltip = $"{layer.Label} layer / {layer.NodeCount} hex",
-            };
-            band.AddToClassList("atlas-layer-band");
-            band.AddToClassList(AtlasHexOverlayBinder.ToLayerClass(layer.Layer));
-            band.EnableInClassList("is-current", layer.IsCurrent);
-            AtlasHexOverlayBinder.ApplyLayerBandLayout(band, layer.Layer);
-            _layerOverlay.Add(band);
-        }
-    }
-
-    private void RenderTraversalMode(AtlasTraversalModeViewState traversalMode)
-    {
-        _traversalModeStrip.Clear();
-        var mode = new Label($"{traversalMode.Label} / 각인 {traversalMode.ActiveSigilCount}/{traversalMode.ActiveSigilCap}")
-        {
-            tooltip = traversalMode.Mode.ToString(),
-        };
-        mode.AddToClassList("atlas-traversal-mode");
-        _traversalModeStrip.Add(mode);
-
-        var policy = new Label(traversalMode.WeaknessContractLabel);
-        policy.AddToClassList("atlas-traversal-policy");
-        _traversalModeStrip.Add(policy);
     }
 
     private void RenderSigilPool(AtlasScreenViewState state)
@@ -163,7 +129,7 @@ public sealed class AtlasScreenView
     private void RenderStageCandidates(AtlasScreenViewState state)
     {
         _stageCandidateList.Clear();
-        foreach (var candidate in state.StageCandidates.Where(candidate => candidate.IsCurrentStage || candidate.IsSelected || !candidate.CanEnter))
+        foreach (var candidate in state.StageCandidates)
         {
             var button = new Button(() => StageCandidateSelected?.Invoke(candidate.HexId))
             {
@@ -224,7 +190,6 @@ public sealed class AtlasScreenView
             tooltip = string.IsNullOrWhiteSpace(tile.LockReason) ? tile.Label : tile.LockReason,
         };
         hitZone.AddToClassList("atlas-hex-hit-zone");
-        hitZone.AddToClassList(AtlasHexOverlayBinder.ToLayerClass(tile.Layer));
         hitZone.EnableInClassList("is-current", tile.IsCurrentStageCandidate);
         hitZone.EnableInClassList("is-selected", tile.IsSelected);
         hitZone.EnableInClassList("is-locked", !tile.CanEnter);
@@ -235,7 +200,7 @@ public sealed class AtlasScreenView
 
     private void RenderAnchorMarker(AtlasHexTileViewState tile)
     {
-        if (!tile.IsSigilAnchor || tile.AnchorHighlightState == "hidden")
+        if (!tile.IsSigilAnchor || tile.AnchorHighlightState is "inactive" or "hidden")
         {
             return;
         }
@@ -245,9 +210,25 @@ public sealed class AtlasScreenView
             tooltip = tile.PlacedSigilName,
         };
         marker.AddToClassList("atlas-anchor-marker");
+        marker.EnableInClassList("is-active", tile.AnchorHighlightState is "active" or "current");
         marker.EnableInClassList("is-future", tile.AnchorHighlightState == "future");
         AtlasHexOverlayBinder.ApplyAnchorLayout(marker, tile);
         _candidateOverlay.Add(marker);
+    }
+
+    private void RenderLayerFocus(AtlasScreenViewState state)
+    {
+        var currentStage = state.SpineStages.FirstOrDefault(stage => stage.IsCurrent);
+        if (currentStage == null)
+        {
+            return;
+        }
+
+        var layer = new VisualElement();
+        layer.AddToClassList("atlas-layer-focus");
+        layer.AddToClassList($"atlas-layer-focus--stage-{currentStage.StageIndex}");
+        AtlasHexOverlayBinder.ApplyLayerFocusLayout(layer, currentStage.StageIndex);
+        _layerOverlay.Add(layer);
     }
 
     private void RenderHexChips(AtlasHexTileViewState tile)

@@ -18,9 +18,7 @@ namespace SM.Editor.Authoring.Atlas;
 public static class AtlasGrayboxAuthoringAssetUtility
 {
     private const string AtlasScenePath = "Assets/_Game/Scenes/Atlas.unity";
-    private const string AtlasLegacyScenePath = "Assets/_Game/Scenes/AtlasLegacy19.unity";
     private const string AtlasPrefabPath = "Assets/_Game/Prefabs/Atlas/AtlasRegionWolfpineTrail.prefab";
-    private const string AtlasLegacyPrefabPath = "Assets/_Game/Prefabs/Atlas/AtlasRegionWolfpineTrailLegacy19.prefab";
     private const string AtlasMaterialFolder = "Assets/_Game/Materials/Atlas";
     private const string AtlasMeshFolder = "Assets/_Game/Meshes/Atlas";
     private const string BattleForestMapPrefabPath = "Assets/_Game/Prefabs/Battle/Maps/BattleMap_Forest_Ruins_01.prefab";
@@ -33,67 +31,34 @@ public static class AtlasGrayboxAuthoringAssetUtility
 
     public static void EnsureAtlasScene()
     {
-        if (NeedsRebuild(AtlasScenePath, AtlasPrefabPath, expectedHexCount: 37))
+        if (!File.Exists(AtlasScenePath) || !File.Exists(AtlasPrefabPath))
         {
             RebuildAtlasScene();
         }
     }
 
-    public static void EnsureLegacyAtlasScene()
-    {
-        if (NeedsRebuild(AtlasLegacyScenePath, AtlasLegacyPrefabPath, expectedHexCount: 19))
-        {
-            RebuildLegacyAtlasScene();
-        }
-    }
-
     public static void RebuildAtlasScene()
-    {
-        RebuildAtlasScene(
-            AtlasScenePath,
-            AtlasPrefabPath,
-            AtlasGrayboxDataFactory.CreateRegion(),
-            AtlasScreenRegionProfile.ThirtySevenHex,
-            "Atlas 37hex 3D scene rebuilt.");
-    }
-
-    public static void RebuildLegacyAtlasScene()
-    {
-        RebuildAtlasScene(
-            AtlasLegacyScenePath,
-            AtlasLegacyPrefabPath,
-            AtlasGrayboxDataFactory.CreateLegacyNineteenHexRegion(),
-            AtlasScreenRegionProfile.LegacyNineteenHex,
-            "Atlas legacy 19hex scene rebuilt.");
-    }
-
-    private static void RebuildAtlasScene(
-        string scenePath,
-        string prefabPath,
-        AtlasRegionDefinition region,
-        AtlasScreenRegionProfile regionProfile,
-        string logMessage)
     {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         EnsureRootObject("SceneMarker_Atlas");
         var camera = EnsureCamera();
         EnsureGoldenHourLighting();
-        var environment = InstantiateAtlasEnvironmentPrefab(region, prefabPath);
+        var environment = InstantiateAtlasEnvironmentPrefab();
         UiEventSystemConfigurator.EnsureSceneEventSystem(scene);
-        var screenController = EnsureRuntimeRoot(regionProfile);
+        var screenController = EnsureRuntimeRoot();
         ConfigureSceneController(environment, camera, screenController);
         EditorSceneManager.MarkSceneDirty(scene);
-        EditorSceneManager.SaveScene(scene, scenePath);
+        EditorSceneManager.SaveScene(scene, AtlasScenePath);
         PatchSerializedScriptReferences(
-            scenePath,
+            AtlasScenePath,
             ("SM.Unity::SM.Unity.UI.Atlas.AtlasScreenController", "Assets/_Game/Scripts/Runtime/Unity/UI/Atlas/AtlasScreenController.cs"),
             ("SM.Unity::SM.Unity.Atlas.Atlas3DSceneController", "Assets/_Game/Scripts/Runtime/Unity/Atlas/Atlas3DSceneController.cs"));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log($"[AtlasGraybox] {logMessage}");
+        Debug.Log("[AtlasGraybox] Atlas 3D scene rebuilt.");
     }
 
-    private static AtlasScreenController EnsureRuntimeRoot(AtlasScreenRegionProfile regionProfile)
+    private static AtlasScreenController EnsureRuntimeRoot()
     {
         var root = EnsureRootObject("AtlasRuntimeRoot");
         var hostGo = CreateChild(root.transform, "AtlasRuntimePanelHost");
@@ -104,7 +69,6 @@ public static class AtlasGrayboxAuthoringAssetUtility
         var controller = EnsureComponent<AtlasScreenController>(controllerGo);
         var serialized = new SerializedObject(controller);
         serialized.FindProperty("panelHost").objectReferenceValue = host;
-        serialized.FindProperty("regionProfile").enumValueIndex = (int)regionProfile;
         serialized.ApplyModifiedPropertiesWithoutUndo();
         return controller;
     }
@@ -114,21 +78,21 @@ public static class AtlasGrayboxAuthoringAssetUtility
         var go = EnsureRootObject("Main Camera");
         var camera = EnsureComponent<Camera>(go);
         go.tag = "MainCamera";
-        go.transform.position = new Vector3(-4.75f, 6.70f, -6.85f);
-        go.transform.rotation = Quaternion.LookRotation(new Vector3(4.75f, -5.80f, 6.85f).normalized, Vector3.up);
+        go.transform.position = new Vector3(-3.90f, 5.55f, -5.65f);
+        go.transform.rotation = Quaternion.LookRotation(new Vector3(3.90f, -4.75f, 5.65f).normalized, Vector3.up);
         camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = new Color(0.44f, 0.49f, 0.45f, 1f);
         camera.orthographic = false;
-        camera.fieldOfView = 38f;
+        camera.fieldOfView = 35f;
         camera.nearClipPlane = 0.1f;
         camera.farClipPlane = 160f;
         EnsureOptionalCinemachineRig(go);
         return camera;
     }
 
-    private static GameObject InstantiateAtlasEnvironmentPrefab(AtlasRegionDefinition region, string prefabPath)
+    private static GameObject InstantiateAtlasEnvironmentPrefab()
     {
-        var prefab = RebuildAtlasEnvironmentPrefab(region, prefabPath);
+        var prefab = RebuildAtlasEnvironmentPrefab();
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         if (instance == null)
         {
@@ -139,7 +103,7 @@ public static class AtlasGrayboxAuthoringAssetUtility
         return instance;
     }
 
-    private static GameObject RebuildAtlasEnvironmentPrefab(AtlasRegionDefinition region, string prefabPath)
+    private static GameObject RebuildAtlasEnvironmentPrefab()
     {
         EnsureAssetFolder("Assets/_Game/Prefabs");
         EnsureAssetFolder("Assets/_Game/Prefabs/Atlas");
@@ -149,10 +113,11 @@ public static class AtlasGrayboxAuthoringAssetUtility
         EnsureAssetFolder(AtlasMeshFolder);
 
         var root = new GameObject("AtlasRegionWolfpineTrail");
+        var region = AtlasGrayboxDataFactory.CreateRegion();
         var hitDiscMesh = LoadOrCreateMesh("Mesh_Atlas_HexHitDisc", () => AtlasHexWorldMapper.CreateHexDiscMesh(AtlasHexWorldMapper.HexRadius * 0.98f));
         var auraRingMesh = LoadOrCreateMesh("Mesh_Atlas_AuraRing", () => AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius * 1.10f, 0.045f));
         var leylineRingMesh = LoadOrCreateMesh("Mesh_Atlas_LeyLineRing", () => AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius, 0.028f, 0.012f));
-        CreateForestDiorama(root.transform, region);
+        CreateForestDiorama(root.transform);
         CreateHexHitboxes(root.transform, region, hitDiscMesh);
 
         var leyline = root.AddComponent<AtlasHexLeylineRenderer>();
@@ -178,42 +143,17 @@ public static class AtlasGrayboxAuthoringAssetUtility
             LoadOrCreateMaterial("M_Atlas_StandeeBase", new Color(0.08f, 0.07f, 0.06f, 0.72f)));
         UnityEngine.Object.DestroyImmediate(standees);
 
-        var prefab = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+        var prefab = PrefabUtility.SaveAsPrefabAsset(root, AtlasPrefabPath);
         UnityEngine.Object.DestroyImmediate(root);
         if (prefab == null)
         {
-            throw new InvalidOperationException($"Failed to save {prefabPath}.");
+            throw new InvalidOperationException($"Failed to save {AtlasPrefabPath}.");
         }
 
         return prefab;
     }
 
-    private static bool NeedsRebuild(string scenePath, string prefabPath, int expectedHexCount)
-    {
-        if (!File.Exists(scenePath) || !File.Exists(prefabPath))
-        {
-            return true;
-        }
-
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-        return prefab == null || CountHexHitboxes(prefab.transform) != expectedHexCount;
-    }
-
-    private static int CountHexHitboxes(Transform root)
-    {
-        var count = 0;
-        foreach (var child in root.GetComponentsInChildren<Transform>(true))
-        {
-            if (child.name.StartsWith("HexHit_", StringComparison.Ordinal))
-            {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    private static void CreateForestDiorama(Transform root, AtlasRegionDefinition region)
+    private static void CreateForestDiorama(Transform root)
     {
         var terrainRoot = CreateChild(root, "WolfpineTrailTerrain");
         var ground = CreatePrimitiveRenderer(
@@ -246,15 +186,15 @@ public static class AtlasGrayboxAuthoringAssetUtility
             var map = PrefabUtility.InstantiatePrefab(mapPrefab, terrainRoot.transform) as GameObject;
             if (map != null)
             {
-                map.name = "BattleMapForestRuinsReferenceMesh";
-                map.transform.localPosition = new Vector3(0f, 0.08f, -0.34f);
+                map.name = "BattleMapForestRuinsBackdrop";
+                map.transform.localPosition = new Vector3(0f, -0.18f, 4.45f);
                 map.transform.localRotation = Quaternion.Euler(0f, 8f, 0f);
-                map.transform.localScale = Vector3.one * 0.78f;
+                map.transform.localScale = Vector3.one * 0.38f;
             }
         }
 
         CreateTrees(terrainRoot.transform);
-        CreateRocksAndRuins(terrainRoot.transform, region);
+        CreateRocksAndRuins(terrainRoot.transform);
     }
 
     private static void CreateHexHitboxes(Transform root, AtlasRegionDefinition region, Mesh hitDiscMesh)
@@ -279,14 +219,10 @@ public static class AtlasGrayboxAuthoringAssetUtility
     {
         var placements = new[]
         {
-            new Vector3(-3.8f, 0f, -2.1f),
-            new Vector3(-3.3f, 0f, 1.2f),
-            new Vector3(-2.6f, 0f, 2.2f),
-            new Vector3(2.8f, 0f, -2.2f),
-            new Vector3(3.5f, 0f, 0.8f),
-            new Vector3(4.0f, 0f, 2.0f),
-            new Vector3(0.4f, 0f, -2.6f),
-            new Vector3(1.4f, 0f, 2.3f),
+            new Vector3(-4.05f, 0f, -2.45f),
+            new Vector3(-4.05f, 0f, 2.45f),
+            new Vector3(4.05f, 0f, -2.45f),
+            new Vector3(4.05f, 0f, 2.45f),
         };
         var trunk = LoadOrCreateMaterial("M_Atlas_TreeTrunk", new Color(0.34f, 0.22f, 0.13f, 1f));
         var needle = LoadOrCreateMaterial("M_Atlas_PineNeedle", new Color(0.16f, 0.36f, 0.24f, 1f));
@@ -294,12 +230,12 @@ public static class AtlasGrayboxAuthoringAssetUtility
         {
             var root = CreateChild(parent, $"WolfpineTree_{i:00}");
             root.transform.localPosition = placements[i];
-            CreatePrimitiveRenderer(root.transform, PrimitiveType.Cylinder, "Trunk", new Vector3(0f, 0.32f, 0f), new Vector3(0.09f, 0.32f, 0.09f), trunk);
-            CreatePrimitiveRenderer(root.transform, PrimitiveType.Capsule, "Crown", new Vector3(0f, 0.88f, 0f), new Vector3(0.42f, 0.62f, 0.42f), needle);
+            CreatePrimitiveRenderer(root.transform, PrimitiveType.Cylinder, "Trunk", new Vector3(0f, 0.22f, 0f), new Vector3(0.063f, 0.224f, 0.063f), trunk);
+            CreatePrimitiveRenderer(root.transform, PrimitiveType.Capsule, "Crown", new Vector3(0f, 0.62f, 0f), new Vector3(0.294f, 0.434f, 0.294f), needle);
         }
     }
 
-    private static void CreateRocksAndRuins(Transform parent, AtlasRegionDefinition region)
+    private static void CreateRocksAndRuins(Transform parent)
     {
         var rock = LoadOrCreateMaterial("M_Atlas_WarmRock", new Color(0.52f, 0.49f, 0.42f, 1f));
         var gold = LoadOrCreateMaterial("M_Atlas_SigilStoneGlow", new Color(0.88f, 0.63f, 0.26f, 1f), "SM/Atlas/HexLeyLine");
@@ -308,6 +244,7 @@ public static class AtlasGrayboxAuthoringAssetUtility
             CreatePrimitiveRenderer(parent, PrimitiveType.Cube, $"MossRock_{position.x:0.0}_{position.z:0.0}", position + Vector3.up * 0.10f, new Vector3(0.42f, 0.22f, 0.34f), rock);
         }
 
+        var region = AtlasGrayboxDataFactory.CreateRegion();
         foreach (var anchor in region.SigilAnchors)
         {
             var world = AtlasHexWorldMapper.ToWorld(anchor);

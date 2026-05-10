@@ -40,7 +40,6 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <ui:VisualElement name="atlas-traversal-mode-strip" class="atlas-traversal-mode-strip" />
         <ui:VisualElement name="atlas-spine-progress-strip" class="atlas-spine-progress-strip" />
     </ui:VisualElement>
 </ui:UXML>

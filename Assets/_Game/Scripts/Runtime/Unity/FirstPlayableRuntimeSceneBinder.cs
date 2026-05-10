@@ -89,7 +89,6 @@ public static class FirstPlayableRuntimeSceneBinder
                 break;
 
             case SceneNames.Atlas:
-            case SceneNames.AtlasLegacy19:
                 ValidateAtlas(scene);
                 break;
 
@@ -149,9 +148,6 @@ public static class FirstPlayableRuntimeSceneBinder
 
         var host = hostGo.GetComponent<RuntimePanelHost>() ?? hostGo.AddComponent<RuntimePanelHost>();
         var controller = controllerGo.GetComponent<UI.Atlas.AtlasScreenController>() ?? controllerGo.AddComponent<UI.Atlas.AtlasScreenController>();
-        controller.ConfigureRegionProfile(scene.name == SceneNames.AtlasLegacy19
-            ? UI.Atlas.AtlasScreenRegionProfile.LegacyNineteenHex
-            : UI.Atlas.AtlasScreenRegionProfile.ThirtySevenHex);
         var environment = ResolveGameObject(scene, "AtlasRegionWolfpineTrail");
         if (environment != null && environment.GetComponent<Atlas.Atlas3DSceneController>() == null)
         {

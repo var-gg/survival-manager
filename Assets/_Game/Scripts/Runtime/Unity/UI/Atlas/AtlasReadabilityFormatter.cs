@@ -22,27 +22,6 @@ public static class AtlasReadabilityFormatter
         return label switch
         {
             "North Spur" => "북쪽 능선",
-            "North Watch Skirmish" => "북쪽 감시 접전",
-            "Northwest Sigil Anchor" => "북서 각인석",
-            "Needle Pass" => "솔잎 고개",
-            "North Sigil Anchor" => "북쪽 각인석",
-            "Frost Cache" => "서리 보관함",
-            "Middle Pressure Sigil Anchor" => "중층 압박 각인석",
-            "Relic Sigil Anchor" => "유물 각인석",
-            "High Scout Perch" => "높은 정찰대",
-            "Inner Evidence Sigil Anchor" => "내층 단서 각인석",
-            "Oath Sigil Anchor" => "맹세 각인석",
-            "Inner Oracle Sigil Anchor" => "내층 예언 각인석",
-            "Moss Shelf Skirmish" => "이끼 턱 접전",
-            "Gate Sigil Anchor" => "관문 각인석",
-            "Southwest Sigil Anchor" => "남서 각인석",
-            "South Sigil Anchor" => "남쪽 각인석",
-            "Southeast Sigil Anchor" => "남동 각인석",
-            "East Watch Stone" => "동쪽 감시석",
-            "Fen Cache" => "늪 보관함",
-            "Dawn Echo" => "새벽 메아리",
-            "South Cache" => "남쪽 보관함",
-            "Distant Watch Stone" => "먼 감시석",
             "Fang Skirmish" => "송곳니 접전",
             "Moss Shelf" => "이끼 턱",
             "West Sigil Anchor" => "서쪽 각인석",
@@ -115,6 +94,20 @@ public static class AtlasReadabilityFormatter
             _ => "기본형",
         };
         return $"{displayName} — {category} ({variant})";
+    }
+
+    public static string FormatSigilTradeoffSummary(AtlasSigilDefinition definition)
+    {
+        return definition.FootprintProfileId switch
+        {
+            "RewardBias.Cluster.Dense" => "좁은 보상 pocket / 강한 밀도",
+            "RewardBias.Cluster.Wide" => "넓은 보상 pocket / 약한 밀도",
+            "ThreatPressure.Lane.Hard" => "짧은 위험 통로 / 강한 압박",
+            "ThreatPressure.Lane.Long" => "긴 위험 통로 / 약한 압박",
+            "AffinityBoost.ScoutArc.Deep" => "깊은 정찰 부채꼴 / 좁은 판독",
+            "AffinityBoost.ScoutArc.Wide" => "넓은 정찰 부채꼴 / 얕은 판독",
+            _ => $"{FormatModifierCategory(definition.SigilCategory)} trade-off",
+        };
     }
 
     public static string FormatModifierCategory(AtlasModifierCategory category)
@@ -341,7 +334,7 @@ public static class AtlasReadabilityFormatter
 
     public static string FormatBoundaryNote()
     {
-        return "각인은 노드의 보상 가중·위협 압력·인연 보정만 바꾸며, 이름 있는 augment나 augment bucket을 직접 주지 않습니다.";
+        return "각인은 노드의 보상 가중·위협 압력·인연 보정만 바꾸며, 전투 보상 이름표를 직접 만들지 않습니다.";
     }
 
     public static string FormatSpineStageLabel(int stageIndex)
@@ -357,40 +350,6 @@ public static class AtlasReadabilityFormatter
         };
     }
 
-    public static string FormatRegionLayer(AtlasRegionLayer layer)
-    {
-        return layer switch
-        {
-            AtlasRegionLayer.Outer => "외곽",
-            AtlasRegionLayer.Middle => "중층",
-            AtlasRegionLayer.Inner => "내층",
-            AtlasRegionLayer.Core => "핵심",
-            _ => layer.ToString(),
-        };
-    }
-
-    public static string FormatTraversalMode(TraversalMode mode)
-    {
-        return mode switch
-        {
-            TraversalMode.CampaignFirstClear => "첫 돌파",
-            TraversalMode.CampaignResume => "이어하기",
-            TraversalMode.Revisit => "재방문",
-            TraversalMode.EndlessRegion => "끝없는 지역",
-            _ => mode.ToString(),
-        };
-    }
-
-    public static string FormatWeaknessContractPolicy(AtlasWeaknessContractPolicy policy)
-    {
-        return policy switch
-        {
-            AtlasWeaknessContractPolicy.LimitedPlaceholder => "계약 제한 예고",
-            AtlasWeaknessContractPolicy.FullPlaceholder => "계약 전체 예고",
-            _ => "약점 계약 없음",
-        };
-    }
-
     public static string BuildCandidateSummary(AtlasRegionNode node, AtlasNodeModifierStack? stack)
     {
         var reward = (stack?.RewardBiasPercent ?? 0) > 0 ? $"보상 +{stack!.RewardBiasPercent.ToString(CultureInfo.InvariantCulture)}%" : "기본 보상";
@@ -402,8 +361,7 @@ public static class AtlasReadabilityFormatter
         IReadOnlyList<AtlasPlacedSigil> placements,
         IReadOnlyList<AtlasSigilDefinition> sigilPool,
         IReadOnlyList<SigilAnchorSlot> anchorSlots,
-        AtlasNodeModifierStack? selectedStack,
-        int activeSigilCap = 2)
+        AtlasNodeModifierStack? selectedStack)
     {
         var anchorsById = anchorSlots.ToDictionary(slot => slot.AnchorId, StringComparer.Ordinal);
         var placed = placements
@@ -421,7 +379,7 @@ public static class AtlasReadabilityFormatter
                 .OrderBy(influence => influence.SigilId, StringComparer.Ordinal)
                 .Select(influence => FormatSigilName(influence.DisplayName))
                 .Distinct(StringComparer.Ordinal));
-        return $"각인 배치 {placements.Count.ToString(CultureInfo.InvariantCulture)}/{activeSigilCap.ToString(CultureInfo.InvariantCulture)}: {string.Join(" | ", placed)}. 선택 노드 영향: {affecting}.";
+        return $"각인 배치 {placements.Count.ToString(CultureInfo.InvariantCulture)}/2: {string.Join(" | ", placed)}. 선택 노드 영향: {affecting}.";
     }
 
     public static string FormatAnchorRole(SigilAnchorSlot slot)
