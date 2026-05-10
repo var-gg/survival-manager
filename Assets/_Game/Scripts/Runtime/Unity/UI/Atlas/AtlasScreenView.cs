@@ -1,5 +1,4 @@
 using System;
-using SM.Atlas.Model;
 using UnityEngine.UIElements;
 
 namespace SM.Unity.UI.Atlas;
@@ -8,6 +7,7 @@ public sealed class AtlasScreenView
 {
     private readonly VisualElement _root;
     private readonly VisualElement _content;
+    private readonly VisualElement _boardPane;
     private readonly VisualElement _board;
     private readonly VisualElement _sigilPool;
     private readonly VisualElement _routeList;
@@ -26,6 +26,7 @@ public sealed class AtlasScreenView
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _content = Require<VisualElement>("atlas-content");
+        _boardPane = Require<VisualElement>("atlas-board-pane");
         _board = Require<VisualElement>("atlas-board");
         _sigilPool = Require<VisualElement>("atlas-sigil-pool");
         _routeList = Require<VisualElement>("atlas-route-list");
@@ -40,14 +41,15 @@ public sealed class AtlasScreenView
         _boundary = Require<Label>("atlas-boundary-note");
         _hash = Require<Label>("atlas-debug-hash");
 
+        _boardPane.pickingMode = PickingMode.Ignore;
+        _board.pickingMode = PickingMode.Ignore;
+        _board.style.display = DisplayStyle.None;
         _root.RegisterCallback<GeometryChangedEvent>(evt =>
         {
             _root.EnableInClassList("atlas-narrow", evt.newRect.width <= 720f);
         });
     }
 
-    public event Action<string>? NodeSelected;
-    public event Action<string>? AnchorSelected;
     public event Action<string>? SigilSelected;
     public event Action<string>? RouteSelected;
 
@@ -55,77 +57,17 @@ public sealed class AtlasScreenView
     {
         _regionTitle.text = state.RegionTitle;
         _placementSummary.text = state.PlacementSummary;
-        RenderBoard(state);
+        RenderBoard();
         RenderSigilPool(state);
         RenderRoutes(state);
         RenderPreview(state.Preview);
         _content.MarkDirtyRepaint();
     }
 
-    private void RenderBoard(AtlasScreenViewState state)
+    private void RenderBoard()
     {
+        // The 3D Atlas scene renders hex geometry and aura rings. UITK keeps the center as a transparent spacer so panels float over the world.
         _board.Clear();
-        foreach (var tile in state.Tiles)
-        {
-            var button = new Button(() =>
-            {
-                if (tile.IsSigilAnchor)
-                {
-                    AnchorSelected?.Invoke(tile.NodeId);
-                }
-                else
-                {
-                    NodeSelected?.Invoke(tile.NodeId);
-                }
-            })
-            {
-                name = $"atlas-hex-{tile.NodeId}",
-            };
-
-            button.AddToClassList("atlas-hex");
-            button.AddToClassList(AtlasHexOverlayBinder.ToKindClass(tile.Kind));
-            button.EnableInClassList("is-selected", tile.IsSelected);
-            button.EnableInClassList("is-route", tile.IsRouteNode);
-            button.EnableInClassList("is-anchor", tile.IsSigilAnchor);
-            button.EnableInClassList("has-sigil", !string.IsNullOrWhiteSpace(tile.PlacedSigilName));
-            button.EnableInClassList("has-aura", tile.AuraCategories.Count > 0);
-            button.EnableInClassList("has-overlap", tile.AuraCategories.Count > 1);
-            AtlasHexOverlayBinder.ApplyTileLayout(button, tile);
-
-            var auraLayer = new VisualElement { name = "atlas-hex-aura" };
-            auraLayer.AddToClassList("atlas-hex-aura");
-            foreach (var aura in tile.AuraCategories)
-            {
-                var swatch = new VisualElement();
-                swatch.AddToClassList("atlas-aura-swatch");
-                swatch.AddToClassList(ToAuraClass(aura));
-                auraLayer.Add(swatch);
-            }
-
-            button.Add(auraLayer);
-            var tokenRow = new VisualElement { name = "atlas-hex-token-row" };
-            tokenRow.AddToClassList("atlas-hex-token-row");
-            AddBadge(tokenRow, tile.TypeChip);
-            AddBadge(tokenRow, tile.RewardFamilyChip);
-            AddBadge(tokenRow, tile.DifficultyChip);
-            button.Add(tokenRow);
-
-            button.Add(new Label(tile.Label) { name = "atlas-hex-label" });
-            if (!string.IsNullOrWhiteSpace(tile.PlacedSigilName))
-            {
-                button.Add(new Label(tile.PlacedSigilName) { name = "atlas-hex-sigil" });
-            }
-
-            var chipRow = new VisualElement { name = "atlas-hex-chip-row" };
-            chipRow.AddToClassList("atlas-hex-chip-row");
-            foreach (var chip in tile.ModifierChips)
-            {
-                AddBadge(chipRow, chip);
-            }
-
-            button.Add(chipRow);
-            _board.Add(button);
-        }
     }
 
     private void RenderSigilPool(AtlasScreenViewState state)
@@ -184,31 +126,4 @@ public sealed class AtlasScreenView
         return element;
     }
 
-    private static void AddBadge(VisualElement row, AtlasHexBadgeViewState badge)
-    {
-        if (string.IsNullOrWhiteSpace(badge.Label))
-        {
-            return;
-        }
-
-        var element = new Label(badge.Label) { tooltip = badge.Tooltip };
-        element.AddToClassList("atlas-chip");
-        foreach (var className in badge.CssClass.Split(' ', StringSplitOptions.RemoveEmptyEntries))
-        {
-            element.AddToClassList(className);
-        }
-
-        row.Add(element);
-    }
-
-    private static string ToAuraClass(AtlasModifierCategory category)
-    {
-        return category switch
-        {
-            AtlasModifierCategory.RewardBias => "atlas-aura--reward",
-            AtlasModifierCategory.ThreatPressure => "atlas-aura--threat",
-            AtlasModifierCategory.AffinityBoost => "atlas-aura--affinity",
-            _ => "atlas-aura--neutral",
-        };
-    }
 }

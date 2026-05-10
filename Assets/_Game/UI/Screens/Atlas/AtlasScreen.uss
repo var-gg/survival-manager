@@ -1,22 +1,25 @@
 .atlas-root {
     flex-grow: 1;
-    background-color: rgb(20, 23, 27);
+    background-color: rgba(20, 23, 27, 0);
     color: rgb(230, 234, 229);
-    padding: 18px;
+    padding: 14px;
 }
 
 .atlas-topbar {
-    min-height: 62px;
+    min-height: 54px;
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
-    border-bottom-width: 1px;
-    border-bottom-color: rgba(255, 255, 255, 0.12);
-    margin-bottom: 14px;
+    background-color: rgba(16, 19, 20, 0.58);
+    border-width: 1px;
+    border-color: rgba(255, 218, 138, 0.22);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
 }
 
 .atlas-title {
-    font-size: 24px;
+    font-size: 21px;
     unity-font-style: bold;
     color: rgb(250, 247, 232);
 }
@@ -38,7 +41,12 @@
 .atlas-left-rail {
     width: 260px;
     min-width: 240px;
-    padding-right: 12px;
+    padding: 10px 12px 8px 10px;
+    background-color: rgba(16, 19, 20, 0.58);
+    border-width: 1px;
+    border-color: rgba(255, 218, 138, 0.18);
+    border-radius: 8px;
+    margin-right: 12px;
 }
 
 .atlas-section-title {
@@ -79,20 +87,15 @@
 
 .atlas-board-pane {
     flex-grow: 1;
-    min-width: 520px;
+    min-width: 340px;
     min-height: 520px;
-    margin-left: 8px;
-    margin-right: 14px;
+    margin-right: 12px;
 }
 
 .atlas-board {
     flex-grow: 1;
     position: relative;
-    background-color: rgb(24, 29, 33);
-    border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.10);
-    border-radius: 8px;
-    overflow: hidden;
+    display: none;
 }
 
 .atlas-hex {
@@ -277,9 +280,9 @@
     width: 360px;
     min-width: 330px;
     padding: 14px;
-    background-color: rgb(31, 37, 42);
+    background-color: rgba(25, 30, 33, 0.72);
     border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 218, 138, 0.24);
     border-radius: 8px;
 }
 
@@ -342,6 +345,7 @@
 }
 
 .atlas-root.atlas-narrow .atlas-board-pane {
+    display: none;
     min-width: 0;
     min-height: 430px;
     margin: 8px 0;

@@ -60,16 +60,6 @@ public sealed class AtlasScreenController : MonoBehaviour
 
         _view = new AtlasScreenView(panelHost.Root);
         _viewRootBuildCount = panelHost.RootBuildCount;
-        _view.NodeSelected += nodeId =>
-        {
-            _presenter.SelectNode(nodeId);
-            Render();
-        };
-        _view.AnchorSelected += nodeId =>
-        {
-            _presenter.PlaceSelectedSigil(nodeId);
-            Render();
-        };
         _view.SigilSelected += sigilId =>
         {
             _presenter.SelectSigil(sigilId);

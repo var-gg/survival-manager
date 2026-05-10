@@ -13,7 +13,7 @@
                 <ui:VisualElement name="atlas-route-list" class="atlas-route-list" />
             </ui:VisualElement>
 
-            <ui:VisualElement class="atlas-board-pane">
+            <ui:VisualElement name="atlas-board-pane" class="atlas-board-pane">
                 <ui:VisualElement name="atlas-board" class="atlas-board" />
             </ui:VisualElement>
 

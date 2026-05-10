@@ -5,6 +5,7 @@ using SM.Atlas.Services;
 using SM.Unity.Atlas;
 using SM.Unity.UI.Atlas;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace SM.Tests.EditMode.Atlas;
 
@@ -49,6 +50,22 @@ public sealed class Atlas3DEnvironmentTests
     }
 
     [Test]
+    public void ScreenView_UsesTransparentWorldSpacerInsteadOfInline2DBoard()
+    {
+        var root = CreateAtlasRoot();
+        var view = new AtlasScreenView(root);
+        view.Render(new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion()).Build());
+
+        var boardPane = root.Q<VisualElement>("atlas-board-pane");
+        var board = root.Q<VisualElement>("atlas-board");
+
+        Assert.That(boardPane.pickingMode, Is.EqualTo(PickingMode.Ignore));
+        Assert.That(board.pickingMode, Is.EqualTo(PickingMode.Ignore));
+        Assert.That(board.style.display.value, Is.EqualTo(DisplayStyle.None));
+        Assert.That(board.childCount, Is.EqualTo(0));
+    }
+
+    [Test]
     public void StandeePlan_PlacesFourSmallP09StyleStandees()
     {
         var region = AtlasGrayboxDataFactory.CreateRegion();
@@ -58,5 +75,28 @@ public sealed class Atlas3DEnvironmentTests
         Assert.That(plan.Select(entry => entry.NodeId), Has.Member("hex_m2_1"));
         Assert.That(plan, Is.All.Matches<AtlasCharacterStandeePresenter.StandeeEntry>(entry =>
             entry.Scale is >= 0.70f and <= 0.85f));
+    }
+
+    private static VisualElement CreateAtlasRoot()
+    {
+        var root = new VisualElement { name = "atlas-root" };
+        var content = new VisualElement { name = "atlas-content" };
+        var boardPane = new VisualElement { name = "atlas-board-pane" };
+        boardPane.Add(new VisualElement { name = "atlas-board" });
+        content.Add(new VisualElement { name = "atlas-sigil-pool" });
+        content.Add(boardPane);
+        content.Add(new VisualElement { name = "atlas-route-list" });
+        root.Add(content);
+        root.Add(new Label { name = "atlas-region-title" });
+        root.Add(new Label { name = "atlas-placement-summary" });
+        root.Add(new Label { name = "atlas-preview-title" });
+        root.Add(new Label { name = "atlas-preview-judgement" });
+        root.Add(new Label { name = "atlas-preview-enemy" });
+        root.Add(new Label { name = "atlas-preview-modifiers" });
+        root.Add(new Label { name = "atlas-preview-reward" });
+        root.Add(new Label { name = "atlas-preview-recommendations" });
+        root.Add(new Label { name = "atlas-boundary-note" });
+        root.Add(new Label { name = "atlas-debug-hash" });
+        return root;
     }
 }
