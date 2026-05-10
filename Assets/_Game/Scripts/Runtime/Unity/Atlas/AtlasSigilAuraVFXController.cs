@@ -44,6 +44,22 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         public string AnchorHighlightState { get; }
     }
 
+    public readonly struct LayerBandEntry
+    {
+        public LayerBandEntry(AtlasRegionLayer layer, float radiusScale, Color color, bool isCurrent)
+        {
+            Layer = layer;
+            RadiusScale = radiusScale;
+            Color = color;
+            IsCurrent = isCurrent;
+        }
+
+        public AtlasRegionLayer Layer { get; }
+        public float RadiusScale { get; }
+        public Color Color { get; }
+        public bool IsCurrent { get; }
+    }
+
     [SerializeField] private Transform auraRoot = null!;
 
     public static IReadOnlyList<AuraEntry> BuildAuraPlan(AtlasScreenViewState state)
@@ -66,6 +82,23 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
                 tile.IsCurrentStageCandidate,
                 tile.IsSigilAnchor,
                 tile.AnchorHighlightState))
+            .ToArray();
+    }
+
+    public static IReadOnlyList<LayerBandEntry> BuildLayerPlan(AtlasScreenViewState state)
+    {
+        if (state == null)
+        {
+            throw new ArgumentNullException(nameof(state));
+        }
+
+        return state.LayerBands
+            .OrderByDescending(layer => layer.Layer)
+            .Select(layer => new LayerBandEntry(
+                layer.Layer,
+                ResolveLayerRadiusScale(layer.Layer),
+                ResolveLayerColor(layer.Layer, layer.IsCurrent),
+                layer.IsCurrent))
             .ToArray();
     }
 
@@ -96,6 +129,11 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         ClearChildren(auraRoot);
 
         var shader = Shader.Find("SM/Atlas/SigilAuraRing") ?? Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Standard");
+        foreach (var layer in BuildLayerPlan(state))
+        {
+            CreateLayerOutline(layer, shader, ringMesh);
+        }
+
         foreach (var entry in BuildAuraPlan(state))
         {
             CreateAura(entry, shader, discMesh, ringMesh, categoryMaterialResolver, overlapMaterial);
@@ -186,6 +224,39 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
         go.transform.localScale = Vector3.one * scale;
         AssignMesh(go, ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius, 0.035f));
         AssignMaterial(go, CreateAuraMaterial(shader, color, scale));
+    }
+
+    private void CreateLayerOutline(LayerBandEntry layer, Shader shader, Mesh? ringMesh)
+    {
+        var go = new GameObject($"LayerOutline_{layer.Layer}");
+        go.transform.SetParent(auraRoot, false);
+        go.transform.position = Vector3.up * (0.032f + (int)layer.Layer * 0.004f);
+        go.transform.localScale = Vector3.one * layer.RadiusScale;
+        AssignMesh(go, ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius, 0.030f));
+        AssignMaterial(go, CreateAuraMaterial(shader, layer.Color, layer.IsCurrent ? 1.6f : 0.45f));
+    }
+
+    private static float ResolveLayerRadiusScale(AtlasRegionLayer layer)
+    {
+        return layer switch
+        {
+            AtlasRegionLayer.Outer => 4.20f,
+            AtlasRegionLayer.Middle => 2.82f,
+            AtlasRegionLayer.Inner => 1.62f,
+            _ => 0.72f,
+        };
+    }
+
+    private static Color ResolveLayerColor(AtlasRegionLayer layer, bool isCurrent)
+    {
+        var alpha = isCurrent ? 0.34f : 0.16f;
+        return layer switch
+        {
+            AtlasRegionLayer.Outer => new Color(0.36f, 0.86f, 0.94f, alpha),
+            AtlasRegionLayer.Middle => new Color(0.95f, 0.70f, 0.30f, alpha),
+            AtlasRegionLayer.Inner => new Color(0.92f, 0.34f, 0.78f, alpha),
+            _ => new Color(1.00f, 1.00f, 1.00f, alpha + 0.08f),
+        };
     }
 
     private static void AssignMesh(GameObject go, Mesh mesh)

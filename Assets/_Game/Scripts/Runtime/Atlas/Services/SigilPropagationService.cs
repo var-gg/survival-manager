@@ -12,12 +12,21 @@ public static class SigilPropagationService
 
     public static AtlasSigilResolution Resolve(AtlasRegionDefinition region, IReadOnlyList<AtlasPlacedSigil> placements)
     {
+        return Resolve(region, placements, AtlasTraversalContext.CampaignFirstClear);
+    }
+
+    public static AtlasSigilResolution Resolve(
+        AtlasRegionDefinition region,
+        IReadOnlyList<AtlasPlacedSigil> placements,
+        AtlasTraversalContext traversalContext)
+    {
         if (region == null)
         {
             throw new ArgumentNullException(nameof(region));
         }
 
         placements ??= Array.Empty<AtlasPlacedSigil>();
+        ValidateActiveSigilCap(placements, traversalContext ?? AtlasTraversalContext.CampaignFirstClear);
         var sigilsById = region.SigilPool.ToDictionary(sigil => sigil.SigilId, StringComparer.Ordinal);
         var nodesByHex = region.Nodes.ToDictionary(node => node.Hex);
         var anchorSlotsById = region.SigilAnchorSlots.ToDictionary(slot => slot.AnchorId, StringComparer.Ordinal);
@@ -83,6 +92,21 @@ public static class SigilPropagationService
         }
 
         return new AtlasSigilResolution(stacks);
+    }
+
+    public static void ValidateActiveSigilCap(
+        IReadOnlyList<AtlasPlacedSigil> placements,
+        AtlasTraversalContext traversalContext)
+    {
+        placements ??= Array.Empty<AtlasPlacedSigil>();
+        traversalContext ??= AtlasTraversalContext.CampaignFirstClear;
+        if (placements.Count <= traversalContext.ActiveSigilCap)
+        {
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"Traversal mode '{traversalContext.Mode}' allows {traversalContext.ActiveSigilCap} active sigils, but {placements.Count} were provided.");
     }
 
     public static int ResolveFalloffPercent(int distance)

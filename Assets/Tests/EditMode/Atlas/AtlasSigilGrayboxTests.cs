@@ -12,7 +12,7 @@ public sealed class AtlasSigilGrayboxTests
     [Test]
     public void GrayboxRegion_HasExpectedNineteenHexComposition()
     {
-        var region = AtlasGrayboxDataFactory.CreateRegion();
+        var region = AtlasGrayboxDataFactory.CreateLegacyNineteenHexRegion();
 
         Assert.That(region.Nodes.Count, Is.EqualTo(19));
         Assert.That(region.StageCandidates.Count, Is.EqualTo(8));
@@ -26,6 +26,21 @@ public sealed class AtlasSigilGrayboxTests
         Assert.That(region.SigilAnchorSlots.Count, Is.EqualTo(3));
         Assert.That(region.SigilPool.Count, Is.EqualTo(6));
         Assert.That(region.Roster.Count, Is.EqualTo(6));
+    }
+
+    [Test]
+    public void GrayboxRegion_DefaultHasExpectedThirtySevenHexComposition()
+    {
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        Assert.That(region.Nodes.Count, Is.EqualTo(37));
+        Assert.That(region.StageCandidates.Count, Is.EqualTo(8));
+        Assert.That(region.SigilAnchorSlots.Count, Is.EqualTo(12));
+        Assert.That(region.Nodes.Count(node => node.Kind == AtlasNodeKind.SigilAnchor), Is.EqualTo(12));
+        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Outer), Is.EqualTo(18));
+        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Middle), Is.EqualTo(12));
+        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Inner), Is.EqualTo(6));
+        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Core), Is.EqualTo(1));
     }
 
     [Test]
@@ -92,12 +107,15 @@ public sealed class AtlasSigilGrayboxTests
                 new[] { new AtlasSigilModifier(AtlasModifierCategory.AffinityBoost, "Affinity", 18) },
                 AtlasModifierCategory.AffinityBoost));
 
-        var resolution = SigilPropagationService.Resolve(region, new[]
-        {
-            new AtlasPlacedSigil("sigil_reward", new AtlasHexCoordinate(0, 0), "anchor"),
-            new AtlasPlacedSigil("sigil_threat", new AtlasHexCoordinate(0, 0), "anchor"),
-            new AtlasPlacedSigil("sigil_affinity", new AtlasHexCoordinate(0, 0), "anchor"),
-        });
+        var resolution = SigilPropagationService.Resolve(
+            region,
+            new[]
+            {
+                new AtlasPlacedSigil("sigil_reward", new AtlasHexCoordinate(0, 0), "anchor"),
+                new AtlasPlacedSigil("sigil_threat", new AtlasHexCoordinate(0, 0), "anchor"),
+                new AtlasPlacedSigil("sigil_affinity", new AtlasHexCoordinate(0, 0), "anchor"),
+            },
+            AtlasTraversalContext.ForMode(TraversalMode.EndlessRegion));
 
         var stack = resolution.FindNode("node")!;
         Assert.That(stack.ResolvedModifiers.Count, Is.LessThanOrEqualTo(3));
@@ -125,11 +143,13 @@ public sealed class AtlasSigilGrayboxTests
         Assert.That(AtlasContextHasher.SortedSigilIds(new[] { b, a }), Is.EqualTo(new[] { "sigil_a", "sigil_b" }));
 
         var pathHash = AtlasContextHasher.BuildStageCandidatePathHash(new[] { "hex_a", "hex_b" });
-        var battle1 = AtlasContextHasher.BuildBattleContextHash("run", "chapter", "site", 2, "encounter", pathHash, hash1, "squad");
-        var battle2 = AtlasContextHasher.BuildBattleContextHash("run", "chapter", "site", 2, "encounter", pathHash, hash2, "squad");
-        var battle3 = AtlasContextHasher.BuildBattleContextHash("run", "chapter", "site", 2, "encounter", pathHash, hash2, "other_squad");
+        var battle1 = AtlasContextHasher.BuildBattleContextHash("run", "chapter", "site", 2, "encounter", TraversalMode.CampaignFirstClear.ToString(), pathHash, hash1, "squad");
+        var battle2 = AtlasContextHasher.BuildBattleContextHash("run", "chapter", "site", 2, "encounter", TraversalMode.CampaignFirstClear.ToString(), pathHash, hash2, "squad");
+        var battle3 = AtlasContextHasher.BuildBattleContextHash("run", "chapter", "site", 2, "encounter", TraversalMode.CampaignFirstClear.ToString(), pathHash, hash2, "other_squad");
+        var battle4 = AtlasContextHasher.BuildBattleContextHash("run", "chapter", "site", 2, "encounter", TraversalMode.EndlessRegion.ToString(), pathHash, hash2, "squad");
         Assert.That(battle1, Is.EqualTo(battle2));
         Assert.That(battle1, Is.Not.EqualTo(battle3));
+        Assert.That(battle1, Is.Not.EqualTo(battle4));
     }
 
     private static AtlasRegionDefinition CreateSingleNodeRegion(params AtlasSigilDefinition[] sigils)

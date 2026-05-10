@@ -13,6 +13,7 @@ public sealed record AtlasHexTileViewState(
     string Label,
     AtlasHexCoordinate Hex,
     AtlasNodeKind Kind,
+    AtlasRegionLayer Layer,
     bool IsSelected,
     bool IsCurrentStageCandidate,
     bool IsSigilAnchor,
@@ -28,6 +29,19 @@ public sealed record AtlasHexTileViewState(
     IReadOnlyList<AtlasModifierCategory> AuraCategories,
     IReadOnlyList<AtlasFootprintShape> AuraShapes,
     bool HasOverlapPulse);
+
+public sealed record AtlasLayerBandViewState(
+    AtlasRegionLayer Layer,
+    string Label,
+    int NodeCount,
+    bool IsCurrent);
+
+public sealed record AtlasTraversalModeViewState(
+    TraversalMode Mode,
+    string Label,
+    int ActiveSigilCap,
+    int ActiveSigilCount,
+    string WeaknessContractLabel);
 
 public sealed record AtlasSigilPoolItemViewState(
     string SigilId,
@@ -69,5 +83,7 @@ public sealed record AtlasScreenViewState(
     IReadOnlyList<AtlasHexTileViewState> Tiles,
     IReadOnlyList<AtlasSigilPoolItemViewState> SigilPool,
     IReadOnlyList<AtlasSpineStageViewState> SpineStages,
+    AtlasTraversalModeViewState TraversalMode,
+    IReadOnlyList<AtlasLayerBandViewState> LayerBands,
     IReadOnlyList<AtlasStageCandidateViewState> StageCandidates,
     AtlasPreviewPanelViewState Preview);

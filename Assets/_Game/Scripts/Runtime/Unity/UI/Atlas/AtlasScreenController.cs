@@ -1,12 +1,20 @@
 using System.Linq;
+using SM.Atlas.Model;
 using SM.Atlas.Services;
 using UnityEngine;
 
 namespace SM.Unity.UI.Atlas;
 
+public enum AtlasScreenRegionProfile
+{
+    ThirtySevenHex = 0,
+    LegacyNineteenHex = 1,
+}
+
 public sealed class AtlasScreenController : MonoBehaviour
 {
     [SerializeField] private RuntimePanelHost panelHost = null!;
+    [SerializeField] private AtlasScreenRegionProfile regionProfile = AtlasScreenRegionProfile.ThirtySevenHex;
 
     private AtlasScreenPresenter _presenter = null!;
     private AtlasScreenView _view = null!;
@@ -15,6 +23,18 @@ public sealed class AtlasScreenController : MonoBehaviour
     public event System.Action<AtlasScreenViewState>? ViewStateRendered;
 
     public AtlasScreenViewState? CurrentState { get; private set; }
+
+    public void ConfigureRegionProfile(AtlasScreenRegionProfile profile)
+    {
+        if (regionProfile == profile)
+        {
+            return;
+        }
+
+        regionProfile = profile;
+        _presenter = null!;
+        CurrentState = null;
+    }
 
     public void EnsureRuntimeControls()
     {
@@ -52,7 +72,7 @@ public sealed class AtlasScreenController : MonoBehaviour
 
     private void EnsureView()
     {
-        _presenter ??= new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion());
+        _presenter ??= new AtlasScreenPresenter(CreateRegionDefinition());
         if (_view != null && _viewRootBuildCount == panelHost.RootBuildCount)
         {
             return;
@@ -118,5 +138,12 @@ public sealed class AtlasScreenController : MonoBehaviour
 
         Render();
         return true;
+    }
+
+    private AtlasRegionDefinition CreateRegionDefinition()
+    {
+        return regionProfile == AtlasScreenRegionProfile.LegacyNineteenHex
+            ? AtlasGrayboxDataFactory.CreateLegacyNineteenHexRegion()
+            : AtlasGrayboxDataFactory.CreateRegion();
     }
 }

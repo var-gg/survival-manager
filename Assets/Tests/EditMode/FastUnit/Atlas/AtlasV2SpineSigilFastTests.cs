@@ -88,6 +88,75 @@ public sealed class AtlasV2SpineSigilFastTests
         Assert.That(state.SpineStages.Select(stage => stage.Label), Is.EqualTo(new[] { "진입", "교전", "단서", "보스", "추출" }));
     }
 
+    [Test]
+    public void RegionLayer_HasExpectedThirtySevenHexComposition()
+    {
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        Assert.That(region.Nodes.Count, Is.EqualTo(37));
+        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Outer), Is.EqualTo(18));
+        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Middle), Is.EqualTo(12));
+        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Inner), Is.EqualTo(6));
+        Assert.That(region.Nodes.Count(node => node.Layer == AtlasRegionLayer.Core), Is.EqualTo(1));
+    }
+
+    [Test]
+    public void AnchorSlotLayerDistribution_HasExpectedTwelveAnchors()
+    {
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        Assert.That(region.SigilAnchorSlots.Count, Is.EqualTo(12));
+        Assert.That(region.SigilAnchorSlots.Count(slot => slot.LayerId == AtlasRegionLayer.Outer.ToString()), Is.EqualTo(6));
+        Assert.That(region.SigilAnchorSlots.Count(slot => slot.LayerId == AtlasRegionLayer.Middle.ToString()), Is.EqualTo(4));
+        Assert.That(region.SigilAnchorSlots.Count(slot => slot.LayerId == AtlasRegionLayer.Inner.ToString()), Is.EqualTo(2));
+        Assert.That(region.SigilAnchorSlots.Count(slot => slot.LayerId == AtlasRegionLayer.Core.ToString()), Is.Zero);
+    }
+
+    [Test]
+    public void TraversalMode_ActiveSigilCap()
+    {
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+        var placements = region.SigilPool
+            .Take(4)
+            .Zip(region.SigilAnchorSlots.Take(4), (sigil, slot) =>
+            {
+                var node = region.Nodes.Single(item => item.NodeId == slot.HexId);
+                return new AtlasPlacedSigil(sigil.SigilId, node.Hex, slot.AnchorId);
+            })
+            .ToArray();
+
+        Assert.That(AtlasTraversalContext.ForMode(TraversalMode.CampaignFirstClear).ActiveSigilCap, Is.EqualTo(2));
+        Assert.That(AtlasTraversalContext.ForMode(TraversalMode.CampaignResume).ActiveSigilCap, Is.EqualTo(2));
+        Assert.That(AtlasTraversalContext.ForMode(TraversalMode.Revisit).ActiveSigilCap, Is.EqualTo(2));
+        Assert.That(AtlasTraversalContext.ForMode(TraversalMode.EndlessRegion).ActiveSigilCap, Is.EqualTo(3));
+        Assert.Throws<InvalidOperationException>(() => SigilPropagationService.Resolve(region, placements.Take(3).ToArray(), AtlasTraversalContext.ForMode(TraversalMode.CampaignFirstClear)));
+        Assert.DoesNotThrow(() => SigilPropagationService.Resolve(region, placements.Take(3).ToArray(), AtlasTraversalContext.ForMode(TraversalMode.EndlessRegion)));
+        Assert.Throws<InvalidOperationException>(() => SigilPropagationService.Resolve(region, placements, AtlasTraversalContext.ForMode(TraversalMode.EndlessRegion)));
+    }
+
+    [Test]
+    public void StageCandidate_LayerAssignment()
+    {
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+        var nodes = region.Nodes.ToDictionary(node => node.NodeId, StringComparer.Ordinal);
+
+        Assert.That(region.StageCandidates.Where(candidate => candidate.SiteStageIndex == 1).Select(candidate => nodes[candidate.HexId].Layer), Is.All.EqualTo(AtlasRegionLayer.Outer));
+        Assert.That(region.StageCandidates.Where(candidate => candidate.SiteStageIndex == 3).Select(candidate => nodes[candidate.HexId].Layer), Is.All.EqualTo(AtlasRegionLayer.Inner));
+        Assert.That(nodes[region.StageCandidates.Single(candidate => candidate.SiteStageIndex == 4).HexId].Layer, Is.EqualTo(AtlasRegionLayer.Core));
+    }
+
+    [Test]
+    public void LegacyNineteenHexRegion_PreservedForV1Smoke()
+    {
+        var legacy = AtlasGrayboxDataFactory.CreateLegacyNineteenHexRegion();
+        var current = AtlasGrayboxDataFactory.CreateRegion();
+
+        Assert.That(legacy.RegionId, Is.Not.EqualTo(current.RegionId));
+        Assert.That(legacy.Nodes.Count, Is.EqualTo(19));
+        Assert.That(legacy.SigilAnchorSlots.Count, Is.EqualTo(3));
+        Assert.That(legacy.AnchorSlotVersion, Does.Contain("legacy"));
+    }
+
     private static AtlasRegionDefinition CreateSingleNodeRegion()
     {
         return new AtlasRegionDefinition(

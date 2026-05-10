@@ -5,10 +5,10 @@ namespace SM.Unity.UI.Atlas;
 
 public static class AtlasHexOverlayBinder
 {
-    private const float TileWidth = 86f;
-    private const float TileHeight = 72f;
-    private const float OriginX = 246f;
-    private const float OriginY = 178f;
+    private const float TileWidth = 74f;
+    private const float TileHeight = 62f;
+    private const float OriginX = 285f;
+    private const float OriginY = 245f;
 
     public static void ApplyTileLayout(VisualElement tile, AtlasHexTileViewState state)
     {
@@ -56,6 +56,22 @@ public static class AtlasHexOverlayBinder
         marker.style.top = y + 24f;
     }
 
+    public static void ApplyLayerBandLayout(VisualElement band, AtlasRegionLayer layer)
+    {
+        var (width, height) = layer switch
+        {
+            AtlasRegionLayer.Outer => (560f, 460f),
+            AtlasRegionLayer.Middle => (420f, 350f),
+            AtlasRegionLayer.Inner => (280f, 236f),
+            _ => (122f, 104f),
+        };
+
+        band.style.left = OriginX + (TileWidth * 0.5f) - (width * 0.5f);
+        band.style.top = OriginY + (TileHeight * 0.5f) - (height * 0.5f);
+        band.style.width = width;
+        band.style.height = height;
+    }
+
     public static string ToKindClass(AtlasNodeKind kind)
     {
         return kind switch
@@ -71,6 +87,18 @@ public static class AtlasHexOverlayBinder
             AtlasNodeKind.ScoutVantage => "atlas-hex--event",
             AtlasNodeKind.Echo => "atlas-hex--event",
             _ => "atlas-hex--normal",
+        };
+    }
+
+    public static string ToLayerClass(AtlasRegionLayer layer)
+    {
+        return layer switch
+        {
+            AtlasRegionLayer.Outer => "atlas-layer--outer",
+            AtlasRegionLayer.Middle => "atlas-layer--middle",
+            AtlasRegionLayer.Inner => "atlas-layer--inner",
+            AtlasRegionLayer.Core => "atlas-layer--core",
+            _ => "atlas-layer--outer",
         };
     }
 }
