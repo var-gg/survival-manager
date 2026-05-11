@@ -216,8 +216,10 @@ public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
 
     private static void ConfigureRendererForBattlePresentation(Renderer renderer)
     {
-        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        renderer.receiveShadows = false;
+        // GPT-Pro 가이드: 캐릭터는 환경과 같은 key sun 그림자를 받아야 함.
+        // 이전엔 Off로 lilToon outline 충돌 회피했으나 그림자가 안 보이는 부작용 큼.
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+        renderer.receiveShadows = true;
         renderer.allowOcclusionWhenDynamic = false;
     }
 

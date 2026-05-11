@@ -62,9 +62,19 @@ public sealed class BattleActorContactShadow : MonoBehaviour
         var renderer = _shadowGo.GetComponent<MeshRenderer>();
         if (renderer != null)
         {
-            // Unlit transparent — dark blob anchor.
+            // Unlit transparent with built-in soft circle texture (Particle default).
             var shader = Shader.Find("Unlit/Transparent") ?? Shader.Find("Sprites/Default");
             var material = new Material(shader);
+            var softCircleTex = Resources.GetBuiltinResource<Texture2D>("Default-Particle.psd")
+                                ?? CreateRadialCircleTexture();
+            if (material.HasProperty("_MainTex"))
+            {
+                material.SetTexture("_MainTex", softCircleTex);
+            }
+            if (material.HasProperty("_BaseMap"))
+            {
+                material.SetTexture("_BaseMap", softCircleTex);
+            }
             if (material.HasProperty("_Color"))
             {
                 material.color = shadowColor;
@@ -80,6 +90,34 @@ public sealed class BattleActorContactShadow : MonoBehaviour
             renderer.lightProbeUsage = LightProbeUsage.Off;
             renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
         }
+    }
+
+    private static Texture2D CreateRadialCircleTexture()
+    {
+        const int size = 128;
+        var tex = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        {
+            name = "BattleContactShadowFallbackTex",
+            wrapMode = TextureWrapMode.Clamp,
+            filterMode = FilterMode.Bilinear
+        };
+        var pixels = new Color32[size * size];
+        var center = (size - 1) * 0.5f;
+        var maxR = center;
+        for (var y = 0; y < size; y++)
+        {
+            for (var x = 0; x < size; x++)
+            {
+                var dx = x - center;
+                var dy = y - center;
+                var dist = Mathf.Sqrt(dx * dx + dy * dy) / maxR;
+                var alpha = Mathf.Clamp01(1f - Mathf.Pow(Mathf.Clamp01(dist), 2.2f));
+                pixels[y * size + x] = new Color32(255, 255, 255, (byte)(alpha * 255));
+            }
+        }
+        tex.SetPixels32(pixels);
+        tex.Apply();
+        return tex;
     }
 
     private void Awake()
