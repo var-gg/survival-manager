@@ -517,37 +517,37 @@ public sealed class BattlePresentationController : MonoBehaviour
             lightingRoot.transform,
             "BattleKeyLight",
             LightType.Directional,
-            Quaternion.Euler(38f, -48f, 0f),
-            new Color(1f, 0.92f, 0.78f, 1f),
-            2.80f);
+            Quaternion.Euler(50f, -45f, 0f),
+            new Color(1f, 0.86f, 0.66f, 1f),
+            1.80f);
         key.shadows = LightShadows.Soft;
-        key.shadowStrength = 0.97f;
+        key.shadowStrength = 0.85f;
         key.shadowBias = 0.01f;
         key.shadowNormalBias = 0.05f;
         key.shadowNearPlane = 0.10f;
         key.shadowResolution = UnityEngine.Rendering.LightShadowResolution.VeryHigh;
         RenderSettings.sun = key;
 
-        // Warm narrative accent — placed far from character spawn area to avoid silhouette wash.
+        // GPT-Pro recommended gameplay rig — single sun + minimal fill + 1 small accent.
+        var fill = CreateBattleLight(
+            lightingRoot.transform,
+            "BattleFillLight",
+            LightType.Directional,
+            Quaternion.Euler(35f, 135f, 0f),
+            new Color(0.34f, 0.42f, 0.52f, 1f),
+            0.08f);
+        fill.shadows = LightShadows.None;
+
         var warmAccent = CreateBattleLight(
             lightingRoot.transform,
             "BattleWarmAccent",
             LightType.Point,
             Quaternion.identity,
-            new Color(1f, 0.62f, 0.24f, 1f),
-            2.2f);
-        warmAccent.transform.localPosition = new Vector3(-5.8f, 2.4f, 4.6f);
-        warmAccent.range = 9f;
+            new Color(1f, 0.52f, 0.20f, 1f),
+            1.5f);
+        warmAccent.transform.localPosition = new Vector3(-5.5f, 2.2f, 2.8f);
+        warmAccent.range = 7f;
         warmAccent.shadows = LightShadows.None;
-
-        var fill = CreateBattleLight(
-            lightingRoot.transform,
-            "BattleFillLight",
-            LightType.Directional,
-            Quaternion.Euler(35f, 130f, 0f),
-            new Color(0.50f, 0.55f, 0.62f, 1f),
-            0.12f);
-        fill.shadows = LightShadows.None;
 
         CreateForegroundDressing(lightingRoot.transform);
     }
