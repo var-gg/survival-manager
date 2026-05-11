@@ -18,11 +18,11 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
     [SerializeField] private Color ambientSky = new(0.40f, 0.50f, 0.62f, 1f);
     [SerializeField] private Color ambientEquator = new(0.46f, 0.50f, 0.50f, 1f);
     [SerializeField] private Color ambientGround = new(0.18f, 0.17f, 0.12f, 1f);
-    [SerializeField, Range(0f, 3f)] private float ambientIntensity = 0.55f;
+    [SerializeField, Range(0f, 3f)] private float ambientIntensity = 0.95f;
     [SerializeField] private bool applyFog = true;
-    [SerializeField] private Color fogColor = new(0.42f, 0.36f, 0.28f, 1f);
-    [SerializeField, Range(0f, 200f)] private float fogStart = 26f;
-    [SerializeField, Range(1f, 400f)] private float fogEnd = 150f;
+    [SerializeField] private Color fogColor = new(0.66f, 0.74f, 0.82f, 1f);
+    [SerializeField, Range(0f, 200f)] private float fogStart = 45f;
+    [SerializeField, Range(1f, 400f)] private float fogEnd = 230f;
     [SerializeField] private bool applyCameraSkybox = true;
 
     private Volume? _runtimeVolume;
@@ -76,14 +76,14 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
             volumeProfile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(DefaultVolumeProfilePath);
         }
 #endif
-        ambientSky = new Color(0.40f, 0.50f, 0.62f, 1f);
-        ambientEquator = new Color(0.46f, 0.50f, 0.50f, 1f);
-        ambientGround = new Color(0.18f, 0.17f, 0.12f, 1f);
-        ambientIntensity = 0.55f;
+        ambientSky = new Color(0.52f, 0.62f, 0.78f, 1f);
+        ambientEquator = new Color(0.58f, 0.60f, 0.56f, 1f);
+        ambientGround = new Color(0.22f, 0.22f, 0.18f, 1f);
+        ambientIntensity = 0.95f;
         applyFog = true;
-        fogColor = new Color(0.42f, 0.36f, 0.28f, 1f);
-        fogStart = 26f;
-        fogEnd = 150f;
+        fogColor = new Color(0.66f, 0.74f, 0.82f, 1f);
+        fogStart = 45f;
+        fogEnd = 230f;
     }
 
     public void Apply()
@@ -115,6 +115,15 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
             _camera = Camera.main;
             _previousCameraClearFlags ??= _camera.clearFlags;
             _camera.clearFlags = CameraClearFlags.Skybox;
+
+            // GPT-Pro 진단 검증으로 발견: Battle.unity Camera에 UACD가 없어서
+            // URP가 default UACD를 attach하는데 renderPostProcessing=false라
+            // Volume override가 Play 모드에서 적용 안 됨. 강제로 켠다.
+            var urpData = _camera.GetComponent<UniversalAdditionalCameraData>()
+                          ?? _camera.gameObject.AddComponent<UniversalAdditionalCameraData>();
+            urpData.renderPostProcessing = true;
+            urpData.allowHDROutput = false;
+            _camera.allowHDR = true;
         }
 
         EnsureGlobalVolume();
@@ -153,19 +162,19 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         if (profile.TryGet<Bloom>(out var bloom))
         {
             bloom.active = true;
-            bloom.intensity.Override(0.06f);
-            bloom.threshold.Override(1.50f);
+            bloom.intensity.Override(0.18f);
+            bloom.threshold.Override(1.40f);
             bloom.tint.Override(Color.white);
-            bloom.scatter.Override(0.55f);
-            bloom.clamp.Override(1.8f);
+            bloom.scatter.Override(0.60f);
+            bloom.clamp.Override(2.0f);
         }
 
         if (profile.TryGet<ColorAdjustments>(out var ca))
         {
-            ca.postExposure.Override(-0.05f);
-            ca.contrast.Override(17f);
-            ca.saturation.Override(10f);
-            ca.colorFilter.Override(new Color(1f, 0.96f, 0.90f, 1f));
+            ca.postExposure.Override(0.18f);
+            ca.contrast.Override(19f);
+            ca.saturation.Override(32f);
+            ca.colorFilter.Override(Color.white);
         }
 
         if (profile.TryGet<Tonemapping>(out var tm))

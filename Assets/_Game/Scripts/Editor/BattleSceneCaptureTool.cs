@@ -138,15 +138,15 @@ public static class BattleSceneCaptureTool
 
         var keyGo = new GameObject("PreviewKey");
         keyGo.transform.SetParent(lightingRoot.transform, false);
-        keyGo.transform.rotation = Quaternion.Euler(32f, -52f, 0f);
+        keyGo.transform.rotation = Quaternion.Euler(38f, -48f, 0f);
         var key = keyGo.AddComponent<Light>();
         key.type = LightType.Directional;
-        key.color = new Color(1.00f, 0.82f, 0.54f, 1f);
-        key.intensity = 2.15f;
-        key.shadows = LightShadows.Hard;
+        key.color = new Color(1.00f, 0.92f, 0.78f, 1f);
+        key.intensity = 2.80f;
+        key.shadows = LightShadows.Soft;
         key.shadowStrength = 0.97f;
-        key.shadowBias = 0.005f;
-        key.shadowNormalBias = 0.04f;
+        key.shadowBias = 0.01f;
+        key.shadowNormalBias = 0.05f;
         key.shadowBias = 0.02f;
         key.shadowNormalBias = 0.10f;
         key.shadowNearPlane = 0.10f;
@@ -164,12 +164,13 @@ public static class BattleSceneCaptureTool
 
         AddPointAccent(lightingRoot.transform, "WarmAccent", new Vector3(-5.8f, 2.4f, 4.6f), new Color(1f, 0.62f, 0.24f, 1f), 2.2f, 9f);
 
+        // ShadowsOnly trees — mesh invisible, shadows fall onto play area
         AddForegroundTree(parent, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_03.prefab",
-            new Vector3(5.6f, 0f, 1.2f), 1.35f, 22f);
+            new Vector3(5.8f, 0f, 5.5f), 1.70f, 22f);
         AddForegroundTree(parent, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_07.prefab",
-            new Vector3(-4.8f, 0f, -1.4f), 1.30f, -42f);
+            new Vector3(-5.2f, 0f, 4.0f), 1.65f, -42f);
         AddForegroundTree(parent, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_09.prefab",
-            new Vector3(6.3f, 0f, -3.1f), 1.40f, 108f);
+            new Vector3(0.5f, 0f, 7.2f), 1.75f, 108f);
 
         return lightingRoot;
     }
@@ -193,8 +194,8 @@ public static class BattleSceneCaptureTool
         instance.transform.localScale = Vector3.one * scale;
         foreach (var r in instance.GetComponentsInChildren<Renderer>(true))
         {
-            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-            r.receiveShadows = true;
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+            r.receiveShadows = false;
         }
     }
 

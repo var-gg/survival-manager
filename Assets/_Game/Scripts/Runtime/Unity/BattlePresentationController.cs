@@ -517,13 +517,13 @@ public sealed class BattlePresentationController : MonoBehaviour
             lightingRoot.transform,
             "BattleKeyLight",
             LightType.Directional,
-            Quaternion.Euler(32f, -52f, 0f),
-            new Color(1f, 0.82f, 0.54f, 1f),
-            2.15f);
-        key.shadows = LightShadows.Hard;
+            Quaternion.Euler(38f, -48f, 0f),
+            new Color(1f, 0.92f, 0.78f, 1f),
+            2.80f);
+        key.shadows = LightShadows.Soft;
         key.shadowStrength = 0.97f;
-        key.shadowBias = 0.005f;
-        key.shadowNormalBias = 0.04f;
+        key.shadowBias = 0.01f;
+        key.shadowNormalBias = 0.05f;
         key.shadowNearPlane = 0.10f;
         key.shadowResolution = UnityEngine.Rendering.LightShadowResolution.VeryHigh;
         RenderSettings.sun = key;
@@ -559,12 +559,13 @@ public sealed class BattlePresentationController : MonoBehaviour
         var dressingRoot = new GameObject("BattleForegroundDressing");
         dressingRoot.transform.SetParent(parent, false);
 
+        // ShadowsOnly trees placed AROUND the play area edges so their shadows fall inward but their meshes are invisible.
         TryInstantiateForegroundTree(dressingRoot.transform, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_03.prefab",
-            position: new Vector3(5.6f, 0f, 1.2f), scale: 1.35f, yawDegrees: 22f);
+            position: new Vector3(5.8f, 0f, 5.5f), scale: 1.70f, yawDegrees: 22f);
         TryInstantiateForegroundTree(dressingRoot.transform, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_07.prefab",
-            position: new Vector3(-4.8f, 0f, -1.4f), scale: 1.30f, yawDegrees: -42f);
+            position: new Vector3(-5.2f, 0f, 4.0f), scale: 1.65f, yawDegrees: -42f);
         TryInstantiateForegroundTree(dressingRoot.transform, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_09.prefab",
-            position: new Vector3(6.3f, 0f, -3.1f), scale: 1.40f, yawDegrees: 108f);
+            position: new Vector3(0.5f, 0f, 7.2f), scale: 1.75f, yawDegrees: 108f);
 #endif
     }
 
@@ -582,10 +583,11 @@ public sealed class BattlePresentationController : MonoBehaviour
         instance.transform.localRotation = Quaternion.Euler(0f, yawDegrees, 0f);
         instance.transform.localScale = Vector3.one * scale;
 
+        // ShadowsOnly — 메쉬는 안 보이고 그림자만 play area에 떨어뜨림.
         foreach (var renderer in instance.GetComponentsInChildren<Renderer>(true))
         {
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-            renderer.receiveShadows = true;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+            renderer.receiveShadows = false;
         }
     }
 #endif
