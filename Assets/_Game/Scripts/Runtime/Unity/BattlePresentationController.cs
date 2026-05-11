@@ -101,6 +101,24 @@ public sealed class BattlePresentationController : MonoBehaviour
                 view = wrapper.gameObject.AddComponent<BattleActorView>();
             }
 
+            // GPT-Pro 권장: 캐릭터 발밑 contact shadow blob — 부감 stylized cel 환경의
+            // readability에 가장 큰 single lift. realtime shadow에만 의존하면 toon 캐릭터가
+            // 지면에 떠 보임.
+            var contactShadow = wrapper.GetComponent<BattleActorContactShadow>()
+                                 ?? wrapper.gameObject.AddComponent<BattleActorContactShadow>();
+            contactShadow.Apply(wrapper.GetSocketTransform(BattleActorSocketId.FeetRing));
+
+            // Force shadow cast/receive on character meshes (lilToon prefab가 disabled로 ship되는 경우 대비).
+            foreach (var renderer in wrapper.GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer is MeshRenderer mr && mr.name == "ContactShadow")
+                {
+                    continue; // contact shadow는 cast 안 함.
+                }
+                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                renderer.receiveShadows = true;
+            }
+
             view.Initialize(actor, actorOverlayRoot, _camera, this, _metadataFormatter);
             view.ApplyOptions(_options);
             _actorViews[actor.Id] = view;
