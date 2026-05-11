@@ -3,6 +3,7 @@ using SM.Unity;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
@@ -35,15 +36,28 @@ public static class BattleSceneCaptureTool
     [MenuItem("SM/Internal/Capture/Battle Live (Game View)")]
     public static void CaptureBattleLive()
     {
-        // Captures whatever the active Camera.main is currently rendering.
-        // Use this in Play mode to capture the live game without spawning a preview rig.
-        // In Edit mode this will render an empty Battle scene (no characters / no map prefab).
+        // Synchronous Camera.Render → HDR RT → PNG.
         var camera = Camera.main;
         if (camera == null)
         {
             Debug.LogError("[BattleSceneCaptureTool] CaptureLive: no Main Camera found.");
             return;
         }
+
+        // Diagnostic: dump runtime render state at capture time.
+        var hdr = camera.allowHDR;
+        var clearFlags = camera.clearFlags;
+        var skybox = RenderSettings.skybox != null ? RenderSettings.skybox.name : "<null>";
+        var fog = RenderSettings.fog;
+        var fogMode = RenderSettings.fogMode;
+        var ambientMode = RenderSettings.ambientMode;
+        var ambientSky = RenderSettings.ambientSkyColor;
+        var ambientIntensity = RenderSettings.ambientIntensity;
+        var sun = RenderSettings.sun != null ? RenderSettings.sun.name : "<null>";
+        var volumes = Object.FindObjectsByType<Volume>(FindObjectsSortMode.None);
+        var globalVolumes = string.Join(", ", System.Array.ConvertAll(volumes, v =>
+            $"{v.name}(p={v.priority},g={v.isGlobal},w={v.weight},prof={(v.profile != null ? v.profile.name : "<null>")})"));
+        Debug.Log($"[CaptureLive.Diag] playing={EditorApplication.isPlaying}, hdr={hdr}, clearFlags={clearFlags}, skybox={skybox}, fog={fog}/{fogMode}, ambientMode={ambientMode}, ambientSky={ambientSky}, ambientIntensity={ambientIntensity}, sun={sun}, volumes=[{globalVolumes}]");
 
         var urpData = camera.gameObject.GetComponent<UniversalAdditionalCameraData>()
                       ?? camera.gameObject.AddComponent<UniversalAdditionalCameraData>();
@@ -77,7 +91,7 @@ public static class BattleSceneCaptureTool
             File.WriteAllBytes(latestPath, bytes);
             File.WriteAllText(Path.Combine(CaptureDirectory, MarkerFileName), stamp);
 
-            Debug.Log($"[BattleSceneCaptureTool] LIVE captured {CaptureWidth}x{CaptureHeight} (playing={EditorApplication.isPlaying}) → {latestPath}");
+            Debug.Log($"[BattleSceneCaptureTool] LIVE captured {CaptureWidth}x{CaptureHeight} → {latestPath}");
         }
         finally
         {

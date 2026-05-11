@@ -79,7 +79,7 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         ambientSky = new Color(0.36f, 0.44f, 0.52f, 1f);
         ambientEquator = new Color(0.38f, 0.41f, 0.39f, 1f);
         ambientGround = new Color(0.14f, 0.13f, 0.10f, 1f);
-        ambientIntensity = 0.75f;
+        ambientIntensity = 1.05f;
         applyFog = true;
         fogColor = new Color(0.28f, 0.34f, 0.38f, 1f);
         fogStart = 22f;
@@ -123,6 +123,8 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
                           ?? _camera.gameObject.AddComponent<UniversalAdditionalCameraData>();
             urpData.renderPostProcessing = true;
             urpData.allowHDROutput = false;
+            // HDR rendering ON for proper Volume Bloom/ColorAdjustments computation;
+            // allowHDROutput OFF so backbuffer is SDR (matches typical user display).
             _camera.allowHDR = true;
         }
 
@@ -160,21 +162,25 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         // The asset's raw Bloom 1.65 + ColorAdjustments contrast 35 over-expose without the demo scene's
         // full point-light rig. Pull those down to values that read on our 4-light setup.
         // GPT-Pro recommended gameplay profile: subtle post-process, structure-first.
+        // SDR-display calibrated: GPT-Pro values were tuned for linear/HDR view but our final blit is SDR.
+        // Push saturation/contrast/exposure noticeably to compensate for SDR clamp losing chroma.
         if (profile.TryGet<Bloom>(out var bloom))
         {
             bloom.active = true;
-            bloom.intensity.Override(0.05f);
-            bloom.threshold.Override(1.40f);
+            bloom.intensity.Override(0.12f);
+            bloom.threshold.Override(1.30f);
             bloom.tint.Override(Color.white);
-            bloom.scatter.Override(0.45f);
+            bloom.scatter.Override(0.55f);
             bloom.clamp.Override(2.0f);
         }
 
         if (profile.TryGet<ColorAdjustments>(out var ca))
         {
-            ca.postExposure.Override(-0.05f);
-            ca.contrast.Override(10f);
-            ca.saturation.Override(4f);
+            // SDR-display compensation: HDR space saturation gets compressed ~50% by Neutral tonemap.
+            // Aggressive push to land vivid on user's monitor.
+            ca.postExposure.Override(0.30f);
+            ca.contrast.Override(28f);
+            ca.saturation.Override(60f);
             ca.colorFilter.Override(Color.white);
         }
 
