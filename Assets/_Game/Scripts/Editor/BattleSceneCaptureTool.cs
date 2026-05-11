@@ -23,7 +23,7 @@ public static class BattleSceneCaptureTool
     private const string CaptureDirectory = "Captures";
     private const string LatestFileName = "battle_latest.png";
     private const string MarkerFileName = ".last_capture";
-    private const int CaptureWidth = 1920;
+    private const int CaptureWidth = 2560;
     private const int CaptureHeight = 1080;
 
     [MenuItem("SM/Internal/Capture/Battle Scene")]

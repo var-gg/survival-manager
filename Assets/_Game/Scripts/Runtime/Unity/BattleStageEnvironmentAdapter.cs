@@ -20,7 +20,7 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
     [SerializeField] private Color ambientGround = new(0.18f, 0.17f, 0.12f, 1f);
     [SerializeField, Range(0f, 3f)] private float ambientIntensity = 0.55f;
     [SerializeField] private bool applyFog = true;
-    [SerializeField] private Color fogColor = new(0.30f, 0.36f, 0.42f, 1f);
+    [SerializeField] private Color fogColor = new(0.42f, 0.36f, 0.28f, 1f);
     [SerializeField, Range(0f, 200f)] private float fogStart = 26f;
     [SerializeField, Range(1f, 400f)] private float fogEnd = 150f;
     [SerializeField] private bool applyCameraSkybox = true;
@@ -81,7 +81,7 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         ambientGround = new Color(0.18f, 0.17f, 0.12f, 1f);
         ambientIntensity = 0.55f;
         applyFog = true;
-        fogColor = new Color(0.30f, 0.36f, 0.42f, 1f);
+        fogColor = new Color(0.42f, 0.36f, 0.28f, 1f);
         fogStart = 26f;
         fogEnd = 150f;
     }
@@ -153,24 +153,25 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         if (profile.TryGet<Bloom>(out var bloom))
         {
             bloom.active = true;
-            bloom.intensity.Override(0.08f);
-            bloom.threshold.Override(1.30f);
+            bloom.intensity.Override(0.06f);
+            bloom.threshold.Override(1.50f);
             bloom.tint.Override(Color.white);
             bloom.scatter.Override(0.55f);
+            bloom.clamp.Override(1.8f);
         }
 
         if (profile.TryGet<ColorAdjustments>(out var ca))
         {
-            ca.postExposure.Override(0.0f);
-            ca.contrast.Override(16f);
-            ca.saturation.Override(8f);
+            ca.postExposure.Override(-0.05f);
+            ca.contrast.Override(17f);
+            ca.saturation.Override(10f);
             ca.colorFilter.Override(new Color(1f, 0.96f, 0.90f, 1f));
         }
 
         if (profile.TryGet<Tonemapping>(out var tm))
         {
             tm.active = true;
-            tm.mode.Override(TonemappingMode.Neutral);
+            tm.mode.Override(TonemappingMode.ACES);
         }
 
         if (profile.TryGet<DepthOfField>(out var dof))
