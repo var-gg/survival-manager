@@ -138,13 +138,15 @@ public static class BattleSceneCaptureTool
 
         var keyGo = new GameObject("PreviewKey");
         keyGo.transform.SetParent(lightingRoot.transform, false);
-        keyGo.transform.rotation = Quaternion.Euler(46f, -55f, 0f);
+        keyGo.transform.rotation = Quaternion.Euler(32f, -52f, 0f);
         var key = keyGo.AddComponent<Light>();
         key.type = LightType.Directional;
-        key.color = new Color(1.00f, 0.85f, 0.60f, 1f);
-        key.intensity = 1.95f;
-        key.shadows = LightShadows.Soft;
-        key.shadowStrength = 0.90f;
+        key.color = new Color(1.00f, 0.82f, 0.54f, 1f);
+        key.intensity = 2.15f;
+        key.shadows = LightShadows.Hard;
+        key.shadowStrength = 0.97f;
+        key.shadowBias = 0.005f;
+        key.shadowNormalBias = 0.04f;
         key.shadowBias = 0.02f;
         key.shadowNormalBias = 0.10f;
         key.shadowNearPlane = 0.10f;
@@ -162,7 +164,38 @@ public static class BattleSceneCaptureTool
 
         AddPointAccent(lightingRoot.transform, "WarmAccent", new Vector3(-5.8f, 2.4f, 4.6f), new Color(1f, 0.62f, 0.24f, 1f), 2.2f, 9f);
 
+        AddForegroundTree(parent, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_03.prefab",
+            new Vector3(5.6f, 0f, 1.2f), 1.35f, 22f);
+        AddForegroundTree(parent, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_07.prefab",
+            new Vector3(-4.8f, 0f, -1.4f), 1.30f, -42f);
+        AddForegroundTree(parent, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_09.prefab",
+            new Vector3(6.3f, 0f, -3.1f), 1.40f, 108f);
+
         return lightingRoot;
+    }
+
+    private static void AddForegroundTree(Transform parent, string prefabPath, Vector3 localPosition, float scale, float yawDegrees)
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        if (prefab == null)
+        {
+            return;
+        }
+
+        var instance = Object.Instantiate(prefab, parent);
+        instance.hideFlags = HideFlags.HideAndDontSave;
+        foreach (var t in instance.GetComponentsInChildren<Transform>(true))
+        {
+            t.gameObject.hideFlags = HideFlags.HideAndDontSave;
+        }
+        instance.transform.localPosition = localPosition;
+        instance.transform.localRotation = Quaternion.Euler(0f, yawDegrees, 0f);
+        instance.transform.localScale = Vector3.one * scale;
+        foreach (var r in instance.GetComponentsInChildren<Renderer>(true))
+        {
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            r.receiveShadows = true;
+        }
     }
 
     private static void AddPointAccent(Transform parent, string name, Vector3 localPosition, Color color, float intensity, float range)

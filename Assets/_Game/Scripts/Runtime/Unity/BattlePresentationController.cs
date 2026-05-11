@@ -517,13 +517,18 @@ public sealed class BattlePresentationController : MonoBehaviour
             lightingRoot.transform,
             "BattleKeyLight",
             LightType.Directional,
-            Quaternion.Euler(46f, -55f, 0f),
-            new Color(1f, 0.85f, 0.60f, 1f),
-            1.95f);
-        key.shadows = LightShadows.Soft;
-        key.shadowStrength = 0.90f;
+            Quaternion.Euler(32f, -52f, 0f),
+            new Color(1f, 0.82f, 0.54f, 1f),
+            2.15f);
+        key.shadows = LightShadows.Hard;
+        key.shadowStrength = 0.97f;
+        key.shadowBias = 0.005f;
+        key.shadowNormalBias = 0.04f;
+        key.shadowNearPlane = 0.10f;
+        key.shadowResolution = UnityEngine.Rendering.LightShadowResolution.VeryHigh;
+        RenderSettings.sun = key;
 
-        // Warm narrative accent for sunset feel — placed far from character spawn area to avoid silhouette wash.
+        // Warm narrative accent — placed far from character spawn area to avoid silhouette wash.
         var warmAccent = CreateBattleLight(
             lightingRoot.transform,
             "BattleWarmAccent",
@@ -534,11 +539,6 @@ public sealed class BattlePresentationController : MonoBehaviour
         warmAccent.transform.localPosition = new Vector3(-5.8f, 2.4f, 4.6f);
         warmAccent.range = 9f;
         warmAccent.shadows = LightShadows.None;
-        key.shadowBias = 0.02f;
-        key.shadowNormalBias = 0.10f;
-        key.shadowNearPlane = 0.10f;
-        key.shadowResolution = UnityEngine.Rendering.LightShadowResolution.VeryHigh;
-        RenderSettings.sun = key;
 
         var fill = CreateBattleLight(
             lightingRoot.transform,
@@ -548,7 +548,47 @@ public sealed class BattlePresentationController : MonoBehaviour
             new Color(0.50f, 0.55f, 0.62f, 1f),
             0.12f);
         fill.shadows = LightShadows.None;
+
+        CreateForegroundDressing(lightingRoot.transform);
     }
+
+    private void CreateForegroundDressing(Transform parent)
+    {
+#if UNITY_EDITOR
+        // Foreground tree dressing — places 3 tall trees at side/front to cast dramatic crisp shadows across the play area.
+        var dressingRoot = new GameObject("BattleForegroundDressing");
+        dressingRoot.transform.SetParent(parent, false);
+
+        TryInstantiateForegroundTree(dressingRoot.transform, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_03.prefab",
+            position: new Vector3(5.6f, 0f, 1.2f), scale: 1.35f, yawDegrees: 22f);
+        TryInstantiateForegroundTree(dressingRoot.transform, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_07.prefab",
+            position: new Vector3(-4.8f, 0f, -1.4f), scale: 1.30f, yawDegrees: -42f);
+        TryInstantiateForegroundTree(dressingRoot.transform, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_09.prefab",
+            position: new Vector3(6.3f, 0f, -3.1f), scale: 1.40f, yawDegrees: 108f);
+#endif
+    }
+
+#if UNITY_EDITOR
+    private static void TryInstantiateForegroundTree(Transform parent, string prefabPath, Vector3 position, float scale, float yawDegrees)
+    {
+        var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        if (prefab == null)
+        {
+            return;
+        }
+
+        var instance = Instantiate(prefab, parent);
+        instance.transform.localPosition = position;
+        instance.transform.localRotation = Quaternion.Euler(0f, yawDegrees, 0f);
+        instance.transform.localScale = Vector3.one * scale;
+
+        foreach (var renderer in instance.GetComponentsInChildren<Renderer>(true))
+        {
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            renderer.receiveShadows = true;
+        }
+    }
+#endif
 
     private static Light CreateBattleLight(
         Transform parent,
