@@ -171,10 +171,10 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 
         if (profile.TryGet<ColorAdjustments>(out var ca))
         {
-            ca.postExposure.Override(0.18f);
-            ca.contrast.Override(19f);
-            ca.saturation.Override(32f);
-            ca.colorFilter.Override(Color.white);
+            ca.postExposure.Override(0.14f);
+            ca.contrast.Override(16f);
+            ca.saturation.Override(14f);
+            ca.colorFilter.Override(new Color(1f, 0.98f, 0.94f, 1f));
         }
 
         if (profile.TryGet<Tonemapping>(out var tm))
