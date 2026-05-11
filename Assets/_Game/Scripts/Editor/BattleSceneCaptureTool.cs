@@ -32,6 +32,134 @@ public static class BattleSceneCaptureTool
         Capture(addPreviewSunIfMissing: true);
     }
 
+    [MenuItem("SM/Internal/Capture/Battle Live (Game View)")]
+    public static void CaptureBattleLive()
+    {
+        // Captures whatever the active Camera.main is currently rendering.
+        // Use this in Play mode to capture the live game without spawning a preview rig.
+        // In Edit mode this will render an empty Battle scene (no characters / no map prefab).
+        var camera = Camera.main;
+        if (camera == null)
+        {
+            Debug.LogError("[BattleSceneCaptureTool] CaptureLive: no Main Camera found.");
+            return;
+        }
+
+        var urpData = camera.gameObject.GetComponent<UniversalAdditionalCameraData>()
+                      ?? camera.gameObject.AddComponent<UniversalAdditionalCameraData>();
+        var previousRenderPostProcessing = urpData.renderPostProcessing;
+        urpData.renderPostProcessing = true;
+
+        Directory.CreateDirectory(CaptureDirectory);
+        var rt = new RenderTexture(CaptureWidth, CaptureHeight, 24, RenderTextureFormat.DefaultHDR)
+        {
+            antiAliasing = 4
+        };
+        var previousActive = RenderTexture.active;
+        var previousTarget = camera.targetTexture;
+        Texture2D tex = null;
+
+        try
+        {
+            camera.targetTexture = rt;
+            camera.Render();
+            RenderTexture.active = rt;
+
+            tex = new Texture2D(CaptureWidth, CaptureHeight, TextureFormat.RGB24, false);
+            tex.ReadPixels(new Rect(0f, 0f, CaptureWidth, CaptureHeight), 0, 0);
+            tex.Apply();
+
+            var bytes = tex.EncodeToPNG();
+            var stamp = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            var stampedPath = Path.Combine(CaptureDirectory, $"battle_live_{stamp}.png");
+            var latestPath = Path.Combine(CaptureDirectory, LatestFileName);
+            File.WriteAllBytes(stampedPath, bytes);
+            File.WriteAllBytes(latestPath, bytes);
+            File.WriteAllText(Path.Combine(CaptureDirectory, MarkerFileName), stamp);
+
+            Debug.Log($"[BattleSceneCaptureTool] LIVE captured {CaptureWidth}x{CaptureHeight} (playing={EditorApplication.isPlaying}) → {latestPath}");
+        }
+        finally
+        {
+            urpData.renderPostProcessing = previousRenderPostProcessing;
+            RenderTexture.active = previousActive;
+            camera.targetTexture = previousTarget;
+            rt.Release();
+            Object.DestroyImmediate(rt);
+            if (tex != null)
+            {
+                Object.DestroyImmediate(tex);
+            }
+        }
+    }
+
+    [MenuItem("SM/Internal/Capture/Battle Play Auto")]
+    public static void StartPlayAutoCapture()
+    {
+        // 1. Enter Play mode (if not already)
+        // 2. After bootstrap + frame settle, capture live
+        // 3. Exit Play
+        // State is persisted via SessionState across domain reload.
+        if (!EnsureBattleSceneOpen())
+        {
+            Debug.LogError("[BattleSceneCaptureTool] PlayAuto: failed to open Battle scene.");
+            return;
+        }
+
+        SessionState.SetBool(PlayAutoPendingKey, true);
+        SessionState.SetInt(PlayAutoFrameKey, 0);
+
+        if (!EditorApplication.isPlaying)
+        {
+            EditorApplication.EnterPlaymode();
+        }
+        // After Play mode entered, the OnUpdate handler counts frames + captures.
+    }
+
+    private const string PlayAutoPendingKey = "SM.BattleCapture.PlayAutoPending";
+    private const string PlayAutoFrameKey = "SM.BattleCapture.PlayAutoFrame";
+    private const int PlayAutoFramesToWait = 180;
+
+    [InitializeOnLoadMethod]
+    private static void RegisterPlayAutoHooks()
+    {
+        EditorApplication.update -= OnPlayAutoUpdate;
+        EditorApplication.update += OnPlayAutoUpdate;
+    }
+
+    private static void OnPlayAutoUpdate()
+    {
+        if (!SessionState.GetBool(PlayAutoPendingKey, false))
+        {
+            return;
+        }
+
+        if (!EditorApplication.isPlaying)
+        {
+            return;
+        }
+
+        var frame = SessionState.GetInt(PlayAutoFrameKey, 0) + 1;
+        SessionState.SetInt(PlayAutoFrameKey, frame);
+
+        if (frame < PlayAutoFramesToWait)
+        {
+            return;
+        }
+
+        SessionState.EraseBool(PlayAutoPendingKey);
+        SessionState.EraseInt(PlayAutoFrameKey);
+
+        try
+        {
+            CaptureBattleLive();
+        }
+        finally
+        {
+            EditorApplication.ExitPlaymode();
+        }
+    }
+
     public static string Capture(bool addPreviewSunIfMissing)
     {
         if (!EnsureBattleSceneOpen())

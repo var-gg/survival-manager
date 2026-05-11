@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'prepare-playable', 'repair-scenes', 'ensure-localization', 'quick-battle-smoke', 'seed-content', 'content-validate', 'balance-sweep-smoke', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'capture-battle', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
+    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'prepare-playable', 'repair-scenes', 'ensure-localization', 'quick-battle-smoke', 'seed-content', 'content-validate', 'balance-sweep-smoke', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'capture-battle', 'capture-battle-live', 'capture-battle-play-auto', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
     [string]$Verb,
     [int]$Lines = 30,
     [string]$Filter = 'error,warning,log',
@@ -571,6 +571,44 @@ try {
                         $latest = Join-Path $projectRoot 'Captures\battle_latest.png'
                         if (Test-Path $latest) {
                             Write-Host "Capture saved: $latest"
+                            break
+                        }
+                    }
+                }
+                Start-Sleep -Milliseconds 500
+            }
+        }
+        'capture-battle-live' {
+            $markerPath = Join-Path $projectRoot 'Captures\.last_capture'
+            $previousMarker = Get-FileLastWriteTimeUtcOrMinValue -Path $markerPath
+            Invoke-UnityMenuCommand -MenuPath 'SM/Internal/Capture/Battle Live (Game View)' -ReadyContext 'battle live capture'
+            for ($attempt = 1; $attempt -le 60; $attempt++) {
+                if (Test-Path $markerPath) {
+                    $current = (Get-Item $markerPath).LastWriteTimeUtc
+                    if ($current -gt $previousMarker) {
+                        $latest = Join-Path $projectRoot 'Captures\battle_latest.png'
+                        if (Test-Path $latest) {
+                            Write-Host "Capture saved: $latest"
+                            break
+                        }
+                    }
+                }
+                Start-Sleep -Milliseconds 500
+            }
+        }
+        'capture-battle-play-auto' {
+            $markerPath = Join-Path $projectRoot 'Captures\.last_capture'
+            $previousMarker = Get-FileLastWriteTimeUtcOrMinValue -Path $markerPath
+            Invoke-UnityMenuCommand -MenuPath 'SM/Internal/Capture/Battle Play Auto' -ReadyContext 'battle play auto capture'
+            # Auto-capture: enters play, waits 180 frames (~3s), captures, exits play.
+            # Total round-trip ~10-15s depending on domain reload speed.
+            for ($attempt = 1; $attempt -le 90; $attempt++) {
+                if (Test-Path $markerPath) {
+                    $current = (Get-Item $markerPath).LastWriteTimeUtc
+                    if ($current -gt $previousMarker) {
+                        $latest = Join-Path $projectRoot 'Captures\battle_latest.png'
+                        if (Test-Path $latest) {
+                            Write-Host "Play auto capture saved: $latest"
                             break
                         }
                     }
