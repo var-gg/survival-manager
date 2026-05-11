@@ -148,8 +148,8 @@ Material:
     - _FlatRimSize: 0.284
     - _FlatSpecularEdgeSmoothness: 0
     - _FlatSpecularSize: 0.1
-    - _Flatness: 0.50
-    - _FlatnessExtra: 0.55
+    - _Flatness: 0.25
+    - _FlatnessExtra: 0.3
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -188,10 +188,10 @@ Material:
     - _Surface: 0
     - _TextureBlendingMode: 0
     - _TextureImpact: 0.50
-    - _UnityShadowMode: 2
+    - _UnityShadowMode: 1
     - _UnityShadowOcclusion: 0
-    - _UnityShadowPower: 0.2
-    - _UnityShadowSharpness: 4.48
+    - _UnityShadowPower: 0.95
+    - _UnityShadowSharpness: 6
     - _VertexColorsEnabled: 0
     - _WindDirection: 0
     - _WindEnabled: 0
@@ -214,11 +214,11 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FlatRimColor: {r: 0.9716981, g: 0.9716981, b: 0.9716981, a: 1}
     - _FlatSpecularColor: {r: 0.85023, g: 0.85034, b: 0.85045, a: 0.85056}
-    - _LightAttenuation: {r: 0.3, g: 0.78, b: 0, a: 0}
+    - _LightAttenuation: {r: 0, g: 1, b: 0, a: 0}
     - _LightmapDirection: {r: 0, g: 1, b: 0, a: 0}
     - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowColor: {r: 0.12, g: 0.055, b: 0.018, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _UnityShadowColor: {r: 0.03737985, g: 0.30322778, b: 0.3773585, a: 1}
+    - _UnityShadowColor: {r: 0.03, g: 0.04, b: 0.06, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
