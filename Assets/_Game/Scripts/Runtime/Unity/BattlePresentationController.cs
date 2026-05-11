@@ -535,11 +535,15 @@ public sealed class BattlePresentationController : MonoBehaviour
             lightingRoot.transform,
             "BattleKeyLight",
             LightType.Directional,
-            Quaternion.Euler(50f, -45f, 0f),
+            Quaternion.Euler(40f, -55f, 0f),
             new Color(1f, 0.86f, 0.66f, 1f),
-            1.80f);
+            2.40f);
         key.shadows = LightShadows.Soft;
-        key.shadowStrength = 0.85f;
+        key.shadowStrength = 1.0f;
+        // 더 sharp한 cast shadow: bias 살짝 더 낮춰 캐스터에 가깝게.
+        key.shadowBias = 0.005f;
+        key.shadowNormalBias = 0.03f;
+        // shadow resolution을 1024로 명시 (URP 4K shadow atlas는 cascade 4 기준).
         key.shadowBias = 0.01f;
         key.shadowNormalBias = 0.05f;
         key.shadowNearPlane = 0.10f;
