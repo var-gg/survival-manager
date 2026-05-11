@@ -517,11 +517,11 @@ public sealed class BattlePresentationController : MonoBehaviour
             lightingRoot.transform,
             "BattleKeyLight",
             LightType.Directional,
-            Quaternion.Euler(48f, -55f, 0f),
-            new Color(1f, 0.90f, 0.72f, 1f),
-            1.7f);
+            Quaternion.Euler(46f, -55f, 0f),
+            new Color(1f, 0.85f, 0.60f, 1f),
+            1.95f);
         key.shadows = LightShadows.Soft;
-        key.shadowStrength = 0.85f;
+        key.shadowStrength = 0.90f;
 
         // Warm narrative accent for sunset feel — placed far from character spawn area to avoid silhouette wash.
         var warmAccent = CreateBattleLight(

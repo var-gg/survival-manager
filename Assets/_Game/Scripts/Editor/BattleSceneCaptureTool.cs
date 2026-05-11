@@ -138,13 +138,13 @@ public static class BattleSceneCaptureTool
 
         var keyGo = new GameObject("PreviewKey");
         keyGo.transform.SetParent(lightingRoot.transform, false);
-        keyGo.transform.rotation = Quaternion.Euler(48f, -55f, 0f);
+        keyGo.transform.rotation = Quaternion.Euler(46f, -55f, 0f);
         var key = keyGo.AddComponent<Light>();
         key.type = LightType.Directional;
-        key.color = new Color(1.00f, 0.90f, 0.72f, 1f);
-        key.intensity = 1.7f;
+        key.color = new Color(1.00f, 0.85f, 0.60f, 1f);
+        key.intensity = 1.95f;
         key.shadows = LightShadows.Soft;
-        key.shadowStrength = 0.85f;
+        key.shadowStrength = 0.90f;
         key.shadowBias = 0.02f;
         key.shadowNormalBias = 0.10f;
         key.shadowNearPlane = 0.10f;
