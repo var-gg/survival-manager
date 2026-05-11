@@ -20,9 +20,9 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
     [SerializeField] private Color ambientGround = new(0.18f, 0.17f, 0.12f, 1f);
     [SerializeField, Range(0f, 3f)] private float ambientIntensity = 0.55f;
     [SerializeField] private bool applyFog = true;
-    [SerializeField] private Color fogColor = new(0.36f, 0.46f, 0.55f, 1f);
-    [SerializeField, Range(0f, 200f)] private float fogStart = 18f;
-    [SerializeField, Range(1f, 400f)] private float fogEnd = 110f;
+    [SerializeField] private Color fogColor = new(0.30f, 0.36f, 0.42f, 1f);
+    [SerializeField, Range(0f, 200f)] private float fogStart = 26f;
+    [SerializeField, Range(1f, 400f)] private float fogEnd = 150f;
     [SerializeField] private bool applyCameraSkybox = true;
 
     private Volume? _runtimeVolume;
@@ -81,9 +81,9 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         ambientGround = new Color(0.18f, 0.17f, 0.12f, 1f);
         ambientIntensity = 0.55f;
         applyFog = true;
-        fogColor = new Color(0.36f, 0.46f, 0.55f, 1f);
-        fogStart = 18f;
-        fogEnd = 110f;
+        fogColor = new Color(0.30f, 0.36f, 0.42f, 1f);
+        fogStart = 26f;
+        fogEnd = 150f;
     }
 
     public void Apply()
@@ -162,9 +162,9 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         if (profile.TryGet<ColorAdjustments>(out var ca))
         {
             ca.postExposure.Override(0.0f);
-            ca.contrast.Override(10f);
-            ca.saturation.Override(0f);
-            ca.colorFilter.Override(Color.white);
+            ca.contrast.Override(16f);
+            ca.saturation.Override(8f);
+            ca.colorFilter.Override(new Color(1f, 0.96f, 0.90f, 1f));
         }
 
         if (profile.TryGet<Tonemapping>(out var tm))
