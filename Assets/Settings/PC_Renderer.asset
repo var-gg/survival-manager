@@ -66,8 +66,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce2e666a0193a442ab1551414ba5f7c3, type: 3}
   m_Name: QuibliPostProcess
-  m_EditorClassIdentifier: 
-  m_Active: 1
+  m_EditorClassIdentifier:
+  m_Active: 0
   settings:
     renderersAfterOpaqueAndSky: []
     renderersBeforePostProcess:

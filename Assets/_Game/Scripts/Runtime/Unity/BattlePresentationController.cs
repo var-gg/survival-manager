@@ -387,19 +387,25 @@ public sealed class BattlePresentationController : MonoBehaviour
         instance.transform.localPosition = map.LocalPosition;
         instance.transform.localRotation = Quaternion.Euler(map.LocalEulerAngles);
         instance.transform.localScale = map.LocalScale;
-        var materialAdapter = instance.GetComponent<BattleMapMaterialAdapter>();
-        if (materialAdapter == null)
-        {
-            materialAdapter = instance.AddComponent<BattleMapMaterialAdapter>();
-        }
 
+        var preExistingMat = instance.GetComponent<BattleMapMaterialAdapter>();
+        var preExistingEnv = instance.GetComponent<BattleStageEnvironmentAdapter>();
+#if UNITY_EDITOR
+        var prefabPath = UnityEditor.AssetDatabase.GetAssetPath(map.Prefab);
+#else
+        var prefabPath = "<build>";
+#endif
+        Debug.Log(
+            $"[BattleMap.Diag] mapId={map.MapId} prefab={map.Prefab.name} path={prefabPath} " +
+            $"instance={instance.name} preExistingMat={preExistingMat != null} preExistingEnv={preExistingEnv != null}");
+
+        var materialAdapter = preExistingMat ?? instance.AddComponent<BattleMapMaterialAdapter>();
         materialAdapter.Apply();
-        var environmentAdapter = instance.GetComponent<BattleStageEnvironmentAdapter>();
-        if (environmentAdapter == null)
-        {
-            environmentAdapter = instance.AddComponent<BattleStageEnvironmentAdapter>();
-            environmentAdapter.ConfigureForestRuinsDefaults();
-        }
+
+        var environmentAdapter = preExistingEnv ?? instance.AddComponent<BattleStageEnvironmentAdapter>();
+        // GPT-Pro 진단: pre-attached 여부와 무관하게 항상 runtime preset을 강제한다.
+        // 이전 코드는 newly-created 시에만 ConfigureForestRuinsDefaults를 호출해 Edit/Play disparity 유발.
+        environmentAdapter.ConfigureForestRuinsDefaults();
 
         _activeEnvironmentAdapter = environmentAdapter;
         _activeEnvironmentAdapter?.Apply();
@@ -511,11 +517,23 @@ public sealed class BattlePresentationController : MonoBehaviour
             lightingRoot.transform,
             "BattleKeyLight",
             LightType.Directional,
-            Quaternion.Euler(42f, -65f, 0f),
-            new Color(1f, 0.92f, 0.78f, 1f),
-            3.2f);
+            Quaternion.Euler(48f, -55f, 0f),
+            new Color(1f, 0.90f, 0.72f, 1f),
+            1.7f);
         key.shadows = LightShadows.Soft;
         key.shadowStrength = 0.85f;
+
+        // Warm narrative accent for sunset feel — placed far from character spawn area to avoid silhouette wash.
+        var warmAccent = CreateBattleLight(
+            lightingRoot.transform,
+            "BattleWarmAccent",
+            LightType.Point,
+            Quaternion.identity,
+            new Color(1f, 0.62f, 0.24f, 1f),
+            2.2f);
+        warmAccent.transform.localPosition = new Vector3(-5.8f, 2.4f, 4.6f);
+        warmAccent.range = 9f;
+        warmAccent.shadows = LightShadows.None;
         key.shadowBias = 0.02f;
         key.shadowNormalBias = 0.10f;
         key.shadowNearPlane = 0.10f;
@@ -527,8 +545,8 @@ public sealed class BattlePresentationController : MonoBehaviour
             "BattleFillLight",
             LightType.Directional,
             Quaternion.Euler(35f, 130f, 0f),
-            new Color(0.42f, 0.52f, 0.64f, 1f),
-            0.30f);
+            new Color(0.50f, 0.55f, 0.62f, 1f),
+            0.12f);
         fill.shadows = LightShadows.None;
     }
 

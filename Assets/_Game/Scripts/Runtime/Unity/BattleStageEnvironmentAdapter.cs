@@ -15,14 +15,14 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 
     [SerializeField] private Material skybox = null!;
     [SerializeField] private VolumeProfile volumeProfile = null!;
-    [SerializeField] private Color ambientSky = new(0.34f, 0.70f, 1.00f, 1f);
-    [SerializeField] private Color ambientEquator = new(0.93f, 1.22f, 1.40f, 1f);
-    [SerializeField] private Color ambientGround = new(0.23f, 0.37f, 0.21f, 1f);
-    [SerializeField, Range(0f, 3f)] private float ambientIntensity = 1.8f;
+    [SerializeField] private Color ambientSky = new(0.40f, 0.50f, 0.62f, 1f);
+    [SerializeField] private Color ambientEquator = new(0.46f, 0.50f, 0.50f, 1f);
+    [SerializeField] private Color ambientGround = new(0.18f, 0.17f, 0.12f, 1f);
+    [SerializeField, Range(0f, 3f)] private float ambientIntensity = 0.55f;
     [SerializeField] private bool applyFog = true;
-    [SerializeField] private Color fogColor = new(0.18f, 0.68f, 1.00f, 1f);
-    [SerializeField, Range(0f, 200f)] private float fogStart = 6f;
-    [SerializeField, Range(1f, 400f)] private float fogEnd = 90f;
+    [SerializeField] private Color fogColor = new(0.36f, 0.46f, 0.55f, 1f);
+    [SerializeField, Range(0f, 200f)] private float fogStart = 18f;
+    [SerializeField, Range(1f, 400f)] private float fogEnd = 110f;
     [SerializeField] private bool applyCameraSkybox = true;
 
     private Volume? _runtimeVolume;
@@ -76,14 +76,14 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
             volumeProfile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(DefaultVolumeProfilePath);
         }
 #endif
-        ambientSky = new Color(0.48f, 0.62f, 0.78f, 1f);
-        ambientEquator = new Color(0.62f, 0.68f, 0.70f, 1f);
-        ambientGround = new Color(0.22f, 0.22f, 0.16f, 1f);
-        ambientIntensity = 1.0f;
+        ambientSky = new Color(0.40f, 0.50f, 0.62f, 1f);
+        ambientEquator = new Color(0.46f, 0.50f, 0.50f, 1f);
+        ambientGround = new Color(0.18f, 0.17f, 0.12f, 1f);
+        ambientIntensity = 0.55f;
         applyFog = true;
-        fogColor = new Color(0.45f, 0.62f, 0.78f, 1f);
-        fogStart = 12f;
-        fogEnd = 140f;
+        fogColor = new Color(0.36f, 0.46f, 0.55f, 1f);
+        fogStart = 18f;
+        fogEnd = 110f;
     }
 
     public void Apply()
@@ -153,18 +153,24 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         if (profile.TryGet<Bloom>(out var bloom))
         {
             bloom.active = true;
-            bloom.intensity.Override(0.12f);
-            bloom.threshold.Override(1.15f);
+            bloom.intensity.Override(0.08f);
+            bloom.threshold.Override(1.30f);
             bloom.tint.Override(Color.white);
-            bloom.scatter.Override(0.7f);
+            bloom.scatter.Override(0.55f);
         }
 
         if (profile.TryGet<ColorAdjustments>(out var ca))
         {
             ca.postExposure.Override(0.0f);
-            ca.contrast.Override(6f);
+            ca.contrast.Override(10f);
             ca.saturation.Override(0f);
             ca.colorFilter.Override(Color.white);
+        }
+
+        if (profile.TryGet<Tonemapping>(out var tm))
+        {
+            tm.active = true;
+            tm.mode.Override(TonemappingMode.Neutral);
         }
 
         if (profile.TryGet<DepthOfField>(out var dof))
@@ -174,8 +180,8 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 
         if (profile.TryGet<Vignette>(out var vignette))
         {
-            vignette.intensity.Override(0.24f);
-            vignette.smoothness.Override(0.42f);
+            vignette.intensity.Override(0.16f);
+            vignette.smoothness.Override(0.40f);
         }
 
         if (profile.TryGet<SplitToning>(out var split))

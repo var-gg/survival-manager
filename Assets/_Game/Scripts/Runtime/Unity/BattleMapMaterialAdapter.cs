@@ -231,8 +231,8 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
         SetFloat(material, "_FlatRimSize", profile.RimSize);
         SetFloat(material, "_FlatRimEdgeSmoothness", 0.22f);
         SetFloat(material, "_FlatRimLightAlign", 1f);
-        SetFloat(material, "_OverrideLightAttenuation", 1f);
-        SetVector(material, "_LightAttenuation", new Vector4(0.08f, 0.92f, 0f, 0f));
+        SetFloat(material, "_OverrideLightAttenuation", 0f);
+        SetVector(material, "_LightAttenuation", new Vector4(0f, 1f, 0f, 0f));
         SetColor(material, "_ColorGradient", Color.Lerp(profile.ShadowColor, ReadBaseColor(material), 0.45f));
         SetColor(material, "_ShadowColor", profile.ShadowColor);
         SetColor(material, "_FlatRimColor", profile.RimColor);
@@ -342,8 +342,8 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
         return role switch
         {
             MaterialRole.Foliage => new QuibliProfile(
-                textureImpact: 0.42f,
-                lightContribution: 0.72f,
+                textureImpact: 0.68f,
+                lightContribution: 0.38f,
                 selfShadingSize: 0.24f,
                 shadowColor: new Color(0.07f, 0.16f, 0.045f, 1f),
                 unityShadowPower: 0.50f,
@@ -353,8 +353,8 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
                 rimSize: 0.22f,
                 rimEnabled: true),
             MaterialRole.Grass => new QuibliProfile(
-                textureImpact: 0.40f,
-                lightContribution: 0.75f,
+                textureImpact: 0.64f,
+                lightContribution: 0.40f,
                 selfShadingSize: 0.20f,
                 shadowColor: new Color(0.06f, 0.14f, 0.035f, 1f),
                 unityShadowPower: 0.48f,
@@ -364,8 +364,8 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
                 rimSize: 0.20f,
                 rimEnabled: true),
             MaterialRole.Bark => new QuibliProfile(
-                textureImpact: 0.42f,
-                lightContribution: 0.70f,
+                textureImpact: 0.74f,
+                lightContribution: 0.36f,
                 selfShadingSize: 0.26f,
                 shadowColor: new Color(0.15f, 0.075f, 0.025f, 1f),
                 unityShadowPower: 0.58f,
@@ -375,8 +375,8 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
                 rimSize: 0.24f,
                 rimEnabled: true),
             MaterialRole.Moss => new QuibliProfile(
-                textureImpact: 0.42f,
-                lightContribution: 0.70f,
+                textureImpact: 0.70f,
+                lightContribution: 0.38f,
                 selfShadingSize: 0.24f,
                 shadowColor: new Color(0.06f, 0.14f, 0.035f, 1f),
                 unityShadowPower: 0.50f,
@@ -386,8 +386,8 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
                 rimSize: 0.20f,
                 rimEnabled: true),
             MaterialRole.Rock => new QuibliProfile(
-                textureImpact: 0.40f,
-                lightContribution: 0.68f,
+                textureImpact: 0.76f,
+                lightContribution: 0.34f,
                 selfShadingSize: 0.28f,
                 shadowColor: new Color(0.14f, 0.115f, 0.085f, 1f),
                 unityShadowPower: 0.60f,
@@ -397,8 +397,8 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
                 rimSize: 0.24f,
                 rimEnabled: true),
             MaterialRole.Soil => new QuibliProfile(
-                textureImpact: 0.38f,
-                lightContribution: 0.78f,
+                textureImpact: 0.78f,
+                lightContribution: 0.32f,
                 selfShadingSize: 0.20f,
                 shadowColor: new Color(0.22f, 0.10f, 0.035f, 1f),
                 unityShadowPower: 0.55f,
@@ -408,8 +408,8 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
                 rimSize: 0f,
                 rimEnabled: false),
             _ => new QuibliProfile(
-                textureImpact: 0.40f,
-                lightContribution: 0.72f,
+                textureImpact: 0.70f,
+                lightContribution: 0.36f,
                 selfShadingSize: 0.24f,
                 shadowColor: new Color(0.13f, 0.09f, 0.05f, 1f),
                 unityShadowPower: 0.52f,

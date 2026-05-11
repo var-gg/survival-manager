@@ -65,12 +65,16 @@ public static class BattleSceneCaptureTool
             mapInstance.name = "PreviewWolfPineMap";
             SetHideFlagsRecursively(mapInstance, HideFlags.HideAndDontSave);
 
-            var materialAdapter = mapInstance.GetComponent<BattleMapMaterialAdapter>()
-                                  ?? mapInstance.AddComponent<BattleMapMaterialAdapter>();
+            var preExistingMat = mapInstance.GetComponent<BattleMapMaterialAdapter>();
+            var preExistingEnv = mapInstance.GetComponent<BattleStageEnvironmentAdapter>();
+            Debug.Log(
+                $"[BattleCapture.Diag] prefab={mapPrefab.name} path={MapPrefabPath} " +
+                $"preExistingMat={preExistingMat != null} preExistingEnv={preExistingEnv != null}");
+
+            var materialAdapter = preExistingMat ?? mapInstance.AddComponent<BattleMapMaterialAdapter>();
             materialAdapter.Apply();
 
-            var envAdapter = mapInstance.GetComponent<BattleStageEnvironmentAdapter>()
-                             ?? mapInstance.AddComponent<BattleStageEnvironmentAdapter>();
+            var envAdapter = preExistingEnv ?? mapInstance.AddComponent<BattleStageEnvironmentAdapter>();
             envAdapter.ConfigureForestRuinsDefaults();
             envAdapter.Apply();
 
@@ -134,11 +138,11 @@ public static class BattleSceneCaptureTool
 
         var keyGo = new GameObject("PreviewKey");
         keyGo.transform.SetParent(lightingRoot.transform, false);
-        keyGo.transform.rotation = Quaternion.Euler(42f, -65f, 0f);
+        keyGo.transform.rotation = Quaternion.Euler(48f, -55f, 0f);
         var key = keyGo.AddComponent<Light>();
         key.type = LightType.Directional;
-        key.color = new Color(1.00f, 0.92f, 0.78f, 1f);
-        key.intensity = 3.2f;
+        key.color = new Color(1.00f, 0.90f, 0.72f, 1f);
+        key.intensity = 1.7f;
         key.shadows = LightShadows.Soft;
         key.shadowStrength = 0.85f;
         key.shadowBias = 0.02f;
@@ -152,9 +156,11 @@ public static class BattleSceneCaptureTool
         fillGo.transform.rotation = Quaternion.Euler(35f, 130f, 0f);
         var fill = fillGo.AddComponent<Light>();
         fill.type = LightType.Directional;
-        fill.color = new Color(0.42f, 0.52f, 0.64f, 1f);
-        fill.intensity = 0.30f;
+        fill.color = new Color(0.50f, 0.55f, 0.62f, 1f);
+        fill.intensity = 0.12f;
         fill.shadows = LightShadows.None;
+
+        AddPointAccent(lightingRoot.transform, "WarmAccent", new Vector3(-5.8f, 2.4f, 4.6f), new Color(1f, 0.62f, 0.24f, 1f), 2.2f, 9f);
 
         return lightingRoot;
     }
