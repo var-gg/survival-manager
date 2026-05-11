@@ -1,4 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Template name="TacticalWorkshopTemplate" src="../../TacticalWorkshop/TacticalWorkshop.uxml" />
     <ui:VisualElement name="TownScreenRoot" class="screen">
         <ui:VisualElement class="screen__topbar">
             <ui:Label name="TitleLabel" class="screen__title" />
@@ -121,6 +122,7 @@
             <ui:VisualElement class="action-group">
                 <ui:Label name="GameplayActionsTitleLabel" class="action-group__title" />
                 <ui:VisualElement class="action-row">
+                    <ui:Button name="TacticalWorkshopButton" class="ui-button ui-button--accent" text="Tactical Workshop" />
                     <ui:Button name="RerollButton" class="ui-button" />
                     <ui:Button name="CycleHeroButton" class="ui-button" />
                     <ui:Button name="CycleItemButton" class="ui-button" />
@@ -153,5 +155,6 @@
             </ui:VisualElement>
             <ui:Label name="StatusLabel" class="panel__text panel__text--muted" />
         </ui:VisualElement>
+        <ui:Instance template="TacticalWorkshopTemplate" />
     </ui:VisualElement>
 </ui:UXML>

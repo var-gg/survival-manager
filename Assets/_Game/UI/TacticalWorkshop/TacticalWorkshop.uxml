@@ -1,0 +1,233 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd">
+    <Style src="TacticalWorkshop.uss" />
+
+    <ui:VisualElement name="TacticalWorkshopRoot" class="sm-tw-modal sm-tw-modal--closed">
+        <ui:VisualElement name="TacticalWorkshopBackdrop" class="sm-tw-modal__backdrop" picking-mode="Ignore" />
+        <ui:VisualElement name="TacticalWorkshopFrame" class="sm-tw-modal__frame sm-ornate-frame">
+            <ui:VisualElement class="sm-tw-modal__glass-tint" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-inner-line" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-corner-cap sm-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-corner-cap sm-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-corner-cap sm-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-corner-cap sm-corner-cap--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="sm-tw-modal__header">
+                <ui:VisualElement class="sm-tw-modal__title-block">
+                    <ui:Label name="TacticalWorkshopEyebrowLabel" class="sm-eyebrow sm-tw-modal__eyebrow" text="TACTICAL WORKSHOP" />
+                    <ui:Label name="TacticalWorkshopTitleLabel" class="sm-tw-modal__title" text="전술 공방" />
+                </ui:VisualElement>
+                <ui:VisualElement class="sm-tw-modal__header-divider" picking-mode="Ignore" />
+                <ui:Button name="TacticalWorkshopCloseButton" class="sm-tw-close-button sm-vine-flourish-host" text="X">
+                    <ui:VisualElement class="sm-vine-flourish sm-tw-close-button__vine" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="sm-tw-modal__columns">
+                <ui:VisualElement class="sm-tw-modal__column sm-tw-modal__column--anchor">
+                    <ui:VisualElement class="sm-tw-section-head">
+                        <ui:Label class="sm-tw-section-head__title" text="Anchor Pad" />
+                        <ui:Label class="sm-tw-section-head__meta" text="3 x 2" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement name="TacticalWorkshopAnchorPad" class="sm-tw-anchor-pad sm-vellum-card">
+                        <ui:VisualElement class="sm-tw-anchor-pad__field">
+                            <ui:VisualElement class="sm-tw-anchor-pad__arc sm-tw-anchor-pad__arc--vanguard" picking-mode="Ignore">
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--deep" />
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--mid" />
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--glow" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-anchor-pad__arc sm-tw-anchor-pad__arc--duelist" picking-mode="Ignore">
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--deep" />
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--mid" />
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--glow" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-anchor-pad__arc sm-tw-anchor-pad__arc--ranger" picking-mode="Ignore">
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--deep" />
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--mid" />
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--glow" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-anchor-pad__arc sm-tw-anchor-pad__arc--mystic" picking-mode="Ignore">
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--deep" />
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--mid" />
+                                <ui:VisualElement class="sm-tw-anchor-pad__arc-line sm-tw-anchor-pad__arc-line--glow" />
+                            </ui:VisualElement>
+
+                            <ui:VisualElement class="sm-tw-anchor-pad__grid">
+                                <ui:VisualElement name="TwAnchorSlot_FrontTop" class="sm-tw-anchor-slot sm-tw-anchor-slot--occupied sm-tw-anchor-slot--front">
+                                    <ui:VisualElement class="sm-tw-anchor-slot__hex" picking-mode="Ignore" />
+                                    <ui:VisualElement class="sm-tw-class-icon sm-tw-class-icon--vanguard" picking-mode="Ignore" />
+                                    <ui:Label class="sm-tw-anchor-slot__label" text="전위" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="TwAnchorSlot_FrontCenter" class="sm-tw-anchor-slot sm-tw-anchor-slot--occupied sm-tw-anchor-slot--front">
+                                    <ui:VisualElement class="sm-tw-anchor-slot__hex" picking-mode="Ignore" />
+                                    <ui:VisualElement class="sm-tw-class-icon sm-tw-class-icon--duelist" picking-mode="Ignore" />
+                                    <ui:Label class="sm-tw-anchor-slot__label" text="결투" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="TwAnchorSlot_FrontBottom" class="sm-tw-anchor-slot sm-tw-anchor-slot--front">
+                                    <ui:VisualElement class="sm-tw-anchor-slot__hex" picking-mode="Ignore" />
+                                    <ui:Label class="sm-tw-anchor-slot__label" text="대기" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="TwAnchorSlot_BackTop" class="sm-tw-anchor-slot sm-tw-anchor-slot--occupied sm-tw-anchor-slot--back">
+                                    <ui:VisualElement class="sm-tw-anchor-slot__hex" picking-mode="Ignore" />
+                                    <ui:VisualElement class="sm-tw-class-icon sm-tw-class-icon--ranger" picking-mode="Ignore" />
+                                    <ui:Label class="sm-tw-anchor-slot__label" text="궁수" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="TwAnchorSlot_BackCenter" class="sm-tw-anchor-slot sm-tw-anchor-slot--occupied sm-tw-anchor-slot--back">
+                                    <ui:VisualElement class="sm-tw-anchor-slot__hex" picking-mode="Ignore" />
+                                    <ui:VisualElement class="sm-tw-class-icon sm-tw-class-icon--mystic" picking-mode="Ignore" />
+                                    <ui:Label class="sm-tw-anchor-slot__label" text="신비" />
+                                </ui:VisualElement>
+                                <ui:VisualElement name="TwAnchorSlot_BackBottom" class="sm-tw-anchor-slot sm-tw-anchor-slot--back">
+                                    <ui:VisualElement class="sm-tw-anchor-slot__hex" picking-mode="Ignore" />
+                                    <ui:Label class="sm-tw-anchor-slot__label" text="대기" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+
+                        <ui:VisualElement class="sm-tw-anchor-pad__standees">
+                            <ui:VisualElement class="sm-tw-standee sm-tw-standee--vanguard">
+                                <ui:VisualElement class="sm-tw-class-icon sm-tw-class-icon--vanguard" picking-mode="Ignore" />
+                                <ui:Label text="Vanguard" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-standee sm-tw-standee--duelist">
+                                <ui:VisualElement class="sm-tw-class-icon sm-tw-class-icon--duelist" picking-mode="Ignore" />
+                                <ui:Label text="Duelist" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-standee sm-tw-standee--ranger">
+                                <ui:VisualElement class="sm-tw-class-icon sm-tw-class-icon--ranger" picking-mode="Ignore" />
+                                <ui:Label text="Ranger" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-standee sm-tw-standee--mystic">
+                                <ui:VisualElement class="sm-tw-class-icon sm-tw-class-icon--mystic" picking-mode="Ignore" />
+                                <ui:Label text="Mystic" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="sm-tw-modal__column sm-tw-modal__column--decision">
+                    <ui:VisualElement class="sm-tw-section-head">
+                        <ui:Label class="sm-tw-section-head__title" text="Posture" />
+                        <ui:Label class="sm-tw-section-head__meta" text="5 Cards" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement name="TacticalWorkshopPostureList" class="sm-tw-posture-list">
+                        <ui:Button name="TwPosture_HoldLine" class="sm-tw-posture-card sm-tw-posture-card--hold-line">
+                            <ui:VisualElement class="sm-tw-posture-card__glow" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-posture-card__art sm-tw-posture-card__art--hold-line" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--vanguard" picking-mode="Ignore" />
+                            <ui:Label name="TwPosture_HoldLine_Title" class="sm-tw-posture-card__title" text="전열 사수" />
+                            <ui:Label name="TwPosture_HoldLine_Body" class="sm-tw-posture-card__body" text="전열을 고정하고 후열 피해를 줄입니다." />
+                        </ui:Button>
+                        <ui:Button name="TwPosture_StandardAdvance" class="sm-tw-posture-card sm-tw-posture-card--standard-advance sm-tw-posture-card--selected">
+                            <ui:VisualElement class="sm-tw-posture-card__glow" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-posture-card__art sm-tw-posture-card__art--standard-advance" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--striker" picking-mode="Ignore" />
+                            <ui:Label name="TwPosture_StandardAdvance_Title" class="sm-tw-posture-card__title" text="표준 전진" />
+                            <ui:Label name="TwPosture_StandardAdvance_Body" class="sm-tw-posture-card__body" text="위험과 화력을 균형 있게 받아냅니다." />
+                        </ui:Button>
+                        <ui:Button name="TwPosture_ProtectCarry" class="sm-tw-posture-card sm-tw-posture-card--protect-carry">
+                            <ui:VisualElement class="sm-tw-posture-card__glow" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-posture-card__art sm-tw-posture-card__art--protect-carry" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--mystic" picking-mode="Ignore" />
+                            <ui:Label name="TwPosture_ProtectCarry_Title" class="sm-tw-posture-card__title" text="캐리 보호" />
+                            <ui:Label name="TwPosture_ProtectCarry_Body" class="sm-tw-posture-card__body" text="핵심 딜러에게 보호와 회복을 집중합니다." />
+                        </ui:Button>
+                        <ui:Button name="TwPosture_CollapseWeakSide" class="sm-tw-posture-card sm-tw-posture-card--collapse-weak-side">
+                            <ui:VisualElement class="sm-tw-posture-card__glow" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-posture-card__art sm-tw-posture-card__art--collapse-weak-side" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--ranger" picking-mode="Ignore" />
+                            <ui:Label name="TwPosture_CollapseWeakSide_Title" class="sm-tw-posture-card__title" text="약측 무너뜨리기" />
+                            <ui:Label name="TwPosture_CollapseWeakSide_Body" class="sm-tw-posture-card__body" text="노출된 적을 빠르게 꺾어 수적 우위를 만듭니다." />
+                        </ui:Button>
+                        <ui:Button name="TwPosture_AllInBackline" class="sm-tw-posture-card sm-tw-posture-card--all-in-backline">
+                            <ui:VisualElement class="sm-tw-posture-card__glow" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-posture-card__art sm-tw-posture-card__art--all-in-backline" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--striker" picking-mode="Ignore" />
+                            <ui:Label name="TwPosture_AllInBackline_Title" class="sm-tw-posture-card__title" text="후열 깊이 침투" />
+                            <ui:Label name="TwPosture_AllInBackline_Body" class="sm-tw-posture-card__body" text="후열 위협을 감수하고 적 핵심을 노립니다." />
+                        </ui:Button>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="sm-tw-section-head sm-tw-section-head--compact">
+                        <ui:Label class="sm-tw-section-head__title" text="Tactic Strip" />
+                        <ui:Label class="sm-tw-section-head__meta" text="Read Only" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="TacticalWorkshopTacticList" class="sm-tw-tactic-list">
+                        <ui:VisualElement name="TwTactic_Vanguard" class="sm-tw-tactic-strip sm-tw-tactic-strip--vanguard">
+                            <ui:VisualElement class="sm-tw-tactic-strip__portrait sm-tw-class-icon--vanguard" picking-mode="Ignore" />
+                            <ui:Label name="TwTactic_Vanguard_Text" class="sm-tw-tactic-strip__text" text="Burst shield when ally HP drops." />
+                            <ui:VisualElement class="sm-tw-trigger-icon sm-tw-trigger-icon--ally-hp" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="TwTactic_Duelist" class="sm-tw-tactic-strip sm-tw-tactic-strip--duelist">
+                            <ui:VisualElement class="sm-tw-tactic-strip__portrait sm-tw-class-icon--duelist" picking-mode="Ignore" />
+                            <ui:Label name="TwTactic_Duelist_Text" class="sm-tw-tactic-strip__text" text="Dive exposed enemy at burst window." />
+                            <ui:VisualElement class="sm-tw-trigger-icon sm-tw-trigger-icon--enemy-exposed" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="TwTactic_Ranger" class="sm-tw-tactic-strip sm-tw-tactic-strip--ranger">
+                            <ui:VisualElement class="sm-tw-tactic-strip__portrait sm-tw-class-icon--ranger" picking-mode="Ignore" />
+                            <ui:Label name="TwTactic_Ranger_Text" class="sm-tw-tactic-strip__text" text="Focus lowest HP enemy from range." />
+                            <ui:VisualElement class="sm-tw-trigger-icon sm-tw-trigger-icon--lowest-hp-enemy" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="TwTactic_Mystic" class="sm-tw-tactic-strip sm-tw-tactic-strip--mystic">
+                            <ui:VisualElement class="sm-tw-tactic-strip__portrait sm-tw-class-icon--mystic" picking-mode="Ignore" />
+                            <ui:Label name="TwTactic_Mystic_Text" class="sm-tw-tactic-strip__text" text="Cleanse and heal at danger spike." />
+                            <ui:VisualElement class="sm-tw-trigger-icon sm-tw-trigger-icon--fallback" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="sm-tw-modal__column sm-tw-modal__column--preview">
+                    <ui:VisualElement class="sm-tw-live-preview sm-vellum-card">
+                        <ui:VisualElement class="sm-tw-section-head">
+                            <ui:Label class="sm-tw-section-head__title" text="Live Preview" />
+                            <ui:Label class="sm-tw-section-head__meta" text="3 Scenarios" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="sm-tw-live-preview__tabs">
+                            <ui:Button name="TwScenario_BalancedOpening" class="sm-tw-scenario-tab sm-tw-scenario-tab--selected" text="Opening" />
+                            <ui:Button name="TwScenario_AntiBurst" class="sm-tw-scenario-tab" text="Anti Burst" />
+                            <ui:Button name="TwScenario_EndgameFortress" class="sm-tw-scenario-tab" text="Fortress" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="sm-tw-live-preview__frame">
+                            <ui:VisualElement name="TwPreview_BalancedOpening" class="sm-tw-live-preview__image sm-tw-live-preview__image--balanced-opening sm-tw-live-preview__image--selected" picking-mode="Ignore" />
+                            <ui:VisualElement name="TwPreview_AntiBurst" class="sm-tw-live-preview__image sm-tw-live-preview__image--anti-burst" picking-mode="Ignore" />
+                            <ui:VisualElement name="TwPreview_EndgameFortress" class="sm-tw-live-preview__image sm-tw-live-preview__image--endgame-fortress" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-live-preview__glass" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement name="TacticalWorkshopThreatHexagon" class="sm-tw-threat-hexagon sm-vellum-card">
+                        <ui:VisualElement class="sm-tw-section-head">
+                            <ui:Label class="sm-tw-section-head__title" text="Threat Hexagon" />
+                            <ui:Label class="sm-tw-section-head__meta" text="8 Lanes" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="sm-tw-threat-hexagon__chart">
+                            <ui:VisualElement class="sm-tw-threat-hexagon__ring sm-tw-threat-hexagon__ring--outer" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-threat-hexagon__ring sm-tw-threat-hexagon__ring--middle" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-threat-hexagon__ring sm-tw-threat-hexagon__ring--inner" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-threat-hexagon__radar-fill" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-threat-hexagon__axis sm-tw-threat-hexagon__axis--vertical" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-threat-hexagon__axis sm-tw-threat-hexagon__axis--horizontal" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-threat-hexagon__axis sm-tw-threat-hexagon__axis--diag-a" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-tw-threat-hexagon__axis sm-tw-threat-hexagon__axis--diag-b" picking-mode="Ignore" />
+
+                            <ui:VisualElement class="sm-tw-threat-vertex sm-tw-threat-vertex--burst"><ui:VisualElement class="sm-tw-threat-icon sm-tw-threat-icon--burst" picking-mode="Ignore" /></ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-threat-vertex sm-tw-threat-vertex--control"><ui:VisualElement class="sm-tw-threat-icon sm-tw-threat-icon--control" picking-mode="Ignore" /></ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-threat-vertex sm-tw-threat-vertex--dive"><ui:VisualElement class="sm-tw-threat-icon sm-tw-threat-icon--dive" picking-mode="Ignore" /></ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-threat-vertex sm-tw-threat-vertex--heal"><ui:VisualElement class="sm-tw-threat-icon sm-tw-threat-icon--heal" picking-mode="Ignore" /></ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-threat-vertex sm-tw-threat-vertex--pierce"><ui:VisualElement class="sm-tw-threat-icon sm-tw-threat-icon--pierce" picking-mode="Ignore" /></ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-threat-vertex sm-tw-threat-vertex--summon"><ui:VisualElement class="sm-tw-threat-icon sm-tw-threat-icon--summon" picking-mode="Ignore" /></ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-threat-vertex sm-tw-threat-vertex--sustain"><ui:VisualElement class="sm-tw-threat-icon sm-tw-threat-icon--sustain" picking-mode="Ignore" /></ui:VisualElement>
+                            <ui:VisualElement class="sm-tw-threat-vertex sm-tw-threat-vertex--swarm"><ui:VisualElement class="sm-tw-threat-icon sm-tw-threat-icon--swarm" picking-mode="Ignore" /></ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="TacticalWorkshopSynergyChips" class="sm-tw-threat-hexagon__chips">
+                            <ui:Label class="sm-tw-synergy-chip sm-tw-synergy-chip--safe" text="Frontline +2" />
+                            <ui:Label class="sm-tw-synergy-chip sm-tw-synergy-chip--warn" text="Burst Watch" />
+                            <ui:Label class="sm-tw-synergy-chip sm-tw-synergy-chip--deep" text="Mystic Cover" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
