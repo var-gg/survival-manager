@@ -12,79 +12,121 @@ namespace SM.Unity;
 /// 전투 씬용 시각 통합 authoring 컴포넌트.
 /// Battle.unity 씬에 pre-place하면 Edit 모드에서도 슬라이더로 즉시 preview,
 /// Play 모드에서도 동일 값 적용. RenderSettings / Sun / Fill / Volume / Camera HDR 한 곳에서.
+///
+/// 사용:
+/// 1. Battle.unity 씬에 빈 GameObject "BattleRenderEnvironment" 생성
+/// 2. 이 컴포넌트 attach
+/// 3. Inspector 상단의 "기본 프리셋" 버튼으로 baseline 적용
+/// 4. 각 섹션 슬라이더로 fine-tune (실시간 Scene view 프리뷰)
 /// </summary>
 [ExecuteAlways]
 [DisallowMultipleComponent]
 public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
 {
-    [Header("Live Preview")]
-    [Tooltip("Edit 모드에서 슬라이더 변경 시 즉시 적용. Play 모드에서는 항상 적용됨.")]
+    [Header("실시간 프리뷰")]
+    [Tooltip("켜져 있으면 슬라이더를 돌릴 때마다 Scene view에 즉시 반영됩니다. 끄면 'Force Apply' 버튼을 눌러야 적용.")]
     [SerializeField] private bool autoApplyInEditMode = true;
 
-    [Header("Ambient Light (Trilight mode)")]
+    [Header("환경광 (Ambient — Trilight 모드)")]
+    [Tooltip("위쪽(하늘) 방향에서 오는 환경광. 보통 차가운 색.")]
     [SerializeField] private Color ambientSky = new(0.36f, 0.44f, 0.52f, 1f);
+    [Tooltip("측면(수평) 방향에서 오는 환경광. 중간 톤.")]
     [SerializeField] private Color ambientEquator = new(0.38f, 0.41f, 0.39f, 1f);
+    [Tooltip("아래(지면 반사)에서 오는 환경광. 보통 따뜻하고 어두움.")]
     [SerializeField] private Color ambientGround = new(0.14f, 0.13f, 0.10f, 1f);
+    [Tooltip("환경광 전반 세기. 1.0이 기본, 1.5+로 올리면 전체 화면이 밝아짐.")]
     [Range(0f, 2f), SerializeField] private float ambientIntensity = 0.75f;
 
-    [Header("Skybox")]
-    [Tooltip("Battle 씬용 스카이박스 머티리얼. 비워두면 기존 RenderSettings.skybox 유지.")]
+    [Header("스카이박스")]
+    [Tooltip("Battle 씬 스카이박스 머티리얼. 비워두면 기존 설정 유지.")]
     [SerializeField] private Material? skybox;
+    [Tooltip("카메라 Clear Flags를 강제로 Skybox로. 비우면 검은 배경.")]
     [SerializeField] private bool forceCameraClearToSkybox = true;
 
-    [Header("Fog")]
+    [Header("포그 (Fog)")]
+    [Tooltip("거리에 따른 안개. 외곽이 흐려지는 분위기용. 부감 전투에서는 끄는 편이 캐릭터 가독성에 좋음.")]
     [SerializeField] private bool fogEnabled;
+    [Tooltip("Linear: start~end 거리 사이 선형 / ExponentialSquared: 거리 제곱으로 짙어짐.")]
     [SerializeField] private FogMode fogMode = FogMode.Linear;
+    [Tooltip("포그 색. 거리에 따라 화면이 이 색으로 페이드됨.")]
     [SerializeField] private Color fogColor = new(0.28f, 0.34f, 0.38f, 1f);
+    [Tooltip("Linear 모드: 이 거리부터 포그 시작 (카메라 기준 m).")]
     [Range(0f, 200f), SerializeField] private float fogStart = 22f;
+    [Tooltip("Linear 모드: 이 거리에서 포그 100%.")]
     [Range(1f, 400f), SerializeField] private float fogEnd = 90f;
+    [Tooltip("Exponential 모드 전용 밀도. Linear에선 무시됨.")]
     [Range(0f, 0.05f), SerializeField] private float fogDensity = 0.01f;
 
-    [Header("Sun (Directional Key Light)")]
-    [Tooltip("Sun 방향 (pitch, yaw, roll). pitch가 높을수록 위에서, yaw로 좌우 방향.")]
+    [Header("햇빛 (Sun Directional Key)")]
+    [Tooltip("X=피치(위아래 각도, 0=수평, 90=수직), Y=요(좌우 각도). 그림자 방향을 결정.")]
     [SerializeField] private Vector3 sunRotationEuler = new(40f, -55f, 0f);
+    [Tooltip("햇빛 색. 따뜻하게: (1, 0.86, 0.66) / 중성: 흰색 / 노을: (1, 0.62, 0.30)")]
     [ColorUsage(false, true), SerializeField] private Color sunColor = new(1f, 0.86f, 0.66f, 1f);
+    [Tooltip("햇빛 세기. 2~3이 자연스러운 일중. 5+는 매우 강함.")]
     [Range(0f, 5f), SerializeField] private float sunIntensity = 2.4f;
+    [Tooltip("그림자 종류. Soft=부드러운 그림자 / Hard=날카로운 / None=그림자 없음.")]
     [SerializeField] private LightShadows sunShadowType = LightShadows.Soft;
+    [Tooltip("그림자 진하기. 1=꽉 찬 검정, 0.5=절반.")]
     [Range(0f, 1f), SerializeField] private float sunShadowStrength = 1.0f;
+    [Tooltip("그림자 캐스터로부터 거리 보정. 너무 크면 그림자가 떠 보이고, 너무 작으면 자기 자신에 그림자 (acne).")]
     [Range(0f, 0.1f), SerializeField] private float sunShadowBias = 0.005f;
+    [Tooltip("법선 방향 그림자 보정. 그림자 가장자리 깨끗하게.")]
     [Range(0f, 1f), SerializeField] private float sunShadowNormalBias = 0.03f;
 
-    [Header("Fill (Directional, no shadow)")]
+    [Header("필 라이트 (Fill — 그림자 없는 보조광)")]
+    [Tooltip("Sun과 반대 방향에서 오는 약한 보조광. 그림자 영역이 완전 검정 되지 않게.")]
     [SerializeField] private Vector3 fillRotationEuler = new(35f, 135f, 0f);
+    [Tooltip("필 색. 보통 차가운 톤 (Sun이 따뜻한 경우 보색 대비).")]
     [ColorUsage(false, true), SerializeField] private Color fillColor = new(0.34f, 0.42f, 0.52f, 1f);
+    [Tooltip("필 세기. 0.05~0.20이 적절. 너무 높으면 그림자가 사라지는 느낌.")]
     [Range(0f, 1f), SerializeField] private float fillIntensity = 0.08f;
 
-    [Header("Camera HDR (URP)")]
-    [Tooltip("Camera UACD를 강제 attach + post-process / HDR output 설정. Edit-vs-Play disparity 해결.")]
+    [Header("카메라 HDR · 후처리 (URP)")]
+    [Tooltip("Camera에 UniversalAdditionalCameraData를 강제 attach. URP 후처리 작동에 필수.")]
     [SerializeField] private bool forceCameraUACD = true;
+    [Tooltip("URP 후처리 패스 활성화. 끄면 Volume 효과가 안 보임.")]
     [SerializeField] private bool renderPostProcessing = true;
+    [Tooltip("카메라 내부 HDR 렌더링. Bloom 같은 효과에 필요. 끄면 LDR 렌더링.")]
     [SerializeField] private bool allowHDR = true;
+    [Tooltip("HDR 디스플레이로 출력. 일반 SDR 모니터에선 false 권장 (사용자 캡쳐와 톤 일치).")]
     [SerializeField] private bool allowHDROutput;
 
-    [Header("Volume Post-Process — Source Profile")]
-    [Tooltip("Vendor profile (TriForge VP_FW01_Summer 등) reference. 비워두면 자체 default 사용. " +
-             "런타임에서 Instantiate copy해서 사용하므로 원본 asset은 mutate 안 됨.")]
+    [Header("Volume 후처리 — 원본 프로파일")]
+    [Tooltip("기반 VolumeProfile asset (예: TriForge VP_FW01_Summer). 런타임에 instantiate 복사해서 사용하므로 원본은 안 건드림. " +
+             "비우면 후처리 기능 비활성.")]
     [SerializeField] private VolumeProfile? sourceVolumeProfile;
 
-    [Header("Volume Post-Process — Overrides")]
-    [Tooltip("Bloom: HDR pixel만 bloom (threshold > 1) 권장. intensity는 SDR 디스플레이에서 압축됨.")]
+    [Header("Volume 후처리 — Bloom (블룸)")]
+    [Tooltip("밝은 픽셀의 발광 효과 세기. 0=없음, 0.05~0.15 자연, 0.3+ 강함. SDR 디스플레이에선 ~50% 채도 손실 보정 필요.")]
     [Range(0f, 3f), SerializeField] private float bloomIntensity = 0.08f;
+    [Tooltip("이 밝기 이상의 픽셀만 bloom. 1.0이 SDR 최대값. 1.3이면 HDR 영역만 발광.")]
     [Range(0f, 3f), SerializeField] private float bloomThreshold = 1.30f;
+    [Tooltip("Bloom 퍼짐 범위. 작을수록 점광, 클수록 큰 후광.")]
     [Range(0f, 1f), SerializeField] private float bloomScatter = 0.55f;
+    [Tooltip("Bloom 색조. 흰색=중성, 따뜻=(1, 0.62, 0.24) sunset, 차가움=(0.5, 0.7, 1)")]
     [ColorUsage(false, true), SerializeField] private Color bloomTint = Color.white;
 
+    [Header("Volume 후처리 — Color Adjustments (색 보정)")]
+    [Tooltip("노출 보정. 양수=밝게, 음수=어둡게. ±0.3 정도가 자연.")]
     [Range(-3f, 3f), SerializeField] private float postExposure;
+    [Tooltip("대비. 양수=어두운 곳 더 어둡고 밝은 곳 더 밝게. 0=원본.")]
     [Range(-100f, 100f), SerializeField] private float contrast = 12f;
+    [Tooltip("채도. 양수=색이 진해짐, 음수=흑백 쪽. SDR 디스플레이에서 ~50% 손실되므로 약간 over-push 권장.")]
     [Range(-100f, 100f), SerializeField] private float saturation = 6f;
+    [Tooltip("전체에 곱해지는 색 필터. 약간 따뜻하게 = (1, 0.96, 0.90) / 차갑게 = (0.95, 0.98, 1) / 흰색 = 변화 없음.")]
     [ColorUsage(false), SerializeField] private Color colorFilter = Color.white;
 
+    [Header("Volume 후처리 — Tonemap · Vignette")]
+    [Tooltip("Neutral=가벼운 압축, ACES=영화같은 부드러운 압축 (채도 더 손실), None=압축 없음 (clip 위험).")]
     [SerializeField] private TonemappingMode tonemapMode = TonemappingMode.Neutral;
+    [Tooltip("화면 가장자리 어둡게. 0~0.2가 자연. 0.3+면 시네마틱.")]
     [Range(0f, 1f), SerializeField] private float vignetteIntensity = 0.12f;
+    [Tooltip("비네팅 부드러움. 1에 가까울수록 페이드 영역 넓음.")]
     [Range(0.01f, 1f), SerializeField] private float vignetteSmoothness = 0.42f;
 
-    [Header("Authoring 적용 옵션")]
-    [Tooltip("기존 BattleStageEnvironmentAdapter가 만들던 자동 sun/fill을 끄고 여기 값만 사용.")]
+    [Header("런타임 적용 옵션")]
+    [Tooltip("기존 BattleStageEnvironmentAdapter가 만들던 자동 sun/fill을 끄고 여기 값만 사용. " +
+             "끄면 두 시스템이 충돌할 수 있으니 보통 켜둠.")]
     [SerializeField] private bool overrideRuntimeLightCreation = true;
 
     // ───── 내부 인스턴스 (Hierarchy에 자동 생성됨)
@@ -301,7 +343,6 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
             vignette.smoothness.Override(vignetteSmoothness);
         }
 
-        // 추가 components 비활성 (gameplay에서 conflict 회피)
         if (profile.TryGet<DepthOfField>(out var dof)) dof.active = false;
         if (profile.TryGet<SplitToning>(out var st)) st.active = false;
         if (profile.TryGet<ShadowsMidtonesHighlights>(out var smh)) smh.active = false;
@@ -432,7 +473,6 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
     {
         if (autoApplyInEditMode || Application.isPlaying)
         {
-            // Defer to avoid OnValidate restrictions on creating GameObjects.
 #if UNITY_EDITOR
             EditorApplication.delayCall += () =>
             {
@@ -449,14 +489,12 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        // Sun direction visualization
         var sunDir = Quaternion.Euler(sunRotationEuler) * Vector3.forward;
         var origin = transform.position + Vector3.up * 5f;
         Gizmos.color = new Color(sunColor.r, sunColor.g, sunColor.b, 1f);
         Gizmos.DrawLine(origin, origin + sunDir * 4f);
         Gizmos.DrawWireSphere(origin + sunDir * 4f, 0.3f);
 
-        // Fog range visualization
         if (fogEnabled && fogMode == FogMode.Linear)
         {
             Gizmos.color = new Color(fogColor.r, fogColor.g, fogColor.b, 0.4f);
