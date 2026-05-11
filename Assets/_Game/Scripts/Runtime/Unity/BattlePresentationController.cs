@@ -511,22 +511,25 @@ public sealed class BattlePresentationController : MonoBehaviour
             lightingRoot.transform,
             "BattleKeyLight",
             LightType.Directional,
-            Quaternion.Euler(52f, 145f, 0f),
-            new Color(1f, 0.91f, 0.76f, 1f),
-            1.25f);
-        key.shadows = LightShadows.None;
+            Quaternion.Euler(42f, -65f, 0f),
+            new Color(1f, 0.92f, 0.78f, 1f),
+            3.2f);
+        key.shadows = LightShadows.Soft;
+        key.shadowStrength = 0.85f;
+        key.shadowBias = 0.02f;
+        key.shadowNormalBias = 0.10f;
+        key.shadowNearPlane = 0.10f;
+        key.shadowResolution = UnityEngine.Rendering.LightShadowResolution.VeryHigh;
+        RenderSettings.sun = key;
 
         var fill = CreateBattleLight(
             lightingRoot.transform,
             "BattleFillLight",
             LightType.Directional,
-            Quaternion.Euler(45f, -35f, 0f),
-            new Color(0.58f, 0.70f, 1f, 1f),
-            0.58f);
+            Quaternion.Euler(35f, 130f, 0f),
+            new Color(0.42f, 0.52f, 0.64f, 1f),
+            0.30f);
         fill.shadows = LightShadows.None;
-
-        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-        RenderSettings.ambientLight = new Color(0.18f, 0.16f, 0.14f, 1f);
     }
 
     private static Light CreateBattleLight(

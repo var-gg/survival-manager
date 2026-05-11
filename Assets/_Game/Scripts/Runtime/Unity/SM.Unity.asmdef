@@ -1,7 +1,7 @@
 {
   "name": "SM.Unity",
   "rootNamespace": "SM.Unity",
-  "references": ["SM.Core", "SM.Content", "SM.Combat", "SM.Meta", "SM.Atlas", "SM.Persistence.Abstractions", "SM.Persistence.Json", "Unity.Localization", "Unity.ResourceManager", "Unity.InputSystem"],
+  "references": ["SM.Core", "SM.Content", "SM.Combat", "SM.Meta", "SM.Atlas", "SM.Persistence.Abstractions", "SM.Persistence.Json", "Unity.Localization", "Unity.ResourceManager", "Unity.InputSystem", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime"],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -9,16 +10,22 @@ namespace SM.Unity;
 [DisallowMultipleComponent]
 public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 {
-    private const string DefaultForestRuinsSkyboxPath = "Assets/Allsky/Anime/Anime Day/Anime Day Equirect.mat";
+    private const string DefaultForestRuinsSkyboxPath = "Assets/TriForge Assets/Fantasy Worlds - Forest/Materials/M_fwOF_SkyBox_01.mat";
+    private const string DefaultVolumeProfilePath = "Assets/TriForge Assets/Fantasy Worlds - Forest/Scenes/PostProcessing/VP_FW01_Summer.asset";
 
     [SerializeField] private Material skybox = null!;
-    [SerializeField] private Color ambientSky = new(0.52f, 0.58f, 0.56f, 1f);
-    [SerializeField] private Color ambientEquator = new(0.34f, 0.33f, 0.29f, 1f);
-    [SerializeField] private Color ambientGround = new(0.16f, 0.14f, 0.12f, 1f);
+    [SerializeField] private VolumeProfile volumeProfile = null!;
+    [SerializeField] private Color ambientSky = new(0.34f, 0.70f, 1.00f, 1f);
+    [SerializeField] private Color ambientEquator = new(0.93f, 1.22f, 1.40f, 1f);
+    [SerializeField] private Color ambientGround = new(0.23f, 0.37f, 0.21f, 1f);
+    [SerializeField, Range(0f, 3f)] private float ambientIntensity = 1.8f;
     [SerializeField] private bool applyFog = true;
-    [SerializeField] private Color fogColor = new(0.42f, 0.45f, 0.40f, 1f);
-    [SerializeField, Range(0.001f, 0.08f)] private float fogDensity = 0.018f;
+    [SerializeField] private Color fogColor = new(0.18f, 0.68f, 1.00f, 1f);
+    [SerializeField, Range(0f, 200f)] private float fogStart = 6f;
+    [SerializeField, Range(1f, 400f)] private float fogEnd = 90f;
     [SerializeField] private bool applyCameraSkybox = true;
+
+    private Volume? _runtimeVolume;
 
     private Material? _previousSkybox;
     private AmbientMode _previousAmbientMode;
@@ -45,14 +52,16 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         Color configuredAmbientEquator,
         Color configuredAmbientGround,
         Color configuredFogColor,
-        float configuredFogDensity)
+        float configuredFogStart,
+        float configuredFogEnd)
     {
         skybox = skyboxMaterial!;
         ambientSky = configuredAmbientSky;
         ambientEquator = configuredAmbientEquator;
         ambientGround = configuredAmbientGround;
         fogColor = configuredFogColor;
-        fogDensity = configuredFogDensity;
+        fogStart = configuredFogStart;
+        fogEnd = configuredFogEnd;
     }
 
     public void ConfigureForestRuinsDefaults()
@@ -62,12 +71,19 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         {
             skybox = AssetDatabase.LoadAssetAtPath<Material>(DefaultForestRuinsSkyboxPath);
         }
+        if (volumeProfile == null)
+        {
+            volumeProfile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(DefaultVolumeProfilePath);
+        }
 #endif
-        ambientSky = new Color(0.92f, 0.96f, 0.96f, 1f);
-        ambientEquator = new Color(0.66f, 0.70f, 0.54f, 1f);
-        ambientGround = new Color(0.38f, 0.32f, 0.22f, 1f);
-        fogColor = new Color(0.60f, 0.72f, 0.82f, 1f);
-        fogDensity = 0.0032f;
+        ambientSky = new Color(0.48f, 0.62f, 0.78f, 1f);
+        ambientEquator = new Color(0.62f, 0.68f, 0.70f, 1f);
+        ambientGround = new Color(0.22f, 0.22f, 0.16f, 1f);
+        ambientIntensity = 1.0f;
+        applyFog = true;
+        fogColor = new Color(0.45f, 0.62f, 0.78f, 1f);
+        fogStart = 12f;
+        fogEnd = 140f;
     }
 
     public void Apply()
@@ -83,13 +99,15 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         RenderSettings.ambientSkyColor = ambientSky;
         RenderSettings.ambientEquatorColor = ambientEquator;
         RenderSettings.ambientGroundColor = ambientGround;
+        RenderSettings.ambientIntensity = ambientIntensity;
 
         RenderSettings.fog = applyFog;
         if (applyFog)
         {
-            RenderSettings.fogMode = FogMode.ExponentialSquared;
+            RenderSettings.fogMode = FogMode.Linear;
             RenderSettings.fogColor = fogColor;
-            RenderSettings.fogDensity = fogDensity;
+            RenderSettings.fogStartDistance = fogStart;
+            RenderSettings.fogEndDistance = fogEnd;
         }
 
         if (applyCameraSkybox && Camera.main != null)
@@ -99,7 +117,92 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
             _camera.clearFlags = CameraClearFlags.Skybox;
         }
 
+        EnsureGlobalVolume();
+
         DynamicGI.UpdateEnvironment();
+    }
+
+    private void EnsureGlobalVolume()
+    {
+        if (volumeProfile == null)
+        {
+            return;
+        }
+
+        if (_runtimeVolume == null)
+        {
+            var volumeGo = new GameObject("__BattleVolume");
+            volumeGo.transform.SetParent(transform, false);
+            _runtimeVolume = volumeGo.AddComponent<Volume>();
+            _runtimeVolume.isGlobal = true;
+            _runtimeVolume.priority = 100;
+            _runtimeVolume.weight = 1f;
+        }
+
+        // Use an instance copy so our runtime tuning never mutates the vendor asset on disk.
+        var runtimeProfile = Instantiate(volumeProfile);
+        runtimeProfile.name = $"{volumeProfile.name}_Runtime";
+        _runtimeVolume.profile = runtimeProfile;
+        TuneRuntimeProfile(runtimeProfile);
+    }
+
+    private static void TuneRuntimeProfile(VolumeProfile profile)
+    {
+        // The asset's raw Bloom 1.65 + ColorAdjustments contrast 35 over-expose without the demo scene's
+        // full point-light rig. Pull those down to values that read on our 4-light setup.
+        if (profile.TryGet<Bloom>(out var bloom))
+        {
+            bloom.active = true;
+            bloom.intensity.Override(0.12f);
+            bloom.threshold.Override(1.15f);
+            bloom.tint.Override(Color.white);
+            bloom.scatter.Override(0.7f);
+        }
+
+        if (profile.TryGet<ColorAdjustments>(out var ca))
+        {
+            ca.postExposure.Override(0.0f);
+            ca.contrast.Override(6f);
+            ca.saturation.Override(0f);
+            ca.colorFilter.Override(Color.white);
+        }
+
+        if (profile.TryGet<DepthOfField>(out var dof))
+        {
+            dof.active = false;
+        }
+
+        if (profile.TryGet<Vignette>(out var vignette))
+        {
+            vignette.intensity.Override(0.24f);
+            vignette.smoothness.Override(0.42f);
+        }
+
+        if (profile.TryGet<SplitToning>(out var split))
+        {
+            split.active = false;
+        }
+
+        if (profile.TryGet<ShadowsMidtonesHighlights>(out var smh))
+        {
+            smh.active = false;
+        }
+
+        if (profile.TryGet<WhiteBalance>(out var wb))
+        {
+            wb.temperature.Override(4f);
+            wb.tint.Override(2f);
+        }
+
+        if (profile.TryGet<ChannelMixer>(out var cm))
+        {
+            cm.active = false;
+        }
+
+        if (profile.TryGet<LiftGammaGain>(out var lgg))
+        {
+            lgg.active = false;
+        }
     }
 
     private void CapturePreviousState()
