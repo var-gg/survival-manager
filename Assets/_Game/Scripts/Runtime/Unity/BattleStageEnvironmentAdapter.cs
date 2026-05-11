@@ -80,7 +80,7 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
         ambientEquator = new Color(0.38f, 0.41f, 0.39f, 1f);
         ambientGround = new Color(0.14f, 0.13f, 0.10f, 1f);
         ambientIntensity = 1.05f;
-        applyFog = true;
+        applyFog = false;
         fogColor = new Color(0.28f, 0.34f, 0.38f, 1f);
         fogStart = 22f;
         fogEnd = 70f;
