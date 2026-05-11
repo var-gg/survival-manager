@@ -45,6 +45,7 @@ docs/02_design/ui/handoff/**/*.download
 .mcp.json
 .claude/
 Saves/
+Captures/
 TestResults-Batch.xml
 Assets/_Recovery/
 Assets/_Recovery.meta

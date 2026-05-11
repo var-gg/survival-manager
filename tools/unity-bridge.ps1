@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'prepare-playable', 'repair-scenes', 'ensure-localization', 'quick-battle-smoke', 'seed-content', 'content-validate', 'balance-sweep-smoke', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
+    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'prepare-playable', 'repair-scenes', 'ensure-localization', 'quick-battle-smoke', 'seed-content', 'content-validate', 'balance-sweep-smoke', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'capture-battle', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
     [string]$Verb,
     [int]$Lines = 30,
     [string]$Filter = 'error,warning,log',
@@ -559,6 +559,24 @@ try {
         }
         'report-battle' {
             Invoke-UnityCli @('observer_contract_report', '--scene', 'battle')
+        }
+        'capture-battle' {
+            $markerPath = Join-Path $projectRoot 'Captures\.last_capture'
+            $previousMarker = Get-FileLastWriteTimeUtcOrMinValue -Path $markerPath
+            Invoke-UnityMenuCommand -MenuPath 'SM/Internal/Capture/Battle Scene' -ReadyContext 'battle scene capture'
+            for ($attempt = 1; $attempt -le 60; $attempt++) {
+                if (Test-Path $markerPath) {
+                    $current = (Get-Item $markerPath).LastWriteTimeUtc
+                    if ($current -gt $previousMarker) {
+                        $latest = Join-Path $projectRoot 'Captures\battle_latest.png'
+                        if (Test-Path $latest) {
+                            Write-Host "Capture saved: $latest"
+                            break
+                        }
+                    }
+                }
+                Start-Sleep -Milliseconds 500
+            }
         }
         'smoke-observer' {
             Invoke-Step -Name 'compile' -Action { Invoke-UnityCli @('editor', 'refresh', '--compile') -WaitForReady -ReadyContext 'compile' }

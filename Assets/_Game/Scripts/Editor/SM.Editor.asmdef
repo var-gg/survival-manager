@@ -1,7 +1,7 @@
 {
   "name": "SM.Editor",
   "rootNamespace": "SM.Editor",
-  "references": ["SM.Core", "SM.Content", "SM.Combat", "SM.Meta", "SM.Meta.Serialization", "SM.Atlas", "SM.Persistence.Abstractions", "SM.Unity", "Unity.Localization", "Unity.Localization.Editor", "Unity.ResourceManager", "UnityCliConnector.Editor"],
+  "references": ["SM.Core", "SM.Content", "SM.Combat", "SM.Meta", "SM.Meta.Serialization", "SM.Atlas", "SM.Persistence.Abstractions", "SM.Unity", "Unity.Localization", "Unity.Localization.Editor", "Unity.ResourceManager", "UnityCliConnector.Editor", "Unity.RenderPipelines.Universal.Runtime"],
   "includePlatforms": ["Editor"],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
