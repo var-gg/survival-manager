@@ -2,6 +2,7 @@ using SM.Core;
 using SM.Meta;
 using SM.Unity.Narrative;
 using SM.Unity.UI;
+using SM.Unity.UI.TacticalWorkshop;
 using SM.Unity.UI.Town;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ public sealed class TownScreenController : MonoBehaviour
     private GameLocalizationController _localization = null!;
     private ContentTextResolver _contentText = null!;
     private TownScreenPresenter? _presenter;
+    private TacticalWorkshopPresenter? _tacticalWorkshopPresenter;
 
     private void Start()
     {
@@ -36,6 +38,7 @@ public sealed class TownScreenController : MonoBehaviour
 
     private void OnDestroy()
     {
+        _tacticalWorkshopPresenter?.Close();
         _storyBridge?.ClearPending();
         if (_localization != null)
         {
@@ -116,6 +119,8 @@ public sealed class TownScreenController : MonoBehaviour
         panelHost.EnsureReady();
         var view = new TownScreenView(panelHost.Root);
         _presenter = new TownScreenPresenter(_root, _localization, _contentText, view);
+        _tacticalWorkshopPresenter = new TacticalWorkshopPresenter(panelHost.Root);
+        view.BindTacticalWorkshopOpen(_tacticalWorkshopPresenter.Open);
         return true;
     }
 

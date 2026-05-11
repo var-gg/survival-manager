@@ -1,0 +1,835 @@
+.sm-tw-modal {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    color: var(--sm-ink-1);
+}
+
+.sm-tw-modal--closed {
+    display: none;
+}
+
+.sm-tw-modal--open {
+    display: flex;
+}
+
+.sm-tw-modal__backdrop {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.sm-tw-modal__frame {
+    position: relative;
+    width: 92%;
+    height: 86%;
+    min-width: 1180px;
+    min-height: 650px;
+    padding-left: var(--sm-s-5);
+    padding-right: var(--sm-s-5);
+    padding-top: var(--sm-s-4);
+    padding-bottom: var(--sm-s-5);
+    background-color: rgba(20, 26, 53, 0.88);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/TacticalWorkshop/panel_modal_frame_9slice.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 96;
+    -unity-slice-bottom: 96;
+    overflow: hidden;
+}
+
+.sm-tw-modal__glass-tint {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    bottom: 10px;
+    background-color: var(--sm-bg-1-a54);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-vellum-a08);
+    border-right-color: var(--sm-vellum-a08);
+    border-top-color: var(--sm-vellum-a12);
+    border-bottom-color: var(--sm-gold-300-a20);
+}
+
+.sm-tw-modal__header {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    min-height: 74px;
+    margin-bottom: var(--sm-s-4);
+}
+
+.sm-tw-modal__title-block {
+    width: 300px;
+}
+
+.sm-tw-modal__eyebrow {
+    margin-bottom: var(--sm-s-1);
+}
+
+.sm-tw-modal__title {
+    font-size: 32px;
+    -unity-font-style: bold;
+    color: var(--sm-gold-100);
+}
+
+.sm-tw-modal__header-divider {
+    flex-grow: 1;
+    height: 24px;
+    margin-left: var(--sm-s-4);
+    margin-right: var(--sm-s-4);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/TacticalWorkshop/ornament_divider_warm_gold.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--sm-gold-200);
+    opacity: 0.82;
+}
+
+.sm-tw-close-button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding-left: 0;
+    padding-right: 0;
+    background-color: var(--sm-bg-2-a78);
+    color: var(--sm-gold-100);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-500);
+    border-right-color: var(--sm-gold-500);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-500);
+    -unity-font-style: bold;
+    font-size: var(--sm-fs-l);
+    transition-property: background-color, scale, border-left-color, border-right-color, border-top-color, border-bottom-color;
+    transition-duration: var(--sm-t-snap);
+    transition-timing-function: var(--sm-e-snap);
+}
+
+.sm-tw-close-button:hover {
+    scale: 1.04 1.04;
+    background-color: var(--sm-gold-300-a24);
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+.sm-tw-close-button__vine {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 5px;
+    height: 8px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Ornaments/ornament-vine-flourish.svg");
+    -unity-background-image-tint-color: var(--sm-gold-200);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.sm-tw-modal__columns {
+    position: relative;
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.sm-tw-modal__column {
+    min-width: 0;
+    margin-right: var(--sm-s-4);
+}
+
+.sm-tw-modal__column--anchor {
+    flex-grow: 4;
+}
+
+.sm-tw-modal__column--decision,
+.sm-tw-modal__column--preview {
+    flex-grow: 3;
+}
+
+.sm-tw-modal__column--preview {
+    margin-right: 0;
+}
+
+.sm-tw-section-head {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 34px;
+    margin-bottom: var(--sm-s-2);
+    padding-bottom: var(--sm-s-1);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--sm-gold-muted-a44);
+}
+
+.sm-tw-section-head--compact {
+    margin-top: var(--sm-s-3);
+}
+
+.sm-tw-section-head__title {
+    font-size: var(--sm-fs-l);
+    -unity-font-style: bold;
+    color: var(--sm-gold-100);
+}
+
+.sm-tw-section-head__meta {
+    font-size: var(--sm-fs-s);
+    color: var(--sm-ink-3);
+    -unity-font-style: bold;
+}
+
+.sm-tw-anchor-pad {
+    position: relative;
+    flex-grow: 1;
+    padding-left: var(--sm-s-4);
+    padding-right: var(--sm-s-4);
+    padding-top: var(--sm-s-4);
+    padding-bottom: var(--sm-s-4);
+    overflow: hidden;
+}
+
+.sm-tw-anchor-pad__field {
+    position: relative;
+    flex-grow: 1;
+    min-height: 438px;
+    background-color: var(--sm-bg-0-a84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-500);
+    border-right-color: var(--sm-gold-500);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-500);
+}
+
+.sm-tw-anchor-pad__grid {
+    position: absolute;
+    left: 38px;
+    right: 38px;
+    top: 34px;
+    bottom: 34px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+}
+
+.sm-tw-anchor-slot {
+    position: relative;
+    width: 31%;
+    height: 43%;
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    align-items: center;
+    justify-content: center;
+    transition-property: scale, opacity, background-color;
+    transition-duration: var(--sm-t-snap);
+    transition-timing-function: var(--sm-e-snap);
+}
+
+.sm-tw-anchor-slot:hover {
+    scale: 1.02 1.02;
+}
+
+.sm-tw-anchor-slot__hex {
+    position: absolute;
+    width: 96px;
+    height: 96px;
+    rotate: 45deg;
+    background-color: var(--sm-bg-2-a78);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-500);
+    border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-500);
+}
+
+.sm-tw-anchor-slot--occupied .sm-tw-anchor-slot__hex {
+    background-color: var(--sm-gold-300-a20);
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-400);
+}
+
+.sm-tw-anchor-slot__label {
+    position: absolute;
+    bottom: 12px;
+    color: var(--sm-ink-1);
+    font-size: var(--sm-fs-s);
+    -unity-font-style: bold;
+}
+
+.sm-tw-class-icon,
+.sm-tw-tactic-strip__portrait,
+.sm-tw-trigger-icon,
+.sm-tw-threat-icon {
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.sm-tw-class-icon {
+    width: 58px;
+    height: 58px;
+}
+
+.sm-tw-class-icon--vanguard {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/class/class_vanguard.png");
+}
+
+.sm-tw-class-icon--duelist {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/class/class_duelist.png");
+}
+
+.sm-tw-class-icon--ranger {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/class/class_ranger.png");
+}
+
+.sm-tw-class-icon--mystic {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/class/class_mystic.png");
+}
+
+.sm-tw-anchor-pad__arc {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 210px;
+    height: 18px;
+}
+
+.sm-tw-anchor-pad__arc--vanguard {
+    translate: -104px -120px;
+    rotate: 18deg;
+}
+
+.sm-tw-anchor-pad__arc--duelist {
+    translate: -128px -12px;
+    rotate: -12deg;
+}
+
+.sm-tw-anchor-pad__arc--ranger {
+    translate: -70px 88px;
+    rotate: 24deg;
+}
+
+.sm-tw-anchor-pad__arc--mystic {
+    translate: -40px -18px;
+    rotate: -38deg;
+}
+
+.sm-tw-anchor-pad__arc-line {
+    position: absolute;
+    height: 2px;
+    top: 8px;
+}
+
+.sm-tw-anchor-pad__arc-line--deep {
+    left: 0;
+    width: 42%;
+    background-color: var(--sm-gold-500);
+}
+
+.sm-tw-anchor-pad__arc-line--mid {
+    left: 42%;
+    width: 34%;
+    background-color: var(--sm-gold-300);
+}
+
+.sm-tw-anchor-pad__arc-line--glow {
+    left: 76%;
+    width: 24%;
+    background-color: var(--sm-gold-100);
+}
+
+.sm-tw-anchor-pad__standees {
+    flex-direction: row;
+    min-height: 74px;
+    margin-top: var(--sm-s-3);
+}
+
+.sm-tw-standee {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: center;
+    margin-right: var(--sm-s-2);
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
+    background-color: var(--sm-vellum-a07);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-2);
+    border-right-color: var(--sm-line-2);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+}
+
+.sm-tw-standee > Label {
+    margin-left: var(--sm-s-2);
+    color: var(--sm-ink-2);
+    font-size: var(--sm-fs-s);
+    -unity-font-style: bold;
+}
+
+.sm-tw-standee--vanguard { border-left-color: var(--sm-fam-vanguard); }
+.sm-tw-standee--duelist { border-left-color: var(--sm-fam-striker); }
+.sm-tw-standee--ranger { border-left-color: var(--sm-fam-ranger); }
+.sm-tw-standee--mystic { border-left-color: var(--sm-fam-mystic); }
+
+.sm-tw-posture-list {
+    flex-grow: 1;
+}
+
+.sm-tw-posture-card {
+    position: relative;
+    height: 91px;
+    min-height: 91px;
+    margin-bottom: var(--sm-s-2);
+    padding-left: 110px;
+    padding-right: var(--sm-s-3);
+    padding-top: var(--sm-s-3);
+    padding-bottom: var(--sm-s-2);
+    align-items: flex-start;
+    background-color: var(--sm-bg-1-a54);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/TacticalWorkshop/panel_card_frame_9slice.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    color: var(--sm-ink-1);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-500);
+    border-right-color: var(--sm-gold-500);
+    border-top-color: var(--sm-gold-muted-a44);
+    border-bottom-color: var(--sm-gold-500);
+    transition-property: scale, background-color, border-left-color, border-right-color, border-top-color, border-bottom-color;
+    transition-duration: var(--sm-t-snap);
+    transition-timing-function: var(--sm-e-snap);
+}
+
+.sm-tw-posture-card:hover {
+    scale: 1.01 1.01;
+    border-top-color: var(--sm-gold-200);
+}
+
+.sm-tw-posture-card--selected {
+    background-color: var(--sm-gold-300-a24);
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+.sm-tw-posture-card__glow {
+    position: absolute;
+    left: -6px;
+    right: -6px;
+    top: -6px;
+    bottom: -6px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/TacticalWorkshop/glow_halo_warm_gold.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: var(--sm-t-snap);
+    transition-timing-function: var(--sm-e-snap);
+}
+
+.sm-tw-posture-card--selected .sm-tw-posture-card__glow {
+    opacity: 0.55;
+}
+
+.sm-tw-posture-card__art {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    width: 80px;
+    height: 66px;
+    background-color: var(--sm-bg-0-a84);
+    -unity-background-scale-mode: scale-to-fit;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-2);
+    border-right-color: var(--sm-line-2);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+}
+
+.sm-tw-posture-card__art--hold-line {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/posture/posture_hold_line.png");
+}
+
+.sm-tw-posture-card__art--standard-advance {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/posture/posture_standard_advance.png");
+}
+
+.sm-tw-posture-card__art--protect-carry {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/posture/posture_protect_carry.png");
+}
+
+.sm-tw-posture-card__art--collapse-weak-side {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/posture/posture_collapse_weak_side.png");
+}
+
+.sm-tw-posture-card__art--all-in-backline {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/posture/posture_all_in_backline.png");
+}
+
+.sm-tw-posture-card .sm-family-tint-rib {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+}
+
+.sm-tw-posture-card__title {
+    font-size: var(--sm-fs-m);
+    -unity-font-style: bold;
+    color: var(--sm-gold-100);
+    margin-bottom: var(--sm-s-1);
+}
+
+.sm-tw-posture-card__body {
+    white-space: normal;
+    color: var(--sm-ink-2);
+    font-size: var(--sm-fs-s);
+}
+
+.sm-tw-tactic-list {
+    min-height: 172px;
+}
+
+.sm-tw-tactic-strip {
+    flex-direction: row;
+    align-items: center;
+    height: 38px;
+    margin-bottom: var(--sm-s-2);
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
+    background-color: var(--sm-bg-2-a78);
+    border-left-width: 2px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-right-color: var(--sm-line-1);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+    opacity: 0.94;
+}
+
+.sm-tw-tactic-strip--vanguard { border-left-color: var(--sm-fam-vanguard); }
+.sm-tw-tactic-strip--duelist { border-left-color: var(--sm-fam-striker); }
+.sm-tw-tactic-strip--ranger { border-left-color: var(--sm-fam-ranger); }
+.sm-tw-tactic-strip--mystic { border-left-color: var(--sm-fam-mystic); }
+
+.sm-tw-tactic-strip__portrait {
+    width: 28px;
+    height: 28px;
+}
+
+.sm-tw-tactic-strip__text {
+    flex-grow: 1;
+    margin-left: var(--sm-s-2);
+    margin-right: var(--sm-s-2);
+    color: var(--sm-ink-2);
+    font-size: var(--sm-fs-s);
+    white-space: nowrap;
+}
+
+.sm-tw-trigger-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.sm-tw-trigger-icon--ally-hp { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/trigger/trigger_ally_hp.png"); }
+.sm-tw-trigger-icon--burst { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/trigger/trigger_burst.png"); }
+.sm-tw-trigger-icon--enemy-exposed { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/trigger/trigger_enemy_exposed.png"); }
+.sm-tw-trigger-icon--enemy-in-range { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/trigger/trigger_enemy_in_range.png"); }
+.sm-tw-trigger-icon--fallback { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/trigger/trigger_fallback.png"); }
+.sm-tw-trigger-icon--lowest-hp-enemy { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/trigger/trigger_lowest_hp_enemy.png"); }
+.sm-tw-trigger-icon--priority-high { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/trigger/trigger_priority_high.png"); }
+.sm-tw-trigger-icon--self-hp { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/trigger/trigger_self_hp.png"); }
+
+.sm-tw-live-preview {
+    min-height: 330px;
+    margin-bottom: var(--sm-s-4);
+}
+
+.sm-tw-live-preview__tabs {
+    flex-direction: row;
+    margin-bottom: var(--sm-s-2);
+}
+
+.sm-tw-scenario-tab {
+    flex-grow: 1;
+    min-height: 30px;
+    margin-right: var(--sm-s-2);
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
+    background-color: var(--sm-bg-2-a78);
+    color: var(--sm-ink-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-2);
+    border-right-color: var(--sm-line-2);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+    font-size: var(--sm-fs-s);
+    transition-property: background-color, color, border-top-color;
+    transition-duration: var(--sm-t-snap);
+}
+
+.sm-tw-scenario-tab--selected,
+.sm-tw-scenario-tab:hover {
+    background-color: var(--sm-gold-300-a22);
+    color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-200);
+}
+
+.sm-tw-live-preview__frame {
+    position: relative;
+    height: 220px;
+    background-color: var(--sm-bg-0-a84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-500);
+    border-right-color: var(--sm-gold-500);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-500);
+    overflow: hidden;
+}
+
+.sm-tw-live-preview__image {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: 0;
+    -unity-background-scale-mode: scale-and-crop;
+    transition-property: opacity;
+    transition-duration: var(--sm-t-snap);
+}
+
+.sm-tw-live-preview__image--selected {
+    opacity: 1;
+}
+
+.sm-tw-live-preview__image--balanced-opening {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/preview/preview_balanced_opening.png");
+}
+
+.sm-tw-live-preview__image--anti-burst {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/preview/preview_anti_burst.png");
+}
+
+.sm-tw-live-preview__image--endgame-fortress {
+    background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/preview/preview_endgame_fortress.png");
+}
+
+.sm-tw-live-preview__glass {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--sm-vellum-a05);
+}
+
+.sm-tw-threat-hexagon {
+    flex-grow: 1;
+    min-height: 300px;
+}
+
+.sm-tw-threat-hexagon__chart {
+    position: relative;
+    flex-grow: 1;
+    min-height: 210px;
+    align-items: center;
+    justify-content: center;
+}
+
+.sm-tw-threat-hexagon__ring {
+    position: absolute;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-muted-a44);
+    border-right-color: var(--sm-gold-muted-a44);
+    border-top-color: var(--sm-gold-muted-a44);
+    border-bottom-color: var(--sm-gold-muted-a44);
+    rotate: 45deg;
+}
+
+.sm-tw-threat-hexagon__ring--outer {
+    width: 158px;
+    height: 158px;
+}
+
+.sm-tw-threat-hexagon__ring--middle {
+    width: 108px;
+    height: 108px;
+}
+
+.sm-tw-threat-hexagon__ring--inner {
+    width: 58px;
+    height: 58px;
+}
+
+.sm-tw-threat-hexagon__radar-fill {
+    position: absolute;
+    width: 96px;
+    height: 74px;
+    rotate: 27deg;
+    background-color: var(--sm-gold-300-a28);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-400);
+}
+
+.sm-tw-threat-hexagon__axis {
+    position: absolute;
+    background-color: var(--sm-gold-muted-a40);
+}
+
+.sm-tw-threat-hexagon__axis--vertical {
+    width: 1px;
+    height: 170px;
+}
+
+.sm-tw-threat-hexagon__axis--horizontal {
+    width: 170px;
+    height: 1px;
+}
+
+.sm-tw-threat-hexagon__axis--diag-a {
+    width: 150px;
+    height: 1px;
+    rotate: 45deg;
+}
+
+.sm-tw-threat-hexagon__axis--diag-b {
+    width: 150px;
+    height: 1px;
+    rotate: -45deg;
+}
+
+.sm-tw-threat-vertex {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--sm-bg-2-a78);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-2);
+    border-right-color: var(--sm-line-2);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-line-1);
+}
+
+.sm-tw-threat-icon {
+    width: 26px;
+    height: 26px;
+}
+
+.sm-tw-threat-vertex--burst { translate: 0 -92px; }
+.sm-tw-threat-vertex--control { translate: 72px -72px; }
+.sm-tw-threat-vertex--dive { translate: 92px 0; }
+.sm-tw-threat-vertex--heal { translate: 72px 72px; }
+.sm-tw-threat-vertex--pierce { translate: 0 92px; }
+.sm-tw-threat-vertex--summon { translate: -72px 72px; }
+.sm-tw-threat-vertex--sustain { translate: -92px 0; }
+.sm-tw-threat-vertex--swarm { translate: -72px -72px; }
+
+.sm-tw-threat-icon--burst { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/threat/threat_burst.png"); }
+.sm-tw-threat-icon--control { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/threat/threat_control.png"); }
+.sm-tw-threat-icon--dive { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/threat/threat_dive.png"); }
+.sm-tw-threat-icon--heal { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/threat/threat_heal.png"); }
+.sm-tw-threat-icon--pierce { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/threat/threat_pierce.png"); }
+.sm-tw-threat-icon--summon { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/threat/threat_summon.png"); }
+.sm-tw-threat-icon--sustain { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/threat/threat_sustain.png"); }
+.sm-tw-threat-icon--swarm { background-image: url("project://database/Assets/_Game/UI/TacticalWorkshop/Sprites/threat/threat_swarm.png"); }
+
+.sm-tw-threat-hexagon__chips {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: var(--sm-s-2);
+}
+
+.sm-tw-synergy-chip {
+    margin-right: var(--sm-s-2);
+    margin-bottom: var(--sm-s-2);
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
+    padding-top: var(--sm-s-1);
+    padding-bottom: var(--sm-s-1);
+    font-size: var(--sm-fs-s);
+    -unity-font-style: bold;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.sm-tw-synergy-chip--safe {
+    color: var(--sm-state-safe);
+    background-color: rgba(109, 191, 120, 0.12);
+    border-left-color: var(--sm-state-safe);
+    border-right-color: var(--sm-state-safe);
+    border-top-color: var(--sm-state-safe);
+    border-bottom-color: var(--sm-state-safe);
+}
+
+.sm-tw-synergy-chip--warn {
+    color: var(--sm-state-warn);
+    background-color: rgba(232, 169, 59, 0.12);
+    border-left-color: var(--sm-state-warn);
+    border-right-color: var(--sm-state-warn);
+    border-top-color: var(--sm-state-warn);
+    border-bottom-color: var(--sm-state-warn);
+}
+
+.sm-tw-synergy-chip--deep {
+    color: var(--sm-fam-mystic-glow);
+    background-color: rgba(138, 92, 184, 0.14);
+    border-left-color: var(--sm-fam-mystic);
+    border-right-color: var(--sm-fam-mystic);
+    border-top-color: var(--sm-fam-mystic-glow);
+    border-bottom-color: var(--sm-fam-mystic-deep);
+}

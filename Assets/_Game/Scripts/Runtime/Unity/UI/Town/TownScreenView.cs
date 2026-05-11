@@ -45,6 +45,7 @@ public sealed class TownScreenView
     private readonly Button _returnToStartButton;
     private readonly Button _expeditionButton;
     private readonly Button _quickBattleButton;
+    private readonly Button _tacticalWorkshopButton;
     private readonly Button _teamPostureButton;
     private readonly Button _cycleHeroButton;
     private readonly Button _cycleItemButton;
@@ -118,6 +119,7 @@ public sealed class TownScreenView
         _returnToStartButton = Require<Button>(root, "ReturnToStartButton");
         _expeditionButton = Require<Button>(root, "ExpeditionButton");
         _quickBattleButton = Require<Button>(root, "QuickBattleButton");
+        _tacticalWorkshopButton = Require<Button>(root, "TacticalWorkshopButton");
         _teamPostureButton = Require<Button>(root, "TeamPostureButton");
         _cycleHeroButton = Require<Button>(root, "CycleHeroButton");
         _cycleItemButton = Require<Button>(root, "CycleItemButton");
@@ -193,6 +195,13 @@ public sealed class TownScreenView
         _deployButtons[DeploymentAnchorId.BackTop].clicked += presenter.CycleBackTop;
         _deployButtons[DeploymentAnchorId.BackCenter].clicked += presenter.CycleBackCenter;
         _deployButtons[DeploymentAnchorId.BackBottom].clicked += presenter.CycleBackBottom;
+    }
+
+    public void BindTacticalWorkshopOpen(Action open)
+    {
+        _tacticalWorkshopButton.clicked += open;
+        _tacticalWorkshopButton.text = "Tactical Workshop";
+        _tacticalWorkshopButton.tooltip = "Open the Tactical Workshop modal.";
     }
 
     public void Render(TownScreenViewState state)
