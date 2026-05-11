@@ -65,8 +65,7 @@ public sealed class BattleActorContactShadow : MonoBehaviour
             // Unlit transparent with built-in soft circle texture (Particle default).
             var shader = Shader.Find("Unlit/Transparent") ?? Shader.Find("Sprites/Default");
             var material = new Material(shader);
-            var softCircleTex = Resources.GetBuiltinResource<Texture2D>("Default-Particle.psd")
-                                ?? CreateRadialCircleTexture();
+            var softCircleTex = CreateRadialCircleTexture();
             if (material.HasProperty("_MainTex"))
             {
                 material.SetTexture("_MainTex", softCircleTex);
