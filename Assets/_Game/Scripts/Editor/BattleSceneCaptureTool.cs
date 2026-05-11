@@ -118,7 +118,7 @@ public static class BattleSceneCaptureTool
 
     private const string PlayAutoPendingKey = "SM.BattleCapture.PlayAutoPending";
     private const string PlayAutoFrameKey = "SM.BattleCapture.PlayAutoFrame";
-    private const int PlayAutoFramesToWait = 180;
+    private const int PlayAutoFramesToWait = 360;
 
     [InitializeOnLoadMethod]
     private static void RegisterPlayAutoHooks()
