@@ -76,14 +76,14 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
             volumeProfile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(DefaultVolumeProfilePath);
         }
 #endif
-        ambientSky = new Color(0.52f, 0.62f, 0.78f, 1f);
-        ambientEquator = new Color(0.58f, 0.60f, 0.56f, 1f);
-        ambientGround = new Color(0.22f, 0.22f, 0.18f, 1f);
-        ambientIntensity = 0.95f;
+        ambientSky = new Color(0.36f, 0.44f, 0.52f, 1f);
+        ambientEquator = new Color(0.38f, 0.41f, 0.39f, 1f);
+        ambientGround = new Color(0.14f, 0.13f, 0.10f, 1f);
+        ambientIntensity = 0.75f;
         applyFog = true;
-        fogColor = new Color(0.66f, 0.74f, 0.82f, 1f);
-        fogStart = 45f;
-        fogEnd = 230f;
+        fogColor = new Color(0.28f, 0.34f, 0.38f, 1f);
+        fogStart = 22f;
+        fogEnd = 70f;
     }
 
     public void Apply()
@@ -159,28 +159,29 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
     {
         // The asset's raw Bloom 1.65 + ColorAdjustments contrast 35 over-expose without the demo scene's
         // full point-light rig. Pull those down to values that read on our 4-light setup.
+        // GPT-Pro recommended gameplay profile: subtle post-process, structure-first.
         if (profile.TryGet<Bloom>(out var bloom))
         {
             bloom.active = true;
-            bloom.intensity.Override(0.18f);
+            bloom.intensity.Override(0.05f);
             bloom.threshold.Override(1.40f);
             bloom.tint.Override(Color.white);
-            bloom.scatter.Override(0.60f);
+            bloom.scatter.Override(0.45f);
             bloom.clamp.Override(2.0f);
         }
 
         if (profile.TryGet<ColorAdjustments>(out var ca))
         {
-            ca.postExposure.Override(0.14f);
-            ca.contrast.Override(16f);
-            ca.saturation.Override(14f);
-            ca.colorFilter.Override(new Color(1f, 0.98f, 0.94f, 1f));
+            ca.postExposure.Override(-0.05f);
+            ca.contrast.Override(10f);
+            ca.saturation.Override(4f);
+            ca.colorFilter.Override(Color.white);
         }
 
         if (profile.TryGet<Tonemapping>(out var tm))
         {
             tm.active = true;
-            tm.mode.Override(TonemappingMode.ACES);
+            tm.mode.Override(TonemappingMode.Neutral);
         }
 
         if (profile.TryGet<DepthOfField>(out var dof))
@@ -190,8 +191,8 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 
         if (profile.TryGet<Vignette>(out var vignette))
         {
-            vignette.intensity.Override(0.16f);
-            vignette.smoothness.Override(0.40f);
+            vignette.intensity.Override(0.12f);
+            vignette.smoothness.Override(0.42f);
         }
 
         if (profile.TryGet<SplitToning>(out var split))

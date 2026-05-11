@@ -266,13 +266,13 @@ public static class BattleSceneCaptureTool
 
         var keyGo = new GameObject("PreviewKey");
         keyGo.transform.SetParent(lightingRoot.transform, false);
-        keyGo.transform.rotation = Quaternion.Euler(38f, -48f, 0f);
+        keyGo.transform.rotation = Quaternion.Euler(50f, -45f, 0f);
         var key = keyGo.AddComponent<Light>();
         key.type = LightType.Directional;
-        key.color = new Color(1.00f, 0.92f, 0.78f, 1f);
-        key.intensity = 2.80f;
+        key.color = new Color(1.00f, 0.86f, 0.66f, 1f);
+        key.intensity = 1.80f;
         key.shadows = LightShadows.Soft;
-        key.shadowStrength = 0.97f;
+        key.shadowStrength = 0.85f;
         key.shadowBias = 0.01f;
         key.shadowNormalBias = 0.05f;
         key.shadowBias = 0.02f;
@@ -283,14 +283,14 @@ public static class BattleSceneCaptureTool
 
         var fillGo = new GameObject("PreviewFill");
         fillGo.transform.SetParent(lightingRoot.transform, false);
-        fillGo.transform.rotation = Quaternion.Euler(35f, 130f, 0f);
+        fillGo.transform.rotation = Quaternion.Euler(35f, 135f, 0f);
         var fill = fillGo.AddComponent<Light>();
         fill.type = LightType.Directional;
-        fill.color = new Color(0.50f, 0.55f, 0.62f, 1f);
-        fill.intensity = 0.12f;
+        fill.color = new Color(0.34f, 0.42f, 0.52f, 1f);
+        fill.intensity = 0.08f;
         fill.shadows = LightShadows.None;
 
-        AddPointAccent(lightingRoot.transform, "WarmAccent", new Vector3(-5.8f, 2.4f, 4.6f), new Color(1f, 0.62f, 0.24f, 1f), 2.2f, 9f);
+        AddPointAccent(lightingRoot.transform, "WarmAccent", new Vector3(-5.5f, 2.2f, 2.8f), new Color(1f, 0.52f, 0.20f, 1f), 1.5f, 7f);
 
         // ShadowsOnly trees — mesh invisible, shadows fall onto play area
         AddForegroundTree(parent, "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_03.prefab",
