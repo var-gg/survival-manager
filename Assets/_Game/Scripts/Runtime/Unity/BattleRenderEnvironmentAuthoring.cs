@@ -23,6 +23,10 @@ namespace SM.Unity;
 [DisallowMultipleComponent]
 public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
 {
+    // 기본 자산 경로 — Inspector에서 비워두면 자동으로 이걸 로드.
+    private const string DefaultSkyboxPath = "Assets/TriForge Assets/Fantasy Worlds - Forest/Materials/M_fwOF_SkyBox_01.mat";
+    private const string DefaultVolumeProfilePath = "Assets/TriForge Assets/Fantasy Worlds - Forest/Scenes/PostProcessing/VP_FW01_Summer.asset";
+
     [Header("실시간 프리뷰")]
     [Tooltip("켜져 있으면 슬라이더를 돌릴 때마다 Scene view에 즉시 반영됩니다. 끄면 'Force Apply' 버튼을 눌러야 적용.")]
     [SerializeField] private bool autoApplyInEditMode = true;
@@ -140,12 +144,27 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
 
     public void Apply()
     {
+        EnsureDefaultAssetsLoaded();
         EnsureChildRoot();
         ApplyRenderSettings();
         ApplyLights();
         ApplyCamera();
         ApplyVolume();
         DynamicGI.UpdateEnvironment();
+    }
+
+    private void EnsureDefaultAssetsLoaded()
+    {
+#if UNITY_EDITOR
+        if (skybox == null)
+        {
+            skybox = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(DefaultSkyboxPath);
+        }
+        if (sourceVolumeProfile == null)
+        {
+            sourceVolumeProfile = UnityEditor.AssetDatabase.LoadAssetAtPath<VolumeProfile>(DefaultVolumeProfilePath);
+        }
+#endif
     }
 
     private void EnsureChildRoot()
