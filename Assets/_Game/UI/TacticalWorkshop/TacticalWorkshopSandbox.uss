@@ -1,0 +1,84 @@
+.sm-tw-sandbox {
+    flex-grow: 1;
+    background-color: var(--sm-bg-0);
+    color: var(--sm-ink-1);
+}
+
+.sm-tw-sandbox__backdrop {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--sm-bg-0);
+}
+
+.sm-tw-sandbox__hud {
+    position: absolute;
+    left: 40px;
+    top: 40px;
+    width: 360px;
+    padding-left: var(--sm-s-4);
+    padding-right: var(--sm-s-4);
+    padding-top: var(--sm-s-4);
+    padding-bottom: var(--sm-s-4);
+    background-color: var(--sm-bg-1-a54);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-500);
+    border-right-color: var(--sm-gold-500);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-500);
+}
+
+.sm-tw-sandbox__eyebrow {
+    color: var(--sm-gold-200);
+    font-size: var(--sm-fs-s);
+    -unity-font-style: bold;
+}
+
+.sm-tw-sandbox__title {
+    margin-top: var(--sm-s-1);
+    color: var(--sm-gold-100);
+    font-size: 28px;
+    -unity-font-style: bold;
+}
+
+.sm-tw-sandbox__body {
+    margin-top: var(--sm-s-2);
+    color: var(--sm-ink-2);
+    white-space: normal;
+}
+
+.sm-tw-sandbox__open-button {
+    margin-top: var(--sm-s-3);
+    min-height: 38px;
+    padding-left: var(--sm-s-3);
+    padding-right: var(--sm-s-3);
+    background-color: var(--sm-bg-2-a78);
+    color: var(--sm-gold-100);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-500);
+    border-right-color: var(--sm-gold-500);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-500);
+    transition-property: background-color, scale;
+    transition-duration: var(--sm-t-snap);
+    transition-timing-function: var(--sm-e-snap);
+}
+
+.sm-tw-sandbox__open-button:hover {
+    scale: 1.02 1.02;
+    background-color: var(--sm-gold-300-a22);
+}
+
+.sm-tw-sandbox__hint {
+    margin-top: var(--sm-s-2);
+    color: var(--sm-ink-3);
+    font-size: var(--sm-fs-s);
+}
