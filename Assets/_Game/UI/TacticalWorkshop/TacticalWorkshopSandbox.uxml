@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd">
+    <ui:Template name="TacticalWorkshopTemplate" src="TacticalWorkshop.uxml" />
+
+    <ui:VisualElement name="TacticalWorkshopSandboxRoot" class="sm-tw-sandbox">
+        <ui:VisualElement class="sm-tw-sandbox__backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="sm-tw-sandbox__hud">
+            <ui:Label class="sm-tw-sandbox__eyebrow" text="INTERNAL PREVIEW" />
+            <ui:Label class="sm-tw-sandbox__title" text="Tactical Workshop Sandbox" />
+            <ui:Label class="sm-tw-sandbox__body" text="Posture selection, scenario tabs, close and reopen flow." />
+            <ui:Button name="TwSandboxOpenButton" class="sm-tw-sandbox__open-button" text="Open Tactical Workshop" />
+            <ui:Label class="sm-tw-sandbox__hint" text="ESC or X closes the modal. Use the button to reopen." />
+        </ui:VisualElement>
+
+        <ui:Instance template="TacticalWorkshopTemplate" />
+    </ui:VisualElement>
+</ui:UXML>

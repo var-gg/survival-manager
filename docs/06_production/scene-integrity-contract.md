@@ -16,6 +16,8 @@ first playable 씬이 marker-only 또는 runtime wiring 누락 상태로 push되
 - `Battle`
 - `Reward`
 
+internal visual sandbox, asset intake, authoring preview scene는 이 계약의 검사 대상이 아니다. 이들은 build settings 진입 경로와 분리된 editor-only verification lane으로 취급한다.
+
 ## 최소 계약
 
 ### Boot
