@@ -31,7 +31,7 @@ public sealed class BattleRenderEnvironmentAuthoringEditor : UnityEditor.Editor
         EditorGUILayout.LabelField("기본 프리셋 (한 번 클릭 → 베이스라인 적용)", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(
             "프리셋 적용 후 아래 슬라이더로 fine-tune.\n" +
-            "값을 바꾸면 Scene view에 즉시 반영됩니다 (실시간 프리뷰가 켜져 있으면).",
+            "슬라이더를 움직이면 Scene view에 즉시 반영됩니다.",
             MessageType.Info);
 
         using (new EditorGUILayout.HorizontalScope())
@@ -41,18 +41,21 @@ public sealed class BattleRenderEnvironmentAuthoringEditor : UnityEditor.Editor
                 Undo.RecordObject(auth, "전투 프리셋 적용");
                 auth.ApplyGameplayPreset();
                 EditorUtility.SetDirty(auth);
+                SceneView.RepaintAll();
             }
             if (GUILayout.Button(ButtonCinematic, GUILayout.Height(30)))
             {
                 Undo.RecordObject(auth, "시네마틱 프리셋 적용");
                 auth.ApplyCinematicPreset();
                 EditorUtility.SetDirty(auth);
+                SceneView.RepaintAll();
             }
             if (GUILayout.Button(ButtonDebug, GUILayout.Height(30)))
             {
                 Undo.RecordObject(auth, "디버그 중립 프리셋 적용");
                 auth.ApplyDebugNeutralPreset();
                 EditorUtility.SetDirty(auth);
+                SceneView.RepaintAll();
             }
         }
 
@@ -65,7 +68,16 @@ public sealed class BattleRenderEnvironmentAuthoringEditor : UnityEditor.Editor
 
         EditorGUILayout.Space(8);
         EditorGUILayout.LabelField("설정 슬라이더", EditorStyles.boldLabel);
+
+        // ─── BeginChangeCheck 패턴: 슬라이더 변경 직후 즉시 Apply + Scene repaint
+        EditorGUI.BeginChangeCheck();
         DrawLocalizedInspector();
+        if (EditorGUI.EndChangeCheck())
+        {
+            auth.Apply();
+            EditorUtility.SetDirty(auth);
+            SceneView.RepaintAll();
+        }
 
         EditorGUILayout.Space(8);
         EditorGUILayout.HelpBox(
