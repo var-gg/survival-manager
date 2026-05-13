@@ -432,13 +432,15 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
         ambientSky = new Color(0.36f, 0.44f, 0.52f, 1f);
         ambientEquator = new Color(0.38f, 0.41f, 0.39f, 1f);
         ambientGround = new Color(0.14f, 0.13f, 0.10f, 1f);
-        ambientIntensity = 0.75f;
+        ambientIntensity = 0.95f;
 
         fogEnabled = false;
 
-        sunRotationEuler = new Vector3(40f, -55f, 0f);
-        sunColor = new Color(1f, 0.86f, 0.66f, 1f);
-        sunIntensity = 2.4f;
+        // 숲 stage 기준: 녹색 leaf 텍스처와 곱해졌을 때 yellow-green 폭주 안 하도록
+        // 약하게-따뜻한 sun + 적당한 강도. cinematic은 별도 preset에서 강하게.
+        sunRotationEuler = new Vector3(42f, -52f, 0f);
+        sunColor = new Color(1f, 0.96f, 0.88f, 1f);
+        sunIntensity = 1.55f;
         sunShadowType = LightShadows.Soft;
         sunShadowStrength = 1.0f;
         sunShadowBias = 0.005f;
@@ -446,15 +448,16 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
 
         fillRotationEuler = new Vector3(35f, 135f, 0f);
         fillColor = new Color(0.34f, 0.42f, 0.52f, 1f);
-        fillIntensity = 0.08f;
+        fillIntensity = 0.10f;
 
-        bloomIntensity = 0.08f;
-        bloomThreshold = 1.30f;
-        bloomScatter = 0.55f;
+        // Bloom은 LDR 디스플레이에서 노란 톤을 누적 증폭하므로 forest baseline은 매우 약하게.
+        bloomIntensity = 0.04f;
+        bloomThreshold = 1.40f;
+        bloomScatter = 0.50f;
         bloomTint = Color.white;
         postExposure = 0f;
-        contrast = 12f;
-        saturation = 6f;
+        contrast = 8f;
+        saturation = 2f;
         colorFilter = Color.white;
         tonemapMode = TonemappingMode.Neutral;
         vignetteIntensity = 0.12f;
