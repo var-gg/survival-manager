@@ -48,7 +48,9 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
     [SerializeField] private bool forceCameraClearToSkybox = true;
 
     [Header("포그 (Fog)")]
-    [Tooltip("거리에 따른 안개. 외곽이 흐려지는 분위기용. 부감 전투에서는 끄는 편이 캐릭터 가독성에 좋음.")]
+    [Tooltip("⚠ Stylized cel 셰이더 호환성 주의 — Quibli/lilToon은 URP fog 처리가 불완전해서 " +
+             "켜면 leaf/grass/character edge에 fog clear color가 파란 형광처럼 새어 나옴. " +
+             "전투 미리보기에서는 항상 OFF 권장. 분위기 fog가 필요하면 URP Volume의 Bloom/Color로 대체.")]
     [SerializeField] private bool fogEnabled;
     [Tooltip("Linear: start~end 거리 사이 선형 / ExponentialSquared: 거리 제곱으로 짙어짐.")]
     [SerializeField] private FogMode fogMode = FogMode.Linear;
@@ -445,7 +447,9 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
         ambientGround = new Color(0.16f, 0.15f, 0.11f, 1f);
         ambientIntensity = 1.0f;
 
-        fogEnabled = true;
+        // 포그는 stylized 셰이더(Quibli/lilToon)와 호환 안 됨 — 항상 OFF.
+        // 분위기는 Bloom + Vignette + warm color filter로 대체.
+        fogEnabled = false;
         fogMode = FogMode.Linear;
         fogColor = new Color(0.30f, 0.42f, 0.50f, 1f);
         fogStart = 12f;

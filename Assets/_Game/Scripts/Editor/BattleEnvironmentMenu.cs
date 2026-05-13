@@ -12,10 +12,35 @@ namespace SM.Editor;
 /// 사용 흐름:
 ///   1. SM/Battle/맵 + 캐릭터 미리보기 셋업  →  씬 열기 + 환경 + map prefab + 더미 캐릭터까지 한 방에.
 ///   2. BattleRenderEnvironment Inspector에서 슬라이더로 라이팅/포스트 튠.
-///   3. 끝나면 SM/Battle/미리보기 정리.
+///   3. Play 모드 진입 시 미리보기는 자동 숨김 — 진짜 P09 캐릭터와 충돌하지 않음.
+///   4. 끝나면 SM/Battle/미리보기 정리.
 /// </summary>
+[InitializeOnLoad]
 public static class BattleEnvironmentMenu
 {
+    static BattleEnvironmentMenu()
+    {
+        // Play 모드 진입 시 미리보기 dummy/map을 숨겨서 runtime이 만드는 진짜 actor와
+        // 겹치지 않게 한다 (EditorOnly 태그는 빌드에서만 strip되지 Play 모드에선 그대로 남음).
+        EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+    }
+
+    private static void OnPlayModeStateChanged(PlayModeStateChange change)
+    {
+        var ws = GameObject.Find(PreviewWorkspaceName);
+        if (ws == null) return;
+        switch (change)
+        {
+            case PlayModeStateChange.ExitingEditMode:
+            case PlayModeStateChange.EnteredPlayMode:
+                if (ws.activeSelf) ws.SetActive(false);
+                break;
+            case PlayModeStateChange.EnteredEditMode:
+                if (!ws.activeSelf) ws.SetActive(true);
+                break;
+        }
+    }
+
     private const string BattleScenePath = "Assets/_Game/Scenes/Battle.unity";
     private const string EnvironmentGameObjectName = "BattleRenderEnvironment";
     private const string PreviewWorkspaceName = "__BattlePreviewWorkspace";
