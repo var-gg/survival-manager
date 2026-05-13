@@ -35,6 +35,10 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
     private bool _showcaseProfileFoldout = true;
     private UnityEditor.Editor? _cachedShowcaseEditor;
     private Vector2 _showcaseScroll;
+    // SerializedObject + SerializedProperty 캐싱 — OnGUI 호출마다 새로 만들면 Unity의
+    // ReorderableList 내부 상태(접힘/펼침)가 매 프레임 reset되어 클릭이 안 먹음.
+    private SerializedObject? _presetSerialized;
+    private SerializedProperty? _colorOverridesProperty;
 
     [MenuItem("SM/캐릭터/P09 외형 편집")]
     public static void Open()
@@ -69,6 +73,8 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             UnityEngine.Object.DestroyImmediate(_cachedShowcaseEditor);
             _cachedShowcaseEditor = null;
         }
+        _presetSerialized = null;
+        _colorOverridesProperty = null;
     }
 
     private void OnGUI()
@@ -409,14 +415,23 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 
         EditorGUILayout.Space(8f);
         EditorGUILayout.LabelField("머티리얼 색상 조정", EditorStyles.boldLabel);
-        var serialized = new SerializedObject(_selectedPreset);
-        var property = serialized.FindProperty("materialColorOverrides");
+
+        // Cached SerializedObject — selectedPreset이 바뀌었을 때만 재생성한다.
+        // 매 OnGUI마다 new SerializedObject(...)을 만들면 ReorderableList 내부 foldout/drag
+        // 상태가 reset되어 항목별 펼침 클릭이 무효가 됨.
+        if (_presetSerialized == null || _presetSerialized.targetObject != _selectedPreset)
+        {
+            _presetSerialized = new SerializedObject(_selectedPreset);
+            _colorOverridesProperty = _presetSerialized.FindProperty("materialColorOverrides");
+        }
+        _presetSerialized.Update();
+
         EditorGUI.BeginChangeCheck();
-        EditorGUILayout.PropertyField(property, new GUIContent("색상 오버라이드"), includeChildren: true);
-        DrawColorReadabilityWarnings(property);
+        EditorGUILayout.PropertyField(_colorOverridesProperty!, new GUIContent("색상 오버라이드"), includeChildren: true);
+        DrawColorReadabilityWarnings(_colorOverridesProperty!);
         if (EditorGUI.EndChangeCheck())
         {
-            serialized.ApplyModifiedProperties();
+            _presetSerialized.ApplyModifiedProperties();
             SaveSelectedPreset(updatePreview: true);
         }
     }
@@ -568,6 +583,9 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
     {
         _selectedEntry = entry;
         _selectedPreset = null;
+        // 캐릭터 전환 시 cached SO 무효화 — 다음 OnGUI에서 새 preset 대상으로 재생성.
+        _presetSerialized = null;
+        _colorOverridesProperty = null;
         if (entry == null)
         {
             return;
