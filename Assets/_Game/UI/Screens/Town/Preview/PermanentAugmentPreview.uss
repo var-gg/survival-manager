@@ -1,0 +1,94 @@
+/* Permanent Augment modal V1 preview (시안 갤러리 #4) */
+.pap-root { flex-grow: 1; color: var(--sm-ink-1); }
+.pap-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop; }
+.pap-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
+
+.pap-frame { position: absolute; left: 60px; right: 60px; top: 50px; bottom: 50px;
+    background-color: rgba(20,26,53,0.96);
+    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
+    border-left-color: var(--sm-gold-400); border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-400); border-bottom-color: var(--sm-gold-400); }
+.pap-frame__corner { position: absolute; width: 24px; height: 24px; background-color: var(--sm-gold-300); }
+.pap-frame__corner--tl { top: -3px; left: -3px; }
+.pap-frame__corner--tr { top: -3px; right: -3px; }
+.pap-frame__corner--bl { bottom: -3px; left: -3px; }
+.pap-frame__corner--br { bottom: -3px; right: -3px; }
+
+.pap-header { flex-direction: row; align-items: center; justify-content: space-between;
+    padding: 18px 32px; border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
+.pap-header__title { font-size: 18px; color: var(--sm-gold-100); letter-spacing: 3px; -unity-font-style: bold; }
+.pap-header__close { width: 36px; height: 36px; background-color: rgba(38,45,84,0.86); color: var(--sm-gold-200);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
+    border-top-color: rgba(230,183,81,0.55); border-bottom-color: rgba(230,183,81,0.55); }
+
+.pap-columns { flex-direction: row; flex-grow: 1; padding: 18px; }
+.pap-col { margin-left: 8px; margin-right: 8px; flex-direction: column; }
+.pap-col--grid { width: 360px; }
+.pap-col--detail { flex-grow: 1; align-items: center; padding-top: 12px; }
+.pap-col--equip { width: 280px; align-items: stretch; padding-top: 12px; }
+
+/* 12 motif grid (3x4) */
+.pap-augment-grid { flex-direction: row; flex-wrap: wrap; }
+.pap-augment-cell { width: 110px; height: 110px; margin: 4px;
+    background-color: rgba(28,34,67,0.86);
+    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
+    border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
+    border-top-color: rgba(230,183,81,0.55); border-bottom-color: rgba(230,183,81,0.55);
+    -unity-background-scale-mode: scale-to-fit; }
+.pap-augment-cell--selected {
+    border-left-color: var(--sm-gold-100); border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100); border-bottom-color: var(--sm-gold-100);
+    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
+}
+.pap-augment-cell--locked { background-color: rgba(20,26,53,0.92); }
+
+/* Detail card */
+.pap-detail-hero { width: 200px; height: 200px; background-color: rgba(72,40,98,0.78);
+    border-top-left-radius: 100px; border-top-right-radius: 100px;
+    border-bottom-left-radius: 100px; border-bottom-right-radius: 100px;
+    margin-bottom: 12px; }
+.pap-detail-title-row { flex-direction: row; justify-content: center; margin-bottom: 12px; }
+.pap-detail-title-row__chip { width: 32px; height: 18px; margin: 0 3px;
+    background-color: rgba(230,183,81,0.62); }
+
+.pap-detail-effect { flex-direction: column; align-items: stretch; width: 240px; }
+.pap-detail-effect__line { height: 8px; background-color: rgba(216,199,153,0.45); margin-bottom: 6px; }
+
+.pap-detail-flavor { width: 240px; padding: 12px; margin-top: 12px;
+    background-color: rgba(245,234,208,0.08);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: rgba(230,183,81,0.28); border-right-color: rgba(230,183,81,0.28);
+    border-top-color: rgba(230,183,81,0.28); border-bottom-color: rgba(230,183,81,0.28); }
+.pap-detail-flavor__glyph { height: 6px; background-color: rgba(216,199,153,0.32); }
+
+/* Equip column */
+.pap-equip-slot { width: 140px; height: 140px; align-self: center;
+    background-color: rgba(28,34,67,0.86);
+    -unity-background-scale-mode: scale-to-fit;
+    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
+    border-left-color: var(--sm-gold-200); border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
+    margin-bottom: 16px; }
+
+.pap-stat-compare { flex-direction: column; padding-top: 8px; padding-bottom: 16px; }
+.pap-stat-row { flex-direction: row; align-items: center; justify-content: space-between;
+    padding: 6px 12px; margin-bottom: 4px;
+    background-color: rgba(38,45,84,0.65);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: rgba(230,183,81,0.28); border-right-color: rgba(230,183,81,0.28);
+    border-top-color: rgba(230,183,81,0.28); border-bottom-color: rgba(230,183,81,0.28); }
+.pap-stat-row__label { color: var(--sm-ink-2); font-size: 11px; }
+.pap-stat-row__before { color: var(--sm-ink-3); font-size: 11px; }
+.pap-stat-row__arrow { width: 12px; height: 8px; background-color: var(--sm-gold-300); margin: 0 6px; }
+.pap-stat-row__after { color: var(--sm-ink-0); font-size: 12px; -unity-font-style: bold; }
+
+.pap-equip-cta { height: 56px; flex-direction: column; align-items: center; justify-content: center;
+    background-color: rgba(200,147,42,0.95);
+    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-100); border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100); border-bottom-color: var(--sm-gold-100); }
+.pap-equip-cta__glyph { width: 80px; height: 8px; background-color: rgba(61,47,18,0.78); }
+.pap-equip-cta__cost { width: 60px; height: 8px; background-color: rgba(61,47,18,0.55); margin-top: 6px; }

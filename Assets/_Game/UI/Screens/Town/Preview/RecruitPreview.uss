@@ -1,0 +1,295 @@
+/* =============================================================
+   Recruit modal V1 preview surface
+   visual SoT: pindoc://town-ui-ux-시안-갤러리-v1 (3. Recruit modal)
+   tone: deep navy frame + gold ornamental trim + parchment candidate cards
+   ============================================================= */
+
+.rcp-root {
+    flex-grow: 1;
+    color: var(--sm-ink-1);
+}
+
+.rcp-backdrop {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+}
+.rcp-backdrop-dim {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    background-color: rgba(12, 17, 38, 0.55);
+}
+
+/* --- Modal frame (deep navy + gold trim) --- */
+.rcp-frame {
+    position: absolute;
+    left: 80px; right: 80px; top: 50px; bottom: 50px;
+    background-color: rgba(20, 26, 53, 0.96);
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-400);
+}
+.rcp-frame__corner {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    background-color: var(--sm-gold-300);
+}
+.rcp-frame__corner--tl { top: -3px; left: -3px; }
+.rcp-frame__corner--tr { top: -3px; right: -3px; }
+.rcp-frame__corner--bl { bottom: -3px; left: -3px; }
+.rcp-frame__corner--br { bottom: -3px; right: -3px; }
+
+/* --- Header (ornamental title + close) --- */
+.rcp-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    padding-left: 32px;
+    padding-right: 32px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.32);
+}
+.rcp-header__title-block {
+    flex-direction: row;
+    align-items: center;
+}
+.rcp-header__ornament {
+    width: 56px;
+    height: 6px;
+    background-color: rgba(230, 183, 81, 0.78);
+}
+.rcp-header__ornament--left { margin-right: 18px; }
+.rcp-header__ornament--right { margin-left: 18px; }
+.rcp-header__title {
+    font-size: 18px;
+    color: var(--sm-gold-100);
+    letter-spacing: 3px;
+    -unity-font-style: bold;
+}
+.rcp-header__close {
+    width: 36px;
+    height: 36px;
+    background-color: rgba(38, 45, 84, 0.86);
+    color: var(--sm-gold-200);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.55);
+    border-right-color: rgba(230, 183, 81, 0.55);
+    border-top-color: rgba(230, 183, 81, 0.55);
+    border-bottom-color: rgba(230, 183, 81, 0.55);
+}
+
+/* --- Card row (4 candidates) --- */
+.rcp-card-row {
+    flex-direction: row;
+    justify-content: center;
+    padding-top: 22px;
+    padding-bottom: 22px;
+    padding-left: 32px;
+    padding-right: 32px;
+    flex-grow: 1;
+}
+
+.rcp-card {
+    width: 200px;
+    height: 100%;
+    margin-left: 8px;
+    margin-right: 8px;
+    background-color: rgba(245, 234, 208, 0.94);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(138, 100, 24, 0.65);
+    border-right-color: rgba(138, 100, 24, 0.65);
+    border-top-color: rgba(138, 100, 24, 0.65);
+    border-bottom-color: rgba(138, 100, 24, 0.65);
+}
+.rcp-card--protected {
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+}
+
+.rcp-card__lock {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    background-color: rgba(230, 183, 81, 0.85);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.rcp-card__portrait {
+    flex-grow: 1;
+    -unity-background-scale-mode: scale-to-fit;
+    margin: 4px 4px 0 4px;
+}
+
+.rcp-card__class-glyph {
+    align-self: center;
+    width: 32px;
+    height: 32px;
+    margin-top: 8px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.rcp-card__synergy-row {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+.rcp-card__synergy-pip {
+    width: 18px;
+    height: 8px;
+    margin-left: 2px;
+    margin-right: 2px;
+    background-color: rgba(74, 114, 184, 0.85);
+}
+.rcp-card__synergy-pip--accent { background-color: rgba(200, 147, 42, 0.85); }
+
+.rcp-card__star-row {
+    flex-direction: row;
+    justify-content: center;
+    padding-top: 4px;
+    padding-bottom: 12px;
+}
+.rcp-card__star {
+    width: 14px;
+    height: 14px;
+    background-color: var(--sm-gold-200);
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+/* --- Action bar (scout | refresh | recruit) --- */
+.rcp-actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 18px;
+    padding-bottom: 12px;
+    padding-left: 56px;
+    padding-right: 56px;
+    border-top-width: 1px;
+    border-top-color: rgba(230, 183, 81, 0.28);
+}
+
+.rcp-actions__scout {
+    flex-direction: row;
+    align-items: center;
+}
+.rcp-actions__scout-icon {
+    width: 36px;
+    height: 36px;
+    background-color: rgba(38, 45, 84, 0.78);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.55);
+    border-right-color: rgba(230, 183, 81, 0.55);
+    border-top-color: rgba(230, 183, 81, 0.55);
+    border-bottom-color: rgba(230, 183, 81, 0.55);
+}
+.rcp-actions__scout-glyph {
+    width: 80px;
+    height: 8px;
+    background-color: rgba(216, 199, 153, 0.45);
+    margin-left: 10px;
+}
+
+.rcp-actions__refresh {
+    width: 240px;
+    height: 48px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(200, 147, 42, 0.92);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
+.rcp-actions__refresh-icon {
+    width: 22px;
+    height: 22px;
+    background-color: rgba(245, 234, 208, 0.92);
+    border-top-left-radius: 11px;
+    border-top-right-radius: 11px;
+    border-bottom-left-radius: 11px;
+    border-bottom-right-radius: 11px;
+    margin-right: 10px;
+}
+.rcp-actions__refresh-glyph {
+    width: 80px;
+    height: 8px;
+    background-color: rgba(61, 47, 18, 0.65);
+}
+
+.rcp-actions__recruit {
+    width: 200px;
+    height: 48px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(38, 45, 84, 0.92);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+}
+.rcp-actions__recruit-glyph {
+    width: 70px;
+    height: 8px;
+    background-color: rgba(245, 234, 208, 0.65);
+    margin-right: 10px;
+}
+.rcp-actions__recruit-check {
+    width: 22px;
+    height: 22px;
+    background-color: var(--sm-gold-200);
+    border-top-left-radius: 11px;
+    border-top-right-radius: 11px;
+    border-bottom-left-radius: 11px;
+    border-bottom-right-radius: 11px;
+}
+
+.rcp-footer {
+    align-items: center;
+    padding-bottom: 12px;
+}
+.rcp-footer__glyph {
+    width: 240px;
+    height: 6px;
+    background-color: rgba(216, 199, 153, 0.32);
+}

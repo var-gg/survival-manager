@@ -1,0 +1,133 @@
+/* Equipment / Refit modal V1 preview
+   SoT: pindoc://town-ui-ux-시안-갤러리-v1 (2)
+   tone: deep navy frame + gold trim + 3 section (standee / affix list / inventory pool) */
+
+.erp-root { flex-grow: 1; color: var(--sm-ink-1); }
+
+.erp-backdrop {
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+}
+.erp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
+
+.erp-frame {
+    position: absolute; left: 60px; right: 60px; top: 50px; bottom: 50px;
+    background-color: rgba(20,26,53,0.96);
+    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
+    border-left-color: var(--sm-gold-400); border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-400); border-bottom-color: var(--sm-gold-400);
+}
+.erp-frame__corner { position: absolute; width: 24px; height: 24px; background-color: var(--sm-gold-300); }
+.erp-frame__corner--tl { top: -3px; left: -3px; }
+.erp-frame__corner--tr { top: -3px; right: -3px; }
+.erp-frame__corner--bl { bottom: -3px; left: -3px; }
+.erp-frame__corner--br { bottom: -3px; right: -3px; }
+
+.erp-header {
+    flex-direction: row; align-items: center; justify-content: space-between;
+    padding-top: 18px; padding-bottom: 18px; padding-left: 32px; padding-right: 32px;
+    border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32);
+}
+.erp-header__title { font-size: 18px; color: var(--sm-gold-100); letter-spacing: 3px; -unity-font-style: bold; }
+.erp-header__close { width: 36px; height: 36px; background-color: rgba(38,45,84,0.86); color: var(--sm-gold-200);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
+    border-top-color: rgba(230,183,81,0.55); border-bottom-color: rgba(230,183,81,0.55);
+}
+
+.erp-columns { flex-direction: row; flex-grow: 1; padding: 18px; }
+.erp-col { margin-left: 8px; margin-right: 8px; flex-direction: column; }
+.erp-col--standee { flex-direction: row; width: 280px; }
+.erp-col--affix { flex-grow: 1; }
+.erp-col--pool { width: 340px; }
+
+/* Standee column */
+.erp-standee { width: 200px; background-color: rgba(245,234,208,0.06); border-left-width: 1px; border-right-width: 1px;
+    border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgba(230,183,81,0.32);
+    border-right-color: rgba(230,183,81,0.32); border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);
+}
+.erp-standee__portrait { flex-grow: 1; -unity-background-scale-mode: scale-to-fit; }
+
+.erp-slot-stack { flex-direction: column; justify-content: space-around; padding-left: 12px; }
+.erp-slot {
+    width: 56px; height: 56px; background-color: rgba(28,34,67,0.86);
+    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-300); border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300); border-bottom-color: var(--sm-gold-300);
+    -unity-background-scale-mode: scale-to-fit;
+}
+.erp-slot--weapon { border-left-color: rgba(180, 90, 210, 0.85); border-right-color: rgba(180, 90, 210, 0.85);
+    border-top-color: rgba(180, 90, 210, 0.85); border-bottom-color: rgba(180, 90, 210, 0.85); }
+
+/* Affix list column */
+.erp-affix-list { flex-grow: 1; flex-direction: column; }
+.erp-affix-row {
+    height: 44px; flex-direction: row; align-items: center; margin-bottom: 6px;
+    padding-left: 12px; padding-right: 16px;
+    background-color: rgba(28,34,67,0.72);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
+    border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);
+}
+.erp-affix-row--selected {
+    background-color: rgba(38,45,84,0.92);
+    border-left-color: var(--sm-gold-200); border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
+    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
+}
+.erp-affix-row__icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: 10px; }
+.erp-affix-row__glyph { flex-grow: 1; height: 8px; background-color: rgba(216,199,153,0.45); }
+.erp-affix-row__tier {
+    width: 32px; height: 8px; background-color: rgba(230,183,81,0.62); margin-left: 8px;
+}
+
+/* CTA block */
+.erp-cta-block { flex-direction: row; align-items: center; justify-content: flex-end; margin-top: 12px; }
+.erp-echo-cost { flex-direction: row; align-items: center; margin-right: 16px;
+    padding-top: 8px; padding-bottom: 8px; padding-left: 12px; padding-right: 12px;
+    background-color: rgba(38,45,84,0.78);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: rgba(140,98,210,0.85); border-right-color: rgba(140,98,210,0.85);
+    border-top-color: rgba(140,98,210,0.85); border-bottom-color: rgba(140,98,210,0.85);
+}
+.erp-echo-cost__icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: 8px; }
+.erp-echo-cost__glyph { width: 50px; height: 6px; background-color: rgba(180,150,230,0.78); }
+
+.erp-refit-cta {
+    width: 200px; height: 48px;
+    background-color: rgba(200,147,42,0.95);
+    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-100); border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100); border-bottom-color: var(--sm-gold-100);
+    flex-direction: row; align-items: center; justify-content: center;
+}
+.erp-refit-cta__glyph { width: 80px; height: 8px; background-color: rgba(61,47,18,0.65); }
+
+/* Pool column */
+.erp-pool { flex-grow: 1; flex-direction: column; padding-top: 0; }
+.erp-pool-row { flex-direction: row; align-items: center; height: 40px; margin-bottom: 6px;
+    padding-left: 8px; padding-right: 12px;
+    background-color: rgba(28,34,67,0.72);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
+    border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);
+}
+.erp-pool-row__weapon-icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: 10px;
+    background-color: rgba(245,234,208,0.18); }
+.erp-pool-row__glyph { flex-grow: 1; height: 8px; background-color: rgba(216,199,153,0.45); }
+.erp-pool-row__gem { width: 12px; height: 12px; margin-left: 6px;
+    border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;
+}
+.erp-pool-row__gem--epic { background-color: rgba(181,97,214,0.95); }
+.erp-pool-row__gem--rare { background-color: rgba(91,142,209,0.95); }
+.erp-pool-row__gem--common { background-color: rgba(216,199,153,0.85); }
+
+.erp-pool-actions { flex-direction: row; justify-content: space-around; padding-top: 8px; }
+.erp-pool-actions__chip {
+    width: 32px; height: 24px;
+    background-color: rgba(38,45,84,0.72);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: rgba(230,183,81,0.42); border-right-color: rgba(230,183,81,0.42);
+    border-top-color: rgba(230,183,81,0.42); border-bottom-color: rgba(230,183,81,0.42);
+}

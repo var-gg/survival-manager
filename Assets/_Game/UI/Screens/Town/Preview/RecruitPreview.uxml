@@ -1,0 +1,53 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!--
+      Recruit modal V1 preview surface
+      visual SoT: pindoc://town-ui-ux-시안-갤러리-v1 (3. Recruit modal)
+      structure: navy frame + ornament header + 4 candidate cards + scout/refresh/recruit action bar
+      assets:
+        hero portraits (Resources/_Game/Art/Characters/hero_*/portrait_full.png — 단린/이빨바람/공한/묵향)
+        class icon (Assets/_Game/UI/Foundation/Sprites/Class/)
+        currency_gold (Assets/_Game/UI/Foundation/Sprites/Currency/currency_gold.png)
+    -->
+    <Style src="RecruitPreview.uss" />
+    <ui:VisualElement name="RcpRoot" class="rcp-root">
+        <ui:VisualElement name="Backdrop" class="rcp-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement name="BackdropDim" class="rcp-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement name="ModalFrame" class="rcp-frame">
+            <ui:VisualElement class="rcp-frame__corner rcp-frame__corner--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="rcp-frame__corner rcp-frame__corner--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="rcp-frame__corner rcp-frame__corner--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="rcp-frame__corner rcp-frame__corner--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="rcp-header">
+                <ui:VisualElement class="rcp-header__title-block">
+                    <ui:VisualElement class="rcp-header__ornament rcp-header__ornament--left" picking-mode="Ignore" />
+                    <ui:Label class="rcp-header__title" text="영입 — RECRUIT" />
+                    <ui:VisualElement class="rcp-header__ornament rcp-header__ornament--right" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Button class="rcp-header__close" text="X" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="CardRow" class="rcp-card-row" />
+
+            <ui:VisualElement class="rcp-actions">
+                <ui:VisualElement class="rcp-actions__scout">
+                    <ui:VisualElement class="rcp-actions__scout-icon" picking-mode="Ignore" />
+                    <ui:VisualElement class="rcp-actions__scout-glyph" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Button class="rcp-actions__refresh">
+                    <ui:VisualElement class="rcp-actions__refresh-icon" picking-mode="Ignore" />
+                    <ui:VisualElement class="rcp-actions__refresh-glyph" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button class="rcp-actions__recruit">
+                    <ui:VisualElement class="rcp-actions__recruit-glyph" picking-mode="Ignore" />
+                    <ui:VisualElement class="rcp-actions__recruit-check" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="rcp-footer">
+                <ui:VisualElement class="rcp-footer__glyph" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

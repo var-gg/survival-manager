@@ -1,0 +1,64 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!--
+      Equipment / Refit modal V1 preview
+      SoT: pindoc://town-ui-ux-시안-갤러리-v1 (2)
+      3-section: 좌측 standee + 3 hex slot / 중앙 5 affix list + Echo CTA / 우측 8 inventory pool
+    -->
+    <Style src="EquipmentRefitPreview.uss" />
+    <ui:VisualElement name="ErpRoot" class="erp-root">
+        <ui:VisualElement class="erp-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="erp-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement class="erp-frame">
+            <ui:VisualElement class="erp-frame__corner erp-frame__corner--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="erp-frame__corner erp-frame__corner--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="erp-frame__corner erp-frame__corner--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="erp-frame__corner erp-frame__corner--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="erp-header">
+                <ui:Label class="erp-header__title" text="장비 — REFIT" />
+                <ui:Button class="erp-header__close" text="X" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="erp-columns">
+                <!-- Left: standee + 3 hex slot -->
+                <ui:VisualElement class="erp-col erp-col--standee">
+                    <ui:VisualElement class="erp-standee">
+                        <ui:VisualElement name="StandeePortrait" class="erp-standee__portrait" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="erp-slot-stack">
+                        <ui:VisualElement class="erp-slot erp-slot--weapon" picking-mode="Ignore" />
+                        <ui:VisualElement class="erp-slot erp-slot--armor" picking-mode="Ignore" />
+                        <ui:VisualElement class="erp-slot erp-slot--accessory" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- Middle: 5 affix list + Echo CTA -->
+                <ui:VisualElement class="erp-col erp-col--affix">
+                    <ui:VisualElement name="AffixList" class="erp-affix-list" />
+                    <ui:VisualElement class="erp-cta-block">
+                        <ui:VisualElement name="EchoCost" class="erp-echo-cost">
+                            <ui:VisualElement name="EchoIcon" class="erp-echo-cost__icon" picking-mode="Ignore" />
+                            <ui:VisualElement class="erp-echo-cost__glyph" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:Button class="erp-refit-cta">
+                            <ui:VisualElement class="erp-refit-cta__glyph" picking-mode="Ignore" />
+                        </ui:Button>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- Right: 8 inventory pool -->
+                <ui:VisualElement class="erp-col erp-col--pool">
+                    <ui:VisualElement name="InventoryPool" class="erp-pool" />
+                    <ui:VisualElement class="erp-pool-actions">
+                        <ui:VisualElement class="erp-pool-actions__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="erp-pool-actions__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="erp-pool-actions__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="erp-pool-actions__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="erp-pool-actions__chip" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
