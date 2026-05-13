@@ -531,7 +531,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         foreach (var character in BattleP09AppearanceCatalogBuilder.LoadCharacters())
         {
             if (string.IsNullOrWhiteSpace(character.Id)
-                || !BattleP09AppearanceRoster.HasDefinedLabel(character.Id)
+                || !BattleP09AppearanceRoster.ShouldShowInAuthoring(character.Id)
                 || !seenCharacterIds.Add(character.Id))
             {
                 continue;
@@ -546,7 +546,7 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             var preset = AssetDatabase.LoadAssetAtPath<BattleP09AppearancePreset>(path);
             if (preset == null
                 || string.IsNullOrWhiteSpace(preset.CharacterId)
-                || !BattleP09AppearanceRoster.HasDefinedLabel(preset.CharacterId)
+                || !BattleP09AppearanceRoster.ShouldShowInAuthoring(preset.CharacterId)
                 || !seenCharacterIds.Add(preset.CharacterId))
             {
                 continue;
@@ -557,8 +557,8 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 
         result.Sort((left, right) =>
         {
-            var orderCompare = BattleP09AppearanceRoster.GetSortOrder(left.CharacterId)
-                .CompareTo(BattleP09AppearanceRoster.GetSortOrder(right.CharacterId));
+            var orderCompare = BattleP09AppearanceRoster.GetAuthoringSortOrder(left.CharacterId)
+                .CompareTo(BattleP09AppearanceRoster.GetAuthoringSortOrder(right.CharacterId));
             return orderCompare != 0 ? orderCompare : string.CompareOrdinal(left.CharacterId, right.CharacterId);
         });
         return result;
@@ -843,11 +843,53 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
             renderQueue = source.renderQueue
         };
 
+        // lilToon URP는 main tint가 _BaseColor / _MainTex 외에 _BaseMap도 사용.
+        // _Color만 읽으면 MainColor 변경이 preview에 안 반영됨.
         CopyTexture(source, previewMaterial, "_MainTex", "_MainTex");
-        CopyTexture(source, previewMaterial, "_MainTex", "_BaseMap");
+        CopyTexture(source, previewMaterial, "_BaseMap", "_MainTex");
+        CopyTexture(source, previewMaterial, "_BaseColorMap", "_MainTex");
         CopyColor(source, previewMaterial, "_Color", "_Color");
-        CopyColor(source, previewMaterial, "_Color", "_BaseColor");
+        CopyColor(source, previewMaterial, "_BaseColor", "_Color");
+        CopyColor(source, previewMaterial, "_Color2nd", "_Color2nd");
+        CopyColor(source, previewMaterial, "_Color3rd", "_Color3rd");
+        SetFloatIfPresent(previewMaterial, "_PreviewTintStrength", CalculatePreviewTintStrength(source));
         return previewMaterial;
+    }
+
+    private static void SetFloatIfPresent(Material target, string targetProperty, float value)
+    {
+        if (target.HasProperty(targetProperty))
+        {
+            target.SetFloat(targetProperty, value);
+        }
+    }
+
+    private static float CalculatePreviewTintStrength(Material source)
+    {
+        var main = ReadColor(source, "_Color", Color.white);
+        var baseColor = ReadColor(source, "_BaseColor", main);
+        var second = ReadColor(source, "_Color2nd", main);
+        var third = ReadColor(source, "_Color3rd", main);
+        var distance = Mathf.Max(
+            ColorDistance(main, Color.white),
+            ColorDistance(baseColor, Color.white),
+            ColorDistance(second, main),
+            ColorDistance(third, main));
+
+        return distance < 0.08f ? 0f : Mathf.Clamp(0.12f + distance * 0.16f, 0.14f, 0.30f);
+    }
+
+    private static Color ReadColor(Material source, string propertyName, Color fallback)
+    {
+        return source.HasProperty(propertyName) ? source.GetColor(propertyName) : fallback;
+    }
+
+    private static float ColorDistance(Color first, Color second)
+    {
+        var red = first.r - second.r;
+        var green = first.g - second.g;
+        var blue = first.b - second.b;
+        return Mathf.Sqrt((red * red + green * green + blue * blue) / 3f);
     }
 
     private static void CopyTexture(Material source, Material target, string sourceProperty, string targetProperty)
