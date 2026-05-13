@@ -1,0 +1,108 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!--
+      Tactical Workshop V1 preview surface
+      visual SoT: pindoc://town-ui-ux-시안-갤러리-v1 (1. Tactical Workshop modal)
+      spec SoT:   pindoc://tactical-workshop-ui-ux-5-posture-anchor-pad-live-preview
+      layout: 3-column modal (Anchor Pad | Posture+Tactic | Live Preview + Threat-Answer)
+      assets: posture_*.png (5), threat_*.png (8), class_*.png (4), currency_*.png (2)
+    -->
+    <Style src="TacticalWorkshopPreview.uss" />
+    <ui:VisualElement name="TwpRoot" class="twp-root">
+        <ui:VisualElement name="Backdrop" class="twp-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement name="BackdropDim" class="twp-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement name="ModalFrame" class="twp-frame">
+            <ui:VisualElement class="twp-frame__corner twp-frame__corner--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="twp-frame__corner twp-frame__corner--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="twp-frame__corner twp-frame__corner--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="twp-frame__corner twp-frame__corner--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="twp-header">
+                <ui:Label class="twp-header__eyebrow" text="TACTICAL WORKSHOP" />
+                <ui:Label class="twp-header__title" text="전술 공방" />
+                <ui:Button class="twp-header__close" text="X" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="twp-columns">
+
+                <!-- ============ LEFT: Anchor Pad ============ -->
+                <ui:VisualElement class="twp-column twp-column--anchor">
+                    <ui:Label class="twp-section-eyebrow" text="ANCHOR PAD" />
+                    <ui:VisualElement class="twp-anchor-pad">
+                        <ui:VisualElement class="twp-anchor-pad__hex" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-anchor-pad__arc twp-anchor-pad__arc--warm" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-anchor-pad__arc twp-anchor-pad__arc--scarlet" picking-mode="Ignore" />
+
+                        <ui:VisualElement class="twp-standee twp-standee--front-left">
+                            <ui:VisualElement class="twp-standee__pillar" picking-mode="Ignore" />
+                            <ui:VisualElement class="twp-standee__figure twp-standee__figure--vanguard" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="twp-standee twp-standee--front-right">
+                            <ui:VisualElement class="twp-standee__pillar" picking-mode="Ignore" />
+                            <ui:VisualElement class="twp-standee__figure twp-standee__figure--duelist" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="twp-standee twp-standee--back-left">
+                            <ui:VisualElement class="twp-standee__pillar" picking-mode="Ignore" />
+                            <ui:VisualElement class="twp-standee__figure twp-standee__figure--ranger" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="twp-standee twp-standee--back-right">
+                            <ui:VisualElement class="twp-standee__pillar" picking-mode="Ignore" />
+                            <ui:VisualElement class="twp-standee__figure twp-standee__figure--mystic" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="twp-action-row">
+                        <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- ============ MIDDLE: Posture + Tactic ============ -->
+                <ui:VisualElement class="twp-column twp-column--posture">
+                    <ui:Label class="twp-section-eyebrow" text="POSTURE — 팀 자세" />
+                    <ui:VisualElement name="PostureCardRow" class="twp-posture-row" />
+
+                    <ui:VisualElement class="twp-tactic-section">
+                        <ui:Label class="twp-section-eyebrow" text="PER-UNIT TACTIC" />
+                        <ui:VisualElement name="TacticPresetRows" class="twp-tactic-rows" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="twp-action-row">
+                        <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- ============ RIGHT: Live Preview + Threat ============ -->
+                <ui:VisualElement class="twp-column twp-column--preview">
+                    <ui:Label class="twp-section-eyebrow" text="LIVE PREVIEW" />
+                    <ui:VisualElement class="twp-live-preview">
+                        <ui:VisualElement class="twp-live-preview__image" picking-mode="Ignore" />
+                    </ui:VisualElement>
+
+                    <ui:Label class="twp-section-eyebrow" text="SYNERGY" />
+                    <ui:VisualElement class="twp-synergy-row">
+                        <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--vanguard" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--duelist" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--ranger" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--mystic" picking-mode="Ignore" />
+                    </ui:VisualElement>
+
+                    <ui:Label class="twp-section-eyebrow" text="THREAT — ANSWER" />
+                    <ui:VisualElement class="twp-threat-wheel">
+                        <ui:VisualElement name="ThreatWheelHexagon" class="twp-threat-wheel__hex" picking-mode="Ignore" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="twp-action-row">
+                        <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,379 @@
+/* =============================================================
+   Tactical Workshop V1 preview surface
+   visual SoT: pindoc://town-ui-ux-시안-갤러리-v1
+   tone: parchment + warm gold trim + dusk village backdrop
+   ============================================================= */
+
+.twp-root {
+    flex-grow: 1;
+    color: var(--sm-ink-1);
+}
+
+/* --- Backdrop (Town hub dusk) --- */
+.twp-backdrop {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+}
+.twp-backdrop-dim {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    background-color: rgba(12, 17, 38, 0.45);
+}
+
+/* --- Modal frame (centered, parchment) --- */
+.twp-frame {
+    position: absolute;
+    left: 60px; right: 60px; top: 40px; bottom: 40px;
+    background-color: rgba(235, 220, 178, 0.96);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-400);
+}
+
+.twp-frame__corner {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: var(--sm-gold-300);
+}
+.twp-frame__corner--tl { top: -2px; left: -2px; }
+.twp-frame__corner--tr { top: -2px; right: -2px; }
+.twp-frame__corner--bl { bottom: -2px; left: -2px; }
+.twp-frame__corner--br { bottom: -2px; right: -2px; }
+
+/* --- Header --- */
+.twp-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    padding-left: 32px;
+    padding-right: 32px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(138, 100, 24, 0.45);
+}
+.twp-header__eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--sm-gold-500);
+    -unity-font-style: bold;
+}
+.twp-header__title {
+    font-size: 22px;
+    color: rgba(61, 47, 18, 1);
+    -unity-font-style: bold;
+    margin-left: 16px;
+}
+.twp-header__close {
+    width: 32px;
+    height: 32px;
+    background-color: rgba(20, 26, 53, 0.65);
+    color: var(--sm-gold-200);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-400);
+}
+
+/* --- 3-column layout --- */
+.twp-columns {
+    flex-direction: row;
+    flex-grow: 1;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+.twp-column {
+    flex-direction: column;
+    margin-left: 8px;
+    margin-right: 8px;
+    background-color: rgba(245, 234, 208, 0.62);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(138, 100, 24, 0.32);
+    border-right-color: rgba(138, 100, 24, 0.32);
+    border-top-color: rgba(138, 100, 24, 0.32);
+    border-bottom-color: rgba(138, 100, 24, 0.32);
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+.twp-column--anchor { flex-grow: 1; flex-basis: 0; }
+.twp-column--posture { flex-grow: 1; flex-basis: 0; }
+.twp-column--preview { flex-grow: 1.05; flex-basis: 0; }
+
+.twp-section-eyebrow {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--sm-gold-500);
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+}
+
+/* --- Anchor Pad (isometric hex) --- */
+.twp-anchor-pad {
+    flex-grow: 1;
+    background-color: rgba(28, 34, 67, 0.18);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(138, 100, 24, 0.28);
+    border-right-color: rgba(138, 100, 24, 0.28);
+    border-top-color: rgba(138, 100, 24, 0.28);
+    border-bottom-color: rgba(138, 100, 24, 0.28);
+    min-height: 300px;
+    margin-bottom: 12px;
+}
+.twp-anchor-pad__hex {
+    position: absolute;
+    left: 40px; right: 40px; top: 80px; bottom: 40px;
+    background-color: rgba(125, 90, 50, 0.55);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.75);
+    border-right-color: rgba(230, 183, 81, 0.75);
+    border-top-color: rgba(230, 183, 81, 0.75);
+    border-bottom-color: rgba(230, 183, 81, 0.75);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+}
+.twp-anchor-pad__arc {
+    position: absolute;
+    width: 120px;
+    height: 4px;
+    top: 130px;
+}
+.twp-anchor-pad__arc--warm {
+    left: 30px;
+    background-color: rgba(245, 130, 40, 0.78);
+    rotate: -22deg;
+}
+.twp-anchor-pad__arc--scarlet {
+    right: 30px;
+    background-color: rgba(220, 50, 75, 0.78);
+    rotate: 18deg;
+}
+
+.twp-standee {
+    position: absolute;
+    width: 64px;
+    height: 88px;
+    align-items: center;
+}
+.twp-standee--front-left  { left: 64px; bottom: 64px; }
+.twp-standee--front-right { left: 124px; bottom: 50px; }
+.twp-standee--back-left   { left: 64px; bottom: 110px; }
+.twp-standee--back-right  { left: 124px; bottom: 96px; }
+
+.twp-standee__pillar {
+    width: 48px;
+    height: 16px;
+    background-color: rgba(200, 147, 42, 0.62);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    margin-bottom: 4px;
+    align-self: center;
+}
+.twp-standee__figure {
+    width: 48px;
+    height: 64px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.twp-standee__figure--vanguard {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_vanguard.png");
+}
+.twp-standee__figure--duelist {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_duelist.png");
+}
+.twp-standee__figure--ranger {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_ranger.png");
+}
+.twp-standee__figure--mystic {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png");
+}
+
+/* --- Posture row (5 cards using posture sprites) --- */
+.twp-posture-row {
+    flex-direction: row;
+    margin-bottom: 16px;
+}
+.twp-posture-card {
+    flex-grow: 1;
+    margin-right: 6px;
+    background-color: rgba(28, 34, 67, 0.62);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.45);
+    border-right-color: rgba(230, 183, 81, 0.45);
+    border-top-color: rgba(230, 183, 81, 0.45);
+    border-bottom-color: rgba(230, 183, 81, 0.45);
+    height: 140px;
+    -unity-background-scale-mode: scale-and-crop;
+}
+.twp-posture-card--selected {
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+}
+
+/* --- Tactic preset rows --- */
+.twp-tactic-section { flex-grow: 1; }
+.twp-tactic-rows {
+    flex-direction: column;
+}
+.twp-tactic-row {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 4px;
+    background-color: rgba(245, 234, 208, 0.5);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(138, 100, 24, 0.32);
+    border-right-color: rgba(138, 100, 24, 0.32);
+    border-top-color: rgba(138, 100, 24, 0.32);
+    border-bottom-color: rgba(138, 100, 24, 0.32);
+}
+.twp-tactic-row__portrait {
+    width: 28px;
+    height: 28px;
+    background-color: rgba(20, 26, 53, 0.62);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    margin-right: 8px;
+}
+.twp-tactic-row__glyph {
+    flex-grow: 1;
+    height: 14px;
+    background-color: rgba(107, 93, 63, 0.5);
+}
+.twp-tactic-row__icon {
+    width: 22px;
+    height: 22px;
+    -unity-background-scale-mode: scale-to-fit;
+    margin-left: 6px;
+}
+
+/* --- Live Preview --- */
+.twp-live-preview {
+    height: 200px;
+    background-color: rgba(20, 26, 53, 0.65);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.55);
+    border-right-color: rgba(230, 183, 81, 0.55);
+    border-top-color: rgba(230, 183, 81, 0.55);
+    border-bottom-color: rgba(230, 183, 81, 0.55);
+    margin-bottom: 12px;
+}
+.twp-live-preview__image {
+    flex-grow: 1;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Posture/posture_standard_advance.png");
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* --- Synergy chips --- */
+.twp-synergy-row {
+    flex-direction: row;
+    margin-bottom: 12px;
+}
+.twp-synergy-chip {
+    width: 40px;
+    height: 32px;
+    margin-right: 4px;
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(28, 34, 67, 0.62);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.55);
+    border-right-color: rgba(230, 183, 81, 0.55);
+    border-top-color: rgba(230, 183, 81, 0.55);
+    border-bottom-color: rgba(230, 183, 81, 0.55);
+}
+.twp-synergy-chip--vanguard { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_vanguard.png"); }
+.twp-synergy-chip--duelist  { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_duelist.png"); }
+.twp-synergy-chip--ranger   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_ranger.png"); }
+.twp-synergy-chip--mystic   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png"); }
+
+/* --- Threat-answer hex wheel --- */
+.twp-threat-wheel {
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+.twp-threat-wheel__hex {
+    width: 160px;
+    height: 140px;
+    background-color: rgba(245, 234, 208, 0.5);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.65);
+    border-right-color: rgba(230, 183, 81, 0.65);
+    border-top-color: rgba(230, 183, 81, 0.65);
+    border-bottom-color: rgba(230, 183, 81, 0.65);
+}
+
+/* --- Bottom action row (abstract chips placeholder) --- */
+.twp-action-row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding-top: 8px;
+    padding-bottom: 4px;
+}
+.twp-action-row__chip {
+    width: 56px;
+    height: 24px;
+    background-color: rgba(20, 26, 53, 0.65);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.55);
+    border-right-color: rgba(230, 183, 81, 0.55);
+    border-top-color: rgba(230, 183, 81, 0.55);
+    border-bottom-color: rgba(230, 183, 81, 0.55);
+}
