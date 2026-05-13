@@ -148,12 +148,35 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
     {
         EnsureDefaultAssetsLoaded();
         EnsureChildRoot();
+        DestroyOrphanRuntimeVolumes();
         ApplyRenderSettings();
         ApplyLights();
         ApplyCamera();
         ApplyVolume();
         ForceShadowCastingOnSceneRenderers();
         DynamicGI.UpdateEnvironment();
+    }
+
+    /// <summary>
+    /// BattleStageEnvironmentAdapter가 만든 "__BattleVolume" 같은 중복 global Volume이
+    /// 씬에 남아 있으면 authoring의 Volume과 priority 충돌해 톤이 망가짐. Apply마다 정리.
+    /// </summary>
+    private void DestroyOrphanRuntimeVolumes()
+    {
+        var allVolumes = FindObjectsByType<Volume>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var v in allVolumes)
+        {
+            if (v == null) continue;
+            if (!v.isGlobal) continue;
+            var n = v.gameObject.name;
+            // 우리 Authoring이 만든 BattleVolume은 보존, 그 외 runtime 충돌 volume은 제거.
+            if (n == "BattleVolume") continue;
+            if (n == "__BattleVolume")
+            {
+                if (Application.isPlaying) Destroy(v.gameObject);
+                else DestroyImmediate(v.gameObject);
+            }
+        }
     }
 
     /// <summary>
