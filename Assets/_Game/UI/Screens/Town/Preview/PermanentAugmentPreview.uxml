@@ -1,0 +1,54 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!-- Permanent Augment modal V1 preview (시안 갤러리 #4)
+         3-section: 12 motif grid (3x4) / selected detail + flavor / equip slot + stat compare + Equip CTA -->
+    <Style src="PermanentAugmentPreview.uss" />
+    <ui:VisualElement name="PapRoot" class="pap-root">
+        <ui:VisualElement class="pap-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="pap-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement class="pap-frame">
+            <ui:VisualElement class="pap-frame__corner pap-frame__corner--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="pap-frame__corner pap-frame__corner--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="pap-frame__corner pap-frame__corner--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="pap-frame__corner pap-frame__corner--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="pap-header">
+                <ui:Label class="pap-header__title" text="영구 증강 — PERMANENT" />
+                <ui:Button class="pap-header__close" text="X" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="pap-columns">
+                <ui:VisualElement class="pap-col pap-col--grid">
+                    <ui:VisualElement name="AugmentGrid" class="pap-augment-grid" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="pap-col pap-col--detail">
+                    <ui:VisualElement name="DetailHero" class="pap-detail-hero" picking-mode="Ignore" />
+                    <ui:VisualElement class="pap-detail-title-row">
+                        <ui:VisualElement class="pap-detail-title-row__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="pap-detail-title-row__chip" picking-mode="Ignore" />
+                        <ui:VisualElement class="pap-detail-title-row__chip" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="pap-detail-effect">
+                        <ui:VisualElement class="pap-detail-effect__line" picking-mode="Ignore" />
+                        <ui:VisualElement class="pap-detail-effect__line" picking-mode="Ignore" />
+                        <ui:VisualElement class="pap-detail-effect__line" picking-mode="Ignore" />
+                        <ui:VisualElement class="pap-detail-effect__line" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="pap-detail-flavor">
+                        <ui:VisualElement class="pap-detail-flavor__glyph" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="pap-col pap-col--equip">
+                    <ui:VisualElement name="EquipSlot" class="pap-equip-slot" picking-mode="Ignore" />
+                    <ui:VisualElement name="StatCompare" class="pap-stat-compare" />
+                    <ui:Button class="pap-equip-cta">
+                        <ui:VisualElement class="pap-equip-cta__glyph" picking-mode="Ignore" />
+                        <ui:VisualElement class="pap-equip-cta__cost" picking-mode="Ignore" />
+                    </ui:Button>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

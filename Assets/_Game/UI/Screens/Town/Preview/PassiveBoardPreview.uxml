@@ -1,0 +1,46 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!-- Passive Board modal V1 (시안 갤러리 #5)
+         4 class tab + hexagonal node tree + selected node detail + Activate CTA + status bar -->
+    <Style src="PassiveBoardPreview.uss" />
+    <ui:VisualElement name="PbpRoot" class="pbp-root">
+        <ui:VisualElement class="pbp-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="pbp-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement class="pbp-frame">
+            <ui:VisualElement class="pbp-frame__corner pbp-frame__corner--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="pbp-frame__corner pbp-frame__corner--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="pbp-frame__corner pbp-frame__corner--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="pbp-frame__corner pbp-frame__corner--br" picking-mode="Ignore" />
+
+            <ui:VisualElement name="ClassTabs" class="pbp-tabs" />
+
+            <ui:VisualElement class="pbp-body">
+                <ui:VisualElement class="pbp-board">
+                    <ui:VisualElement name="BoardCanvas" class="pbp-board__canvas" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="pbp-detail">
+                    <ui:VisualElement class="pbp-detail__tier-bar">
+                        <ui:Label class="pbp-detail__tier-label" text="TIER II" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="DetailIcon" class="pbp-detail__icon" picking-mode="Ignore" />
+                    <ui:Label class="pbp-detail__title" text="KILLING INTENT" />
+                    <ui:VisualElement class="pbp-detail__desc">
+                        <ui:VisualElement class="pbp-detail__desc-line" picking-mode="Ignore" />
+                        <ui:VisualElement class="pbp-detail__desc-line" picking-mode="Ignore" />
+                        <ui:VisualElement class="pbp-detail__desc-line" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label class="pbp-detail__available" text="AVAILABLE" />
+                    <ui:Button class="pbp-detail__activate" text="ACTIVATE" />
+                    <ui:Label class="pbp-detail__progress" text="1 / 3" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="pbp-footer">
+                <ui:Label class="pbp-footer__points" text="6 / 45 NODE POINTS" />
+                <ui:VisualElement class="pbp-footer__glyph" picking-mode="Ignore" />
+                <ui:Button class="pbp-footer__close" text="X" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,73 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!-- Theater tab V1 (시안 갤러리 #7)
+         entry list (chapter grouped) / replay player + scrub / chapter detail + Replay CTA -->
+    <Style src="TheaterPreview.uss" />
+    <ui:VisualElement name="ThpRoot" class="thp-root">
+        <ui:VisualElement class="thp-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="thp-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement class="thp-frame">
+            <ui:VisualElement class="thp-frame__corner thp-frame__corner--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="thp-frame__corner thp-frame__corner--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="thp-frame__corner thp-frame__corner--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="thp-frame__corner thp-frame__corner--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="thp-header">
+                <ui:Label class="thp-header__title" text="극장 — THEATER" />
+                <ui:Button class="thp-header__close" text="X" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="thp-body">
+                <!-- Left entry list -->
+                <ui:VisualElement name="EntryList" class="thp-entry-list" />
+
+                <!-- Center player -->
+                <ui:VisualElement class="thp-player">
+                    <ui:VisualElement class="thp-player__controls-top">
+                        <ui:VisualElement class="thp-player__control-btn" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-player__control-btn" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-player__control-btn" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="PlayerImage" class="thp-player__image" picking-mode="Ignore" />
+                    <ui:VisualElement class="thp-player__scrub-row">
+                        <ui:VisualElement class="thp-player__scrub-prev" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-player__scrub-time" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-player__scrub-play" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-player__scrub-bar" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-player__scrub-speed" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="thp-player__caption">
+                        <ui:VisualElement class="thp-player__caption-glyph" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- Right chapter detail -->
+                <ui:VisualElement class="thp-detail">
+                    <ui:VisualElement name="DetailBanner" class="thp-detail__banner" picking-mode="Ignore" />
+                    <ui:VisualElement class="thp-detail__title-block">
+                        <ui:VisualElement class="thp-detail__title-glyph" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="thp-detail__meta">
+                        <ui:VisualElement class="thp-detail__meta-row" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-detail__meta-row" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-detail__meta-row" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="thp-detail__beats">
+                        <ui:VisualElement class="thp-detail__beats-line" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-detail__beats-line" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-detail__beats-line" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-detail__beats-line" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="thp-detail__attrs">
+                        <ui:VisualElement class="thp-detail__attr" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-detail__attr" picking-mode="Ignore" />
+                        <ui:VisualElement class="thp-detail__attr" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Button class="thp-detail__replay">
+                        <ui:VisualElement class="thp-detail__replay-glyph" picking-mode="Ignore" />
+                    </ui:Button>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

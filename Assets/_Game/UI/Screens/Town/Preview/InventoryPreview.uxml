@@ -1,0 +1,70 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!-- Inventory tab V1 (시안 갤러리 #6)
+         currency header / 5 category sidebar / 5x4 grid / selected item detail -->
+    <Style src="InventoryPreview.uss" />
+    <ui:VisualElement name="InvRoot" class="inv-root">
+        <ui:VisualElement class="inv-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="inv-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement class="inv-frame">
+            <ui:VisualElement class="inv-frame__corner inv-frame__corner--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="inv-frame__corner inv-frame__corner--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="inv-frame__corner inv-frame__corner--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="inv-frame__corner inv-frame__corner--br" picking-mode="Ignore" />
+
+            <!-- Top currency header -->
+            <ui:VisualElement class="inv-currency-header">
+                <ui:VisualElement class="inv-currency">
+                    <ui:VisualElement name="GoldIcon" class="inv-currency__icon" picking-mode="Ignore" />
+                    <ui:Label class="inv-currency__amount" text="9,876,543" />
+                </ui:VisualElement>
+                <ui:VisualElement class="inv-currency">
+                    <ui:VisualElement name="EchoIcon" class="inv-currency__icon" picking-mode="Ignore" />
+                    <ui:Label class="inv-currency__amount" text="543,210" />
+                </ui:VisualElement>
+                <ui:Button class="inv-currency__close" text="X" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="inv-body">
+                <!-- Left sidebar (5 categories) -->
+                <ui:VisualElement name="CategorySidebar" class="inv-sidebar" />
+
+                <!-- Center 5x4 grid -->
+                <ui:VisualElement class="inv-main">
+                    <ui:VisualElement class="inv-main__filter-row">
+                        <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ItemGrid" class="inv-grid" />
+                </ui:VisualElement>
+
+                <!-- Right detail panel -->
+                <ui:VisualElement class="inv-detail">
+                    <ui:VisualElement name="DetailIcon" class="inv-detail__icon" picking-mode="Ignore" />
+                    <ui:VisualElement class="inv-detail__name-bar">
+                        <ui:VisualElement class="inv-detail__name-glyph" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="DetailAffixes" class="inv-detail__affixes" />
+                    <ui:VisualElement class="inv-detail__owner">
+                        <ui:VisualElement class="inv-detail__owner-icon" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-detail__owner-glyph" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="inv-detail__buttons">
+                        <ui:Button class="inv-detail__btn inv-detail__btn--equip">
+                            <ui:VisualElement class="inv-detail__btn-glyph" picking-mode="Ignore" />
+                        </ui:Button>
+                        <ui:Button class="inv-detail__btn inv-detail__btn--sell">
+                            <ui:VisualElement class="inv-detail__btn-glyph" picking-mode="Ignore" />
+                        </ui:Button>
+                        <ui:Button class="inv-detail__btn inv-detail__btn--compare">
+                            <ui:VisualElement class="inv-detail__btn-glyph" picking-mode="Ignore" />
+                        </ui:Button>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

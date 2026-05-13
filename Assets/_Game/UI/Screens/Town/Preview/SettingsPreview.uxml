@@ -1,0 +1,39 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!-- Settings / Pause modal V1 (시안 갤러리 #8)
+         5 category sidebar (Display/Audio/Control/Account/Help) / option list / Apply Cancel Reset -->
+    <Style src="SettingsPreview.uss" />
+    <ui:VisualElement name="StpRoot" class="stp-root">
+        <ui:VisualElement class="stp-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="stp-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement class="stp-frame">
+            <ui:VisualElement class="stp-frame__corner stp-frame__corner--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="stp-frame__corner stp-frame__corner--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="stp-frame__corner stp-frame__corner--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="stp-frame__corner stp-frame__corner--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="stp-header">
+                <ui:VisualElement class="stp-header__ornament" picking-mode="Ignore" />
+                <ui:Label class="stp-header__title" text="설정 — SETTINGS" />
+                <ui:VisualElement class="stp-header__ornament" picking-mode="Ignore" />
+                <ui:Button class="stp-header__close" text="X" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="stp-body">
+                <ui:VisualElement name="CategorySidebar" class="stp-sidebar" />
+                <ui:VisualElement name="OptionList" class="stp-options" />
+                <ui:VisualElement class="stp-actions">
+                    <ui:Button class="stp-actions__apply">
+                        <ui:VisualElement class="stp-actions__apply-glyph" picking-mode="Ignore" />
+                    </ui:Button>
+                    <ui:Button class="stp-actions__cancel">
+                        <ui:VisualElement class="stp-actions__cancel-glyph" picking-mode="Ignore" />
+                    </ui:Button>
+                    <ui:Button class="stp-actions__reset">
+                        <ui:VisualElement class="stp-actions__reset-glyph" picking-mode="Ignore" />
+                    </ui:Button>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
