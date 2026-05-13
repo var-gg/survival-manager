@@ -11,7 +11,7 @@ namespace SM.Editor.Authoring.CombatSandbox;
 
 public static class CombatSandboxAuthoringAssetUtility
 {
-    public const string AuthoringMenuPath = "SM/Authoring/Combat Sandbox";
+    public const string AuthoringMenuPath = "SM/저작/전투 샌드박스";
     public const string OpenActiveConfigMenuPath = "Window/SM/Combat Sandbox Active Config";
     public const string RecoveryMenuPath = "SM/Internal/Recovery/Refresh Combat Sandbox Authoring Assets";
 

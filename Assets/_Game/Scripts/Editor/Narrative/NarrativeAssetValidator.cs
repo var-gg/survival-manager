@@ -16,7 +16,7 @@ public static class NarrativeAssetValidator
     private const string DialogueSequencesDir = "Assets/Resources/_Game/Content/Definitions/DialogueSequences";
     private const string StoryTableName = ContentLocalizationTables.Story;
 
-    [MenuItem("SM/Narrative/Validate Narrative Assets")]
+    [MenuItem("SM/내러티브/내러티브 자산 검증")]
     public static void Validate()
     {
         int errors = 0;

@@ -37,7 +37,7 @@ public static class NarrativeSeedImporter
     private const string ArchiveCatalogDir = "Assets/Resources/_Game/Content/Definitions/StoryArchive";
     private const string StoryTableName = ContentLocalizationTables.Story;
 
-    [MenuItem("SM/Narrative/Import Narrative Seeds")]
+    [MenuItem("SM/내러티브/시드 임포트")]
     public static void ImportFromMenu()
     {
         if (!File.Exists(ManifestPath))

@@ -1,4 +1,5 @@
 using System.IO;
+using SM.Unity;
 using SM.Unity.UI;
 using SM.Unity.UI.TacticalWorkshop;
 using UnityEditor;
@@ -13,7 +14,7 @@ public static class TacticalWorkshopSandboxBootstrap
     private const string ScenePath = "Assets/_Game/Scenes/TacticalWorkshopSandbox.unity";
     private const string VisualTreePath = "Assets/_Game/UI/TacticalWorkshop/TacticalWorkshopSandbox.uxml";
     private const string PreviewStylePath = "Assets/_Game/UI/TacticalWorkshop/TacticalWorkshopSandbox.uss";
-    private const string MenuPath = "SM/Internal/UI/Tactical Workshop Preview";
+    private const string MenuPath = "SM/UI 워크샵 (전술) 미리보기";
     private const string RebuildMenuPath = "SM/Internal/Recovery/Rebuild Tactical Workshop Sandbox Scene";
 
     [MenuItem(MenuPath, false, 41)]

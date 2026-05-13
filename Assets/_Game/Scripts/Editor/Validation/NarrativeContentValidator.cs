@@ -21,7 +21,7 @@ public static class NarrativeContentValidator
     private const string HeroLoreResourcesPath = "_Game/Content/Definitions/HeroLore";
     private const string StoryTableName = "Content_Story";
 
-    [MenuItem("SM/Validation/Validate Narrative Content")]
+    [MenuItem("SM/내러티브/내러티브 콘텐츠 검증")]
     public static void ValidateOrThrow()
     {
         NarrativeSeedData.ValidateSeedCountsOrThrow();

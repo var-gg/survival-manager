@@ -18,7 +18,7 @@ namespace SM.Editor.Authoring.RecruitmentSandbox;
 
 public sealed class RecruitmentSandboxWindow : EditorWindow
 {
-    private const string MenuPath = "SM/Authoring/Recruitment Sandbox";
+    private const string MenuPath = "SM/저작/영입 샌드박스";
 
     private RecruitmentSandboxState _state = null!;
     private RuntimeCombatContentLookup _lookup = null!;
