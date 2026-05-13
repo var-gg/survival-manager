@@ -1,2 +1,74 @@
+/* =============================================================
+   Town Screen — V1 시안 baseline 적용 (pindoc://town-ui-ux-시안-갤러리-v1)
+     - 정적 일러 backdrop (town_frontier_village/dusk) +
+     - dim overlay +
+     - frosted parchment panel + gold trim
+   캐릭터 standee는 후속 (chroma key 처리 필요).
+   ============================================================= */
+
 .town-screen {
+    background-color: var(--sm-bg-0);
+    color: var(--sm-ink-1);
+    position: relative;
+}
+
+/* backdrop = 가장 뒤 정적 일러 ----------------------------- */
+.town-screen__backdrop {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 1);
+}
+
+/* dim = backdrop 위에 얹어 panel 가독성 확보 ---------------- */
+.town-screen__backdrop-dim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(12, 17, 38, 0.45);
+}
+
+/* topbar = backdrop이 비치도록 살짝 투명 ------------------- */
+.town-screen .screen__topbar {
+    background-color: rgba(20, 26, 53, 0.78);
+}
+
+.town-screen .screen__title {
+    color: var(--sm-gold-200);
+}
+
+/* panel = frosted parchment + gold trim -------------------- */
+.town-screen .panel {
+    background-color: rgba(28, 34, 67, 0.82);
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.town-screen .panel__title {
+    color: var(--sm-gold-200);
+}
+
+.town-screen .card {
+    background-color: var(--sm-vellum-a06);
+    border-left-color: var(--sm-fam-vanguard-glow-a45);
+    border-right-color: var(--sm-gold-300-a22);
+    border-top-color: var(--sm-gold-300-a22);
+    border-bottom-color: var(--sm-gold-300-a22);
+}
+
+.town-screen .ui-button--accent {
+    background-color: var(--sm-fam-vanguard);
+    color: var(--sm-ink-0);
 }

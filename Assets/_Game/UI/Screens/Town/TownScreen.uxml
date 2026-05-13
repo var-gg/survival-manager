@@ -1,6 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Template name="TacticalWorkshopTemplate" src="../../TacticalWorkshop/TacticalWorkshop.uxml" />
-    <ui:VisualElement name="TownScreenRoot" class="screen">
+    <ui:VisualElement name="TownScreenRoot" class="screen town-screen">
+        <ui:VisualElement name="TownBackdrop" class="town-screen__backdrop" picking-mode="Ignore" />
+        <ui:VisualElement name="TownBackdropDim" class="town-screen__backdrop-dim" picking-mode="Ignore" />
         <ui:VisualElement class="screen__topbar">
             <ui:Label name="TitleLabel" class="screen__title" />
             <ui:VisualElement class="screen__toolbar">
