@@ -159,28 +159,26 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 
     private static void TuneRuntimeProfile(VolumeProfile profile)
     {
-        // The asset's raw Bloom 1.65 + ColorAdjustments contrast 35 over-expose without the demo scene's
-        // full point-light rig. Pull those down to values that read on our 4-light setup.
-        // GPT-Pro recommended gameplay profile: subtle post-process, structure-first.
-        // SDR-display calibrated: GPT-Pro values were tuned for linear/HDR view but our final blit is SDR.
-        // Push saturation/contrast/exposure noticeably to compensate for SDR clamp losing chroma.
+        // BattleRenderEnvironmentAuthoring이 우선 진실원 — 이 함수는 Authoring이 부재할 때만
+        // 적용되는 fallback. 따라서 forest baseline에 안전한 값을 쓴다 (이전 +0.30 exposure /
+        // contrast 28 / saturation 60 조합은 텍스처 + 따뜻한 sun과 누적되어 blown-out 발생).
         if (profile.TryGet<Bloom>(out var bloom))
         {
             bloom.active = true;
-            bloom.intensity.Override(0.12f);
-            bloom.threshold.Override(1.30f);
+            bloom.intensity.Override(0.04f);
+            bloom.threshold.Override(1.40f);
             bloom.tint.Override(Color.white);
-            bloom.scatter.Override(0.55f);
+            bloom.scatter.Override(0.50f);
             bloom.clamp.Override(2.0f);
         }
 
         if (profile.TryGet<ColorAdjustments>(out var ca))
         {
-            // SDR-display compensation: HDR space saturation gets compressed ~50% by Neutral tonemap.
-            // Aggressive push to land vivid on user's monitor.
-            ca.postExposure.Override(0.30f);
-            ca.contrast.Override(28f);
-            ca.saturation.Override(60f);
+            // 안전 baseline — postExposure 0, contrast/saturation 약하게.
+            // 시네마틱 push가 필요하면 BattleRenderEnvironmentAuthoring의 Cinematic preset에서.
+            ca.postExposure.Override(0f);
+            ca.contrast.Override(8f);
+            ca.saturation.Override(2f);
             ca.colorFilter.Override(Color.white);
         }
 
