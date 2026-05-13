@@ -1,0 +1,172 @@
+/* =============================================================
+   Town.RosterGrid V0 preview surface
+   source-of-truth: pindoc://town-ui-ux-시안-갤러리-v1
+   tone: anime-painted illustrated world (명일방주 / Honkai Star Rail)
+   - dusk village backdrop + dim
+   - frosted parchment header
+   - 12 hero card grid (HeroPortraitCard atom)
+   - filter chip strip
+   - floating Quick Battle button
+   ============================================================= */
+
+.rgp-root {
+    flex-grow: 1;
+    color: var(--sm-ink-1);
+}
+
+/* --------- Backdrop layers (z=0,1) -------------------------- */
+
+.rgp-backdrop {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.rgp-backdrop-dim {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    background-color: rgba(12, 17, 38, 0.55);
+}
+
+/* --------- Header (z=2) ------------------------------------- */
+
+.rgp-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 28px;
+    padding-bottom: 16px;
+    padding-left: 40px;
+    padding-right: 40px;
+    background-color: rgba(20, 26, 53, 0.78);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--sm-gold-400);
+}
+
+.rgp-header__title-group {
+    flex-direction: column;
+}
+
+.rgp-header__eyebrow {
+    font-size: 11px;
+    color: var(--sm-gold-300);
+    letter-spacing: 4px;
+    -unity-font-style: bold;
+    margin-bottom: 6px;
+}
+
+.rgp-header__title {
+    font-size: 28px;
+    color: var(--sm-gold-200);
+    -unity-font-style: bold;
+}
+
+.rgp-header__meta {
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.rgp-header__count {
+    font-size: 22px;
+    color: var(--sm-vellum);
+    -unity-font-style: bold;
+}
+
+.rgp-header__hint {
+    font-size: 11px;
+    color: var(--sm-ink-3);
+    margin-top: 4px;
+}
+
+/* --------- Filter chip strip -------------------------------- */
+
+.rgp-filter-strip {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 40px;
+    padding-right: 40px;
+    background-color: rgba(20, 26, 53, 0.62);
+}
+
+.rgp-filter-chip {
+    height: 32px;
+    padding-left: 14px;
+    padding-right: 14px;
+    margin-right: 8px;
+    background-color: rgba(28, 34, 67, 0.86);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-2);
+    border-right-color: var(--sm-line-2);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-2);
+    color: var(--sm-ink-2);
+    font-size: 12px;
+}
+
+.rgp-filter-chip:hover {
+    background-color: rgba(38, 45, 84, 0.92);
+    color: var(--sm-ink-1);
+}
+
+.rgp-filter-chip--selected {
+    background-color: rgba(200, 147, 42, 0.16);
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+    color: var(--sm-gold-100);
+    -unity-font-style: bold;
+}
+
+/* --------- Grid (z=3) --------------------------------------- */
+
+.rgp-grid-scroll {
+    flex-grow: 1;
+    padding-top: 20px;
+    padding-bottom: 80px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.rgp-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.rgp-grid > * {
+    margin-right: 12px;
+    margin-bottom: 12px;
+}
+
+/* --------- Floating Quick Battle button --------------------- */
+
+.rgp-quick-battle {
+    position: absolute;
+    right: 40px;
+    bottom: 32px;
+    width: 184px;
+    height: 56px;
+    background-color: rgba(74, 114, 184, 0.92);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+    color: var(--sm-ink-0);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.rgp-quick-battle:hover {
+    background-color: rgba(127, 163, 224, 1);
+}

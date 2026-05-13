@@ -1,0 +1,39 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!--
+      Survival Manager : Town.RosterGrid V0 preview surface
+      source-of-truth (visual): pindoc://town-ui-ux-시안-갤러리-v1
+      source-of-truth (IA):    pindoc://ux-surface-catalog-v1-draft (Town.RosterGrid P0 default)
+      cards: HeroPortraitCard atom (Assets/_Game/UI/Foundation/Components/HeroPortraitCard.uxml)
+      data: mock 12 lead+supporting hero (RosterGridPreviewController fixtures)
+    -->
+    <Style src="RosterGridPreview.uss" />
+    <ui:VisualElement name="RosterGridPreviewRoot" class="rgp-root">
+        <ui:VisualElement name="Backdrop" class="rgp-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement name="BackdropDim" class="rgp-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement name="HeaderBar" class="rgp-header">
+            <ui:VisualElement class="rgp-header__title-group">
+                <ui:Label class="rgp-header__eyebrow" text="ASHGLEN — ROSTER" />
+                <ui:Label class="rgp-header__title" text="잿골 — 동료 목록" />
+            </ui:VisualElement>
+            <ui:VisualElement class="rgp-header__meta">
+                <ui:Label name="HeroCount" class="rgp-header__count" text="12 / 12" />
+                <ui:Label class="rgp-header__hint" text="동료를 선택해 시트를 봅니다" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="FilterStrip" class="rgp-filter-strip">
+            <ui:Button class="rgp-filter-chip rgp-filter-chip--selected" text="전체" />
+            <ui:Button class="rgp-filter-chip" text="선봉 / Vanguard" />
+            <ui:Button class="rgp-filter-chip" text="결투가 / Striker" />
+            <ui:Button class="rgp-filter-chip" text="사수 / Ranger" />
+            <ui:Button class="rgp-filter-chip" text="비술사 / Mystic" />
+        </ui:VisualElement>
+
+        <ui:ScrollView name="GridScroll" class="rgp-grid-scroll">
+            <ui:VisualElement name="GridContainer" class="rgp-grid" />
+        </ui:ScrollView>
+
+        <ui:Button name="QuickBattleButton" class="rgp-quick-battle" text="Quick Battle (Smoke)" />
+    </ui:VisualElement>
+</ui:UXML>
