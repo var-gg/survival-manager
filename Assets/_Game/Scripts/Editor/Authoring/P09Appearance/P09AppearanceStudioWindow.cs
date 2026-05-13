@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
 using SM.Unity;
+using SM.Unity.P09Appearance;
 using UnityEditor;
 using UnityEngine;
 
@@ -632,6 +633,25 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         }
 
         _previewRenderer = new PreviewRenderUtility();
+        ApplyShowcaseProfileToPreview();
+    }
+
+    /// <summary>
+    /// CharacterShowcaseProfile을 PreviewRenderUtility에 적용. Wiki capture와 동일한 profile을
+    /// 사용하므로 두 출력이 강제 일치한다. profile이 없으면 안전한 fallback.
+    /// </summary>
+    private void ApplyShowcaseProfileToPreview()
+    {
+        if (_previewRenderer == null) return;
+
+        var profile = CharacterShowcasePreviewApplier.LoadDefault();
+        if (profile != null)
+        {
+            CharacterShowcasePreviewApplier.ApplyTo(_previewRenderer, profile);
+            return;
+        }
+
+        // Fallback (profile 자산 없을 때) — 기존 default와 동일한 값으로.
         _previewRenderer.cameraFieldOfView = 24f;
         _previewRenderer.camera.clearFlags = CameraClearFlags.Color;
         _previewRenderer.camera.backgroundColor = new Color(0.68f, 0.79f, 0.88f, 1f);
@@ -646,28 +666,9 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
 
     private void ConfigurePreviewLighting()
     {
-        if (_previewRenderer == null)
-        {
-            return;
-        }
-
-        if (_previewMaterialMode == PreviewMaterialMode.QuibliLook)
-        {
-            _previewRenderer.camera.backgroundColor = new Color(0.68f, 0.79f, 0.88f, 1f);
-            _previewRenderer.ambientColor = new Color(0.54f, 0.58f, 0.62f, 1f);
-            _previewRenderer.lights[0].intensity = 1.35f;
-            _previewRenderer.lights[0].transform.rotation = Quaternion.Euler(38f, -32f, 0f);
-            _previewRenderer.lights[1].intensity = 0.78f;
-            _previewRenderer.lights[1].transform.rotation = Quaternion.Euler(330f, 142f, 0f);
-            return;
-        }
-
-        _previewRenderer.camera.backgroundColor = new Color(0.68f, 0.79f, 0.88f, 1f);
-        _previewRenderer.ambientColor = new Color(0.62f, 0.62f, 0.62f, 1f);
-        _previewRenderer.lights[0].intensity = 1.15f;
-        _previewRenderer.lights[0].transform.rotation = Quaternion.Euler(45f, -35f, 0f);
-        _previewRenderer.lights[1].intensity = 0.65f;
-        _previewRenderer.lights[1].transform.rotation = Quaternion.Euler(340f, 140f, 0f);
+        // Mode별 라이팅 분기 제거 — 모든 모드가 CharacterShowcaseProfile baseline을 공유.
+        // material swap 여부는 ApplyPreviewMaterialMode에서만 결정.
+        ApplyShowcaseProfileToPreview();
     }
 
     private void ApplyPreviewMaterialMode(Transform modelRoot, ICollection<Material> generatedMaterials)

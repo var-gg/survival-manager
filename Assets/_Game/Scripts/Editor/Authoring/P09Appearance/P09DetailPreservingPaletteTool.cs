@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SM.Unity;
+using SM.Unity.P09Appearance;
 using UnityEditor;
 using UnityEngine;
 
@@ -178,29 +179,41 @@ public static class P09DetailPreservingPaletteTool
             instance.transform.localScale = Vector3.one;
             preset.ApplyTo(instance.transform, generatedMaterials);
             P09PreviewPoseUtility.TryApplyDefaultIdlePose(instance, preset.SexId);
-            ApplyPreviewReadableMaterials(instance.transform, generatedMaterials);
+
+            // 단일 진실원: CharacterShowcaseProfile. Studio window preview와 동일 profile을 사용해
+            // wiki 캡쳐 이미지가 사용자가 Studio에서 보는 것과 강제로 일치하게 한다.
+            var profile = CharacterShowcasePreviewApplier.LoadDefault();
+            if (CharacterShowcasePreviewApplier.ShouldUseReadableMaterials(profile))
+            {
+                ApplyPreviewReadableMaterials(instance.transform, generatedMaterials);
+            }
 
             var backgroundColor = ParseColor(spec.Background);
             previewRenderer = new PreviewRenderUtility();
-            previewRenderer.cameraFieldOfView = 23f;
-            previewRenderer.camera.clearFlags = CameraClearFlags.Color;
+            if (profile != null)
+            {
+                CharacterShowcasePreviewApplier.ApplyTo(previewRenderer, profile);
+            }
+            else
+            {
+                // Profile 자산이 없을 때만 legacy fallback.
+                previewRenderer.cameraFieldOfView = 23f;
+                previewRenderer.camera.clearFlags = CameraClearFlags.Color;
+                previewRenderer.camera.nearClipPlane = 0.05f;
+                previewRenderer.camera.farClipPlane = 80f;
+                previewRenderer.ambientColor = new Color(0.68f, 0.70f, 0.72f, 1f);
+                previewRenderer.lights[0].intensity = 1.45f;
+                previewRenderer.lights[0].transform.rotation = Quaternion.Euler(38f, -32f, 0f);
+                previewRenderer.lights[1].intensity = 0.75f;
+                previewRenderer.lights[1].transform.rotation = Quaternion.Euler(330f, 142f, 0f);
+            }
+            // Per-character background는 spec이 override (wiki crop은 인물별 배경 달라야 함).
             previewRenderer.camera.backgroundColor = backgroundColor;
-            previewRenderer.camera.nearClipPlane = 0.05f;
-            previewRenderer.camera.farClipPlane = 80f;
-            previewRenderer.ambientColor = new Color(0.68f, 0.70f, 0.72f, 1f);
-            previewRenderer.lights[0].intensity = 1.45f;
-            previewRenderer.lights[0].transform.rotation = Quaternion.Euler(38f, -32f, 0f);
-            previewRenderer.lights[1].intensity = 0.75f;
-            previewRenderer.lights[1].transform.rotation = Quaternion.Euler(330f, 142f, 0f);
             previewRenderer.AddSingleGO(instance);
 
             var camera = previewRenderer.camera;
             camera.clearFlags = CameraClearFlags.Color;
             camera.backgroundColor = backgroundColor;
-            camera.fieldOfView = 23f;
-            camera.nearClipPlane = 0.05f;
-            camera.farClipPlane = 80f;
-            camera.allowHDR = false;
             camera.allowMSAA = true;
 
             ConfigureCamera(camera, instance.transform, RenderWidth, RenderHeight);
