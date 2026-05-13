@@ -31,6 +31,7 @@
 - `quick-battle-smoke.md`: `Combat Sandbox` direct lane와 Town `Quick Battle (Smoke)` 운영 기준
 - `recruitment-and-retrain-harness.md`: Loop B + Loop C recruit/retrain sandbox와 governance inspect
 - `scene-installer.md`: first playable scene rebuild installer 기준
+- `sm-menu-guide.md`: SM 메뉴 진입점 전체를 사용자 워크플로우 기준으로 정리
 - `scene-repair-bootstrap.md`: first playable scene repair/bootstrap 운영 기준
 - `unity-bootstrap.md`: Unity 부트스트랩 절차
 - `unity-cli.md`: Unity CLI optional fast lane와 reconnect recovery
