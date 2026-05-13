@@ -1,19 +1,32 @@
-# Claude Design handoff 운영 기준
+# Claude Design handoff 운영 기준 — historical reference
+
+> ⚠ **이 폴더의 HTML/CSS/JSX는 현재 비주얼 SoT가 아니다.** 시각 톤이
+> 프로젝트가 지향하는 anime-painted / illustrated world (명일방주 / Honkai
+> Star Rail 톤)와 맞지 않아 채택 보류. **현재 비주얼 reference로 절대 읽지 말 것.**
+>
+> AI 에이전트 / 새 협업자는 **pindoc wiki의 시안 갤러리만** SoT로 사용.
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-08
-- 소스오브트루스: `docs/02_design/ui/handoff/README.md`
+- 최종수정일: 2026-05-13
+- 소스오브트루스: 이 README는 historical handoff 자산의 위치/형상관리 기준만 다룬다. 비주얼 SoT는 pindoc.
 - 관련문서:
-  - `docs/02_design/index.md`
-  - `docs/03_architecture/ui-runtime-architecture.md`
-  - `docs/02_design/ui/handoff/foundation-pack-v0.2/README.md`
-  - pindoc Analysis: `pindoc://claude-design-uitk-adoption-audit-2026-05-08`
-  - pindoc Task: `pindoc://task-claude-design-handoff-intake-policy`
-  - pindoc Task: `pindoc://task-foundation-pack-v0-2-unity-adoption`
-  - pindoc Task: `pindoc://task-battle-shell-v0-4-uitk-adoption`
+  - 현재 비주얼 SoT (Town): `pindoc://town-ui-ux-시안-갤러리-v1-gallery-town-ui-mockups-v1`
+  - 현재 비주얼 SoT (Battle map): `pindoc://battle-map-시안-갤러리-v1-10-site-일러-reference-gallery-battle`
+  - 컴포넌트 카탈로그: `pindoc://analysis-town-ui-component-system-v1`
+  - 실행 plan: `pindoc://plan-town-ui-v1-execution`
+  - UX surface 카탈로그: `pindoc://ux-surface-catalog-v1-draft`
+  - 전환 결정 + 적용 audit: `pindoc://claude-design-uitk-adoption-audit-2026-05-08`
 
-## 목적
+## 왜 deprecated인가
+
+claude.ai/design 핸드오프 (v0.2~v0.6)의 HTML/CSS는 **시각 톤이 프로젝트가
+지향하는 anime-painted / illustrated world 톤 (명일방주 / Honkai Star Rail
+계열)과 맞지 않아 채택 보류.** 다만 IA(field 구조, state matrix, component
+계약)는 일부 유효해서 historical reference로 보존한다. AI 에이전트나 새 협업자는
+**시각 reference로 이 폴더의 HTML을 읽지 말 것** — 위 pindoc 시안 갤러리가 SoT.
+
+## 목적 (Historical)
 
 이 디렉터리는 Claude Design에서 받은 HTML/CSS 중심 handoff를 Unity UI Toolkit 구현으로 옮기기 전 보존하는 reference 영역이다. 여기의 파일은 게임 코드가 직접 로드하지 않으며, Unity 구현자는 시각 톤, component contract, state matrix, responsive intent만 읽어 `Assets/_Game/UI/**`의 UXML/USS와 presenter read model로 다시 작성한다.
 

@@ -1,21 +1,35 @@
-# Foundation Pack v0.2 — claude.ai/design 핸드오프 결과
+# Foundation Pack v0.2 — claude.ai/design 핸드오프 결과 — historical reference
 
-- 상태: draft
+> ⚠ **이 HTML/JSX는 현재 비주얼 SoT가 아니다.** anime-painted 톤과 mismatch로
+> 채택 보류. 비주얼 reference로 읽지 말 것. 현재 SoT는 아래 pindoc 링크.
+
+- 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-08
-- 소스오브트루스: 이 폴더의 HTML/JSX 파일과 `../README.md` handoff 운영 기준
+- 최종수정일: 2026-05-13
+- 소스오브트루스: 이 README는 historical 자산의 위치/형상관리 기준만 다룬다. 비주얼 SoT는 pindoc.
 - 관련문서:
-  - `docs/02_design/ui/handoff/README.md`
-  - `docs/02_design/ui/battle-observer-ui.md`
-  - `docs/02_design/ui/town-character-sheet-ui.md`
-  - `docs/03_architecture/ui-runtime-architecture.md`
-  - pindoc Analysis: `pindoc://ux-surface-catalog-v1-draft` (UX Surface 카탈로그 v3)
-  - pindoc Analysis: `pindoc://claude-design-handoff-brief` (의뢰 brief v3)
-  - pindoc Analysis: `pindoc://analysis-p09-visual-baseline` (P09 시각 baseline)
-  - pindoc Task: `pindoc://task-claude-design-cycle-2-to-7` (5/8 reset 후 cycle plan)
-  - pindoc Task: `pindoc://task-foundation-pack-v0-2-unity-adoption` (Unity 적용 task)
+  - 현재 비주얼 SoT: `pindoc://town-ui-ux-시안-갤러리-v1-gallery-town-ui-mockups-v1`
+  - 현재 비주얼 SoT: `pindoc://analysis-town-ui-component-system-v1`
+  - 전환 결정: `pindoc://claude-design-uitk-adoption-audit-2026-05-08`
+  - `docs/02_design/ui/handoff/README.md` (deprecated 마스터)
 
-## 목적
+## 현재 비주얼 SoT
+
+**이 폴더의 HTML/JSX는 더 이상 비주얼 reference로 사용하지 않는다.** 시각 톤이
+프로젝트가 지향하는 anime-painted / illustrated world (명일방주 / Honkai Star
+Rail 톤)과 너무 달라 채택 보류. 현재 Town/Battle/HeroDetail UI 비주얼 시안은
+pindoc wiki의 시안 갤러리 (위 SoT 링크)를 본다.
+
+활용 자산 (이미 Unity에 반영된 일부):
+
+- `Assets/_Game/UI/Foundation/Styles/ThemeTokens.uss` — 컬러/타이포 토큰
+- `Assets/_Game/UI/Foundation/Styles/RuntimePanelTheme.uss`
+- `Assets/_Game/UI/Foundation/Components/Button.{uxml,uss}`
+- `Assets/_Game/UI/Foundation/Components/HeroPortraitCard.{uxml,uss}`
+
+token 일부는 시안 v1 톤에 맞춰 재조정 예정 (별도 task).
+
+## 목적 (Historical)
 
 claude.ai/design 의뢰로 생성된 Survival Manager Foundation pack v0.2의 결과물 보존소.
 JRPG/원신/유니콘 오버로드 톤 + 1인 인디 production scope를 흡수한 design system mock 6 step + 3 surface 검증.

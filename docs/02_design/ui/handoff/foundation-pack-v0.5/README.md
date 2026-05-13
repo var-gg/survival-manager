@@ -1,6 +1,13 @@
-# Foundation pack v0.5 — Common.HeroDetail (단린 seed)
+# Foundation pack v0.5 — Common.HeroDetail (단린 seed) [DEPRECATED]
 
-**Status**: cycle 3 (v0.5) 부분 완료 — HTML + CSS 수집, JS pending (Chrome 보안 차단)
+**상태: deprecated**. 시각 톤 mismatch로 pindoc wiki 시안 갤러리로 SoT 전환.
+HeroDetail의 IA (4-slot skill grid, stance switcher 등)는 여전히 유효하지만 비주얼
+reference는 pindoc 시안을 본다.
+
+- 현재 비주얼 SoT: `pindoc://analysis-town-ui-component-system-v1` (HeroDetail surface 포함)
+- 전환 결정: `pindoc://claude-design-uitk-adoption-audit-2026-05-08`
+
+**원본 status** (cycle 시점): cycle 3 (v0.5) 부분 완료 — HTML + CSS 수집, JS pending (Chrome 보안 차단)
 
 ## 산출물
 

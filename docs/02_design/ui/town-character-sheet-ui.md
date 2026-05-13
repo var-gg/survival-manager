@@ -2,17 +2,21 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-08
-- 소스오브트루스: `docs/02_design/ui/town-character-sheet-ui.md`
+- 최종수정일: 2026-05-13
+- 소스오브트루스: `docs/02_design/ui/town-character-sheet-ui.md` (정보 구조 / field closure)
 - 관련문서:
   - `docs/02_design/deck/launch-core-roster-sheet.md`
   - `docs/02_design/meta/town-and-expedition-loop.md`
   - `docs/03_architecture/town-character-sheet-contract.md`
+  - **비주얼 시안 SoT**: `pindoc://town-ui-ux-시안-갤러리-v1-gallery-town-ui-mockups-v1`
+  - **컴포넌트 카탈로그**: `pindoc://analysis-town-ui-component-system-v1`
 
 ## 목적
 
-이 문서는 Town에서 플레이어가 보는 character sheet의 정보 구조를 고정한다.
-스타일보다 IA와 field closure를 우선한다.
+이 문서는 Town에서 플레이어가 보는 character sheet의 **정보 구조(IA)**를 고정한다.
+스타일보다 IA와 field closure를 우선한다. **비주얼 톤 / 레이아웃 / 일러스트 기준은
+pindoc 시안 갤러리(위 SoT)를 본다** — claude.ai/design 핸드오프 v0.2~v0.6의
+HTML/CSS는 시각 톤 mismatch로 deprecated.
 
 ## 기본 원칙
 

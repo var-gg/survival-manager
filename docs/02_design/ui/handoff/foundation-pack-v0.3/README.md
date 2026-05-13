@@ -1,9 +1,12 @@
-# Foundation Pack v0.3 — claude.ai/design 핸드오프 결과 (cycle 1)
+# Foundation Pack v0.3 — claude.ai/design 핸드오프 결과 (cycle 1) — historical reference
 
-- 상태: draft
+> ⚠ **이 HTML은 현재 비주얼 SoT가 아니다.** anime-painted 톤과 mismatch로 채택
+> 보류. 비주얼 reference로 읽지 말 것. 현재 SoT는 `pindoc://town-ui-ux-시안-갤러리-v1-gallery-town-ui-mockups-v1`.
+
+- 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-08
-- 소스오브트루스: 이 폴더의 HTML 파일
+- 최종수정일: 2026-05-13
+- 소스오브트루스: 이 README는 historical 자산의 위치 기준만 다룬다.
 - 관련문서:
   - `docs/02_design/ui/handoff/foundation-pack-v0.2/README.md` (v0.2 baseline)
   - `docs/02_design/ui/battle-observer-ui.md`

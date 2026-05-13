@@ -1,6 +1,12 @@
-# Foundation pack v0.4 — Battle shell
+# Foundation pack v0.4 — Battle shell [DEPRECATED]
 
-**Status**: cycle 2 (v0.4) 부분 완료 — HTML + CSS 수집, JS pending (Chrome 보안 차단으로 사용자 manual Keep 필요)
+**상태: deprecated**. 시각 톤이 anime-painted illustrated world 방향과 안 맞아
+pindoc wiki 시안 갤러리로 SoT 전환. 이 폴더의 HTML/CSS/JS는 historical reference.
+
+- 현재 비주얼 SoT: `pindoc://battle-map-시안-갤러리-v1-10-site-일러-reference-gallery-battle`
+- 전환 결정: `pindoc://claude-design-uitk-adoption-audit-2026-05-08`
+
+**원본 status** (cycle 시점): cycle 2 (v0.4) 부분 완료 — HTML + CSS 수집, JS pending (Chrome 보안 차단으로 사용자 manual Keep 필요)
 
 ## 산출물
 
