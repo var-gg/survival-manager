@@ -88,12 +88,10 @@ public sealed class BattlePresentationController : MonoBehaviour
         DisableObtrusiveBackdrops();
         // Map renderer가 비로소 씬에 존재하므로 authoring Apply를 다시 호출하여
         // ForceShadowCastingOnSceneRenderers가 map 자식까지 캐스터로 강제하게 한다.
-        var authoringOverride = RefreshEnvironmentAuthoring();
+        // Authoring 누락 시에도 true 반환 — fallback Adapter가 silent 으로 마스킹 안 하도록.
+        var skipAdapter = RefreshEnvironmentAuthoring();
         CreateBattleLighting();
-        // BattleStageEnvironmentAdapter는 RenderSettings/Volume/Camera를 또 한 번 덮어쓰며
-        // TriForge VP_FW01_Summer 프로파일을 적용해서 노란색 polution을 만든다.
-        // Authoring이 override를 켰으면 (default true) Adapter는 완전히 비활성화한다.
-        if (!authoringOverride)
+        if (!skipAdapter)
         {
             _activeEnvironmentAdapter?.Apply();
         }
@@ -571,13 +569,21 @@ public sealed class BattlePresentationController : MonoBehaviour
     /// ForceShadowCastingOnSceneRenderers가 map 자식 renderer들을 캐스터로 강제 등록한다.
     /// </summary>
     /// <summary>
-    /// Authoring이 씬에 있고 override flag가 켜져 있으면 Apply 후 true 반환 — 호출자가
-    /// 충돌하는 어댑터(BattleStageEnvironmentAdapter)를 건너뛰는 신호로 사용.
+    /// Authoring이 씬에 있고 override flag가 켜져 있으면 Apply 후 true 반환.
+    /// 누락 시 LOUD ERROR — fallback으로 어댑터를 silent하게 쓰지 않는다. 깨진 화면 + 콘솔
+    /// 빨간 줄로 즉시 인지하게 만들고, 호출자는 어댑터도 건너뛴다.
     /// </summary>
     private bool RefreshEnvironmentAuthoring()
     {
         var auth = Object.FindFirstObjectByType<BattleRenderEnvironmentAuthoring>();
-        if (auth == null) return false;
+        if (auth == null)
+        {
+            Debug.LogError(
+                "[BattleLighting] BattleRenderEnvironmentAuthoring 컴포넌트가 Battle.unity에 없습니다. " +
+                "SM/Battle/맵 + 캐릭터 미리보기 셋업 메뉴로 BattleRenderEnvironment GameObject를 셋업하세요. " +
+                "Adapter fallback은 silent 으로 호출되지 않으며, 라이팅이 의도적으로 정의되지 않은 상태로 남습니다.");
+            return true; // true 리턴 — 호출자가 Adapter도 건너뛰게 해서 fallback 마스킹 차단.
+        }
         auth.Apply();
         return auth.OverrideRuntimeLightCreation;
     }
