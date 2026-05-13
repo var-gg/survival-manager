@@ -150,7 +150,32 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
         ApplyLights();
         ApplyCamera();
         ApplyVolume();
+        ForceShadowCastingOnSceneRenderers();
         DynamicGI.UpdateEnvironment();
+    }
+
+    /// <summary>
+    /// 씬 안의 모든 mesh renderer가 shadow를 cast/receive 하도록 강제.
+    /// 트리/바위 prefab이 shadow caster 비활성으로 ship된 경우 대비.
+    /// ShadowsOnly marker가 붙은 오브젝트와 BattleActorContactShadow는 건너뜀.
+    /// </summary>
+    private void ForceShadowCastingOnSceneRenderers()
+    {
+        var renderers = FindObjectsByType<Renderer>(FindObjectsSortMode.None);
+        foreach (var renderer in renderers)
+        {
+            if (renderer == null) continue;
+            // UI layer skip
+            if (renderer.gameObject.layer == 5) continue;
+            // ShadowsOnly marker가 있는 오브젝트는 건드리지 않음
+            if (renderer.GetComponentInParent<BattleShadowOnlyMarker>() != null) continue;
+            // Contact shadow blob 자신은 cast 안 함
+            if (renderer.gameObject.name.Contains("ContactShadow")) continue;
+            if (renderer.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly) continue;
+
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            renderer.receiveShadows = true;
+        }
     }
 
     private void EnsureDefaultAssetsLoaded()

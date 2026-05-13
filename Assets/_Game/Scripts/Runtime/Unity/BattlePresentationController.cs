@@ -528,6 +528,15 @@ public sealed class BattlePresentationController : MonoBehaviour
             return;
         }
 
+        // BattleRenderEnvironmentAuthoring이 씬에 있고 override flag가 켜져 있으면
+        // 여기서 자동 sun 생성을 건너뛴다 (이중 sun 충돌 방지).
+        var authoring = Object.FindFirstObjectByType<BattleRenderEnvironmentAuthoring>();
+        if (authoring != null && authoring.OverrideRuntimeLightCreation)
+        {
+            Debug.Log("[BattleLighting] BattleRenderEnvironmentAuthoring takeover — auto sun/fill 생성 skip.");
+            return;
+        }
+
         var lightingRoot = new GameObject("BattleLighting");
         lightingRoot.transform.SetParent(battleStageRoot, false);
 
