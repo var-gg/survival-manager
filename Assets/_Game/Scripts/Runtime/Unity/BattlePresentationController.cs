@@ -84,6 +84,11 @@ public sealed class BattlePresentationController : MonoBehaviour
         Clear();
         var tacticalOverlayMode = CreateSelectedMap(mapContext);
         CreateStageDecor(tacticalOverlayMode);
+        // Map 인스턴스 직후 거대 BackgroundMountain prefab들을 끈다 — 1500m+ 사이즈가 카메라 시야를 압도.
+        DisableObtrusiveBackdrops();
+        // Map renderer가 비로소 씬에 존재하므로 authoring Apply를 다시 호출하여
+        // ForceShadowCastingOnSceneRenderers가 map 자식까지 캐스터로 강제하게 한다.
+        RefreshEnvironmentAuthoring();
         CreateBattleLighting();
         _activeEnvironmentAdapter?.Apply();
         var runtimeCatalog = BattleActorPresentationCatalog.ResolveRuntimeCatalog(presentationCatalog);
@@ -519,6 +524,50 @@ public sealed class BattlePresentationController : MonoBehaviour
         }
 
         UpdateStageReadability();
+    }
+
+    /// <summary>
+    /// TriForge BackgroundMountain prefab 5개 (WolfPineBackdrop 3개 + WolfPineHorizon DistantHill 2개)는
+    /// 원본 mesh 사이즈가 ~1500m라 부감 카메라 시야를 베이지 plane으로 압도한다.
+    /// Map 인스턴스 직후 강제로 비활성화.
+    /// </summary>
+    private void DisableObtrusiveBackdrops()
+    {
+        if (battleStageRoot == null)
+        {
+            return;
+        }
+        var transforms = battleStageRoot.GetComponentsInChildren<Transform>(true);
+        var disabled = 0;
+        foreach (var t in transforms)
+        {
+            if (t == null) continue;
+            var n = t.name;
+            if (n == "WolfPineBackdrop"
+                || n.StartsWith("BackdropMountain_")
+                || n.StartsWith("DistantHill_"))
+            {
+                if (t.gameObject.activeSelf)
+                {
+                    t.gameObject.SetActive(false);
+                    disabled++;
+                }
+            }
+        }
+        if (disabled > 0)
+        {
+            Debug.Log($"[BattleStage] 거대 backdrop mountain {disabled}개 비활성화 (베이지 plane 차단).");
+        }
+    }
+
+    /// <summary>
+    /// Map renderer가 씬에 존재하는 시점에 BattleRenderEnvironmentAuthoring.Apply()를 재호출.
+    /// ForceShadowCastingOnSceneRenderers가 map 자식 renderer들을 캐스터로 강제 등록한다.
+    /// </summary>
+    private void RefreshEnvironmentAuthoring()
+    {
+        var auth = Object.FindFirstObjectByType<BattleRenderEnvironmentAuthoring>();
+        auth?.Apply();
     }
 
     private void CreateBattleLighting()
