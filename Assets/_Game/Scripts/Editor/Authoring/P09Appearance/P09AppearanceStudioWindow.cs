@@ -46,12 +46,6 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         OpenWindow();
     }
 
-    [MenuItem("SM/Characters/P09 Appearance Studio")]
-    private static void OpenLegacy()
-    {
-        OpenWindow();
-    }
-
     private static void OpenWindow()
     {
         var window = GetWindow<P09AppearanceStudioWindow>("P09 외형 편집");

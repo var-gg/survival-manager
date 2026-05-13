@@ -12,7 +12,7 @@ public static class NarrativePortraitValidator
     private const string AuthoringMapPath = "tools/narrative-authoring-map.json";
     private const string PortraitsRoot = "Assets/Resources/Narrative/Portraits";
 
-    [MenuItem("SM/Narrative/Validate Portrait Assets")]
+    [MenuItem("SM/내러티브/포트레이트 자산 검증")]
     public static void ValidatePortraits()
     {
         if (!File.Exists(AuthoringMapPath))

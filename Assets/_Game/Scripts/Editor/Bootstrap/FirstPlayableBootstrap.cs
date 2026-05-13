@@ -118,12 +118,6 @@ public static class FirstPlayableBootstrap
         PrepareObserverPlayable();
     }
 
-    [MenuItem("SM/극장모드", false, 3)]
-    public static void PlayTheaterMode()
-    {
-        EditorUtility.DisplayDialog("극장모드", "극장모드는 준비 중입니다.", "확인");
-    }
-
     public static void EnsureLocalizationFoundation()
     {
         LocalizationFoundationBootstrap.EnsureFoundationAssets();

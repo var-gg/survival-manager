@@ -16,7 +16,7 @@ Loop B recruit/retrain/duplicate/dismiss 흐름을 Editor에서 재현하고 det
 
 ## 진입점
 
-- 메뉴: `SM/Authoring/Recruitment Sandbox`
+- 메뉴: `SM/저작/영입 샌드박스`
 - 런타임 세션: `GameSessionState` + `RuntimeCombatContentLookup`
 - low-level preview: `RecruitPackGenerator`, `TeamPlanEvaluator`, `RecruitCandidateScoringService`
 

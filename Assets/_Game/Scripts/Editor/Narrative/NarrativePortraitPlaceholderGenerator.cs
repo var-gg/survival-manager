@@ -12,7 +12,7 @@ public static class NarrativePortraitPlaceholderGenerator
     private const string PortraitsRoot = "Assets/Resources/Narrative/Portraits";
     private const int PlaceholderSize = 256;
 
-    [MenuItem("SM/Narrative/Generate Portrait Placeholders")]
+    [MenuItem("SM/내러티브/포트레이트 플레이스홀더 생성")]
     public static void GeneratePlaceholders()
     {
         if (!File.Exists(AuthoringMapPath))
