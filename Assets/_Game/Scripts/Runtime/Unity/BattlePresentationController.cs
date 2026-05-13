@@ -88,9 +88,15 @@ public sealed class BattlePresentationController : MonoBehaviour
         DisableObtrusiveBackdrops();
         // Map renderer가 비로소 씬에 존재하므로 authoring Apply를 다시 호출하여
         // ForceShadowCastingOnSceneRenderers가 map 자식까지 캐스터로 강제하게 한다.
-        RefreshEnvironmentAuthoring();
+        var authoringOverride = RefreshEnvironmentAuthoring();
         CreateBattleLighting();
-        _activeEnvironmentAdapter?.Apply();
+        // BattleStageEnvironmentAdapter는 RenderSettings/Volume/Camera를 또 한 번 덮어쓰며
+        // TriForge VP_FW01_Summer 프로파일을 적용해서 노란색 polution을 만든다.
+        // Authoring이 override를 켰으면 (default true) Adapter는 완전히 비활성화한다.
+        if (!authoringOverride)
+        {
+            _activeEnvironmentAdapter?.Apply();
+        }
         var runtimeCatalog = BattleActorPresentationCatalog.ResolveRuntimeCatalog(presentationCatalog);
 
         foreach (var actor in initialStep.Units)
@@ -564,10 +570,16 @@ public sealed class BattlePresentationController : MonoBehaviour
     /// Map renderer가 씬에 존재하는 시점에 BattleRenderEnvironmentAuthoring.Apply()를 재호출.
     /// ForceShadowCastingOnSceneRenderers가 map 자식 renderer들을 캐스터로 강제 등록한다.
     /// </summary>
-    private void RefreshEnvironmentAuthoring()
+    /// <summary>
+    /// Authoring이 씬에 있고 override flag가 켜져 있으면 Apply 후 true 반환 — 호출자가
+    /// 충돌하는 어댑터(BattleStageEnvironmentAdapter)를 건너뛰는 신호로 사용.
+    /// </summary>
+    private bool RefreshEnvironmentAuthoring()
     {
         var auth = Object.FindFirstObjectByType<BattleRenderEnvironmentAuthoring>();
-        auth?.Apply();
+        if (auth == null) return false;
+        auth.Apply();
+        return auth.OverrideRuntimeLightCreation;
     }
 
     private void CreateBattleLighting()
