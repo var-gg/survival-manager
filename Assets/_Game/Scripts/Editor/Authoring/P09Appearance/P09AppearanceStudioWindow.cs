@@ -32,6 +32,9 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
     private PreviewFraming _previewFraming = PreviewFraming.FullBody;
     private PreviewMaterialMode _previewMaterialMode = PreviewMaterialMode.QuibliLook;
     private float _previewYaw;
+    private bool _showcaseProfileFoldout = true;
+    private UnityEditor.Editor? _cachedShowcaseEditor;
+    private Vector2 _showcaseScroll;
 
     [MenuItem("SM/캐릭터/P09 외형 편집")]
     public static void Open()
@@ -61,6 +64,11 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         DestroyPreview();
         _previewRenderer?.Cleanup();
         _previewRenderer = null;
+        if (_cachedShowcaseEditor != null)
+        {
+            UnityEngine.Object.DestroyImmediate(_cachedShowcaseEditor);
+            _cachedShowcaseEditor = null;
+        }
     }
 
     private void OnGUI()
@@ -171,15 +179,99 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
                 PreviewPanelWidth,
                 PreviewPanelHeight,
                 GUILayout.ExpandWidth(false),
-                GUILayout.ExpandHeight(true));
+                GUILayout.ExpandHeight(false));
             EditorGUI.DrawRect(rect, new Color(0.16f, 0.16f, 0.16f, 1f));
             if (_previewRoot == null)
             {
                 EditorGUI.LabelField(rect, "미리보기를 갱신하세요.", EditorStyles.centeredGreyMiniLabel);
-                return;
+            }
+            else
+            {
+                DrawRenderedPreview(rect);
             }
 
-            DrawRenderedPreview(rect);
+            // 미리보기 아래에 Showcase profile 패널 — 보면서 즉시 라이팅 baseline 조정.
+            DrawShowcaseProfilePanel();
+        }
+    }
+
+    /// <summary>
+    /// 캐릭터 표현 baseline (CharacterShowcaseProfile)을 Studio에서 직접 만짐.
+    /// 슬라이더 한 번 돌릴 때마다 위쪽 P09 preview에 즉시 반영되고, 동시에 wiki 캡쳐 출력도
+    /// 같은 자산을 구독하므로 강제 일치.
+    /// </summary>
+    private void DrawShowcaseProfilePanel()
+    {
+        EditorGUILayout.Space(6f);
+        _showcaseProfileFoldout = EditorGUILayout.Foldout(
+            _showcaseProfileFoldout,
+            "캐릭터 표현 baseline (Showcase Profile — 모든 P09 / wiki 캡쳐 공통)",
+            true,
+            EditorStyles.foldoutHeader);
+        if (!_showcaseProfileFoldout) return;
+
+        var profile = CharacterShowcasePreviewApplier.LoadDefault();
+        if (profile == null)
+        {
+            EditorGUILayout.HelpBox(
+                "CharacterShowcaseProfile 자산이 없습니다. 자동 생성하시겠습니까?",
+                MessageType.Info);
+            if (GUILayout.Button("default profile 자산 생성"))
+            {
+                CharacterShowcasePreviewApplier.EnsureDefaultExists();
+                Repaint();
+            }
+            return;
+        }
+
+        // Asset 경로 + 핑(Project window에서 찾기) 버튼
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            EditorGUILayout.LabelField(
+                "자산", AssetDatabase.GetAssetPath(profile),
+                EditorStyles.miniLabel);
+            if (GUILayout.Button("Project에서 찾기", GUILayout.Width(110f)))
+            {
+                EditorGUIUtility.PingObject(profile);
+            }
+        }
+
+        // 자산 자체의 Inspector를 그대로 임베드 — Header/Tooltip이 그대로 나옴.
+        UnityEditor.Editor.CreateCachedEditor(profile, null, ref _cachedShowcaseEditor);
+        if (_cachedShowcaseEditor == null) return;
+
+        EditorGUI.BeginChangeCheck();
+        using (var scroll = new EditorGUILayout.ScrollViewScope(
+            _showcaseScroll, GUILayout.MaxHeight(360f)))
+        {
+            _showcaseScroll = scroll.scrollPosition;
+            _cachedShowcaseEditor.OnInspectorGUI();
+        }
+        if (EditorGUI.EndChangeCheck())
+        {
+            EditorUtility.SetDirty(profile);
+            CharacterShowcasePreviewApplier.InvalidateCache();
+            ApplyShowcaseProfileToPreview();
+            UpdatePreview();
+        }
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if (GUILayout.Button("자산 저장 (SaveAssets)"))
+            {
+                AssetDatabase.SaveAssets();
+            }
+            if (GUILayout.Button("기본값 리셋"))
+            {
+                Undo.RecordObject(profile, "Reset Showcase Profile");
+                var fresh = ScriptableObject.CreateInstance<CharacterShowcaseProfile>();
+                EditorUtility.CopySerialized(fresh, profile);
+                ScriptableObject.DestroyImmediate(fresh);
+                EditorUtility.SetDirty(profile);
+                CharacterShowcasePreviewApplier.InvalidateCache();
+                ApplyShowcaseProfileToPreview();
+                UpdatePreview();
+            }
         }
     }
 
