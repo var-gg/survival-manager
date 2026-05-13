@@ -1,6 +1,13 @@
-# Foundation pack v0.6 — Common detail screens (ItemDetail / SkillDetail / StatusEffectTooltip)
+# Foundation pack v0.6 — Common detail screens [DEPRECATED]
 
-**Status**: cycle 4 (v0.6) 부분 완료 — HTML + CSS 수집, JS pending (Chrome Keep)
+**상태: deprecated**. 시각 톤 mismatch로 pindoc wiki 시안 갤러리로 SoT 전환.
+ItemDetail / SkillDetail / StatusEffectTooltip의 IA는 유효하지만 비주얼 reference는
+pindoc 시안을 본다.
+
+- 현재 비주얼 SoT: `pindoc://analysis-town-ui-component-system-v1`
+- 전환 결정: `pindoc://claude-design-uitk-adoption-audit-2026-05-08`
+
+**원본 status** (cycle 시점): cycle 4 (v0.6) 부분 완료 — HTML + CSS 수집, JS pending (Chrome Keep)
 
 ## 산출물 (단일 page에 3 surface 묶음)
 

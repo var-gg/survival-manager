@@ -115,6 +115,6 @@
 - `deck/hero-expansion-roadmap.md`: 영웅풀 확장 wave, specialist 정책, DLC/sequel 규칙
 - `progression/explanation-progression-premise.md`: progression premise 설명 문서
 - `ui/battle-observer-ui.md`: 전투 관전자 UI 기준
-- `ui/town-character-sheet-ui.md`: Town 5-panel character sheet IA
+- `ui/town-character-sheet-ui.md`: Town 5-panel character sheet IA (정보 구조 SoT — 비주얼은 pindoc 시안 갤러리)
 - `ui/localization-policy.md`: 플레이어 노출 텍스트와 localization table 정책
-- `ui/handoff/README.md`: Claude Design HTML/CSS handoff 운영 기준과 Unity UITK 변환 규칙
+- `ui/handoff/README.md`: [deprecated] Claude Design HTML/CSS 핸드오프 historical reference. 비주얼 SoT는 pindoc Analysis (`pindoc://town-ui-ux-시안-갤러리-v1-gallery-town-ui-mockups-v1` / `pindoc://analysis-town-ui-component-system-v1` 등).
