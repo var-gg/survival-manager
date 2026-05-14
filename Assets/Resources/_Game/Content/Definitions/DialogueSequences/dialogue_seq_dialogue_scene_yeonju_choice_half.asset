@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__008
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.008
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-4371517343713745165
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__007
   _speakerId: hero_ember_runner
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.007
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.small
   _autoAdvanceHint: 0
 --- !u!114 &-4353099613797663390
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4008242548978574191
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-3855933782687649664
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__002
   _speakerId: hero_ember_runner
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.small
   _autoAdvanceHint: 0
 --- !u!114 &-3172732985940505035
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__010
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.010
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2452799659911303033
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__006
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -166,7 +166,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__009
   _speakerId: hero_ember_runner
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.009
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &1154383238183759436
@@ -184,7 +184,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__005
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &6515239946894584998
@@ -202,7 +202,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__004
   _speakerId: hero_ember_runner
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.004
-  _emote: Grim
+  _emote: cry
   _emotionTextKey: loc.story.emotion.tearful
   _autoAdvanceHint: 0
 --- !u!114 &8210494247157805466
@@ -220,6 +220,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_yeonju_choice_half__line__001
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_yeonju_choice_half.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0

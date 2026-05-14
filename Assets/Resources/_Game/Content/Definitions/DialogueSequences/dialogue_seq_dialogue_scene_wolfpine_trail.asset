@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__013
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.013
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &-7492075944129850794
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5481636700272747722
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__011
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.011
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4448133416394326211
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &-3123545545124398024
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__010
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.010
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &-2248338282969364330
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__009
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.009
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &-1078379363068764259
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__008
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.008
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -170,7 +170,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3259365649712138688
@@ -188,7 +188,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.002
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.solemn
   _autoAdvanceHint: 0
 --- !u!114 &3618910491004496598
@@ -206,7 +206,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.solemn
   _autoAdvanceHint: 0
 --- !u!114 &4516168689072263245
@@ -224,7 +224,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__012
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.012
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &6025989676978472118
@@ -242,7 +242,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.curious
   _autoAdvanceHint: 0
 --- !u!114 &7251614918391989714
@@ -260,7 +260,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.006
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.wary
   _autoAdvanceHint: 0
 --- !u!114 &7369411750752438698
@@ -278,7 +278,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__014
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.014
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &9134592265863941377
@@ -296,6 +296,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_wolfpine_trail__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_wolfpine_trail.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

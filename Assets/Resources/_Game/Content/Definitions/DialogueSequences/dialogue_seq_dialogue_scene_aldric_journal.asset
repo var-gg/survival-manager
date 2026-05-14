@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__015
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.015
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &-7773044476508786711
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__013
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.013
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7586404068288042256
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__008
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.reading
   _autoAdvanceHint: 0
 --- !u!114 &-6632060605561914029
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__009
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.reading
   _autoAdvanceHint: 0
 --- !u!114 &-5778043019092591305
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__016
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.016
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-5397441735808981824
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__007
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.007
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-4504764486937382014
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4121957774700785160
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__017
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.017
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2986259507465859694
@@ -159,7 +159,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__010
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.010
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2459964641007595724
@@ -177,7 +177,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.002
-  _emote: Shock
+  _emote: shock
   _emotionTextKey: loc.story.emotion.shock
   _autoAdvanceHint: 0
 --- !u!114 &-2297335283157796463
@@ -195,7 +195,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__020
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.020
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-2227339606122714938
@@ -213,7 +213,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -266,7 +266,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &2901162243869374725
@@ -284,7 +284,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__014
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.014
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.reading
   _autoAdvanceHint: 0
 --- !u!114 &3087377381700158644
@@ -302,7 +302,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__019
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.019
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &6028873981386893476
@@ -320,7 +320,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &6377096677166532963
@@ -338,7 +338,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7618250530486285777
@@ -356,7 +356,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__012
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.012
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &7739402235353935301
@@ -374,7 +374,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.blunt
   _autoAdvanceHint: 0
 --- !u!114 &8260703636295575627
@@ -392,7 +392,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__011
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.011
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &8911689793871607201
@@ -410,6 +410,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aldric_journal__line__018
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aldric_journal.018
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.reading
   _autoAdvanceHint: 0

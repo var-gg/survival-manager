@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6499586982176544830
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-5355562855263936549
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__014
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-3948022625425175355
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__015
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-3858159821841386484
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__013
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-3073497650662644881
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__007
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-2139248087070246462
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__001
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.001
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &-1330840380891038800
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -189,7 +189,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &221447561077236888
@@ -207,7 +207,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1681231720860768899
@@ -225,7 +225,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2259292725440399831
@@ -243,7 +243,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__010
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &5169259202493473196
@@ -261,7 +261,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &5195300348926153612
@@ -279,7 +279,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__009
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.003
-  _emote: Skeptical
+  _emote: smile
   _emotionTextKey: loc.story.emotion.wry
   _autoAdvanceHint: 0
 --- !u!114 &5346145548082356334
@@ -297,7 +297,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__008
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &8280580706674653343
@@ -315,6 +315,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother__line__011
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc2_last_word_for_brother.005
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0

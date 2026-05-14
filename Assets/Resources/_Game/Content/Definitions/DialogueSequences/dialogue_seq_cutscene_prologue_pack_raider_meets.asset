@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__001
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.wary
   _autoAdvanceHint: 0
 --- !u!114 &-6970296867304191005
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6864655366071770357
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6674530264535287889
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4850504196038653442
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__015
   _speakerId: npc_han_sae
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.015
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-2521272827447593989
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1370237412257198693
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__009
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.009
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &-1359374595288661211
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__019
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.019
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -195,7 +195,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__021
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.021
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &402529644926735117
@@ -213,7 +213,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__013
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.013
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &1909281352223385341
@@ -231,7 +231,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2054318384369452674
@@ -249,7 +249,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__006
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2757560244177745854
@@ -267,7 +267,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__017
   _speakerId: npc_han_sae
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.017
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &2841897009496980254
@@ -285,7 +285,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__007
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &3393507324177642221
@@ -303,7 +303,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__010
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.010
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &3951178714419325038
@@ -321,7 +321,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__011
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.011
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &4404424300085975692
@@ -339,7 +339,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__014
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.014
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6865916157807699701
@@ -357,7 +357,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__016
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.016
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6896171666748415907
@@ -375,7 +375,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__005
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &7857158536585009162
@@ -393,7 +393,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__020
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.020
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &8645938486867642050
@@ -411,7 +411,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.012
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &9164450854818473623
@@ -429,6 +429,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_pack_raider_meets__line__018
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_pack_raider_meets.018
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

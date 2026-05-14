@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_quiet_corridor__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_quiet_corridor.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-4261237249570558266
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_quiet_corridor__line__003
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_quiet_corridor.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-858441993082416988
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_quiet_corridor__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_quiet_corridor.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-332360634378967913
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_quiet_corridor__line__006
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_quiet_corridor.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -109,7 +109,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_quiet_corridor__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_quiet_corridor.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &2336195995716006971
@@ -127,7 +127,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_quiet_corridor__line__001
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_quiet_corridor.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.small
   _autoAdvanceHint: 0
 --- !u!114 &2734169910316948364
@@ -145,7 +145,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_quiet_corridor__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_quiet_corridor.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7035052137218016287
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_quiet_corridor__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_quiet_corridor.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

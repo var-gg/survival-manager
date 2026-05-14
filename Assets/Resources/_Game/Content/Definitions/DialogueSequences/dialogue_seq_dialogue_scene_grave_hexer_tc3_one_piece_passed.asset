@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed__line__001
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-7089007753373649912
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5609234497542830175
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2438954290378156327
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -111,7 +111,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &3147378786474967035
@@ -129,7 +129,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed__line__003
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &4134412692254399453
@@ -147,7 +147,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4206629637524952299
@@ -165,7 +165,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed.004
-  _emote: Skeptical
+  _emote: smile
   _emotionTextKey: loc.story.emotion.wry
   _autoAdvanceHint: 0
 --- !u!114 &8108603274597425061
@@ -183,7 +183,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8264731944286870025
@@ -201,6 +201,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc3_one_piece_passed.008
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0

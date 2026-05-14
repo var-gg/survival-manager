@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_leads_closure__line__001
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_leads_closure.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.calm
   _autoAdvanceHint: 0
 --- !u!114 &-8092881994603030193
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_leads_closure__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_leads_closure.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.looking
   _autoAdvanceHint: 0
 --- !u!114 &-7762291263506591244
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_leads_closure__line__000
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_leads_closure.000
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-6329809174734975341
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_leads_closure__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_leads_closure.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.faint
   _autoAdvanceHint: 0
 --- !u!114 &-4067091767126610545
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_leads_closure__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_leads_closure.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.faint
   _autoAdvanceHint: 0
 --- !u!114 &-2891676096992579896
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_leads_closure__line__007
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_leads_closure.007
-  _emote: Default
+  _emote: smile
   _emotionTextKey: loc.story.emotion.faint_smile
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -145,7 +145,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_leads_closure__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_leads_closure.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &8643461296636592276
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_leads_closure__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_leads_closure.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.careful
   _autoAdvanceHint: 0

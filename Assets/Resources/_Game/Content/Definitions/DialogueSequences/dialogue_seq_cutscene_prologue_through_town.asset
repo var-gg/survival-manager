@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_through_town__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_through_town.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7693697041120287413
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_through_town__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_through_town.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2381290673387348573
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_through_town__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_through_town.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -87,6 +87,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_through_town__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_through_town.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

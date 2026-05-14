@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-7012778577490514597
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer.006
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-6405638434695229551
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2140535452975216171
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2019885612136254973
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1217790962126202320
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1138932623910967154
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -164,7 +164,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8431987703162440448
@@ -182,6 +182,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_dawn_priest_memorial_dawn_prayer.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

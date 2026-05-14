@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_record__line__004
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_record.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-6907463982981705178
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_record__line__003
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_record.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-5561771724377577792
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_record__line__007
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_record.007
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-4292198078051526277
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_record__line__002
   _speakerId: npc_silent_moon
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_record.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-3604088669824730491
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_record__line__008
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_record.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-1604683516735545774
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_record__line__009
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_record.009
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-1201959684973998589
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_record__line__006
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_record.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-264958087653726865
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_record__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_record.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -183,7 +183,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_record__line__001
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_record.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &7603377947858623264
@@ -201,6 +201,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_record__line__005
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_record.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0

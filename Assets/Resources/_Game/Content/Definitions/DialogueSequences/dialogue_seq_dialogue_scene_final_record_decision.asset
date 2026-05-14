@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__009
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.009
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-7509724413856182905
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-4430805846853319239
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__017
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.017
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-3270437017686443375
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &-3190111278511044243
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__005
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-2885185555980758030
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__000
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.000
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.ritual
   _autoAdvanceHint: 0
 --- !u!114 &-2594044776981548700
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__001
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.001
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.hurt
   _autoAdvanceHint: 0
 --- !u!114 &-130611905906904314
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__010
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.010
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -191,7 +191,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__011
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.011
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &311691085700580880
@@ -209,7 +209,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__016
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.016
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.calm
   _autoAdvanceHint: 0
 --- !u!114 &320176584514022005
@@ -227,7 +227,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__008
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.008
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &3142921848931432147
@@ -245,7 +245,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &3792319829541009559
@@ -263,7 +263,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__007
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &5004650539081595119
@@ -281,7 +281,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__012
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.012
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &6835204344171272947
@@ -299,7 +299,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__015
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.015
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &7060061037775981774
@@ -317,7 +317,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &7573382280321997208
@@ -335,7 +335,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__013
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.013
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.accepting
   _autoAdvanceHint: 0
 --- !u!114 &8933432201644924460
@@ -353,6 +353,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_final_record_decision__line__014
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_final_record_decision.014
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0

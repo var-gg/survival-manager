@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__014
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.008
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-8684053189873469692
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__008
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-6816935368133998398
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__016
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.010
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5554047120175717355
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__007
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-3841406520850737767
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__010
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-2636158646662437736
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1164399196836115099
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__013
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-123475735496070819
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__012
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.006
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -190,7 +190,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__011
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4770833291262561987
@@ -208,7 +208,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__001
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &5047547255799896807
@@ -226,7 +226,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__009
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &5655318753280486378
@@ -244,7 +244,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__015
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.009
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &5804189623022258355
@@ -262,7 +262,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &6790500661934209648
@@ -280,7 +280,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__004
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &8262563576451400999
@@ -298,7 +298,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__006
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &8639296689709024909
@@ -316,7 +316,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8980662732521342553
@@ -334,6 +334,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc2_promise_letter_and_intent.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

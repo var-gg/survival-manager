@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_names__line__000
   _speakerId: npc_black_vellum
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_names.000
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-4204782263141566287
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_names__line__001
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_names.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -73,7 +73,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_names__line__004
   _speakerId: npc_black_vellum
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_names.004
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &3643217648859214740
@@ -91,7 +91,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_names__line__005
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_names.005
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.no_joke
   _autoAdvanceHint: 0
 --- !u!114 &5190221297918740717
@@ -109,7 +109,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_names__line__007
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_names.007
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &5763204751110384216
@@ -127,7 +127,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_names__line__002
   _speakerId: npc_black_vellum
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_names.002
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.ritual
   _autoAdvanceHint: 0
 --- !u!114 &7662022962448834164
@@ -145,7 +145,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_names__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_names.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7690719381995012946
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_names__line__006
   _speakerId: npc_black_vellum
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_names.006
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_okay_with_cost__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_okay_with_cost.005
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-1701305154271004408
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_okay_with_cost__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_okay_with_cost.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -72,7 +72,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_okay_with_cost__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_okay_with_cost.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2164242443306137546
@@ -90,7 +90,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_okay_with_cost__line__006
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_okay_with_cost.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2802879005828261164
@@ -108,7 +108,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_okay_with_cost__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_okay_with_cost.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &2841071169497199902
@@ -126,7 +126,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_okay_with_cost__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_okay_with_cost.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7192671989567288834
@@ -144,6 +144,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_okay_with_cost__line__001
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_okay_with_cost.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0

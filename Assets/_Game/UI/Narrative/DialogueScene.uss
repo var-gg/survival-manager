@@ -1,7 +1,4 @@
-.dialogue-scene-root {
-    justify-content: center;
-    align-items: center;
-}
+/* 미연시(비주얼 노벨) 스타일 — 상단 큰 포트레잇 무대 + 하단 대사창 */
 
 .dialogue-scene-backdrop {
     position: absolute;
@@ -9,79 +6,96 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: var(--story-backdrop-color);
+    background-color: rgb(16, 15, 20);
 }
 
-.dialogue-scene-layout {
-    position: relative;
-    width: 100%;
-    height: 100%;
+/* 포트레잇 무대 — 화면 위쪽, 하단 대사창 공간만 비운다 */
+.dialogue-scene-stage {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 288px;
     flex-direction: row;
-    align-items: center;
     justify-content: space-between;
-    padding-left: 36px;
-    padding-right: 36px;
-    padding-top: 36px;
-    padding-bottom: 36px;
+    align-items: flex-end;
+    padding-left: 64px;
+    padding-right: 64px;
 }
 
 .dialogue-scene-slot {
-    width: 300px;
-    min-height: 420px;
+    width: 38%;
+    height: 100%;
     justify-content: flex-end;
     overflow: hidden;
 }
 
-.dialogue-scene-portrait {
-    width: 100%;
-    height: 420px;
-    border-top-left-radius: 18px;
-    border-top-right-radius: 18px;
-    border-bottom-left-radius: 18px;
-    border-bottom-right-radius: 18px;
+.dialogue-scene-slot--left {
+    align-items: flex-start;
 }
 
-.dialogue-scene-center {
-    flex-grow: 1;
-    max-width: 760px;
-    min-width: 0;
-    margin-left: 24px;
-    margin-right: 24px;
-}
-
-.dialogue-scene-nameplate {
-    margin-bottom: 10px;
-}
-
-.dialogue-scene-text-panel {
-    min-height: 220px;
-}
-
-.dialogue-scene-line {
-    min-height: 112px;
-}
-
-.dialogue-scene-actions {
-    margin-top: 14px;
+.dialogue-scene-slot--right {
     align-items: flex-end;
 }
 
+.dialogue-scene-portrait {
+    width: 100%;
+    height: 96%;
+}
+
+/* 하단 대사창 — 화면 폭을 거의 가득 채우는 미연시 텍스트 박스 */
+.dialogue-scene-dialoguebox {
+    position: absolute;
+    left: 48px;
+    right: 48px;
+    bottom: 36px;
+    min-height: 216px;
+}
+
+.dialogue-scene-dialoguebox-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.dialogue-scene-nameplate {
+    font-size: 21px;
+    margin-bottom: 0;
+}
+
+.dialogue-scene-line {
+    font-size: 24px;
+    min-height: 92px;
+    white-space: normal;
+}
+
+.dialogue-scene-continue-hint {
+    margin-top: 14px;
+    -unity-text-align: middle-right;
+}
+
+.dialogue-scene-skip-button {
+    min-width: 112px;
+}
+
+/* skip 확인 오버레이 */
 .dialogue-scene-skip-confirm-panel {
-    width: 420px;
+    width: 440px;
     max-width: 90%;
 }
 
 .dialogue-scene-confirm-title {
     color: var(--story-accent-color);
-    font-size: 18px;
-    unity-font-style: bold;
+    font-size: 19px;
+    -unity-font-style: bold;
     margin-bottom: 8px;
 }
 
 .dialogue-scene-confirm-body {
     color: var(--story-text-color);
     white-space: normal;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
 .dialogue-scene-confirm-actions {

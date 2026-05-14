@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__011
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.011
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-3421048569687224304
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__010
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.010
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-3242517394285436590
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-231978413756316325
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__001
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.pause
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -113,7 +113,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__003
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.pause
   _autoAdvanceHint: 0
 --- !u!114 &3431622630855538496
@@ -131,7 +131,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__008
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.accepting
   _autoAdvanceHint: 0
 --- !u!114 &4107869653810566004
@@ -149,7 +149,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.004
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &4625648537196751527
@@ -167,7 +167,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__009
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.009
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &5847988864084868071
@@ -185,7 +185,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &7753354727077358644
@@ -203,7 +203,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__005
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.005
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.formal
   _autoAdvanceHint: 0
 --- !u!114 &7764143573271482960
@@ -221,7 +221,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &8660126283821298228
@@ -239,6 +239,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_baekgyu__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_baekgyu.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

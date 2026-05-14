@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_bark_glass_conduit__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_glass_conduit.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &-3387530184504828864
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_bark_glass_conduit__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_glass_conduit.002
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-2222798689703292175
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_bark_glass_conduit__line__000
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_glass_conduit.000
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -87,6 +87,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_bark_glass_conduit__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_glass_conduit.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.ready
   _autoAdvanceHint: 0

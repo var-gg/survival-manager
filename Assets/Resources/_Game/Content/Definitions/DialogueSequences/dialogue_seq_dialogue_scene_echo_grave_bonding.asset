@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__001
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-5781640234518452259
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-5624417207390120381
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__010
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.010
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.faint
   _autoAdvanceHint: 0
 --- !u!114 &-3407684220049323482
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.006
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &-670316859539596147
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__007
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.soft
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -130,7 +130,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__009
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.after_long_pause
   _autoAdvanceHint: 0
 --- !u!114 &3343694502923602293
@@ -148,7 +148,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.light
   _autoAdvanceHint: 0
 --- !u!114 &3841739551881772696
@@ -166,7 +166,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.pause
   _autoAdvanceHint: 0
 --- !u!114 &6904928209761081997
@@ -184,7 +184,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &7815573197380817576
@@ -202,7 +202,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7843780490383234102
@@ -220,6 +220,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_grave_bonding__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_grave_bonding.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.still
   _autoAdvanceHint: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-3731794222049711003
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__005
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-3489167435964621675
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &-3077008336709803432
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__012
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.008
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-2823427975580692919
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__008
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-2724158354838863067
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__010
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-1653734150093546743
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -169,7 +169,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__007
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.003
-  _emote: Skeptical
+  _emote: smile
   _emotionTextKey: loc.story.emotion.wry
   _autoAdvanceHint: 0
 --- !u!114 &2787290704846769125
@@ -187,7 +187,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__001
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &4165058499035935670
@@ -205,7 +205,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4843151475073179180
@@ -223,7 +223,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &5807763843086312055
@@ -241,7 +241,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__011
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8444496253237403907
@@ -259,7 +259,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__013
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8497504947543560379
@@ -277,6 +277,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_raider_tc3_black_paint_not_forever.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0

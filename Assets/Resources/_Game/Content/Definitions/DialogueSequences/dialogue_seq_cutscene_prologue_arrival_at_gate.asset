@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_arrival_at_gate__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_arrival_at_gate.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -55,7 +55,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_arrival_at_gate__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_arrival_at_gate.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1952776348723794585
@@ -73,7 +73,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_arrival_at_gate__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_arrival_at_gate.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &3176197813804823993
@@ -91,7 +91,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_arrival_at_gate__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_arrival_at_gate.006
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &3320994602327843156
@@ -109,7 +109,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_arrival_at_gate__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_arrival_at_gate.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3376269699146715399
@@ -127,7 +127,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_arrival_at_gate__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_arrival_at_gate.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4638102602515349116
@@ -145,7 +145,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_arrival_at_gate__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_arrival_at_gate.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7181979994137157500
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_arrival_at_gate__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_arrival_at_gate.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

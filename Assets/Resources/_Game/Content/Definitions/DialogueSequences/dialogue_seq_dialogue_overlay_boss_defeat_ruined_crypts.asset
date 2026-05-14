@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_ruined_crypts__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_ruined_crypts.002
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.solemn
   _autoAdvanceHint: 0
 --- !u!114 &-5357510943829155687
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_ruined_crypts__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_ruined_crypts.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_ruined_crypts__line__003
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_ruined_crypts.003
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &2360365652527040374
@@ -87,6 +87,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_ruined_crypts__line__001
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_ruined_crypts.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0

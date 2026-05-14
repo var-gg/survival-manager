@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__013
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.013
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &-8221733756428042518
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__003
   _speakerId: npc_purification_judicator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.003
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.cold
   _autoAdvanceHint: 0
 --- !u!114 &-6666891151621818902
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__001
   _speakerId: npc_purification_judicator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.cold
   _autoAdvanceHint: 0
 --- !u!114 &-5020025909974604107
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.012
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4336791164819800892
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-1198900865800961444
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__008
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.008
-  _emote: Defiant
+  _emote: serious
   _emotionTextKey: loc.story.emotion.defiant
   _autoAdvanceHint: 0
 --- !u!114 &-445230404877703922
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__011
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.011
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &-408937263188413351
@@ -159,7 +159,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -208,7 +208,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3191710020889307846
@@ -226,7 +226,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__015
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.015
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &5106696164844982520
@@ -244,7 +244,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__010
   _speakerId: npc_purification_judicator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.010
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &6024809854695826466
@@ -262,7 +262,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__007
   _speakerId: npc_purification_judicator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.007
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.cold
   _autoAdvanceHint: 0
 --- !u!114 &6573545962358897197
@@ -280,7 +280,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__016
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.016
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6819998090170149745
@@ -298,7 +298,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__014
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.014
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &6838203418193052830
@@ -316,7 +316,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.006
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.sardonic
   _autoAdvanceHint: 0
 --- !u!114 &7334217155440700399
@@ -334,6 +334,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_purification_judicator__line__005
   _speakerId: npc_purification_judicator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_purification_judicator.005
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.cold
   _autoAdvanceHint: 0

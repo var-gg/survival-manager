@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_event_dawn_priest_main_cathedral_intro__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_event_dawn_priest_main_cathedral_intro.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-922081368874827616
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_event_dawn_priest_main_cathedral_intro__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_event_dawn_priest_main_cathedral_intro.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_event_dawn_priest_main_cathedral_intro__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_event_dawn_priest_main_cathedral_intro.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8491996644408486023
@@ -87,6 +87,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_event_dawn_priest_main_cathedral_intro__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_event_dawn_priest_main_cathedral_intro.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

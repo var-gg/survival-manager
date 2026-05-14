@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_wolfpine_break__line__001
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_break.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.confused
   _autoAdvanceHint: 0
 --- !u!114 &-2320104877120896070
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_wolfpine_break__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_break.002
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -70,7 +70,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_wolfpine_break__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_break.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1554162519266612835
@@ -88,7 +88,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_wolfpine_break__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_break.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1815381831311497261
@@ -106,6 +106,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_wolfpine_break__line__003
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_break.003
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0

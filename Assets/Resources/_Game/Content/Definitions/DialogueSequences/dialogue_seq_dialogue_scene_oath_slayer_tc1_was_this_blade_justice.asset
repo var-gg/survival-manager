@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6952370868479948309
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice__line__007
   _speakerId: hero_oath_slayer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &-4958137854211001117
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice__line__008
   _speakerId: hero_oath_slayer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-3052558346593232958
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice__line__001
   _speakerId: hero_oath_slayer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-3034716778297812977
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -129,7 +129,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice__line__005
   _speakerId: hero_oath_slayer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &4625660495334993010
@@ -147,7 +147,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7092780973242975680
@@ -165,7 +165,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7744076580766691521
@@ -183,7 +183,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice__line__006
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.051
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8285484495473971584
@@ -201,6 +201,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice__line__004
   _speakerId: hero_oath_slayer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0

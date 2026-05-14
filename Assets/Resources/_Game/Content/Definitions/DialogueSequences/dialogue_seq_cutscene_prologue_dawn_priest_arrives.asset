@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_dawn_priest_arrives__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_dawn_priest_arrives.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-8319283101979076621
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_dawn_priest_arrives__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_dawn_priest_arrives.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7015803695316183919
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_dawn_priest_arrives__line__005
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_dawn_priest_arrives.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-4098415996143995592
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_dawn_priest_arrives__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_dawn_priest_arrives.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1560942382436648730
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_dawn_priest_arrives__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_dawn_priest_arrives.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-221157319454981634
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_dawn_priest_arrives__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_dawn_priest_arrives.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -145,7 +145,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_dawn_priest_arrives__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_dawn_priest_arrives.001
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.weary
   _autoAdvanceHint: 0
 --- !u!114 &8414166369315986436
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_dawn_priest_arrives__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_dawn_priest_arrives.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

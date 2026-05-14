@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_glass_orders_baekgyu__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_glass_orders_baekgyu.002
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-7839139158478699828
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_glass_orders_baekgyu__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_glass_orders_baekgyu.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.sharp
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -76,7 +76,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_glass_orders_baekgyu__line__005
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_glass_orders_baekgyu.005
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &3233916359722428792
@@ -94,7 +94,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_glass_orders_baekgyu__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_glass_orders_baekgyu.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.reading
   _autoAdvanceHint: 0
 --- !u!114 &4060736376782196751
@@ -112,7 +112,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_glass_orders_baekgyu__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_glass_orders_baekgyu.008
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &4810979990333465005
@@ -130,7 +130,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_glass_orders_baekgyu__line__006
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_glass_orders_baekgyu.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &5086582434210535986
@@ -148,7 +148,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_glass_orders_baekgyu__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_glass_orders_baekgyu.001
-  _emote: Grim
+  _emote: anger
   _emotionTextKey: loc.story.emotion.anger
   _autoAdvanceHint: 0
 --- !u!114 &6091694976178939195
@@ -184,7 +184,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_glass_orders_baekgyu__line__010
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_glass_orders_baekgyu.010
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.light
   _autoAdvanceHint: 0
 --- !u!114 &8823922617784955865
@@ -220,6 +220,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_glass_orders_baekgyu__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_glass_orders_baekgyu.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

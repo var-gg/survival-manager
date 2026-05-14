@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &-8797279168768441487
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4679796044579898164
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__007
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.sharp
   _autoAdvanceHint: 0
 --- !u!114 &-3620237126736722289
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__018
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.018
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.solemn
   _autoAdvanceHint: 0
 --- !u!114 &-2424734610040397354
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__011
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.011
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.controlled
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -156,7 +156,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.008
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &1985732587086839627
@@ -174,7 +174,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__004
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.004
-  _emote: Default
+  _emote: smile
   _emotionTextKey: loc.story.emotion.faint_smile
   _autoAdvanceHint: 0
 --- !u!114 &2672842870814109306
@@ -192,7 +192,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.012
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3336335252595885610
@@ -210,7 +210,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.003
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.restrained
   _autoAdvanceHint: 0
 --- !u!114 &4266814959069558270
@@ -246,7 +246,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__005
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.005
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.hurt
   _autoAdvanceHint: 0
 --- !u!114 &5209189611157317048
@@ -264,7 +264,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__010
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.010
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &5235312495824596552
@@ -282,7 +282,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__016
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.016
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &5694622888143570179
@@ -300,7 +300,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__014
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.014
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.sad
   _autoAdvanceHint: 0
 --- !u!114 &5764452160493487764
@@ -318,7 +318,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__017
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.017
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6358205806141566803
@@ -336,7 +336,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__015
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.015
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.pained
   _autoAdvanceHint: 0
 --- !u!114 &8336563082324593252
@@ -354,7 +354,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__013
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.013
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.whisper
   _autoAdvanceHint: 0
 --- !u!114 &9017448040222067911
@@ -372,6 +372,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_encounter__line__002
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_encounter.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.serene
   _autoAdvanceHint: 0

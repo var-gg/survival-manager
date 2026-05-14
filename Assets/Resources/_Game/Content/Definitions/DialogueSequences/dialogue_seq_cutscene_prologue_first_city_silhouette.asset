@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_first_city_silhouette__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_first_city_silhouette.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2708659618944605013
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_first_city_silhouette__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_first_city_silhouette.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -70,7 +70,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_first_city_silhouette__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_first_city_silhouette.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8022182798665457841
@@ -88,7 +88,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_first_city_silhouette__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_first_city_silhouette.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8674043684029648921
@@ -106,6 +106,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_first_city_silhouette__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_first_city_silhouette.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_priest_first_crack__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_priest_first_crack.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &-8662966255823838990
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_priest_first_crack__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_priest_first_crack.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7846912717207852447
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_priest_first_crack__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_priest_first_crack.003
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.weary
   _autoAdvanceHint: 0
 --- !u!114 &-2003467773331631828
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_priest_first_crack__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_priest_first_crack.001
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.weary
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -107,7 +107,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_priest_first_crack__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_priest_first_crack.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8515090064555102161
@@ -125,6 +125,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_priest_first_crack__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_priest_first_crack.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

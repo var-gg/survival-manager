@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-7968181716870218484
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6108239906801866012
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5762509053217721391
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1441361051052205886
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1365691562669380882
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-609124594268319116
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -165,7 +165,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4631179387968151270
@@ -183,7 +183,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat__line__003
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &7061398353979986977
@@ -201,6 +201,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_grave_hexer_memorial_new_bell_in_empty_seat.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

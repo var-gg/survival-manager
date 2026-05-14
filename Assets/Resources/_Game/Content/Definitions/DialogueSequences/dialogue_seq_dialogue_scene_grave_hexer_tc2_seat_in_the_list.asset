@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__015
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.009
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-4763862963697317153
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-4439146236367970813
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__001
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-2406660078228230984
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-182537000809293051
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__011
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -136,7 +136,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__003
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &644662661610001029
@@ -154,7 +154,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1051809013381957261
@@ -172,7 +172,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__012
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.006
-  _emote: Skeptical
+  _emote: smile
   _emotionTextKey: loc.story.emotion.wry
   _autoAdvanceHint: 0
 --- !u!114 &2275867436281208083
@@ -190,7 +190,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__014
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4202654952205535912
@@ -208,7 +208,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__009
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &5470248361280782943
@@ -226,7 +226,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__016
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.010
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &5552257715232668039
@@ -244,7 +244,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__007
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.003
-  _emote: Skeptical
+  _emote: smile
   _emotionTextKey: loc.story.emotion.wry
   _autoAdvanceHint: 0
 --- !u!114 &6246569064624677873
@@ -262,7 +262,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__010
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &6515485542555446042
@@ -280,7 +280,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &6880732334066247208
@@ -298,7 +298,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6907674315558441725
@@ -316,7 +316,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7479582718367775016
@@ -334,6 +334,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list__line__013
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc2_seat_in_the_list.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__001
   _speakerId: hero_crypt_guardian
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-7884811480123893862
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__006
   _speakerId: hero_crypt_guardian
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &-6701337534508130038
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__011
   _speakerId: hero_crypt_guardian
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-5460428352528334368
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__004
   _speakerId: hero_crypt_guardian
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-4341227199137258670
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__007
   _speakerId: hero_crypt_guardian
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-2622643992118650561
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1660355559902788680
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -170,7 +170,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__013
   _speakerId: hero_crypt_guardian
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &1305042673800481094
@@ -188,7 +188,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1366960544381449573
@@ -206,7 +206,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2541154011769826106
@@ -224,7 +224,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4086453954270295919
@@ -242,7 +242,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4262288684488694449
@@ -260,7 +260,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__010
   _speakerId: hero_crypt_guardian
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &4902982555076376174
@@ -278,7 +278,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__014
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &5252375118566514410
@@ -296,6 +296,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__005
   _speakerId: hero_crypt_guardian
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0

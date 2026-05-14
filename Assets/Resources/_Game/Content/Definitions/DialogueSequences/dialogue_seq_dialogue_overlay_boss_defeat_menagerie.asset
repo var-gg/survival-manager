@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_menagerie__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_menagerie.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-8103361561924425887
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_menagerie__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_menagerie.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.reading
   _autoAdvanceHint: 0
 --- !u!114 &-4841753935331391538
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_menagerie__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_menagerie.003
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.cold
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -108,7 +108,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_menagerie__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_menagerie.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2522538182483992274
@@ -126,7 +126,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_menagerie__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_menagerie.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &8083928423514703596
@@ -144,6 +144,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_menagerie__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_menagerie.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0

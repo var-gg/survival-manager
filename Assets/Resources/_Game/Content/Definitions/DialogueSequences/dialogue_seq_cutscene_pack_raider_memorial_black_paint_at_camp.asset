@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -56,7 +56,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3063197696243131298
@@ -74,7 +74,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3996119657576548006
@@ -92,7 +92,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &5452773723172320866
@@ -110,7 +110,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6937638193184298634
@@ -128,7 +128,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7597881635218630308
@@ -146,7 +146,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7707219083935922686
@@ -164,7 +164,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp.006
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &8897065583440186482
@@ -182,6 +182,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_pack_raider_memorial_black_paint_at_camp.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

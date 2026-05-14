@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="theater-root" class="theater-root">
+        <ui:Label name="theater-title" text="극장 모드 — 내러티브 시퀀스" class="theater-title" />
+        <ui:Label name="theater-status" text="" class="theater-status" />
+        <ui:ScrollView name="theater-list" class="theater-list" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_glass_conduit__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_glass_conduit.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-1636338490808191482
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_glass_conduit__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_glass_conduit.002
-  _emote: Grim
+  _emote: anger
   _emotionTextKey: loc.story.emotion.growl
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -70,7 +70,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_glass_conduit__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_glass_conduit.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1092518020318302816
@@ -88,7 +88,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_glass_conduit__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_glass_conduit.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dread
   _autoAdvanceHint: 0
 --- !u!114 &8149612078982714756
@@ -106,6 +106,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_defeat_glass_conduit__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_defeat_glass_conduit.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
