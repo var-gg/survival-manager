@@ -16,6 +16,7 @@ public static class P09DetailPreservingPaletteTool
     private const string OutputFolder = "Logs/p09-fullbody";
     private const int RenderWidth = 1200;
     private const int RenderHeight = 1600;
+    private const bool UseCompatibilityPreviewShader = true;
     private static readonly Color ContactSheetBackgroundColor = new(0.68f, 0.79f, 0.88f, 1f);
 
     [MenuItem("SM/Internal/P09/Apply Detail Preserving Palettes")]
@@ -109,11 +110,11 @@ public static class P09DetailPreservingPaletteTool
     {
         preset.SetContentId(BattleP09AppearancePartType.Weapon, spec.WeaponId);
         preset.SetContentId(BattleP09AppearancePartType.Shield, spec.ShieldId);
-        preset.SetContentId(BattleP09AppearancePartType.Head, spec.ArmorId);
-        preset.SetContentId(BattleP09AppearancePartType.Chest, spec.ArmorId);
-        preset.SetContentId(BattleP09AppearancePartType.Arm, spec.ArmorId);
-        preset.SetContentId(BattleP09AppearancePartType.Waist, spec.ArmorId);
-        preset.SetContentId(BattleP09AppearancePartType.Leg, spec.ArmorId);
+        preset.SetContentId(BattleP09AppearancePartType.Head, spec.HeadId);
+        preset.SetContentId(BattleP09AppearancePartType.Chest, spec.ChestId);
+        preset.SetContentId(BattleP09AppearancePartType.Arm, spec.ArmId);
+        preset.SetContentId(BattleP09AppearancePartType.Waist, spec.WaistId);
+        preset.SetContentId(BattleP09AppearancePartType.Leg, spec.LegId);
         preset.SetContentId(BattleP09AppearancePartType.Sex, spec.SexId);
         preset.SetContentId(BattleP09AppearancePartType.FaceType, spec.FaceTypeId);
         preset.SetContentId(BattleP09AppearancePartType.HairStyle, spec.HairStyleId);
@@ -349,9 +350,13 @@ public static class P09DetailPreservingPaletteTool
         };
 
         CopyTexture(source, previewMaterial, "_MainTex", "_MainTex");
-        CopyTexture(source, previewMaterial, "_MainTex", "_BaseMap");
+        CopyTexture(source, previewMaterial, "_BaseMap", "_MainTex");
+        CopyTexture(source, previewMaterial, "_BaseColorMap", "_MainTex");
+        CopyColor(source, previewMaterial, "_BaseColor", "_Color");
         CopyColor(source, previewMaterial, "_Color", "_Color");
-        CopyColor(source, previewMaterial, "_Color", "_BaseColor");
+        CopyColor(source, previewMaterial, "_Color2nd", "_Color2nd");
+        CopyColor(source, previewMaterial, "_Color3rd", "_Color3rd");
+        SetFloatIfPresent(previewMaterial, "_PreviewTintStrength", CalculatePreviewTintStrength(source));
         return previewMaterial;
     }
 
@@ -379,6 +384,42 @@ public static class P09DetailPreservingPaletteTool
         {
             target.SetColor(targetProperty, source.GetColor(sourceProperty));
         }
+    }
+
+    private static void SetFloatIfPresent(Material target, string targetProperty, float value)
+    {
+        if (target.HasProperty(targetProperty))
+        {
+            target.SetFloat(targetProperty, value);
+        }
+    }
+
+    private static float CalculatePreviewTintStrength(Material source)
+    {
+        var main = ReadColor(source, "_Color", Color.white);
+        var baseColor = ReadColor(source, "_BaseColor", main);
+        var second = ReadColor(source, "_Color2nd", main);
+        var third = ReadColor(source, "_Color3rd", main);
+        var distance = Mathf.Max(
+            ColorDistance(main, Color.white),
+            ColorDistance(baseColor, Color.white),
+            ColorDistance(second, main),
+            ColorDistance(third, main));
+
+        return distance < 0.08f ? 0f : Mathf.Clamp(0.12f + distance * 0.16f, 0.14f, 0.30f);
+    }
+
+    private static Color ReadColor(Material source, string propertyName, Color fallback)
+    {
+        return source.HasProperty(propertyName) ? source.GetColor(propertyName) : fallback;
+    }
+
+    private static float ColorDistance(Color first, Color second)
+    {
+        var red = first.r - second.r;
+        var green = first.g - second.g;
+        var blue = first.b - second.b;
+        return Mathf.Sqrt((red * red + green * green + blue * blue) / 3f);
     }
 
     private static Texture2D CropTexture(Texture2D source, Color background, int margin)
@@ -545,143 +586,446 @@ public static class P09DetailPreservingPaletteTool
             new PaletteSpec(
                 "hero_dawn_priest",
                 "단린 (丹麟) / Dawn Priest",
-                2, 2, 4, 6, 1, 1, 0, 2, 7, 3, 4,
+                2, 2, 4, 6, 1, 1, 0, 2,
+                7, 7, 5, 7, 4, 3, 4,
                 "#6F7884",
                 new[]
                 {
-                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#9B643F", "#C9A24E", "#D9856F"),
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#9B643F", "#6D3F24", "#C58A5C"),
                     O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#D8C8A8", "#C9A24E", "#D9856F"),
-                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#D8C8A8", "#C9A24E", "#D9856F"),
-                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#D8C8A8", "#C9A24E", "#D9856F"),
-                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#8E6A45", "#C9A24E", "#D9856F"),
-                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#8E6A45", "#C9A24E", "#D9856F"),
-                    O("무기", BattleP09AppearancePartType.Weapon, "Weapon", "#C9A24E", "#8E6A45", "#D9856F", "#FFD979"),
-                    O("방패", BattleP09AppearancePartType.Shield, "Shield", "#D8C8A8", "#C9A24E", "#D9856F", "#FFD979"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#D8C8A8", "#C9A24E", "#7A6688"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#CFC7B8", "#8E7F72", "#C9A24E"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#8E6A45", "#5B4430", "#C9A24E"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#7A5635", "#4D3828", "#D8C8A8"),
+                    O("무기", BattleP09AppearancePartType.Weapon, "Weapon", "#C9A24E", "#E8D49A", "#8E6A45"),
+                    O("방패", BattleP09AppearancePartType.Shield, "Shield", "#D8C8A8", "#C9A24E", "#7A6688"),
                 }),
             new PaletteSpec(
                 "hero_pack_raider",
                 "이빨바람 / Pack Raider",
-                1, 3, 2, 1, 1, 1, 0, 2, 4, 1, 0,
+                1, 3, 2, 1, 1, 1, 0, 2,
+                0, 4, 10, 10, 4, 1, 0,
                 "#687078",
                 new[]
                 {
-                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#15120F", "#D08A2E", "#C9B58A"),
-                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#A96F36", "#D08A2E", "#C9B58A"),
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#15120F", "#050403", "#3A2B22"),
                     O("상의", BattleP09AppearancePartType.Chest, "Armor", "#A96F36", "#D08A2E", "#C9B58A"),
-                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#A96F36", "#D08A2E", "#C9B58A"),
-                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#6B472D", "#D08A2E", "#C9B58A"),
-                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#6B472D", "#D08A2E", "#C9B58A"),
-                    O("무기", BattleP09AppearancePartType.Weapon, "Weapon", "#C9B58A", "#D08A2E", "#5A3A25"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#8B5A2E", "#2F4A2F", "#D08A2E"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#5A3A25", "#D08A2E", "#2F4A2F"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#6B472D", "#3F2A1E", "#A96F36"),
+                    O("사냥칼", BattleP09AppearancePartType.Weapon, "Weapon", "#73543A", "#C9B58A", "#2D2016"),
                 }),
             new PaletteSpec(
                 "hero_grave_hexer",
                 "묵향 (墨香) / Grave Hexer",
-                2, 2, 8, 5, 1, 1, 0, 2, 9, 7, 0,
+                2, 2, 8, 5, 1, 1, 0, 1,
+                9, 9, 9, 8, 9, 7, 0,
                 "#66635F",
                 new[]
                 {
-                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#D8D4C8", "#8E8980", "#6DBE7C"),
-                    O("무기 결정", BattleP09AppearancePartType.Weapon, "Crystal", "#6DBE7C", "#6DBE7C", "#B8B0A3", "#6DBE7C"),
-                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#B8B0A3", "#8E8980", "#6DBE7C"),
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#C8C5BB", "#A89F8B", "#E2DED6"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#B8B0A3", "#6DBE7C", "#C4A458"),
                     O("상의", BattleP09AppearancePartType.Chest, "Armor", "#B8B0A3", "#8E8980", "#6DBE7C"),
-                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#B8B0A3", "#8E8980", "#6DBE7C"),
-                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#5F5A54", "#8E8980", "#B8B0A3"),
-                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5F5A54", "#8E8980", "#B8B0A3"),
-                    O("무기", BattleP09AppearancePartType.Weapon, "Weapon", "#8E8980", "#6DBE7C", "#B8B0A3", "#6DBE7C"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#B8B0A3", "#7FA88C", "#C4A458"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#6F647A", "#4C405E", "#6DBE7C"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5F5A54", "#3F3B36", "#B8B0A3"),
+                    O("지팡이", BattleP09AppearancePartType.Weapon, "Weapon", "#4F5856", "#6DBE7C", "#B8B0A3", "#234A31"),
                 }),
             new PaletteSpec(
                 "hero_echo_savant",
                 "공한 (空閑) / Echo Savant",
-                1, 2, 13, 8, 1, 1, 0, 2, 11, 13, 0,
+                1, 2, 13, 8, 1, 4, 0, 2,
+                11, 11, 11, 8, 11, 13, 0,
                 "#7A706A",
                 new[]
                 {
-                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#92879F", "#C8C1D8", "#8FD4E8"),
-                    O("무기 프리즘", BattleP09AppearancePartType.Weapon, "Prism", "#8FD4E8", "#C8C1D8", "#4C405E", "#8FD4E8"),
-                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#8C7FA0", "#C8C1D8", "#8FD4E8"),
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#6F647A", "#2A2430", "#C8C1D8"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#8C7FA0", "#4C405E", "#8FD4E8"),
                     O("상의", BattleP09AppearancePartType.Chest, "Armor", "#8C7FA0", "#C8C1D8", "#8FD4E8"),
-                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#8C7FA0", "#C8C1D8", "#8FD4E8"),
-                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#5A4C6B", "#C8C1D8", "#8C7FA0"),
-                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5A4C6B", "#C8C1D8", "#8C7FA0"),
-                    O("무기", BattleP09AppearancePartType.Weapon, "Weapon", "#C8C1D8", "#8FD4E8", "#4C405E", "#8FD4E8"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#7B6E90", "#4C405E", "#C8C1D8"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#D6D2E3", "#8C7FA0", "#8FD4E8"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#4C405E", "#2E2638", "#8C7FA0"),
+                    O("의례 활", BattleP09AppearancePartType.Weapon, "Weapon", "#4D435A", "#8FD4E8", "#C8C1D8", "#2A5360"),
                 }),
             new PaletteSpec(
                 "npc_lyra_sternfeld",
                 "선영 (宣英) / Lyra Sternfeld",
-                2, 2, 7, 3, 1, 1, 0, 2, 7, 9, 0,
+                2, 2, 7, 3, 1, 3, 0, 2,
+                9, 7, 8, 7, 7, 9, 0,
                 "#77716A",
                 new[]
                 {
-                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#D6CBAE", "#8D74C9", "#B8B9C2"),
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#D6CBAE", "#BFAE82", "#F0E6C8"),
                     O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#D8D2C2", "#8D74C9", "#B8B9C2"),
-                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#D8D2C2", "#8D74C9", "#B8B9C2"),
-                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#D8D2C2", "#8D74C9", "#B8B9C2"),
-                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#6E6480", "#8D74C9", "#B8B9C2"),
-                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#6E6480", "#8D74C9", "#B8B9C2"),
-                    O("무기", BattleP09AppearancePartType.Weapon, "Weapon", "#B8B9C2", "#8D74C9", "#D8D2C2", "#9A7DFF"),
-                    O("방패", BattleP09AppearancePartType.Shield, "Shield", "#D8D2C2", "#8D74C9", "#B8B9C2", "#9A7DFF"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#D8D2C2", "#8D74C9", "#D6CBAE"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#C8C0D2", "#6E6480", "#8D74C9"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#6E6480", "#3C2D48", "#D6CBAE"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5C5248", "#3B322D", "#8D74C9"),
+                    O("의식 지팡이", BattleP09AppearancePartType.Weapon, "Weapon", "#D8D2C2", "#8D74C9", "#D4AF37", "#32205A"),
                 }),
             new PaletteSpec(
                 "npc_grey_fang",
                 "회조 (灰爪) / Grey Fang",
-                1, 1, 2, 5, 1, 1, 5, 2, 4, 1, 0,
+                1, 1, 2, 5, 1, 1, 5, 2,
+                0, 4, 11, 4, 3, 1, 0,
                 "#5E6970",
                 new[]
                 {
-                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#B0B3B0", "#C1B59C", "#8F9698"),
-                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#8B7A68", "#C1B59C", "#8F9698"),
-                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#8B7A68", "#C1B59C", "#8F9698"),
-                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#8B7A68", "#C1B59C", "#8F9698"),
-                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#5C5248", "#C1B59C", "#8B7A68"),
-                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5C5248", "#C1B59C", "#8B7A68"),
-                    O("무기", BattleP09AppearancePartType.Weapon, "Weapon", "#8F9698", "#C1B59C", "#5C5248"),
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#B0B3B0", "#817A74", "#D4D0CA"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#8B7A68", "#5C5248", "#C1B59C"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#6A625F", "#3E3A36", "#8F9698"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#5C5248", "#3A2A1F", "#8B7A68"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#6F665C", "#4B3A2B", "#8F9698"),
+                    O("낡은 사냥칼", BattleP09AppearancePartType.Weapon, "Weapon", "#5B5A58", "#6A4A35", "#C1B59C"),
                 }),
             new PaletteSpec(
                 "npc_black_vellum",
                 "흑지 (黑紙) / Black Vellum",
-                2, 2, 9, 1, 1, 1, 0, 2, 9, 7, 0,
+                2, 2, 9, 1, 1, 1, 0, 2,
+                9, 9, 11, 9, 8, 7, 0,
                 "#6A6864",
                 new[]
                 {
-                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#151517", "#202022", "#2E5A4F"),
-                    O("무기 결정", BattleP09AppearancePartType.Weapon, "Crystal", "#2E5A4F", "#202022", "#AFA79A", "#2E5A4F"),
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#151517", "#050508", "#34343A"),
                     O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#AFA79A", "#202022", "#2E5A4F"),
-                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#AFA79A", "#202022", "#2E5A4F"),
-                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#AFA79A", "#202022", "#2E5A4F"),
-                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#514A43", "#202022", "#AFA79A"),
-                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#514A43", "#202022", "#AFA79A"),
-                    O("무기", BattleP09AppearancePartType.Weapon, "Weapon", "#202022", "#2E5A4F", "#AFA79A", "#2E5A4F"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#AFA79A", "#202022", "#5A5148"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#4A4648", "#202022", "#2E5A4F"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#3E3A36", "#151517", "#AFA79A"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#56505C", "#2A2434", "#2E5A4F"),
+                    O("단죄 지팡이", BattleP09AppearancePartType.Weapon, "Weapon", "#3B3745", "#2E5A4F", "#AFA79A", "#123028"),
                 }),
             new PaletteSpec(
                 "npc_silent_moon",
                 "침월 (沉月) / Silent Moon",
-                2, 2, 9, 8, 1, 1, 0, 2, 8, 7, 0,
+                2, 2, 9, 8, 1, 3, 0, 1,
+                8, 8, 8, 9, 8, 7, 0,
                 "#746A64",
                 new[]
                 {
-                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#C7C0D8", "#D6D2E3", "#8EA0FF"),
-                    O("무기 결정", BattleP09AppearancePartType.Weapon, "Crystal", "#8EA0FF", "#D6D2E3", "#3F304D", "#8EA0FF"),
-                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#AFA7B8", "#D6D2E3", "#8EA0FF"),
-                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#AFA7B8", "#D6D2E3", "#8EA0FF"),
-                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#AFA7B8", "#D6D2E3", "#8EA0FF"),
-                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#503D61", "#D6D2E3", "#AFA7B8"),
-                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#503D61", "#D6D2E3", "#AFA7B8"),
-                    O("무기", BattleP09AppearancePartType.Weapon, "Weapon", "#D6D2E3", "#8EA0FF", "#3F304D", "#8EA0FF"),
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#C7C0D8", "#6F5D88", "#F0EAF8"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#AFA7B8", "#3F304D", "#8EA0FF"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#AFA7B8", "#3F304D", "#D6D2E3"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#AFA7B8", "#4A3A5C", "#8EA0FF"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#D6D2E3", "#8A8198", "#3F304D"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#3F304D", "#241B2D", "#AFA7B8"),
+                    O("침묵 지팡이", BattleP09AppearancePartType.Weapon, "Weapon", "#4D435A", "#8EA0FF", "#D6D2E3", "#26365A"),
                 }),
             new PaletteSpec(
                 "npc_baekgyu_sternheim",
                 "백규 (白圭) / Baekgyu Sternheim",
-                1, 1, 3, 5, 1, 1, 6, 2, 12, 5, 0,
+                1, 1, 3, 5, 1, 1, 6, 2,
+                12, 12, 5, 12, 12, 5, 0,
                 "#5B6470",
                 new[]
                 {
-                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#D8D4C8", "#D8CFB8", "#7D5CC7"),
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#D8D4C8", "#AFA89A", "#F2EEE0"),
                     O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#7E8490", "#D8CFB8", "#7D5CC7"),
                     O("상의", BattleP09AppearancePartType.Chest, "Armor", "#7E8490", "#D8CFB8", "#7D5CC7"),
-                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#7E8490", "#D8CFB8", "#7D5CC7"),
-                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#4C5664", "#D8CFB8", "#7D5CC7"),
-                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#4C5664", "#D8CFB8", "#7D5CC7"),
-                    O("무기", BattleP09AppearancePartType.Weapon, "Weapon", "#D8CFB8", "#7D5CC7", "#3E4652", "#7D5CC7"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#6F737A", "#3E4652", "#D8CFB8"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#3E4652", "#242A31", "#7D5CC7"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5C6370", "#353B45", "#D8CFB8"),
+                    O("귀족 검", BattleP09AppearancePartType.Weapon, "Weapon", "#424047", "#D8CFB8", "#7D5CC7", "#30204A"),
+                }),
+            new PaletteSpec(
+                "warden",
+                "철위 (鐵衛) / Iron Warden",
+                1, 2, 5, 5, 1, 2, 4, 2,
+                6, 6, 6, 5, 6, 3, 5,
+                "#5E6670",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#C0C0B8", "#8E8A82", "#E5E0D6"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#9AA0A6", "#3F5F8F", "#D8CFB8"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#9AA0A6", "#3F5F8F", "#B7B0A0"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#8D949C", "#5B626A", "#D8CFB8"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#4A5160", "#2E3440", "#8A5A38"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#7A828C", "#4A5160", "#D8CFB8"),
+                    O("정규군 검", BattleP09AppearancePartType.Weapon, "Weapon", "#B0B4B8", "#6D6258", "#D8CFB8"),
+                    O("왕청 방패", BattleP09AppearancePartType.Shield, "Shield", "#4A6FA8", "#D8CFB8", "#8A5A38"),
+                }),
+            new PaletteSpec(
+                "guardian",
+                "묘직 (墓直) / Crypt Guardian",
+                2, 2, 6, 5, 1, 2, 0, 2,
+                9, 5, 6, 9, 5, 2, 3,
+                "#59635F",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#D2CEC4", "#A9A092", "#EEE9DE"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#B8B0A3", "#7A8FA8", "#C4A458"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#8D969A", "#5E6F80", "#B8B0A3"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#8A9096", "#5B636B", "#C4A458"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#B8B0A3", "#7A8FA8", "#C4A458"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#6B7075", "#3F454A", "#B8B0A3"),
+                    O("묘역 검", BattleP09AppearancePartType.Weapon, "Weapon", "#7A7770", "#B8B0A3", "#C4A458"),
+                    O("석관 방패", BattleP09AppearancePartType.Shield, "Shield", "#8D969A", "#5E6F80", "#C4A458"),
+                }),
+            new PaletteSpec(
+                "bulwark",
+                "송곳벽 / Fang Bulwark",
+                1, 1, 2, 6, 1, 1, 2, 2,
+                4, 4, 6, 4, 4, 1, 2,
+                "#686158",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#A65A2E", "#5A2E1D", "#D08A2E"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#B06A3C", "#D08A2E", "#C9B58A"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#9A5B34", "#D08A2E", "#2F4A2F"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#7E7770", "#5A3A25", "#D08A2E"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#5A3A25", "#3A2618", "#D08A2E"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#6B472D", "#3F2A1E", "#9A5B34"),
+                    O("부족 검", BattleP09AppearancePartType.Weapon, "Weapon", "#73543A", "#C9B58A", "#2D2016"),
+                    O("나무 방패", BattleP09AppearancePartType.Shield, "Shield", "#D08A2E", "#5A3A25", "#2F4A2F"),
+                }),
+            new PaletteSpec(
+                "slayer",
+                "서검 (誓劍) / Oath Slayer",
+                2, 2, 6, 1, 1, 2, 0, 1,
+                0, 5, 12, 5, 5, 4, 0,
+                "#6D6E74",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#1A1718", "#050508", "#3A3336"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#8A8E92", "#2A2A2E", "#D8CFB8"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#5F6570", "#D8CFB8", "#8D74C9"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#3E4652", "#202022", "#D8CFB8"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5C6370", "#2A2A2E", "#8A8E92"),
+                    O("맹세검", BattleP09AppearancePartType.Weapon, "Weapon", "#B8B8BC", "#D8CFB8", "#2A2A2E"),
+                }),
+            new PaletteSpec(
+                "reaver",
+                "묵괴 (墨壞) / Grave Reaver",
+                2, 3, 8, 5, 1, 2, 0, 1,
+                11, 11, 4, 11, 5, 5, 0,
+                "#5F5B57",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#CFCAC0", "#A89F8B", "#E7E2D8"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#4A4648", "#AFA79A", "#8E4F36"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#4A4648", "#AFA79A", "#8E4F36"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#6B5544", "#3A2A1F", "#8E4F36"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#3E3A36", "#202022", "#AFA79A"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5C5A58", "#2F3035", "#AFA79A"),
+                    O("회수검", BattleP09AppearancePartType.Weapon, "Weapon", "#3B3745", "#8E4F36", "#AFA79A"),
+                }),
+            new PaletteSpec(
+                "hunter",
+                "원시 (遠矢) / Longshot Hunter",
+                1, 2, 12, 1, 1, 2, 1, 2,
+                3, 3, 5, 3, 3, 10, 0,
+                "#657078",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#5A3D2B", "#2A1F1A", "#8A5A38"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#C0A078", "#3F5F8F", "#D8CFB8"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#C0A078", "#3F5F8F", "#D8CFB8"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#8A8E92", "#4A5160", "#D8CFB8"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#3F5F8F", "#2E3440", "#C0A078"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#6A5A45", "#3E342A", "#3F5F8F"),
+                    O("장궁", BattleP09AppearancePartType.Weapon, "Weapon", "#8A6A3F", "#3F5F8F", "#D8CFB8"),
+                }),
+            new PaletteSpec(
+                "scout",
+                "숲살이 / Trail Scout",
+                2, 1, 12, 4, 1, 1, 0, 2,
+                10, 10, 3, 10, 4, 11, 0,
+                "#5F6C5B",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#4F6B35", "#2E3F24", "#8A9A5B"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#6F8A3A", "#D08A2E", "#C9B58A"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#6F8A3A", "#D08A2E", "#3F5F32"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#A88A5F", "#5A3A25", "#D08A2E"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#5A3A25", "#2F4A2F", "#D08A2E"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#6B472D", "#3F2A1E", "#6F8A3A"),
+                    O("숲 활", BattleP09AppearancePartType.Weapon, "Weapon", "#73543A", "#D08A2E", "#3F5F32"),
+                }),
+            new PaletteSpec(
+                "marksman",
+                "냉시 (冷矢) / Dread Marksman",
+                1, 2, 5, 5, 1, 4, 0, 2,
+                5, 5, 5, 9, 5, 12, 0,
+                "#596066",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#D0D6D8", "#9EA8AA", "#EEF4F4"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#7F8E94", "#4F6A76", "#76D7E0"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#7F8E94", "#4F6A76", "#76D7E0"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#6F7E84", "#3F5058", "#B8B0A3"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#B8B0A3", "#4F6A76", "#76D7E0"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5C666A", "#2F3A40", "#7F8E94"),
+                    O("냉궁", BattleP09AppearancePartType.Weapon, "Weapon", "#3E4652", "#76D7E0", "#B8B0A3", "#1B4A50"),
+                }),
+            new PaletteSpec(
+                "shaman",
+                "풍의 (風儀) / Storm Shaman",
+                2, 2, 10, 1, 1, 1, 0, 3,
+                10, 10, 10, 7, 10, 8, 0,
+                "#6A6458",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#2E2119", "#1A120E", "#8A7F70"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#8A4F2E", "#C98D47", "#2F4A2F"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#8A4F2E", "#C98D47", "#2F4A2F"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#7A4A32", "#C98D47", "#8A7F70"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#6B4A3A", "#D4A458", "#2F4A2F"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#4F3928", "#2E2119", "#8A4F2E"),
+                    O("토템 지팡이", BattleP09AppearancePartType.Weapon, "Weapon", "#6A4A35", "#D4A458", "#2F4A2F"),
+                }),
+            new PaletteSpec(
+                "rift_stalker",
+                "틈사냥꾼 / Rift Stalker",
+                2, 3, 1, 1, 1, 4, 0, 1,
+                0, 11, 4, 10, 11, 1, 0,
+                "#615F69",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#2A1F1A", "#0F0B08", "#5A3A28"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#5A4A62", "#3F304D", "#8EA0FF"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#7A4A32", "#D08A2E", "#5A3A25"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#5A3A25", "#2F4A2F", "#D08A2E"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#3F304D", "#241B2D", "#5A4A62"),
+                    O("틈 단검", BattleP09AppearancePartType.Weapon, "Weapon", "#5B5A58", "#8EA0FF", "#D08A2E"),
+                }),
+            new PaletteSpec(
+                "bastion_penitent",
+                "참회벽 / Bastion Penitent",
+                2, 1, 5, 9, 1, 2, 0, 2,
+                0, 6, 5, 6, 5, 3, 3,
+                "#626A72",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#A33A2E", "#5A1F1A", "#D66A4F"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#8A8E92", "#4A5160", "#C9A24E"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#7A828C", "#3E4652", "#D8CFB8"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#5C6370", "#2E3440", "#8A3A2E"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5C6370", "#2A2A2E", "#C9A24E"),
+                    O("옛 정규군 검", BattleP09AppearancePartType.Weapon, "Weapon", "#A8A8AC", "#6D6258", "#C9A24E"),
+                    O("가족 방패", BattleP09AppearancePartType.Shield, "Shield", "#8A8E92", "#C9A24E", "#3F5F8F"),
+                }),
+            new PaletteSpec(
+                "pale_executor",
+                "백집행 (白執行) / Pale Executor",
+                1, 3, 13, 5, 1, 4, 3, 2,
+                12, 12, 9, 12, 11, 12, 0,
+                "#6A6870",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#D8D4C8", "#AFA89A", "#F2EEE0"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#B8B0C8", "#2F3035", "#2E8A7A"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#B8B0C8", "#2F3035", "#2E8A7A"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#AFA79A", "#3E3A36", "#2E8A7A"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#4A405A", "#2F3035", "#D8CFB8"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#3B3745", "#202022", "#B8B0C8"),
+                    O("망명자의 활", BattleP09AppearancePartType.Weapon, "Weapon", "#3B3745", "#2E8A7A", "#B8B0C8", "#124038"),
+                }),
+            new PaletteSpec(
+                "mirror_cantor",
+                "명음 (明音) / Mirror Cantor",
+                2, 2, 9, 8, 1, 4, 0, 2,
+                9, 9, 8, 9, 8, 9, 5,
+                "#686370",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#2D1F3F", "#120A20", "#C7C0D8"),
+                    O("머리 장비", BattleP09AppearancePartType.Head, "Armor", "#D8D2E3", "#C05BE0", "#8FD4E8"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#D8D2E3", "#C05BE0", "#8FD4E8"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#AFA7B8", "#4A3A5C", "#8FD4E8"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#C7C0D8", "#6F5D88", "#C05BE0"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#4A3A5C", "#2D2438", "#D8D2E3"),
+                    O("거울 지팡이", BattleP09AppearancePartType.Weapon, "Weapon", "#D8D2E3", "#C05BE0", "#8FD4E8", "#2A5360"),
+                    O("의례 거울", BattleP09AppearancePartType.Shield, "Shield", "#C7C0D8", "#8FD4E8", "#C05BE0", "#2A5360"),
+                }),
+            new PaletteSpec(
+                "hero_aegis_sentinel",
+                "방진 (方陣) / Aegis Sentinel",
+                1, 1, 5, 5, 1, 2, 1, 2,
+                0, 6, 6, 9, 6, 5, 5,
+                "#646B76",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#C9C6BC", "#8F8A82", "#E8E2D6"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#9EA5B0", "#5A4B78", "#D8D2E3"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#8D96A0", "#4C405E", "#B8B0C8"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#4B3A32", "#2D2438", "#8FD4E8"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#7E8792", "#3E4652", "#D8D2E3"),
+                    O("결사 의례검", BattleP09AppearancePartType.Weapon, "Weapon", "#B8B0C8", "#8FD4E8", "#4C405E", "#26365A"),
+                    O("격자 방패", BattleP09AppearancePartType.Shield, "Shield", "#D8D2E3", "#8FD4E8", "#5A4B78", "#26365A"),
+                }),
+            new PaletteSpec(
+                "hero_shardblade",
+                "편검 (片劍) / Shardblade",
+                2, 1, 3, 8, 1, 4, 0, 2,
+                0, 4, 5, 4, 3, 4, 0,
+                "#6B6862",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#6F4B88", "#2A1838", "#C8B5E8"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#7B614A", "#2E3440", "#8FD4E8"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#6F737A", "#4C405E", "#D8D2E3"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#2E3440", "#1A1D24", "#8FD4E8"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5C4A38", "#2D241C", "#6F4B88"),
+                    O("재조립 검", BattleP09AppearancePartType.Weapon, "Weapon", "#D8D2E3", "#8FD4E8", "#6F4B88", "#2A5360"),
+                }),
+            new PaletteSpec(
+                "hero_prism_seeker",
+                "광로 (光路) / Prism Seeker",
+                1, 1, 12, 1, 1, 4, 0, 2,
+                0, 3, 11, 8, 3, 13, 0,
+                "#686C76",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#2B211D", "#0D0908", "#6B4A38"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#D6D2E3", "#5A4B78", "#8FD4E8"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#6F647A", "#3F304D", "#8FD4E8"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#4C405E", "#2A2430", "#D6D2E3"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5C6370", "#2E3440", "#8FD4E8"),
+                    O("프리즘 활", BattleP09AppearancePartType.Weapon, "Weapon", "#4D435A", "#8FD4E8", "#D6D2E3", "#2A5360"),
+                }),
+            new PaletteSpec(
+                "hero_ember_runner",
+                "연주 (燕走) / Ember Runner",
+                2, 1, 1, 6, 1, 1, 0, 1,
+                0, 3, 4, 4, 3, 10, 0,
+                "#66706A",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#B66A34", "#5A2E1D", "#E08A42"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#8A6B3E", "#D08A2E", "#3F5F32"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#8A4F2E", "#5A3A25", "#D08A2E"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#5A3A25", "#2F4A2F", "#D08A2E"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#7A4A32", "#3F2A1E", "#8A6B3E"),
+                    O("견습 활", BattleP09AppearancePartType.Weapon, "Weapon", "#8A6A3F", "#D08A2E", "#3F5F32"),
+                }),
+            new PaletteSpec(
+                "hero_iron_pelt",
+                "철피 (鐵皮) / Iron Pelt",
+                1, 1, 2, 1, 1, 3, 5, 2,
+                0, 6, 6, 4, 4, 5, 3,
+                "#5E5B54",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#1F1713", "#080504", "#5A3A25"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#5E6266", "#2F3438", "#9A4A2E"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#5A3A25", "#2F4A2F", "#8A4A2E"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#4A2E22", "#1E1712", "#9A4A2E"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#5A3A25", "#2F241C", "#5E6266"),
+                    O("강경파 검", BattleP09AppearancePartType.Weapon, "Weapon", "#4A4642", "#9A4A2E", "#C1B59C"),
+                    O("탈취 방패", BattleP09AppearancePartType.Shield, "Shield", "#5E6266", "#9A4A2E", "#2F4A2F"),
+                }),
+            new PaletteSpec(
+                "npc_aldric",
+                "단현 스턴홀트 (丹玄) / Aldric Sternfeld",
+                1, 1, 8, 5, 1, 2, 6, 2,
+                0, 3, 3, 3, 3, 0, 0,
+                "#706A64",
+                new[]
+                {
+                    O("머리", BattleP09AppearancePartType.HairColor, "Hair", "#D8D4C8", "#AFA89A", "#F2EEE0"),
+                    O("상의", BattleP09AppearancePartType.Chest, "Armor", "#5C5A58", "#202022", "#B8A078"),
+                    O("팔 장비", BattleP09AppearancePartType.Arm, "Armor", "#4A4648", "#202022", "#B8A078"),
+                    O("허리 장비", BattleP09AppearancePartType.Waist, "Armor", "#2A2A2E", "#151517", "#8A3A2E"),
+                    O("하의", BattleP09AppearancePartType.Leg, "Armor", "#3F3B36", "#202022", "#B8A078"),
                 }),
         };
     }
@@ -709,7 +1053,11 @@ public static class P09DetailPreservingPaletteTool
         int EyeColorId,
         int FacialHairId,
         int BustSizeId,
-        int ArmorId,
+        int HeadId,
+        int ChestId,
+        int ArmId,
+        int WaistId,
+        int LegId,
         int WeaponId,
         int ShieldId,
         string Background,

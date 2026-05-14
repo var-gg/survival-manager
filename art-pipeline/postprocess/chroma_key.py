@@ -10,9 +10,13 @@ Usage:
 
 Defaults:
     chroma    = (255, 0, 255)   # fluorescent magenta
-    tolerance = 40              # RGB distance threshold
+    tolerance = 70              # RGB distance threshold (was 40 — too low for ChatGPT magenta)
     feather   = 1.0             # edge gaussian blur radius (px)
-    spill     = 0.6             # subject-edge magenta tint suppression strength
+    spill     = 0.2             # subject-edge magenta tint suppression strength
+                                # (was 0.6 — over-aggressive on amber/warm pixels;
+                                # turned amber sense-glow into cool violet/purple
+                                # in small assets where anti-alias dominates.
+                                # 0.2 keeps mild edge cleanup without hue distortion.)
 
 Dependencies: pillow, numpy, scipy
 """
@@ -33,7 +37,7 @@ def chroma_to_alpha(
     chroma: tuple[int, int, int] = (255, 0, 255),
     tolerance: float = 70.0,
     feather: float = 1.0,
-    spill_strength: float = 0.6,
+    spill_strength: float = 0.2,
 ) -> None:
     img = Image.open(in_path).convert("RGBA")
     arr = np.array(img)
@@ -98,7 +102,7 @@ def main() -> int:
     ap.add_argument("--chroma", default="#FF00FF", help="hex (e.g. #FF00FF) or 'r,g,b'")
     ap.add_argument("--tolerance", type=float, default=70.0)
     ap.add_argument("--feather", type=float, default=1.0)
-    ap.add_argument("--spill", type=float, default=0.6)
+    ap.add_argument("--spill", type=float, default=0.2)
     args = ap.parse_args()
 
     chroma = parse_color(args.chroma)

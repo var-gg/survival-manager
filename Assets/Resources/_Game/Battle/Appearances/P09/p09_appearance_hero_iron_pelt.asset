@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be14c1833dae4ff4896bf12a128b8957, type: 3}
+  m_Name: p09_appearance_hero_iron_pelt
+  m_EditorClassIdentifier: SM.Unity::SM.Unity.BattleP09AppearancePreset
+  characterId: hero_iron_pelt
+  displayName: "\uCCA0\uD53C (\u9435\u76AE) / Iron Pelt"
+  catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
+  weaponId: 5
+  shieldId: 3
+  headId: 0
+  chestId: 6
+  armId: 6
+  waistId: 4
+  legId: 4
+  sexId: 1
+  faceTypeId: 1
+  hairStyleId: 2
+  hairColorId: 1
+  skinId: 1
+  eyeColorId: 3
+  facialHairId: 5
+  bustSizeId: 2
+  materialColorOverrides:
+  - Label: "\uBA38\uB9AC"
+    UsePartTarget: 1
+    TargetPart: 10
+    TargetContains: Hair
+    Enabled: 1
+    MainColor: {r: 0.12156863, g: 0.09019608, b: 0.07450981, a: 1}
+    SecondColor: {r: 0.03137255, g: 0.019607844, b: 0.015686275, a: 1}
+    ThirdColor: {r: 0.3529412, g: 0.22745098, b: 0.14509805, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uC0C1\uC758"
+    UsePartTarget: 1
+    TargetPart: 4
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.36862746, g: 0.38431373, b: 0.4, a: 1}
+    SecondColor: {r: 0.18431373, g: 0.20392157, b: 0.21960784, a: 1}
+    ThirdColor: {r: 0.6039216, g: 0.2901961, b: 0.18039216, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD314 \uC7A5\uBE44"
+    UsePartTarget: 1
+    TargetPart: 5
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.3529412, g: 0.22745098, b: 0.14509805, a: 1}
+    SecondColor: {r: 0.18431373, g: 0.2901961, b: 0.18431373, a: 1}
+    ThirdColor: {r: 0.5411765, g: 0.2901961, b: 0.18039216, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD5C8\uB9AC \uC7A5\uBE44"
+    UsePartTarget: 1
+    TargetPart: 6
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.2901961, g: 0.18039216, b: 0.13333334, a: 1}
+    SecondColor: {r: 0.11764706, g: 0.09019608, b: 0.07058824, a: 1}
+    ThirdColor: {r: 0.6039216, g: 0.2901961, b: 0.18039216, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD558\uC758"
+    UsePartTarget: 1
+    TargetPart: 7
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.3529412, g: 0.22745098, b: 0.14509805, a: 1}
+    SecondColor: {r: 0.18431373, g: 0.14117648, b: 0.10980392, a: 1}
+    ThirdColor: {r: 0.36862746, g: 0.38431373, b: 0.4, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uAC15\uACBD\uD30C \uAC80"
+    UsePartTarget: 1
+    TargetPart: 1
+    TargetContains: Weapon
+    Enabled: 1
+    MainColor: {r: 0.2901961, g: 0.27450982, b: 0.25882354, a: 1}
+    SecondColor: {r: 0.6039216, g: 0.2901961, b: 0.18039216, a: 1}
+    ThirdColor: {r: 0.75686276, g: 0.70980394, b: 0.6117647, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD0C8\uCDE8 \uBC29\uD328"
+    UsePartTarget: 1
+    TargetPart: 2
+    TargetContains: Shield
+    Enabled: 1
+    MainColor: {r: 0.36862746, g: 0.38431373, b: 0.4, a: 1}
+    SecondColor: {r: 0.6039216, g: 0.2901961, b: 0.18039216, a: 1}
+    ThirdColor: {r: 0.18431373, g: 0.2901961, b: 0.18431373, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}

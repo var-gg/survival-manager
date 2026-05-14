@@ -4,17 +4,22 @@
 Standalone testable (no Playwright dependency). Reads files from disk,
 produces the string that would be submitted to ChatGPT.
 
+Multi-subject support (v2 — 2026-05-09):
+- subject frontmatter `kind` 분기로 sub-anchor 선택 + ref directory 결정.
+- common anchor (`style/style-anchor-common.md`)는 항상 prepend.
+- sub anchor: character / map / icon / cutscene 4종 (`style/style-anchor-{family}.md`).
+- LAYOUT block (map/icon/cutscene)이 정의되면 prompt에 포함.
+
 Usage:
     python assemble_prompt.py <subject_page.md>            # prints to stdout
     python assemble_prompt.py <subject_page.md> --json     # also prints metadata to stderr
 
 Domain (survival-manager game):
     subject_page = art-pipeline/subjects/{kind_dir}/{subject_id}/{variant}.md
-    style-anchor = art-pipeline/style/style-anchor.md (project-level, single)
-    refs         = art-pipeline/ref/characters/{slug}/anchor.png
+    style-anchor = art-pipeline/style/style-anchor-common.md + style-anchor-{family}.md
+    refs         = art-pipeline/ref/{kind_dir}/{subject_id}/anchor.png
 
-Adapted from vargg-webtoon comic-imagegen assemble_prompt.py
-(A:\\vargg-workspace\\vargg-webtoon\\.claude\\skills\\comic-imagegen\\scripts\\assemble_prompt.py).
+Adapted from vargg-webtoon comic-imagegen assemble_prompt.py.
 """
 import argparse
 import json
@@ -31,6 +36,55 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
     sys.stderr.reconfigure(encoding="utf-8")
 
 REQUIRED_FRONTMATTER = ["slug", "kind", "subject_id", "variant", "refs", "aspect", "status"]
+
+# kind → sub-anchor filename (under art-pipeline/style/)
+KIND_TO_ANCHOR_FILE = {
+    # character family
+    "character_portrait_full": "style-anchor-character.md",
+    "character_portrait_bust": "style-anchor-character.md",
+    "character_portrait_face": "style-anchor-character.md",
+    "character_battle_stance": "style-anchor-character.md",
+    # character sheet family
+    "face_emotion_sheet": "style-anchor-character.md",
+    "face_combat_state_sheet": "style-anchor-character.md",
+    "bust_emotion_sheet": "style-anchor-character.md",
+    "battle_stance_sheet": "style-anchor-character.md",
+    "skill_icon_theme_sheet": "style-anchor-icon.md",
+    # map family (cycle stages)
+    "map_concept": "style-anchor-map.md",
+    "map_layout": "style-anchor-map.md",
+    "map_decor_breakdown": "style-anchor-map.md",
+    "map_painted": "style-anchor-map.md",
+    "environment_site": "style-anchor-map.md",  # legacy alias / town BG
+    # icon family
+    "skill_icon": "style-anchor-icon.md",
+    "passive_icon": "style-anchor-icon.md",
+    "equipment_icon": "style-anchor-icon.md",
+    # cutscene
+    "cutscene_cut": "style-anchor-cutscene.md",
+}
+
+# kind → ref directory under art-pipeline/ref/
+KIND_TO_REF_DIR = {
+    "character_portrait_full": "characters",
+    "character_portrait_bust": "characters",
+    "character_portrait_face": "characters",
+    "character_battle_stance": "characters",
+    "face_emotion_sheet": "characters",
+    "face_combat_state_sheet": "characters",
+    "bust_emotion_sheet": "characters",
+    "battle_stance_sheet": "characters",
+    "skill_icon_theme_sheet": "characters",
+    "map_concept": "maps",
+    "map_layout": "maps",
+    "map_decor_breakdown": "maps",
+    "map_painted": "maps",
+    "environment_site": "backgrounds",
+    "skill_icon": "icons",
+    "passive_icon": "icons",
+    "equipment_icon": "icons",
+    "cutscene_cut": "cutscenes",
+}
 
 
 def parse_subject(subject_path: Path) -> tuple[dict[str, Any], str]:
@@ -64,28 +118,77 @@ def parse_subject(subject_path: Path) -> tuple[dict[str, Any], str]:
     return fm, fence
 
 
-def extract_anchor_blocks(anchor_path: Path) -> dict[str, str]:
-    """Extract the 4 base blocks from style-anchor.md.
-
-    Returns dict with keys: art_style, shading, chroma, negative.
-    """
-    text = anchor_path.read_text(encoding="utf-8")
-
-    def grab(start_marker: str) -> str:
+def _extract_blocks(path: Path, names: list[str]) -> dict[str, str]:
+    """Extract === NAME === blocks from anchor markdown. Missing names map to empty string."""
+    text = path.read_text(encoding="utf-8")
+    out: dict[str, str] = {}
+    for name in names:
         pattern = re.compile(
-            rf"=== {re.escape(start_marker)}.*?===\n(.*?)(?=\n=== |\n```|\Z)",
+            rf"=== {re.escape(name)}.*?===\n(.*?)(?=\n=== |\n```|\Z)",
             re.DOTALL,
         )
         m = pattern.search(text)
-        if not m:
-            raise ValueError(f"{anchor_path}: block '{start_marker}' not found")
-        return m.group(1).strip()
+        out[name] = m.group(1).strip() if m else ""
+    return out
+
+
+def extract_anchor_for_kind(pipeline_root: Path, kind: str) -> dict[str, str]:
+    """Resolve common + sub anchor for a subject kind.
+
+    Returns dict with keys: art_style / layout / shading / chroma / negative.
+    common's STYLE BASELINE prepends art_style; common's NEGATIVE COMMON appends negative.
+    """
+    common_path = pipeline_root / "style" / "style-anchor-common.md"
+    sub_filename = KIND_TO_ANCHOR_FILE.get(kind)
+    if sub_filename is None:
+        raise ValueError(
+            f"unknown kind '{kind}' — add mapping in KIND_TO_ANCHOR_FILE"
+        )
+    sub_path = pipeline_root / "style" / sub_filename
+    if not common_path.is_file():
+        raise FileNotFoundError(f"style-anchor-common not found: {common_path}")
+    if not sub_path.is_file():
+        raise FileNotFoundError(
+            f"style-anchor for kind '{kind}' not found: {sub_path}"
+        )
+
+    common = _extract_blocks(common_path, ["STYLE BASELINE", "NEGATIVE COMMON"])
+    sub = _extract_blocks(
+        sub_path,
+        [
+            "ART STYLE",
+            "LAYOUT / COMPOSITION",
+            "SHADING / LIGHTING",
+            "CHROMA BACKGROUND",
+            "NEGATIVE",
+        ],
+    )
+
+    art_style_parts = [p for p in [common["STYLE BASELINE"], sub["ART STYLE"]] if p]
+    negative_parts = [p for p in [sub["NEGATIVE"], common["NEGATIVE COMMON"]] if p]
 
     return {
-        "art_style": grab("ART STYLE"),
-        "shading": grab("SHADING / LIGHTING"),
-        "chroma": grab("CHROMA BACKGROUND"),
-        "negative": grab("NEGATIVE"),
+        "art_style": "\n\n".join(art_style_parts),
+        "layout": sub["LAYOUT / COMPOSITION"],
+        "shading": sub["SHADING / LIGHTING"],
+        "chroma": sub["CHROMA BACKGROUND"],
+        "negative": "\n\n".join(negative_parts),
+    }
+
+
+# Backward-compat alias for any external caller still using the old name.
+def extract_anchor_blocks(anchor_path: Path) -> dict[str, str]:  # pragma: no cover
+    """Deprecated. Use extract_anchor_for_kind(pipeline_root, kind)."""
+    blocks = _extract_blocks(
+        anchor_path,
+        ["ART STYLE", "LAYOUT / COMPOSITION", "SHADING / LIGHTING", "CHROMA BACKGROUND", "NEGATIVE"],
+    )
+    return {
+        "art_style": blocks["ART STYLE"],
+        "layout": blocks["LAYOUT / COMPOSITION"],
+        "shading": blocks["SHADING / LIGHTING"],
+        "chroma": blocks["CHROMA BACKGROUND"],
+        "negative": blocks["NEGATIVE"],
     }
 
 
@@ -97,31 +200,36 @@ def find_pipeline_root(subject_path: Path) -> Path:
     raise RuntimeError(f"art-pipeline root not found in path of {subject_path}")
 
 
-def resolve_ref_paths(pipeline_root: Path, ref_specs: list[str]) -> list[tuple[Path, str]]:
+def resolve_ref_paths(
+    pipeline_root: Path, ref_specs: list[str], kind: str
+) -> list[tuple[Path, str]]:
     """Resolve REF specs to absolute paths with kind labels.
 
-    Two ref kinds (chained REF policy):
+    Three ref forms:
+    1. Anchor — "{subject_id}" → ref/{kind_dir}/{subject_id}/anchor.png
+    2. Prior output — "{subject_id}:{file_stem}" → output/{subject_id}/{file_stem}.png
+    3. Direct file — "{subject_id}" with no anchor.png subdir → ref/{kind_dir}/{subject_id}.png
+       (fallback for maps/icons where anchor.png subdir convention may not apply)
 
-    1. Anchor (P09 model capture) — "{char_id}"
-       -> art-pipeline/ref/characters/{char_id}/anchor.png
-
-    2. Prior output (previously generated illustration of same character) — "{char_id}:{file_stem}"
-       -> art-pipeline/output/{char_id}/{file_stem}.png
-
-    Returns list of (path, kind_label) tuples for downstream prompt assembly.
-
-    Raises FileNotFoundError if any ref is missing.
+    Empty refs list returns [] (icon/cutscene may have no refs).
     """
+    if not ref_specs:
+        return []
+    kind_dir = KIND_TO_REF_DIR.get(kind, "characters")
     paths: list[tuple[Path, str]] = []
     missing: list[str] = []
     for spec in ref_specs:
         if ":" in spec:
-            char_id, file_stem = spec.split(":", 1)
-            p = pipeline_root / "output" / char_id / f"{file_stem}.png"
-            label = f"{char_id}/{file_stem} (prior output illustration)"
+            subject_id, file_stem = spec.split(":", 1)
+            p = pipeline_root / "output" / subject_id / f"{file_stem}.png"
+            label = f"{subject_id}/{file_stem} (prior output illustration — canonical visual style baseline)"
         else:
-            p = pipeline_root / "ref" / "characters" / spec / "anchor.png"
-            label = f"{spec}/anchor (P09 simplified 3D model capture)"
+            p = pipeline_root / "ref" / kind_dir / spec / "anchor.png"
+            if not p.is_file():
+                alt = pipeline_root / "ref" / kind_dir / f"{spec}.png"
+                if alt.is_file():
+                    p = alt
+            label = f"{spec}/anchor (reference image)"
         if not p.is_file():
             missing.append(f"{spec} -> {p}")
         else:
@@ -141,14 +249,13 @@ def build_ref_attachment_block(ref_paths: list[tuple[Path, str]]) -> str:
 {listing}
 
 Instruction:
-- The "anchor" image is the P09 simplified 3D model capture — silhouette / color zone source.
-  Use it for shape / outfit-layout reference. The illustration MUST be more detailed.
-- The "prior output illustration" images (if attached) are the canonical visual style and
-  proportion baseline that prior cycles already locked in. The current variant must match
-  these prior outputs in identity, hair color, eye color, outfit layer count, and palette.
-- The character spec block below is the authoritative source for fine details (color hex,
-  defining features). When the spec contradicts a ref, the spec wins for details, but the
-  prior outputs win for identity continuity."""
+- "anchor" image is a reference (P09 simplified 3D model capture for characters,
+  or stage screenshot for maps). Use it for shape / layout / silhouette / color zone reference.
+- "prior output illustration" images are canonical visual style baseline that prior cycles
+  locked in. Match identity, palette, and visual style to these.
+- The subject prompt fence below is the authoritative source for fine details (color hex,
+  defining features, layout markers). When the spec contradicts a ref, the spec wins for details,
+  but prior outputs win for identity/style continuity."""
 
 
 def assemble(
@@ -159,16 +266,21 @@ def assemble(
 ) -> str:
     """Compose the final prompt string.
 
-    Order: ART STYLE → SHADING → REF attachment → SUBJECT prompt fence → CHROMA → NEGATIVE.
+    Order: ART STYLE → SHADING → LAYOUT (if present) → REF attachment (if any) → SUBJECT prompt fence → CHROMA → NEGATIVE.
     """
     parts = [
         f"=== ART STYLE (엄수) ===\n{anchor['art_style']}",
         f"=== SHADING / LIGHTING ===\n{anchor['shading']}",
-        build_ref_attachment_block(ref_paths),
-        fence,
-        f"=== CHROMA BACKGROUND (CRITICAL) ===\n{anchor['chroma']}",
-        f"=== NEGATIVE ===\n{anchor['negative']}",
     ]
+    if anchor.get("layout"):
+        parts.append(f"=== LAYOUT / COMPOSITION ===\n{anchor['layout']}")
+    if ref_paths:
+        parts.append(build_ref_attachment_block(ref_paths))
+    parts.append(fence)
+    if anchor.get("chroma"):
+        parts.append(f"=== CHROMA BACKGROUND (CRITICAL) ===\n{anchor['chroma']}")
+    if anchor.get("negative"):
+        parts.append(f"=== NEGATIVE ===\n{anchor['negative']}")
     return "\n\n".join(parts)
 
 
@@ -190,19 +302,15 @@ def main() -> int:
         return 2
 
     pipeline_root = find_pipeline_root(subject_path)
-    anchor_path = pipeline_root / "style" / "style-anchor.md"
-    if not anchor_path.is_file():
-        print(f"error: style-anchor not found: {anchor_path}", file=sys.stderr)
-        return 3
 
     try:
-        anchor = extract_anchor_blocks(anchor_path)
-    except ValueError as e:
+        anchor = extract_anchor_for_kind(pipeline_root, fm["kind"])
+    except (ValueError, FileNotFoundError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 4
 
     try:
-        ref_paths = resolve_ref_paths(pipeline_root, fm["refs"])
+        ref_paths = resolve_ref_paths(pipeline_root, fm["refs"], fm["kind"])
     except FileNotFoundError as e:
         print(f"error: {e}", file=sys.stderr)
         return 5

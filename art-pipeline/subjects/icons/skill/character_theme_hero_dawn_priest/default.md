@@ -1,8 +1,11 @@
 ---
-slug: hero_dawn_priest--skill_icon_sheet
-kind: skill_icon_sheet
-subject_id: hero_dawn_priest
-variant: skill_icon_sheet
+slug: character_theme_hero_dawn_priest--default
+kind: skill_icon_theme_sheet
+subject_id: character_theme_hero_dawn_priest
+variant: default
+theme_character_id: hero_dawn_priest
+source_character_id: hero_dawn_priest
+presentation_only: true
 refs:
   - hero_dawn_priest
   - hero_dawn_priest:portrait_full
@@ -17,17 +20,21 @@ skills:
 status: rendered
 ---
 
-# 단린 — Skill Icon Sheet (4 signature skill)
+# 단린 — Skill Icon Theme Sheet (presentation bridge)
+
+이 subject는 캐릭터 이미지 cycle에 속하지 않는다. `SkillId -> IconId -> Sprite` 프레젠테이션 카탈로그가 확정되기 전까지, 단린의 팔레트와 종교적 시각 언어를 빌린 스킬 아이콘 후보 sheet로만 관리한다. 전투 규칙상 캐릭터 전용 스킬 소유권을 의미하지 않는다.
 
 ## 산출물
 
-`skill_icon_<id>.png` 4장:
+원본 sheet: `art-pipeline/output/character_theme_hero_dawn_priest/default.png`
+
+`art-pipeline/output/icons/skill/character_theme_hero_dawn_priest/skill_icon_<id>.png` 4장:
 - skill_icon_sigil_shield.png — 봉인의 방패 (active 1)
 - skill_icon_platinum_aegis.png — 백금의 호위 (active 2)
 - skill_icon_ash_purification.png — 재의 정화 (active 3)
 - skill_icon_faith_absent.png — 신앙의 부재 (variant late-game)
 
-인게임 스킬 UI button + tooltip illustration용. 추상 메타포 baseline — 캐릭터 figure 등장 X, 시각적 symbol/object만.
+인게임 스킬 UI button + tooltip illustration 후보. 추상 메타포 baseline — 캐릭터 figure 등장 X, 시각적 symbol/object만.
 
 ## prompt 명세
 

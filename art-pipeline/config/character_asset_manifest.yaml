@@ -1,0 +1,257 @@
+schema: character_asset_manifest_v1
+updated_at: 2026-05-14
+
+source:
+  primary_registry: pindoc://wiki-character-lore-registry-mirror
+  dialogue_policy: pindoc://analysis-character-operation-layer
+  asset_matrix: pindoc://analysis-character-asset-matrix-dawn-priest
+  rule: "All Pindoc wiki characters with dialogue lines are story portrait targets. Support/background/NPC tiers are not minimal battle-only exceptions."
+
+profiles:
+  story_dialogue_character:
+    description: "Any Pindoc wiki character with dialogue lines. Full narrative emotion, combat face, VN bust, and stance coverage."
+    required:
+      - anchor
+      - portrait_full_default
+      - face_emotion_sheet
+      - face_combat_state_sheet
+      - bust_emotion_sheet_R
+      - bust_emotion_sheet_L_outputs
+      - battle_stance_sheet
+  lead_story_combat:
+    description: "Legacy alias for story_dialogue_character. Lead 4 keep the same full set."
+    required:
+      - anchor
+      - portrait_full_default
+      - face_emotion_sheet
+      - face_combat_state_sheet
+      - bust_emotion_sheet_R
+      - bust_emotion_sheet_L_outputs
+      - battle_stance_sheet
+  named_story_battle:
+    description: "Legacy alias for story_dialogue_character. Named battle/story characters keep the same full set."
+    required:
+      - anchor
+      - portrait_full_default
+      - face_emotion_sheet
+      - face_combat_state_sheet
+      - bust_emotion_sheet_R
+      - bust_emotion_sheet_L_outputs
+      - battle_stance_sheet
+  battle_actor_core:
+    description: "Deprecated profile name. Kept for compatibility, but it now requires the full dialogue character matrix."
+    deprecated: true
+    required:
+      - anchor
+      - portrait_full_default
+      - face_emotion_sheet
+      - face_combat_state_sheet
+      - bust_emotion_sheet_R
+      - bust_emotion_sheet_L_outputs
+      - battle_stance_sheet
+
+asset_requirements:
+  anchor:
+    kind: ref
+    files:
+      - ref/characters/{id}/anchor.png
+  portrait_full_default:
+    kind: subject_output
+    subject: subjects/characters/{id}/portrait_full_default.md
+    outputs:
+      - output/{id}/portrait_full.png
+  face_emotion_sheet:
+    kind: sheet_output
+    subject: subjects/characters/{id}/face_emotion_sheet.md
+    outputs:
+      - output/{id}/face_emotion_sheet.png
+    derived_outputs:
+      - output/{id}/portrait_face_default.png
+      - output/{id}/portrait_face_smile.png
+      - output/{id}/portrait_face_serious.png
+      - output/{id}/portrait_face_shock.png
+      - output/{id}/portrait_face_anger.png
+      - output/{id}/portrait_face_sad.png
+      - output/{id}/portrait_face_cry.png
+      - output/{id}/portrait_face_quiet.png
+  face_combat_state_sheet:
+    kind: sheet_output
+    subject: subjects/characters/{id}/face_combat_state_sheet.md
+    outputs:
+      - output/{id}/face_combat_state_sheet.png
+    derived_outputs:
+      - output/{id}/portrait_face_wounded.png
+      - output/{id}/portrait_face_stunned.png
+      - output/{id}/portrait_face_feared.png
+      - output/{id}/portrait_face_charmed.png
+      - output/{id}/portrait_face_pained.png
+      - output/{id}/portrait_face_downed.png
+  bust_emotion_sheet_R:
+    kind: sheet_output
+    subject: subjects/characters/{id}/bust_emotion_sheet_R.md
+    outputs:
+      - output/{id}/bust_emotion_sheet_R.png
+    derived_outputs:
+      - output/{id}/portrait_bust_default_R.png
+      - output/{id}/portrait_bust_smile_R.png
+      - output/{id}/portrait_bust_serious_R.png
+      - output/{id}/portrait_bust_shock_R.png
+      - output/{id}/portrait_bust_anger_R.png
+      - output/{id}/portrait_bust_sad_R.png
+      - output/{id}/portrait_bust_cry_R.png
+      - output/{id}/portrait_bust_quiet_R.png
+  bust_emotion_sheet_L_outputs:
+    kind: derived_output
+    derivation: mirror_from_bust_emotion_sheet_R
+    derived_outputs:
+      - output/{id}/portrait_bust_default_L.png
+      - output/{id}/portrait_bust_smile_L.png
+      - output/{id}/portrait_bust_serious_L.png
+      - output/{id}/portrait_bust_shock_L.png
+      - output/{id}/portrait_bust_anger_L.png
+      - output/{id}/portrait_bust_sad_L.png
+      - output/{id}/portrait_bust_cry_L.png
+      - output/{id}/portrait_bust_quiet_L.png
+  battle_stance_sheet:
+    kind: sheet_output
+    subject: subjects/characters/{id}/battle_stance_sheet.md
+    outputs:
+      - output/{id}/battle_stance_sheet.png
+    derived_outputs:
+      - output/{id}/portrait_stance_idle.png
+      - output/{id}/portrait_stance_attack.png
+      - output/{id}/portrait_stance_guard.png
+      - output/{id}/portrait_stance_cast.png
+
+characters:
+  - id: hero_dawn_priest
+    profile: story_dialogue_character
+    tier: lead
+    wiki_slug: wiki-character-hero-dawn-priest
+  - id: hero_pack_raider
+    profile: story_dialogue_character
+    tier: lead
+    wiki_slug: wiki-character-hero-pack-raider
+  - id: hero_grave_hexer
+    profile: story_dialogue_character
+    tier: lead
+    wiki_slug: wiki-character-hero-grave-hexer
+  - id: hero_echo_savant
+    profile: story_dialogue_character
+    tier: lead
+    wiki_slug: wiki-character-hero-echo-savant
+  - id: npc_lyra_sternfeld
+    profile: story_dialogue_character
+    tier: sub_antagonist
+    wiki_slug: wiki-character-npc-lyra-sternfeld
+  - id: npc_grey_fang
+    profile: story_dialogue_character
+    tier: sub_antagonist
+    wiki_slug: wiki-character-npc-grey-fang
+  - id: npc_black_vellum
+    profile: story_dialogue_character
+    tier: sub_antagonist
+    wiki_slug: wiki-character-npc-black-vellum
+  - id: npc_silent_moon
+    profile: story_dialogue_character
+    tier: sub_antagonist
+    wiki_slug: wiki-character-npc-silent-moon
+  - id: npc_baekgyu_sternheim
+    profile: story_dialogue_character
+    tier: npc_antagonist
+    wiki_slug: wiki-character-npc-baekgyu-sternheim
+  - id: warden
+    profile: story_dialogue_character
+    tier: support
+    wiki_character_id: hero_iron_warden
+    wiki_slug: wiki-character-hero-iron-warden
+  - id: guardian
+    profile: story_dialogue_character
+    tier: support
+    wiki_character_id: hero_crypt_guardian
+    wiki_slug: wiki-character-hero-crypt-guardian
+  - id: bulwark
+    profile: story_dialogue_character
+    tier: background
+    wiki_character_id: hero_fang_bulwark
+    wiki_slug: wiki-character-hero-fang-bulwark
+  - id: slayer
+    profile: story_dialogue_character
+    tier: support
+    wiki_character_id: hero_oath_slayer
+    wiki_slug: wiki-character-hero-oath-slayer
+  - id: reaver
+    profile: story_dialogue_character
+    tier: background
+    wiki_character_id: hero_grave_reaver
+    wiki_slug: wiki-character-hero-grave-reaver
+  - id: hunter
+    profile: story_dialogue_character
+    tier: support
+    wiki_character_id: hero_longshot_hunter
+    wiki_slug: wiki-character-hero-longshot-hunter
+  - id: scout
+    profile: story_dialogue_character
+    tier: support
+    wiki_character_id: hero_trail_scout
+    wiki_slug: wiki-character-hero-trail-scout
+  - id: marksman
+    profile: story_dialogue_character
+    tier: support
+    wiki_character_id: hero_dread_marksman
+    wiki_slug: wiki-character-hero-dread-marksman
+  - id: shaman
+    profile: story_dialogue_character
+    tier: support
+    wiki_character_id: hero_storm_shaman
+    wiki_slug: wiki-character-hero-storm-shaman
+  - id: rift_stalker
+    profile: story_dialogue_character
+    tier: background
+    wiki_character_id: hero_rift_stalker
+    wiki_slug: wiki-character-hero-rift-stalker
+  - id: bastion_penitent
+    profile: story_dialogue_character
+    tier: background
+    wiki_character_id: hero_bastion_penitent
+    wiki_slug: wiki-character-hero-bastion-penitent
+  - id: pale_executor
+    profile: story_dialogue_character
+    tier: background
+    wiki_character_id: hero_pale_executor
+    wiki_slug: wiki-character-hero-pale-executor
+  - id: mirror_cantor
+    profile: story_dialogue_character
+    tier: support
+    wiki_character_id: hero_mirror_cantor
+    wiki_slug: wiki-character-hero-mirror-cantor
+  - id: hero_aegis_sentinel
+    profile: story_dialogue_character
+    tier: support
+    wiki_slug: wiki-character-hero-aegis-sentinel
+    source_status: pending_p09_preset_and_anchor
+  - id: hero_shardblade
+    profile: story_dialogue_character
+    tier: support
+    wiki_slug: wiki-character-hero-shardblade
+    source_status: pending_p09_preset_and_anchor
+  - id: hero_prism_seeker
+    profile: story_dialogue_character
+    tier: background
+    wiki_slug: wiki-character-hero-prism-seeker
+    source_status: pending_p09_preset_and_anchor
+  - id: hero_ember_runner
+    profile: story_dialogue_character
+    tier: background
+    wiki_slug: wiki-character-hero-ember-runner
+    source_status: pending_p09_preset_and_anchor
+  - id: hero_iron_pelt
+    profile: story_dialogue_character
+    tier: background
+    wiki_slug: wiki-character-hero-iron-pelt
+    source_status: registry_only_missing_wiki_page_and_p09
+  - id: npc_aldric
+    profile: story_dialogue_character
+    tier: npc_antagonist
+    wiki_slug: wiki-character-npc-aldric
+    source_status: pending_p09_preset_and_anchor

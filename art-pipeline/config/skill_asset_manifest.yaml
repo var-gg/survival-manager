@@ -1,0 +1,41 @@
+schema: skill_asset_manifest_v1
+updated_at: 2026-05-13
+
+policy:
+  hierarchy: "Skill images live under art-pipeline/subjects/icons/skill/**, not under character subject folders."
+  gameplay_binding: "Runtime ownership must be SkillId -> IconId -> Sprite/presentation catalog. Character pages do not own skill images."
+  character_theme_bridge: "character_theme_* sheets are temporary presentation-only theme sheets for palette and icon-language exploration. They are not character-exclusive skill definitions."
+
+profiles:
+  character_theme_bridge:
+    description: "Presentation-only 2x2 skill icon theme sheet that borrows a character palette/reference while the canonical SkillId -> IconId catalog is being settled."
+    required:
+      - theme_sheet
+
+asset_requirements:
+  theme_sheet:
+    kind: sheet_output
+    subject: subjects/icons/skill/{id}/default.md
+    outputs:
+      - output/{id}/default.png
+    dynamic_outputs:
+      from_frontmatter: skills
+      pattern: output/icons/skill/{id}/skill_icon_{skill}.png
+
+assets:
+  - id: character_theme_hero_dawn_priest
+    profile: character_theme_bridge
+    theme_character_id: hero_dawn_priest
+    binding_status: presentation_only_bridge
+  - id: character_theme_hero_pack_raider
+    profile: character_theme_bridge
+    theme_character_id: hero_pack_raider
+    binding_status: presentation_only_bridge
+  - id: character_theme_hero_grave_hexer
+    profile: character_theme_bridge
+    theme_character_id: hero_grave_hexer
+    binding_status: presentation_only_bridge
+  - id: character_theme_hero_echo_savant
+    profile: character_theme_bridge
+    theme_character_id: hero_echo_savant
+    binding_status: presentation_only_bridge
