@@ -80,16 +80,11 @@ Style avoidance (CRITICAL — character must NOT look photoreal/realistic):
 - NO concept-art-realism palette (avoid muted desaturated everything).
 - The character is anime-game-stylized fantasy art, NOT a realistic painting of a real person in costume.
 
-General avoidance:
-- Generic AI illustration smoothing (no purposeful brush direction).
+Character-specific avoidance:
 - Plastic / waxy skin texture.
 - Symmetric "AI face" (eyes too symmetric, lips too symmetric, generic stock proportions).
-- Watermarks, signatures, text artifacts in the image.
-- Extra fingers, malformed hands, melted weapon shapes.
 - Background gradients, painted environments, scenery — background must be FLAT magenta.
 - Any magenta tint on the subject.
-- Real-world brand logos. Use stylized fantasy sigils only.
-- Oversaturated neon palette.
 - Multiple characters in one frame (single subject only unless explicitly requested).
 - Frame borders, panel layouts, comic-style gutters — this is a single illustration, not a comic page.
 ```

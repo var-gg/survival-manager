@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be14c1833dae4ff4896bf12a128b8957, type: 3}
+  m_Name: p09_appearance_npc_aldric
+  m_EditorClassIdentifier: SM.Unity::SM.Unity.BattleP09AppearancePreset
+  characterId: npc_aldric
+  displayName: "\uB2E8\uD604 \uC2A4\uD134\uD640\uD2B8 (\u4E39\u7384) / Aldric Sternfeld"
+  catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
+  weaponId: 0
+  shieldId: 0
+  headId: 0
+  chestId: 3
+  armId: 3
+  waistId: 3
+  legId: 3
+  sexId: 1
+  faceTypeId: 1
+  hairStyleId: 8
+  hairColorId: 5
+  skinId: 1
+  eyeColorId: 2
+  facialHairId: 6
+  bustSizeId: 2
+  materialColorOverrides:
+  - Label: "\uBA38\uB9AC"
+    UsePartTarget: 1
+    TargetPart: 10
+    TargetContains: Hair
+    Enabled: 1
+    MainColor: {r: 0.84705883, g: 0.83137256, b: 0.78431374, a: 1}
+    SecondColor: {r: 0.6862745, g: 0.65882355, b: 0.6039216, a: 1}
+    ThirdColor: {r: 0.9490196, g: 0.93333334, b: 0.8784314, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uC0C1\uC758"
+    UsePartTarget: 1
+    TargetPart: 4
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.36078432, g: 0.3529412, b: 0.34509805, a: 1}
+    SecondColor: {r: 0.1254902, g: 0.1254902, b: 0.13333334, a: 1}
+    ThirdColor: {r: 0.72156864, g: 0.627451, b: 0.47058824, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD314 \uC7A5\uBE44"
+    UsePartTarget: 1
+    TargetPart: 5
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.2901961, g: 0.27450982, b: 0.28235295, a: 1}
+    SecondColor: {r: 0.1254902, g: 0.1254902, b: 0.13333334, a: 1}
+    ThirdColor: {r: 0.72156864, g: 0.627451, b: 0.47058824, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD5C8\uB9AC \uC7A5\uBE44"
+    UsePartTarget: 1
+    TargetPart: 6
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.16470589, g: 0.16470589, b: 0.18039216, a: 1}
+    SecondColor: {r: 0.08235294, g: 0.08235294, b: 0.09019608, a: 1}
+    ThirdColor: {r: 0.5411765, g: 0.22745098, b: 0.18039216, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD558\uC758"
+    UsePartTarget: 1
+    TargetPart: 7
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.24705882, g: 0.23137255, b: 0.21176471, a: 1}
+    SecondColor: {r: 0.1254902, g: 0.1254902, b: 0.13333334, a: 1}
+    ThirdColor: {r: 0.72156864, g: 0.627451, b: 0.47058824, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}

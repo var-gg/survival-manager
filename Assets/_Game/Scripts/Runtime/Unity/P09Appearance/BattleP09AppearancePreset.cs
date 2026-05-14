@@ -698,6 +698,11 @@ public sealed class BattleP09MaterialColorOverride
         SetColorIfPresent(material, "_BaseColor", MainColor);
         SetColorIfPresent(material, "_Color2nd", SecondColor);
         SetColorIfPresent(material, "_Color3rd", ThirdColor);
+        SetColorIfPresent(material, "_ShadowColor", DeriveShadowColor(MainColor));
+        SetColorIfPresent(material, "_Shadow2ndColor", DeriveShadowColor(SecondColor));
+        SetColorIfPresent(material, "_RimColor", DeriveRimColor(ThirdColor));
+        SetColorIfPresent(material, "_RimShadeColor", DeriveShadowColor(ThirdColor));
+        SetColorIfPresent(material, "_OutlineColor", DeriveOutlineColor(MainColor));
 
         if (UseEmissionColor)
         {
@@ -712,6 +717,49 @@ public sealed class BattleP09MaterialColorOverride
         {
             material.SetColor(propertyName, color);
         }
+    }
+
+    private static Color DeriveShadowColor(Color color)
+    {
+        var shadow = Color.Lerp(color, Color.black, 0.18f);
+        shadow = EnsureMinimumLuminance(shadow, 0.42f);
+        shadow.a = color.a;
+        return shadow;
+    }
+
+    private static Color DeriveOutlineColor(Color color)
+    {
+        var outline = Color.Lerp(color, Color.black, GetLuminance(color) < 0.35f ? 0.35f : 0.55f);
+        outline.a = 1f;
+        return outline;
+    }
+
+    private static Color DeriveRimColor(Color color)
+    {
+        var rim = Color.Lerp(color, Color.white, 0.18f);
+        rim.a = color.a;
+        return rim;
+    }
+
+    private static Color EnsureMinimumLuminance(Color color, float minimumLuminance)
+    {
+        var luminance = GetLuminance(color);
+        if (luminance >= minimumLuminance)
+        {
+            return color;
+        }
+
+        var scale = minimumLuminance / Mathf.Max(0.001f, luminance);
+        return new Color(
+            Mathf.Clamp01(color.r * scale),
+            Mathf.Clamp01(color.g * scale),
+            Mathf.Clamp01(color.b * scale),
+            color.a);
+    }
+
+    private static float GetLuminance(Color color)
+    {
+        return (color.r * 0.299f) + (color.g * 0.587f) + (color.b * 0.114f);
     }
 }
 }

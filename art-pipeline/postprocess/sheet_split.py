@@ -179,42 +179,54 @@ def split_sheet(
     min_size: int = 5000,
     pad: int = 16,
     fallback_gap: int = 32,
+    method: str = "auto",
 ) -> list[Path]:
-    """Split sheet into individual cells, name by emotion."""
+    """Split sheet into individual cells, name by emotion.
+
+    method:
+      - "auto" (default): try chroma → alpha → hardcoded
+      - "hardcoded": skip detection, use canvas / rows / cols / gap directly.
+        Use when alpha components leak between cells (e.g. a wide hand gesture
+        connects two cells visually) and forced-grid is the only safe split.
+    """
     img = Image.open(sheet_path).convert("RGBA")
     arr = np.array(img)
     expected = rows * cols
     if len(emotions) != expected:
         raise ValueError(f"emotions list length {len(emotions)} != rows*cols {expected}")
 
-    # Strategy priority:
-    #   1. chroma row/col gap detection (most accurate, uses magenta gaps in raw sheet)
-    #   2. alpha-based connected component label
-    #   3. hardcoded grid fallback (canvas / rows / cols / gap)
-    method = ""
-    chroma_bboxes = find_cells_by_chroma(arr)
-    if len(chroma_bboxes) == expected:
-        sorted_bboxes = chroma_bboxes  # already in row-major reading order
-        method = "chroma boundary"
+    if method == "hardcoded":
+        sorted_bboxes = hardcoded_grid_bboxes(arr.shape[1], arr.shape[0], rows, cols, fallback_gap)
+        used_method = "hardcoded grid (forced)"
     else:
-        print(
-            f"[sheet_split] chroma boundary detection found {len(chroma_bboxes)} cells "
-            f"(expected {expected}); trying alpha component fallback",
-            file=sys.stderr,
-        )
-        alpha_bboxes = find_cells_by_alpha(arr, min_size=min_size, pad=pad)
-        if len(alpha_bboxes) == expected:
-            sorted_bboxes = sort_cells_reading_order(alpha_bboxes, rows)
-            method = "alpha component"
+        # Strategy priority:
+        #   1. chroma row/col gap detection (most accurate, uses magenta gaps in raw sheet)
+        #   2. alpha-based connected component label
+        #   3. hardcoded grid fallback (canvas / rows / cols / gap)
+        used_method = ""
+        chroma_bboxes = find_cells_by_chroma(arr)
+        if len(chroma_bboxes) == expected:
+            sorted_bboxes = chroma_bboxes  # already in row-major reading order
+            used_method = "chroma boundary"
         else:
             print(
-                f"[sheet_split] alpha-based detection found {len(alpha_bboxes)} cells "
-                f"(expected {expected}); falling back to hardcoded grid",
+                f"[sheet_split] chroma boundary detection found {len(chroma_bboxes)} cells "
+                f"(expected {expected}); trying alpha component fallback",
                 file=sys.stderr,
             )
-            sorted_bboxes = hardcoded_grid_bboxes(arr.shape[1], arr.shape[0], rows, cols, fallback_gap)
-            method = "hardcoded grid"
-    print(f"[sheet_split] split method: {method}", file=sys.stderr)
+            alpha_bboxes = find_cells_by_alpha(arr, min_size=min_size, pad=pad)
+            if len(alpha_bboxes) == expected:
+                sorted_bboxes = sort_cells_reading_order(alpha_bboxes, rows)
+                used_method = "alpha component"
+            else:
+                print(
+                    f"[sheet_split] alpha-based detection found {len(alpha_bboxes)} cells "
+                    f"(expected {expected}); falling back to hardcoded grid",
+                    file=sys.stderr,
+                )
+                sorted_bboxes = hardcoded_grid_bboxes(arr.shape[1], arr.shape[0], rows, cols, fallback_gap)
+                used_method = "hardcoded grid"
+    print(f"[sheet_split] split method: {used_method}", file=sys.stderr)
 
     out_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
@@ -244,6 +256,14 @@ def main() -> int:
     ap.add_argument("--min-size", type=int, default=5000)
     ap.add_argument("--pad", type=int, default=16)
     ap.add_argument("--fallback-gap", type=int, default=32)
+    ap.add_argument(
+        "--method",
+        choices=["auto", "hardcoded"],
+        default="auto",
+        help="auto: chroma → alpha → hardcoded fallback chain (default). "
+             "hardcoded: skip detection, use forced grid math (use when alpha "
+             "components leak across cells).",
+    )
     args = ap.parse_args()
 
     emotions = [e.strip() for e in args.emotions.split(",") if e.strip()]
@@ -257,6 +277,7 @@ def main() -> int:
         min_size=args.min_size,
         pad=args.pad,
         fallback_gap=args.fallback_gap,
+        method=args.method,
     )
     print(f"[sheet_split] wrote {len(written)} cells")
     return 0

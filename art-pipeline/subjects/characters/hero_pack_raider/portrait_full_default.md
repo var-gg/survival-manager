@@ -6,70 +6,76 @@ variant: portrait_full
 emotion: default
 refs:
   - hero_pack_raider
+  - hero_dawn_priest:portrait_full_style_seed_best
 aspect: "2:3"
 output_size: "1024x1536"
 chroma: "#FF00FF"
 status: rendered
 ---
 
-# 이빨바람 (Pack Raider) — Portrait Full Default (v2 — REF-first)
+# 이빨바람 (Pack Raider) — Portrait Full Default (v3 — P09 canon + house style seed)
 
-## v2 변경 사유
+## v3 변경 사유
 
 V1: spec block에 "Yri-sol tribe young hunter-leader", "Duelist tracker", "wolf-pack raider" 같은 archetype 어휘 + "layered weathered hunter's leather", "arm guards" 같은 묘사가 들어가서 ChatGPT가 일반 fantasy ranger archetype으로 매핑 → ref보다 더 화려한 layered leather + multiple straps + pouch 추가됨.
 
 V2 fix: V6 단린에서 검증된 REF-first 패턴 적용. spec block에서 archetype 묘사 제거, REF가 캐릭터 BLUEPRINT 전체임을 강제. P09 asset material override hex로 색 anchor.
 
+V3 update: 2026-05-13 P09 통합 외형 재산출 기준을 반영하고, `hero_dawn_priest:portrait_full_style_seed_best`를 내부 house style seed로 붙인다. P09 anchor는 costume/identity canon이고, 단린 best seed는 professional key visual brushwork와 face appeal 기준이다.
+
 ## prompt 명세
 
 ```prompt
-=== REF IS THE FULL CHARACTER BLUEPRINT (highest authority) ===
-The attached image is the COMPLETE BLUEPRINT for this character. Your illustration is the high-resolution, painterly version of this EXACT character — not a reinterpretation, not a fantasy archetype variant.
+=== REFERENCE ROLE SPLIT (highest authority) ===
+Two reference images are attached.
 
-Match the REF for ALL of the following (the ref is the canonical source):
-- Outfit type, layer count, layer order top-to-bottom.
-- Garment shapes (tunic, wrap, trousers — whatever the ref shows).
-- Color zones (top tier vs bottom tier, exactly as ref shows).
-- Hair length, hair shape, hair color.
-- Eye color.
-- Weapon type, weapon size, weapon shape, weapon position.
-- Skin tone.
-- Body proportions and silhouette.
-- Pose composition (with VARIANT adjustments noted below).
-- Presence/absence of accessories — render only what's in the ref.
+REF 1 — P09 model anchor:
+- Canon for identity, costume family, slot layout, weapon/shield presence, color zones, and silhouette readability.
+- Use it as the costume truth, NOT as a line-for-line tracing target.
+- Preserve the big readable facts: near-black wild hair, warm amber/burnt leather, moss forest accent on arm/waist, single short sword, no shield.
 
-The ref is WHAT THE CHARACTER LOOKS LIKE. Your job is to render that exact character with painterly detail and stylized JRPG illustration quality.
+REF 2 — 단린 best style seed:
+- Style-only seed for survival-manager house style.
+- Borrow its professional key visual qualities: face appeal, brush density, painterly cloth rhythm, confident line economy, controlled edge detail, premium JRPG full-body finish.
+- Do NOT copy 단린's priest costume, cape shape, shield, sword shape, color balance, or feminine body language.
 
-DO NOT:
-- Add garments, ornaments, weapons, or accessories that aren't in the ref.
-- Reinterpret the character into a different archetype (e.g., elaborate ranger armor when ref shows simple hunter clothes; tribal warrior when ref shows utilitarian hunter).
-- Change the outfit's layer structure or color zones.
-- Lengthen, shorten, or restyle hair beyond what the ref shows.
-- Substitute the sword for a more "fitting" or "fantasy-iconic" weapon.
-- Add multiple belt pouches, satchels, knife sheaths, or hunter accessories not in the ref.
-- Add tribal face tattoos, scarification markings, bone hair accessories, feather decorations, or totem ornaments not visible in the ref.
-- Add a shield, buckler, or defensive equipment of any kind (this character has NO shield).
+Final image goal:
+Translate the P09 costume canon into an original professional fantasy game key visual. It should feel drawn by the same internal game art team as 단린 best seed, not like a direct 3D-to-2D conversion.
 
-The illustration is a HIGH-RES PAINTERLY ENHANCEMENT of the ref. Nothing more, nothing less.
+=== HARD CANON LOCKS ===
+Keep these exact identity/costume facts:
+- Male young pack raider / hunter-leader, alert and coiled at rest.
+- Head slot empty: no hood, helmet, crown, antlers, feathers, or large hair ornament.
+- Near-black wild shag hair, warm brown/amber eyes, light slightly tanned skin.
+- Armor_004 leather chest and leg with Armor_010 forest arm and waist accent.
+- Sword_001 only. No shield, no bow, no axe, no staff, no back weapon.
+- Warm leather / burnt amber / moss green palette. Do not shift him into cold black rogue, generic green ranger, or metal knight armor.
 
-=== REF DETAIL ENHANCEMENT (allowed — surface enhancements only) ===
-Render the following with painterly fidelity. These are surface-level enhancements on what the ref already contains, NOT new content:
-- Leather sheen and cloth weave on garments visible in ref.
-- Hair strand definition matching ref's hair shape and color exactly (wild shag, near-black).
-- Material reflection: subtle bone-cream highlight on sword blade visible in ref.
-- Subtle skin warmth on visible skin areas.
-- Eye catch light matching ref's amber color.
-- Cinematic three-point lighting (key warm upper-left, cool rim upper-back-right, soft fill below) on the silhouette ref shows.
-- Subtle stitching detail at garment seams (NOT heavy realistic leather grain).
+=== PROFESSIONAL ILLUSTRATOR TRANSLATION (allowed and desired) ===
+Use artistic judgment to make the character feel like premium original game art:
+- Improve facial appeal, gaze intensity, and hair rhythm beyond the low-poly model.
+- Use tasteful asymmetry in wild hair, leather folds, hand pose, and stance.
+- Let leather straps and forest accent shapes read clearly while avoiding pouch overload.
+- Add fine seam detail, small stitching, painterly edge highlights, and restrained leather sheen only on existing garments/gear.
+- Push lighting, value grouping, and silhouette rhythm for a key visual read.
+- Maintain full-body clarity for cutout use, but avoid rigid mannequin posture.
+
+Forbidden:
+- No external IP costume motifs, no specific franchise/artist imitation.
+- No shield, buckler, bow, axe, staff, secondary blade, animal ears, tail, wolf transformation, face tattoo, scarification, bone/feather totems, or giant cloak.
+- No exact copy of REF 2 costume or pose; REF 2 is style-only.
 
 === EXACT COLOR ANCHORS (P09 asset material override hex) ===
 Use these hex values when the ref's lighting obscures the canonical color. The ref shape + these hex = the canonical character.
 
 - Hair: #15120F (near-black with cool deep tone). NOT brown, NOT auburn, NOT chestnut. Dark and cool, almost black, slightly windswept wild shag style.
-- Top color zone (head ornament + chest tunic + arm guards): #A96F36 (warm ochre / tan leather). Dominant on the upper body.
-- Bottom color zone (waist wrap + trousers): #6B472D (dark warm umber leather). Darker than the top zone, clearly distinguishable from #A96F36.
-- Sword blade: #C9B58A (bone/cream tone). NOT shiny gold, NOT mirror silver. A muted bone-cream blade with subtle warm undertone.
-- Eyes: yellow/amber iris (#D8B040 to #E0A030 family). NOT brown, NOT green, NOT blue.
+- P09 slots: Head none / Armor_004_Chest / Armor_010_Arm / Armor_010_Waist / Armor_004_Leg.
+- Chest leather zone: #A96F36 main, #D08A2E secondary, #C9B58A accent.
+- Arm forest/leather zone: #8B5A2E main, #2F4A2F moss secondary, #D08A2E accent.
+- Waist forest/leather zone: #5A3A25 main, #D08A2E secondary, #2F4A2F moss accent.
+- Leg leather zone: #6B472D main, #3F2A1E secondary, #A96F36 accent.
+- Sword: #73543A main, #C9B58A blade/highlight, #2D2016 dark grip. Muted hunting sword, not shiny heroic gold.
+- Eyes: warm brown/amber iris. NOT green, NOT blue.
 - Skin: light tone, slightly tanned (P09 SkinId 1), soft idealized.
 - Accent details (small highlights on garment seams, sword fittings, belt buckle): #D08A2E (warm amber) and #C9B58A (bone/cream).
 

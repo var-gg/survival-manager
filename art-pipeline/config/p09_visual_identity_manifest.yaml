@@ -1,0 +1,259 @@
+schema: p09_visual_identity_manifest_v1
+updated_at: 2026-05-13
+source:
+  p09_preset_dir: Assets/Resources/_Game/Battle/Appearances/P09
+  capture_dir: Logs/p09-fullbody
+  capture_anchor_dir: art-pipeline/ref/characters
+coverage_note: This manifest covers characters that already have Unity P09 presets/captures. It is not the dialogue portrait target source; use
+  character_asset_manifest.yaml for the Pindoc wiki target list.
+alias_presets:
+- alias_id: priest
+  target_id: hero_dawn_priest
+  hidden_in_authoring: true
+  reason: Runtime ArchetypeId fallback. Studio must show the named hero only.
+- alias_id: raider
+  target_id: hero_pack_raider
+  hidden_in_authoring: true
+  reason: Runtime ArchetypeId fallback. Studio must show the named hero only.
+- alias_id: hexer
+  target_id: hero_grave_hexer
+  hidden_in_authoring: true
+  reason: Runtime ArchetypeId fallback. Studio must show the named hero only.
+rules:
+- id: hide_runtime_aliases_in_studio
+  severity: error
+  summary: Archetype alias presets stay available for runtime fallback but are hidden from P09 Appearance Studio.
+- id: same_faction_same_job
+  severity: review
+  summary: Same faction and same job may share an outfit family, but hair, palette, weapon, or silhouette must separate the character.
+- id: cross_faction_overlap
+  severity: warning
+  summary: Different faction or job should not rely on the exact same outfit unless palette and head/hair make them readable.
+- id: no_exact_character_duplicate
+  severity: error
+  summary: No two non-alias characters should share the same body, outfit, weapon, shield, and palette signature.
+characters:
+- id: hero_dawn_priest
+  display_name: 단린 (丹麟) / Dawn Priest
+  faction: solarum
+  combat_class: priest_paladin
+  archetype_id: priest
+  uniform_group: solarum_priest_paladin
+  silhouette_family: p09_h7_c7_a5_w7_l4_wp3_sh4
+  visual_intent: Armor_007 사제복을 중심으로 arm/leg를 전투형으로 섞은 warm ivory/gold/rose 사제 호위자.
+- id: hero_pack_raider
+  display_name: 이빨바람 / Pack Raider
+  faction: irisol
+  combat_class: pack_raider
+  archetype_id: raider
+  uniform_group: irisol_pack_raider
+  silhouette_family: p09_h0_c4_a10_w10_l4_wp1_sh0
+  visual_intent: Head를 비워 wild hair를 살리고 Armor_004 leather에 Armor_010 forest accent를 섞은 raider.
+- id: hero_grave_hexer
+  display_name: 묵향 (墨香) / Grave Hexer
+  faction: pale_conclave
+  combat_class: grave_hexer
+  archetype_id: hexer
+  uniform_group: pale_conclave_grave_hexer
+  silhouette_family: p09_h9_c9_a9_w8_l9_wp7_sh0
+  visual_intent: Armor_009 robe에 Armor_008 waist를 더한 bone/jade/amber 기억 관리관.
+- id: hero_echo_savant
+  display_name: 공한 (空閑) / Echo Savant
+  faction: lattice_order
+  combat_class: echo_savant
+  archetype_id: marksman
+  uniform_group: lattice_order_echo_savant
+  silhouette_family: p09_h11_c11_a11_w8_l11_wp13_sh0
+  visual_intent: Armor_011 cowl에 Armor_008 pale sash와 Bow_004 cyan prism을 둔 관측 사수.
+- id: npc_lyra_sternfeld
+  display_name: 선영 (宣英) / Lyra Sternfeld
+  faction: solarum
+  combat_class: fanatic_priest
+  archetype_id: priest
+  uniform_group: solarum_fanatic_priest
+  silhouette_family: p09_h9_c7_a8_w7_l7_wp9_sh0
+  visual_intent: 단린과 같은 priest baseline을 cold ivory/violet ceremonial authority로 뒤튼 광신 사제.
+- id: npc_grey_fang
+  display_name: 회조 (灰爪) / Grey Fang
+  faction: irisol
+  combat_class: grey_fang_duelist
+  archetype_id: raider
+  uniform_group: irisol_grey_fang_duelist
+  silhouette_family: p09_h0_c4_a11_w4_l3_wp1_sh0
+  visual_intent: 피형제 leather baseline에 frost hair와 rogue arm/travel boots를 더한 분리파 결투가.
+- id: npc_black_vellum
+  display_name: 흑지 (黑紙) / Black Vellum
+  faction: pale_conclave
+  combat_class: black_vellum_judicator
+  archetype_id: hexer
+  uniform_group: pale_conclave_black_vellum_judicator
+  silhouette_family: p09_h9_c9_a11_w9_l8_wp7_sh0
+  visual_intent: Armor_009 robe에 black sleeve와 dark caster boots를 붙인 parchment/ink/emerald 단죄자.
+- id: npc_silent_moon
+  display_name: 침월 (沉月) / Silent Moon
+  faction: lattice_order
+  combat_class: silent_moon_hardliner
+  archetype_id: hexer
+  uniform_group: lattice_order_silent_moon_hardliner
+  silhouette_family: p09_h8_c8_a8_w9_l8_wp7_sh0
+  visual_intent: Armor_008 moon mage에 Armor_009 sash를 더한 lavender/eggplant/blue-violet 강경파.
+- id: npc_baekgyu_sternheim
+  display_name: 백규 (白圭) / Baekgyu Sternheim
+  faction: solarum
+  combat_class: scholar_boss
+  archetype_id: pale_executor
+  uniform_group: solarum_scholar_boss
+  silhouette_family: p09_h12_c12_a5_w12_l12_wp5_sh0
+  visual_intent: Armor_012 officer-scholar에 Armor_005 arm을 섞은 grey/ivory/violet 정치 권위.
+- id: warden
+  display_name: 철위 (鐵衛) / Iron Warden
+  faction: solarum
+  combat_class: iron_warden
+  archetype_id: warden
+  uniform_group: solarum_iron_warden
+  silhouette_family: p09_h6_c6_a6_w5_l6_wp3_sh5
+  visual_intent: Armor_006 full plate에 field waist와 royal blue shield를 둔 veteran warden.
+- id: guardian
+  display_name: 묘직 (墓直) / Crypt Guardian
+  faction: pale_conclave
+  combat_class: crypt_guardian
+  archetype_id: guardian
+  uniform_group: pale_conclave_crypt_guardian
+  silhouette_family: p09_h9_c5_a6_w9_l5_wp2_sh3
+  visual_intent: Armor_005 chain에 robe head/waist와 heavy arm을 얹은 blue-grey/bone/amber 수호자.
+- id: bulwark
+  display_name: 송곳벽 / Fang Bulwark
+  faction: irisol
+  combat_class: fang_bulwark
+  archetype_id: bulwark
+  uniform_group: irisol_fang_bulwark
+  silhouette_family: p09_h4_c4_a6_w4_l4_wp1_sh2
+  visual_intent: Armor_004 leather에 heavy guard arm과 orange shield를 더한 이리솔 방패병.
+- id: slayer
+  display_name: 서검 (誓劍) / Oath Slayer
+  faction: solarum
+  combat_class: oath_slayer
+  archetype_id: slayer
+  uniform_group: solarum_oath_slayer
+  silhouette_family: p09_h0_c5_a12_w5_l5_wp4_sh0
+  visual_intent: Head를 비워 black hair를 보이고 Armor_005 chain에 Armor_012 arm을 붙인 executor duelist.
+- id: reaver
+  display_name: 묵괴 (墨壞) / Grave Reaver
+  faction: pale_conclave
+  combat_class: grave_reaver
+  archetype_id: reaver
+  uniform_group: pale_conclave_grave_reaver
+  silhouette_family: p09_h11_c11_a4_w11_l5_wp5_sh0
+  visual_intent: Armor_011 rogue에 leather arm과 chain leg를 섞은 ash/black/rust 묘역 순찰병.
+- id: hunter
+  display_name: 원시 (遠矢) / Longshot Hunter
+  faction: solarum
+  combat_class: longshot_hunter
+  archetype_id: hunter
+  uniform_group: solarum_longshot_hunter
+  silhouette_family: p09_h3_c3_a5_w3_l3_wp10_sh0
+  visual_intent: Armor_003 travel hunter에 Armor_005 bracer와 tan/blue cloth를 둔 원정 정찰병.
+- id: scout
+  display_name: 숲살이 / Trail Scout
+  faction: irisol
+  combat_class: trail_scout
+  archetype_id: scout
+  uniform_group: irisol_trail_scout
+  silhouette_family: p09_h10_c10_a3_w10_l4_wp11_sh0
+  visual_intent: Armor_010 forest scout에 travel sleeve/leather leg를 섞은 green/orange 혼혈 정찰병.
+- id: marksman
+  display_name: 냉시 (冷矢) / Dread Marksman
+  faction: pale_conclave
+  combat_class: dread_marksman
+  archetype_id: marksman
+  uniform_group: pale_conclave_dread_marksman
+  silhouette_family: p09_h5_c5_a5_w9_l5_wp12_sh0
+  visual_intent: Armor_005 chain에 Armor_009 sash와 cyan bow glow를 둔 cold precision archer.
+- id: shaman
+  display_name: 풍의 (風儀) / Storm Shaman
+  faction: irisol
+  combat_class: storm_shaman
+  archetype_id: shaman
+  uniform_group: irisol_storm_shaman
+  silhouette_family: p09_h10_c10_a10_w7_l10_wp8_sh0
+  visual_intent: Armor_010 shaman에 robe sash를 더한 red-brown/amber/deep-green 공동체 치유사.
+- id: rift_stalker
+  display_name: 틈사냥꾼 / Rift Stalker
+  faction: irisol
+  combat_class: rift_stalker
+  archetype_id: rift_stalker
+  uniform_group: irisol_rift_stalker
+  silhouette_family: p09_h0_c11_a4_w10_l11_wp1_sh0
+  visual_intent: Head를 비운 Armor_011 rogue에 leather/forest clan mark와 cyan rift accent를 더한 stalker.
+- id: bastion_penitent
+  display_name: 참회벽 / Bastion Penitent
+  faction: solarum
+  combat_class: bastion_penitent
+  archetype_id: bastion_penitent
+  uniform_group: solarum_bastion_penitent
+  silhouette_family: p09_h0_c6_a5_w6_l5_wp3_sh3
+  visual_intent: Head를 비운 repaired plate/chain mix와 red hair/gold-blue shield의 참회 방패병.
+- id: pale_executor
+  display_name: 백집행 (白執行) / Pale Executor
+  faction: pale_conclave
+  combat_class: pale_executor
+  archetype_id: pale_executor
+  uniform_group: pale_conclave_pale_executor
+  silhouette_family: p09_h12_c12_a9_w12_l11_wp12_sh0
+  visual_intent: Armor_012 formal executor에 robe arm/exile leg와 teal bow glow를 더한 망명 처형자.
+- id: mirror_cantor
+  display_name: 명음 (明音) / Mirror Cantor
+  faction: lattice_order
+  combat_class: mirror_cantor
+  archetype_id: mirror_cantor
+  uniform_group: lattice_order_mirror_cantor
+  silhouette_family: p09_h9_c9_a8_w9_l8_wp9_sh5
+  visual_intent: Armor_009 cantor robe에 Armor_008 arm/leg와 mirror shield를 둔 crystal white/magenta/cyan 봉합자.
+- id: hero_aegis_sentinel
+  display_name: 방진 (方陣) / Aegis Sentinel
+  faction: lattice_order
+  combat_class: aegis_sentinel
+  archetype_id: hero_aegis_sentinel
+  uniform_group: lattice_order_aegis_sentinel
+  silhouette_family: p09_h0_c6_a6_w9_l6_wp5_sh5
+  visual_intent: Head를 비워 회백 노년 hair/moustache를 보이고 plate+ritual sash+heraldic shield로 침묵의 결사 보초를 만든다.
+- id: hero_shardblade
+  display_name: 편검 (片劍) / Shardblade
+  faction: lattice_order
+  combat_class: shardblade
+  archetype_id: hero_shardblade
+  uniform_group: lattice_order_shardblade
+  silhouette_family: p09_h0_c4_a5_w4_l3_wp4_sh0
+  visual_intent: 외부 일상복 같은 Armor_004에 실전 bracer와 격자검을 더한 earth/indigo/prism 직공 결투가.
+- id: hero_prism_seeker
+  display_name: 광로 (光路) / Prism Seeker
+  faction: lattice_order
+  combat_class: prism_seeker
+  archetype_id: hero_prism_seeker
+  uniform_group: lattice_order_prism_seeker
+  silhouette_family: p09_h0_c3_a11_w8_l3_wp13_sh0
+  visual_intent: Pindoc wiki의 젊은 남성 Ranger 기준. travel scout gear에 lattice sash와 Bow_004 prism signal을 더한 외부 호기심 정찰병.
+- id: hero_ember_runner
+  display_name: 연주 (燕走) / Ember Runner
+  faction: irisol
+  combat_class: ember_runner
+  archetype_id: hero_ember_runner
+  uniform_group: irisol_ember_runner
+  silhouette_family: p09_h0_c3_a4_w4_l3_wp10_sh0
+  visual_intent: 가벼운 travel/leather mix와 bright ember hair로 이리솔 견습 사냥꾼의 빠른 에너지를 만든다.
+- id: hero_iron_pelt
+  display_name: 철피 (鐵皮) / Iron Pelt
+  faction: irisol
+  combat_class: iron_pelt_hardliner
+  archetype_id: hero_iron_pelt
+  uniform_group: irisol_iron_pelt_hardliner
+  silhouette_family: p09_h0_c6_a6_w4_l4_wp5_sh3
+  visual_intent: 솔라룸 plate 파편을 이리솔 leather에 강제로 섞은 dark iron/rust/moss 강경 분리파 vanguard.
+- id: npc_aldric
+  display_name: 단현 스턴홀트 (丹玄) / Aldric Sternfeld
+  faction: solarum
+  combat_class: historical_scholar
+  archetype_id: npc_aldric
+  uniform_group: solarum_historical_scholar
+  silhouette_family: p09_h0_c3_a3_w3_l3_wp0_sh0
+  visual_intent: Male_Armor_003 scholar robe, ivory tied hair, and dignified facial hair for the historical dead scholar with no combat weapon.

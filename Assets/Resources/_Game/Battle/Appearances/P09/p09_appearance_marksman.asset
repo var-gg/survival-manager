@@ -13,77 +13,91 @@ MonoBehaviour:
   m_Name: p09_appearance_marksman
   m_EditorClassIdentifier: SM.Unity::SM.Unity.BattleP09AppearancePreset
   characterId: marksman
-  displayName: marksman
+  displayName: "\uB0C9\uC2DC (\u51B7\u77E2) / Dread Marksman"
   catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
   weaponId: 12
   shieldId: 0
-  headId: 7
-  chestId: 6
-  armId: 6
-  waistId: 8
-  legId: 8
+  headId: 5
+  chestId: 5
+  armId: 5
+  waistId: 9
+  legId: 5
   sexId: 1
-  faceTypeId: 3
-  hairStyleId: 6
-  hairColorId: 8
-  skinId: 3
-  eyeColorId: 2
+  faceTypeId: 2
+  hairStyleId: 5
+  hairColorId: 5
+  skinId: 1
+  eyeColorId: 4
   facialHairId: 0
   bustSizeId: 2
   materialColorOverrides:
+  - Label: "\uBA38\uB9AC"
+    UsePartTarget: 1
+    TargetPart: 10
+    TargetContains: Hair
+    Enabled: 1
+    MainColor: {r: 0.8156863, g: 0.8392157, b: 0.84705883, a: 1}
+    SecondColor: {r: 0.61960787, g: 0.65882355, b: 0.6666667, a: 1}
+    ThirdColor: {r: 0.93333334, g: 0.95686275, b: 0.95686275, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uBA38\uB9AC \uC7A5\uBE44"
     UsePartTarget: 1
     TargetPart: 3
     TargetContains: Armor
     Enabled: 1
-    MainColor: {r: 0.82, g: 0.78, b: 0.7, a: 1}
-    SecondColor: {r: 0.34, g: 0.27, b: 0.22, a: 1}
-    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
+    MainColor: {r: 0.49803922, g: 0.5568628, b: 0.5803922, a: 1}
+    SecondColor: {r: 0.30980393, g: 0.41568628, b: 0.4627451, a: 1}
+    ThirdColor: {r: 0.4627451, g: 0.84313726, b: 0.8784314, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uC0C1\uC758"
     UsePartTarget: 1
     TargetPart: 4
     TargetContains: Armor
     Enabled: 1
-    MainColor: {r: 0.82, g: 0.78, b: 0.7, a: 1}
-    SecondColor: {r: 0.34, g: 0.27, b: 0.22, a: 1}
-    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
+    MainColor: {r: 0.49803922, g: 0.5568628, b: 0.5803922, a: 1}
+    SecondColor: {r: 0.30980393, g: 0.41568628, b: 0.4627451, a: 1}
+    ThirdColor: {r: 0.4627451, g: 0.84313726, b: 0.8784314, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uD314 \uC7A5\uBE44"
     UsePartTarget: 1
     TargetPart: 5
     TargetContains: Armor
     Enabled: 1
-    MainColor: {r: 0.82, g: 0.78, b: 0.7, a: 1}
-    SecondColor: {r: 0.34, g: 0.27, b: 0.22, a: 1}
-    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
+    MainColor: {r: 0.43529412, g: 0.49411765, b: 0.5176471, a: 1}
+    SecondColor: {r: 0.24705882, g: 0.3137255, b: 0.34509805, a: 1}
+    ThirdColor: {r: 0.72156864, g: 0.6901961, b: 0.6392157, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uD5C8\uB9AC \uC7A5\uBE44"
     UsePartTarget: 1
     TargetPart: 6
     TargetContains: Armor
     Enabled: 1
-    MainColor: {r: 0.82, g: 0.78, b: 0.7, a: 1}
-    SecondColor: {r: 0.34, g: 0.27, b: 0.22, a: 1}
-    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
+    MainColor: {r: 0.72156864, g: 0.6901961, b: 0.6392157, a: 1}
+    SecondColor: {r: 0.30980393, g: 0.41568628, b: 0.4627451, a: 1}
+    ThirdColor: {r: 0.4627451, g: 0.84313726, b: 0.8784314, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uD558\uC758"
     UsePartTarget: 1
     TargetPart: 7
     TargetContains: Armor
     Enabled: 1
-    MainColor: {r: 0.82, g: 0.78, b: 0.7, a: 1}
-    SecondColor: {r: 0.34, g: 0.27, b: 0.22, a: 1}
-    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
-  - Label: "\uBB34\uAE30"
+    MainColor: {r: 0.36078432, g: 0.4, b: 0.41568628, a: 1}
+    SecondColor: {r: 0.18431373, g: 0.22745098, b: 0.2509804, a: 1}
+    ThirdColor: {r: 0.49803922, g: 0.5568628, b: 0.5803922, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uB0C9\uAD81"
     UsePartTarget: 1
     TargetPart: 1
     TargetContains: Weapon
     Enabled: 1
-    MainColor: {r: 0.78, g: 0.76, b: 0.72, a: 1}
-    SecondColor: {r: 0.28, g: 0.24, b: 0.2, a: 1}
-    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
-  - Label: "\uBC29\uD328"
-    UsePartTarget: 1
-    TargetPart: 2
-    TargetContains: Shield
-    Enabled: 1
-    MainColor: {r: 0.7, g: 0.76, b: 0.82, a: 1}
-    SecondColor: {r: 0.25, g: 0.26, b: 0.3, a: 1}
-    ThirdColor: {r: 1, g: 1, b: 1, a: 1}
+    MainColor: {r: 0.24313726, g: 0.27450982, b: 0.32156864, a: 1}
+    SecondColor: {r: 0.4627451, g: 0.84313726, b: 0.8784314, a: 1}
+    ThirdColor: {r: 0.72156864, g: 0.6901961, b: 0.6392157, a: 1}
+    UseEmissionColor: 1
+    EmissionColor: {r: 0.105882354, g: 0.2901961, b: 0.3137255, a: 1}

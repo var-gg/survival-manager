@@ -52,7 +52,7 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
 sys.path.insert(0, str(Path(__file__).parent))
 from assemble_prompt import (  # noqa: E402
     assemble,
-    extract_anchor_blocks,
+    extract_anchor_for_kind,
     find_pipeline_root,
     parse_subject,
     resolve_ref_paths,
@@ -139,6 +139,12 @@ POLL_IMAGE_JS = """
     return alt.includes('업로드한 이미지') ||
            a.includes('attached image') ||
            a.includes('uploaded image') ||
+           a.includes('__anchor') ||
+           a.endsWith('anchor.png') ||
+           a.endsWith('anchor.jpg') ||
+           a.endsWith('anchor.jpeg') ||
+           a.endsWith('anchor.webp') ||
+           /^.+\\.(png|jpg|jpeg|webp)$/i.test(alt || '') ||
            alt.includes('첨부') ||
            a.includes('attachment');
   };
@@ -575,14 +581,9 @@ def main() -> int:
     config = load_config(pipeline_root)
     timeout = args.timeout or config["default_timeout"]
 
-    anchor_path = pipeline_root / "style" / "style-anchor.md"
-    if not anchor_path.is_file():
-        print(f"error: style-anchor not found: {anchor_path}", file=sys.stderr)
-        return 4
-
     try:
-        anchor = extract_anchor_blocks(anchor_path)
-        ref_paths = resolve_ref_paths(pipeline_root, fm["refs"])
+        anchor = extract_anchor_for_kind(pipeline_root, fm["kind"])
+        ref_paths = resolve_ref_paths(pipeline_root, fm["refs"], fm["kind"])
     except (ValueError, FileNotFoundError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 5
@@ -599,7 +600,19 @@ def main() -> int:
         return 0
 
     raw_path, final_path = output_dest(pipeline_root, fm)
-    chroma_hex = fm.get("chroma", "#FF00FF")
+    # chroma resolution: explicit frontmatter > kind default > magenta fallback.
+    # kind starting with map_ or in {cutscene_cut, environment_site} → OFF (no chroma).
+    chroma_explicit = fm.get("chroma")
+    if args.no_chroma or chroma_explicit is False or chroma_explicit == "false":
+        chroma_hex = None
+    elif isinstance(chroma_explicit, str) and chroma_explicit.startswith("#"):
+        chroma_hex = chroma_explicit
+    else:
+        _kind = fm.get("kind", "")
+        if _kind.startswith("map_") or _kind in ("cutscene_cut", "environment_site"):
+            chroma_hex = None
+        else:
+            chroma_hex = "#FF00FF"
 
     user_data_dir = Path(config["user_data_dir"]).resolve()
     user_data_dir.mkdir(parents=True, exist_ok=True)
@@ -652,14 +665,14 @@ def main() -> int:
         finally:
             context.close()
 
-    if not args.no_chroma:
+    if chroma_hex is not None:
         try:
             run_chroma_key(pipeline_root, raw_path, final_path, chroma_hex)
         except subprocess.CalledProcessError as e:
             print(f"[imagegen] chroma_key failed (exit={e.returncode}). raw kept at {raw_path}", file=sys.stderr)
             return 6
     else:
-        # If chroma is skipped, copy raw to final position
+        # chroma skipped (frontmatter chroma:false / kind=map_*/cutscene_cut/environment_site / --no-chroma flag) — copy raw to final.
         final_path.parent.mkdir(parents=True, exist_ok=True)
         final_path.write_bytes(raw_path.read_bytes())
 
@@ -674,7 +687,7 @@ def main() -> int:
         "width": img_info.get("width"),
         "height": img_info.get("height"),
         "status": "rendered",
-        "chroma_applied": not args.no_chroma,
+        "chroma_applied": chroma_hex is not None,
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0

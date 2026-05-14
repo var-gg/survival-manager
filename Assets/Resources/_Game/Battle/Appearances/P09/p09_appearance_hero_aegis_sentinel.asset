@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be14c1833dae4ff4896bf12a128b8957, type: 3}
+  m_Name: p09_appearance_hero_aegis_sentinel
+  m_EditorClassIdentifier: SM.Unity::SM.Unity.BattleP09AppearancePreset
+  characterId: hero_aegis_sentinel
+  displayName: "\uBC29\uC9C4 (\u65B9\u9663) / Aegis Sentinel"
+  catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
+  weaponId: 5
+  shieldId: 5
+  headId: 0
+  chestId: 6
+  armId: 6
+  waistId: 9
+  legId: 6
+  sexId: 1
+  faceTypeId: 1
+  hairStyleId: 5
+  hairColorId: 5
+  skinId: 1
+  eyeColorId: 2
+  facialHairId: 1
+  bustSizeId: 2
+  materialColorOverrides:
+  - Label: "\uBA38\uB9AC"
+    UsePartTarget: 1
+    TargetPart: 10
+    TargetContains: Hair
+    Enabled: 1
+    MainColor: {r: 0.7882353, g: 0.7764706, b: 0.7372549, a: 1}
+    SecondColor: {r: 0.56078434, g: 0.5411765, b: 0.50980395, a: 1}
+    ThirdColor: {r: 0.9098039, g: 0.8862745, b: 0.8392157, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uC0C1\uC758"
+    UsePartTarget: 1
+    TargetPart: 4
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.61960787, g: 0.64705884, b: 0.6901961, a: 1}
+    SecondColor: {r: 0.3529412, g: 0.29411766, b: 0.47058824, a: 1}
+    ThirdColor: {r: 0.84705883, g: 0.8235294, b: 0.8901961, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD314 \uC7A5\uBE44"
+    UsePartTarget: 1
+    TargetPart: 5
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.5529412, g: 0.5882353, b: 0.627451, a: 1}
+    SecondColor: {r: 0.29803923, g: 0.2509804, b: 0.36862746, a: 1}
+    ThirdColor: {r: 0.72156864, g: 0.6901961, b: 0.78431374, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD5C8\uB9AC \uC7A5\uBE44"
+    UsePartTarget: 1
+    TargetPart: 6
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.29411766, g: 0.22745098, b: 0.19607843, a: 1}
+    SecondColor: {r: 0.1764706, g: 0.14117648, b: 0.21960784, a: 1}
+    ThirdColor: {r: 0.56078434, g: 0.83137256, b: 0.9098039, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD558\uC758"
+    UsePartTarget: 1
+    TargetPart: 7
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.49411765, g: 0.5294118, b: 0.57254905, a: 1}
+    SecondColor: {r: 0.24313726, g: 0.27450982, b: 0.32156864, a: 1}
+    ThirdColor: {r: 0.84705883, g: 0.8235294, b: 0.8901961, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uACB0\uC0AC \uC758\uB840\uAC80"
+    UsePartTarget: 1
+    TargetPart: 1
+    TargetContains: Weapon
+    Enabled: 1
+    MainColor: {r: 0.72156864, g: 0.6901961, b: 0.78431374, a: 1}
+    SecondColor: {r: 0.56078434, g: 0.83137256, b: 0.9098039, a: 1}
+    ThirdColor: {r: 0.29803923, g: 0.2509804, b: 0.36862746, a: 1}
+    UseEmissionColor: 1
+    EmissionColor: {r: 0.14901961, g: 0.21176471, b: 0.3529412, a: 1}
+  - Label: "\uACA9\uC790 \uBC29\uD328"
+    UsePartTarget: 1
+    TargetPart: 2
+    TargetContains: Shield
+    Enabled: 1
+    MainColor: {r: 0.84705883, g: 0.8235294, b: 0.8901961, a: 1}
+    SecondColor: {r: 0.56078434, g: 0.83137256, b: 0.9098039, a: 1}
+    ThirdColor: {r: 0.3529412, g: 0.29411766, b: 0.47058824, a: 1}
+    UseEmissionColor: 1
+    EmissionColor: {r: 0.14901961, g: 0.21176471, b: 0.3529412, a: 1}

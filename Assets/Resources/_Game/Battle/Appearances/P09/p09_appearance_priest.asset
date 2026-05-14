@@ -19,9 +19,9 @@ MonoBehaviour:
   shieldId: 4
   headId: 7
   chestId: 7
-  armId: 7
+  armId: 5
   waistId: 7
-  legId: 7
+  legId: 4
   sexId: 2
   faceTypeId: 2
   hairStyleId: 4
@@ -37,8 +37,8 @@ MonoBehaviour:
     TargetContains: Hair
     Enabled: 1
     MainColor: {r: 0.60784316, g: 0.39215687, b: 0.24705882, a: 1}
-    SecondColor: {r: 0.7882353, g: 0.63529414, b: 0.30588236, a: 1}
-    ThirdColor: {r: 0.8509804, g: 0.52156866, b: 0.43529412, a: 1}
+    SecondColor: {r: 0.42745098, g: 0.24705882, b: 0.14117648, a: 1}
+    ThirdColor: {r: 0.77254903, g: 0.5411765, b: 0.36078432, a: 1}
     UseEmissionColor: 0
     EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uBA38\uB9AC \uC7A5\uBE44"
@@ -58,7 +58,7 @@ MonoBehaviour:
     Enabled: 1
     MainColor: {r: 0.84705883, g: 0.78431374, b: 0.65882355, a: 1}
     SecondColor: {r: 0.7882353, g: 0.63529414, b: 0.30588236, a: 1}
-    ThirdColor: {r: 0.8509804, g: 0.52156866, b: 0.43529412, a: 1}
+    ThirdColor: {r: 0.47843137, g: 0.4, b: 0.53333336, a: 1}
     UseEmissionColor: 0
     EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uD314 \uC7A5\uBE44"
@@ -66,9 +66,9 @@ MonoBehaviour:
     TargetPart: 5
     TargetContains: Armor
     Enabled: 1
-    MainColor: {r: 0.84705883, g: 0.78431374, b: 0.65882355, a: 1}
-    SecondColor: {r: 0.7882353, g: 0.63529414, b: 0.30588236, a: 1}
-    ThirdColor: {r: 0.8509804, g: 0.52156866, b: 0.43529412, a: 1}
+    MainColor: {r: 0.8117647, g: 0.78039217, b: 0.72156864, a: 1}
+    SecondColor: {r: 0.5568628, g: 0.49803922, b: 0.44705883, a: 1}
+    ThirdColor: {r: 0.7882353, g: 0.63529414, b: 0.30588236, a: 1}
     UseEmissionColor: 0
     EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uD5C8\uB9AC \uC7A5\uBE44"
@@ -77,8 +77,8 @@ MonoBehaviour:
     TargetContains: Armor
     Enabled: 1
     MainColor: {r: 0.5568628, g: 0.41568628, b: 0.27058825, a: 1}
-    SecondColor: {r: 0.7882353, g: 0.63529414, b: 0.30588236, a: 1}
-    ThirdColor: {r: 0.8509804, g: 0.52156866, b: 0.43529412, a: 1}
+    SecondColor: {r: 0.35686275, g: 0.26666668, b: 0.1882353, a: 1}
+    ThirdColor: {r: 0.7882353, g: 0.63529414, b: 0.30588236, a: 1}
     UseEmissionColor: 0
     EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uD558\uC758"
@@ -86,9 +86,9 @@ MonoBehaviour:
     TargetPart: 7
     TargetContains: Armor
     Enabled: 1
-    MainColor: {r: 0.5568628, g: 0.41568628, b: 0.27058825, a: 1}
-    SecondColor: {r: 0.7882353, g: 0.63529414, b: 0.30588236, a: 1}
-    ThirdColor: {r: 0.8509804, g: 0.52156866, b: 0.43529412, a: 1}
+    MainColor: {r: 0.47843137, g: 0.3372549, b: 0.20784314, a: 1}
+    SecondColor: {r: 0.3019608, g: 0.21960784, b: 0.15686275, a: 1}
+    ThirdColor: {r: 0.84705883, g: 0.78431374, b: 0.65882355, a: 1}
     UseEmissionColor: 0
     EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uBB34\uAE30"
@@ -97,10 +97,10 @@ MonoBehaviour:
     TargetContains: Weapon
     Enabled: 1
     MainColor: {r: 0.7882353, g: 0.63529414, b: 0.30588236, a: 1}
-    SecondColor: {r: 0.5568628, g: 0.41568628, b: 0.27058825, a: 1}
-    ThirdColor: {r: 0.8509804, g: 0.52156866, b: 0.43529412, a: 1}
-    UseEmissionColor: 1
-    EmissionColor: {r: 1, g: 0.8509804, b: 0.4745098, a: 1}
+    SecondColor: {r: 0.9098039, g: 0.83137256, b: 0.6039216, a: 1}
+    ThirdColor: {r: 0.5568628, g: 0.41568628, b: 0.27058825, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   - Label: "\uBC29\uD328"
     UsePartTarget: 1
     TargetPart: 2
@@ -108,6 +108,6 @@ MonoBehaviour:
     Enabled: 1
     MainColor: {r: 0.84705883, g: 0.78431374, b: 0.65882355, a: 1}
     SecondColor: {r: 0.7882353, g: 0.63529414, b: 0.30588236, a: 1}
-    ThirdColor: {r: 0.8509804, g: 0.52156866, b: 0.43529412, a: 1}
-    UseEmissionColor: 1
-    EmissionColor: {r: 1, g: 0.8509804, b: 0.4745098, a: 1}
+    ThirdColor: {r: 0.47843137, g: 0.4, b: 0.53333336, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}

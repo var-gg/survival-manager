@@ -381,21 +381,41 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         var sexId = type == BattleP09AppearancePartType.Sex
             ? 0
             : _selectedPreset.SexId;
+        var currentId = _selectedPreset.GetContentId(type);
         var options = _catalog.GetOptions(type, sexId).ToList();
-        if (options.Count == 0)
+        var optionIds = new List<int>(options.Count + 2);
+        var labels = new List<string>(options.Count + 2);
+        if (AllowsNoContentOption(type) && options.All(option => option.ContentId != 0))
+        {
+            optionIds.Add(0);
+            labels.Add(BuildNoContentOptionLabel(type));
+        }
+
+        foreach (var option in options)
+        {
+            optionIds.Add(option.ContentId);
+            labels.Add(BuildOptionLabel(type, option));
+        }
+
+        if (optionIds.Count == 0)
         {
             EditorGUILayout.LabelField(GetPartLabel(type), "P09 옵션 없음");
             return;
         }
 
-        var currentId = _selectedPreset.GetContentId(type);
-        var currentIndex = Mathf.Max(0, options.FindIndex(option => option.ContentId == currentId));
-        var labels = options.Select(option => BuildOptionLabel(type, option)).ToArray();
+        var currentIndex = optionIds.IndexOf(currentId);
+        if (currentIndex < 0)
+        {
+            optionIds.Insert(0, currentId);
+            labels.Insert(0, BuildMissingCurrentOptionLabel(currentId));
+            currentIndex = 0;
+        }
+
         EditorGUI.BeginChangeCheck();
-        var nextIndex = EditorGUILayout.Popup(GetPartLabel(type), currentIndex, labels);
+        var nextIndex = EditorGUILayout.Popup(GetPartLabel(type), currentIndex, labels.ToArray());
         if (EditorGUI.EndChangeCheck())
         {
-            _selectedPreset.SetContentId(type, options[nextIndex].ContentId);
+            _selectedPreset.SetContentId(type, optionIds[nextIndex]);
             SaveSelectedPreset(updatePreview: true);
         }
     }
@@ -1024,6 +1044,35 @@ public sealed class P09AppearanceStudioWindow : EditorWindow
         return string.IsNullOrWhiteSpace(displayName)
             ? $"#{option.ContentId}"
             : $"{option.ContentId}: {displayName}";
+    }
+
+    private static bool AllowsNoContentOption(BattleP09AppearancePartType type)
+    {
+        return type switch
+        {
+            BattleP09AppearancePartType.Head => true,
+            BattleP09AppearancePartType.Weapon => true,
+            BattleP09AppearancePartType.Shield => true,
+            BattleP09AppearancePartType.FacialHair => true,
+            _ => false
+        };
+    }
+
+    private static string BuildNoContentOptionLabel(BattleP09AppearancePartType type)
+    {
+        return type switch
+        {
+            BattleP09AppearancePartType.Head => "0: 머리 장비 없음",
+            BattleP09AppearancePartType.Weapon => "0: 무기 없음",
+            BattleP09AppearancePartType.Shield => "0: 방패 없음",
+            BattleP09AppearancePartType.FacialHair => "0: 수염 없음",
+            _ => "0: 없음"
+        };
+    }
+
+    private static string BuildMissingCurrentOptionLabel(int contentId)
+    {
+        return $"{contentId}: 현재 값(카탈로그 없음)";
     }
 
     private static string TranslateOptionName(BattleP09AppearancePartType type, string displayName)
