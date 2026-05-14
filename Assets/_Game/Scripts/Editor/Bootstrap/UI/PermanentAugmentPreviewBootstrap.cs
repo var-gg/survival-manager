@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using SM.Unity.UI.Town.Preview;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -5,8 +8,8 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Permanent Augment 미리보기 — 시안 갤러리 V1 #4.
-/// 12 motif grid (3x4) + selected detail + equip slot + stat compare + Equip CTA.
+/// SM/Town/Permanent Augment 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// 모델: "장착한 영구 augment 1개 + 해금 후보 풀" (audit §4.1 P0-4 다운스코프 — posture 그리드 폐기).
 /// </summary>
 public sealed class PermanentAugmentPreviewBootstrap : EditorWindow
 {
@@ -16,23 +19,7 @@ public sealed class PermanentAugmentPreviewBootstrap : EditorWindow
 
     private const string AugmentSpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Augment/augment_{0}.png";
 
-    private static readonly string[] AugmentMotifs =
-    {
-        "flame", "serpent", "star",
-        "shield", "moon", "horn",
-        "blade", "thorn", "wing",
-        "void", "seal", "eye",
-    };
-    private const int SelectedIndex = 4; // mockup의 highlighted moon
-
-    private static readonly (string label, string before, string after, bool up)[] StatRows =
-    {
-        ("ATK", "415", "488", true),
-        ("DEF", "278", "233", false),
-        ("HP", "1860", "2145", true),
-        ("CRIT", "14.2%", "17.8%", true),
-        ("DODGE", "6.3%", "4.9%", false),
-    };
+    private PermanentAugmentView? _view;
 
     [MenuItem("SM/Town/Permanent Augment 미리보기", false, 12)]
     public static void Open()
@@ -41,66 +28,69 @@ public sealed class PermanentAugmentPreviewBootstrap : EditorWindow
         window.minSize = new Vector2(1320f, 780f);
     }
 
-    private void CreateGUI()
+    private void CreateGUI() => BuildInto(rootVisualElement);
+
+    /// <summary>EditorWindow + TownPreviewCaptureUtility 공용 — 지정 root에 surface preview 빌드.</summary>
+    public void BuildInto(VisualElement root)
     {
         var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(VisualTreePath);
-        if (visualTree == null) { rootVisualElement.Add(new Label($"UXML 못 찾음: {VisualTreePath}")); return; }
+        if (visualTree == null) { root.Add(new Label($"UXML 못 찾음: {VisualTreePath}")); return; }
 
         var tokens = AssetDatabase.LoadAssetAtPath<StyleSheet>(ThemeTokensPath);
         var theme = AssetDatabase.LoadAssetAtPath<StyleSheet>(RuntimePanelThemePath);
-        if (tokens != null) rootVisualElement.styleSheets.Add(tokens);
-        if (theme != null) rootVisualElement.styleSheets.Add(theme);
+        if (tokens != null) root.styleSheets.Add(tokens);
+        if (theme != null) root.styleSheets.Add(theme);
 
-        visualTree.CloneTree(rootVisualElement);
-        InjectAugmentGrid();
-        InjectStatCompare();
-        InjectEquipSlot();
+        visualTree.CloneTree(root);
+
+        _view = new PermanentAugmentView(root);
+        _view.Render(BuildMockViewState());
     }
 
-    private void InjectAugmentGrid()
+    private PermanentAugmentViewState BuildMockViewState()
     {
-        var grid = rootVisualElement.Q<VisualElement>("AugmentGrid");
-        if (grid == null) return;
-        grid.Clear();
-        for (var i = 0; i < AugmentMotifs.Length; i++)
+        // Presenter catalog 재사용 + mock unlock/equip 상태. P0-4 다운스코프 — progress/posture 폐기.
+        const string equippedId = "augment_perm_guardian_detail";   // 단일 슬롯 장착
+        const string selectedId = "augment_perm_guardian_detail";   // detail panel 선택
+        var mockUnlocked = new HashSet<string>
         {
-            var cell = new VisualElement();
-            cell.AddToClassList("pap-augment-cell");
-            if (i == SelectedIndex) cell.AddToClassList("pap-augment-cell--selected");
-            if (i >= 9) cell.AddToClassList("pap-augment-cell--locked"); // 마지막 3개 locked
-            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AugmentSpriteFmt, AugmentMotifs[i]));
-            if (tex != null) cell.style.backgroundImage = new StyleBackground(tex);
-            grid.Add(cell);
-        }
+            "augment_perm_citadel_doctrine",
+            "augment_perm_guardian_detail",
+            "augment_perm_breakthrough_orders",
+            // "augment_perm_night_hunt_mandate" — 미해금
+        };
+
+        var cells = PermanentAugmentPresenter.Catalog
+            .Select(p => new PermanentAugmentCellViewState(
+                AugmentId: p.AugmentId,
+                KoLabel: p.KoLabel,
+                FamilyBucket: p.FamilyBucket,
+                Unlocked: mockUnlocked.Contains(p.AugmentId),
+                IsEquipped: p.AugmentId == equippedId,
+                IsSelected: p.AugmentId == selectedId,
+                IconSprite: LoadAugmentSprite(p.Motif)))
+            .ToList();
+
+        var selectedSpec = PermanentAugmentPresenter.Catalog.First(p => p.AugmentId == selectedId);
+        var detail = new PermanentAugmentDetailViewState(
+            SelectedAugmentId: selectedSpec.AugmentId,
+            KoLabel: selectedSpec.KoLabel,
+            EnLabel: selectedSpec.EnLabel,
+            FamilyBucket: selectedSpec.FamilyBucket,
+            SignatureEffect: selectedSpec.SignatureEffect,
+            FlavorText: selectedSpec.Flavor,
+            IsUnlocked: mockUnlocked.Contains(selectedSpec.AugmentId),
+            IsEquipped: selectedSpec.AugmentId == equippedId,
+            IconSprite: LoadAugmentSprite(selectedSpec.Motif),
+            MetaRows: new[]
+            {
+                new PermanentAugmentMetaRowViewState("FAMILY", selectedSpec.FamilyBucket),
+                new PermanentAugmentMetaRowViewState("강화 효과", selectedSpec.SignatureEffect),
+            });
+
+        return new PermanentAugmentViewState(cells, detail);
     }
 
-    private void InjectEquipSlot()
-    {
-        var slot = rootVisualElement.Q<VisualElement>("EquipSlot");
-        if (slot == null) return;
-        var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AugmentSpriteFmt, AugmentMotifs[0])); // flame as currently equipped
-        if (tex != null) slot.style.backgroundImage = new StyleBackground(tex);
-    }
-
-    private void InjectStatCompare()
-    {
-        var container = rootVisualElement.Q<VisualElement>("StatCompare");
-        if (container == null) return;
-        container.Clear();
-        foreach (var (label, before, after, up) in StatRows)
-        {
-            var row = new VisualElement();
-            row.AddToClassList("pap-stat-row");
-
-            var lbl = new Label(label); lbl.AddToClassList("pap-stat-row__label"); row.Add(lbl);
-            var bf = new Label(before); bf.AddToClassList("pap-stat-row__before"); row.Add(bf);
-            var arrow = new VisualElement();
-            arrow.AddToClassList("pap-stat-row__arrow");
-            if (!up) arrow.style.backgroundColor = new StyleColor(new Color(0.85f, 0.35f, 0.32f, 0.95f));
-            row.Add(arrow);
-            var af = new Label(after); af.AddToClassList("pap-stat-row__after"); row.Add(af);
-
-            container.Add(row);
-        }
-    }
+    private static Texture2D? LoadAugmentSprite(string key) =>
+        AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AugmentSpriteFmt, key));
 }

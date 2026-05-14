@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using SM.Unity.UI.Town.Preview;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -5,8 +8,8 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Passive Board 미리보기 — 시안 갤러리 V1 #5.
-/// 4 class tab + hex node tree + node detail + Activate CTA + 6/45 NODE POINTS footer.
+/// SM/Town/Passive Board 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// pindoc V1 SoT (passive-board-node-catalog.md): 4 board × 18 node (12 small + 5 notable + 1 keystone).
 /// </summary>
 public sealed class PassiveBoardPreviewBootstrap : EditorWindow
 {
@@ -15,54 +18,9 @@ public sealed class PassiveBoardPreviewBootstrap : EditorWindow
     private const string RuntimePanelThemePath = "Assets/_Game/UI/Foundation/Styles/RuntimePanelTheme.uss";
     private const string ClassSpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Class/class_{0}.png";
     private const string AffixSpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Affix/affix_{0}.png";
+    private const string PortraitPathFmt = "Assets/Resources/_Game/Art/Characters/hero_{0}/portrait_full.png";
 
-    private readonly struct TabSpec
-    {
-        public TabSpec(string key, string label, bool sel) { Key=key; Label=label; Selected=sel; }
-        public string Key { get; }
-        public string Label { get; }
-        public bool Selected { get; }
-    }
-    private static readonly TabSpec[] Tabs =
-    {
-        new("vanguard", "VANGUARD", false),
-        new("duelist",  "DUELIST",  true),
-        new("ranger",   "RANGER",   false),
-        new("mystic",   "MYSTIC",   false),
-    };
-
-    private readonly struct NodeSpec
-    {
-        public NodeSpec(float left, float top, string state, string iconKey)
-        { Left=left; Top=top; State=state; IconKey=iconKey; }
-        public float Left { get; }
-        public float Top { get; }
-        public string State { get; } // root / active / available / locked
-        public string IconKey { get; }
-    }
-
-    /// <summary> mockup의 hex tree 대략 — 중앙 root + inner ring(active 6) + outer ring(locked) </summary>
-    private static readonly NodeSpec[] Nodes =
-    {
-        // Center root
-        new(0.46f, 0.40f, "root", "crit"),
-        // Inner ring (active)
-        new(0.30f, 0.16f, "active", "atk"),
-        new(0.62f, 0.16f, "active", "speed"),
-        new(0.14f, 0.40f, "active", "armor"),
-        new(0.78f, 0.40f, "active", "pierce"),
-        new(0.30f, 0.64f, "active", "lifesteal"),
-        new(0.62f, 0.64f, "active", "heal"),
-        // Outer ring (locked)
-        new(0.08f, 0.10f, "locked", "atk"),
-        new(0.85f, 0.10f, "locked", "speed"),
-        new(0.02f, 0.40f, "locked", "armor"),
-        new(0.90f, 0.40f, "locked", "pierce"),
-        new(0.08f, 0.70f, "locked", "lifesteal"),
-        new(0.85f, 0.70f, "locked", "heal"),
-        new(0.46f, 0.10f, "locked", "block"),
-        new(0.46f, 0.78f, "locked", "thorn"),
-    };
+    private PassiveBoardView? _view;
 
     [MenuItem("SM/Town/Passive Board 미리보기", false, 13)]
     public static void Open()
@@ -71,61 +29,112 @@ public sealed class PassiveBoardPreviewBootstrap : EditorWindow
         window.minSize = new Vector2(1280f, 760f);
     }
 
-    private void CreateGUI()
+    private void CreateGUI() => BuildInto(rootVisualElement);
+
+    /// <summary>EditorWindow + TownPreviewCaptureUtility 공용 — 지정 root에 surface preview 빌드.</summary>
+    public void BuildInto(VisualElement root)
     {
         var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(VisualTreePath);
-        if (visualTree == null) { rootVisualElement.Add(new Label($"UXML 못 찾음: {VisualTreePath}")); return; }
+        if (visualTree == null) { root.Add(new Label($"UXML 못 찾음: {VisualTreePath}")); return; }
         var tokens = AssetDatabase.LoadAssetAtPath<StyleSheet>(ThemeTokensPath);
         var theme = AssetDatabase.LoadAssetAtPath<StyleSheet>(RuntimePanelThemePath);
-        if (tokens != null) rootVisualElement.styleSheets.Add(tokens);
-        if (theme != null) rootVisualElement.styleSheets.Add(theme);
-        visualTree.CloneTree(rootVisualElement);
+        if (tokens != null) root.styleSheets.Add(tokens);
+        if (theme != null) root.styleSheets.Add(theme);
+        visualTree.CloneTree(root);
 
-        InjectTabs();
-        InjectBoardNodes();
-        InjectDetailIcon();
+        _view = new PassiveBoardView(root);
+        _view.Render(BuildMockViewState());
     }
 
-    private void InjectTabs()
+    private PassiveBoardViewState BuildMockViewState()
     {
-        var tabs = rootVisualElement.Q<VisualElement>("ClassTabs");
-        if (tabs == null) return;
-        tabs.Clear();
-        foreach (var t in Tabs)
+        // per-hero 컨텍스트 mock — duelist hero (portrait 보유한 pack_raider).
+        var header = new PassiveBoardHeaderViewState(
+            HeroId: "pack_raider",
+            HeroDisplayName: "팩 레이더 / Pack Raider",
+            ClassKey: "duelist",
+            ClassLabel: "결투가 보드",
+            BoardId: "board_duelist",
+            HeroPortrait: LoadHeroPortrait("pack_raider"),
+            ClassIconSprite: LoadClassSprite("duelist"));
+
+        var nodes = BuildMockNodes();
+        var (activeSmall, totalSmall, activeNotable, totalNotable, activeKeystone, totalKeystone) = CountActive(nodes);
+
+        var keystoneNode = nodes.First(n => n.NodeId == "passive_duelist_keystone_01");
+        var detail = new PassiveBoardDetailViewState(
+            SelectedNodeId: keystoneNode.NodeId,
+            KindLabel: "KEYSTONE",
+            TitleText: "KILLING INTENT",
+            RuleSummary: keystoneNode.RuleSummary,
+            Tags: keystoneNode.Tags,
+            AvailableLabel: "ACTIVE",
+            ButtonLabel: "DEACTIVATE",
+            IconSprite: LoadAffixSprite("crit"));
+
+        var footer = new PassiveBoardFooterViewState(
+            BreakdownText: $"DUELIST · SMALL {activeSmall}/{totalSmall} · NOTABLE {activeNotable}/{totalNotable} · KEYSTONE {activeKeystone}/{totalKeystone}");
+
+        return new PassiveBoardViewState(header, nodes, detail, footer);
+    }
+
+    private IReadOnlyList<PassiveBoardNodeViewState> BuildMockNodes()
+    {
+        // duelist board 18 node — hex tree 배치 (1 keystone + 5 notable + 12 small)
+        var raw = new (float Left, float Top, string Kind, bool Active, string Icon, string NodeId, string Rule, string Tags)[]
         {
-            var btn = new VisualElement(); btn.AddToClassList("pbp-tab");
-            if (t.Selected) btn.AddToClassList("pbp-tab--selected");
-            var icon = new VisualElement(); icon.AddToClassList("pbp-tab__icon");
-            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(ClassSpriteFmt, t.Key));
-            if (tex != null) icon.style.backgroundImage = new StyleBackground(tex);
-            btn.Add(icon);
-            var lbl = new Label(t.Label); lbl.AddToClassList("pbp-tab__label"); btn.Add(lbl);
-            tabs.Add(btn);
-        }
+            (0.46f, 0.40f, "keystone", true,  "crit",      "passive_duelist_keystone_01",  "phys_power +1.5, attack_speed +0.12, crit_multiplier +0.15", "frontline · burst"),
+            (0.46f, 0.22f, "notable",  true,  "atk",       "passive_duelist_notable_01",   "phys_power +1, attack_speed +0.08",   "frontline · burst"),
+            (0.63f, 0.34f, "notable",  true,  "crit",      "passive_duelist_notable_02",   "crit_chance +0.025, lifesteal +0.02", "frontline · burst"),
+            (0.57f, 0.55f, "notable",  false, "pierce",    "passive_duelist_notable_03",   "phys_power +0.9, phys_pen +0.8",      "frontline · burst"),
+            (0.35f, 0.55f, "notable",  false, "speed",     "passive_duelist_notable_04",   "move_speed +0.06, target_switch_delay -0.05", "frontline · burst"),
+            (0.29f, 0.34f, "notable",  false, "lifesteal", "passive_duelist_notable_05",   "phys_power +1, crit_chance +0.02",    "frontline · burst"),
+            (0.46f, 0.04f, "small",    true,  "atk",       "passive_duelist_small_01",     "phys_power +0.8",      "frontline · burst"),
+            (0.64f, 0.09f, "small",    true,  "speed",     "passive_duelist_small_02",     "attack_speed +0.1",    "frontline · burst"),
+            (0.77f, 0.22f, "small",    true,  "crit",      "passive_duelist_small_03",     "crit_chance +0.02",    "frontline · burst"),
+            (0.82f, 0.40f, "small",    false, "lifesteal", "passive_duelist_small_04",     "lifesteal +0.02",      "frontline · burst"),
+            (0.77f, 0.58f, "small",    false, "pierce",    "passive_duelist_small_05",     "phys_pen +0.7",        "frontline · burst"),
+            (0.64f, 0.71f, "small",    false, "speed",     "passive_duelist_small_06",     "move_speed +0.05",     "frontline · burst"),
+            (0.46f, 0.76f, "small",    false, "atk",       "passive_duelist_small_07",     "phys_power +0.8",      "frontline · burst"),
+            (0.28f, 0.71f, "small",    true,  "speed",     "passive_duelist_small_08",     "attack_speed +0.1",    "frontline · burst"),
+            (0.15f, 0.58f, "small",    false, "crit",      "passive_duelist_small_09",     "crit_chance +0.02",    "frontline · burst"),
+            (0.10f, 0.40f, "small",    true,  "lifesteal", "passive_duelist_small_10",     "lifesteal +0.02",      "frontline · burst"),
+            (0.15f, 0.22f, "small",    false, "pierce",    "passive_duelist_small_11",     "phys_pen +0.7",        "frontline · burst"),
+            (0.28f, 0.09f, "small",    false, "speed",     "passive_duelist_small_12",     "move_speed +0.05",     "frontline · burst"),
+        };
+
+        return raw.Select(n => new PassiveBoardNodeViewState(
+            NodeId: n.NodeId,
+            KindKey: n.Kind,
+            Left: n.Left,
+            Top: n.Top,
+            IconKey: n.Icon,
+            IconSprite: LoadAffixSprite(n.Icon),
+            RuleSummary: n.Rule,
+            Tags: n.Tags,
+            IsActive: n.Active)).ToList();
     }
 
-    private void InjectBoardNodes()
+    private static (int activeSmall, int totalSmall, int activeNotable, int totalNotable, int activeKeystone, int totalKeystone)
+        CountActive(IReadOnlyList<PassiveBoardNodeViewState> nodes)
     {
-        var canvas = rootVisualElement.Q<VisualElement>("BoardCanvas");
-        if (canvas == null) return;
-        canvas.Clear();
-        foreach (var n in Nodes)
+        int activeSmall = 0, totalSmall = 0, activeNotable = 0, totalNotable = 0, activeKeystone = 0, totalKeystone = 0;
+        foreach (var n in nodes)
         {
-            var node = new VisualElement(); node.AddToClassList("pbp-board__node");
-            node.AddToClassList($"pbp-board__node--{n.State}");
-            node.style.left = new StyleLength(new Length(n.Left * 100f, LengthUnit.Percent));
-            node.style.top = new StyleLength(new Length(n.Top * 100f, LengthUnit.Percent));
-            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AffixSpriteFmt, n.IconKey));
-            if (tex != null) node.style.backgroundImage = new StyleBackground(tex);
-            canvas.Add(node);
+            switch (n.KindKey)
+            {
+                case "small":    totalSmall++;    if (n.IsActive) activeSmall++;    break;
+                case "notable":  totalNotable++;  if (n.IsActive) activeNotable++;  break;
+                case "keystone": totalKeystone++; if (n.IsActive) activeKeystone++; break;
+            }
         }
+        return (activeSmall, totalSmall, activeNotable, totalNotable, activeKeystone, totalKeystone);
     }
 
-    private void InjectDetailIcon()
-    {
-        var icon = rootVisualElement.Q<VisualElement>("DetailIcon");
-        if (icon == null) return;
-        var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AffixSpriteFmt, "crit"));
-        if (tex != null) icon.style.backgroundImage = new StyleBackground(tex);
-    }
+    private static Texture2D? LoadClassSprite(string key) =>
+        AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(ClassSpriteFmt, key));
+    private static Texture2D? LoadAffixSprite(string key) =>
+        AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AffixSpriteFmt, key));
+    private static Texture2D? LoadHeroPortrait(string heroId) =>
+        AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(PortraitPathFmt, heroId));
 }

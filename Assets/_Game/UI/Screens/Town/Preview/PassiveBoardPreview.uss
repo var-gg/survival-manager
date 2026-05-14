@@ -5,62 +5,126 @@
     -unity-background-scale-mode: scale-and-crop; }
 .pbp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
 
-.pbp-frame { position: absolute; left: 60px; right: 60px; top: 50px; bottom: 50px;
-    background-color: rgba(20,26,53,0.96);
-    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
-    border-left-color: var(--sm-gold-400); border-right-color: var(--sm-gold-400);
-    border-top-color: var(--sm-gold-400); border-bottom-color: var(--sm-gold-400); }
-.pbp-frame__corner { position: absolute; width: 24px; height: 24px; background-color: var(--sm-gold-300); }
-.pbp-frame__corner--tl { top: -3px; left: -3px; }
-.pbp-frame__corner--tr { top: -3px; right: -3px; }
-.pbp-frame__corner--bl { bottom: -3px; left: -3px; }
-.pbp-frame__corner--br { bottom: -3px; right: -3px; }
+/* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
+.pbp-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
 
-.pbp-tabs { flex-direction: row; justify-content: center; padding-top: 16px; padding-bottom: 8px; }
-.pbp-tab { flex-direction: row; align-items: center; padding: 8px 24px; margin: 0 6px;
-    background-color: rgba(38,45,84,0.65);
-    border-bottom-width: 3px; border-bottom-color: transparent;
-}
-.pbp-tab--selected { border-bottom-color: var(--sm-gold-200); background-color: rgba(38,45,84,0.92); }
-.pbp-tab__icon { width: 22px; height: 22px; -unity-background-scale-mode: scale-to-fit; margin-right: 8px; }
-.pbp-tab__label { color: var(--sm-ink-1); font-size: 12px; letter-spacing: 3px; -unity-font-style: bold; }
-.pbp-tab--selected .pbp-tab__label { color: var(--sm-gold-100); }
+/* Board 헤더 — per-hero 컨텍스트. hero portrait + 이름 + 클래스 보드 인디케이터 (고정, 비대화).
+   옛 4-class 자유 전환 탭 폐기 — 보드는 hero 클래스로 고정. */
+.pbp-header { flex-direction: row; align-items: center;
+    padding: 12px 24px;
+    border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
+.pbp-header__portrait { width: 52px; height: 52px; margin-right: 14px;
+    -unity-background-scale-mode: scale-and-crop;
+    background-color: rgba(20,26,53,0.78);
+    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-300); border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300); border-bottom-color: var(--sm-gold-300); }
+.pbp-header__info { flex-direction: column; }
+.pbp-header__hero-name { color: var(--sm-gold-100); font-size: 16px; -unity-font-style: bold;
+    letter-spacing: 1px; margin-bottom: 4px; }
+.pbp-header__class-row { flex-direction: row; align-items: center; }
+.pbp-header__class-icon { width: 18px; height: 18px; margin-right: 6px;
+    -unity-background-scale-mode: scale-to-fit; }
+.pbp-header__class-label { color: var(--sm-ink-2); font-size: 11px; letter-spacing: 3px;
+    -unity-font-style: bold; }
 
 .pbp-body { flex-direction: row; flex-grow: 1; padding: 18px; }
 .pbp-board { flex-grow: 1; margin-right: 14px;
-    background-color: rgba(28,34,67,0.62);
+    background-color: rgba(16,21,44,0.86);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32); }
 .pbp-board__canvas { flex-grow: 1; }
 
-.pbp-board__node {
-    position: absolute; width: 60px; height: 60px;
-    background-color: rgba(38,45,84,0.85);
-    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
-    border-left-color: rgba(91,142,209,0.62); border-right-color: rgba(91,142,209,0.62);
-    border-top-color: rgba(91,142,209,0.62); border-bottom-color: rgba(91,142,209,0.62);
+/* --- Board ring guide layer — 옛 flat grey canvas 보강 ---
+   center (46%,40%) · 동심 ring r 0.18 / 0.36 · 중앙 warm glow.
+   node가 그 위에 올라가도록 BoardCanvas보다 먼저 선언. picking 무시. */
+.pbp-board__glow {
+    position: absolute;
+    left: 6%; top: 0%;
+    width: 80%; height: 80%;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/glow_halo_warm_gold.png");
     -unity-background-scale-mode: scale-to-fit;
+    opacity: 0.55;
 }
-.pbp-board__node--root {
-    background-color: rgba(200,147,42,0.42);
-    border-left-color: var(--sm-gold-200); border-right-color: var(--sm-gold-200);
-    border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
-    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
+.pbp-board__ring {
+    position: absolute;
+    background-color: rgba(0,0,0,0);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: rgba(230,183,81,0.20);
+    border-right-color: rgba(230,183,81,0.20);
+    border-top-color: rgba(230,183,81,0.20);
+    border-bottom-color: rgba(230,183,81,0.20);
+    border-top-left-radius: 50%; border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%; border-bottom-right-radius: 50%;
 }
-.pbp-board__node--active {
-    background-color: rgba(91,142,209,0.62);
-    border-left-color: var(--sm-gold-200); border-right-color: var(--sm-gold-200);
-    border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
+/* depth 2 ring: r 0.36 → diameter 72%, center (46%,40%) */
+.pbp-board__ring--outer { left: 10%; top: 4%; width: 72%; height: 72%; }
+/* depth 1 ring: r 0.18 → diameter 36%, center (46%,40%) */
+.pbp-board__ring--inner {
+    left: 28%; top: 22%; width: 36%; height: 36%;
+    border-left-color: rgba(230,183,81,0.32);
+    border-right-color: rgba(230,183,81,0.32);
+    border-top-color: rgba(230,183,81,0.32);
+    border-bottom-color: rgba(230,183,81,0.32);
 }
-.pbp-board__node--locked { background-color: rgba(38,45,84,0.55);
+/* center keystone anchor disc */
+.pbp-board__ring-core {
+    position: absolute;
+    left: 40%; top: 31%; width: 12%; height: 18%;
+    background-color: rgba(200,147,42,0.14);
+    border-top-left-radius: 50%; border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%; border-bottom-right-radius: 50%;
+}
+
+/* --- Node (passive-board-node-catalog.md V1 floor) ---
+   kind 축: small / notable / keystone — 시각 크기와 강조 차이.
+   state 축: --active (per-hero 활성, 토글) — base는 inactive (muted). */
+
+.pbp-board__node {
+    position: absolute;
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(38,45,84,0.55);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(107,93,63,0.62); border-right-color: rgba(107,93,63,0.62);
     border-top-color: rgba(107,93,63,0.62); border-bottom-color: rgba(107,93,63,0.62);
 }
 
-/* Detail panel */
+/* Kind — size & shape */
+.pbp-board__node--small {
+    width: 36px; height: 36px;
+    margin-left: -18px; margin-top: -18px;  /* center on coord */
+    border-top-left-radius: 18px; border-top-right-radius: 18px;
+    border-bottom-left-radius: 18px; border-bottom-right-radius: 18px;
+}
+.pbp-board__node--notable {
+    width: 52px; height: 52px;
+    margin-left: -26px; margin-top: -26px;
+    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
+}
+.pbp-board__node--keystone {
+    width: 68px; height: 68px;
+    margin-left: -34px; margin-top: -34px;
+    background-color: rgba(200,147,42,0.42);
+    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
+    border-left-color: var(--sm-gold-200); border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
+}
+
+/* State — per-hero active toggle */
+.pbp-board__node--active {
+    background-color: rgba(91,142,209,0.78);
+    border-left-color: var(--sm-gold-200); border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
+}
+.pbp-board__node--keystone.pbp-board__node--active {
+    background-color: rgba(200,147,42,0.78);
+}
+
+/* Detail panel — dark navy card. ceremony frame texture가 parchment라
+   near-transparent bg면 dark용 text가 저대비 → solid navy로 보정. */
 .pbp-detail { width: 280px;
-    background-color: rgba(245,234,208,0.06);
+    background-color: rgba(20,26,53,0.92);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);
@@ -75,21 +139,31 @@
 }
 .pbp-detail__title { color: var(--sm-gold-100); font-size: 15px; letter-spacing: 3px; -unity-font-style: bold;
     margin-top: 12px; margin-bottom: 12px; }
-.pbp-detail__desc { width: 240px; padding: 0 12px; }
-.pbp-detail__desc-line { height: 8px; background-color: rgba(216,199,153,0.42); margin-bottom: 6px; }
+.pbp-detail__desc { width: 240px; padding: 8px 14px; }
+.pbp-detail__desc-text {
+    font-size: 12px;
+    color: var(--sm-ink-1);
+    white-space: normal;
+    -unity-text-align: middle-center;
+    margin-bottom: 8px;
+}
+.pbp-detail__desc-tags {
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: rgba(216,199,153,0.78);
+    white-space: normal;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+}
 .pbp-detail__available { color: rgba(120,200,140,0.92); font-size: 11px; letter-spacing: 3px;
     -unity-font-style: bold; margin-top: 14px; margin-bottom: 8px; }
-.pbp-detail__activate { width: 200px; height: 44px;
-    background-color: rgba(200,147,42,0.95); color: rgba(20,16,8,1);
-    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
-    border-left-color: var(--sm-gold-100); border-right-color: var(--sm-gold-100);
-    border-top-color: var(--sm-gold-100); border-bottom-color: var(--sm-gold-100);
+/* Activate CTA: visual은 sm-cta sm-cta--md sm-cta--primary. width/color/font만 surface 고유. */
+.pbp-detail__activate { width: 200px; color: rgba(20,16,8,1);
     font-size: 14px; letter-spacing: 4px; -unity-font-style: bold; }
 .pbp-detail__progress { margin-top: 8px; color: var(--sm-ink-2); font-size: 11px; }
 
-/* Footer */
+/* Footer — point-budget 폐기. per-kind active 카운트만 노출. */
 .pbp-footer { flex-direction: row; align-items: center; justify-content: space-between;
     padding: 10px 24px; border-top-width: 1px; border-top-color: rgba(230,183,81,0.28); }
-.pbp-footer__points { color: var(--sm-gold-200); font-size: 11px; letter-spacing: 3px; -unity-font-style: bold; }
-.pbp-footer__glyph { width: 180px; height: 6px; background-color: rgba(216,199,153,0.32); }
+.pbp-footer__breakdown { color: var(--sm-gold-200); font-size: 11px; letter-spacing: 2px; -unity-font-style: bold; }
 .pbp-footer__close { width: 28px; height: 28px; background-color: rgba(38,45,84,0.72); color: var(--sm-gold-200); }

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using SM.Unity.UI.Town.Preview;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -5,43 +8,20 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Inventory 미리보기 — 시안 갤러리 V1 #6.
-/// currency header / 5 category sidebar / 5x4 weapon grid / selected item detail.
+/// SM/Town/Inventory 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// Bootstrap = mock ViewState injection. 실 GameSessionRoot 없이 View 직접 render.
+/// 시안 SoT: pindoc://town-ui-ux-시안-갤러리-v1 (6. Inventory tab)
 /// </summary>
 public sealed class InventoryPreviewBootstrap : EditorWindow
 {
     private const string VisualTreePath = "Assets/_Game/UI/Screens/Town/Preview/InventoryPreview.uxml";
     private const string ThemeTokensPath = "Assets/_Game/UI/Foundation/Styles/ThemeTokens.uss";
     private const string RuntimePanelThemePath = "Assets/_Game/UI/Foundation/Styles/RuntimePanelTheme.uss";
+
     private const string AffixSpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Affix/affix_{0}.png";
     private const string CurrencySpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Currency/currency_{0}.png";
-    private const string ClassSpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Class/class_{0}.png";
 
-    private readonly struct Category
-    {
-        public Category(string label, string count, string icon, bool sel) { Label=label; Count=count; IconKey=icon; Selected=sel; }
-        public string Label { get; }
-        public string Count { get; }
-        public string IconKey { get; }
-        public bool Selected { get; }
-    }
-    private static readonly Category[] Categories =
-    {
-        new("ALL",        "128/200", "atk",       false),
-        new("WEAPON",     "48/100",  "pierce",    true),
-        new("ARMOR",      "36/100",  "armor",     false),
-        new("ACCESSORY",  "25/100",  "amplify",   false),
-        new("CONSUMABLE", "89/200",  "heal",      false),
-        new("BLUEPRINT",  "18/100",  "link",      false),
-    };
-
-    private static readonly (string icon, string rarity)[] GridItems =
-    {
-        ("atk","epic"), ("crit","epic"), ("pierce","rare"), ("speed","epic"), ("magic_atk","epic"),
-        ("armor","rare"), ("crit","rare"), ("pierce","epic"), ("speed","rare"), ("magic_atk","rare"),
-        ("atk","common"), ("armor","common"), ("pierce","common"), ("speed","common"), ("magic_atk","common"),
-        ("crit","rare"), ("armor","epic"), ("pierce","rare"), ("speed","epic"), ("magic_atk","common"),
-    };
+    private InventoryView? _view;
 
     [MenuItem("SM/Town/Inventory 미리보기", false, 14)]
     public static void Open()
@@ -50,82 +30,114 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
         window.minSize = new Vector2(1400f, 820f);
     }
 
-    private void CreateGUI()
+    private void CreateGUI() => BuildInto(rootVisualElement);
+
+    /// <summary>EditorWindow + TownPreviewCaptureUtility 공용 — 지정 root에 surface preview 빌드.</summary>
+    public void BuildInto(VisualElement root)
     {
         var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(VisualTreePath);
-        if (visualTree == null) { rootVisualElement.Add(new Label($"UXML 못 찾음: {VisualTreePath}")); return; }
+        if (visualTree == null) { root.Add(new Label($"UXML 못 찾음: {VisualTreePath}")); return; }
         var tokens = AssetDatabase.LoadAssetAtPath<StyleSheet>(ThemeTokensPath);
         var theme = AssetDatabase.LoadAssetAtPath<StyleSheet>(RuntimePanelThemePath);
-        if (tokens != null) rootVisualElement.styleSheets.Add(tokens);
-        if (theme != null) rootVisualElement.styleSheets.Add(theme);
-        visualTree.CloneTree(rootVisualElement);
+        if (tokens != null) root.styleSheets.Add(tokens);
+        if (theme != null) root.styleSheets.Add(theme);
+        visualTree.CloneTree(root);
 
-        var goldIcon = rootVisualElement.Q<VisualElement>("GoldIcon");
-        var goldTex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(CurrencySpriteFmt, "gold"));
-        if (goldIcon != null && goldTex != null) goldIcon.style.backgroundImage = new StyleBackground(goldTex);
-
-        var echoIcon = rootVisualElement.Q<VisualElement>("EchoIcon");
-        var echoTex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(CurrencySpriteFmt, "echo"));
-        if (echoIcon != null && echoTex != null) echoIcon.style.backgroundImage = new StyleBackground(echoTex);
-
-        InjectSidebar();
-        InjectGrid();
-        InjectDetail();
+        _view = new InventoryView(root);
+        _view.Render(BuildMockViewState());
     }
 
-    private void InjectSidebar()
+    private InventoryViewState BuildMockViewState()
     {
-        var sidebar = rootVisualElement.Q<VisualElement>("CategorySidebar");
-        if (sidebar == null) return;
-        sidebar.Clear();
-        foreach (var c in Categories)
-        {
-            var row = new VisualElement(); row.AddToClassList("inv-sidebar__row");
-            if (c.Selected) row.AddToClassList("inv-sidebar__row--selected");
-            var icon = new VisualElement(); icon.AddToClassList("inv-sidebar__row-icon");
-            var iconTex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AffixSpriteFmt, c.IconKey));
-            if (iconTex != null) icon.style.backgroundImage = new StyleBackground(iconTex);
-            row.Add(icon);
-            var info = new VisualElement(); info.AddToClassList("inv-sidebar__row-info");
-            var name = new Label(c.Label); name.AddToClassList("inv-sidebar__row-name"); info.Add(name);
-            var count = new Label(c.Count); count.AddToClassList("inv-sidebar__row-count"); info.Add(count);
-            row.Add(info);
-            sidebar.Add(row);
-        }
+        return new InventoryViewState(
+            Gold: 9_876_543,
+            Echo: 543_210,
+            GoldSprite: LoadCurrencySprite("gold"),
+            EchoSprite: LoadCurrencySprite("echo"),
+            Categories: BuildMockCategories(),
+            Items: BuildMockItems(),
+            Detail: BuildMockDetail());
     }
 
-    private void InjectGrid()
+    private IReadOnlyList<InventoryCategoryViewState> BuildMockCategories()
     {
-        var grid = rootVisualElement.Q<VisualElement>("ItemGrid");
-        if (grid == null) return;
-        grid.Clear();
-        foreach (var (icon, rarity) in GridItems)
-        {
-            var cell = new VisualElement();
-            cell.AddToClassList("inv-grid__cell");
-            cell.AddToClassList($"inv-grid__cell--{rarity}");
-            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AffixSpriteFmt, icon));
-            if (tex != null) cell.style.backgroundImage = new StyleBackground(tex);
-            grid.Add(cell);
-        }
+        // Presenter static catalog 재사용 + mock count.
+        var counts = new[] { "109/300", "48/100", "36/100", "25/100" };
+        var i = 0;
+        return InventoryPresenter.Categories
+            .Select(c => new InventoryCategoryViewState(
+                Key: c.Key,
+                Label: c.Label,
+                Count: counts[i++],
+                IconSprite: LoadAffixSprite(c.IconKey),
+                IsSelected: c.Key == "weapon"))
+            .ToList();
     }
 
-    private void InjectDetail()
+    private IReadOnlyList<InventoryItemViewState> BuildMockItems()
     {
-        var icon = rootVisualElement.Q<VisualElement>("DetailIcon");
-        var iconTex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AffixSpriteFmt, "atk"));
-        if (icon != null && iconTex != null) icon.style.backgroundImage = new StyleBackground(iconTex);
-
-        var affixes = rootVisualElement.Q<VisualElement>("DetailAffixes");
-        if (affixes == null) return;
-        affixes.Clear();
-        var rows = new[] { ("ATK", "+256"), ("CRIT", "+18.7%"), ("SPEED", "+128"), ("LIFESTEAL", "+9.6%") };
-        foreach (var (label, value) in rows)
+        // 5×4 = 20 cell mock. rarity / weapon family / equipped 다양 demo.
+        var rows = new (string Icon, string Rarity, string WeaponFamily, bool Equipped)[]
         {
-            var row = new VisualElement(); row.AddToClassList("inv-detail__affix-row");
-            var g = new VisualElement(); g.AddToClassList("inv-detail__affix-glyph"); row.Add(g);
-            var v = new Label(value); v.AddToClassList("inv-detail__affix-value"); row.Add(v);
-            affixes.Add(row);
+            ("atk",       "epic",   "blade",  true ),
+            ("crit",      "epic",   "blade",  false),
+            ("pierce",    "rare",   "bow",    false),
+            ("speed",     "epic",   "bow",    true ),
+            ("magic_atk", "epic",   "focus",  false),
+            ("armor",     "rare",   "shield", true ),
+            ("crit",      "rare",   "blade",  false),
+            ("pierce",    "epic",   "bow",    false),
+            ("speed",     "rare",   "bow",    false),
+            ("magic_atk", "rare",   "focus",  true ),
+            ("atk",       "common", "blade",  false),
+            ("armor",     "common", "shield", false),
+            ("pierce",    "common", "bow",    false),
+            ("speed",     "common", "bow",    false),
+            ("magic_atk", "common", "focus",  false),
+            ("crit",      "rare",   "blade",  false),
+            ("armor",     "epic",   "shield", false),
+            ("pierce",    "rare",   "bow",    false),
+            ("speed",     "epic",   "bow",    false),
+            ("magic_atk", "common", "focus",  false),
+        };
+
+        var items = new List<InventoryItemViewState>(rows.Length);
+        for (var i = 0; i < rows.Length; i++)
+        {
+            var r = rows[i];
+            var familyLabel = InventoryPresenter.WeaponFamilyLabels.TryGetValue(r.WeaponFamily, out var lbl)
+                ? lbl : r.WeaponFamily;
+            items.Add(new InventoryItemViewState(
+                ItemInstanceId: $"mock_item_{i:D2}",
+                IconKey: r.Icon,
+                RarityKey: r.Rarity,
+                WeaponFamilyKey: r.WeaponFamily,
+                WeaponFamilyLabel: familyLabel,
+                IsEquipped: r.Equipped,
+                IconSprite: LoadAffixSprite(r.Icon)));
         }
+        return items;
     }
+
+    private InventoryDetailViewState BuildMockDetail()
+    {
+        // item-and-affix-system.md: implicit 1 + prefix 2 + suffix 2 = 5 line
+        var affixes = new[]
+        {
+            new InventoryAffixRowViewState("implicit", "ATK",       "+256"),
+            new InventoryAffixRowViewState("prefix",   "CRIT",      "+18.7%"),
+            new InventoryAffixRowViewState("prefix",   "PIERCE",    "+1.2"),
+            new InventoryAffixRowViewState("suffix",   "SPEED",     "+128"),
+            new InventoryAffixRowViewState("suffix",   "LIFESTEAL", "+9.6%"),
+        };
+        return new InventoryDetailViewState(
+            ItemInstanceId: "mock_item_00",
+            IconSprite: LoadAffixSprite("atk"),
+            Affixes: affixes);
+    }
+
+    private static Texture2D? LoadAffixSprite(string key) =>
+        AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AffixSpriteFmt, key));
+    private static Texture2D? LoadCurrencySprite(string key) =>
+        AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(CurrencySpriteFmt, key));
 }

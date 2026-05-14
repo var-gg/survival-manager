@@ -22,18 +22,26 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
+        <!-- Filter strip — pindoc://wiki-combat-synergy-v1 baseline.
+             세력 3 (솔라룸 / 이리솔 부족 / 회상 결사, 2/4 breakpoint) +
+             직업 4 (전위 / 결투가 / 궁수 / 신비, 2/3 breakpoint). -->
         <ui:VisualElement name="FilterStrip" class="rgp-filter-strip">
             <ui:Button class="rgp-filter-chip rgp-filter-chip--selected" text="전체" />
-            <ui:Button class="rgp-filter-chip" text="선봉 / Vanguard" />
-            <ui:Button class="rgp-filter-chip" text="결투가 / Striker" />
-            <ui:Button class="rgp-filter-chip" text="사수 / Ranger" />
-            <ui:Button class="rgp-filter-chip" text="비술사 / Mystic" />
+            <ui:VisualElement class="rgp-filter-divider" picking-mode="Ignore" />
+            <ui:Button class="rgp-filter-chip" text="솔라룸" />
+            <ui:Button class="rgp-filter-chip" text="이리솔 부족" />
+            <ui:Button class="rgp-filter-chip" text="회상 결사" />
+            <ui:VisualElement class="rgp-filter-divider" picking-mode="Ignore" />
+            <ui:Button class="rgp-filter-chip" text="전위" />
+            <ui:Button class="rgp-filter-chip" text="결투가" />
+            <ui:Button class="rgp-filter-chip" text="궁수" />
+            <ui:Button class="rgp-filter-chip" text="신비" />
         </ui:VisualElement>
 
         <ui:ScrollView name="GridScroll" class="rgp-grid-scroll">
             <ui:VisualElement name="GridContainer" class="rgp-grid" />
         </ui:ScrollView>
 
-        <ui:Button name="QuickBattleButton" class="rgp-quick-battle" text="Quick Battle (Smoke)" />
+        <ui:Button name="QuickBattleButton" class="rgp-quick-battle sm-cta sm-cta--hero sm-cta--utility" text="Quick Battle (Smoke)" />
     </ui:VisualElement>
 </ui:UXML>

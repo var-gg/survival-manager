@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using SM.Unity.UI.Town.Preview;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -5,8 +7,8 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Equipment Refit 미리보기 — 시안 갤러리 V1 #2.
-/// 3-section: standee + 3 hex slot / 5 affix list + Echo CTA / 8 inventory pool.
+/// SM/Town/Equipment Refit 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// 시안 SoT: pindoc://town-ui-ux-시안-갤러리-v1 (2. Equipment Refit modal)
 /// </summary>
 public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
 {
@@ -18,9 +20,7 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
     private const string EchoIconPath = "Assets/_Game/UI/Foundation/Sprites/Currency/currency_echo.png";
     private const string AffixSpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Affix/affix_{0}.png";
 
-    private static readonly string[] AffixSamples = { "atk", "crit", "armor", "speed", "resist_phys" };
-    private static readonly string[] PoolIcons = { "atk", "crit", "armor", "speed", "resist_phys", "lifesteal", "pierce", "block" };
-    private static readonly string[] PoolGems = { "epic", "rare", "rare", "common", "rare", "epic", "common", "rare" };
+    private EquipmentRefitView? _view;
 
     [MenuItem("SM/Town/Equipment Refit 미리보기", false, 11)]
     public static void Open()
@@ -29,85 +29,78 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
         window.minSize = new Vector2(1320f, 780f);
     }
 
-    private void CreateGUI()
+    private void CreateGUI() => BuildInto(rootVisualElement);
+
+    /// <summary>EditorWindow + TownPreviewCaptureUtility 공용 — 지정 root에 surface preview 빌드.</summary>
+    public void BuildInto(VisualElement root)
     {
         var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(VisualTreePath);
-        if (visualTree == null) { rootVisualElement.Add(new Label($"UXML 못 찾음: {VisualTreePath}")); return; }
+        if (visualTree == null) { root.Add(new Label($"UXML 못 찾음: {VisualTreePath}")); return; }
 
         var tokens = AssetDatabase.LoadAssetAtPath<StyleSheet>(ThemeTokensPath);
         var theme = AssetDatabase.LoadAssetAtPath<StyleSheet>(RuntimePanelThemePath);
-        if (tokens != null) rootVisualElement.styleSheets.Add(tokens);
-        if (theme != null) rootVisualElement.styleSheets.Add(theme);
+        if (tokens != null) root.styleSheets.Add(tokens);
+        if (theme != null) root.styleSheets.Add(theme);
 
-        visualTree.CloneTree(rootVisualElement);
+        visualTree.CloneTree(root);
 
-        var portrait = rootVisualElement.Q<VisualElement>("StandeePortrait");
-        var portraitTex = AssetDatabase.LoadAssetAtPath<Texture2D>(PortraitPath);
-        if (portrait != null && portraitTex != null) portrait.style.backgroundImage = new StyleBackground(portraitTex);
-
-        var echoIcon = rootVisualElement.Q<VisualElement>("EchoIcon");
-        var echoTex = AssetDatabase.LoadAssetAtPath<Texture2D>(EchoIconPath);
-        if (echoIcon != null && echoTex != null) echoIcon.style.backgroundImage = new StyleBackground(echoTex);
-
-        InjectAffixList();
-        InjectInventoryPool();
+        _view = new EquipmentRefitView(root);
+        _view.Render(BuildMockViewState());
     }
 
-    private void InjectAffixList()
+    private EquipmentRefitViewState BuildMockViewState()
     {
-        var list = rootVisualElement.Q<VisualElement>("AffixList");
-        if (list == null) return;
-        list.Clear();
-        for (var i = 0; i < AffixSamples.Length; i++)
+        // 5 affix line — implicit 1 + prefix 2 + suffix 2
+        var affixRaw = new (string Icon, string Group)[]
         {
-            var row = new VisualElement();
-            row.AddToClassList("erp-affix-row");
-            if (i == 1) row.AddToClassList("erp-affix-row--selected"); // 두 번째 selected (mockup의 highlight)
-
-            var icon = new VisualElement();
-            icon.AddToClassList("erp-affix-row__icon");
-            var iconTex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AffixSpriteFmt, AffixSamples[i]));
-            if (iconTex != null) icon.style.backgroundImage = new StyleBackground(iconTex);
-            row.Add(icon);
-
-            var glyph = new VisualElement();
-            glyph.AddToClassList("erp-affix-row__glyph");
-            row.Add(glyph);
-
-            var tier = new VisualElement();
-            tier.AddToClassList("erp-affix-row__tier");
-            row.Add(tier);
-
-            list.Add(row);
+            ("atk",         "implicit"),
+            ("crit",        "prefix"),
+            ("armor",       "prefix"),
+            ("speed",       "suffix"),
+            ("resist_phys", "suffix"),
+        };
+        var affixes = new List<EquipmentRefitAffixRowViewState>(affixRaw.Length);
+        for (var i = 0; i < affixRaw.Length; i++)
+        {
+            var (icon, group) = affixRaw[i];
+            affixes.Add(new EquipmentRefitAffixRowViewState(
+                GroupKey: group,
+                IconKey: icon,
+                IconSprite: LoadAffixSprite(icon),
+                IsSelectedForReroll: i == 1));  // mock: 2번째 affix가 reroll 대상
         }
+
+        // 8 inventory pool item
+        var poolRaw = new (string Icon, string Rarity)[]
+        {
+            ("atk", "epic"),
+            ("crit", "rare"),
+            ("armor", "rare"),
+            ("speed", "common"),
+            ("resist_phys", "rare"),
+            ("lifesteal", "epic"),
+            ("pierce", "common"),
+            ("block", "rare"),
+        };
+        var pool = new List<EquipmentRefitPoolRowViewState>(poolRaw.Length);
+        for (var i = 0; i < poolRaw.Length; i++)
+        {
+            var (icon, rarity) = poolRaw[i];
+            pool.Add(new EquipmentRefitPoolRowViewState(
+                ItemInstanceId: $"mock_pool_{i:D2}",
+                IconKey: icon,
+                IconSprite: LoadAffixSprite(icon),
+                RarityKey: rarity));
+        }
+
+        return new EquipmentRefitViewState(
+            StandeePortrait: AssetDatabase.LoadAssetAtPath<Texture2D>(PortraitPath),
+            EchoSprite: AssetDatabase.LoadAssetAtPath<Texture2D>(EchoIconPath),
+            RefitCost: EquipmentRefitPresenter.RefitEchoCost,
+            Affixes: affixes,
+            Pool: pool);
     }
 
-    private void InjectInventoryPool()
-    {
-        var pool = rootVisualElement.Q<VisualElement>("InventoryPool");
-        if (pool == null) return;
-        pool.Clear();
-        for (var i = 0; i < PoolIcons.Length; i++)
-        {
-            var row = new VisualElement();
-            row.AddToClassList("erp-pool-row");
-
-            var icon = new VisualElement();
-            icon.AddToClassList("erp-pool-row__weapon-icon");
-            var iconTex = AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AffixSpriteFmt, PoolIcons[i]));
-            if (iconTex != null) icon.style.backgroundImage = new StyleBackground(iconTex);
-            row.Add(icon);
-
-            var glyph = new VisualElement();
-            glyph.AddToClassList("erp-pool-row__glyph");
-            row.Add(glyph);
-
-            var gem = new VisualElement();
-            gem.AddToClassList("erp-pool-row__gem");
-            gem.AddToClassList($"erp-pool-row__gem--{PoolGems[i]}");
-            row.Add(gem);
-
-            pool.Add(row);
-        }
-    }
+    private static Texture2D? LoadAffixSprite(string key) =>
+        AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(AffixSpriteFmt, key));
 }

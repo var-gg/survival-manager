@@ -5,16 +5,8 @@
     -unity-background-scale-mode: scale-and-crop; }
 .thp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.62); }
 
-.thp-frame { position: absolute; left: 50px; right: 50px; top: 40px; bottom: 40px;
-    background-color: rgba(20,26,53,0.96);
-    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
-    border-left-color: var(--sm-gold-400); border-right-color: var(--sm-gold-400);
-    border-top-color: var(--sm-gold-400); border-bottom-color: var(--sm-gold-400); }
-.thp-frame__corner { position: absolute; width: 24px; height: 24px; background-color: var(--sm-gold-300); }
-.thp-frame__corner--tl { top: -3px; left: -3px; }
-.thp-frame__corner--tr { top: -3px; right: -3px; }
-.thp-frame__corner--bl { bottom: -3px; left: -3px; }
-.thp-frame__corner--br { bottom: -3px; right: -3px; }
+/* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
+.thp-frame { left: 50px; right: 50px; top: 40px; bottom: 40px; }
 
 .thp-header { flex-direction: row; align-items: center; justify-content: space-between;
     padding: 14px 24px; border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
@@ -23,12 +15,14 @@
 
 .thp-body { flex-direction: row; flex-grow: 1; padding: 14px; }
 
-/* Entry list */
-.thp-entry-list { width: 220px; flex-direction: column; margin-right: 12px; }
-.thp-entry-group { padding-bottom: 6px; }
-.thp-entry-group__title { color: var(--sm-gold-300); font-size: 11px; letter-spacing: 2px;
-    -unity-font-style: bold; padding: 8px 4px; }
-.thp-entry { flex-direction: row; align-items: center; padding: 6px 6px; margin-bottom: 4px;
+/* Entry list — ScrollView (6 group / 23 entry archive). 옛 220px 좁은 폭 + 빡빡한 padding 보강. */
+.thp-entry-list { width: 256px; margin-right: 12px; }
+.thp-entry-list .unity-scroll-view__content-container { flex-direction: column; }
+.thp-entry-group { padding-bottom: 12px; }
+.thp-entry-group__title { color: var(--sm-gold-300); font-size: 12px; letter-spacing: 2px;
+    -unity-font-style: bold; padding-left: 4px; padding-right: 4px; padding-top: 12px; padding-bottom: 7px;
+    white-space: normal; }
+.thp-entry { flex-direction: row; align-items: center; padding: 9px 10px; margin-bottom: 6px;
     background-color: rgba(38,45,84,0.62);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
@@ -37,12 +31,35 @@
     border-left-color: var(--sm-gold-200); border-right-color: var(--sm-gold-200);
     border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200); }
 .thp-entry--locked { background-color: rgba(28,34,67,0.42); }
-.thp-entry__thumb { width: 44px; height: 26px; -unity-background-scale-mode: scale-and-crop;
-    background-color: rgba(20,26,53,0.62); margin-right: 8px;
+.thp-entry__thumb { width: 54px; height: 34px; -unity-background-scale-mode: scale-and-crop;
+    background-color: rgba(20,26,53,0.62); margin-right: 10px;
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32); }
+/* Theater entry text column — scene_id label + meta row (duration · completion · watched_at).
+   pindoc ReplayLedgerEntry column 시각화. 옛 mock의 abstract glyph 대체. */
 .thp-entry__info { flex-grow: 1; flex-direction: column; }
+.thp-entry__title-text {
+    color: var(--sm-vellum);
+    font-size: 11px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+    white-space: normal;
+}
+.thp-entry__meta-row {
+    flex-direction: row;
+    align-items: center;
+}
+.thp-entry__meta-text {
+    color: rgba(216, 199, 153, 0.62);
+    font-size: 10px;
+    margin-right: 4px;
+}
+.thp-entry__meta-text--partial { color: rgba(232, 169, 59, 0.92); }
+.thp-entry__meta-text--watched { color: rgba(120, 200, 140, 0.78); }
+
+/* legacy glyph 호환 (locked 등) */
 .thp-entry__title-glyph { height: 6px; background-color: rgba(216,199,153,0.55); margin-bottom: 3px; }
 .thp-entry__meta-glyph { height: 5px; width: 60%; background-color: rgba(216,199,153,0.32); }
 .thp-entry__check { width: 16px; height: 16px; background-color: rgba(120,200,140,0.85);
@@ -97,9 +114,6 @@
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32); }
-.thp-detail__replay { height: 48px; margin-top: 12px;
-    background-color: rgba(200,147,42,0.95);
-    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
-    border-left-color: var(--sm-gold-100); border-right-color: var(--sm-gold-100);
-    border-top-color: var(--sm-gold-100); border-bottom-color: var(--sm-gold-100); }
+/* Replay CTA: visual은 sm-cta sm-cta--lg sm-cta--primary. margin만 surface 고유. */
+.thp-detail__replay { margin-top: 12px; }
 .thp-detail__replay-glyph { align-self: center; width: 60%; height: 8px; background-color: rgba(61,47,18,0.78); }

@@ -5,16 +5,8 @@
     -unity-background-scale-mode: scale-and-crop; }
 .inv-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
 
-.inv-frame { position: absolute; left: 60px; right: 60px; top: 50px; bottom: 50px;
-    background-color: rgba(235,220,178,0.96);
-    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
-    border-left-color: var(--sm-gold-400); border-right-color: var(--sm-gold-400);
-    border-top-color: var(--sm-gold-400); border-bottom-color: var(--sm-gold-400); }
-.inv-frame__corner { position: absolute; width: 24px; height: 24px; background-color: var(--sm-gold-300); }
-.inv-frame__corner--tl { top: -3px; left: -3px; }
-.inv-frame__corner--tr { top: -3px; right: -3px; }
-.inv-frame__corner--bl { bottom: -3px; left: -3px; }
-.inv-frame__corner--br { bottom: -3px; right: -3px; }
+/* Modal frame visual은 sm-modal-frame sm-modal-frame--parchment + sm-frame-corner-cap. */
+.inv-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
 
 /* Currency header */
 .inv-currency-header { flex-direction: row; align-items: center; padding: 14px 24px;
@@ -66,12 +58,67 @@
     border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
     border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
     border-top-color: rgba(230,183,81,0.55); border-bottom-color: rgba(230,183,81,0.55);
-    -unity-background-scale-mode: scale-to-fit;
 }
 .inv-grid__cell--epic { border-left-color: rgba(181,97,214,0.95); border-right-color: rgba(181,97,214,0.95);
     border-top-color: rgba(181,97,214,0.95); border-bottom-color: rgba(181,97,214,0.95); }
 .inv-grid__cell--rare { border-left-color: rgba(91,142,209,0.95); border-right-color: rgba(91,142,209,0.95);
     border-top-color: rgba(91,142,209,0.95); border-bottom-color: rgba(91,142,209,0.95); }
+
+/* Item icon — main affix sprite (full cell) */
+.inv-grid__cell-icon {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* Weapon family badge — top-left corner. item-and-affix-system.md V1: shield/blade/bow/focus */
+.inv-grid__cell-family {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    background-color: rgba(20, 26, 53, 0.85);
+    color: var(--sm-vellum);
+    font-size: 8px;
+    -unity-font-style: bold;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.55);
+    border-right-color: rgba(230, 183, 81, 0.55);
+    border-top-color: rgba(230, 183, 81, 0.55);
+    border-bottom-color: rgba(230, 183, 81, 0.55);
+}
+.inv-grid__cell-family--shield { background-color: rgba(74, 114, 184, 0.85); }
+.inv-grid__cell-family--blade  { background-color: rgba(182, 51, 74, 0.85); }
+.inv-grid__cell-family--bow    { background-color: rgba(120, 200, 140, 0.85); }
+.inv-grid__cell-family--focus  { background-color: rgba(138, 92, 184, 0.85); }
+
+/* Equipped marker — top-right gold dot */
+.inv-grid__cell-equipped {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 10px;
+    height: 10px;
+    background-color: var(--sm-gold-200);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
 
 /* Right detail */
 .inv-detail { width: 260px; padding: 18px;
@@ -86,10 +133,44 @@
 .inv-detail__name-bar { padding-top: 12px; padding-bottom: 8px;
     border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
 .inv-detail__name-glyph { height: 8px; background-color: rgba(216,199,153,0.62); }
+/* Affix detail — item-and-affix-system.md V1: implicit 1 + prefix 2 + suffix 2 = 5 line.
+   group header (IMPLICIT/PREFIX/SUFFIX) + left-tint row으로 그룹 시각 분리. */
 .inv-detail__affixes { flex-direction: column; margin-top: 12px; }
-.inv-detail__affix-row { flex-direction: row; align-items: center; padding: 4px 0; }
-.inv-detail__affix-glyph { flex-grow: 1; height: 6px; background-color: rgba(216,199,153,0.42); }
-.inv-detail__affix-value { color: var(--sm-gold-200); font-size: 11px; -unity-font-style: bold; margin-left: 8px; }
+
+.inv-detail__affix-group {
+    font-size: 9px;
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    color: var(--sm-gold-300);
+}
+.inv-detail__affix-group--implicit { color: var(--sm-gold-200); }
+.inv-detail__affix-group--prefix   { color: rgba(127, 163, 224, 0.92); }
+.inv-detail__affix-group--suffix   { color: rgba(166, 220, 154, 0.92); }
+
+.inv-detail__affix-row {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 3px; padding-bottom: 3px;
+    padding-left: 6px; padding-right: 4px;
+    margin-bottom: 2px;
+}
+.inv-detail__affix-row--implicit { border-left-width: 2px; border-left-color: var(--sm-gold-200); }
+.inv-detail__affix-row--prefix   { border-left-width: 2px; border-left-color: rgba(127, 163, 224, 0.78); }
+.inv-detail__affix-row--suffix   { border-left-width: 2px; border-left-color: rgba(166, 220, 154, 0.78); }
+
+.inv-detail__affix-label {
+    flex-grow: 1;
+    color: var(--sm-ink-2);
+    font-size: 11px;
+}
+.inv-detail__affix-value {
+    color: var(--sm-gold-200);
+    font-size: 11px;
+    -unity-font-style: bold;
+    margin-left: 8px;
+}
 .inv-detail__owner { flex-direction: row; align-items: center; margin-top: 12px; padding: 6px 0; }
 .inv-detail__owner-icon { width: 24px; height: 24px; -unity-background-scale-mode: scale-to-fit; margin-right: 8px;
     background-color: rgba(245,234,208,0.18);
@@ -97,12 +178,9 @@
     border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
 }
 .inv-detail__owner-glyph { flex-grow: 1; height: 6px; background-color: rgba(216,199,153,0.42); }
+/* btn stack: visual은 sm-cta sm-cta--inline + secondary/primary variant.
+   inv-detail__btn--equip/sell/compare UXML 측에서 variant 지정. column layout만 surface 고유. */
 .inv-detail__buttons { flex-direction: column; margin-top: 12px; }
-.inv-detail__btn { height: 36px; margin-bottom: 6px;
-    background-color: rgba(38,45,84,0.85);
-    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
-    border-left-color: var(--sm-gold-300); border-right-color: var(--sm-gold-300);
-    border-top-color: var(--sm-gold-300); border-bottom-color: var(--sm-gold-300); }
-.inv-detail__btn--equip { background-color: rgba(200,147,42,0.82); }
+.inv-detail__btn { margin-bottom: 6px; }
 .inv-detail__btn-glyph { height: 6px; background-color: rgba(245,234,208,0.62);
     align-self: center; width: 70%; }

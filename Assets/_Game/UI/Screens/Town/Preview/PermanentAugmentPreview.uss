@@ -5,16 +5,8 @@
     -unity-background-scale-mode: scale-and-crop; }
 .pap-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
 
-.pap-frame { position: absolute; left: 60px; right: 60px; top: 50px; bottom: 50px;
-    background-color: rgba(20,26,53,0.96);
-    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
-    border-left-color: var(--sm-gold-400); border-right-color: var(--sm-gold-400);
-    border-top-color: var(--sm-gold-400); border-bottom-color: var(--sm-gold-400); }
-.pap-frame__corner { position: absolute; width: 24px; height: 24px; background-color: var(--sm-gold-300); }
-.pap-frame__corner--tl { top: -3px; left: -3px; }
-.pap-frame__corner--tr { top: -3px; right: -3px; }
-.pap-frame__corner--bl { bottom: -3px; left: -3px; }
-.pap-frame__corner--br { bottom: -3px; right: -3px; }
+/* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
+.pap-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
 
 .pap-header { flex-direction: row; align-items: center; justify-content: space-between;
     padding: 18px 32px; border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
@@ -27,42 +19,179 @@
 .pap-columns { flex-direction: row; flex-grow: 1; padding: 18px; }
 .pap-col { margin-left: 8px; margin-right: 8px; flex-direction: column; }
 .pap-col--grid { width: 360px; }
-.pap-col--detail { flex-grow: 1; align-items: center; padding-top: 12px; }
+/* Detail column — dark navy feature card. ceremony frame texture가 parchment라
+   bare bg에 gold text를 얹으면 저대비 → 좌/우 column처럼 dark card로 통일. */
+.pap-col--detail {
+    flex-grow: 1;
+    align-items: center;
+    padding: 16px 14px;
+    background-color: rgba(28, 34, 67, 0.88);
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
+    border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);
+}
 .pap-col--equip { width: 280px; align-items: stretch; padding-top: 12px; }
 
-/* 12 motif grid (3x4) */
-.pap-augment-grid { flex-direction: row; flex-wrap: wrap; }
-.pap-augment-cell { width: 110px; height: 110px; margin: 4px;
+/* 4 augment grid (2x2) — pindoc V1: permanent 4개 only, 자세 1:1 매핑.
+   각 cell: icon + 한국어 표시명 + 자세 매핑 라벨. 이전 12 motif grid 폐기. */
+.pap-augment-grid { flex-direction: row; flex-wrap: wrap; justify-content: space-around; }
+.pap-augment-cell {
+    width: 162px;
+    height: 200px;
+    margin: 4px;
+    padding: 8px;
     background-color: rgba(28,34,67,0.86);
     border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
     border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
     border-top-color: rgba(230,183,81,0.55); border-bottom-color: rgba(230,183,81,0.55);
-    -unity-background-scale-mode: scale-to-fit; }
+    align-items: center;
+}
+/* Family bucket chip (top of cell) — AugmentDefinition.FamilyId 정보 표기.
+   P0-4 다운스코프: 5 bucket 색축 폐기 → neutral chip. */
+.pap-augment-cell__family {
+    align-self: stretch;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin-bottom: 4px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: var(--sm-ink-2);
+    background-color: rgba(38, 45, 84, 0.78);
+}
+
+.pap-augment-cell__icon {
+    width: 80px;
+    height: 80px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.pap-augment-cell__name {
+    margin-top: 6px;
+    color: var(--sm-gold-100);
+    font-size: 12px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+/* Status footer — unlocked progress 또는 locked unlock hint */
+.pap-augment-cell__status {
+    align-self: stretch;
+    margin-top: 6px;
+    padding-top: 4px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+    border-top-width: 1px;
+    border-top-color: rgba(230, 183, 81, 0.32);
+}
+.pap-augment-cell__status-text {
+    -unity-text-align: middle-center;
+    font-size: 9px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    white-space: normal;
+}
+.pap-augment-cell__status-text--equipped {
+    color: var(--sm-gold-100);
+}
+.pap-augment-cell__status-text--unlocked {
+    color: rgba(120, 200, 140, 0.92);
+}
+.pap-augment-cell__status-text--locked {
+    color: rgba(216, 199, 153, 0.62);
+}
+/* Equipped — 현재 장착된 1개 (단일 슬롯). gold 테두리 + 따뜻한 dark 배경.
+   배경 alpha를 높여 ceremony 프레임 parchment 텍스처가 비치지 않게 한다. */
+.pap-augment-cell--equipped {
+    background-color: rgba(58, 48, 30, 0.94);
+    border-left-color: var(--sm-gold-300); border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300); border-bottom-color: var(--sm-gold-300);
+}
+/* Selected — detail panel에 표시 중. 더 밝은 gold + 굵은 테두리 + 더 따뜻한 dark 배경
+   (equipped와 stack 가능 — 둘 다면 selected 배경/테두리가 우선). */
 .pap-augment-cell--selected {
     border-left-color: var(--sm-gold-100); border-right-color: var(--sm-gold-100);
     border-top-color: var(--sm-gold-100); border-bottom-color: var(--sm-gold-100);
     border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
+    background-color: rgba(84, 66, 32, 0.96);
 }
-.pap-augment-cell--locked { background-color: rgba(20,26,53,0.92); }
+/* Locked — 미해금. dark 배경 유지 + 살짝 dim (parchment bleed 최소화). */
+.pap-augment-cell--locked {
+    background-color: rgba(18, 22, 44, 0.94);
+    opacity: 0.72;
+}
 
-/* Detail card */
-.pap-detail-hero { width: 200px; height: 200px; background-color: rgba(72,40,98,0.78);
-    border-top-left-radius: 100px; border-top-right-radius: 100px;
-    border-bottom-left-radius: 100px; border-bottom-right-radius: 100px;
-    margin-bottom: 12px; }
-.pap-detail-title-row { flex-direction: row; justify-content: center; margin-bottom: 12px; }
-.pap-detail-title-row__chip { width: 32px; height: 18px; margin: 0 3px;
-    background-color: rgba(230,183,81,0.62); }
+/* Detail card — flat 보라 원 placeholder 대신 glow halo + augment icon 합성.
+   콘솔급: warm glow 뒤판 + 중앙 augment motif. */
+.pap-detail-hero {
+    width: 200px; height: 200px;
+    margin-bottom: 12px;
+    align-items: center;
+    justify-content: center;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/glow_halo_warm_gold.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.pap-detail-hero__icon {
+    width: 120px; height: 120px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+/* Detail column 실 텍스트 — 옛 placeholder bar(chip/line/glyph) 폐기.
+   selected augment의 한국어 표시명 + 영문 별칭 + 자세 매핑 + 시그니처 효과 + 플레이버. */
+.pap-detail-title {
+    font-size: 22px;
+    color: var(--sm-gold-100);
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+    margin-bottom: 2px;
+    white-space: normal;
+}
+.pap-detail-subtitle {
+    font-size: 11px;
+    color: var(--sm-ink-2);
+    letter-spacing: 1px;
+    -unity-text-align: middle-center;
+    margin-bottom: 14px;
+    white-space: normal;
+}
 
-.pap-detail-effect { flex-direction: column; align-items: stretch; width: 240px; }
-.pap-detail-effect__line { height: 8px; background-color: rgba(216,199,153,0.45); margin-bottom: 6px; }
+.pap-detail-effect { flex-direction: column; align-items: stretch; width: 260px;
+    padding: 10px 12px;
+    background-color: rgba(38, 45, 84, 0.55);
+    border-left-width: 2px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: rgba(230,183,81,0.24);
+    border-top-color: rgba(230,183,81,0.24);
+    border-bottom-color: rgba(230,183,81,0.24); }
+.pap-detail-effect__heading {
+    font-size: 9px;
+    color: var(--sm-gold-300);
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+    margin-bottom: 4px;
+}
+.pap-detail-effect__body {
+    font-size: 13px;
+    color: var(--sm-ink-1);
+    white-space: normal;
+}
 
-.pap-detail-flavor { width: 240px; padding: 12px; margin-top: 12px;
+.pap-detail-flavor { width: 260px; padding: 12px; margin-top: 12px;
     background-color: rgba(245,234,208,0.08);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.28); border-right-color: rgba(230,183,81,0.28);
     border-top-color: rgba(230,183,81,0.28); border-bottom-color: rgba(230,183,81,0.28); }
-.pap-detail-flavor__glyph { height: 6px; background-color: rgba(216,199,153,0.32); }
+.pap-detail-flavor__text {
+    font-size: 11px;
+    color: rgba(216,199,153,0.82);
+    white-space: normal;
+    -unity-text-align: middle-left;
+}
 
 /* Equip column */
 .pap-equip-slot { width: 140px; height: 140px; align-self: center;
@@ -73,22 +202,40 @@
     border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
     margin-bottom: 16px; }
 
-.pap-stat-compare { flex-direction: column; padding-top: 8px; padding-bottom: 16px; }
-.pap-stat-row { flex-direction: row; align-items: center; justify-content: space-between;
-    padding: 6px 12px; margin-bottom: 4px;
-    background-color: rgba(38,45,84,0.65);
-    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
-    border-left-color: rgba(230,183,81,0.28); border-right-color: rgba(230,183,81,0.28);
-    border-top-color: rgba(230,183,81,0.28); border-bottom-color: rgba(230,183,81,0.28); }
-.pap-stat-row__label { color: var(--sm-ink-2); font-size: 11px; }
-.pap-stat-row__before { color: var(--sm-ink-3); font-size: 11px; }
-.pap-stat-row__arrow { width: 12px; height: 8px; background-color: var(--sm-gold-300); margin: 0 6px; }
-.pap-stat-row__after { color: var(--sm-ink-0); font-size: 12px; -unity-font-style: bold; }
+/* Meta rows — permanent augment는 stat boost가 아니라 family + signature effect.
+   label / value 두 줄 row 구성. (P0-4: thesis/posture 매핑 row 폐기) */
+.pap-meta-rows { flex-direction: column; padding-top: 8px; padding-bottom: 16px; }
+.pap-meta-row {
+    flex-direction: column;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background-color: rgba(38, 45, 84, 0.65);
+    border-left-width: 2px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: rgba(230,183,81,0.28);
+    border-top-color: rgba(230,183,81,0.28);
+    border-bottom-color: rgba(230,183,81,0.28);
+}
+.pap-meta-row__label {
+    color: var(--sm-gold-300);
+    font-size: 9px;
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+    margin-bottom: 2px;
+}
+.pap-meta-row__value {
+    color: var(--sm-ink-1);
+    font-size: 12px;
+    white-space: normal;
+}
 
-.pap-equip-cta { height: 56px; flex-direction: column; align-items: center; justify-content: center;
-    background-color: rgba(200,147,42,0.95);
-    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
-    border-left-color: var(--sm-gold-100); border-right-color: var(--sm-gold-100);
-    border-top-color: var(--sm-gold-100); border-bottom-color: var(--sm-gold-100); }
-.pap-equip-cta__glyph { width: 80px; height: 8px; background-color: rgba(61,47,18,0.78); }
-.pap-equip-cta__cost { width: 60px; height: 8px; background-color: rgba(61,47,18,0.55); margin-top: 6px; }
+/* Equip CTA: visual은 sm-cta sm-cta--hero sm-cta--primary. 단일 슬롯 equip 액션.
+   상태별 라벨: 장착됨 / 장착 / 🔒 미해금 — disabled는 SetEnabled로 분기. */
+.pap-equip-cta { flex-direction: column; }
+.pap-equip-cta__label {
+    color: rgba(61, 47, 18, 1);
+    font-size: 14px;
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+}
+.pap-equip-cta:disabled { opacity: 0.45; }

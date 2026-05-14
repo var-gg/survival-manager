@@ -22,31 +22,12 @@
     background-color: rgba(12, 17, 38, 0.45);
 }
 
-/* --- Modal frame (centered, parchment) --- */
+/* --- Modal frame (centered, parchment) ---
+   Visual은 sm-modal-frame sm-modal-frame--parchment (RuntimePanelTheme.uss).
+   Corner cap은 sm-frame-corner-cap. 본 rule은 inset position만 유지. */
 .twp-frame {
-    position: absolute;
     left: 60px; right: 60px; top: 40px; bottom: 40px;
-    background-color: rgba(235, 220, 178, 0.96);
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 2px;
-    border-left-color: var(--sm-gold-400);
-    border-right-color: var(--sm-gold-400);
-    border-top-color: var(--sm-gold-400);
-    border-bottom-color: var(--sm-gold-400);
 }
-
-.twp-frame__corner {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    background-color: var(--sm-gold-300);
-}
-.twp-frame__corner--tl { top: -2px; left: -2px; }
-.twp-frame__corner--tr { top: -2px; right: -2px; }
-.twp-frame__corner--bl { bottom: -2px; left: -2px; }
-.twp-frame__corner--br { bottom: -2px; right: -2px; }
 
 /* --- Header --- */
 .twp-header {
@@ -138,7 +119,7 @@
     border-right-color: rgba(138, 100, 24, 0.28);
     border-top-color: rgba(138, 100, 24, 0.28);
     border-bottom-color: rgba(138, 100, 24, 0.28);
-    min-height: 300px;
+    min-height: 340px;
     margin-bottom: 12px;
 }
 .twp-anchor-pad__hex {
@@ -175,31 +156,37 @@
     rotate: 18deg;
 }
 
+/* 6 anchor (3x2 isometric) — Front × 3 (lower) + Back × 3 (upper, iso right-shift).
+   left은 % 기반 — pad 폭에 비례해 고르게 분산 (옛 고정 px는 좌측 쏠림 + 우측 공백). */
 .twp-standee {
     position: absolute;
-    width: 64px;
-    height: 88px;
+    width: 72px;
+    height: 104px;
     align-items: center;
 }
-.twp-standee--front-left  { left: 64px; bottom: 64px; }
-.twp-standee--front-right { left: 124px; bottom: 50px; }
-.twp-standee--back-left   { left: 64px; bottom: 110px; }
-.twp-standee--back-right  { left: 124px; bottom: 96px; }
+.twp-standee--front-top    { left: 4%;  bottom: 52px; }
+.twp-standee--front-center { left: 36%; bottom: 52px; }
+.twp-standee--front-bottom { left: 68%; bottom: 52px; }
+.twp-standee--back-top     { left: 12%; bottom: 158px; }
+.twp-standee--back-center  { left: 44%; bottom: 158px; }
+.twp-standee--back-bottom  { left: 76%; bottom: 158px; }
+.twp-standee--empty { opacity: 0.32; }
 
 .twp-standee__pillar {
-    width: 48px;
-    height: 16px;
+    width: 54px;
+    height: 14px;
     background-color: rgba(200, 147, 42, 0.62);
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
     margin-bottom: 4px;
     align-self: center;
 }
+.twp-standee__pillar--empty { background-color: rgba(107, 93, 63, 0.55); }
 .twp-standee__figure {
-    width: 48px;
-    height: 64px;
+    width: 60px;
+    height: 82px;
     -unity-background-scale-mode: scale-to-fit;
 }
 .twp-standee__figure--vanguard {
@@ -215,7 +202,9 @@
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png");
 }
 
-/* --- Posture row (5 cards using posture sprites) --- */
+/* --- Posture row (5 cards) ---
+   pindoc V1: 5 posture (전열 사수 / 표준 전진 / 캐리 보호 / 약측 무너뜨리기 / 후열 깊이 침투).
+   posture는 V1에서 사용자가 편집 가능한 유일한 전술 element. */
 .twp-posture-row {
     flex-direction: row;
     margin-bottom: 16px;
@@ -234,6 +223,7 @@
     border-bottom-color: rgba(230, 183, 81, 0.45);
     height: 140px;
     -unity-background-scale-mode: scale-and-crop;
+    justify-content: flex-end;  /* label을 카드 하단에 */
 }
 .twp-posture-card--selected {
     border-left-color: var(--sm-gold-300);
@@ -245,50 +235,156 @@
     border-top-width: 3px;
     border-bottom-width: 3px;
 }
+.twp-posture-card__label {
+    -unity-text-align: middle-center;
+    color: var(--sm-vellum);
+    font-size: 11px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    padding-top: 4px;
+    padding-bottom: 6px;
+    background-color: rgba(20, 26, 53, 0.78);
+    white-space: normal;
+}
 
-/* --- Tactic preset rows --- */
+/* --- Per-unit tactic display (V1 read-only) — RuleSet schema ---
+   pindoc V1: hero가 RoleInstructionDefinition을 가지고,
+   N개의 (condition → action → target) rule을 priority 순으로 보유.
+   첫 condition matching이 fire. 사용자는 V1에서 자세만 편집 — rule set는 read-only.
+
+   schema: container → hero block × N → header + rules list × M rule rows */
 .twp-tactic-section { flex-grow: 1; }
 .twp-tactic-rows {
     flex-direction: column;
 }
-.twp-tactic-row {
+
+/* Hero block — header + rule list */
+.twp-tactic-hero {
+    flex-direction: column;
+    margin-bottom: 8px;
+    padding-top: 4px;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    background-color: rgba(245, 234, 208, 0.42);
+    border-left-width: 2px;
+    border-left-color: rgba(107, 93, 63, 0.55);
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-color: rgba(138, 100, 24, 0.28);
+    border-bottom-color: rgba(138, 100, 24, 0.28);
+}
+.twp-tactic-hero--readonly {
+    opacity: 0.92;
+}
+
+.twp-tactic-hero__header {
     flex-direction: row;
     align-items: center;
-    padding-top: 6px;
-    padding-bottom: 6px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 4px;
+}
+.twp-tactic-hero__portrait {
+    width: 22px;
+    height: 22px;
+    background-color: rgba(20, 26, 53, 0.62);
+    border-top-left-radius: 11px;
+    border-top-right-radius: 11px;
+    border-bottom-left-radius: 11px;
+    border-bottom-right-radius: 11px;
+    margin-right: 8px;
+}
+.twp-tactic-hero__name {
+    color: rgba(61, 47, 18, 1);
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-right: 12px;
+}
+.twp-tactic-hero__posture {
+    color: rgba(107, 93, 63, 1);
+    font-size: 10px;
+    margin-right: 8px;
+}
+.twp-tactic-hero__count {
+    color: rgba(138, 100, 24, 1);
+    font-size: 9px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    align-self: center;
+}
+
+/* Rule list — priority 순 stacked rules */
+.twp-tactic-hero__rules {
+    flex-direction: column;
     padding-left: 8px;
-    padding-right: 8px;
-    margin-bottom: 4px;
-    background-color: rgba(245, 234, 208, 0.5);
+    padding-top: 2px;
+}
+
+/* Each rule = priority badge + cond → arrow → act → arrow → tgt */
+.twp-tactic-rule {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin-bottom: 2px;
+}
+.twp-tactic-rule__priority {
+    width: 22px;
+    color: rgba(138, 100, 24, 1);
+    font-size: 9px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-right: 6px;
+}
+
+.twp-tactic-rule__chip {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 1px;
+    padding-bottom: 1px;
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(138, 100, 24, 0.32);
-    border-right-color: rgba(138, 100, 24, 0.32);
-    border-top-color: rgba(138, 100, 24, 0.32);
-    border-bottom-color: rgba(138, 100, 24, 0.32);
 }
-.twp-tactic-row__portrait {
-    width: 28px;
-    height: 28px;
-    background-color: rgba(20, 26, 53, 0.62);
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
-    margin-right: 8px;
+.twp-tactic-rule__chip--cond {
+    background-color: rgba(127, 163, 224, 0.32);
+    border-left-color: rgba(127, 163, 224, 0.78);
+    border-right-color: rgba(127, 163, 224, 0.78);
+    border-top-color: rgba(127, 163, 224, 0.78);
+    border-bottom-color: rgba(127, 163, 224, 0.78);
 }
-.twp-tactic-row__glyph {
-    flex-grow: 1;
-    height: 14px;
-    background-color: rgba(107, 93, 63, 0.5);
+.twp-tactic-rule__chip--act {
+    background-color: rgba(200, 147, 42, 0.32);
+    border-left-color: rgba(200, 147, 42, 0.78);
+    border-right-color: rgba(200, 147, 42, 0.78);
+    border-top-color: rgba(200, 147, 42, 0.78);
+    border-bottom-color: rgba(200, 147, 42, 0.78);
 }
-.twp-tactic-row__icon {
-    width: 22px;
-    height: 22px;
-    -unity-background-scale-mode: scale-to-fit;
-    margin-left: 6px;
+.twp-tactic-rule__chip--tgt {
+    background-color: rgba(166, 220, 154, 0.32);
+    border-left-color: rgba(166, 220, 154, 0.78);
+    border-right-color: rgba(166, 220, 154, 0.78);
+    border-top-color: rgba(166, 220, 154, 0.78);
+    border-bottom-color: rgba(166, 220, 154, 0.78);
+}
+.twp-tactic-rule__chip-label {
+    color: rgba(20, 28, 50, 1);
+    font-size: 9px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+.twp-tactic-rule__arrow {
+    align-items: center;
+    justify-content: center;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+.twp-tactic-rule__arrow-label {
+    color: rgba(107, 93, 63, 0.78);
+    font-size: 10px;
+    -unity-font-style: bold;
 }
 
 /* --- Live Preview --- */
@@ -311,13 +407,16 @@
     -unity-background-scale-mode: scale-and-crop;
 }
 
-/* --- Synergy chips --- */
+/* --- Synergy chips (7 family = race 3 + class 4) ---
+   synergy-family-catalog.md baseline. race chip은 sprite 미아직이라 color block.
+   class chip은 기존 4 class sprite 재사용. divider로 race/class 그룹 분리. */
 .twp-synergy-row {
     flex-direction: row;
+    align-items: center;
     margin-bottom: 12px;
 }
 .twp-synergy-chip {
-    width: 40px;
+    width: 32px;
     height: 32px;
     margin-right: 4px;
     -unity-background-scale-mode: scale-to-fit;
@@ -331,29 +430,75 @@
     border-top-color: rgba(230, 183, 81, 0.55);
     border-bottom-color: rgba(230, 183, 81, 0.55);
 }
+/* Race family — color block placeholder (sprite 미발행) */
+.twp-synergy-chip--human    { background-color: rgba(245, 234, 208, 0.62); }
+.twp-synergy-chip--beastkin { background-color: rgba(122, 138, 82, 0.78); }
+.twp-synergy-chip--undead   { background-color: rgba(82, 74, 104, 0.85); }
+/* Class family — sprite */
 .twp-synergy-chip--vanguard { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_vanguard.png"); }
 .twp-synergy-chip--duelist  { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_duelist.png"); }
 .twp-synergy-chip--ranger   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_ranger.png"); }
 .twp-synergy-chip--mystic   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png"); }
 
-/* --- Threat-answer hex wheel --- */
-.twp-threat-wheel {
-    align-items: center;
-    justify-content: center;
+.twp-synergy-divider {
+    width: 1px;
+    height: 24px;
+    background-color: rgba(230, 183, 81, 0.55);
+    margin-left: 6px;
+    margin-right: 6px;
+    align-self: center;
+}
+
+/* --- Threat grid (8 lane = counter-system-topology.md) ---
+   ArmorFrontline / ResistanceShell / GuardBulwark / EvasiveSkirmish /
+   ControlChain / SustainBall / DiveBackline / SwarmFlood.
+   sprite mapping은 Bootstrap에서 1:1 매핑 — 정확한 art는 art-pipeline 재생성 필요. */
+.twp-threat-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
     margin-bottom: 12px;
 }
-.twp-threat-wheel__hex {
-    width: 160px;
-    height: 140px;
-    background-color: rgba(245, 234, 208, 0.5);
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.65);
-    border-right-color: rgba(230, 183, 81, 0.65);
-    border-top-color: rgba(230, 183, 81, 0.65);
-    border-bottom-color: rgba(230, 183, 81, 0.65);
+.twp-threat-chip {
+    width: 80px;
+    height: 60px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(245, 234, 208, 0.30);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.55);
+    border-right-color: rgba(230, 183, 81, 0.55);
+    border-top-color: rgba(230, 183, 81, 0.55);
+    border-bottom-color: rgba(230, 183, 81, 0.55);
+    justify-content: flex-end;
+}
+.twp-threat-chip__label {
+    -unity-text-align: middle-center;
+    color: var(--sm-vellum);
+    font-size: 9px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    background-color: rgba(20, 26, 53, 0.78);
+    white-space: normal;
+}
+.twp-threat-chip--answered {
+    background-color: rgba(120, 200, 140, 0.32);
+    border-left-color: rgba(120, 200, 140, 0.85);
+    border-right-color: rgba(120, 200, 140, 0.85);
+    border-top-color: rgba(120, 200, 140, 0.85);
+    border-bottom-color: rgba(120, 200, 140, 0.85);
+}
+.twp-threat-chip--unanswered {
+    background-color: rgba(226, 85, 72, 0.32);
+    border-left-color: rgba(226, 85, 72, 0.85);
+    border-right-color: rgba(226, 85, 72, 0.85);
+    border-top-color: rgba(226, 85, 72, 0.85);
+    border-bottom-color: rgba(226, 85, 72, 0.85);
 }
 
 /* --- Bottom action row (abstract chips placeholder) --- */

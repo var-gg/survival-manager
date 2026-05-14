@@ -11,11 +11,13 @@
         <ui:VisualElement name="Backdrop" class="twp-backdrop" picking-mode="Ignore" />
         <ui:VisualElement name="BackdropDim" class="twp-backdrop-dim" picking-mode="Ignore" />
 
-        <ui:VisualElement name="ModalFrame" class="twp-frame">
-            <ui:VisualElement class="twp-frame__corner twp-frame__corner--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="twp-frame__corner twp-frame__corner--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="twp-frame__corner twp-frame__corner--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="twp-frame__corner twp-frame__corner--br" picking-mode="Ignore" />
+        <ui:VisualElement name="ModalFrame" class="twp-frame sm-modal-frame sm-modal-frame--parchment sm-modal-anim">
+            <!-- 콘솔급 9-slice ornate frame texture overlay — mood bg color 위에 얹는 gold trim 이미지 -->
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
 
             <ui:VisualElement class="twp-header">
                 <ui:Label class="twp-header__eyebrow" text="TACTICAL WORKSHOP" />
@@ -25,27 +27,38 @@
 
             <ui:VisualElement class="twp-columns">
 
-                <!-- ============ LEFT: Anchor Pad ============ -->
+                <!-- ============ LEFT: Anchor Pad (6 anchor, 4 deploy) ============
+                     deployment-and-anchors.md: Front × 3 + Back × 3 = 6 anchor.
+                     battle deploy size 4 — 2개 slot은 empty 상태. -->
                 <ui:VisualElement class="twp-column twp-column--anchor">
-                    <ui:Label class="twp-section-eyebrow" text="ANCHOR PAD" />
+                    <ui:Label class="twp-section-eyebrow" text="ANCHOR PAD — 6 SLOT / 4 DEPLOY" />
                     <ui:VisualElement class="twp-anchor-pad">
                         <ui:VisualElement class="twp-anchor-pad__hex" picking-mode="Ignore" />
                         <ui:VisualElement class="twp-anchor-pad__arc twp-anchor-pad__arc--warm" picking-mode="Ignore" />
                         <ui:VisualElement class="twp-anchor-pad__arc twp-anchor-pad__arc--scarlet" picking-mode="Ignore" />
 
-                        <ui:VisualElement class="twp-standee twp-standee--front-left">
+                        <!-- Front row (Top / Center / Bottom) — 가까이, 아래쪽 -->
+                        <ui:VisualElement class="twp-standee twp-standee--front-top">
                             <ui:VisualElement class="twp-standee__pillar" picking-mode="Ignore" />
                             <ui:VisualElement class="twp-standee__figure twp-standee__figure--vanguard" picking-mode="Ignore" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="twp-standee twp-standee--front-right">
+                        <ui:VisualElement class="twp-standee twp-standee--front-center">
                             <ui:VisualElement class="twp-standee__pillar" picking-mode="Ignore" />
                             <ui:VisualElement class="twp-standee__figure twp-standee__figure--duelist" picking-mode="Ignore" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="twp-standee twp-standee--back-left">
+                        <ui:VisualElement class="twp-standee twp-standee--front-bottom twp-standee--empty">
+                            <ui:VisualElement class="twp-standee__pillar twp-standee__pillar--empty" picking-mode="Ignore" />
+                        </ui:VisualElement>
+
+                        <!-- Back row (Top / Center / Bottom) — 멀리, 위쪽 -->
+                        <ui:VisualElement class="twp-standee twp-standee--back-top twp-standee--empty">
+                            <ui:VisualElement class="twp-standee__pillar twp-standee__pillar--empty" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="twp-standee twp-standee--back-center">
                             <ui:VisualElement class="twp-standee__pillar" picking-mode="Ignore" />
                             <ui:VisualElement class="twp-standee__figure twp-standee__figure--ranger" picking-mode="Ignore" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="twp-standee twp-standee--back-right">
+                        <ui:VisualElement class="twp-standee twp-standee--back-bottom">
                             <ui:VisualElement class="twp-standee__pillar" picking-mode="Ignore" />
                             <ui:VisualElement class="twp-standee__figure twp-standee__figure--mystic" picking-mode="Ignore" />
                         </ui:VisualElement>
@@ -81,18 +94,22 @@
                         <ui:VisualElement class="twp-live-preview__image" picking-mode="Ignore" />
                     </ui:VisualElement>
 
-                    <ui:Label class="twp-section-eyebrow" text="SYNERGY" />
+                    <ui:Label class="twp-section-eyebrow" text="SYNERGY — 7 FAMILY (race 3 + class 4)" />
                     <ui:VisualElement class="twp-synergy-row">
+                        <!-- Race family (3): human / beastkin / undead (2/4 breakpoint) -->
+                        <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--human" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--beastkin" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--undead" picking-mode="Ignore" />
+                        <ui:VisualElement class="twp-synergy-divider" picking-mode="Ignore" />
+                        <!-- Class family (4): vanguard / duelist / ranger / mystic (2/3 breakpoint) -->
                         <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--vanguard" picking-mode="Ignore" />
                         <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--duelist" picking-mode="Ignore" />
                         <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--ranger" picking-mode="Ignore" />
                         <ui:VisualElement class="twp-synergy-chip twp-synergy-chip--mystic" picking-mode="Ignore" />
                     </ui:VisualElement>
 
-                    <ui:Label class="twp-section-eyebrow" text="THREAT — ANSWER" />
-                    <ui:VisualElement class="twp-threat-wheel">
-                        <ui:VisualElement name="ThreatWheelHexagon" class="twp-threat-wheel__hex" picking-mode="Ignore" />
-                    </ui:VisualElement>
+                    <ui:Label class="twp-section-eyebrow" text="THREAT — ANSWER (8 LANE)" />
+                    <ui:VisualElement name="ThreatGrid" class="twp-threat-grid" />
 
                     <ui:VisualElement class="twp-action-row">
                         <ui:VisualElement class="twp-action-row__chip" picking-mode="Ignore" />

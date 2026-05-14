@@ -124,6 +124,75 @@
     -unity-font-style: bold;
 }
 
+/* Race / Class 그룹 사이 divider (시각 분리) */
+.rgp-filter-divider {
+    width: 1px;
+    height: 22px;
+    background-color: rgba(230, 183, 81, 0.45);
+    margin-left: 8px;
+    margin-right: 8px;
+    align-self: center;
+}
+
+/* --- Profile overlay (4차 round column) — HeroPortraitCard atom 위에 RosterGrid 전용 layer ---
+   atom 보존, 추가 정보만 overlay. picking-mode ignore로 카드 클릭 방해 안 함. */
+.rgp-profile-overlay {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+}
+
+/* Equip slot dots — top-left (3 dots, filled = 장착 채움) */
+.rgp-profile-overlay__equip-row {
+    position: absolute;
+    top: 6px;
+    left: 4px;
+    flex-direction: row;
+}
+.rgp-profile-overlay__equip-dot {
+    width: 6px;
+    height: 6px;
+    margin-right: 2px;
+    background-color: rgba(107, 93, 63, 0.55);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.rgp-profile-overlay__equip-dot--filled {
+    background-color: var(--sm-gold-300);
+}
+
+/* Level + xp bar — bottom edge */
+.rgp-profile-overlay__level-row {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    bottom: 22px;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(20, 26, 53, 0.78);
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.rgp-profile-overlay__level-label {
+    color: var(--sm-gold-100);
+    font-size: 9px;
+    -unity-font-style: bold;
+    margin-right: 4px;
+    min-width: 28px;
+}
+.rgp-profile-overlay__xp-bar {
+    flex-grow: 1;
+    height: 4px;
+    background-color: rgba(216, 199, 153, 0.22);
+}
+.rgp-profile-overlay__xp-fill {
+    height: 4px;
+    background-color: rgba(127, 163, 224, 0.85);
+}
+
 /* --------- Grid (z=3) --------------------------------------- */
 
 .rgp-grid-scroll {
@@ -147,21 +216,13 @@
 
 /* --------- Floating Quick Battle button --------------------- */
 
+/* Quick Battle CTA: visual은 sm-cta sm-cta--hero sm-cta--utility.
+   floating position + width + font만 surface 고유. */
 .rgp-quick-battle {
     position: absolute;
     right: 40px;
     bottom: 32px;
     width: 184px;
-    height: 56px;
-    background-color: rgba(74, 114, 184, 0.92);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: var(--sm-gold-300);
-    border-right-color: var(--sm-gold-300);
-    border-top-color: var(--sm-gold-300);
-    border-bottom-color: var(--sm-gold-300);
     color: var(--sm-ink-0);
     font-size: 14px;
     -unity-font-style: bold;

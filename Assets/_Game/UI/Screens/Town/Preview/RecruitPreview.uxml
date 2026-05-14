@@ -2,9 +2,10 @@
     <!--
       Recruit modal V1 preview surface
       visual SoT: pindoc://town-ui-ux-시안-갤러리-v1 (3. Recruit modal)
-      structure: navy frame + ornament header + 4 candidate cards + scout/refresh/recruit action bar
+      structure: navy frame + ornament header + 4 candidate cards + scout/refresh action bar
+      카드 컬럼은 runtime offer 모델 (RecruitUnitPreview + RecruitOfferMetadata) 정합 — audit §4.1.
       assets:
-        hero portraits (Resources/_Game/Art/Characters/hero_*/portrait_full.png — 단린/이빨바람/공한/묵향)
+        hero portraits (Resources/_Game/Art/Characters/hero_{blueprintId}/portrait_full.png — 12 archetype 중 3장만 존재)
         class icon (Assets/_Game/UI/Foundation/Sprites/Class/)
         currency_gold (Assets/_Game/UI/Foundation/Sprites/Currency/currency_gold.png)
     -->
@@ -13,11 +14,12 @@
         <ui:VisualElement name="Backdrop" class="rcp-backdrop" picking-mode="Ignore" />
         <ui:VisualElement name="BackdropDim" class="rcp-backdrop-dim" picking-mode="Ignore" />
 
-        <ui:VisualElement name="ModalFrame" class="rcp-frame">
-            <ui:VisualElement class="rcp-frame__corner rcp-frame__corner--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="rcp-frame__corner rcp-frame__corner--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="rcp-frame__corner rcp-frame__corner--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="rcp-frame__corner rcp-frame__corner--br" picking-mode="Ignore" />
+        <ui:VisualElement name="ModalFrame" class="rcp-frame sm-modal-frame sm-modal-frame--ceremony sm-modal-anim">
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
 
             <ui:VisualElement class="rcp-header">
                 <ui:VisualElement class="rcp-header__title-block">
@@ -30,18 +32,15 @@
 
             <ui:VisualElement name="CardRow" class="rcp-card-row" />
 
+            <!-- Action bar — Recruit는 per-card로 옮겼고, action bar는 Scout/Refresh만 -->
             <ui:VisualElement class="rcp-actions">
-                <ui:VisualElement class="rcp-actions__scout">
+                <ui:Button class="rcp-actions__scout sm-cta sm-cta--lg sm-cta--secondary">
                     <ui:VisualElement class="rcp-actions__scout-icon" picking-mode="Ignore" />
-                    <ui:VisualElement class="rcp-actions__scout-glyph" picking-mode="Ignore" />
-                </ui:VisualElement>
-                <ui:Button class="rcp-actions__refresh">
-                    <ui:VisualElement class="rcp-actions__refresh-icon" picking-mode="Ignore" />
-                    <ui:VisualElement class="rcp-actions__refresh-glyph" picking-mode="Ignore" />
+                    <ui:Label name="ScoutLabel" class="rcp-actions__scout-label" text="SCOUT" />
                 </ui:Button>
-                <ui:Button class="rcp-actions__recruit">
-                    <ui:VisualElement class="rcp-actions__recruit-glyph" picking-mode="Ignore" />
-                    <ui:VisualElement class="rcp-actions__recruit-check" picking-mode="Ignore" />
+                <ui:Button class="rcp-actions__refresh sm-cta sm-cta--lg sm-cta--primary">
+                    <ui:VisualElement class="rcp-actions__refresh-icon" picking-mode="Ignore" />
+                    <ui:Label name="RefreshLabel" class="rcp-actions__refresh-label" text="REFRESH" />
                 </ui:Button>
             </ui:VisualElement>
 

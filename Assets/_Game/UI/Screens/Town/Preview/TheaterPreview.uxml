@@ -6,11 +6,12 @@
         <ui:VisualElement class="thp-backdrop" picking-mode="Ignore" />
         <ui:VisualElement class="thp-backdrop-dim" picking-mode="Ignore" />
 
-        <ui:VisualElement class="thp-frame">
-            <ui:VisualElement class="thp-frame__corner thp-frame__corner--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="thp-frame__corner thp-frame__corner--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="thp-frame__corner thp-frame__corner--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="thp-frame__corner thp-frame__corner--br" picking-mode="Ignore" />
+        <ui:VisualElement class="thp-frame sm-modal-frame sm-modal-frame--ceremony sm-modal-anim">
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
 
             <ui:VisualElement class="thp-header">
                 <ui:Label class="thp-header__title" text="극장 — THEATER" />
@@ -18,8 +19,8 @@
             </ui:VisualElement>
 
             <ui:VisualElement class="thp-body">
-                <!-- Left entry list -->
-                <ui:VisualElement name="EntryList" class="thp-entry-list" />
+                <!-- Left entry list — 6 group / 23 entry → ScrollView (Prologue+Ch1~5 archive) -->
+                <ui:ScrollView name="EntryList" class="thp-entry-list" />
 
                 <!-- Center player -->
                 <ui:VisualElement class="thp-player">
@@ -63,7 +64,7 @@
                         <ui:VisualElement class="thp-detail__attr" picking-mode="Ignore" />
                         <ui:VisualElement class="thp-detail__attr" picking-mode="Ignore" />
                     </ui:VisualElement>
-                    <ui:Button class="thp-detail__replay">
+                    <ui:Button class="thp-detail__replay sm-cta sm-cta--lg sm-cta--primary">
                         <ui:VisualElement class="thp-detail__replay-glyph" picking-mode="Ignore" />
                     </ui:Button>
                 </ui:VisualElement>

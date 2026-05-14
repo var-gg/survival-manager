@@ -6,11 +6,12 @@
         <ui:VisualElement class="stp-backdrop" picking-mode="Ignore" />
         <ui:VisualElement class="stp-backdrop-dim" picking-mode="Ignore" />
 
-        <ui:VisualElement class="stp-frame">
-            <ui:VisualElement class="stp-frame__corner stp-frame__corner--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="stp-frame__corner stp-frame__corner--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="stp-frame__corner stp-frame__corner--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="stp-frame__corner stp-frame__corner--br" picking-mode="Ignore" />
+        <ui:VisualElement class="stp-frame sm-modal-frame sm-modal-frame--modal-small sm-modal-anim">
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--br" picking-mode="Ignore" />
 
             <ui:VisualElement class="stp-header">
                 <ui:VisualElement class="stp-header__ornament" picking-mode="Ignore" />
@@ -23,13 +24,13 @@
                 <ui:VisualElement name="CategorySidebar" class="stp-sidebar" />
                 <ui:VisualElement name="OptionList" class="stp-options" />
                 <ui:VisualElement class="stp-actions">
-                    <ui:Button class="stp-actions__apply">
+                    <ui:Button class="stp-actions__apply sm-cta sm-cta--md sm-cta--primary">
                         <ui:VisualElement class="stp-actions__apply-glyph" picking-mode="Ignore" />
                     </ui:Button>
-                    <ui:Button class="stp-actions__cancel">
+                    <ui:Button class="stp-actions__cancel sm-cta sm-cta--md sm-cta--secondary">
                         <ui:VisualElement class="stp-actions__cancel-glyph" picking-mode="Ignore" />
                     </ui:Button>
-                    <ui:Button class="stp-actions__reset">
+                    <ui:Button class="stp-actions__reset sm-cta sm-cta--md sm-cta--utility">
                         <ui:VisualElement class="stp-actions__reset-glyph" picking-mode="Ignore" />
                     </ui:Button>
                 </ui:VisualElement>

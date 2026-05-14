@@ -21,30 +21,12 @@
     background-color: rgba(12, 17, 38, 0.55);
 }
 
-/* --- Modal frame (deep navy + gold trim) --- */
+/* --- Modal frame ---
+   Visual은 sm-modal-frame sm-modal-frame--ceremony, corner는 sm-frame-corner-cap.
+   본 rule은 inset position만 유지. corner size 28→24로 통일 (drift 제거). */
 .rcp-frame {
-    position: absolute;
     left: 80px; right: 80px; top: 50px; bottom: 50px;
-    background-color: rgba(20, 26, 53, 0.96);
-    border-left-width: 3px;
-    border-right-width: 3px;
-    border-top-width: 3px;
-    border-bottom-width: 3px;
-    border-left-color: var(--sm-gold-400);
-    border-right-color: var(--sm-gold-400);
-    border-top-color: var(--sm-gold-400);
-    border-bottom-color: var(--sm-gold-400);
 }
-.rcp-frame__corner {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    background-color: var(--sm-gold-300);
-}
-.rcp-frame__corner--tl { top: -3px; left: -3px; }
-.rcp-frame__corner--tr { top: -3px; right: -3px; }
-.rcp-frame__corner--bl { bottom: -3px; left: -3px; }
-.rcp-frame__corner--br { bottom: -3px; right: -3px; }
 
 /* --- Header (ornamental title + close) --- */
 .rcp-header {
@@ -102,10 +84,11 @@
 }
 
 .rcp-card {
-    width: 200px;
+    width: 220px;
     height: 100%;
     margin-left: 8px;
     margin-right: 8px;
+    padding-bottom: 8px;
     background-color: rgba(245, 234, 208, 0.94);
     border-left-width: 2px;
     border-right-width: 2px;
@@ -115,6 +98,12 @@
     border-right-color: rgba(138, 100, 24, 0.65);
     border-top-color: rgba(138, 100, 24, 0.65);
     border-bottom-color: rgba(138, 100, 24, 0.65);
+}
+.rcp-card--on-plan {
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
 }
 .rcp-card--protected {
     border-left-color: var(--sm-gold-200);
@@ -127,60 +116,226 @@
     border-bottom-width: 3px;
 }
 
-.rcp-card__lock {
+/* Pity badge — corner marker. slot type Protected와 별개:
+   Metadata.ProtectedByPity = pity 보정으로 tier 보장된 offer. */
+.rcp-card__pity-badge {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 24px;
-    height: 24px;
-    background-color: rgba(230, 183, 81, 0.85);
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    top: 4px;
+    right: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    background-color: rgba(200, 147, 42, 0.92);
+    color: rgba(43, 33, 12, 1);
+    font-size: 8px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+/* Slot type badge — top of card. Recruitment 4 slot 정합 */
+.rcp-card__slot-badge {
+    align-self: center;
+    margin-top: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+    color: var(--sm-vellum);
+}
+.rcp-card__slot-badge--standard { background-color: rgba(38, 45, 84, 0.78); }
+.rcp-card__slot-badge--on-plan  { background-color: rgba(200, 147, 42, 0.82); color: rgba(61, 47, 18, 1); }
+.rcp-card__slot-badge--protected { background-color: rgba(74, 114, 184, 0.85); }
+.rcp-card__slot-badge--scout {
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-100); border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100); border-bottom-color: var(--sm-gold-100);
 }
 
 .rcp-card__portrait {
-    flex-grow: 1;
+    height: 140px;
     -unity-background-scale-mode: scale-to-fit;
     margin: 4px 4px 0 4px;
 }
 
-.rcp-card__class-glyph {
-    align-self: center;
-    width: 32px;
-    height: 32px;
-    margin-top: 8px;
-    -unity-background-scale-mode: scale-to-fit;
-}
-
-.rcp-card__synergy-row {
-    flex-direction: row;
-    justify-content: center;
+/* Display name (recruit-contract: unit name 필수) */
+.rcp-card__name {
     margin-top: 6px;
-    margin-bottom: 6px;
+    -unity-text-align: middle-center;
+    color: rgba(61, 47, 18, 1);
+    font-size: 13px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
 }
-.rcp-card__synergy-pip {
-    width: 18px;
-    height: 8px;
-    margin-left: 2px;
-    margin-right: 2px;
-    background-color: rgba(74, 114, 184, 0.85);
-}
-.rcp-card__synergy-pip--accent { background-color: rgba(200, 147, 42, 0.85); }
 
-.rcp-card__star-row {
+/* Formation · class row (recruit-contract: formation line + class) */
+.rcp-card__meta-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+.rcp-card__class-glyph {
+    width: 16px;
+    height: 16px;
+    -unity-background-scale-mode: scale-to-fit;
+    margin-right: 6px;
+}
+.rcp-card__meta-text {
+    color: rgba(107, 93, 63, 1);
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+/* tier dots + plan chip — single compact row */
+.rcp-card__tier-plan-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-top: 6px;
+}
+
+/* Tier dots (3 dot = Common/Rare/Epic, fill 1/2/3) */
+.rcp-card__tier-row {
+    flex-direction: row;
+    align-items: center;
+}
+.rcp-card__tier-dot {
+    width: 10px;
+    height: 10px;
+    margin-left: 3px;
+    margin-right: 3px;
+    background-color: rgba(107, 93, 63, 0.32);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.rcp-card__tier-dot--filled { background-color: var(--sm-gold-300); }
+
+/* Plan fit chip (now lives in tier-plan-row alongside tier dots) */
+.rcp-card__plan-chip {
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    color: var(--sm-vellum);
+}
+.rcp-card__plan-chip--on-plan  { background-color: rgba(120, 200, 140, 0.78); color: rgba(20, 40, 22, 1); }
+.rcp-card__plan-chip--bridge   { background-color: rgba(127, 163, 224, 0.78); color: rgba(20, 28, 50, 1); }
+.rcp-card__plan-chip--off-plan { background-color: rgba(107, 93, 63, 0.55); color: var(--sm-vellum); }
+
+/* Plan group — plan chip + plan score 묶음 (tier-plan-row 우측) */
+.rcp-card__plan-group {
+    flex-direction: row;
+    align-items: center;
+}
+
+/* Plan score — Metadata.PlanScore.Total (6-component breakdown 합). 시각 노출 (캡처에서 tooltip 안 보임). */
+.rcp-card__plan-score {
+    margin-left: 5px;
+    font-size: 10px;
+    -unity-font-style: bold;
+    color: rgba(138, 100, 24, 1);
+}
+
+/* Tag chip row (archetype RecruitPlanTags ≤3 — offer field 아님, archetype 파생) */
+.rcp-card__tag-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-top: 6px;
+}
+.rcp-card__tag {
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin-right: 3px;
+    margin-bottom: 2px;
+    background-color: rgba(127, 163, 224, 0.25);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(127, 163, 224, 0.55);
+    border-right-color: rgba(127, 163, 224, 0.55);
+    border-top-color: rgba(127, 163, 224, 0.55);
+    border-bottom-color: rgba(127, 163, 224, 0.55);
+    color: rgba(31, 59, 102, 1);
+    font-size: 9px;
+    -unity-font-style: bold;
+}
+
+/* Skills block — sig active / sig passive / flex active / flex passive */
+.rcp-card__skills {
+    flex-direction: column;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top-width: 1px;
+    border-top-color: rgba(138, 100, 24, 0.32);
+}
+.rcp-card__skill-line {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+.rcp-card__skill-slot {
+    width: 32px;
+    color: rgba(138, 100, 24, 1);
+    font-size: 8px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+.rcp-card__skill-line--sig .rcp-card__skill-slot { color: var(--sm-gold-500); }
+.rcp-card__skill-line--flex .rcp-card__skill-slot { color: rgba(127, 163, 224, 0.92); }
+.rcp-card__skill-name {
+    flex-grow: 1;
+    color: rgba(61, 47, 18, 1);
+    font-size: 10px;
+}
+
+/* Gold cost row */
+.rcp-card__cost-row {
     flex-direction: row;
     justify-content: center;
-    padding-top: 4px;
-    padding-bottom: 12px;
+    padding-bottom: 6px;
 }
-.rcp-card__star {
-    width: 14px;
-    height: 14px;
-    background-color: var(--sm-gold-200);
-    margin-left: 2px;
-    margin-right: 2px;
+.rcp-card__cost-label {
+    font-size: 11px;
+    -unity-font-style: bold;
+    color: var(--sm-gold-500);
+    letter-spacing: 1px;
+}
+
+/* Per-card Recruit CTA — visual은 sm-cta sm-cta--md sm-cta--primary */
+.rcp-card__recruit {
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-top: 2px;
+    color: rgba(61, 47, 18, 1);
+    font-size: 12px;
+    letter-spacing: 2px;
+    -unity-font-style: bold;
 }
 
 /* --- Action bar (scout | refresh | recruit) --- */
@@ -196,45 +351,32 @@
     border-top-color: rgba(230, 183, 81, 0.28);
 }
 
+/* Scout CTA: visual은 sm-cta sm-cta--lg sm-cta--secondary. width만 surface 고유.
+   recruitment-contract.md: 35 Echo 1회/phase, OnPlan slot scoring bias. */
 .rcp-actions__scout {
-    flex-direction: row;
-    align-items: center;
+    width: 280px;
 }
 .rcp-actions__scout-icon {
-    width: 36px;
-    height: 36px;
-    background-color: rgba(38, 45, 84, 0.78);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.55);
-    border-right-color: rgba(230, 183, 81, 0.55);
-    border-top-color: rgba(230, 183, 81, 0.55);
-    border-bottom-color: rgba(230, 183, 81, 0.55);
+    width: 22px;
+    height: 22px;
+    background-color: rgba(245, 234, 208, 0.92);
+    border-top-left-radius: 11px;
+    border-top-right-radius: 11px;
+    border-bottom-left-radius: 11px;
+    border-bottom-right-radius: 11px;
+    margin-right: 10px;
 }
-.rcp-actions__scout-glyph {
-    width: 80px;
-    height: 8px;
-    background-color: rgba(216, 199, 153, 0.45);
-    margin-left: 10px;
+.rcp-actions__scout-label {
+    color: var(--sm-vellum);
+    font-size: 13px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
 }
 
+/* Refresh CTA: visual은 sm-cta sm-cta--lg sm-cta--primary. width만 surface 고유.
+   recruitment-contract.md: free 1회 → 2/4/6 Gold cap. */
 .rcp-actions__refresh {
-    width: 240px;
-    height: 48px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(200, 147, 42, 0.92);
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 2px;
-    border-left-color: var(--sm-gold-100);
-    border-right-color: var(--sm-gold-100);
-    border-top-color: var(--sm-gold-100);
-    border-bottom-color: var(--sm-gold-100);
+    width: 280px;
 }
 .rcp-actions__refresh-icon {
     width: 22px;
@@ -246,42 +388,11 @@
     border-bottom-right-radius: 11px;
     margin-right: 10px;
 }
-.rcp-actions__refresh-glyph {
-    width: 80px;
-    height: 8px;
-    background-color: rgba(61, 47, 18, 0.65);
-}
-
-.rcp-actions__recruit {
-    width: 200px;
-    height: 48px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(38, 45, 84, 0.92);
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 2px;
-    border-left-color: var(--sm-gold-300);
-    border-right-color: var(--sm-gold-300);
-    border-top-color: var(--sm-gold-300);
-    border-bottom-color: var(--sm-gold-300);
-}
-.rcp-actions__recruit-glyph {
-    width: 70px;
-    height: 8px;
-    background-color: rgba(245, 234, 208, 0.65);
-    margin-right: 10px;
-}
-.rcp-actions__recruit-check {
-    width: 22px;
-    height: 22px;
-    background-color: var(--sm-gold-200);
-    border-top-left-radius: 11px;
-    border-top-right-radius: 11px;
-    border-bottom-left-radius: 11px;
-    border-bottom-right-radius: 11px;
+.rcp-actions__refresh-label {
+    color: rgba(61, 47, 18, 1);
+    font-size: 13px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
 }
 
 .rcp-footer {
