@@ -55,3 +55,6 @@ Assets/Tests/EditMode/Temp/
 Assets/Tests/EditMode/Temp.meta
 art-pipeline/output/
 art-pipeline/**/__pycache__/
+
+# Narrative wiki dump — SoT는 pindoc, raw-wiki는 재생성 가능한 중간 산출물
+tools/raw-wiki/
