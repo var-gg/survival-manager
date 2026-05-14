@@ -5,16 +5,9 @@
     -unity-background-scale-mode: scale-and-crop; }
 .stp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.65); }
 
-.stp-frame { position: absolute; left: 220px; right: 220px; top: 100px; bottom: 100px;
-    background-color: rgba(20,26,53,0.96);
-    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
-    border-left-color: var(--sm-gold-400); border-right-color: var(--sm-gold-400);
-    border-top-color: var(--sm-gold-400); border-bottom-color: var(--sm-gold-400); }
-.stp-frame__corner { position: absolute; width: 20px; height: 20px; background-color: var(--sm-gold-300); }
-.stp-frame__corner--tl { top: -2px; left: -2px; }
-.stp-frame__corner--tr { top: -2px; right: -2px; }
-.stp-frame__corner--bl { bottom: -2px; left: -2px; }
-.stp-frame__corner--br { bottom: -2px; right: -2px; }
+/* Modal frame visual은 sm-modal-frame sm-modal-frame--modal-small
+   + sm-frame-corner-cap sm-frame-corner-cap--small. 작은 modal variant. */
+.stp-frame { left: 220px; right: 220px; top: 100px; bottom: 100px; }
 
 .stp-header { flex-direction: row; align-items: center; justify-content: center;
     padding: 12px 24px; border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32);
@@ -47,8 +40,40 @@
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32); }
 .stp-opt-row { flex-direction: row; align-items: center; padding: 10px 8px;
     border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.16); }
+.stp-opt-row--dirty { background-color: rgba(232, 169, 59, 0.08); }
+
 .stp-opt-row__label { width: 90px; color: var(--sm-ink-2); font-size: 12px; }
+.stp-opt-row__dirty-mark {
+    width: 12px;
+    color: rgba(232, 169, 59, 0.92);
+    font-size: 14px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
 .stp-opt-row__control { flex-grow: 1; flex-direction: row; align-items: center; padding-left: 12px; }
+
+/* per-row reset button — 4차 round column. dirty 일 때만 활성 시각. */
+.stp-opt-row__reset {
+    width: 28px;
+    height: 22px;
+    margin-left: 10px;
+    background-color: rgba(38, 45, 84, 0.62);
+    color: var(--sm-gold-200);
+    font-size: 13px;
+    -unity-font-style: bold;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.45);
+    border-right-color: rgba(230, 183, 81, 0.45);
+    border-top-color: rgba(230, 183, 81, 0.45);
+    border-bottom-color: rgba(230, 183, 81, 0.45);
+}
+.stp-opt-row__reset--disabled {
+    opacity: 0.32;
+    color: rgba(216, 199, 153, 0.42);
+}
 
 /* Slider variant */
 .stp-opt-row__slider-bar { flex-grow: 1; height: 4px; background-color: rgba(216,199,153,0.32); }
@@ -78,19 +103,9 @@
 
 /* Action column */
 .stp-actions { width: 160px; flex-direction: column; margin-left: 14px; }
-.stp-actions__apply, .stp-actions__cancel, .stp-actions__reset {
-    height: 44px; margin-bottom: 8px; flex-direction: row; align-items: center; justify-content: center;
-    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
-}
-.stp-actions__apply { background-color: rgba(200,147,42,0.95);
-    border-left-color: var(--sm-gold-100); border-right-color: var(--sm-gold-100);
-    border-top-color: var(--sm-gold-100); border-bottom-color: var(--sm-gold-100); }
-.stp-actions__cancel { background-color: rgba(38,45,84,0.85);
-    border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
-    border-top-color: rgba(230,183,81,0.55); border-bottom-color: rgba(230,183,81,0.55); }
-.stp-actions__reset { background-color: rgba(74,114,184,0.78);
-    border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
-    border-top-color: rgba(230,183,81,0.55); border-bottom-color: rgba(230,183,81,0.55); }
+/* Apply/Cancel/Reset CTAs: visual은 sm-cta sm-cta--md + primary/secondary/utility variant.
+   margin만 surface 고유. */
+.stp-actions__apply, .stp-actions__cancel, .stp-actions__reset { margin-bottom: 8px; }
 .stp-actions__apply-glyph, .stp-actions__cancel-glyph, .stp-actions__reset-glyph {
     width: 80px; height: 8px; background-color: rgba(245,234,208,0.78); }
 .stp-actions__apply-glyph { background-color: rgba(61,47,18,0.78); }

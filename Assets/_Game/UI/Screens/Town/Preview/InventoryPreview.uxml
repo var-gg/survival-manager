@@ -6,11 +6,12 @@
         <ui:VisualElement class="inv-backdrop" picking-mode="Ignore" />
         <ui:VisualElement class="inv-backdrop-dim" picking-mode="Ignore" />
 
-        <ui:VisualElement class="inv-frame">
-            <ui:VisualElement class="inv-frame__corner inv-frame__corner--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="inv-frame__corner inv-frame__corner--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="inv-frame__corner inv-frame__corner--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="inv-frame__corner inv-frame__corner--br" picking-mode="Ignore" />
+        <ui:VisualElement class="inv-frame sm-modal-frame sm-modal-frame--parchment sm-modal-anim">
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
 
             <!-- Top currency header -->
             <ui:VisualElement class="inv-currency-header">
@@ -53,13 +54,13 @@
                         <ui:VisualElement class="inv-detail__owner-glyph" picking-mode="Ignore" />
                     </ui:VisualElement>
                     <ui:VisualElement class="inv-detail__buttons">
-                        <ui:Button class="inv-detail__btn inv-detail__btn--equip">
+                        <ui:Button class="inv-detail__btn inv-detail__btn--equip sm-cta sm-cta--inline sm-cta--primary">
                             <ui:VisualElement class="inv-detail__btn-glyph" picking-mode="Ignore" />
                         </ui:Button>
-                        <ui:Button class="inv-detail__btn inv-detail__btn--sell">
+                        <ui:Button class="inv-detail__btn inv-detail__btn--sell sm-cta sm-cta--inline sm-cta--secondary">
                             <ui:VisualElement class="inv-detail__btn-glyph" picking-mode="Ignore" />
                         </ui:Button>
-                        <ui:Button class="inv-detail__btn inv-detail__btn--compare">
+                        <ui:Button class="inv-detail__btn inv-detail__btn--compare sm-cta sm-cta--inline sm-cta--secondary">
                             <ui:VisualElement class="inv-detail__btn-glyph" picking-mode="Ignore" />
                         </ui:Button>
                     </ui:VisualElement>

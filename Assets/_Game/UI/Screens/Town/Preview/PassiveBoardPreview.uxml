@@ -6,39 +6,46 @@
         <ui:VisualElement class="pbp-backdrop" picking-mode="Ignore" />
         <ui:VisualElement class="pbp-backdrop-dim" picking-mode="Ignore" />
 
-        <ui:VisualElement class="pbp-frame">
-            <ui:VisualElement class="pbp-frame__corner pbp-frame__corner--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="pbp-frame__corner pbp-frame__corner--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="pbp-frame__corner pbp-frame__corner--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="pbp-frame__corner pbp-frame__corner--br" picking-mode="Ignore" />
+        <ui:VisualElement class="pbp-frame sm-modal-frame sm-modal-frame--ceremony sm-modal-anim">
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
 
-            <ui:VisualElement name="ClassTabs" class="pbp-tabs" />
+            <ui:VisualElement name="BoardHeader" class="pbp-header" />
 
             <ui:VisualElement class="pbp-body">
                 <ui:VisualElement class="pbp-board">
+                    <!-- Ring guide layer — Presenter.ComputeRingPosition(center 46%/40%, r 0.18/0.36)와
+                         Bootstrap mock 좌표 양쪽에 정합. BoardCanvas보다 먼저 선언 → 노드 뒤에 그려짐. -->
+                    <ui:VisualElement class="pbp-board__glow" picking-mode="Ignore" />
+                    <ui:VisualElement class="pbp-board__ring pbp-board__ring--outer" picking-mode="Ignore" />
+                    <ui:VisualElement class="pbp-board__ring pbp-board__ring--inner" picking-mode="Ignore" />
+                    <ui:VisualElement class="pbp-board__ring-core" picking-mode="Ignore" />
                     <ui:VisualElement name="BoardCanvas" class="pbp-board__canvas" />
                 </ui:VisualElement>
 
+                <!-- detail panel — kind label (Small/Notable/Keystone) + active 토글
+                     "1/3 progress"는 point-budget 모델이라 제거. per-hero on/off만 노출. -->
                 <ui:VisualElement class="pbp-detail">
                     <ui:VisualElement class="pbp-detail__tier-bar">
-                        <ui:Label class="pbp-detail__tier-label" text="TIER II" />
+                        <ui:Label class="pbp-detail__tier-label" text="KEYSTONE" />
                     </ui:VisualElement>
                     <ui:VisualElement name="DetailIcon" class="pbp-detail__icon" picking-mode="Ignore" />
                     <ui:Label class="pbp-detail__title" text="KILLING INTENT" />
                     <ui:VisualElement class="pbp-detail__desc">
-                        <ui:VisualElement class="pbp-detail__desc-line" picking-mode="Ignore" />
-                        <ui:VisualElement class="pbp-detail__desc-line" picking-mode="Ignore" />
-                        <ui:VisualElement class="pbp-detail__desc-line" picking-mode="Ignore" />
+                        <ui:Label name="DetailDesc" class="pbp-detail__desc-text" text="—" />
+                        <ui:Label name="DetailTags" class="pbp-detail__desc-tags" text="—" />
                     </ui:VisualElement>
-                    <ui:Label class="pbp-detail__available" text="AVAILABLE" />
-                    <ui:Button class="pbp-detail__activate" text="ACTIVATE" />
-                    <ui:Label class="pbp-detail__progress" text="1 / 3" />
+                    <ui:Label class="pbp-detail__available" text="ACTIVE" />
+                    <ui:Button class="pbp-detail__activate sm-cta sm-cta--md sm-cta--primary" text="DEACTIVATE" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
+            <!-- footer — point-budget 모델 폐기. per-kind active 수만 노출. -->
             <ui:VisualElement class="pbp-footer">
-                <ui:Label class="pbp-footer__points" text="6 / 45 NODE POINTS" />
-                <ui:VisualElement class="pbp-footer__glyph" picking-mode="Ignore" />
+                <ui:Label name="FooterBreakdown" class="pbp-footer__breakdown" text="DUELIST · SMALL 0/12 · NOTABLE 0/5 · KEYSTONE 0/1" />
                 <ui:Button class="pbp-footer__close" text="X" />
             </ui:VisualElement>
         </ui:VisualElement>

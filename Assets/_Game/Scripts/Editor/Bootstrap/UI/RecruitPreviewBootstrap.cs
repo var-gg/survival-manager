@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using SM.Unity.UI.Town.Preview;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -5,9 +7,8 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Recruit 미리보기 — 시안 갤러리 V1 #3.
-/// navy frame + 4 candidate card (lead hero portrait + class glyph + tier stars) +
-/// scout / refresh CTA / recruit confirm action bar.
+/// SM/Town/Recruit 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// 카드 컬럼은 runtime offer 모델 (RecruitUnitPreview + RecruitOfferMetadata) 정합 — audit §4.1.
 /// </summary>
 public sealed class RecruitPreviewBootstrap : EditorWindow
 {
@@ -18,26 +19,7 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
     private const string ClassSpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Class/class_{0}.png";
     private const string PortraitPathFmt = "Assets/Resources/_Game/Art/Characters/hero_{0}/portrait_full.png";
 
-    private readonly struct Candidate
-    {
-        public Candidate(string heroId, string classKey, int starTier, int synergyCount, bool protectedLock)
-        {
-            HeroId = heroId; ClassKey = classKey; StarTier = starTier; SynergyCount = synergyCount; ProtectedLock = protectedLock;
-        }
-        public string HeroId { get; }
-        public string ClassKey { get; }
-        public int StarTier { get; }
-        public int SynergyCount { get; }
-        public bool ProtectedLock { get; }
-    }
-
-    private static readonly Candidate[] Candidates =
-    {
-        new("dawn_priest",   "vanguard", 4, 4, false),
-        new("pack_raider",   "duelist",  5, 5, true),   // protected (gold lock glow)
-        new("echo_savant",   "ranger",   3, 3, false),
-        new("grave_hexer",   "mystic",   4, 4, false),
-    };
+    private RecruitView? _view;
 
     [MenuItem("SM/Town/Recruit 미리보기", false, 10)]
     public static void Open()
@@ -46,75 +28,81 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
         window.minSize = new Vector2(1280f, 760f);
     }
 
-    private void CreateGUI()
+    private void CreateGUI() => BuildInto(rootVisualElement);
+
+    /// <summary>EditorWindow + TownPreviewCaptureUtility 공용 — 지정 root에 surface preview 빌드.</summary>
+    public void BuildInto(VisualElement root)
     {
         var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(VisualTreePath);
-        if (visualTree == null) { rootVisualElement.Add(new Label($"UXML 못 찾음: {VisualTreePath}")); return; }
+        if (visualTree == null) { root.Add(new Label($"UXML 못 찾음: {VisualTreePath}")); return; }
 
         var tokens = AssetDatabase.LoadAssetAtPath<StyleSheet>(ThemeTokensPath);
         var theme = AssetDatabase.LoadAssetAtPath<StyleSheet>(RuntimePanelThemePath);
-        if (tokens != null) rootVisualElement.styleSheets.Add(tokens);
-        if (theme != null) rootVisualElement.styleSheets.Add(theme);
+        if (tokens != null) root.styleSheets.Add(tokens);
+        if (theme != null) root.styleSheets.Add(theme);
 
-        visualTree.CloneTree(rootVisualElement);
-        InjectCandidates();
+        visualTree.CloneTree(root);
+
+        _view = new RecruitView(root);
+        _view.Render(BuildMockViewState());
     }
 
-    private void InjectCandidates()
+    private RecruitViewState BuildMockViewState()
     {
-        var row = rootVisualElement.Q<VisualElement>("CardRow");
-        if (row == null) return;
-        row.Clear();
-
-        foreach (var c in Candidates)
+        // 4 mock candidate — V1 활성 archetype matrix에서 (blueprint id = archetype id, portrait path 키).
+        // 컬럼 출처: offer 실 field (slot/tier/plan/planScore/gold/pity/scout) + archetype 파생 (class/tags/sig) + offer rolled (flex).
+        var raw = new (string BlueprintId, string Name, string ClassKey, RecruitSlotType Slot, RecruitTier Tier, RecruitPlanFit Plan, int PlanScore, int Gold, bool Pity, bool Scout, string[] Tags, string SigA, string SigP, string FlexA, string FlexP)[]
         {
-            var card = new VisualElement();
-            card.AddToClassList("rcp-card");
-            if (c.ProtectedLock) card.AddToClassList("rcp-card--protected");
+            ("pack_raider", "Pack Raider", "duelist",
+                RecruitSlotType.StandardA, RecruitTier.Common, RecruitPlanFit.OffPlan, 6, 80, false, false,
+                new[] { "#pack", "#burst", "#dive" },
+                "어흥 분쇄", "피의 광기", "돌격 강타", "출혈 추적"),
+            ("dawn_priest", "Dawn Priest", "mystic",
+                RecruitSlotType.StandardB, RecruitTier.Rare, RecruitPlanFit.Bridge, 21, 150, false, false,
+                new[] { "#heal", "#light", "#protect" },
+                "새벽 기도", "빛의 은신", "성광 세례", "마나 격류"),
+            ("trail_scout", "Trail Scout", "ranger",
+                RecruitSlotType.OnPlan, RecruitTier.Rare, RecruitPlanFit.OnPlan, 38, 150, false, true,
+                new[] { "#scout", "#mobile", "#finisher" },
+                "추적의 화살", "숲의 은신", "연사 세례", "예리한 눈"),
+            ("grave_hexer", "Grave Hexer", "mystic",
+                RecruitSlotType.Protected, RecruitTier.Epic, RecruitPlanFit.OnPlan, 44, 280, true, false,
+                new[] { "#hex", "#dot", "#control" },
+                "망령의 저주", "죽음의 친화", "어둠 화살", "무덤 시야"),
+        };
 
-            if (c.ProtectedLock)
-            {
-                var lockIcon = new VisualElement();
-                lockIcon.AddToClassList("rcp-card__lock");
-                card.Add(lockIcon);
-            }
-
-            var portrait = new VisualElement();
-            portrait.AddToClassList("rcp-card__portrait");
-            var portraitPath = string.Format(PortraitPathFmt, c.HeroId);
-            var portraitTex = AssetDatabase.LoadAssetAtPath<Texture2D>(portraitPath);
-            if (portraitTex != null) portrait.style.backgroundImage = new StyleBackground(portraitTex);
-            card.Add(portrait);
-
-            var classGlyph = new VisualElement();
-            classGlyph.AddToClassList("rcp-card__class-glyph");
-            var classPath = string.Format(ClassSpriteFmt, c.ClassKey);
-            var classTex = AssetDatabase.LoadAssetAtPath<Texture2D>(classPath);
-            if (classTex != null) classGlyph.style.backgroundImage = new StyleBackground(classTex);
-            card.Add(classGlyph);
-
-            var synergyRow = new VisualElement();
-            synergyRow.AddToClassList("rcp-card__synergy-row");
-            for (var i = 0; i < c.SynergyCount; i++)
-            {
-                var pip = new VisualElement();
-                pip.AddToClassList("rcp-card__synergy-pip");
-                if (i == 0) pip.AddToClassList("rcp-card__synergy-pip--accent");
-                synergyRow.Add(pip);
-            }
-            card.Add(synergyRow);
-
-            var starRow = new VisualElement();
-            starRow.AddToClassList("rcp-card__star-row");
-            for (var i = 0; i < c.StarTier; i++)
-            {
-                var s = new VisualElement();
-                s.AddToClassList("rcp-card__star");
-                starRow.Add(s);
-            }
-            card.Add(starRow);
-
-            row.Add(card);
+        var candidates = new List<RecruitCandidateViewState>(raw.Length);
+        for (var i = 0; i < raw.Length; i++)
+        {
+            var r = raw[i];
+            candidates.Add(new RecruitCandidateViewState(
+                SlotIndex: i,
+                BlueprintId: r.BlueprintId,
+                DisplayName: r.Name,
+                ClassKey: r.ClassKey,
+                SlotType: r.Slot,
+                Tier: r.Tier,
+                PlanFit: r.Plan,
+                PlanScore: r.PlanScore,
+                GoldCost: r.Gold,
+                ProtectedByPity: r.Pity,
+                ScoutBias: r.Scout,
+                Tags: r.Tags,
+                SigActive: r.SigA,
+                SigPassive: r.SigP,
+                FlexActive: r.FlexA,
+                FlexPassive: r.FlexP,
+                PortraitSprite: AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(PortraitPathFmt, r.BlueprintId)),
+                ClassSprite: AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(ClassSpriteFmt, r.ClassKey))));
         }
+
+        var actionBar = new RecruitActionBarViewState(
+            ScoutEchoCost: 35,
+            CanUseScout: true,
+            ScoutDirectiveLabel: "후열",   // PendingScoutDirective.Kind = Backline 예시
+            FreeRefreshesRemaining: 0,    // 이미 free 사용
+            CurrentPaidRefreshCost: 4);    // 2→4→6 cap의 2회차
+
+        return new RecruitViewState(candidates, actionBar);
     }
 }

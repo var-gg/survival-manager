@@ -9,11 +9,12 @@
         <ui:VisualElement class="erp-backdrop" picking-mode="Ignore" />
         <ui:VisualElement class="erp-backdrop-dim" picking-mode="Ignore" />
 
-        <ui:VisualElement class="erp-frame">
-            <ui:VisualElement class="erp-frame__corner erp-frame__corner--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="erp-frame__corner erp-frame__corner--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="erp-frame__corner erp-frame__corner--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="erp-frame__corner erp-frame__corner--br" picking-mode="Ignore" />
+        <ui:VisualElement class="erp-frame sm-modal-frame sm-modal-frame--ceremony sm-modal-anim">
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
 
             <ui:VisualElement class="erp-header">
                 <ui:Label class="erp-header__title" text="장비 — REFIT" />
@@ -41,8 +42,8 @@
                             <ui:VisualElement name="EchoIcon" class="erp-echo-cost__icon" picking-mode="Ignore" />
                             <ui:VisualElement class="erp-echo-cost__glyph" picking-mode="Ignore" />
                         </ui:VisualElement>
-                        <ui:Button class="erp-refit-cta">
-                            <ui:VisualElement class="erp-refit-cta__glyph" picking-mode="Ignore" />
+                        <ui:Button class="erp-refit-cta sm-cta sm-cta--lg sm-cta--primary">
+                            <ui:Label name="RefitCostLabel" class="erp-refit-cta__label" text="REFIT (-15 Echo)" />
                         </ui:Button>
                     </ui:VisualElement>
                 </ui:VisualElement>

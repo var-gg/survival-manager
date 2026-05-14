@@ -11,18 +11,8 @@
 }
 .erp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
 
-.erp-frame {
-    position: absolute; left: 60px; right: 60px; top: 50px; bottom: 50px;
-    background-color: rgba(20,26,53,0.96);
-    border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
-    border-left-color: var(--sm-gold-400); border-right-color: var(--sm-gold-400);
-    border-top-color: var(--sm-gold-400); border-bottom-color: var(--sm-gold-400);
-}
-.erp-frame__corner { position: absolute; width: 24px; height: 24px; background-color: var(--sm-gold-300); }
-.erp-frame__corner--tl { top: -3px; left: -3px; }
-.erp-frame__corner--tr { top: -3px; right: -3px; }
-.erp-frame__corner--bl { bottom: -3px; left: -3px; }
-.erp-frame__corner--br { bottom: -3px; right: -3px; }
+/* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
+.erp-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
 
 .erp-header {
     flex-direction: row; align-items: center; justify-content: space-between;
@@ -60,21 +50,39 @@
 .erp-slot--weapon { border-left-color: rgba(180, 90, 210, 0.85); border-right-color: rgba(180, 90, 210, 0.85);
     border-top-color: rgba(180, 90, 210, 0.85); border-bottom-color: rgba(180, 90, 210, 0.85); }
 
-/* Affix list column */
+/* Affix list column — item-and-affix-system.md V1: implicit 1 + prefix 2 + suffix 2 = 5 line */
 .erp-affix-list { flex-grow: 1; flex-direction: column; }
+
+/* Group header (IMPLICIT / PREFIX / SUFFIX) */
+.erp-affix-group {
+    font-size: 10px; letter-spacing: 3px; -unity-font-style: bold;
+    color: var(--sm-gold-300);
+    padding-top: 6px; padding-bottom: 2px; padding-left: 4px;
+    margin-bottom: 2px;
+}
+.erp-affix-group--implicit { color: var(--sm-gold-200); }
+.erp-affix-group--prefix   { color: rgba(127, 163, 224, 0.92); }
+.erp-affix-group--suffix   { color: rgba(166, 220, 154, 0.92); }
+
 .erp-affix-row {
-    height: 44px; flex-direction: row; align-items: center; margin-bottom: 6px;
+    height: 38px; flex-direction: row; align-items: center; margin-bottom: 4px;
     padding-left: 12px; padding-right: 16px;
     background-color: rgba(28,34,67,0.72);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);
 }
+/* Group tint — implicit는 gold strip, prefix는 blue, suffix는 green left border */
+.erp-affix-row--implicit { border-left-width: 3px; border-left-color: var(--sm-gold-200); }
+.erp-affix-row--prefix   { border-left-width: 3px; border-left-color: rgba(127, 163, 224, 0.78); }
+.erp-affix-row--suffix   { border-left-width: 3px; border-left-color: rgba(166, 220, 154, 0.78); }
+
 .erp-affix-row--selected {
     background-color: rgba(38,45,84,0.92);
-    border-left-color: var(--sm-gold-200); border-right-color: var(--sm-gold-200);
-    border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
-    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+    border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
 }
 .erp-affix-row__icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: 10px; }
 .erp-affix-row__glyph { flex-grow: 1; height: 8px; background-color: rgba(216,199,153,0.45); }
@@ -94,15 +102,14 @@
 .erp-echo-cost__icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: 8px; }
 .erp-echo-cost__glyph { width: 50px; height: 6px; background-color: rgba(180,150,230,0.78); }
 
-.erp-refit-cta {
-    width: 200px; height: 48px;
-    background-color: rgba(200,147,42,0.95);
-    border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
-    border-left-color: var(--sm-gold-100); border-right-color: var(--sm-gold-100);
-    border-top-color: var(--sm-gold-100); border-bottom-color: var(--sm-gold-100);
-    flex-direction: row; align-items: center; justify-content: center;
+/* Refit CTA: visual은 sm-cta sm-cta--lg sm-cta--primary. 15 Echo single-affix reroll. */
+.erp-refit-cta { width: 220px; }
+.erp-refit-cta__label {
+    color: rgba(61, 47, 18, 1);
+    font-size: 13px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
 }
-.erp-refit-cta__glyph { width: 80px; height: 8px; background-color: rgba(61,47,18,0.65); }
 
 /* Pool column */
 .erp-pool { flex-grow: 1; flex-direction: column; padding-top: 0; }
