@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.flat
   _autoAdvanceHint: 0
 --- !u!114 &-4304793670788592465
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2397381105403064124
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1969203785568849846
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__010
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.010
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.careful
   _autoAdvanceHint: 0
 --- !u!114 &-877514402225714405
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &-772810245229424926
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.004
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -149,7 +149,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__009
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.009
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.still
   _autoAdvanceHint: 0
 --- !u!114 &1430094854334035157
@@ -167,7 +167,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.confused
   _autoAdvanceHint: 0
 --- !u!114 &1961269030575086535
@@ -185,7 +185,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__008
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.008
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &2140142825103421111
@@ -203,7 +203,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &2508745240281672684
@@ -221,7 +221,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__011
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.011
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &3677023862990220230
@@ -239,6 +239,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_ledger__line__005
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_ledger.005
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0

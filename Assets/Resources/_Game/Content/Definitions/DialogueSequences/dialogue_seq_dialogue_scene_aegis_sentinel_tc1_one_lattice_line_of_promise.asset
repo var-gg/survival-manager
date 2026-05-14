@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__006
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4855194571784101027
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4064914112666818637
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2672044134681466218
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__013
   _speakerId: hero_aegis_sentinel
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.006
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-1900371038376944670
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1688949459613595591
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__010
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -152,7 +152,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2289714437391253520
@@ -170,7 +170,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3038458441997387141
@@ -188,7 +188,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__011
   _speakerId: hero_aegis_sentinel
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &4816313322466801173
@@ -206,7 +206,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &5691776685852990635
@@ -224,7 +224,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &5716840061347721281
@@ -242,7 +242,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &5788768972133586949
@@ -260,7 +260,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__014
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7079471056781336008
@@ -278,7 +278,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7775325313287942373
@@ -296,6 +296,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__004
   _speakerId: hero_aegis_sentinel
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0

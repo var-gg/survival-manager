@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__005
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-6967927987100838477
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__010
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.010
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-5323836046325415519
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__011
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.011
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-4919928196070622106
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__001
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.001
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.solemn
   _autoAdvanceHint: 0
 --- !u!114 &-3455037409473430811
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-2827624609545414531
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__009
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.009
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-1491444991287320423
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__006
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.006
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.pained
   _autoAdvanceHint: 0
 --- !u!114 &-603378481274439852
@@ -159,7 +159,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.sharper
   _autoAdvanceHint: 0
 --- !u!114 &-271256338124506881
@@ -177,7 +177,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__000
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.careful
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -242,7 +242,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__014
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.014
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &6549658572020022618
@@ -260,7 +260,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__013
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.013
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &7454575006560128578
@@ -278,7 +278,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__007
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.007
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &7577085843133124265

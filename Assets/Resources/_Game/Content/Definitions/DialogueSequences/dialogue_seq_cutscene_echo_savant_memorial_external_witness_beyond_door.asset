@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6346400801598805348
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1662656579304076272
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-917120087670101733
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door__line__006
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-336473841249097119
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door__line__002
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -129,7 +129,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2766564772403546256
@@ -147,7 +147,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3324979634181619143
@@ -165,7 +165,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8449690219345910863
@@ -183,7 +183,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door__line__004
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &8486300885517114402
@@ -201,6 +201,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door__line__008
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_echo_savant_memorial_external_witness_beyond_door.008
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0

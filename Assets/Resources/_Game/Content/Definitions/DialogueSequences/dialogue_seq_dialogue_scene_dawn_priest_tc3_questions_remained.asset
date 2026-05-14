@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__011
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.010
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -59,7 +59,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &1130121374325926442
@@ -77,7 +77,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &1141211408159396142
@@ -95,7 +95,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.041
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1651047884974726136
@@ -113,7 +113,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1877830535559961275
@@ -131,7 +131,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2409244609373626010
@@ -149,7 +149,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__009
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.008
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &2652212014855928938
@@ -167,7 +167,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3596564381250801300
@@ -185,7 +185,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7269752629569988819
@@ -203,7 +203,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &7597851767352576524
@@ -221,7 +221,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__007
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &8414526172376029712
@@ -239,6 +239,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained__line__010
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.009
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0

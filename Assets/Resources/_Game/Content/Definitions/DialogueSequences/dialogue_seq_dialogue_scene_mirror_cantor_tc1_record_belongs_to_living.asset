@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5932131596921719670
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__005
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.005
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-5847798630894387754
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__015
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4833972157155000191
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__013
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &-3376782546662835226
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__010
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-2930601375295943619
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__006
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -153,7 +153,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1066970687964535512
@@ -171,7 +171,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1843721718488435619
@@ -189,7 +189,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__014
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.008
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &2667482932159751690
@@ -207,7 +207,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__011
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3762810515980038750
@@ -225,7 +225,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4295129966562453112
@@ -243,7 +243,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &5383983282082776250
@@ -261,7 +261,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__007
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &7469145066530584538
@@ -279,7 +279,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7629130206150041722
@@ -297,7 +297,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__004
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &8214139156265109459
@@ -315,6 +315,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living__line__001
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_mirror_cantor_tc1_record_belongs_to_living.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0

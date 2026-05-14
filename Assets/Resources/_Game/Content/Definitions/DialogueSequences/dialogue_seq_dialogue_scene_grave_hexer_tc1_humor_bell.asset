@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-8638644273335541114
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7688480688344369621
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__010
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7396940975490691131
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__009
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-5208295824655284533
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-4940356135477442589
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__012
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-3522415597962792214
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__007
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-2060623220972930391
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__003
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.003
-  _emote: Skeptical
+  _emote: smile
   _emotionTextKey: loc.story.emotion.wry
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -187,7 +187,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &1133104740164243442
@@ -205,7 +205,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__001
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.001
-  _emote: Skeptical
+  _emote: smile
   _emotionTextKey: loc.story.emotion.wry
   _autoAdvanceHint: 0
 --- !u!114 &2668661889210758430
@@ -223,7 +223,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &4230667647539110917
@@ -241,7 +241,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4450048495602546909
@@ -259,7 +259,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__013
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4698136530232916358
@@ -277,6 +277,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__011
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

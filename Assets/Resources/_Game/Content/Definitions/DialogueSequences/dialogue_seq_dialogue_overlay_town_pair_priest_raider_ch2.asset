@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-2539992380008415940
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -71,7 +71,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2__line__000
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2.000
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.blunt
   _autoAdvanceHint: 0
 --- !u!114 &4156588936202345475
@@ -89,7 +89,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6483193069733372048
@@ -107,7 +107,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &7039624818443158748
@@ -125,6 +125,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_town_pair_priest_raider_ch2.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0

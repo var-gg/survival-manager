@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__010
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.010
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5054855776035403156
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-4177485962571464371
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4117988142832260344
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__001
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-2590953155161504863
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-61725488064776058
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__009
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.009
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -148,7 +148,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &1896949030736556670
@@ -166,7 +166,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__008
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.008
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &2914156769288184856
@@ -184,7 +184,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &6417595311989289658
@@ -202,7 +202,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7218932759791646672
@@ -220,6 +220,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc3_work_beyond_the_door.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

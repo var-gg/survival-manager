@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__011
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-8314378885297046823
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7685882199851279759
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7507906945680801196
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6330000013169960392
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__006
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-5641728822081015848
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-4492274729073515805
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__004
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-1388203756085894209
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__014
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -188,7 +188,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__001
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &2027109906690168989
@@ -206,7 +206,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2406978390048687103
@@ -224,7 +224,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__010
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &2639565018790727687
@@ -242,7 +242,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__013
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &4847077151683946490
@@ -260,7 +260,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__007
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &8622760562613456529
@@ -278,7 +278,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &9047022431085680961
@@ -296,6 +296,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_echo_savant_tc1_external_words_again.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

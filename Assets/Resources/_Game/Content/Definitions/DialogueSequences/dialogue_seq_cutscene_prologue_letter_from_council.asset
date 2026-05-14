@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_letter_from_council__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_letter_from_council.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-8375128172979726808
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_letter_from_council__line__005
   _speakerId: npc_gangong
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_letter_from_council.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-3428155191252571694
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_letter_from_council__line__004
   _speakerId: npc_gangong
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_letter_from_council.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-961231788708962194
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_letter_from_council__line__002
   _speakerId: npc_gangong
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_letter_from_council.002
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &-890732674130320272
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_letter_from_council__line__008
   _speakerId: npc_gangong
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_letter_from_council.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -129,7 +129,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_letter_from_council__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_letter_from_council.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1946008748260956517
@@ -147,7 +147,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_letter_from_council__line__006
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_letter_from_council.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4905328915288076243
@@ -165,7 +165,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_letter_from_council__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_letter_from_council.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6212814100959999045
@@ -183,7 +183,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_letter_from_council__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_letter_from_council.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7921825122223987275
@@ -201,6 +201,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_prologue_letter_from_council__line__007
   _speakerId: npc_gangong
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_letter_from_council.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0

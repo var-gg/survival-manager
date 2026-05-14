@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__003
   _speakerId: hero_storm_shaman
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &-8252558043535815093
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6954690315090038822
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__010
   _speakerId: hero_storm_shaman
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-6038801736639756962
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__013
   _speakerId: hero_storm_shaman
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.008
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-4962305298443528869
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__006
   _speakerId: hero_storm_shaman
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-4364811874312728189
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__011
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2058432971842254512
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__009
   _speakerId: hero_storm_shaman
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -170,7 +170,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__012
   _speakerId: hero_storm_shaman
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &2763182201629330969
@@ -188,7 +188,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__014
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3425380831297536365
@@ -206,7 +206,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3715055974196594959
@@ -224,7 +224,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4465519212892740960
@@ -242,7 +242,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__004
   _speakerId: hero_storm_shaman
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &5917172528714589832
@@ -260,7 +260,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__001
   _speakerId: hero_storm_shaman
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &7094027211429127619
@@ -278,7 +278,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8079487840918951926
@@ -296,6 +296,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__007
   _speakerId: hero_storm_shaman
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0

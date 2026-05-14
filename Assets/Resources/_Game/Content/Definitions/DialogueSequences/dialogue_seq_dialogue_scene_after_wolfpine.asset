@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5237660988517527502
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -73,7 +73,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2348437189507625918
@@ -91,7 +91,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__006
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4532798085509176857
@@ -109,7 +109,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__005
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &4848506544527453717
@@ -127,7 +127,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &5033041088480599136
@@ -145,7 +145,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.002
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &6261629097592596208
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0

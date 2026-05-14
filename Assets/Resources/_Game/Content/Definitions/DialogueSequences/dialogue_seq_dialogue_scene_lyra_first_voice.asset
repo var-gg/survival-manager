@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_voice__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_voice.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-4787151634816465824
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_voice__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_voice.003
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.wary
   _autoAdvanceHint: 0
 --- !u!114 &-4189772915957394007
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_voice__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_voice.004
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &-3792894133494017184
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_voice__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_voice.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-1771173322691747158
@@ -126,7 +126,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_first_voice__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_first_voice.002
-  _emote: Shock
+  _emote: shock
   _emotionTextKey: loc.story.emotion.pale
   _autoAdvanceHint: 0
 --- !u!114 &6083606886176620989

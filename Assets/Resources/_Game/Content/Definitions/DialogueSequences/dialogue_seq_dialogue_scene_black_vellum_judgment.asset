@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_judgment__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_judgment.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.no_joke
   _autoAdvanceHint: 0
 --- !u!114 &-4449755105193279902
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_judgment__line__003
   _speakerId: npc_black_vellum
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_judgment.003
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.cold
   _autoAdvanceHint: 0
 --- !u!114 &-3739191539958736336
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_judgment__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_judgment.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-3161736388975277887
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_judgment__line__013
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_judgment.013
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-2343238259620097682
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_judgment__line__012
   _speakerId: npc_black_vellum
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_judgment.012
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-1741290836660672017
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_judgment__line__001
   _speakerId: npc_black_vellum
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_judgment.001
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.ritual
   _autoAdvanceHint: 0
 --- !u!114 &-1131175036242629561
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_judgment__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_judgment.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-96654563666045062
@@ -205,7 +205,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_judgment__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_judgment.008
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &6139488187766621056
@@ -259,7 +259,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_judgment__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_judgment.002
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &9067272132968080043
@@ -277,6 +277,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_black_vellum_judgment__line__011
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_black_vellum_judgment.011
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

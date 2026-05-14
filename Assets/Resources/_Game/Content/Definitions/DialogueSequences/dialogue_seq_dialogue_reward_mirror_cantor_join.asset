@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_reward_mirror_cantor_join__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_mirror_cantor_join.004
-  _emote: Default
+  _emote: smile
   _emotionTextKey: loc.story.emotion.amused
   _autoAdvanceHint: 0
 --- !u!114 &-2052439998324307068
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_reward_mirror_cantor_join__line__003
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_mirror_cantor_join.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -90,7 +90,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_reward_mirror_cantor_join__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_mirror_cantor_join.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2072281014610949086
@@ -108,7 +108,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_reward_mirror_cantor_join__line__001
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_mirror_cantor_join.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.calm
   _autoAdvanceHint: 0
 --- !u!114 &4224105317886284450
@@ -126,7 +126,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_reward_mirror_cantor_join__line__002
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_mirror_cantor_join.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &6290473310159242830
@@ -144,6 +144,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_reward_mirror_cantor_join__line__005
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_mirror_cantor_join.005
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0

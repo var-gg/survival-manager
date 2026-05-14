@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__011
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.011
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.almost_whisper
   _autoAdvanceHint: 0
 --- !u!114 &-4086757192999731081
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.003
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &-3479268784376558104
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__008
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.looking_away
   _autoAdvanceHint: 0
 --- !u!114 &-3348583084975949465
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__010
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.010
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-3080027472262358465
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2583484974782497949
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2449207227778052739
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__005
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.005
-  _emote: Grim
+  _emote: anger
   _emotionTextKey: loc.story.emotion.anger
   _autoAdvanceHint: 0
 --- !u!114 &-2138778440341605365
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__007
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.007
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.hurt
   _autoAdvanceHint: 0
 --- !u!114 &-2134477617577825154
@@ -159,7 +159,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__013
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.013
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -205,7 +205,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__004
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &1025945382784645648
@@ -223,7 +223,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__006
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.006
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.strained
   _autoAdvanceHint: 0
 --- !u!114 &3636850566506927277
@@ -241,7 +241,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__012
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.012
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.after_pause
   _autoAdvanceHint: 0
 --- !u!114 &4479823384683799454
@@ -259,7 +259,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__001
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &6535522379383699589
@@ -277,6 +277,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_parting__line__002
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_parting.002
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.pained
   _autoAdvanceHint: 0

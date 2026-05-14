@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch5_empty_table__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch5_empty_table.004
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &-3934170143692882874
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch5_empty_table__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch5_empty_table.002
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-3139650847840695229
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch5_empty_table__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch5_empty_table.006
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-1970481258224074225
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch5_empty_table__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch5_empty_table.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-246461375126626601
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch5_empty_table__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch5_empty_table.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.careful
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -127,7 +127,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch5_empty_table__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch5_empty_table.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &1942095534590807060
@@ -145,7 +145,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch5_empty_table__line__007
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch5_empty_table.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &4390685642356551979
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch5_empty_table__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch5_empty_table.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

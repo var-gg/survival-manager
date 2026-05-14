@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5247645601159543307
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__005
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-3910072003886037223
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__003
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-2858841026714427849
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.012
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -114,7 +114,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2571540132288895236
@@ -132,7 +132,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__009
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.careful
   _autoAdvanceHint: 0
 --- !u!114 &2699854256846344301
@@ -150,7 +150,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3417477219054614329
@@ -168,7 +168,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__006
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &3951648999203638929
@@ -186,7 +186,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__008
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.008
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &4667781742358008592
@@ -204,7 +204,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.002
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &5939882154493126546
@@ -222,7 +222,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__010
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.010
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0
 --- !u!114 &6345934435951028127
@@ -240,7 +240,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8279237993935670561
@@ -258,6 +258,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_meet_at_the_stone__line__011
   _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_meet_at_the_stone.011
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0

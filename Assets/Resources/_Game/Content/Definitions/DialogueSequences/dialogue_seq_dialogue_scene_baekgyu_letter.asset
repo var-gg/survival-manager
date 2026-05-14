@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_letter__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_letter.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-4112788409327556414
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_letter__line__002
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_letter.002
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-2351190773235549444
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_letter__line__003
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_letter.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -90,7 +90,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_letter__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_letter.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2995907793849503291
@@ -108,7 +108,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_letter__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_letter.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &4719689126725459903
@@ -126,7 +126,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_letter__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_letter.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &7563068145017867244
@@ -144,6 +144,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_letter__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_letter.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

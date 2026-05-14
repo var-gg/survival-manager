@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7609100685488679418
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.looking
   _autoAdvanceHint: 0
 --- !u!114 &-4418141177109581151
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-3801576108330589166
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-3565599034535307601
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.002
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &-2853348348299475498
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-128281797141230408
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__006
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.006
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__001
   _speakerId: npc_han_sae
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.001
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0

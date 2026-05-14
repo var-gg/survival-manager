@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__012
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.012
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &-8444924385803255031
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.006
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.cold
   _autoAdvanceHint: 0
 --- !u!114 &-8388209835346946472
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__008
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.008
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-5864908528337333077
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__010
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.010
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.small
   _autoAdvanceHint: 0
 --- !u!114 &-4752227701403598735
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__009
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.009
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.formal
   _autoAdvanceHint: 0
 --- !u!114 &-3139279255272567261
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.004
-  _emote: Grim
+  _emote: anger
   _emotionTextKey: loc.story.emotion.rage
   _autoAdvanceHint: 0
 --- !u!114 &-484097924037367925
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.002
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.restrained
   _autoAdvanceHint: 0
 --- !u!114 &-393157564179296718
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__005
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.005
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.formal
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -186,7 +186,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__011
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.011
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &517954462078578665
@@ -204,7 +204,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__001
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.calm
   _autoAdvanceHint: 0
 --- !u!114 &1470968155946136773
@@ -222,7 +222,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__003
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.formal
   _autoAdvanceHint: 0
 --- !u!114 &2435433593007497528
@@ -240,7 +240,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__007
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.formal
   _autoAdvanceHint: 0
 --- !u!114 &8991458815620527783
@@ -258,6 +258,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_baekgyu_first_encounter__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_baekgyu_first_encounter.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

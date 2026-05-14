@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.002
-  _emote: Shock
+  _emote: shock
   _emotionTextKey: loc.story.emotion.shock
   _autoAdvanceHint: 0
 --- !u!114 &-6824242705897533695
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.slow
   _autoAdvanceHint: 0
 --- !u!114 &-3621568869937967420
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__009
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.looking
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -95,7 +95,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__011
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.011
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.soft
   _autoAdvanceHint: 0
 --- !u!114 &1902361403040493802
@@ -113,7 +113,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__001
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.001
-  _emote: Default
+  _emote: shock
   _emotionTextKey: loc.story.emotion.disoriented
   _autoAdvanceHint: 0
 --- !u!114 &2134483288703441613
@@ -131,7 +131,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__003
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &3329591543401924436
@@ -149,7 +149,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__010
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.010
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &5557066878492795590
@@ -167,7 +167,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.008
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &5889152600040731738
@@ -185,7 +185,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6290136713555353902
@@ -203,7 +203,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.wary
   _autoAdvanceHint: 0
 --- !u!114 &7430817034358700910
@@ -221,7 +221,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.006
-  _emote: Shock
+  _emote: shock
   _emotionTextKey: loc.story.emotion.stunned
   _autoAdvanceHint: 0
 --- !u!114 &7985754952126533741
@@ -239,6 +239,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_koohan_awakening__line__007
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_koohan_awakening.007
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0

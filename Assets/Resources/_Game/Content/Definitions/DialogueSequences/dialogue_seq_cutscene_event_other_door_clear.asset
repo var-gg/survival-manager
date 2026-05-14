@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_event_other_door_clear__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_event_other_door_clear.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5881465642533863269
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_event_other_door_clear__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_event_other_door_clear.003
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-4750099852978175997
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_event_other_door_clear__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_event_other_door_clear.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2554492402556759941
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_event_other_door_clear__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_event_other_door_clear.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -106,6 +106,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_event_other_door_clear__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_event_other_door_clear.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_signal__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_signal.006
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-7542890415420574500
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_signal__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_signal.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-6566454361454589717
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_signal__line__005
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_signal.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-402185700856048534
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_signal__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_signal.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -108,7 +108,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_signal__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_signal.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &5627315531920054252
@@ -126,7 +126,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_signal__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_signal.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.barely
   _autoAdvanceHint: 0
 --- !u!114 &8950440877359864952
@@ -144,6 +144,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grey_fang_signal__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grey_fang_signal.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.careful
   _autoAdvanceHint: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_chapter_clear_ruined_crypts__line__002
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_chapter_clear_ruined_crypts.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-7721000914208165355
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_chapter_clear_ruined_crypts__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_chapter_clear_ruined_crypts.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6520224696184359567
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_chapter_clear_ruined_crypts__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_chapter_clear_ruined_crypts.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-5201029833451878374
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_chapter_clear_ruined_crypts__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_chapter_clear_ruined_crypts.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5192643807824035709
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_chapter_clear_ruined_crypts__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_chapter_clear_ruined_crypts.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -128,7 +128,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_chapter_clear_ruined_crypts__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_chapter_clear_ruined_crypts.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &1002698122778760218
@@ -146,7 +146,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_chapter_clear_ruined_crypts__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_chapter_clear_ruined_crypts.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1170684554969099406
@@ -164,7 +164,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_chapter_clear_ruined_crypts__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_chapter_clear_ruined_crypts.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &4962949434480780178
@@ -182,6 +182,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_chapter_clear_ruined_crypts__line__001
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_chapter_clear_ruined_crypts.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

@@ -1,0 +1,58 @@
+.theater-root {
+    flex-grow: 1;
+    background-color: rgba(20, 18, 24, 0.97);
+    padding-top: 32px;
+    padding-bottom: 32px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.theater-title {
+    font-size: 30px;
+    color: rgb(236, 230, 242);
+    -unity-font-style: bold;
+    margin-bottom: 2px;
+}
+
+.theater-status {
+    font-size: 13px;
+    color: rgb(150, 144, 162);
+    margin-bottom: 18px;
+}
+
+.theater-list {
+    flex-grow: 1;
+}
+
+.theater-list-item {
+    margin-top: 0;
+    margin-bottom: 4px;
+    margin-left: 0;
+    margin-right: 0;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: rgba(48, 44, 58, 0.92);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    color: rgb(222, 216, 228);
+    font-size: 14px;
+    -unity-text-align: middle-left;
+    white-space: normal;
+}
+
+.theater-list-item:hover {
+    background-color: rgba(74, 68, 88, 0.96);
+    color: rgb(245, 240, 250);
+}
+
+.theater-list-item:active {
+    background-color: rgba(92, 82, 110, 0.98);
+}

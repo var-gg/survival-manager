@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__001
   _speakerId: npc_silent_moon
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-2724136154507066419
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__013
   _speakerId: npc_silent_moon
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.013
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -79,7 +79,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__004
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &1973825132166826634
@@ -97,7 +97,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.012
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &2018836263443149284
@@ -115,7 +115,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__005
   _speakerId: npc_silent_moon
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &3450586475729898476
@@ -133,7 +133,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__006
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3496509171583956622
@@ -151,7 +151,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3635967030619281228
@@ -169,7 +169,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__003
   _speakerId: npc_silent_moon
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &3834103823969689950
@@ -187,7 +187,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__002
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.002
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &4350626254890919608
@@ -205,7 +205,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__010
   _speakerId: npc_silent_moon
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.010
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &5314640036139477255
@@ -223,7 +223,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__011
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.011
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &7470726639019278946
@@ -241,7 +241,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__008
   _speakerId: npc_silent_moon
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.008
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &8740175621708039316
@@ -259,7 +259,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__007
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.007
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &9081201047102433786
@@ -277,6 +277,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_silent_moon_cost_again__line__009
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_moon_cost_again.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.thoughtful
   _autoAdvanceHint: 0

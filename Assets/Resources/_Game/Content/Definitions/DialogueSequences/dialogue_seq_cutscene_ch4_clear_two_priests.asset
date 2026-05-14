@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch4_clear_two_priests__line__007
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch4_clear_two_priests.007
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-6608284815983356944
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch4_clear_two_priests__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch4_clear_two_priests.003
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2564879819532087289
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch4_clear_two_priests__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch4_clear_two_priests.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -92,7 +92,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch4_clear_two_priests__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch4_clear_two_priests.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.after_pause
   _autoAdvanceHint: 0
 --- !u!114 &2405809583442356055
@@ -110,7 +110,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch4_clear_two_priests__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch4_clear_two_priests.008
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.no_joke
   _autoAdvanceHint: 0
 --- !u!114 &2619543361652137184
@@ -128,7 +128,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch4_clear_two_priests__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch4_clear_two_priests.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &5124157882417605366
@@ -146,7 +146,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch4_clear_two_priests__line__005
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch4_clear_two_priests.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &5339458900053470739
@@ -164,7 +164,7 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch4_clear_two_priests__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch4_clear_two_priests.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &8027086401338851451
@@ -182,6 +182,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch4_clear_two_priests__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch4_clear_two_priests.004
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.hollow
   _autoAdvanceHint: 0

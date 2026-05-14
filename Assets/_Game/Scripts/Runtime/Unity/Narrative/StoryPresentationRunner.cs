@@ -197,6 +197,13 @@ public sealed class StoryPresentationRunner : MonoBehaviour
         }
 
         container.pickingMode = PickingMode.Ignore;
+        // TemplateContainer는 기본 크기가 0이라 그 안의 absolute story-layer가 펼쳐지지 않는다.
+        // narrative root(전체 화면)를 그대로 채우도록 absolute stretch한다.
+        container.style.position = Position.Absolute;
+        container.style.left = 0f;
+        container.style.right = 0f;
+        container.style.top = 0f;
+        container.style.bottom = 0f;
         _narrativeRoot!.Add(container);
         return container.Q<VisualElement>(rootName)
                ?? throw new InvalidOperationException($"Missing UITK element '{rootName}'.");

@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_bark_menagerie__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_menagerie.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5936342427787968545
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_bark_menagerie__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_menagerie.002
-  _emote: Grim
+  _emote: anger
   _emotionTextKey: loc.story.emotion.rage
   _autoAdvanceHint: 0
 --- !u!114 &-230210741438700535
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_bark_menagerie__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_menagerie.001
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -88,7 +88,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_bark_menagerie__line__003
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_menagerie.003
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.no_joke
   _autoAdvanceHint: 0
 --- !u!114 &6478945154047611678
@@ -106,6 +106,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_bark_menagerie__line__004
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_menagerie.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0

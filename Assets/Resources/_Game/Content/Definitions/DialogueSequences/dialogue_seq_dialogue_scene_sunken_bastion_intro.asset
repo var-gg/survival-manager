@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-6461688125008474417
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6210539676883072989
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__007
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.007
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.uneasy
   _autoAdvanceHint: 0
 --- !u!114 &-6071508451006005151
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__010
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.010
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-5768810237960070997
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-803432749457444652
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.006
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.blunt
   _autoAdvanceHint: 0
 --- !u!114 &-173922294498455179
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__009
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.009
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -168,7 +168,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__011
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.011
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.cold
   _autoAdvanceHint: 0
 --- !u!114 &4354276708497494565
@@ -186,7 +186,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__005
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.reading
   _autoAdvanceHint: 0
 --- !u!114 &6264043869695555055
@@ -204,7 +204,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.002
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.skeptical
   _autoAdvanceHint: 0
 --- !u!114 &8266709355086316737
@@ -222,7 +222,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8700693937197444066
@@ -240,7 +240,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.001
-  _emote: Shock
+  _emote: shock
   _emotionTextKey: loc.story.emotion.shock
   _autoAdvanceHint: 0
 --- !u!114 &8991581215314806294
@@ -258,6 +258,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_sunken_bastion_intro__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_sunken_bastion_intro.012
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

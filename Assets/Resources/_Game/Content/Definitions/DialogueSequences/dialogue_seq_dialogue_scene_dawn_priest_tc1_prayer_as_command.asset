@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__010
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7060195004971361667
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__014
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6744451206148598684
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__007
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-4355108463974765578
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__013
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.007
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-3745391950993583536
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__008
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-3317927337919238434
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.003
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &-2751622353855311495
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1556632343771248889
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1449938926689413998
@@ -159,7 +159,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.001
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.weary
   _autoAdvanceHint: 0
 --- !u!114 &-125841207622225600
@@ -177,7 +177,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__011
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -224,7 +224,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.003
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.weary
   _autoAdvanceHint: 0
 --- !u!114 &3808164901516362012
@@ -242,7 +242,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.004
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.weary
   _autoAdvanceHint: 0
 --- !u!114 &5716854166397676423
@@ -260,7 +260,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &8507525688768514129
@@ -278,7 +278,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__009
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &8692484454945633315
@@ -296,6 +296,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

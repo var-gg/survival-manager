@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch4_orders__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch4_orders.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.curious
   _autoAdvanceHint: 0
 --- !u!114 &-8433550887920010307
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch4_orders__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch4_orders.001
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.focused
   _autoAdvanceHint: 0
 --- !u!114 &-7014844309143258483
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch4_orders__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch4_orders.004
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.blunt
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -90,7 +90,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch4_orders__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch4_orders.006
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &5668455351551920337
@@ -108,7 +108,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch4_orders__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch4_orders.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &6375627748517318063
@@ -126,7 +126,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch4_orders__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch4_orders.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6507797948885085747
@@ -144,6 +144,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_pre_ch4_orders__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_pre_ch4_orders.003
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0

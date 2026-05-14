@@ -319,7 +319,7 @@ public sealed class DialogueScenePresenter : IDisposable
                 ? line.EmoteId
                 : resolvedSpeaker.DefaultEmoteId;
 
-        return _portraitResolver.TryResolve(resolvedSpeaker.CharacterId, emoteId, out var portrait)
+        return _portraitResolver.TryResolve(resolvedSpeaker.CharacterId, emoteId, side, out var portrait)
             ? portrait
             : null;
     }

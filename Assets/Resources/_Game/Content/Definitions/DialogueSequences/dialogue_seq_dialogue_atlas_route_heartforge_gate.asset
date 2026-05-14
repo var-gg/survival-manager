@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_atlas_route_heartforge_gate__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_atlas_route_heartforge_gate.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7135880200670906972
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_atlas_route_heartforge_gate__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_atlas_route_heartforge_gate.004
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0
 --- !u!114 &-4532890637278021039
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_atlas_route_heartforge_gate__line__001
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_atlas_route_heartforge_gate.001
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-1289820347858987821
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_atlas_route_heartforge_gate__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_atlas_route_heartforge_gate.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -107,7 +107,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_atlas_route_heartforge_gate__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_atlas_route_heartforge_gate.002
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &4233236962390363195
@@ -125,6 +125,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_atlas_route_heartforge_gate__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_atlas_route_heartforge_gate.003
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.wary
   _autoAdvanceHint: 0

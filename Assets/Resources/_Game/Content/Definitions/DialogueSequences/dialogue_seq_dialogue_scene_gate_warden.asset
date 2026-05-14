@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__016
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.016
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &-7939326764863016470
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__010
   _speakerId: npc_gojin
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.010
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.hollow
   _autoAdvanceHint: 0
 --- !u!114 &-7828446216729675670
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__017
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.017
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-6233765003963354318
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__013
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.013
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &-5967463062265078001
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__005
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.005
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5194608923666039188
@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.009
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-3955021277509813061
@@ -123,7 +123,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__015
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.015
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-2406713338252189090
@@ -141,7 +141,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__004
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.004
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-2230892272474358047
@@ -159,7 +159,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.001
-  _emote: Shock
+  _emote: shock
   _emotionTextKey: loc.story.emotion.shock
   _autoAdvanceHint: 0
 --- !u!114 &-562050215799693722
@@ -177,7 +177,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__007
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.007
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -227,7 +227,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__006
   _speakerId: npc_gojin
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.006
-  _emote: Grim
+  _emote: sad
   _emotionTextKey: loc.story.emotion.weak
   _autoAdvanceHint: 0
 --- !u!114 &2544990727833775557
@@ -245,7 +245,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3147732898104979529
@@ -263,7 +263,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__011
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.011
-  _emote: Shock
+  _emote: shock
   _emotionTextKey: loc.story.emotion.shock
   _autoAdvanceHint: 0
 --- !u!114 &3475245767717428142
@@ -281,7 +281,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__014
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.014
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3566361856493851842
@@ -299,7 +299,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.002
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
 --- !u!114 &6017281487206466069
@@ -317,7 +317,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__012
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.012
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6333969106910713684
@@ -335,7 +335,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__008
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.008
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &9009101307567043018
@@ -353,6 +353,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.003
-  _emote: Grim
+  _emote: serious
   _emotionTextKey: loc.story.emotion.tense
   _autoAdvanceHint: 0

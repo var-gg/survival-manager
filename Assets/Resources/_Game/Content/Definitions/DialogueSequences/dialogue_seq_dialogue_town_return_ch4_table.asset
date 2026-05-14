@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_ch4_table__line__003
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_ch4_table.003
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-5628959574675146459
@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_ch4_table__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_ch4_table.008
-  _emote: Skeptical
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &-2865256887948797358
@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_ch4_table__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_ch4_table.004
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-1517915853054721937
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_ch4_table__line__005
   _speakerId: hero_ember_runner
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_ch4_table.005
-  _emote: Default
+  _emote: quiet
   _emotionTextKey: loc.story.emotion.small
   _autoAdvanceHint: 0
 --- !u!114 &11400000
@@ -111,7 +111,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_ch4_table__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_ch4_table.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.after_pause
   _autoAdvanceHint: 0
 --- !u!114 &2459825673171857472
@@ -129,7 +129,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_ch4_table__line__002
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_ch4_table.002
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.solemn
   _autoAdvanceHint: 0
 --- !u!114 &2857307672356835375
@@ -147,7 +147,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_ch4_table__line__000
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_ch4_table.000
-  _emote: Default
+  _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4166905669965545443
@@ -165,7 +165,7 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_ch4_table__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_ch4_table.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.composed
   _autoAdvanceHint: 0
 --- !u!114 &5309040912848608099
@@ -201,6 +201,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_ch4_table__line__009
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_ch4_table.009
-  _emote: Resolute
+  _emote: serious
   _emotionTextKey: loc.story.emotion.blunt
   _autoAdvanceHint: 0
