@@ -446,14 +446,16 @@ class WikiParser:
 # ---------------------------------------------------------------------------
 
 def build_seed(scenes: dict[str, WikiScene]) -> dict:
-    """Emit narrative-seed-wiki.json with extended fields.
+    """Emit narrative-seed-wiki.json.
 
-    Compatible-ish with legacy narrative-seed.json so that
-    NarrativeSeedImporter.cs can pick this up with minimal work:
-    - dialogueSequences[].lines[] follow DialogueLineSeed shape
-    - presentations[] follow PresentationTextSeed shape (KoTitle only)
-    - extra fields (branch, voice_role, line_id) are extensions, ignored by
-      legacy importer but available to viewer/CMS.
+    Schema-compatible with NarrativeSeedImporter.cs (NarrativeSeedManifest):
+    - top-level: version / sourceHash / storyEvents / dialogueSequences /
+      presentations / archiveEntries / diagnostics
+    - dialogueSequences[].lines[] expose `text` (KO source) consumed by the
+      importer's ParseLines; `en` is the translation slot, filled later.
+    - extended fields (lineId, branchTag, sectionLabel, voiceRole, refs) and
+      the `lineIndex` map are ignored by the current importer but preserved
+      for the theater-mode viewer and a future extended importer.
     """
     dialogue_sequences = []
     presentations = []
@@ -470,7 +472,7 @@ def build_seed(scenes: dict[str, WikiScene]) -> dict:
                 "emotionRaw": ln.emotion_raw,
                 "emotionId": ln.emotion_id,
                 "emoteId": ln.emote_id,
-                "ko": ln.text_ko,
+                "text": ln.text_ko,
                 "en": "",
                 "branchTag": ln.branch_tag,
                 "sectionLabel": ln.section_label,
@@ -501,8 +503,11 @@ def build_seed(scenes: dict[str, WikiScene]) -> dict:
     return {
         "version": 1,
         "source": "pindoc-wiki",
+        "sourceHash": "",
+        "storyEvents": [],
         "dialogueSequences": dialogue_sequences,
         "presentations": presentations,
+        "archiveEntries": [],
         "lineIndex": line_index_map,
     }
 
@@ -510,6 +515,19 @@ def build_seed(scenes: dict[str, WikiScene]) -> dict:
 # ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
+
+def compute_source_hash(md_files: list[Path]) -> str:
+    """Stable hash over all raw-wiki source files (name + bytes).
+
+    Lets the importer detect whether the seed changed since the last import."""
+    h = hashlib.sha1()
+    for md in sorted(md_files, key=lambda p: p.name):
+        h.update(md.name.encode("utf-8"))
+        h.update(b"\0")
+        h.update(md.read_bytes())
+        h.update(b"\0")
+    return h.hexdigest()[:16]
+
 
 def main() -> int:
     if not RAW_WIKI_DIR.exists():
@@ -529,6 +547,7 @@ def main() -> int:
         parser.parse_file(md)
 
     seed = build_seed(parser.scenes)
+    seed["sourceHash"] = compute_source_hash(md_files)
     seed["diagnostics"] = [asdict(d) for d in parser.diagnostics]
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

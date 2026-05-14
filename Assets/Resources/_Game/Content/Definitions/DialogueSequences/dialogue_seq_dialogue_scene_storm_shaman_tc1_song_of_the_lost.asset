@@ -1,0 +1,301 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8863254054879558323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__003
+  _speakerId: hero_storm_shaman
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.003
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.thoughtful
+  _autoAdvanceHint: 0
+--- !u!114 &-8252558043535815093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__000
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.000
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6954690315090038822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__010
+  _speakerId: hero_storm_shaman
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.005
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.gentle
+  _autoAdvanceHint: 0
+--- !u!114 &-6038801736639756962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__013
+  _speakerId: hero_storm_shaman
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.008
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.resolute
+  _autoAdvanceHint: 0
+--- !u!114 &-4962305298443528869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__006
+  _speakerId: hero_storm_shaman
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.003
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.resolute
+  _autoAdvanceHint: 0
+--- !u!114 &-4364811874312728189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__011
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.006
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2058432971842254512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__009
+  _speakerId: hero_storm_shaman
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.004
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.gentle
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost
+  _lines:
+  - {fileID: -8252558043535815093}
+  - {fileID: 5917172528714589832}
+  - {fileID: 3425380831297536365}
+  - {fileID: -8863254054879558323}
+  - {fileID: 4465519212892740960}
+  - {fileID: 7094027211429127619}
+  - {fileID: -4962305298443528869}
+  - {fileID: 8079487840918951926}
+  - {fileID: 3715055974196594959}
+  - {fileID: -2058432971842254512}
+  - {fileID: -6954690315090038822}
+  - {fileID: -4364811874312728189}
+  - {fileID: 1225683108308841895}
+  - {fileID: -6038801736639756962}
+  - {fileID: 2763182201629330969}
+--- !u!114 &1225683108308841895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__012
+  _speakerId: hero_storm_shaman
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.007
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.thoughtful
+  _autoAdvanceHint: 0
+--- !u!114 &2763182201629330969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_14
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__014
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.009
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &3425380831297536365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__002
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.002
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &3715055974196594959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__008
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.003
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4465519212892740960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__004
+  _speakerId: hero_storm_shaman
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.004
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.gentle
+  _autoAdvanceHint: 0
+--- !u!114 &5917172528714589832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__001
+  _speakerId: hero_storm_shaman
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.001
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.gentle
+  _autoAdvanceHint: 0
+--- !u!114 &7094027211429127619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__005
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.005
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8079487840918951926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost__line__007
+  _speakerId: hero_storm_shaman
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.004
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.gentle
+  _autoAdvanceHint: 0

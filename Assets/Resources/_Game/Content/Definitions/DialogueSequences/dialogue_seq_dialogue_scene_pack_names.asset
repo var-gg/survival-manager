@@ -1,0 +1,358 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9037316115981130774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__001
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.001
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-7236474708960776817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__004
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.004
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6886935817126900513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_15
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__015
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.015
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &-6880664112020630614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_14
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__014
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.014
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6835060430458497816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_16
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__016
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.016
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-5479775574150873468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__002
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.002
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4548469922483289826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__006
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.006
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3975797568111198676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__012
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.012
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.sharp
+  _autoAdvanceHint: 0
+--- !u!114 &-1426105927274793282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__011
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.011
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.steady
+  _autoAdvanceHint: 0
+--- !u!114 &-1290582521756406144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__003
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.003
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-1184724599895053716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__007
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.007
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_seq_dialogue_scene_pack_names
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names
+  _lines:
+  - {fileID: 8576434006713216495}
+  - {fileID: -9037316115981130774}
+  - {fileID: -5479775574150873468}
+  - {fileID: -1290582521756406144}
+  - {fileID: -7236474708960776817}
+  - {fileID: 7872183650529491794}
+  - {fileID: -4548469922483289826}
+  - {fileID: -1184724599895053716}
+  - {fileID: 6017122551345868847}
+  - {fileID: 7213259135341641853}
+  - {fileID: 8651795606946765743}
+  - {fileID: -1426105927274793282}
+  - {fileID: -3975797568111198676}
+  - {fileID: 2586001473105313836}
+  - {fileID: -6880664112020630614}
+  - {fileID: -6886935817126900513}
+  - {fileID: -6835060430458497816}
+  - {fileID: 8542554176117471101}
+--- !u!114 &2586001473105313836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__013
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.013
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &6017122551345868847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__008
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.008
+  _emote: Grim
+  _emotionTextKey: loc.story.emotion.bitter
+  _autoAdvanceHint: 0
+--- !u!114 &7213259135341641853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__009
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.009
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &7872183650529491794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__005
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.005
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &8542554176117471101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_17
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__017
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.017
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8576434006713216495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__000
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.000
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8651795606946765743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_pack_names__line__010
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_pack_names.010
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.furious
+  _autoAdvanceHint: 0

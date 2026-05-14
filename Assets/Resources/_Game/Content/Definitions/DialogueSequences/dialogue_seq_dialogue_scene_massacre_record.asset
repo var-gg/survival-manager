@@ -1,0 +1,149 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5703565017547708727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_massacre_record__line__002
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.002
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-526759284794018225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_massacre_record__line__005
+  _speakerId: hero_mirror_cantor
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.005
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.direct
+  _autoAdvanceHint: 0
+--- !u!114 &-297940658483660812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_massacre_record__line__001
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.001
+  _emote: Shock
+  _emotionTextKey: loc.story.emotion.shaken
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_seq_dialogue_scene_massacre_record
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_seq_dialogue_scene_massacre_record
+  _lines:
+  - {fileID: 4747523536885935779}
+  - {fileID: -297940658483660812}
+  - {fileID: -5703565017547708727}
+  - {fileID: 4932175376232587587}
+  - {fileID: 1424093795478156746}
+  - {fileID: -526759284794018225}
+  - {fileID: 73299711587696163}
+--- !u!114 &73299711587696163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_massacre_record__line__006
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.006
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &1424093795478156746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_massacre_record__line__004
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.004
+  _emote: Grim
+  _emotionTextKey: loc.story.emotion.pained
+  _autoAdvanceHint: 0
+--- !u!114 &4747523536885935779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_massacre_record__line__000
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.000
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4932175376232587587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_massacre_record__line__003
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.003
+  _emote: Grim
+  _emotionTextKey: loc.story.emotion.no_joke
+  _autoAdvanceHint: 0

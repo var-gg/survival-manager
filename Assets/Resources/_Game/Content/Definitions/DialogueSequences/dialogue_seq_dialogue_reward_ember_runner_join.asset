@@ -1,0 +1,149 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-4085226545279643779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_reward_ember_runner_join__line__004
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_ember_runner_join.004
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &-2008112357124502175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_reward_ember_runner_join__line__002
+  _speakerId: hero_ember_runner
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_ember_runner_join.002
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.trying_bright
+  _autoAdvanceHint: 0
+--- !u!114 &-314856830785610266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_reward_ember_runner_join__line__000
+  _speakerId: hero_ember_runner
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_ember_runner_join.000
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.nervous
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_seq_dialogue_reward_ember_runner_join
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_seq_dialogue_reward_ember_runner_join
+  _lines:
+  - {fileID: -314856830785610266}
+  - {fileID: 6750505033100182102}
+  - {fileID: -2008112357124502175}
+  - {fileID: 3736449087483043838}
+  - {fileID: -4085226545279643779}
+  - {fileID: 1618186949602912781}
+  - {fileID: 8926270786743414792}
+--- !u!114 &1618186949602912781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_reward_ember_runner_join__line__005
+  _speakerId: hero_ember_runner
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_ember_runner_join.005
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.confused
+  _autoAdvanceHint: 0
+--- !u!114 &3736449087483043838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_reward_ember_runner_join__line__003
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_ember_runner_join.003
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.amused
+  _autoAdvanceHint: 0
+--- !u!114 &6750505033100182102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_reward_ember_runner_join__line__001
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_ember_runner_join.001
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &8926270786743414792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_reward_ember_runner_join__line__006
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_reward_ember_runner_join.006
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.faint
+  _autoAdvanceHint: 0

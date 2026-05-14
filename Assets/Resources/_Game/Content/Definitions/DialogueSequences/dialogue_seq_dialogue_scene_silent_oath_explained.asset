@@ -1,0 +1,301 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8535462500797732106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__005
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.005
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-6967927987100838477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__010
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.010
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &-5323836046325415519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__011
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.011
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-4919928196070622106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__012
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.012
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.nod
+  _autoAdvanceHint: 0
+--- !u!114 &-4607567220025581070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__001
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.001
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.solemn
+  _autoAdvanceHint: 0
+--- !u!114 &-3455037409473430811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__003
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.003
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &-2827624609545414531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__009
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.009
+  _emote: Grim
+  _emotionTextKey: loc.story.emotion.grim
+  _autoAdvanceHint: 0
+--- !u!114 &-1491444991287320423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__006
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.006
+  _emote: Grim
+  _emotionTextKey: loc.story.emotion.pained
+  _autoAdvanceHint: 0
+--- !u!114 &-603378481274439852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__004
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.004
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.sharper
+  _autoAdvanceHint: 0
+--- !u!114 &-271256338124506881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__000
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.000
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.careful
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_seq_dialogue_scene_silent_oath_explained
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained
+  _lines:
+  - {fileID: -271256338124506881}
+  - {fileID: -4607567220025581070}
+  - {fileID: 1247537315404968347}
+  - {fileID: -3455037409473430811}
+  - {fileID: -603378481274439852}
+  - {fileID: -8535462500797732106}
+  - {fileID: -1491444991287320423}
+  - {fileID: 7454575006560128578}
+  - {fileID: 7577085843133124265}
+  - {fileID: -2827624609545414531}
+  - {fileID: -6967927987100838477}
+  - {fileID: -5323836046325415519}
+  - {fileID: -4919928196070622106}
+  - {fileID: 6549658572020022618}
+  - {fileID: 5607779422970481198}
+--- !u!114 &1247537315404968347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__002
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.002
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.angry
+  _autoAdvanceHint: 0
+--- !u!114 &5607779422970481198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_14
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__014
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.014
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &6549658572020022618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__013
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.013
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &7454575006560128578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__007
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.007
+  _emote: Grim
+  _emotionTextKey: loc.story.emotion.tense
+  _autoAdvanceHint: 0
+--- !u!114 &7577085843133124265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_silent_oath_explained__line__008
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_silent_oath_explained.008
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.clear
+  _autoAdvanceHint: 0

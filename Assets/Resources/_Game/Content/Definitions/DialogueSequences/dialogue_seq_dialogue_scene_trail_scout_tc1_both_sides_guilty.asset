@@ -1,0 +1,301 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9165250262645420901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__005
+  _speakerId: hero_trail_scout
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.005
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.direct
+  _autoAdvanceHint: 0
+--- !u!114 &-8904904070702406579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__002
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.002
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-7432863434944434612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__009
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.003
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6274837259539204955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__008
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.005
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-5510228237169527448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__007
+  _speakerId: hero_trail_scout
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.004
+  _emote: Skeptical
+  _emotionTextKey: loc.story.emotion.dry
+  _autoAdvanceHint: 0
+--- !u!114 &-5319375198366362526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__001
+  _speakerId: hero_trail_scout
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.001
+  _emote: Grim
+  _emotionTextKey: loc.story.emotion.grim
+  _autoAdvanceHint: 0
+--- !u!114 &-3848964515681676075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__000
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.000
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty
+  _lines:
+  - {fileID: -3848964515681676075}
+  - {fileID: -5319375198366362526}
+  - {fileID: -8904904070702406579}
+  - {fileID: 1601002718963507557}
+  - {fileID: 5900706790953266163}
+  - {fileID: -9165250262645420901}
+  - {fileID: 2818415640806030328}
+  - {fileID: -5510228237169527448}
+  - {fileID: -6274837259539204955}
+  - {fileID: -7432863434944434612}
+  - {fileID: 5701815952519536337}
+  - {fileID: 2127957891741943281}
+  - {fileID: 3519828685225569949}
+  - {fileID: 8142208752294517385}
+  - {fileID: 7595672473754907998}
+--- !u!114 &1601002718963507557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__003
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.003
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2127957891741943281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__011
+  _speakerId: hero_trail_scout
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.005
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.gentle
+  _autoAdvanceHint: 0
+--- !u!114 &2818415640806030328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__006
+  _speakerId: hero_trail_scout
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.003
+  _emote: Skeptical
+  _emotionTextKey: loc.story.emotion.wry
+  _autoAdvanceHint: 0
+--- !u!114 &3519828685225569949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__012
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.006
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5701815952519536337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__010
+  _speakerId: hero_trail_scout
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.004
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &5900706790953266163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__004
+  _speakerId: hero_trail_scout
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.004
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &7595672473754907998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_14
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__014
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.008
+  _emote: Default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8142208752294517385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty__line__013
+  _speakerId: hero_trail_scout
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_trail_scout_tc1_both_sides_guilty.007
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.resolute
+  _autoAdvanceHint: 0

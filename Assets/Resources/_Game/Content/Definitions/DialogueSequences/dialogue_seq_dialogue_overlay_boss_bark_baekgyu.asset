@@ -1,0 +1,187 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8827302497157620350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_baekgyu__line__001
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_baekgyu.001
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.response
+  _autoAdvanceHint: 0
+--- !u!114 &-8712969538586970288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_baekgyu__line__005
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_baekgyu.005
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.response
+  _autoAdvanceHint: 0
+--- !u!114 &-5260709658868061345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_baekgyu__line__002
+  _speakerId: npc_baekgyu_sternheim
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_baekgyu.002
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.phase_2
+  _autoAdvanceHint: 0
+--- !u!114 &-1733777603856399478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_baekgyu__line__003
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_baekgyu.003
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.response
+  _autoAdvanceHint: 0
+--- !u!114 &-1433025049286909808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_baekgyu__line__006
+  _speakerId: npc_baekgyu_sternheim
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_baekgyu.006
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.phase_4
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_seq_dialogue_overlay_boss_bark_baekgyu
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_baekgyu
+  _lines:
+  - {fileID: 2789493135065728728}
+  - {fileID: -8827302497157620350}
+  - {fileID: -5260709658868061345}
+  - {fileID: -1733777603856399478}
+  - {fileID: 2313829724564268902}
+  - {fileID: -8712969538586970288}
+  - {fileID: -1433025049286909808}
+  - {fileID: 2185868185051175402}
+  - {fileID: 4841969988952779997}
+--- !u!114 &2185868185051175402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_baekgyu__line__007
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_baekgyu.007
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.response
+  _autoAdvanceHint: 0
+--- !u!114 &2313829724564268902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_baekgyu__line__004
+  _speakerId: npc_baekgyu_sternheim
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_baekgyu.004
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.phase_3
+  _autoAdvanceHint: 0
+--- !u!114 &2789493135065728728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_baekgyu__line__000
+  _speakerId: npc_baekgyu_sternheim
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_baekgyu.000
+  _emote: Resolute
+  _emotionTextKey: loc.story.emotion.phase_start
+  _autoAdvanceHint: 0
+--- !u!114 &4841969988952779997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_baekgyu__line__008
+  _speakerId: hero_mirror_cantor
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_baekgyu.008
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.support
+  _autoAdvanceHint: 0
