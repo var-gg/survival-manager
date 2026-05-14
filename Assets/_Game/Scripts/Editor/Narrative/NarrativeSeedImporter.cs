@@ -32,6 +32,7 @@ public sealed record NarrativeSeedImportResult(
 public static class NarrativeSeedImporter
 {
     private const string ManifestPath = "Temp/Narrative/narrative-seed.json";
+    private const string WikiManifestPath = "Temp/Narrative/narrative-seed-wiki.json";
     private const string StoryEventsDir = "Assets/Resources/_Game/Content/Definitions/StoryEvents";
     private const string DialogueSequencesDir = "Assets/Resources/_Game/Content/Definitions/DialogueSequences";
     private const string ArchiveCatalogDir = "Assets/Resources/_Game/Content/Definitions/StoryArchive";
@@ -59,6 +60,44 @@ public static class NarrativeSeedImporter
             DryRun: false));
 
         Debug.Log($"[NarrativeSeedImporter] Done. Created={result.CreatedAssets}, Updated={result.UpdatedAssets}, " +
+                  $"Deleted={result.DeletedAssets}, LocCreated={result.CreatedLocalizationEntries}, LocUpdated={result.UpdatedLocalizationEntries}");
+
+        foreach (var diag in result.Diagnostics)
+        {
+            var msg = $"[NarrativeSeedImporter] [{diag.Severity}] {diag.Code}: {diag.Message} ({diag.SourcePath}:{diag.LineNumber})";
+            if (diag.Severity == NarrativeDiagnosticSeverity.Error) Debug.LogError(msg);
+            else if (diag.Severity == NarrativeDiagnosticSeverity.Warning) Debug.LogWarning(msg);
+            else Debug.Log(msg);
+        }
+    }
+
+    [MenuItem("SM/내러티브/위키 시드 임포트")]
+    public static void ImportWikiFromMenu()
+    {
+        // Unity 에디터의 cwd는 프로젝트 루트가 아닐 수 있으므로 절대 경로로 해석한다.
+        var wikiPath = Path.Combine(
+            Directory.GetParent(Application.dataPath)!.FullName, WikiManifestPath);
+        if (!File.Exists(wikiPath))
+        {
+            Debug.LogError($"[NarrativeSeedImporter] Wiki manifest not found at {wikiPath}. Run 'python tools/wiki_narrative_extract.py' first.");
+            return;
+        }
+
+        var manifest = LoadManifest(wikiPath);
+        if (manifest == null)
+        {
+            Debug.LogError("[NarrativeSeedImporter] Failed to parse wiki manifest.");
+            return;
+        }
+
+        // CleanRemovedAssets: false — wiki seed와 legacy seed가 전환기 동안 공존한다.
+        // 양쪽을 가로지르는 orphan pruning은 서로의 asset을 삭제하므로 끈다.
+        var result = Import(manifest, new NarrativeSeedImportOptions(
+            CleanRemovedAssets: false,
+            InsertMissingEnglishEntries: true,
+            DryRun: false));
+
+        Debug.Log($"[NarrativeSeedImporter] Wiki seed done. Created={result.CreatedAssets}, Updated={result.UpdatedAssets}, " +
                   $"Deleted={result.DeletedAssets}, LocCreated={result.CreatedLocalizationEntries}, LocUpdated={result.UpdatedLocalizationEntries}");
 
         foreach (var diag in result.Diagnostics)
