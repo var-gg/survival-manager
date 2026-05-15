@@ -17,6 +17,7 @@ public sealed class SceneFlowController
 
     public void GoToBoot() => Load(SceneNames.Boot);
     public void GoToTown() => Load(SceneNames.Town);
+    public void GoToAtlas() => Load(SceneNames.Atlas);
     public void GoToExpedition() => Load(SceneNames.Expedition);
     public void GoToBattle() => Load(SceneNames.Battle);
     public void GoToReward() => Load(SceneNames.Reward);

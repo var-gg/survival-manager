@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using SM.Editor.Authoring.Atlas;
 using SM.Editor.Bootstrap.UI;
 using SM.Unity;
 using SM.Unity.UI;
@@ -18,7 +19,7 @@ namespace SM.Editor.Bootstrap;
 public static class FirstPlayableSceneInstaller
 {
     private const string ScenesRoot = "Assets/_Game/Scenes";
-    private static readonly string[] OrderedSceneNames = { "Boot", "Town", "Expedition", "Battle", "Reward" };
+    private static readonly string[] OrderedSceneNames = { "Boot", "Town", "Atlas", "Expedition", "Battle", "Reward" };
 
     [MenuItem("SM/Internal/Recovery/Repair First Playable Scenes")]
     public static void RepairFirstPlayableScenes()
@@ -28,6 +29,7 @@ public static class FirstPlayableSceneInstaller
 
         RebuildBoot();
         RebuildTown();
+        AtlasGrayboxAuthoringAssetUtility.EnsureAtlasScene();
         RebuildExpedition();
         RebuildBattle();
         RebuildReward();
@@ -303,6 +305,18 @@ public static class FirstPlayableSceneInstaller
                     {
                         ["TownRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
                         ["TownScreenController"] = new[] { typeof(TownScreenController) },
+                    });
+                break;
+
+            case SceneNames.Atlas:
+                ValidateScene(
+                    SceneNames.Atlas,
+                    new[] { "SceneMarker_Atlas", "AtlasRuntimeRoot", "AtlasRuntimePanelHost", "AtlasScreenController", "AtlasRegionWolfpineTrail", "Main Camera", "EventSystem" },
+                    new Dictionary<string, System.Type[]>
+                    {
+                        ["AtlasRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
+                        ["AtlasScreenController"] = new[] { typeof(SM.Unity.UI.Atlas.AtlasScreenController) },
+                        ["AtlasRegionWolfpineTrail"] = new[] { typeof(SM.Unity.Atlas.Atlas3DSceneController) },
                     });
                 break;
 
