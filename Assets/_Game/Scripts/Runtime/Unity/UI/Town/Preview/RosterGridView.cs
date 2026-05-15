@@ -31,6 +31,8 @@ public sealed class RosterGridView
         if (_modalRoot == null) return;
         _modalRoot.style.display = DisplayStyle.Flex;
         _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
+        var wrapper = _modalRoot.parent?.parent;
+        if (wrapper != null) wrapper.style.display = DisplayStyle.Flex;
     }
 
     public void Close()
@@ -38,6 +40,8 @@ public sealed class RosterGridView
         if (_modalRoot == null) return;
         _modalRoot.style.display = DisplayStyle.None;
         _modalRoot.AddToClassList("sm-modal-anim--enter");
+        var wrapper = _modalRoot.parent?.parent;
+        if (wrapper != null) wrapper.style.display = DisplayStyle.None;
     }
 
     public RosterGridView(VisualElement root, VisualTreeAsset? heroCardTemplate)
