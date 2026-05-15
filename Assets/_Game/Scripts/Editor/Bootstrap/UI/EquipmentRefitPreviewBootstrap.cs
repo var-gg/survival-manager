@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SM.Unity.UI.Town.Preview;
 using UnityEditor;
@@ -7,8 +8,11 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Equipment Refit 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// SM/Town/Equipment Refit 미리보기 — Sprint 2 real-wire dev tool.
 /// 시안 SoT: pindoc://town-ui-ux-시안-갤러리-v1 (2. Equipment Refit modal)
+///
+/// 진입: real GameSessionRoot 우선 (Profile.Inventory + AffixDefinition 기반 affix row).
+/// 실패 시 mock fallback (8 inventory item + 5 affix row demo).
 /// </summary>
 public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
 {
@@ -21,6 +25,7 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
     private const string AffixSpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Affix/affix_{0}.png";
 
     private EquipmentRefitView? _view;
+    private EquipmentRefitPresenter? _presenter;
 
     [MenuItem("SM/Town/Equipment Refit 미리보기", false, 11)]
     public static void Open()
@@ -45,7 +50,37 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
         visualTree.CloneTree(root);
 
         _view = new EquipmentRefitView(root);
+
+        if (TryWireRealSession(_view))
+        {
+            return;
+        }
+
         _view.Render(BuildMockViewState());
+    }
+
+    private bool TryWireRealSession(EquipmentRefitView view)
+    {
+        try
+        {
+            var sessionRoot = PreviewSessionContext.EnsureSession();
+            var contentText = PreviewSessionContext.CreateContentText(sessionRoot);
+            _presenter = new EquipmentRefitPresenter(
+                sessionRoot,
+                view,
+                contentText,
+                PreviewSessionContext.LoadAffixSprite,
+                PreviewSessionContext.LoadCurrencySprite,
+                PreviewSessionContext.LoadHeroPortrait);
+            _presenter.Initialize();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[EquipmentRefitPreview] real-session wire 실패, mock fallback: {e.Message}");
+            _presenter = null;
+            return false;
+        }
     }
 
     private EquipmentRefitViewState BuildMockViewState()

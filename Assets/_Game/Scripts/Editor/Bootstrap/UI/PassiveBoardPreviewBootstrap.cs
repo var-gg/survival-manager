@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Unity.UI.Town.Preview;
@@ -8,8 +9,11 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Passive Board 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// SM/Town/Passive Board 미리보기 — Sprint 2 real-wire dev tool.
 /// pindoc V1 SoT (passive-board-node-catalog.md): 4 board × 18 node (12 small + 5 notable + 1 keystone).
+///
+/// 진입: real GameSessionRoot 우선 (per-hero loadout의 SelectedPassiveNodeIds 기반 active state).
+/// 실패 시 mock fallback. Presenter는 첫 hero를 자동 선택 (ResolveSelectedHeroId).
 /// </summary>
 public sealed class PassiveBoardPreviewBootstrap : EditorWindow
 {
@@ -21,6 +25,7 @@ public sealed class PassiveBoardPreviewBootstrap : EditorWindow
     private const string PortraitPathFmt = "Assets/Resources/_Game/Art/Characters/hero_{0}/portrait_full.png";
 
     private PassiveBoardView? _view;
+    private PassiveBoardPresenter? _presenter;
 
     [MenuItem("SM/Town/Passive Board 미리보기", false, 13)]
     public static void Open()
@@ -43,7 +48,36 @@ public sealed class PassiveBoardPreviewBootstrap : EditorWindow
         visualTree.CloneTree(root);
 
         _view = new PassiveBoardView(root);
+
+        if (TryWireRealSession(_view))
+        {
+            return;
+        }
+
         _view.Render(BuildMockViewState());
+    }
+
+    private bool TryWireRealSession(PassiveBoardView view)
+    {
+        try
+        {
+            var sessionRoot = PreviewSessionContext.EnsureSession();
+            var contentText = PreviewSessionContext.CreateContentText(sessionRoot);
+            _presenter = new PassiveBoardPresenter(
+                sessionRoot,
+                view,
+                contentText,
+                PreviewSessionContext.LoadClassSprite,
+                PreviewSessionContext.LoadAffixSprite);
+            _presenter.Initialize();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[PassiveBoardPreview] real-session wire 실패, mock fallback: {e.Message}");
+            _presenter = null;
+            return false;
+        }
     }
 
     private PassiveBoardViewState BuildMockViewState()

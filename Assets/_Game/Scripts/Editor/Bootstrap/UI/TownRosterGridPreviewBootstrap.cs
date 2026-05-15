@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SM.Unity.UI.Town.Preview;
 using UnityEditor;
@@ -7,8 +8,11 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/RosterGrid 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// SM/Town/RosterGrid 미리보기 — Sprint 2 real-wire dev tool.
 /// 시안 SoT: pindoc://town-ui-ux-시안-갤러리-v1 (V0 hub) + ux-surface-catalog#Town.RosterGrid.
+///
+/// 진입: real GameSessionRoot 우선 (PreviewSessionContext.EnsureSession → RosterGridPresenter.Initialize).
+/// 실패 시 mock fallback. real path는 default profile의 Heroes (HeroInstanceRecord[]) 그대로 카드화.
 /// </summary>
 public sealed class TownRosterGridPreviewBootstrap : EditorWindow
 {
@@ -18,6 +22,7 @@ public sealed class TownRosterGridPreviewBootstrap : EditorWindow
     private const string RuntimePanelThemePath = "Assets/_Game/UI/Foundation/Styles/RuntimePanelTheme.uss";
 
     private RosterGridView? _view;
+    private RosterGridPresenter? _presenter;
 
     [MenuItem("SM/Town/RosterGrid 미리보기", false, 8)]
     public static void Open()
@@ -45,7 +50,31 @@ public sealed class TownRosterGridPreviewBootstrap : EditorWindow
         visualTree.CloneTree(root);
 
         _view = new RosterGridView(root, heroCardTemplate);
+
+        if (TryWireRealSession(_view))
+        {
+            return;
+        }
+
         _view.Render(BuildMockViewState());
+    }
+
+    private bool TryWireRealSession(RosterGridView view)
+    {
+        try
+        {
+            var sessionRoot = PreviewSessionContext.EnsureSession();
+            var contentText = PreviewSessionContext.CreateContentText(sessionRoot);
+            _presenter = new RosterGridPresenter(sessionRoot, view, contentText);
+            _presenter.Initialize();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[RosterGridPreview] real-session wire 실패, mock fallback: {e.Message}");
+            _presenter = null;
+            return false;
+        }
     }
 
     private RosterGridViewState BuildMockViewState()

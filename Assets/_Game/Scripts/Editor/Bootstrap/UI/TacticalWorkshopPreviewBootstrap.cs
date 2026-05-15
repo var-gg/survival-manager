@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Unity.UI.Town.Preview;
@@ -8,11 +9,11 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Tactical Workshop 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// SM/Town/Tactical Workshop 미리보기 — Sprint 2 real-wire dev tool.
 ///
-/// Bootstrap = mock ViewState injection. 실 GameSessionRoot 없이 View 직접 render.
-/// 패턴: 모든 mock surface가 같은 구조 — ViewState (runtime asmdef) + View (runtime asmdef) + Bootstrap (editor).
-/// Production: GameSessionRoot + Presenter가 ViewState 빌드 → View.Render 동일 코드 path.
+/// 진입: real GameSessionRoot 우선 (Profile.ActiveBlueprint의 anchor 6 + SelectedTeamPosture).
+/// per-unit tactic은 P1-1 미반영 — Presenter가 빈 리스트 반환 (runtime model 자체 부재).
+/// 실패 시 mock fallback (시각 demo는 mock이 더 풍부).
 ///
 /// 시안 SoT: pindoc://town-ui-ux-시안-갤러리-v1 (1. Tactical Workshop modal)
 /// 워크플로우 SoT: docs/02_design/ui/town-profile-binding-workflow.md
@@ -28,6 +29,7 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
     private const string ClassSpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Class/class_{0}.png";
 
     private TacticalWorkshopView? _view;
+    private TacticalWorkshopPresenter? _presenter;
 
     [MenuItem("SM/Town/Tactical Workshop 미리보기", false, 9)]
     public static void Open()
@@ -52,7 +54,35 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
         visualTree.CloneTree(root);
 
         _view = new TacticalWorkshopView(root);
+
+        if (TryWireRealSession(_view))
+        {
+            return;
+        }
+
         _view.Render(BuildMockViewState());
+    }
+
+    private bool TryWireRealSession(TacticalWorkshopView view)
+    {
+        try
+        {
+            var sessionRoot = PreviewSessionContext.EnsureSession();
+            _presenter = new TacticalWorkshopPresenter(
+                sessionRoot,
+                view,
+                PreviewSessionContext.LoadPostureSprite,
+                PreviewSessionContext.LoadThreatSprite,
+                PreviewSessionContext.LoadClassSprite);
+            _presenter.Initialize();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[TacticalWorkshopPreview] real-session wire 실패, mock fallback: {e.Message}");
+            _presenter = null;
+            return false;
+        }
     }
 
     private TacticalWorkshopViewState BuildMockViewState()
