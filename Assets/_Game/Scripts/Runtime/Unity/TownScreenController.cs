@@ -20,6 +20,9 @@ public sealed class TownScreenController : MonoBehaviour
     private TownScreenPresenter? _presenter;
     private SquadBuilderPresenter? _squadBuilderPresenter;
     private RecruitPresenter? _recruitPresenter;
+    private EquipmentRefitPresenter? _equipmentRefitPresenter;
+    private PassiveBoardPresenter? _passiveBoardPresenter;
+    private PermanentAugmentPresenter? _permanentAugmentPresenter;
 
     private void Start()
     {
@@ -89,13 +92,31 @@ public sealed class TownScreenController : MonoBehaviour
         _squadBuilderPresenter = new SquadBuilderPresenter(panelHost.Root, _root, _contentText);
         view.BindSquadBuilderOpen(_squadBuilderPresenter.Open);
 
-        // Recruit modal — Preview surface UXML/Presenter 재사용. sprite loader는 null fallback
-        // (production runtime은 Resources/Addressables 미설치 — sprite는 후속 task).
+        // Recruit / EquipmentRefit / PassiveBoard / PermanentAugment modal — Preview surface UXML/Presenter 재사용.
+        // sprite loader는 null fallback (production runtime은 Resources/Addressables 미설치 — 후속 task).
         var recruitView = new RecruitView(panelHost.Root);
         _recruitPresenter = new RecruitPresenter(_root, recruitView, _contentText);
         _recruitPresenter.Initialize();
-        _recruitPresenter.Close();   // hub modal default closed
+        _recruitPresenter.Close();
         view.BindRecruitOpen(_recruitPresenter.Open);
+
+        var equipmentRefitView = new EquipmentRefitView(panelHost.Root);
+        _equipmentRefitPresenter = new EquipmentRefitPresenter(_root, equipmentRefitView, _contentText);
+        _equipmentRefitPresenter.Initialize();
+        _equipmentRefitPresenter.Close();
+        view.BindEquipmentRefitOpen(_equipmentRefitPresenter.Open);
+
+        var passiveBoardView = new PassiveBoardView(panelHost.Root);
+        _passiveBoardPresenter = new PassiveBoardPresenter(_root, passiveBoardView, _contentText);
+        _passiveBoardPresenter.Initialize();
+        _passiveBoardPresenter.Close();
+        view.BindPassiveBoardOpen(_passiveBoardPresenter.Open);
+
+        var permanentAugmentView = new PermanentAugmentView(panelHost.Root);
+        _permanentAugmentPresenter = new PermanentAugmentPresenter(_root, permanentAugmentView);
+        _permanentAugmentPresenter.Initialize();
+        _permanentAugmentPresenter.Close();
+        view.BindPermanentAugmentOpen(_permanentAugmentPresenter.Open);
         return true;
     }
 

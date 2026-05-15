@@ -21,12 +21,36 @@ public sealed class PassiveBoardView
     private readonly Label? _availableLabel;
     private readonly Button? _activateButton;
     private readonly Label _footerBreakdown;
+    private readonly VisualElement? _modalRoot;
+    private readonly Button? _closeButton;
 
     private IPassiveBoardActions? _actions;
+
+    public void BindClose(Action close)
+    {
+        if (_closeButton == null || close == null) return;
+        _closeButton.clicked += close;
+    }
+
+    public void Open()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.Flex;
+        _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
+    }
+
+    public void Close()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.None;
+        _modalRoot.AddToClassList("sm-modal-anim--enter");
+    }
 
     public PassiveBoardView(VisualElement root)
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
+        _modalRoot = root.Q<VisualElement>("PbpRoot");
+        _closeButton = root.Q<Button>(className: "pbp-header__close");   // UXML에 없으면 null OK
         _boardHeader = root.Q<VisualElement>("BoardHeader")
             ?? throw new ArgumentException("BoardHeader 못 찾음");
         _boardCanvas = root.Q<VisualElement>("BoardCanvas")

@@ -7,6 +7,9 @@
     <ui:Template name="HeroPortraitCardTemplate" src="../../Foundation/Components/HeroPortraitCard.uxml" />
     <ui:Template name="SquadBuilderTemplate" src="SquadBuilder.uxml" />
     <ui:Template name="RecruitTemplate" src="Preview/RecruitPreview.uxml" />
+    <ui:Template name="EquipmentRefitTemplate" src="Preview/EquipmentRefitPreview.uxml" />
+    <ui:Template name="PassiveBoardTemplate" src="Preview/PassiveBoardPreview.uxml" />
+    <ui:Template name="PermanentAugmentTemplate" src="Preview/PermanentAugmentPreview.uxml" />
     <ui:VisualElement name="TownScreenRoot" class="screen town-hub">
         <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop sm-backdrop" picking-mode="Ignore" />
         <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim sm-backdrop-dim" picking-mode="Ignore" />
@@ -61,6 +64,9 @@
             <ui:VisualElement class="town-hub__toolbar-actions">
                 <ui:Button name="SquadBuilderButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="Squad Builder" />
                 <ui:Button name="RecruitButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="Recruit" />
+                <ui:Button name="EquipmentRefitButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="Equipment" />
+                <ui:Button name="PassiveBoardButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="Passive Board" />
+                <ui:Button name="PermanentAugmentButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="Permanent" />
                 <ui:Button name="ExpeditionButton" class="ui-button sm-cta sm-cta--inline sm-cta--primary" />
                 <ui:Button name="SaveButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
                 <ui:Button name="LoadButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
@@ -81,6 +87,15 @@
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
             <ui:Instance template="RecruitTemplate" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+            <ui:Instance template="EquipmentRefitTemplate" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+            <ui:Instance template="PassiveBoardTemplate" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+            <ui:Instance template="PermanentAugmentTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
