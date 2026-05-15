@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SM.Unity
 {
@@ -8,7 +9,7 @@ internal static class BattleP09AppearanceRoster
 {
     // Runtime fallback keeps archetype aliases because authored content can still
     // resolve visuals by ArchetypeId. Studio authoring uses AuthoringCharacterIds.
-    private static readonly string[] CharacterIds =
+    private static readonly string[] CoreCharacterIds =
     {
         "warden",
         "guardian",
@@ -43,7 +44,51 @@ internal static class BattleP09AppearanceRoster
         "npc_aldric",
     };
 
-    private static readonly string[] AuthoringCharacterIds =
+    // Extra actors are encounter-visible P09 variants. They are not main story
+    // speakers by default, but they still need names and visual slots.
+    private static readonly string[] ExtraActorCharacterIds =
+    {
+        "extra_kojin_gate_warden",
+        "extra_solarum_border_lancer",
+        "extra_solarum_sigil_scribe",
+        "extra_border_reliquary_carry",
+        "extra_wolfpine_outrider",
+        "extra_wolfpine_ember_runner_cell",
+        "extra_grey_fang_vanguard",
+        "extra_bastion_line_guard",
+        "extra_bastion_reliquary_guard",
+        "extra_sunken_adjudicator_lieutenant",
+        "extra_sunken_bastion_adjudicator",
+        "extra_tithe_mark_bearer",
+        "extra_tithe_chain_cantor",
+        "extra_tithe_executioner_proxy",
+        "extra_tithe_inquisitor_pureflame",
+        "extra_pale_memorial_keeper",
+        "extra_pale_tomb_sentinel",
+        "extra_black_roll_bailiff",
+        "extra_crypt_list_keeper",
+        "extra_lattice_root_usher",
+        "extra_lattice_echo_caretaker",
+        "extra_bone_orchard_watcher",
+        "extra_glass_field_cleric",
+        "extra_glass_shard_bailiff",
+        "extra_glass_forest_recordkeeper",
+        "extra_menagerie_snare_runner",
+        "extra_sample_b17_survivor",
+        "extra_menagerie_keeper",
+        "extra_heartforge_gate_guard",
+        "extra_record_rights_marker",
+        "extra_heartforge_gate_warden",
+        "extra_worldscar_archive_cell",
+        "extra_worldscar_rite_echo",
+        "extra_worldscar_record_bailiff",
+    };
+
+    private static readonly string[] CharacterIds = CoreCharacterIds
+        .Concat(ExtraActorCharacterIds)
+        .ToArray();
+
+    private static readonly string[] CoreAuthoringCharacterIds =
     {
         "hero_dawn_priest",
         "hero_pack_raider",
@@ -74,6 +119,10 @@ internal static class BattleP09AppearanceRoster
         "hero_iron_pelt",
         "npc_aldric",
     };
+
+    private static readonly string[] AuthoringCharacterIds = CoreAuthoringCharacterIds
+        .Concat(ExtraActorCharacterIds)
+        .ToArray();
 
     private static readonly HashSet<string> AuthoringHiddenAliases = new(StringComparer.Ordinal)
     {
@@ -117,6 +166,40 @@ internal static class BattleP09AppearanceRoster
         ["hero_ember_runner"] = "연주 (燕走) / Ember Runner",
         ["hero_iron_pelt"] = "철피 (鐵皮) / Iron Pelt",
         ["npc_aldric"] = "단현 스턴홀트 (丹玄) / Aldric Sternfeld",
+        ["extra_kojin_gate_warden"] = "고진 관문 파수관 / Kojin Gate Warden",
+        ["extra_solarum_border_lancer"] = "솔라룸 국경 창병 / Solarium Border Lancer",
+        ["extra_solarum_sigil_scribe"] = "솔라룸 각인 서기 / Solarium Sigil Scribe",
+        ["extra_border_reliquary_carry"] = "국경 성물 운반자 / Border Reliquary Carrier",
+        ["extra_wolfpine_outrider"] = "늑대소나무 척후기수 / Wolfpine Outrider",
+        ["extra_wolfpine_ember_runner_cell"] = "늑대소나무 불씨전령조 / Wolfpine Ember Runner Cell",
+        ["extra_grey_fang_vanguard"] = "회조 선봉대 / Grey Fang Vanguard",
+        ["extra_bastion_line_guard"] = "보루 전열 경비 / Bastion Line Guard",
+        ["extra_bastion_reliquary_guard"] = "보루 성물고 경비 / Bastion Reliquary Guard",
+        ["extra_sunken_adjudicator_lieutenant"] = "침몰 심판 부관 / Sunken Adjudicator Lieutenant",
+        ["extra_sunken_bastion_adjudicator"] = "침몰 보루 심판관 / Sunken Bastion Adjudicator",
+        ["extra_tithe_mark_bearer"] = "십일조 표식 운반자 / Tithe Mark Bearer",
+        ["extra_tithe_chain_cantor"] = "십일조 사슬 성창가 / Tithe Chain Cantor",
+        ["extra_tithe_executioner_proxy"] = "십일조 집행 대리인 / Tithe Executioner Proxy",
+        ["extra_tithe_inquisitor_pureflame"] = "십일조 순화 심문관 / Tithe Pureflame Inquisitor",
+        ["extra_pale_memorial_keeper"] = "창백 추모지기 / Pale Memorial Keeper",
+        ["extra_pale_tomb_sentinel"] = "창백 묘지 파수병 / Pale Tomb Sentinel",
+        ["extra_black_roll_bailiff"] = "흑부 집달관 / Black Roll Bailiff",
+        ["extra_crypt_list_keeper"] = "묘실 명부지기 / Crypt List Keeper",
+        ["extra_lattice_root_usher"] = "격자뿌리 인도자 / Lattice Root Usher",
+        ["extra_lattice_echo_caretaker"] = "격자 메아리 관리인 / Lattice Echo Caretaker",
+        ["extra_bone_orchard_watcher"] = "뼈 과수원 감시자 / Bone Orchard Watcher",
+        ["extra_glass_field_cleric"] = "유리 들판 성직자 / Glass Field Cleric",
+        ["extra_glass_shard_bailiff"] = "유리 파편 집달관 / Glass Shard Bailiff",
+        ["extra_glass_forest_recordkeeper"] = "유리숲 기록관 / Glass Forest Recordkeeper",
+        ["extra_menagerie_snare_runner"] = "우리 덫 주자 / Menagerie Snare Runner",
+        ["extra_sample_b17_survivor"] = "표본 B17 생존자 / Sample B17 Survivor",
+        ["extra_menagerie_keeper"] = "우리 관리인 / Menagerie Keeper",
+        ["extra_heartforge_gate_guard"] = "심장단조 관문 경비 / Heartforge Gate Guard",
+        ["extra_record_rights_marker"] = "기록권 표식자 / Record Rights Marker",
+        ["extra_heartforge_gate_warden"] = "심장단조 관문 파수관 / Heartforge Gate Warden",
+        ["extra_worldscar_archive_cell"] = "세계상처 기록 감방 / Worldscar Archive Cell",
+        ["extra_worldscar_rite_echo"] = "세계상처 의례 메아리 / Worldscar Rite Echo",
+        ["extra_worldscar_record_bailiff"] = "세계상처 기록 집달관 / Worldscar Record Bailiff",
     };
 
     public static IReadOnlyList<string> CanonicalCharacterIds => CharacterIds;

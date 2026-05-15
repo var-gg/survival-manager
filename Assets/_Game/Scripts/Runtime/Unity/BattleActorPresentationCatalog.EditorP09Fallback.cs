@@ -11,6 +11,7 @@ namespace SM.Unity;
 public sealed partial class BattleActorPresentationCatalog
 {
     private const float EditorP09TargetModelHeight = 2.05f;
+    private const int EditorP09RoughHairVariantCount = 10;
     private const string EditorP09VisualPrefabPath = "Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/P09_Human_Combat_Demo Variant.prefab";
 
     private static readonly string[] EditorP09AbstractCharacterIds =
@@ -230,10 +231,11 @@ public sealed partial class BattleActorPresentationCatalog
 
     private static void ApplyEditorP09RoughVariant(GameObject model, int slotIndex)
     {
-        var hairName = $"Hair_{slotIndex + 1:00}";
-        var hairMaterial = LoadEditorP09HairMaterial(hairName, EditorP09HairColors[slotIndex % EditorP09HairColors.Length]);
+        var normalizedSlotIndex = Math.Max(0, slotIndex);
+        var hairName = ResolveEditorP09RoughHairName(normalizedSlotIndex);
+        var hairMaterial = LoadEditorP09HairMaterial(hairName, EditorP09HairColors[normalizedSlotIndex % EditorP09HairColors.Length]);
         var eyeMaterial = AssetDatabase.LoadAssetAtPath<Material>(
-            $"Assets/P09_Modular_Humanoid/Model_DATA/Materials/Common/Eye/P09_Eye_{EditorP09EyeColors[slotIndex % EditorP09EyeColors.Length]}.mat");
+            $"Assets/P09_Modular_Humanoid/Model_DATA/Materials/Common/Eye/P09_Eye_{EditorP09EyeColors[normalizedSlotIndex % EditorP09EyeColors.Length]}.mat");
 
         foreach (var transform in model.GetComponentsInChildren<Transform>(true))
         {
@@ -252,6 +254,13 @@ public sealed partial class BattleActorPresentationCatalog
         {
             ApplyEditorP09MaterialByPrefix(model, "P09_Eye", eyeMaterial);
         }
+    }
+
+    internal static string ResolveEditorP09RoughHairName(int slotIndex)
+    {
+        var normalizedSlotIndex = Math.Max(0, slotIndex);
+        var hairIndex = normalizedSlotIndex % EditorP09RoughHairVariantCount + 1;
+        return $"Hair_{hairIndex:00}";
     }
 
     private static bool IsEditorP09HairGroupName(string name)
