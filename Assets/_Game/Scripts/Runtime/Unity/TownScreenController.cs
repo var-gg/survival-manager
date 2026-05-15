@@ -19,6 +19,7 @@ public sealed class TownScreenController : MonoBehaviour
     private ContentTextResolver _contentText = null!;
     private TownScreenPresenter? _presenter;
     private TacticalWorkshopPresenter? _tacticalWorkshopPresenter;
+    private SquadBuilderPresenter? _squadBuilderPresenter;
 
     private void Start()
     {
@@ -88,6 +89,8 @@ public sealed class TownScreenController : MonoBehaviour
         _presenter = new TownScreenPresenter(_root, _localization, _contentText, view);
         _tacticalWorkshopPresenter = new TacticalWorkshopPresenter(panelHost.Root);
         view.BindTacticalWorkshopOpen(_tacticalWorkshopPresenter.Open);
+        _squadBuilderPresenter = new SquadBuilderPresenter(panelHost.Root, _root, _contentText);
+        view.BindSquadBuilderOpen(_squadBuilderPresenter.Open);
         return true;
     }
 

@@ -1,0 +1,51 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!--
+      Squad Builder modal — anchor 6 (Front 3 + Back 3) + posture 5 편집 (audit §2.2).
+      Town hub의 bottom toolbar에서 진입. TacticalWorkshop modal과 같은 panel-overlay 패턴.
+    -->
+    <Style src="SquadBuilder.uss" />
+    <ui:VisualElement name="SquadBuilderRoot" class="sm-sqb-modal sm-sqb-modal--closed" picking-mode="Position">
+        <ui:VisualElement class="sm-sqb-modal__backdrop" picking-mode="Position" />
+        <ui:VisualElement class="sm-sqb-modal__panel">
+            <ui:VisualElement class="sm-sqb-modal__header">
+                <ui:VisualElement class="sm-sqb-modal__title-group">
+                    <ui:Label name="SquadBuilderEyebrowLabel" class="sm-sqb-modal__eyebrow" text="SQUAD BUILDER" />
+                    <ui:Label name="SquadBuilderTitleLabel" class="sm-sqb-modal__title" text="전열 편성" />
+                </ui:VisualElement>
+                <ui:Button name="SquadBuilderCloseButton" class="sm-sqb-modal__close ui-button" text="✕" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="sm-sqb-modal__section">
+                <ui:Label class="sm-sqb-modal__section-title" text="앵커 배치" />
+                <ui:Label name="SquadBuilderAnchorHint" class="sm-sqb-modal__hint" text="버튼을 누르면 다음 hero로 순환합니다." />
+                <ui:VisualElement class="sm-sqb-modal__anchor-grid">
+                    <ui:VisualElement class="sm-sqb-modal__anchor-column">
+                        <ui:Label class="sm-sqb-modal__column-title" text="전열 (Front)" />
+                        <ui:Button name="SquadBuilderAnchor_FrontTop" class="sm-sqb-modal__anchor-button ui-button" />
+                        <ui:Button name="SquadBuilderAnchor_FrontCenter" class="sm-sqb-modal__anchor-button ui-button" />
+                        <ui:Button name="SquadBuilderAnchor_FrontBottom" class="sm-sqb-modal__anchor-button ui-button" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="sm-sqb-modal__anchor-column">
+                        <ui:Label class="sm-sqb-modal__column-title" text="후열 (Back)" />
+                        <ui:Button name="SquadBuilderAnchor_BackTop" class="sm-sqb-modal__anchor-button ui-button" />
+                        <ui:Button name="SquadBuilderAnchor_BackCenter" class="sm-sqb-modal__anchor-button ui-button" />
+                        <ui:Button name="SquadBuilderAnchor_BackBottom" class="sm-sqb-modal__anchor-button ui-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="sm-sqb-modal__section">
+                <ui:Label class="sm-sqb-modal__section-title" text="자세 (Team Posture)" />
+                <ui:VisualElement class="sm-sqb-modal__posture-row">
+                    <ui:Button name="SquadBuilderPosture_HoldLine" class="sm-sqb-modal__posture-button ui-button" text="전열 사수" />
+                    <ui:Button name="SquadBuilderPosture_StandardAdvance" class="sm-sqb-modal__posture-button ui-button" text="표준 전진" />
+                    <ui:Button name="SquadBuilderPosture_ProtectCarry" class="sm-sqb-modal__posture-button ui-button" text="캐리 보호" />
+                    <ui:Button name="SquadBuilderPosture_CollapseWeakSide" class="sm-sqb-modal__posture-button ui-button" text="약측 무너뜨리기" />
+                    <ui:Button name="SquadBuilderPosture_AllInBackline" class="sm-sqb-modal__posture-button ui-button" text="후열 깊이 침투" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:Label name="SquadBuilderStatusLabel" class="sm-sqb-modal__status" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

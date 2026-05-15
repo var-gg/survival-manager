@@ -24,5 +24,29 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("FilterStrip"));
         Assert.That(uxml, Does.Contain("HeroCount"));
         Assert.That(uxml, Does.Contain("TacticalWorkshopButton"));
+        Assert.That(uxml, Does.Contain("SquadBuilderButton"));
+        Assert.That(uxml, Does.Contain("SquadBuilderTemplate"));
+    }
+
+    [Test]
+    public void SquadBuilderUxml_Declares_All_Anchor_And_Posture_Controls()
+    {
+        // audit §2.2 SquadBuilder modal — anchor 6 (Front 3 + Back 3) + posture 5.
+        var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/SquadBuilder.uxml");
+        Assert.That(uxml, Does.Contain("SquadBuilderRoot"));
+        Assert.That(uxml, Does.Contain("SquadBuilderCloseButton"));
+        // 6 anchor
+        Assert.That(uxml, Does.Contain("SquadBuilderAnchor_FrontTop"));
+        Assert.That(uxml, Does.Contain("SquadBuilderAnchor_FrontCenter"));
+        Assert.That(uxml, Does.Contain("SquadBuilderAnchor_FrontBottom"));
+        Assert.That(uxml, Does.Contain("SquadBuilderAnchor_BackTop"));
+        Assert.That(uxml, Does.Contain("SquadBuilderAnchor_BackCenter"));
+        Assert.That(uxml, Does.Contain("SquadBuilderAnchor_BackBottom"));
+        // 5 posture
+        Assert.That(uxml, Does.Contain("SquadBuilderPosture_HoldLine"));
+        Assert.That(uxml, Does.Contain("SquadBuilderPosture_StandardAdvance"));
+        Assert.That(uxml, Does.Contain("SquadBuilderPosture_ProtectCarry"));
+        Assert.That(uxml, Does.Contain("SquadBuilderPosture_CollapseWeakSide"));
+        Assert.That(uxml, Does.Contain("SquadBuilderPosture_AllInBackline"));
     }
 }
