@@ -142,6 +142,12 @@ public sealed class AtlasScreenController : MonoBehaviour
             return;
         }
 
+        if (_region != null && !_root.SessionState.TryApplyAtlasSelectionToExpedition(_region))
+        {
+            _root.SetBlockingError("Atlas 선택을 Expedition 경로로 넘길 수 없습니다.");
+            return;
+        }
+
         var checkpoint = _root.SaveProfile(SessionCheckpointKind.TownExit);
         if (!checkpoint.IsSuccessful)
         {
