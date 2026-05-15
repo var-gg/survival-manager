@@ -53,34 +53,34 @@
                 <ui:Label class="town-hub__column-eyebrow" text="MARKET ROW · 마을 거점" />
                 <ui:Button name="NpcEntry_Dalmok" class="town-hub__npc-entry sm-hover-raise">
                     <ui:VisualElement class="town-hub__npc-portrait town-hub__npc-portrait--dalmok" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__npc-info">
-                        <ui:Label class="town-hub__npc-name" text="달목" />
-                        <ui:Label class="town-hub__npc-role" text="여관 · 모집" />
-                        <ui:Label name="NpcHint_Dalmok" class="town-hub__npc-hint" text="새 동료 명단을 정리해두었네." />
+                    <ui:VisualElement class="town-hub__npc-info" picking-mode="Ignore">
+                        <ui:Label class="town-hub__npc-name" text="달목" picking-mode="Ignore" />
+                        <ui:Label class="town-hub__npc-role" text="여관 · 모집" picking-mode="Ignore" />
+                        <ui:Label name="NpcHint_Dalmok" class="town-hub__npc-hint" text="새 동료 명단을 정리해두었네." picking-mode="Ignore" />
                     </ui:VisualElement>
                 </ui:Button>
                 <ui:Button name="NpcEntry_Soemae" class="town-hub__npc-entry sm-hover-raise">
                     <ui:VisualElement class="town-hub__npc-portrait town-hub__npc-portrait--soemae" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__npc-info">
-                        <ui:Label class="town-hub__npc-name" text="쇠매" />
-                        <ui:Label class="town-hub__npc-role" text="공방 · 장비" />
-                        <ui:Label name="NpcHint_Soemae" class="town-hub__npc-hint" text="망치 소리는 거짓말 안 해." />
+                    <ui:VisualElement class="town-hub__npc-info" picking-mode="Ignore">
+                        <ui:Label class="town-hub__npc-name" text="쇠매" picking-mode="Ignore" />
+                        <ui:Label class="town-hub__npc-role" text="공방 · 장비" picking-mode="Ignore" />
+                        <ui:Label name="NpcHint_Soemae" class="town-hub__npc-hint" text="망치 소리는 거짓말 안 해." picking-mode="Ignore" />
                     </ui:VisualElement>
                 </ui:Button>
                 <ui:Button name="NpcEntry_Galma" class="town-hub__npc-entry sm-hover-raise">
                     <ui:VisualElement class="town-hub__npc-portrait town-hub__npc-portrait--galma" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__npc-info">
-                        <ui:Label class="town-hub__npc-name" text="갈마" />
-                        <ui:Label class="town-hub__npc-role" text="진료소 · 수련" />
-                        <ui:Label name="NpcHint_Galma" class="town-hub__npc-hint" text="다친 곳은 다음에도 다친다." />
+                    <ui:VisualElement class="town-hub__npc-info" picking-mode="Ignore">
+                        <ui:Label class="town-hub__npc-name" text="갈마" picking-mode="Ignore" />
+                        <ui:Label class="town-hub__npc-role" text="진료소 · 수련" picking-mode="Ignore" />
+                        <ui:Label name="NpcHint_Galma" class="town-hub__npc-hint" text="다친 곳은 다음에도 다친다." picking-mode="Ignore" />
                     </ui:VisualElement>
                 </ui:Button>
                 <ui:Button name="NpcEntry_Solgil" class="town-hub__npc-entry sm-hover-raise">
                     <ui:VisualElement class="town-hub__npc-portrait town-hub__npc-portrait--solgil" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__npc-info">
-                        <ui:Label class="town-hub__npc-name" text="솔길" />
-                        <ui:Label class="town-hub__npc-role" text="기록 · 창고" />
-                        <ui:Label name="NpcHint_Solgil" class="town-hub__npc-hint" text="원정대가 못 본 것을 적어둔다." />
+                    <ui:VisualElement class="town-hub__npc-info" picking-mode="Ignore">
+                        <ui:Label class="town-hub__npc-name" text="솔길" picking-mode="Ignore" />
+                        <ui:Label class="town-hub__npc-role" text="기록 · 창고" picking-mode="Ignore" />
+                        <ui:Label name="NpcHint_Solgil" class="town-hub__npc-hint" text="원정대가 못 본 것을 적어둔다." picking-mode="Ignore" />
                     </ui:VisualElement>
                 </ui:Button>
             </ui:VisualElement>
@@ -93,11 +93,11 @@
                     <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--br" picking-mode="Ignore" />
                     <ui:Button name="WelcomeHeroEntry" class="town-hub__welcome sm-hover-raise" picking-mode="Position">
                         <ui:VisualElement name="WelcomeHeroPortrait" class="town-hub__welcome-portrait" picking-mode="Ignore" />
-                        <ui:VisualElement class="town-hub__welcome-text">
-                            <ui:Label name="WelcomeHeroEyebrow" class="sm-eyebrow town-hub__welcome-eyebrow" text="오늘의 부관" />
-                            <ui:Label name="WelcomeHeroName" class="town-hub__welcome-name" text="" />
-                            <ui:Label name="WelcomeHeroGreeting" class="town-hub__welcome-greeting" text="잿골에 오신 것을 환영합니다." />
-                            <ui:Label name="WelcomeHeroHint" class="town-hub__welcome-hint" text="클릭해 동료 시트를 봅니다." />
+                        <ui:VisualElement class="town-hub__welcome-text" picking-mode="Ignore">
+                            <ui:Label name="WelcomeHeroEyebrow" class="sm-eyebrow town-hub__welcome-eyebrow" text="오늘의 부관" picking-mode="Ignore" />
+                            <ui:Label name="WelcomeHeroName" class="town-hub__welcome-name" text="" picking-mode="Ignore" />
+                            <ui:Label name="WelcomeHeroGreeting" class="town-hub__welcome-greeting" text="잿골에 오신 것을 환영합니다." picking-mode="Ignore" />
+                            <ui:Label name="WelcomeHeroHint" class="town-hub__welcome-hint" text="클릭해 동료 시트를 봅니다." picking-mode="Ignore" />
                         </ui:VisualElement>
                     </ui:Button>
                 </ui:VisualElement>
@@ -106,24 +106,24 @@
             <ui:VisualElement class="town-hub__utility-strip">
                 <ui:Label class="town-hub__column-eyebrow" text="LEDGER · 마을 비망록" />
                 <ui:Button name="RosterButton" class="town-hub__utility-entry sm-hover-raise">
-                    <ui:Label class="town-hub__utility-icon" text="◈" />
-                    <ui:VisualElement class="town-hub__utility-text">
-                        <ui:Label class="town-hub__utility-name" text="동료 명부" />
-                        <ui:Label name="RosterCountLabel" class="town-hub__utility-meta" text="" />
+                    <ui:Label class="town-hub__utility-icon" text="◈" picking-mode="Ignore" />
+                    <ui:VisualElement class="town-hub__utility-text" picking-mode="Ignore">
+                        <ui:Label class="town-hub__utility-name" text="동료 명부" picking-mode="Ignore" />
+                        <ui:Label name="RosterCountLabel" class="town-hub__utility-meta" text="" picking-mode="Ignore" />
                     </ui:VisualElement>
                 </ui:Button>
                 <ui:Button name="PermanentAugmentButton" class="town-hub__utility-entry sm-hover-raise">
-                    <ui:Label class="town-hub__utility-icon" text="✦" />
-                    <ui:VisualElement class="town-hub__utility-text">
-                        <ui:Label class="town-hub__utility-name" text="영구 강화" />
-                        <ui:Label class="town-hub__utility-meta" text="자세 신조" />
+                    <ui:Label class="town-hub__utility-icon" text="✦" picking-mode="Ignore" />
+                    <ui:VisualElement class="town-hub__utility-text" picking-mode="Ignore">
+                        <ui:Label class="town-hub__utility-name" text="영구 강화" picking-mode="Ignore" />
+                        <ui:Label class="town-hub__utility-meta" text="자세 신조" picking-mode="Ignore" />
                     </ui:VisualElement>
                 </ui:Button>
                 <ui:Button name="SquadBuilderButton" class="town-hub__utility-entry sm-hover-raise">
-                    <ui:Label class="town-hub__utility-icon" text="❖" />
-                    <ui:VisualElement class="town-hub__utility-text">
-                        <ui:Label class="town-hub__utility-name" text="전열 편성" />
-                        <ui:Label class="town-hub__utility-meta" text="앵커 6 · 자세 5" />
+                    <ui:Label class="town-hub__utility-icon" text="❖" picking-mode="Ignore" />
+                    <ui:VisualElement class="town-hub__utility-text" picking-mode="Ignore">
+                        <ui:Label class="town-hub__utility-name" text="전열 편성" picking-mode="Ignore" />
+                        <ui:Label class="town-hub__utility-meta" text="앵커 6 · 자세 5" picking-mode="Ignore" />
                     </ui:VisualElement>
                 </ui:Button>
             </ui:VisualElement>
