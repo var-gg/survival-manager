@@ -21,7 +21,6 @@ public sealed class TownScreenView
     private readonly Label _helpBodyLabel;
     private readonly Button _helpDismissButton;
     private readonly VisualElement _gridContainer;
-    private readonly Button _tacticalWorkshopButton;
     private readonly Button _squadBuilderButton;
     private readonly Button _expeditionButton;
     private readonly Button _saveButton;
@@ -44,7 +43,6 @@ public sealed class TownScreenView
         _helpBodyLabel = Require<Label>(root, "HelpBodyLabel");
         _helpDismissButton = Require<Button>(root, "HelpDismissButton");
         _gridContainer = Require<VisualElement>(root, "GridContainer");
-        _tacticalWorkshopButton = Require<Button>(root, "TacticalWorkshopButton");
         _squadBuilderButton = Require<Button>(root, "SquadBuilderButton");
         _expeditionButton = Require<Button>(root, "ExpeditionButton");
         _saveButton = Require<Button>(root, "SaveButton");
@@ -67,11 +65,6 @@ public sealed class TownScreenView
         _quickBattleButton.clicked += presenter.QuickBattle;
     }
 
-    public void BindTacticalWorkshopOpen(Action open)
-    {
-        _tacticalWorkshopButton.clicked += open;
-    }
-
     public void BindSquadBuilderOpen(Action open)
     {
         _squadBuilderButton.clicked += open;
@@ -91,7 +84,6 @@ public sealed class TownScreenView
         _helpBodyLabel.text = state.Help.Body;
         _helpDismissButton.text = state.Help.DismissLabel;
 
-        _tacticalWorkshopButton.text = state.TacticalWorkshopLabel;
         _expeditionButton.text = state.ExpeditionLabel;
         _expeditionButton.tooltip = state.ExpeditionTooltip;
         _saveButton.text = state.SaveLabel;
@@ -118,10 +110,27 @@ public sealed class TownScreenView
     {
         var card = new VisualElement { name = $"HeroCard_{hero.HeroId}" };
         card.AddToClassList("town-hub-card");
+        // inline backup — USS class가 stylesheet 미로딩 환경에서 짤리는 것 방지.
+        card.style.width = 138;
+        card.style.height = 184;
+        card.style.flexShrink = 0;
+        // Foundation atom: rarity jewel border (common/rare/epic) + family tint rib.
+        card.AddToClassList("sm-jewel-duotone");
         if (!string.IsNullOrEmpty(hero.RarityKey))
         {
-            card.AddToClassList($"town-hub-card--rare-{hero.RarityKey}");
+            card.AddToClassList($"sm-jewel-duotone--{hero.RarityKey}");
         }
+
+        // family rib — 카드 상단 4px 띠.
+        var rib = new VisualElement { name = "FamilyRib" };
+        rib.AddToClassList("town-hub-card__rib");
+        rib.AddToClassList("sm-family-tint-rib");
+        if (!string.IsNullOrEmpty(hero.FamilyKey))
+        {
+            rib.AddToClassList($"sm-family-tint-rib--{hero.FamilyKey}");
+        }
+        rib.pickingMode = PickingMode.Ignore;
+        card.Add(rib);
 
         var equipRow = new VisualElement();
         equipRow.AddToClassList("town-hub-card__equip-row");

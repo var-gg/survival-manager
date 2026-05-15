@@ -1,19 +1,26 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <!--
-      Squad Builder modal — anchor 6 (Front 3 + Back 3) + posture 5 편집 (audit §2.2).
-      Town hub의 bottom toolbar에서 진입. TacticalWorkshop modal과 같은 panel-overlay 패턴.
+      Squad Builder modal (audit §2.2) — anchor 6 (Front 3 + Back 3) + posture 5.
+      Foundation atom (RuntimePanelTheme.uss) — sm-backdrop-dim + sm-frame-corner-cap × 4 +
+      sm-ornament-divider + sm-cta + sm-modal-anim.
     -->
     <Style src="SquadBuilder.uss" />
-    <ui:VisualElement name="SquadBuilderRoot" class="sm-sqb-modal sm-sqb-modal--closed" picking-mode="Position">
-        <ui:VisualElement class="sm-sqb-modal__backdrop" picking-mode="Position" />
+    <ui:VisualElement name="SquadBuilderRoot" class="sm-sqb-modal sm-sqb-modal--closed sm-modal-anim sm-modal-anim--enter" picking-mode="Position">
+        <ui:VisualElement class="sm-backdrop-dim sm-sqb-modal__backdrop" picking-mode="Position" />
         <ui:VisualElement class="sm-sqb-modal__panel">
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+
             <ui:VisualElement class="sm-sqb-modal__header">
                 <ui:VisualElement class="sm-sqb-modal__title-group">
-                    <ui:Label name="SquadBuilderEyebrowLabel" class="sm-sqb-modal__eyebrow" text="SQUAD BUILDER" />
-                    <ui:Label name="SquadBuilderTitleLabel" class="sm-sqb-modal__title" text="전열 편성" />
+                    <ui:Label name="SquadBuilderEyebrowLabel" class="sm-eyebrow sm-sqb-modal__eyebrow" text="SQUAD BUILDER" />
+                    <ui:Label name="SquadBuilderTitleLabel" class="sm-headline sm-sqb-modal__title" text="전열 편성" />
                 </ui:VisualElement>
-                <ui:Button name="SquadBuilderCloseButton" class="sm-sqb-modal__close ui-button" text="✕" />
+                <ui:Button name="SquadBuilderCloseButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary sm-sqb-modal__close" text="✕" />
             </ui:VisualElement>
+            <ui:VisualElement class="sm-ornament-divider sm-sqb-modal__divider" picking-mode="Ignore" />
 
             <ui:VisualElement class="sm-sqb-modal__section">
                 <ui:Label class="sm-sqb-modal__section-title" text="앵커 배치" />
@@ -21,15 +28,15 @@
                 <ui:VisualElement class="sm-sqb-modal__anchor-grid">
                     <ui:VisualElement class="sm-sqb-modal__anchor-column">
                         <ui:Label class="sm-sqb-modal__column-title" text="전열 (Front)" />
-                        <ui:Button name="SquadBuilderAnchor_FrontTop" class="sm-sqb-modal__anchor-button ui-button" />
-                        <ui:Button name="SquadBuilderAnchor_FrontCenter" class="sm-sqb-modal__anchor-button ui-button" />
-                        <ui:Button name="SquadBuilderAnchor_FrontBottom" class="sm-sqb-modal__anchor-button ui-button" />
+                        <ui:Button name="SquadBuilderAnchor_FrontTop" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                        <ui:Button name="SquadBuilderAnchor_FrontCenter" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                        <ui:Button name="SquadBuilderAnchor_FrontBottom" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
                     </ui:VisualElement>
                     <ui:VisualElement class="sm-sqb-modal__anchor-column">
                         <ui:Label class="sm-sqb-modal__column-title" text="후열 (Back)" />
-                        <ui:Button name="SquadBuilderAnchor_BackTop" class="sm-sqb-modal__anchor-button ui-button" />
-                        <ui:Button name="SquadBuilderAnchor_BackCenter" class="sm-sqb-modal__anchor-button ui-button" />
-                        <ui:Button name="SquadBuilderAnchor_BackBottom" class="sm-sqb-modal__anchor-button ui-button" />
+                        <ui:Button name="SquadBuilderAnchor_BackTop" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                        <ui:Button name="SquadBuilderAnchor_BackCenter" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                        <ui:Button name="SquadBuilderAnchor_BackBottom" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -37,11 +44,11 @@
             <ui:VisualElement class="sm-sqb-modal__section">
                 <ui:Label class="sm-sqb-modal__section-title" text="자세 (Team Posture)" />
                 <ui:VisualElement class="sm-sqb-modal__posture-row">
-                    <ui:Button name="SquadBuilderPosture_HoldLine" class="sm-sqb-modal__posture-button ui-button" text="전열 사수" />
-                    <ui:Button name="SquadBuilderPosture_StandardAdvance" class="sm-sqb-modal__posture-button ui-button" text="표준 전진" />
-                    <ui:Button name="SquadBuilderPosture_ProtectCarry" class="sm-sqb-modal__posture-button ui-button" text="캐리 보호" />
-                    <ui:Button name="SquadBuilderPosture_CollapseWeakSide" class="sm-sqb-modal__posture-button ui-button" text="약측 무너뜨리기" />
-                    <ui:Button name="SquadBuilderPosture_AllInBackline" class="sm-sqb-modal__posture-button ui-button" text="후열 깊이 침투" />
+                    <ui:Button name="SquadBuilderPosture_HoldLine" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="전열 사수" />
+                    <ui:Button name="SquadBuilderPosture_StandardAdvance" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="표준 전진" />
+                    <ui:Button name="SquadBuilderPosture_ProtectCarry" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="캐리 보호" />
+                    <ui:Button name="SquadBuilderPosture_CollapseWeakSide" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="약측 무너뜨리기" />
+                    <ui:Button name="SquadBuilderPosture_AllInBackline" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="후열 깊이 침투" />
                 </ui:VisualElement>
             </ui:VisualElement>
 

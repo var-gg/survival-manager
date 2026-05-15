@@ -1,6 +1,7 @@
 /* =============================================================
-   Squad Builder modal — anchor 6 + posture 5 편집 (audit §2.2)
-   Town hub bottom toolbar에서 진입. panel-overlay 패턴 (TacticalWorkshop와 동일).
+   Squad Builder modal — Foundation atom (RuntimePanelTheme.uss) 위에
+   modal-specific positioning + section layout만 정의.
+   mood/CTA/corner ornament/animation은 atom 직접 적용 (audit §2.2).
    ============================================================= */
 
 .sm-sqb-modal {
@@ -13,60 +14,58 @@
 .sm-sqb-modal--closed { display: none; }
 .sm-sqb-modal--open { display: flex; }
 
+/* sm-backdrop-dim atom 위에 modal-specific darker tint. */
 .sm-sqb-modal__backdrop {
-    position: absolute;
-    left: 0; right: 0; top: 0; bottom: 0;
-    background-color: rgba(12, 17, 38, 0.82);
+    background-color: rgba(8, 12, 28, 0.86);
 }
 
+/* Panel — atom token (sm-frame-ceremony-bg / sm-frame-trim-*) + corner cap atom의 absolute parent. */
 .sm-sqb-modal__panel {
-    width: 720px;
-    background-color: rgba(28, 34, 67, 0.98);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: var(--sm-gold-300);
-    border-right-color: var(--sm-gold-300);
-    border-top-color: var(--sm-gold-300);
-    border-bottom-color: var(--sm-gold-300);
-    padding-top: 20px;
-    padding-bottom: 20px;
-    padding-left: 28px;
-    padding-right: 28px;
+    position: relative;
+    width: 760px;
+    background-color: var(--sm-frame-ceremony-bg);
+    border-left-width: var(--sm-frame-trim-w);
+    border-right-width: var(--sm-frame-trim-w);
+    border-top-width: var(--sm-frame-trim-w);
+    border-bottom-width: var(--sm-frame-trim-w);
+    border-left-color: var(--sm-frame-trim-color);
+    border-right-color: var(--sm-frame-trim-color);
+    border-top-color: var(--sm-frame-trim-color);
+    border-bottom-color: var(--sm-frame-trim-color);
+    padding-top: 28px;
+    padding-bottom: 24px;
+    padding-left: 36px;
+    padding-right: 36px;
 }
 
 .sm-sqb-modal__header {
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
-    border-bottom-width: 1px;
-    border-bottom-color: var(--sm-gold-300-a28);
-    padding-bottom: 12px;
-    margin-bottom: 18px;
+    padding-bottom: 14px;
 }
 
 .sm-sqb-modal__title-group { flex-direction: column; }
 
 .sm-sqb-modal__eyebrow {
-    color: var(--sm-gold-300);
-    font-size: 11px;
-    letter-spacing: 4px;
-    -unity-font-style: bold;
     margin-bottom: 4px;
+    letter-spacing: 4px;
 }
 
-.sm-sqb-modal__title {
-    color: var(--sm-gold-200);
-    font-size: 22px;
-    -unity-font-style: bold;
-}
+.sm-sqb-modal__title { font-size: 26px; }
 
 .sm-sqb-modal__close {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     -unity-text-align: middle-center;
-    color: var(--sm-ink-2);
+    color: var(--sm-ink-1);
+    -unity-font-style: bold;
+}
+
+.sm-sqb-modal__divider {
+    height: 12px;
+    margin-top: 0;
+    margin-bottom: 18px;
 }
 
 .sm-sqb-modal__section {
@@ -78,13 +77,14 @@
     color: var(--sm-gold-200);
     font-size: 14px;
     -unity-font-style: bold;
+    letter-spacing: 1px;
     margin-bottom: 6px;
 }
 
 .sm-sqb-modal__hint {
     color: var(--sm-ink-3);
     font-size: 11px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .sm-sqb-modal__anchor-grid {
@@ -95,7 +95,7 @@
 .sm-sqb-modal__anchor-column {
     flex-direction: column;
     flex-grow: 1;
-    margin-right: 12px;
+    margin-right: 14px;
 }
 
 .sm-sqb-modal__anchor-column:last-child { margin-right: 0; }
@@ -103,21 +103,16 @@
 .sm-sqb-modal__column-title {
     color: var(--sm-ink-2);
     font-size: 12px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     -unity-text-align: middle-center;
+    letter-spacing: 2px;
 }
 
 .sm-sqb-modal__anchor-button {
-    height: 44px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     -unity-text-align: middle-center;
     color: var(--sm-ink-1);
-    background-color: rgba(20, 26, 53, 0.85);
     white-space: normal;
-}
-
-.sm-sqb-modal__anchor-button:hover {
-    background-color: rgba(38, 45, 84, 0.95);
 }
 
 .sm-sqb-modal__posture-row {
@@ -126,30 +121,19 @@
 }
 
 .sm-sqb-modal__posture-button {
-    height: 40px;
     flex-grow: 1;
-    margin-right: 6px;
-    margin-bottom: 6px;
+    margin-right: 8px;
+    margin-bottom: 8px;
     -unity-text-align: middle-center;
-    color: var(--sm-ink-2);
-    background-color: rgba(20, 26, 53, 0.85);
-}
-
-.sm-sqb-modal__posture-button:hover {
-    background-color: rgba(38, 45, 84, 0.95);
     color: var(--sm-ink-1);
 }
 
 .sm-sqb-modal__posture-button--selected {
-    background-color: rgba(200, 147, 42, 0.22);
-    border-left-color: var(--sm-gold-300);
-    border-right-color: var(--sm-gold-300);
-    border-top-color: var(--sm-gold-300);
-    border-bottom-color: var(--sm-gold-300);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
+    background-color: rgba(200, 147, 42, 0.32);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
     color: var(--sm-gold-100);
     -unity-font-style: bold;
 }
@@ -158,5 +142,5 @@
     color: var(--sm-ink-3);
     font-size: 11px;
     -unity-text-align: middle-center;
-    margin-top: 4px;
+    margin-top: 6px;
 }

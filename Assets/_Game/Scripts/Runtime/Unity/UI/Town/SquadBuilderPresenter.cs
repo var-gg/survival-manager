@@ -110,6 +110,9 @@ public sealed class SquadBuilderPresenter
         _modalRoot.style.display = _isOpen ? DisplayStyle.Flex : DisplayStyle.None;
         _modalRoot.EnableInClassList("sm-sqb-modal--open", _isOpen);
         _modalRoot.EnableInClassList("sm-sqb-modal--closed", !_isOpen);
+        // Foundation atom — sm-modal-anim tier 1 (modal scale + opacity transition).
+        // 닫혀 있을 때만 enter class 적용 (opacity 0 + scale 0.96), 열릴 때 제거 → ease-out transition.
+        _modalRoot.EnableInClassList("sm-modal-anim--enter", !_isOpen);
 
         if (!_isOpen) return;
 
