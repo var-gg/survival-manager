@@ -475,6 +475,21 @@
     white-space: normal;
 }
 
+.atlas-continue-button {
+    min-height: 42px;
+    margin-top: 10px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgb(245, 204, 112);
+    background-color: rgb(69, 62, 43);
+    color: rgb(255, 242, 198);
+    unity-font-style: bold;
+}
+
+.atlas-continue-button:hover {
+    background-color: rgb(88, 76, 47);
+}
+
 .atlas-debug-hash {
     margin-top: 10px;
     color: rgb(148, 160, 168);

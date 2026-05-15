@@ -87,6 +87,7 @@ public sealed class AtlasScreenController : MonoBehaviour
             SelectNode(hexId);
             Render();
         };
+        _view.ContinueSelected += ContinueToExpedition;
         SyncPresenterFromSession();
     }
 
@@ -131,6 +132,24 @@ public sealed class AtlasScreenController : MonoBehaviour
 
         Render();
         return true;
+    }
+
+    public void ContinueToExpedition()
+    {
+        EnsureSessionReady();
+        if (_root == null)
+        {
+            return;
+        }
+
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.TownExit);
+        if (!checkpoint.IsSuccessful)
+        {
+            _root.SetBlockingError(checkpoint.Message);
+            return;
+        }
+
+        _root.SceneFlow.GoToExpedition();
     }
 
     private void EnsureSessionReady()

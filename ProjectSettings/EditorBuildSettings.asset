@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/_Game/Scenes/Town.unity
     guid: 50fecf6c0d2deed4fb386c437d552728
   - enabled: 1
+    path: Assets/_Game/Scenes/Atlas.unity
+    guid: ffa101e3fbc30bc4c93d9dd307be2a29
+  - enabled: 1
     path: Assets/_Game/Scenes/Expedition.unity
     guid: 7c0db7099defe09488723054f6671aeb
   - enabled: 1

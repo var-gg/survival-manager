@@ -5,6 +5,7 @@ using SM.Combat.Model;
 using SM.Meta.Model;
 using SM.Unity;
 using SM.Unity.UI;
+using SM.Unity.UI.Atlas;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -77,10 +78,7 @@ public sealed class PlayModeSmokeTests
             root.SessionState.CycleTeamPosture();
         }
 
-        town!.OpenExpedition();
-
-        yield return WaitForScene(SceneNames.Expedition);
-        yield return WaitForComponent<ExpeditionScreenController>();
+        yield return OpenExpeditionThroughAtlas(town!);
         var expedition = FindAny<ExpeditionScreenController>();
         Assert.That(expedition, Is.Not.Null, BuildSceneDiagnostic("Expedition scene should contain ExpeditionScreenController after Start Expedition."));
         expedition!.NextBattle();
@@ -147,10 +145,7 @@ public sealed class PlayModeSmokeTests
         var town = FindAny<TownScreenController>();
         Assert.That(town, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownScreenController before normal run closure."));
         var siteId = root.SessionState.SelectedCampaignSiteId;
-        town!.OpenExpedition();
-
-        yield return WaitForScene(SceneNames.Expedition);
-        yield return WaitForComponent<ExpeditionScreenController>();
+        yield return OpenExpeditionThroughAtlas(town!);
         while (root.SessionState.GetSelectedExpeditionNode()?.RequiresBattle == true)
         {
             Assert.That(root.SessionState.PrepareSelectedBattleNodeHandoff(), Is.True, "Battle nodes should prepare a reward-bearing handoff.");
@@ -168,10 +163,7 @@ public sealed class PlayModeSmokeTests
             yield return WaitForScene(SceneNames.Town);
             town = FindAny<TownScreenController>();
             Assert.That(town, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownScreenController before expedition resume."));
-            town!.OpenExpedition();
-
-            yield return WaitForScene(SceneNames.Expedition);
-            yield return WaitForComponent<ExpeditionScreenController>();
+            yield return OpenExpeditionThroughAtlas(town!);
         }
 
         var expedition = FindAny<ExpeditionScreenController>();
@@ -274,6 +266,23 @@ public sealed class PlayModeSmokeTests
 
         yield return WaitForScene(SceneNames.Town);
         yield return WaitForComponent<TownScreenController>();
+    }
+
+    private static IEnumerator OpenExpeditionThroughAtlas(TownScreenController town)
+    {
+        town.OpenExpedition();
+        yield return WaitForScene(SceneNames.Atlas);
+        yield return WaitForComponent<AtlasScreenController>();
+
+        var atlas = FindAny<AtlasScreenController>();
+        var atlasHost = FindPanelHost("AtlasRuntimePanelHost");
+        Assert.That(atlas, Is.Not.Null, BuildSceneDiagnostic("Atlas scene should contain AtlasScreenController before Expedition."));
+        Assert.That(atlasHost, Is.Not.Null, BuildSceneDiagnostic("Atlas scene should contain AtlasRuntimePanelHost before Expedition."));
+        Assert.That(atlasHost!.Root.Q<Button>("atlas-continue-button"), Is.Not.Null, "Atlas should expose the continue handoff button.");
+
+        atlas!.ContinueToExpedition();
+        yield return WaitForScene(SceneNames.Expedition);
+        yield return WaitForComponent<ExpeditionScreenController>();
     }
 
     private static IEnumerator WaitForScene(string sceneName, float timeout = 8f)

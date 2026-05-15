@@ -126,14 +126,14 @@ public sealed class TownScreenPresenter
         {
             var checkpoint = _root.SaveProfile(SessionCheckpointKind.TownExit);
             if (!checkpoint.IsSuccessful) { Refresh(checkpoint.Message); return; }
-            _root.SceneFlow.GoToExpedition();
+            _root.SceneFlow.GoToAtlas();
             return;
         }
 
         _root.SessionState.BeginNewExpedition();
         var newRunCheckpoint = _root.SaveProfile(SessionCheckpointKind.TownExit);
         if (!newRunCheckpoint.IsSuccessful) { Refresh(newRunCheckpoint.Message); return; }
-        _root.SceneFlow.GoToExpedition();
+        _root.SceneFlow.GoToAtlas();
     }
 
     public void QuickBattle()

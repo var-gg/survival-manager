@@ -26,6 +26,7 @@ public sealed class AtlasScreenView
     private readonly Label _recommendations;
     private readonly Label _boundary;
     private readonly Label _hash;
+    private readonly Button _continueButton;
     private int? _lastLayerStageIndex;
 
     public AtlasScreenView(VisualElement root)
@@ -49,6 +50,8 @@ public sealed class AtlasScreenView
         _recommendations = Require<Label>("atlas-preview-recommendations");
         _boundary = Require<Label>("atlas-boundary-note");
         _hash = Require<Label>("atlas-debug-hash");
+        _continueButton = Require<Button>("atlas-continue-button");
+        _continueButton.clicked += () => ContinueSelected?.Invoke();
 
         _boardPane.pickingMode = PickingMode.Position;
         _board.pickingMode = PickingMode.Ignore;
@@ -64,6 +67,7 @@ public sealed class AtlasScreenView
     public event Action<string>? SigilSelected;
     public event Action<string>? AnchorSelected;
     public event Action<string>? StageCandidateSelected;
+    public event Action? ContinueSelected;
 
     public void Render(AtlasScreenViewState state)
     {
