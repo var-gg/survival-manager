@@ -37,7 +37,60 @@ public static class TownPreviewCaptureUtility
         (r => Make<InventoryPreviewBootstrap>(b => b.BuildInto(r)),        "inventory"),
         (r => Make<TheaterPreviewBootstrap>(b => b.BuildInto(r)),          "theater"),
         (r => Make<SettingsPreviewBootstrap>(b => b.BuildInto(r)),         "settings"),
+        // production Town hub + SquadBuilder modal — Phase 1/4 retroactive 시각 검증 (atom 적용).
+        (r => BuildProductionTownHub(r, openSquadBuilder: false),          "production_town_hub"),
+        (r => BuildProductionTownHub(r, openSquadBuilder: true),           "squad_builder_modal"),
     };
+
+    private const string TownScreenUxmlPath = "Assets/_Game/UI/Screens/Town/TownScreen.uxml";
+    private const string TownScreenUssPath = "Assets/_Game/UI/Screens/Town/TownScreen.uss";
+    private const string ThemeTokensPath = "Assets/_Game/UI/Foundation/Styles/ThemeTokens.uss";
+    private const string RuntimePanelThemePath = "Assets/_Game/UI/Foundation/Styles/RuntimePanelTheme.uss";
+
+    /// <summary>
+    /// production TownScreen.uxml + atom style 직접 inject + real-session presenter wire.
+    /// Bootstrap 우회 (production controller가 scene 전용이라 EditorWindow에 없음). audit §2.1/§2.2 정합 캡처.
+    /// </summary>
+    private static void BuildProductionTownHub(VisualElement root, bool openSquadBuilder)
+    {
+        var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(TownScreenUxmlPath);
+        if (visualTree == null)
+        {
+            root.Add(new UnityEngine.UIElements.Label($"TownScreen.uxml 못 찾음: {TownScreenUxmlPath}"));
+            return;
+        }
+
+        var tokens = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.StyleSheet>(ThemeTokensPath);
+        var theme = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.StyleSheet>(RuntimePanelThemePath);
+        var townUss = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.StyleSheet>(TownScreenUssPath);
+        if (tokens != null) root.styleSheets.Add(tokens);
+        if (theme != null) root.styleSheets.Add(theme);
+        if (townUss != null) root.styleSheets.Add(townUss);
+        visualTree.CloneTree(root);
+
+        try
+        {
+            var sessionRoot = PreviewSessionContext.EnsureSession();
+            var contentText = PreviewSessionContext.CreateContentText(sessionRoot);
+            var view = new SM.Unity.UI.Town.TownScreenView(root);
+            var presenter = new SM.Unity.UI.Town.TownScreenPresenter(
+                sessionRoot, sessionRoot.Localization, contentText, view);
+            presenter.Initialize();
+
+            // SquadBuilder modal — Town hub 안에 인스턴스 (UXML Instance). presenter ctor가 element 조회.
+            // openSquadBuilder=true면 즉시 Open (modal 열린 상태 캡처).
+            var squadBuilder = new SM.Unity.UI.Town.SquadBuilderPresenter(root, sessionRoot, contentText);
+            if (openSquadBuilder)
+            {
+                squadBuilder.Open();
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[PreviewCapture] production hub wire 실패: {e.Message}");
+            root.Add(new UnityEngine.UIElements.Label($"production hub wire fail: {e.Message}"));
+        }
+    }
 
     private const string OutputDir = "Screenshots/mockups";
     private const int CaptureWidth = 1600;

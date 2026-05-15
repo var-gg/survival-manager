@@ -1,6 +1,6 @@
 /* =============================================================
-   Town hub V1 — RosterGrid default panel + bottom toolbar.
-   audit §2.1 채택, RosterGridPreview.uss style 그대로 가져와 town-hub__* 클래스로 정착.
+   Town hub V1 (audit §2.1) — Foundation atom (RuntimePanelTheme.uss) 위에
+   surface-specific layout/positioning만 정의. mood/CTA/corner ornament는 atom 직접 적용.
    ============================================================= */
 
 .town-hub {
@@ -10,21 +10,16 @@
     position: relative;
 }
 
-/* Backdrop ----------------------------------------------------- */
+/* Backdrop layers — atom의 sm-backdrop / sm-backdrop-dim 위에 surface backdrop 이미지 fragmented. */
 .town-hub__backdrop {
-    position: absolute;
-    left: 0; right: 0; top: 0; bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
-    -unity-background-scale-mode: scale-and-crop;
 }
 
 .town-hub__backdrop-dim {
-    position: absolute;
-    left: 0; right: 0; top: 0; bottom: 0;
-    background-color: rgba(12, 17, 38, 0.55);
+    background-color: rgba(12, 17, 38, 0.62);
 }
 
-/* Help strip --------------------------------------------------- */
+/* Help strip ----------------------------------------------------- */
 .town-hub__help {
     flex-direction: row;
     align-items: center;
@@ -48,37 +43,34 @@
     margin-left: 12px;
 }
 
-/* Header ------------------------------------------------------- */
+/* Header bar — ceremony mood + 4-corner vine + ornament divider 합성.
+   sm-modal-frame은 absolute라 in-flow header에 못 씀 → atom token으로 직접 합성. */
 .town-hub__header {
+    position: relative;
+    background-color: var(--sm-frame-ceremony-bg);
+    border-bottom-width: var(--sm-frame-trim-w);
+    border-bottom-color: var(--sm-frame-trim-color);
+}
+
+.town-hub__header-content {
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-end;
     padding-top: 28px;
-    padding-bottom: 16px;
-    padding-left: 40px;
-    padding-right: 40px;
-    background-color: rgba(20, 26, 53, 0.78);
-    border-bottom-width: 1px;
-    border-bottom-color: var(--sm-gold-400);
+    padding-bottom: 18px;
+    padding-left: 56px;
+    padding-right: 56px;
 }
 
-.town-hub__header-title {
-    flex-direction: column;
-}
+.town-hub__header-title { flex-direction: column; }
 
+/* sm-eyebrow / sm-headline atom 위에 surface-specific overrides. */
 .town-hub__eyebrow {
-    font-size: 11px;
-    color: var(--sm-gold-300);
-    letter-spacing: 4px;
-    -unity-font-style: bold;
     margin-bottom: 6px;
+    letter-spacing: 4px;
 }
 
-.town-hub__title {
-    font-size: 28px;
-    color: var(--sm-gold-200);
-    -unity-font-style: bold;
-}
+.town-hub__title { font-size: 32px; }
 
 .town-hub__header-meta {
     flex-direction: column;
@@ -94,7 +86,7 @@
 .town-hub__header-tools {
     flex-direction: row;
     align-items: center;
-    margin-top: 6px;
+    margin-top: 8px;
 }
 
 .town-hub__locale-status {
@@ -105,10 +97,21 @@
 
 .town-hub__locale-button {
     margin-left: 4px;
+    min-width: 56px;
 }
 
 .town-hub__help-button {
     margin-left: 8px;
+    min-width: 56px;
+}
+
+/* ornament divider sits at the bottom edge of the header, replacing the flat border. */
+.town-hub__header-divider {
+    position: absolute;
+    left: 40px;
+    right: 40px;
+    bottom: -3px;
+    height: 12px;
 }
 
 /* Filter chip strip ------------------------------------------- */
@@ -120,6 +123,8 @@
     padding-left: 40px;
     padding-right: 40px;
     background-color: rgba(20, 26, 53, 0.62);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--sm-frame-divider-ceremony);
 }
 
 .town-hub__filter-chip {
@@ -164,34 +169,11 @@
     align-self: center;
 }
 
-/* Profile overlay (HeroPortraitCard atom 위 — RosterGridPreview와 동일 패턴) */
-.rgp-profile-overlay { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
-.rgp-profile-overlay__equip-row { position: absolute; top: 6px; left: 4px; flex-direction: row; }
-.rgp-profile-overlay__equip-dot {
-    width: 6px; height: 6px; margin-right: 2px;
-    background-color: rgba(107, 93, 63, 0.55);
-    border-top-left-radius: 3px; border-top-right-radius: 3px;
-    border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;
-}
-.rgp-profile-overlay__equip-dot--filled { background-color: var(--sm-gold-300); }
-.rgp-profile-overlay__level-row {
-    position: absolute; left: 4px; right: 4px; bottom: 22px;
-    flex-direction: row; align-items: center;
-    background-color: rgba(20, 26, 53, 0.78);
-    padding-left: 4px; padding-right: 4px; padding-top: 2px; padding-bottom: 2px;
-}
-.rgp-profile-overlay__level-label {
-    color: var(--sm-gold-100); font-size: 9px; -unity-font-style: bold;
-    margin-right: 4px; min-width: 28px;
-}
-.rgp-profile-overlay__xp-bar { flex-grow: 1; height: 4px; background-color: rgba(216, 199, 153, 0.22); }
-.rgp-profile-overlay__xp-fill { height: 4px; background-color: rgba(127, 163, 224, 0.85); }
-
 /* Grid -------------------------------------------------------- */
 .town-hub__grid-scroll {
     flex-grow: 1;
-    padding-top: 20px;
-    padding-bottom: 88px;
+    padding-top: 24px;
+    padding-bottom: 96px;
     padding-left: 40px;
     padding-right: 40px;
 }
@@ -203,39 +185,57 @@
 }
 
 .town-hub__grid > * {
-    margin-right: 12px;
-    margin-bottom: 12px;
+    margin-right: 14px;
+    margin-bottom: 14px;
 }
 
-/* Hero card — production hub 전용 (Foundation HeroPortraitCard atom은 Resources 외부라 코드 직접 build) */
+/* Hero card — atom (sm-jewel-duotone / sm-family-tint-rib / sm-hover-raise) overlay.
+   카드 자체는 BuildHeroCard 코드에서 family rib + jewel border + hover-raise 적용.
+   flex-shrink 0 명시 — ScrollView row+wrap 안에서 카드가 0 width로 짤리는 것 방지. */
 .town-hub-card {
-    width: 132px;
-    height: 168px;
+    width: 138px;
+    height: 184px;
+    flex-shrink: 0;
+    flex-grow: 0;
     background-color: rgba(28, 34, 67, 0.92);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: var(--sm-line-2);
-    border-right-color: var(--sm-line-2);
-    border-top-color: var(--sm-line-2);
-    border-bottom-color: var(--sm-line-2);
-    padding-top: 8px;
+    padding-top: 0;
     padding-bottom: 6px;
     padding-left: 6px;
     padding-right: 6px;
     flex-direction: column;
     justify-content: flex-end;
     position: relative;
+    transition-property: translate, scale;
+    transition-duration: 120ms;
+    transition-timing-function: ease-out;
 }
 
-.town-hub-card--rare-rare { border-left-color: var(--sm-rare-rare); border-right-color: var(--sm-rare-rare); border-top-color: var(--sm-rare-rare); border-bottom-color: var(--sm-rare-rare); }
-.town-hub-card--rare-epic { border-left-color: var(--sm-rare-epic); border-right-color: var(--sm-rare-epic); border-top-color: var(--sm-rare-epic); border-bottom-color: var(--sm-rare-epic); }
+.town-hub-card:hover {
+    translate: 0 -2px;
+    scale: 1.02 1.02;
+}
+
+.town-hub-card__rib {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
 
 .town-hub-card__portrait {
     flex-grow: 1;
-    background-color: rgba(20, 26, 53, 0.55);
-    margin-bottom: 4px;
+    background-color: rgba(20, 26, 53, 0.6);
+    margin-top: 8px;
+    margin-bottom: 6px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(0, 0, 0, 0.28);
+    border-right-color: rgba(0, 0, 0, 0.28);
+    border-top-color: rgba(0, 0, 0, 0.28);
+    border-bottom-color: rgba(0, 0, 0, 0.28);
 }
 
 .town-hub-card__name {
@@ -258,8 +258,8 @@
 
 .town-hub-card__equip-row {
     position: absolute;
-    top: 6px;
-    left: 6px;
+    top: 10px;
+    left: 8px;
     flex-direction: row;
 }
 
@@ -292,17 +292,18 @@
 .town-hub-card__xp-bar { flex-grow: 1; height: 4px; background-color: rgba(216, 199, 153, 0.22); }
 .town-hub-card__xp-fill { height: 4px; background-color: rgba(127, 163, 224, 0.85); }
 
-/* Toolbar ----------------------------------------------------- */
+/* Toolbar bar — ceremony mood + 4 vine corner (bottom 2). */
 .town-hub__toolbar {
+    position: relative;
     flex-direction: row;
     align-items: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 24px;
-    padding-right: 24px;
-    background-color: rgba(20, 26, 53, 0.88);
-    border-top-width: 1px;
-    border-top-color: var(--sm-gold-300-a28);
+    padding-top: 14px;
+    padding-bottom: 14px;
+    padding-left: 56px;
+    padding-right: 56px;
+    background-color: var(--sm-frame-ceremony-bg);
+    border-top-width: var(--sm-frame-trim-w);
+    border-top-color: var(--sm-frame-trim-color);
 }
 
 .town-hub__status {
@@ -318,20 +319,41 @@
 }
 
 .town-hub__toolbar-actions > .ui-button {
-    margin-left: 6px;
+    margin-left: 8px;
+    min-width: 96px;
+    padding-left: 14px;
+    padding-right: 14px;
 }
 
-/* Floating Quick Battle CTA ----------------------------------- */
+.town-hub__return-button {
+    margin-left: 18px;
+}
+
+/* Modal overlay wrapper — TemplateContainer in-flow 한계 우회.
+   wrapper 자체는 absolute fill + picking ignore. 내부 modal element가 picking 차지. */
+.town-hub__modal-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.town-hub__modal-overlay > * {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+/* Floating Quick Battle CTA — sm-cta--hero atom 위에 floating 위치만. */
 .town-hub__quick-battle {
     position: absolute;
     right: 40px;
-    bottom: 78px;
-    width: 184px;
+    bottom: 86px;
+    width: 200px;
     color: var(--sm-ink-0);
-    font-size: 14px;
     -unity-font-style: bold;
-}
-
-.town-hub__quick-battle:hover {
-    background-color: rgba(127, 163, 224, 1);
+    letter-spacing: 1px;
 }

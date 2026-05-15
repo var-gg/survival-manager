@@ -1,49 +1,52 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <!--
-      Town hub (V1) — RosterGrid를 default 진입 panel로 채택.
-      audit §2.1: 12 hero grid + filter chip + Quick Battle floating CTA + bottom toolbar.
-      옛 single-page dashboard (recruit/deploy/character sheet 등 30+ 액션 모두 한 화면)는 폐기.
-      후속 phase에서 Recruit/EquipmentRefit/PassiveBoard/Character sheet는 modal로 분리.
+      Town hub V1 — RosterGrid default panel (audit §2.1) + Foundation atom (RuntimePanelTheme.uss).
+      header / toolbar는 ceremony mood + vine SVG corner + ornament-divider 합성.
+      hero card는 BuildHeroCard 코드에서 family-tint-rib + jewel-duotone + hover-raise atom 적용.
     -->
     <ui:Template name="HeroPortraitCardTemplate" src="../../Foundation/Components/HeroPortraitCard.uxml" />
-    <ui:Template name="TacticalWorkshopTemplate" src="../../TacticalWorkshop/TacticalWorkshop.uxml" />
     <ui:Template name="SquadBuilderTemplate" src="SquadBuilder.uxml" />
     <ui:VisualElement name="TownScreenRoot" class="screen town-hub">
-        <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop" picking-mode="Ignore" />
-        <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim" picking-mode="Ignore" />
+        <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop sm-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim sm-backdrop-dim" picking-mode="Ignore" />
 
         <ui:VisualElement name="HelpStrip" class="town-hub__help">
             <ui:Label name="HelpBodyLabel" class="town-hub__help-body" />
-            <ui:Button name="HelpDismissButton" class="ui-button town-hub__help-dismiss" />
+            <ui:Button name="HelpDismissButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary town-hub__help-dismiss" />
         </ui:VisualElement>
 
         <ui:VisualElement name="HeaderBar" class="town-hub__header">
-            <ui:VisualElement class="town-hub__header-title">
-                <ui:Label name="TitleEyebrowLabel" class="town-hub__eyebrow" />
-                <ui:Label name="TitleLabel" class="town-hub__title" />
-            </ui:VisualElement>
-            <ui:VisualElement class="town-hub__header-meta">
-                <ui:Label name="HeroCount" class="town-hub__count" />
-                <ui:VisualElement class="town-hub__header-tools">
-                    <ui:Label name="LocaleStatusLabel" class="town-hub__locale-status" />
-                    <ui:Button name="LocaleKoButton" class="ui-button town-hub__locale-button" />
-                    <ui:Button name="LocaleEnButton" class="ui-button town-hub__locale-button" />
-                    <ui:Button name="HelpButton" class="ui-button town-hub__help-button" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="town-hub__header-content">
+                <ui:VisualElement class="town-hub__header-title">
+                    <ui:Label name="TitleEyebrowLabel" class="sm-eyebrow town-hub__eyebrow" />
+                    <ui:Label name="TitleLabel" class="sm-headline town-hub__title" />
+                </ui:VisualElement>
+                <ui:VisualElement class="town-hub__header-meta">
+                    <ui:Label name="HeroCount" class="town-hub__count" />
+                    <ui:VisualElement class="town-hub__header-tools">
+                        <ui:Label name="LocaleStatusLabel" class="town-hub__locale-status" />
+                        <ui:Button name="LocaleKoButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary town-hub__locale-button" />
+                        <ui:Button name="LocaleEnButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary town-hub__locale-button" />
+                        <ui:Button name="HelpButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary town-hub__help-button" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
+            <ui:VisualElement class="sm-ornament-divider town-hub__header-divider" picking-mode="Ignore" />
         </ui:VisualElement>
 
         <ui:VisualElement name="FilterStrip" class="town-hub__filter-strip">
-            <ui:Button name="FilterChip_All" class="town-hub__filter-chip town-hub__filter-chip--selected" text="전체" />
+            <ui:Button name="FilterChip_All" class="town-hub__filter-chip town-hub__filter-chip--selected sm-select-snap" text="전체" />
             <ui:VisualElement class="town-hub__filter-divider" picking-mode="Ignore" />
-            <ui:Button name="FilterChip_Sollarum" class="town-hub__filter-chip" text="솔라룸" />
-            <ui:Button name="FilterChip_Irisol" class="town-hub__filter-chip" text="이리솔 부족" />
-            <ui:Button name="FilterChip_Recall" class="town-hub__filter-chip" text="회상 결사" />
+            <ui:Button name="FilterChip_Sollarum" class="town-hub__filter-chip sm-select-snap" text="솔라룸" />
+            <ui:Button name="FilterChip_Irisol" class="town-hub__filter-chip sm-select-snap" text="이리솔 부족" />
+            <ui:Button name="FilterChip_Recall" class="town-hub__filter-chip sm-select-snap" text="회상 결사" />
             <ui:VisualElement class="town-hub__filter-divider" picking-mode="Ignore" />
-            <ui:Button name="FilterChip_Vanguard" class="town-hub__filter-chip" text="전위" />
-            <ui:Button name="FilterChip_Duelist" class="town-hub__filter-chip" text="결투가" />
-            <ui:Button name="FilterChip_Ranger" class="town-hub__filter-chip" text="궁수" />
-            <ui:Button name="FilterChip_Mystic" class="town-hub__filter-chip" text="신비" />
+            <ui:Button name="FilterChip_Vanguard" class="town-hub__filter-chip sm-select-snap" text="전위" />
+            <ui:Button name="FilterChip_Duelist" class="town-hub__filter-chip sm-select-snap" text="결투가" />
+            <ui:Button name="FilterChip_Ranger" class="town-hub__filter-chip sm-select-snap" text="궁수" />
+            <ui:Button name="FilterChip_Mystic" class="town-hub__filter-chip sm-select-snap" text="신비" />
         </ui:VisualElement>
 
         <ui:ScrollView name="GridScroll" class="town-hub__grid-scroll">
@@ -51,20 +54,28 @@
         </ui:ScrollView>
 
         <ui:VisualElement name="ToolbarBar" class="town-hub__toolbar">
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--br" picking-mode="Ignore" />
             <ui:Label name="StatusLabel" class="town-hub__status" />
             <ui:VisualElement class="town-hub__toolbar-actions">
-                <ui:Button name="SquadBuilderButton" class="ui-button" text="Squad Builder" />
-                <ui:Button name="TacticalWorkshopButton" class="ui-button" text="Tactical Workshop" />
-                <ui:Button name="ExpeditionButton" class="ui-button ui-button--accent" />
-                <ui:Button name="SaveButton" class="ui-button" />
-                <ui:Button name="LoadButton" class="ui-button" />
-                <ui:Button name="ReturnToStartButton" class="ui-button ui-button--warning" />
+                <ui:Button name="SquadBuilderButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="Squad Builder" />
+                <ui:Button name="ExpeditionButton" class="ui-button sm-cta sm-cta--inline sm-cta--primary" />
+                <ui:Button name="SaveButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
+                <ui:Button name="LoadButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
+                <ui:Button name="ReturnToStartButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary town-hub__return-button" />
             </ui:VisualElement>
         </ui:VisualElement>
 
         <ui:Button name="QuickBattleButton" class="town-hub__quick-battle sm-cta sm-cta--hero sm-cta--utility" text="Quick Battle (Smoke)" />
 
-        <ui:Instance template="TacticalWorkshopTemplate" />
-        <ui:Instance template="SquadBuilderTemplate" />
+        <!-- Modal layer overlay — TemplateContainer는 default in-flow + height 0이라
+             내부 modal(position:absolute fill)이 0 size parent 기준으로 잘림.
+             absolute fill wrapper로 root 영역 전체를 차지하게 강제. wrapper + Instance 둘 다
+             picking-mode=Ignore (modal closed 시 hub click 통과, open 시 modal 자체가 picking).
+             TacticalWorkshop modal은 audit §2.2 결정 후 책임이 SquadBuilder와 중복 + per-unit
+             tactic runtime 모델 부재(P1-1)로 hub에서 분리. redesign 후 별건 task로 재진입. -->
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+            <ui:Instance template="SquadBuilderTemplate" picking-mode="Ignore" />
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

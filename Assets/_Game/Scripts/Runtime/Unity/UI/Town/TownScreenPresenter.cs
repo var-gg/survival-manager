@@ -173,7 +173,6 @@ public sealed class TownScreenPresenter
             Help: BuildHelpState(),
             RosterCap: MetaBalanceDefaults.TownRosterCap,
             Heroes: heroes,
-            TacticalWorkshopLabel: Localize(GameLocalizationTables.UITown, "ui.town.action.tactical_workshop", "Tactical Workshop"),
             ExpeditionLabel: BuildExpeditionLabel(session),
             ExpeditionTooltip: BuildExpeditionTooltip(session),
             SaveLabel: Localize(GameLocalizationTables.UICommon, "ui.common.save", "Save"),

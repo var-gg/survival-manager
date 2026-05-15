@@ -24,7 +24,9 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("GridContainer"));
         Assert.That(uxml, Does.Contain("FilterStrip"));
         Assert.That(uxml, Does.Contain("HeroCount"));
-        Assert.That(uxml, Does.Contain("TacticalWorkshopButton"));
+        // TacticalWorkshop은 audit §2.2 + P1-1 검토 후 hub에서 분리 (중복/모델 부재).
+        Assert.That(uxml, Does.Not.Contain("TacticalWorkshopButton"));
+        Assert.That(uxml, Does.Not.Contain("TacticalWorkshopTemplate"));
         Assert.That(uxml, Does.Contain("SquadBuilderButton"));
         Assert.That(uxml, Does.Contain("SquadBuilderTemplate"));
     }
