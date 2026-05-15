@@ -138,23 +138,25 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Modal layer overlays — TemplateContainer height 0 우회 + picking-mode=Ignore (modal closed 시 hub click 통과). -->
-        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+        <!-- Modal layer overlays — TemplateContainer height 0 우회 + picking-mode=Ignore (modal closed 시 hub click 통과).
+             각 wrapper에 inline style="display: none;" 강제 — controller Open 시 display=Flex로 토글. wrapper 단위라 안의
+             Preview UXML root (RcpRoot/ErpRoot/PbpRoot/PapRoot/InvRoot/RosterGridPreviewRoot)가 default visible이어도 hub 안 가림. -->
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="SquadBuilderTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="RecruitTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="EquipmentRefitTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="PassiveBoardTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="PermanentAugmentTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="RosterTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>

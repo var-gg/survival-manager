@@ -37,6 +37,8 @@ public sealed class PassiveBoardView
         if (_modalRoot == null) return;
         _modalRoot.style.display = DisplayStyle.Flex;
         _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
+        var wrapper = _modalRoot.parent?.parent;
+        if (wrapper != null) wrapper.style.display = DisplayStyle.Flex;
     }
 
     public void Close()
@@ -44,6 +46,8 @@ public sealed class PassiveBoardView
         if (_modalRoot == null) return;
         _modalRoot.style.display = DisplayStyle.None;
         _modalRoot.AddToClassList("sm-modal-anim--enter");
+        var wrapper = _modalRoot.parent?.parent;
+        if (wrapper != null) wrapper.style.display = DisplayStyle.None;
     }
 
     public PassiveBoardView(VisualElement root)

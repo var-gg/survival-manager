@@ -58,20 +58,24 @@ public sealed class RecruitView
         _closeButton.clicked += close;
     }
 
-    /// <summary>hub modal opener가 호출 — modal 표시 + sm-modal-anim 진입 transition.</summary>
+    /// <summary>hub modal opener가 호출 — modal 표시 + sm-modal-anim 진입 transition. wrapper(town-hub__modal-overlay)도 같이 토글.</summary>
     public void Open()
     {
         if (_modalRoot == null) return;
         _modalRoot.style.display = DisplayStyle.Flex;
         _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
+        var wrapper = _modalRoot.parent?.parent;
+        if (wrapper != null) wrapper.style.display = DisplayStyle.Flex;
     }
 
-    /// <summary>hub modal opener가 호출 — modal 숨김.</summary>
+    /// <summary>hub modal opener가 호출 — modal 숨김. wrapper도 같이 닫음.</summary>
     public void Close()
     {
         if (_modalRoot == null) return;
         _modalRoot.style.display = DisplayStyle.None;
         _modalRoot.AddToClassList("sm-modal-anim--enter");
+        var wrapper = _modalRoot.parent?.parent;
+        if (wrapper != null) wrapper.style.display = DisplayStyle.None;
     }
 
     public void Render(RecruitViewState state)
