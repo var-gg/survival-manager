@@ -62,7 +62,8 @@ public sealed record AtlasResolvedModifier(
     int Percent,
     IReadOnlyList<AtlasSigilInfluence> Sources,
     bool SameCategoryCapped,
-    bool HardCapped);
+    bool HardCapped,
+    bool RiskBackedCapped = false);
 
 public sealed record AtlasNodeModifierStack(
     string NodeId,

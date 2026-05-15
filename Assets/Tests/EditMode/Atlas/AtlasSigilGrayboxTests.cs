@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
+using SM.Unity.UI.Atlas;
 
 namespace SM.Tests.EditMode.Atlas;
 
@@ -29,45 +30,60 @@ public sealed class AtlasSigilGrayboxTests
     }
 
     [Test]
-    public void SigilPropagation_QuantizesFalloffAndCapsSameCategory()
+    public void NormalizedMath_UsesProfileFalloffAndRiskBackedRewardCap()
     {
-        Assert.That(SigilPropagationService.ResolveFalloffPercent(0), Is.EqualTo(100));
-        Assert.That(SigilPropagationService.ResolveFalloffPercent(1), Is.EqualTo(70));
-        Assert.That(SigilPropagationService.ResolveFalloffPercent(2), Is.EqualTo(40));
-        Assert.That(SigilPropagationService.ResolveFalloffPercent(3), Is.EqualTo(0));
-
-        var region = CreateSingleNodeRegion(
+        var region = CreateLaneTargetRegion(
+            AtlasNodeKind.Cache,
             new AtlasSigilDefinition(
                 "sigil_alpha",
                 "Alpha",
                 2,
                 "reward",
                 new[] { new AtlasSigilModifier(AtlasModifierCategory.RewardBias, "Alpha reward", 70) },
-                AtlasModifierCategory.RewardBias),
+                AtlasModifierCategory.RewardBias,
+                "RewardBias.Cluster.Dense",
+                4),
             new AtlasSigilDefinition(
                 "sigil_beta",
                 "Beta",
                 2,
-                "reward",
-                new[] { new AtlasSigilModifier(AtlasModifierCategory.RewardBias, "Beta reward", 60) },
-                AtlasModifierCategory.RewardBias));
+                "threat",
+                new[] { new AtlasSigilModifier(AtlasModifierCategory.ThreatPressure, "Beta threat", 60) },
+                AtlasModifierCategory.ThreatPressure,
+                "ThreatPressure.Lane.Hard",
+                4));
 
-        var resolution = SigilPropagationService.Resolve(region, new[]
+        var rewardOnly = AtlasSigilInfluenceMathService.Resolve(region, new[]
         {
-            new AtlasPlacedSigil("sigil_beta", new AtlasHexCoordinate(0, 0), "anchor"),
             new AtlasPlacedSigil("sigil_alpha", new AtlasHexCoordinate(0, 0), "anchor"),
-        });
+        }, AtlasTraversalMode.StoryRevisit, currentStageIndex: 1);
+        var rewardWithThreat = AtlasSigilInfluenceMathService.Resolve(region, new[]
+        {
+            new AtlasPlacedSigil("sigil_alpha", new AtlasHexCoordinate(0, 0), "anchor"),
+            new AtlasPlacedSigil("sigil_beta", new AtlasHexCoordinate(0, 0), "anchor"),
+        }, AtlasTraversalMode.StoryRevisit, currentStageIndex: 1);
 
-        var stack = resolution.FindNode("node");
-        Assert.That(stack, Is.Not.Null);
-        var reward = stack!.ResolvedModifiers.Single(modifier => modifier.Category == AtlasModifierCategory.RewardBias);
-        Assert.That(reward.Percent, Is.EqualTo(SigilPropagationService.RewardBiasHardCapPercent));
-        Assert.That(reward.SameCategoryCapped, Is.True);
-        Assert.That(reward.HardCapped, Is.True);
+        Assert.That(rewardOnly.Evaluations.Single().Cells.Select(cell => cell.Falloff), Is.EqualTo(new[] { 1.00, 0.80, 0.65 }));
+
+        var safeReward = AtlasSigilMathResolutionAdapter
+            .ToModifierResolution(region, rewardOnly)
+            .FindNode("node")!
+            .ResolvedModifiers
+            .Single(modifier => modifier.Category == AtlasModifierCategory.RewardBias);
+        var greedyReward = AtlasSigilMathResolutionAdapter
+            .ToModifierResolution(region, rewardWithThreat)
+            .FindNode("node")!
+            .ResolvedModifiers
+            .Single(modifier => modifier.Category == AtlasModifierCategory.RewardBias);
+
+        Assert.That(safeReward.Percent, Is.LessThanOrEqualTo(15));
+        Assert.That(safeReward.RiskBackedCapped, Is.True);
+        Assert.That(greedyReward.Percent, Is.GreaterThan(safeReward.Percent));
+        Assert.That(greedyReward.Percent, Is.LessThanOrEqualTo(40));
     }
 
     [Test]
-    public void SigilPropagation_EnforcesThreatHardCapAndThreeCategoryStack()
+    public void NormalizedMath_EnforcesThreatCapAndThreeCategoryStack()
     {
         var region = CreateLaneTargetRegion(
             new AtlasSigilDefinition(
@@ -76,32 +92,40 @@ public sealed class AtlasSigilGrayboxTests
                 2,
                 "reward",
                 new[] { new AtlasSigilModifier(AtlasModifierCategory.RewardBias, "Reward", 25) },
-                AtlasModifierCategory.RewardBias),
+                AtlasModifierCategory.RewardBias,
+                "RewardBias.Cluster.Wide",
+                4),
             new AtlasSigilDefinition(
                 "sigil_threat",
                 "Threat",
                 2,
                 "threat",
                 new[] { new AtlasSigilModifier(AtlasModifierCategory.ThreatPressure, "Threat", 70) },
-                AtlasModifierCategory.ThreatPressure),
+                AtlasModifierCategory.ThreatPressure,
+                "ThreatPressure.Lane.Hard",
+                8),
             new AtlasSigilDefinition(
                 "sigil_affinity",
                 "Affinity",
                 2,
                 "affinity",
                 new[] { new AtlasSigilModifier(AtlasModifierCategory.AffinityBoost, "Affinity", 18) },
-                AtlasModifierCategory.AffinityBoost));
+                AtlasModifierCategory.AffinityBoost,
+                "AffinityBoost.ScoutArc.Wide",
+                4));
 
-        var resolution = SigilPropagationService.Resolve(region, new[]
+        var mathResolution = AtlasSigilInfluenceMathService.Resolve(region, new[]
         {
             new AtlasPlacedSigil("sigil_reward", new AtlasHexCoordinate(0, 0), "anchor"),
             new AtlasPlacedSigil("sigil_threat", new AtlasHexCoordinate(0, 0), "anchor"),
             new AtlasPlacedSigil("sigil_affinity", new AtlasHexCoordinate(0, 0), "anchor"),
-        });
+        }, AtlasTraversalMode.StoryRevisit, currentStageIndex: 1);
 
+        var resolution = AtlasSigilMathResolutionAdapter.ToModifierResolution(region, mathResolution);
         var stack = resolution.FindNode("node")!;
         Assert.That(stack.ResolvedModifiers.Count, Is.LessThanOrEqualTo(3));
-        Assert.That(stack.ThreatPressurePercent, Is.EqualTo(SigilPropagationService.ThreatPressureHardCapPercent));
+        Assert.That(stack.ThreatPressurePercent, Is.LessThanOrEqualTo(45));
+        Assert.That(stack.ResolvedModifiers.Single(modifier => modifier.Category == AtlasModifierCategory.ThreatPressure).HardCapped, Is.True);
     }
 
     [Test]
@@ -132,6 +156,38 @@ public sealed class AtlasSigilGrayboxTests
         Assert.That(battle1, Is.Not.EqualTo(battle3));
     }
 
+    [Test]
+    public void Presenter_UsesNormalizedMathForOverlayAndRiskBackedCapText()
+    {
+        var presenter = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion());
+        presenter.SelectSigil("sigil_elite_relic");
+        presenter.PlaceSelectedSigil("hex_0_1");
+
+        var state = presenter.Build();
+        var modifierTooltips = state.Tiles
+            .SelectMany(tile => tile.ModifierChips)
+            .Select(chip => chip.Tooltip)
+            .ToArray();
+
+        Assert.That(state.PlacementSummary, Does.Contain("/2"));
+        Assert.That(modifierTooltips, Has.Some.Contains("위험 연동 cap"));
+        Assert.That(state.Preview.DebugHashLine, Does.Contain("NodeOverlayHash="));
+        Assert.That(state.Preview.DebugHashLine, Does.Contain("input=runId>chapterId>siteId>nodeIndex>encounterId>stageCandidatePathHash>NodeOverlayHash>squadSnapshotId"));
+    }
+
+    [Test]
+    public void Presenter_EndlessMode_AllowsThreeActiveSigils()
+    {
+        var presenter = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion(), AtlasTraversalMode.EndlessRegion);
+        presenter.SelectSigil("sigil_forest_guide");
+        presenter.PlaceSelectedSigil("hex_m1_m1");
+
+        var state = presenter.Build();
+
+        Assert.That(state.PlacementSummary, Does.Contain("3/3"));
+        Assert.That(state.Tiles.SelectMany(tile => tile.AuraCategories), Has.Member(AtlasModifierCategory.AffinityBoost));
+    }
+
     private static AtlasRegionDefinition CreateSingleNodeRegion(params AtlasSigilDefinition[] sigils)
     {
         return new AtlasRegionDefinition(
@@ -147,13 +203,18 @@ public sealed class AtlasSigilGrayboxTests
 
     private static AtlasRegionDefinition CreateLaneTargetRegion(params AtlasSigilDefinition[] sigils)
     {
+        return CreateLaneTargetRegion(AtlasNodeKind.Skirmish, sigils);
+    }
+
+    private static AtlasRegionDefinition CreateLaneTargetRegion(AtlasNodeKind targetKind, params AtlasSigilDefinition[] sigils)
+    {
         return new AtlasRegionDefinition(
             "region",
             "Region",
             new[]
             {
                 new AtlasRegionNode("anchor_node", new AtlasHexCoordinate(0, 0), AtlasNodeKind.SigilAnchor, "Anchor", "anchor", "sigil", "answer"),
-                new AtlasRegionNode("node", new AtlasHexCoordinate(1, 0), AtlasNodeKind.Skirmish, "Node", "enemy", "reward", "answer", 0),
+                new AtlasRegionNode("node", new AtlasHexCoordinate(1, 0), targetKind, "Node", "enemy", "reward", "answer", 0),
             },
             new[] { new AtlasHexCoordinate(0, 0) },
             sigils,

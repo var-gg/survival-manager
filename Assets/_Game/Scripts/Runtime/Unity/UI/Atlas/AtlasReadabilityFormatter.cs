@@ -366,6 +366,7 @@ public static class AtlasReadabilityFormatter
 
     public static string BuildPlacementSummary(
         IReadOnlyList<AtlasPlacedSigil> placements,
+        int activeSigilCap,
         IReadOnlyList<AtlasSigilDefinition> sigilPool,
         IReadOnlyList<SigilAnchorSlot> anchorSlots,
         AtlasNodeModifierStack? selectedStack)
@@ -386,7 +387,7 @@ public static class AtlasReadabilityFormatter
                 .OrderBy(influence => influence.SigilId, StringComparer.Ordinal)
                 .Select(influence => FormatSigilName(influence.DisplayName))
                 .Distinct(StringComparer.Ordinal));
-        return $"각인 배치 {placements.Count.ToString(CultureInfo.InvariantCulture)}/2: {string.Join(" | ", placed)}. 선택 노드 영향: {affecting}.";
+        return $"각인 배치 {placements.Count.ToString(CultureInfo.InvariantCulture)}/{activeSigilCap.ToString(CultureInfo.InvariantCulture)}: {string.Join(" | ", placed)}. 선택 노드 영향: {affecting}.";
     }
 
     public static string FormatAnchorRole(SigilAnchorSlot slot)

@@ -9,7 +9,7 @@ namespace SM.Atlas.Services;
 
 public static class AtlasContextHasher
 {
-    private const string CapRuleVersion = "cap_rule_v2_same_category_strongest_plus_second_half";
+    private const string CapRuleVersion = "math_rule_v1_normalized_influence_mass";
 
     public static string BuildSigilSnapshotHash(
         AtlasRegionDefinition region,
@@ -56,6 +56,30 @@ public static class AtlasContextHasher
         string cycleSalt,
         IReadOnlyList<AtlasSigilInfluence> affectingSigils)
     {
+        return BuildNodeOverlayHash(regionId, node, cycleSalt, affectingSigils, Array.Empty<AtlasResolvedModifier>());
+    }
+
+    public static string BuildNodeOverlayHash(
+        string regionId,
+        AtlasRegionNode node,
+        string cycleSalt,
+        AtlasNodeModifierStack stack)
+    {
+        if (stack == null)
+        {
+            throw new ArgumentNullException(nameof(stack));
+        }
+
+        return BuildNodeOverlayHash(regionId, node, cycleSalt, stack.Influences, stack.ResolvedModifiers);
+    }
+
+    private static string BuildNodeOverlayHash(
+        string regionId,
+        AtlasRegionNode node,
+        string cycleSalt,
+        IReadOnlyList<AtlasSigilInfluence> affectingSigils,
+        IReadOnlyList<AtlasResolvedModifier> resolvedModifiers)
+    {
         var builder = new StringBuilder();
         builder.Append("atlas-node-overlay|")
             .Append(regionId).Append('|')
@@ -70,9 +94,24 @@ public static class AtlasContextHasher
                 .Append(sigil.Category).Append(':')
                 .Append(sigil.SigilId).Append('@')
                 .Append(sigil.AnchorId).Append(':')
+                .Append(sigil.FootprintProfileId).Append(':')
+                .Append(sigil.FootprintShape).Append(':')
                 .Append(sigil.FalloffTier).Append(':')
                 .Append(sigil.RawPercent).Append(':')
                 .Append(sigil.EffectivePercent);
+        }
+
+        foreach (var modifier in (resolvedModifiers ?? Array.Empty<AtlasResolvedModifier>())
+                     .OrderBy(modifier => modifier.Category)
+                     .ThenByDescending(modifier => modifier.Percent)
+                     .ThenBy(modifier => modifier.Label, StringComparer.Ordinal))
+        {
+            builder.Append("|resolved:")
+                .Append(modifier.Category).Append(':')
+                .Append(modifier.Percent).Append(':')
+                .Append(modifier.SameCategoryCapped ? '1' : '0').Append(':')
+                .Append(modifier.HardCapped ? '1' : '0').Append(':')
+                .Append(modifier.RiskBackedCapped ? '1' : '0');
         }
 
         return ComputeHash(builder.ToString());
@@ -119,9 +158,9 @@ public static class AtlasContextHasher
     private static IReadOnlyList<AtlasSigilInfluence> SortedSigils(IEnumerable<AtlasSigilInfluence> affectingSigils)
     {
         return (affectingSigils ?? Array.Empty<AtlasSigilInfluence>())
-            .OrderBy(sigil => sigil.Category)
-            .ThenBy(sigil => sigil.SigilId, StringComparer.Ordinal)
+            .OrderBy(sigil => sigil.SigilId, StringComparer.Ordinal)
             .ThenBy(sigil => sigil.AnchorId, StringComparer.Ordinal)
+            .ThenBy(sigil => sigil.Category)
             .ToArray();
     }
 
