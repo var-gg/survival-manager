@@ -1,4 +1,5 @@
 using System.Linq;
+using SM.Atlas.Model;
 using SM.Atlas.Services;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ public sealed class AtlasScreenController : MonoBehaviour
 
     private AtlasScreenPresenter _presenter = null!;
     private AtlasScreenView _view = null!;
+    private GameSessionRoot? _root;
+    private AtlasRegionDefinition? _region;
     private int _viewRootBuildCount = -1;
 
     public event System.Action<AtlasScreenViewState>? ViewStateRendered;
@@ -32,6 +35,10 @@ public sealed class AtlasScreenController : MonoBehaviour
     private void Start()
     {
         EnsureRuntimeControls();
+        if (_root != null)
+        {
+            _root.SessionState.SetCurrentScene(SceneNames.Atlas);
+        }
     }
 
     private void ResolvePanelHost()
@@ -52,9 +59,14 @@ public sealed class AtlasScreenController : MonoBehaviour
 
     private void EnsureView()
     {
-        _presenter ??= new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion());
+        EnsureSessionReady();
+        _region ??= AtlasGrayboxDataFactory.CreateRegion();
+        _presenter ??= _root == null
+            ? new AtlasScreenPresenter(_region)
+            : new AtlasScreenPresenter(_region, _root.SessionState.EnsureAtlasSession(_region));
         if (_view != null && _viewRootBuildCount == panelHost.RootBuildCount)
         {
+            SyncPresenterFromSession();
             return;
         }
 
@@ -62,19 +74,20 @@ public sealed class AtlasScreenController : MonoBehaviour
         _viewRootBuildCount = panelHost.RootBuildCount;
         _view.SigilSelected += sigilId =>
         {
-            _presenter.SelectSigil(sigilId);
+            SelectSigil(sigilId);
             Render();
         };
         _view.AnchorSelected += hexId =>
         {
-            _presenter.PlaceSelectedSigil(hexId);
+            PlaceSelectedSigil(hexId);
             Render();
         };
         _view.StageCandidateSelected += hexId =>
         {
-            _presenter.SelectNode(hexId);
+            SelectNode(hexId);
             Render();
         };
+        SyncPresenterFromSession();
     }
 
     private void Render()
@@ -109,14 +122,70 @@ public sealed class AtlasScreenController : MonoBehaviour
 
         if (tile.IsSigilAnchor)
         {
-            _presenter.PlaceSelectedSigil(nodeId);
+            PlaceSelectedSigil(nodeId);
         }
         else
         {
-            _presenter.SelectNode(nodeId);
+            SelectNode(nodeId);
         }
 
         Render();
         return true;
+    }
+
+    private void EnsureSessionReady()
+    {
+        if (_root != null || !Application.isPlaying)
+        {
+            return;
+        }
+
+        _root = GameSessionRoot.EnsureInstance();
+    }
+
+    private void SelectSigil(string sigilId)
+    {
+        if (_root == null || _region == null)
+        {
+            _presenter.SelectSigil(sigilId);
+            return;
+        }
+
+        _root.SessionState.SelectAtlasSigil(_region, sigilId);
+        SyncPresenterFromSession();
+    }
+
+    private void SelectNode(string nodeId)
+    {
+        if (_root == null || _region == null)
+        {
+            _presenter.SelectNode(nodeId);
+            return;
+        }
+
+        _root.SessionState.SelectAtlasNode(_region, nodeId);
+        SyncPresenterFromSession();
+    }
+
+    private void PlaceSelectedSigil(string nodeId)
+    {
+        if (_root == null || _region == null)
+        {
+            _presenter.PlaceSelectedSigil(nodeId);
+            return;
+        }
+
+        _root.SessionState.PlaceSelectedAtlasSigil(_region, nodeId);
+        SyncPresenterFromSession();
+    }
+
+    private void SyncPresenterFromSession()
+    {
+        if (_root == null || _region == null || _presenter == null)
+        {
+            return;
+        }
+
+        _presenter.SetSession(_root.SessionState.EnsureAtlasSession(_region));
     }
 }
