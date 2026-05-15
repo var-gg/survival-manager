@@ -21,7 +21,7 @@ public sealed class AtlasNodePreviewBuilder
         string cycleSalt,
         string squadSnapshotId)
     {
-        var nodeOverlayHash = AtlasContextHasher.BuildNodeOverlayHash(region.RegionId, node, cycleSalt, stack.Influences);
+        var nodeOverlayHash = AtlasContextHasher.BuildNodeOverlayHash(region.RegionId, node, cycleSalt, stack);
         var battleContextHash = AtlasContextHasher.BuildBattleContextHash(
             runId,
             chapterId,

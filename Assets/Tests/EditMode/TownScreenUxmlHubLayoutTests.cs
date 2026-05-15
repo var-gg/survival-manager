@@ -10,6 +10,7 @@ namespace SM.Tests.EditMode;
 /// SquadBuilder/CharacterSheet/Recruit modal로 분리.
 /// </summary>
 [TestFixture]
+[Category("FastUnit")]
 public sealed class TownScreenUxmlHubLayoutTests
 {
     [Test]
