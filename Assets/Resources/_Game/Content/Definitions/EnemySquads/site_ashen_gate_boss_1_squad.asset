@@ -15,17 +15,18 @@ MonoBehaviour:
   Id: site_ashen_gate_boss_1_squad
   NameKey: content.enemy_squad.site_ashen_gate_boss_1_squad.name
   DescriptionKey: content.enemy_squad.site_ashen_gate_boss_1_squad.desc
-  FactionId: faction_ashen_vanguard
+  FactionId: faction_solarum_border
   EnemyPosture: 2
   ThreatTier: 3
   ThreatCost: 3
   RewardDropTags:
-  - faction_ashen_vanguard
+  - faction_solarum_border
   - boss
   Members:
   - Id: site_ashen_gate_boss_1_squad_captain
     NameKey: 
-    ArchetypeId: bulwark
+    ArchetypeId: warden
+    CharacterId: hero_aegis_sentinel
     Anchor: 1
     Role: 1
     PositiveTraitId: 
@@ -35,6 +36,7 @@ MonoBehaviour:
   - Id: site_ashen_gate_boss_1_squad_escort_1
     NameKey: 
     ArchetypeId: hunter
+    CharacterId: extra_solarum_border_lancer
     Anchor: 3
     Role: 2
     PositiveTraitId: 
@@ -44,6 +46,7 @@ MonoBehaviour:
   - Id: site_ashen_gate_boss_1_squad_escort_2
     NameKey: 
     ArchetypeId: hexer
+    CharacterId: extra_solarum_sigil_scribe
     Anchor: 5
     Role: 2
     PositiveTraitId: 

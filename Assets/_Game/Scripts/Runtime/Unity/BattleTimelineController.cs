@@ -71,7 +71,8 @@ public sealed class BattleTimelineController
     public bool TryAdvance(float deltaTime,
         out BattleSimulationStep previousStep,
         out BattleSimulationStep currentStep,
-        out float alpha)
+        out float alpha,
+        ICollection<(BattleSimulationStep PreviousStep, BattleSimulationStep CurrentStep)>? consumedTransitions = null)
     {
         previousStep = PreviousStep!;
         currentStep = CurrentStep!;
@@ -114,6 +115,7 @@ public sealed class BattleTimelineController
         while (_stepAccumulator >= FixedStepSeconds)
         {
             _stepAccumulator -= FixedStepSeconds;
+            var transitionFrom = CurrentStep!;
 
             if (_currentIndex < FurthestIndex)
             {
@@ -139,6 +141,7 @@ public sealed class BattleTimelineController
             stepped = true;
             previousStep = PreviousStep!;
             currentStep = CurrentStep!;
+            consumedTransitions?.Add((transitionFrom, currentStep));
         }
 
         alpha = IsFinished ? 1f : ResolveBlendAlpha(fixedStep);

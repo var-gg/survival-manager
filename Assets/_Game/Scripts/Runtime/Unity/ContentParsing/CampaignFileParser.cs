@@ -188,6 +188,10 @@ internal static class CampaignFileParser
                 {
                     member.ArchetypeId = trimmed["ArchetypeId:".Length..].Trim();
                 }
+                else if (trimmed.StartsWith("CharacterId:", StringComparison.Ordinal))
+                {
+                    member.CharacterId = trimmed["CharacterId:".Length..].Trim();
+                }
                 else if (trimmed.StartsWith("Anchor:", StringComparison.Ordinal))
                 {
                     member.Anchor = (DeploymentAnchorValue)ParseInt(trimmed["Anchor:".Length..].Trim());
@@ -301,9 +305,11 @@ internal static class CampaignFileParser
         {
             definition.StoryOrder = definition.Id switch
             {
-                "chapter_ashen_frontier" => 1,
-                "chapter_ruined_crypts" => 2,
-                "chapter_warren_depths" => 3,
+                "chapter_ashen_gate" => 1,
+                "chapter_sunken_bastion" => 2,
+                "chapter_ruined_crypts" => 3,
+                "chapter_glass_forest" => 4,
+                "chapter_heartforge_descent" => 5,
                 _ => 1,
             };
         }
@@ -312,14 +318,16 @@ internal static class CampaignFileParser
         {
             definition.SiteIds = definition.Id switch
             {
-                "chapter_ashen_frontier" => new List<string> { "site_ashen_gate", "site_cinder_watch" },
-                "chapter_warren_depths" => new List<string> { "site_forgotten_warren", "site_twisted_den" },
-                "chapter_ruined_crypts" => new List<string> { "site_ruined_crypt", "site_grave_sanctum" },
+                "chapter_ashen_gate" => new List<string> { "site_ashen_gate", "site_wolfpine_trail" },
+                "chapter_sunken_bastion" => new List<string> { "site_sunken_bastion", "site_tithe_road" },
+                "chapter_ruined_crypts" => new List<string> { "site_ruined_crypts", "site_bone_orchard" },
+                "chapter_glass_forest" => new List<string> { "site_glass_forest", "site_starved_menagerie" },
+                "chapter_heartforge_descent" => new List<string> { "site_heartforge_gate", "site_worldscar_depths" },
                 _ => definition.SiteIds,
             };
         }
 
-        if (definition.StoryOrder == 3)
+        if (definition.StoryOrder == 5)
         {
             definition.UnlocksEndlessOnClear = true;
         }
@@ -343,11 +351,15 @@ internal static class CampaignFileParser
         definition.SiteOrder = Math.Max(definition.SiteOrder, definition.Id switch
         {
             "site_ashen_gate" => 1,
-            "site_cinder_watch" => 2,
-            "site_forgotten_warren" => 3,
-            "site_grave_sanctum" => 4,
-            "site_ruined_crypt" => 5,
-            "site_twisted_den" => 6,
+            "site_wolfpine_trail" => 2,
+            "site_sunken_bastion" => 1,
+            "site_tithe_road" => 2,
+            "site_ruined_crypts" => 1,
+            "site_bone_orchard" => 2,
+            "site_glass_forest" => 1,
+            "site_starved_menagerie" => 2,
+            "site_heartforge_gate" => 1,
+            "site_worldscar_depths" => 2,
             _ => 1,
         });
     }
@@ -550,76 +562,124 @@ internal static class CampaignFileParser
         {
             "site_ashen_gate" => new CampaignSiteFallbackSpec(
                 "site_ashen_gate",
-                "chapter_ashen_frontier",
+                "chapter_ashen_gate",
                 1,
-                "faction_ashen_vanguard",
+                "faction_solarum_border",
                 ThreatTierValue.Tier1,
                 "boss_overlay_ashen_gate",
-                new[] { "warden", "hunter", "hexer", "raider" },
+                new[] { "bastion_penitent", "warden", "hexer", "raider" },
                 new[] { "guardian", "scout", "hexer", "hunter" },
-                new[] { "bulwark", "hunter", "hexer", "warden" },
-                "bulwark",
+                new[] { "bulwark", "hunter", "mirror_cantor", "warden" },
+                "warden",
                 new[] { "hunter", "hexer" }),
-            "site_cinder_watch" => new CampaignSiteFallbackSpec(
-                "site_cinder_watch",
-                "chapter_ashen_frontier",
+            "site_wolfpine_trail" => new CampaignSiteFallbackSpec(
+                "site_wolfpine_trail",
+                "chapter_ashen_gate",
                 2,
-                "faction_cinder_watch",
+                "faction_wolfpine_pack",
                 ThreatTierValue.Tier1,
-                "boss_overlay_cinder_watch",
-                new[] { "hunter", "scout", "raider", "priest" },
-                new[] { "marksman", "scout", "guardian", "hexer" },
-                new[] { "marksman", "bulwark", "scout", "hexer" },
-                "marksman",
-                new[] { "scout", "priest" }),
-            "site_forgotten_warren" => new CampaignSiteFallbackSpec(
-                "site_forgotten_warren",
-                "chapter_warren_depths",
-                1,
-                "faction_warren_pack",
-                ThreatTierValue.Tier2,
-                "boss_overlay_forgotten_warren",
-                new[] { "raider", "scout", "shaman", "hunter" },
-                new[] { "reaver", "scout", "shaman", "hunter" },
+                "boss_overlay_wolfpine_trail",
+                new[] { "scout", "raider", "hunter", "shaman" },
+                new[] { "rift_stalker", "raider", "scout", "hunter" },
                 new[] { "reaver", "raider", "scout", "shaman" },
                 "reaver",
-                new[] { "scout", "shaman" }),
-            "site_twisted_den" => new CampaignSiteFallbackSpec(
-                "site_twisted_den",
-                "chapter_warren_depths",
-                2,
-                "faction_twisted_den",
+                new[] { "rift_stalker", "shaman" }),
+            "site_sunken_bastion" => new CampaignSiteFallbackSpec(
+                "site_sunken_bastion",
+                "chapter_sunken_bastion",
+                1,
+                "faction_sunken_adjudicators",
                 ThreatTierValue.Tier2,
-                "boss_overlay_twisted_den",
-                new[] { "slayer", "raider", "scout", "shaman" },
+                "boss_overlay_sunken_bastion",
+                new[] { "guardian", "bastion_penitent", "priest", "marksman" },
+                new[] { "bulwark", "guardian", "hexer", "priest" },
+                new[] { "guardian", "bastion_penitent", "mirror_cantor", "marksman" },
+                "guardian",
+                new[] { "bastion_penitent", "priest" }),
+            "site_tithe_road" => new CampaignSiteFallbackSpec(
+                "site_tithe_road",
+                "chapter_sunken_bastion",
+                2,
+                "faction_tithe_road",
+                ThreatTierValue.Tier2,
+                "boss_overlay_tithe_road",
+                new[] { "scout", "priest", "raider", "hexer" },
+                new[] { "marksman", "scout", "guardian", "hexer" },
+                new[] { "priest", "pale_executor", "scout", "hexer" },
+                "priest",
+                new[] { "pale_executor", "hexer" }),
+            "site_ruined_crypts" => new CampaignSiteFallbackSpec(
+                "site_ruined_crypts",
+                "chapter_ruined_crypts",
+                1,
+                "faction_pale_archive",
+                ThreatTierValue.Tier3,
+                "boss_overlay_ruined_crypts",
+                new[] { "guardian", "hexer", "mirror_cantor", "hunter" },
+                new[] { "bulwark", "hexer", "priest", "marksman" },
+                new[] { "hexer", "guardian", "priest", "mirror_cantor" },
+                "hexer",
+                new[] { "priest", "guardian" }),
+            "site_bone_orchard" => new CampaignSiteFallbackSpec(
+                "site_bone_orchard",
+                "chapter_ruined_crypts",
+                2,
+                "faction_bone_orchard",
+                ThreatTierValue.Tier3,
+                "boss_overlay_bone_orchard",
+                new[] { "shaman", "scout", "reaver", "hunter" },
+                new[] { "rift_stalker", "shaman", "raider", "priest" },
+                new[] { "shaman", "reaver", "mirror_cantor", "hunter" },
+                "shaman",
+                new[] { "reaver", "mirror_cantor" }),
+            "site_glass_forest" => new CampaignSiteFallbackSpec(
+                "site_glass_forest",
+                "chapter_glass_forest",
+                1,
+                "faction_glass_forest",
+                ThreatTierValue.Tier3,
+                "boss_overlay_glass_forest",
+                new[] { "priest", "marksman", "scout", "hexer" },
+                new[] { "marksman", "rift_stalker", "priest", "hexer" },
+                new[] { "marksman", "mirror_cantor", "scout", "priest" },
+                "marksman",
+                new[] { "mirror_cantor", "scout" }),
+            "site_starved_menagerie" => new CampaignSiteFallbackSpec(
+                "site_starved_menagerie",
+                "chapter_glass_forest",
+                2,
+                "faction_starved_menagerie",
+                ThreatTierValue.Tier3,
+                "boss_overlay_starved_menagerie",
+                new[] { "raider", "scout", "shaman", "hunter" },
                 new[] { "slayer", "hunter", "scout", "priest" },
                 new[] { "slayer", "reaver", "scout", "priest" },
                 "slayer",
                 new[] { "scout", "priest" }),
-            "site_ruined_crypt" => new CampaignSiteFallbackSpec(
-                "site_ruined_crypt",
-                "chapter_ruined_crypts",
+            "site_heartforge_gate" => new CampaignSiteFallbackSpec(
+                "site_heartforge_gate",
+                "chapter_heartforge_descent",
                 1,
-                "faction_bone_host",
+                "faction_heartforge_gate",
                 ThreatTierValue.Tier3,
-                "boss_overlay_ruined_crypt",
-                new[] { "guardian", "hexer", "priest", "hunter" },
-                new[] { "bulwark", "hexer", "priest", "marksman" },
-                new[] { "bulwark", "hexer", "priest", "marksman" },
-                "hexer",
-                new[] { "priest", "guardian" }),
-            "site_grave_sanctum" => new CampaignSiteFallbackSpec(
-                "site_grave_sanctum",
-                "chapter_ruined_crypts",
+                "boss_overlay_heartforge_gate",
+                new[] { "guardian", "marksman", "hexer", "raider" },
+                new[] { "bulwark", "pale_executor", "hexer", "shaman" },
+                new[] { "bulwark", "pale_executor", "hexer", "shaman" },
+                "bulwark",
+                new[] { "pale_executor", "hexer" }),
+            "site_worldscar_depths" => new CampaignSiteFallbackSpec(
+                "site_worldscar_depths",
+                "chapter_heartforge_descent",
                 2,
-                "faction_grave_sanctum",
+                "faction_worldscar_depths",
                 ThreatTierValue.Tier3,
-                "boss_overlay_grave_sanctum",
-                new[] { "guardian", "hexer", "shaman", "marksman" },
-                new[] { "bulwark", "hexer", "shaman", "hunter" },
-                new[] { "bulwark", "guardian", "hexer", "shaman" },
-                "shaman",
-                new[] { "guardian", "hexer" }),
+                "boss_overlay_worldscar_depths",
+                new[] { "mirror_cantor", "hexer", "guardian", "marksman" },
+                new[] { "pale_executor", "shaman", "rift_stalker", "priest" },
+                new[] { "hexer", "mirror_cantor", "guardian", "shaman" },
+                "hexer",
+                new[] { "mirror_cantor", "guardian" }),
             _ => null!,
         };
 

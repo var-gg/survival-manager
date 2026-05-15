@@ -17,8 +17,8 @@ MonoBehaviour:
   DescriptionKey: content.campaign.chapter.chapter_ruined_crypts.desc
   StoryOrder: 3
   SiteIds:
-  - site_ruined_crypt
-  - site_grave_sanctum
-  UnlocksEndlessOnClear: 1
+  - site_ruined_crypts
+  - site_bone_orchard
+  UnlocksEndlessOnClear: 0
   legacyDisplayName: 
   legacyDescription: 

@@ -17,11 +17,14 @@ MonoBehaviour:
   DescriptionKey: content.boss_overlay.boss_overlay_ashen_gate.desc
   PhaseTrigger: 1
   ThreatCost: 1
-  SignatureAuraTag: boss_aura_curse
-  SignatureUtilityTag: boss_utility_revive
+  SignatureAuraTag: boss_aura_guard_anchor
+  SignatureUtilityTag: boss_utility_gate_lock
   RewardDropTags:
   - boss
   - boss_overlay_ashen_gate
+  - site_ashen_gate
+  - boss_aura_guard_anchor
+  - boss_utility_gate_lock
   AppliedStatuses:
   - Id: boss_overlay_ashen_gate_guarded
     StatusId: guarded

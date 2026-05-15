@@ -40,9 +40,11 @@ public static partial class BattleMapCatalogBootstrap
             Vector3.zero,
             Vector3.one,
             BattleMapTacticalOverlayMode.None);
-        catalog.SetChapterPool("chapter_ashen_frontier", new[] { MapId });
+        catalog.SetChapterPool("chapter_ashen_gate", new[] { MapId });
+        catalog.SetChapterPool("chapter_sunken_bastion", new[] { MapId });
         catalog.SetChapterPool("chapter_ruined_crypts", new[] { MapId });
-        catalog.SetChapterPool("chapter_warren_depths", new[] { MapId });
+        catalog.SetChapterPool("chapter_glass_forest", new[] { MapId });
+        catalog.SetChapterPool("chapter_heartforge_descent", new[] { MapId });
 
         EditorUtility.SetDirty(catalog);
         AssetDatabase.SaveAssets();
@@ -102,6 +104,7 @@ public static partial class BattleMapCatalogBootstrap
         EnsureWolfPineRoad(root.transform);
         EnsureWolfPineDiorama(root.transform);
         EnsureWolfPineDressing(root.transform);
+        EnsureWolfPineEdgeTreatment(root.transform);
     }
 
     private static void EnsurePlayableFloor(Transform root)
@@ -116,7 +119,7 @@ public static partial class BattleMapCatalogBootstrap
 
         floor.transform.localPosition = new Vector3(0f, -1.12f, 0f);
         floor.transform.localRotation = Quaternion.identity;
-        floor.transform.localScale = new Vector3(12.5f, 1f, 8.2f);
+        floor.transform.localScale = new Vector3(30f, 1f, 20f);
         RemoveCollider(floor);
 
         var renderer = floor.GetComponent<Renderer>();
@@ -131,8 +134,8 @@ public static partial class BattleMapCatalogBootstrap
         var road = new GameObject("WolfPineRoad");
         road.name = "WolfPineRoad";
         road.transform.SetParent(root, false);
-        road.transform.localPosition = new Vector3(0f, -1.105f, -0.18f);
-        road.transform.localRotation = Quaternion.Euler(0f, -8f, 0f);
+        road.transform.localPosition = new Vector3(0f, -1.105f, -0.12f);
+        road.transform.localRotation = Quaternion.Euler(0f, -2.5f, 0f);
         road.transform.localScale = Vector3.one;
 
         var meshFilter = road.AddComponent<MeshFilter>();
@@ -144,14 +147,14 @@ public static partial class BattleMapCatalogBootstrap
     private static void EnsureWolfPineDressing(Transform root)
     {
         var treeLine = EnsureChild(root, "WolfPineTreeline");
-        AddVendorPrefab(treeLine, "Pine_Left_Back_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_05.prefab", new Vector3(-12.5f, -1.12f, 5.8f), new Vector3(0f, 30f, 0f), new Vector3(0.95f, 0.95f, 0.95f));
-        AddVendorPrefab(treeLine, "Pine_Left_Back_02", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_08.prefab", new Vector3(-9.7f, -1.12f, 7.2f), new Vector3(0f, -12f, 0f), new Vector3(1.1f, 1.1f, 1.1f));
-        AddVendorPrefab(treeLine, "Pine_Left_Mid_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_10.prefab", new Vector3(-13.6f, -1.12f, 1.5f), new Vector3(0f, 58f, 0f), new Vector3(1.0f, 1.0f, 1.0f));
-        AddVendorPrefab(treeLine, "Pine_Left_Front_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_03.prefab", new Vector3(-10.9f, -1.12f, -5.6f), new Vector3(0f, 8f, 0f), new Vector3(0.9f, 0.9f, 0.9f));
-        AddVendorPrefab(treeLine, "Pine_Right_Back_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_07.prefab", new Vector3(12.1f, -1.12f, 6.4f), new Vector3(0f, -22f, 0f), new Vector3(0.98f, 0.98f, 0.98f));
-        AddVendorPrefab(treeLine, "Pine_Right_Back_02", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_11.prefab", new Vector3(9.4f, -1.12f, 7.7f), new Vector3(0f, 18f, 0f), new Vector3(1.06f, 1.06f, 1.06f));
-        AddVendorPrefab(treeLine, "Pine_Right_Mid_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_06.prefab", new Vector3(13.3f, -1.12f, 1.4f), new Vector3(0f, -40f, 0f), new Vector3(1.02f, 1.02f, 1.02f));
-        AddVendorPrefab(treeLine, "Pine_Right_Front_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_FW01_Tree_B_04.prefab", new Vector3(10.7f, -1.12f, -5.9f), new Vector3(0f, -8f, 0f), new Vector3(0.92f, 0.92f, 0.92f));
+        AddVendorPrefab(treeLine, "Pine_Left_Back_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_fwOF_Tree_M_1.prefab", new Vector3(-15.8f, -1.12f, 9.3f), new Vector3(0f, 30f, 0f), new Vector3(0.54f, 0.54f, 0.54f));
+        AddVendorPrefab(treeLine, "Pine_Left_Back_02", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_fwOF_Tree_M_2.prefab", new Vector3(-11.6f, -1.12f, 10.4f), new Vector3(0f, -12f, 0f), new Vector3(0.58f, 0.58f, 0.58f));
+        AddVendorPrefab(treeLine, "Pine_Left_Mid_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_fwOF_Tree_S_1.prefab", new Vector3(-16.2f, -1.12f, 4.5f), new Vector3(0f, 58f, 0f), new Vector3(0.56f, 0.56f, 0.56f));
+        AddVendorPrefab(treeLine, "Pine_Left_Front_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_fwOF_Tree_S_2.prefab", new Vector3(-19.6f, -1.12f, -11.2f), new Vector3(0f, 8f, 0f), new Vector3(0.34f, 0.34f, 0.34f));
+        AddVendorPrefab(treeLine, "Pine_Right_Back_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_fwOF_Tree_M_2.prefab", new Vector3(15.4f, -1.12f, 9.5f), new Vector3(0f, -22f, 0f), new Vector3(0.55f, 0.55f, 0.55f));
+        AddVendorPrefab(treeLine, "Pine_Right_Back_02", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_fwOF_Tree_M_1.prefab", new Vector3(11.4f, -1.12f, 10.7f), new Vector3(0f, 18f, 0f), new Vector3(0.56f, 0.56f, 0.56f));
+        AddVendorPrefab(treeLine, "Pine_Right_Mid_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_fwOF_Tree_S_1.prefab", new Vector3(16.0f, -1.12f, 4.4f), new Vector3(0f, -40f, 0f), new Vector3(0.56f, 0.56f, 0.56f));
+        AddVendorPrefab(treeLine, "Pine_Right_Front_01", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Trees/Summer/P_fwOF_Tree_S_2.prefab", new Vector3(19.4f, -1.12f, -11.0f), new Vector3(0f, -8f, 0f), new Vector3(0.34f, 0.34f, 0.34f));
 
         var understory = EnsureChild(root, "WolfPineUnderstory");
         AddVendorPrefab(understory, "Grass_Left_Front", "Assets/TriForge Assets/Fantasy Worlds - Forest/Prefabs/Foliage/Summer/P_fwOF_Grass_M_1.prefab", new Vector3(-6.9f, -1.07f, -5.3f), new Vector3(0f, 38f, 0f), new Vector3(2.0f, 2.0f, 2.0f));
@@ -186,21 +189,23 @@ public static partial class BattleMapCatalogBootstrap
         EnsureWolfPineMaterial(
             GroundMaterialPath,
             "M_BattleMap_WolfPine_Ground",
-            new Color(0.86f, 0.95f, 0.72f, 1f),
-            new Color(0.08f, 0.16f, 0.06f, 1f),
-            0.05f,
-            0.38f,
+            new Color(0.25f, 0.40f, 0.11f, 1f),
+            new Color(0.035f, 0.095f, 0.025f, 1f),
+            0.96f,
+            0.32f,
+            0.62f,
             GroundTexturePath,
             new Vector2(8f, 6f));
         EnsureWolfPineMaterial(
             RoadMaterialPath,
             "M_BattleMap_WolfPine_Road",
-            new Color(0.95f, 0.76f, 0.48f, 1f),
-            new Color(0.20f, 0.09f, 0.04f, 1f),
-            0.08f,
-            0.36f,
+            new Color(0.76f, 0.43f, 0.14f, 1f),
+            new Color(0.12f, 0.055f, 0.018f, 1f),
+            0.98f,
+            0.34f,
+            0.74f,
             RoadTexturePath,
-            new Vector2(10f, 1.25f));
+            new Vector2(5.5f, 0.85f));
     }
 
     private static Material EnsureWolfPineMaterial(
@@ -210,10 +215,12 @@ public static partial class BattleMapCatalogBootstrap
         Color shadowColor,
         float textureImpact,
         float lightContribution,
+        float unityShadowPower,
         string texturePath,
         Vector2 textureScale)
     {
-        var shader = Shader.Find("Universal Render Pipeline/Lit")
+        var shader = Shader.Find("Quibli/Stylized Lit")
+                     ?? Shader.Find("Universal Render Pipeline/Lit")
                      ?? Shader.Find("Standard")
                      ?? Shader.Find("Unlit/Color");
         if (shader == null)
@@ -236,7 +243,9 @@ public static partial class BattleMapCatalogBootstrap
             material.name = materialName;
         }
 
-        SetColor(material, color);
+        SetColor(material, "_BaseColor", color);
+        SetColor(material, "_ColorGradient", Color.Lerp(shadowColor, color, 0.55f));
+        SetColor(material, "_Color", color);
         var texture = AssetDatabase.LoadAssetAtPath<Texture>(texturePath);
         if (texture != null)
         {
@@ -251,7 +260,23 @@ public static partial class BattleMapCatalogBootstrap
 
         ClearTexture(material, "_BumpMap");
         SetFloat(material, "_Metallic", 0f);
-        SetFloat(material, "_Smoothness", 0.08f);
+        SetFloat(material, "_Smoothness", 0.04f);
+        SetFloat(material, "_TextureImpact", textureImpact);
+        SetFloat(material, "_LightContribution", lightContribution);
+        SetFloat(material, "_SelfShadingSize", 0.34f);
+        SetFloat(material, "_ReceiveShadows", 1f);
+        SetFloat(material, "_SpecularEnabled", 0f);
+        SetFloat(material, "_RimEnabled", 0f);
+        SetFloat(material, "_OverrideLightAttenuation", 1f);
+        SetVector(material, "_LightAttenuation", new Vector4(0.30f, 0.78f, 0f, 0f));
+        SetColor(material, "_ShadowColor", shadowColor);
+        SetFloat(material, "_UnityShadowMode", 1f);
+        SetFloat(material, "_UnityShadowOcclusion", 0f);
+        SetFloat(material, "_UnityShadowPower", unityShadowPower);
+        SetFloat(material, "_UnityShadowSharpness", 8f);
+        SetFloat(material, "_ShadowEdgeSize", 0.62f);
+        SetFloat(material, "_ShadowEdgeSizeExtra", 0.045f);
+        material.EnableKeyword("DR_LIGHT_ATTENUATION");
         EditorUtility.SetDirty(material);
         return material;
     }
@@ -268,40 +293,62 @@ public static partial class BattleMapCatalogBootstrap
             AssetDatabase.CreateAsset(mesh, RoadMeshPath);
         }
 
-        var centers = new[]
+        var lowerEdge = new[]
         {
-            new Vector2(-70f, 0.85f),
-            new Vector2(-58f, 0.62f),
-            new Vector2(-46f, 0.18f),
-            new Vector2(-34f, -0.22f),
-            new Vector2(-22f, -0.06f),
-            new Vector2(-10f, 0.34f),
-            new Vector2(0f, 0.08f),
-            new Vector2(10f, -0.26f),
-            new Vector2(22f, -0.08f),
-            new Vector2(34f, 0.32f),
-            new Vector2(46f, 0.12f),
-            new Vector2(58f, -0.34f),
-            new Vector2(70f, -0.52f),
+            new Vector3(-70f, 0f, -2.95f),
+            new Vector3(-56f, 0f, -2.25f),
+            new Vector3(-42f, 0f, -3.45f),
+            new Vector3(-30f, 0f, -2.55f),
+            new Vector3(-22f, 0f, -3.35f),
+            new Vector3(-16f, 0f, -2.70f),
+            new Vector3(-11f, 0f, -3.65f),
+            new Vector3(-7f, 0f, -2.55f),
+            new Vector3(-3f, 0f, -3.30f),
+            new Vector3(0f, 0f, -2.75f),
+            new Vector3(4f, 0f, -3.85f),
+            new Vector3(8f, 0f, -2.62f),
+            new Vector3(13f, 0f, -3.42f),
+            new Vector3(19f, 0f, -2.45f),
+            new Vector3(28f, 0f, -3.55f),
+            new Vector3(42f, 0f, -2.35f),
+            new Vector3(56f, 0f, -3.20f),
+            new Vector3(70f, 0f, -2.72f),
         };
-        var halfWidths = new[] { 2.8f, 2.35f, 2.9f, 2.45f, 2.75f, 2.30f, 2.65f, 2.25f, 2.8f, 2.40f, 2.95f, 2.35f, 2.7f };
-        var vertices = new Vector3[centers.Length * 2];
-        var uvs = new Vector2[vertices.Length];
-        for (var i = 0; i < centers.Length; i++)
+        var upperEdge = new[]
         {
-            var x = centers[i].x;
-            var centerZ = centers[i].y;
-            var halfWidth = halfWidths[i];
-            var t = i / (float)(centers.Length - 1);
-            vertices[i * 2] = new Vector3(x, 0f, centerZ - halfWidth);
-            vertices[(i * 2) + 1] = new Vector3(x, 0f, centerZ + halfWidth);
-            uvs[i * 2] = new Vector2(t, 0f);
-            uvs[(i * 2) + 1] = new Vector2(t, 1f);
+            new Vector3(-70f, 0f, 2.55f),
+            new Vector3(-56f, 0f, 3.25f),
+            new Vector3(-42f, 0f, 2.35f),
+            new Vector3(-30f, 0f, 3.38f),
+            new Vector3(-22f, 0f, 2.40f),
+            new Vector3(-16f, 0f, 3.12f),
+            new Vector3(-11f, 0f, 2.35f),
+            new Vector3(-7f, 0f, 3.38f),
+            new Vector3(-3f, 0f, 2.62f),
+            new Vector3(0f, 0f, 3.55f),
+            new Vector3(4f, 0f, 2.48f),
+            new Vector3(8f, 0f, 3.24f),
+            new Vector3(13f, 0f, 2.25f),
+            new Vector3(19f, 0f, 3.12f),
+            new Vector3(28f, 0f, 2.44f),
+            new Vector3(42f, 0f, 3.28f),
+            new Vector3(56f, 0f, 2.42f),
+            new Vector3(70f, 0f, 3.02f),
+        };
+        var vertices = new Vector3[lowerEdge.Length * 2];
+        var uvs = new Vector2[vertices.Length];
+        for (var i = 0; i < lowerEdge.Length; i++)
+        {
+            var t = i / (float)(lowerEdge.Length - 1);
+            vertices[i * 2] = lowerEdge[i];
+            vertices[(i * 2) + 1] = upperEdge[i];
+            uvs[i * 2] = new Vector2(t * 11f, 0f);
+            uvs[(i * 2) + 1] = new Vector2(t * 11f, 1f);
         }
 
-        var triangles = new int[(centers.Length - 1) * 6];
+        var triangles = new int[(lowerEdge.Length - 1) * 6];
         var triangleIndex = 0;
-        for (var i = 0; i < centers.Length - 1; i++)
+        for (var i = 0; i < lowerEdge.Length - 1; i++)
         {
             var lower = i * 2;
             var upper = lower + 1;
@@ -461,6 +508,14 @@ public static partial class BattleMapCatalogBootstrap
         if (material.HasProperty(propertyName))
         {
             material.SetFloat(propertyName, value);
+        }
+    }
+
+    private static void SetVector(Material material, string propertyName, Vector4 value)
+    {
+        if (material.HasProperty(propertyName))
+        {
+            material.SetVector(propertyName, value);
         }
     }
 

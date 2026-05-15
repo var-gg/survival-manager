@@ -19,5 +19,6 @@ MonoBehaviour:
   Class: {fileID: 11400000, guid: ae9c9da2287c8624e818c771bc678450, type: 2}
   DefaultArchetype: {fileID: 11400000, guid: c8abb6345272ebf43a150ee7bf39e90b, type: 2}
   DefaultRoleInstruction: {fileID: 11400000, guid: a6f8bce66c670e1418579d29f11206bc, type: 2}
+  DominantHand: 0
   legacyDisplayName: 
   legacyDescription: 

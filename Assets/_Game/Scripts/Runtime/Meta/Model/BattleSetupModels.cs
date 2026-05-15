@@ -153,6 +153,7 @@ public sealed record EnemySquadMemberTemplate(
     string Id,
     string Name,
     string ArchetypeId,
+    string CharacterId,
     DeploymentAnchorId Anchor,
     string PositiveTraitId,
     string NegativeTraitId,

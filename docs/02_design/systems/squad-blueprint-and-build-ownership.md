@@ -5,7 +5,7 @@
 - 최종수정일: 2026-04-02
 - 소스오브트루스: `docs/02_design/systems/squad-blueprint-and-build-ownership.md`
 - 관련문서:
-  - `docs/01_product/vision.md`
+  - Pindoc strategy/product artifacts
   - `docs/02_design/combat/team-tactics-and-unit-rules.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
 

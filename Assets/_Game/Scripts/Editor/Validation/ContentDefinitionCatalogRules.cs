@@ -115,19 +115,19 @@ internal sealed class CampaignCatalogValidator : ICatalogValidationRule
 {
     public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
     {
-        if (context.Chapters.Count != 3)
+        if (context.Chapters.Count != 5)
         {
-            ContentValidationIssueFactory.AddError(issues, "campaign.chapter_count", $"Story chapters must be locked to 3. Found {context.Chapters.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "campaign.chapter_count", $"Story chapters must be locked to 5. Found {context.Chapters.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        if (context.Sites.Count != 6)
+        if (context.Sites.Count != 10)
         {
-            ContentValidationIssueFactory.AddError(issues, "campaign.site_count", $"Expedition sites must be locked to 6. Found {context.Sites.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "campaign.site_count", $"Expedition sites must be locked to 10. Found {context.Sites.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        if (context.Encounters.Count != 24)
+        if (context.Encounters.Count != 40)
         {
-            ContentValidationIssueFactory.AddError(issues, "campaign.encounter_count", $"Encounter catalog must be locked to 24 battle encounters. Found {context.Encounters.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "campaign.encounter_count", $"Encounter catalog must be locked to 40 battle encounters. Found {context.Encounters.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
         foreach (var chapter in context.Chapters.Values)

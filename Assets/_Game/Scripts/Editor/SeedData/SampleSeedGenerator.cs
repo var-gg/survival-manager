@@ -191,7 +191,7 @@ public static class SampleSeedGenerator
         CheckMinimum(failures, "Augments/augment_silver_guard.asset", HasCanonicalAsset<AugmentDefinition>($"{ResourcesRoot}/Augments/augment_silver_guard.asset", augment => augment.Id, "augment_silver_guard"));
         CheckMinimum(failures, "Items/item_warden_armor.asset", HasCanonicalAsset<ItemBaseDefinition>($"{ResourcesRoot}/Items/item_warden_armor.asset", item => item.Id, "item_warden_armor"));
         CheckMinimum(failures, "Affixes/affix_guarded.asset", HasCanonicalAsset<AffixDefinition>($"{ResourcesRoot}/Affixes/affix_guarded.asset", affix => affix.Id, "affix_guarded"));
-        CheckMinimum(failures, "CampaignChapters/chapter_ashen_frontier.asset", HasCanonicalAsset<CampaignChapterDefinition>($"{ResourcesRoot}/CampaignChapters/chapter_ashen_frontier.asset", chapter => chapter.Id, "chapter_ashen_frontier"));
+        CheckMinimum(failures, "CampaignChapters/chapter_ashen_gate.asset", HasCanonicalAsset<CampaignChapterDefinition>($"{ResourcesRoot}/CampaignChapters/chapter_ashen_gate.asset", chapter => chapter.Id, "chapter_ashen_gate"));
         CheckMinimum(failures, "ExpeditionSites/site_ashen_gate.asset", HasCanonicalAsset<ExpeditionSiteDefinition>($"{ResourcesRoot}/ExpeditionSites/site_ashen_gate.asset", site => site.Id, "site_ashen_gate"));
         CheckMinimum(failures, "StatusFamilies/status_family_guarded.asset", HasCanonicalAsset<StatusFamilyDefinition>($"{ResourcesRoot}/StatusFamilies/status_family_guarded.asset", status => status.Id, "guarded"));
         CheckMinimum(failures, "RewardSources/reward_source_skirmish.asset", HasCanonicalAsset<RewardSourceDefinition>($"{ResourcesRoot}/RewardSources/reward_source_skirmish.asset", reward => reward.Id, "reward_source_skirmish"));
@@ -3436,15 +3436,9 @@ public static class SampleSeedGenerator
 
     private static IReadOnlyList<(string SiteId, string AnswerLaneId)> GetSiteAnswerLaneContracts()
     {
-        return new[]
-        {
-            ("site_ashen_gate", "answer_lane_guard_anchor"),
-            ("site_cinder_watch", "answer_lane_reach_anti_carry"),
-            ("site_forgotten_warren", "answer_lane_anti_swarm_persistence"),
-            ("site_twisted_den", "answer_lane_peel_cleanse"),
-            ("site_ruined_crypt", "answer_lane_anti_sustain_finish"),
-            ("site_grave_sanctum", "answer_lane_hybrid_boss_prep"),
-        };
+        return GetCampaignSiteSeeds()
+            .Select(site => (site.SiteId, site.AnswerLaneId))
+            .ToArray();
     }
 
     private static IEnumerable<LootBundleEntryDefinition> MakeRewardRouteEntries(
@@ -3466,15 +3460,8 @@ public static class SampleSeedGenerator
 
     private static void CreateCampaignEncounterCatalog()
     {
-        var sites = new[]
-        {
-            new { ChapterId = "chapter_ashen_frontier", ChapterOrder = 1, ChapterName = "Ashen Frontier", ChapterNameKo = "잿빛 변경", ChapterDesc = "Open the frontier routes.", ChapterDescKo = "변경의 첫 루트를 연다.", SiteId = "site_ashen_gate", SiteOrder = 1, SiteName = "Ashen Gate", SiteNameKo = "잿문", SiteDesc = "Vanguard outpost route.", SiteDescKo = "전열 진영과 충돌하는 루트.", Faction = "faction_ashen_vanguard", AnswerLaneId = "answer_lane_guard_anchor", EncounterFamilyIds = new[] { "encounter_family_bastion_front", "encounter_family_protect_carry", "encounter_family_control_cleanse", "encounter_family_sustain_grind" }, SkirmishA = new[] { "bastion_penitent", "warden", "hexer", "raider" }, SkirmishB = new[] { "guardian", "scout", "hexer", "hunter" }, Elite = new[] { "bulwark", "hunter", "mirror_cantor", "warden" }, BossCaptain = "bulwark", BossEscorts = new[] { "hunter", "hexer" }, OverlayId = "boss_overlay_ashen_gate" },
-            new { ChapterId = "chapter_ashen_frontier", ChapterOrder = 1, ChapterName = "Ashen Frontier", ChapterNameKo = "잿빛 변경", ChapterDesc = "Open the frontier routes.", ChapterDescKo = "변경의 첫 루트를 연다.", SiteId = "site_cinder_watch", SiteOrder = 2, SiteName = "Cinder Watch", SiteNameKo = "잿불 망대", SiteDesc = "Ranged harassment route.", SiteDescKo = "원거리 압박이 많은 루트.", Faction = "faction_cinder_watch", AnswerLaneId = "answer_lane_reach_anti_carry", EncounterFamilyIds = new[] { "encounter_family_mark_execute", "encounter_family_weakside_dive", "encounter_family_tempo_swarm", "encounter_family_protect_carry" }, SkirmishA = new[] { "hunter", "scout", "pale_executor", "priest" }, SkirmishB = new[] { "marksman", "scout", "guardian", "hexer" }, Elite = new[] { "marksman", "bulwark", "scout", "hexer" }, BossCaptain = "marksman", BossEscorts = new[] { "scout", "priest" }, OverlayId = "boss_overlay_cinder_watch" },
-            new { ChapterId = "chapter_warren_depths", ChapterOrder = 2, ChapterName = "Warren Depths", ChapterNameKo = "망실 굴지", ChapterDesc = "Break the hidden warrens.", ChapterDescKo = "숨은 굴을 돌파한다.", SiteId = "site_forgotten_warren", SiteOrder = 1, SiteName = "Forgotten Warren", SiteNameKo = "망실 굴", SiteDesc = "Attrition-heavy tunnels.", SiteDescKo = "소모전이 긴 터널.", Faction = "faction_warren_pack", AnswerLaneId = "answer_lane_anti_swarm_persistence", EncounterFamilyIds = new[] { "encounter_family_sustain_grind", "encounter_family_tempo_swarm", "encounter_family_summon_pressure", "encounter_family_weakside_dive" }, SkirmishA = new[] { "raider", "scout", "shaman", "hunter" }, SkirmishB = new[] { "reaver", "scout", "shaman", "hunter" }, Elite = new[] { "reaver", "raider", "scout", "shaman" }, BossCaptain = "reaver", BossEscorts = new[] { "rift_stalker", "shaman" }, OverlayId = "boss_overlay_forgotten_warren" },
-            new { ChapterId = "chapter_warren_depths", ChapterOrder = 2, ChapterName = "Warren Depths", ChapterNameKo = "망실 굴지", ChapterDesc = "Break the hidden warrens.", ChapterDescKo = "숨은 굴을 돌파한다.", SiteId = "site_twisted_den", SiteOrder = 2, SiteName = "Twisted Den", SiteNameKo = "뒤틀린 소굴", SiteDesc = "Ambush-heavy den.", SiteDescKo = "기습이 많은 소굴.", Faction = "faction_twisted_den", AnswerLaneId = "answer_lane_peel_cleanse", EncounterFamilyIds = new[] { "encounter_family_weakside_dive", "encounter_family_mark_execute", "encounter_family_summon_pressure", "encounter_family_tempo_swarm" }, SkirmishA = new[] { "rift_stalker", "raider", "scout", "shaman" }, SkirmishB = new[] { "slayer", "hunter", "scout", "priest" }, Elite = new[] { "slayer", "reaver", "scout", "priest" }, BossCaptain = "slayer", BossEscorts = new[] { "scout", "priest" }, OverlayId = "boss_overlay_twisted_den" },
-            new { ChapterId = "chapter_ruined_crypts", ChapterOrder = 3, ChapterName = "Ruined Crypts", ChapterNameKo = "폐허 묘실", ChapterDesc = "Seal the crypt lords.", ChapterDescKo = "묘실의 군주를 봉인한다.", SiteId = "site_ruined_crypt", SiteOrder = 1, SiteName = "Ruined Crypt", SiteNameKo = "폐허 묘실", SiteDesc = "Undead elite route.", SiteDescKo = "언데드 정예 루트.", Faction = "faction_bone_host", AnswerLaneId = "answer_lane_anti_sustain_finish", EncounterFamilyIds = new[] { "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry", "encounter_family_summon_pressure" }, SkirmishA = new[] { "guardian", "hexer", "mirror_cantor", "hunter" }, SkirmishB = new[] { "bulwark", "hexer", "priest", "marksman" }, Elite = new[] { "bulwark", "hexer", "priest", "marksman" }, BossCaptain = "hexer", BossEscorts = new[] { "priest", "guardian" }, OverlayId = "boss_overlay_ruined_crypt" },
-            new { ChapterId = "chapter_ruined_crypts", ChapterOrder = 3, ChapterName = "Ruined Crypts", ChapterNameKo = "폐허 묘실", ChapterDesc = "Seal the crypt lords.", ChapterDescKo = "묘실의 군주를 봉인한다.", SiteId = "site_grave_sanctum", SiteOrder = 2, SiteName = "Grave Sanctum", SiteNameKo = "무덤 성소", SiteDesc = "Final ritual route.", SiteDescKo = "최종 의식 루트.", Faction = "faction_grave_sanctum", AnswerLaneId = "answer_lane_hybrid_boss_prep", EncounterFamilyIds = new[] { "encounter_family_bastion_front", "encounter_family_control_cleanse", "encounter_family_mark_execute", "encounter_family_bastion_front" }, SkirmishA = new[] { "guardian", "hexer", "shaman", "marksman" }, SkirmishB = new[] { "bulwark", "hexer", "shaman", "hunter" }, Elite = new[] { "bulwark", "pale_executor", "hexer", "shaman" }, BossCaptain = "shaman", BossEscorts = new[] { "bastion_penitent", "hexer" }, OverlayId = "boss_overlay_grave_sanctum" },
-        };
+        var sites = GetCampaignSiteSeeds();
+        PruneCampaignEncounterCatalogAssets(sites);
 
         foreach (var chapterGroup in sites.GroupBy(site => site.ChapterId))
         {
@@ -3486,7 +3473,7 @@ public static class SampleSeedGenerator
                 asset.DescriptionKey = ContentLocalizationTables.BuildCampaignChapterDescriptionKey(asset.Id);
                 asset.StoryOrder = first.ChapterOrder;
                 asset.SiteIds = chapterGroup.OrderBy(site => site.SiteOrder).Select(site => site.SiteId).ToList();
-                asset.UnlocksEndlessOnClear = first.ChapterOrder == 3;
+                asset.UnlocksEndlessOnClear = first.ChapterOrder == 5;
                 UpsertStringEntry(ContentLocalizationTables.Campaign, asset.NameKey, first.ChapterNameKo, first.ChapterName);
                 UpsertStringEntry(ContentLocalizationTables.Campaign, asset.DescriptionKey, first.ChapterDescKo, first.ChapterDesc);
             });
@@ -3503,26 +3490,236 @@ public static class SampleSeedGenerator
                 asset.NameKey = ContentLocalizationTables.BuildExpeditionSiteNameKey(asset.Id);
                 asset.DescriptionKey = ContentLocalizationTables.BuildExpeditionSiteDescriptionKey(asset.Id);
                 asset.SiteOrder = site.SiteOrder;
-                asset.FactionId = site.Faction;
+                asset.FactionId = site.FactionId;
                 asset.EncounterIds = encounterIds;
                 asset.ExtractRewardSourceId = "reward_source_extract";
-                asset.ThreatTier = site.ChapterOrder switch { 1 => ThreatTierValue.Tier1, 2 => ThreatTierValue.Tier2, _ => ThreatTierValue.Tier3 };
+                asset.ThreatTier = site.ThreatTier;
                 UpsertStringEntry(ContentLocalizationTables.Campaign, asset.NameKey, site.SiteNameKo, site.SiteName);
                 UpsertStringEntry(ContentLocalizationTables.Campaign, asset.DescriptionKey, site.SiteDescKo, site.SiteDesc);
             });
 
-            CreateBossOverlay(site.OverlayId, site.SiteName, site.SiteNameKo);
-            CreateEnemySquad($"{site.SiteId}_skirmish_1_squad", site.Faction, site.SkirmishA, TeamPostureTypeValue.StandardAdvance, ThreatTierValue.Tier1, 1);
-            CreateEnemySquad($"{site.SiteId}_skirmish_2_squad", site.Faction, site.SkirmishB, TeamPostureTypeValue.StandardAdvance, ThreatTierValue.Tier1, 1);
-            CreateEnemySquad($"{site.SiteId}_elite_1_squad", site.Faction, site.Elite, TeamPostureTypeValue.CollapseWeakSide, ThreatTierValue.Tier2, 2);
-            CreateBossSquad($"{site.SiteId}_boss_1_squad", site.Faction, site.BossCaptain, site.BossEscorts, ThreatTierValue.Tier3, 3);
+            CreateBossOverlay(site);
+            CreateEnemySquad($"{site.SiteId}_skirmish_1_squad", site.FactionId, site.SkirmishA, TeamPostureTypeValue.StandardAdvance, ThreatTierValue.Tier1, 1);
+            CreateEnemySquad($"{site.SiteId}_skirmish_2_squad", site.FactionId, site.SkirmishB, TeamPostureTypeValue.StandardAdvance, ThreatTierValue.Tier1, 1);
+            CreateEnemySquad($"{site.SiteId}_elite_1_squad", site.FactionId, site.Elite, TeamPostureTypeValue.CollapseWeakSide, ThreatTierValue.Tier2, 2);
+            CreateBossSquad($"{site.SiteId}_boss_1_squad", site.FactionId, site.BossCaptain, site.BossEscorts, ThreatTierValue.Tier3, 3);
 
-            CreateEncounter($"{site.SiteId}_skirmish_1", site.SiteId, site.Faction, EncounterKindValue.Skirmish, $"{site.SiteId}_skirmish_1_squad", string.Empty, "reward_source_skirmish", ThreatTierValue.Tier1, 1, 1, "chapter_entry", site.EncounterFamilyIds[0], site.AnswerLaneId);
-            CreateEncounter($"{site.SiteId}_skirmish_2", site.SiteId, site.Faction, EncounterKindValue.Skirmish, $"{site.SiteId}_skirmish_2_squad", string.Empty, "reward_source_skirmish", ThreatTierValue.Tier1, 1, 1, "chapter_entry", site.EncounterFamilyIds[1], site.AnswerLaneId);
-            CreateEncounter($"{site.SiteId}_elite_1", site.SiteId, site.Faction, EncounterKindValue.Elite, $"{site.SiteId}_elite_1_squad", string.Empty, "reward_source_elite", ThreatTierValue.Tier2, 2, 2, "site_mid", site.EncounterFamilyIds[2], site.AnswerLaneId);
-            CreateEncounter($"{site.SiteId}_boss_1", site.SiteId, site.Faction, EncounterKindValue.Boss, $"{site.SiteId}_boss_1_squad", site.OverlayId, "reward_source_boss", ThreatTierValue.Tier3, 3, 3, "site_boss", site.EncounterFamilyIds[3], site.AnswerLaneId);
+            CreateEncounter($"{site.SiteId}_skirmish_1", site.SiteId, site.FactionId, EncounterKindValue.Skirmish, $"{site.SiteId}_skirmish_1_squad", string.Empty, "reward_source_skirmish", ThreatTierValue.Tier1, 1, 1, "chapter_entry", site.EncounterFamilyIds[0], site.AnswerLaneId);
+            CreateEncounter($"{site.SiteId}_skirmish_2", site.SiteId, site.FactionId, EncounterKindValue.Skirmish, $"{site.SiteId}_skirmish_2_squad", string.Empty, "reward_source_skirmish", ThreatTierValue.Tier1, 1, 1, "chapter_entry", site.EncounterFamilyIds[1], site.AnswerLaneId);
+            CreateEncounter($"{site.SiteId}_elite_1", site.SiteId, site.FactionId, EncounterKindValue.Elite, $"{site.SiteId}_elite_1_squad", string.Empty, "reward_source_elite", ThreatTierValue.Tier2, 2, 2, "site_mid", site.EncounterFamilyIds[2], site.AnswerLaneId);
+            CreateEncounter($"{site.SiteId}_boss_1", site.SiteId, site.FactionId, EncounterKindValue.Boss, $"{site.SiteId}_boss_1_squad", site.OverlayId, "reward_source_boss", ThreatTierValue.Tier3, 3, 3, "site_boss", site.EncounterFamilyIds[3], site.AnswerLaneId);
         }
     }
+
+    private static IReadOnlyList<CampaignSiteSeed> GetCampaignSiteSeeds()
+    {
+        return new[]
+        {
+            new CampaignSiteSeed(
+                "chapter_ashen_gate", 1, "Ashen Gate", "잿문 장", "Break the Solarium border gate.", "솔라룸 국경 관문을 돌파한다.",
+                "site_ashen_gate", 1, "Ashen Gate", "잿문", "Fixed gate line with Solarium P09 patrols.", "솔라룸 P09 경비대와 맞서는 고정 관문 전선.",
+                "faction_solarum_border", ThreatTierValue.Tier1, "answer_lane_guard_anchor",
+                new[] { "encounter_family_bastion_front", "encounter_family_protect_carry", "encounter_family_control_cleanse", "encounter_family_sustain_grind" },
+                Members(Member("bastion_penitent", "extra_kojin_gate_warden"), Member("warden", "extra_solarum_border_lancer"), Member("hexer", "extra_solarum_sigil_scribe"), Member("raider", "extra_border_reliquary_carry")),
+                Members(Member("guardian", "extra_kojin_gate_warden"), Member("scout", "extra_solarum_border_lancer"), Member("hexer", "extra_solarum_sigil_scribe"), Member("hunter", "extra_border_reliquary_carry")),
+                Members(Member("bulwark", "hero_aegis_sentinel"), Member("hunter", "extra_solarum_border_lancer"), Member("mirror_cantor", "extra_solarum_sigil_scribe"), Member("warden", "extra_kojin_gate_warden")),
+                Member("warden", "hero_aegis_sentinel"),
+                Members(Member("hunter", "extra_solarum_border_lancer"), Member("hexer", "extra_solarum_sigil_scribe")),
+                "boss_overlay_ashen_gate", "boss_aura_guard_anchor", "boss_utility_gate_lock", "guarded"),
+            new CampaignSiteSeed(
+                "chapter_ashen_gate", 1, "Ashen Gate", "잿문 장", "Break the Solarium border gate.", "솔라룸 국경 관문을 돌파한다.",
+                "site_wolfpine_trail", 2, "Wolfpine Trail", "늑대소나무길", "Pack scouts and Grey Fang's vanguard turn the route into a pursuit.", "팩 정찰대와 회조의 선봉대가 추적전으로 압박하는 숲길.",
+                "faction_wolfpine_pack", ThreatTierValue.Tier1, "answer_lane_peel_anti_dive",
+                new[] { "encounter_family_weakside_dive", "encounter_family_tempo_swarm", "encounter_family_mark_execute", "encounter_family_protect_carry" },
+                Members(Member("scout", "extra_wolfpine_outrider"), Member("raider", "extra_wolfpine_ember_runner_cell"), Member("hunter", "extra_grey_fang_vanguard"), Member("shaman", "extra_wolfpine_outrider")),
+                Members(Member("rift_stalker", "extra_wolfpine_outrider"), Member("raider", "hero_ember_runner"), Member("scout", "extra_grey_fang_vanguard"), Member("hunter", "extra_wolfpine_ember_runner_cell")),
+                Members(Member("reaver", "npc_grey_fang"), Member("raider", "extra_grey_fang_vanguard"), Member("scout", "hero_ember_runner"), Member("shaman", "extra_wolfpine_outrider")),
+                Member("reaver", "npc_grey_fang"),
+                Members(Member("rift_stalker", "extra_wolfpine_outrider"), Member("shaman", "extra_grey_fang_vanguard")),
+                "boss_overlay_wolfpine_trail", "boss_aura_pack_hunt", "boss_utility_ambush_call", "marked"),
+            new CampaignSiteSeed(
+                "chapter_sunken_bastion", 2, "Sunken Bastion", "침몰 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
+                "site_sunken_bastion", 1, "Sunken Bastion", "침몰 보루", "Shielded adjudicators protect a submerged reliquary.", "방패 든 심판관들이 잠긴 성물고를 지킨다.",
+                "faction_sunken_adjudicators", ThreatTierValue.Tier2, "answer_lane_break_formation",
+                new[] { "encounter_family_bastion_front", "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry" },
+                Members(Member("guardian", "extra_bastion_line_guard"), Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("priest", "extra_sunken_adjudicator_lieutenant"), Member("marksman", "extra_sunken_bastion_adjudicator")),
+                Members(Member("bulwark", "hero_iron_pelt"), Member("guardian", "extra_bastion_line_guard"), Member("hexer", "extra_sunken_bastion_adjudicator"), Member("priest", "extra_bastion_reliquary_guard")),
+                Members(Member("guardian", "hero_iron_pelt"), Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("mirror_cantor", "extra_sunken_adjudicator_lieutenant"), Member("marksman", "extra_sunken_bastion_adjudicator")),
+                Member("guardian", "hero_iron_pelt"),
+                Members(Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("priest", "extra_sunken_adjudicator_lieutenant")),
+                "boss_overlay_sunken_bastion", "boss_aura_drowned_bastion", "boss_utility_reliquary_seal", "barrier"),
+            new CampaignSiteSeed(
+                "chapter_sunken_bastion", 2, "Sunken Bastion", "침몰 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
+                "site_tithe_road", 2, "Tithe Road", "십일조로", "Marked carriers and pureflame escorts test cleanse timing.", "표식을 짊어진 징수 행렬과 순화 호위가 해제 타이밍을 시험한다.",
+                "faction_tithe_road", ThreatTierValue.Tier2, "answer_lane_anti_mark_cleanse",
+                new[] { "encounter_family_mark_execute", "encounter_family_control_cleanse", "encounter_family_weakside_dive", "encounter_family_sustain_grind" },
+                Members(Member("scout", "extra_tithe_mark_bearer"), Member("priest", "extra_tithe_chain_cantor"), Member("raider", "extra_tithe_executioner_proxy"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
+                Members(Member("marksman", "extra_tithe_mark_bearer"), Member("scout", "extra_tithe_executioner_proxy"), Member("guardian", "extra_tithe_chain_cantor"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
+                Members(Member("priest", "npc_lyra_sternfeld"), Member("pale_executor", "extra_tithe_executioner_proxy"), Member("scout", "extra_tithe_mark_bearer"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
+                Member("priest", "npc_lyra_sternfeld"),
+                Members(Member("pale_executor", "extra_tithe_executioner_proxy"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
+                "boss_overlay_tithe_road", "boss_aura_pureflame_tithe", "boss_utility_mark_chain", "marked"),
+            new CampaignSiteSeed(
+                "chapter_ruined_crypts", 3, "Ruined Crypts", "폐허 묘실", "Cross the Pale Archive and its false memorials.", "창백 기록고와 거짓 추모지를 통과한다.",
+                "site_ruined_crypts", 1, "Ruined Crypts", "폐허 묘실", "Archive keepers turn memorial records into attrition pressure.", "기록 수호자들이 추모 기록을 소모전 압박으로 바꾼다.",
+                "faction_pale_archive", ThreatTierValue.Tier3, "answer_lane_anti_sustain_finish",
+                new[] { "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry", "encounter_family_summon_pressure" },
+                Members(Member("guardian", "extra_pale_memorial_keeper"), Member("hexer", "extra_pale_tomb_sentinel"), Member("mirror_cantor", "extra_black_roll_bailiff"), Member("hunter", "extra_crypt_list_keeper")),
+                Members(Member("bulwark", "extra_pale_tomb_sentinel"), Member("hexer", "npc_silent_moon"), Member("priest", "extra_pale_memorial_keeper"), Member("marksman", "extra_crypt_list_keeper")),
+                Members(Member("hexer", "npc_silent_moon"), Member("guardian", "extra_pale_tomb_sentinel"), Member("priest", "extra_pale_memorial_keeper"), Member("mirror_cantor", "extra_black_roll_bailiff")),
+                Member("hexer", "npc_silent_moon"),
+                Members(Member("priest", "extra_pale_memorial_keeper"), Member("guardian", "extra_pale_tomb_sentinel")),
+                "boss_overlay_ruined_crypts", "boss_aura_pale_record", "boss_utility_memorial_loop", "silence"),
+            new CampaignSiteSeed(
+                "chapter_ruined_crypts", 3, "Ruined Crypts", "폐허 묘실", "Cross the Pale Archive and its false memorials.", "창백 기록고와 거짓 추모지를 통과한다.",
+                "site_bone_orchard", 2, "Bone Orchard", "뼈 과수원", "Lattice-root watchers flood the lane with summoned bodies.", "격자뿌리 감시자들이 소환체로 전선을 채운다.",
+                "faction_bone_orchard", ThreatTierValue.Tier3, "answer_lane_anti_summon_burst",
+                new[] { "encounter_family_summon_pressure", "encounter_family_tempo_swarm", "encounter_family_mark_execute", "encounter_family_control_cleanse" },
+                Members(Member("shaman", "extra_lattice_root_usher"), Member("scout", "extra_lattice_echo_caretaker"), Member("reaver", "extra_bone_orchard_watcher"), Member("hunter", "extra_lattice_root_usher")),
+                Members(Member("rift_stalker", "extra_bone_orchard_watcher"), Member("shaman", "npc_black_vellum"), Member("raider", "extra_lattice_echo_caretaker"), Member("priest", "extra_lattice_root_usher")),
+                Members(Member("shaman", "npc_black_vellum"), Member("reaver", "extra_bone_orchard_watcher"), Member("mirror_cantor", "extra_lattice_echo_caretaker"), Member("hunter", "extra_lattice_root_usher")),
+                Member("shaman", "npc_black_vellum"),
+                Members(Member("reaver", "extra_bone_orchard_watcher"), Member("mirror_cantor", "extra_lattice_echo_caretaker")),
+                "boss_overlay_bone_orchard", "boss_aura_lattice_growth", "boss_utility_body_bloom", "burn"),
+            new CampaignSiteSeed(
+                "chapter_glass_forest", 4, "Glass Forest", "유리숲", "Enter the refracted Solarium record field.", "굴절된 솔라룸 기록장을 통과한다.",
+                "site_glass_forest", 1, "Glass Forest", "유리숲", "Shards, clerics, and recordkeepers split targeting priorities.", "유리 파편, 성직자, 기록관이 타깃 우선순위를 흔든다.",
+                "faction_glass_forest", ThreatTierValue.Tier3, "answer_lane_cleanse_mobility",
+                new[] { "encounter_family_control_cleanse", "encounter_family_mark_execute", "encounter_family_weakside_dive", "encounter_family_sustain_grind" },
+                Members(Member("priest", "extra_glass_field_cleric"), Member("marksman", "extra_glass_shard_bailiff"), Member("scout", "extra_glass_forest_recordkeeper"), Member("hexer", "extra_glass_field_cleric")),
+                Members(Member("marksman", "hero_prism_seeker"), Member("rift_stalker", "extra_glass_shard_bailiff"), Member("priest", "extra_glass_field_cleric"), Member("hexer", "extra_glass_forest_recordkeeper")),
+                Members(Member("marksman", "hero_prism_seeker"), Member("mirror_cantor", "extra_glass_forest_recordkeeper"), Member("scout", "extra_glass_shard_bailiff"), Member("priest", "extra_glass_field_cleric")),
+                Member("marksman", "hero_prism_seeker"),
+                Members(Member("mirror_cantor", "extra_glass_forest_recordkeeper"), Member("scout", "extra_glass_shard_bailiff")),
+                "boss_overlay_glass_forest", "boss_aura_refraction", "boss_utility_shard_redirect", "exposed"),
+            new CampaignSiteSeed(
+                "chapter_glass_forest", 4, "Glass Forest", "유리숲", "Enter the refracted Solarium record field.", "굴절된 솔라룸 기록장을 통과한다.",
+                "site_starved_menagerie", 2, "Starved Menagerie", "굶주린 우리", "Broken specimens and snare runners create long swarm pressure.", "부서진 표본과 덫 주자들이 긴 압박을 만든다.",
+                "faction_starved_menagerie", ThreatTierValue.Tier3, "answer_lane_anti_swarm_persistence",
+                new[] { "encounter_family_tempo_swarm", "encounter_family_summon_pressure", "encounter_family_weakside_dive", "encounter_family_mark_execute" },
+                Members(Member("raider", "extra_menagerie_snare_runner"), Member("scout", "extra_sample_b17_survivor"), Member("shaman", "extra_menagerie_keeper"), Member("hunter", "extra_menagerie_snare_runner")),
+                Members(Member("slayer", "hero_shardblade"), Member("hunter", "extra_sample_b17_survivor"), Member("scout", "extra_menagerie_snare_runner"), Member("priest", "extra_menagerie_keeper")),
+                Members(Member("slayer", "hero_shardblade"), Member("reaver", "extra_sample_b17_survivor"), Member("scout", "extra_menagerie_snare_runner"), Member("priest", "extra_menagerie_keeper")),
+                Member("slayer", "hero_shardblade"),
+                Members(Member("scout", "extra_menagerie_snare_runner"), Member("priest", "extra_menagerie_keeper")),
+                "boss_overlay_starved_menagerie", "boss_aura_starved_swarm", "boss_utility_snare_release", "wound"),
+            new CampaignSiteSeed(
+                "chapter_heartforge_descent", 5, "Heartforge Descent", "심장단조 하강", "Push through the final gate into the worldscar.", "최종 관문을 지나 세계상처 심부로 내려간다.",
+                "site_heartforge_gate", 1, "Heartforge Gate", "심장단조 관문", "Gate guards and record-right markers test hybrid break tools.", "관문 경비와 기록권 표식이 혼합 돌파 수단을 시험한다.",
+                "faction_heartforge_gate", ThreatTierValue.Tier3, "answer_lane_hybrid_break",
+                new[] { "encounter_family_bastion_front", "encounter_family_mark_execute", "encounter_family_control_cleanse", "encounter_family_protect_carry" },
+                Members(Member("guardian", "extra_heartforge_gate_guard"), Member("marksman", "extra_record_rights_marker"), Member("hexer", "extra_heartforge_gate_warden"), Member("raider", "extra_heartforge_gate_guard")),
+                Members(Member("bulwark", "extra_heartforge_gate_warden"), Member("pale_executor", "extra_record_rights_marker"), Member("hexer", "extra_heartforge_gate_guard"), Member("shaman", "extra_record_rights_marker")),
+                Members(Member("bulwark", "hero_aegis_sentinel"), Member("pale_executor", "extra_record_rights_marker"), Member("hexer", "extra_heartforge_gate_warden"), Member("shaman", "extra_heartforge_gate_guard")),
+                Member("bulwark", "hero_aegis_sentinel"),
+                Members(Member("pale_executor", "extra_record_rights_marker"), Member("hexer", "extra_heartforge_gate_warden")),
+                "boss_overlay_heartforge_gate", "boss_aura_heartforge_lock", "boss_utility_record_rights", "sunder"),
+            new CampaignSiteSeed(
+                "chapter_heartforge_descent", 5, "Heartforge Descent", "심장단조 하강", "Push through the final gate into the worldscar.", "최종 관문을 지나 세계상처 심부로 내려간다.",
+                "site_worldscar_depths", 2, "Worldscar Depths", "세계상처 심부", "Baekgyu's final archive cell combines every prior pressure lane.", "백규의 최종 기록 감방이 이전 전선 압박을 모두 결합한다.",
+                "faction_worldscar_depths", ThreatTierValue.Tier3, "answer_lane_adaptive_mastery",
+                new[] { "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_summon_pressure", "encounter_family_bastion_front" },
+                Members(Member("mirror_cantor", "extra_worldscar_archive_cell"), Member("hexer", "extra_worldscar_rite_echo"), Member("guardian", "extra_worldscar_record_bailiff"), Member("marksman", "extra_worldscar_archive_cell")),
+                Members(Member("pale_executor", "extra_worldscar_record_bailiff"), Member("shaman", "extra_worldscar_rite_echo"), Member("rift_stalker", "extra_worldscar_archive_cell"), Member("priest", "extra_worldscar_record_bailiff")),
+                Members(Member("hexer", "npc_baekgyu_sternheim"), Member("mirror_cantor", "extra_worldscar_archive_cell"), Member("guardian", "extra_worldscar_record_bailiff"), Member("shaman", "extra_worldscar_rite_echo")),
+                Member("hexer", "npc_baekgyu_sternheim"),
+                Members(Member("mirror_cantor", "extra_worldscar_archive_cell"), Member("guardian", "extra_worldscar_record_bailiff")),
+                "boss_overlay_worldscar_depths", "boss_aura_worldscar_law", "boss_utility_final_record", "silence"),
+        };
+    }
+
+    private static EnemyMemberSeed Member(string archetypeId, string characterId = "")
+    {
+        return new EnemyMemberSeed(archetypeId, characterId);
+    }
+
+    private static IReadOnlyList<EnemyMemberSeed> Members(params EnemyMemberSeed[] members)
+    {
+        return members;
+    }
+
+    private static void PruneCampaignEncounterCatalogAssets(IReadOnlyList<CampaignSiteSeed> sites)
+    {
+        var chapterFiles = sites
+            .Select(site => $"{site.ChapterId}.asset")
+            .ToHashSet(StringComparer.Ordinal);
+        var siteFiles = sites
+            .Select(site => $"{site.SiteId}.asset")
+            .ToHashSet(StringComparer.Ordinal);
+        var overlayFiles = sites
+            .Select(site => $"{site.OverlayId}.asset")
+            .ToHashSet(StringComparer.Ordinal);
+        var encounterFiles = sites
+            .SelectMany(site => new[]
+            {
+                $"{site.SiteId}_skirmish_1.asset",
+                $"{site.SiteId}_skirmish_2.asset",
+                $"{site.SiteId}_elite_1.asset",
+                $"{site.SiteId}_boss_1.asset",
+            })
+            .ToHashSet(StringComparer.Ordinal);
+        var squadFiles = sites
+            .SelectMany(site => new[]
+            {
+                $"{site.SiteId}_skirmish_1_squad.asset",
+                $"{site.SiteId}_skirmish_2_squad.asset",
+                $"{site.SiteId}_elite_1_squad.asset",
+                $"{site.SiteId}_boss_1_squad.asset",
+            })
+            .ToHashSet(StringComparer.Ordinal);
+
+        DeleteUnexpectedCampaignAssets("CampaignChapters", chapterFiles);
+        DeleteUnexpectedCampaignAssets("ExpeditionSites", siteFiles);
+        DeleteUnexpectedCampaignAssets("BossOverlays", overlayFiles);
+        DeleteUnexpectedCampaignAssets("Encounters", encounterFiles);
+        DeleteUnexpectedCampaignAssets("EnemySquads", squadFiles);
+    }
+
+    private static void DeleteUnexpectedCampaignAssets(string folderName, HashSet<string> expectedFileNames)
+    {
+        var folder = $"{ResourcesRoot}/{folderName}";
+        if (!Directory.Exists(folder))
+        {
+            return;
+        }
+
+        foreach (var assetPath in Directory.EnumerateFiles(folder, "*.asset", SearchOption.TopDirectoryOnly).Select(ToUnityPath))
+        {
+            if (!expectedFileNames.Contains(Path.GetFileName(assetPath)))
+            {
+                AssetDatabase.DeleteAsset(assetPath);
+            }
+        }
+    }
+
+    private sealed record CampaignSiteSeed(
+        string ChapterId,
+        int ChapterOrder,
+        string ChapterName,
+        string ChapterNameKo,
+        string ChapterDesc,
+        string ChapterDescKo,
+        string SiteId,
+        int SiteOrder,
+        string SiteName,
+        string SiteNameKo,
+        string SiteDesc,
+        string SiteDescKo,
+        string FactionId,
+        ThreatTierValue ThreatTier,
+        string AnswerLaneId,
+        IReadOnlyList<string> EncounterFamilyIds,
+        IReadOnlyList<EnemyMemberSeed> SkirmishA,
+        IReadOnlyList<EnemyMemberSeed> SkirmishB,
+        IReadOnlyList<EnemyMemberSeed> Elite,
+        EnemyMemberSeed BossCaptain,
+        IReadOnlyList<EnemyMemberSeed> BossEscorts,
+        string OverlayId,
+        string OverlayAuraTag,
+        string OverlayUtilityTag,
+        string OverlayStatusId);
+
+    private sealed record EnemyMemberSeed(string ArchetypeId, string CharacterId);
 
     private static void CreateRewardSource(string id, string enName, string koName, RewardSourceKindValue kind, string dropTableId, IReadOnlyList<RarityBracketValue> rarityBrackets)
     {
@@ -3580,25 +3777,25 @@ public static class SampleSeedGenerator
         };
     }
 
-    private static void CreateBossOverlay(string id, string siteName, string siteNameKo)
+    private static void CreateBossOverlay(CampaignSiteSeed site)
     {
-        CreateAsset<BossOverlayDefinition>($"{ResourcesRoot}/BossOverlays/{id}.asset", asset =>
+        CreateAsset<BossOverlayDefinition>($"{ResourcesRoot}/BossOverlays/{site.OverlayId}.asset", asset =>
         {
-            asset.Id = id;
-            asset.NameKey = ContentLocalizationTables.BuildBossOverlayNameKey(id);
-            asset.DescriptionKey = ContentLocalizationTables.BuildBossOverlayDescriptionKey(id);
+            asset.Id = site.OverlayId;
+            asset.NameKey = ContentLocalizationTables.BuildBossOverlayNameKey(site.OverlayId);
+            asset.DescriptionKey = ContentLocalizationTables.BuildBossOverlayDescriptionKey(site.OverlayId);
             asset.PhaseTrigger = BossPhaseTriggerValue.HealthBelowHalf;
             asset.ThreatCost = 1;
-            asset.SignatureAuraTag = "boss_aura_curse";
-            asset.SignatureUtilityTag = "boss_utility_revive";
-            asset.RewardDropTags = new List<string> { "boss", id };
-            asset.AppliedStatuses = new List<StatusApplicationRule> { MakeStatus($"{id}_guarded", "guarded", 999f, 0f) };
-            UpsertStringEntry(ContentLocalizationTables.Encounters, asset.NameKey, $"{siteNameKo} 우두머리 위상", $"{siteName} Boss Overlay");
-            UpsertStringEntry(ContentLocalizationTables.Encounters, asset.DescriptionKey, "위상 전환, 오라, 보상 태그를 소유", "Owns phase trigger, aura, and reward tags");
+            asset.SignatureAuraTag = site.OverlayAuraTag;
+            asset.SignatureUtilityTag = site.OverlayUtilityTag;
+            asset.RewardDropTags = new List<string> { "boss", site.OverlayId, site.SiteId, site.OverlayAuraTag, site.OverlayUtilityTag };
+            asset.AppliedStatuses = new List<StatusApplicationRule> { MakeStatus($"{site.OverlayId}_{site.OverlayStatusId}", site.OverlayStatusId, 999f, 0f) };
+            UpsertStringEntry(ContentLocalizationTables.Encounters, asset.NameKey, $"{site.SiteNameKo} 우두머리 위상", $"{site.SiteName} Boss Overlay");
+            UpsertStringEntry(ContentLocalizationTables.Encounters, asset.DescriptionKey, $"{site.AnswerLaneId} 전용 오라와 보상 태그", $"{site.AnswerLaneId} aura and reward tags");
         });
     }
 
-    private static void CreateEnemySquad(string id, string factionId, IReadOnlyList<string> archetypes, TeamPostureTypeValue posture, ThreatTierValue threatTier, int threatCost)
+    private static void CreateEnemySquad(string id, string factionId, IReadOnlyList<EnemyMemberSeed> members, TeamPostureTypeValue posture, ThreatTierValue threatTier, int threatCost)
     {
         CreateAsset<EnemySquadTemplateDefinition>($"{ResourcesRoot}/EnemySquads/{id}.asset", asset =>
         {
@@ -3610,10 +3807,11 @@ public static class SampleSeedGenerator
             asset.ThreatTier = threatTier;
             asset.ThreatCost = threatCost;
             asset.RewardDropTags = new List<string> { factionId, threatTier.ToString().ToLowerInvariant() };
-            asset.Members = archetypes.Select((archetypeId, index) => new EnemySquadMemberDefinition
+            asset.Members = members.Select((member, index) => new EnemySquadMemberDefinition
             {
                 Id = $"{id}_{index + 1}",
-                ArchetypeId = archetypeId,
+                ArchetypeId = member.ArchetypeId,
+                CharacterId = member.CharacterId,
                 Anchor = index switch
                 {
                     0 => DeploymentAnchorValue.FrontTop,
@@ -3631,7 +3829,7 @@ public static class SampleSeedGenerator
         });
     }
 
-    private static void CreateBossSquad(string id, string factionId, string captain, IReadOnlyList<string> escorts, ThreatTierValue threatTier, int threatCost)
+    private static void CreateBossSquad(string id, string factionId, EnemyMemberSeed captain, IReadOnlyList<EnemyMemberSeed> escorts, ThreatTierValue threatTier, int threatCost)
     {
         CreateAsset<EnemySquadTemplateDefinition>($"{ResourcesRoot}/EnemySquads/{id}.asset", asset =>
         {
@@ -3645,9 +3843,9 @@ public static class SampleSeedGenerator
             asset.RewardDropTags = new List<string> { factionId, "boss" };
             asset.Members = new List<EnemySquadMemberDefinition>
             {
-                new() { Id = $"{id}_captain", ArchetypeId = captain, Anchor = DeploymentAnchorValue.FrontCenter, Role = EnemySquadMemberRoleValue.Captain },
-                new() { Id = $"{id}_escort_1", ArchetypeId = escorts[0], Anchor = DeploymentAnchorValue.BackTop, Role = EnemySquadMemberRoleValue.Escort },
-                new() { Id = $"{id}_escort_2", ArchetypeId = escorts[1], Anchor = DeploymentAnchorValue.BackBottom, Role = EnemySquadMemberRoleValue.Escort },
+                new() { Id = $"{id}_captain", ArchetypeId = captain.ArchetypeId, CharacterId = captain.CharacterId, Anchor = DeploymentAnchorValue.FrontCenter, Role = EnemySquadMemberRoleValue.Captain },
+                new() { Id = $"{id}_escort_1", ArchetypeId = escorts[0].ArchetypeId, CharacterId = escorts[0].CharacterId, Anchor = DeploymentAnchorValue.BackTop, Role = EnemySquadMemberRoleValue.Escort },
+                new() { Id = $"{id}_escort_2", ArchetypeId = escorts[1].ArchetypeId, CharacterId = escorts[1].CharacterId, Anchor = DeploymentAnchorValue.BackBottom, Role = EnemySquadMemberRoleValue.Escort },
             };
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.NameKey, $"{id} 우두머리 분대", $"{id} boss squad");
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.DescriptionKey, "우두머리 + 호위 구조", "Boss captain plus escorts");

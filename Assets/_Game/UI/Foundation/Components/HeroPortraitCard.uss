@@ -191,8 +191,53 @@
     height: 170px;
     translate: -50% 0;
     /* RenderTexture 또는 Sprite는 C#에서 backgroundImage로 wire */
+    background-color: var(--sm-bg-0);
     -unity-background-image-tint-color: rgb(255, 255, 255);
     -unity-background-scale-mode: scale-and-crop;
+}
+
+.sm-hpc__p09-placeholder-bust {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+    height: 72px;
+    background-color: var(--sm-fam-mystic-deep);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 0;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+}
+
+.sm-hpc__p09-placeholder-head {
+    position: absolute;
+    left: 47px;
+    top: 32px;
+    width: 46px;
+    height: 56px;
+    background-color: var(--sm-fam-mystic-deep);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.sm-hpc__p09-placeholder-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 22px;
+    font-size: 8px;
+    color: var(--sm-gold-200);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
 }
 
 .sm-hpc__portrait-glow {

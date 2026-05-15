@@ -20,14 +20,14 @@ MonoBehaviour:
   EnemySquadTemplateId: site_ashen_gate_skirmish_2_squad
   BossOverlayId: 
   RewardSourceId: reward_source_skirmish
-  FactionId: faction_ashen_vanguard
+  FactionId: faction_solarum_border
   ThreatTier: 1
   ThreatCost: 1
   ThreatSkulls: 1
   DifficultyBand: chapter_entry
   RewardDropTags:
   - reward_source_skirmish
-  - faction_ashen_vanguard
+  - faction_solarum_border
   - skirmish
   - encounter_family_protect_carry
   - answer_lane_guard_anchor

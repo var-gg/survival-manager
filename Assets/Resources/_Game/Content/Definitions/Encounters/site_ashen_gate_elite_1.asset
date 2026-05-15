@@ -20,14 +20,14 @@ MonoBehaviour:
   EnemySquadTemplateId: site_ashen_gate_elite_1_squad
   BossOverlayId: 
   RewardSourceId: reward_source_elite
-  FactionId: faction_ashen_vanguard
+  FactionId: faction_solarum_border
   ThreatTier: 2
   ThreatCost: 2
   ThreatSkulls: 2
   DifficultyBand: site_mid
   RewardDropTags:
   - reward_source_elite
-  - faction_ashen_vanguard
+  - faction_solarum_border
   - elite
   - encounter_family_control_cleanse
   - answer_lane_guard_anchor

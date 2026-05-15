@@ -6,7 +6,7 @@
 - 결정일: 2026-03-29
 - 소스오브트루스: `docs/04_decisions/adr-0002-prototype-phase.md`
 - 관련문서:
-  - `docs/01_product/mvp-vertical-slice.md`
+  - Pindoc strategy/product artifacts
   - `tasks/001_mvp_vertical_slice/spec.md`
 
 ## 문맥

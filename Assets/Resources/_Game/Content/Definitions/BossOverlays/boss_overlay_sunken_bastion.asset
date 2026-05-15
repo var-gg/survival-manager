@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bff4098d7b1f4248a1aa3e0e29265c6, type: 3}
+  m_Name: boss_overlay_sunken_bastion
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.BossOverlayDefinition
+  Id: boss_overlay_sunken_bastion
+  NameKey: content.boss_overlay.boss_overlay_sunken_bastion.name
+  DescriptionKey: content.boss_overlay.boss_overlay_sunken_bastion.desc
+  PhaseTrigger: 1
+  ThreatCost: 1
+  SignatureAuraTag: boss_aura_drowned_bastion
+  SignatureUtilityTag: boss_utility_reliquary_seal
+  RewardDropTags:
+  - boss
+  - boss_overlay_sunken_bastion
+  - site_sunken_bastion
+  - boss_aura_drowned_bastion
+  - boss_utility_reliquary_seal
+  AppliedStatuses:
+  - Id: boss_overlay_sunken_bastion_barrier
+    StatusId: barrier
+    DurationSeconds: 999
+    Magnitude: 0
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
+    Effects: []
+  legacyDisplayName: 
+  legacyDescription: 

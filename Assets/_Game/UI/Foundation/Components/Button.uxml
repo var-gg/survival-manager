@@ -2,11 +2,11 @@
     <!--
       Survival Manager : Button atom template
       source: docs/02_design/ui/handoff/foundation-pack-v0.2/atoms-button-herocard.html
-      structure: variant 5 (primary, secondary, destructive, ghost, icon) x size 3 (sm, md, lg, plus mobile) x state 5 (default, hover, active, disabled, loading)
+      structure: variant 5 (primary, secondary, tertiary, warning, danger) x size 3 (s, m, l) x state 5 (default, hover, active, disabled, loading)
       modifier class wiring (root element):
-        variant: sm-btn..primary, sm-btn..secondary, sm-btn..destructive, sm-btn..ghost, sm-btn..icon
-        size:    sm-btn..sm, sm-btn..md, sm-btn..lg, sm-btn..mobile
-        state:   sm-btn..loading (label hide plus spinner show), sm-btn..disabled (or VisualElement.SetEnabled false)
+        variant: sm-btn..primary, sm-btn..secondary, sm-btn..tertiary, sm-btn..warning, sm-btn..danger
+        size:    sm-btn..s, sm-btn..m, sm-btn..l
+        state:   sm-btn..default, sm-btn..hover, sm-btn..active, sm-btn..disabled, sm-btn..loading
         family:  sm-btn..fam-{beastkin, vanguard, striker, ranger, mystic} (family tint slot, optional)
       label override:
         sm-btn__label-ko / text  : Korean primary
@@ -14,7 +14,7 @@
       NOTE: BEM modifier in actual class uses double-dash. comment uses double-dot to avoid XML invalid sequence.
     -->
     <Style src="Button.uss" />
-    <ui:VisualElement name="Button" class="sm-btn sm-btn--primary sm-btn--md sm-btn--fam-striker">
+    <ui:VisualElement name="Button" class="sm-btn sm-btn--primary sm-btn--m sm-btn--default sm-btn--fam-striker">
         <ui:VisualElement name="outline" class="sm-btn__outline" picking-mode="Ignore" />
         <ui:VisualElement name="inset" class="sm-btn__inset" picking-mode="Ignore" />
 

@@ -1,2 +1,33 @@
 .expedition-screen {
+    background-color: var(--sm-bg-0);
+    color: var(--sm-ink-1);
+}
+
+.expedition-screen .screen__title {
+    color: var(--sm-gold-200);
+}
+
+.expedition-screen .panel {
+    background-color: var(--sm-bg-1);
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
+}
+
+.expedition-screen .node-card {
+    background-color: var(--sm-vellum-a07);
+    border-left-color: var(--sm-fam-ranger);
+    border-right-color: var(--sm-gold-300-a22);
+    border-top-color: var(--sm-gold-300-a22);
+    border-bottom-color: var(--sm-gold-300-a22);
+}
+
+.expedition-screen .node-card--current,
+.expedition-screen .node-card--selected {
+    background-color: var(--sm-gold-300-a20);
+    border-left-color: var(--sm-gold-300-a78);
+    border-right-color: var(--sm-gold-300-a78);
+    border-top-color: var(--sm-gold-300-a78);
+    border-bottom-color: var(--sm-gold-300-a78);
 }

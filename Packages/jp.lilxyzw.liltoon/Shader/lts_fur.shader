@@ -765,6 +765,7 @@ Shader "Hidden/lilToonFur"
             #define LIL_OPTIMIZE_APPLY_SHADOW_FA
             #define LIL_OPTIMIZE_USE_FORWARDADD
             #define LIL_OPTIMIZE_USE_VERTEXLIGHT
+            
             #define LIL_SRP_VERSION_MAJOR 17
             #define LIL_SRP_VERSION_MINOR 4
             #define LIL_SRP_VERSION_PATCH 0
@@ -774,6 +775,8 @@ Shader "Hidden/lilToonFur"
             #pragma fragmentoption ARB_precision_hint_fastest
             #define LIL_FUR
 
+            
+            
         ENDHLSL
 
 
@@ -1248,6 +1251,7 @@ Shader "Hidden/lilToonFur"
             #define LIL_OPTIMIZE_APPLY_SHADOW_FA
             #define LIL_OPTIMIZE_USE_FORWARDADD
             #define LIL_OPTIMIZE_USE_VERTEXLIGHT
+            
             #define LIL_SRP_VERSION_MAJOR 17
             #define LIL_SRP_VERSION_MINOR 4
             #define LIL_SRP_VERSION_PATCH 0
@@ -1257,6 +1261,8 @@ Shader "Hidden/lilToonFur"
             #pragma fragmentoption ARB_precision_hint_fastest
             #define LIL_FUR
 
+            
+            
         ENDHLSL
 
 

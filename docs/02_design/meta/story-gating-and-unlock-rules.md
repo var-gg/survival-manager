@@ -6,7 +6,7 @@
 - 소스오브트루스: `docs/02_design/meta/story-gating-and-unlock-rules.md`
 - 관련문서:
   - `docs/02_design/meta/campaign-chapter-and-expedition-sites.md`
-  - `docs/02_design/narrative/chapter-beat-sheet.md`
+  - Pindoc narrative script / beat artifacts
   - `docs/02_design/narrative/dialogue-event-schema.md`
   - `docs/03_architecture/narrative-code-architecture.md`
 

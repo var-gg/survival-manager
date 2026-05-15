@@ -34,6 +34,8 @@ public static class FirstPlayableSceneInstaller
         RebuildBattle();
         RebuildReward();
         EnsureBuildSettings();
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         ValidateSavedSceneContracts();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -132,6 +134,9 @@ public static class FirstPlayableSceneInstaller
         EnsureRootObject("SceneMarker_Battle");
         EnsureCamera("Main Camera", true, new Vector3(0f, 8f, -8f), Quaternion.Euler(35f, 0f, 0f));
         EnsureEventSystem();
+        var environmentGo = EnsureRootObject("BattleRenderEnvironment");
+        var environment = EnsureComponent<BattleRenderEnvironmentAuthoring>(environmentGo);
+        environment.ApplyGameplayPreset();
 
         var runtimeRoot = EnsureRootObject("BattleRuntimeRoot");
         var host = EnsureRuntimePanelHost(runtimeRoot.transform, SceneNames.Battle);
@@ -231,6 +236,7 @@ public static class FirstPlayableSceneInstaller
             ["SM.Unity::SM.Unity.BattleScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BattleScreenController.cs"),
             ["SM.Unity::SM.Unity.BattlePresentationController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BattlePresentationController.cs"),
             ["SM.Unity::SM.Unity.BattleCameraController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BattleCameraController.cs"),
+            ["SM.Unity::SM.Unity.BattleRenderEnvironmentAuthoring"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BattleRenderEnvironmentAuthoring.cs"),
             ["SM.Unity::SM.Unity.UI.RuntimePanelHost"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/UI/RuntimePanelHost.cs"),
         };
 
@@ -250,7 +256,7 @@ public static class FirstPlayableSceneInstaller
         }
 
         File.WriteAllText(scenePath, text, new System.Text.UTF8Encoding(false));
-        AssetDatabase.ImportAsset(scenePath, ImportAssetOptions.ForceUpdate);
+        AssetDatabase.ImportAsset(scenePath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
     }
 
     private static string ResolveScriptGuid(string scriptPath)
@@ -334,9 +340,10 @@ public static class FirstPlayableSceneInstaller
             case SceneNames.Battle:
                 ValidateScene(
                     SceneNames.Battle,
-                    new[] { "SceneMarker_Battle", "BattleRuntimeRoot", "BattleRuntimePanelHost", "BattleScreenController", "BattlePresentationRoot", "BattleStageRoot", "BattleCameraRoot", "ActorOverlayCanvas", "ActorOverlayRoot", "Main Camera", "EventSystem" },
+                    new[] { "SceneMarker_Battle", "BattleRenderEnvironment", "BattleRuntimeRoot", "BattleRuntimePanelHost", "BattleScreenController", "BattlePresentationRoot", "BattleStageRoot", "BattleCameraRoot", "ActorOverlayCanvas", "ActorOverlayRoot", "Main Camera", "EventSystem" },
                     new Dictionary<string, System.Type[]>
                     {
+                        ["BattleRenderEnvironment"] = new[] { typeof(BattleRenderEnvironmentAuthoring) },
                         ["BattleRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
                         ["BattleScreenController"] = new[] { typeof(BattleScreenController) },
                         ["BattlePresentationRoot"] = new[] { typeof(BattlePresentationController) },

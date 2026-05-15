@@ -2,17 +2,25 @@
 
 - 상태: draft
 - 소유자: repository
-- 최종수정일: 2026-04-10
-- 소스오브트루스: `docs/02_design/narrative/master-script.md`
+- 최종수정일: 2026-05-11
+- 소스오브트루스: Pindoc `wiki-narrative-script-prologue`, `wiki-narrative-script-ch1`, `wiki-narrative-script-chapter-intro-clear-v1`
 - 관련문서:
   - `docs/02_design/narrative/dialogue-event-schema.md`
-  - `docs/02_design/narrative/campaign-story-arc.md`
-  - `docs/02_design/deck/character-lore-registry.md`
+  - Pindoc narrative script / campaign / character-lore artifacts
+  - Pindoc: `analysis-start-ch1-narrative-cleanup-plan`
 
 ## 목적
 
-캠페인 전체 대사의 원문 SoT. 작가가 이 파일 하나만 열어 전체 대사를 읽고 수정할 수 있다.
-dialogue-event-schema.md는 트리거/스키마를, 이 문서는 실제 대사 텍스트를 소유한다.
+캠페인 대사의 과거 repo seed baseline이다. 새 production draft와 창작 방향은 Pindoc Wiki를 우선한다.
+dialogue-event-schema.md는 트리거/스키마를 설명하고, 이 파일은 runtime seed 동기화 전 reference로만 남긴다.
+
+## 현재 정합 상태 (2026-05-11)
+
+Pindoc 기준 Prologue~Chapter 1 최신 production draft가 repo 본문보다 앞서 있다. 현재 최신 기준은 회조를 Chapter 1에서 죽이지 않고, 파편 제거 후 생존한 채 분리파 결별 hook으로 남기는 retcon이다.
+
+이 파일의 Chapter 1 본문에는 아직 `국경문`, `재의 문지기 골렘`, `심장로/격자` 중심의 이전 세대 구조와 회조 관련 구버전 hook이 남아 있다. runtime seed나 새 narrative authoring에 사용하기 전, Pindoc 최신본을 기준으로 Chapter 1 본문을 동기화해야 한다.
+
+정리 기준은 Pindoc `analysis-start-ch1-narrative-cleanup-plan`에 고정했다. 다음 repo 동기화 작업은 Prologue 삽입, Chapter 1 본문 교체, Town return ch1 한새 scene 반영, stale 용어 검색 정리 순서로 진행한다.
 
 ## 연출 유형
 

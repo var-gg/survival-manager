@@ -8,7 +8,7 @@
   - `docs/02_design/combat/encounter-catalog-and-scaling.md`
   - `docs/02_design/meta/campaign-chapter-and-expedition-sites.md`
   - `docs/02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
-  - `docs/02_design/deck/roster-archetype-launch-scope.md`
+  - Pindoc character-lore / roster artifacts
   - `docs/02_design/systems/first-playable-slice.md`
 
 ## 목적

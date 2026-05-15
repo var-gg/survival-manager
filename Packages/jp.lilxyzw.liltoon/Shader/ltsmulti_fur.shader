@@ -692,6 +692,8 @@ Shader "Hidden/lilToonMultiFur"
             #define LIL_MULTI_INPUTS_IDMASK
             #define LIL_MULTI_INPUTS_UDIMDISCARD
 
+            
+            
         ENDHLSL
 
 
@@ -1198,6 +1200,8 @@ Shader "Hidden/lilToonMultiFur"
             #define LIL_MULTI_INPUTS_IDMASK
             #define LIL_MULTI_INPUTS_UDIMDISCARD
 
+            
+            
         ENDHLSL
 
 

@@ -672,6 +672,8 @@ Shader "_lil/lilToonMulti"
             #define LIL_MULTI_INPUTS_UDIMDISCARD
             #define LIL_MULTI_INPUTS_OUTLINE
 
+            
+            
         ENDHLSL
 
 
@@ -1116,6 +1118,8 @@ Shader "_lil/lilToonMulti"
             #define LIL_MULTI_INPUTS_UDIMDISCARD
             #define LIL_MULTI_INPUTS_OUTLINE
 
+            
+            
         ENDHLSL
 
 

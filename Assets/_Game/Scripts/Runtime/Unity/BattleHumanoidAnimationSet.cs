@@ -222,14 +222,6 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
             return guardLoop != null ? guardLoop : FirstNonNull(guardEnter, idle);
         }
 
-        if (state.ActionState is CombatActionState.AdvanceToAnchor
-            or CombatActionState.Approach
-            or CombatActionState.Reposition
-            or CombatActionState.BreakContact)
-        {
-            return move != null ? move : idle;
-        }
-
         return idle;
     }
 

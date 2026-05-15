@@ -29,7 +29,7 @@ MonoBehaviour:
     Threshold: 1.5
     ActionType: 1
     TargetSelector: 5
-    Skill: {fileID: 11400000, guid: 2e6f1276316572a409f21d1823a20832, type: 2}
+    Skill: {fileID: 11400000, guid: 18a359aa1f3f6964ea4870542bdda48f, type: 2}
   - Priority: 1
     ConditionType: 3
     Threshold: 0
@@ -47,6 +47,7 @@ MonoBehaviour:
   RoleTag: bruiser
   RoleFamilyTag: striker
   PrimaryWeaponFamilyTag: blade
+  DefaultDominantHand: 0
   RecruitTier: 1
   BudgetCard:
     Domain: 0
@@ -124,6 +125,7 @@ MonoBehaviour:
       DamageType: 0
       Lane: 0
       LockRule: 1
+      WeaponHandedness: 0
       TargetRule:
         Domain: 2
         PrimarySelector: 1

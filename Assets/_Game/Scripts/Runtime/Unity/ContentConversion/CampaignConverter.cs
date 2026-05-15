@@ -78,8 +78,9 @@ internal static class CampaignConverter
                 .Where(member => member != null && !string.IsNullOrWhiteSpace(member.ArchetypeId))
                 .Select(member => new EnemySquadMemberTemplate(
                     string.IsNullOrWhiteSpace(member.Id) ? $"{definition.Id}:{member.ArchetypeId}:{member.Anchor}" : member.Id,
-                    ResolveLegacyName(member.NameKey, member.LegacyDisplayName, member.ArchetypeId),
+                    ResolveLegacyName(member.NameKey, member.LegacyDisplayName, string.IsNullOrWhiteSpace(member.CharacterId) ? member.ArchetypeId : member.CharacterId),
                     member.ArchetypeId,
+                    member.CharacterId,
                     (DeploymentAnchorId)member.Anchor,
                     member.PositiveTraitId,
                     member.NegativeTraitId,

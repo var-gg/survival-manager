@@ -5,7 +5,7 @@
 - 최종수정일: 2026-05-13
 - 소스오브트루스: `docs/02_design/ui/town-character-sheet-ui.md` (정보 구조 / field closure)
 - 관련문서:
-  - `docs/02_design/deck/launch-core-roster-sheet.md`
+  - Pindoc character-lore artifacts
   - `docs/02_design/meta/town-and-expedition-loop.md`
   - `docs/03_architecture/town-character-sheet-contract.md`
   - **비주얼 시안 SoT**: `pindoc://town-ui-ux-시안-갤러리-v1-gallery-town-ui-mockups-v1`

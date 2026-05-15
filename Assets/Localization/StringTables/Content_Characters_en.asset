@@ -51,7 +51,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001008
-    m_Localized: Pack Raider
+    m_Localized: Raider
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001009
@@ -91,7 +91,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001018
-    m_Localized: Dawn Priest
+    m_Localized: Priest
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001019
@@ -99,7 +99,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001020
-    m_Localized: Grave Hexer
+    m_Localized: Hexer
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001021

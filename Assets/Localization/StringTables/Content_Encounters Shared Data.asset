@@ -447,6 +447,654 @@ MonoBehaviour:
     m_Key: content.encounter.site_grave_sanctum_boss_1.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 16452991082029056
+    m_Key: content.boss_overlay.boss_overlay_wolfpine_trail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452991212052480
+    m_Key: content.boss_overlay.boss_overlay_wolfpine_trail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452992906551296
+    m_Key: content.enemy_squad.site_wolfpine_trail_skirmish_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452992906551297
+    m_Key: content.enemy_squad.site_wolfpine_trail_skirmish_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452994479415296
+    m_Key: content.enemy_squad.site_wolfpine_trail_skirmish_2_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452994479415297
+    m_Key: content.enemy_squad.site_wolfpine_trail_skirmish_2_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452996152942592
+    m_Key: content.enemy_squad.site_wolfpine_trail_elite_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452996152942593
+    m_Key: content.enemy_squad.site_wolfpine_trail_elite_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452997692252160
+    m_Key: content.enemy_squad.site_wolfpine_trail_boss_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452997692252161
+    m_Key: content.enemy_squad.site_wolfpine_trail_boss_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452999265116160
+    m_Key: content.encounter.site_wolfpine_trail_skirmish_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452999265116161
+    m_Key: content.encounter.site_wolfpine_trail_skirmish_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453001110609920
+    m_Key: content.encounter.site_wolfpine_trail_skirmish_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453001114804224
+    m_Key: content.encounter.site_wolfpine_trail_skirmish_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453002939326464
+    m_Key: content.encounter.site_wolfpine_trail_elite_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453002939326465
+    m_Key: content.encounter.site_wolfpine_trail_elite_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453004747071488
+    m_Key: content.encounter.site_wolfpine_trail_boss_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453004747071489
+    m_Key: content.encounter.site_wolfpine_trail_boss_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453008454836224
+    m_Key: content.boss_overlay.boss_overlay_sunken_bastion.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453008454836225
+    m_Key: content.boss_overlay.boss_overlay_sunken_bastion.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453010275164160
+    m_Key: content.enemy_squad.site_sunken_bastion_skirmish_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453010275164161
+    m_Key: content.enemy_squad.site_sunken_bastion_skirmish_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453012145823744
+    m_Key: content.enemy_squad.site_sunken_bastion_skirmish_2_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453012145823745
+    m_Key: content.enemy_squad.site_sunken_bastion_skirmish_2_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453014461079552
+    m_Key: content.enemy_squad.site_sunken_bastion_elite_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453014461079553
+    m_Key: content.enemy_squad.site_sunken_bastion_elite_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453016474345472
+    m_Key: content.enemy_squad.site_sunken_bastion_boss_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453016474345473
+    m_Key: content.enemy_squad.site_sunken_bastion_boss_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453018219175936
+    m_Key: content.encounter.site_sunken_bastion_skirmish_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453018219175937
+    m_Key: content.encounter.site_sunken_bastion_skirmish_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453020194693120
+    m_Key: content.encounter.site_sunken_bastion_skirmish_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453020194693121
+    m_Key: content.encounter.site_sunken_bastion_skirmish_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453022375731200
+    m_Key: content.encounter.site_sunken_bastion_elite_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453022375731201
+    m_Key: content.encounter.site_sunken_bastion_elite_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453024531603456
+    m_Key: content.encounter.site_sunken_bastion_boss_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453024531603457
+    m_Key: content.encounter.site_sunken_bastion_boss_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453028428111872
+    m_Key: content.boss_overlay.boss_overlay_tithe_road.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453028428111873
+    m_Key: content.boss_overlay.boss_overlay_tithe_road.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453030248439808
+    m_Key: content.enemy_squad.site_tithe_road_skirmish_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453030248439809
+    m_Key: content.enemy_squad.site_tithe_road_skirmish_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453032077156352
+    m_Key: content.enemy_squad.site_tithe_road_skirmish_2_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453032077156353
+    m_Key: content.enemy_squad.site_tithe_road_skirmish_2_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453034052673536
+    m_Key: content.enemy_squad.site_tithe_road_elite_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453034052673537
+    m_Key: content.enemy_squad.site_tithe_road_elite_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453035726200832
+    m_Key: content.enemy_squad.site_tithe_road_boss_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453035726200833
+    m_Key: content.enemy_squad.site_tithe_road_boss_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453037391339520
+    m_Key: content.encounter.site_tithe_road_skirmish_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453037391339521
+    m_Key: content.encounter.site_tithe_road_skirmish_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453038968397824
+    m_Key: content.encounter.site_tithe_road_skirmish_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453038968397825
+    m_Key: content.encounter.site_tithe_road_skirmish_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453040549650432
+    m_Key: content.encounter.site_tithe_road_elite_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453040549650433
+    m_Key: content.encounter.site_tithe_road_elite_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453042663579648
+    m_Key: content.encounter.site_tithe_road_boss_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453042663579649
+    m_Key: content.encounter.site_tithe_road_boss_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453046430064640
+    m_Key: content.boss_overlay.boss_overlay_ruined_crypts.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453046430064641
+    m_Key: content.boss_overlay.boss_overlay_ruined_crypts.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453048338472960
+    m_Key: content.enemy_squad.site_ruined_crypts_skirmish_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453048338472961
+    m_Key: content.enemy_squad.site_ruined_crypts_skirmish_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453050464985088
+    m_Key: content.enemy_squad.site_ruined_crypts_skirmish_2_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453050464985089
+    m_Key: content.enemy_squad.site_ruined_crypts_skirmish_2_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453052373393408
+    m_Key: content.enemy_squad.site_ruined_crypts_elite_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453052373393409
+    m_Key: content.enemy_squad.site_ruined_crypts_elite_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453054147584000
+    m_Key: content.enemy_squad.site_ruined_crypts_boss_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453054147584001
+    m_Key: content.enemy_squad.site_ruined_crypts_boss_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453056102129664
+    m_Key: content.encounter.site_ruined_crypts_skirmish_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453056102129665
+    m_Key: content.encounter.site_ruined_crypts_skirmish_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453057905680384
+    m_Key: content.encounter.site_ruined_crypts_skirmish_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453057905680385
+    m_Key: content.encounter.site_ruined_crypts_skirmish_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453059717619712
+    m_Key: content.encounter.site_ruined_crypts_elite_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453059717619713
+    m_Key: content.encounter.site_ruined_crypts_elite_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453062397779968
+    m_Key: content.encounter.site_ruined_crypts_boss_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453062397779969
+    m_Key: content.encounter.site_ruined_crypts_boss_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453067347058688
+    m_Key: content.boss_overlay.boss_overlay_bone_orchard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453067347058689
+    m_Key: content.boss_overlay.boss_overlay_bone_orchard.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453070023024640
+    m_Key: content.enemy_squad.site_bone_orchard_skirmish_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453070023024641
+    m_Key: content.enemy_squad.site_bone_orchard_skirmish_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453072376029184
+    m_Key: content.enemy_squad.site_bone_orchard_skirmish_2_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453072376029185
+    m_Key: content.enemy_squad.site_bone_orchard_skirmish_2_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453074280243200
+    m_Key: content.enemy_squad.site_bone_orchard_elite_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453074280243201
+    m_Key: content.enemy_squad.site_bone_orchard_elite_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453076138319872
+    m_Key: content.enemy_squad.site_bone_orchard_boss_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453076138319873
+    m_Key: content.enemy_squad.site_bone_orchard_boss_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453078248054784
+    m_Key: content.encounter.site_bone_orchard_skirmish_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453078248054785
+    m_Key: content.encounter.site_bone_orchard_skirmish_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453080257126400
+    m_Key: content.encounter.site_bone_orchard_skirmish_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453080257126401
+    m_Key: content.encounter.site_bone_orchard_skirmish_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453082098425856
+    m_Key: content.encounter.site_bone_orchard_elite_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453082098425857
+    m_Key: content.encounter.site_bone_orchard_elite_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453084082331648
+    m_Key: content.encounter.site_bone_orchard_boss_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453084082331649
+    m_Key: content.encounter.site_bone_orchard_boss_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453088004005888
+    m_Key: content.boss_overlay.boss_overlay_glass_forest.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453088004005889
+    m_Key: content.boss_overlay.boss_overlay_glass_forest.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453089790779392
+    m_Key: content.enemy_squad.site_glass_forest_skirmish_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453089790779393
+    m_Key: content.enemy_squad.site_glass_forest_skirmish_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453092403830784
+    m_Key: content.enemy_squad.site_glass_forest_skirmish_2_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453092403830785
+    m_Key: content.enemy_squad.site_glass_forest_skirmish_2_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453094517760000
+    m_Key: content.enemy_squad.site_glass_forest_elite_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453094517760001
+    m_Key: content.enemy_squad.site_glass_forest_elite_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453096266784768
+    m_Key: content.enemy_squad.site_glass_forest_boss_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453096266784769
+    m_Key: content.enemy_squad.site_glass_forest_boss_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453098162610176
+    m_Key: content.encounter.site_glass_forest_skirmish_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453098162610177
+    m_Key: content.encounter.site_glass_forest_skirmish_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453099722891264
+    m_Key: content.encounter.site_glass_forest_skirmish_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453099722891265
+    m_Key: content.encounter.site_glass_forest_skirmish_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453101224452096
+    m_Key: content.encounter.site_glass_forest_elite_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453101224452097
+    m_Key: content.encounter.site_glass_forest_elite_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453102717624320
+    m_Key: content.encounter.site_glass_forest_boss_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453102717624321
+    m_Key: content.encounter.site_glass_forest_boss_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453106584772608
+    m_Key: content.boss_overlay.boss_overlay_starved_menagerie.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453106584772609
+    m_Key: content.boss_overlay.boss_overlay_starved_menagerie.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453108405100544
+    m_Key: content.enemy_squad.site_starved_menagerie_skirmish_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453108405100545
+    m_Key: content.enemy_squad.site_starved_menagerie_skirmish_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453110116376576
+    m_Key: content.enemy_squad.site_starved_menagerie_skirmish_2_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453110116376577
+    m_Key: content.enemy_squad.site_starved_menagerie_skirmish_2_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453111735377920
+    m_Key: content.enemy_squad.site_starved_menagerie_elite_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453111735377921
+    m_Key: content.enemy_squad.site_starved_menagerie_elite_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453113417293824
+    m_Key: content.enemy_squad.site_starved_menagerie_boss_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453113417293825
+    m_Key: content.enemy_squad.site_starved_menagerie_boss_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453114851745792
+    m_Key: content.encounter.site_starved_menagerie_skirmish_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453114851745793
+    m_Key: content.encounter.site_starved_menagerie_skirmish_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453116344918016
+    m_Key: content.encounter.site_starved_menagerie_skirmish_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453116344918017
+    m_Key: content.encounter.site_starved_menagerie_skirmish_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453117825507328
+    m_Key: content.encounter.site_starved_menagerie_elite_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453117825507329
+    m_Key: content.encounter.site_starved_menagerie_elite_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453119352233984
+    m_Key: content.encounter.site_starved_menagerie_boss_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453119352233985
+    m_Key: content.encounter.site_starved_menagerie_boss_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453122661539840
+    m_Key: content.boss_overlay.boss_overlay_heartforge_gate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453122661539841
+    m_Key: content.boss_overlay.boss_overlay_heartforge_gate.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453124523810816
+    m_Key: content.enemy_squad.site_heartforge_gate_skirmish_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453124523810817
+    m_Key: content.enemy_squad.site_heartforge_gate_skirmish_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453126767763456
+    m_Key: content.enemy_squad.site_heartforge_gate_skirmish_2_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453126767763457
+    m_Key: content.enemy_squad.site_heartforge_gate_skirmish_2_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453128978161664
+    m_Key: content.enemy_squad.site_heartforge_gate_elite_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453128978161665
+    m_Key: content.enemy_squad.site_heartforge_gate_elite_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453131037564928
+    m_Key: content.enemy_squad.site_heartforge_gate_boss_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453131037564929
+    m_Key: content.enemy_squad.site_heartforge_gate_boss_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453134044880896
+    m_Key: content.encounter.site_heartforge_gate_skirmish_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453134044880897
+    m_Key: content.encounter.site_heartforge_gate_skirmish_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453137291272192
+    m_Key: content.encounter.site_heartforge_gate_skirmish_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453137291272193
+    m_Key: content.encounter.site_heartforge_gate_skirmish_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453139925295104
+    m_Key: content.encounter.site_heartforge_gate_elite_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453139925295105
+    m_Key: content.encounter.site_heartforge_gate_elite_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453141909200896
+    m_Key: content.encounter.site_heartforge_gate_boss_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453141909200897
+    m_Key: content.encounter.site_heartforge_gate_boss_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453144987820032
+    m_Key: content.boss_overlay.boss_overlay_worldscar_depths.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453144987820033
+    m_Key: content.boss_overlay.boss_overlay_worldscar_depths.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453146594238464
+    m_Key: content.enemy_squad.site_worldscar_depths_skirmish_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453146594238465
+    m_Key: content.enemy_squad.site_worldscar_depths_skirmish_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453148599115776
+    m_Key: content.enemy_squad.site_worldscar_depths_skirmish_2_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453148599115777
+    m_Key: content.enemy_squad.site_worldscar_depths_skirmish_2_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453150369112064
+    m_Key: content.enemy_squad.site_worldscar_depths_elite_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453150369112065
+    m_Key: content.enemy_squad.site_worldscar_depths_elite_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453152067805184
+    m_Key: content.enemy_squad.site_worldscar_depths_boss_1_squad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453152067805185
+    m_Key: content.enemy_squad.site_worldscar_depths_boss_1_squad.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453153682612224
+    m_Key: content.encounter.site_worldscar_depths_skirmish_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453153686806528
+    m_Key: content.encounter.site_worldscar_depths_skirmish_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453155368722432
+    m_Key: content.encounter.site_worldscar_depths_skirmish_2.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453155368722433
+    m_Key: content.encounter.site_worldscar_depths_skirmish_2.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453157163884544
+    m_Key: content.encounter.site_worldscar_depths_elite_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453157163884545
+    m_Key: content.encounter.site_worldscar_depths_elite_1.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453158833217536
+    m_Key: content.encounter.site_worldscar_depths_boss_1.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453158833217537
+    m_Key: content.encounter.site_worldscar_depths_boss_1.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -1,5 +1,5 @@
 .battle-screen {
-    background-color: rgba(0, 0, 0, 0);
+    background-color: var(--sm-transparent);
     padding-left: 0;
     padding-right: 0;
     padding-top: 0;
@@ -16,15 +16,15 @@
     align-items: center;
     padding-left: 12px;
     padding-right: 10px;
-    background-color: rgba(12, 17, 31, 0.54);
+    background-color: var(--sm-bg-1-a54);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.28);
-    border-right-color: rgba(230, 183, 81, 0.28);
-    border-top-color: rgba(230, 183, 81, 0.28);
-    border-bottom-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
 }
 
 .battle-screen .sm-bs-title {
@@ -87,15 +87,15 @@
     width: 210px;
     height: 6px;
     margin-left: 12px;
-    background-color: rgba(245, 234, 208, 0.12);
+    background-color: var(--sm-vellum-a12);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.24);
-    border-right-color: rgba(230, 183, 81, 0.24);
-    border-top-color: rgba(230, 183, 81, 0.24);
-    border-bottom-color: rgba(230, 183, 81, 0.24);
+    border-left-color: var(--sm-gold-300-a24);
+    border-right-color: var(--sm-gold-300-a24);
+    border-top-color: var(--sm-gold-300-a24);
+    border-bottom-color: var(--sm-gold-300-a24);
 }
 
 .battle-screen .sm-bs-progress-fill {
@@ -115,15 +115,15 @@
     left: 12px;
     right: 12px;
     z-index: 8;
-    background-color: rgba(12, 17, 38, 0.84);
+    background-color: var(--sm-bg-0-a84);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.32);
-    border-right-color: rgba(230, 183, 81, 0.32);
-    border-top-color: rgba(230, 183, 81, 0.32);
-    border-bottom-color: rgba(230, 183, 81, 0.32);
+    border-left-color: var(--sm-gold-300-a32);
+    border-right-color: var(--sm-gold-300-a32);
+    border-top-color: var(--sm-gold-300-a32);
+    border-bottom-color: var(--sm-gold-300-a32);
 }
 
 .battle-screen .sm-bs-layout {
@@ -148,15 +148,15 @@
 .battle-screen .sm-bs-unit-detail-panel,
 .battle-screen .sm-bs-event-feed,
 .battle-screen .sm-bs-settings-panel {
-    background-color: rgba(18, 24, 45, 0.78);
+    background-color: var(--sm-bg-2-a78);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.36);
-    border-right-color: rgba(230, 183, 81, 0.36);
-    border-top-color: rgba(230, 183, 81, 0.36);
-    border-bottom-color: rgba(230, 183, 81, 0.36);
+    border-left-color: var(--sm-gold-300-a36);
+    border-right-color: var(--sm-gold-300-a36);
+    border-top-color: var(--sm-gold-300-a36);
+    border-bottom-color: var(--sm-gold-300-a36);
 }
 
 .battle-screen .sm-bs-threat-strip {
@@ -229,15 +229,15 @@
     padding-right: 8px;
     flex-direction: row;
     align-items: center;
-    background-color: rgba(245, 234, 208, 0.08);
+    background-color: var(--sm-vellum-a08);
     border-left-width: 3px;
     border-left-color: var(--sm-fam-mystic);
     border-top-width: 1px;
     border-bottom-width: 1px;
     border-right-width: 1px;
-    border-top-color: rgba(245, 234, 208, 0.10);
-    border-bottom-color: rgba(245, 234, 208, 0.10);
-    border-right-color: rgba(245, 234, 208, 0.10);
+    border-top-color: var(--sm-vellum-a10);
+    border-bottom-color: var(--sm-vellum-a10);
+    border-right-color: var(--sm-vellum-a10);
 }
 
 .battle-screen .sm-bs-roster-list--ally .sm-bs-roster-unit {
@@ -261,10 +261,10 @@
 }
 
 .battle-screen .sm-bs-roster-unit--selected {
-    background-color: rgba(230, 183, 81, 0.20);
-    border-top-color: rgba(230, 183, 81, 0.42);
-    border-bottom-color: rgba(230, 183, 81, 0.42);
-    border-right-color: rgba(230, 183, 81, 0.42);
+    background-color: var(--sm-gold-300-a20);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
 }
 
 .battle-screen .sm-bs-roster-unit--down {
@@ -277,9 +277,9 @@
     height: 152px;
     min-width: 128px;
     margin-right: 12px;
-    background-color: rgba(31, 25, 19, 0.82);
+    background-color: var(--sm-bg-portrait-a82);
     border-width: 1px;
-    border-color: rgba(218, 187, 118, 0.54);
+    border-color: var(--sm-gold-muted-a54);
     -unity-background-scale-mode: scale-and-crop;
     overflow: hidden;
     -unity-text-align: middle-center;
@@ -309,7 +309,7 @@
 }
 
 .battle-screen .sm-bs-roster-portrait--missing {
-    background-color: rgba(78, 61, 42, 0.66);
+    background-color: var(--sm-bg-portrait-missing-a66);
 }
 
 .battle-screen .sm-bs-roster-meta {
@@ -337,7 +337,7 @@
 .battle-screen .sm-bs-roster-hp-track {
     margin-top: 12px;
     height: 8px;
-    background-color: rgba(245, 234, 208, 0.10);
+    background-color: var(--sm-vellum-a10);
 }
 
 .battle-screen .sm-bs-roster-list--enemy .sm-bs-roster-hp-track {
@@ -347,7 +347,7 @@
 
 .battle-screen .sm-bs-roster-hp-fill {
     height: 100%;
-    background-color: rgba(166, 220, 154, 0.86);
+    background-color: var(--sm-state-safe-a86);
 }
 
 .battle-screen .sm-bs-event-feed {
@@ -425,16 +425,16 @@
     margin-right: 5px;
     padding-left: 8px;
     padding-right: 8px;
-    background-color: rgba(245, 234, 208, 0.09);
+    background-color: var(--sm-vellum-a09);
     color: var(--sm-vellum);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.34);
-    border-right-color: rgba(230, 183, 81, 0.34);
-    border-top-color: rgba(230, 183, 81, 0.34);
-    border-bottom-color: rgba(230, 183, 81, 0.34);
+    border-left-color: var(--sm-gold-300-a34);
+    border-right-color: var(--sm-gold-300-a34);
+    border-top-color: var(--sm-gold-300-a34);
+    border-bottom-color: var(--sm-gold-300-a34);
 }
 
 .battle-screen .sm-bs-control-bar .sm-bs-control-btn {
@@ -449,7 +449,7 @@
 }
 
 .battle-screen .sm-bs-control-btn:hover {
-    background-color: rgba(230, 183, 81, 0.20);
+    background-color: var(--sm-gold-300-a20);
 }
 
 .battle-screen .sm-bs-control-btn--small {
@@ -461,21 +461,21 @@
 }
 
 .battle-screen .sm-bs-control-btn--primary {
-    background-color: rgba(230, 183, 81, 0.24);
+    background-color: var(--sm-gold-300-a24);
 }
 
 .battle-screen .sm-bs-control-btn--debug {
-    border-left-color: rgba(127, 163, 224, 0.45);
-    border-right-color: rgba(127, 163, 224, 0.45);
-    border-top-color: rgba(127, 163, 224, 0.45);
-    border-bottom-color: rgba(127, 163, 224, 0.45);
+    border-left-color: var(--sm-fam-vanguard-glow-a45);
+    border-right-color: var(--sm-fam-vanguard-glow-a45);
+    border-top-color: var(--sm-fam-vanguard-glow-a45);
+    border-bottom-color: var(--sm-fam-vanguard-glow-a45);
 }
 
 .battle-screen .sm-bs-control-btn--warning {
-    border-left-color: rgba(232, 169, 59, 0.56);
-    border-right-color: rgba(232, 169, 59, 0.56);
-    border-top-color: rgba(232, 169, 59, 0.56);
-    border-bottom-color: rgba(232, 169, 59, 0.56);
+    border-left-color: var(--sm-state-warn-a56);
+    border-right-color: var(--sm-state-warn-a56);
+    border-top-color: var(--sm-state-warn-a56);
+    border-bottom-color: var(--sm-state-warn-a56);
 }
 
 .battle-screen .sm-bs-utility-group {
@@ -492,7 +492,7 @@
     align-items: flex-end;
     justify-content: center;
     padding-right: 24px;
-    background-color: rgba(7, 8, 10, 0.20);
+    background-color: var(--sm-bg-void-a20);
 }
 
 .battle-screen .sm-bs-unit-detail-panel {
@@ -551,8 +551,8 @@
     right: 0;
     bottom: 0;
     border-width: 1px;
-    border-color: rgba(218, 187, 118, 0.72);
-    background-color: rgba(31, 25, 19, 0.82);
+    border-color: var(--sm-gold-muted-a72);
+    background-color: var(--sm-bg-portrait-a82);
     -unity-background-scale-mode: scale-and-crop;
 }
 
@@ -582,12 +582,12 @@
 }
 
 .battle-screen .sm-bs-unit-detail-tab--active {
-    background-color: rgba(230, 183, 81, 0.26);
+    background-color: var(--sm-gold-300-a26);
     color: var(--sm-gold-100);
-    border-left-color: rgba(230, 183, 81, 0.78);
-    border-right-color: rgba(230, 183, 81, 0.78);
-    border-top-color: rgba(230, 183, 81, 0.78);
-    border-bottom-color: rgba(230, 183, 81, 0.78);
+    border-left-color: var(--sm-gold-300-a78);
+    border-right-color: var(--sm-gold-300-a78);
+    border-top-color: var(--sm-gold-300-a78);
+    border-bottom-color: var(--sm-gold-300-a78);
 }
 
 .battle-screen .sm-bs-unit-detail-body {
@@ -609,9 +609,9 @@
     width: 40%;
     min-width: 292px;
     margin-right: 14px;
-    background-color: rgba(31, 25, 19, 0.70);
+    background-color: var(--sm-bg-portrait-a70);
     border-width: 1px;
-    border-color: rgba(218, 187, 118, 0.44);
+    border-color: var(--sm-gold-muted-a44);
     overflow: hidden;
 }
 
@@ -621,7 +621,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: rgba(120, 56, 74, 0.22);
+    background-color: var(--sm-state-injured-a22);
 }
 
 .battle-screen .sm-bs-unit-vitals {
@@ -634,9 +634,9 @@
 .battle-screen .sm-bs-unit-vital-track {
     height: 9px;
     margin-top: 4px;
-    background-color: rgba(4, 8, 10, 0.72);
+    background-color: var(--sm-bg-vital-a72);
     border-width: 1px;
-    border-color: rgba(245, 234, 208, 0.18);
+    border-color: var(--sm-vellum-a18);
 }
 
 .battle-screen .sm-bs-unit-vital-track--shield {
@@ -645,12 +645,12 @@
 
 .battle-screen .sm-bs-unit-hp-fill {
     height: 100%;
-    background-color: rgba(166, 220, 154, 0.92);
+    background-color: var(--sm-state-safe-a92);
 }
 
 .battle-screen .sm-bs-unit-shield-fill {
     height: 100%;
-    background-color: rgba(118, 168, 230, 0.82);
+    background-color: var(--sm-state-shield-a82);
 }
 
 .battle-screen .sm-bs-unit-tab-body {
@@ -677,9 +677,9 @@
     padding-bottom: 5px;
     padding-left: 7px;
     padding-right: 7px;
-    background-color: rgba(245, 234, 208, 0.07);
+    background-color: var(--sm-vellum-a07);
     border-width: 1px;
-    border-color: rgba(230, 183, 81, 0.20);
+    border-color: var(--sm-gold-300-a20);
 }
 
 .battle-screen .sm-bs-stat-row--compact {
@@ -732,20 +732,20 @@
     -unity-text-align: middle-center;
     color: var(--sm-ink-2);
     font-size: 10px;
-    background-color: rgba(245, 234, 208, 0.06);
+    background-color: var(--sm-vellum-a06);
     border-width: 1px;
-    border-color: rgba(245, 234, 208, 0.15);
+    border-color: var(--sm-vellum-a15);
 }
 
 .battle-screen .sm-bs-anchor-cell--occupied {
     color: var(--sm-ink-0);
-    border-color: rgba(230, 183, 81, 0.36);
+    border-color: var(--sm-gold-300-a36);
 }
 
 .battle-screen .sm-bs-anchor-cell--home {
     color: var(--sm-gold-100);
-    background-color: rgba(230, 183, 81, 0.25);
-    border-color: rgba(230, 183, 81, 0.78);
+    background-color: var(--sm-gold-300-a25);
+    border-color: var(--sm-gold-300-a78);
 }
 
 .battle-screen .sm-bs-dial-grid {
@@ -779,12 +779,12 @@
 .battle-screen .sm-bs-dial-track {
     height: 5px;
     margin-top: 3px;
-    background-color: rgba(245, 234, 208, 0.10);
+    background-color: var(--sm-vellum-a10);
 }
 
 .battle-screen .sm-bs-dial-fill {
     height: 100%;
-    background-color: rgba(230, 183, 81, 0.78);
+    background-color: var(--sm-gold-300-a78);
 }
 
 .battle-screen .sm-bs-skill-slots {
@@ -804,15 +804,15 @@
     padding-right: 6px;
     flex-direction: row;
     align-items: center;
-    background-color: rgba(245, 234, 208, 0.08);
+    background-color: var(--sm-vellum-a08);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.28);
-    border-right-color: rgba(230, 183, 81, 0.28);
-    border-top-color: rgba(230, 183, 81, 0.28);
-    border-bottom-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
 }
 
 .battle-screen .sm-bs-skill-slot--signature {
@@ -826,7 +826,7 @@
 }
 
 .battle-screen .sm-bs-skill-slot--missing {
-    background-color: rgba(245, 234, 208, 0.05);
+    background-color: var(--sm-vellum-a05);
 }
 
 .battle-screen .sm-bs-skill-icon {
@@ -834,9 +834,9 @@
     height: 36px;
     min-width: 36px;
     margin-right: 7px;
-    background-color: rgba(31, 25, 19, 0.82);
+    background-color: var(--sm-bg-portrait-a82);
     border-width: 1px;
-    border-color: rgba(218, 187, 118, 0.54);
+    border-color: var(--sm-gold-muted-a54);
     -unity-background-scale-mode: scale-and-crop;
 }
 
@@ -870,9 +870,9 @@
     padding-bottom: 8px;
     padding-left: 8px;
     padding-right: 8px;
-    background-color: rgba(245, 234, 208, 0.06);
+    background-color: var(--sm-vellum-a06);
     border-width: 1px;
-    border-color: rgba(230, 183, 81, 0.22);
+    border-color: var(--sm-gold-300-a22);
 }
 
 .battle-screen .sm-bs-equipment-slot--placeholder {
@@ -920,9 +920,9 @@
     padding-top: 5px;
     padding-left: 5px;
     padding-right: 5px;
-    background-color: rgba(245, 234, 208, 0.07);
+    background-color: var(--sm-vellum-a07);
     border-width: 1px;
-    border-color: rgba(230, 183, 81, 0.24);
+    border-color: var(--sm-gold-300-a24);
 }
 
 .battle-screen .sm-bs-status-chip--permanent {
@@ -934,9 +934,9 @@
     width: 26px;
     height: 26px;
     min-width: 26px;
-    background-color: rgba(31, 25, 19, 0.82);
+    background-color: var(--sm-bg-portrait-a82);
     border-width: 1px;
-    border-color: rgba(218, 187, 118, 0.40);
+    border-color: var(--sm-gold-muted-a40);
 }
 
 .battle-screen .sm-bs-status-chip-label {
@@ -960,7 +960,7 @@
 .battle-screen .sm-bs-status-chip-ring {
     height: 3px;
     margin-top: 4px;
-    background-color: rgba(230, 183, 81, 0.78);
+    background-color: var(--sm-gold-300-a78);
 }
 
 .battle-screen .sm-bs-empty-line {

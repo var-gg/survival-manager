@@ -16,10 +16,10 @@ MonoBehaviour:
   RangeDiscipline: 0
   ReevaluationInterval: 0.42
   RangeHysteresis: 0.16
-  PreferredRangeMin: 0
-  PreferredRangeMax: 0
+  PreferredRangeMin: 0.6
+  PreferredRangeMax: 1.15
   ApproachBuffer: 0.25
-  RetreatBuffer: 0.25
+  RetreatBuffer: 0.2
   ChaseLeashMeters: 5
   RetreatAtHpPercent: 0
   RetreatBias: 0.04
@@ -31,4 +31,4 @@ MonoBehaviour:
   BlockMitigation: 0.38
   Stability: 0.88
   BlockCooldownSeconds: 1
-  FrontlineGuardRadius: 2.5
+  FrontlineGuardRadius: 3

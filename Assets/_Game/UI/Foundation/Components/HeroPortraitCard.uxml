@@ -27,7 +27,11 @@
 
         <ui:VisualElement name="portrait" class="sm-hpc__portrait">
             <ui:VisualElement name="portrait-inset" class="sm-hpc__portrait-inset" picking-mode="Ignore" />
-            <ui:VisualElement name="silhouette" class="sm-hpc__silhouette" picking-mode="Ignore" />
+            <ui:VisualElement name="silhouette" class="sm-hpc__silhouette" picking-mode="Ignore">
+                <ui:VisualElement class="sm-hpc__p09-placeholder-bust" picking-mode="Ignore" />
+                <ui:VisualElement class="sm-hpc__p09-placeholder-head" picking-mode="Ignore" />
+                <ui:Label class="sm-hpc__p09-placeholder-label" text="P09 RenderTexture" picking-mode="Ignore" />
+            </ui:VisualElement>
             <ui:VisualElement name="portrait-glow" class="sm-hpc__portrait-glow" picking-mode="Ignore" />
             <ui:Label name="tag" class="sm-hpc__tag" text="P09" picking-mode="Ignore" />
 

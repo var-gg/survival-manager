@@ -22,12 +22,18 @@ MonoBehaviour:
     localScale: {x: 1, y: 1, z: 1}
     tacticalOverlayMode: 2
   chapterPools:
-  - chapterId: chapter_ashen_frontier
+  - chapterId: chapter_ashen_gate
+    mapIds:
+    - map_001_forest_ruins
+  - chapterId: chapter_sunken_bastion
     mapIds:
     - map_001_forest_ruins
   - chapterId: chapter_ruined_crypts
     mapIds:
     - map_001_forest_ruins
-  - chapterId: chapter_warren_depths
+  - chapterId: chapter_glass_forest
+    mapIds:
+    - map_001_forest_ruins
+  - chapterId: chapter_heartforge_descent
     mapIds:
     - map_001_forest_ruins

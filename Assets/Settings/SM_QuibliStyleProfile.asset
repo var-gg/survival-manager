@@ -21,7 +21,7 @@ MonoBehaviour:
     m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.25
+    m_Value: 0.08
   scatter:
     m_OverrideState: 1
     m_Value: 0.5
@@ -65,25 +65,25 @@ MonoBehaviour:
   active: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.62
+    m_Value: 0.40
   blueShadows:
     m_OverrideState: 1
-    m_Value: 0.34
+    m_Value: 0.025
   greenShadows:
     m_OverrideState: 1
-    m_Value: 0.05
+    m_Value: 0.015
   redHighlights:
     m_OverrideState: 1
-    m_Value: 0.18
+    m_Value: 0.40
   contrast:
     m_OverrideState: 1
-    m_Value: 0.28
+    m_Value: 0.72
   vibrance:
     m_OverrideState: 1
-    m_Value: 0.38
+    m_Value: 0.28
   saturation:
     m_OverrideState: 1
-    m_Value: 0.08
+    m_Value: 0.16
 --- !u!114 &-3357603926938260329
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -105,7 +105,7 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.5}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.2
+    m_Value: 0.10
   smoothness:
     m_OverrideState: 0
     m_Value: 0.2
@@ -211,16 +211,16 @@ MonoBehaviour:
   active: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.55
+    m_Value: 0.16
   blur:
     m_OverrideState: 1
-    m_Value: 0.72
+    m_Value: 0.08
   edgePreserve:
     m_OverrideState: 1
-    m_Value: 0.28
+    m_Value: 0.90
   rangeStart:
     m_OverrideState: 1
     m_Value: 0
   rangeEnd:
     m_OverrideState: 1
-    m_Value: 100
+    m_Value: 55

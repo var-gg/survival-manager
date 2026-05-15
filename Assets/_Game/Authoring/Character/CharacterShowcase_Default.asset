@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: CharacterShowcase_Default
+  m_Name: 
   m_EditorClassIdentifier: SM.Unity:SM.Unity.P09Appearance:CharacterShowcaseProfile
   fieldOfView: 23
   nearClip: 0.05

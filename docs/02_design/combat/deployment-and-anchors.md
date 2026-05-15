@@ -5,7 +5,7 @@
 - 최종수정일: 2026-03-30
 - 소스오브트루스: `docs/02_design/combat/deployment-and-anchors.md`
 - 관련문서:
-  - `docs/01_product/vision.md`
+  - Pindoc strategy/product artifacts
   - `docs/02_design/combat/battlefield-and-camera.md`
   - `docs/02_design/combat/team-tactics-and-unit-rules.md`
   - `docs/03_architecture/combat-state-and-event-model.md`

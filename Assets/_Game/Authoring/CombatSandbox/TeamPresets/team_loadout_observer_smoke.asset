@@ -26,7 +26,7 @@ MonoBehaviour:
     - MemberId: enemy_grey_fang
       SourceKind: 1
       HeroId: 
-      DisplayName: 회조 (灰爪) / Grey Fang
+      DisplayName: "\uD68C\uC870 (\u7070\u722A) / Grey Fang"
       ArchetypeId: reaver
       CharacterId: npc_grey_fang
       Anchor: 0
@@ -36,7 +36,7 @@ MonoBehaviour:
     - MemberId: enemy_silent_moon
       SourceKind: 1
       HeroId: 
-      DisplayName: 침월 (沉月) / Silent Moon
+      DisplayName: "\uCE68\uC6D4 (\u6C89\u6708) / Silent Moon"
       ArchetypeId: hexer
       CharacterId: npc_silent_moon
       Anchor: 2
@@ -46,7 +46,7 @@ MonoBehaviour:
     - MemberId: enemy_lyra_sternfeld
       SourceKind: 1
       HeroId: 
-      DisplayName: 선영 (宣英) / Lyra Sternfeld
+      DisplayName: "\uC120\uC601 (\u5BA3\u82F1) / Lyra Sternfeld"
       ArchetypeId: priest
       CharacterId: npc_lyra_sternfeld
       Anchor: 3
@@ -56,7 +56,7 @@ MonoBehaviour:
     - MemberId: enemy_black_vellum
       SourceKind: 1
       HeroId: 
-      DisplayName: 흑지 (黑紙) / Black Vellum
+      DisplayName: "\uD751\uC9C0 (\u9ED1\u7D19) / Black Vellum"
       ArchetypeId: shaman
       CharacterId: npc_black_vellum
       Anchor: 5

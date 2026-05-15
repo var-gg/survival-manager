@@ -156,8 +156,11 @@ public sealed class BattleHumanoidAnimationSetTests
             SetField(set, "guardLoop", guard);
             SetField(set, "death", death);
 
-            Assert.That(set.TryResolveLoopClip(CreateUnit(CombatActionState.Approach), out var approachClip), Is.True);
-            Assert.That(approachClip, Is.SameAs(move));
+            Assert.That(set.TryResolveLoopClip(CreateUnit(CombatActionState.Approach), isLocomoting: false, out var blockedApproachClip), Is.True);
+            Assert.That(blockedApproachClip, Is.SameAs(idle));
+
+            Assert.That(set.TryResolveLoopClip(CreateUnit(CombatActionState.Approach), isLocomoting: true, out var movingApproachClip), Is.True);
+            Assert.That(movingApproachClip, Is.SameAs(move));
 
             Assert.That(set.TryResolveLoopClip(CreateUnit(CombatActionState.Recover, isDefending: true), out var guardClip), Is.True);
             Assert.That(guardClip, Is.SameAs(guard));

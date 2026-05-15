@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: site_ashen_gate
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:ExpeditionSiteDefinition
   Id: site_ashen_gate
-  ChapterId: chapter_ashen_frontier
+  ChapterId: chapter_ashen_gate
   NameKey: content.campaign.site.site_ashen_gate.name
   DescriptionKey: content.campaign.site.site_ashen_gate.desc
   SiteOrder: 1
-  FactionId: faction_ashen_vanguard
+  FactionId: faction_solarum_border
   EncounterIds:
   - site_ashen_gate_skirmish_1
   - site_ashen_gate_skirmish_2

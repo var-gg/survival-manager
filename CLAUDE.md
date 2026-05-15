@@ -19,6 +19,7 @@
 4. 현재 task `status.md` (있으면)
 
 모든 Markdown 파일을 한 번에 읽지 않는다.
+product vision, MVP 범위, 게임기획, narrative/lore/visual design은 Pindoc Wiki를 먼저 본다. repo Markdown은 코드 직결 계약, 하네스, setup, 현재 task handoff를 우선한다.
 
 ## 구현 허용 범위
 
@@ -145,7 +146,7 @@ pwsh -File tools/smoke-check.ps1 -RepoRoot .
 
 ### 문서 역할 분류
 
-- `docs/**`: durable knowledge
+- `docs/**`: repo 운영/기술/코드 계약 durable knowledge
 - `tasks/**`: live state / handoff
 - `prompts/**`, `.agents/skills/**`: agent routing asset
 - `docs/04_decisions/**`: durable decision (코드 직결 architecture만)

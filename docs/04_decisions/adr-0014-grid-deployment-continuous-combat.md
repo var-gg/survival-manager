@@ -6,7 +6,7 @@
 - 결정일: 2026-03-30
 - 소스오브트루스: `docs/04_decisions/adr-0014-grid-deployment-continuous-combat.md`
 - 관련문서:
-  - `docs/01_product/vision.md`
+  - Pindoc strategy/product artifacts
   - `docs/02_design/combat/battlefield-and-camera.md`
   - `docs/02_design/combat/realtime-simulation-model.md`
   - `docs/02_design/combat/deployment-and-anchors.md`

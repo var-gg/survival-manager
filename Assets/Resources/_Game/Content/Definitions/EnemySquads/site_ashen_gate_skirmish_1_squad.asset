@@ -15,17 +15,18 @@ MonoBehaviour:
   Id: site_ashen_gate_skirmish_1_squad
   NameKey: content.enemy_squad.site_ashen_gate_skirmish_1_squad.name
   DescriptionKey: content.enemy_squad.site_ashen_gate_skirmish_1_squad.desc
-  FactionId: faction_ashen_vanguard
+  FactionId: faction_solarum_border
   EnemyPosture: 1
   ThreatTier: 1
   ThreatCost: 1
   RewardDropTags:
-  - faction_ashen_vanguard
+  - faction_solarum_border
   - tier1
   Members:
   - Id: site_ashen_gate_skirmish_1_squad_1
     NameKey: 
     ArchetypeId: bastion_penitent
+    CharacterId: extra_kojin_gate_warden
     Anchor: 0
     Role: 0
     PositiveTraitId: 
@@ -35,6 +36,7 @@ MonoBehaviour:
   - Id: site_ashen_gate_skirmish_1_squad_2
     NameKey: 
     ArchetypeId: warden
+    CharacterId: extra_solarum_border_lancer
     Anchor: 2
     Role: 0
     PositiveTraitId: 
@@ -44,6 +46,7 @@ MonoBehaviour:
   - Id: site_ashen_gate_skirmish_1_squad_3
     NameKey: 
     ArchetypeId: hexer
+    CharacterId: extra_solarum_sigil_scribe
     Anchor: 3
     Role: 0
     PositiveTraitId: 
@@ -53,6 +56,7 @@ MonoBehaviour:
   - Id: site_ashen_gate_skirmish_1_squad_4
     NameKey: 
     ArchetypeId: raider
+    CharacterId: extra_border_reliquary_carry
     Anchor: 5
     Role: 0
     PositiveTraitId: 

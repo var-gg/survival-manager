@@ -1,8 +1,10 @@
 # ADR-0001 문서 체계와 거버넌스 구조 채택
 
-- 상태: active
+- 상태: superseded
+- 폐기일: 2026-05-16
+- 후속 결정: `pindoc://decision-doc-harness-pindoc-migration`
 - 소유자: repository
-- 최종수정일: 2026-03-28
+- 최종수정일: 2026-05-16
 - 소스오브트루스: `docs/04_decisions/adr-0001-docs-architecture.md`
 - 관련문서:
   - `docs/index.md`
@@ -13,6 +15,10 @@
 ## 배경
 
 이 프로젝트는 AI 에이전트가 지속적으로 저장소를 수정한다. 문서 탐색 경로와 기준 문서가 불분명하면, 같은 주제를 여러 위치에서 중복 수정하거나 오래된 기준을 따를 위험이 크다.
+
+## 폐기 사유
+
+본 ADR의 기본 폴더 체계는 초기 repo Markdown 중심 정책이었다. 2026-05-16 현재 product/design/narrative/lore의 primary SoT는 Pindoc Wiki로 전환됐고, repo `docs/**`는 하네스, 기술 구조, setup, runtime/content contract 중심으로 축소됐다. 새 기준은 `pindoc://decision-doc-harness-pindoc-migration`과 `docs/00_governance/source-of-truth-matrix.md`를 따른다.
 
 ## 결정
 
