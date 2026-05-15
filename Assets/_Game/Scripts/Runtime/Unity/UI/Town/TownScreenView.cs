@@ -1,18 +1,18 @@
 using System;
+using SM.Unity.UI;
 using UnityEngine.UIElements;
 
 namespace SM.Unity.UI.Town;
 
 /// <summary>
-/// Town hub V1 view — 12 hero card grid (코드 직접 build) + header + bottom toolbar + floating Quick Battle.
-/// audit §2.1 RosterGrid hub. HeroPortraitCard atom은 Resources 외부라 production runtime 의존성을 만들지 않으려고
-/// 직접 VisualElement code로 카드를 build (atom 보존, dev preview에서만 atom 재사용).
+/// 잿골 hub V2 View — pindoc://v1-scene-screen-routing-ashglen-hub-analysis 정합.
+/// 4 NPC entry (좌) + Welcome hero center + utility entries (우) + utility top bar + Atlas CTA bar.
+/// 옛 RosterGrid+toolbar layout 폐기.
 /// </summary>
 public sealed class TownScreenView
 {
-    private readonly Label _eyebrowLabel;
+    private readonly Label _titleEyebrowLabel;
     private readonly Label _titleLabel;
-    private readonly Label _heroCountLabel;
     private readonly Label _localeStatusLabel;
     private readonly Button _localeKoButton;
     private readonly Button _localeEnButton;
@@ -20,25 +20,42 @@ public sealed class TownScreenView
     private readonly VisualElement _helpStrip;
     private readonly Label _helpBodyLabel;
     private readonly Button _helpDismissButton;
-    private readonly VisualElement _gridContainer;
-    private readonly Button _squadBuilderButton;
-    private readonly Button _recruitButton;
-    private readonly Button _equipmentRefitButton;
-    private readonly Button _passiveBoardButton;
-    private readonly Button _permanentAugmentButton;
-    private readonly Button _expeditionButton;
     private readonly Button _saveButton;
     private readonly Button _loadButton;
     private readonly Button _returnToStartButton;
-    private readonly Button _quickBattleButton;
+
+    private readonly Button _npcEntryDalmok;
+    private readonly Label _npcHintDalmok;
+    private readonly Button _npcEntrySoemae;
+    private readonly Label _npcHintSoemae;
+    private readonly Button _npcEntryGalma;
+    private readonly Label _npcHintGalma;
+    private readonly Button _npcEntrySolgil;
+    private readonly Label _npcHintSolgil;
+
+    private readonly Button _welcomeHeroEntry;
+    private readonly Label _welcomeHeroEyebrow;
+    private readonly Label _welcomeHeroName;
+    private readonly Label _welcomeHeroGreeting;
+    private readonly Label _welcomeHeroHint;
+
+    private readonly Button _rosterButton;
+    private readonly Label _rosterCountLabel;
+    private readonly Button _permanentAugmentButton;
+    private readonly Button _squadBuilderButton;
+
     private readonly Label _statusLabel;
+    private readonly Button _quickBattleButton;
+    private readonly Button _expeditionButton;
+
+    private string _currentWelcomeHeroId = string.Empty;
 
     public TownScreenView(VisualElement root)
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
-        _eyebrowLabel = Require<Label>(root, "TitleEyebrowLabel");
+
+        _titleEyebrowLabel = Require<Label>(root, "TitleEyebrowLabel");
         _titleLabel = Require<Label>(root, "TitleLabel");
-        _heroCountLabel = Require<Label>(root, "HeroCount");
         _localeStatusLabel = Require<Label>(root, "LocaleStatusLabel");
         _localeKoButton = Require<Button>(root, "LocaleKoButton");
         _localeEnButton = Require<Button>(root, "LocaleEnButton");
@@ -46,22 +63,38 @@ public sealed class TownScreenView
         _helpStrip = Require<VisualElement>(root, "HelpStrip");
         _helpBodyLabel = Require<Label>(root, "HelpBodyLabel");
         _helpDismissButton = Require<Button>(root, "HelpDismissButton");
-        _gridContainer = Require<VisualElement>(root, "GridContainer");
-        _squadBuilderButton = Require<Button>(root, "SquadBuilderButton");
-        _recruitButton = Require<Button>(root, "RecruitButton");
-        _equipmentRefitButton = Require<Button>(root, "EquipmentRefitButton");
-        _passiveBoardButton = Require<Button>(root, "PassiveBoardButton");
-        _permanentAugmentButton = Require<Button>(root, "PermanentAugmentButton");
-        _expeditionButton = Require<Button>(root, "ExpeditionButton");
         _saveButton = Require<Button>(root, "SaveButton");
         _loadButton = Require<Button>(root, "LoadButton");
         _returnToStartButton = Require<Button>(root, "ReturnToStartButton");
-        _quickBattleButton = Require<Button>(root, "QuickBattleButton");
+
+        _npcEntryDalmok = Require<Button>(root, "NpcEntry_Dalmok");
+        _npcHintDalmok = Require<Label>(root, "NpcHint_Dalmok");
+        _npcEntrySoemae = Require<Button>(root, "NpcEntry_Soemae");
+        _npcHintSoemae = Require<Label>(root, "NpcHint_Soemae");
+        _npcEntryGalma = Require<Button>(root, "NpcEntry_Galma");
+        _npcHintGalma = Require<Label>(root, "NpcHint_Galma");
+        _npcEntrySolgil = Require<Button>(root, "NpcEntry_Solgil");
+        _npcHintSolgil = Require<Label>(root, "NpcHint_Solgil");
+
+        _welcomeHeroEntry = Require<Button>(root, "WelcomeHeroEntry");
+        _welcomeHeroEyebrow = Require<Label>(root, "WelcomeHeroEyebrow");
+        _welcomeHeroName = Require<Label>(root, "WelcomeHeroName");
+        _welcomeHeroGreeting = Require<Label>(root, "WelcomeHeroGreeting");
+        _welcomeHeroHint = Require<Label>(root, "WelcomeHeroHint");
+
+        _rosterButton = Require<Button>(root, "RosterButton");
+        _rosterCountLabel = Require<Label>(root, "RosterCountLabel");
+        _permanentAugmentButton = Require<Button>(root, "PermanentAugmentButton");
+        _squadBuilderButton = Require<Button>(root, "SquadBuilderButton");
+
         _statusLabel = Require<Label>(root, "StatusLabel");
+        _quickBattleButton = Require<Button>(root, "QuickBattleButton");
+        _expeditionButton = Require<Button>(root, "ExpeditionButton");
     }
 
     public void Bind(TownScreenPresenter presenter)
     {
+        if (presenter == null) throw new ArgumentNullException(nameof(presenter));
         _localeKoButton.clicked += presenter.SelectKorean;
         _localeEnButton.clicked += presenter.SelectEnglish;
         _helpButton.clicked += presenter.ToggleHelp;
@@ -69,139 +102,61 @@ public sealed class TownScreenView
         _saveButton.clicked += presenter.SaveProfile;
         _loadButton.clicked += presenter.LoadProfile;
         _returnToStartButton.clicked += presenter.ReturnToStart;
-        _expeditionButton.clicked += presenter.OpenExpedition;
         _quickBattleButton.clicked += presenter.QuickBattle;
+        _expeditionButton.clicked += presenter.OpenExpedition;
+        _welcomeHeroEntry.clicked += () => presenter.OpenWelcomeHeroSheet(_currentWelcomeHeroId);
     }
 
-    public void BindSquadBuilderOpen(Action open)
-    {
-        _squadBuilderButton.clicked += open;
-    }
-
-    public void BindRecruitOpen(Action open)
-    {
-        _recruitButton.clicked += open;
-    }
-
-    public void BindEquipmentRefitOpen(Action open)
-    {
-        _equipmentRefitButton.clicked += open;
-    }
-
-    public void BindPassiveBoardOpen(Action open)
-    {
-        _passiveBoardButton.clicked += open;
-    }
-
-    public void BindPermanentAugmentOpen(Action open)
-    {
-        _permanentAugmentButton.clicked += open;
-    }
+    public void BindNpcDalmokOpen(Action open) => _npcEntryDalmok.clicked += open;
+    public void BindNpcSoemaeOpen(Action open) => _npcEntrySoemae.clicked += open;
+    public void BindNpcGalmaOpen(Action open) => _npcEntryGalma.clicked += open;
+    public void BindNpcSolgilOpen(Action open) => _npcEntrySolgil.clicked += open;
+    public void BindRosterOpen(Action open) => _rosterButton.clicked += open;
+    public void BindPermanentAugmentOpen(Action open) => _permanentAugmentButton.clicked += open;
+    public void BindSquadBuilderOpen(Action open) => _squadBuilderButton.clicked += open;
 
     public void Render(TownScreenViewState state)
     {
-        _eyebrowLabel.text = state.TitleEyebrow;
+        if (state == null) throw new ArgumentNullException(nameof(state));
+
+        _titleEyebrowLabel.text = state.TitleEyebrow;
         _titleLabel.text = state.Title;
-        _heroCountLabel.text = $"{state.Heroes.Count} / {state.RosterCap}";
         _localeStatusLabel.text = state.LocaleStatus;
         _localeKoButton.text = state.LocaleKoLabel;
         _localeEnButton.text = state.LocaleEnLabel;
         _helpButton.text = state.HelpButtonLabel;
-
-        _helpStrip.style.display = state.Help.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
-        _helpBodyLabel.text = state.Help.Body;
-        _helpDismissButton.text = state.Help.DismissLabel;
-
-        _recruitButton.text = state.RecruitLabel;
-        _equipmentRefitButton.text = state.EquipmentRefitLabel;
-        _passiveBoardButton.text = state.PassiveBoardLabel;
-        _permanentAugmentButton.text = state.PermanentAugmentLabel;
-        _expeditionButton.text = state.ExpeditionLabel;
-        _expeditionButton.tooltip = state.ExpeditionTooltip;
         _saveButton.text = state.SaveLabel;
         _loadButton.text = state.LoadLabel;
         _returnToStartButton.text = state.ReturnToStartLabel;
         _returnToStartButton.tooltip = state.ReturnToStartTooltip;
         _returnToStartButton.SetEnabled(state.CanReturnToStart);
 
-        _quickBattleButton.style.display = state.ShowQuickBattle ? DisplayStyle.Flex : DisplayStyle.None;
+        _helpStrip.style.display = state.Help.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
+        _helpBodyLabel.text = state.Help.Body;
+        _helpDismissButton.text = state.Help.DismissLabel;
+
+        _npcHintDalmok.text = state.DalmokEntry.HintText;
+        _npcHintSoemae.text = state.SoemaeEntry.HintText;
+        _npcHintGalma.text = state.GalmaEntry.HintText;
+        _npcHintSolgil.text = state.SolgilEntry.HintText;
+
+        _currentWelcomeHeroId = state.WelcomeHero.HeroId;
+        _welcomeHeroEyebrow.text = state.WelcomeHero.EyebrowText;
+        _welcomeHeroName.text = state.WelcomeHero.HeroName;
+        _welcomeHeroGreeting.text = state.WelcomeHero.Greeting;
+        _welcomeHeroHint.text = state.WelcomeHero.HintText;
+        _welcomeHeroEntry.SetEnabled(!string.IsNullOrEmpty(state.WelcomeHero.HeroId));
+
+        _rosterCountLabel.text = state.RosterCountText;
+
+        _expeditionButton.text = state.ExpeditionLabel;
+        _expeditionButton.tooltip = state.ExpeditionTooltip;
         _quickBattleButton.text = state.QuickBattleLabel;
         _quickBattleButton.tooltip = state.QuickBattleTooltip;
         _quickBattleButton.SetEnabled(state.CanQuickBattle);
+        _quickBattleButton.style.display = state.ShowQuickBattle ? DisplayStyle.Flex : DisplayStyle.None;
 
         _statusLabel.text = state.StatusText;
-
-        _gridContainer.Clear();
-        foreach (var hero in state.Heroes)
-        {
-            _gridContainer.Add(BuildHeroCard(hero));
-        }
-    }
-
-    private static VisualElement BuildHeroCard(TownHeroCardViewState hero)
-    {
-        var card = new VisualElement { name = $"HeroCard_{hero.HeroId}" };
-        card.AddToClassList("town-hub-card");
-        // inline backup — USS class가 stylesheet 미로딩 환경에서 짤리는 것 방지.
-        card.style.width = 138;
-        card.style.height = 184;
-        card.style.flexShrink = 0;
-        // Foundation atom: rarity jewel border (common/rare/epic) + family tint rib.
-        card.AddToClassList("sm-jewel-duotone");
-        if (!string.IsNullOrEmpty(hero.RarityKey))
-        {
-            card.AddToClassList($"sm-jewel-duotone--{hero.RarityKey}");
-        }
-
-        // family rib — 카드 상단 4px 띠.
-        var rib = new VisualElement { name = "FamilyRib" };
-        rib.AddToClassList("town-hub-card__rib");
-        rib.AddToClassList("sm-family-tint-rib");
-        if (!string.IsNullOrEmpty(hero.FamilyKey))
-        {
-            rib.AddToClassList($"sm-family-tint-rib--{hero.FamilyKey}");
-        }
-        rib.pickingMode = PickingMode.Ignore;
-        card.Add(rib);
-
-        var equipRow = new VisualElement();
-        equipRow.AddToClassList("town-hub-card__equip-row");
-        for (var i = 0; i < 3; i++)
-        {
-            var dot = new VisualElement();
-            dot.AddToClassList("town-hub-card__equip-dot");
-            if (i < hero.EquipSlots) dot.AddToClassList("town-hub-card__equip-dot--filled");
-            equipRow.Add(dot);
-        }
-        card.Add(equipRow);
-
-        var portrait = new VisualElement();
-        portrait.AddToClassList("town-hub-card__portrait");
-        card.Add(portrait);
-
-        var nameLabel = new Label(hero.DisplayName);
-        nameLabel.AddToClassList("town-hub-card__name");
-        card.Add(nameLabel);
-
-        var archetype = new Label(hero.ArchetypeLabel);
-        archetype.AddToClassList("town-hub-card__archetype");
-        card.Add(archetype);
-
-        var levelRow = new VisualElement();
-        levelRow.AddToClassList("town-hub-card__level-row");
-        var levelLabel = new Label($"Lv {hero.Level}");
-        levelLabel.AddToClassList("town-hub-card__level-label");
-        levelRow.Add(levelLabel);
-        var xpBar = new VisualElement();
-        xpBar.AddToClassList("town-hub-card__xp-bar");
-        var xpFill = new VisualElement();
-        xpFill.AddToClassList("town-hub-card__xp-fill");
-        xpFill.style.width = new StyleLength(new Length(hero.XpPct, LengthUnit.Percent));
-        xpBar.Add(xpFill);
-        levelRow.Add(xpBar);
-        card.Add(levelRow);
-
-        return card;
     }
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement

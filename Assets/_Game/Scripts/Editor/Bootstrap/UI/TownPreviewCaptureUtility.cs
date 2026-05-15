@@ -77,8 +77,15 @@ public static class TownPreviewCaptureUtility
                 sessionRoot, sessionRoot.Localization, contentText, view);
             presenter.Initialize();
 
-            // SquadBuilder modal — Town hub 안에 인스턴스 (UXML Instance). presenter ctor가 element 조회.
-            // openSquadBuilder=true면 즉시 Open (modal 열린 상태 캡처).
+            // Phase 5 hub V2 — 6 modal element가 panel root 안에 인스턴스 (UXML Instance). 모두 default closed.
+            // production controller 없이 capture utility에서 직접 wire — Roster는 heroCardTemplate 없이 Close만.
+            new SM.Unity.UI.Town.Preview.RecruitView(root).Close();
+            new SM.Unity.UI.Town.Preview.EquipmentRefitView(root).Close();
+            new SM.Unity.UI.Town.Preview.PassiveBoardView(root).Close();
+            new SM.Unity.UI.Town.Preview.InventoryView(root).Close();
+            new SM.Unity.UI.Town.Preview.PermanentAugmentView(root).Close();
+            new SM.Unity.UI.Town.Preview.RosterGridView(root, heroCardTemplate: null).Close();
+
             var squadBuilder = new SM.Unity.UI.Town.SquadBuilderPresenter(root, sessionRoot, contentText);
             if (openSquadBuilder)
             {

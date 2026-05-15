@@ -19,12 +19,36 @@ public sealed class InventoryView
     private readonly VisualElement _itemGrid;
     private readonly VisualElement _detailIcon;
     private readonly VisualElement _detailAffixes;
+    private readonly VisualElement? _modalRoot;
+    private readonly Button? _closeButton;
 
     private IInventoryActions? _actions;
+
+    public void BindClose(Action close)
+    {
+        if (_closeButton == null || close == null) return;
+        _closeButton.clicked += close;
+    }
+
+    public void Open()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.Flex;
+        _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
+    }
+
+    public void Close()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.None;
+        _modalRoot.AddToClassList("sm-modal-anim--enter");
+    }
 
     public InventoryView(VisualElement root)
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
+        _modalRoot = root.Q<VisualElement>("InvRoot");
+        _closeButton = root.Q<Button>(className: "inv-header__close");   // UXML에 없으면 null OK
         _goldIcon = root.Q<VisualElement>("GoldIcon")
             ?? throw new ArgumentException("GoldIcon 못 찾음");
         _echoIcon = root.Q<VisualElement>("EchoIcon")
