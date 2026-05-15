@@ -76,6 +76,7 @@ public sealed partial class GameSessionState
                 throw new ArgumentNullException(nameof(region));
             }
 
+            _session._atlasExpeditionModifierPayload = null;
             var state = EnsureAtlasSession(region);
             var candidate = ResolveCandidateForCurrentExpeditionNode(region, state);
             if (candidate == null)
@@ -84,13 +85,20 @@ public sealed partial class GameSessionState
             }
 
             var node = region.Nodes.FirstOrDefault(item => string.Equals(item.NodeId, candidate.HexId, StringComparison.Ordinal));
-            return node is { SiteNodeIndex: >= 0 }
-                   && _session._expeditionFlow.SelectNodeFromAtlas(node.SiteNodeIndex);
+            if (node is not { SiteNodeIndex: >= 0 }
+                || !_session._expeditionFlow.SelectNodeFromAtlas(node.SiteNodeIndex))
+            {
+                return false;
+            }
+
+            _session._atlasExpeditionModifierPayload = BuildModifierPayload(region, state, candidate, node);
+            return true;
         }
 
         internal void Reset()
         {
             _session._atlasSession = null;
+            _session._atlasExpeditionModifierPayload = null;
         }
 
         private AtlasStageCandidate? ResolveCandidateForCurrentExpeditionNode(
@@ -131,6 +139,43 @@ public sealed partial class GameSessionState
                 SiteSpineIndex = Math.Min(currentNodeIndex, AtlasSpineProgressionService.BossStageIndex),
                 BossResolved = currentNodeIndex >= AtlasSpineProgressionService.ExtractStageIndex - 1,
             };
+        }
+
+        private AtlasExpeditionModifierPayload BuildModifierPayload(
+            AtlasRegionDefinition region,
+            AtlasSessionState state,
+            AtlasStageCandidate candidate,
+            AtlasRegionNode node)
+        {
+            var resolution = AtlasSessionService.Resolve(region, state);
+            var stack = resolution.ModifierResolution.FindNode(node.NodeId)
+                        ?? new AtlasNodeModifierStack(node.NodeId, node.Hex, Array.Empty<AtlasSigilInfluence>(), Array.Empty<AtlasResolvedModifier>());
+            var expeditionNode = _session.ExpeditionNodes.FirstOrDefault(item => item.Index == node.SiteNodeIndex);
+            var stageCandidatePath = AtlasSpineProgressionService.StageCandidatePath(state.StageCandidatePath, candidate);
+            var stageCandidatePathHash = AtlasContextHasher.BuildStageCandidatePathHash(stageCandidatePath);
+            var nodeOverlayHash = AtlasContextHasher.BuildNodeOverlayHash(region.RegionId, node, state.Identity.CycleSalt, stack);
+            var battleContextHash = AtlasContextHasher.BuildBattleContextHash(
+                state.Identity.RunId,
+                state.Identity.ChapterId,
+                state.Identity.SiteId,
+                node.SiteNodeIndex,
+                expeditionNode?.Id ?? state.Identity.EncounterId,
+                stageCandidatePathHash,
+                nodeOverlayHash,
+                state.Identity.SquadSnapshotId);
+
+            return new AtlasExpeditionModifierPayload(
+                region.RegionId,
+                node.NodeId,
+                node.SiteNodeIndex,
+                expeditionNode?.Id ?? string.Empty,
+                stageCandidatePathHash,
+                nodeOverlayHash,
+                battleContextHash,
+                stack.RewardBiasPercent,
+                stack.ThreatPressurePercent,
+                stack.AffinityBoostPercent,
+                stack.ResolvedModifiers);
         }
 
         private bool CanReuseSession(

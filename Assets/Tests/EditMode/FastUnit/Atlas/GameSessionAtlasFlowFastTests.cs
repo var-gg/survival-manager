@@ -100,6 +100,32 @@ public sealed class GameSessionAtlasFlowFastTests
         Assert.That(session.SelectedExpeditionNodeIndex, Is.EqualTo(1));
     }
 
+    [Test]
+    public void AtlasModifierPayload_IsReadableAfterSelectionHandoff()
+    {
+        var session = CreateBoundSession();
+        session.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        session.SelectAtlasSigil(region, "sigil_beast_spoils");
+        session.PlaceSelectedAtlasSigil(region, "hex_m1_m1");
+        session.SelectAtlasNode(region, "hex_m2_1");
+
+        Assert.That(session.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        var payload = session.AtlasExpeditionModifierPayload;
+
+        Assert.That(payload, Is.Not.Null);
+        Assert.That(payload!.RegionId, Is.EqualTo(region.RegionId));
+        Assert.That(payload.AtlasNodeId, Is.EqualTo("hex_m2_1"));
+        Assert.That(payload.SiteNodeIndex, Is.EqualTo(0));
+        Assert.That(payload.ExpeditionNodeId, Is.EqualTo(session.GetSelectedExpeditionNode()?.Id));
+        Assert.That(payload.StageCandidatePathHash, Is.Not.Empty);
+        Assert.That(payload.NodeOverlayHash, Is.Not.Empty);
+        Assert.That(payload.BattleContextHash, Is.Not.Empty);
+        Assert.That(payload.RewardBiasPercent, Is.GreaterThan(0));
+        Assert.That(payload.HasAnyModifier, Is.True);
+    }
+
     private static GameSessionState CreateBoundSession()
     {
         var session = GameSessionTestFactory.Create(EditorFreeCombatContentFixture.CreateRunLoopLookup());
