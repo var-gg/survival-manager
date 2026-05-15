@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SM.Combat.Model;
+using SM.Core.Content;
 using UnityEngine;
 
 namespace SM.Unity.UI.Expedition;
@@ -203,13 +204,21 @@ public sealed class ExpeditionScreenPresenter
             var isCurrent = node.Index == session.CurrentExpeditionNodeIndex;
             var isSelected = node.Index == session.SelectedExpeditionNodeIndex;
             var isSelectable = selectable.Contains(node.Index);
+            var rewardLines = new List<string>
+            {
+                Localize(GameLocalizationTables.UIExpedition, "ui.expedition.node.type", "Type: {0}", ResolveNodeType(node)),
+                Localize(GameLocalizationTables.UIExpedition, "ui.expedition.node.reward", "Planned Reward: {0}", ResolveNodeReward(node)),
+                Localize(GameLocalizationTables.UIExpedition, "ui.expedition.node.effect", "Node Effect: {0}", BuildNodeEffectTag(node)),
+            };
+            var encounterPreview = BuildEncounterPreviewText(node, compact: true);
+            if (!string.IsNullOrWhiteSpace(encounterPreview))
+            {
+                rewardLines.Add(encounterPreview);
+            }
+
             cards.Add(new ExpeditionNodeCardViewState(
                 $"{i + 1}. {ResolveNodeLabel(node)}",
-                string.Join(
-                    "\n",
-                    Localize(GameLocalizationTables.UIExpedition, "ui.expedition.node.type", "Type: {0}", ResolveNodeType(node)),
-                    Localize(GameLocalizationTables.UIExpedition, "ui.expedition.node.reward", "Planned Reward: {0}", ResolveNodeReward(node)),
-                    Localize(GameLocalizationTables.UIExpedition, "ui.expedition.node.effect", "Node Effect: {0}", BuildNodeEffectTag(node))),
+                string.Join("\n", rewardLines),
                 isSelected
                     ? Localize(GameLocalizationTables.UICommon, "ui.common.selected", "Selected")
                     : isCurrent
@@ -321,6 +330,14 @@ public sealed class ExpeditionScreenPresenter
             sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.planned", "Planned Reward: {0}", ResolveNodeReward(selected)));
             sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.effect", "Node Effect / Risk: {0}", BuildNodeEffectTag(selected)));
             sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.description", "Route Note: {0}", ResolveNodeDescription(selected)));
+            var encounterPreview = BuildEncounterPreviewText(selected, compact: false);
+            if (!string.IsNullOrWhiteSpace(encounterPreview))
+            {
+                sb.AppendLine();
+                sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.encounter.title", "Encounter Preview"));
+                sb.AppendLine(encounterPreview);
+            }
+
             sb.AppendLine(Localize(GameLocalizationTables.UIExpedition, "ui.expedition.reward.return_town", "Return to Town: abandon this expedition and lose the current route commitment."));
         }
         else
@@ -351,13 +368,91 @@ public sealed class ExpeditionScreenPresenter
 
     private string BuildNodeTooltip(ExpeditionNodeViewModel node)
     {
+        var encounterPreview = BuildEncounterPreviewText(node, compact: true);
+        var suffix = string.IsNullOrWhiteSpace(encounterPreview) ? string.Empty : $". {encounterPreview.Replace("\n", " / ")}";
         return Localize(
             GameLocalizationTables.UIExpedition,
             "ui.expedition.tooltip.route_card",
-            "{0}. Planned reward: {1}. Node effect: {2}",
+            "{0}. Planned reward: {1}. Node effect: {2}{3}",
             ResolveNodeType(node),
             ResolveNodeReward(node),
-            BuildNodeEffectTag(node));
+            BuildNodeEffectTag(node),
+            suffix);
+    }
+
+    private string BuildEncounterPreviewText(ExpeditionNodeViewModel node, bool compact)
+    {
+        if (!node.RequiresBattle)
+        {
+            return string.Empty;
+        }
+
+        if (!_root.CombatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+            || !ExpeditionEncounterPreviewBuilder.TryBuild(
+                snapshot,
+                node,
+                _contentText.GetCharacterName,
+                _contentText.GetArchetypeName,
+                out var preview))
+        {
+            return Localize(GameLocalizationTables.UIExpedition, "ui.expedition.encounter.missing", "Encounter: {0}", node.Id);
+        }
+
+        var enemies = preview.EnemyNames.Count == 0
+            ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None")
+            : string.Join(" / ", preview.EnemyNames);
+        var tags = preview.RewardDropTags.Count == 0
+            ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None")
+            : string.Join(" / ", preview.RewardDropTags.Select(tag => BattleReadabilityFormatter.HumanizeToken(tag, tag)));
+
+        if (compact)
+        {
+            return string.Join(
+                "\n",
+                Localize(
+                    GameLocalizationTables.UIExpedition,
+                    "ui.expedition.encounter.compact",
+                    "Encounter: {0} / Threat {1}",
+                    FormatEncounterKind(preview.Kind),
+                    preview.ThreatSkulls),
+                Localize(GameLocalizationTables.UIExpedition, "ui.expedition.encounter.enemies", "Enemy: {0}", enemies));
+        }
+
+        var lines = new List<string>
+        {
+            Localize(
+                GameLocalizationTables.UIExpedition,
+                "ui.expedition.encounter.detail.kind",
+                "{0} / Threat {1} / {2}",
+                FormatEncounterKind(preview.Kind),
+                preview.ThreatSkulls,
+                BattleReadabilityFormatter.HumanizeToken(preview.DifficultyBand, preview.EncounterId)),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.encounter.detail.enemy", "Enemy Actors: {0}", enemies),
+            Localize(GameLocalizationTables.UIExpedition, "ui.expedition.encounter.detail.tags", "Reward Tags: {0}", tags),
+        };
+
+        if (!string.IsNullOrWhiteSpace(preview.BossOverlayId))
+        {
+            lines.Insert(1, Localize(
+                GameLocalizationTables.UIExpedition,
+                "ui.expedition.encounter.detail.boss",
+                "Boss Overlay: {0} / Aura {1} / Utility {2}",
+                string.IsNullOrWhiteSpace(preview.BossOverlayName) ? preview.BossOverlayId : preview.BossOverlayName,
+                BattleReadabilityFormatter.HumanizeToken(preview.BossAuraTag, "-"),
+                BattleReadabilityFormatter.HumanizeToken(preview.BossUtilityTag, "-")));
+        }
+
+        return string.Join("\n", lines);
+    }
+
+    private string FormatEncounterKind(EncounterKindValue kind)
+    {
+        return kind switch
+        {
+            EncounterKindValue.Boss => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.encounter.kind.boss", "Boss"),
+            EncounterKindValue.Elite => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.encounter.kind.elite", "Elite"),
+            _ => Localize(GameLocalizationTables.UIExpedition, "ui.expedition.encounter.kind.skirmish", "Skirmish"),
+        };
     }
 
     private string BuildSquadText(GameSessionState session)

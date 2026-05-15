@@ -81,6 +81,7 @@ public static class EditorFreeCombatContentFixture
         IReadOnlyDictionary<string, ExpeditionSiteTemplate>? expeditionSites = null,
         IReadOnlyDictionary<string, EncounterTemplate>? encounters = null,
         IReadOnlyDictionary<string, EnemySquadTemplate>? enemySquads = null,
+        IReadOnlyDictionary<string, BossOverlayTemplate>? bossOverlays = null,
         IReadOnlyDictionary<string, RewardSourceTemplate>? rewardSources = null)
     {
         var emptyPackages = new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal);
@@ -100,6 +101,7 @@ public static class EditorFreeCombatContentFixture
             ExpeditionSites: expeditionSites,
             Encounters: encounters,
             EnemySquads: enemySquads,
+            BossOverlays: bossOverlays,
             RewardSources: rewardSources,
             FirstPlayableSlice: firstPlayableSlice);
     }
