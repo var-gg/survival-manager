@@ -54,8 +54,9 @@ public sealed class PlayModeSmokeTests
         var townHost = FindPanelHost("TownRuntimePanelHost");
         Assert.That(town, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownScreenController after scene settle."));
         Assert.That(townHost, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownRuntimePanelHost after scene settle."));
-        Assert.That(townHost!.Root.Q<Button>("DeployButton_FrontTop"), Is.Not.Null, "Town should expose deployment anchor buttons in the runtime panel.");
-        Assert.That(townHost.Root.Q<Button>("TeamPostureButton"), Is.Not.Null, "Town should expose a team posture button in the runtime panel.");
+        // Town V1 hub (audit §2.1) — anchor/posture 편집은 후속 SquadBuilder modal로 분리.
+        // 직접 SessionState.AssignHeroToAnchor / CycleTeamPosture를 호출해 expedition 시드 (line 72-77).
+        Assert.That(townHost!.Root.Q<VisualElement>("GridContainer"), Is.Not.Null, "Town hub should expose RosterGrid container in the runtime panel.");
         var quickBattleButton = townHost.Root.Q<Button>("QuickBattleButton");
         Assert.That(quickBattleButton, Is.Not.Null, "Town should expose Quick Battle as a secondary smoke button.");
         Assert.That(quickBattleButton!.text, Is.EqualTo("Quick Battle (Smoke)"));
@@ -130,8 +131,8 @@ public sealed class PlayModeSmokeTests
         quickBattleButton = townHost.Root.Q<Button>("QuickBattleButton");
         Assert.That(expeditionButton, Is.Not.Null);
         Assert.That(expeditionButton!.text, Is.EqualTo("Resume Expedition"));
-        Assert.That(townHost.Root.Q<Button>("PrevChapterButton")!.enabledSelf, Is.False, "Campaign chapter should lock while a run is active.");
-        Assert.That(townHost.Root.Q<Button>("PrevSiteButton")!.enabledSelf, Is.False, "Campaign site should lock while a run is active.");
+        // Town V1 hub: chapter/site cycle은 hub에 없음 — 후속 ExpeditionRouteModal로 분리.
+        // run 활성 시 "Resume Expedition" label/CanStartQuickBattleSmoke=false로 lock 효과 검증 (아래 quickBattleButton).
         Assert.That(quickBattleButton, Is.Not.Null);
         Assert.That(quickBattleButton!.enabledSelf, Is.False, "Quick Battle should not overwrite an active authored run.");
         Assert.That(root.SessionState.CanResumeExpedition, Is.True);

@@ -1,74 +1,337 @@
 /* =============================================================
-   Town Screen — V1 시안 baseline 적용 (pindoc://town-ui-ux-시안-갤러리-v1)
-     - 정적 일러 backdrop (town_frontier_village/dusk) +
-     - dim overlay +
-     - frosted parchment panel + gold trim
-   캐릭터 standee는 후속 (chroma key 처리 필요).
+   Town hub V1 — RosterGrid default panel + bottom toolbar.
+   audit §2.1 채택, RosterGridPreview.uss style 그대로 가져와 town-hub__* 클래스로 정착.
    ============================================================= */
 
-.town-screen {
-    background-color: var(--sm-bg-0);
+.town-hub {
+    flex-grow: 1;
     color: var(--sm-ink-1);
+    background-color: var(--sm-bg-0);
     position: relative;
 }
 
-/* backdrop = 가장 뒤 정적 일러 ----------------------------- */
-.town-screen__backdrop {
+/* Backdrop ----------------------------------------------------- */
+.town-hub__backdrop {
     position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    left: 0; right: 0; top: 0; bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
     -unity-background-scale-mode: scale-and-crop;
-    -unity-background-image-tint-color: rgba(255, 255, 255, 1);
 }
 
-/* dim = backdrop 위에 얹어 panel 가독성 확보 ---------------- */
-.town-screen__backdrop-dim {
+.town-hub__backdrop-dim {
     position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: rgba(12, 17, 38, 0.45);
+    left: 0; right: 0; top: 0; bottom: 0;
+    background-color: rgba(12, 17, 38, 0.55);
 }
 
-/* topbar = backdrop이 비치도록 살짝 투명 ------------------- */
-.town-screen .screen__topbar {
-    background-color: rgba(20, 26, 53, 0.78);
-}
-
-.town-screen .screen__title {
-    color: var(--sm-gold-200);
-}
-
-/* panel = frosted parchment + gold trim -------------------- */
-.town-screen .panel {
-    background-color: rgba(28, 34, 67, 0.82);
-    border-left-color: var(--sm-gold-300-a28);
-    border-right-color: var(--sm-gold-300-a28);
-    border-top-color: var(--sm-gold-300-a28);
+/* Help strip --------------------------------------------------- */
+.town-hub__help {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(28, 34, 67, 0.92);
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 24px;
+    padding-right: 24px;
+    border-bottom-width: 1px;
     border-bottom-color: var(--sm-gold-300-a28);
+}
+
+.town-hub__help-body {
+    flex-grow: 1;
+    color: var(--sm-ink-2);
+    font-size: 12px;
+    white-space: normal;
+}
+
+.town-hub__help-dismiss {
+    margin-left: 12px;
+}
+
+/* Header ------------------------------------------------------- */
+.town-hub__header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 28px;
+    padding-bottom: 16px;
+    padding-left: 40px;
+    padding-right: 40px;
+    background-color: rgba(20, 26, 53, 0.78);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--sm-gold-400);
+}
+
+.town-hub__header-title {
+    flex-direction: column;
+}
+
+.town-hub__eyebrow {
+    font-size: 11px;
+    color: var(--sm-gold-300);
+    letter-spacing: 4px;
+    -unity-font-style: bold;
+    margin-bottom: 6px;
+}
+
+.town-hub__title {
+    font-size: 28px;
+    color: var(--sm-gold-200);
+    -unity-font-style: bold;
+}
+
+.town-hub__header-meta {
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.town-hub__count {
+    font-size: 22px;
+    color: var(--sm-vellum);
+    -unity-font-style: bold;
+}
+
+.town-hub__header-tools {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.town-hub__locale-status {
+    font-size: 11px;
+    color: var(--sm-ink-3);
+    margin-right: 10px;
+}
+
+.town-hub__locale-button {
+    margin-left: 4px;
+}
+
+.town-hub__help-button {
+    margin-left: 8px;
+}
+
+/* Filter chip strip ------------------------------------------- */
+.town-hub__filter-strip {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 40px;
+    padding-right: 40px;
+    background-color: rgba(20, 26, 53, 0.62);
+}
+
+.town-hub__filter-chip {
+    height: 32px;
+    padding-left: 14px;
+    padding-right: 14px;
+    margin-right: 8px;
+    background-color: rgba(28, 34, 67, 0.86);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
+    border-left-color: var(--sm-line-2);
+    border-right-color: var(--sm-line-2);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-2);
+    color: var(--sm-ink-2);
+    font-size: 12px;
 }
 
-.town-screen .panel__title {
-    color: var(--sm-gold-200);
+.town-hub__filter-chip:hover {
+    background-color: rgba(38, 45, 84, 0.92);
+    color: var(--sm-ink-1);
 }
 
-.town-screen .card {
-    background-color: var(--sm-vellum-a06);
-    border-left-color: var(--sm-fam-vanguard-glow-a45);
-    border-right-color: var(--sm-gold-300-a22);
-    border-top-color: var(--sm-gold-300-a22);
-    border-bottom-color: var(--sm-gold-300-a22);
+.town-hub__filter-chip--selected {
+    background-color: rgba(200, 147, 42, 0.16);
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+    color: var(--sm-gold-100);
+    -unity-font-style: bold;
 }
 
-.town-screen .ui-button--accent {
-    background-color: var(--sm-fam-vanguard);
+.town-hub__filter-divider {
+    width: 1px;
+    height: 22px;
+    background-color: rgba(230, 183, 81, 0.45);
+    margin-left: 8px;
+    margin-right: 8px;
+    align-self: center;
+}
+
+/* Profile overlay (HeroPortraitCard atom 위 — RosterGridPreview와 동일 패턴) */
+.rgp-profile-overlay { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.rgp-profile-overlay__equip-row { position: absolute; top: 6px; left: 4px; flex-direction: row; }
+.rgp-profile-overlay__equip-dot {
+    width: 6px; height: 6px; margin-right: 2px;
+    background-color: rgba(107, 93, 63, 0.55);
+    border-top-left-radius: 3px; border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;
+}
+.rgp-profile-overlay__equip-dot--filled { background-color: var(--sm-gold-300); }
+.rgp-profile-overlay__level-row {
+    position: absolute; left: 4px; right: 4px; bottom: 22px;
+    flex-direction: row; align-items: center;
+    background-color: rgba(20, 26, 53, 0.78);
+    padding-left: 4px; padding-right: 4px; padding-top: 2px; padding-bottom: 2px;
+}
+.rgp-profile-overlay__level-label {
+    color: var(--sm-gold-100); font-size: 9px; -unity-font-style: bold;
+    margin-right: 4px; min-width: 28px;
+}
+.rgp-profile-overlay__xp-bar { flex-grow: 1; height: 4px; background-color: rgba(216, 199, 153, 0.22); }
+.rgp-profile-overlay__xp-fill { height: 4px; background-color: rgba(127, 163, 224, 0.85); }
+
+/* Grid -------------------------------------------------------- */
+.town-hub__grid-scroll {
+    flex-grow: 1;
+    padding-top: 20px;
+    padding-bottom: 88px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.town-hub__grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.town-hub__grid > * {
+    margin-right: 12px;
+    margin-bottom: 12px;
+}
+
+/* Hero card — production hub 전용 (Foundation HeroPortraitCard atom은 Resources 외부라 코드 직접 build) */
+.town-hub-card {
+    width: 132px;
+    height: 168px;
+    background-color: rgba(28, 34, 67, 0.92);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-2);
+    border-right-color: var(--sm-line-2);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-2);
+    padding-top: 8px;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+}
+
+.town-hub-card--rare-rare { border-left-color: var(--sm-rare-rare); border-right-color: var(--sm-rare-rare); border-top-color: var(--sm-rare-rare); border-bottom-color: var(--sm-rare-rare); }
+.town-hub-card--rare-epic { border-left-color: var(--sm-rare-epic); border-right-color: var(--sm-rare-epic); border-top-color: var(--sm-rare-epic); border-bottom-color: var(--sm-rare-epic); }
+
+.town-hub-card__portrait {
+    flex-grow: 1;
+    background-color: rgba(20, 26, 53, 0.55);
+    margin-bottom: 4px;
+}
+
+.town-hub-card__name {
+    color: var(--sm-vellum);
+    font-size: 12px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.town-hub-card__archetype {
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    -unity-text-align: middle-center;
+    margin-bottom: 4px;
+}
+
+.town-hub-card__equip-row {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    flex-direction: row;
+}
+
+.town-hub-card__equip-dot {
+    width: 6px; height: 6px; margin-right: 2px;
+    background-color: rgba(107, 93, 63, 0.55);
+    border-top-left-radius: 3px; border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;
+}
+.town-hub-card__equip-dot--filled { background-color: var(--sm-gold-300); }
+
+.town-hub-card__level-row {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(20, 26, 53, 0.78);
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.town-hub-card__level-label {
+    color: var(--sm-gold-100);
+    font-size: 9px;
+    -unity-font-style: bold;
+    margin-right: 4px;
+    min-width: 28px;
+}
+
+.town-hub-card__xp-bar { flex-grow: 1; height: 4px; background-color: rgba(216, 199, 153, 0.22); }
+.town-hub-card__xp-fill { height: 4px; background-color: rgba(127, 163, 224, 0.85); }
+
+/* Toolbar ----------------------------------------------------- */
+.town-hub__toolbar {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 24px;
+    padding-right: 24px;
+    background-color: rgba(20, 26, 53, 0.88);
+    border-top-width: 1px;
+    border-top-color: var(--sm-gold-300-a28);
+}
+
+.town-hub__status {
+    flex-grow: 1;
+    color: var(--sm-ink-3);
+    font-size: 11px;
+    -unity-text-align: middle-left;
+}
+
+.town-hub__toolbar-actions {
+    flex-direction: row;
+    align-items: center;
+}
+
+.town-hub__toolbar-actions > .ui-button {
+    margin-left: 6px;
+}
+
+/* Floating Quick Battle CTA ----------------------------------- */
+.town-hub__quick-battle {
+    position: absolute;
+    right: 40px;
+    bottom: 78px;
+    width: 184px;
     color: var(--sm-ink-0);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.town-hub__quick-battle:hover {
+    background-color: rgba(127, 163, 224, 1);
 }
