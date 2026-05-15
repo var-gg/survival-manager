@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Unity.UI.Town.Preview;
@@ -8,8 +9,11 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Permanent Augment 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// SM/Town/Permanent Augment 미리보기 — Sprint 2 real-wire dev tool.
 /// 모델: "장착한 영구 augment 1개 + 해금 후보 풀" (audit §4.1 P0-4 다운스코프 — posture 그리드 폐기).
+///
+/// 진입: real GameSessionRoot 우선 (UnlockedPermanentAugmentIds + EquippedAugmentIds 기반).
+/// 실패 시 mock fallback.
 /// </summary>
 public sealed class PermanentAugmentPreviewBootstrap : EditorWindow
 {
@@ -20,6 +24,7 @@ public sealed class PermanentAugmentPreviewBootstrap : EditorWindow
     private const string AugmentSpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Augment/augment_{0}.png";
 
     private PermanentAugmentView? _view;
+    private PermanentAugmentPresenter? _presenter;
 
     [MenuItem("SM/Town/Permanent Augment 미리보기", false, 12)]
     public static void Open()
@@ -44,7 +49,33 @@ public sealed class PermanentAugmentPreviewBootstrap : EditorWindow
         visualTree.CloneTree(root);
 
         _view = new PermanentAugmentView(root);
+
+        if (TryWireRealSession(_view))
+        {
+            return;
+        }
+
         _view.Render(BuildMockViewState());
+    }
+
+    private bool TryWireRealSession(PermanentAugmentView view)
+    {
+        try
+        {
+            var sessionRoot = PreviewSessionContext.EnsureSession();
+            _presenter = new PermanentAugmentPresenter(
+                sessionRoot,
+                view,
+                PreviewSessionContext.LoadAugmentSprite);
+            _presenter.Initialize();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[PermanentAugmentPreview] real-session wire 실패, mock fallback: {e.Message}");
+            _presenter = null;
+            return false;
+        }
     }
 
     private PermanentAugmentViewState BuildMockViewState()

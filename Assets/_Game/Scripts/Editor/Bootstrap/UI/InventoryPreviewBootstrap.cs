@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Unity.UI.Town.Preview;
@@ -8,9 +9,12 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Inventory 미리보기 — Sprint 1 presenter 패턴 dev tool.
-/// Bootstrap = mock ViewState injection. 실 GameSessionRoot 없이 View 직접 render.
+/// SM/Town/Inventory 미리보기 — Sprint 2 real-wire dev tool.
 /// 시안 SoT: pindoc://town-ui-ux-시안-갤러리-v1 (6. Inventory tab)
+///
+/// 진입: real GameSessionRoot 우선 (Profile.Inventory + Currencies). default profile은 4 item만 들고 있어
+/// mock의 5×4 demo grid보다 sparse하지만, runtime model 정합 검증이 목적.
+/// 실패 시 mock fallback (20 cell rarity/family demo).
 /// </summary>
 public sealed class InventoryPreviewBootstrap : EditorWindow
 {
@@ -22,6 +26,7 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
     private const string CurrencySpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Currency/currency_{0}.png";
 
     private InventoryView? _view;
+    private InventoryPresenter? _presenter;
 
     [MenuItem("SM/Town/Inventory 미리보기", false, 14)]
     public static void Open()
@@ -44,7 +49,34 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
         visualTree.CloneTree(root);
 
         _view = new InventoryView(root);
+
+        if (TryWireRealSession(_view))
+        {
+            return;
+        }
+
         _view.Render(BuildMockViewState());
+    }
+
+    private bool TryWireRealSession(InventoryView view)
+    {
+        try
+        {
+            var sessionRoot = PreviewSessionContext.EnsureSession();
+            _presenter = new InventoryPresenter(
+                sessionRoot,
+                view,
+                PreviewSessionContext.LoadCurrencySprite,
+                PreviewSessionContext.LoadAffixSprite);
+            _presenter.Initialize();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[InventoryPreview] real-session wire 실패, mock fallback: {e.Message}");
+            _presenter = null;
+            return false;
+        }
     }
 
     private InventoryViewState BuildMockViewState()

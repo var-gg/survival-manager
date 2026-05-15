@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SM.Unity.UI.Town.Preview;
 using UnityEditor;
@@ -7,8 +8,11 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town/Recruit 미리보기 — Sprint 1 presenter 패턴 dev tool.
+/// SM/Town/Recruit 미리보기 — Sprint 2 real-wire dev tool.
 /// 카드 컬럼은 runtime offer 모델 (RecruitUnitPreview + RecruitOfferMetadata) 정합 — audit §4.1.
+///
+/// 진입: real GameSessionRoot 우선 (PreviewSessionContext.EnsureSession → RecruitPresenter.Initialize).
+/// 실패 시 mock fallback (안전망). real path가 default profile의 4 RecruitOffers를 그대로 렌더.
 /// </summary>
 public sealed class RecruitPreviewBootstrap : EditorWindow
 {
@@ -20,6 +24,7 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
     private const string PortraitPathFmt = "Assets/Resources/_Game/Art/Characters/hero_{0}/portrait_full.png";
 
     private RecruitView? _view;
+    private RecruitPresenter? _presenter;
 
     [MenuItem("SM/Town/Recruit 미리보기", false, 10)]
     public static void Open()
@@ -44,7 +49,36 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
         visualTree.CloneTree(root);
 
         _view = new RecruitView(root);
+
+        if (TryWireRealSession(_view))
+        {
+            return;
+        }
+
         _view.Render(BuildMockViewState());
+    }
+
+    private bool TryWireRealSession(RecruitView view)
+    {
+        try
+        {
+            var sessionRoot = PreviewSessionContext.EnsureSession();
+            var contentText = PreviewSessionContext.CreateContentText(sessionRoot);
+            _presenter = new RecruitPresenter(
+                sessionRoot,
+                view,
+                contentText,
+                PreviewSessionContext.LoadClassSprite,
+                PreviewSessionContext.LoadHeroPortrait);
+            _presenter.Initialize();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[RecruitPreview] real-session wire 실패, mock fallback: {e.Message}");
+            _presenter = null;
+            return false;
+        }
     }
 
     private RecruitViewState BuildMockViewState()
