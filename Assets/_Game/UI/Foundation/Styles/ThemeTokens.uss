@@ -18,6 +18,7 @@
     --sm-line-2: rgb(59, 70, 127);       /* divider */
     --sm-vellum: rgb(245, 234, 208);     /* #F5EAD0 양피지 ink primary */
     --sm-vellum-2: rgb(226, 212, 173);   /* 양피지 muted */
+    --sm-transparent: rgba(0, 0, 0, 0);
 
     /* === GOLD — menu trim ladder =========================== */
     --sm-gold-100: rgb(255, 233, 168);   /* glaint */
@@ -28,6 +29,7 @@
     --sm-gold-glow: rgba(245, 214, 138, 0.35);
 
     /* === INK — on parchment ================================ */
+    --sm-ink-0: rgb(255, 248, 224);      /* highlight ink (#FFF8E0) */
     --sm-ink-1: rgb(245, 234, 208);      /* primary text */
     --sm-ink-2: rgb(216, 199, 153);      /* secondary */
     --sm-ink-3: rgb(157, 138, 94);       /* muted */
@@ -58,12 +60,14 @@
     /* === RARITY — jewel duotone ============================ */
     --sm-rare-common: rgb(205, 196, 168);
     --sm-rare-common-deep: rgb(107, 98, 72);
+    --sm-rare-common-glow: rgb(245, 234, 208);
     --sm-rare-rare: rgb(91, 142, 209);
     --sm-rare-rare-deep: rgb(31, 59, 102);
     --sm-rare-rare-glow: rgb(155, 190, 237);
     --sm-rare-epic: rgb(181, 97, 214);
     --sm-rare-epic-2: rgb(240, 138, 60);     /* purple → flame dueltone */
     --sm-rare-epic-deep: rgb(74, 33, 104);
+    --sm-rare-epic-glow: rgb(255, 224, 160);
 
     /* === STATE ============================================= */
     --sm-state-safe: rgb(109, 191, 120);
@@ -72,6 +76,15 @@
     --sm-state-locked: rgb(107, 110, 133);
     --sm-state-ko: rgb(138, 138, 152);
     --sm-state-injured: rgb(182, 51, 74);    /* warm bruise — lead와 통일 */
+
+    /* === TYPE FAMILY — v0.2 source font token names ========= */
+    /* Unity Font asset wiring uses -unity-font-definition at rule level.
+       These tokens preserve the source family contract for component specs. */
+    --sm-type-ko: Pretendard;
+    --sm-type-mincho: ShipporiMincho;
+    --sm-type-display: Cinzel;
+    --sm-type-garamond: CormorantGaramond;
+    --sm-type-mono: JetBrainsMono;
 
     /* === SPACING — 8pt grid ================================ */
     --sm-s-1: 4px;
@@ -89,6 +102,47 @@
 
     /* === MOTION ============================================ */
     --sm-t-snap: 200ms;
+    --sm-e-snap: ease-out;
+
+    /* === ALPHA / LAYER TOKENS — USS-safe gradient stand-ins == */
+    --sm-bg-0-a84: rgba(12, 17, 38, 0.84);
+    --sm-bg-1-a54: rgba(12, 17, 31, 0.54);
+    --sm-bg-2-a78: rgba(18, 24, 45, 0.78);
+    --sm-bg-void-a20: rgba(7, 8, 10, 0.20);
+    --sm-bg-vital-a72: rgba(4, 8, 10, 0.72);
+    --sm-bg-portrait-a70: rgba(31, 25, 19, 0.70);
+    --sm-bg-portrait-a82: rgba(31, 25, 19, 0.82);
+    --sm-bg-portrait-missing-a66: rgba(78, 61, 42, 0.66);
+    --sm-vellum-a05: rgba(245, 234, 208, 0.05);
+    --sm-vellum-a06: rgba(245, 234, 208, 0.06);
+    --sm-vellum-a07: rgba(245, 234, 208, 0.07);
+    --sm-vellum-a08: rgba(245, 234, 208, 0.08);
+    --sm-vellum-a09: rgba(245, 234, 208, 0.09);
+    --sm-vellum-a10: rgba(245, 234, 208, 0.10);
+    --sm-vellum-a12: rgba(245, 234, 208, 0.12);
+    --sm-vellum-a15: rgba(245, 234, 208, 0.15);
+    --sm-vellum-a18: rgba(245, 234, 208, 0.18);
+    --sm-gold-muted-a40: rgba(218, 187, 118, 0.40);
+    --sm-gold-muted-a44: rgba(218, 187, 118, 0.44);
+    --sm-gold-muted-a54: rgba(218, 187, 118, 0.54);
+    --sm-gold-muted-a72: rgba(218, 187, 118, 0.72);
+    --sm-gold-300-a20: rgba(230, 183, 81, 0.20);
+    --sm-gold-300-a22: rgba(230, 183, 81, 0.22);
+    --sm-gold-300-a24: rgba(230, 183, 81, 0.24);
+    --sm-gold-300-a25: rgba(230, 183, 81, 0.25);
+    --sm-gold-300-a26: rgba(230, 183, 81, 0.26);
+    --sm-gold-300-a28: rgba(230, 183, 81, 0.28);
+    --sm-gold-300-a32: rgba(230, 183, 81, 0.32);
+    --sm-gold-300-a34: rgba(230, 183, 81, 0.34);
+    --sm-gold-300-a36: rgba(230, 183, 81, 0.36);
+    --sm-gold-300-a42: rgba(230, 183, 81, 0.42);
+    --sm-gold-300-a78: rgba(230, 183, 81, 0.78);
+    --sm-fam-vanguard-glow-a45: rgba(127, 163, 224, 0.45);
+    --sm-state-warn-a56: rgba(232, 169, 59, 0.56);
+    --sm-state-safe-a86: rgba(166, 220, 154, 0.86);
+    --sm-state-safe-a92: rgba(166, 220, 154, 0.92);
+    --sm-state-shield-a82: rgba(118, 168, 230, 0.82);
+    --sm-state-injured-a22: rgba(120, 56, 74, 0.22);
 
     /* === FONT SIZE — 4-tier ================================ */
     /* Korean body / display / dev tag 공용. font-family는
@@ -98,6 +152,40 @@
     --sm-fs-m: 14px;
     --sm-fs-l: 18px;
     --sm-fs-xl: 24px;
+
+    /* === MOOD BASELINE — V1 시안 갤러리 (8 Town Preview surface) ===
+       3 mood frame + 1 backdrop + 4 CTA tier. 8 Preview surface가
+       본 token만 참조해서 corner/trim/CTA drift 제거.
+         parchment = TacticalWorkshop / Inventory (cream BG, dark ink)
+         ceremony  = Recruit / EquipmentRefit / PermanentAugment /
+                     PassiveBoard / Theater (deep navy BG, gold ink)
+         modal-sm  = Settings (작은 modal, navy 같지만 corner/border 축소) */
+    --sm-frame-parchment-bg: rgba(235, 220, 178, 0.96);
+    --sm-frame-ceremony-bg: rgba(20, 26, 53, 0.96);
+    --sm-frame-modal-bg: rgba(20, 26, 53, 0.96);
+    --sm-backdrop-dim: rgba(12, 17, 38, 0.55);
+
+    --sm-frame-trim-color: var(--sm-gold-400);
+    --sm-frame-trim-w: 3px;
+    --sm-frame-trim-w-small: 2px;
+
+    --sm-frame-corner-color: var(--sm-gold-300);
+    /* corner = ornament-corner-vine.svg (vector, 34x34 viewBox). 1:1 size로 crisp 렌더. */
+    --sm-frame-corner-size: 34px;
+    --sm-frame-corner-size-small: 28px;
+
+    --sm-frame-divider-ceremony: rgba(230, 183, 81, 0.32);
+    --sm-frame-divider-parchment: rgba(138, 100, 24, 0.45);
+
+    --sm-on-parchment-ink: rgb(61, 47, 18);
+    --sm-on-parchment-ink-muted: rgb(107, 93, 63);
+
+    /* CTA height tier: inline (inventory secondary) / md (settings, passive) /
+       lg (recruit, refit, theater primary modal) / hero (augment equip, hub) */
+    --sm-cta-h-inline: 36px;
+    --sm-cta-h-md: 44px;
+    --sm-cta-h-lg: 48px;
+    --sm-cta-h-hero: 56px;
 
     /* =========================================================
        LEGACY ALIASES — backward-compat for existing screen USS

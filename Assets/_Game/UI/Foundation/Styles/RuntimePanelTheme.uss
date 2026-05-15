@@ -523,6 +523,18 @@
 /* --- Jewel duotone — rarity --- */
 /* tier dot / item slot border / portrait frame에 적용.
    common(parchment) / rare(sapphire) / epic(amethyst→flame). */
+.sm-jewel-duotone {
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    background-color: var(--sm-rare-common);
+    border-left-color: var(--sm-rare-common-deep);
+    border-right-color: var(--sm-rare-common-deep);
+    border-top-color: var(--sm-rare-common-deep);
+    border-bottom-color: var(--sm-rare-common-deep);
+}
+
 .sm-jewel-common {
     background-color: var(--sm-rare-common);
     border-left-color: var(--sm-rare-common-deep);
@@ -544,6 +556,30 @@
     border-left-color: var(--sm-rare-epic-deep);
     border-right-color: var(--sm-rare-epic-deep);
     border-top-color: var(--sm-rare-epic-deep);
+    border-bottom-color: var(--sm-rare-epic-deep);
+}
+
+.sm-jewel-duotone--common {
+    background-color: var(--sm-rare-common);
+    border-left-color: var(--sm-rare-common-deep);
+    border-right-color: var(--sm-rare-common-deep);
+    border-top-color: var(--sm-rare-common-deep);
+    border-bottom-color: var(--sm-rare-common-deep);
+}
+
+.sm-jewel-duotone--rare {
+    background-color: var(--sm-rare-rare);
+    border-left-color: var(--sm-rare-rare-deep);
+    border-right-color: var(--sm-rare-rare-deep);
+    border-top-color: var(--sm-rare-rare-deep);
+    border-bottom-color: var(--sm-rare-rare-deep);
+}
+
+.sm-jewel-duotone--epic {
+    background-color: var(--sm-rare-epic);
+    border-left-color: var(--sm-rare-epic-2);
+    border-right-color: var(--sm-rare-epic-deep);
+    border-top-color: var(--sm-rare-epic-2);
     border-bottom-color: var(--sm-rare-epic-deep);
 }
 
@@ -697,3 +733,262 @@
 .sm-stripe-gold-300 { background-color: var(--sm-gold-300); }
 .sm-stripe-gold-400 { background-color: var(--sm-gold-400); }
 .sm-stripe-gold-500 { background-color: var(--sm-gold-500); }
+
+/* =============================================================
+   V1 MODAL FRAME — 시안 갤러리 (8 Town Preview surface)
+   parchment / ceremony / modal-small mood baseline.
+   각 Preview USS는 local .xxx-frame / .xxx-frame__corner / .xxx-cta
+   rule 대신 본 atom 참조. 토큰은 ThemeTokens.uss "MOOD BASELINE" 절.
+   ============================================================= */
+
+/* --- Backdrop layer template ---
+   풀스크린 backdrop image + dim overlay. image url은 surface USS에서
+   설정 (surface마다 backdrop이 다를 수 있음 — town 외 다른 hub 등). */
+.sm-backdrop {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.sm-backdrop-dim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--sm-backdrop-dim);
+}
+
+/* --- Modal frame (centered absolute, gold border + corner cap host) ---
+   inset (left/right/top/bottom)은 surface 별로 변하므로 atom에서 lock
+   안 함. surface USS에서 position offset 지정. 본 atom은 mood/trim만 통일. */
+.sm-modal-frame {
+    position: absolute;
+    background-color: var(--sm-frame-ceremony-bg);
+    border-left-width: var(--sm-frame-trim-w);
+    border-right-width: var(--sm-frame-trim-w);
+    border-top-width: var(--sm-frame-trim-w);
+    border-bottom-width: var(--sm-frame-trim-w);
+    border-left-color: var(--sm-frame-trim-color);
+    border-right-color: var(--sm-frame-trim-color);
+    border-top-color: var(--sm-frame-trim-color);
+    border-bottom-color: var(--sm-frame-trim-color);
+}
+
+.sm-modal-frame--parchment {
+    background-color: var(--sm-frame-parchment-bg);
+}
+
+.sm-modal-frame--ceremony {
+    background-color: var(--sm-frame-ceremony-bg);
+}
+
+.sm-modal-frame--modal-small {
+    background-color: var(--sm-frame-modal-bg);
+    border-left-width: var(--sm-frame-trim-w-small);
+    border-right-width: var(--sm-frame-trim-w-small);
+    border-top-width: var(--sm-frame-trim-w-small);
+    border-bottom-width: var(--sm-frame-trim-w-small);
+}
+
+/* --- Frame corner ornament (vine SVG @ 4 corners, mirrored) ---
+   audit §4.2 frame 합성 전환: 기존 flat gold square → ornament-corner-vine.svg
+   (vector, 해상도 독립). HeroPortraitCard .sm-hpc__cornament와 같은 패턴 —
+   default orientation = top-left, 나머지 3코너는 USS scale로 미러. tint는 gold token. */
+.sm-frame-corner-cap {
+    position: absolute;
+    width: var(--sm-frame-corner-size);
+    height: var(--sm-frame-corner-size);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Ornaments/ornament-corner-vine.svg");
+    -unity-background-image-tint-color: var(--sm-frame-corner-color);
+}
+
+.sm-frame-corner-cap--small {
+    width: var(--sm-frame-corner-size-small);
+    height: var(--sm-frame-corner-size-small);
+}
+
+.sm-frame-corner-cap--tl { top: -3px; left: -3px; }
+.sm-frame-corner-cap--tr { top: -3px; right: -3px; scale: -1 1; }
+.sm-frame-corner-cap--bl { bottom: -3px; left: -3px; scale: 1 -1; }
+.sm-frame-corner-cap--br { bottom: -3px; right: -3px; scale: -1 -1; }
+
+.sm-frame-corner-cap--small.sm-frame-corner-cap--tl { top: -2px; left: -2px; }
+.sm-frame-corner-cap--small.sm-frame-corner-cap--tr { top: -2px; right: -2px; }
+.sm-frame-corner-cap--small.sm-frame-corner-cap--bl { bottom: -2px; left: -2px; }
+.sm-frame-corner-cap--small.sm-frame-corner-cap--br { bottom: -2px; right: -2px; }
+
+/* --- CTA button (4 height tier × 3 tone variant) ---
+   8 Preview surface가 같은 height + border width 규약을 공유.
+   tone: primary(gold)/secondary(navy)/utility(blue).
+   surface 별 추가 padding/glyph은 local rule로. */
+.sm-cta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+}
+
+.sm-cta--inline { height: var(--sm-cta-h-inline); }
+.sm-cta--md     { height: var(--sm-cta-h-md); }
+.sm-cta--lg     { height: var(--sm-cta-h-lg); }
+.sm-cta--hero   { height: var(--sm-cta-h-hero); }
+
+.sm-cta--primary {
+    background-color: rgba(200, 147, 42, 0.95);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
+
+.sm-cta--secondary {
+    background-color: rgba(38, 45, 84, 0.92);
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+.sm-cta--utility {
+    background-color: rgba(74, 114, 184, 0.92);
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+/* --- Frame divider hairline ---
+   ceremony header bottom / column hairline (gold tint). parchment은
+   warm shadow gold tint. surface USS에서 border-bottom / border-right
+   에 사용. */
+.sm-frame-divider-ceremony {
+    border-bottom-color: var(--sm-frame-divider-ceremony);
+}
+
+.sm-frame-divider-parchment {
+    border-bottom-color: var(--sm-frame-divider-parchment);
+}
+
+/* =============================================================
+   콘솔급 UI texture layer — 9-slice frame / ornament / glow
+   town-profile-binding-workflow.md "UI 품질 기준" 절 참조.
+   flat color border 위에 ornate gold trim 이미지를 overlay해서
+   JRPG 콘솔급 엣지 마감. mood bg color는 그대로 두고, texture는
+   absolute-fill 자식 element로 얹는다 (border-image 미지원 우회).
+
+   art-pipeline 원본: Foundation/Sprites/Frame/*.png
+   (panel_card_frame_9slice / ornament_divider_warm_gold / glow_halo_warm_gold).
+   panel_modal_frame_9slice는 audit §4.2로 폐기 — modal frame은 vine SVG 코너
+   (.sm-frame-corner-cap) + sm-modal-frame border/bg 합성 구조로 전환.
+   ============================================================= */
+
+/* --- Modal frame inner edge accent ---
+   audit §4.2: 기존 panel_modal_frame_9slice.png 9-slice는 raster 코너 blur +
+   중앙 baked parchment가 mood color와 충돌 → 폐기. 합성 구조로 전환 —
+   코너 = sm-frame-corner-cap vine SVG / 엣지 trim = sm-modal-frame border /
+   중앙 = sm-modal-frame mood bg color. 본 layer는 outer trim 안쪽 얇은 gold
+   hairline만 — 깊이 accent (raster blur 없이 ceremony 마감). picking-mode ignore. */
+.sm-modal-frame__texture {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.20);
+    border-right-color: rgba(230, 183, 81, 0.20);
+    border-top-color: rgba(230, 183, 81, 0.20);
+    border-bottom-color: rgba(230, 183, 81, 0.20);
+}
+
+/* --- 9-slice card frame texture overlay ---
+   card / panel 단위 ornate border. modal frame보다 얇은 trim. */
+.sm-card-frame__texture {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/panel_card_frame_9slice.png");
+    -unity-slice-left: 48;
+    -unity-slice-top: 48;
+    -unity-slice-right: 48;
+    -unity-slice-bottom: 48;
+    -unity-slice-scale: 0.5;
+}
+
+/* --- Ornament divider ---
+   header bottom / section 구분에 쓰는 warm gold ornament 띠.
+   flat hairline 대신 image. 높이는 surface USS에서 조정. */
+.sm-ornament-divider {
+    height: 10px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/ornament_divider_warm_gold.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* --- Glow halo ---
+   selected / keystone / hero portrait 등 강조 element 뒤에 까는
+   warm gold glow. absolute-fill 또는 고정 크기 자식. picking ignore. */
+.sm-glow-halo {
+    position: absolute;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/glow_halo_warm_gold.png");
+    -unity-background-scale-mode: scale-to-fit;
+    opacity: 0.85;
+}
+
+/* =============================================================
+   Modal / element 애니메이션 atom — JRPG 콘솔급 motion.
+   UI Toolkit USS transition 기반. C#에서 class toggle로 trigger.
+   3-tier (analysis-town-ui-component-system-v1):
+     tier 1 — modal in/out (scale + opacity)
+     tier 2 — card hover / tab 전환 (rim glow, raise)
+     tier 3 — node toggle / chip select (snap scale)
+   ============================================================= */
+
+/* tier 1 — modal 등장/퇴장. C#: 열 때 --enter 제거, 닫을 때 --exit 추가. */
+.sm-modal-anim {
+    transition-property: opacity, scale;
+    transition-duration: 200ms, 200ms;
+    transition-timing-function: ease-out, ease-out;
+    opacity: 1;
+    scale: 1 1;
+}
+.sm-modal-anim--enter {
+    opacity: 0;
+    scale: 0.96 0.96;
+}
+.sm-modal-anim--exit {
+    opacity: 0;
+    scale: 0.96 0.96;
+}
+
+/* tier 2 — card / tab hover. cool blue rim + 살짝 raise. */
+.sm-hover-raise {
+    transition-property: translate, scale;
+    transition-duration: 120ms;
+    transition-timing-function: ease-out;
+}
+.sm-hover-raise:hover {
+    translate: 0 -2px;
+    scale: 1.02 1.02;
+}
+
+/* tier 3 — node / chip select snap. */
+.sm-select-snap {
+    transition-property: scale;
+    transition-duration: 90ms;
+    transition-timing-function: ease-out;
+}
+.sm-select-snap:active {
+    scale: 0.95 0.95;
+}
