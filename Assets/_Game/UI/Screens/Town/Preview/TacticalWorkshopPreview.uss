@@ -247,18 +247,18 @@
     white-space: normal;
 }
 
-/* --- Per-unit tactic display (V1 read-only) — RuleSet schema ---
-   pindoc V1: hero가 RoleInstructionDefinition을 가지고,
-   N개의 (condition → action → target) rule을 priority 순으로 보유.
-   첫 condition matching이 fire. 사용자는 V1에서 자세만 편집 — rule set는 read-only.
+/* --- Per-unit tactic display (V1 read-only) — runtime 실재 요약 ---
+   audit §4.1 P1-1: condition→action→target rule chain 모델은 runtime에 없음.
+   실재는 RoleInstructionDefinition(Anchor + RoleTag + bias 3 float) +
+   BehaviorProfileDefinition(FormationLine + RangeDiscipline). 가짜 RuleSet 폐기.
 
-   schema: container → hero block × N → header + rules list × M rule rows */
+   schema: container → hero block × N → header(portrait+name+anchor·role) + behavior + bias bars × 3 */
 .twp-tactic-section { flex-grow: 1; }
 .twp-tactic-rows {
     flex-direction: column;
 }
 
-/* Hero block — header + rule list */
+/* Hero block — header + behavior + bias bars */
 .twp-tactic-hero {
     flex-direction: column;
     margin-bottom: 8px;
@@ -282,7 +282,7 @@
     flex-direction: row;
     align-items: center;
     padding-top: 4px;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
     padding-left: 4px;
 }
 .twp-tactic-hero__portrait {
@@ -299,92 +299,56 @@
     color: rgba(61, 47, 18, 1);
     font-size: 12px;
     -unity-font-style: bold;
-    margin-right: 12px;
+    margin-right: 10px;
 }
-.twp-tactic-hero__posture {
+/* anchor · role — RoleInstruction (배치 위치 + 역할) */
+.twp-tactic-hero__role {
     color: rgba(107, 93, 63, 1);
     font-size: 10px;
-    margin-right: 8px;
+    -unity-font-style: bold;
 }
-.twp-tactic-hero__count {
+/* formation · range — BehaviorProfile 요약 */
+.twp-tactic-hero__behavior {
     color: rgba(138, 100, 24, 1);
     font-size: 9px;
-    -unity-font-style: bold;
     letter-spacing: 1px;
-    align-self: center;
+    padding-left: 4px;
+    padding-bottom: 4px;
 }
 
-/* Rule list — priority 순 stacked rules */
-.twp-tactic-hero__rules {
+/* bias bars — RoleInstruction bias 3 float (캐리 보호 / 후열 압박 / 후퇴) */
+.twp-tactic-hero__biases {
     flex-direction: column;
     padding-left: 8px;
     padding-top: 2px;
 }
-
-/* Each rule = priority badge + cond → arrow → act → arrow → tgt */
-.twp-tactic-rule {
+.twp-tactic-bias {
     flex-direction: row;
     align-items: center;
-    padding-top: 2px;
-    padding-bottom: 2px;
     margin-bottom: 2px;
 }
-.twp-tactic-rule__priority {
+.twp-tactic-bias__label {
+    width: 56px;
+    color: rgba(61, 47, 18, 1);
+    font-size: 9px;
+}
+.twp-tactic-bias__bar {
+    flex-grow: 1;
+    height: 6px;
+    background-color: rgba(107, 93, 63, 0.28);
+    margin-left: 4px;
+    margin-right: 4px;
+}
+.twp-tactic-bias__fill {
+    height: 6px;
+    background-color: rgba(200, 147, 42, 0.85);
+}
+.twp-tactic-bias__value {
     width: 22px;
     color: rgba(138, 100, 24, 1);
     font-size: 9px;
     -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    margin-right: 6px;
-}
-
-.twp-tactic-rule__chip {
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 1px;
-    padding-bottom: 1px;
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-}
-.twp-tactic-rule__chip--cond {
-    background-color: rgba(127, 163, 224, 0.32);
-    border-left-color: rgba(127, 163, 224, 0.78);
-    border-right-color: rgba(127, 163, 224, 0.78);
-    border-top-color: rgba(127, 163, 224, 0.78);
-    border-bottom-color: rgba(127, 163, 224, 0.78);
-}
-.twp-tactic-rule__chip--act {
-    background-color: rgba(200, 147, 42, 0.32);
-    border-left-color: rgba(200, 147, 42, 0.78);
-    border-right-color: rgba(200, 147, 42, 0.78);
-    border-top-color: rgba(200, 147, 42, 0.78);
-    border-bottom-color: rgba(200, 147, 42, 0.78);
-}
-.twp-tactic-rule__chip--tgt {
-    background-color: rgba(166, 220, 154, 0.32);
-    border-left-color: rgba(166, 220, 154, 0.78);
-    border-right-color: rgba(166, 220, 154, 0.78);
-    border-top-color: rgba(166, 220, 154, 0.78);
-    border-bottom-color: rgba(166, 220, 154, 0.78);
-}
-.twp-tactic-rule__chip-label {
-    color: rgba(20, 28, 50, 1);
-    font-size: 9px;
-    -unity-font-style: bold;
-    letter-spacing: 1px;
-}
-.twp-tactic-rule__arrow {
-    align-items: center;
-    justify-content: center;
-    padding-left: 3px;
-    padding-right: 3px;
-}
-.twp-tactic-rule__arrow-label {
-    color: rgba(107, 93, 63, 0.78);
-    font-size: 10px;
-    -unity-font-style: bold;
+    -unity-text-align: middle-right;
 }
 
 /* --- Live Preview --- */

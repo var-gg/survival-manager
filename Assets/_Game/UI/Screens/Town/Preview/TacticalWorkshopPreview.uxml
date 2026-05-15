@@ -31,7 +31,7 @@
                      deployment-and-anchors.md: Front × 3 + Back × 3 = 6 anchor.
                      battle deploy size 4 — 2개 slot은 empty 상태. -->
                 <ui:VisualElement class="twp-column twp-column--anchor">
-                    <ui:Label class="twp-section-eyebrow" text="ANCHOR PAD — 6 SLOT / 4 DEPLOY" />
+                    <ui:Label class="twp-section-eyebrow" text="ANCHOR PAD — 6 SLOT / 4 DEPLOY (READ-ONLY)" />
                     <ui:VisualElement class="twp-anchor-pad">
                         <ui:VisualElement class="twp-anchor-pad__hex" picking-mode="Ignore" />
                         <ui:VisualElement class="twp-anchor-pad__arc twp-anchor-pad__arc--warm" picking-mode="Ignore" />
@@ -76,7 +76,7 @@
                     <ui:VisualElement name="PostureCardRow" class="twp-posture-row" />
 
                     <ui:VisualElement class="twp-tactic-section">
-                        <ui:Label class="twp-section-eyebrow" text="PER-UNIT TACTIC" />
+                        <ui:Label class="twp-section-eyebrow" text="PER-UNIT — 배치 역할 · AI 성향 (READ-ONLY)" />
                         <ui:VisualElement name="TacticPresetRows" class="twp-tactic-rows" />
                     </ui:VisualElement>
 

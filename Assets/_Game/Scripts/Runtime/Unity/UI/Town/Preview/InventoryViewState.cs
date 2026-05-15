@@ -4,11 +4,12 @@ using UnityEngine;
 namespace SM.Unity.UI.Town.Preview;
 
 /// <summary>
-/// Inventory V1 surface ViewState — pindoc V1 wiki SoT.
-/// - currency: Gold / Echo (Profile.Currencies)
-/// - 4 category (ALL + weapon/armor/accessory) — item-and-affix-system.md (3 slot)
-/// - N×M item grid (ItemDefinition + ItemInstanceRecord) — rarity / weapon family / equipped
-/// - 5 affix detail (implicit 1 + prefix 2 + suffix 2) grouped
+/// Inventory V1 surface ViewState — runtime 모델 정합 (audit §4.1 P1-3).
+/// - currency: Gold / Echo — CurrencyRecord 8종 중 V1 활성 경제 2종만 노출
+/// - 4 category (ALL + weapon/armor/accessory) — ItemSlotType 3종 + ALL
+/// - N×M item grid (InventoryItemRecord + ItemBaseDefinition) — rarity / weapon family / equipped
+/// - affix detail: 이름 + 값 범위 (AffixDefinition.NameKey / ValueMin~ValueMax —
+///   instance 확정 roll 미저장이라 범위 표기). sell 액션은 runtime API 부재로 제거.
 /// </summary>
 public sealed record InventoryCategoryViewState(
     string Key,                 // all / weapon / armor / accessory
@@ -29,9 +30,9 @@ public sealed record InventoryItemViewState(
 );
 
 public sealed record InventoryAffixRowViewState(
-    string GroupKey,            // implicit / prefix / suffix
-    string Label,               // "ATK" / "CRIT" 등
-    string Value                // "+256" / "+18.7%" 등
+    string GroupKey,            // implicit / prefix / suffix ← AffixDefinition.Tier
+    string Name,                // ← AffixDefinition.NameKey resolved
+    string ValueRange           // ← AffixDefinition.ValueMin~ValueMax (instance 확정 roll 미저장 → 범위)
 );
 
 public sealed record InventoryDetailViewState(

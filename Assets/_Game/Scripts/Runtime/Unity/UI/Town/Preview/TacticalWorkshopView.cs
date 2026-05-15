@@ -83,7 +83,7 @@ public sealed class TacticalWorkshopView
             }
 
             standee.tooltip = isEmpty ? $"{a.AnchorId} · empty" : $"{a.AnchorId} · {a.AssignedHeroId}";
-            standee.RegisterCallback<ClickEvent>(_ => _actions?.OnAnchorClicked(a.AnchorId));
+            // anchor pad는 read-only reference — anchor 편집은 SquadBuilder 책임 (audit §2.2)
             _anchorPad.Add(standee);
         }
     }
@@ -162,12 +162,17 @@ public sealed class TacticalWorkshopView
         }
     }
 
+    /// <summary>
+    /// per-unit tactic block — runtime 실재 요약 (read-only). RoleInstruction(anchor·role·bias) +
+    /// BehaviorProfile(formation·range). 가짜 condition→action→target rule chain 폐기 (audit §4.1 P1-1).
+    /// </summary>
     private static VisualElement BuildHeroTacticBlock(TacticalWorkshopHeroTacticViewState hero)
     {
         var block = new VisualElement();
         block.AddToClassList("twp-tactic-hero");
         block.AddToClassList("twp-tactic-hero--readonly");
 
+        // header — portrait + name + anchor·role (RoleInstruction)
         var header = new VisualElement();
         header.AddToClassList("twp-tactic-hero__header");
 
@@ -179,64 +184,51 @@ public sealed class TacticalWorkshopView
         name.AddToClassList("twp-tactic-hero__name");
         header.Add(name);
 
-        var posture = new Label($"자세: {hero.PostureLabel}");
-        posture.AddToClassList("twp-tactic-hero__posture");
-        header.Add(posture);
-
-        var count = new Label($"{hero.Rules.Count} rules");
-        count.AddToClassList("twp-tactic-hero__count");
-        header.Add(count);
+        var role = new Label($"{hero.AnchorLabel} · {hero.RoleLabel}");
+        role.AddToClassList("twp-tactic-hero__role");
+        header.Add(role);
 
         block.Add(header);
 
-        var rulesContainer = new VisualElement();
-        rulesContainer.AddToClassList("twp-tactic-hero__rules");
-        foreach (var rule in hero.Rules)
+        // behavior — FormationLine + RangeDiscipline (BehaviorProfile 요약)
+        var behavior = new Label($"{hero.FormationLabel} · {hero.RangeLabel}");
+        behavior.AddToClassList("twp-tactic-hero__behavior");
+        block.Add(behavior);
+
+        // bias bars — RoleInstruction bias 3 float (0..1)
+        var biasContainer = new VisualElement();
+        biasContainer.AddToClassList("twp-tactic-hero__biases");
+        foreach (var bias in hero.Biases)
         {
-            rulesContainer.Add(BuildRuleRow(rule));
+            biasContainer.Add(BuildBiasRow(bias));
         }
-        block.Add(rulesContainer);
+        block.Add(biasContainer);
 
         return block;
     }
 
-    private static VisualElement BuildRuleRow(TacticalWorkshopRuleViewState rule)
+    private static VisualElement BuildBiasRow(TacticalWorkshopBiasViewState bias)
     {
         var row = new VisualElement();
-        row.AddToClassList("twp-tactic-rule");
+        row.AddToClassList("twp-tactic-bias");
 
-        var prio = new Label($"P{rule.Priority}");
-        prio.AddToClassList("twp-tactic-rule__priority");
-        row.Add(prio);
+        var label = new Label(bias.Label);
+        label.AddToClassList("twp-tactic-bias__label");
+        row.Add(label);
 
-        row.Add(BuildChainChip(rule.ConditionId, "cond"));
-        row.Add(BuildArrow());
-        row.Add(BuildChainChip(rule.ActionId, "act"));
-        row.Add(BuildArrow());
-        row.Add(BuildChainChip(rule.TargetId, "tgt"));
+        var bar = new VisualElement();
+        bar.AddToClassList("twp-tactic-bias__bar");
+        var fill = new VisualElement();
+        fill.AddToClassList("twp-tactic-bias__fill");
+        fill.style.width = new StyleLength(new Length(Mathf.Clamp01(bias.Value) * 100f, LengthUnit.Percent));
+        bar.Add(fill);
+        row.Add(bar);
+
+        var value = new Label(Mathf.RoundToInt(Mathf.Clamp01(bias.Value) * 100f).ToString());
+        value.AddToClassList("twp-tactic-bias__value");
+        row.Add(value);
 
         return row;
-    }
-
-    private static VisualElement BuildChainChip(string label, string kind)
-    {
-        var chip = new VisualElement();
-        chip.AddToClassList("twp-tactic-rule__chip");
-        chip.AddToClassList($"twp-tactic-rule__chip--{kind}");
-        var lbl = new Label(label);
-        lbl.AddToClassList("twp-tactic-rule__chip-label");
-        chip.Add(lbl);
-        return chip;
-    }
-
-    private static VisualElement BuildArrow()
-    {
-        var arrow = new VisualElement();
-        arrow.AddToClassList("twp-tactic-rule__arrow");
-        var lbl = new Label("→");
-        lbl.AddToClassList("twp-tactic-rule__arrow-label");
-        arrow.Add(lbl);
-        return arrow;
     }
 
     private static string AnchorPositionClass(string anchorId) => anchorId switch
@@ -262,9 +254,9 @@ public sealed class TacticalWorkshopView
 /// <summary>
 /// View → Presenter event interface. View가 Presenter 구현 직접 참조 안 하도록 분리.
 /// Editor Bootstrap이 dev tool로 사용 시 null 또는 stub로 inject 가능.
+/// anchor pad는 read-only reference라 anchor 액션 없음 — posture만 편집 가능 (audit §2.2).
 /// </summary>
 public interface ITacticalWorkshopActions
 {
     void OnPostureSelected(string postureId);
-    void OnAnchorClicked(string anchorId);
 }

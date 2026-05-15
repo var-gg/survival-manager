@@ -120,48 +120,49 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
 
     private IReadOnlyList<TacticalWorkshopHeroTacticViewState> BuildMockTactics()
     {
-        // 4 deploy hero × N rule per hero. pindoc V1 wiki-combat-posture-tactic-v1 condition/action/target enum.
+        // 4 deploy hero × runtime 실재 요약 — RoleInstruction(anchor/role/bias 3 float) +
+        // BehaviorProfile(formation/range). 가짜 condition→action→target RuleSet 폐기 (audit §4.1 P1-1).
         return new[]
         {
             new TacticalWorkshopHeroTacticViewState(
-                HeroId: "warden",
-                DisplayName: "Iron Warden",
-                PostureLabel: "전열 사수",
-                Rules: new[]
+                HeroId: "warden", DisplayName: "Iron Warden",
+                AnchorLabel: "전열 상단", RoleLabel: "전열 수호",
+                FormationLabel: "전열", RangeLabel: "근접 고수",
+                Biases: new[]
                 {
-                    new TacticalWorkshopRuleViewState(1, "SelfHpBelow",  "ActiveSkill", "Self"),
-                    new TacticalWorkshopRuleViewState(2, "EnemyInRange", "BasicAttack", "FirstEnemyInRange"),
-                    new TacticalWorkshopRuleViewState(3, "Fallback",     "WaitDefend",  "Self"),
+                    new TacticalWorkshopBiasViewState("캐리 보호", 0.72f),
+                    new TacticalWorkshopBiasViewState("후열 압박", 0.10f),
+                    new TacticalWorkshopBiasViewState("후퇴", 0.15f),
                 }),
             new TacticalWorkshopHeroTacticViewState(
-                HeroId: "slayer",
-                DisplayName: "Oath Slayer",
-                PostureLabel: "표준 전진",
-                Rules: new[]
+                HeroId: "slayer", DisplayName: "Oath Slayer",
+                AnchorLabel: "전열 중앙", RoleLabel: "결투 돌격",
+                FormationLabel: "전열", RangeLabel: "거리 좁히기",
+                Biases: new[]
                 {
-                    new TacticalWorkshopRuleViewState(1, "EnemyExposed", "ActiveSkill", "MostExposedEnemy"),
-                    new TacticalWorkshopRuleViewState(2, "EnemyInRange", "BasicAttack", "FirstEnemyInRange"),
-                    new TacticalWorkshopRuleViewState(3, "Fallback",     "WaitDefend",  "Self"),
+                    new TacticalWorkshopBiasViewState("캐리 보호", 0.18f),
+                    new TacticalWorkshopBiasViewState("후열 압박", 0.65f),
+                    new TacticalWorkshopBiasViewState("후퇴", 0.12f),
                 }),
             new TacticalWorkshopHeroTacticViewState(
-                HeroId: "hunter",
-                DisplayName: "Longshot Hunter",
-                PostureLabel: "표준 전진",
-                Rules: new[]
+                HeroId: "hunter", DisplayName: "Longshot Hunter",
+                AnchorLabel: "후열 중앙", RoleLabel: "원거리 사격",
+                FormationLabel: "후열", RangeLabel: "밴드 유지",
+                Biases: new[]
                 {
-                    new TacticalWorkshopRuleViewState(1, "LowestHpEnemy", "ActiveSkill", "LowestHpEnemy"),
-                    new TacticalWorkshopRuleViewState(2, "EnemyInRange",  "BasicAttack", "FirstEnemyInRange"),
-                    new TacticalWorkshopRuleViewState(3, "Fallback",      "WaitDefend",  "Self"),
+                    new TacticalWorkshopBiasViewState("캐리 보호", 0.30f),
+                    new TacticalWorkshopBiasViewState("후열 압박", 0.48f),
+                    new TacticalWorkshopBiasViewState("후퇴", 0.52f),
                 }),
             new TacticalWorkshopHeroTacticViewState(
-                HeroId: "priest",
-                DisplayName: "Dawn Priest",
-                PostureLabel: "캐리 보호",
-                Rules: new[]
+                HeroId: "priest", DisplayName: "Dawn Priest",
+                AnchorLabel: "후열 하단", RoleLabel: "치유 지원",
+                FormationLabel: "후열", RangeLabel: "밴드 유지",
+                Biases: new[]
                 {
-                    new TacticalWorkshopRuleViewState(1, "AllyHpBelow",  "ActiveSkill", "LowestHpAlly"),
-                    new TacticalWorkshopRuleViewState(2, "EnemyInRange", "BasicAttack", "NearestEnemy"),
-                    new TacticalWorkshopRuleViewState(3, "Fallback",     "WaitDefend",  "Self"),
+                    new TacticalWorkshopBiasViewState("캐리 보호", 0.86f),
+                    new TacticalWorkshopBiasViewState("후열 압박", 0.05f),
+                    new TacticalWorkshopBiasViewState("후퇴", 0.58f),
                 }),
         };
     }

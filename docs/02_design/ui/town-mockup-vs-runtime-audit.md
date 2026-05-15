@@ -354,6 +354,14 @@ row가 아니라 column이기 때문.
 | **P1-3** | Inventory | sell API / affix roll / 통화 범위 | sell 정책, roll 저장 위치 |
 | **P2** | Theater / Settings | 백킹 모델 자체 부재 — 모델 신설 선행 | `NarrativeProgressRecord` / `SettingProfile` 정의 |
 
+**P1 선행 확인 결과 (2026-05-14)** — 위 표의 "선행 결정/확인" 해소:
+
+- **affix roll 저장**: 미저장. `InventoryItemRecord` = `ItemInstanceId` + `ItemBaseId` + `AffixIds`(affix **definition id** 리스트) + `EquippedHeroId`. instance 확정 roll 값 필드 없음 → affix row는 affix 이름(`AffixDefinition.NameKey`) + `ValueMin~ValueMax` **범위** 표기. 가짜 rolled value(`+256`) 폐기. P1-2 / P1-3 공통.
+- **sell API**: 부재. `GameSessionState`에 sell 메서드 없음 (`EquipItem`/`UnequipItem`/`RefitItem`만 존재) → Inventory의 sell 액션 제거. sell API 신설은 별도 task.
+- **anchor 편집 경계**: §2.2 결정대로 TW anchor pad는 **read-only**. `AssignHeroToAnchor`/`CycleDeploymentAssignment` edit API는 존재하나 SquadBuilder 책임 영역.
+- **통화 범위**: `CurrencyRecord` 8종 존재 (Gold / Echo / TraitReroll / TraitLock / TraitPurge / EmberDust / EchoCrystal / BossSigil). V1 Inventory는 활성 경제인 **Gold / Echo 2종만** 노출 (나머지 6종은 trait/craft 시스템 미surface).
+- **per-unit tactic**: `RoleInstructionDefinition`(`Anchor` + `RoleTag` + `ProtectCarryBias`/`BacklinePressureBias`/`RetreatBias` 3 float) + `BehaviorProfileDefinition`(튜닝 float 다발). condition→action→target rule chain 모델 없음 → TW per-unit 블록을 anchor/role/bias 요약으로 재정의 (가짜 rule chip 폐기).
+
 **프레임 구조 (별건, 병행 가능)**: 풀패널 `panel_modal_frame_9slice.png` 9-slice → `ornament-corner-vine.svg` 4코너 + 엣지 trim + mood-color 중앙 **합성 구조**로 전환. 해상도 독립 + ceremony 네이비 mood 복원 (Fix 5 땜빵 불필요해짐).
 
 ## 5. 본 audit이 닫지 않는 것

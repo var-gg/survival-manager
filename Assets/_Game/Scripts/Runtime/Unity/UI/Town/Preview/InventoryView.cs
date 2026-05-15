@@ -154,11 +154,11 @@ public sealed class InventoryView
             row.AddToClassList("inv-detail__affix-row");
             row.AddToClassList($"inv-detail__affix-row--{affix.GroupKey}");
 
-            var labelEl = new Label(affix.Label);
-            labelEl.AddToClassList("inv-detail__affix-label");
-            row.Add(labelEl);
+            var nameEl = new Label(affix.Name);
+            nameEl.AddToClassList("inv-detail__affix-name");
+            row.Add(nameEl);
 
-            var value = new Label(affix.Value);
+            var value = new Label(affix.ValueRange);
             value.AddToClassList("inv-detail__affix-value");
             row.Add(value);
 
@@ -167,12 +167,14 @@ public sealed class InventoryView
     }
 }
 
-/// <summary>View → Presenter event interface. V1 Inventory: category 선택, item 선택, equip/sell/compare 액션.</summary>
+/// <summary>
+/// View → Presenter event interface. V1 Inventory: category 선택, item 선택, equip/compare 액션.
+/// sell은 GameSessionState에 API가 없어 제거 (audit §4.1 P1-3 — sell API 신설은 별도 task).
+/// </summary>
 public interface IInventoryActions
 {
     void OnCategorySelected(string categoryKey);
     void OnItemSelected(string itemInstanceId);
     void OnEquipItem(string itemInstanceId);
-    void OnSellItem(string itemInstanceId);
     void OnCompareItem(string itemInstanceId);
 }
