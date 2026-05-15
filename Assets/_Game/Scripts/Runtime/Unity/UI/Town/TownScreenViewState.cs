@@ -18,6 +18,7 @@ public sealed record TownScreenViewState(
     HelpStripViewState Help,
     int RosterCap,
     IReadOnlyList<TownHeroCardViewState> Heroes,
+    string RecruitLabel,
     string ExpeditionLabel,
     string ExpeditionTooltip,
     string SaveLabel,

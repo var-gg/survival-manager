@@ -3,6 +3,7 @@ using SM.Meta;
 using SM.Unity.Narrative;
 using SM.Unity.UI;
 using SM.Unity.UI.Town;
+using SM.Unity.UI.Town.Preview;
 using UnityEngine;
 
 namespace SM.Unity
@@ -18,6 +19,7 @@ public sealed class TownScreenController : MonoBehaviour
     private ContentTextResolver _contentText = null!;
     private TownScreenPresenter? _presenter;
     private SquadBuilderPresenter? _squadBuilderPresenter;
+    private RecruitPresenter? _recruitPresenter;
 
     private void Start()
     {
@@ -86,6 +88,14 @@ public sealed class TownScreenController : MonoBehaviour
         _presenter = new TownScreenPresenter(_root, _localization, _contentText, view);
         _squadBuilderPresenter = new SquadBuilderPresenter(panelHost.Root, _root, _contentText);
         view.BindSquadBuilderOpen(_squadBuilderPresenter.Open);
+
+        // Recruit modal — Preview surface UXML/Presenter 재사용. sprite loader는 null fallback
+        // (production runtime은 Resources/Addressables 미설치 — sprite는 후속 task).
+        var recruitView = new RecruitView(panelHost.Root);
+        _recruitPresenter = new RecruitPresenter(_root, recruitView, _contentText);
+        _recruitPresenter.Initialize();
+        _recruitPresenter.Close();   // hub modal default closed
+        view.BindRecruitOpen(_recruitPresenter.Open);
         return true;
     }
 

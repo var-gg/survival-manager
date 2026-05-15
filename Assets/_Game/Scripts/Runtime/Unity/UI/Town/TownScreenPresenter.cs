@@ -173,6 +173,7 @@ public sealed class TownScreenPresenter
             Help: BuildHelpState(),
             RosterCap: MetaBalanceDefaults.TownRosterCap,
             Heroes: heroes,
+            RecruitLabel: Localize(GameLocalizationTables.UITown, "ui.town.action.recruit", "Recruit"),
             ExpeditionLabel: BuildExpeditionLabel(session),
             ExpeditionTooltip: BuildExpeditionTooltip(session),
             SaveLabel: Localize(GameLocalizationTables.UICommon, "ui.common.save", "Save"),

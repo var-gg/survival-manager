@@ -22,6 +22,7 @@ public sealed class TownScreenView
     private readonly Button _helpDismissButton;
     private readonly VisualElement _gridContainer;
     private readonly Button _squadBuilderButton;
+    private readonly Button _recruitButton;
     private readonly Button _expeditionButton;
     private readonly Button _saveButton;
     private readonly Button _loadButton;
@@ -44,6 +45,7 @@ public sealed class TownScreenView
         _helpDismissButton = Require<Button>(root, "HelpDismissButton");
         _gridContainer = Require<VisualElement>(root, "GridContainer");
         _squadBuilderButton = Require<Button>(root, "SquadBuilderButton");
+        _recruitButton = Require<Button>(root, "RecruitButton");
         _expeditionButton = Require<Button>(root, "ExpeditionButton");
         _saveButton = Require<Button>(root, "SaveButton");
         _loadButton = Require<Button>(root, "LoadButton");
@@ -70,6 +72,11 @@ public sealed class TownScreenView
         _squadBuilderButton.clicked += open;
     }
 
+    public void BindRecruitOpen(Action open)
+    {
+        _recruitButton.clicked += open;
+    }
+
     public void Render(TownScreenViewState state)
     {
         _eyebrowLabel.text = state.TitleEyebrow;
@@ -84,6 +91,7 @@ public sealed class TownScreenView
         _helpBodyLabel.text = state.Help.Body;
         _helpDismissButton.text = state.Help.DismissLabel;
 
+        _recruitButton.text = state.RecruitLabel;
         _expeditionButton.text = state.ExpeditionLabel;
         _expeditionButton.tooltip = state.ExpeditionTooltip;
         _saveButton.text = state.SaveLabel;
