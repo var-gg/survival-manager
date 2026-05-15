@@ -14,15 +14,38 @@ public sealed class RosterGridView
 {
     private readonly VisualElement _gridContainer;
     private readonly Label? _heroCountLabel;
-    private readonly VisualTreeAsset _heroCardTemplate;
+    private readonly VisualTreeAsset? _heroCardTemplate;
+    private readonly VisualElement? _modalRoot;
+    private readonly Button? _closeButton;
 
     private IRosterGridActions? _actions;
 
-    public RosterGridView(VisualElement root, VisualTreeAsset heroCardTemplate)
+    public void BindClose(Action close)
+    {
+        if (_closeButton == null || close == null) return;
+        _closeButton.clicked += close;
+    }
+
+    public void Open()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.Flex;
+        _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
+    }
+
+    public void Close()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.None;
+        _modalRoot.AddToClassList("sm-modal-anim--enter");
+    }
+
+    public RosterGridView(VisualElement root, VisualTreeAsset? heroCardTemplate)
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
-        _heroCardTemplate = heroCardTemplate
-            ?? throw new ArgumentNullException(nameof(heroCardTemplate));
+        _heroCardTemplate = heroCardTemplate;   // production hub modal은 null 허용 (heroCardTemplate은 후속 task)
+        _modalRoot = root.Q<VisualElement>("RosterGridPreviewRoot");
+        _closeButton = root.Q<Button>(className: "rgp-header__close");
         _gridContainer = root.Q<VisualElement>("GridContainer")
             ?? throw new ArgumentException("GridContainer 못 찾음");
         _heroCountLabel = root.Q<Label>("HeroCount");

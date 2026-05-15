@@ -27,19 +27,31 @@ public sealed class InventoryPresenter : IInventoryActions
     public InventoryPresenter(
         GameSessionRoot root,
         InventoryView view,
-        SpriteLoader currencySprite,
-        SpriteLoader affixSprite)
+        SpriteLoader? currencySprite = null,
+        SpriteLoader? affixSprite = null)
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _view = view ?? throw new ArgumentNullException(nameof(view));
-        _currencySprite = currencySprite ?? throw new ArgumentNullException(nameof(currencySprite));
-        _affixSprite = affixSprite ?? throw new ArgumentNullException(nameof(affixSprite));
+        _currencySprite = currencySprite ?? (_ => null);
+        _affixSprite = affixSprite ?? (_ => null);
     }
 
     public void Initialize()
     {
         _view.Bind(this);
+        _view.BindClose(Close);
         Refresh();
+    }
+
+    public void Open()
+    {
+        _view.Open();
+        Refresh();
+    }
+
+    public void Close()
+    {
+        _view.Close();
     }
 
     public void Refresh()
