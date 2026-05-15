@@ -16,7 +16,7 @@
 
             <ui:VisualElement class="pap-header">
                 <ui:Label class="pap-header__title" text="영구 증강 — PERMANENT" />
-                <ui:Button class="pap-header__close" text="X" />
+                <ui:Button class="pap-header__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
             </ui:VisualElement>
 
             <ui:VisualElement class="pap-columns">

@@ -198,9 +198,13 @@ public sealed class ContentTextResolver
 
     private string Localize(string table, string key, string fallback, string finalFallback)
     {
-        return _localization.LocalizePlayerFacingContent(
-            table,
-            key,
-            string.IsNullOrWhiteSpace(fallback) ? finalFallback : fallback);
+        var safeFallback = string.IsNullOrWhiteSpace(fallback) ? finalFallback : fallback;
+        var result = _localization.LocalizePlayerFacingContent(table, key, safeFallback);
+        // Localization init 미완료 또는 key 미정의 시 raw key (예 "content.archetype.warden.name") 반환 케이스 방어.
+        if (string.IsNullOrEmpty(result) || result == key || result.StartsWith("content.", System.StringComparison.Ordinal))
+        {
+            return safeFallback;
+        }
+        return result;
     }
 }

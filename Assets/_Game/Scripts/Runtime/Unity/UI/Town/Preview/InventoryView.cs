@@ -52,7 +52,7 @@ public sealed class InventoryView
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
         _modalRoot = root.Q<VisualElement>("InvRoot");
-        _closeButton = root.Q<Button>(className: "inv-header__close");   // UXML에 없으면 null OK
+        _closeButton = root.Q<Button>(className: "inv-currency__close");   // UXML currency header에 X 버튼
         _goldIcon = root.Q<VisualElement>("GoldIcon")
             ?? throw new ArgumentException("GoldIcon 못 찾음");
         _echoIcon = root.Q<VisualElement>("EchoIcon")

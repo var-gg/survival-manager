@@ -18,7 +18,7 @@
 
             <ui:VisualElement class="erp-header">
                 <ui:Label class="erp-header__title" text="장비 — REFIT" />
-                <ui:Button class="erp-header__close" text="X" />
+                <ui:Button class="erp-header__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
             </ui:VisualElement>
 
             <ui:VisualElement class="erp-columns">
