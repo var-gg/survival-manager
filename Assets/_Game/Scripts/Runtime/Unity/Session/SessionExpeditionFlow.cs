@@ -280,6 +280,26 @@ public sealed partial class GameSessionState
             return true;
         }
 
+        internal bool SelectNodeFromAtlas(int nodeIndex)
+        {
+            _session.EnsureExpeditionNodes();
+            if (nodeIndex < 0 || nodeIndex >= _session._expeditionNodes.Count)
+            {
+                return false;
+            }
+
+            var current = GetCurrentExpeditionNode();
+            if (current != null
+                && current.Index == nodeIndex
+                && !_session._resolvedExpeditionNodeIds.Contains(current.Id))
+            {
+                _session.SelectedExpeditionNodeIndex = nodeIndex;
+                return true;
+            }
+
+            return SelectNextExpeditionNode(nodeIndex);
+        }
+
         internal ExpeditionNodeViewModel? GetCurrentExpeditionNode()
         {
             _session.EnsureExpeditionNodes();

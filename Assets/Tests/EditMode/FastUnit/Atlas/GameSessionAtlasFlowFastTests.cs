@@ -69,6 +69,37 @@ public sealed class GameSessionAtlasFlowFastTests
         Assert.That(second.Identity.SiteId, Is.EqualTo(session.SelectedCampaignSiteId));
     }
 
+    [Test]
+    public void AtlasSelectionHandoff_SelectsCurrentExpeditionNode()
+    {
+        var session = CreateBoundSession();
+        session.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        session.SelectAtlasNode(region, "hex_m2_1");
+        session.SelectAtlasNode(region, "hex_m1_2");
+
+        Assert.That(session.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        Assert.That(session.SelectedExpeditionNodeIndex, Is.EqualTo(0));
+        Assert.That(session.GetSelectedExpeditionNode()?.Index, Is.EqualTo(session.CurrentExpeditionNodeIndex));
+    }
+
+    [Test]
+    public void AtlasSelectionHandoff_UsesCurrentProgressAfterCurrentNodeAdvances()
+    {
+        var session = CreateBoundSession();
+        session.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+        session.SelectAtlasNode(region, "hex_m2_1");
+        session.SelectAtlasNode(region, "hex_m1_2");
+        Assert.That(session.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        Assert.That(session.ResolveSelectedExpeditionNode(), Is.True);
+
+        Assert.That(session.CurrentExpeditionNodeIndex, Is.EqualTo(1));
+        Assert.That(session.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        Assert.That(session.SelectedExpeditionNodeIndex, Is.EqualTo(1));
+    }
+
     private static GameSessionState CreateBoundSession()
     {
         var session = GameSessionTestFactory.Create(EditorFreeCombatContentFixture.CreateRunLoopLookup());

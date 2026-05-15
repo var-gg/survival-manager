@@ -292,6 +292,9 @@ public sealed partial class GameSessionState
     public void PlaceSelectedAtlasSigil(AtlasRegionDefinition region, string nodeId) =>
         _atlasFlow.PlaceSelectedSigil(region, nodeId);
 
+    public bool TryApplyAtlasSelectionToExpedition(AtlasRegionDefinition region) =>
+        _atlasFlow.TryApplySelectedNodeToExpedition(region);
+
     private bool TryBuildQuickBattleCompiledScenario(out CombatSandboxCompiledScenario scenario, out string error)
     {
         scenario = null!;

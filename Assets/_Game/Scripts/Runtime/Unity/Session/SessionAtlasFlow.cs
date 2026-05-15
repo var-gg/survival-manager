@@ -32,11 +32,11 @@ public sealed partial class GameSessionState
                 return _session._atlasSession!;
             }
 
-            _session._atlasSession = AtlasSessionService.CreateInitial(
+            _session._atlasSession = AlignToExpeditionProgress(AtlasSessionService.CreateInitial(
                 region,
                 identity,
                 resolvedMode,
-                AtlasGrayboxDataFactory.CreateDefaultPlacements(region));
+                AtlasGrayboxDataFactory.CreateDefaultPlacements(region)));
             return _session._atlasSession;
         }
 
@@ -69,9 +69,68 @@ public sealed partial class GameSessionState
                 nodeId);
         }
 
+        internal bool TryApplySelectedNodeToExpedition(AtlasRegionDefinition region)
+        {
+            if (region == null)
+            {
+                throw new ArgumentNullException(nameof(region));
+            }
+
+            var state = EnsureAtlasSession(region);
+            var candidate = ResolveCandidateForCurrentExpeditionNode(region, state);
+            if (candidate == null)
+            {
+                return false;
+            }
+
+            var node = region.Nodes.FirstOrDefault(item => string.Equals(item.NodeId, candidate.HexId, StringComparison.Ordinal));
+            return node is { SiteNodeIndex: >= 0 }
+                   && _session._expeditionFlow.SelectNodeFromAtlas(node.SiteNodeIndex);
+        }
+
         internal void Reset()
         {
             _session._atlasSession = null;
+        }
+
+        private AtlasStageCandidate? ResolveCandidateForCurrentExpeditionNode(
+            AtlasRegionDefinition region,
+            AtlasSessionState state)
+        {
+            foreach (var hexId in state.StageCandidatePath ?? Array.Empty<string>())
+            {
+                var candidate = AtlasSpineProgressionService.FindCandidate(region, hexId);
+                if (candidate != null && CandidateTargetsCurrentOrFutureNode(region, candidate))
+                {
+                    return candidate;
+                }
+            }
+
+            var selectedCandidate = AtlasSpineProgressionService.FindCandidate(region, state.SelectedNodeId);
+            if (selectedCandidate != null && CandidateTargetsCurrentOrFutureNode(region, selectedCandidate))
+            {
+                return selectedCandidate;
+            }
+
+            return AtlasSpineProgressionService.CurrentCandidates(region, state.SiteSpineIndex, state.BossResolved)
+                .FirstOrDefault(candidate => CandidateTargetsCurrentOrFutureNode(region, candidate));
+        }
+
+        private bool CandidateTargetsCurrentOrFutureNode(AtlasRegionDefinition region, AtlasStageCandidate candidate)
+        {
+            var node = region.Nodes.FirstOrDefault(item => string.Equals(item.NodeId, candidate.HexId, StringComparison.Ordinal));
+            return node is { SiteNodeIndex: >= 0 }
+                   && node.SiteNodeIndex >= _session.CurrentExpeditionNodeIndex;
+        }
+
+        private AtlasSessionState AlignToExpeditionProgress(AtlasSessionState state)
+        {
+            var currentNodeIndex = Math.Max(0, _session.CurrentExpeditionNodeIndex);
+            return state with
+            {
+                SiteSpineIndex = Math.Min(currentNodeIndex, AtlasSpineProgressionService.BossStageIndex),
+                BossResolved = currentNodeIndex >= AtlasSpineProgressionService.ExtractStageIndex - 1,
+            };
         }
 
         private bool CanReuseSession(
