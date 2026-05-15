@@ -48,6 +48,7 @@ public sealed class BattleP09AppearanceRosterFastTests
     [Test]
     public void CanonicalRoster_IncludesCampaignExtraActorsForP09Fallback()
     {
+        Assert.That(ExtraActorCharacterRegistry.CharacterIds, Is.EquivalentTo(CampaignExtraActorIds));
         Assert.That(BattleP09AppearanceRoster.CanonicalCharacterIds, Is.SupersetOf(CampaignExtraActorIds));
 
         foreach (var characterId in CampaignExtraActorIds)
@@ -57,6 +58,35 @@ public sealed class BattleP09AppearanceRosterFastTests
                 Is.True,
                 characterId);
             Assert.That(displayName, Is.Not.Empty, characterId);
+            Assert.That(ExtraActorCharacterRegistry.TryGetProfile(characterId, out var profile), Is.True, characterId);
+            Assert.That(profile.DisplayName, Is.EqualTo(displayName), characterId);
+        }
+    }
+
+    [Test]
+    public void ExtraActorRegistry_ProvidesCharacterAssetPlanningFields()
+    {
+        Assert.That(ExtraActorCharacterRegistry.Profiles.Count, Is.EqualTo(34));
+        Assert.That(
+            ExtraActorCharacterRegistry.Profiles.Select(profile => profile.ActorId),
+            Is.Unique);
+        Assert.That(
+            ExtraActorCharacterRegistry.Profiles.Count(profile => profile.ExposureTier == ExtraActorExposureTier.BossActor),
+            Is.EqualTo(8));
+
+        foreach (var profile in ExtraActorCharacterRegistry.Profiles)
+        {
+            Assert.That(profile.DisplayName, Is.Not.Empty, profile.ActorId);
+            Assert.That(profile.ChapterId, Does.StartWith("chapter_"), profile.ActorId);
+            Assert.That(profile.SiteId, Does.StartWith("site_"), profile.ActorId);
+            Assert.That(profile.StorySafety, Is.Not.Empty, profile.ActorId);
+            Assert.That(profile.FactionId, Does.StartWith("faction_"), profile.ActorId);
+            Assert.That(profile.CombatArchetypeId, Is.Not.Empty, profile.ActorId);
+            Assert.That(profile.P09BasePresetId, Is.Not.Empty, profile.ActorId);
+            Assert.That(profile.ModelArchetype, Is.Not.Empty, profile.ActorId);
+            Assert.That(profile.BarkSetId, Does.StartWith("bark_set_extra_"), profile.ActorId);
+            Assert.That(profile.DossierHook, Is.Not.Empty, profile.ActorId);
+            Assert.That(profile.GachaEligible, Is.True, profile.ActorId);
         }
     }
 
