@@ -7,6 +7,7 @@
     -->
     <ui:Template name="HeroPortraitCardTemplate" src="../../Foundation/Components/HeroPortraitCard.uxml" />
     <ui:Template name="TacticalWorkshopTemplate" src="../../TacticalWorkshop/TacticalWorkshop.uxml" />
+    <ui:Template name="SquadBuilderTemplate" src="SquadBuilder.uxml" />
     <ui:VisualElement name="TownScreenRoot" class="screen town-hub">
         <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop" picking-mode="Ignore" />
         <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim" picking-mode="Ignore" />
@@ -52,6 +53,7 @@
         <ui:VisualElement name="ToolbarBar" class="town-hub__toolbar">
             <ui:Label name="StatusLabel" class="town-hub__status" />
             <ui:VisualElement class="town-hub__toolbar-actions">
+                <ui:Button name="SquadBuilderButton" class="ui-button" text="Squad Builder" />
                 <ui:Button name="TacticalWorkshopButton" class="ui-button" text="Tactical Workshop" />
                 <ui:Button name="ExpeditionButton" class="ui-button ui-button--accent" />
                 <ui:Button name="SaveButton" class="ui-button" />
@@ -63,5 +65,6 @@
         <ui:Button name="QuickBattleButton" class="town-hub__quick-battle sm-cta sm-cta--hero sm-cta--utility" text="Quick Battle (Smoke)" />
 
         <ui:Instance template="TacticalWorkshopTemplate" />
+        <ui:Instance template="SquadBuilderTemplate" />
     </ui:VisualElement>
 </ui:UXML>

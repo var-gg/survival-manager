@@ -22,6 +22,7 @@ public sealed class TownScreenView
     private readonly Button _helpDismissButton;
     private readonly VisualElement _gridContainer;
     private readonly Button _tacticalWorkshopButton;
+    private readonly Button _squadBuilderButton;
     private readonly Button _expeditionButton;
     private readonly Button _saveButton;
     private readonly Button _loadButton;
@@ -44,6 +45,7 @@ public sealed class TownScreenView
         _helpDismissButton = Require<Button>(root, "HelpDismissButton");
         _gridContainer = Require<VisualElement>(root, "GridContainer");
         _tacticalWorkshopButton = Require<Button>(root, "TacticalWorkshopButton");
+        _squadBuilderButton = Require<Button>(root, "SquadBuilderButton");
         _expeditionButton = Require<Button>(root, "ExpeditionButton");
         _saveButton = Require<Button>(root, "SaveButton");
         _loadButton = Require<Button>(root, "LoadButton");
@@ -68,6 +70,11 @@ public sealed class TownScreenView
     public void BindTacticalWorkshopOpen(Action open)
     {
         _tacticalWorkshopButton.clicked += open;
+    }
+
+    public void BindSquadBuilderOpen(Action open)
+    {
+        _squadBuilderButton.clicked += open;
     }
 
     public void Render(TownScreenViewState state)
