@@ -14,10 +14,12 @@ namespace SM.Unity.UI.Town.Preview;
 public sealed class RecruitView
 {
     private readonly VisualElement _cardRow;
+    private readonly VisualElement? _modalRoot;
     private readonly Label? _scoutLabel;
     private readonly Label? _refreshLabel;
     private readonly Button? _scoutButton;
     private readonly Button? _refreshButton;
+    private readonly Button? _closeButton;
 
     private IRecruitActions? _actions;
 
@@ -26,10 +28,12 @@ public sealed class RecruitView
         if (root == null) throw new ArgumentNullException(nameof(root));
         _cardRow = root.Q<VisualElement>("CardRow")
             ?? throw new ArgumentException("CardRow 못 찾음");
+        _modalRoot = root.Q<VisualElement>("RcpRoot");   // hub modal toggle용 (preview에선 null OK)
         _scoutLabel = root.Q<Label>("ScoutLabel");
         _refreshLabel = root.Q<Label>("RefreshLabel");
         _scoutButton = root.Q<Button>(className: "rcp-actions__scout");
         _refreshButton = root.Q<Button>(className: "rcp-actions__refresh");
+        _closeButton = root.Q<Button>(className: "rcp-header__close");
     }
 
     public void Bind(IRecruitActions actions)
@@ -45,6 +49,29 @@ public sealed class RecruitView
             _refreshButton.clicked -= HandleRefreshClicked;
             _refreshButton.clicked += HandleRefreshClicked;
         }
+    }
+
+    /// <summary>hub modal opener가 close action 등록 (preview Bootstrap은 호출 안 함).</summary>
+    public void BindClose(Action close)
+    {
+        if (_closeButton == null || close == null) return;
+        _closeButton.clicked += close;
+    }
+
+    /// <summary>hub modal opener가 호출 — modal 표시 + sm-modal-anim 진입 transition.</summary>
+    public void Open()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.Flex;
+        _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
+    }
+
+    /// <summary>hub modal opener가 호출 — modal 숨김.</summary>
+    public void Close()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.None;
+        _modalRoot.AddToClassList("sm-modal-anim--enter");
     }
 
     public void Render(RecruitViewState state)

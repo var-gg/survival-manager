@@ -29,6 +29,8 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Not.Contain("TacticalWorkshopTemplate"));
         Assert.That(uxml, Does.Contain("SquadBuilderButton"));
         Assert.That(uxml, Does.Contain("SquadBuilderTemplate"));
+        Assert.That(uxml, Does.Contain("RecruitButton"));
+        Assert.That(uxml, Does.Contain("RecruitTemplate"));
     }
 
     [Test]

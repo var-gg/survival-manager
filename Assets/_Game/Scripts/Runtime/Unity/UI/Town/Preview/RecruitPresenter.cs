@@ -32,20 +32,33 @@ public sealed class RecruitPresenter : IRecruitActions
         GameSessionRoot root,
         RecruitView view,
         ContentTextResolver contentText,
-        SpriteLoader classSprite,
-        SpriteLoader portraitLoader)
+        SpriteLoader? classSprite = null,
+        SpriteLoader? portraitLoader = null)
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _view = view ?? throw new ArgumentNullException(nameof(view));
         _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
-        _classSprite = classSprite ?? throw new ArgumentNullException(nameof(classSprite));
-        _portraitLoader = portraitLoader ?? throw new ArgumentNullException(nameof(portraitLoader));
+        // production hub modal에서는 sprite loader 미주입 (Resources/Addressables 미설치) — null fallback.
+        _classSprite = classSprite ?? (_ => null);
+        _portraitLoader = portraitLoader ?? (_ => null);
     }
 
     public void Initialize()
     {
         _view.Bind(this);
+        _view.BindClose(Close);
         Refresh();
+    }
+
+    public void Open()
+    {
+        _view.Open();
+        Refresh();
+    }
+
+    public void Close()
+    {
+        _view.Close();
     }
 
     public void Refresh()

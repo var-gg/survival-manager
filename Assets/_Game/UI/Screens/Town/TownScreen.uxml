@@ -6,6 +6,7 @@
     -->
     <ui:Template name="HeroPortraitCardTemplate" src="../../Foundation/Components/HeroPortraitCard.uxml" />
     <ui:Template name="SquadBuilderTemplate" src="SquadBuilder.uxml" />
+    <ui:Template name="RecruitTemplate" src="Preview/RecruitPreview.uxml" />
     <ui:VisualElement name="TownScreenRoot" class="screen town-hub">
         <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop sm-backdrop" picking-mode="Ignore" />
         <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim sm-backdrop-dim" picking-mode="Ignore" />
@@ -59,6 +60,7 @@
             <ui:Label name="StatusLabel" class="town-hub__status" />
             <ui:VisualElement class="town-hub__toolbar-actions">
                 <ui:Button name="SquadBuilderButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="Squad Builder" />
+                <ui:Button name="RecruitButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="Recruit" />
                 <ui:Button name="ExpeditionButton" class="ui-button sm-cta sm-cta--inline sm-cta--primary" />
                 <ui:Button name="SaveButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
                 <ui:Button name="LoadButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
@@ -76,6 +78,9 @@
              tactic runtime 모델 부재(P1-1)로 hub에서 분리. redesign 후 별건 task로 재진입. -->
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
             <ui:Instance template="SquadBuilderTemplate" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore">
+            <ui:Instance template="RecruitTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
