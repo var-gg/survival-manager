@@ -1,162 +1,67 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!--
+      Town hub (V1) — RosterGrid를 default 진입 panel로 채택.
+      audit §2.1: 12 hero grid + filter chip + Quick Battle floating CTA + bottom toolbar.
+      옛 single-page dashboard (recruit/deploy/character sheet 등 30+ 액션 모두 한 화면)는 폐기.
+      후속 phase에서 Recruit/EquipmentRefit/PassiveBoard/Character sheet는 modal로 분리.
+    -->
+    <ui:Template name="HeroPortraitCardTemplate" src="../../Foundation/Components/HeroPortraitCard.uxml" />
     <ui:Template name="TacticalWorkshopTemplate" src="../../TacticalWorkshop/TacticalWorkshop.uxml" />
-    <ui:VisualElement name="TownScreenRoot" class="screen town-screen">
-        <ui:VisualElement name="TownBackdrop" class="town-screen__backdrop" picking-mode="Ignore" />
-        <ui:VisualElement name="TownBackdropDim" class="town-screen__backdrop-dim" picking-mode="Ignore" />
-        <ui:VisualElement class="screen__topbar">
-            <ui:Label name="TitleLabel" class="screen__title" />
-            <ui:VisualElement class="screen__toolbar">
-                <ui:VisualElement class="screen__locale">
-                    <ui:Label name="LocaleStatusLabel" class="screen__locale-status" />
-                    <ui:Button name="LocaleKoButton" class="ui-button" />
-                    <ui:Button name="LocaleEnButton" class="ui-button" />
-                </ui:VisualElement>
-                <ui:Button name="HelpButton" class="ui-button" />
-            </ui:VisualElement>
+    <ui:VisualElement name="TownScreenRoot" class="screen town-hub">
+        <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop" picking-mode="Ignore" />
+        <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement name="HelpStrip" class="town-hub__help">
+            <ui:Label name="HelpBodyLabel" class="town-hub__help-body" />
+            <ui:Button name="HelpDismissButton" class="ui-button town-hub__help-dismiss" />
         </ui:VisualElement>
 
-        <ui:VisualElement name="HelpStrip" class="panel panel--dense help-strip">
-            <ui:Label name="HelpBodyLabel" class="panel__text help-strip__body" />
-            <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss" />
-        </ui:VisualElement>
-
-        <ui:VisualElement class="screen__body">
-            <ui:VisualElement class="screen__column">
-                <ui:VisualElement class="panel">
-                    <ui:Label name="CampaignTitleLabel" class="panel__title" />
-                    <ui:Label name="CampaignSummaryLabel" class="panel__text" />
-                    <ui:VisualElement class="action-row">
-                        <ui:Button name="PrevChapterButton" class="ui-button" />
-                        <ui:Button name="NextChapterButton" class="ui-button" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="action-row">
-                        <ui:Button name="PrevSiteButton" class="ui-button" />
-                        <ui:Button name="NextSiteButton" class="ui-button" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-                <ui:VisualElement class="panel">
-                    <ui:Label name="RosterTitleLabel" class="panel__title" />
-                    <ui:Label name="RosterLabel" class="panel__text" />
-                </ui:VisualElement>
+        <ui:VisualElement name="HeaderBar" class="town-hub__header">
+            <ui:VisualElement class="town-hub__header-title">
+                <ui:Label name="TitleEyebrowLabel" class="town-hub__eyebrow" />
+                <ui:Label name="TitleLabel" class="town-hub__title" />
             </ui:VisualElement>
-
-            <ui:VisualElement class="screen__column" style="flex-grow: 1.4;">
-                <ui:VisualElement class="panel">
-                    <ui:Label name="EconomyTitleLabel" class="panel__title" />
-                    <ui:Label name="CurrencyLabel" class="panel__text" />
-                </ui:VisualElement>
-                <ui:VisualElement class="panel">
-                    <ui:Label name="BlueprintTitleLabel" class="panel__title" />
-                    <ui:Label name="BlueprintSummaryLabel" class="panel__text" />
-                </ui:VisualElement>
-                <ui:VisualElement class="panel">
-                    <ui:Label name="RecruitTitleLabel" class="panel__title" />
-                    <ui:Label name="RecruitSummaryLabel" class="panel__text" />
-                    <ui:VisualElement class="card-row" name="RecruitCardsRow">
-                        <ui:VisualElement class="card" name="RecruitCard1">
-                            <ui:Label name="RecruitCard1TitleLabel" class="card__title" />
-                            <ui:Label name="RecruitCard1BodyLabel" class="card__body" />
-                            <ui:Button name="RecruitCard1Button" class="ui-button" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="card" name="RecruitCard2">
-                            <ui:Label name="RecruitCard2TitleLabel" class="card__title" />
-                            <ui:Label name="RecruitCard2BodyLabel" class="card__body" />
-                            <ui:Button name="RecruitCard2Button" class="ui-button" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="card" name="RecruitCard3">
-                            <ui:Label name="RecruitCard3TitleLabel" class="card__title" />
-                            <ui:Label name="RecruitCard3BodyLabel" class="card__body" />
-                            <ui:Button name="RecruitCard3Button" class="ui-button" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="card" name="RecruitCard4">
-                            <ui:Label name="RecruitCard4TitleLabel" class="card__title" />
-                            <ui:Label name="RecruitCard4BodyLabel" class="card__body" />
-                            <ui:Button name="RecruitCard4Button" class="ui-button" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <ui:VisualElement class="screen__column">
-                <ui:VisualElement class="panel panel--dense">
-                    <ui:Label name="CharacterSheetOverviewTitleLabel" class="panel__title" />
-                    <ui:Label name="CharacterSheetOverviewBodyLabel" class="panel__text" />
-                </ui:VisualElement>
-                <ui:VisualElement class="panel panel--dense">
-                    <ui:Label name="CharacterSheetLoadoutTitleLabel" class="panel__title" />
-                    <ui:Label name="CharacterSheetLoadoutBodyLabel" class="panel__text" />
-                </ui:VisualElement>
-                <ui:VisualElement class="panel panel--dense">
-                    <ui:Label name="CharacterSheetPassivesTitleLabel" class="panel__title" />
-                    <ui:Label name="CharacterSheetPassivesBodyLabel" class="panel__text" />
-                </ui:VisualElement>
-                <ui:VisualElement class="panel panel--dense">
-                    <ui:Label name="CharacterSheetSynergyTitleLabel" class="panel__title" />
-                    <ui:Label name="CharacterSheetSynergyBodyLabel" class="panel__text" />
-                </ui:VisualElement>
-                <ui:VisualElement class="panel panel--dense">
-                    <ui:Label name="CharacterSheetProgressionTitleLabel" class="panel__title" />
-                    <ui:Label name="CharacterSheetProgressionBodyLabel" class="panel__text" />
-                </ui:VisualElement>
-                <ui:VisualElement class="panel">
-                    <ui:Label name="DeployTitleLabel" class="panel__title" />
-                    <ui:Label name="DeployPreviewLabel" class="panel__text" />
-                    <ui:VisualElement class="deploy-grid">
-                        <ui:Button name="DeployButton_FrontTop" class="ui-button deploy-button" />
-                        <ui:Button name="DeployButton_FrontCenter" class="ui-button deploy-button" />
-                        <ui:Button name="DeployButton_FrontBottom" class="ui-button deploy-button" />
-                        <ui:Button name="DeployButton_BackTop" class="ui-button deploy-button" />
-                        <ui:Button name="DeployButton_BackCenter" class="ui-button deploy-button" />
-                        <ui:Button name="DeployButton_BackBottom" class="ui-button deploy-button" />
-                    </ui:VisualElement>
-                    <ui:Button name="TeamPostureButton" class="ui-button" />
+            <ui:VisualElement class="town-hub__header-meta">
+                <ui:Label name="HeroCount" class="town-hub__count" />
+                <ui:VisualElement class="town-hub__header-tools">
+                    <ui:Label name="LocaleStatusLabel" class="town-hub__locale-status" />
+                    <ui:Button name="LocaleKoButton" class="ui-button town-hub__locale-button" />
+                    <ui:Button name="LocaleEnButton" class="ui-button town-hub__locale-button" />
+                    <ui:Button name="HelpButton" class="ui-button town-hub__help-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <ui:VisualElement class="panel panel--dense status-bar">
-            <ui:VisualElement class="action-group">
-                <ui:Label name="PrimaryActionsTitleLabel" class="action-group__title" />
-                <ui:VisualElement class="action-row">
-                    <ui:Button name="ExpeditionButton" class="ui-button ui-button--accent" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement class="action-group">
-                <ui:Label name="GameplayActionsTitleLabel" class="action-group__title" />
-                <ui:VisualElement class="action-row">
-                    <ui:Button name="TacticalWorkshopButton" class="ui-button ui-button--accent" text="Tactical Workshop" />
-                    <ui:Button name="RerollButton" class="ui-button" />
-                    <ui:Button name="CycleHeroButton" class="ui-button" />
-                    <ui:Button name="CycleItemButton" class="ui-button" />
-                    <ui:Button name="ScoutButton" class="ui-button" />
-                    <ui:Button name="RetrainActiveButton" class="ui-button" />
-                    <ui:Button name="RetrainPassiveButton" class="ui-button" />
-                    <ui:Button name="FullRetrainButton" class="ui-button" />
-                    <ui:Button name="DismissButton" class="ui-button ui-button--danger" />
-                    <ui:Button name="RefitButton" class="ui-button" />
-                    <ui:Button name="CycleBoardButton" class="ui-button" />
-                    <ui:Button name="CycleNodeButton" class="ui-button" />
-                    <ui:Button name="ToggleNodeButton" class="ui-button" />
-                    <ui:Button name="CyclePermanentButton" class="ui-button" />
-                    <ui:Button name="EquipPermanentButton" class="ui-button" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement class="action-group">
-                <ui:Label name="UtilityActionsTitleLabel" class="action-group__title" />
-                <ui:VisualElement class="action-row">
-                    <ui:Button name="SaveButton" class="ui-button" />
-                    <ui:Button name="LoadButton" class="ui-button" />
-                    <ui:Button name="ReturnToStartButton" class="ui-button ui-button--warning" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement name="DebugActionsGroup" class="action-group action-group--debug">
-                <ui:Label name="DebugActionsTitleLabel" class="action-group__title" />
-                <ui:VisualElement class="action-row">
-                    <ui:Button name="QuickBattleButton" class="ui-button ui-button--debug" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:Label name="StatusLabel" class="panel__text panel__text--muted" />
+        <ui:VisualElement name="FilterStrip" class="town-hub__filter-strip">
+            <ui:Button name="FilterChip_All" class="town-hub__filter-chip town-hub__filter-chip--selected" text="전체" />
+            <ui:VisualElement class="town-hub__filter-divider" picking-mode="Ignore" />
+            <ui:Button name="FilterChip_Sollarum" class="town-hub__filter-chip" text="솔라룸" />
+            <ui:Button name="FilterChip_Irisol" class="town-hub__filter-chip" text="이리솔 부족" />
+            <ui:Button name="FilterChip_Recall" class="town-hub__filter-chip" text="회상 결사" />
+            <ui:VisualElement class="town-hub__filter-divider" picking-mode="Ignore" />
+            <ui:Button name="FilterChip_Vanguard" class="town-hub__filter-chip" text="전위" />
+            <ui:Button name="FilterChip_Duelist" class="town-hub__filter-chip" text="결투가" />
+            <ui:Button name="FilterChip_Ranger" class="town-hub__filter-chip" text="궁수" />
+            <ui:Button name="FilterChip_Mystic" class="town-hub__filter-chip" text="신비" />
         </ui:VisualElement>
+
+        <ui:ScrollView name="GridScroll" class="town-hub__grid-scroll">
+            <ui:VisualElement name="GridContainer" class="town-hub__grid" />
+        </ui:ScrollView>
+
+        <ui:VisualElement name="ToolbarBar" class="town-hub__toolbar">
+            <ui:Label name="StatusLabel" class="town-hub__status" />
+            <ui:VisualElement class="town-hub__toolbar-actions">
+                <ui:Button name="TacticalWorkshopButton" class="ui-button" text="Tactical Workshop" />
+                <ui:Button name="ExpeditionButton" class="ui-button ui-button--accent" />
+                <ui:Button name="SaveButton" class="ui-button" />
+                <ui:Button name="LoadButton" class="ui-button" />
+                <ui:Button name="ReturnToStartButton" class="ui-button ui-button--warning" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:Button name="QuickBattleButton" class="town-hub__quick-battle sm-cta sm-cta--hero sm-cta--utility" text="Quick Battle (Smoke)" />
+
         <ui:Instance template="TacticalWorkshopTemplate" />
     </ui:VisualElement>
 </ui:UXML>

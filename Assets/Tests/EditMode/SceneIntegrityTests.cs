@@ -136,17 +136,8 @@ public sealed class SceneIntegrityTests
         AssertSceneDoesNotContainComponent<StandaloneInputModule>(scene);
     }
 
-    [Test]
-    public void TownScreenUxml_Declares_Expedition_And_Deployment_Controls()
-    {
-        var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/TownScreen.uxml");
-        Assert.That(uxml, Does.Not.Contain("RealmSummaryLabel"));
-        Assert.That(uxml, Does.Contain("ReturnToStartButton"));
-        Assert.That(uxml, Does.Contain("ExpeditionButton"));
-        Assert.That(uxml, Does.Contain("QuickBattleButton"));
-        Assert.That(uxml, Does.Contain("DeployButton_FrontTop"));
-        Assert.That(uxml, Does.Contain("TeamPostureButton"));
-    }
+    // TownScreenUxml_Declares_Hub_Layout_Controls는 SceneIntegrityTests.OneTimeSetUp(BattleRenderEnvironment 검증)이
+    // Battle scene 별건 issue로 깨질 때 같이 묶이지 않도록 TownScreenUxmlHubLayoutTests로 분리.
 
     [Test]
     public void BattleScreenUxml_Declares_Settings_And_Scrubber_Controls()

@@ -22,10 +22,7 @@ public sealed class TownScreenController : MonoBehaviour
 
     private void Start()
     {
-        if (!EnsureViewReady())
-        {
-            return;
-        }
+        if (!EnsureViewReady()) return;
 
         _localization.LocaleChanged += HandleLocaleChanged;
         _root.SessionState.SetCurrentScene(SceneNames.Town);
@@ -46,33 +43,11 @@ public sealed class TownScreenController : MonoBehaviour
         }
     }
 
-    public void RecruitOffer0() => _presenter?.RecruitOffer0();
-    public void RecruitOffer1() => _presenter?.RecruitOffer1();
-    public void RecruitOffer2() => _presenter?.RecruitOffer2();
-    public void RecruitOffer3() => _presenter?.RecruitOffer3();
-    public void RerollOffers() => _presenter?.RerollOffers();
     public void SaveProfile() => _presenter?.SaveProfile();
     public void LoadProfile() => _presenter?.LoadProfile();
     public void ReturnToStart() => _presenter?.ReturnToStart();
     public void OpenExpedition() => _presenter?.OpenExpedition();
     public void QuickBattle() => _presenter?.QuickBattle();
-    public void PreviousChapter() => _presenter?.PreviousChapter();
-    public void NextChapter() => _presenter?.NextChapter();
-    public void PreviousSite() => _presenter?.PreviousSite();
-    public void NextSite() => _presenter?.NextSite();
-    public void CycleHero() => _presenter?.CycleHero();
-    public void CycleItem() => _presenter?.CycleItem();
-    public void UseScout() => _presenter?.UseScout();
-    public void RetrainFlexActive() => _presenter?.RetrainFlexActive();
-    public void RetrainFlexPassive() => _presenter?.RetrainFlexPassive();
-    public void FullRetrain() => _presenter?.FullRetrain();
-    public void DismissSelectedHero() => _presenter?.DismissSelectedHero();
-    public void RefitSelectedItem() => _presenter?.RefitSelectedItem();
-    public void CycleBoard() => _presenter?.CycleBoard();
-    public void CyclePassiveNode() => _presenter?.CyclePassiveNode();
-    public void TogglePassiveNode() => _presenter?.TogglePassiveNode();
-    public void CyclePermanentCandidate() => _presenter?.CyclePermanentCandidate();
-    public void EquipSelectedPermanentAugment() => _presenter?.EquipSelectedPermanentAugment();
 
     public void EnsureRuntimeControls()
     {
@@ -88,14 +63,6 @@ public sealed class TownScreenController : MonoBehaviour
 
         EnsureViewReady();
     }
-
-    public void CycleFrontTop() => _presenter?.CycleFrontTop();
-    public void CycleFrontCenter() => _presenter?.CycleFrontCenter();
-    public void CycleFrontBottom() => _presenter?.CycleFrontBottom();
-    public void CycleBackTop() => _presenter?.CycleBackTop();
-    public void CycleBackCenter() => _presenter?.CycleBackCenter();
-    public void CycleBackBottom() => _presenter?.CycleBackBottom();
-    public void CycleTeamPosture() => _presenter?.CycleTeamPosture();
 
     private bool EnsureViewReady()
     {
