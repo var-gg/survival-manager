@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Content.Definitions;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -59,13 +60,13 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         _view.Render(BuildState());
     }
 
-    void IEquipmentRefitActions.OnAffixSelected(string affixKey)
+    void IEquipmentRefitActions.OnAffixSelected(string affixId)
     {
-        // affixKey는 affixId. selected item의 AffixIds에서 index 찾기.
+        // selected item의 AffixIds에서 index 찾기 (RefitItem은 affixSlotIndex를 받음).
         var item = ResolveSelectedItem();
         if (item != null)
         {
-            _selectedAffixIndex = item.AffixIds.FindIndex(id => string.Equals(id, affixKey, StringComparison.Ordinal));
+            _selectedAffixIndex = item.AffixIds.FindIndex(id => string.Equals(id, affixId, StringComparison.Ordinal));
         }
         Refresh();
     }
@@ -101,26 +102,31 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
     {
         var session = _root.SessionState;
         var inventory = session.Profile.Inventory;
+        var lookup = _root.CombatContentLookup;
 
-        // Pool — Profile.Inventory 전체. ItemBaseDefinition으로 weapon family / rarity 보강.
+        // Pool — Profile.Inventory 전체. ItemBaseDefinition으로 이름 / slot / rarity 보강.
         var pool = inventory
             .Select(item =>
             {
+                var slotKey = "weapon";
                 var rarityKey = "common";
-                if (_root.CombatContentLookup.TryGetItemDefinition(item.ItemBaseId, out var baseDef))
+                if (lookup.TryGetItemDefinition(item.ItemBaseId, out var baseDef))
                 {
+                    slotKey = baseDef.SlotType.ToString().ToLowerInvariant();
                     rarityKey = baseDef.RarityTier.ToString().ToLowerInvariant();
                 }
                 return new EquipmentRefitPoolRowViewState(
                     ItemInstanceId: item.ItemInstanceId,
-                    IconKey: item.ItemBaseId,
+                    Name: _contentText.GetItemName(item.ItemBaseId),
+                    SlotKey: slotKey,
                     IconSprite: _affixSprite(item.ItemBaseId),
-                    RarityKey: rarityKey);
+                    RarityKey: rarityKey,
+                    IsSelected: string.Equals(item.ItemInstanceId, _selectedItemInstanceId, StringComparison.Ordinal));
             })
             .ToList();
 
-        // Affix list — selected item의 AffixIds. V1 floor 규약: implicit 1 + prefix 2 + suffix 2.
-        // index 기반 group 추정 (0=implicit, 1~2=prefix, 3+=suffix). 정확한 flag은 Sprint 3 cont.
+        // Affix list — selected item의 AffixIds. group은 AffixDefinition.Tier에서 read (index 추정 폐기).
+        // 값은 instance 확정 roll 미저장 (AffixIds = definition id) → ValueMin~ValueMax 범위 표기.
         var selectedItem = ResolveSelectedItem();
         var affixes = new List<EquipmentRefitAffixRowViewState>();
         if (selectedItem != null)
@@ -128,20 +134,64 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             for (var i = 0; i < selectedItem.AffixIds.Count; i++)
             {
                 var affixId = selectedItem.AffixIds[i];
-                var group = i == 0 ? "implicit" : i <= 2 ? "prefix" : "suffix";
+                var group = "prefix";
+                var valueRange = "—";
+                if (lookup.TryGetAffixDefinition(affixId, out var affixDef))
+                {
+                    group = affixDef.Tier.ToString().ToLowerInvariant();
+                    valueRange = $"{affixDef.ValueMin:0.#} ~ {affixDef.ValueMax:0.#}";
+                }
                 affixes.Add(new EquipmentRefitAffixRowViewState(
+                    AffixId: affixId,
                     GroupKey: group,
-                    IconKey: affixId,
+                    Name: _contentText.GetAffixName(affixId),
+                    ValueRange: valueRange,
                     IconSprite: _affixSprite(affixId),
                     IsSelectedForReroll: i == _selectedAffixIndex));
             }
         }
 
+        // 좌측 컨텍스트 — 선택 item 정체성 + 장착 hero (InventoryItemRecord.EquippedHeroId 파생).
+        var selectedItemName = "—";
+        var selectedSlotLabel = "—";
+        var selectedRarityKey = "common";
+        var equippedHeroLabel = "미장착";
+        Texture2D? equippedHeroPortrait = null;
+        if (selectedItem != null)
+        {
+            selectedItemName = _contentText.GetItemName(selectedItem.ItemBaseId);
+            if (lookup.TryGetItemDefinition(selectedItem.ItemBaseId, out var baseDef))
+            {
+                selectedSlotLabel = SlotLabelKo(baseDef.SlotType);
+                selectedRarityKey = baseDef.RarityTier.ToString().ToLowerInvariant();
+            }
+            if (!string.IsNullOrEmpty(selectedItem.EquippedHeroId))
+            {
+                var hero = session.Profile.Heroes
+                    .FirstOrDefault(h => string.Equals(h.HeroId, selectedItem.EquippedHeroId, StringComparison.Ordinal));
+                var heroName = !string.IsNullOrEmpty(hero?.Name) ? hero!.Name : selectedItem.EquippedHeroId;
+                equippedHeroLabel = $"장착: {heroName}";
+                equippedHeroPortrait = _portraitLoader(selectedItem.EquippedHeroId);
+            }
+        }
+
         return new EquipmentRefitViewState(
-            StandeePortrait: null,  // TODO Sprint 3 cont: selected hero portrait
+            SelectedItemName: selectedItemName,
+            SelectedItemSlotLabel: selectedSlotLabel,
+            SelectedItemRarityKey: selectedRarityKey,
+            EquippedHeroLabel: equippedHeroLabel,
+            EquippedHeroPortrait: equippedHeroPortrait,
             EchoSprite: _currencySprite("echo"),
             RefitCost: RefitEchoCost,
             Affixes: affixes,
             Pool: pool);
     }
+
+    private static string SlotLabelKo(ItemSlotType slot) => slot switch
+    {
+        ItemSlotType.Weapon    => "무기",
+        ItemSlotType.Armor     => "방어구",
+        ItemSlotType.Accessory => "장신구",
+        _ => slot.ToString(),
+    };
 }

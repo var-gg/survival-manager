@@ -28,16 +28,39 @@
 
 .erp-columns { flex-direction: row; flex-grow: 1; padding: 18px; }
 .erp-col { margin-left: 8px; margin-right: 8px; flex-direction: column; }
-.erp-col--standee { flex-direction: row; width: 280px; }
+.erp-col--standee { flex-direction: column; width: 280px; }
 .erp-col--affix { flex-grow: 1; }
 .erp-col--pool { width: 340px; }
 
-/* Standee column */
+/* Standee column — 장착 hero standee + 3 slot (row), 그 아래 선택 item 컨텍스트 */
+.erp-standee-row { flex-direction: row; flex-grow: 1; }
 .erp-standee { width: 200px; background-color: rgba(245,234,208,0.06); border-left-width: 1px; border-right-width: 1px;
     border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgba(230,183,81,0.32);
     border-right-color: rgba(230,183,81,0.32); border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);
 }
 .erp-standee__portrait { flex-grow: 1; -unity-background-scale-mode: scale-to-fit; }
+
+/* 선택 item 컨텍스트 — item 이름·slot + 장착 hero (EquippedHeroId 파생) */
+.erp-item-context {
+    flex-direction: column;
+    margin-top: 12px;
+    padding: 10px 12px;
+    background-color: rgba(28,34,67,0.78);
+    border-left-width: 2px;
+    border-left-color: var(--sm-gold-300);
+}
+.erp-item-context__name {
+    color: var(--sm-gold-100);
+    font-size: 13px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+.erp-item-context__hero {
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    letter-spacing: 1px;
+    margin-top: 3px;
+}
 
 .erp-slot-stack { flex-direction: column; justify-content: space-around; padding-left: 12px; }
 .erp-slot {
@@ -85,9 +108,20 @@
     border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
 }
 .erp-affix-row__icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: 10px; }
-.erp-affix-row__glyph { flex-grow: 1; height: 8px; background-color: rgba(216,199,153,0.45); }
-.erp-affix-row__tier {
-    width: 32px; height: 8px; background-color: rgba(230,183,81,0.62); margin-left: 8px;
+/* affix 이름 — AffixDefinition.NameKey resolved */
+.erp-affix-row__name {
+    flex-grow: 1;
+    color: var(--sm-vellum);
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+/* 값 범위 — AffixDefinition.ValueMin~ValueMax (instance 확정 roll 미저장 → 범위) */
+.erp-affix-row__value {
+    color: var(--sm-gold-200);
+    font-size: 11px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-right;
+    margin-left: 8px;
 }
 
 /* CTA block */
@@ -120,9 +154,28 @@
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);
 }
+.erp-pool-row--selected {
+    background-color: rgba(38,45,84,0.92);
+    border-left-color: var(--sm-gold-200); border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
+}
 .erp-pool-row__weapon-icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: 10px;
     background-color: rgba(245,234,208,0.18); }
-.erp-pool-row__glyph { flex-grow: 1; height: 8px; background-color: rgba(216,199,153,0.45); }
+/* item 이름 — ItemBaseDefinition.NameKey resolved */
+.erp-pool-row__name {
+    flex-grow: 1;
+    color: var(--sm-vellum);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+/* slot 표기 — ItemBaseDefinition.SlotType (weapon/armor/accessory) */
+.erp-pool-row__slot {
+    color: var(--sm-ink-3);
+    font-size: 9px;
+    letter-spacing: 1px;
+    margin-left: 6px;
+    margin-right: 6px;
+}
 .erp-pool-row__gem { width: 12px; height: 12px; margin-left: 6px;
     border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;
 }

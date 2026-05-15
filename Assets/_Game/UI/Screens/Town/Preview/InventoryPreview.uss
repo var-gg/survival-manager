@@ -160,11 +160,14 @@
 .inv-detail__affix-row--prefix   { border-left-width: 2px; border-left-color: rgba(127, 163, 224, 0.78); }
 .inv-detail__affix-row--suffix   { border-left-width: 2px; border-left-color: rgba(166, 220, 154, 0.78); }
 
-.inv-detail__affix-label {
+/* affix 이름 — AffixDefinition.NameKey resolved */
+.inv-detail__affix-name {
     flex-grow: 1;
-    color: var(--sm-ink-2);
+    color: var(--sm-vellum);
     font-size: 11px;
+    -unity-font-style: bold;
 }
+/* 값 범위 — AffixDefinition.ValueMin~ValueMax (instance 확정 roll 미저장 → 범위) */
 .inv-detail__affix-value {
     color: var(--sm-gold-200);
     font-size: 11px;

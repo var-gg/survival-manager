@@ -61,13 +61,10 @@ public sealed class InventoryPresenter : IInventoryActions
 
     void IInventoryActions.OnEquipItem(string itemInstanceId)
     {
-        // TODO Sprint 2: SessionState.EquipItem(heroId, slotType, itemInstanceId) API 추가 후 wire.
+        // TODO Sprint 2: SessionState.EquipItem(heroId, itemInstanceId) — hero 타깃 선택 UI 필요.
     }
 
-    void IInventoryActions.OnSellItem(string itemInstanceId)
-    {
-        // TODO Sprint 2: SessionState.SellItem or dismiss API.
-    }
+    // OnSellItem 제거: GameSessionState에 sell API 없음 (audit §4.1 P1-3). sell API 신설은 별도 task.
 
     void IInventoryActions.OnCompareItem(string itemInstanceId)
     {

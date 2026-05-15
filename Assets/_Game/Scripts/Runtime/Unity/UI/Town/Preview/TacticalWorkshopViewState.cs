@@ -6,12 +6,15 @@ namespace SM.Unity.UI.Town.Preview;
 /// <summary>
 /// Tactical Workshop V1 surface ViewState — profile binding workflow의 Sprint 1.
 ///
-/// pindoc V1 wiki SoT:
-/// - 6 anchor (deployment-and-anchors.md): Front × 3 + Back × 3, 4 deploy.
+/// pindoc V1 wiki SoT + runtime 모델 정합 (audit §4.1 P1-1):
+/// - 6 anchor (deployment-and-anchors.md): Front × 3 + Back × 3, 4 deploy. anchor pad는
+///   **read-only reference** — anchor 편집은 SquadBuilder 책임 (audit §2.2).
 /// - 5 posture (wiki-combat-posture-tactic-v1): HoldLine / StandardAdvance / ProtectCarry / CollapseWeakSide / AllInBackline.
 /// - 7 synergy family (wiki-combat-synergy-v1): race 3 + class 4.
 /// - 8 threat lane (wiki-combat-counter-topology-v1): ArmorFrontline 등.
-/// - per-unit tactic은 V1 read-only RuleSet (N rules per hero).
+/// - per-unit tactic: runtime 실재는 `RoleInstructionDefinition`(Anchor + RoleTag + bias 3 float) +
+///   `BehaviorProfileDefinition`(FormationLine + RangeDiscipline + 튜닝 float). condition→action→target
+///   rule chain 모델은 runtime에 없음 — 가짜 RuleSet 폐기, anchor/role/bias 요약으로 재정의.
 ///
 /// 본 ViewState는 profile (GameSessionState.Profile) → View 변환의 중간 데이터.
 /// Texture2D는 caller가 pre-resolve (Editor: AssetDatabase, Runtime: Resources/Addressables).
@@ -46,18 +49,27 @@ public sealed record TacticalWorkshopThreatViewState(
     string AnswerState
 );
 
-public sealed record TacticalWorkshopRuleViewState(
-    int Priority,
-    string ConditionId,
-    string ActionId,
-    string TargetId
+/// <summary>
+/// RoleInstructionDefinition의 bias float 1개 (ProtectCarryBias / BacklinePressureBias / RetreatBias). 0..1.
+/// </summary>
+public sealed record TacticalWorkshopBiasViewState(
+    string Label,
+    float Value
 );
 
+/// <summary>
+/// per-unit "tactic" = runtime 실재 요약 — read-only display.
+/// `RoleInstructionDefinition`(Anchor + RoleTag + bias) + `BehaviorProfileDefinition`(Formation + Range).
+/// 가짜 condition→action→target RuleSet 폐기 (audit §4.1 P1-1 — runtime에 rule chain 모델 없음).
+/// </summary>
 public sealed record TacticalWorkshopHeroTacticViewState(
     string HeroId,
     string DisplayName,
-    string PostureLabel,
-    IReadOnlyList<TacticalWorkshopRuleViewState> Rules
+    string AnchorLabel,        // ← RoleInstructionDefinition.Anchor (배치 위치)
+    string RoleLabel,          // ← RoleInstructionDefinition.RoleTag (역할)
+    string FormationLabel,     // ← BehaviorProfileDefinition.FormationLine (전열/중열/후열)
+    string RangeLabel,         // ← BehaviorProfileDefinition.RangeDiscipline (거리 규율)
+    IReadOnlyList<TacticalWorkshopBiasViewState> Biases   // RoleInstruction bias 3 float
 );
 
 public sealed record TacticalWorkshopViewState(

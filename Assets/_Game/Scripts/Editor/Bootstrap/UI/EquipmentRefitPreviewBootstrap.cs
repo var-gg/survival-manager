@@ -50,51 +50,59 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
 
     private EquipmentRefitViewState BuildMockViewState()
     {
-        // 5 affix line — implicit 1 + prefix 2 + suffix 2
-        var affixRaw = new (string Icon, string Group)[]
+        // affix row — AffixDefinition.Tier 기준 group. 값은 instance 확정 roll 미저장 →
+        // AffixDefinition.ValueMin~ValueMax 범위 표기 (가짜 rolled value 아님 — audit §4.1 P1-2).
+        var affixRaw = new (string AffixId, string Group, string Name, string Range, string Icon, bool Selected)[]
         {
-            ("atk",         "implicit"),
-            ("crit",        "prefix"),
-            ("armor",       "prefix"),
-            ("speed",       "suffix"),
-            ("resist_phys", "suffix"),
+            ("affix_atk_implicit", "implicit", "기본 공격력",  "8 ~ 15",      "atk",         false),
+            ("affix_crit_chance",  "prefix",   "치명타 확률",  "4 ~ 9",       "crit",        true),
+            ("affix_armor_flat",   "prefix",   "방어도",        "12 ~ 30",     "armor",       false),
+            ("affix_atk_speed",    "suffix",   "공격 속도",     "0.05 ~ 0.15", "speed",       false),
+            ("affix_resist_phys",  "suffix",   "물리 저항",     "6 ~ 14",      "resist_phys", false),
         };
         var affixes = new List<EquipmentRefitAffixRowViewState>(affixRaw.Length);
-        for (var i = 0; i < affixRaw.Length; i++)
+        foreach (var a in affixRaw)
         {
-            var (icon, group) = affixRaw[i];
             affixes.Add(new EquipmentRefitAffixRowViewState(
-                GroupKey: group,
-                IconKey: icon,
-                IconSprite: LoadAffixSprite(icon),
-                IsSelectedForReroll: i == 1));  // mock: 2번째 affix가 reroll 대상
+                AffixId: a.AffixId,
+                GroupKey: a.Group,
+                Name: a.Name,
+                ValueRange: a.Range,
+                IconSprite: LoadAffixSprite(a.Icon),
+                IsSelectedForReroll: a.Selected));
         }
 
-        // 8 inventory pool item
-        var poolRaw = new (string Icon, string Rarity)[]
+        // 8 inventory pool item — ItemBaseDefinition 이름 / slot / rarity.
+        var poolRaw = new (string Name, string Slot, string Icon, string Rarity, bool Selected)[]
         {
-            ("atk", "epic"),
-            ("crit", "rare"),
-            ("armor", "rare"),
-            ("speed", "common"),
-            ("resist_phys", "rare"),
-            ("lifesteal", "epic"),
-            ("pierce", "common"),
-            ("block", "rare"),
+            ("강철 장검",   "weapon",    "atk",         "epic",   true),
+            ("수호 흉갑",   "armor",     "armor",       "rare",   false),
+            ("신속의 단검", "weapon",    "speed",       "rare",   false),
+            ("사냥꾼 활",   "weapon",    "crit",        "common", false),
+            ("마력 매개체", "accessory", "resist_phys", "rare",   false),
+            ("흡혈 부적",   "accessory", "lifesteal",   "epic",   false),
+            ("관통 창",     "weapon",    "pierce",      "common", false),
+            ("성벽 방패",   "armor",     "block",       "rare",   false),
         };
         var pool = new List<EquipmentRefitPoolRowViewState>(poolRaw.Length);
         for (var i = 0; i < poolRaw.Length; i++)
         {
-            var (icon, rarity) = poolRaw[i];
+            var p = poolRaw[i];
             pool.Add(new EquipmentRefitPoolRowViewState(
                 ItemInstanceId: $"mock_pool_{i:D2}",
-                IconKey: icon,
-                IconSprite: LoadAffixSprite(icon),
-                RarityKey: rarity));
+                Name: p.Name,
+                SlotKey: p.Slot,
+                IconSprite: LoadAffixSprite(p.Icon),
+                RarityKey: p.Rarity,
+                IsSelected: p.Selected));
         }
 
         return new EquipmentRefitViewState(
-            StandeePortrait: AssetDatabase.LoadAssetAtPath<Texture2D>(PortraitPath),
+            SelectedItemName: "강철 장검",
+            SelectedItemSlotLabel: "무기",
+            SelectedItemRarityKey: "epic",
+            EquippedHeroLabel: "장착: Dawn Priest",
+            EquippedHeroPortrait: AssetDatabase.LoadAssetAtPath<Texture2D>(PortraitPath),
             EchoSprite: AssetDatabase.LoadAssetAtPath<Texture2D>(EchoIconPath),
             RefitCost: EquipmentRefitPresenter.RefitEchoCost,
             Affixes: affixes,

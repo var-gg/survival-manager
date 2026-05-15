@@ -68,15 +68,8 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
         Refresh();
     }
 
-    void ITacticalWorkshopActions.OnAnchorClicked(string anchorId)
-    {
-        if (!Enum.TryParse<DeploymentAnchorId>(anchorId, out var anchor))
-        {
-            return;
-        }
-        _root.SessionState.CycleDeploymentAssignment(anchor);
-        Refresh();
-    }
+    // anchor pad는 read-only reference — anchor 편집은 SquadBuilder 책임 (audit §2.2).
+    // OnAnchorClicked 액션 제거: CycleDeploymentAssignment edit는 SquadBuilder surface로 이관.
 
     // === ViewState builder ===
 
@@ -154,7 +147,9 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
 
     private IReadOnlyList<TacticalWorkshopHeroTacticViewState> BuildTactics(GameSessionState session)
     {
-        // Sprint 2: deployed hero × RoleInstructionDefinition.RuleSet 매핑.
+        // Sprint 2: deployed hero × archetype의 RoleInstruction(Anchor/RoleTag/bias 3 float) +
+        // BehaviorProfile(FormationLine/RangeDiscipline) 매핑. condition→action→target rule chain은
+        // runtime 모델에 없음 (audit §4.1 P1-1) — 가짜 RuleSet 대신 실재 요약으로 빌드.
         return Array.Empty<TacticalWorkshopHeroTacticViewState>();
     }
 

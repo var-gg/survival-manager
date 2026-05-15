@@ -1,8 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <!--
-      Equipment / Refit modal V1 preview
+      Equipment / Refit modal V1 preview — item-centric refit (audit §4.1 P1-2)
       SoT: pindoc://town-ui-ux-시안-갤러리-v1 (2)
-      3-section: 좌측 standee + 3 hex slot / 중앙 5 affix list + Echo CTA / 우측 8 inventory pool
+      3-section: 좌측 장착 hero + 3 slot + 선택 item 컨텍스트 / 중앙 affix list (이름+값 범위) + Echo CTA / 우측 inventory pool
     -->
     <Style src="EquipmentRefitPreview.uss" />
     <ui:VisualElement name="ErpRoot" class="erp-root">
@@ -22,15 +22,21 @@
             </ui:VisualElement>
 
             <ui:VisualElement class="erp-columns">
-                <!-- Left: standee + 3 hex slot -->
+                <!-- Left: 장착 hero standee + 3 slot + 선택 item 컨텍스트 -->
                 <ui:VisualElement class="erp-col erp-col--standee">
-                    <ui:VisualElement class="erp-standee">
-                        <ui:VisualElement name="StandeePortrait" class="erp-standee__portrait" picking-mode="Ignore" />
+                    <ui:VisualElement class="erp-standee-row">
+                        <ui:VisualElement class="erp-standee">
+                            <ui:VisualElement name="StandeePortrait" class="erp-standee__portrait" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="erp-slot-stack">
+                            <ui:VisualElement class="erp-slot erp-slot--weapon" picking-mode="Ignore" />
+                            <ui:VisualElement class="erp-slot erp-slot--armor" picking-mode="Ignore" />
+                            <ui:VisualElement class="erp-slot erp-slot--accessory" picking-mode="Ignore" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement class="erp-slot-stack">
-                        <ui:VisualElement class="erp-slot erp-slot--weapon" picking-mode="Ignore" />
-                        <ui:VisualElement class="erp-slot erp-slot--armor" picking-mode="Ignore" />
-                        <ui:VisualElement class="erp-slot erp-slot--accessory" picking-mode="Ignore" />
+                    <ui:VisualElement class="erp-item-context">
+                        <ui:Label name="SelectedItemName" class="erp-item-context__name" text="—" />
+                        <ui:Label name="EquippedHeroLabel" class="erp-item-context__hero" text="—" />
                     </ui:VisualElement>
                 </ui:VisualElement>
 
