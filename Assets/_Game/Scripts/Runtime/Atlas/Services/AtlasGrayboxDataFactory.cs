@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SM.Atlas.Model;
 
 namespace SM.Atlas.Services;
@@ -151,5 +152,28 @@ public static class AtlasGrayboxDataFactory
             roster,
             stageCandidates,
             anchorSlots);
+    }
+
+    public static IReadOnlyList<AtlasPlacedSigil> CreateDefaultPlacements(AtlasRegionDefinition region)
+    {
+        if (region == null || region.SigilPool.Count < 2 || region.SigilAnchorSlots.Count < 2)
+        {
+            return Array.Empty<AtlasPlacedSigil>();
+        }
+
+        return new[]
+        {
+            CreateDefaultPlacement(region, "sigil_beast_spoils", "anchor_middle_pressure"),
+            CreateDefaultPlacement(region, "sigil_flank_pressure", "anchor_inner_evidence"),
+        }.Where(placement => !string.IsNullOrWhiteSpace(placement.SigilId)).ToArray();
+    }
+
+    private static AtlasPlacedSigil CreateDefaultPlacement(AtlasRegionDefinition region, string sigilId, string anchorId)
+    {
+        var slot = region.SigilAnchorSlots.FirstOrDefault(candidate => candidate.AnchorId == anchorId);
+        var node = slot == null ? null : region.Nodes.FirstOrDefault(candidate => candidate.NodeId == slot.HexId);
+        return node == null
+            ? new AtlasPlacedSigil(string.Empty, default, string.Empty)
+            : new AtlasPlacedSigil(sigilId, node.Hex, anchorId);
     }
 }

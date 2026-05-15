@@ -44,6 +44,7 @@ public sealed partial class GameSessionState
             _session._hasPendingRewardSettlement = false;
             _session._quickBattleSeedOverride = null;
             _session._compiledQuickBattleScenario = null;
+            _session.ResetAtlasSession();
             _session._runtimeTelemetryEvents.Clear();
             _session._resolvedExpeditionNodeIds.Clear();
             _session.EnsureBattleDeployReady();
@@ -94,6 +95,7 @@ public sealed partial class GameSessionState
             }
 
             _session._compiledQuickBattleScenario = null;
+            _session.ResetAtlasSession();
             _session.QuickBattleConfig = quickBattleConfig;
             _session.QuickBattleLaneKind = laneKind;
             _session.EnsureBattleDeployReady();
@@ -140,6 +142,7 @@ public sealed partial class GameSessionState
             _session._pendingRewardChoices.Clear();
             _session._quickBattleSeedOverride = null;
             _session._compiledQuickBattleScenario = null;
+            _session.ResetAtlasSession();
             _session.ActiveRun = null;
             _session.SyncActiveRunRecord();
             _session.SyncExpeditionState();
@@ -355,6 +358,7 @@ public sealed partial class GameSessionState
             _session._hasPendingRewardSettlement = false;
             _session._pendingRewardChoices.Clear();
             _session.ActiveRun = null;
+            _session.ResetAtlasSession();
             _session.SyncActiveRunRecord();
         }
 
@@ -641,6 +645,7 @@ public sealed partial class GameSessionState
         _lastAutomaticLootBundle = null;
         _hasPendingRewardSettlement = false;
         _pendingRewardChoices.Clear();
+        ResetAtlasSession();
         _resolvedExpeditionNodeIds.Clear();
         EnsureExpeditionNodes(reset: true);
         AutoSelectNextExpeditionNode();
@@ -775,6 +780,7 @@ public sealed partial class GameSessionState
             HasActiveExpeditionRun = false;
             QuickBattleLaneKind = IsQuickBattleSmokeActive ? QuickBattleLaneKind : CombatSandboxLaneKind.None;
             ActiveRun = null;
+            ResetAtlasSession();
             SyncActiveRunRecord();
             return;
         }

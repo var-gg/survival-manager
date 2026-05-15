@@ -20,11 +20,23 @@ public sealed class AtlasScreenPresenter
             _region,
             AtlasSessionIdentity.GrayboxDefault,
             traversalMode,
-            BuildDefaultPlacements(_region));
+            AtlasGrayboxDataFactory.CreateDefaultPlacements(_region));
+    }
+
+    public AtlasScreenPresenter(AtlasRegionDefinition region, AtlasSessionState session)
+    {
+        _region = region ?? throw new ArgumentNullException(nameof(region));
+        _session = session ?? throw new ArgumentNullException(nameof(session));
     }
 
     public int SiteSpineIndex => _session.SiteSpineIndex;
     public bool BossResolved => _session.BossResolved;
+    public AtlasSessionState Session => _session;
+
+    public void SetSession(AtlasSessionState session)
+    {
+        _session = session ?? throw new ArgumentNullException(nameof(session));
+    }
 
     public void SelectSigil(string sigilId)
     {
@@ -68,27 +80,6 @@ public sealed class AtlasScreenPresenter
             BuildSpineStages(sessionResolution),
             BuildStageCandidates(sessionResolution),
             BuildPreview(preview, sessionResolution.SelectedNode, sessionResolution.SelectedStack, sessionResolution.StageCandidatePathHash));
-    }
-
-    private static IReadOnlyList<AtlasPlacedSigil> BuildDefaultPlacements(AtlasRegionDefinition region)
-    {
-        if (region.SigilPool.Count < 2 || region.SigilAnchorSlots.Count < 2)
-        {
-            return Array.Empty<AtlasPlacedSigil>();
-        }
-
-        return new[]
-        {
-            BuildDefaultPlacement(region, "sigil_beast_spoils", "anchor_middle_pressure"),
-            BuildDefaultPlacement(region, "sigil_flank_pressure", "anchor_inner_evidence"),
-        }.Where(placement => !string.IsNullOrWhiteSpace(placement.SigilId)).ToArray();
-    }
-
-    private static AtlasPlacedSigil BuildDefaultPlacement(AtlasRegionDefinition region, string sigilId, string anchorId)
-    {
-        var slot = region.SigilAnchorSlots.FirstOrDefault(candidate => candidate.AnchorId == anchorId);
-        var node = slot == null ? null : region.Nodes.FirstOrDefault(candidate => candidate.NodeId == slot.HexId);
-        return node == null ? new AtlasPlacedSigil(string.Empty, default, string.Empty) : new AtlasPlacedSigil(sigilId, node.Hex, anchorId);
     }
 
     private AtlasHexTileViewState BuildTile(AtlasRegionNode node, AtlasSessionResolution sessionResolution)

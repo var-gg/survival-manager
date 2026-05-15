@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Atlas.Model;
 using SM.Combat.Model;
 using SM.Content;
 using SM.Content.Definitions;
@@ -40,6 +41,7 @@ public sealed partial class GameSessionState
     private readonly SessionDeploymentFlow _deploymentFlow;
     private readonly SessionRecruitmentFlow _recruitmentFlow;
     private readonly SessionExpeditionFlow _expeditionFlow;
+    private readonly SessionAtlasFlow _atlasFlow;
     private readonly SessionRewardSettlementFlow _rewardSettlementFlow;
     private readonly LoadoutCompiler _loadoutCompiler = new();
     private readonly List<string> _expeditionSquadHeroIds = new();
@@ -57,6 +59,7 @@ public sealed partial class GameSessionState
     private RecruitPityState _recruitPityState = new();
     private DuplicateConversionResult? _lastDuplicateConversion;
     private CombatSandboxCompiledScenario? _compiledQuickBattleScenario;
+    private AtlasSessionState? _atlasSession;
 
     public SaveProfile Profile { get; private set; } = new();
     public ActiveRunState? ActiveRun { get; private set; }
@@ -64,6 +67,7 @@ public sealed partial class GameSessionState
     public StoryDirectorService StoryDirector { get; private set; }
     public RosterState Roster { get; private set; } = new();
     public ExpeditionState Expedition { get; private set; } = new();
+    public AtlasSessionState? AtlasSession => _atlasSession;
     public string CurrentSceneName { get; private set; } = SceneNames.Boot;
     public int PermanentAugmentSlotCount { get; private set; } = 1;
     public int CurrentExpeditionNodeIndex { get; private set; }
@@ -136,6 +140,7 @@ public sealed partial class GameSessionState
         _deploymentFlow = new SessionDeploymentFlow(this);
         _recruitmentFlow = new SessionRecruitmentFlow(this);
         _expeditionFlow = new SessionExpeditionFlow(this);
+        _atlasFlow = new SessionAtlasFlow(this);
         _rewardSettlementFlow = new SessionRewardSettlementFlow(this);
         StoryDirector = _narrativeRuntimeBootstrap.CreateStoryDirector(NarrativeProgressRecord.Empty);
     }
@@ -202,6 +207,7 @@ public sealed partial class GameSessionState
             _lastDuplicateConversion = null;
             _quickBattleSeedOverride = null;
             _compiledQuickBattleScenario = null;
+            _atlasSession = null;
             SelectedTeamPosture = TeamPostureType.StandardAdvance;
             SelectedTeamTacticId = string.Empty;
             _recruitOfferGeneration = 0;
@@ -270,6 +276,21 @@ public sealed partial class GameSessionState
     public void ReloadCombatSandboxConfig() => _expeditionFlow.ReloadCombatSandboxConfig();
 
     public void ReloadQuickBattleConfig() => _expeditionFlow.ReloadQuickBattleConfig();
+
+    public AtlasSessionState EnsureAtlasSession(AtlasRegionDefinition region, AtlasTraversalMode? traversalMode = null) =>
+        _atlasFlow.EnsureAtlasSession(region, traversalMode);
+
+    public AtlasSessionResolution ResolveAtlasSession(AtlasRegionDefinition region) =>
+        _atlasFlow.ResolveAtlasSession(region);
+
+    public void SelectAtlasSigil(AtlasRegionDefinition region, string sigilId) =>
+        _atlasFlow.SelectSigil(region, sigilId);
+
+    public void SelectAtlasNode(AtlasRegionDefinition region, string nodeId) =>
+        _atlasFlow.SelectNode(region, nodeId);
+
+    public void PlaceSelectedAtlasSigil(AtlasRegionDefinition region, string nodeId) =>
+        _atlasFlow.PlaceSelectedSigil(region, nodeId);
 
     private bool TryBuildQuickBattleCompiledScenario(out CombatSandboxCompiledScenario scenario, out string error)
     {
