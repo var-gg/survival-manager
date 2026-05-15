@@ -108,6 +108,26 @@ public sealed class CharacterAxisLocalizationTests
     }
 
     [Test]
+    public void ContentTextResolver_UsesDefinedP09LabelForExtraActorCharacter()
+    {
+        var lookup = new FakeCombatContentLookup();
+        var go = new GameObject("P09ExtraLabelResolver");
+        try
+        {
+            var localization = go.AddComponent<GameLocalizationController>();
+            var resolver = new ContentTextResolver(localization, lookup);
+
+            Assert.That(
+                resolver.GetCharacterName("extra_worldscar_archive_cell", "mirror_cantor"),
+                Is.EqualTo("세계상처 기록 감방 / Worldscar Archive Cell"));
+        }
+        finally
+        {
+            Object.DestroyImmediate(go);
+        }
+    }
+
+    [Test]
     public void BattleUnitMetadataFormatter_BuildsAxisSummaryFromCharacterHierarchy()
     {
         var race = ScriptableObject.CreateInstance<RaceDefinition>();
