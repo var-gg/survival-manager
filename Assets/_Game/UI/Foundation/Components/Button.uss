@@ -2,7 +2,7 @@
  * Button.uss
  * Survival Manager - Button atom
  * source: docs/02_design/ui/handoff/foundation-pack-v0.2/atoms-button-herocard.html (line 186-475)
- * matrix: variant 5 x size 3 (+mobile) x state 5
+ * matrix: variant 5 (primary/secondary/tertiary/warning/danger) x size 3 (s/m/l) x state 5
  *
  * USS 제약 워크어라운드:
  *   - linear-gradient → 단색 (family token 활용)
@@ -35,11 +35,12 @@
     white-space: nowrap;
     min-height: 40px;
     transition-property: color, scale, opacity, background-color, border-color, translate;
-    transition-duration: 120ms, 120ms, 120ms, 120ms, 120ms, 120ms;
-    transition-timing-function: ease-out;
+    transition-duration: var(--sm-t-snap), var(--sm-t-snap), var(--sm-t-snap), var(--sm-t-snap), var(--sm-t-snap), var(--sm-t-snap);
+    transition-timing-function: var(--sm-e-snap);
 }
 
 /* === sizes =================================================== */
+.sm-btn--s,
 .sm-btn--sm {
     padding-top: 7px;
     padding-bottom: 7px;
@@ -49,6 +50,7 @@
     min-height: 32px;
 }
 
+.sm-btn--m,
 .sm-btn--md {
     padding-top: 10px;
     padding-bottom: 10px;
@@ -58,6 +60,7 @@
     min-height: 40px;
 }
 
+.sm-btn--l,
 .sm-btn--lg {
     padding-top: 13px;
     padding-bottom: 13px;
@@ -105,8 +108,8 @@
     border-top-color: var(--sm-gold-300);
     border-bottom-color: var(--sm-gold-300);
     transition-property: border-left-color, border-right-color, border-top-color, border-bottom-color;
-    transition-duration: 120ms;
-    transition-timing-function: ease-out;
+    transition-duration: var(--sm-t-snap);
+    transition-timing-function: var(--sm-e-snap);
 }
 
 /* === corner cap (8x8 L-bracket) ============================= */
@@ -163,8 +166,8 @@
     -unity-background-image-tint-color: var(--sm-gold-200);
     opacity: 0;
     transition-property: opacity;
-    transition-duration: 120ms;
-    transition-timing-function: ease-out;
+    transition-duration: var(--sm-t-snap);
+    transition-timing-function: var(--sm-e-snap);
 }
 
 .sm-btn__vine--left {
@@ -180,11 +183,12 @@
     scale: -1 1;
 }
 
-.sm-btn:hover > .sm-btn__vine {
+.sm-btn:hover > .sm-btn__vine,
+.sm-btn--hover > .sm-btn__vine {
     opacity: 0.85;
 }
 
-/* === ember tick (destructive only) ========================= */
+/* === ember tick (danger only) ============================== */
 .sm-btn__ember {
     position: absolute;
     display: none;
@@ -205,6 +209,7 @@
     border-bottom-color: var(--sm-gold-200);
 }
 
+.sm-btn--danger .sm-btn__ember,
 .sm-btn--destructive .sm-btn__ember {
     display: flex;
 }
@@ -252,10 +257,12 @@
     padding-bottom: 0;
 }
 
+.sm-btn--s .sm-btn__label-ko,
 .sm-btn--sm .sm-btn__label-ko {
     font-size: 12px;
 }
 
+.sm-btn--l .sm-btn__label-ko,
 .sm-btn--lg .sm-btn__label-ko {
     font-size: 15px;
 }
@@ -278,18 +285,21 @@
     background-color: var(--sm-fam-striker);
 }
 
-.sm-btn--primary:hover {
+.sm-btn--primary:hover,
+.sm-btn--primary.sm-btn--hover {
     background-color: var(--sm-fam-striker-glow);
 }
 
-.sm-btn--primary:hover > .sm-btn__inset {
+.sm-btn--primary:hover > .sm-btn__inset,
+.sm-btn--primary.sm-btn--hover > .sm-btn__inset {
     border-left-color: var(--sm-gold-200);
     border-right-color: var(--sm-gold-200);
     border-top-color: var(--sm-gold-200);
     border-bottom-color: var(--sm-gold-200);
 }
 
-.sm-btn--primary:active {
+.sm-btn--primary:active,
+.sm-btn--primary.sm-btn--active {
     translate: 0 1px;
     opacity: 0.92;
 }
@@ -307,24 +317,28 @@
     border-bottom-color: rgba(245, 214, 138, 0.35);
 }
 
-.sm-btn--secondary:hover > .sm-btn__inset {
+.sm-btn--secondary:hover > .sm-btn__inset,
+.sm-btn--secondary.sm-btn--hover > .sm-btn__inset {
     border-left-color: var(--sm-gold-200);
     border-right-color: var(--sm-gold-200);
     border-top-color: var(--sm-gold-200);
     border-bottom-color: var(--sm-gold-200);
 }
 
-.sm-btn--secondary:active {
+.sm-btn--secondary:active,
+.sm-btn--secondary.sm-btn--active {
     translate: 0 1px;
     opacity: 0.92;
 }
 
-/* --- DESTRUCTIVE (wine + ember tick) ----------------------- */
+/* --- DANGER (wine + ember tick) ---------------------------- */
+.sm-btn--danger,
 .sm-btn--destructive {
     background-color: var(--sm-fam-striker-deep);
     color: var(--sm-vellum);
 }
 
+.sm-btn--danger > .sm-btn__outline,
 .sm-btn--destructive > .sm-btn__outline {
     border-left-color: var(--sm-fam-striker-deep);
     border-right-color: var(--sm-fam-striker-deep);
@@ -332,6 +346,7 @@
     border-bottom-color: var(--sm-fam-striker-deep);
 }
 
+.sm-btn--danger > .sm-btn__inset,
 .sm-btn--destructive > .sm-btn__inset {
     border-left-color: var(--sm-fam-striker-glow);
     border-right-color: var(--sm-fam-striker-glow);
@@ -339,6 +354,7 @@
     border-bottom-color: var(--sm-fam-striker-glow);
 }
 
+.sm-btn--danger > .sm-btn__cap,
 .sm-btn--destructive > .sm-btn__cap {
     border-left-color: var(--sm-fam-striker-glow);
     border-right-color: var(--sm-fam-striker-glow);
@@ -346,16 +362,23 @@
     border-bottom-color: var(--sm-fam-striker-glow);
 }
 
-.sm-btn--destructive:hover {
+.sm-btn--danger:hover,
+.sm-btn--danger.sm-btn--hover,
+.sm-btn--destructive:hover,
+.sm-btn--destructive.sm-btn--hover {
     background-color: var(--sm-fam-striker-glow);
 }
 
-.sm-btn--destructive:active {
+.sm-btn--danger:active,
+.sm-btn--danger.sm-btn--active,
+.sm-btn--destructive:active,
+.sm-btn--destructive.sm-btn--active {
     translate: 0 1px;
     opacity: 0.92;
 }
 
-/* --- GHOST (line only) ------------------------------------- */
+/* --- TERTIARY (line only) ---------------------------------- */
+.sm-btn--tertiary,
 .sm-btn--ghost {
     background-color: rgba(0, 0, 0, 0);
     color: var(--sm-ink-2);
@@ -363,6 +386,7 @@
     padding-right: 18px;
 }
 
+.sm-btn--tertiary > .sm-btn__outline,
 .sm-btn--ghost > .sm-btn__outline {
     border-top-width: 0;
     border-left-width: 0;
@@ -371,23 +395,65 @@
     border-bottom-color: var(--sm-gold-400);
 }
 
+.sm-btn--tertiary > .sm-btn__inset,
 .sm-btn--ghost > .sm-btn__inset {
     display: none;
 }
 
+.sm-btn--tertiary > .sm-btn__cap,
 .sm-btn--ghost > .sm-btn__cap {
     display: none;
 }
 
-.sm-btn--ghost:hover {
+.sm-btn--tertiary:hover,
+.sm-btn--tertiary.sm-btn--hover,
+.sm-btn--ghost:hover,
+.sm-btn--ghost.sm-btn--hover {
     color: var(--sm-gold-200);
 }
 
-.sm-btn--ghost:hover > .sm-btn__outline {
+.sm-btn--tertiary:hover > .sm-btn__outline,
+.sm-btn--tertiary.sm-btn--hover > .sm-btn__outline,
+.sm-btn--ghost:hover > .sm-btn__outline,
+.sm-btn--ghost.sm-btn--hover > .sm-btn__outline {
     border-bottom-color: var(--sm-gold-200);
 }
 
-.sm-btn--ghost:active {
+.sm-btn--tertiary:active,
+.sm-btn--tertiary.sm-btn--active,
+.sm-btn--ghost:active,
+.sm-btn--ghost.sm-btn--active {
+    translate: 0 1px;
+    opacity: 0.92;
+}
+
+/* --- WARNING (ochre state, gold line) ---------------------- */
+.sm-btn--warning {
+    background-color: var(--sm-gold-500);
+    color: var(--sm-ink-0);
+}
+
+.sm-btn--warning > .sm-btn__outline {
+    border-left-color: var(--sm-state-warn);
+    border-right-color: var(--sm-state-warn);
+    border-top-color: var(--sm-state-warn);
+    border-bottom-color: var(--sm-state-warn);
+}
+
+.sm-btn--warning > .sm-btn__inset {
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.sm-btn--warning:hover,
+.sm-btn--warning.sm-btn--hover {
+    background-color: var(--sm-state-warn);
+}
+
+.sm-btn--warning:active,
+.sm-btn--warning.sm-btn--active {
     translate: 0 1px;
     opacity: 0.92;
 }
@@ -404,12 +470,14 @@
     color: var(--sm-gold-200);
 }
 
+.sm-btn--icon.sm-btn--s,
 .sm-btn--icon.sm-btn--sm {
     width: 32px;
     height: 32px;
     min-height: 32px;
 }
 
+.sm-btn--icon.sm-btn--l,
 .sm-btn--icon.sm-btn--lg {
     width: 48px;
     height: 48px;
@@ -422,23 +490,30 @@
     min-height: 44px;
 }
 
-.sm-btn--icon:hover {
+.sm-btn--icon:hover,
+.sm-btn--icon.sm-btn--hover {
     color: var(--sm-gold-100);
 }
 
-.sm-btn--icon:hover > .sm-btn__inset {
+.sm-btn--icon:hover > .sm-btn__inset,
+.sm-btn--icon.sm-btn--hover > .sm-btn__inset {
     border-left-color: var(--sm-gold-200);
     border-right-color: var(--sm-gold-200);
     border-top-color: var(--sm-gold-200);
     border-bottom-color: var(--sm-gold-200);
 }
 
-.sm-btn--icon:active {
+.sm-btn--icon:active,
+.sm-btn--icon.sm-btn--active {
     translate: 0 1px;
     opacity: 0.92;
 }
 
 /* === disabled state ========================================== */
+.sm-btn--default {
+    opacity: 1;
+}
+
 .sm-btn--disabled,
 .sm-btn:disabled {
     opacity: 0.4;
@@ -457,7 +532,8 @@
     background-color: var(--sm-fam-beastkin);
 }
 
-.sm-btn--fam-beastkin.sm-btn--primary:hover {
+.sm-btn--fam-beastkin.sm-btn--primary:hover,
+.sm-btn--fam-beastkin.sm-btn--primary.sm-btn--hover {
     background-color: var(--sm-fam-beastkin-glow);
 }
 
@@ -465,7 +541,8 @@
     background-color: var(--sm-fam-vanguard);
 }
 
-.sm-btn--fam-vanguard.sm-btn--primary:hover {
+.sm-btn--fam-vanguard.sm-btn--primary:hover,
+.sm-btn--fam-vanguard.sm-btn--primary.sm-btn--hover {
     background-color: var(--sm-fam-vanguard-glow);
 }
 
@@ -473,7 +550,8 @@
     background-color: var(--sm-fam-striker);
 }
 
-.sm-btn--fam-striker.sm-btn--primary:hover {
+.sm-btn--fam-striker.sm-btn--primary:hover,
+.sm-btn--fam-striker.sm-btn--primary.sm-btn--hover {
     background-color: var(--sm-fam-striker-glow);
 }
 
@@ -481,7 +559,8 @@
     background-color: var(--sm-fam-ranger);
 }
 
-.sm-btn--fam-ranger.sm-btn--primary:hover {
+.sm-btn--fam-ranger.sm-btn--primary:hover,
+.sm-btn--fam-ranger.sm-btn--primary.sm-btn--hover {
     background-color: var(--sm-fam-ranger-glow);
 }
 
@@ -489,7 +568,8 @@
     background-color: var(--sm-fam-mystic);
 }
 
-.sm-btn--fam-mystic.sm-btn--primary:hover {
+.sm-btn--fam-mystic.sm-btn--primary:hover,
+.sm-btn--fam-mystic.sm-btn--primary.sm-btn--hover {
     background-color: var(--sm-fam-mystic-glow);
 }
 

@@ -29,7 +29,7 @@ MonoBehaviour:
     Threshold: 0.6
     ActionType: 1
     TargetSelector: 1
-    Skill: {fileID: 11400000, guid: 842b174f92a91a24db7e7ab0d1d7b11c, type: 2}
+    Skill: {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
   - Priority: 1
     ConditionType: 4
     Threshold: 1.5
@@ -47,6 +47,7 @@ MonoBehaviour:
   RoleTag: support
   RoleFamilyTag: mystic
   PrimaryWeaponFamilyTag: focus
+  DefaultDominantHand: 0
   RecruitTier: 1
   BudgetCard:
     Domain: 0
@@ -128,6 +129,7 @@ MonoBehaviour:
       DamageType: 0
       Lane: 0
       LockRule: 1
+      WeaponHandedness: 0
       TargetRule:
         Domain: 2
         PrimarySelector: 1

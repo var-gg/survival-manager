@@ -8,6 +8,7 @@ public sealed class BattlePresentationCueBuilder
 {
     private const float HeavyImpactDamageThreshold = 16f;
     private const float DisplacementTraceDistanceThreshold = 0.35f;
+    private const float MovementCueDistanceThreshold = 0.05f;
 
     public IReadOnlyList<BattlePresentationCue> Build(BattleSimulationStep previousStep, BattleSimulationStep currentStep)
     {
@@ -86,24 +87,27 @@ public sealed class BattlePresentationCueBuilder
                     AnimationDirection: guardDirection));
             }
 
-            var wasRepositioning = IsRepositioning(previous);
-            var isRepositioning = IsRepositioning(current);
-            if (!wasRepositioning && isRepositioning)
+            var wasPresentationMovement = IsPresentationMovementState(previous);
+            var isPresentationMovement = IsPresentationMovementState(current);
+            if (!wasPresentationMovement && isPresentationMovement)
             {
                 var movement = ResolveMovementAnimation(previous, current, currentById);
-                cues.Add(new BattlePresentationCue(
-                    BattlePresentationCueType.RepositionStart,
-                    currentStep.StepIndex,
-                    current.Id,
-                    current.TargetId,
-                    current.PendingActionType,
-                    movement.Distance,
-                    Note: movement.Note,
-                    AnimationSemantic: movement.Semantic,
-                    AnimationDirection: movement.Direction,
-                    AnimationIntensity: movement.Intensity));
+                if (movement.Distance >= MovementCueDistanceThreshold)
+                {
+                    cues.Add(new BattlePresentationCue(
+                        BattlePresentationCueType.RepositionStart,
+                        currentStep.StepIndex,
+                        current.Id,
+                        current.TargetId,
+                        current.PendingActionType,
+                        movement.Distance,
+                        Note: movement.Note,
+                        AnimationSemantic: movement.Semantic,
+                        AnimationDirection: movement.Direction,
+                        AnimationIntensity: movement.Intensity));
+                }
             }
-            else if (wasRepositioning && !isRepositioning)
+            else if (wasPresentationMovement && !isPresentationMovement)
             {
                 cues.Add(new BattlePresentationCue(
                     BattlePresentationCueType.RepositionStop,
@@ -150,6 +154,7 @@ public sealed class BattlePresentationCueBuilder
                         attackAnimation.Semantic,
                         attackAnimation.Direction,
                         attackAnimation.Intensity));
+                    TryAddImpactDisplacementTraceCue(cues, previousById, currentById, currentStep.StepIndex, eventData);
                     TryAddTargetCue(cues, currentById, BattlePresentationCueType.ImpactDamage, currentStep.StepIndex, eventData);
                     break;
                 }
@@ -164,6 +169,7 @@ public sealed class BattlePresentationCueBuilder
                         eventData.Value,
                         BattlePresentationAnchorId.Cast,
                         BattlePresentationAnchorId.Center));
+                    TryAddImpactDisplacementTraceCue(cues, previousById, currentById, currentStep.StepIndex, eventData);
                     TryAddTargetCue(cues, currentById, BattlePresentationCueType.ImpactDamage, currentStep.StepIndex, eventData);
                     break;
 
@@ -233,9 +239,13 @@ public sealed class BattlePresentationCueBuilder
         }
     }
 
-    private static bool IsRepositioning(BattleUnitReadModel unit)
+    private static bool IsPresentationMovementState(BattleUnitReadModel unit)
     {
-        return unit.ActionState is CombatActionState.Reposition or CombatActionState.AdvanceToAnchor or CombatActionState.BreakContact;
+        return unit.ActionState is CombatActionState.Approach
+            or CombatActionState.SecurePosition
+            or CombatActionState.Reposition
+            or CombatActionState.AdvanceToAnchor
+            or CombatActionState.BreakContact;
     }
 
     private static BattleAnimationCueDescriptor ResolveMovementAnimation(
@@ -321,7 +331,7 @@ public sealed class BattlePresentationCueBuilder
         BattleUnitReadModel current,
         int stepIndex)
     {
-        if (IsRepositioning(previous) || IsRepositioning(current))
+        if (IsPresentationMovementState(previous) || IsPresentationMovementState(current))
         {
             return;
         }
@@ -402,6 +412,52 @@ public sealed class BattlePresentationCueBuilder
             animation.Semantic,
             animation.Direction,
             animation.Intensity));
+    }
+
+    private static void TryAddImpactDisplacementTraceCue(
+        ICollection<BattlePresentationCue> cues,
+        IReadOnlyDictionary<string, BattleUnitReadModel> previousById,
+        IReadOnlyDictionary<string, BattleUnitReadModel> currentById,
+        int stepIndex,
+        BattleEvent eventData)
+    {
+        if (eventData.Value <= 0f || eventData.TargetId == null)
+        {
+            return;
+        }
+
+        var targetId = eventData.TargetId.Value.Value;
+        if (!previousById.TryGetValue(targetId, out var previous)
+            || !currentById.TryGetValue(targetId, out var current))
+        {
+            return;
+        }
+
+        var deltaX = current.Position.X - previous.Position.X;
+        var deltaY = current.Position.Y - previous.Position.Y;
+        var distance = (float)System.Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+        if (distance < DisplacementTraceDistanceThreshold)
+        {
+            return;
+        }
+
+        var impact = ResolveImpactAnimation(eventData);
+        var intensity = impact.Intensity == BattleAnimationIntensity.Heavy
+            ? BattleAnimationIntensity.Heavy
+            : BattleAnimationIntensity.Medium;
+        cues.Add(new BattlePresentationCue(
+            BattlePresentationCueType.RepositionStart,
+            stepIndex,
+            targetId,
+            eventData.ActorId.Value,
+            eventData.ActionType,
+            distance,
+            BattlePresentationAnchorId.Feet,
+            BattlePresentationAnchorId.Cast,
+            ComposeCueNote("trace_knockback", eventData.Note),
+            BattleAnimationSemantic.BackstepDisengage,
+            BattleAnimationDirection.Backward,
+            intensity));
     }
 
     private static BattleAnimationCueDescriptor ResolveImpactAnimation(BattleEvent eventData)

@@ -648,6 +648,8 @@ Shader "Hidden/lilToonMultiRefraction"
             #define LIL_MULTI_INPUTS_IDMASK
             #define LIL_MULTI_INPUTS_UDIMDISCARD
 
+            
+            
         ENDHLSL
 
 
@@ -1056,6 +1058,8 @@ Shader "Hidden/lilToonMultiRefraction"
             #define LIL_MULTI_INPUTS_IDMASK
             #define LIL_MULTI_INPUTS_UDIMDISCARD
 
+            
+            
         ENDHLSL
 
 

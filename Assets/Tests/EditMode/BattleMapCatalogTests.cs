@@ -45,6 +45,7 @@ public sealed class BattleMapCatalogTests
         var stageGo = new GameObject("StageRoot");
         var overlayGo = new GameObject("OverlayRoot", typeof(RectTransform));
         var controllerGo = new GameObject("BattlePresentationController");
+        var environmentGo = new GameObject("BattleRenderEnvironment");
         var catalog = ScriptableObject.CreateInstance<BattleMapCatalog>();
         var prefab = new GameObject("MapPrefab");
 
@@ -52,6 +53,7 @@ public sealed class BattleMapCatalogTests
         {
             cameraGo.tag = "MainCamera";
             cameraGo.AddComponent<Camera>();
+            environmentGo.AddComponent<BattleRenderEnvironmentAuthoring>();
 
             catalog.SetDefaultMapId("map_test");
             catalog.SetMap("map_test", "Map Test", prefab, new Vector3(1f, 2f, 3f), new Vector3(0f, 45f, 0f), Vector3.one * 2f, BattleMapTacticalOverlayMode.ReadabilityOnly);
@@ -82,6 +84,7 @@ public sealed class BattleMapCatalogTests
             Object.DestroyImmediate(controllerGo);
             Object.DestroyImmediate(overlayGo);
             Object.DestroyImmediate(stageGo);
+            Object.DestroyImmediate(environmentGo);
             Object.DestroyImmediate(cameraGo);
         }
     }
@@ -122,6 +125,15 @@ public sealed class BattleMapCatalogTests
         Assert.That(prefab!.transform.Find("PlayableFloor"), Is.Not.Null);
         Assert.That(prefab.transform.Find("WolfPineRoad"), Is.Not.Null);
         Assert.That(prefab.transform.Find("WolfPineTreeline/Pine_Left_Back_01"), Is.Not.Null);
+        Assert.That(prefab.transform.Find("WolfPineBuffer"), Is.Not.Null);
+        Assert.That(prefab.transform.Find("WolfPineFrame"), Is.Not.Null);
+        Assert.That(prefab.transform.Find("WolfPineBackdrop"), Is.Not.Null);
+        Assert.That(CountDirectChildren(prefab.transform.Find("WolfPineBuffer")), Is.GreaterThanOrEqualTo(30));
+        Assert.That(CountNameContains(prefab.transform.Find("WolfPineFrame"), "Frame_Tree_L_"), Is.InRange(6, 8));
+        Assert.That(CountNameContains(prefab.transform.Find("WolfPineFrame"), "StandingStone"), Is.InRange(1, 2));
+        Assert.That(CountRenderers(prefab.transform.Find("WolfPineBackdrop")), Is.GreaterThan(0));
+        Assert.That(prefab.GetComponent<BattleMapMaterialAdapter>(), Is.Null);
+        Assert.That(prefab.GetComponent<BattleStageEnvironmentAdapter>(), Is.Null);
     }
 
     private static BattleSimulationStep CreateEmptyStep()
@@ -140,5 +152,34 @@ public sealed class BattleMapCatalogTests
         var field = target.GetType().GetField(fieldName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
         Assert.That(field, Is.Not.Null, $"Missing field '{fieldName}'.");
         field!.SetValue(target, value);
+    }
+
+    private static int CountDirectChildren(Transform? transform)
+    {
+        return transform == null ? 0 : transform.childCount;
+    }
+
+    private static int CountNameContains(Transform? transform, string fragment)
+    {
+        if (transform == null)
+        {
+            return 0;
+        }
+
+        var count = 0;
+        foreach (var child in transform.GetComponentsInChildren<Transform>(true))
+        {
+            if (child.name.Contains(fragment))
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    private static int CountRenderers(Transform? transform)
+    {
+        return transform == null ? 0 : transform.GetComponentsInChildren<Renderer>(true).Length;
     }
 }

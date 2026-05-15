@@ -180,14 +180,27 @@ MonoBehaviour:
   - board_ranger
   - board_mystic
   ParkingLotContentIds:
+  - affix_cleansing
+  - affix_focusing
+  - affix_lithe
+  - affix_piercing
+  - affix_reaching
+  - affix_warded
   - augment_perm_legacy_bone
   - augment_perm_legacy_chalice
+  - augment_perm_legacy_crown
   - augment_perm_legacy_fang
   - augment_perm_legacy_grace
   - augment_perm_legacy_hide
+  - augment_perm_legacy_lantern
   - augment_perm_legacy_oath
   - augment_perm_legacy_scope
   - augment_perm_legacy_signal
+  - augment_perm_legacy_spur
+  - bastion_penitent
+  - mirror_cantor
+  - pale_executor
+  - rift_stalker
   SynergyGrammar:
   - FamilyId: synergy_beastkin
     FamilyType: 0

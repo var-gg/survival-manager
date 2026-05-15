@@ -87,6 +87,110 @@ MonoBehaviour:
     m_Key: content.campaign.site.site_grave_sanctum.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 16452987370070016
+    m_Key: content.campaign.chapter.chapter_ashen_gate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452987583979520
+    m_Key: content.campaign.chapter.chapter_ashen_gate.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452989110706176
+    m_Key: content.campaign.chapter.chapter_sunken_bastion.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452989110706177
+    m_Key: content.campaign.chapter.chapter_sunken_bastion.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452991048474624
+    m_Key: content.campaign.chapter.chapter_glass_forest.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452991048474625
+    m_Key: content.campaign.chapter.chapter_glass_forest.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452992801693696
+    m_Key: content.campaign.chapter.chapter_heartforge_descent.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452992801693697
+    m_Key: content.campaign.chapter.chapter_heartforge_descent.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452994521358336
+    m_Key: content.campaign.site.site_wolfpine_trail.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452994521358337
+    m_Key: content.campaign.site.site_wolfpine_trail.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453011638312960
+    m_Key: content.campaign.site.site_sunken_bastion.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453011642507264
+    m_Key: content.campaign.site.site_sunken_bastion.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453031708057600
+    m_Key: content.campaign.site.site_tithe_road.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453031708057601
+    m_Key: content.campaign.site.site_tithe_road.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453049701621760
+    m_Key: content.campaign.site.site_ruined_crypts.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453049701621761
+    m_Key: content.campaign.site.site_ruined_crypts.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453070119493632
+    m_Key: content.campaign.site.site_bone_orchard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453070119493633
+    m_Key: content.campaign.site.site_bone_orchard.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453090973573120
+    m_Key: content.campaign.site.site_glass_forest.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453090973573121
+    m_Key: content.campaign.site.site_glass_forest.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453109696946176
+    m_Key: content.campaign.site.site_starved_menagerie.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453109696946177
+    m_Key: content.campaign.site.site_starved_menagerie.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453126021177344
+    m_Key: content.campaign.site.site_heartforge_gate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453126021177345
+    m_Key: content.campaign.site.site_heartforge_gate.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453148565561344
+    m_Key: content.campaign.site.site_worldscar_depths.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453148565561345
+    m_Key: content.campaign.site.site_worldscar_depths.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

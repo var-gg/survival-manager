@@ -5,7 +5,7 @@
 - 최종수정일: 2026-04-07
 - 소스오브트루스: `docs/02_design/meta/synergy-breakpoints-and-soft-counters.md`
 - 관련문서:
-  - `docs/02_design/deck/roster-archetype-launch-scope.md`
+  - Pindoc character-lore / roster artifacts
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
   - `docs/02_design/meta/synergy-family-catalog.md`
   - `docs/02_design/meta/synergy-and-augment-taxonomy.md`

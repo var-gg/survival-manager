@@ -126,6 +126,30 @@ public sealed class GameSessionAtlasFlowFastTests
         Assert.That(payload.HasAnyModifier, Is.True);
     }
 
+    [Test]
+    public void AtlasSelectionHandoff_KeepsAuthoredEncounterIdentityWhenModifiersApply()
+    {
+        var session = CreateBoundSession();
+        session.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        session.SelectAtlasSigil(region, "sigil_beast_spoils");
+        session.PlaceSelectedAtlasSigil(region, "hex_m1_m1");
+        session.SelectAtlasNode(region, "hex_m2_1");
+
+        Assert.That(session.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        var selectedEncounterId = session.GetSelectedExpeditionNode()?.Id;
+        var payload = session.AtlasExpeditionModifierPayload;
+
+        Assert.That(selectedEncounterId, Is.Not.Empty);
+        Assert.That(payload, Is.Not.Null);
+        Assert.That(payload!.ExpeditionNodeId, Is.EqualTo(selectedEncounterId));
+        Assert.That(payload.HasAnyModifier, Is.True);
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        Assert.That(session.ActiveRun?.Overlay.EncounterId, Is.EqualTo(selectedEncounterId));
+    }
+
     private static GameSessionState CreateBoundSession()
     {
         var session = GameSessionTestFactory.Create(EditorFreeCombatContentFixture.CreateRunLoopLookup());

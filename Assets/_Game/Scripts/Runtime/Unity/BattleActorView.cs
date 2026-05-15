@@ -1542,7 +1542,11 @@ public sealed class BattleActorView : MonoBehaviour
 
     private static bool IsPresentationRepositionState(CombatActionState state)
     {
-        return state is CombatActionState.Reposition or CombatActionState.AdvanceToAnchor or CombatActionState.BreakContact;
+        return state is CombatActionState.Approach
+            or CombatActionState.SecurePosition
+            or CombatActionState.Reposition
+            or CombatActionState.AdvanceToAnchor
+            or CombatActionState.BreakContact;
     }
 
     private static void AddOutline(Graphic graphic, Color color)

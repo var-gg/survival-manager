@@ -5,9 +5,9 @@
 - 최종수정일: 2026-05-08
 - 소스오브트루스: `docs/02_design/systems/launch-content-scope-and-balance.md`
 - 관련문서:
-  - `docs/01_product/vision.md`
+  - Pindoc strategy/product artifacts
   - `docs/02_design/systems/launch-floor-content-matrix.md`
-  - `docs/02_design/deck/roster-archetype-launch-scope.md`
+  - Pindoc character-lore / roster artifacts
   - `docs/02_design/combat/resource-cadence-loadout.md`
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/02_design/meta/item-passive-augment-budget.md`
@@ -70,7 +70,7 @@ temporary augment는 GPT Pro P0 dial pass 이후 V1 prototype에서 먼저 safe 
 
 ## 세부 문서 소유권
 
-- roster와 archetype taxonomy: `docs/02_design/deck/roster-archetype-launch-scope.md`
+- roster와 archetype taxonomy: Pindoc character-lore / roster artifacts
 - explicit launch floor roster: `docs/02_design/systems/launch-floor-content-matrix.md`
 - cadence와 loadout topology: `docs/02_design/combat/resource-cadence-loadout.md`
 - skill taxonomy와 수식: `docs/02_design/combat/skill-taxonomy-and-damage-model.md`

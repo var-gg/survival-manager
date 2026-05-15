@@ -201,6 +201,9 @@ Shader "Hidden/ltspass_lite_transparent"
             #pragma fragmentoption ARB_precision_hint_fastest
             #define LIL_LITE
 
+            
+            
+            
         ENDHLSL
 
 
@@ -648,6 +651,9 @@ Shader "Hidden/ltspass_lite_transparent"
             #pragma fragmentoption ARB_precision_hint_fastest
             #define LIL_LITE
 
+            
+            
+            
         ENDHLSL
 
 

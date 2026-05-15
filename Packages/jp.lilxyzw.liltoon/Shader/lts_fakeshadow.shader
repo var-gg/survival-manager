@@ -157,6 +157,7 @@ Shader "_lil/[Optional] lilToonFakeShadow"
             #define LIL_OPTIMIZE_APPLY_SHADOW_FA
             #define LIL_OPTIMIZE_USE_FORWARDADD
             #define LIL_OPTIMIZE_USE_VERTEXLIGHT
+            
             #define LIL_SRP_VERSION_MAJOR 17
             #define LIL_SRP_VERSION_MINOR 4
             #define LIL_SRP_VERSION_PATCH 0
@@ -165,6 +166,10 @@ Shader "_lil/[Optional] lilToonFakeShadow"
             #pragma fragmentoption ARB_precision_hint_fastest
             #define LIL_FAKESHADOW
 
+            
+            
+            
+            
         ENDHLSL
 
 
@@ -343,6 +348,7 @@ Shader "_lil/[Optional] lilToonFakeShadow"
             #define LIL_OPTIMIZE_APPLY_SHADOW_FA
             #define LIL_OPTIMIZE_USE_FORWARDADD
             #define LIL_OPTIMIZE_USE_VERTEXLIGHT
+            
             #define LIL_SRP_VERSION_MAJOR 17
             #define LIL_SRP_VERSION_MINOR 4
             #define LIL_SRP_VERSION_PATCH 0
@@ -351,6 +357,10 @@ Shader "_lil/[Optional] lilToonFakeShadow"
             #pragma fragmentoption ARB_precision_hint_fastest
             #define LIL_FAKESHADOW
 
+            
+            
+            
+            
         ENDHLSL
 
 

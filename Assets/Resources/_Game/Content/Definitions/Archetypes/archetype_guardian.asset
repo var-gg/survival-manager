@@ -47,6 +47,7 @@ MonoBehaviour:
   RoleTag: anchor
   RoleFamilyTag: vanguard
   PrimaryWeaponFamilyTag: shield
+  DefaultDominantHand: 0
   RecruitTier: 1
   BudgetCard:
     Domain: 0
@@ -97,7 +98,6 @@ MonoBehaviour:
   FlexUtilitySkillPool:
   - {fileID: 11400000, guid: c9597000b38b85d46964a561713062bb, type: 2}
   - {fileID: 11400000, guid: 9079bacc511ab944f9fc2895fe983736, type: 2}
-  - {fileID: 11400000, guid: 4dd611eacab313b4ba0cdde8577a54c2, type: 2}
   FlexSupportSkillPool:
   - {fileID: 11400000, guid: 46b032dc7350b0445b83f0258c88a29f, type: 2}
   - {fileID: 11400000, guid: 3f09216fe0af34448a6a556b915e1ddf, type: 2}
@@ -107,7 +107,6 @@ MonoBehaviour:
   RecruitFlexActivePool:
   - {fileID: 11400000, guid: c9597000b38b85d46964a561713062bb, type: 2}
   - {fileID: 11400000, guid: 9079bacc511ab944f9fc2895fe983736, type: 2}
-  - {fileID: 11400000, guid: 4dd611eacab313b4ba0cdde8577a54c2, type: 2}
   RecruitFlexPassivePool:
   - {fileID: 11400000, guid: 46b032dc7350b0445b83f0258c88a29f, type: 2}
   - {fileID: 11400000, guid: 3f09216fe0af34448a6a556b915e1ddf, type: 2}
@@ -124,6 +123,7 @@ MonoBehaviour:
       DamageType: 0
       Lane: 0
       LockRule: 1
+      WeaponHandedness: 0
       TargetRule:
         Domain: 2
         PrimarySelector: 1

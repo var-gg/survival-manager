@@ -12,6 +12,7 @@ namespace SM.Content.Definitions
         public string Id = string.Empty;
         public string NameKey = string.Empty;
         public string ArchetypeId = string.Empty;
+        public string CharacterId = string.Empty;
         public DeploymentAnchorValue Anchor = DeploymentAnchorValue.FrontCenter;
         public EnemySquadMemberRoleValue Role = EnemySquadMemberRoleValue.Unit;
         public string PositiveTraitId = string.Empty;

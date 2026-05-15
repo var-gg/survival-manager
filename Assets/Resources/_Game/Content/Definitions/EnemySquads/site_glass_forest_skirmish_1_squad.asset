@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ba22f58e432e6c468626870fa5e1d0a, type: 3}
+  m_Name: site_glass_forest_skirmish_1_squad
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.EnemySquadTemplateDefinition
+  Id: site_glass_forest_skirmish_1_squad
+  NameKey: content.enemy_squad.site_glass_forest_skirmish_1_squad.name
+  DescriptionKey: content.enemy_squad.site_glass_forest_skirmish_1_squad.desc
+  FactionId: faction_glass_forest
+  EnemyPosture: 1
+  ThreatTier: 1
+  ThreatCost: 1
+  RewardDropTags:
+  - faction_glass_forest
+  - tier1
+  Members:
+  - Id: site_glass_forest_skirmish_1_squad_1
+    NameKey: 
+    ArchetypeId: priest
+    CharacterId: extra_glass_field_cleric
+    Anchor: 0
+    Role: 0
+    PositiveTraitId: 
+    NegativeTraitId: 
+    RuleModifierTags: []
+    legacyDisplayName: 
+  - Id: site_glass_forest_skirmish_1_squad_2
+    NameKey: 
+    ArchetypeId: marksman
+    CharacterId: extra_glass_shard_bailiff
+    Anchor: 2
+    Role: 0
+    PositiveTraitId: 
+    NegativeTraitId: 
+    RuleModifierTags: []
+    legacyDisplayName: 
+  - Id: site_glass_forest_skirmish_1_squad_3
+    NameKey: 
+    ArchetypeId: scout
+    CharacterId: extra_glass_forest_recordkeeper
+    Anchor: 3
+    Role: 0
+    PositiveTraitId: 
+    NegativeTraitId: 
+    RuleModifierTags: []
+    legacyDisplayName: 
+  - Id: site_glass_forest_skirmish_1_squad_4
+    NameKey: 
+    ArchetypeId: hexer
+    CharacterId: extra_glass_field_cleric
+    Anchor: 5
+    Role: 0
+    PositiveTraitId: 
+    NegativeTraitId: 
+    RuleModifierTags: []
+    legacyDisplayName: 
+  legacyDisplayName: 
+  legacyDescription: 

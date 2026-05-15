@@ -2,24 +2,27 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-05-16
 - 소스오브트루스: `docs/index.md`
 - 관련문서:
   - `AGENTS.md`
   - `docs/00_governance/docs-governance.md`
   - `docs/00_governance/docs-harness.md`
   - `docs/00_governance/source-of-truth-matrix.md`
+  - `pindoc://decision-doc-harness-pindoc-migration`
 
 ## 목적
 
 이 디렉터리는 `survival-manager`의 공식 문서 체계를 담는다.
 현재 저장소 phase는 `prototype`이며, 문서는 실제 구현 상태와 운영 기준을 반영해야 한다.
 
+제품 방향, 게임기획, 창작/narrative/lore, visual design의 기본 source-of-truth는 Pindoc Wiki다.
+repo `docs/**`는 하네스, 코드 구조, setup, runtime/content contract, production/release 운영처럼 git과 함께 움직여야 하는 문서만 active 시작 표면으로 둔다.
+
 ## 문서 계층
 
 - `00_governance/`: 문서 운영 원칙, 용어, 명명 규칙, 검수 체크리스트
-- `01_product/`: 제품 목표, 범위, 사용자 가치
-- `02_design/`: 게임/UX/시스템 디자인 문서
+- `02_design/`: legacy 위치의 code-facing gameplay/content/UI contract와 Pindoc 전환 hold 문서
 - `03_architecture/`: 기술 구조, 코딩 경계, 의존 방향, Unity 특화 제약
 - `04_decisions/`: ADR과 주요 기술/운영 결정
 - `05_setup/`: 개발 환경 및 초기 설정 절차
@@ -46,8 +49,7 @@
 ## 시작점
 
 - 거버넌스 인덱스: `00_governance/index.md`
-- 제품 인덱스: `01_product/index.md`
-- 디자인 인덱스: `02_design/index.md`
+- design/runtime contract 인덱스: `02_design/index.md`
 - 아키텍처 인덱스: `03_architecture/index.md`
 - 의사결정 인덱스: `04_decisions/index.md`
 - 설정 인덱스: `05_setup/index.md`

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-08
+- 최종수정일: 2026-05-16
 - 소스오브트루스: `docs/00_governance/docs-harness.md`
 - 관련문서:
   - `AGENTS.md`
@@ -41,6 +41,7 @@
 - `tasks/**`: live state, handoff, 실행 상태
 - `prompts/**`, `.agents/skills/**`: agent routing asset
 - `docs/04_decisions/**`: durable decision
+- Pindoc Wiki: product/design/narrative/lore/creative planning의 primary memory
 
 문서 역할이 다르면 같은 주제를 공유해도 삭제 대상이 아니다.
 대신 어떤 문서가 정책인지, 어떤 문서가 설치 절차인지, 어떤 문서가 live rollout 상태인지 분리해서 읽는다.
@@ -48,12 +49,13 @@
 ## 신뢰 계층
 
 - A: `AGENTS.md`, ADR, active index, 현재 task `status.md`
-- B: 현재 작업과 직접 관련된 active design/setup/architecture 문서
+- B: 현재 작업과 직접 관련된 active setup/architecture/code-facing contract 문서
 - C: `draft` 문서
 - D: deprecated, archive, legacy, pointer, historical memo
 
 D 계층은 기본 검색 대상에서 제외한다.
 legacy archaeology가 명시된 경우에만 참고하고, active source로 인용하지 않는다.
+제품/게임기획/창작 방향은 repo의 legacy design 문서가 아니라 Pindoc context/search 결과를 우선한다.
 
 ## 온디맨드 확장 규칙
 

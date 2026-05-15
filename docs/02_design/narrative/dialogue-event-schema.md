@@ -5,13 +5,13 @@
 - 최종수정일: 2026-04-10
 - 소스오브트루스: `docs/02_design/narrative/dialogue-event-schema.md`
 - 관련문서:
-  - `docs/02_design/narrative/chapter-beat-sheet.md`
+  - Pindoc narrative script / beat artifacts
   - `docs/03_architecture/narrative-code-architecture.md`
   - `docs/02_design/meta/story-gating-and-unlock-rules.md`
 
 ## 목적
 
-스토리 이벤트와 대사 시퀀스의 ID 규칙, trigger schema, once policy, presentation grade를 고정한다. 이 문서는 narrative event authoring의 source of truth다.
+스토리 이벤트와 대사 시퀀스의 ID 규칙, trigger schema, once policy, presentation grade를 고정한다. 이 문서는 code-facing narrative event authoring contract이며, 창작 beat와 production script는 Pindoc을 우선한다.
 
 ## 명명 규칙
 

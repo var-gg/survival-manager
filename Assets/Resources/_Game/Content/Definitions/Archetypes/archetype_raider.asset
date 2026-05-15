@@ -47,6 +47,7 @@ MonoBehaviour:
   RoleTag: bruiser
   RoleFamilyTag: striker
   PrimaryWeaponFamilyTag: blade
+  DefaultDominantHand: 0
   RecruitTier: 1
   BudgetCard:
     Domain: 0
@@ -124,6 +125,7 @@ MonoBehaviour:
       DamageType: 0
       Lane: 0
       LockRule: 1
+      WeaponHandedness: 0
       TargetRule:
         Domain: 2
         PrimarySelector: 1

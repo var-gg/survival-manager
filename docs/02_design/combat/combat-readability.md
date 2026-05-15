@@ -5,7 +5,7 @@
 - 최종수정일: 2026-03-30
 - 소스오브트루스: `docs/02_design/combat/combat-readability.md`
 - 관련문서:
-  - `docs/01_product/mvp-vertical-slice.md`
+  - Pindoc strategy/product artifacts
   - `docs/02_design/combat/battlefield-and-camera.md`
   - `docs/02_design/combat/battle-presentation-contract.md`
   - `docs/02_design/combat/combat-spatial-contract.md`

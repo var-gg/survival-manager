@@ -174,6 +174,7 @@ Shader "Hidden/ltsother_baker"
             #define LIL_OPTIMIZE_APPLY_SHADOW_FA
             #define LIL_OPTIMIZE_USE_FORWARDADD
             #define LIL_OPTIMIZE_USE_VERTEXLIGHT
+            
         ENDHLSL
 
         Pass

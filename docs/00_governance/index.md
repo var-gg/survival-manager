@@ -9,6 +9,7 @@
 - 문서 체계와 메타데이터 규칙은 `docs-governance.md`
 - 기본 시작 컨텍스트, lifecycle, deprecated suppression 규칙은 `docs-harness.md`
 - 겹치는 문서군의 역할 표는 `source-of-truth-matrix.md`
+- product/design/narrative/lore source-of-truth는 Pindoc Wiki가 소유하고, repo 문서는 code-facing contract와 운영 문서만 active 시작 표면으로 둔다
 - docs 검증과 eval 초안은 `docs-evals.md`
 - 파일명/경로 규칙은 `naming-conventions.md`
 - 용어 정의는 `glossary.md`

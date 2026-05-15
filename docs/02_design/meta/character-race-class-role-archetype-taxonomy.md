@@ -5,7 +5,7 @@
 - 최종수정일: 2026-05-02
 - 소스오브트루스: `docs/02_design/meta/character-race-class-role-archetype-taxonomy.md`
 - 관련문서:
-  - `docs/02_design/deck/roster-archetype-launch-scope.md`
+  - Pindoc character-lore / roster artifacts
   - `docs/02_design/combat/team-tactics-and-unit-rules.md`
   - `docs/03_architecture/character-axis-and-localized-battle-metadata.md`
   - `docs/04_decisions/adr-0021-character-definition-identity-layer.md`

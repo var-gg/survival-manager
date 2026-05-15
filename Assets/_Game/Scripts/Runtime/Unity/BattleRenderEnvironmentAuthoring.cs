@@ -6,7 +6,8 @@ using UnityEngine.Rendering.Universal;
 using UnityEditor;
 #endif
 
-namespace SM.Unity;
+namespace SM.Unity
+{
 
 /// <summary>
 /// 전투 씬용 시각 통합 authoring 컴포넌트.
@@ -578,4 +579,5 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
             Gizmos.DrawWireSphere(camPos, fogEnd);
         }
     }
+}
 }

@@ -35,9 +35,11 @@ public sealed partial class BattleMapCatalog
             Vector3.zero,
             Vector3.one,
             BattleMapTacticalOverlayMode.None);
-        catalog.SetChapterPool("chapter_ashen_frontier", new[] { DefaultForestRuinsMapId });
+        catalog.SetChapterPool("chapter_ashen_gate", new[] { DefaultForestRuinsMapId });
+        catalog.SetChapterPool("chapter_sunken_bastion", new[] { DefaultForestRuinsMapId });
         catalog.SetChapterPool("chapter_ruined_crypts", new[] { DefaultForestRuinsMapId });
-        catalog.SetChapterPool("chapter_warren_depths", new[] { DefaultForestRuinsMapId });
+        catalog.SetChapterPool("chapter_glass_forest", new[] { DefaultForestRuinsMapId });
+        catalog.SetChapterPool("chapter_heartforge_descent", new[] { DefaultForestRuinsMapId });
 
         _editorFantasyWorldsFallbackCatalog = catalog;
         return _editorFantasyWorldsFallbackCatalog;

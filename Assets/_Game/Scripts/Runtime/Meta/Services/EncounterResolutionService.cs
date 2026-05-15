@@ -194,7 +194,8 @@ public sealed class EncounterResolutionService
                 Array.Empty<string>(),
                 squad.EnemyPosture,
                 ResolveEnemyRoleTag(member),
-                "opening:authored"))
+                "opening:authored",
+                CharacterId: member.CharacterId))
             .ToList();
 
         var buildResult = BattleSetupBuilder.Build(Array.Empty<BattleParticipantSpec>(), new BattleEncounterPlan(enemyParticipants, squad.EnemyPosture), _content);

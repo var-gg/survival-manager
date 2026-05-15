@@ -1199,11 +1199,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 501683838985
-    m_Localized: 
+    m_Localized: "Ashen Gate\uC758 \uC794\uD574\uC5D0\uC11C \uCCAB \uBC88\uC9F8 Heartforge
+      \uD30C\uD3B8\uC744 \uD655\uBCF4\uD588\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 501683838986
-    m_Localized: "\uC7AC\uC758 \uBB38 \uCD94\uCD9C"
+    m_Localized: "\uCCAB \uB2E8\uC11C \uD68C\uC218"
     m_Metadata:
       m_Items: []
   - m_Id: 501683838987

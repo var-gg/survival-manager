@@ -27,7 +27,7 @@ MonoBehaviour:
     - MemberId: ally_dawn_priest
       SourceKind: 1
       HeroId: 
-      DisplayName: 단린 (丹麟) / Dawn Priest
+      DisplayName: "\uB2E8\uB9B0 (\u4E39\u9E9F) / Dawn Priest"
       ArchetypeId: priest
       CharacterId: hero_dawn_priest
       Anchor: 1
@@ -37,7 +37,7 @@ MonoBehaviour:
     - MemberId: ally_pack_raider
       SourceKind: 1
       HeroId: 
-      DisplayName: 이빨바람 / Pack Raider
+      DisplayName: "\uC774\uBE68\uBC14\uB78C / Pack Raider"
       ArchetypeId: raider
       CharacterId: hero_pack_raider
       Anchor: 2
@@ -47,7 +47,7 @@ MonoBehaviour:
     - MemberId: ally_echo_savant
       SourceKind: 1
       HeroId: 
-      DisplayName: 공한 (空閑) / Echo Savant
+      DisplayName: "\uACF5\uD55C (\u7A7A\u9591) / Echo Savant"
       ArchetypeId: marksman
       CharacterId: hero_echo_savant
       Anchor: 3
@@ -57,7 +57,7 @@ MonoBehaviour:
     - MemberId: ally_grave_hexer
       SourceKind: 1
       HeroId: 
-      DisplayName: 묵향 (墨香) / Grave Hexer
+      DisplayName: "\uBB35\uD5A5 (\u58A8\u9999) / Grave Hexer"
       ArchetypeId: hexer
       CharacterId: hero_grave_hexer
       Anchor: 5

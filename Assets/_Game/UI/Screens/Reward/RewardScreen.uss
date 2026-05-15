@@ -1,2 +1,28 @@
 .reward-screen {
+    background-color: var(--sm-bg-0);
+    color: var(--sm-ink-1);
+}
+
+.reward-screen .screen__title {
+    color: var(--sm-gold-200);
+}
+
+.reward-screen .panel {
+    background-color: var(--sm-bg-1);
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
+}
+
+.reward-screen .card {
+    background-color: var(--sm-vellum-a07);
+    border-left-color: var(--sm-fam-mystic);
+    border-right-color: var(--sm-gold-300-a24);
+    border-top-color: var(--sm-gold-300-a24);
+    border-bottom-color: var(--sm-gold-300-a24);
+}
+
+.reward-screen .card__title {
+    color: var(--sm-gold-100);
 }

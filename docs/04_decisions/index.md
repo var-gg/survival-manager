@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-04
+- 최종수정일: 2026-05-16
 - 소스오브트루스: `docs/04_decisions/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -14,7 +14,7 @@
 
 ## ADR 목록
 
-- `adr-0001-docs-architecture.md`: 문서 체계와 거버넌스 구조
+- `adr-0001-docs-architecture.md`: 문서 체계와 거버넌스 구조 (superseded: Pindoc 전환)
 - `adr-0002-prototype-phase.md`: prototype 단계 채택
 - `adr-0003-unity-project-structure.md`: Unity 프로젝트 구조 채택
 - `adr-0004-content-pipeline-boundary.md`: 콘텐츠 파이프라인 경계 채택
@@ -36,9 +36,9 @@
 - `adr-0021-character-definition-identity-layer.md`: `CharacterDefinition` identity layer와 localized battle metadata 채택
 - `adr-0022-narrative-architecture.md`: 내러티브 아키텍처 (definitions in Content, runtime in Meta, presentation in Unity) 채택
 - `adr-0023-meta-content-adapter-boundary.md`: `SM.Meta` content adapter boundary와 pure Meta asmdef 경계 채택
-- `adr-0024-narrative-human-centric-reskin.md`: 내러티브 인간 중심 reskin (P09 정렬, 캐릭터 IP 운영, 회수 가능 결말, 삼국지 구조 흡수) 채택
+- `adr-0024-narrative-human-centric-reskin.md`: 내러티브 인간 중심 reskin (superseded: Pindoc 전환)
 
 ## 운영 메모
 
 - ADR 번호는 중복 없이 증가한다.
-- 구조/정책이 durable하게 바뀌면 관련 기준 문서와 ADR을 함께 갱신한다.
+- 신규 결정은 Pindoc Decision/Analysis가 기본이다. git ADR은 코드 직결 architecture 결정에만 사용한다.

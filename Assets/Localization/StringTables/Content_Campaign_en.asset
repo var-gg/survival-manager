@@ -39,7 +39,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3635404801
-    m_Localized: Seal the crypt lords.
+    m_Localized: Cross the Pale Archive and its false memorials.
     m_Metadata:
       m_Items: []
   - m_Id: 4453294080
@@ -47,7 +47,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4453294081
-    m_Localized: Vanguard outpost route.
+    m_Localized: Fixed gate line with Solarium P09 patrols.
     m_Metadata:
       m_Items: []
   - m_Id: 13529767936
@@ -88,6 +88,110 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 43833614337
     m_Localized: Final ritual route.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452987370070016
+    m_Localized: Ashen Gate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452987583979520
+    m_Localized: Break the Solarium border gate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452989110706176
+    m_Localized: Sunken Bastion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452989110706177
+    m_Localized: Break the drowned Solarium adjudication line.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452991048474624
+    m_Localized: Glass Forest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452991048474625
+    m_Localized: Enter the refracted Solarium record field.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452992801693696
+    m_Localized: Heartforge Descent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452992801693697
+    m_Localized: Push through the final gate into the worldscar.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452994521358336
+    m_Localized: Wolfpine Trail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16452994521358337
+    m_Localized: Pack scouts and Grey Fang's vanguard turn the route into a pursuit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453011638312960
+    m_Localized: Sunken Bastion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453011642507264
+    m_Localized: Shielded adjudicators protect a submerged reliquary.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453031708057600
+    m_Localized: Tithe Road
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453031708057601
+    m_Localized: Marked carriers and pureflame escorts test cleanse timing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453049701621760
+    m_Localized: Ruined Crypts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453049701621761
+    m_Localized: Archive keepers turn memorial records into attrition pressure.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453070119493632
+    m_Localized: Bone Orchard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453070119493633
+    m_Localized: Lattice-root watchers flood the lane with summoned bodies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453090973573120
+    m_Localized: Glass Forest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453090973573121
+    m_Localized: Shards, clerics, and recordkeepers split targeting priorities.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453109696946176
+    m_Localized: Starved Menagerie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453109696946177
+    m_Localized: Broken specimens and snare runners create long swarm pressure.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453126021177344
+    m_Localized: Heartforge Gate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453126021177345
+    m_Localized: Gate guards and record-right markers test hybrid break tools.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453148565561344
+    m_Localized: Worldscar Depths
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16453148565561345
+    m_Localized: Baekgyu's final archive cell combines every prior pressure lane.
     m_Metadata:
       m_Items: []
   references:

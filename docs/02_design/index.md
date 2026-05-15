@@ -1,26 +1,31 @@
-# 02 디자인
+# 02 design/runtime contract
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-10
-- 소스오브트루스: `docs/02_design/index.md`
+- 최종수정일: 2026-05-16
+- 소스오브트루스: Pindoc Wiki for product/design planning; `docs/02_design/index.md` for remaining repo contract inventory
 - 관련문서:
   - `docs/index.md`
+  - `docs/00_governance/source-of-truth-matrix.md`
   - `docs/03_architecture/index.md`
-  - `docs/04_decisions/adr-0014-grid-deployment-continuous-combat.md`
+  - `pindoc://decision-doc-harness-pindoc-migration`
 
 ## 목적
 
-게임 디자인, UX 흐름, 화면/시스템 설계 문서를 모은다.
+이 폴더는 더 이상 제품/게임기획/창작 방향의 source-of-truth가 아니다.
+Pindoc 이관이 끝나지 않았거나 코드·validator·runtime contract와 직접 묶여 아직 repo에 남겨 둔 gameplay/content/UI 계약만 보관한다.
 
-## design와 harness 경계
+새 product vision, MVP 범위, design pillars, narrative/world/campaign/character lore, visual mockup 결정은 Pindoc Wiki에 작성한다.
+repo에 남은 문서를 읽을 때도 "무엇을 만들지"의 창작 기준이 아니라 "현재 구현과 validation이 어떤 contract를 기대하는지"로 제한해서 해석한다.
 
-- 이 폴더는 `무엇을 만들지`와 플레이어 경험 기준을 정의한다.
-- Unity task를 `어떻게 닫을지`에 대한 preflight, phase gate, validator-first, loop budget은 `docs/03_architecture/unity-agent-harness-contract.md`와 그 하위 운영 계약 문서를 따른다.
-- 큰 migration task의 실행/핸드오프 기준은 design 문서가 아니라 현재 task 상태 문서와 task template를 우선한다.
-- design 문서에 implementation loop 규칙을 섞지 않는다. 그런 규칙은 architecture/harness 문서로 보낸다.
+## 유지 기준
 
-## combat 문서
+- 코드나 validator가 직접 기대하는 schema, enum, content budget, fatal validation rule은 repo에 남긴다.
+- Pindoc 최신본이 있는 creative planning 문서는 repo에서 제거한다.
+- 삭제하지 않은 draft narrative seed는 runtime seed 동기화 전 reference로만 취급한다.
+- 이 폴더의 code-facing contract도 후속 작업에서 `docs/03_architecture/**` 또는 Pindoc artifact로 세분 이동할 수 있다.
+
+## combat contract 문서
 
 - `combat/authority-matrix.md`: UnitKit/Skill/Affix/Synergy/Augment/Status 권한 경계
 - `combat/resource-cadence-loadout.md`: 6-slot topology, energy cadence, action lane 기준
@@ -50,71 +55,28 @@
 - `combat/hero-traits.md`: recruit trait/quirk와 token 정책
 - `combat/battle-playback-contract.md`: 플레이백 정책, seek, 스크러버, 리플레이 계약
 
-## meta 문서
+## meta contract 문서
 
-- `meta/town-and-expedition-loop.md`: Town -> chapter/site -> Battle -> Reward 루프 기준
-- `meta/campaign-chapter-and-expedition-sites.md`: story chapter, site, endless unlock 기준
-- `meta/recruitment-contract.md`: 4-slot recruit pack, on-plan/protected, refresh, scout 기준
-- `meta/retrain-contract.md`: flex-only retrain, cost curve, previous-result exclusion, pity 기준
-- `meta/economy-protection-contract.md`: Gold/Echo split, refit/recovery rail, no-dead-reward, dismiss refund 기준
-- `meta/duplicate-handling-contract.md`: duplicate 판정, Echo conversion, recruit pool exclusion 기준
-- `meta/drop-table-rarity-bracket-and-source-matrix.md`: automatic drop/source/rarity floor
-- `meta/item-and-affix-system.md`: 아이템과 affix 구조, Echo refit, advanced crafting 경계
-- `meta/affix-authoring-schema.md`: affix schema와 authority / budget / line-density 기준
-- `meta/affix-pool-v1.md`: affix catalog와 live subset
-- `meta/equipment-family-and-crafting-depth.md`: weapon family floor와 deep crafting 경계
-- `meta/item-passive-augment-budget.md`: 출시 기준 item/passive/augment 예산 허브와 passive/permanent V1 cap
-- `meta/passive-board-node-catalog.md`: launch floor passive board node 카탈로그
-- `meta/augment-system.md`: augment 문법
-- `meta/augment-synergy-operating-model.md`: augment offer와 synergy 운영 기준
-- `meta/augment-catalog-v1.md`: augment catalog와 live subset
-- `meta/permanent-augment-progression.md`: `unlock many, equip one` permanent progression
-- `meta/pvp-boundary.md`: PVP 경계
-- `meta/pvp-ruleset-and-arena-loop.md`: async arena ruleset과 season cadence
-- `meta/session-realm-and-official-online-boundary.md`: `OfflineLocal` / `OnlineAuthoritative` session realm과 공식 온라인 경계
-- `meta/character-race-class-role-archetype-taxonomy.md`: `Character / Race / Class / Role / Archetype` taxonomy와 launch floor identity layer
-- `meta/synergy-breakpoints-and-soft-counters.md`: 출시 기준 2/4 breakpoint와 soft counter
-- `meta/synergy-family-catalog.md`: 7 family 2/4 payload 카탈로그
-- `meta/synergy-and-augment-taxonomy.md`: synergy / augment 역할 경계, 2/4 threshold, rarity
+- `meta/index.md`: meta contract 문서 인덱스
 
-## systems 문서
+## systems contract 문서
 
 - `systems/launch-content-scope-and-balance.md`: 출시 기준 콘텐츠 수량과 Loop A loadout 문법 허브
 - `systems/first-playable-slice.md`: Loop D first playable subset cap, quota, pool filtering
 - `systems/launch-floor-content-matrix.md`: 12 core archetype launch floor matrix
-- `systems/launch-encounter-variety-and-answer-lane-matrix.md`: 24 encounter family/site/reward routing matrix
+- `systems/launch-encounter-variety-and-answer-lane-matrix.md`: encounter family/site/reward routing matrix
 - `systems/squad-blueprint-and-build-ownership.md`: squad blueprint와 빌드 소유권 기준
 - `systems/skills-items-and-passive-boards.md`: 스킬, 아이템, 패시브 보드, permanent thesis build 구조
 - `systems/content-budgeting-contract.md`: BudgetCard, domain window, derived sanity 계약
 - `systems/rarity-ladder-contract.md`: `Common / Rare / Epic` governance rarity 계약
 - `systems/v1-forbidden-list.md`: fatal validator forbidden policy
 
-## narrative 문서
+## narrative transition 문서
 
-- `narrative/index.md`: 내러티브 설계 인덱스 (세계관, 페이싱, 아크, 비트, 이벤트 스키마, 세력 충돌)
-- `narrative/world-building-bible.md`: 세계관 바이블
-- `narrative/narrative-pacing-formula.md`: 감정 곡선, session cadence, reveal timing 공식
-- `narrative/campaign-story-arc.md`: 캠페인 로그라인, chapter 목적, 엔딩/후속작 hook
-- `narrative/chapter-beat-sheet.md`: node 단위 비트, 감정값, 영웅 합류
-- `narrative/dialogue-event-schema.md`: story event ID, trigger, once policy, presentation grade
-- `narrative/faction-conflict-matrix.md`: 세력 쌍별 충돌 행렬
+- `narrative/index.md`: Pindoc-first narrative transition hold 인덱스
 
-### narrative / deck / meta cross-link
+## UI contract 문서
 
-- site topology와 encounter lane은 `meta/campaign-chapter-and-expedition-sites.md`가 소유한다.
-- node 단위 beat와 감정값은 `narrative/chapter-beat-sheet.md`가 소유한다.
-- hero canon과 tier는 `deck/character-lore-registry.md`가 소유한다.
-- story unlock/fail-safe는 `meta/story-gating-and-unlock-rules.md`가 소유한다.
-
-## 기타 디자인 문서
-
-- `deck/index.md`: 덱 설계 인덱스
-- `deck/roster-archetype-launch-scope.md`: 출시 기준 roster와 archetype package
-- `deck/launch-core-roster-sheet.md`: 12 core archetype 운영용 roster truth sheet
-- `deck/character-lore-registry.md`: 영웅 canon short bio, tier, beat budget 레지스트리
-- `deck/hero-expansion-roadmap.md`: 영웅풀 확장 wave, specialist 정책, DLC/sequel 규칙
-- `progression/explanation-progression-premise.md`: progression premise 설명 문서
 - `ui/battle-observer-ui.md`: 전투 관전자 UI 기준
-- `ui/town-character-sheet-ui.md`: Town 5-panel character sheet IA (정보 구조 SoT — 비주얼은 pindoc 시안 갤러리)
+- `ui/town-character-sheet-ui.md`: Town 5-panel character sheet source/view-state contract
 - `ui/localization-policy.md`: 플레이어 노출 텍스트와 localization table 정책
-- `ui/handoff/README.md`: [deprecated] Claude Design HTML/CSS 핸드오프 historical reference. 비주얼 SoT는 pindoc Analysis (`pindoc://town-ui-ux-시안-갤러리-v1-gallery-town-ui-mockups-v1` / `pindoc://analysis-town-ui-component-system-v1` 등).

@@ -297,12 +297,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 74389100057244041}
-  - component: {fileID: 5275982302311485754}
-  - component: {fileID: 5050455141263337440}
-  - component: {fileID: 4635660487926803030}
-  - component: {fileID: 6505223694051572276}
-  - component: {fileID: 2719267127372807088}
-  - component: {fileID: 7729536161086125865}
+  - component: {fileID: 8363822972429694235}
+  - component: {fileID: 3893495811646597520}
+  - component: {fileID: 431138850045120374}
+  - component: {fileID: 35067829060127159}
+  - component: {fileID: 7943304398661685005}
+  - component: {fileID: 409618327390568769}
   m_Layer: 0
   m_Name: BattleActor_PrimitiveWrapper
   m_TagString: Untagged
@@ -327,7 +327,7 @@ Transform:
   - {fileID: 4774599708852023584}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5275982302311485754
+--- !u!114 &8363822972429694235
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -350,7 +350,7 @@ MonoBehaviour:
   castAnchor: {fileID: 886464728186366658}
   projectileOrigin: {fileID: 3389051416325933911}
   cameraFocusTarget: {fileID: 1372072753471815891}
---- !u!114 &5050455141263337440
+--- !u!114 &3893495811646597520
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -362,7 +362,7 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: 
   m_EditorClassIdentifier: SM.Unity::SM.Unity.BattleActorView
---- !u!114 &4635660487926803030
+--- !u!114 &431138850045120374
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -378,7 +378,7 @@ MonoBehaviour:
   bodyRenderer: {fileID: 3087896677837666860}
   shadowRenderer: {fileID: 8441422592967485605}
   createRuntimePrimitivesIfMissing: 1
---- !u!114 &6505223694051572276
+--- !u!114 &35067829060127159
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -391,7 +391,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SM.Unity::SM.Unity.BattleAnimationEventBridge
   rawEventMappings: []
---- !u!114 &2719267127372807088
+--- !u!114 &7943304398661685005
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -404,7 +404,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SM.Unity::SM.Unity.BattleActorVfxSurface
   catalog: {fileID: 0}
---- !u!114 &7729536161086125865
+--- !u!114 &409618327390568769
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

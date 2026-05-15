@@ -39,7 +39,7 @@ public sealed class BattlePresentationCueBuilderTests
         });
         var current = CreateStep(units: new[]
         {
-            CreateUnit("ally", TeamSide.Ally, targetId: "enemy_b", isDefending: true, actionState: CombatActionState.Reposition),
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy_b", isDefending: true, actionState: CombatActionState.Reposition, position: new CombatVector2(-0.6f, 0f)),
             CreateUnit("enemy_a", TeamSide.Enemy),
             CreateUnit("enemy_b", TeamSide.Enemy),
         });
@@ -49,6 +49,55 @@ public sealed class BattlePresentationCueBuilderTests
         Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.TargetChanged && cue.SubjectActorId == "ally" && cue.RelatedActorId == "enemy_b"), Is.True);
         Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.GuardEnter && cue.SubjectActorId == "ally"), Is.True);
         Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.RepositionStart && cue.SubjectActorId == "ally"), Is.True);
+    }
+
+    [Test]
+    public void Build_EmitsApproachAndSecurePositionMovementCues_WhenActorsMove()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("approach", TeamSide.Ally, targetId: "enemy_a", actionState: CombatActionState.AcquireTarget, position: new CombatVector2(0f, 0f)),
+            CreateUnit("secure", TeamSide.Ally, targetId: "enemy_b", actionState: CombatActionState.AcquireTarget, position: new CombatVector2(0f, 0f)),
+            CreateUnit("enemy_a", TeamSide.Enemy, targetId: "approach", position: new CombatVector2(2f, 0f)),
+            CreateUnit("enemy_b", TeamSide.Enemy, targetId: "secure", position: new CombatVector2(2f, 0f)),
+        });
+        var current = CreateStep(units: new[]
+        {
+            CreateUnit("approach", TeamSide.Ally, targetId: "enemy_a", actionState: CombatActionState.Approach, position: new CombatVector2(0.55f, 0f)),
+            CreateUnit("secure", TeamSide.Ally, targetId: "enemy_b", actionState: CombatActionState.SecurePosition, position: new CombatVector2(0f, 0.55f)),
+            CreateUnit("enemy_a", TeamSide.Enemy, targetId: "approach", position: new CombatVector2(2f, 0f)),
+            CreateUnit("enemy_b", TeamSide.Enemy, targetId: "secure", position: new CombatVector2(2f, 0f)),
+        });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+        var approach = cues.Single(cue => cue.CueType == BattlePresentationCueType.RepositionStart && cue.SubjectActorId == "approach");
+        var secure = cues.Single(cue => cue.CueType == BattlePresentationCueType.RepositionStart && cue.SubjectActorId == "secure");
+
+        Assert.That(approach.Magnitude, Is.EqualTo(0.55f).Within(0.001f));
+        Assert.That(approach.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.DashEngage));
+        Assert.That(approach.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
+        Assert.That(secure.Magnitude, Is.EqualTo(0.55f).Within(0.001f));
+        Assert.That(secure.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.LateralStrafe));
+        Assert.That(secure.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Left));
+    }
+
+    [Test]
+    public void Build_DoesNotEmitMovementCue_WhenMovementStateHasTinyDelta()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.AcquireTarget, position: new CombatVector2(0f, 0f)),
+            CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(2f, 0f)),
+        });
+        var current = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.Approach, position: new CombatVector2(0.02f, 0f)),
+            CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(2f, 0f)),
+        });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.RepositionStart && cue.SubjectActorId == "ally"), Is.False);
     }
 
     [Test]
@@ -359,6 +408,64 @@ public sealed class BattlePresentationCueBuilderTests
         Assert.That(FindImpact(cues, "enemy_heavy").AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Heavy));
         Assert.That(FindImpact(cues, "enemy_knockdown").AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.Knockdown));
         Assert.That(FindImpact(cues, "enemy_knockdown").AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Heavy));
+    }
+
+    [Test]
+    public void Build_EmitsKnockbackTrace_WhenDamageTargetDisplaces()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", position: new CombatVector2(0f, 0f)),
+            CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1f, 0f)),
+        });
+        var current = CreateStep(
+            units: new[]
+            {
+                CreateUnit("ally", TeamSide.Ally, targetId: "enemy", position: new CombatVector2(0f, 0f)),
+                CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1.45f, 0f)),
+            },
+            events: new[]
+            {
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f, Note: "crit"),
+            });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        var trace = cues.Single(cue => cue.CueType == BattlePresentationCueType.RepositionStart && cue.SubjectActorId == "enemy");
+        Assert.That(trace.RelatedActorId, Is.EqualTo("ally"));
+        Assert.That(trace.Magnitude, Is.EqualTo(0.45f).Within(0.001f));
+        Assert.That(trace.Note, Does.Contain("trace_knockback"));
+        Assert.That(trace.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BackstepDisengage));
+        Assert.That(trace.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Backward));
+        Assert.That(trace.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Heavy));
+    }
+
+    [Test]
+    public void Build_DoesNotEmitKnockbackTrace_ForMissOrTinyTargetDelta()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy_miss", position: new CombatVector2(0f, 0f)),
+            CreateUnit("enemy_miss", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1f, 0f)),
+            CreateUnit("enemy_tiny", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(2f, 0f)),
+        });
+        var current = CreateStep(
+            units: new[]
+            {
+                CreateUnit("ally", TeamSide.Ally, targetId: "enemy_miss", position: new CombatVector2(0f, 0f)),
+                CreateUnit("enemy_miss", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1.5f, 0f)),
+                CreateUnit("enemy_tiny", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(2.1f, 0f)),
+            },
+            events: new[]
+            {
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_miss"), "Enemy Miss", 0f, Note: "miss_range"),
+                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_tiny"), "Enemy Tiny", 8f),
+            });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.RepositionStart && cue.SubjectActorId == "enemy_miss"), Is.False);
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.RepositionStart && cue.SubjectActorId == "enemy_tiny"), Is.False);
     }
 
     [Test]

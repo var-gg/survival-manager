@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a5a8ad2cd1d6ad4296f85b4af65bfff, type: 3}
+  m_Name: site_worldscar_depths_skirmish_2
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.EncounterDefinition
+  Id: site_worldscar_depths_skirmish_2
+  NameKey: content.encounter.site_worldscar_depths_skirmish_2.name
+  DescriptionKey: content.encounter.site_worldscar_depths_skirmish_2.desc
+  Kind: 0
+  SiteId: site_worldscar_depths
+  EnemySquadTemplateId: site_worldscar_depths_skirmish_2_squad
+  BossOverlayId: 
+  RewardSourceId: reward_source_skirmish
+  FactionId: faction_worldscar_depths
+  ThreatTier: 1
+  ThreatCost: 1
+  ThreatSkulls: 1
+  DifficultyBand: chapter_entry
+  RewardDropTags:
+  - reward_source_skirmish
+  - faction_worldscar_depths
+  - skirmish
+  - encounter_family_sustain_grind
+  - answer_lane_adaptive_mastery
+  legacyDisplayName: 
+  legacyDescription: 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
@@ -43,6 +44,32 @@ public sealed class BattleTimelineControllerTests
         Assert.That(timeline.CurrentIndex, Is.EqualTo(1));
         Assert.That(curr, Is.Not.Null);
         Assert.That(curr!.StepIndex, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void TryAdvance_WhenDeltaConsumesMultipleSteps_ReportsEveryTransition()
+    {
+        var (_, timeline) = CreateTimeline();
+        var fixedStep = timeline.FixedStepSeconds;
+        var transitions = new List<(BattleSimulationStep PreviousStep, BattleSimulationStep CurrentStep)>();
+
+        var stepped = timeline.TryAdvance(
+            fixedStep * 3.25f,
+            out var previous,
+            out var current,
+            out _,
+            transitions);
+
+        Assert.That(stepped, Is.True);
+        Assert.That(transitions, Has.Count.EqualTo(3));
+        Assert.That(transitions[0].PreviousStep.StepIndex, Is.EqualTo(0));
+        Assert.That(transitions[0].CurrentStep.StepIndex, Is.EqualTo(1));
+        Assert.That(transitions[1].PreviousStep.StepIndex, Is.EqualTo(1));
+        Assert.That(transitions[1].CurrentStep.StepIndex, Is.EqualTo(2));
+        Assert.That(transitions[2].PreviousStep.StepIndex, Is.EqualTo(2));
+        Assert.That(transitions[2].CurrentStep.StepIndex, Is.EqualTo(3));
+        Assert.That(previous.StepIndex, Is.EqualTo(2));
+        Assert.That(current.StepIndex, Is.EqualTo(3));
     }
 
     [Test]

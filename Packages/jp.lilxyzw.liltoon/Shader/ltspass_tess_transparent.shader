@@ -778,6 +778,7 @@ Shader "Hidden/ltspass_tess_transparent"
             #define LIL_OPTIMIZE_APPLY_SHADOW_FA
             #define LIL_OPTIMIZE_USE_FORWARDADD
             #define LIL_OPTIMIZE_USE_VERTEXLIGHT
+            
             #define LIL_SRP_VERSION_MAJOR 17
             #define LIL_SRP_VERSION_MINOR 4
             #define LIL_SRP_VERSION_PATCH 0
@@ -787,6 +788,8 @@ Shader "Hidden/ltspass_tess_transparent"
             #pragma exclude_renderers gles gles3 glcore
             #pragma fragmentoption ARB_precision_hint_fastest
 
+            
+            
         ENDHLSL
 
 
@@ -1337,6 +1340,7 @@ Shader "Hidden/ltspass_tess_transparent"
             #define LIL_OPTIMIZE_APPLY_SHADOW_FA
             #define LIL_OPTIMIZE_USE_FORWARDADD
             #define LIL_OPTIMIZE_USE_VERTEXLIGHT
+            
             #define LIL_SRP_VERSION_MAJOR 17
             #define LIL_SRP_VERSION_MINOR 4
             #define LIL_SRP_VERSION_PATCH 0
@@ -1346,6 +1350,8 @@ Shader "Hidden/ltspass_tess_transparent"
             #pragma exclude_renderers gles gles3 glcore
             #pragma fragmentoption ARB_precision_hint_fastest
 
+            
+            
         ENDHLSL
 
 

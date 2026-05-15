@@ -32,6 +32,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private readonly List<BattleEvent> _recentLogs = new();
     private readonly List<string> _decisiveTimeline = new();
+    private readonly List<(BattleSimulationStep PreviousStep, BattleSimulationStep CurrentStep)> _consumedTransitions = new();
     private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
     private readonly BattleCameraFramingPolicy _cameraFramingPolicy = new();
     private readonly ScreenHelpState _helpState = new(HelpPrefsKey);
@@ -133,11 +134,13 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
+        _consumedTransitions.Clear();
         var stepped = _timeline.TryAdvance(
             Time.deltaTime,
             out var previousStep,
             out var currentStep,
-            out var alpha);
+            out var alpha,
+            _consumedTransitions);
 
         if (previousStep == null || currentStep == null)
         {
@@ -146,14 +149,16 @@ public sealed class BattleScreenController : MonoBehaviour
 
         if (stepped)
         {
-            _totalEventCount += currentStep.Events.Count;
-            TrackDecisiveEvents(currentStep);
-            presentationController.AdvanceStep(previousStep, currentStep);
-            RefreshHud(currentStep);
-
-            if (currentStep.IsFinished && !_battleFinishedHandled)
+            if (_consumedTransitions.Count == 0)
             {
-                FinishBattle();
+                ConsumeTimelineTransition(previousStep, currentStep);
+            }
+            else
+            {
+                foreach (var transition in _consumedTransitions)
+                {
+                    ConsumeTimelineTransition(transition.PreviousStep, transition.CurrentStep);
+                }
             }
         }
 
@@ -168,6 +173,19 @@ public sealed class BattleScreenController : MonoBehaviour
         if (_presentationOptions.ShowDebugOverlay)
         {
             DrawDebugTargetLines(currentStep);
+        }
+    }
+
+    private void ConsumeTimelineTransition(BattleSimulationStep previousStep, BattleSimulationStep currentStep)
+    {
+        _totalEventCount += currentStep.Events.Count;
+        TrackDecisiveEvents(currentStep);
+        presentationController.AdvanceStep(previousStep, currentStep);
+        RefreshHud(currentStep);
+
+        if (currentStep.IsFinished && !_battleFinishedHandled)
+        {
+            FinishBattle();
         }
     }
 

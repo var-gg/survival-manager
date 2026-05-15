@@ -10,10 +10,7 @@
   - `docs/04_decisions/adr-0007-thirdparty-asset-policy.md`
   - `docs/04_decisions/adr-0022-narrative-architecture.md`
   - `docs/02_design/narrative/index.md`
-  - `docs/02_design/narrative/world-building-bible.md`
-  - `docs/02_design/narrative/campaign-story-arc.md`
-  - `docs/02_design/narrative/faction-conflict-matrix.md`
-  - `docs/02_design/deck/character-lore-registry.md`
+  - Pindoc narrative / character-lore artifacts
 
 ## ⚠ 폐기 사유 (2026-05-05)
 
@@ -84,7 +81,7 @@
 
 감수할 비용:
 
-- `docs/02_design/narrative/world-building-bible.md`, `faction-conflict-matrix.md`, `campaign-story-arc.md`, `chapter-beat-sheet.md`, `master-script.md`, `docs/02_design/deck/character-lore-registry.md`가 거의 전체 rewrite다.
+- 당시 repo narrative/deck 문서군이 거의 전체 rewrite 대상이었다. 현재 creative source는 Pindoc narrative / character-lore artifacts로 이관됐다.
 - `faction_*` ID 일부 변경. 단 `CharacterDefinition.Id`는 race-neutral 명명(`warden`, `priest`, `raider` 등)이라 보존 가능. `HeroLoreDefinition.HeroId`는 `hero_*` 패턴 보존하되 일부 의미·소속을 갱신.
 - `race_relicborn`과 4 Relicborn `UnitArchetypeDefinition` 후보는 폐기하고 인간 4번째 세력의 `culture_*` 정의로 대체. `runtime_decision: deferred-runtime`인 4 캐릭터 자산이 아직 만들어지지 않은 점이 비용 회피에 다행이다 (`character-lore-registry.md`).
 - ch3 midpoint reveal의 시각적 충격(Relicborn 각성)이 약해진다. 충격을 다른 축(정치적 폭로, 가문 비밀, 신앙의 거짓)으로 이전해야 한다.

@@ -54,50 +54,86 @@ MonoBehaviour:
     RequiredContextTags:
     - site_ashen_gate
     - answer_lane_guard_anchor
-  - Id: elite_site_cinder_watch_answer_lane_reach_anti_carry
+  - Id: elite_site_wolfpine_trail_answer_lane_peel_anti_dive
     RewardType: 2
     Amount: 12
     RarityBracket: 2
     Weight: 1
     IsGuaranteed: 0
     RequiredContextTags:
-    - site_cinder_watch
-    - answer_lane_reach_anti_carry
-  - Id: elite_site_forgotten_warren_answer_lane_anti_swarm_persistence
+    - site_wolfpine_trail
+    - answer_lane_peel_anti_dive
+  - Id: elite_site_sunken_bastion_answer_lane_break_formation
     RewardType: 2
     Amount: 12
     RarityBracket: 2
     Weight: 1
     IsGuaranteed: 0
     RequiredContextTags:
-    - site_forgotten_warren
-    - answer_lane_anti_swarm_persistence
-  - Id: elite_site_twisted_den_answer_lane_peel_cleanse
+    - site_sunken_bastion
+    - answer_lane_break_formation
+  - Id: elite_site_tithe_road_answer_lane_anti_mark_cleanse
     RewardType: 2
     Amount: 12
     RarityBracket: 2
     Weight: 1
     IsGuaranteed: 0
     RequiredContextTags:
-    - site_twisted_den
-    - answer_lane_peel_cleanse
-  - Id: elite_site_ruined_crypt_answer_lane_anti_sustain_finish
+    - site_tithe_road
+    - answer_lane_anti_mark_cleanse
+  - Id: elite_site_ruined_crypts_answer_lane_anti_sustain_finish
     RewardType: 2
     Amount: 12
     RarityBracket: 2
     Weight: 1
     IsGuaranteed: 0
     RequiredContextTags:
-    - site_ruined_crypt
+    - site_ruined_crypts
     - answer_lane_anti_sustain_finish
-  - Id: elite_site_grave_sanctum_answer_lane_hybrid_boss_prep
+  - Id: elite_site_bone_orchard_answer_lane_anti_summon_burst
     RewardType: 2
     Amount: 12
     RarityBracket: 2
     Weight: 1
     IsGuaranteed: 0
     RequiredContextTags:
-    - site_grave_sanctum
-    - answer_lane_hybrid_boss_prep
+    - site_bone_orchard
+    - answer_lane_anti_summon_burst
+  - Id: elite_site_glass_forest_answer_lane_cleanse_mobility
+    RewardType: 2
+    Amount: 12
+    RarityBracket: 2
+    Weight: 1
+    IsGuaranteed: 0
+    RequiredContextTags:
+    - site_glass_forest
+    - answer_lane_cleanse_mobility
+  - Id: elite_site_starved_menagerie_answer_lane_anti_swarm_persistence
+    RewardType: 2
+    Amount: 12
+    RarityBracket: 2
+    Weight: 1
+    IsGuaranteed: 0
+    RequiredContextTags:
+    - site_starved_menagerie
+    - answer_lane_anti_swarm_persistence
+  - Id: elite_site_heartforge_gate_answer_lane_hybrid_break
+    RewardType: 2
+    Amount: 12
+    RarityBracket: 2
+    Weight: 1
+    IsGuaranteed: 0
+    RequiredContextTags:
+    - site_heartforge_gate
+    - answer_lane_hybrid_break
+  - Id: elite_site_worldscar_depths_answer_lane_adaptive_mastery
+    RewardType: 2
+    Amount: 12
+    RarityBracket: 2
+    Weight: 1
+    IsGuaranteed: 0
+    RequiredContextTags:
+    - site_worldscar_depths
+    - answer_lane_adaptive_mastery
   legacyDisplayName: 
   legacyDescription: 

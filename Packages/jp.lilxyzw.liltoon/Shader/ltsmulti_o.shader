@@ -672,6 +672,8 @@ Shader "Hidden/lilToonMultiOutline"
             #define LIL_MULTI_INPUTS_UDIMDISCARD
             #define LIL_MULTI_INPUTS_OUTLINE
 
+            
+            
         ENDHLSL
 
 
@@ -1201,6 +1203,8 @@ Shader "Hidden/lilToonMultiOutline"
             #define LIL_MULTI_INPUTS_UDIMDISCARD
             #define LIL_MULTI_INPUTS_OUTLINE
 
+            
+            
         ENDHLSL
 
 

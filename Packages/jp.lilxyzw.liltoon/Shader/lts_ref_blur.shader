@@ -722,6 +722,7 @@ Shader "Hidden/lilToonRefractionBlur"
             #define LIL_OPTIMIZE_APPLY_SHADOW_FA
             #define LIL_OPTIMIZE_USE_FORWARDADD
             #define LIL_OPTIMIZE_USE_VERTEXLIGHT
+            
             #define LIL_SRP_VERSION_MAJOR 17
             #define LIL_SRP_VERSION_MINOR 4
             #define LIL_SRP_VERSION_PATCH 0
@@ -731,6 +732,8 @@ Shader "Hidden/lilToonRefractionBlur"
             #define LIL_REFRACTION
             #define LIL_REFRACTION_BLUR2
 
+            
+            
         ENDHLSL
 
 
@@ -1138,6 +1141,7 @@ Shader "Hidden/lilToonRefractionBlur"
             #define LIL_OPTIMIZE_APPLY_SHADOW_FA
             #define LIL_OPTIMIZE_USE_FORWARDADD
             #define LIL_OPTIMIZE_USE_VERTEXLIGHT
+            
             #define LIL_SRP_VERSION_MAJOR 17
             #define LIL_SRP_VERSION_MINOR 4
             #define LIL_SRP_VERSION_PATCH 0
@@ -1147,6 +1151,8 @@ Shader "Hidden/lilToonRefractionBlur"
             #define LIL_REFRACTION
             #define LIL_REFRACTION_BLUR2
 
+            
+            
         ENDHLSL
 
 

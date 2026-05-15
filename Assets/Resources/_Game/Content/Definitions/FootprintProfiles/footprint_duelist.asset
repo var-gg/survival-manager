@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de6689e57582cbe499b3baa8f557c5f7, type: 3}
   m_Name: footprint_duelist
   m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:FootprintProfileDefinition
-  NavigationRadius: 0.4
-  SeparationRadius: 0.62
-  CombatReach: 0.58
-  PreferredRangeMin: 0.55
-  PreferredRangeMax: 1.25
+  NavigationRadius: 0.45
+  SeparationRadius: 0.68
+  CombatReach: 1.3
+  PreferredRangeMin: 0.95
+  PreferredRangeMax: 1.45
   EngagementSlotCount: 6
-  EngagementSlotRadius: 0.9
+  EngagementSlotRadius: 1.3
   BodySizeCategory: 1
   HeadAnchorHeight: 2
