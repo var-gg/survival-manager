@@ -23,6 +23,28 @@ public sealed class PermanentAugmentView
     private readonly VisualElement _equipSlot;
     private readonly Button? _equipCta;
     private readonly Label? _equipCtaLabel;
+    private readonly VisualElement? _modalRoot;
+    private readonly Button? _closeButton;
+
+    public void BindClose(Action close)
+    {
+        if (_closeButton == null || close == null) return;
+        _closeButton.clicked += close;
+    }
+
+    public void Open()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.Flex;
+        _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
+    }
+
+    public void Close()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.None;
+        _modalRoot.AddToClassList("sm-modal-anim--enter");
+    }
 
     // glow halo 위에 합성하는 augment icon — 최초 Render 시 1회 생성 후 재사용.
     private VisualElement? _detailHeroIcon;
@@ -33,6 +55,8 @@ public sealed class PermanentAugmentView
     public PermanentAugmentView(VisualElement root)
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
+        _modalRoot = root.Q<VisualElement>("PapRoot");
+        _closeButton = root.Q<Button>(className: "pap-header__close");
         _augmentGrid = root.Q<VisualElement>("AugmentGrid")
             ?? throw new ArgumentException("AugmentGrid 못 찾음");
         _detailHero = root.Q<VisualElement>("DetailHero")

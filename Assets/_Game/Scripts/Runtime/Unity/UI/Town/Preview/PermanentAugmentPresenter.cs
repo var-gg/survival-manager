@@ -27,17 +27,29 @@ public sealed class PermanentAugmentPresenter : IPermanentAugmentActions
     public PermanentAugmentPresenter(
         GameSessionRoot root,
         PermanentAugmentView view,
-        SpriteLoader augmentSprite)
+        SpriteLoader? augmentSprite = null)
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _view = view ?? throw new ArgumentNullException(nameof(view));
-        _augmentSprite = augmentSprite ?? throw new ArgumentNullException(nameof(augmentSprite));
+        _augmentSprite = augmentSprite ?? (_ => null);
     }
 
     public void Initialize()
     {
         _view.Bind(this);
+        _view.BindClose(Close);
         Refresh();
+    }
+
+    public void Open()
+    {
+        _view.Open();
+        Refresh();
+    }
+
+    public void Close()
+    {
+        _view.Close();
     }
 
     public void Refresh()

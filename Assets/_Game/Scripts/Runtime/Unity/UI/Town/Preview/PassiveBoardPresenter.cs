@@ -32,14 +32,14 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
         GameSessionRoot root,
         PassiveBoardView view,
         ContentTextResolver contentText,
-        SpriteLoader classSprite,
-        SpriteLoader affixSprite)
+        SpriteLoader? classSprite = null,
+        SpriteLoader? affixSprite = null)
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _view = view ?? throw new ArgumentNullException(nameof(view));
         _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
-        _classSprite = classSprite ?? throw new ArgumentNullException(nameof(classSprite));
-        _affixSprite = affixSprite ?? throw new ArgumentNullException(nameof(affixSprite));
+        _classSprite = classSprite ?? (_ => null);
+        _affixSprite = affixSprite ?? (_ => null);
     }
 
     /// <summary>Town hub controller가 selected hero 컨텍스트를 전달 (Sprint 3+ navigation).</summary>
@@ -52,7 +52,19 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
     public void Initialize()
     {
         _view.Bind(this);
+        _view.BindClose(Close);
         Refresh();
+    }
+
+    public void Open()
+    {
+        _view.Open();
+        Refresh();
+    }
+
+    public void Close()
+    {
+        _view.Close();
     }
 
     public void Refresh()

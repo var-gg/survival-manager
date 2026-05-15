@@ -19,12 +19,36 @@ public sealed class EquipmentRefitView
     private readonly VisualElement _affixList;
     private readonly VisualElement _inventoryPool;
     private readonly Label _refitCostLabel;
+    private readonly VisualElement? _modalRoot;
+    private readonly Button? _closeButton;
 
     private IEquipmentRefitActions? _actions;
+
+    public void BindClose(Action close)
+    {
+        if (_closeButton == null || close == null) return;
+        _closeButton.clicked += close;
+    }
+
+    public void Open()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.Flex;
+        _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
+    }
+
+    public void Close()
+    {
+        if (_modalRoot == null) return;
+        _modalRoot.style.display = DisplayStyle.None;
+        _modalRoot.AddToClassList("sm-modal-anim--enter");
+    }
 
     public EquipmentRefitView(VisualElement root)
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
+        _modalRoot = root.Q<VisualElement>("ErpRoot");
+        _closeButton = root.Q<Button>(className: "erp-header__close");
         _standeePortrait = root.Q<VisualElement>("StandeePortrait")
             ?? throw new ArgumentException("StandeePortrait 못 찾음");
         _echoIcon = root.Q<VisualElement>("EchoIcon")

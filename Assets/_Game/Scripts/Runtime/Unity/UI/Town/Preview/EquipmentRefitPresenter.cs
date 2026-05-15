@@ -37,22 +37,35 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         GameSessionRoot root,
         EquipmentRefitView view,
         ContentTextResolver contentText,
-        SpriteLoader affixSprite,
-        SpriteLoader currencySprite,
-        SpriteLoader portraitLoader)
+        SpriteLoader? affixSprite = null,
+        SpriteLoader? currencySprite = null,
+        SpriteLoader? portraitLoader = null)
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _view = view ?? throw new ArgumentNullException(nameof(view));
         _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
-        _affixSprite = affixSprite ?? throw new ArgumentNullException(nameof(affixSprite));
-        _currencySprite = currencySprite ?? throw new ArgumentNullException(nameof(currencySprite));
-        _portraitLoader = portraitLoader ?? throw new ArgumentNullException(nameof(portraitLoader));
+        // production hub modal에서는 sprite loader 미주입 — null fallback (후속 task에서 Resources/Addressables 적용).
+        _affixSprite = affixSprite ?? (_ => null);
+        _currencySprite = currencySprite ?? (_ => null);
+        _portraitLoader = portraitLoader ?? (_ => null);
     }
 
     public void Initialize()
     {
         _view.Bind(this);
+        _view.BindClose(Close);
         Refresh();
+    }
+
+    public void Open()
+    {
+        _view.Open();
+        Refresh();
+    }
+
+    public void Close()
+    {
+        _view.Close();
     }
 
     public void Refresh()
