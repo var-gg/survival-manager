@@ -46,7 +46,7 @@
             <!-- footer — point-budget 모델 폐기. per-kind active 수만 노출. -->
             <ui:VisualElement class="pbp-footer">
                 <ui:Label name="FooterBreakdown" class="pbp-footer__breakdown" text="DUELIST · SMALL 0/12 · NOTABLE 0/5 · KEYSTONE 0/1" />
-                <ui:Button class="pbp-footer__close" text="X" />
+                <ui:Button class="pbp-footer__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

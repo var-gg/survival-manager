@@ -23,7 +23,7 @@
                     <ui:VisualElement name="EchoIcon" class="inv-currency__icon" picking-mode="Ignore" />
                     <ui:Label class="inv-currency__amount" text="543,210" />
                 </ui:VisualElement>
-                <ui:Button class="inv-currency__close" text="X" />
+                <ui:Button class="inv-currency__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
             </ui:VisualElement>
 
             <ui:VisualElement class="inv-body">

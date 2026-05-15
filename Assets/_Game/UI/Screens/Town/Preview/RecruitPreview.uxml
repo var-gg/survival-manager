@@ -27,7 +27,7 @@
                     <ui:Label class="rcp-header__title" text="영입 — RECRUIT" />
                     <ui:VisualElement class="rcp-header__ornament rcp-header__ornament--right" picking-mode="Ignore" />
                 </ui:VisualElement>
-                <ui:Button class="rcp-header__close" text="X" />
+                <ui:Button class="rcp-header__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
             </ui:VisualElement>
 
             <ui:VisualElement name="CardRow" class="rcp-card-row" />

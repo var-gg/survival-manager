@@ -829,39 +829,82 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 2px;
+    /* embossed border: 밝은 top + 어두운 bottom = 입체감 + 두께 차이로 raster gradient 흉내 */
+    border-top-width: 1px;
+    border-left-width: 1.5px;
+    border-right-width: 1.5px;
+    border-bottom-width: 2.5px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    transition-property: background-color, scale, translate, border-top-color, border-bottom-color;
+    transition-duration: 120ms;
+    transition-timing-function: ease-out;
 }
 
-.sm-cta--inline { height: var(--sm-cta-h-inline); }
-.sm-cta--md     { height: var(--sm-cta-h-md); }
-.sm-cta--lg     { height: var(--sm-cta-h-lg); }
-.sm-cta--hero   { height: var(--sm-cta-h-hero); }
+.sm-cta:hover {
+    scale: 1.03 1.03;
+    border-top-color: var(--sm-gold-100);
+}
 
+.sm-cta:active {
+    scale: 0.97 0.97;
+    translate: 0 1px;
+    border-top-width: 2px;
+    border-bottom-width: 1px;
+}
+
+.sm-cta:disabled {
+    opacity: 0.45;
+}
+
+.sm-cta--inline { height: var(--sm-cta-h-inline); padding-left: var(--sm-s-3); padding-right: var(--sm-s-3); }
+.sm-cta--md     { height: var(--sm-cta-h-md);     padding-left: var(--sm-s-4); padding-right: var(--sm-s-4); }
+.sm-cta--lg     { height: var(--sm-cta-h-lg);     padding-left: var(--sm-s-5); padding-right: var(--sm-s-5); }
+.sm-cta--hero   { height: var(--sm-cta-h-hero);   padding-left: var(--sm-s-6); padding-right: var(--sm-s-6); }
+
+/* primary — gold filled, deep amber rim. JRPG hero CTA 톤. */
 .sm-cta--primary {
     background-color: rgba(200, 147, 42, 0.95);
-    border-left-color: var(--sm-gold-100);
-    border-right-color: var(--sm-gold-100);
     border-top-color: var(--sm-gold-100);
-    border-bottom-color: var(--sm-gold-100);
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-500);
+    color: rgb(31, 19, 9);
 }
 
+.sm-cta--primary:hover {
+    background-color: rgba(230, 183, 81, 0.98);
+    border-bottom-color: var(--sm-gold-400);
+}
+
+/* secondary — navy parchment + gold trim. utility/menu CTA. */
 .sm-cta--secondary {
     background-color: rgba(38, 45, 84, 0.92);
-    border-left-color: var(--sm-gold-300);
-    border-right-color: var(--sm-gold-300);
-    border-top-color: var(--sm-gold-300);
-    border-bottom-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-200);
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-500);
+    color: var(--sm-vellum);
 }
 
+.sm-cta--secondary:hover {
+    background-color: rgba(54, 64, 116, 0.95);
+    border-top-color: var(--sm-gold-100);
+}
+
+/* utility — sapphire blue + gold trim. debug/Quick Battle. */
 .sm-cta--utility {
     background-color: rgba(74, 114, 184, 0.92);
-    border-left-color: var(--sm-gold-300);
-    border-right-color: var(--sm-gold-300);
-    border-top-color: var(--sm-gold-300);
-    border-bottom-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-200);
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-fam-vanguard-deep);
+    color: var(--sm-ink-0);
+}
+
+.sm-cta--utility:hover {
+    background-color: rgba(95, 140, 215, 0.95);
+    border-top-color: var(--sm-gold-100);
 }
 
 /* --- Frame divider hairline ---

@@ -54,7 +54,7 @@ public sealed class PassiveBoardView
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
         _modalRoot = root.Q<VisualElement>("PbpRoot");
-        _closeButton = root.Q<Button>(className: "pbp-header__close");   // UXML에 없으면 null OK
+        _closeButton = root.Q<Button>(className: "pbp-footer__close");   // UXML footer에 X 버튼 있음
         _boardHeader = root.Q<VisualElement>("BoardHeader")
             ?? throw new ArgumentException("BoardHeader 못 찾음");
         _boardCanvas = root.Q<VisualElement>("BoardCanvas")
