@@ -1,0 +1,165 @@
+/* =============================================================
+   HeroFaceCard atom (sm-face-card)
+   잿골 hub V3 (`pindoc://decision-town-hub-v3-ashglen-face-cluster`) +
+   atom contract (`pindoc://analysis-hero-face-card-bark-emotion-system`).
+   NPC + hero 공용 — 얼굴 중심 사각형 카드 + 배지로 위계 분리 + 8 감정 swap class.
+   다키스트 던전 패턴: 정적 일러도 표정 + 바크로 살아 숨쉬는 ambient.
+   ============================================================= */
+
+.sm-face-card {
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 4px;
+    padding-right: 4px;
+    background-color: rgba(20, 26, 53, 0.78);
+    border-top-width: 1px;
+    border-left-width: 1.5px;
+    border-right-width: 1.5px;
+    border-bottom-width: 2.5px;
+    border-top-color: var(--sm-gold-200);
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-500);
+    transition-property: scale, translate, border-top-color;
+    transition-duration: 120ms;
+    transition-timing-function: ease-out;
+}
+
+.sm-face-card:hover {
+    scale: 1.04 1.04;
+    translate: 0 -2px;
+    border-top-color: var(--sm-gold-100);
+}
+
+/* role 위계 */
+.sm-face-card--npc {
+    background-color: rgba(28, 34, 67, 0.88);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+.sm-face-card--hero-deploy {
+    background-color: rgba(38, 45, 84, 0.92);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-300);
+    border-top-width: 2px;
+    border-bottom-width: 3px;
+}
+
+.sm-face-card--hero {
+    /* base 그대로 — 일반 roster */
+}
+
+/* size variant */
+.sm-face-card--lg { width: 128px; height: 144px; }
+.sm-face-card--md { width: 96px;  height: 112px; }
+.sm-face-card--sm { width: 64px;  height: 80px; }
+
+/* badge — 좌상단 작은 사각/원형. 거점 분류 또는 captain 표시. */
+.sm-face-card__badge {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 22px;
+    height: 22px;
+    background-color: var(--sm-gold-400);
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-top-color: var(--sm-gold-100);
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-500);
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    font-size: 11px;
+    color: rgb(31, 19, 9);
+}
+
+.sm-face-card__badge--tavern  { background-color: rgba(127, 163, 224, 0.92); }   /* sapphire — 여관 */
+.sm-face-card__badge--forge   { background-color: rgba(181, 138, 54, 0.92); }    /* ranger ochre — 공방 */
+.sm-face-card__badge--clinic  { background-color: rgba(166, 220, 154, 0.92); }   /* safe green — 진료소 */
+.sm-face-card__badge--records { background-color: rgba(212, 180, 240, 0.92); }   /* mystic — 기록 */
+.sm-face-card__badge--captain { background-color: rgba(245, 214, 138, 0.95); }   /* gold-200 — captain */
+.sm-face-card__badge--none    { display: none; }
+
+/* portrait — 얼굴 close-up 영역. face_emotion_sheet 1 cell. */
+.sm-face-card__portrait {
+    flex-grow: 1;
+    width: 100%;
+    background-color: rgba(8, 12, 28, 0.45);
+    margin-bottom: 4px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-top-color: rgba(0, 0, 0, 0.32);
+    border-left-color: rgba(0, 0, 0, 0.28);
+    border-right-color: rgba(0, 0, 0, 0.28);
+    border-bottom-color: rgba(0, 0, 0, 0.18);
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* emotion swap — face_emotion_sheet은 4×2 (8 cell). cell offset은 Unity USS의
+   -unity-background-image-tint-color 또는 background-position-x/y로 cell 1개 노출.
+   Phase 7에서는 PNG 자체를 emotion별 별도 file로 export하거나 (atlas slice) sprite로 처리.
+   default neutral은 base background-image. swap class는 옅은 tint 또는 별도 sprite로.
+   본격 sprite atlas slice는 art-pipeline 후속. 현재는 USS color tint overlay placeholder. */
+.sm-face-card__emotion--neutral    { -unity-background-image-tint-color: rgba(255, 255, 255, 1); }
+.sm-face-card__emotion--confident  { -unity-background-image-tint-color: rgba(255, 240, 200, 1); }
+.sm-face-card__emotion--amused     { -unity-background-image-tint-color: rgba(255, 230, 180, 1); }
+.sm-face-card__emotion--surprised  { -unity-background-image-tint-color: rgba(220, 230, 255, 1); }
+.sm-face-card__emotion--concerned  { -unity-background-image-tint-color: rgba(200, 210, 230, 1); }
+.sm-face-card__emotion--pained     { -unity-background-image-tint-color: rgba(220, 180, 180, 1); }
+.sm-face-card__emotion--angry      { -unity-background-image-tint-color: rgba(255, 200, 200, 1); }
+.sm-face-card__emotion--determined { -unity-background-image-tint-color: rgba(255, 220, 180, 1); }
+
+/* name */
+.sm-face-card__name {
+    color: var(--sm-vellum);
+    font-size: 11px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.sm-face-card--lg .sm-face-card__name { font-size: 13px; }
+.sm-face-card--md .sm-face-card__name { font-size: 11px; }
+.sm-face-card--sm .sm-face-card__name { font-size: 9px; }
+
+/* state overlay */
+.sm-face-card__state-overlay {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+}
+
+.sm-face-card__state-overlay--ko       { background-color: rgba(138, 138, 152, 0.55); }
+.sm-face-card__state-overlay--injured  { background-color: rgba(182, 51, 74, 0.18); }
+.sm-face-card__state-overlay--locked   { background-color: rgba(107, 110, 133, 0.55); }
+.sm-face-card__state-overlay--selected {
+    background-color: rgba(0, 0, 0, 0);
+    border-top-color: var(--sm-gold-100);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+    border-top-width: 2px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+}
+
+/* bark anchor — BarkPopupView (Phase 8) attach point */
+.sm-face-card__bark-anchor {
+    position: absolute;
+    left: 50%;
+    top: -8px;
+    width: 1px;
+    height: 1px;
+}

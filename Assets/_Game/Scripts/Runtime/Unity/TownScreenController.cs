@@ -24,7 +24,9 @@ public sealed class TownScreenController : MonoBehaviour
     private PassiveBoardPresenter? _passiveBoardPresenter;
     private InventoryPresenter? _inventoryPresenter;
     private PermanentAugmentPresenter? _permanentAugmentPresenter;
-    private RosterGridView? _rosterModalView;   // heroCardTemplate 미주입 — close-only placeholder.
+    private RosterGridView? _rosterModalView;
+    // jjjj hub V3 NPC mapping (pindoc://decision-town-hub-v3-ashglen-face-cluster):
+    //   달목 → Recruit / 쇠매 → EquipmentRefit / 갈마 → PassiveBoard / 솔길 → Inventory.
 
     private void Start()
     {
@@ -92,49 +94,104 @@ public sealed class TownScreenController : MonoBehaviour
         var view = new TownScreenView(panelHost.Root);
         _presenter = new TownScreenPresenter(_root, _localization, _contentText, view);
 
-        // 잿골 hub V2 NPC 매핑 (pindoc://v1-scene-screen-routing-ashglen-hub-analysis 정합):
-        //   달목 (여관) → Recruit / 쇠매 (공방) → EquipmentRefit / 갈마 (진료소) → PassiveBoard / 솔길 (기록) → Inventory.
-        // sprite loader는 null fallback — production runtime은 Resources/Addressables 미설치, 후속 task에서 wire.
-        var recruitView = new RecruitView(panelHost.Root);
-        _recruitPresenter = new RecruitPresenter(_root, recruitView, _contentText);
-        _recruitPresenter.Initialize();
-        _recruitPresenter.Close();
-        view.BindNpcDalmokOpen(_recruitPresenter.Open);
+        // Modal Presenter 인스턴스화 — 각 modal 별도 try/catch로 격리.
+        // 한 modal의 element 누락이 hub 전체를 깨지 않게. sprite loader는 null fallback (production runtime).
+        TryWireRecruit(panelHost.Root, view);
+        TryWireEquipmentRefit(panelHost.Root, view);
+        TryWirePassiveBoard(panelHost.Root, view);
+        TryWireInventory(panelHost.Root, view);
+        TryWirePermanentAugment(panelHost.Root, view);
+        TryWireSquadBuilder(panelHost.Root, view);
+        TryWireRoster(panelHost.Root, view);
 
-        var equipmentRefitView = new EquipmentRefitView(panelHost.Root);
-        _equipmentRefitPresenter = new EquipmentRefitPresenter(_root, equipmentRefitView, _contentText);
-        _equipmentRefitPresenter.Initialize();
-        _equipmentRefitPresenter.Close();
-        view.BindNpcSoemaeOpen(_equipmentRefitPresenter.Open);
-
-        var passiveBoardView = new PassiveBoardView(panelHost.Root);
-        _passiveBoardPresenter = new PassiveBoardPresenter(_root, passiveBoardView, _contentText);
-        _passiveBoardPresenter.Initialize();
-        _passiveBoardPresenter.Close();
-        view.BindNpcGalmaOpen(_passiveBoardPresenter.Open);
-
-        var inventoryView = new InventoryView(panelHost.Root);
-        _inventoryPresenter = new InventoryPresenter(_root, inventoryView);
-        _inventoryPresenter.Initialize();
-        _inventoryPresenter.Close();
-        view.BindNpcSolgilOpen(_inventoryPresenter.Open);
-
-        // Utility entries (우 column): PermanentAugment / SquadBuilder / Roster placeholder.
-        var permanentAugmentView = new PermanentAugmentView(panelHost.Root);
-        _permanentAugmentPresenter = new PermanentAugmentPresenter(_root, permanentAugmentView);
-        _permanentAugmentPresenter.Initialize();
-        _permanentAugmentPresenter.Close();
-        view.BindPermanentAugmentOpen(_permanentAugmentPresenter.Open);
-
-        _squadBuilderPresenter = new SquadBuilderPresenter(panelHost.Root, _root, _contentText);
-        view.BindSquadBuilderOpen(_squadBuilderPresenter.Open);
-
-        // Roster modal — heroCardTemplate 미주입 (Resources/Addressables 후속). default closed +
-        // RosterButton click은 placeholder status로 wire 안내. heroCardTemplate 마련 후 Render wire.
-        _rosterModalView = new RosterGridView(panelHost.Root, heroCardTemplate: null);
-        _rosterModalView.Close();
-        view.BindRosterOpen(() => _presenter?.Refresh("동료 명부 — heroCardTemplate Resources copy 후속 wire."));
+        view.BindTheaterOpen(() => _presenter?.Refresh("극장 (Theater) — story replay surface 후속 wire."));
         return true;
+    }
+
+    private void TryWireRecruit(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            var recruitView = new RecruitView(root);
+            _recruitPresenter = new RecruitPresenter(_root, recruitView, _contentText);
+            _recruitPresenter.Initialize();
+            _recruitPresenter.Close();
+            _presenter?.SetNpcOpener("dalmok", _recruitPresenter.Open);
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Recruit wire 실패: {e.Message}"); }
+    }
+
+    private void TryWireEquipmentRefit(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            var equipmentRefitView = new EquipmentRefitView(root);
+            _equipmentRefitPresenter = new EquipmentRefitPresenter(_root, equipmentRefitView, _contentText);
+            _equipmentRefitPresenter.Initialize();
+            _equipmentRefitPresenter.Close();
+            _presenter?.SetNpcOpener("soemae", _equipmentRefitPresenter.Open);
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] EquipmentRefit wire 실패: {e.Message}"); }
+    }
+
+    private void TryWirePassiveBoard(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            var passiveBoardView = new PassiveBoardView(root);
+            _passiveBoardPresenter = new PassiveBoardPresenter(_root, passiveBoardView, _contentText);
+            _passiveBoardPresenter.Initialize();
+            _passiveBoardPresenter.Close();
+            _presenter?.SetNpcOpener("galma", _passiveBoardPresenter.Open);
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] PassiveBoard wire 실패: {e.Message}"); }
+    }
+
+    private void TryWireInventory(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            var inventoryView = new InventoryView(root);
+            _inventoryPresenter = new InventoryPresenter(_root, inventoryView);
+            _inventoryPresenter.Initialize();
+            _inventoryPresenter.Close();
+            _presenter?.SetNpcOpener("solgil", _inventoryPresenter.Open);
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Inventory wire 실패: {e.Message}"); }
+    }
+
+    private void TryWirePermanentAugment(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            var permanentAugmentView = new PermanentAugmentView(root);
+            _permanentAugmentPresenter = new PermanentAugmentPresenter(_root, permanentAugmentView);
+            _permanentAugmentPresenter.Initialize();
+            _permanentAugmentPresenter.Close();
+            view.BindPermanentAugmentOpen(_permanentAugmentPresenter.Open);
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] PermanentAugment wire 실패: {e.Message}"); }
+    }
+
+    private void TryWireSquadBuilder(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            _squadBuilderPresenter = new SquadBuilderPresenter(root, _root, _contentText);
+            view.BindSquadBuilderOpen(_squadBuilderPresenter.Open);
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] SquadBuilder wire 실패: {e.Message}"); }
+    }
+
+    private void TryWireRoster(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            _rosterModalView = new RosterGridView(root, heroCardTemplate: null);
+            _rosterModalView.Close();
+            view.BindRosterOpen(() => _presenter?.Refresh("동료 명부 — heroCardTemplate Resources copy 후속 wire."));
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Roster wire 실패: {e.Message}"); }
     }
 
     private bool EnsureSessionReady()

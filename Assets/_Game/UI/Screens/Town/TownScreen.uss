@@ -1,7 +1,7 @@
 /* =============================================================
-   잿골 Town hub V2 — pindoc://v1-scene-screen-routing-ashglen-hub-analysis 정합.
-   Foundation atom (RuntimePanelTheme.uss) + ThemeTokens.uss 위에 hub-specific layout만.
-   "포근한 마을보다 작고 빽빽한 변경 생활감" — backdrop dim 강하게 + 4 NPC entry가 dominant.
+   잿골 Town hub V3 — pindoc://decision-town-hub-v3-ashglen-face-cluster.
+   Layout: top utility / middle (NPC strip + Welcome center + utility column) / bottom hero cluster row /
+   bottom CTA bar. atom (HeroFaceCard / sm-cta / sm-modal-frame) + ThemeTokens + RuntimePanelTheme 위에 layout만.
    ============================================================= */
 
 .town-hub {
@@ -16,18 +16,18 @@
 }
 
 .town-hub__backdrop-dim {
-    background-color: rgba(8, 12, 28, 0.74);
+    background-color: rgba(8, 12, 28, 0.72);
 }
 
-/* Header bar — 변경 마을 명패 + utility strip */
+/* Top utility bar */
 .town-hub__header {
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-end;
-    padding-top: 18px;
-    padding-bottom: 14px;
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-top: 16px;
+    padding-bottom: 12px;
+    padding-left: 32px;
+    padding-right: 32px;
     background-color: rgba(20, 26, 53, 0.78);
     border-bottom-width: 1px;
     border-bottom-color: var(--sm-gold-300-a32);
@@ -40,7 +40,7 @@
     letter-spacing: 4px;
 }
 
-.town-hub__title { font-size: 26px; }
+.town-hub__title { font-size: 24px; }
 
 .town-hub__header-tools {
     flex-direction: row;
@@ -53,25 +53,20 @@
     margin-right: 10px;
 }
 
-.town-hub__locale-button {
-    margin-left: 4px;
-    min-width: 56px;
-}
-
 .town-hub__utility-divider {
     width: 1px;
     height: 22px;
     background-color: rgba(230, 183, 81, 0.45);
-    margin-left: 12px;
-    margin-right: 8px;
+    margin-left: 10px;
+    margin-right: 6px;
 }
 
 .town-hub__header-tools > .ui-button {
-    margin-left: 6px;
-    min-width: 64px;
+    margin-left: 5px;
+    min-width: 56px;
 }
 
-/* Help strip ---------------------------------------------------- */
+/* Help strip */
 .town-hub__help {
     flex-direction: row;
     align-items: center;
@@ -93,12 +88,12 @@
 
 .town-hub__help-dismiss { margin-left: 12px; }
 
-/* Body — 3-column: NPC strip / center stage / utility strip ------ */
-.town-hub__body {
+/* Stage — 3 column (NPC strip / Welcome center / utility) */
+.town-hub__stage {
     flex-grow: 1;
     flex-direction: row;
-    padding-top: 24px;
-    padding-bottom: 24px;
+    padding-top: 20px;
+    padding-bottom: 12px;
     padding-left: 32px;
     padding-right: 32px;
 }
@@ -112,240 +107,118 @@
     -unity-text-align: middle-left;
 }
 
-/* NPC strip (좌) — 4 entry vertical -------------------------- */
+/* NPC strip (좌) — 4 face card vertical column. View가 BuildFaceCard로 채움. */
 .town-hub__npc-strip {
-    width: 320px;
+    width: 200px;
     flex-direction: column;
     margin-right: 24px;
-}
-
-.town-hub__npc-entry {
-    flex-direction: row;
     align-items: center;
-    margin-bottom: 12px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 12px;
-    padding-right: 14px;
-    background-color: rgba(28, 34, 67, 0.86);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: var(--sm-gold-500);
-    border-right-color: var(--sm-gold-500);
-    border-top-color: var(--sm-gold-400);
-    border-bottom-color: var(--sm-gold-500);
-    color: var(--sm-ink-1);
+    padding-top: 22px;
 }
 
-.town-hub__npc-entry:hover {
-    background-color: rgba(38, 45, 84, 0.94);
-    border-left-color: var(--sm-gold-300);
-    border-right-color: var(--sm-gold-300);
-    border-top-color: var(--sm-gold-200);
-    border-bottom-color: var(--sm-gold-300);
+.town-hub__npc-strip > * {
+    margin-bottom: 14px;
 }
 
-.town-hub__npc-portrait {
-    width: 64px;
-    height: 84px;
-    margin-right: 12px;
-    background-color: rgba(20, 26, 53, 0.78);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: var(--sm-line-2);
-    border-right-color: var(--sm-line-2);
-    border-top-color: var(--sm-line-2);
-    border-bottom-color: var(--sm-line-2);
-    -unity-background-scale-mode: scale-and-crop;
-}
-
-/* NPC tint placeholder — 캐릭터 portrait asset 마련 전 family color 띠. */
-.town-hub__npc-portrait--dalmok { background-color: rgba(127, 163, 224, 0.32); }   /* 여관 sapphire */
-.town-hub__npc-portrait--soemae { background-color: rgba(181, 138, 54, 0.36); }    /* 공방 ranger ochre */
-.town-hub__npc-portrait--galma  { background-color: rgba(166, 220, 154, 0.32); }   /* 진료소 safe green */
-.town-hub__npc-portrait--solgil { background-color: rgba(212, 180, 240, 0.32); }   /* 기록 mystic */
-
-.town-hub__npc-info {
-    flex-grow: 1;
-    flex-direction: column;
-}
-
-.town-hub__npc-name {
-    color: var(--sm-vellum);
-    font-size: 16px;
-    -unity-font-style: bold;
-}
-
-.town-hub__npc-role {
-    color: var(--sm-gold-200);
-    font-size: 11px;
-    letter-spacing: 2px;
-    margin-top: 2px;
-    margin-bottom: 6px;
-}
-
-.town-hub__npc-hint {
-    color: var(--sm-ink-3);
-    font-size: 11px;
-    white-space: normal;
-}
-
-/* Center stage — Welcome hero standee + greeting ------------- */
-.town-hub__center-stage {
+/* Center — Welcome captain face (lg) + greeting */
+.town-hub__center {
     flex-grow: 1;
     align-items: center;
     justify-content: center;
 }
 
-.town-hub__welcome-frame {
-    position: relative;
-    width: 380px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
-    background-color: var(--sm-frame-ceremony-bg);
-    border-left-width: var(--sm-frame-trim-w);
-    border-right-width: var(--sm-frame-trim-w);
-    border-top-width: var(--sm-frame-trim-w);
-    border-bottom-width: var(--sm-frame-trim-w);
-    border-left-color: var(--sm-frame-trim-color);
-    border-right-color: var(--sm-frame-trim-color);
-    border-top-color: var(--sm-frame-trim-color);
-    border-bottom-color: var(--sm-frame-trim-color);
-}
-
-.town-hub__welcome {
-    flex-direction: column;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0);
-    border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0;
-    padding-top: 0; padding-bottom: 0; padding-left: 0; padding-right: 0;
-}
-
-.town-hub__welcome-portrait {
-    width: 280px;
-    height: 360px;
-    background-color: rgba(20, 26, 53, 0.62);
-    margin-bottom: 14px;
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: var(--sm-gold-500);
-    border-right-color: var(--sm-gold-500);
-    border-top-color: var(--sm-gold-300);
-    border-bottom-color: var(--sm-gold-500);
-    -unity-background-scale-mode: scale-and-crop;
-}
-
-.town-hub__welcome-text {
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-
-.town-hub__welcome-eyebrow {
-    margin-bottom: 4px;
-    letter-spacing: 3px;
-    color: var(--sm-gold-300);
-    font-size: 11px;
-}
-
-.town-hub__welcome-name {
-    color: var(--sm-vellum);
-    font-size: 22px;
-    -unity-font-style: bold;
-    margin-bottom: 6px;
+.town-hub__welcome-mount {
+    margin-bottom: 16px;
 }
 
 .town-hub__welcome-greeting {
-    color: var(--sm-ink-1);
-    font-size: 12px;
-    -unity-text-align: middle-center;
-    white-space: normal;
-    margin-bottom: 4px;
-}
-
-.town-hub__welcome-hint {
-    color: var(--sm-ink-3);
-    font-size: 10px;
-    -unity-text-align: middle-center;
-}
-
-/* Utility strip (우) — Roster / 영구 강화 / 전열 편성 ---------- */
-.town-hub__utility-strip {
-    width: 280px;
-    flex-direction: column;
-    margin-left: 24px;
-    align-items: flex-end;
-}
-
-.town-hub__utility-entry {
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 12px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 14px;
-    padding-right: 14px;
-    background-color: rgba(28, 34, 67, 0.86);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: var(--sm-line-2);
-    border-right-color: var(--sm-line-2);
-    border-top-color: var(--sm-gold-500);
-    border-bottom-color: var(--sm-line-2);
-    color: var(--sm-ink-1);
-}
-
-.town-hub__utility-entry:hover {
-    background-color: rgba(38, 45, 84, 0.94);
-    border-top-color: var(--sm-gold-300);
-}
-
-.town-hub__utility-icon {
-    color: var(--sm-gold-200);
-    font-size: 22px;
-    -unity-font-style: bold;
-    margin-right: 12px;
-    min-width: 24px;
-    -unity-text-align: middle-center;
-}
-
-.town-hub__utility-text {
-    flex-grow: 1;
-    flex-direction: column;
-}
-
-.town-hub__utility-name {
     color: var(--sm-vellum);
     font-size: 14px;
     -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    max-width: 480px;
+    white-space: normal;
 }
 
-.town-hub__utility-meta {
-    color: var(--sm-ink-3);
-    font-size: 10px;
-    letter-spacing: 1px;
-    margin-top: 2px;
+/* Utility strip (우) — 4 entry */
+.town-hub__utility-strip {
+    width: 200px;
+    flex-direction: column;
+    margin-left: 24px;
+    padding-top: 0;
 }
 
-/* Bottom CTA bar ----------------------------------------------- */
+.town-hub__utility-entry {
+    width: 100%;
+    margin-bottom: 10px;
+    -unity-text-align: middle-left;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+.town-hub__utility-name {
+    -unity-text-align: middle-left;
+    font-size: 13px;
+}
+
+/* Hero cluster — bottom row (deploy md row + roster sm row) */
+.town-hub__hero-cluster {
+    flex-direction: column;
+    padding-top: 8px;
+    padding-bottom: 14px;
+    padding-left: 32px;
+    padding-right: 32px;
+    background-color: rgba(20, 26, 53, 0.56);
+    border-top-width: 1px;
+    border-top-color: var(--sm-gold-300-a28);
+}
+
+.town-hub__cluster-eyebrow {
+    color: var(--sm-gold-300);
+    font-size: 11px;
+    letter-spacing: 4px;
+    -unity-font-style: bold;
+    margin-bottom: 10px;
+}
+
+.town-hub__cluster-rows {
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.town-hub__deploy-row {
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.town-hub__deploy-row > * {
+    margin-right: 10px;
+}
+
+.town-hub__roster-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    margin-left: 14px;
+    border-left-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.32);
+    padding-left: 14px;
+    align-items: flex-end;
+}
+
+.town-hub__roster-row > * {
+    margin-right: 6px;
+    margin-bottom: 6px;
+}
+
+/* Bottom CTA bar */
 .town-hub__cta-bar {
     flex-direction: row;
     align-items: center;
     padding-top: 12px;
     padding-bottom: 14px;
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 32px;
+    padding-right: 32px;
     background-color: var(--sm-frame-ceremony-bg);
     border-top-width: var(--sm-frame-trim-w);
     border-top-color: var(--sm-frame-trim-color);
@@ -370,24 +243,23 @@
 
 .town-hub__expedition-cta {
     min-width: 220px;
-    color: rgb(22, 15, 9);
     -unity-font-style: bold;
     letter-spacing: 1px;
 }
 
-/* Modal overlay wrapper — TemplateContainer in-flow 한계 우회. */
+/* Bark layer — absolute fill above cluster. Phase 8 BarkPopupView가 채움. */
+.town-hub__bark-layer {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+}
+
+/* Modal overlay wrapper — TemplateContainer height 0 우회. */
 .town-hub__modal-overlay {
     position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    left: 0; right: 0; top: 0; bottom: 0;
 }
 
 .town-hub__modal-overlay > * {
     position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    left: 0; right: 0; top: 0; bottom: 0;
 }

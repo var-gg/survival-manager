@@ -1,13 +1,15 @@
 using System;
+using System.Collections.Generic;
 using SM.Unity.UI;
 using UnityEngine.UIElements;
 
 namespace SM.Unity.UI.Town;
 
 /// <summary>
-/// 잿골 hub V2 View — pindoc://v1-scene-screen-routing-ashglen-hub-analysis 정합.
-/// 4 NPC entry (좌) + Welcome hero center + utility entries (우) + utility top bar + Atlas CTA bar.
-/// 옛 RosterGrid+toolbar layout 폐기.
+/// 잿골 hub V3 View — pindoc://decision-town-hub-v3-ashglen-face-cluster.
+/// HeroFaceCard atom (sm-face-card) 코드 build — NPC strip + Welcome captain + deploy row + roster row.
+/// 가변 hero list: BuildState에서 매 Render마다 cluster clear + 재구축. atom contract는
+/// pindoc://analysis-hero-face-card-bark-emotion-system.
 /// </summary>
 public sealed class TownScreenView
 {
@@ -22,33 +24,27 @@ public sealed class TownScreenView
     private readonly Button _helpDismissButton;
     private readonly Button _saveButton;
     private readonly Button _loadButton;
+    private readonly Button _settingsButton;
     private readonly Button _returnToStartButton;
 
-    private readonly Button _npcEntryDalmok;
-    private readonly Label _npcHintDalmok;
-    private readonly Button _npcEntrySoemae;
-    private readonly Label _npcHintSoemae;
-    private readonly Button _npcEntryGalma;
-    private readonly Label _npcHintGalma;
-    private readonly Button _npcEntrySolgil;
-    private readonly Label _npcHintSolgil;
-
-    private readonly Button _welcomeHeroEntry;
-    private readonly Label _welcomeHeroEyebrow;
-    private readonly Label _welcomeHeroName;
-    private readonly Label _welcomeHeroGreeting;
-    private readonly Label _welcomeHeroHint;
+    private readonly VisualElement _npcStrip;
+    private readonly VisualElement _welcomeMount;
+    private readonly Label _welcomeGreeting;
+    private readonly VisualElement _deployRow;
+    private readonly VisualElement _rosterRow;
 
     private readonly Button _rosterButton;
-    private readonly Label _rosterCountLabel;
-    private readonly Button _permanentAugmentButton;
     private readonly Button _squadBuilderButton;
+    private readonly Button _permanentAugmentButton;
+    private readonly Button _theaterButton;
 
     private readonly Label _statusLabel;
     private readonly Button _quickBattleButton;
     private readonly Button _expeditionButton;
 
-    private string _currentWelcomeHeroId = string.Empty;
+    private Action<string>? _onNpcClick;
+    private Action<string>? _onHeroClick;
+    private string _welcomeHeroId = string.Empty;
 
     public TownScreenView(VisualElement root)
     {
@@ -65,27 +61,19 @@ public sealed class TownScreenView
         _helpDismissButton = Require<Button>(root, "HelpDismissButton");
         _saveButton = Require<Button>(root, "SaveButton");
         _loadButton = Require<Button>(root, "LoadButton");
+        _settingsButton = Require<Button>(root, "SettingsButton");
         _returnToStartButton = Require<Button>(root, "ReturnToStartButton");
 
-        _npcEntryDalmok = Require<Button>(root, "NpcEntry_Dalmok");
-        _npcHintDalmok = Require<Label>(root, "NpcHint_Dalmok");
-        _npcEntrySoemae = Require<Button>(root, "NpcEntry_Soemae");
-        _npcHintSoemae = Require<Label>(root, "NpcHint_Soemae");
-        _npcEntryGalma = Require<Button>(root, "NpcEntry_Galma");
-        _npcHintGalma = Require<Label>(root, "NpcHint_Galma");
-        _npcEntrySolgil = Require<Button>(root, "NpcEntry_Solgil");
-        _npcHintSolgil = Require<Label>(root, "NpcHint_Solgil");
-
-        _welcomeHeroEntry = Require<Button>(root, "WelcomeHeroEntry");
-        _welcomeHeroEyebrow = Require<Label>(root, "WelcomeHeroEyebrow");
-        _welcomeHeroName = Require<Label>(root, "WelcomeHeroName");
-        _welcomeHeroGreeting = Require<Label>(root, "WelcomeHeroGreeting");
-        _welcomeHeroHint = Require<Label>(root, "WelcomeHeroHint");
+        _npcStrip = Require<VisualElement>(root, "NpcStrip");
+        _welcomeMount = Require<VisualElement>(root, "WelcomeCaptainMount");
+        _welcomeGreeting = Require<Label>(root, "WelcomeCaptainGreeting");
+        _deployRow = Require<VisualElement>(root, "DeployRow");
+        _rosterRow = Require<VisualElement>(root, "RosterRow");
 
         _rosterButton = Require<Button>(root, "RosterButton");
-        _rosterCountLabel = Require<Label>(root, "RosterCountLabel");
-        _permanentAugmentButton = Require<Button>(root, "PermanentAugmentButton");
         _squadBuilderButton = Require<Button>(root, "SquadBuilderButton");
+        _permanentAugmentButton = Require<Button>(root, "PermanentAugmentButton");
+        _theaterButton = Require<Button>(root, "TheaterButton");
 
         _statusLabel = Require<Label>(root, "StatusLabel");
         _quickBattleButton = Require<Button>(root, "QuickBattleButton");
@@ -104,16 +92,15 @@ public sealed class TownScreenView
         _returnToStartButton.clicked += presenter.ReturnToStart;
         _quickBattleButton.clicked += presenter.QuickBattle;
         _expeditionButton.clicked += presenter.OpenExpedition;
-        _welcomeHeroEntry.clicked += () => presenter.OpenWelcomeHeroSheet(_currentWelcomeHeroId);
+        _settingsButton.clicked += presenter.OpenSettings;
+        _onNpcClick = presenter.OnNpcClick;
+        _onHeroClick = presenter.OnHeroClick;
     }
 
-    public void BindNpcDalmokOpen(Action open) => _npcEntryDalmok.clicked += open;
-    public void BindNpcSoemaeOpen(Action open) => _npcEntrySoemae.clicked += open;
-    public void BindNpcGalmaOpen(Action open) => _npcEntryGalma.clicked += open;
-    public void BindNpcSolgilOpen(Action open) => _npcEntrySolgil.clicked += open;
     public void BindRosterOpen(Action open) => _rosterButton.clicked += open;
-    public void BindPermanentAugmentOpen(Action open) => _permanentAugmentButton.clicked += open;
     public void BindSquadBuilderOpen(Action open) => _squadBuilderButton.clicked += open;
+    public void BindPermanentAugmentOpen(Action open) => _permanentAugmentButton.clicked += open;
+    public void BindTheaterOpen(Action open) => _theaterButton.clicked += open;
 
     public void Render(TownScreenViewState state)
     {
@@ -127,6 +114,7 @@ public sealed class TownScreenView
         _helpButton.text = state.HelpButtonLabel;
         _saveButton.text = state.SaveLabel;
         _loadButton.text = state.LoadLabel;
+        _settingsButton.text = state.SettingsLabel;
         _returnToStartButton.text = state.ReturnToStartLabel;
         _returnToStartButton.tooltip = state.ReturnToStartTooltip;
         _returnToStartButton.SetEnabled(state.CanReturnToStart);
@@ -135,19 +123,53 @@ public sealed class TownScreenView
         _helpBodyLabel.text = state.Help.Body;
         _helpDismissButton.text = state.Help.DismissLabel;
 
-        _npcHintDalmok.text = state.DalmokEntry.HintText;
-        _npcHintSoemae.text = state.SoemaeEntry.HintText;
-        _npcHintGalma.text = state.GalmaEntry.HintText;
-        _npcHintSolgil.text = state.SolgilEntry.HintText;
+        // NPC strip — 4 face card lg.
+        _npcStrip.Clear();
+        foreach (var npc in state.NpcEntries)
+        {
+            var card = BuildFaceCard(npc.NpcId, npc.DisplayName, npc.EmotionKey, npc.BadgeKey, "lg", "npc");
+            var npcId = npc.NpcId;
+            card.clicked += () => _onNpcClick?.Invoke(npcId);
+            _npcStrip.Add(card);
+        }
 
-        _currentWelcomeHeroId = state.WelcomeHero.HeroId;
-        _welcomeHeroEyebrow.text = state.WelcomeHero.EyebrowText;
-        _welcomeHeroName.text = state.WelcomeHero.HeroName;
-        _welcomeHeroGreeting.text = state.WelcomeHero.Greeting;
-        _welcomeHeroHint.text = state.WelcomeHero.HintText;
-        _welcomeHeroEntry.SetEnabled(!string.IsNullOrEmpty(state.WelcomeHero.HeroId));
+        // Welcome captain — 큰 face card + greeting.
+        _welcomeMount.Clear();
+        _welcomeHeroId = state.WelcomeCaptain.HeroId;
+        if (!string.IsNullOrEmpty(state.WelcomeCaptain.HeroId))
+        {
+            var welcome = BuildFaceCard(
+                state.WelcomeCaptain.HeroId,
+                state.WelcomeCaptain.DisplayName,
+                state.WelcomeCaptain.EmotionKey,
+                "captain",
+                "lg",
+                "hero-deploy");
+            var heroId = state.WelcomeCaptain.HeroId;
+            welcome.clicked += () => _onHeroClick?.Invoke(heroId);
+            _welcomeMount.Add(welcome);
+        }
+        _welcomeGreeting.text = state.WelcomeCaptain.Greeting;
 
-        _rosterCountLabel.text = state.RosterCountText;
+        // Deploy row — 4 face card md.
+        _deployRow.Clear();
+        foreach (var h in state.DeployHeroes)
+        {
+            var card = BuildFaceCard(h.HeroId, h.DisplayName, h.EmotionKey, h.BadgeKey, "md", "hero-deploy");
+            var heroId = h.HeroId;
+            card.clicked += () => _onHeroClick?.Invoke(heroId);
+            _deployRow.Add(card);
+        }
+
+        // Roster row — face card sm (deploy 제외 8).
+        _rosterRow.Clear();
+        foreach (var h in state.RosterHeroes)
+        {
+            var card = BuildFaceCard(h.HeroId, h.DisplayName, h.EmotionKey, h.BadgeKey, "sm", "hero");
+            var heroId = h.HeroId;
+            card.clicked += () => _onHeroClick?.Invoke(heroId);
+            _rosterRow.Add(card);
+        }
 
         _expeditionButton.text = state.ExpeditionLabel;
         _expeditionButton.tooltip = state.ExpeditionTooltip;
@@ -157,6 +179,37 @@ public sealed class TownScreenView
         _quickBattleButton.style.display = state.ShowQuickBattle ? DisplayStyle.Flex : DisplayStyle.None;
 
         _statusLabel.text = state.StatusText;
+    }
+
+    /// <summary>HeroFaceCard atom build — NPC + hero 공용. badge로 위계 분리, size로 변형.</summary>
+    private static Button BuildFaceCard(string id, string displayName, string emotion, string badge, string size, string role)
+    {
+        var card = new Button { name = $"FaceCard_{id}", text = string.Empty };
+        card.AddToClassList("sm-face-card");
+        card.AddToClassList($"sm-face-card--{role}");
+        card.AddToClassList($"sm-face-card--{size}");
+
+        if (!string.IsNullOrEmpty(badge) && badge != "none")
+        {
+            var b = new Label(string.Empty);
+            b.AddToClassList("sm-face-card__badge");
+            b.AddToClassList($"sm-face-card__badge--{badge}");
+            b.pickingMode = PickingMode.Ignore;
+            card.Add(b);
+        }
+
+        var portrait = new VisualElement { name = "Portrait" };
+        portrait.AddToClassList("sm-face-card__portrait");
+        portrait.AddToClassList($"sm-face-card__emotion--{emotion}");
+        portrait.pickingMode = PickingMode.Ignore;
+        card.Add(portrait);
+
+        var nameLabel = new Label(displayName);
+        nameLabel.AddToClassList("sm-face-card__name");
+        nameLabel.pickingMode = PickingMode.Ignore;
+        card.Add(nameLabel);
+
+        return card;
     }
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement
