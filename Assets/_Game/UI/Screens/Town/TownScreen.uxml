@@ -1,146 +1,93 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <!--
-      잿골 Town hub V2 — pindoc://v1-scene-screen-routing-ashglen-hub-analysis 정합.
-      "안전한 본거지가 아니라, 서로 불편한 사람들이 같은 지붕을 쓰는 임시 정착지" — 4 NPC 거점이 hub의
-      dominant. 명일방주 식 ambient hub: NPC 4 menu strip (좌) + Welcome hero center + utility (우) +
-      원정 CTA (하단). 옛 RosterGrid+toolbar 정책 폐기.
-
-      surface ↔ NPC 매핑:
-        달목 (여관) → Recruit
-        쇠매 (공방) → EquipmentRefit
-        갈마 (진료소) → PassiveBoard
-        솔길 (기록)  → Inventory (창고/기록) + Theater placeholder
-      utility: 동료 명부 → Roster modal / 영구 강화 → PermanentAugment / Save·Load·Return·Settings.
-      CTA: 원정으로 → SquadBuilder + Atlas 진입 통합.
+      잿골 Town hub V3 — pindoc://decision-town-hub-v3-ashglen-face-cluster.
+      얼굴 중심 사각형 카드 cluster + 가변 deploy + 4 NPC ambient + 표정 swap + 바크 layer.
+      Layout: top utility bar / middle backdrop+welcome captain / bottom NPC strip + hero cluster + utility column / CTA bar.
+      Modal Instance layer는 V2와 동일 (5 modal — Squad/Recruit/Equipment/Passive/Inventory + PermAugment + Roster placeholder).
     -->
-    <ui:Template name="HeroPortraitCardTemplate" src="../../Foundation/Components/HeroPortraitCard.uxml" />
     <ui:Template name="SquadBuilderTemplate" src="SquadBuilder.uxml" />
     <ui:Template name="RecruitTemplate" src="Preview/RecruitPreview.uxml" />
     <ui:Template name="EquipmentRefitTemplate" src="Preview/EquipmentRefitPreview.uxml" />
     <ui:Template name="PassiveBoardTemplate" src="Preview/PassiveBoardPreview.uxml" />
     <ui:Template name="PermanentAugmentTemplate" src="Preview/PermanentAugmentPreview.uxml" />
+    <ui:Template name="InventoryTemplate" src="Preview/InventoryPreview.uxml" />
     <ui:Template name="RosterTemplate" src="Preview/RosterGridPreview.uxml" />
-    <ui:VisualElement name="TownScreenRoot" class="screen town-hub">
+    <ui:VisualElement name="TownScreenRoot" class="screen town-hub town-hub--v3">
         <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop sm-backdrop" picking-mode="Ignore" />
         <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim sm-backdrop-dim" picking-mode="Ignore" />
 
-        <!-- Top bar — title + utility icons (Save/Load/Return/Locale/Help/Settings) -->
+        <!-- Top utility bar -->
         <ui:VisualElement name="HeaderBar" class="town-hub__header">
-            <ui:VisualElement class="town-hub__header-title">
-                <ui:Label name="TitleEyebrowLabel" class="sm-eyebrow town-hub__eyebrow" text="ASHGLEN — 잿골" />
-                <ui:Label name="TitleLabel" class="sm-headline town-hub__title" text="변방 잿골 마을" />
+            <ui:VisualElement class="town-hub__header-title" picking-mode="Ignore">
+                <ui:Label name="TitleEyebrowLabel" class="sm-eyebrow town-hub__eyebrow" text="ASHGLEN — 잿골" picking-mode="Ignore" />
+                <ui:Label name="TitleLabel" class="sm-headline town-hub__title" text="변방 잿골 마을" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:VisualElement class="town-hub__header-tools">
-                <ui:Label name="LocaleStatusLabel" class="town-hub__locale-status" />
-                <ui:Button name="LocaleKoButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary town-hub__locale-button" />
-                <ui:Button name="LocaleEnButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary town-hub__locale-button" />
+                <ui:Label name="LocaleStatusLabel" class="town-hub__locale-status" picking-mode="Ignore" />
+                <ui:Button name="LocaleKoButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
+                <ui:Button name="LocaleEnButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
                 <ui:Button name="HelpButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="?" />
                 <ui:VisualElement class="town-hub__utility-divider" picking-mode="Ignore" />
                 <ui:Button name="SaveButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
                 <ui:Button name="LoadButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
+                <ui:Button name="SettingsButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="⚙" />
                 <ui:Button name="ReturnToStartButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
             </ui:VisualElement>
         </ui:VisualElement>
 
         <ui:VisualElement name="HelpStrip" class="town-hub__help">
-            <ui:Label name="HelpBodyLabel" class="town-hub__help-body" />
+            <ui:Label name="HelpBodyLabel" class="town-hub__help-body" picking-mode="Ignore" />
             <ui:Button name="HelpDismissButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary town-hub__help-dismiss" />
         </ui:VisualElement>
 
-        <!-- Body: 좌 NPC strip + center stage + 우 utility entries -->
-        <ui:VisualElement class="town-hub__body">
-            <ui:VisualElement class="town-hub__npc-strip">
-                <ui:Label class="town-hub__column-eyebrow" text="MARKET ROW · 마을 거점" />
-                <ui:Button name="NpcEntry_Dalmok" class="town-hub__npc-entry sm-hover-raise">
-                    <ui:VisualElement class="town-hub__npc-portrait town-hub__npc-portrait--dalmok" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__npc-info" picking-mode="Ignore">
-                        <ui:Label class="town-hub__npc-name" text="달목" picking-mode="Ignore" />
-                        <ui:Label class="town-hub__npc-role" text="여관 · 모집" picking-mode="Ignore" />
-                        <ui:Label name="NpcHint_Dalmok" class="town-hub__npc-hint" text="새 동료 명단을 정리해두었네." picking-mode="Ignore" />
-                    </ui:VisualElement>
-                </ui:Button>
-                <ui:Button name="NpcEntry_Soemae" class="town-hub__npc-entry sm-hover-raise">
-                    <ui:VisualElement class="town-hub__npc-portrait town-hub__npc-portrait--soemae" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__npc-info" picking-mode="Ignore">
-                        <ui:Label class="town-hub__npc-name" text="쇠매" picking-mode="Ignore" />
-                        <ui:Label class="town-hub__npc-role" text="공방 · 장비" picking-mode="Ignore" />
-                        <ui:Label name="NpcHint_Soemae" class="town-hub__npc-hint" text="망치 소리는 거짓말 안 해." picking-mode="Ignore" />
-                    </ui:VisualElement>
-                </ui:Button>
-                <ui:Button name="NpcEntry_Galma" class="town-hub__npc-entry sm-hover-raise">
-                    <ui:VisualElement class="town-hub__npc-portrait town-hub__npc-portrait--galma" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__npc-info" picking-mode="Ignore">
-                        <ui:Label class="town-hub__npc-name" text="갈마" picking-mode="Ignore" />
-                        <ui:Label class="town-hub__npc-role" text="진료소 · 수련" picking-mode="Ignore" />
-                        <ui:Label name="NpcHint_Galma" class="town-hub__npc-hint" text="다친 곳은 다음에도 다친다." picking-mode="Ignore" />
-                    </ui:VisualElement>
-                </ui:Button>
-                <ui:Button name="NpcEntry_Solgil" class="town-hub__npc-entry sm-hover-raise">
-                    <ui:VisualElement class="town-hub__npc-portrait town-hub__npc-portrait--solgil" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__npc-info" picking-mode="Ignore">
-                        <ui:Label class="town-hub__npc-name" text="솔길" picking-mode="Ignore" />
-                        <ui:Label class="town-hub__npc-role" text="기록 · 창고" picking-mode="Ignore" />
-                        <ui:Label name="NpcHint_Solgil" class="town-hub__npc-hint" text="원정대가 못 본 것을 적어둔다." picking-mode="Ignore" />
-                    </ui:VisualElement>
-                </ui:Button>
-            </ui:VisualElement>
+        <!-- Middle stage — backdrop + Welcome captain center, NPC strip 좌측, utility 우측 -->
+        <ui:VisualElement class="town-hub__stage">
+            <ui:VisualElement name="NpcStrip" class="town-hub__npc-strip" />
 
-            <ui:VisualElement class="town-hub__center-stage">
-                <ui:VisualElement class="town-hub__welcome-frame">
-                    <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--tl" picking-mode="Ignore" />
-                    <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--tr" picking-mode="Ignore" />
-                    <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--bl" picking-mode="Ignore" />
-                    <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--small sm-frame-corner-cap--br" picking-mode="Ignore" />
-                    <ui:Button name="WelcomeHeroEntry" class="town-hub__welcome sm-hover-raise" picking-mode="Position">
-                        <ui:VisualElement name="WelcomeHeroPortrait" class="town-hub__welcome-portrait" picking-mode="Ignore" />
-                        <ui:VisualElement class="town-hub__welcome-text" picking-mode="Ignore">
-                            <ui:Label name="WelcomeHeroEyebrow" class="sm-eyebrow town-hub__welcome-eyebrow" text="오늘의 부관" picking-mode="Ignore" />
-                            <ui:Label name="WelcomeHeroName" class="town-hub__welcome-name" text="" picking-mode="Ignore" />
-                            <ui:Label name="WelcomeHeroGreeting" class="town-hub__welcome-greeting" text="잿골에 오신 것을 환영합니다." picking-mode="Ignore" />
-                            <ui:Label name="WelcomeHeroHint" class="town-hub__welcome-hint" text="클릭해 동료 시트를 봅니다." picking-mode="Ignore" />
-                        </ui:VisualElement>
-                    </ui:Button>
-                </ui:VisualElement>
+            <ui:VisualElement class="town-hub__center">
+                <ui:VisualElement name="WelcomeCaptainMount" class="town-hub__welcome-mount" />
+                <ui:Label name="WelcomeCaptainGreeting" class="town-hub__welcome-greeting" picking-mode="Ignore" />
             </ui:VisualElement>
 
             <ui:VisualElement class="town-hub__utility-strip">
-                <ui:Label class="town-hub__column-eyebrow" text="LEDGER · 마을 비망록" />
-                <ui:Button name="RosterButton" class="town-hub__utility-entry sm-hover-raise">
-                    <ui:Label class="town-hub__utility-icon" text="◈" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__utility-text" picking-mode="Ignore">
-                        <ui:Label class="town-hub__utility-name" text="동료 명부" picking-mode="Ignore" />
-                        <ui:Label name="RosterCountLabel" class="town-hub__utility-meta" text="" picking-mode="Ignore" />
-                    </ui:VisualElement>
+                <ui:Label class="town-hub__column-eyebrow" text="LEDGER · 마을 비망록" picking-mode="Ignore" />
+                <ui:Button name="RosterButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
+                    <ui:Label class="town-hub__utility-name" text="◈  동료 명부" picking-mode="Ignore" />
                 </ui:Button>
-                <ui:Button name="PermanentAugmentButton" class="town-hub__utility-entry sm-hover-raise">
-                    <ui:Label class="town-hub__utility-icon" text="✦" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__utility-text" picking-mode="Ignore">
-                        <ui:Label class="town-hub__utility-name" text="영구 강화" picking-mode="Ignore" />
-                        <ui:Label class="town-hub__utility-meta" text="자세 신조" picking-mode="Ignore" />
-                    </ui:VisualElement>
+                <ui:Button name="SquadBuilderButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
+                    <ui:Label class="town-hub__utility-name" text="❖  전열 편성" picking-mode="Ignore" />
                 </ui:Button>
-                <ui:Button name="SquadBuilderButton" class="town-hub__utility-entry sm-hover-raise">
-                    <ui:Label class="town-hub__utility-icon" text="❖" picking-mode="Ignore" />
-                    <ui:VisualElement class="town-hub__utility-text" picking-mode="Ignore">
-                        <ui:Label class="town-hub__utility-name" text="전열 편성" picking-mode="Ignore" />
-                        <ui:Label class="town-hub__utility-meta" text="앵커 6 · 자세 5" picking-mode="Ignore" />
-                    </ui:VisualElement>
+                <ui:Button name="PermanentAugmentButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
+                    <ui:Label class="town-hub__utility-name" text="✦  영구 강화" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="TheaterButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
+                    <ui:Label class="town-hub__utility-name" text="▶  극장" picking-mode="Ignore" />
                 </ui:Button>
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Bottom bar — 원정 CTA + Quick Battle (utility) + 상태 -->
+        <!-- Bottom hero cluster — deploy 4 highlight (md) + roster N thumbnail (sm). 가변 list. -->
+        <ui:VisualElement class="town-hub__hero-cluster">
+            <ui:Label class="town-hub__cluster-eyebrow" text="잿골에 머무는 동료" picking-mode="Ignore" />
+            <ui:VisualElement class="town-hub__cluster-rows">
+                <ui:VisualElement name="DeployRow" class="town-hub__deploy-row" />
+                <ui:VisualElement name="RosterRow" class="town-hub__roster-row" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Bottom CTA bar -->
         <ui:VisualElement class="town-hub__cta-bar">
-            <ui:Label name="StatusLabel" class="town-hub__status" />
+            <ui:Label name="StatusLabel" class="town-hub__status" picking-mode="Ignore" />
             <ui:VisualElement class="town-hub__cta-actions">
                 <ui:Button name="QuickBattleButton" class="ui-button sm-cta sm-cta--md sm-cta--utility town-hub__quick-battle-button" text="Quick Battle (Smoke)" />
                 <ui:Button name="ExpeditionButton" class="ui-button sm-cta sm-cta--hero sm-cta--primary town-hub__expedition-cta" />
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Modal layer overlays — TemplateContainer height 0 우회 + picking-mode=Ignore (modal closed 시 hub click 통과).
-             각 wrapper에 inline style="display: none;" 강제 — controller Open 시 display=Flex로 토글. wrapper 단위라 안의
-             Preview UXML root (RcpRoot/ErpRoot/PbpRoot/PapRoot/InvRoot/RosterGridPreviewRoot)가 default visible이어도 hub 안 가림. -->
+        <!-- Bark layer placeholder (Phase 8 BarkBus + BarkPopupView가 attach) -->
+        <ui:VisualElement name="BarkLayer" class="town-hub__bark-layer" picking-mode="Ignore" />
+
+        <!-- Modal layer overlays — TemplateContainer height 0 우회 + inline display:none 강제 default closed. -->
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="SquadBuilderTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
@@ -155,6 +102,9 @@
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="PermanentAugmentTemplate" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
+            <ui:Instance template="InventoryTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="RosterTemplate" picking-mode="Ignore" />

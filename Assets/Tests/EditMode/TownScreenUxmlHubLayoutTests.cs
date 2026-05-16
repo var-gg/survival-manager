@@ -16,38 +16,51 @@ public sealed class TownScreenUxmlHubLayoutTests
     [Test]
     public void TownScreenUxml_Declares_Hub_Layout_Controls()
     {
-        // Phase 5 잿골 hub V2 — 4 NPC menu (좌) + Welcome hero center + utility (우) + Atlas CTA.
-        // pindoc://v1-scene-screen-routing-ashglen-hub-analysis 정합. 옛 RosterGrid+toolbar 폐기.
+        // Phase 7 잿골 hub V3 — pindoc://decision-town-hub-v3-ashglen-face-cluster.
+        // 얼굴 중심 cluster + 가변 deploy + 4 NPC ambient + utility + Atlas CTA + bark layer.
+        // NPC + hero face card는 View가 코드로 build (NpcStrip / WelcomeCaptainMount / DeployRow / RosterRow container만 UXML).
         var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/TownScreen.uxml");
-        Assert.That(uxml, Does.Not.Contain("RealmSummaryLabel"));
+        // Top utility bar
+        Assert.That(uxml, Does.Contain("TitleEyebrowLabel"));
+        Assert.That(uxml, Does.Contain("TitleLabel"));
+        Assert.That(uxml, Does.Contain("LocaleKoButton"));
+        Assert.That(uxml, Does.Contain("LocaleEnButton"));
+        Assert.That(uxml, Does.Contain("HelpButton"));
+        Assert.That(uxml, Does.Contain("SaveButton"));
+        Assert.That(uxml, Does.Contain("LoadButton"));
+        Assert.That(uxml, Does.Contain("SettingsButton"));
         Assert.That(uxml, Does.Contain("ReturnToStartButton"));
-        Assert.That(uxml, Does.Contain("ExpeditionButton"));
-        Assert.That(uxml, Does.Contain("QuickBattleButton"));
-        // 4 NPC entry (달목/쇠매/갈마/솔길).
-        Assert.That(uxml, Does.Contain("NpcEntry_Dalmok"));
-        Assert.That(uxml, Does.Contain("NpcEntry_Soemae"));
-        Assert.That(uxml, Does.Contain("NpcEntry_Galma"));
-        Assert.That(uxml, Does.Contain("NpcEntry_Solgil"));
-        // Welcome hero standee.
-        Assert.That(uxml, Does.Contain("WelcomeHeroEntry"));
-        Assert.That(uxml, Does.Contain("WelcomeHeroName"));
-        // Utility entries — Roster (utility), PermanentAugment, SquadBuilder.
+        // V3 layout containers — face card는 코드 build
+        Assert.That(uxml, Does.Contain("NpcStrip"));
+        Assert.That(uxml, Does.Contain("WelcomeCaptainMount"));
+        Assert.That(uxml, Does.Contain("WelcomeCaptainGreeting"));
+        Assert.That(uxml, Does.Contain("DeployRow"));
+        Assert.That(uxml, Does.Contain("RosterRow"));
+        Assert.That(uxml, Does.Contain("BarkLayer"));
+        // Utility entries (4)
         Assert.That(uxml, Does.Contain("RosterButton"));
-        Assert.That(uxml, Does.Contain("PermanentAugmentButton"));
         Assert.That(uxml, Does.Contain("SquadBuilderButton"));
-        // Modal Templates — 5 modal (Squad/Recruit/Equipment/Passive/PermAugment) + Roster placeholder.
+        Assert.That(uxml, Does.Contain("PermanentAugmentButton"));
+        Assert.That(uxml, Does.Contain("TheaterButton"));
+        // CTA
+        Assert.That(uxml, Does.Contain("QuickBattleButton"));
+        Assert.That(uxml, Does.Contain("ExpeditionButton"));
+        // Modal Templates — 7 (Squad/Recruit/Equipment/Passive/PermAugment/Inventory/Roster)
         Assert.That(uxml, Does.Contain("SquadBuilderTemplate"));
         Assert.That(uxml, Does.Contain("RecruitTemplate"));
         Assert.That(uxml, Does.Contain("EquipmentRefitTemplate"));
         Assert.That(uxml, Does.Contain("PassiveBoardTemplate"));
         Assert.That(uxml, Does.Contain("PermanentAugmentTemplate"));
+        Assert.That(uxml, Does.Contain("InventoryTemplate"));
         Assert.That(uxml, Does.Contain("RosterTemplate"));
-        // 옛 hub element 폐기 — RosterGrid was default panel, now 별도 utility modal.
-        Assert.That(uxml, Does.Not.Contain("FilterStrip"));
-        Assert.That(uxml, Does.Not.Contain("EquipmentRefitButton"));   // NPC entry로 대체
-        Assert.That(uxml, Does.Not.Contain("PassiveBoardButton"));     // NPC entry로 대체
-        Assert.That(uxml, Does.Not.Contain("RecruitButton"));          // NPC entry로 대체
-        // TacticalWorkshop은 audit §2.2 + P1-1 검토 후 hub에서 분리 (중복/모델 부재).
+        // 옛 V1/V2 element 폐기 검증
+        Assert.That(uxml, Does.Not.Contain("RealmSummaryLabel"));
+        Assert.That(uxml, Does.Not.Contain("NpcEntry_Dalmok"));      // V2 NPC entry — 코드 build로 대체
+        Assert.That(uxml, Does.Not.Contain("WelcomeHeroEntry"));      // V2 standee — Welcome captain face card로 대체
+        Assert.That(uxml, Does.Not.Contain("FilterStrip"));           // V1 RosterGrid filter chip
+        Assert.That(uxml, Does.Not.Contain("EquipmentRefitButton"));  // V2 toolbar — NPC click 매핑
+        Assert.That(uxml, Does.Not.Contain("PassiveBoardButton"));    // V2 toolbar
+        // TacticalWorkshop은 commit dbbb9d4a에서 분리 (audit §2.2 + P1-1)
         Assert.That(uxml, Does.Not.Contain("TacticalWorkshopButton"));
         Assert.That(uxml, Does.Not.Contain("TacticalWorkshopTemplate"));
     }

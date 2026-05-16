@@ -1,21 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SM.Meta;
 using SM.Meta.Model;
-using SM.Persistence.Abstractions.Models;
 using SM.Unity.UI;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town;
 
 /// <summary>
-/// 잿골 hub V2 presenter — pindoc://v1-scene-screen-routing-ashglen-hub-analysis 정합.
-/// 명일방주 식 ambient hub: 4 NPC menu (좌) + Welcome hero center + utility (우) + Atlas CTA (하).
-/// 옛 RosterGrid+toolbar 폐기. Recruit/Equipment/Passive/Inventory 진입은 NPC entry로 위임,
-/// PermAugment/SquadBuilder/Roster는 utility entry, Quick Battle/Save/Load/Return은 top utility.
-///
-/// Welcome hero rotation: V1 단순 fallback — deploy squad 첫 번째 (또는 roster 첫 번째). 후속에
-/// chapter 단계별 narrative cue 적용.
+/// 잿골 hub V3 presenter — pindoc://decision-town-hub-v3-ashglen-face-cluster.
+/// 얼굴 중심 cluster + 가변 deploy + 4 NPC ambient + utility entries + Atlas CTA.
+/// NPC click 매핑은 controller가 SetNpcOpener로 inject — presenter는 dict lookup만.
+/// Welcome captain V1 rotation: deploy squad 첫 hero (narrative cue 부관). Phase 8에 EmotionState 통합.
 /// </summary>
 public sealed class TownScreenPresenter
 {
@@ -26,6 +23,9 @@ public sealed class TownScreenPresenter
     private readonly ContentTextResolver _contentText;
     private readonly TownScreenView _view;
     private readonly ScreenHelpState _helpState;
+    private readonly Dictionary<string, Action> _npcOpeners = new(StringComparer.Ordinal);
+    private Action? _settingsOpener;
+    private Action? _theaterOpener;
     private string _pendingStatus = string.Empty;
 
     public TownScreenPresenter(
@@ -41,11 +41,7 @@ public sealed class TownScreenPresenter
         _helpState = new ScreenHelpState(HelpPrefsKey);
     }
 
-    public void Initialize()
-    {
-        _view.Bind(this);
-        Refresh();
-    }
+    public void Initialize() { _view.Bind(this); Refresh(); }
 
     public void Refresh(string message = "")
     {
@@ -57,7 +53,6 @@ public sealed class TownScreenPresenter
 
     public void SelectKorean() => _localization.TrySetLocale("ko");
     public void SelectEnglish() => _localization.TrySetLocale("en");
-
     public void ToggleHelp() { _helpState.Toggle(); Refresh(); }
     public void DismissHelp() { _helpState.Dismiss(); Refresh(); }
 
@@ -89,9 +84,7 @@ public sealed class TownScreenPresenter
     {
         if (IsReturnToStartBlocked(_root.SessionState))
         {
-            Refresh(Localize(
-                GameLocalizationTables.UITown,
-                "ui.town.error.return_start_locked",
+            Refresh(Localize(GameLocalizationTables.UITown, "ui.town.error.return_start_locked",
                 "진행 중인 런이 있어 지금은 시작 화면으로 돌아갈 수 없습니다."));
             return;
         }
@@ -128,9 +121,7 @@ public sealed class TownScreenPresenter
     {
         if (!_root.SessionState.CanStartQuickBattleSmoke)
         {
-            Refresh(Localize(
-                GameLocalizationTables.UITown,
-                "ui.town.error.quick_battle_locked",
+            Refresh(Localize(GameLocalizationTables.UITown, "ui.town.error.quick_battle_locked",
                 "Quick Battle (Smoke) is unavailable while a reward settlement or expedition run is active."));
             return;
         }
@@ -143,31 +134,83 @@ public sealed class TownScreenPresenter
         _root.SceneFlow.GoToBattle();
     }
 
-    /// <summary>Welcome hero standee click — Phase 3 CharacterSheet modal 후속. 일단 status placeholder.</summary>
-    public void OpenWelcomeHeroSheet(string heroId)
+    public void OpenSettings()
+    {
+        if (_settingsOpener != null) _settingsOpener.Invoke();
+        else Refresh("Settings — V1 모델 미존재 (audit §4.1 P2, 후속 wire)");
+    }
+
+    public void OpenTheater()
+    {
+        if (_theaterOpener != null) _theaterOpener.Invoke();
+        else Refresh("극장 (Theater) — story replay 후속 wire");
+    }
+
+    /// <summary>NPC 거점 click 라우팅 — controller가 SetNpcOpener로 inject한 modal opener invoke.</summary>
+    public void OnNpcClick(string npcId)
+    {
+        if (_npcOpeners.TryGetValue(npcId, out var open)) open.Invoke();
+        else Refresh($"NPC 거점 미연결: {npcId}");
+    }
+
+    /// <summary>Hero face card click — Phase 3 CharacterSheet modal 후속.</summary>
+    public void OnHeroClick(string heroId)
     {
         if (string.IsNullOrEmpty(heroId)) return;
-        Refresh($"동료 시트 — {heroId} (Phase 3 후속 wire)");
+        Refresh($"동료 시트 — {heroId} (Phase 3 CharacterSheet 후속 wire)");
     }
+
+    public void SetNpcOpener(string npcId, Action open) => _npcOpeners[npcId] = open;
+    public void SetSettingsOpener(Action open) => _settingsOpener = open;
+    public void SetTheaterOpener(Action open) => _theaterOpener = open;
 
     private TownScreenViewState BuildState(GameSessionState session)
     {
         var showDebugActions = Application.isEditor || Debug.isDebugBuild;
+        var statusText = _pendingStatus;
+        _pendingStatus = string.Empty;
 
-        // Welcome hero V1: deploy squad 첫 번째, fallback Profile.Heroes 첫 번째.
-        var welcomeHeroId = session.ExpeditionSquadHeroIds.FirstOrDefault()
+        var deployHeroIds = session.ExpeditionSquadHeroIds.ToList();
+        var welcomeHeroId = deployHeroIds.FirstOrDefault()
             ?? session.Profile.Heroes.FirstOrDefault()?.HeroId
             ?? string.Empty;
         var welcomeHero = session.Profile.Heroes
             .FirstOrDefault(h => string.Equals(h.HeroId, welcomeHeroId, StringComparison.Ordinal));
-        var welcomeName = string.IsNullOrEmpty(welcomeHeroId)
-            ? Localize(GameLocalizationTables.UITown, "ui.town.welcome.empty_name", "—")
-            : (!string.IsNullOrEmpty(welcomeHero?.Name) ? welcomeHero!.Name : _contentText.GetCharacterName(welcomeHeroId, welcomeHeroId));
+        var welcomeName = ResolveHeroDisplayName(welcomeHeroId, welcomeHero?.Name);
+        var welcomeGreeting = string.IsNullOrEmpty(welcomeHeroId)
+            ? Localize(GameLocalizationTables.UITown, "ui.town.welcome.empty", "잿골은 늘 그대로일세. 한 사람도 함께가 아닌가.")
+            : Localize(GameLocalizationTables.UITown, "ui.town.welcome.greeting_default", "잿골은 늘 그대로일세. 잠시 숨을 돌리시지요.");
 
-        var rosterCount = session.Profile.Heroes.Count;
-        var rosterCap = MetaBalanceDefaults.TownRosterCap;
-        var statusText = _pendingStatus;
-        _pendingStatus = string.Empty;
+        // NPC 4 거점 — 정적 (Phase 8에 EmotionState/BarkBus 통합)
+        var npcEntries = new List<TownNpcCardViewState>
+        {
+            new("dalmok",  "달목", "amused",    "tavern"),
+            new("soemae",  "쇠매", "neutral",   "forge"),
+            new("galma",   "갈마", "concerned", "clinic"),
+            new("solgil",  "솔길", "neutral",   "records"),
+        };
+
+        // Deploy row — ExpeditionSquadHeroIds (deploy 4 cap)
+        var deployCards = new List<TownHeroCardViewState>();
+        foreach (var hid in deployHeroIds)
+        {
+            var hero = session.Profile.Heroes.FirstOrDefault(h => string.Equals(h.HeroId, hid, StringComparison.Ordinal));
+            var displayName = ResolveHeroDisplayName(hid, hero?.Name);
+            var badge = string.Equals(hid, welcomeHeroId, StringComparison.Ordinal) ? "captain" : "none";
+            deployCards.Add(new TownHeroCardViewState(hid, displayName, "neutral", badge, IsDeploy: true));
+        }
+
+        // Roster row — Profile.Heroes 중 deploy 외
+        var deployIdSet = new HashSet<string>(deployHeroIds, StringComparer.Ordinal);
+        var rosterCards = session.Profile.Heroes
+            .Where(h => !deployIdSet.Contains(h.HeroId))
+            .Select(h => new TownHeroCardViewState(
+                HeroId: h.HeroId,
+                DisplayName: ResolveHeroDisplayName(h.HeroId, h.Name),
+                EmotionKey: "neutral",
+                BadgeKey: "none",
+                IsDeploy: false))
+            .ToList();
 
         return new TownScreenViewState(
             TitleEyebrow: Localize(GameLocalizationTables.UITown, "ui.town.eyebrow", "ASHGLEN — 잿골"),
@@ -179,27 +222,33 @@ public sealed class TownScreenPresenter
             Help: BuildHelpState(),
             SaveLabel: Localize(GameLocalizationTables.UICommon, "ui.common.save", "Save"),
             LoadLabel: Localize(GameLocalizationTables.UICommon, "ui.common.load", "Load"),
+            SettingsLabel: Localize(GameLocalizationTables.UICommon, "ui.common.settings", "⚙"),
             ReturnToStartLabel: Localize(GameLocalizationTables.UICommon, "ui.common.return_start", "Return to Start"),
             ReturnToStartTooltip: BuildReturnToStartTooltip(session),
             CanReturnToStart: !IsReturnToStartBlocked(session),
-            DalmokEntry: new TownNpcEntryViewState(Localize(GameLocalizationTables.UITown, "ui.town.npc.dalmok.hint", "새 동료 명단을 정리해두었네.")),
-            SoemaeEntry: new TownNpcEntryViewState(Localize(GameLocalizationTables.UITown, "ui.town.npc.soemae.hint", "망치 소리는 거짓말 안 해.")),
-            GalmaEntry: new TownNpcEntryViewState(Localize(GameLocalizationTables.UITown, "ui.town.npc.galma.hint", "다친 곳은 다음에도 다친다.")),
-            SolgilEntry: new TownNpcEntryViewState(Localize(GameLocalizationTables.UITown, "ui.town.npc.solgil.hint", "원정대가 못 본 것을 적어둔다.")),
-            WelcomeHero: new TownWelcomeHeroViewState(
+            NpcEntries: npcEntries,
+            WelcomeCaptain: new TownWelcomeViewState(
                 HeroId: welcomeHeroId,
-                EyebrowText: Localize(GameLocalizationTables.UITown, "ui.town.welcome.eyebrow", "오늘의 부관"),
-                HeroName: welcomeName,
-                Greeting: Localize(GameLocalizationTables.UITown, "ui.town.welcome.greeting_default", "잿골은 늘 그대로일세. 잠시 숨을 돌리시지요."),
-                HintText: Localize(GameLocalizationTables.UITown, "ui.town.welcome.hint", "클릭해 동료 시트를 봅니다.")),
-            RosterCountText: $"{rosterCount} / {rosterCap}",
+                DisplayName: welcomeName,
+                EmotionKey: "confident",
+                Greeting: welcomeGreeting),
+            DeployHeroes: deployCards,
+            RosterHeroes: rosterCards,
             ExpeditionLabel: BuildExpeditionLabel(session),
             ExpeditionTooltip: BuildExpeditionTooltip(session),
             QuickBattleLabel: Localize(GameLocalizationTables.UITown, "ui.town.action.quick_battle_smoke", "Quick Battle (Smoke)"),
-            QuickBattleTooltip: Localize(GameLocalizationTables.UITown, "ui.town.tooltip.quick_battle_smoke", "Open an integration smoke battle using the current Town build, then return through Reward or direct Town restore."),
+            QuickBattleTooltip: Localize(GameLocalizationTables.UITown, "ui.town.tooltip.quick_battle_smoke",
+                "Open an integration smoke battle using the current Town build, then return through Reward or direct Town restore."),
             CanQuickBattle: showDebugActions && session.CanStartQuickBattleSmoke,
             ShowQuickBattle: showDebugActions,
             StatusText: statusText);
+    }
+
+    private string ResolveHeroDisplayName(string heroId, string? heroName)
+    {
+        if (string.IsNullOrEmpty(heroId)) return "—";
+        if (!string.IsNullOrEmpty(heroName)) return heroName!;
+        return _contentText.GetCharacterName(heroId, heroId);
     }
 
     private string BuildLocaleStatus()
@@ -219,9 +268,7 @@ public sealed class TownScreenPresenter
     {
         return new HelpStripViewState(
             _helpState.IsVisible,
-            Localize(
-                GameLocalizationTables.UITown,
-                "ui.town.help.body",
+            Localize(GameLocalizationTables.UITown, "ui.town.help.body",
                 "달목·쇠매·갈마·솔길 — 4 거점 NPC를 통해 모집·장비·수련·창고로. 우측 명부에서 동료를, 원정 버튼으로 출발."),
             Localize(GameLocalizationTables.UICommon, "ui.common.hide", "Hide"));
     }
@@ -242,19 +289,24 @@ public sealed class TownScreenPresenter
     {
         if (session.HasPendingRewardSettlement)
         {
-            return Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_reward", "Open Reward to settle the previous node before continuing.");
+            return Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_reward",
+                "Open Reward to settle the previous node before continuing.");
         }
 
         return session.CanResumeExpedition
-            ? Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_resume", "Resume the authored expedition from the currently selected route.")
-            : Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_start", "Begin the authored expedition loop with the current preparation.");
+            ? Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_resume",
+                "Resume the authored expedition from the currently selected route.")
+            : Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_start",
+                "Begin the authored expedition loop with the current preparation.");
     }
 
     private string BuildReturnToStartTooltip(GameSessionState session)
     {
         return IsReturnToStartBlocked(session)
-            ? Localize(GameLocalizationTables.UITown, "ui.town.tooltip.return_start_locked", "Blocked while an authored run or smoke battle is still active.")
-            : Localize(GameLocalizationTables.UITown, "ui.town.tooltip.return_start", "Leave the local run shell and go back to Boot.");
+            ? Localize(GameLocalizationTables.UITown, "ui.town.tooltip.return_start_locked",
+                "Blocked while an authored run or smoke battle is still active.")
+            : Localize(GameLocalizationTables.UITown, "ui.town.tooltip.return_start",
+                "Leave the local run shell and go back to Boot.");
     }
 
     private static bool IsReturnToStartBlocked(GameSessionState session)
