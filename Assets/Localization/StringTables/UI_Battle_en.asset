@@ -530,6 +530,27 @@ MonoBehaviour:
     m_Localized: Expand the summary panel.
     m_Metadata:
       m_Items: []
+  - m_Id: 17538112149590016
+    m_Localized: Dominant Hand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144448
+    m_Localized: Unit's dominant hand. Determines the basis for posture and motion
+      mirroring.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144449
+    m_Localized: Left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144450
+    m_Localized: Right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144451
+    m_Localized: Ambidextrous
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

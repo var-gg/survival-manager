@@ -53,9 +53,11 @@ public sealed class StatV2AndSandboxTests
         Assert.That(CountAssets("Archetypes"), Is.EqualTo(16));
         Assert.That(CountLaunchFloorSkills(), Is.EqualTo(40));
         Assert.That(CountSupportModifierSkills(), Is.EqualTo(12));
-        Assert.That(CountAssets("Items"), Is.EqualTo(36));
+        // V1 SafeTarget items 42 (10ed7f7b "출시 안전 목표 콘텐츠 볼륨 보강" 확장 후)
+        Assert.That(CountAssets("Items"), Is.EqualTo(42));
         Assert.That(CountAssets("PassiveBoards"), Is.EqualTo(4));
-        Assert.That(CountAssets("PassiveNodes"), Is.EqualTo(72));
+        // V1 SafeTarget PassiveNodes 96 (line 51 PaidLaunchSafeTarget.PassiveNodeCount와 일치)
+        Assert.That(CountAssets("PassiveNodes"), Is.EqualTo(96));
         Assert.That(CountAugments(isPermanent: false), Is.EqualTo(24));
         Assert.That(CountAugments(isPermanent: true), Is.EqualTo(12));
         Assert.That(CountSynergyFamilies(), Is.EqualTo(7));

@@ -719,6 +719,26 @@ MonoBehaviour:
     m_Key: ui.battle.tactic.dial.width
     m_Metadata:
       m_Items: []
+  - m_Id: 17538112149590016
+    m_Key: ui.battle.axis.dominant_hand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144448
+    m_Key: ui.battle.tooltip.dominant_hand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144449
+    m_Key: ui.battle.hand.left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144450
+    m_Key: ui.battle.hand.right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144451
+    m_Key: ui.battle.hand.ambidextrous
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
