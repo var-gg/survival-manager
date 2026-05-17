@@ -106,6 +106,7 @@ internal static class SkillConverter
             recruitPlanTags,
             recruitScoutTags,
             BuildGovernanceSummary(skill.BudgetCard),
+            IconId: string.IsNullOrWhiteSpace(skill.IconId) ? $"skill_icon_{skill.Id}" : skill.IconId,
             VfxHookId: string.IsNullOrWhiteSpace(skill.VfxHookId) ? $"vfx.{skill.Id}" : skill.VfxHookId);
     }
 

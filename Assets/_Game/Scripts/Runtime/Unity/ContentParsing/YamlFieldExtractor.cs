@@ -963,6 +963,7 @@ internal static class YamlFieldExtractor
                 skill.Id = CoalesceId(skill.Id, DeriveId(assetPath));
                 skill.NameKey = Coalesce(skill.NameKey, ContentLocalizationTables.BuildSkillNameKey(skill.Id));
                 skill.DescriptionKey = Coalesce(skill.DescriptionKey, ContentLocalizationTables.BuildSkillDescriptionKey(skill.Id));
+                skill.IconId = Coalesce(skill.IconId, $"skill_icon_{skill.Id}");
                 break;
             case TraitPoolDefinition traitPool:
                 traitPool.Id = CoalesceId(traitPool.Id, DeriveId(assetPath));
@@ -972,6 +973,7 @@ internal static class YamlFieldExtractor
                 item.Id = CoalesceId(item.Id, DeriveId(assetPath));
                 item.NameKey = Coalesce(item.NameKey, ContentLocalizationTables.BuildItemNameKey(item.Id));
                 item.DescriptionKey = Coalesce(item.DescriptionKey, ContentLocalizationTables.BuildItemDescriptionKey(item.Id));
+                item.IconId = Coalesce(item.IconId, $"item_icon_{item.Id}");
                 break;
             case AffixDefinition affix:
                 affix.Id = CoalesceId(affix.Id, DeriveId(assetPath));
@@ -982,6 +984,7 @@ internal static class YamlFieldExtractor
                 augment.Id = CoalesceId(augment.Id, DeriveId(assetPath));
                 augment.NameKey = Coalesce(augment.NameKey, ContentLocalizationTables.BuildAugmentNameKey(augment.Id));
                 augment.DescriptionKey = Coalesce(augment.DescriptionKey, ContentLocalizationTables.BuildAugmentDescriptionKey(augment.Id));
+                augment.IconId = Coalesce(augment.IconId, $"augment_{augment.Id}");
                 break;
             case StableTagDefinition stableTag:
                 stableTag.Id = CoalesceId(stableTag.Id, DeriveId(assetPath, "tag_"));

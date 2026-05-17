@@ -6,7 +6,7 @@ variant: default
 emotion: default
 refs: []                                 # icon은 보통 ref 없이 prompt만으로 충분
 aspect: "1:1"
-output_size: "1024x1024"
+output_size: "1568x1568"                 # sheet 작업 기본: 2x2, 768px cells + 32px gutter
 chroma: "#FF00FF"
 status: idea
 ---
@@ -26,10 +26,19 @@ Kind: {skill | passive | equipment}
 - Color zone: primary {HEX}, accent {HEX}
 
 ## Composition
-- 1:1 square, subject CENTERED
+- For list work, generate a 2x2 sheet: 1568x1568 canvas, 768x768 cells, 32px pure #FF00FF gutters and outer margin
+- For single-icon work, 1024x1024 is allowed
+- 1:1 square per cell, subject CENTERED
 - Subject takes ~70% of canvas (clear margin)
 - Hero rim-light upper-left, deep shadow lower-right
 - NO multi-object, NO scene, NO character
+
+## Chroma / cutout contract
+- Background must be flat pure #FF00FF from canvas edge to the subject's outer stroke
+- Subject must have a continuous clean 2-4 px outer stroke
+- No shadow, blur, glow, particles, or semi-transparent residue outside the outer stroke
+- No magenta / fuchsia / hot pink on the subject itself
+- No text, letters, numerals, frame, or border
 
 ## Mood
 {element / archetype / element family — e.g., 회상 결사 기억, element_shadow_soul, 솔라룸 정화 신성}

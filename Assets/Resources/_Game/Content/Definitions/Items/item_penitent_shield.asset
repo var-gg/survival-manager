@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: item_penitent_shield
   NameKey: content.item.item_penitent_shield.name
   DescriptionKey: content.item.item_penitent_shield.desc
+  IconId: item_icon_shield
   SlotType: 0
   IdentityKind: 0
   ItemFamilyTag: shield

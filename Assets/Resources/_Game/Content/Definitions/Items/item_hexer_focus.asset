@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: item_hexer_focus
   NameKey: content.item.item_hexer_focus.name
   DescriptionKey: content.item.item_hexer_focus.desc
+  IconId: item_icon_focus
   SlotType: 0
   IdentityKind: 0
   ItemFamilyTag: focus

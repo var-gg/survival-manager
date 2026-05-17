@@ -80,6 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
+  IconId: skill_icon_voice_scar
   VfxHookId: vfx.support_lingering
   SfxHookId: 
   LearnSource: 0

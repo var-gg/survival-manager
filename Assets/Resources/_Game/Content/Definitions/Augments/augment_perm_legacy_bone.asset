@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_perm_legacy_bone
   NameKey: content.augment.augment_perm_legacy_bone.name
   DescriptionKey: content.augment.augment_perm_legacy_bone.desc
+  IconId: augment_void
   Rarity: 2
   IsPermanent: 1
   BudgetCard:

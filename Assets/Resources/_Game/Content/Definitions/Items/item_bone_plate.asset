@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: item_bone_plate
   NameKey: content.item.item_bone_plate.name
   DescriptionKey: content.item.item_bone_plate.desc
+  IconId: item_icon_armor
   SlotType: 1
   IdentityKind: 0
   ItemFamilyTag: armor

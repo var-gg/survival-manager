@@ -104,6 +104,7 @@ public sealed class BattleUnitMetadataFormatter
 {
     private readonly GameLocalizationController _localization;
     private readonly ContentTextResolver _contentText;
+    private readonly ContentIconResolver _iconResolver;
     private readonly BattleUnitPortraitResolver _portraitResolver = new();
 
     public BattleUnitMetadataFormatter(
@@ -112,6 +113,7 @@ public sealed class BattleUnitMetadataFormatter
     {
         _localization = localization;
         _contentText = new ContentTextResolver(localization, lookup);
+        _iconResolver = new ContentIconResolver(lookup);
     }
 
     public BattleUnitOverheadText BuildOverhead(BattleUnitReadModel unit)
@@ -311,7 +313,8 @@ public sealed class BattleUnitMetadataFormatter
     private BattleSkillSlotViewState BuildSkillSlot(string slotLabel, string skillId, string skillName, string characterId)
     {
         var resolvedName = ResolveSkillDisplayName(skillId, skillName);
-        var icon = _portraitResolver.ResolveSkillIcon(characterId, skillId);
+        var icon = _iconResolver.ResolveSkill(skillId, characterId)
+                   ?? _portraitResolver.ResolveSkillIcon(characterId, skillId);
         return new BattleSkillSlotViewState(slotLabel, resolvedName, skillId, icon);
     }
 
@@ -397,7 +400,8 @@ public sealed class BattleUnitMetadataFormatter
         chips.Add(new BattleStatusEffectChip(
             statusId,
             ResolveSkillDisplayName(skillId, skillName),
-            _portraitResolver.ResolveSkillIcon(unit.CharacterId, skillId),
+            _iconResolver.ResolveSkill(skillId, unit.CharacterId)
+            ?? _portraitResolver.ResolveSkillIcon(unit.CharacterId, skillId),
             0f,
             0f,
             1,

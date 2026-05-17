@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_perm_legacy_oath
   NameKey: content.augment.augment_perm_legacy_oath.name
   DescriptionKey: content.augment.augment_perm_legacy_oath.desc
+  IconId: augment_shield
   Rarity: 2
   IsPermanent: 1
   BudgetCard:

@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_platinum_overrun
   NameKey: content.augment.augment_platinum_overrun.name
   DescriptionKey: content.augment.augment_platinum_overrun.desc
+  IconId: augment_wing
   Rarity: 2
   IsPermanent: 0
   BudgetCard:

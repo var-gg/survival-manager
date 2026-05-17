@@ -1,0 +1,135 @@
+schema: content_icon_catalog_v1
+updated_at: 2026-05-18
+
+policy:
+  runtime_root: Assets/Resources/_Game/Art/Icons
+  source_truth: "Unity authored assets own SkillDefinitionAsset.IconId, ItemBaseDefinition.IconId, and AugmentDefinition.IconId as stable presentation handles."
+  runtime_binding: "Runtime UI resolves IconId to Resources path; combat simulation and FastUnit lanes never depend on Sprite or Texture2D."
+  generation_batch: "Generate 4 icons per imagegen call as a 1568x1568 2x2 sheet: 768px cells with 32px #FF00FF gutters."
+  single_icon_source: "Single-icon subjects may use 1024x1024, but sheet generation is preferred for list work."
+  final_canvas: "Sync output normalizes each icon to a 512x512 transparent PNG with the source centered inside a 448px safe box."
+  chroma_contract: "Source background must be flat #FF00FF from canvas edge to subject outline."
+  outline_contract: "Every generated symbol needs a clean outer stroke. Outside that stroke, there must be no shadow, blur, glow, particles, or semi-transparent residue."
+  negative_prompt: "No text, no numerals, no frame, no character portrait, no scenery, no magenta/fuchsia subject color."
+
+icons:
+  skill:
+    - id: skill_icon_ash_purification
+      source: art-pipeline/output/icons/skill/character_theme_hero_dawn_priest/skill_icon_ash_purification.png
+    - id: skill_icon_dormant_ward
+      source: art-pipeline/output/icons/skill/character_theme_hero_echo_savant/skill_icon_dormant_ward.png
+    - id: skill_icon_external_lexicon
+      source: art-pipeline/output/icons/skill/character_theme_hero_echo_savant/skill_icon_external_lexicon.png
+    - id: skill_icon_faith_absent
+      source: art-pipeline/output/icons/skill/character_theme_hero_dawn_priest/skill_icon_faith_absent.png
+    - id: skill_icon_fang_strike
+      source: art-pipeline/output/icons/skill/character_theme_hero_pack_raider/skill_icon_fang_strike.png
+    - id: skill_icon_jest_bell
+      source: art-pipeline/output/icons/skill/character_theme_hero_grave_hexer/skill_icon_jest_bell.png
+    - id: skill_icon_knot_arrow
+      source: art-pipeline/output/icons/skill/character_theme_hero_echo_savant/skill_icon_knot_arrow.png
+    - id: skill_icon_memory_project
+      source: art-pipeline/output/icons/skill/character_theme_hero_grave_hexer/skill_icon_memory_project.png
+    - id: skill_icon_pack_position
+      source: art-pipeline/output/icons/skill/character_theme_hero_pack_raider/skill_icon_pack_position.png
+    - id: skill_icon_platinum_aegis
+      source: art-pipeline/output/icons/skill/character_theme_hero_dawn_priest/skill_icon_platinum_aegis.png
+    - id: skill_icon_return_path
+      source: art-pipeline/output/icons/skill/character_theme_hero_pack_raider/skill_icon_return_path.png
+    - id: skill_icon_sigil_shield
+      source: art-pipeline/output/icons/skill/character_theme_hero_dawn_priest/skill_icon_sigil_shield.png
+    - id: skill_icon_time_distance
+      source: art-pipeline/output/icons/skill/character_theme_hero_grave_hexer/skill_icon_time_distance.png
+    - id: skill_icon_voice_scar
+      source: art-pipeline/output/icons/skill/character_theme_hero_grave_hexer/skill_icon_voice_scar.png
+    - id: skill_icon_weathering_pause
+      source: art-pipeline/output/icons/skill/character_theme_hero_echo_savant/skill_icon_weathering_pause.png
+    - id: skill_icon_wind_read
+      source: art-pipeline/output/icons/skill/character_theme_hero_pack_raider/skill_icon_wind_read.png
+  item:
+    - id: item_icon_armor
+      source: art-pipeline/output/icons/affix/affix_armor.png
+    - id: item_icon_blade
+      source: art-pipeline/output/icons/augment/augment_blade.png
+    - id: item_icon_bow
+      source: art-pipeline/output/icons/skill/character_theme_hero_echo_savant/skill_icon_knot_arrow.png
+    - id: item_icon_focus
+      source: art-pipeline/output/icons/augment/augment_seal.png
+    - id: item_icon_shield
+      source: art-pipeline/output/icons/augment/augment_shield.png
+    - id: item_icon_trinket
+      source: art-pipeline/output/icons/augment/augment_star.png
+  augment:
+    - id: augment_blade
+      source: art-pipeline/output/icons/augment/augment_blade.png
+    - id: augment_eye
+      source: art-pipeline/output/icons/augment/augment_eye.png
+    - id: augment_flame
+      source: art-pipeline/output/icons/augment/augment_flame.png
+    - id: augment_horn
+      source: art-pipeline/output/icons/augment/augment_horn.png
+    - id: augment_moon
+      source: art-pipeline/output/icons/augment/augment_moon.png
+    - id: augment_seal
+      source: art-pipeline/output/icons/augment/augment_seal.png
+    - id: augment_serpent
+      source: art-pipeline/output/icons/augment/augment_serpent.png
+    - id: augment_shield
+      source: art-pipeline/output/icons/augment/augment_shield.png
+    - id: augment_star
+      source: art-pipeline/output/icons/augment/augment_star.png
+    - id: augment_thorn
+      source: art-pipeline/output/icons/augment/augment_thorn.png
+    - id: augment_void
+      source: art-pipeline/output/icons/augment/augment_void.png
+    - id: augment_wing
+      source: art-pipeline/output/icons/augment/augment_wing.png
+  affix:
+    - id: affix_amplify
+      source: art-pipeline/output/icons/affix/affix_amplify.png
+    - id: affix_armor
+      source: art-pipeline/output/icons/affix/affix_armor.png
+    - id: affix_atk
+      source: art-pipeline/output/icons/affix/affix_atk.png
+    - id: affix_aura
+      source: art-pipeline/output/icons/affix/affix_aura.png
+    - id: affix_block
+      source: art-pipeline/output/icons/affix/affix_block.png
+    - id: affix_cast_speed
+      source: art-pipeline/output/icons/affix/affix_cast_speed.png
+    - id: affix_charge
+      source: art-pipeline/output/icons/affix/affix_charge.png
+    - id: affix_cleanse
+      source: art-pipeline/output/icons/affix/affix_cleanse.png
+    - id: affix_cooldown
+      source: art-pipeline/output/icons/affix/affix_cooldown.png
+    - id: affix_crit
+      source: art-pipeline/output/icons/affix/affix_crit.png
+    - id: affix_dodge
+      source: art-pipeline/output/icons/affix/affix_dodge.png
+    - id: affix_heal
+      source: art-pipeline/output/icons/affix/affix_heal.png
+    - id: affix_hp
+      source: art-pipeline/output/icons/affix/affix_hp.png
+    - id: affix_lifesteal
+      source: art-pipeline/output/icons/affix/affix_lifesteal.png
+    - id: affix_link
+      source: art-pipeline/output/icons/affix/affix_link.png
+    - id: affix_magic_atk
+      source: art-pipeline/output/icons/affix/affix_magic_atk.png
+    - id: affix_mana
+      source: art-pipeline/output/icons/affix/affix_mana.png
+    - id: affix_pierce
+      source: art-pipeline/output/icons/affix/affix_pierce.png
+    - id: affix_resist_magic
+      source: art-pipeline/output/icons/affix/affix_resist_magic.png
+    - id: affix_resist_phys
+      source: art-pipeline/output/icons/affix/affix_resist_phys.png
+    - id: affix_revive
+      source: art-pipeline/output/icons/affix/affix_revive.png
+    - id: affix_speed
+      source: art-pipeline/output/icons/affix/affix_speed.png
+    - id: affix_taunt
+      source: art-pipeline/output/icons/affix/affix_taunt.png
+    - id: affix_thorn
+      source: art-pipeline/output/icons/affix/affix_thorn.png

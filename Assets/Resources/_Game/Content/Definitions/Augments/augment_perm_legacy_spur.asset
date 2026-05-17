@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_perm_legacy_spur
   NameKey: content.augment.augment_perm_legacy_spur.name
   DescriptionKey: content.augment.augment_perm_legacy_spur.desc
+  IconId: augment_wing
   Rarity: 2
   IsPermanent: 1
   BudgetCard:

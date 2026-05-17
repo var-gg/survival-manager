@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: item_bone_blade
   NameKey: content.item.item_bone_blade.name
   DescriptionKey: content.item.item_bone_blade.desc
+  IconId: item_icon_blade
   SlotType: 0
   IdentityKind: 0
   ItemFamilyTag: blade

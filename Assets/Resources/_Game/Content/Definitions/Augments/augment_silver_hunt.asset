@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_silver_hunt
   NameKey: content.augment.augment_silver_hunt.name
   DescriptionKey: content.augment.augment_silver_hunt.desc
+  IconId: augment_eye
   Rarity: 0
   IsPermanent: 0
   BudgetCard:

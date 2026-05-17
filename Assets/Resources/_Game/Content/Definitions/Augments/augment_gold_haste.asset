@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_gold_haste
   NameKey: content.augment.augment_gold_haste.name
   DescriptionKey: content.augment.augment_gold_haste.desc
+  IconId: augment_wing
   Rarity: 1
   IsPermanent: 0
   BudgetCard:

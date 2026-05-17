@@ -381,8 +381,14 @@ internal sealed class SkillSchemaRule : DefinitionSchemaRule<SkillDefinitionAsse
         }
 
         ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(skill.AnimationHookId, "skill.animation_hook", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(skill.IconId, "skill.icon", assetPath, issues);
         ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(skill.VfxHookId, "skill.vfx_hook", assetPath, issues);
         ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(skill.SfxHookId, "skill.sfx_hook", assetPath, issues);
+        if (string.IsNullOrWhiteSpace(skill.IconId))
+        {
+            ContentValidationIssueFactory.AddError(issues, "skill.icon_required", "Skill IconId is required for the presentation catalog handshake.", assetPath);
+        }
+
         if (string.IsNullOrWhiteSpace(skill.VfxHookId))
         {
             ContentValidationIssueFactory.AddError(issues, "skill.vfx_hook_required", "Skill VfxHookId is required as the pre-VFX catalog handshake.", assetPath);
@@ -424,6 +430,12 @@ internal sealed class AugmentSchemaRule : DefinitionSchemaRule<AugmentDefinition
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, augment.MutualExclusionTags, assetPath, "Augment mutual exclusion");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, augment.RequiresTags, assetPath, "Augment requires");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, augment.RuleModifierTags, assetPath, "Augment rule modifier");
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(augment.IconId, "augment.icon", assetPath, issues);
+        if (string.IsNullOrWhiteSpace(augment.IconId))
+        {
+            ContentValidationIssueFactory.AddError(issues, "augment.icon_required", "Augment IconId is required for reward and permanent augment presentation.", assetPath);
+        }
+
         if (string.IsNullOrWhiteSpace(augment.FamilyId))
         {
             ContentValidationIssueFactory.AddError(issues, "augment.family_id", "Augment is missing FamilyId.", assetPath);
@@ -487,6 +499,12 @@ internal sealed class ItemSchemaRule : DefinitionSchemaRule<ItemBaseDefinition>
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, item.RuleModifierTags, assetPath, "Item rule modifier");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, item.AllowedArchetypeTags, assetPath, "Item allowed archetype");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, item.UniqueRuleTags, assetPath, "Item unique rule");
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(item.IconId, "item.icon", assetPath, issues);
+        if (string.IsNullOrWhiteSpace(item.IconId))
+        {
+            ContentValidationIssueFactory.AddError(issues, "item.icon_required", "Item IconId is required for inventory and equipment presentation.", assetPath);
+        }
+
         if (item.IdentityKind == ItemIdentityValue.Unique
             && item.GrantedSkills.Count == 0
             && item.RuleModifierTags.Count == 0

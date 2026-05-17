@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: item_marksman_armor
   NameKey: content.item.item_marksman_armor.name
   DescriptionKey: content.item.item_marksman_armor.desc
+  IconId: item_icon_armor
   SlotType: 1
   IdentityKind: 0
   ItemFamilyTag: ranger_armor

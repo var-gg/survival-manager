@@ -58,6 +58,7 @@ internal static class SkillFileParser
             definition.AiIntents = ParsePackedEnumList<SkillAiIntentValue>(ExtractValue(lines, "AiIntents:"));
             definition.AiScoreHints = ParseSkillAiScoreHints(lines, "AiScoreHints:");
             definition.AnimationHookId = ExtractValue(lines, "AnimationHookId:");
+            definition.IconId = ExtractValue(lines, "IconId:");
             definition.VfxHookId = ExtractValue(lines, "VfxHookId:");
             definition.SfxHookId = ExtractValue(lines, "SfxHookId:");
             definition.LearnSource = (SkillLearnSourceValue)ExtractInt(lines, "LearnSource:");
@@ -102,6 +103,11 @@ internal static class SkillFileParser
         if (string.IsNullOrWhiteSpace(definition.VfxHookId) && !string.IsNullOrWhiteSpace(definition.Id))
         {
             definition.VfxHookId = $"vfx.{definition.Id}";
+        }
+
+        if (string.IsNullOrWhiteSpace(definition.IconId) && !string.IsNullOrWhiteSpace(definition.Id))
+        {
+            definition.IconId = $"skill_icon_{definition.Id}";
         }
 
         if (!string.IsNullOrWhiteSpace(definition.CleanseProfileId))

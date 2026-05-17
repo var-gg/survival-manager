@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: item_lucky_charm
   NameKey: content.item.item_lucky_charm.name
   DescriptionKey: content.item.item_lucky_charm.desc
+  IconId: item_icon_trinket
   SlotType: 2
   IdentityKind: 0
   ItemFamilyTag: accessory

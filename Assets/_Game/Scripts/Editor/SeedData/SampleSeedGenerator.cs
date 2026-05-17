@@ -885,6 +885,8 @@ public static class SampleSeedGenerator
             a.HealCoeff = tuple.Item6 == SkillKindValue.Heal ? 1f : 0f;
             a.HealthCoeff = 0f;
             a.CanCrit = tuple.Item1 == "skill_precision_shot";
+            a.IconId = ResolveSkillIconId(a.Id);
+            a.VfxHookId = ResolveSkillVfxHookId(a.Id);
             UpsertStringEntry(ContentLocalizationTables.Skills, a.NameKey, tuple.Item3, tuple.Item2);
             UpsertStringEntry(ContentLocalizationTables.Skills, a.DescriptionKey, tuple.Item5, tuple.Item4);
         }));
@@ -1418,6 +1420,7 @@ public static class SampleSeedGenerator
 
         skill.EffectFamilyId = effectFamilyId;
         skill.MutuallyExclusiveGroupId = mutuallyExclusiveGroupId;
+        skill.IconId = ResolveSkillIconId(skill.Id);
         skill.VfxHookId = ResolveSkillVfxHookId(skill.Id);
         skill.RecruitNativeTags = ResolveTags(tags, nativeTagIds);
         skill.RecruitPlanTags = ResolveTags(tags, planTagIds);
@@ -1460,6 +1463,7 @@ public static class SampleSeedGenerator
                 a.NameKey = ContentLocalizationTables.BuildAugmentNameKey(d.id);
                 a.DescriptionKey = ContentLocalizationTables.BuildAugmentDescriptionKey(d.id);
                 a.FamilyId = d.permanent ? "permanent_legacy" : d.rarity.ToString().ToLowerInvariant();
+                a.IconId = ResolveAugmentIconId(d.id, a.FamilyId);
                 a.Rarity = d.rarity;
                 a.IsPermanent = d.permanent;
                 a.Modifiers = new List<SerializableStatModifier>
@@ -1497,6 +1501,7 @@ public static class SampleSeedGenerator
                 a.Id = d.id;
                 a.NameKey = ContentLocalizationTables.BuildItemNameKey(d.id);
                 a.DescriptionKey = ContentLocalizationTables.BuildItemDescriptionKey(d.id);
+                a.IconId = ResolveItemIconId(d.id, d.slot, string.Empty);
                 a.SlotType = d.slot;
                 a.IdentityKind = ItemIdentityValue.Baseline;
                 a.BudgetBand = d.slot switch
@@ -2478,6 +2483,8 @@ public static class SampleSeedGenerator
                 asset.RequiredClassTags = ResolveTags(tags, definition.Classes);
                 asset.AppliedStatuses = new List<StatusApplicationRule>();
                 asset.CleanseProfileId = string.Empty;
+                asset.IconId = ResolveSkillIconId(asset.Id);
+                asset.VfxHookId = ResolveSkillVfxHookId(asset.Id);
                 UpsertStringEntry(ContentLocalizationTables.Skills, asset.NameKey, definition.KoName, definition.EnName);
                 UpsertStringEntry(ContentLocalizationTables.Skills, asset.DescriptionKey, $"{definition.KoName} modifier", $"{definition.EnName} modifier");
             });
@@ -2506,6 +2513,7 @@ public static class SampleSeedGenerator
 
             item.ItemFamilyTag = itemFamilyTag;
             item.WeaponFamilyTag = weaponFamilyTag;
+            item.IconId = ResolveItemIconId(item.Id, item.SlotType, weaponFamilyTag);
             item.AffixPoolTag = NormalizeAffixPoolTag(item, itemFamilyTag);
             item.CraftCategory = NormalizeCraftCategory(item, itemFamilyTag);
             item.CraftCurrencyTag = craftCurrencyTag;
@@ -3144,6 +3152,7 @@ public static class SampleSeedGenerator
 
             item.ItemFamilyTag = itemFamilyTag;
             item.WeaponFamilyTag = weaponFamilyTag;
+            item.IconId = ResolveItemIconId(item.Id, item.SlotType, weaponFamilyTag);
             item.AffixPoolTag = NormalizeAffixPoolTag(item, itemFamilyTag);
             item.CraftCategory = craftCategory;
             item.CraftCurrencyTag = craftCurrencyTag;
@@ -3210,6 +3219,11 @@ public static class SampleSeedGenerator
             skill.SupportBlockedTags = blockedTags;
             skill.RequiredWeaponTags = weaponTags;
             skill.RequiredClassTags = classTags;
+            if (string.IsNullOrWhiteSpace(skill.IconId))
+            {
+                skill.IconId = ResolveSkillIconId(skill.Id);
+            }
+
             if (string.IsNullOrWhiteSpace(skill.VfxHookId))
             {
                 skill.VfxHookId = ResolveSkillVfxHookId(skill.Id);
@@ -3261,6 +3275,11 @@ public static class SampleSeedGenerator
             augment.MutualExclusionTags = augment.MutualExclusionTags.Where(IsValidTagReference).Distinct().ToList();
             augment.RequiresTags = augment.RequiresTags.Where(IsValidTagReference).Distinct().ToList();
             augment.RuleModifierTags = augment.RuleModifierTags.Where(IsValidTagReference).Distinct().ToList();
+            if (string.IsNullOrWhiteSpace(augment.IconId))
+            {
+                augment.IconId = ResolveAugmentIconId(augment.Id, augment.FamilyId);
+            }
+
             PatchSerializedAugmentTags(augment);
             EditorUtility.SetDirty(augment);
         }
@@ -4003,6 +4022,7 @@ public static class SampleSeedGenerator
         skill.RequiredClassTags = resolvedClassTags;
         skill.AppliedStatuses = resolvedStatuses;
         skill.CleanseProfileId = cleanseProfileId;
+        skill.IconId = ResolveSkillIconId(skill.Id);
         skill.VfxHookId = ResolveSkillVfxHookId(skill.Id);
         PatchSerializedSkillContract(skill, resolvedCompileTags, resolvedBlockedTags, resolvedWeaponTags, resolvedClassTags, resolvedStatuses, cleanseProfileId);
         EditorUtility.SetDirty(skill);
@@ -4011,6 +4031,52 @@ public static class SampleSeedGenerator
     private static string ResolveSkillVfxHookId(string skillId)
     {
         return string.IsNullOrWhiteSpace(skillId) ? string.Empty : $"vfx.{skillId}";
+    }
+
+    private static string ResolveSkillIconId(string skillId)
+    {
+        if (string.IsNullOrWhiteSpace(skillId))
+        {
+            return string.Empty;
+        }
+
+        return skillId switch
+        {
+            "skill_priest_core" or "skill_guardian_core" or "skill_bulwark_core" => "skill_icon_sigil_shield",
+            "skill_minor_heal" or "skill_mystic_support_1" or "skill_mystic_support_2" => "skill_icon_platinum_aegis",
+            "skill_hexer_core" => "skill_icon_time_distance",
+            "skill_hexer_utility" => "skill_icon_memory_project",
+            "skill_shaman_core" or "skill_shaman_utility" => "skill_icon_voice_scar",
+            "skill_raider_core" or "skill_reaver_core" or "skill_slayer_core" or "skill_power_strike" => "skill_icon_fang_strike",
+            "skill_raider_utility" or "skill_reaver_utility" or "skill_slayer_utility" => "skill_icon_return_path",
+            "skill_scout_core" or "skill_marksman_core" or "skill_precision_shot" => "skill_icon_knot_arrow",
+            "skill_scout_utility" or "skill_marksman_utility" or "skill_hunter_utility" => "skill_icon_wind_read",
+            "support_purifying" => "skill_icon_ash_purification",
+            "support_guarded" or "support_anchored" => "skill_icon_sigil_shield",
+            "support_brutal" or "support_executioner" => "skill_icon_fang_strike",
+            "support_hunter_mark" or "support_longshot" or "support_piercing" => "skill_icon_knot_arrow",
+            "support_swift" => "skill_icon_wind_read",
+            "support_lingering" => "skill_icon_voice_scar",
+            "support_siphon" => "skill_icon_memory_project",
+            "support_echo" => "skill_icon_external_lexicon",
+            _ when skillId.Contains("vanguard", StringComparison.Ordinal)
+                || skillId.Contains("warden", StringComparison.Ordinal)
+                || skillId.Contains("guardian", StringComparison.Ordinal)
+                || skillId.Contains("bulwark", StringComparison.Ordinal) => "skill_icon_sigil_shield",
+            _ when skillId.Contains("duelist", StringComparison.Ordinal)
+                || skillId.Contains("raider", StringComparison.Ordinal)
+                || skillId.Contains("reaver", StringComparison.Ordinal)
+                || skillId.Contains("slayer", StringComparison.Ordinal) => "skill_icon_fang_strike",
+            _ when skillId.Contains("ranger", StringComparison.Ordinal)
+                || skillId.Contains("scout", StringComparison.Ordinal)
+                || skillId.Contains("marksman", StringComparison.Ordinal)
+                || skillId.Contains("hunter", StringComparison.Ordinal) => "skill_icon_knot_arrow",
+            _ when skillId.Contains("mystic", StringComparison.Ordinal)
+                || skillId.Contains("priest", StringComparison.Ordinal)
+                || skillId.Contains("hexer", StringComparison.Ordinal)
+                || skillId.Contains("shaman", StringComparison.Ordinal) => "skill_icon_memory_project",
+            _ => $"skill_icon_{skillId}"
+        };
     }
 
     private static StatusApplicationRule MakeStatus(string id, string statusId, float durationSeconds, float magnitude)
@@ -4101,6 +4167,91 @@ public static class SampleSeedGenerator
             ItemSlotType.Armor => "armor",
             _ => "accessory"
         };
+    }
+
+    private static string ResolveItemIconId(string itemId, ItemSlotType slot, string weaponFamilyTag)
+    {
+        if (slot == ItemSlotType.Weapon)
+        {
+            var family = !string.IsNullOrWhiteSpace(weaponFamilyTag)
+                ? weaponFamilyTag
+                : InferWeaponFamily(itemId);
+            return family switch
+            {
+                "shield" => "item_icon_shield",
+                "bow" => "item_icon_bow",
+                "focus" => "item_icon_focus",
+                _ => "item_icon_blade",
+            };
+        }
+
+        return slot == ItemSlotType.Armor
+            ? "item_icon_armor"
+            : "item_icon_trinket";
+    }
+
+    private static string ResolveAugmentIconId(string augmentId, string familyId)
+    {
+        var tokens = $"{augmentId} {familyId}".ToLowerInvariant();
+        if (tokens.Contains("ward", StringComparison.Ordinal)
+            || tokens.Contains("guard", StringComparison.Ordinal)
+            || tokens.Contains("bastion", StringComparison.Ordinal)
+            || tokens.Contains("wall", StringComparison.Ordinal)
+            || tokens.Contains("oath", StringComparison.Ordinal))
+        {
+            return "augment_shield";
+        }
+
+        if (tokens.Contains("hunt", StringComparison.Ordinal)
+            || tokens.Contains("scope", StringComparison.Ordinal)
+            || tokens.Contains("signal", StringComparison.Ordinal))
+        {
+            return "augment_eye";
+        }
+
+        if (tokens.Contains("haste", StringComparison.Ordinal)
+            || tokens.Contains("stride", StringComparison.Ordinal)
+            || tokens.Contains("reach", StringComparison.Ordinal)
+            || tokens.Contains("overrun", StringComparison.Ordinal)
+            || tokens.Contains("spur", StringComparison.Ordinal))
+        {
+            return "augment_wing";
+        }
+
+        if (tokens.Contains("fury", StringComparison.Ordinal)
+            || tokens.Contains("reckoning", StringComparison.Ordinal)
+            || tokens.Contains("blade", StringComparison.Ordinal)
+            || tokens.Contains("fang", StringComparison.Ordinal))
+        {
+            return "augment_blade";
+        }
+
+        if (tokens.Contains("mending", StringComparison.Ordinal)
+            || tokens.Contains("clarity", StringComparison.Ordinal)
+            || tokens.Contains("focus", StringComparison.Ordinal)
+            || tokens.Contains("grace", StringComparison.Ordinal)
+            || tokens.Contains("chalice", StringComparison.Ordinal))
+        {
+            return "augment_seal";
+        }
+
+        if (tokens.Contains("hex", StringComparison.Ordinal)
+            || tokens.Contains("catacomb", StringComparison.Ordinal)
+            || tokens.Contains("bone", StringComparison.Ordinal)
+            || tokens.Contains("void", StringComparison.Ordinal))
+        {
+            return "augment_void";
+        }
+
+        if (tokens.Contains("pack", StringComparison.Ordinal)
+            || tokens.Contains("pact", StringComparison.Ordinal)
+            || tokens.Contains("hinterland", StringComparison.Ordinal)
+            || tokens.Contains("hide", StringComparison.Ordinal))
+        {
+            return "augment_moon";
+        }
+
+        return "augment_star";
     }
 
     private static string NormalizeAffixPoolTag(ItemBaseDefinition item, string itemFamilyTag)
@@ -4216,6 +4367,7 @@ public static class SampleSeedGenerator
         IReadOnlyList<StableTagDefinition> uniqueRuleTags)
     {
         var serializedObject = new SerializedObject(item);
+        serializedObject.FindProperty(nameof(ItemBaseDefinition.IconId))!.stringValue = item.IconId ?? string.Empty;
         serializedObject.FindProperty(nameof(ItemBaseDefinition.ItemFamilyTag))!.stringValue = itemFamilyTag;
         serializedObject.FindProperty(nameof(ItemBaseDefinition.WeaponFamilyTag))!.stringValue = weaponFamilyTag;
         serializedObject.FindProperty(nameof(ItemBaseDefinition.AffixPoolTag))!.stringValue = affixPoolTag;
@@ -4248,6 +4400,7 @@ public static class SampleSeedGenerator
     private static void PatchSerializedAugmentTags(AugmentDefinition augment)
     {
         var serializedObject = new SerializedObject(augment);
+        serializedObject.FindProperty(nameof(AugmentDefinition.IconId))!.stringValue = augment.IconId ?? string.Empty;
         SetObjectReferenceArray(serializedObject.FindProperty(nameof(AugmentDefinition.Tags)), augment.Tags);
         SetObjectReferenceArray(serializedObject.FindProperty(nameof(AugmentDefinition.BuildBiasTags)), augment.BuildBiasTags);
         SetObjectReferenceArray(serializedObject.FindProperty(nameof(AugmentDefinition.ProtectionTags)), augment.ProtectionTags);
@@ -4291,6 +4444,7 @@ public static class SampleSeedGenerator
         SetObjectReferenceArray(serializedObject.FindProperty(nameof(SkillDefinitionAsset.RequiredClassTags)), requiredClassTags);
         SetStatusRuleArray(serializedObject.FindProperty(nameof(SkillDefinitionAsset.AppliedStatuses)), statuses);
         serializedObject.FindProperty(nameof(SkillDefinitionAsset.CleanseProfileId))!.stringValue = cleanseProfileId ?? string.Empty;
+        serializedObject.FindProperty(nameof(SkillDefinitionAsset.IconId))!.stringValue = skill.IconId ?? string.Empty;
         serializedObject.FindProperty(nameof(SkillDefinitionAsset.VfxHookId))!.stringValue = skill.VfxHookId ?? string.Empty;
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
     }

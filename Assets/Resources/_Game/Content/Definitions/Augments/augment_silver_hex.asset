@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_silver_hex
   NameKey: content.augment.augment_silver_hex.name
   DescriptionKey: content.augment.augment_silver_hex.desc
+  IconId: augment_void
   Rarity: 0
   IsPermanent: 0
   BudgetCard:

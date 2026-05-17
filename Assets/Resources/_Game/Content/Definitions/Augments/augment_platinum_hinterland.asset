@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_platinum_hinterland
   NameKey: content.augment.augment_platinum_hinterland.name
   DescriptionKey: content.augment.augment_platinum_hinterland.desc
+  IconId: augment_shield
   Rarity: 2
   IsPermanent: 0
   BudgetCard:

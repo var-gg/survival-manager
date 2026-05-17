@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_silver_clarity
   NameKey: content.augment.augment_silver_clarity.name
   DescriptionKey: content.augment.augment_silver_clarity.desc
+  IconId: augment_seal
   Rarity: 0
   IsPermanent: 0
   BudgetCard:

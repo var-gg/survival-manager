@@ -80,6 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
+  IconId: skill_icon_external_lexicon
   VfxHookId: vfx.support_echo
   SfxHookId: 
   LearnSource: 0

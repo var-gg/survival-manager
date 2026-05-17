@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: item_marksman_bow
   NameKey: content.item.item_marksman_bow.name
   DescriptionKey: content.item.item_marksman_bow.desc
+  IconId: item_icon_bow
   SlotType: 0
   IdentityKind: 0
   ItemFamilyTag: bow

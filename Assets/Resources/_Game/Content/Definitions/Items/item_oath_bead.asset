@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: item_oath_bead
   NameKey: content.item.item_oath_bead.name
   DescriptionKey: content.item.item_oath_bead.desc
+  IconId: item_icon_trinket
   SlotType: 2
   IdentityKind: 0
   ItemFamilyTag: accessory

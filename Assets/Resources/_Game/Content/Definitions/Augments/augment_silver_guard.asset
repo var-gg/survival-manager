@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_silver_guard
   NameKey: content.augment.augment_silver_guard.name
   DescriptionKey: content.augment.augment_silver_guard.desc
+  IconId: augment_shield
   Rarity: 0
   IsPermanent: 0
   BudgetCard:

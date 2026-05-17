@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_gold_bastion
   NameKey: content.augment.augment_gold_bastion.name
   DescriptionKey: content.augment.augment_gold_bastion.desc
+  IconId: augment_shield
   Rarity: 1
   IsPermanent: 0
   BudgetCard:

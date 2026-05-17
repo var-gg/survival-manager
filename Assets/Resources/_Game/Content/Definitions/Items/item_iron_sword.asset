@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: item_iron_sword
   NameKey: content.item.item_iron_sword.name
   DescriptionKey: content.item.item_iron_sword.desc
+  IconId: item_icon_blade
   SlotType: 0
   IdentityKind: 0
   ItemFamilyTag: blade

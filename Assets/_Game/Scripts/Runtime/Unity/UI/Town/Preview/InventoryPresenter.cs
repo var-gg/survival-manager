@@ -89,23 +89,34 @@ public sealed class InventoryPresenter : IInventoryActions
         var gold = session.Profile.Currencies.Gold;
         var echo = session.Profile.Currencies.Echo;
 
-        // Sprint 2: Profile.Inventory (InventoryItemRecord[]) → ViewState 기본 wire.
-        // ItemBaseId / ItemInstanceId + equipped state read. rarity / weapon family / affix는 Sprint 3
-        // (ItemDefinition lookup via CombatContentLookup 필요).
         var equippedItemIds = new HashSet<string>(
             session.Profile.Heroes.SelectMany(h => h.EquippedItemIds ?? Enumerable.Empty<string>())
                                   .Where(id => !string.IsNullOrEmpty(id)),
             StringComparer.Ordinal);
+        var lookup = _root.CombatContentLookup;
 
         var items = session.Profile.Inventory
-            .Select(item => new InventoryItemViewState(
-                ItemInstanceId: item.ItemInstanceId,
-                IconKey: item.ItemBaseId,  // TODO Sprint 3: ItemDefinition.IconKey
-                RarityKey: "common",       // TODO Sprint 3: ItemDefinition.Rarity
-                WeaponFamilyKey: "blade",  // TODO Sprint 3: ItemDefinition.WeaponFamilyTag
-                WeaponFamilyLabel: WeaponFamilyLabels.TryGetValue("blade", out var lbl) ? lbl : "blade",
-                IsEquipped: equippedItemIds.Contains(item.ItemInstanceId),
-                IconSprite: _affixSprite(item.ItemBaseId)))
+            .Select(item =>
+            {
+                var iconKey = item.ItemBaseId;
+                var rarityKey = "common";
+                var weaponFamilyKey = "item";
+                if (lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
+                {
+                    iconKey = string.IsNullOrWhiteSpace(itemDef.IconId) ? item.ItemBaseId : itemDef.IconId;
+                    rarityKey = itemDef.RarityTier.ToString().ToLowerInvariant();
+                    weaponFamilyKey = ResolveFamilyKey(itemDef);
+                }
+
+                return new InventoryItemViewState(
+                    ItemInstanceId: item.ItemInstanceId,
+                    IconKey: iconKey,
+                    RarityKey: rarityKey,
+                    WeaponFamilyKey: weaponFamilyKey,
+                    WeaponFamilyLabel: WeaponFamilyLabels.TryGetValue(weaponFamilyKey, out var lbl) ? lbl : weaponFamilyKey,
+                    IsEquipped: equippedItemIds.Contains(item.ItemInstanceId),
+                    IconSprite: _affixSprite(iconKey) ?? _affixSprite(item.ItemBaseId));
+            })
             .ToList();
 
         return new InventoryViewState(
@@ -120,8 +131,6 @@ public sealed class InventoryPresenter : IInventoryActions
 
     private IReadOnlyList<InventoryCategoryViewState> BuildCategories(int totalItems)
     {
-        // V1: ALL + 3 equipment slot. Sprint 2: Profile.Inventory 집계 — ALL은 total, slot별 count는 Sprint 3.
-        // weapon/armor/accessory split은 ItemDefinition.SlotType lookup 필요.
         const int rosterCap = 300;
         return CategoryCatalog
             .Select(c => new InventoryCategoryViewState(
@@ -154,4 +163,19 @@ public sealed class InventoryPresenter : IInventoryActions
 
     public static IReadOnlyList<(string Key, string Label, string IconKey)> Categories
         => CategoryCatalog.Select(c => (c.Key, c.Label, c.IconKey)).ToList();
+
+    private static string ResolveFamilyKey(SM.Content.Definitions.ItemBaseDefinition item)
+    {
+        return item.SlotType switch
+        {
+            SM.Content.Definitions.ItemSlotType.Weapon when !string.IsNullOrWhiteSpace(item.WeaponFamilyTag) => item.WeaponFamilyTag,
+            SM.Content.Definitions.ItemSlotType.Weapon when item.Id.Contains("shield", StringComparison.Ordinal) => "shield",
+            SM.Content.Definitions.ItemSlotType.Weapon when item.Id.Contains("bow", StringComparison.Ordinal) => "bow",
+            SM.Content.Definitions.ItemSlotType.Weapon when item.Id.Contains("focus", StringComparison.Ordinal) || item.Id.Contains("bead", StringComparison.Ordinal) => "focus",
+            SM.Content.Definitions.ItemSlotType.Weapon => "blade",
+            SM.Content.Definitions.ItemSlotType.Armor => "armor",
+            SM.Content.Definitions.ItemSlotType.Accessory => "accessory",
+            _ => "item",
+        };
+    }
 }

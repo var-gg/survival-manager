@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_perm_legacy_scope
   NameKey: content.augment.augment_perm_legacy_scope.name
   DescriptionKey: content.augment.augment_perm_legacy_scope.desc
+  IconId: augment_eye
   Rarity: 2
   IsPermanent: 1
   BudgetCard:

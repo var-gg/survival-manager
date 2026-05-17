@@ -80,6 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
+  IconId: skill_icon_knot_arrow
   VfxHookId: vfx.skill_scout_core
   SfxHookId: 
   LearnSource: 0

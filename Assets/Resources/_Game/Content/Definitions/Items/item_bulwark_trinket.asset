@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: item_bulwark_trinket
   NameKey: content.item.item_bulwark_trinket.name
   DescriptionKey: content.item.item_bulwark_trinket.desc
+  IconId: item_icon_trinket
   SlotType: 2
   IdentityKind: 0
   ItemFamilyTag: vanguard_trinket

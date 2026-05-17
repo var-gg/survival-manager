@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+"""Sync generated icon outputs into Unity Resources as normalized PNGs."""
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+from typing import Any
+
+import yaml
+from PIL import Image
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+PIPELINE_ROOT = REPO_ROOT / "art-pipeline"
+DEFAULT_CATALOG = PIPELINE_ROOT / "config" / "content_icon_catalog.yaml"
+TARGET_DIRS = {
+    "skill": "Skill",
+    "item": "Item",
+    "augment": "Augment",
+    "affix": "Affix",
+}
+CHROMA = (255, 0, 255)
+
+
+def load_catalog(path: Path) -> dict[str, Any]:
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: expected YAML mapping")
+    return data
+
+
+def transparent_chroma(image: Image.Image) -> Image.Image:
+    rgba = image.convert("RGBA")
+    pixels = rgba.load()
+    width, height = rgba.size
+    for y in range(height):
+        for x in range(width):
+            r, g, b, a = pixels[x, y]
+            if a == 0:
+                continue
+            if abs(r - CHROMA[0]) <= 6 and abs(g - CHROMA[1]) <= 6 and abs(b - CHROMA[2]) <= 6:
+                pixels[x, y] = (r, g, b, 0)
+    return rgba
+
+
+def normalize_icon(source: Path, target: Path, canvas_size: int, safe_box: int) -> None:
+    image = transparent_chroma(Image.open(source))
+    bbox = image.getbbox()
+    if bbox is None:
+        raise ValueError(f"{source}: no visible pixels after chroma removal")
+
+    cropped = image.crop(bbox)
+    scale = min(safe_box / cropped.width, safe_box / cropped.height)
+    size = (
+        max(1, round(cropped.width * scale)),
+        max(1, round(cropped.height * scale)),
+    )
+    resized = cropped.resize(size, Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (canvas_size, canvas_size), (0, 0, 0, 0))
+    offset = ((canvas_size - size[0]) // 2, (canvas_size - size[1]) // 2)
+    canvas.alpha_composite(resized, dest=offset)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(target, "PNG")
+
+
+def iter_icons(catalog: dict[str, Any]) -> list[tuple[str, str, Path]]:
+    icons = catalog.get("icons")
+    if not isinstance(icons, dict):
+        raise ValueError("catalog missing icons mapping")
+
+    result: list[tuple[str, str, Path]] = []
+    for kind, entries in icons.items():
+        if kind not in TARGET_DIRS:
+            continue
+        if not isinstance(entries, list):
+            raise ValueError(f"icons.{kind}: expected list")
+        for entry in entries:
+            if not isinstance(entry, dict):
+                raise ValueError(f"icons.{kind}: expected mapping entries")
+            icon_id = str(entry.get("id", "")).strip()
+            source = str(entry.get("source", "")).strip()
+            if not icon_id or not source:
+                raise ValueError(f"icons.{kind}: entries require id and source")
+            result.append((kind, icon_id, REPO_ROOT / source))
+    return result
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--catalog", type=Path, default=DEFAULT_CATALOG)
+    parser.add_argument("--canvas-size", type=int, default=512)
+    parser.add_argument("--safe-box", type=int, default=448)
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args()
+
+    catalog = load_catalog(args.catalog)
+    runtime_root = REPO_ROOT / catalog.get("policy", {}).get(
+        "runtime_root",
+        "Assets/Resources/_Game/Art/Icons",
+    )
+
+    written = 0
+    for kind, icon_id, source in iter_icons(catalog):
+        if not source.is_file():
+            raise FileNotFoundError(source)
+        target = runtime_root / TARGET_DIRS[kind] / f"{icon_id}.png"
+        if args.dry_run:
+            print(f"[sync_content_icons] {source} -> {target}")
+            continue
+        normalize_icon(source, target, args.canvas_size, args.safe_box)
+        written += 1
+
+    if not args.dry_run:
+        print(f"[sync_content_icons] wrote {written} icons to {runtime_root}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

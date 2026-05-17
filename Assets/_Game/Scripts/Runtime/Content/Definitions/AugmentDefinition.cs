@@ -16,6 +16,7 @@ namespace SM.Content.Definitions
         public string Id = string.Empty;
         public string NameKey = string.Empty;
         public string DescriptionKey = string.Empty;
+        public string IconId = string.Empty;
         public ContentRarity Rarity = ContentRarity.Common;
         public bool IsPermanent;
         public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Augment, PowerBand = SM.Core.Content.PowerBand.Major };

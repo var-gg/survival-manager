@@ -154,6 +154,15 @@ public sealed class ContentValidationComponentTests
         skill.Id = "skill_missing_vfx";
         skill.NameKey = "content.skill.missing_vfx.name";
         skill.DescriptionKey = "content.skill.missing_vfx.desc";
+        var item = Own(ScriptableObject.CreateInstance<ItemBaseDefinition>());
+        item.Id = "item_missing_icon";
+        item.NameKey = "content.item.missing_icon.name";
+        item.DescriptionKey = "content.item.missing_icon.desc";
+        var augment = Own(ScriptableObject.CreateInstance<AugmentDefinition>());
+        augment.Id = "augment_missing_icon";
+        augment.NameKey = "content.augment.missing_icon.name";
+        augment.DescriptionKey = "content.augment.missing_icon.desc";
+        augment.FamilyId = "probe_family";
         var status = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
         status.Id = "missing_vfx_status";
         status.NameKey = "content.status.missing_vfx.name";
@@ -161,9 +170,14 @@ public sealed class ContentValidationComponentTests
 
         var issues = new List<ContentValidationIssue>();
         new SkillSchemaRule().Validate(new ValidationAssetDescriptor(skill, "Assets/skill_missing_vfx.asset", ValidationAssetSourceKind.Explicit, skill.GetType()), EmptyCatalog(), issues);
+        new ItemSchemaRule().Validate(new ValidationAssetDescriptor(item, "Assets/item_missing_icon.asset", ValidationAssetSourceKind.Explicit, item.GetType()), EmptyCatalog(), issues);
+        new AugmentSchemaRule().Validate(new ValidationAssetDescriptor(augment, "Assets/augment_missing_icon.asset", ValidationAssetSourceKind.Explicit, augment.GetType()), EmptyCatalog(), issues);
         new StatusFamilySchemaRule().Validate(new ValidationAssetDescriptor(status, "Assets/status_missing_vfx.asset", ValidationAssetSourceKind.Explicit, status.GetType()), EmptyCatalog(), issues);
 
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.icon_required"));
         Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.vfx_hook_required"));
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("item.icon_required"));
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("augment.icon_required"));
         Assert.That(issues.Select(issue => issue.Code), Contains.Item("status.vfx_cue_required"));
     }
 

@@ -80,6 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
+  IconId: skill_icon_return_path
   VfxHookId: vfx.skill_slayer_utility
   SfxHookId: 
   LearnSource: 0

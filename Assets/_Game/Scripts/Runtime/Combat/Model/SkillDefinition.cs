@@ -199,6 +199,7 @@ public record BattleSkillSpec(
     float AreaRadius = 0f,
     bool PunishCluster = false,
     bool AllowsEliteFocusCap = false,
+    string IconId = "",
     string VfxHookId = "")
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;

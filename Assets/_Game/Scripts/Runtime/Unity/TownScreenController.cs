@@ -17,6 +17,7 @@ public sealed class TownScreenController : MonoBehaviour
     private GameSessionRoot _root = null!;
     private GameLocalizationController _localization = null!;
     private ContentTextResolver _contentText = null!;
+    private ContentIconResolver _contentIconResolver = null!;
     private TownScreenPresenter? _presenter;
     private SquadBuilderPresenter? _squadBuilderPresenter;
     private RecruitPresenter? _recruitPresenter;
@@ -126,7 +127,11 @@ public sealed class TownScreenController : MonoBehaviour
         try
         {
             var equipmentRefitView = new EquipmentRefitView(root);
-            _equipmentRefitPresenter = new EquipmentRefitPresenter(_root, equipmentRefitView, _contentText);
+            _equipmentRefitPresenter = new EquipmentRefitPresenter(
+                _root,
+                equipmentRefitView,
+                _contentText,
+                _contentIconResolver.ResolveAny);
             _equipmentRefitPresenter.Initialize();
             _equipmentRefitPresenter.Close();
             _presenter?.SetNpcOpener("soemae", _equipmentRefitPresenter.Open);
@@ -152,7 +157,10 @@ public sealed class TownScreenController : MonoBehaviour
         try
         {
             var inventoryView = new InventoryView(root);
-            _inventoryPresenter = new InventoryPresenter(_root, inventoryView);
+            _inventoryPresenter = new InventoryPresenter(
+                _root,
+                inventoryView,
+                affixSprite: _contentIconResolver.ResolveAny);
             _inventoryPresenter.Initialize();
             _inventoryPresenter.Close();
             _presenter?.SetNpcOpener("solgil", _inventoryPresenter.Open);
@@ -165,7 +173,10 @@ public sealed class TownScreenController : MonoBehaviour
         try
         {
             var permanentAugmentView = new PermanentAugmentView(root);
-            _permanentAugmentPresenter = new PermanentAugmentPresenter(_root, permanentAugmentView);
+            _permanentAugmentPresenter = new PermanentAugmentPresenter(
+                _root,
+                permanentAugmentView,
+                _contentIconResolver.ResolveAny);
             _permanentAugmentPresenter.Initialize();
             _permanentAugmentPresenter.Close();
             view.BindPermanentAugmentOpen(_permanentAugmentPresenter.Open);
@@ -210,6 +221,7 @@ public sealed class TownScreenController : MonoBehaviour
 
         _localization = _root.Localization;
         _contentText = new ContentTextResolver(_localization, _root.CombatContentLookup);
+        _contentIconResolver = new ContentIconResolver(_root.CombatContentLookup);
         return true;
     }
 

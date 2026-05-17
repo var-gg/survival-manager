@@ -80,6 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
+  IconId: skill_icon_platinum_aegis
   VfxHookId: vfx.skill_mystic_support_2
   SfxHookId: 
   LearnSource: 0

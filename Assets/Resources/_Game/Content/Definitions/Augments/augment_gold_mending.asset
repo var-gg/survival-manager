@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_gold_mending
   NameKey: content.augment.augment_gold_mending.name
   DescriptionKey: content.augment.augment_gold_mending.desc
+  IconId: augment_seal
   Rarity: 1
   IsPermanent: 0
   BudgetCard:

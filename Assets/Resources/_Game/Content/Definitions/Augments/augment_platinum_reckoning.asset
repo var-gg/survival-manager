@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_platinum_reckoning
   NameKey: content.augment.augment_platinum_reckoning.name
   DescriptionKey: content.augment.augment_platinum_reckoning.desc
+  IconId: augment_eye
   Rarity: 2
   IsPermanent: 0
   BudgetCard:

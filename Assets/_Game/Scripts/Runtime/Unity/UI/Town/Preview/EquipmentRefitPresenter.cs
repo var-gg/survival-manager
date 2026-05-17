@@ -123,16 +123,18 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             {
                 var slotKey = "weapon";
                 var rarityKey = "common";
+                var iconKey = item.ItemBaseId;
                 if (lookup.TryGetItemDefinition(item.ItemBaseId, out var baseDef))
                 {
                     slotKey = baseDef.SlotType.ToString().ToLowerInvariant();
                     rarityKey = baseDef.RarityTier.ToString().ToLowerInvariant();
+                    iconKey = string.IsNullOrWhiteSpace(baseDef.IconId) ? item.ItemBaseId : baseDef.IconId;
                 }
                 return new EquipmentRefitPoolRowViewState(
                     ItemInstanceId: item.ItemInstanceId,
                     Name: _contentText.GetItemName(item.ItemBaseId),
                     SlotKey: slotKey,
-                    IconSprite: _affixSprite(item.ItemBaseId),
+                    IconSprite: _affixSprite(iconKey) ?? _affixSprite(item.ItemBaseId),
                     RarityKey: rarityKey,
                     IsSelected: string.Equals(item.ItemInstanceId, _selectedItemInstanceId, StringComparison.Ordinal));
             })

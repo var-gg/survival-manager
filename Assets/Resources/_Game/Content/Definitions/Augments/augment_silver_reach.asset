@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_silver_reach
   NameKey: content.augment.augment_silver_reach.name
   DescriptionKey: content.augment.augment_silver_reach.desc
+  IconId: augment_wing
   Rarity: 0
   IsPermanent: 0
   BudgetCard:

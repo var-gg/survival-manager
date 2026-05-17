@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_gold_pack
   NameKey: content.augment.augment_gold_pack.name
   DescriptionKey: content.augment.augment_gold_pack.desc
+  IconId: augment_moon
   Rarity: 1
   IsPermanent: 0
   BudgetCard:

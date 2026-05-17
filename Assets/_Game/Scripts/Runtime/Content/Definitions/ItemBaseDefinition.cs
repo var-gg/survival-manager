@@ -23,6 +23,7 @@ namespace SM.Content.Definitions
         public string Id = string.Empty;
         public string NameKey = string.Empty;
         public string DescriptionKey = string.Empty;
+        public string IconId = string.Empty;
         public ItemSlotType SlotType = ItemSlotType.Weapon;
         public ItemIdentityValue IdentityKind = ItemIdentityValue.Baseline;
         public string ItemFamilyTag = string.Empty;

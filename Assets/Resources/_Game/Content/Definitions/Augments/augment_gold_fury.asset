@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_gold_fury
   NameKey: content.augment.augment_gold_fury.name
   DescriptionKey: content.augment.augment_gold_fury.desc
+  IconId: augment_blade
   Rarity: 1
   IsPermanent: 0
   BudgetCard:

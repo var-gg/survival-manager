@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_silver_stride
   NameKey: content.augment.augment_silver_stride.name
   DescriptionKey: content.augment.augment_silver_stride.desc
+  IconId: augment_wing
   Rarity: 0
   IsPermanent: 0
   BudgetCard:

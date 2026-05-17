@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_silver_ward
   NameKey: content.augment.augment_silver_ward.name
   DescriptionKey: content.augment.augment_silver_ward.desc
+  IconId: augment_shield
   Rarity: 0
   IsPermanent: 0
   BudgetCard:

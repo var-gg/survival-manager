@@ -80,6 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
+  IconId: skill_icon_sigil_shield
   VfxHookId: vfx.skill_vanguard_passive_2
   SfxHookId: 
   LearnSource: 0

@@ -26,6 +26,7 @@ internal static class ItemFileParser
             definition.NameKey = ContentLocalizationTables.BuildItemNameKey(definition.Id);
             definition.DescriptionKey = ContentLocalizationTables.BuildItemDescriptionKey(definition.Id);
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
+            definition.IconId = ExtractValue(lines, "IconId:");
             definition.SlotType = (ItemSlotType)ExtractInt(lines, "SlotType:");
             definition.IdentityKind = (ItemIdentityValue)ExtractInt(lines, "IdentityKind:");
             definition.ItemFamilyTag = ExtractValue(lines, "ItemFamilyTag:");
@@ -43,6 +44,7 @@ internal static class ItemFileParser
             definition.UniqueRuleTags = ParseReferenceList(lines, "UniqueRuleTags:", guidToPath, stableTags);
             definition.AllowedCraftOperations = ParsePackedEnumList<CraftOperationKindValue>(ExtractValue(lines, "AllowedCraftOperations:"));
             definition.BaseModifiers = ParseModifiers(lines, "BaseModifiers:");
+            ApplyItemFallbacks(definition);
             return definition;
         }, guidToPath).Values.ToList();
     }
@@ -99,6 +101,7 @@ internal static class ItemFileParser
             definition.DescriptionKey = ContentLocalizationTables.BuildAugmentDescriptionKey(definition.Id);
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
             SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "Description:"));
+            definition.IconId = ExtractValue(lines, "IconId:");
             definition.Rarity = ExtractInt(lines, "Rarity:") switch
             {
                 1 => ContentRarity.Rare,
@@ -175,9 +178,29 @@ internal static class ItemFileParser
             Array.Empty<CounterToolContribution>());
     }
 
+    internal static void ApplyItemFallbacks(ItemBaseDefinition definition)
+    {
+        if (!string.IsNullOrWhiteSpace(definition.IconId))
+        {
+            return;
+        }
+
+        definition.IconId = definition.SlotType switch
+        {
+            ItemSlotType.Weapon => $"item_icon_{ResolveWeaponIconFamily(definition)}",
+            ItemSlotType.Armor => "item_icon_armor",
+            _ => "item_icon_trinket",
+        };
+    }
+
     internal static void ApplyAugmentFallbacks(AugmentDefinition definition)
     {
         definition.FamilyId = Coalesce(definition.FamilyId, definition.Id);
+        if (string.IsNullOrWhiteSpace(definition.IconId))
+        {
+            definition.IconId = ResolveAugmentIconId(definition);
+        }
+
         if (definition.BudgetCard != null && definition.BudgetCard.Vector != null && definition.BudgetCard.Vector.FinalScore > 0)
         {
             var budgetTarget = LoopCContentGovernance.AugmentBudgetTargets[definition.Rarity];
@@ -227,5 +250,107 @@ internal static class ItemFileParser
             definition.Rarity == ContentRarity.Epic ? 1 : 0,
             Array.Empty<ThreatPattern>(),
             Array.Empty<CounterToolContribution>());
+    }
+
+    private static string ResolveWeaponIconFamily(ItemBaseDefinition definition)
+    {
+        if (!string.IsNullOrWhiteSpace(definition.WeaponFamilyTag))
+        {
+            return NormalizeWeaponIconFamily(definition.WeaponFamilyTag);
+        }
+
+        if (definition.Id.Contains("shield", StringComparison.Ordinal))
+        {
+            return "shield";
+        }
+
+        if (definition.Id.Contains("bow", StringComparison.Ordinal))
+        {
+            return "bow";
+        }
+
+        if (definition.Id.Contains("focus", StringComparison.Ordinal) || definition.Id.Contains("bead", StringComparison.Ordinal))
+        {
+            return "focus";
+        }
+
+        return "blade";
+    }
+
+    private static string NormalizeWeaponIconFamily(string family)
+    {
+        return family switch
+        {
+            "shield" or "bow" or "focus" or "blade" => family,
+            _ => "blade",
+        };
+    }
+
+    private static string ResolveAugmentIconId(AugmentDefinition definition)
+    {
+        var id = definition.Id ?? string.Empty;
+        var family = definition.FamilyId ?? string.Empty;
+        var tokens = $"{id} {family}".ToLowerInvariant();
+
+        if (tokens.Contains("ward", StringComparison.Ordinal)
+            || tokens.Contains("guard", StringComparison.Ordinal)
+            || tokens.Contains("bastion", StringComparison.Ordinal)
+            || tokens.Contains("wall", StringComparison.Ordinal)
+            || tokens.Contains("oath", StringComparison.Ordinal))
+        {
+            return "augment_shield";
+        }
+
+        if (tokens.Contains("hunt", StringComparison.Ordinal)
+            || tokens.Contains("scope", StringComparison.Ordinal)
+            || tokens.Contains("signal", StringComparison.Ordinal)
+            || tokens.Contains("eye", StringComparison.Ordinal))
+        {
+            return "augment_eye";
+        }
+
+        if (tokens.Contains("haste", StringComparison.Ordinal)
+            || tokens.Contains("stride", StringComparison.Ordinal)
+            || tokens.Contains("reach", StringComparison.Ordinal)
+            || tokens.Contains("overrun", StringComparison.Ordinal)
+            || tokens.Contains("spur", StringComparison.Ordinal))
+        {
+            return "augment_wing";
+        }
+
+        if (tokens.Contains("fury", StringComparison.Ordinal)
+            || tokens.Contains("reckoning", StringComparison.Ordinal)
+            || tokens.Contains("blade", StringComparison.Ordinal)
+            || tokens.Contains("fang", StringComparison.Ordinal))
+        {
+            return "augment_blade";
+        }
+
+        if (tokens.Contains("mending", StringComparison.Ordinal)
+            || tokens.Contains("clarity", StringComparison.Ordinal)
+            || tokens.Contains("focus", StringComparison.Ordinal)
+            || tokens.Contains("grace", StringComparison.Ordinal)
+            || tokens.Contains("chalice", StringComparison.Ordinal))
+        {
+            return "augment_seal";
+        }
+
+        if (tokens.Contains("hex", StringComparison.Ordinal)
+            || tokens.Contains("catacomb", StringComparison.Ordinal)
+            || tokens.Contains("bone", StringComparison.Ordinal)
+            || tokens.Contains("void", StringComparison.Ordinal))
+        {
+            return "augment_void";
+        }
+
+        if (tokens.Contains("pack", StringComparison.Ordinal)
+            || tokens.Contains("pact", StringComparison.Ordinal)
+            || tokens.Contains("hinterland", StringComparison.Ordinal)
+            || tokens.Contains("hide", StringComparison.Ordinal))
+        {
+            return "augment_moon";
+        }
+
+        return "augment_star";
     }
 }

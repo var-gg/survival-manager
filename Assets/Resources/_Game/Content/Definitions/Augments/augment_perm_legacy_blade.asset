@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_perm_legacy_blade
   NameKey: content.augment.augment_perm_legacy_blade.name
   DescriptionKey: content.augment.augment_perm_legacy_blade.desc
+  IconId: augment_blade
   Rarity: 2
   IsPermanent: 1
   BudgetCard:

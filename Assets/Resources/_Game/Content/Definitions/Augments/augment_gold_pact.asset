@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_gold_pact
   NameKey: content.augment.augment_gold_pact.name
   DescriptionKey: content.augment.augment_gold_pact.desc
+  IconId: augment_shield
   Rarity: 1
   IsPermanent: 0
   BudgetCard:

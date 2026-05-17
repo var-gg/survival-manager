@@ -80,6 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
+  IconId: skill_icon_fang_strike
   VfxHookId: vfx.skill_duelist_passive_2
   SfxHookId: 
   LearnSource: 0

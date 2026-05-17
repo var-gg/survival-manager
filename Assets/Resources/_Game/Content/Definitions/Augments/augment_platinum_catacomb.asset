@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: augment_platinum_catacomb
   NameKey: content.augment.augment_platinum_catacomb.name
   DescriptionKey: content.augment.augment_platinum_catacomb.desc
+  IconId: augment_void
   Rarity: 2
   IsPermanent: 0
   BudgetCard:

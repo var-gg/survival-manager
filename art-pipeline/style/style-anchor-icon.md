@@ -26,12 +26,14 @@ Subject silhouette must be readable as a single shape.
 === SHADING / LIGHTING (icon kind) ===
 Strong rim-light on subject silhouette to maintain readability at small size.
 Subtle gradient inside subject (NOT flat).
-Drop shadow optional — if present, cast onto magenta (chroma 누끼 후 transparency 안전).
+All glow/shadow/highlight effects must stay INSIDE the subject silhouette or inside the outer stroke.
 
 === CHROMA BACKGROUND (icon kind 엄수) ===
 Background: solid uniform color #FF00FF (pure fluorescent magenta).
-- NO gradient. NO shadow on background. Flat fill from canvas edge to subject silhouette.
-- Subject edge: clear 1–2 px dark line-art outline along entire silhouette.
+- NO gradient. NO shadow on background. NO blur, glow, particles, haze, or semi-transparent residue outside the subject.
+- Flat #FF00FF fill from canvas edge to the OUTER stroke.
+- Subject edge: continuous clean 2–4 px outer stroke along the entire silhouette.
+- The area outside the outer stroke must be pure #FF00FF only for flood-fill / chroma removal.
 
 FORBIDDEN on subject:
 - NO magenta / hot pink / fuchsia anywhere on the subject.
@@ -43,6 +45,6 @@ FORBIDDEN on subject:
 - NO text/numeral/letter on icon.
 - NO frame ring or border decoration (UI handles).
 - NO character portrait (use character_portrait_* kind instead).
-- NO drop shadow on background (only on subject if used).
+- NO drop shadow, glow, or blur outside the outer stroke.
 - NO multi-frame strip (single icon only).
 ```

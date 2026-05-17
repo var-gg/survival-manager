@@ -48,6 +48,7 @@ namespace SM.Content.Definitions
         public List<SkillAiIntentValue> AiIntents = new();
         public SkillAiScoreHints AiScoreHints = new();
         public string AnimationHookId = string.Empty;
+        public string IconId = string.Empty;
         public string VfxHookId = string.Empty;
         public string SfxHookId = string.Empty;
         public SkillLearnSourceValue LearnSource = SkillLearnSourceValue.LegacyDerived;
