@@ -49,7 +49,8 @@ public sealed class StatV2AndSandboxTests
         Assert.That(ContentDefinitionValidator.PaidLaunchFloor.SkillCount, Is.EqualTo(40));
         Assert.That(ContentDefinitionValidator.PaidLaunchSafeTarget.ArchetypeCount, Is.EqualTo(16));
         Assert.That(ContentDefinitionValidator.PaidLaunchSafeTarget.PassiveNodeCount, Is.EqualTo(96));
-        Assert.That(CountAssets("Archetypes"), Is.EqualTo(12));
+        // V1 SafeTarget archetype 16 (bastion_penitent / mirror_cantor / pale_executor / rift_stalker 추가됨 — 10ed7f7b "출시 안전 목표 콘텐츠 볼륨 보강")
+        Assert.That(CountAssets("Archetypes"), Is.EqualTo(16));
         Assert.That(CountLaunchFloorSkills(), Is.EqualTo(40));
         Assert.That(CountSupportModifierSkills(), Is.EqualTo(12));
         Assert.That(CountAssets("Items"), Is.EqualTo(36));
