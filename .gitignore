@@ -36,6 +36,9 @@ Thumbs.db
 *.bak
 *.log
 
+# Personal scratch scripts (GCE 디버그 잔재 등 — 본 프로젝트와 무관한 ad-hoc)
+tools/_tmp_*
+
 # Claude Design handoff local/transient files
 docs/02_design/ui/handoff/**/_local/
 docs/02_design/ui/handoff/**/*.crdownload
