@@ -7,6 +7,7 @@ policy:
   runtime_binding: "Runtime UI resolves IconId to Resources path; combat simulation and FastUnit lanes never depend on Sprite or Texture2D."
   generation_batch: "Generate 4 icons per imagegen call as a 1568x1568 2x2 sheet: 768px cells with 32px #FF00FF gutters."
   single_icon_source: "Single-icon subjects may use 1024x1024, but sheet generation is preferred for list work."
+  skill_source_ownership: "Canonical skill icon PNGs live under art-pipeline/output/icons/skill/catalog_v1 and are grouped by skill semantic family, never by character."
   final_canvas: "Sync output normalizes each icon to a 512x512 transparent PNG with the source centered inside a 448px safe box."
   chroma_contract: "Source background must be flat #FF00FF from canvas edge to subject outline."
   outline_contract: "Every generated symbol needs a clean outer stroke. Outside that stroke, there must be no shadow, blur, glow, particles, or semi-transparent residue."
@@ -15,44 +16,44 @@ policy:
 icons:
   skill:
     - id: skill_icon_ash_purification
-      source: art-pipeline/output/icons/skill/character_theme_hero_dawn_priest/skill_icon_ash_purification.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_ash_purification.png
     - id: skill_icon_dormant_ward
-      source: art-pipeline/output/icons/skill/character_theme_hero_echo_savant/skill_icon_dormant_ward.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_dormant_ward.png
     - id: skill_icon_external_lexicon
-      source: art-pipeline/output/icons/skill/character_theme_hero_echo_savant/skill_icon_external_lexicon.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_external_lexicon.png
     - id: skill_icon_faith_absent
-      source: art-pipeline/output/icons/skill/character_theme_hero_dawn_priest/skill_icon_faith_absent.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_faith_absent.png
     - id: skill_icon_fang_strike
-      source: art-pipeline/output/icons/skill/character_theme_hero_pack_raider/skill_icon_fang_strike.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
     - id: skill_icon_jest_bell
-      source: art-pipeline/output/icons/skill/character_theme_hero_grave_hexer/skill_icon_jest_bell.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_jest_bell.png
     - id: skill_icon_knot_arrow
-      source: art-pipeline/output/icons/skill/character_theme_hero_echo_savant/skill_icon_knot_arrow.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
     - id: skill_icon_memory_project
-      source: art-pipeline/output/icons/skill/character_theme_hero_grave_hexer/skill_icon_memory_project.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_memory_project.png
     - id: skill_icon_pack_position
-      source: art-pipeline/output/icons/skill/character_theme_hero_pack_raider/skill_icon_pack_position.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_pack_position.png
     - id: skill_icon_platinum_aegis
-      source: art-pipeline/output/icons/skill/character_theme_hero_dawn_priest/skill_icon_platinum_aegis.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_platinum_aegis.png
     - id: skill_icon_return_path
-      source: art-pipeline/output/icons/skill/character_theme_hero_pack_raider/skill_icon_return_path.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_return_path.png
     - id: skill_icon_sigil_shield
-      source: art-pipeline/output/icons/skill/character_theme_hero_dawn_priest/skill_icon_sigil_shield.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
     - id: skill_icon_time_distance
-      source: art-pipeline/output/icons/skill/character_theme_hero_grave_hexer/skill_icon_time_distance.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_time_distance.png
     - id: skill_icon_voice_scar
-      source: art-pipeline/output/icons/skill/character_theme_hero_grave_hexer/skill_icon_voice_scar.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_voice_scar.png
     - id: skill_icon_weathering_pause
-      source: art-pipeline/output/icons/skill/character_theme_hero_echo_savant/skill_icon_weathering_pause.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_weathering_pause.png
     - id: skill_icon_wind_read
-      source: art-pipeline/output/icons/skill/character_theme_hero_pack_raider/skill_icon_wind_read.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_wind_read.png
   item:
     - id: item_icon_armor
       source: art-pipeline/output/icons/affix/affix_armor.png
     - id: item_icon_blade
       source: art-pipeline/output/icons/augment/augment_blade.png
     - id: item_icon_bow
-      source: art-pipeline/output/icons/skill/character_theme_hero_echo_savant/skill_icon_knot_arrow.png
+      source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
     - id: item_icon_focus
       source: art-pipeline/output/icons/augment/augment_seal.png
     - id: item_icon_shield

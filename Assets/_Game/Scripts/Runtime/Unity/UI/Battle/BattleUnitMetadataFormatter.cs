@@ -313,8 +313,7 @@ public sealed class BattleUnitMetadataFormatter
     private BattleSkillSlotViewState BuildSkillSlot(string slotLabel, string skillId, string skillName, string characterId)
     {
         var resolvedName = ResolveSkillDisplayName(skillId, skillName);
-        var icon = _iconResolver.ResolveSkill(skillId, characterId)
-                   ?? _portraitResolver.ResolveSkillIcon(characterId, skillId);
+        var icon = _iconResolver.ResolveSkill(skillId, characterId);
         return new BattleSkillSlotViewState(slotLabel, resolvedName, skillId, icon);
     }
 
@@ -400,8 +399,7 @@ public sealed class BattleUnitMetadataFormatter
         chips.Add(new BattleStatusEffectChip(
             statusId,
             ResolveSkillDisplayName(skillId, skillName),
-            _iconResolver.ResolveSkill(skillId, unit.CharacterId)
-            ?? _portraitResolver.ResolveSkillIcon(unit.CharacterId, skillId),
+            _iconResolver.ResolveSkill(skillId, unit.CharacterId),
             0f,
             0f,
             1,

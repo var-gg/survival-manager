@@ -4,10 +4,9 @@
 # ChatGPT 게임 프로젝트 URL (사용자가 셋업한 GPT 프로젝트)
 chatgpt_project_url: https://chatgpt.com/g/g-p-69c7aa09d1588191a8dd5bd93db389ba/project
 
-# Playwright 영구 user_data_dir — vargg-webtoon comic-imagegen과 공유.
-# 같은 ChatGPT 로그인 세션 재사용 (vargg쪽이 이미 로그인되어 있어 supervision 불필요).
-# 단 vargg 쪽이 동시 실행 중이면 chrome 락 충돌 가능 — 동시 실행 금지.
-user_data_dir: ~/.claude/comic-imagegen/chrome-user-data
+# Playwright 영구 user_data_dir — survival-manager game-image-gen 전용.
+# 첫 실행에서 ChatGPT 로그인이 필요하며, 이후 이 프로필에 세션이 저장된다.
+user_data_dir: ~/.claude/game-image-gen/chrome-user-data
 
 # 이미지 생성 폴링 타임아웃 (초). ChatGPT가 느릴 때를 대비.
 default_timeout: 240

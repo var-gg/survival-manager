@@ -50,6 +50,7 @@ KIND_TO_ANCHOR_FILE = {
     "bust_emotion_sheet": "style-anchor-character.md",
     "battle_stance_sheet": "style-anchor-character.md",
     "skill_icon_theme_sheet": "style-anchor-icon.md",
+    "skill_icon_catalog_sheet": "style-anchor-icon.md",
     # map family (cycle stages)
     "map_concept": "style-anchor-map.md",
     "map_layout": "style-anchor-map.md",
@@ -75,6 +76,7 @@ KIND_TO_REF_DIR = {
     "bust_emotion_sheet": "characters",
     "battle_stance_sheet": "characters",
     "skill_icon_theme_sheet": "characters",
+    "skill_icon_catalog_sheet": "icons",
     "map_concept": "maps",
     "map_layout": "maps",
     "map_decor_breakdown": "maps",

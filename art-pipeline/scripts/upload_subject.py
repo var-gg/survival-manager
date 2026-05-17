@@ -385,6 +385,10 @@ def force_new_chat(page: Page, project_url: str) -> None:
 
 
 def upload_refs(page: Page, ref_paths: list[tuple[Path, str]]) -> None:
+    if not ref_paths:
+        print("[imagegen] no REF attachments", file=sys.stderr)
+        return
+
     files_data = []
     for p, _label in ref_paths:
         mime, _ = mimetypes.guess_type(str(p))

@@ -48,25 +48,6 @@ internal sealed class BattleUnitPortraitResolver
         return Resolve(unit);
     }
 
-    public Texture2D? ResolveSkillIcon(string characterId, string skillId)
-    {
-        if (string.IsNullOrWhiteSpace(characterId) || string.IsNullOrWhiteSpace(skillId))
-        {
-            return null;
-        }
-
-        foreach (var iconId in EnumerateSkillIconIds(characterId, skillId))
-        {
-            var texture = LoadRaw(characterId, $"skill_icon_{iconId}");
-            if (texture != null)
-            {
-                return texture;
-            }
-        }
-
-        return null;
-    }
-
     private Texture2D? LoadRaw(string characterId, string assetStem)
     {
         var key = $"{characterId}:{assetStem}";
@@ -155,66 +136,6 @@ internal sealed class BattleUnitPortraitResolver
 
         yield return "serious";
         yield return "default";
-    }
-
-    private static IEnumerable<string> EnumerateSkillIconIds(string characterId, string skillId)
-    {
-        if (string.Equals(characterId, "hero_dawn_priest", StringComparison.Ordinal))
-        {
-            if (string.Equals(skillId, "skill_priest_core", StringComparison.Ordinal))
-            {
-                yield return "sigil_shield";
-            }
-            else if (string.Equals(skillId, "skill_minor_heal", StringComparison.Ordinal))
-            {
-                yield return "platinum_aegis";
-            }
-            else if (string.Equals(skillId, "support_purifying", StringComparison.Ordinal))
-            {
-                yield return "ash_purification";
-            }
-        }
-        else if (string.Equals(characterId, "hero_pack_raider", StringComparison.Ordinal))
-        {
-            if (string.Equals(skillId, "skill_raider_core", StringComparison.Ordinal)
-                || string.Equals(skillId, "skill_scout_utility", StringComparison.Ordinal))
-            {
-                yield return "wind_read";
-            }
-            else if (string.Equals(skillId, "skill_raider_utility", StringComparison.Ordinal)
-                || string.Equals(skillId, "skill_power_strike", StringComparison.Ordinal)
-                || string.Equals(skillId, "skill_reaver_utility", StringComparison.Ordinal)
-                || string.Equals(skillId, "skill_slayer_utility", StringComparison.Ordinal))
-            {
-                yield return "fang_strike";
-            }
-            else if (string.Equals(skillId, "support_brutal", StringComparison.Ordinal))
-            {
-                yield return "pack_position";
-            }
-        }
-        else if (string.Equals(characterId, "hero_grave_hexer", StringComparison.Ordinal))
-        {
-            if (string.Equals(skillId, "skill_hexer_core", StringComparison.Ordinal))
-            {
-                yield return "time_distance";
-            }
-            else if (string.Equals(skillId, "skill_hexer_utility", StringComparison.Ordinal)
-                || string.Equals(skillId, "skill_minor_heal", StringComparison.Ordinal))
-            {
-                yield return "memory_project";
-            }
-            else if (string.Equals(skillId, "skill_shaman_utility", StringComparison.Ordinal))
-            {
-                yield return "voice_scar";
-            }
-        }
-
-        yield return skillId;
-        if (skillId.StartsWith("skill_", StringComparison.Ordinal))
-        {
-            yield return skillId["skill_".Length..];
-        }
     }
 
     private static bool HasStatus(IEnumerable<string> statusIds, string token)

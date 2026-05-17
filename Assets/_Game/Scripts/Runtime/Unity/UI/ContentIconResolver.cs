@@ -11,7 +11,6 @@ internal sealed class ContentIconResolver
     private const string ItemPath = "_Game/Art/Icons/Item";
     private const string AugmentPath = "_Game/Art/Icons/Augment";
     private const string AffixPath = "_Game/Art/Icons/Affix";
-    private const string CharacterPath = "_Game/Art/Characters";
 
     private readonly ICombatContentLookup _lookup;
     private readonly Dictionary<string, Texture2D?> _cache = new(StringComparer.Ordinal);
@@ -43,21 +42,8 @@ internal sealed class ContentIconResolver
         }
 
         var iconId = ResolveSkillIconId(skillId);
-        var global = Load($"{SkillPath}/{iconId}")
-                     ?? Load($"{SkillPath}/skill_icon_{skillId}");
-        if (global != null)
-        {
-            return global;
-        }
-
-        if (!string.IsNullOrWhiteSpace(characterId))
-        {
-            return Load($"{CharacterPath}/{characterId}/{iconId}")
-                   ?? Load($"{CharacterPath}/{characterId}/skill_icon_{skillId}")
-                   ?? Load($"{CharacterPath}/{characterId}/skill_icon_{StripPrefix(skillId, "skill_")}");
-        }
-
-        return null;
+        return Load($"{SkillPath}/{iconId}")
+               ?? Load($"{SkillPath}/skill_icon_{skillId}");
     }
 
     public Texture2D? ResolveItem(string itemId)
