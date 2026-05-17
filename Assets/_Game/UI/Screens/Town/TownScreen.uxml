@@ -19,18 +19,18 @@
         <!-- Top utility bar -->
         <ui:VisualElement name="HeaderBar" class="town-hub__header">
             <ui:VisualElement class="town-hub__header-title" picking-mode="Ignore">
-                <ui:Label name="TitleEyebrowLabel" class="sm-eyebrow town-hub__eyebrow" text="ASHGLEN — 잿골" picking-mode="Ignore" />
-                <ui:Label name="TitleLabel" class="sm-headline town-hub__title" text="변방 잿골 마을" picking-mode="Ignore" />
+                <ui:Label name="TitleEyebrowLabel" class="sm-eyebrow town-hub__eyebrow" picking-mode="Ignore" />
+                <ui:Label name="TitleLabel" class="sm-headline town-hub__title" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:VisualElement class="town-hub__header-tools">
                 <ui:Label name="LocaleStatusLabel" class="town-hub__locale-status" picking-mode="Ignore" />
                 <ui:Button name="LocaleKoButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
                 <ui:Button name="LocaleEnButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
-                <ui:Button name="HelpButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="?" />
+                <ui:Button name="HelpButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
                 <ui:VisualElement class="town-hub__utility-divider" picking-mode="Ignore" />
                 <ui:Button name="SaveButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
                 <ui:Button name="LoadButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
-                <ui:Button name="SettingsButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" text="⚙" />
+                <ui:Button name="SettingsButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
                 <ui:Button name="ReturnToStartButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary" />
             </ui:VisualElement>
         </ui:VisualElement>
@@ -50,25 +50,25 @@
             </ui:VisualElement>
 
             <ui:VisualElement class="town-hub__utility-strip">
-                <ui:Label class="town-hub__column-eyebrow" text="LEDGER · 마을 비망록" picking-mode="Ignore" />
+                <ui:Label name="LedgerTitleLabel" class="town-hub__column-eyebrow" picking-mode="Ignore" />
                 <ui:Button name="RosterButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
-                    <ui:Label class="town-hub__utility-name" text="◈  동료 명부" picking-mode="Ignore" />
+                    <ui:Label name="RosterEntryLabel" class="town-hub__utility-name" picking-mode="Ignore" />
                 </ui:Button>
                 <ui:Button name="SquadBuilderButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
-                    <ui:Label class="town-hub__utility-name" text="❖  전열 편성" picking-mode="Ignore" />
+                    <ui:Label name="SquadBuilderEntryLabel" class="town-hub__utility-name" picking-mode="Ignore" />
                 </ui:Button>
                 <ui:Button name="PermanentAugmentButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
-                    <ui:Label class="town-hub__utility-name" text="✦  영구 강화" picking-mode="Ignore" />
+                    <ui:Label name="PermanentAugmentEntryLabel" class="town-hub__utility-name" picking-mode="Ignore" />
                 </ui:Button>
                 <ui:Button name="TheaterButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
-                    <ui:Label class="town-hub__utility-name" text="▶  극장" picking-mode="Ignore" />
+                    <ui:Label name="TheaterEntryLabel" class="town-hub__utility-name" picking-mode="Ignore" />
                 </ui:Button>
             </ui:VisualElement>
         </ui:VisualElement>
 
         <!-- Bottom hero cluster — deploy 4 highlight (md) + roster N thumbnail (sm). 가변 list. -->
         <ui:VisualElement class="town-hub__hero-cluster">
-            <ui:Label class="town-hub__cluster-eyebrow" text="잿골에 머무는 동료" picking-mode="Ignore" />
+            <ui:Label name="ClusterEyebrowLabel" class="town-hub__cluster-eyebrow" picking-mode="Ignore" />
             <ui:VisualElement class="town-hub__cluster-rows">
                 <ui:VisualElement name="DeployRow" class="town-hub__deploy-row" />
                 <ui:VisualElement name="RosterRow" class="town-hub__roster-row" />
@@ -79,7 +79,7 @@
         <ui:VisualElement class="town-hub__cta-bar">
             <ui:Label name="StatusLabel" class="town-hub__status" picking-mode="Ignore" />
             <ui:VisualElement class="town-hub__cta-actions">
-                <ui:Button name="QuickBattleButton" class="ui-button sm-cta sm-cta--md sm-cta--utility town-hub__quick-battle-button" text="Quick Battle (Smoke)" />
+                <ui:Button name="QuickBattleButton" class="ui-button sm-cta sm-cta--md sm-cta--utility town-hub__quick-battle-button" />
                 <ui:Button name="ExpeditionButton" class="ui-button sm-cta sm-cta--hero sm-cta--primary town-hub__expedition-cta" />
             </ui:VisualElement>
         </ui:VisualElement>

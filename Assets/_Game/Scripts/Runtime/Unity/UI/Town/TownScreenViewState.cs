@@ -49,4 +49,11 @@ public sealed record TownScreenViewState(
     string QuickBattleTooltip,
     bool CanQuickBattle,
     bool ShowQuickBattle,
-    string StatusText);
+    string StatusText,
+    // Phase 7 V3 hub V3 utility column / cluster / entry labels (UXML literal 분리)
+    string LedgerTitle,
+    string RosterEntryLabel,
+    string SquadBuilderEntryLabel,
+    string PermanentAugmentEntryLabel,
+    string TheaterEntryLabel,
+    string ClusterEyebrow);

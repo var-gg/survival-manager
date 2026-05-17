@@ -33,10 +33,16 @@ public sealed class TownScreenView
     private readonly VisualElement _deployRow;
     private readonly VisualElement _rosterRow;
 
+    private readonly Label _ledgerTitleLabel;
     private readonly Button _rosterButton;
+    private readonly Label _rosterEntryLabel;
     private readonly Button _squadBuilderButton;
+    private readonly Label _squadBuilderEntryLabel;
     private readonly Button _permanentAugmentButton;
+    private readonly Label _permanentAugmentEntryLabel;
     private readonly Button _theaterButton;
+    private readonly Label _theaterEntryLabel;
+    private readonly Label _clusterEyebrowLabel;
 
     private readonly Label _statusLabel;
     private readonly Button _quickBattleButton;
@@ -70,10 +76,16 @@ public sealed class TownScreenView
         _deployRow = Require<VisualElement>(root, "DeployRow");
         _rosterRow = Require<VisualElement>(root, "RosterRow");
 
+        _ledgerTitleLabel = Require<Label>(root, "LedgerTitleLabel");
         _rosterButton = Require<Button>(root, "RosterButton");
+        _rosterEntryLabel = Require<Label>(root, "RosterEntryLabel");
         _squadBuilderButton = Require<Button>(root, "SquadBuilderButton");
+        _squadBuilderEntryLabel = Require<Label>(root, "SquadBuilderEntryLabel");
         _permanentAugmentButton = Require<Button>(root, "PermanentAugmentButton");
+        _permanentAugmentEntryLabel = Require<Label>(root, "PermanentAugmentEntryLabel");
         _theaterButton = Require<Button>(root, "TheaterButton");
+        _theaterEntryLabel = Require<Label>(root, "TheaterEntryLabel");
+        _clusterEyebrowLabel = Require<Label>(root, "ClusterEyebrowLabel");
 
         _statusLabel = Require<Label>(root, "StatusLabel");
         _quickBattleButton = Require<Button>(root, "QuickBattleButton");
@@ -122,6 +134,13 @@ public sealed class TownScreenView
         _helpStrip.style.display = state.Help.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
         _helpBodyLabel.text = state.Help.Body;
         _helpDismissButton.text = state.Help.DismissLabel;
+
+        _ledgerTitleLabel.text = state.LedgerTitle;
+        _rosterEntryLabel.text = state.RosterEntryLabel;
+        _squadBuilderEntryLabel.text = state.SquadBuilderEntryLabel;
+        _permanentAugmentEntryLabel.text = state.PermanentAugmentEntryLabel;
+        _theaterEntryLabel.text = state.TheaterEntryLabel;
+        _clusterEyebrowLabel.text = state.ClusterEyebrow;
 
         // NPC strip — 4 face card lg.
         _npcStrip.Clear();

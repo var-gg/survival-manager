@@ -375,6 +375,13 @@ public static class LocalizationFoundationBootstrap
             ["ui.town.eyebrow"] = ("ASHGLEN — 잿골", "ASHGLEN — Ashglen", false),
             ["ui.town.welcome.empty"] = ("잿골은 늘 그대로일세. 한 사람도 함께가 아닌가.", "Ashglen still stands on its own. Not a single soul here with us.", false),
             ["ui.town.welcome.greeting_default"] = ("잿골은 늘 그대로일세. 잠시 숨을 돌리시지요.", "Ashglen still stands on its own. Catch your breath for a moment.", false),
+            // Phase 7 V3 hub column / utility entry / cluster labels (UXML literal 분리)
+            ["ui.town.ledger.title"] = ("LEDGER · 마을 비망록", "LEDGER · Town Records", false),
+            ["ui.town.entry.roster"] = ("◈  동료 명부", "◈  Roster", false),
+            ["ui.town.entry.squad_builder"] = ("❖  전열 편성", "❖  Squad Builder", false),
+            ["ui.town.entry.permanent_augment"] = ("✦  영구 강화", "✦  Permanent Augment", false),
+            ["ui.town.entry.theater"] = ("▶  극장", "▶  Theater", false),
+            ["ui.town.cluster.eyebrow"] = ("잿골에 머무는 동료", "Comrades staying in Ashglen", false),
         });
 
         AddOrUpdateEntries(new Dictionary<string, (string ko, string en, bool smart)>(StringComparer.Ordinal)

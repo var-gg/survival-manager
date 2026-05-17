@@ -983,6 +983,30 @@ MonoBehaviour:
     m_Key: ui.town.welcome.greeting_default
     m_Metadata:
       m_Items: []
+  - m_Id: 17541022656827392
+    m_Key: ui.town.ledger.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021696
+    m_Key: ui.town.entry.roster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021697
+    m_Key: ui.town.entry.squad_builder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021698
+    m_Key: ui.town.entry.permanent_augment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021699
+    m_Key: ui.town.entry.theater
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021700
+    m_Key: ui.town.cluster.eyebrow
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

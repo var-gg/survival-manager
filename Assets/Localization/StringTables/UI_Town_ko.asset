@@ -1056,6 +1056,30 @@ MonoBehaviour:
       \uC228\uC744 \uB3CC\uB9AC\uC2DC\uC9C0\uC694."
     m_Metadata:
       m_Items: []
+  - m_Id: 17541022656827392
+    m_Localized: "LEDGER \xB7 \uB9C8\uC744 \uBE44\uB9DD\uB85D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021696
+    m_Localized: "\u25C8  \uB3D9\uB8CC \uBA85\uBD80"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021697
+    m_Localized: "\u2756  \uC804\uC5F4 \uD3B8\uC131"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021698
+    m_Localized: "\u2726  \uC601\uAD6C \uAC15\uD654"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021699
+    m_Localized: "\u25B6  \uADF9\uC7A5"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021700
+    m_Localized: "\uC7BF\uACE8\uC5D0 \uBA38\uBB34\uB294 \uB3D9\uB8CC"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

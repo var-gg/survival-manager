@@ -1029,6 +1029,30 @@ MonoBehaviour:
     m_Localized: Ashglen still stands on its own. Catch your breath for a moment.
     m_Metadata:
       m_Items: []
+  - m_Id: 17541022656827392
+    m_Localized: "LEDGER \xB7 Town Records"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021696
+    m_Localized: "\u25C8  Roster"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021697
+    m_Localized: "\u2756  Squad Builder"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021698
+    m_Localized: "\u2726  Permanent Augment"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021699
+    m_Localized: "\u25B6  Theater"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021700
+    m_Localized: Comrades staying in Ashglen
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

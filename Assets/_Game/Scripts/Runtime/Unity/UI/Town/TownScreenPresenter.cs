@@ -241,7 +241,13 @@ public sealed class TownScreenPresenter
                 "Open an integration smoke battle using the current Town build, then return through Reward or direct Town restore."),
             CanQuickBattle: showDebugActions && session.CanStartQuickBattleSmoke,
             ShowQuickBattle: showDebugActions,
-            StatusText: statusText);
+            StatusText: statusText,
+            LedgerTitle: Localize(GameLocalizationTables.UITown, "ui.town.ledger.title", "LEDGER · 마을 비망록"),
+            RosterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.roster", "◈  동료 명부"),
+            SquadBuilderEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.squad_builder", "❖  전열 편성"),
+            PermanentAugmentEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.permanent_augment", "✦  영구 강화"),
+            TheaterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.theater", "▶  극장"),
+            ClusterEyebrow: Localize(GameLocalizationTables.UITown, "ui.town.cluster.eyebrow", "잿골에 머무는 동료"));
     }
 
     private string ResolveHeroDisplayName(string heroId, string? heroName)
