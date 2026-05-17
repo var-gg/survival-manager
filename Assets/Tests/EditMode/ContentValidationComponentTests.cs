@@ -34,7 +34,8 @@ public sealed class ContentValidationComponentTests
 
         Assert.That(services.Validator, Is.Not.Null);
         Assert.That(services.ReportWriter, Is.Not.Null);
-        Assert.That(services.ReportPaths.GetDefaultReportDirectory(), Does.Contain("Logs/content-validation"));
+        // path separator OS-aware: Windows `\` vs Unix `/`
+        Assert.That(services.ReportPaths.GetDefaultReportDirectory(), Does.Match(@"Logs[/\\]content-validation"));
     }
 
     [Test]
