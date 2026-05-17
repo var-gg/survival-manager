@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  VfxHookId: 
+  VfxHookId: vfx.skill_mystic_support_2
   SfxHookId: 
   LearnSource: 0
   EffectFamilyId: hexer_support

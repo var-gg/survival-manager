@@ -383,6 +383,10 @@ internal sealed class SkillSchemaRule : DefinitionSchemaRule<SkillDefinitionAsse
         ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(skill.AnimationHookId, "skill.animation_hook", assetPath, issues);
         ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(skill.VfxHookId, "skill.vfx_hook", assetPath, issues);
         ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(skill.SfxHookId, "skill.sfx_hook", assetPath, issues);
+        if (string.IsNullOrWhiteSpace(skill.VfxHookId))
+        {
+            ContentValidationIssueFactory.AddError(issues, "skill.vfx_hook_required", "Skill VfxHookId is required as the pre-VFX catalog handshake.", assetPath);
+        }
 
         foreach (var status in skill.AppliedStatuses.Where(status => status != null))
         {
@@ -595,6 +599,17 @@ internal sealed class StatusFamilySchemaRule : DefinitionSchemaRule<StatusFamily
         if (statusFamily.VisualPriority < 0)
         {
             ContentValidationIssueFactory.AddError(issues, "status.visual_priority", "Status VisualPriority must be non-negative.", assetPath);
+        }
+
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(statusFamily.VfxCueId, "status.vfx_cue", assetPath, issues);
+        if (string.IsNullOrWhiteSpace(statusFamily.VfxCueId))
+        {
+            ContentValidationIssueFactory.AddError(issues, "status.vfx_cue_required", "Status VfxCueId is required as the pre-VFX catalog handshake.", assetPath);
+        }
+
+        if (statusFamily.AppliesPeriodicDamage && statusFamily.Group != StatusGroupValue.Attrition)
+        {
+            ContentValidationIssueFactory.AddError(issues, "status.periodic_damage_group", "Periodic damage statuses must stay in the Attrition group.", assetPath);
         }
 
         LoopAContractValidator.ValidateStatusFamily(statusFamily, assetPath, issues);

@@ -1418,6 +1418,7 @@ public static class SampleSeedGenerator
 
         skill.EffectFamilyId = effectFamilyId;
         skill.MutuallyExclusiveGroupId = mutuallyExclusiveGroupId;
+        skill.VfxHookId = ResolveSkillVfxHookId(skill.Id);
         skill.RecruitNativeTags = ResolveTags(tags, nativeTagIds);
         skill.RecruitPlanTags = ResolveTags(tags, planTagIds);
         skill.RecruitScoutTags = ResolveTags(tags, scoutTagIds);
@@ -3209,6 +3210,10 @@ public static class SampleSeedGenerator
             skill.SupportBlockedTags = blockedTags;
             skill.RequiredWeaponTags = weaponTags;
             skill.RequiredClassTags = classTags;
+            if (string.IsNullOrWhiteSpace(skill.VfxHookId))
+            {
+                skill.VfxHookId = ResolveSkillVfxHookId(skill.Id);
+            }
             PatchSerializedSkillContract(skill, compileTags, blockedTags, weaponTags, classTags, skill.AppliedStatuses, skill.CleanseProfileId);
             EditorUtility.SetDirty(skill);
         }
@@ -3292,6 +3297,8 @@ public static class SampleSeedGenerator
                 asset.UsesControlDiminishing = definition.Diminishing;
                 asset.AffectedByTenacity = definition.Tenacity;
                 asset.TenacityScale = definition.Scale;
+                asset.AppliesPeriodicDamage = definition.Id is "burn" or "bleed";
+                asset.VfxCueId = $"vfx.status_{definition.Id}";
                 asset.IsRuleModifierOnly = definition.RuleOnly;
                 asset.CompileTags = new List<string> { definition.Id };
                 UpsertStringEntry(ContentLocalizationTables.Status, asset.NameKey, definition.Ko, definition.En);
@@ -3996,8 +4003,14 @@ public static class SampleSeedGenerator
         skill.RequiredClassTags = resolvedClassTags;
         skill.AppliedStatuses = resolvedStatuses;
         skill.CleanseProfileId = cleanseProfileId;
+        skill.VfxHookId = ResolveSkillVfxHookId(skill.Id);
         PatchSerializedSkillContract(skill, resolvedCompileTags, resolvedBlockedTags, resolvedWeaponTags, resolvedClassTags, resolvedStatuses, cleanseProfileId);
         EditorUtility.SetDirty(skill);
+    }
+
+    private static string ResolveSkillVfxHookId(string skillId)
+    {
+        return string.IsNullOrWhiteSpace(skillId) ? string.Empty : $"vfx.{skillId}";
     }
 
     private static StatusApplicationRule MakeStatus(string id, string statusId, float durationSeconds, float magnitude)
@@ -4278,6 +4291,7 @@ public static class SampleSeedGenerator
         SetObjectReferenceArray(serializedObject.FindProperty(nameof(SkillDefinitionAsset.RequiredClassTags)), requiredClassTags);
         SetStatusRuleArray(serializedObject.FindProperty(nameof(SkillDefinitionAsset.AppliedStatuses)), statuses);
         serializedObject.FindProperty(nameof(SkillDefinitionAsset.CleanseProfileId))!.stringValue = cleanseProfileId ?? string.Empty;
+        serializedObject.FindProperty(nameof(SkillDefinitionAsset.VfxHookId))!.stringValue = skill.VfxHookId ?? string.Empty;
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
     }
 

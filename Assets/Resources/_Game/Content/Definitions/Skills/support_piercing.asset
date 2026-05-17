@@ -82,7 +82,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  VfxHookId: 
+  VfxHookId: vfx.support_piercing
   SfxHookId: 
   LearnSource: 0
   EffectFamilyId: piercing_support

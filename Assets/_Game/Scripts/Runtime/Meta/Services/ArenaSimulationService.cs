@@ -113,7 +113,8 @@ public sealed class ArenaSimulationService
             offenseSnapshot.TeamTactic.Posture,
             defenseSnapshot.TeamTactic.Posture,
             BattleSimulator.DefaultFixedStepSeconds,
-            seed);
+            seed,
+            statusRules: offenseSnapshot.StatusRules ?? defenseSnapshot.StatusRules);
         var result = BattleResolver.Run(state);
         var completedAtUtc = DateTime.UtcNow.ToString("O");
         var replay = ReplayAssembler.Assemble(offenseSnapshot, defenseSnapshot.Allies, result, seed, startedAtUtc, completedAtUtc);

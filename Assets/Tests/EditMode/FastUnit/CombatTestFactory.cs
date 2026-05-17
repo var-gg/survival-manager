@@ -75,9 +75,10 @@ public static class CombatTestFactory
         IReadOnlyList<BattleUnitLoadout> enemies,
         TeamPostureType allyPosture = TeamPostureType.StandardAdvance,
         TeamPostureType enemyPosture = TeamPostureType.StandardAdvance,
-        int seed = 7)
+        int seed = 7,
+        CombatStatusRules? statusRules = null)
     {
-        return BattleFactory.Create(allies, enemies, allyPosture, enemyPosture, BattleSimulator.DefaultFixedStepSeconds, seed);
+        return BattleFactory.Create(allies, enemies, allyPosture, enemyPosture, BattleSimulator.DefaultFixedStepSeconds, seed, statusRules: statusRules);
     }
 
     public static BattleUnitLoadout CreateLoopAUnit(

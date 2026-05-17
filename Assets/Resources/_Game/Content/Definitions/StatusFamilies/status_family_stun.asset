@@ -20,6 +20,8 @@ MonoBehaviour:
   UsesControlDiminishing: 1
   AffectedByTenacity: 1
   TenacityScale: 1
+  AppliesPeriodicDamage: 0
+  VfxCueId: vfx.status_stun
   BudgetCard:
     Domain: 7
     Rarity: 0

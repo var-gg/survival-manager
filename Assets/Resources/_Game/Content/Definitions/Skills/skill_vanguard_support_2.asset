@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  VfxHookId: 
+  VfxHookId: vfx.skill_vanguard_support_2
   SfxHookId: 
   LearnSource: 0
   EffectFamilyId: bulwark_support

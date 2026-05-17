@@ -26,6 +26,8 @@ internal static class StatusFileParser
             definition.UsesControlDiminishing = ExtractBool(lines, "UsesControlDiminishing:");
             definition.AffectedByTenacity = ExtractBool(lines, "AffectedByTenacity:");
             definition.TenacityScale = ExtractFloat(lines, "TenacityScale:");
+            definition.AppliesPeriodicDamage = ExtractBool(lines, "AppliesPeriodicDamage:");
+            definition.VfxCueId = ExtractValue(lines, "VfxCueId:");
             definition.BudgetCard = ParseBudgetCard(lines, "BudgetCard:") ?? definition.BudgetCard;
             definition.IsRuleModifierOnly = ExtractBool(lines, "IsRuleModifierOnly:");
             definition.AuthorityLayer = (AuthorityLayer)ExtractInt(lines, "AuthorityLayer:");
@@ -185,6 +187,11 @@ internal static class StatusFileParser
         };
         definition.IsHardControl = definition.Id is "root" or "silence" or "stun";
         definition.UsesControlDiminishing = definition.IsHardControl;
+        definition.AppliesPeriodicDamage = definition.AppliesPeriodicDamage || definition.Id is "burn" or "bleed";
+        if (string.IsNullOrWhiteSpace(definition.VfxCueId))
+        {
+            definition.VfxCueId = $"vfx.status_{definition.Id}";
+        }
 
         if (definition.BudgetCard != null && definition.BudgetCard.Vector != null && definition.BudgetCard.Vector.FinalScore > 0)
         {

@@ -20,6 +20,8 @@ MonoBehaviour:
   UsesControlDiminishing: 0
   AffectedByTenacity: 0
   TenacityScale: 0
+  AppliesPeriodicDamage: 0
+  VfxCueId: vfx.status_barrier
   BudgetCard:
     Domain: 7
     Rarity: 0

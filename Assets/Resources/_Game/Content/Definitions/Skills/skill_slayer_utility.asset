@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  VfxHookId: 
+  VfxHookId: vfx.skill_slayer_utility
   SfxHookId: 
   LearnSource: 0
   EffectFamilyId: bleed_followup

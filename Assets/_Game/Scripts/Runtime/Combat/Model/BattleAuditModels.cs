@@ -20,7 +20,8 @@ public sealed record BattleLoadoutSnapshot(
     IReadOnlyList<string> TeamTags,
     IReadOnlyList<CompileProvenanceEntry>? Provenance = null,
     TeamCounterCoverageReport? TeamCounterCoverage = null,
-    IReadOnlyList<string>? FirstPlayableUnitBlueprintIds = null);
+    IReadOnlyList<string>? FirstPlayableUnitBlueprintIds = null,
+    CombatStatusRules? StatusRules = null);
 
 public sealed record BattleReplayHeader(
     string MatchId,

@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  VfxHookId: 
+  VfxHookId: vfx.support_lingering
   SfxHookId: 
   LearnSource: 0
   EffectFamilyId: lingering_support

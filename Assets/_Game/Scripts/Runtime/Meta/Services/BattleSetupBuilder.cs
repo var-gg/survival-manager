@@ -35,7 +35,7 @@ public static class BattleSetupBuilder
             enemyDefinitions.Add(definition);
         }
 
-        return BattleSetupBuildResult.Success(allyDefinitions, enemyDefinitions);
+        return BattleSetupBuildResult.Success(allyDefinitions, enemyDefinitions, CombatStatusRuleCompiler.Compile(content));
     }
 
     private static bool TryBuildDefinition(

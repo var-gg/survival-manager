@@ -19,6 +19,8 @@ internal static class StatusConverter
             definition.UsesControlDiminishing,
             definition.AffectedByTenacity,
             definition.TenacityScale,
+            definition.AppliesPeriodicDamage,
+            definition.VfxCueId,
             definition.IsRuleModifierOnly,
             Enumerate(definition.CompileTags)
                 .Where(id => !string.IsNullOrWhiteSpace(id))

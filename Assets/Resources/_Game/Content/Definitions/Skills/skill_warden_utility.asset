@@ -82,7 +82,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  VfxHookId: 
+  VfxHookId: vfx.skill_warden_utility
   SfxHookId: 
   LearnSource: 0
   EffectFamilyId: guard_cleanse

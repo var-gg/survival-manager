@@ -608,6 +608,13 @@ internal sealed class SkillCatalogValidator : ICatalogValidationRule
                 }
             }
 
+            if (!skill.Id.StartsWith("support_", StringComparison.Ordinal)
+                && skill.SlotKind is not SkillSlotKindValue.Support
+                && requiredClassIds.Count == 0)
+            {
+                ContentValidationIssueFactory.AddError(issues, "skill.class_gate_required", $"Class-owned skill '{skill.Id}' must define at least one RequiredClassTags entry.", assetPath);
+            }
+
             if (!string.IsNullOrWhiteSpace(skill.CleanseProfileId))
             {
                 if (!cleanseProfileIds.Contains(skill.CleanseProfileId))
@@ -650,6 +657,12 @@ internal sealed class SkillCatalogValidator : ICatalogValidationRule
                 if (allowedTagIds.Count == 0)
                 {
                     ContentValidationIssueFactory.AddError(issues, "skill.support_allowed_tags", $"Support modifier '{skill.Id}' must define at least one include tag.", assetPath);
+                }
+
+                if (!allowedTagIds.Overlaps(ContentValidationPolicyCatalog.CanonicalClassIds)
+                    && !allowedTagIds.Overlaps(ContentValidationPolicyCatalog.AllowedRoleFamilyTags))
+                {
+                    ContentValidationIssueFactory.AddError(issues, "skill.support_gate_anchor", $"Support modifier '{skill.Id}' must include at least one class or role-family gate tag.", assetPath);
                 }
             }
         }

@@ -187,6 +187,8 @@ public sealed record StatusFamilyTemplate(
     bool UsesControlDiminishing,
     bool AffectedByTenacity,
     float TenacityScale,
+    bool AppliesPeriodicDamage,
+    string VfxCueId,
     bool IsRuleModifierOnly,
     IReadOnlyList<string> CompileTags,
     ContentGovernanceSummary? Governance = null);
@@ -268,11 +270,12 @@ public sealed record BattleSetupBuildResult(
     bool IsSuccess,
     string? Error,
     IReadOnlyList<BattleUnitLoadout> Allies,
-    IReadOnlyList<BattleUnitLoadout> Enemies)
+    IReadOnlyList<BattleUnitLoadout> Enemies,
+    CombatStatusRules? StatusRules = null)
 {
-    public static BattleSetupBuildResult Success(IReadOnlyList<BattleUnitLoadout> allies, IReadOnlyList<BattleUnitLoadout> enemies)
-        => new(true, null, allies, enemies);
+    public static BattleSetupBuildResult Success(IReadOnlyList<BattleUnitLoadout> allies, IReadOnlyList<BattleUnitLoadout> enemies, CombatStatusRules? statusRules = null)
+        => new(true, null, allies, enemies, statusRules);
 
     public static BattleSetupBuildResult Fail(string error)
-        => new(false, error, Array.Empty<BattleUnitLoadout>(), Array.Empty<BattleUnitLoadout>());
+        => new(false, error, Array.Empty<BattleUnitLoadout>(), Array.Empty<BattleUnitLoadout>(), CombatStatusRules.Default);
 }

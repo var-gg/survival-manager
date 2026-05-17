@@ -108,6 +108,66 @@ public sealed class ContentValidationComponentTests
     }
 
     [Test]
+    public void SkillCatalogValidator_FlagsMissingClassGate_ForClassOwnedSkill()
+    {
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_probe_core";
+        skill.SlotKind = SkillSlotKindValue.CoreActive;
+
+        var catalog = new ValidationAssetCatalog(new[]
+        {
+            new ValidationAssetDescriptor(skill, "Assets/skill_probe_core.asset", ValidationAssetSourceKind.Explicit, skill.GetType()),
+        });
+
+        var issues = new List<ContentValidationIssue>();
+        new SkillCatalogValidator().Validate(new CatalogValidationContext(catalog), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.class_gate_required"));
+    }
+
+    [Test]
+    public void SkillCatalogValidator_FlagsSupportModifierWithoutClassOrRoleGate()
+    {
+        var pierceTag = Own(ScriptableObject.CreateInstance<StableTagDefinition>());
+        pierceTag.Id = "pierce";
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "support_probe";
+        skill.SlotKind = SkillSlotKindValue.Support;
+        skill.SupportAllowedTags.Add(pierceTag);
+
+        var catalog = new ValidationAssetCatalog(new ScriptableObject[]
+        {
+            skill,
+            pierceTag,
+        }.Select((asset, index) => new ValidationAssetDescriptor(asset, $"Assets/probe_{index}.asset", ValidationAssetSourceKind.Explicit, asset.GetType())).ToList());
+
+        var issues = new List<ContentValidationIssue>();
+        new SkillCatalogValidator().Validate(new CatalogValidationContext(catalog), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.support_gate_anchor"));
+    }
+
+    [Test]
+    public void SchemaRules_FlagMissingPreVfxHooks()
+    {
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_missing_vfx";
+        skill.NameKey = "content.skill.missing_vfx.name";
+        skill.DescriptionKey = "content.skill.missing_vfx.desc";
+        var status = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        status.Id = "missing_vfx_status";
+        status.NameKey = "content.status.missing_vfx.name";
+        status.DescriptionKey = "content.status.missing_vfx.desc";
+
+        var issues = new List<ContentValidationIssue>();
+        new SkillSchemaRule().Validate(new ValidationAssetDescriptor(skill, "Assets/skill_missing_vfx.asset", ValidationAssetSourceKind.Explicit, skill.GetType()), EmptyCatalog(), issues);
+        new StatusFamilySchemaRule().Validate(new ValidationAssetDescriptor(status, "Assets/status_missing_vfx.asset", ValidationAssetSourceKind.Explicit, status.GetType()), EmptyCatalog(), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.vfx_hook_required"));
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("status.vfx_cue_required"));
+    }
+
+    [Test]
     public void FactionIsolationValidator_FlagsSynergyLeak()
     {
         var site = Own(ScriptableObject.CreateInstance<ExpeditionSiteDefinition>());

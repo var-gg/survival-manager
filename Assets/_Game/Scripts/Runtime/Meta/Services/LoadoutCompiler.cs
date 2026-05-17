@@ -296,7 +296,8 @@ public sealed class LoadoutCompiler
             teamTags,
             compileProvenance,
             counterCoverage,
-            content.FirstPlayableSlice?.UnitBlueprintIds);
+            content.FirstPlayableSlice?.UnitBlueprintIds,
+            CombatStatusRuleCompiler.Compile(content));
     }
 
     private static void AddNumericPackage(
@@ -798,7 +799,8 @@ public sealed class LoadoutCompiler
                     .Append(string.Join(",", skill.RequiredClassTags ?? Array.Empty<string>())).Append(':')
                     .Append(string.Join(",", (skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>())
                         .Select(status => $"{status.StatusId}:{status.DurationSeconds.ToString("0.###", CultureInfo.InvariantCulture)}:{status.Magnitude.ToString("0.###", CultureInfo.InvariantCulture)}:{status.MaxStacks}:{status.RefreshDurationOnReapply}"))).Append(':')
-                    .Append(skill.CleanseProfileId ?? string.Empty)
+                    .Append(skill.CleanseProfileId ?? string.Empty).Append(':')
+                    .Append(skill.VfxHookId ?? string.Empty)
                     .Append('|');
             }
 

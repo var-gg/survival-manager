@@ -24,7 +24,8 @@ public sealed class BattleState
         int seed,
         TelemetryContext? telemetryContext = null,
         TeamTacticProfile? allyTactic = null,
-        TeamTacticProfile? enemyTactic = null)
+        TeamTacticProfile? enemyTactic = null,
+        CombatStatusRules? statusRules = null)
     {
         Allies = allies;
         Enemies = enemies;
@@ -35,6 +36,7 @@ public sealed class BattleState
         FixedStepSeconds = fixedStepSeconds;
         Seed = seed;
         TelemetryContext = telemetryContext;
+        StatusRules = statusRules ?? CombatStatusRules.Default;
     }
 
     public IReadOnlyList<UnitSnapshot> Allies { get; }
@@ -46,6 +48,7 @@ public sealed class BattleState
     public float FixedStepSeconds { get; }
     public int Seed { get; }
     public TelemetryContext? TelemetryContext { get; }
+    public CombatStatusRules StatusRules { get; }
     public BattleActivityTelemetryAccumulator ActivityTelemetry { get; } = new();
     public int StepIndex { get; private set; }
     public float ElapsedSeconds { get; private set; }

@@ -82,7 +82,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  VfxHookId: 
+  VfxHookId: vfx.skill_hexer_core
   SfxHookId: 
   LearnSource: 0
   EffectFamilyId: hexer_signature

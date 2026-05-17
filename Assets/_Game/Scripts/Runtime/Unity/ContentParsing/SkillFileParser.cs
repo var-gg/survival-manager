@@ -99,6 +99,11 @@ internal static class SkillFileParser
                         : SkillSlotKindValue.CoreActive;
         }
 
+        if (string.IsNullOrWhiteSpace(definition.VfxHookId) && !string.IsNullOrWhiteSpace(definition.Id))
+        {
+            definition.VfxHookId = $"vfx.{definition.Id}";
+        }
+
         if (!string.IsNullOrWhiteSpace(definition.CleanseProfileId))
         {
             var tags = ItemFileParser.LoadStableTags();

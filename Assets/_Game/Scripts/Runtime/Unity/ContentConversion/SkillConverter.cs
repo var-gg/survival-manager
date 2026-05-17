@@ -105,7 +105,8 @@ internal static class SkillConverter
             recruitNativeTags,
             recruitPlanTags,
             recruitScoutTags,
-            BuildGovernanceSummary(skill.BudgetCard));
+            BuildGovernanceSummary(skill.BudgetCard),
+            VfxHookId: string.IsNullOrWhiteSpace(skill.VfxHookId) ? $"vfx.{skill.Id}" : skill.VfxHookId);
     }
 
     internal static BattleBasicAttackSpec BuildBasicAttackSpec(UnitArchetypeDefinition definition)

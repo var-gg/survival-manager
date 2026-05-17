@@ -198,7 +198,8 @@ public record BattleSkillSpec(
     BattleAreaEffectFamily AreaEffectFamily = BattleAreaEffectFamily.SingleTarget,
     float AreaRadius = 0f,
     bool PunishCluster = false,
-    bool AllowsEliteFocusCap = false)
+    bool AllowsEliteFocusCap = false,
+    string VfxHookId = "")
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
 

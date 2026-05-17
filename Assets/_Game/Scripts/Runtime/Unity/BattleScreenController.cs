@@ -542,7 +542,8 @@ public sealed class BattleScreenController : MonoBehaviour
             _compiledSnapshot.TeamTactic.Posture,
             encounter.EnemyPosture,
             BattleSimulator.DefaultFixedStepSeconds,
-            seed: encounter.Context.BattleSeed);
+            seed: encounter.Context.BattleSeed,
+            statusRules: _compiledSnapshot.StatusRules);
         _simulator = new BattleSimulator(newState, MaxBattleSteps);
 
         _timeline!.Reset(_simulator, _simulator.CurrentStep, MaxBattleSteps);
@@ -936,7 +937,8 @@ public sealed class BattleScreenController : MonoBehaviour
             allySnapshot.TeamTactic.Posture,
             encounter.EnemyPosture,
             BattleSimulator.DefaultFixedStepSeconds,
-            seed: encounter.Context.BattleSeed);
+            seed: encounter.Context.BattleSeed,
+            statusRules: allySnapshot.StatusRules ?? CombatStatusRuleCompiler.Compile(snapshot));
         new EncounterResolutionService(snapshot).ApplyBattleBootstrap(simulationState, encounter);
 
         _simulator = new BattleSimulator(simulationState, MaxBattleSteps);

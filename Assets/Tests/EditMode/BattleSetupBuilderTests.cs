@@ -34,6 +34,8 @@ public sealed class BattleSetupBuilderTests
         var result = BattleSetupBuilder.Build(allies, new BattleEncounterPlan(Array.Empty<BattleParticipantSpec>(), TeamPostureType.StandardAdvance), snapshot);
 
         Assert.That(result.IsSuccess, Is.True, result.Error);
+        Assert.That(result.StatusRules, Is.Not.Null);
+        Assert.That(result.StatusRules!.AppliesPeriodicDamage("burn"), Is.True);
         Assert.That(result.Allies.First(definition => definition.Id == heroA).PreferredAnchor, Is.EqualTo(DeploymentAnchorId.BackBottom));
         Assert.That(result.Allies.First(definition => definition.Id == heroB).PreferredAnchor, Is.EqualTo(DeploymentAnchorId.FrontCenter));
     }
@@ -78,7 +80,7 @@ public sealed class BattleSetupBuilderTests
         var result = BattleSetupBuilder.Build(allies, new BattleEncounterPlan(Array.Empty<BattleParticipantSpec>(), TeamPostureType.StandardAdvance), snapshot);
         Assert.That(result.IsSuccess, Is.True, result.Error);
 
-        var state = BattleFactory.Create(result.Allies, result.Enemies);
+        var state = BattleFactory.Create(result.Allies, result.Enemies, statusRules: result.StatusRules);
         var baseUnit = state.Allies.First(unit => unit.Definition.Id == "ally_base");
         var variantUnit = state.Allies.First(unit => unit.Definition.Id == "ally_variant");
 

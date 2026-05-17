@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  VfxHookId: 
+  VfxHookId: vfx.skill_power_strike
   SfxHookId: 
   LearnSource: 0
   EffectFamilyId: 
@@ -119,12 +119,16 @@ MonoBehaviour:
       InheritDodge: 0
       InheritBlock: 0
   Effects: []
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
   SupportBlockedTags: []
-  RequiredWeaponTags: []
-  RequiredClassTags: []
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 2f240f94125537247a2371d267839993, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
   AppliedStatuses: []
   CleanseProfileId: 
   legacyDisplayName: 

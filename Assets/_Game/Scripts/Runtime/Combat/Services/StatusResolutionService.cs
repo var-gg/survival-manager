@@ -9,25 +9,29 @@ namespace SM.Combat.Services;
 
 public static class StatusResolutionService
 {
-    private const float ControlResistWindowSeconds = 1.5f;
-    private const float ControlResistMultiplier = 0.5f;
-
     public static void AdvanceStatuses(BattleState state, List<BattleEvent> stepEvents)
     {
         foreach (var unit in state.AllUnits.Where(unit => unit.IsAlive))
         {
-            ApplyPeriodicDamage(state, unit, "burn", stepEvents);
-            ApplyPeriodicDamage(state, unit, "bleed", stepEvents);
+            foreach (var statusId in unit.Statuses
+                         .Select(status => status.StatusId)
+                         .Where(state.StatusRules.AppliesPeriodicDamage)
+                         .Distinct(StringComparer.Ordinal)
+                         .ToList())
+            {
+                ApplyPeriodicDamage(state, unit, statusId, stepEvents);
+            }
 
             var removedStatuses = unit.AdvanceStatusTimers(state.FixedStepSeconds);
             foreach (var statusId in removedStatuses)
             {
                 stepEvents.Add(BuildStatusEvent(state, unit, unit, BattleEventKind.StatusRemoved, statusId));
                 BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusRemoved, unit, unit, statusId, 0f);
-                if (IsHardControl(statusId))
+                if (state.StatusRules.IsHardControl(statusId))
                 {
-                    unit.ApplyControlResistWindow(ControlResistWindowSeconds, ControlResistMultiplier);
-                    stepEvents.Add(BuildStatusEvent(state, unit, unit, BattleEventKind.ControlResistApplied, statusId, ControlResistMultiplier));
+                    var controlRule = state.StatusRules.ControlDiminishing;
+                    unit.ApplyControlResistWindow(controlRule.WindowSeconds, controlRule.ControlResistMultiplier);
+                    stepEvents.Add(BuildStatusEvent(state, unit, unit, BattleEventKind.ControlResistApplied, statusId, controlRule.ControlResistMultiplier));
                 }
             }
 
@@ -94,13 +98,13 @@ public static class StatusResolutionService
             return;
         }
 
-        if (IsHardControl(spec.StatusId) && target.IsUnstoppable)
+        if (state.StatusRules.IsHardControl(spec.StatusId) && target.IsUnstoppable)
         {
             return;
         }
 
-        var adjustedDuration = AdjustDurationForTenacity(target, spec.StatusId, spec.DurationSeconds);
-        if (target.ControlResistWindow is { } resistWindow && IsHardControl(spec.StatusId))
+        var adjustedDuration = AdjustDurationForTenacity(state, target, spec.StatusId, spec.DurationSeconds);
+        if (target.ControlResistWindow is { } resistWindow && state.StatusRules.IsHardControl(spec.StatusId))
         {
             adjustedDuration *= Math.Max(0.1f, 1f - resistWindow.ResistMultiplier);
         }
@@ -136,28 +140,41 @@ public static class StatusResolutionService
 
     private static void ApplyCleanse(BattleState state, UnitSnapshot actor, UnitSnapshot target, string cleanseProfileId, List<BattleEvent> stepEvents)
     {
-        var removedIds = cleanseProfileId switch
+        if (!state.StatusRules.TryGetCleanseProfile(cleanseProfileId, out var cleanseRule))
         {
-            "cleanse_basic" => new[] { "slow", "burn", "bleed", "wound", "sunder", "marked", "exposed" },
-            "cleanse_control" => new[] { "root", "silence", "slow", "burn", "bleed", "wound", "sunder", "marked", "exposed" },
-            "break_and_unstoppable" => new[] { "stun", "root", "silence" },
-            _ => Array.Empty<string>(),
-        };
-
-        var removed = target.RemoveStatuses(removedIds);
-        if (cleanseProfileId == "break_and_unstoppable")
-        {
-            target.ApplyStatus(new StatusApplicationSpec("status.break_and_unstoppable", "unstoppable", 0.8f, 0f));
+            return;
         }
 
-        if (removed > 0 || cleanseProfileId == "break_and_unstoppable")
+        var removed = target.RemoveStatuses(cleanseRule.RemovesStatusIds);
+        if (cleanseRule.RemovesOneHardControl)
+        {
+            var hardControl = target.Statuses
+                .Select(status => status.StatusId)
+                .FirstOrDefault(state.StatusRules.IsHardControl);
+            if (!string.IsNullOrWhiteSpace(hardControl) && target.RemoveStatus(hardControl))
+            {
+                removed++;
+            }
+        }
+
+        if (cleanseRule.GrantsUnstoppable)
+        {
+            target.ApplyStatus(new StatusApplicationSpec(
+                $"status.{cleanseRule.Id}.unstoppable",
+                "unstoppable",
+                Math.Max(0.1f, cleanseRule.GrantedUnstoppableDurationSeconds),
+                0f));
+        }
+
+        if (removed > 0 || cleanseRule.GrantsUnstoppable)
         {
             stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.CleanseTriggered, cleanseProfileId, removed));
-            if (cleanseProfileId == "break_and_unstoppable")
+            if (cleanseRule.GrantsUnstoppable)
             {
-                target.ApplyControlResistWindow(ControlResistWindowSeconds, ControlResistMultiplier);
-                stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.ControlResistApplied, "unstoppable", ControlResistMultiplier));
-                BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusApplied, actor, target, "unstoppable", ControlResistMultiplier);
+                var controlRule = state.StatusRules.ControlDiminishing;
+                target.ApplyControlResistWindow(controlRule.WindowSeconds, controlRule.ControlResistMultiplier);
+                stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.ControlResistApplied, "unstoppable", controlRule.ControlResistMultiplier));
+                BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusApplied, actor, target, "unstoppable", controlRule.ControlResistMultiplier);
             }
         }
     }
@@ -188,22 +205,13 @@ public static class StatusResolutionService
             "status_tick"));
     }
 
-    private static float AdjustDurationForTenacity(UnitSnapshot target, string statusId, float durationSeconds)
+    private static float AdjustDurationForTenacity(BattleState state, UnitSnapshot target, string statusId, float durationSeconds)
     {
         var tenacity = Math.Max(0f, target.Stats.Get(StatKey.Tenacity));
-        return statusId switch
-        {
-            "stun" or "root" => Math.Max(0.1f, durationSeconds * Math.Max(0.1f, 1f - tenacity)),
-            "silence" => Math.Max(0.1f, durationSeconds * Math.Max(0.1f, 1f - (tenacity * 0.5f))),
-            _ => durationSeconds,
-        };
-    }
-
-    private static bool IsHardControl(string statusId)
-    {
-        return string.Equals(statusId, "stun", StringComparison.Ordinal)
-               || string.Equals(statusId, "root", StringComparison.Ordinal)
-               || string.Equals(statusId, "silence", StringComparison.Ordinal);
+        var tenacityScale = state.StatusRules.ResolveTenacityScale(statusId);
+        return tenacityScale <= 0f
+            ? durationSeconds
+            : Math.Max(0.1f, durationSeconds * Math.Max(0.1f, 1f - (tenacity * tenacityScale)));
     }
 
     private static BattleEvent BuildStatusEvent(

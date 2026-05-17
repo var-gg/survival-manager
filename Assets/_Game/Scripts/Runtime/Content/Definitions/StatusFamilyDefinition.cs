@@ -35,6 +35,8 @@ namespace SM.Content.Definitions
         public bool UsesControlDiminishing;
         public bool AffectedByTenacity = true;
         public float TenacityScale = 1f;
+        public bool AppliesPeriodicDamage;
+        public string VfxCueId = string.Empty;
         public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Status, PowerBand = PowerBand.Minor };
         public bool IsRuleModifierOnly;
         public AuthorityLayer AuthorityLayer = AuthorityLayer.Status;

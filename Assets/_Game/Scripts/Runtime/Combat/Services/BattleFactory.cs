@@ -15,7 +15,8 @@ public static class BattleFactory
         TeamPostureType enemyPosture = TeamPostureType.StandardAdvance,
         float fixedStepSeconds = BattleSimulator.DefaultFixedStepSeconds,
         int seed = 7,
-        BattlefieldLayout? layout = null)
+        BattlefieldLayout? layout = null,
+        CombatStatusRules? statusRules = null)
     {
         var resolved = layout ?? BattlefieldLayout.Default;
         var allyPackages = ResolveTeamPackages(allyDefinitions);
@@ -45,7 +46,8 @@ public static class BattleFactory
             fixedStepSeconds,
             seed,
             allyTactic: allyTactic,
-            enemyTactic: enemyTactic);
+            enemyTactic: enemyTactic,
+            statusRules: statusRules);
         RecordFormationTelemetry(state, resolved, TeamSide.Ally, allyTactic);
         RecordFormationTelemetry(state, resolved, TeamSide.Enemy, enemyTactic);
         return state;
