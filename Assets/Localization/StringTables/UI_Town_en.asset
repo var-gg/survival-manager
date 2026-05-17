@@ -1017,6 +1017,18 @@ MonoBehaviour:
       return through Reward or direct Town restore.
     m_Metadata:
       m_Items: []
+  - m_Id: 17539472987328512
+    m_Localized: "ASHGLEN \u2014 Ashglen"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539473020882944
+    m_Localized: Ashglen still stands on its own. Not a single soul here with us.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539473020882945
+    m_Localized: Ashglen still stands on its own. Catch your breath for a moment.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

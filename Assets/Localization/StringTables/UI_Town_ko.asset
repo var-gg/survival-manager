@@ -1042,6 +1042,20 @@ MonoBehaviour:
       \uC758\uBBF8\uB97C \uC720\uC9C0\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
+  - m_Id: 17539472987328512
+    m_Localized: "ASHGLEN \u2014 \uC7BF\uACE8"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539473020882944
+    m_Localized: "\uC7BF\uACE8\uC740 \uB298 \uADF8\uB300\uB85C\uC77C\uC138. \uD55C
+      \uC0AC\uB78C\uB3C4 \uD568\uAED8\uAC00 \uC544\uB2CC\uAC00."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539473020882945
+    m_Localized: "\uC7BF\uACE8\uC740 \uB298 \uADF8\uB300\uB85C\uC77C\uC138. \uC7A0\uC2DC
+      \uC228\uC744 \uB3CC\uB9AC\uC2DC\uC9C0\uC694."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

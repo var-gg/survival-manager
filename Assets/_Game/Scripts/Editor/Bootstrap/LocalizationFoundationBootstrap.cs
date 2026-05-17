@@ -372,6 +372,9 @@ public static class LocalizationFoundationBootstrap
             ["ui.town.tooltip.expedition_start"] = ("현재 준비 상태로 authored 원정 루프를 시작합니다.", "Begin the authored expedition loop with the current preparation.", false),
             ["ui.town.tooltip.expedition_resume"] = ("현재 선택된 authored 경로에서 원정을 재개합니다.", "Resume the authored expedition from the currently selected route.", false),
             ["ui.town.tooltip.expedition_reward"] = ("이전 노드 정산을 위해 Reward를 먼저 엽니다.", "Open Reward to settle the previous node before continuing.", false),
+            ["ui.town.eyebrow"] = ("ASHGLEN — 잿골", "ASHGLEN — Ashglen", false),
+            ["ui.town.welcome.empty"] = ("잿골은 늘 그대로일세. 한 사람도 함께가 아닌가.", "Ashglen still stands on its own. Not a single soul here with us.", false),
+            ["ui.town.welcome.greeting_default"] = ("잿골은 늘 그대로일세. 잠시 숨을 돌리시지요.", "Ashglen still stands on its own. Catch your breath for a moment.", false),
         });
 
         AddOrUpdateEntries(new Dictionary<string, (string ko, string en, bool smart)>(StringComparer.Ordinal)
@@ -569,6 +572,17 @@ public static class LocalizationFoundationBootstrap
             ["ui.expedition.tooltip.resolve_settlement"] = ("전투 없이 정산 노드를 처리하고 Reward로 이동합니다.", "Resolve this settlement node and move to Reward without a battle.", false),
             ["ui.expedition.tooltip.return_town"] = ("현재 원정을 포기하고 Town으로 돌아갑니다.", "Abandon the current expedition and return to Town.", false),
             ["ui.expedition.tooltip.route_card"] = ("{0}. 예정 보상: {1}. 노드 효과: {2}", "{0}. Planned reward: {1}. Node effect: {2}", true),
+            ["ui.expedition.encounter.title"] = ("조우 미리보기", "Encounter Preview", false),
+            ["ui.expedition.encounter.missing"] = ("조우: {0}", "Encounter: {0}", true),
+            ["ui.expedition.encounter.compact"] = ("조우: {0} / 위협 {1}", "Encounter: {0} / Threat {1}", true),
+            ["ui.expedition.encounter.enemies"] = ("적: {0}", "Enemy: {0}", true),
+            ["ui.expedition.encounter.detail.kind"] = ("{0} / 위협 {1} / {2}", "{0} / Threat {1} / {2}", true),
+            ["ui.expedition.encounter.detail.enemy"] = ("적 액터: {0}", "Enemy Actors: {0}", true),
+            ["ui.expedition.encounter.detail.tags"] = ("보상 태그: {0}", "Reward Tags: {0}", true),
+            ["ui.expedition.encounter.detail.boss"] = ("보스 오버레이: {0} / 오라 {1} / 유틸리티 {2}", "Boss Overlay: {0} / Aura {1} / Utility {2}", true),
+            ["ui.expedition.encounter.kind.boss"] = ("보스", "Boss", false),
+            ["ui.expedition.encounter.kind.elite"] = ("엘리트", "Elite", false),
+            ["ui.expedition.encounter.kind.skirmish"] = ("교전", "Skirmish", false),
         });
 
         AddOrUpdateEntries(new Dictionary<string, (string ko, string en, bool smart)>(StringComparer.Ordinal)

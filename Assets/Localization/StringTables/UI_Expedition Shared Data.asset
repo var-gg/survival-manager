@@ -339,6 +339,50 @@ MonoBehaviour:
     m_Key: ui.expedition.tooltip.route_card
     m_Metadata:
       m_Items: []
+  - m_Id: 17539471737425920
+    m_Key: ui.expedition.encounter.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539471758397440
+    m_Key: ui.expedition.encounter.missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539471758397441
+    m_Key: ui.expedition.encounter.compact
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539471758397442
+    m_Key: ui.expedition.encounter.enemies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539471758397443
+    m_Key: ui.expedition.encounter.detail.kind
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539471758397444
+    m_Key: ui.expedition.encounter.detail.enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539471758397445
+    m_Key: ui.expedition.encounter.detail.tags
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539471758397446
+    m_Key: ui.expedition.encounter.detail.boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539471758397447
+    m_Key: ui.expedition.encounter.kind.boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539471758397448
+    m_Key: ui.expedition.encounter.kind.elite
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17539471758397449
+    m_Key: ui.expedition.encounter.kind.skirmish
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
