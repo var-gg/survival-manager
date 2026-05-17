@@ -33,6 +33,7 @@ public sealed class BattlePresentationSnapshotTests
                 new BattleEvent(1, 0.1f, new CoreEntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new CoreEntityId("enemy"), "Enemy", 10f)
             });
 
+            ExpectAuthoringMissingError();
             controller.Initialize(initial);
             controller.AdvanceStep(initial, current);
 
@@ -80,6 +81,7 @@ public sealed class BattlePresentationSnapshotTests
                 allyPosition: new CombatVector2(3f, 0f),
                 allyActionState: CombatActionState.Reposition);
 
+            ExpectAuthoringMissingError();
             controller.Initialize(initial);
             controller.SetBlend(initial, current, 0.25f);
 
@@ -126,5 +128,18 @@ public sealed class BattlePresentationSnapshotTests
         var field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.That(field, Is.Not.Null, $"Missing field '{fieldName}'.");
         field!.SetValue(target, value);
+    }
+
+    /// <summary>
+    /// 79ce5af8: BattlePresentationController.RefreshEnvironmentAuthoring 이 BattleRenderEnvironmentAuthoring 누락 시
+    /// 의도적으로 LOUD ERROR (Debug.LogError)를 토함 — fallback 마스킹 차단 디자인. EditMode test fixture는
+    /// Battle.unity scene을 안 쓰므로 이 component가 항상 없고, 이 Error는 expected. test 의도는 presentation
+    /// cue/surface 검증이지 lighting 환경 검증이 아니라 Expect 박고 진행.
+    /// </summary>
+    private static void ExpectAuthoringMissingError()
+    {
+        UnityEngine.TestTools.LogAssert.Expect(
+            LogType.Error,
+            new System.Text.RegularExpressions.Regex(@"\[BattleLighting\].*BattleRenderEnvironmentAuthoring"));
     }
 }
