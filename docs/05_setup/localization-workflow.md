@@ -15,7 +15,7 @@
 
 ## foundation 재생성
 
-1. Unity editor `6000.4.0f1`로 프로젝트를 연다.
+1. Unity editor `6000.4.7f1`로 프로젝트를 연다.
 2. `SM/Internal/Recovery/Ensure Localization Foundation`를 실행한다.
 3. `Assets/Localization/Localization Settings.asset`이 존재하는지 확인한다.
 4. `Assets/Localization/Locales/ko.asset`, `Assets/Localization/Locales/en.asset`, pseudo locale asset이 있는지 확인한다.

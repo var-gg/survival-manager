@@ -170,7 +170,7 @@ pwsh -File tools/focus-unity.ps1
 $targetPid = (Get-NetTCPConnection -LocalPort 8090 -State Listen).OwningProcess
 Stop-Process -Id $targetPid -Force
 Start-Sleep -Seconds 5
-Start-Process "C:\Program Files\Unity\Hub\Editor\6000.4.0f1\Editor\Unity.exe" -ArgumentList @("-projectPath", "A:\projects\game\survival-manager")
+Start-Process "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" -ArgumentList @("-projectPath", "A:\projects\game\survival-manager")
 pwsh -File tools/wait-unity-ready.ps1 -MaxAttempts 18 -IntervalSeconds 10 -WarmupSeconds 10
 ```
 

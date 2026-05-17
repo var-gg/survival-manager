@@ -13,7 +13,7 @@
 
 현재 로컬 설치 확인 기준 에디터 버전은 다음과 같다.
 
-- `6000.4.0f1`
+- `6000.4.7f1`
 
 `ProjectSettings/ProjectVersion.txt`는 이 값으로 고정한다.
 

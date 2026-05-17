@@ -20,7 +20,7 @@ full loop newcomer lane의 preflight와 Boot 진입을 한 번의 명령으로 �
 
 ## clean clone 최초 실행 절차
 
-1. Unity `6000.4.0f1`로 프로젝트를 연다.
+1. Unity `6000.4.7f1`로 프로젝트를 연다.
 2. 스크립트 컴파일 완료를 기다린다.
 3. `SM/전체테스트` 실행
 4. canonical sample content readiness와 Boot scene contract를 fail-fast preflight로 확인한다.

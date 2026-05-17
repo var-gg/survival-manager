@@ -108,7 +108,7 @@ generated artifact는 `Logs/*`와 CI artifact로 보관하고, durable sign-off�
 
 아래 항목은 자동화로 대체하지 않는다.
 
-- clean clone newcomer witness: Unity `6000.4.0f1`만으로 `SM/전체테스트 -> Boot -> Start Local Run`
+- clean clone newcomer witness: Unity `6000.4.7f1`만으로 `SM/전체테스트 -> Boot -> Start Local Run`
 - normal loop smoke: first reward return, selector lock, `Resume Expedition`, boss extract `Reward -> Town(close)`
 - Quick Battle smoke: campaign progression 비오염 확인
 - localization: `ko` / `en` overlay 전환, `ui.battle.*` missing key 0

@@ -18,7 +18,7 @@ first playable UI는 Town / Expedition / Battle / Reward마다 scene 안에서 u
 
 - Town / Expedition / Battle / Reward UI는 `UI Toolkit first`로 전환한다.
 - 화면 진입 seam은 `RuntimePanelHost` 하나로 고정한다.
-- 현재 Unity `6000.4.0f1` 기준 backend는 `UIDocument`를 사용한다.
+- 현재 Unity `6000.4.7f1` 기준 backend는 `UIDocument`를 사용한다.
 - presenter / controller / view state는 backend 타입에 직접 의존하지 않아서, 추후 `Panel Renderer` 계열로 교체 가능하도록 둔다.
 - major navigation은 scene 단위 유지이며 `SceneFlowController`를 canonical route로 유지한다.
 - 화면 구조는 `View + Presenter + immutable ViewState`를 기본으로 한다.
