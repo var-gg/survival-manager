@@ -300,6 +300,10 @@ public sealed class LoopAContractClosureTests
             BattleFactory.ResolveAnchorPosition(TeamSide.Ally, DeploymentAnchorId.FrontCenter),
             BattleFactory.ResolveSpawnPosition(TeamSide.Ally, DeploymentAnchorId.FrontCenter));
         var summonProfile = new SummonProfile();
+        // summon이 enemy(FrontCenter)를 BasicAttack 사정거리 안에서 죽이도록 — anchor 좌표가 아니라
+        // mirror kill payload 검증이 의도이므로, summon spawn position을 enemy 옆에 박는다.
+        // (anchor 기본은 BackCenter (-6.15,0), enemy spawn은 (+4.05,0) — attackRange 1.2 한참 밖이라 RangeMiss로 빠지면 Kill event 자체가 안 생김.)
+        var enemyAnchorPos = BattleFactory.ResolveAnchorPosition(TeamSide.Enemy, DeploymentAnchorId.FrontCenter);
         var summon = new UnitSnapshot(
             new EntityHandle("ally_summon"),
             TeamSide.Ally,
@@ -318,8 +322,8 @@ public sealed class LoopAContractClosureTests
                 },
                 summonProfile: summonProfile,
                 behavior: new BehaviorProfile(0.25f, 0.1f, 0.1f, 0.1f, 0.5f, 0.5f, 0f, 0f, 0f, 0.5f, 1f, FormationLine.Midline, RangeDiscipline.HoldBand, 0.8f, 1.2f, 0.4f, 0.25f, 6f, 0f)),
-            BattleFactory.ResolveAnchorPosition(TeamSide.Ally, DeploymentAnchorId.BackCenter),
-            BattleFactory.ResolveSpawnPosition(TeamSide.Ally, DeploymentAnchorId.BackCenter));
+            new CombatVector2(enemyAnchorPos.X - 0.5f, enemyAnchorPos.Y),
+            new CombatVector2(enemyAnchorPos.X - 0.5f, enemyAnchorPos.Y));
         summon.TakeDamage(2f);
         var enemy = new UnitSnapshot(
             new EntityHandle("enemy_target"),
