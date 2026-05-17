@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22aadf3933f75294bb8f2c238a933e11, type: 3}
+  m_Name: extra_worldscar_rite_echo
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.ExtraActorCharacterDefinition
+  Id: extra_worldscar_rite_echo
+  NameKey: content.character.extra_worldscar_rite_echo.name
+  DescriptionKey: content.character.extra_worldscar_rite_echo.desc
+  ExposureTier: 0
+  ChapterId: chapter_heartforge_descent
+  SiteId: site_worldscar_depths
+  FirstClearSpawnPolicy: 1
+  StorySafety: ritual_echo
+  FactionId: faction_lattice
+  CombatArchetypeId: shaman
+  P09BasePresetId: shaman
+  ModelArchetype: ritual_cell
+  IllustrationTier: 0
+  BarkSetId: bark_set_extra_worldscar_rite_echo
+  DossierHook: "\uB124 \uAC08\uB798 \uC758\uB840 \uB3C4\uAD6C\uC758 \uC794\uD5A5"
+  GachaEligible: 1

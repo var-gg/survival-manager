@@ -135,6 +135,11 @@ namespace SM.Content.Definitions
                 return Characters;
             }
 
+            if (definitionType == typeof(ExtraActorCharacterDefinition))
+            {
+                return Characters;
+            }
+
             if (definitionType == typeof(TraitEntry))
             {
                 return Traits;

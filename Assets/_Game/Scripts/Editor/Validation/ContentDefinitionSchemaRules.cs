@@ -105,6 +105,43 @@ internal sealed class CharacterDefinitionSchemaRule : DefinitionSchemaRule<Chara
     }
 }
 
+internal sealed class ExtraActorCharacterDefinitionSchemaRule : DefinitionSchemaRule<ExtraActorCharacterDefinition>
+{
+    public ExtraActorCharacterDefinitionSchemaRule()
+        : base(nameof(ExtraActorCharacterDefinition))
+    {
+    }
+
+    protected override string GetCanonicalId(ExtraActorCharacterDefinition asset)
+    {
+        return asset.Id;
+    }
+
+    protected override void ValidateAsset(
+        ExtraActorCharacterDefinition definition,
+        string assetPath,
+        ValidationAssetCatalog catalog,
+        ICollection<ContentValidationIssue> issues)
+    {
+        ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(definition.ExposureTier, "Extra actor exposure tier", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(definition.FirstClearSpawnPolicy, "Extra actor spawn policy", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(definition.IllustrationTier, "Extra actor illustration tier", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(definition.ChapterId, "extra_actor.chapter_id", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(definition.SiteId, "extra_actor.site_id", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(definition.StorySafety, "extra_actor.story_safety", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(definition.FactionId, "extra_actor.faction_id", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(definition.CombatArchetypeId, "extra_actor.combat_archetype_id", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(definition.P09BasePresetId, "extra_actor.p09_base_preset_id", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(definition.ModelArchetype, "extra_actor.model_archetype", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(definition.BarkSetId, "extra_actor.bark_set_id", assetPath, issues);
+
+        if (string.IsNullOrWhiteSpace(definition.DossierHook))
+        {
+            ContentValidationIssueFactory.AddError(issues, "extra_actor.dossier_hook", "Extra actor is missing a dossier hook.", assetPath);
+        }
+    }
+}
+
 internal sealed class TraitPoolSchemaRule : DefinitionSchemaRule<TraitPoolDefinition>
 {
     public TraitPoolSchemaRule()
@@ -836,6 +873,7 @@ internal sealed class DefinitionSchemaRuleRegistry
             new DefinitionIdentityOnlyRule<RaceDefinition>(nameof(RaceDefinition), asset => asset.Id),
             new ClassDefinitionSchemaRule(),
             new CharacterDefinitionSchemaRule(),
+            new ExtraActorCharacterDefinitionSchemaRule(),
             new TraitPoolSchemaRule(),
             new ArchetypeSchemaRule(),
             new SkillSchemaRule(),

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22aadf3933f75294bb8f2c238a933e11, type: 3}
+  m_Name: extra_worldscar_archive_cell
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.ExtraActorCharacterDefinition
+  Id: extra_worldscar_archive_cell
+  NameKey: content.character.extra_worldscar_archive_cell.name
+  DescriptionKey: content.character.extra_worldscar_archive_cell.desc
+  ExposureTier: 0
+  ChapterId: chapter_heartforge_descent
+  SiteId: site_worldscar_depths
+  FirstClearSpawnPolicy: 1
+  StorySafety: system_cell
+  FactionId: faction_mixed
+  CombatArchetypeId: mirror_cantor
+  P09BasePresetId: mirror_cantor
+  ModelArchetype: ritual_cell
+  IllustrationTier: 0
+  BarkSetId: bark_set_extra_worldscar_archive_cell
+  DossierHook: "\uCCAB \uB3C4\uC2DC \uAE30\uB85D\uC2E4\uC758 \uC804\uD22C \uC140"
+  GachaEligible: 1

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22aadf3933f75294bb8f2c238a933e11, type: 3}
+  m_Name: extra_bone_orchard_watcher
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.ExtraActorCharacterDefinition
+  Id: extra_bone_orchard_watcher
+  NameKey: content.character.extra_bone_orchard_watcher.name
+  DescriptionKey: content.character.extra_bone_orchard_watcher.desc
+  ExposureTier: 1
+  ChapterId: chapter_ruined_crypts
+  SiteId: site_bone_orchard
+  FirstClearSpawnPolicy: 0
+  StorySafety: ritual_proxy
+  FactionId: faction_lattice
+  CombatArchetypeId: reaver
+  P09BasePresetId: reaver
+  ModelArchetype: survivor_keeper
+  IllustrationTier: 1
+  BarkSetId: bark_set_extra_bone_orchard_watcher
+  DossierHook: "\uBB38\uC744 \uD1B5\uACFC\uD560 \uC790\uACA9\uC744 \uBB3B\uB294 \uAD00\uB9DD\uC790"
+  GachaEligible: 1

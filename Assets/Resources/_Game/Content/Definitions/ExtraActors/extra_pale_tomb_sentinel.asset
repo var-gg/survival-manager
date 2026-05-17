@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22aadf3933f75294bb8f2c238a933e11, type: 3}
+  m_Name: extra_pale_tomb_sentinel
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.ExtraActorCharacterDefinition
+  Id: extra_pale_tomb_sentinel
+  NameKey: content.character.extra_pale_tomb_sentinel.name
+  DescriptionKey: content.character.extra_pale_tomb_sentinel.desc
+  ExposureTier: 0
+  ChapterId: chapter_ruined_crypts
+  SiteId: site_ruined_crypts
+  FirstClearSpawnPolicy: 1
+  StorySafety: actual_enemy_unit
+  FactionId: faction_pale
+  CombatArchetypeId: guardian
+  P09BasePresetId: guardian
+  ModelArchetype: gate_guard
+  IllustrationTier: 0
+  BarkSetId: bark_set_extra_pale_tomb_sentinel
+  DossierHook: "\uBB18\uC5ED \uBC29\uC5B4\uC120\uC744 \uB2EB\uB294 \uD30C\uC218\uBCD1"
+  GachaEligible: 1

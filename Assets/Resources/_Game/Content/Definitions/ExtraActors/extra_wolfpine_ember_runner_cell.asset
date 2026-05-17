@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22aadf3933f75294bb8f2c238a933e11, type: 3}
+  m_Name: extra_wolfpine_ember_runner_cell
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.ExtraActorCharacterDefinition
+  Id: extra_wolfpine_ember_runner_cell
+  NameKey: content.character.extra_wolfpine_ember_runner_cell.name
+  DescriptionKey: content.character.extra_wolfpine_ember_runner_cell.desc
+  ExposureTier: 0
+  ChapterId: chapter_ashen_gate
+  SiteId: site_wolfpine_trail
+  FirstClearSpawnPolicy: 1
+  StorySafety: actual_enemy_cell
+  FactionId: faction_wolfpine
+  CombatArchetypeId: hunter
+  P09BasePresetId: hunter
+  ModelArchetype: field_lancer
+  IllustrationTier: 0
+  BarkSetId: bark_set_extra_wolfpine_ember_runner_cell
+  DossierHook: "\uD769\uC5B4\uC9C4 \uCD94\uACA9\uB300\uB97C \uBB36\uB294 \uC804\uB839\uC870"
+  GachaEligible: 1

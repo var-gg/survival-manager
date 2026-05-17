@@ -187,6 +187,41 @@ public sealed class ContentValidationWorkflowTests
     }
 
     [Test]
+    public void ContentDefinitionValidator_FlagsExtraActorRegistryDrift()
+    {
+        EnsureFolder(TempRoot);
+        var profile = ExtraActorCharacterRegistry.Profiles.First();
+        var asset = CreateTempAsset<ExtraActorCharacterDefinition>("extra_actor_registry_drift.asset", definition =>
+        {
+            definition.Id = profile.ActorId;
+            definition.NameKey = ContentLocalizationTables.BuildCharacterNameKey(profile.ActorId);
+            definition.DescriptionKey = ContentLocalizationTables.BuildCharacterDescriptionKey(profile.ActorId);
+            definition.ExposureTier = ExtraActorExposureTierValue.ExtraActor;
+            definition.ChapterId = profile.ChapterId;
+            definition.SiteId = profile.SiteId;
+            definition.FirstClearSpawnPolicy = ExtraActorSpawnPolicyValue.SiteLocalPool;
+            definition.StorySafety = "story_drift";
+            definition.FactionId = profile.FactionId;
+            definition.CombatArchetypeId = profile.CombatArchetypeId;
+            definition.P09BasePresetId = profile.P09BasePresetId;
+            definition.ModelArchetype = profile.ModelArchetype;
+            definition.IllustrationTier = ExtraActorIllustrationTierValue.ExtraCard;
+            definition.BarkSetId = profile.BarkSetId;
+            definition.DossierHook = profile.DossierHook;
+            definition.GachaEligible = false;
+        });
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+
+        var report = ContentDefinitionValidator.BuildValidationReport(new[] { asset });
+        var codes = report.Issues.Select(issue => issue.Code).ToHashSet(StringComparer.Ordinal);
+
+        Assert.That(codes, Contains.Item("extra_actor.catalog_floor"));
+        Assert.That(codes, Contains.Item("extra_actor.registry_mismatch"));
+    }
+
+    [Test]
     public void ContentDefinitionValidator_FlagsDeepSchemaContractDrift()
     {
         EnsureFolder(TempRoot);

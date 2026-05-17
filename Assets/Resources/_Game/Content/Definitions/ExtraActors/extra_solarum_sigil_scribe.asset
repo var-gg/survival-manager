@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22aadf3933f75294bb8f2c238a933e11, type: 3}
+  m_Name: extra_solarum_sigil_scribe
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.ExtraActorCharacterDefinition
+  Id: extra_solarum_sigil_scribe
+  NameKey: content.character.extra_solarum_sigil_scribe.name
+  DescriptionKey: content.character.extra_solarum_sigil_scribe.desc
+  ExposureTier: 0
+  ChapterId: chapter_ashen_gate
+  SiteId: site_ashen_gate
+  FirstClearSpawnPolicy: 1
+  StorySafety: actual_enemy_unit
+  FactionId: faction_solarum
+  CombatArchetypeId: hexer
+  P09BasePresetId: hexer
+  ModelArchetype: record_clerk
+  IllustrationTier: 0
+  BarkSetId: bark_set_extra_solarum_sigil_scribe
+  DossierHook: "\uD30C\uD3B8 \uD45C\uC2DD\uC744 \uC804\uC7A5 \uBA85\uB839\uC73C\uB85C
+    \uC62E\uAE30\uB294 \uC11C\uAE30"
+  GachaEligible: 1

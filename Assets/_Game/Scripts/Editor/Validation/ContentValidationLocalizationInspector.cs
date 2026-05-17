@@ -92,6 +92,7 @@ internal sealed class DefaultLocalizationShapeProvider : ILocalizationShapeProvi
             [typeof(RaceDefinition)] = CreateShape<RaceDefinition>("NameKey", "DescriptionKey"),
             [typeof(ClassDefinition)] = CreateShape<ClassDefinition>("NameKey", "DescriptionKey"),
             [typeof(CharacterDefinition)] = CreateShape<CharacterDefinition>("NameKey", "DescriptionKey"),
+            [typeof(ExtraActorCharacterDefinition)] = CreateShape<ExtraActorCharacterDefinition>("NameKey", "DescriptionKey"),
             [typeof(TraitPoolDefinition)] = CreateShape<TraitPoolDefinition>(
                 Array.Empty<string>(),
                 CreateCollectionDescriptor<TraitPoolDefinition>("PositiveTraits", asset => asset.PositiveTraits),

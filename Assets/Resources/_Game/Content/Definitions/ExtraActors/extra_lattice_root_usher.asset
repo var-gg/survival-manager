@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22aadf3933f75294bb8f2c238a933e11, type: 3}
+  m_Name: extra_lattice_root_usher
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.ExtraActorCharacterDefinition
+  Id: extra_lattice_root_usher
+  NameKey: content.character.extra_lattice_root_usher.name
+  DescriptionKey: content.character.extra_lattice_root_usher.desc
+  ExposureTier: 0
+  ChapterId: chapter_ruined_crypts
+  SiteId: site_bone_orchard
+  FirstClearSpawnPolicy: 1
+  StorySafety: ritual_proxy
+  FactionId: faction_lattice
+  CombatArchetypeId: shaman
+  P09BasePresetId: shaman
+  ModelArchetype: survivor_keeper
+  IllustrationTier: 0
+  BarkSetId: bark_set_extra_lattice_root_usher
+  DossierHook: "\uBFCC\uB9AC \uC758\uC2DD\uC73C\uB85C \uD1B5\uACFC\uC790\uB97C \uAC00\uB974\uB294
+    \uC778\uB3C4\uC790"
+  GachaEligible: 1

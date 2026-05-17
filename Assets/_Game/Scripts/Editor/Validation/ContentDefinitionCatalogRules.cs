@@ -24,6 +24,7 @@ internal sealed class CatalogValidationContext
         Overlays = catalog.OfType<BossOverlayDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Archetypes = catalog.OfType<UnitArchetypeDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Characters = catalog.OfType<CharacterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        ExtraActors = catalog.OfType<ExtraActorCharacterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         PassiveBoards = catalog.OfType<PassiveBoardDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Statuses = catalog.OfType<StatusFamilyDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         CleanseProfiles = catalog.OfType<CleanseProfileDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
@@ -47,6 +48,7 @@ internal sealed class CatalogValidationContext
     internal IReadOnlyDictionary<string, BossOverlayDefinition> Overlays { get; }
     internal IReadOnlyDictionary<string, UnitArchetypeDefinition> Archetypes { get; }
     internal IReadOnlyDictionary<string, CharacterDefinition> Characters { get; }
+    internal IReadOnlyDictionary<string, ExtraActorCharacterDefinition> ExtraActors { get; }
     internal IReadOnlyDictionary<string, PassiveBoardDefinition> PassiveBoards { get; }
     internal IReadOnlyDictionary<string, StatusFamilyDefinition> Statuses { get; }
     internal IReadOnlyDictionary<string, CleanseProfileDefinition> CleanseProfiles { get; }
@@ -93,6 +95,7 @@ internal sealed class CatalogValidationRuleRegistry
             new FirstPlayableSliceCatalogValidator(),
             new EncounterAuthoringCatalogValidator(),
             new CharacterCatalogValidator(),
+            new ExtraActorCatalogValidator(),
             new StatusCatalogValidator(),
             new RewardCatalogValidator(),
             new BuildLaneCoverageCatalogValidator(),
@@ -291,6 +294,152 @@ internal sealed class CharacterCatalogValidator : ICatalogValidationRule
                 $"Executable CharacterDefinition catalog must match the current 16-id runtime set [{required}]. {string.Join(" ", drift)} Deferred runtime ids stay lore-only until Relicborn race/archetype authoring closes: [{deferred}].",
                 ContentValidationPolicyCatalog.ReportFolderName);
         }
+    }
+}
+
+internal sealed class ExtraActorCatalogValidator : ICatalogValidationRule
+{
+    public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
+    {
+        var expectedIds = ExtraActorCharacterRegistry.CharacterIds.ToHashSet(StringComparer.Ordinal);
+        var actualIds = context.ExtraActors.Keys.ToHashSet(StringComparer.Ordinal);
+        if (!expectedIds.SetEquals(actualIds))
+        {
+            var missing = expectedIds
+                .Except(actualIds, StringComparer.Ordinal)
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+            var extra = actualIds
+                .Except(expectedIds, StringComparer.Ordinal)
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+            var drift = new List<string>();
+            if (missing.Count > 0)
+            {
+                drift.Add($"Missing [{string.Join(", ", missing)}].");
+            }
+
+            if (extra.Count > 0)
+            {
+                drift.Add($"Unexpected [{string.Join(", ", extra)}].");
+            }
+
+            ContentValidationIssueFactory.AddError(
+                issues,
+                "extra_actor.catalog_floor",
+                $"ExtraActorCharacterDefinition catalog must match the encounter-visible extra actor registry. {string.Join(" ", drift)}",
+                ContentValidationPolicyCatalog.ReportFolderName);
+        }
+
+        foreach (var profile in ExtraActorCharacterRegistry.Profiles)
+        {
+            if (!context.ExtraActors.TryGetValue(profile.ActorId, out var definition))
+            {
+                continue;
+            }
+
+            ValidateProfileMirror(context, issues, profile, definition);
+        }
+
+        foreach (var squad in context.Squads.Values)
+        {
+            var assetPath = context.GetPath(squad);
+            foreach (var member in squad.Members)
+            {
+                if (string.IsNullOrWhiteSpace(member.CharacterId) || !member.CharacterId.StartsWith("extra_", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (!context.ExtraActors.ContainsKey(member.CharacterId))
+                {
+                    ContentValidationIssueFactory.AddError(
+                        issues,
+                        "extra_actor.enemy_squad_ref",
+                        $"Enemy squad member references unregistered extra actor character '{member.CharacterId}'.",
+                        assetPath);
+                }
+            }
+        }
+    }
+
+    private static void ValidateProfileMirror(
+        CatalogValidationContext context,
+        ICollection<ContentValidationIssue> issues,
+        ExtraActorCharacterProfile profile,
+        ExtraActorCharacterDefinition definition)
+    {
+        var assetPath = context.GetPath(definition);
+        if (!context.Chapters.ContainsKey(definition.ChapterId))
+        {
+            ContentValidationIssueFactory.AddError(issues, "extra_actor.chapter_ref", $"Extra actor references missing chapter '{definition.ChapterId}'.", assetPath);
+        }
+
+        if (!context.Sites.TryGetValue(definition.SiteId, out var site))
+        {
+            ContentValidationIssueFactory.AddError(issues, "extra_actor.site_ref", $"Extra actor references missing site '{definition.SiteId}'.", assetPath);
+        }
+        else if (!string.Equals(site.ChapterId, definition.ChapterId, StringComparison.Ordinal))
+        {
+            ContentValidationIssueFactory.AddError(issues, "extra_actor.site_chapter_mismatch", "Extra actor site must belong to the same chapter as the extra actor profile.", assetPath);
+        }
+
+        if (!context.ArchetypeIds.Contains(definition.CombatArchetypeId))
+        {
+            ContentValidationIssueFactory.AddError(issues, "extra_actor.archetype_ref", $"Extra actor references missing combat archetype '{definition.CombatArchetypeId}'.", assetPath);
+        }
+
+        if (!BattleP09AppearanceRoster.TryGetDefinedDisplayName(definition.Id, out var displayName))
+        {
+            ContentValidationIssueFactory.AddError(issues, "extra_actor.p09_roster_ref", "Extra actor must have a P09 roster display name.", assetPath);
+        }
+        else if (!string.Equals(displayName, profile.DisplayName, StringComparison.Ordinal))
+        {
+            ContentValidationIssueFactory.AddError(issues, "extra_actor.p09_roster_name", "Extra actor P09 roster display name must mirror the registry profile.", assetPath);
+        }
+
+        ValidateMirror(issues, definition.ExposureTier.ToString(), profile.ExposureTier.ToString(), "ExposureTier", assetPath);
+        ValidateMirror(issues, definition.FirstClearSpawnPolicy.ToString(), profile.FirstClearSpawnPolicy.ToString(), "FirstClearSpawnPolicy", assetPath);
+        ValidateMirror(issues, definition.IllustrationTier.ToString(), profile.IllustrationTier.ToString(), "IllustrationTier", assetPath);
+        ValidateMirror(issues, definition.ChapterId, profile.ChapterId, "ChapterId", assetPath);
+        ValidateMirror(issues, definition.SiteId, profile.SiteId, "SiteId", assetPath);
+        ValidateMirror(issues, definition.StorySafety, profile.StorySafety, "StorySafety", assetPath);
+        ValidateMirror(issues, definition.FactionId, profile.FactionId, "FactionId", assetPath);
+        ValidateMirror(issues, definition.CombatArchetypeId, profile.CombatArchetypeId, "CombatArchetypeId", assetPath);
+        ValidateMirror(issues, definition.P09BasePresetId, profile.P09BasePresetId, "P09BasePresetId", assetPath);
+        ValidateMirror(issues, definition.ModelArchetype, profile.ModelArchetype, "ModelArchetype", assetPath);
+        ValidateMirror(issues, definition.BarkSetId, profile.BarkSetId, "BarkSetId", assetPath);
+        ValidateMirror(issues, definition.DossierHook, profile.DossierHook, "DossierHook", assetPath);
+
+        if (definition.GachaEligible != profile.GachaEligible)
+        {
+            ContentValidationIssueFactory.AddError(
+                issues,
+                "extra_actor.registry_mismatch",
+                "Extra actor GachaEligible must mirror the registry profile.",
+                assetPath,
+                "ExtraActorCharacterDefinition.GachaEligible");
+        }
+    }
+
+    private static void ValidateMirror(
+        ICollection<ContentValidationIssue> issues,
+        string actual,
+        string expected,
+        string fieldName,
+        string assetPath)
+    {
+        if (string.Equals(actual, expected, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        ContentValidationIssueFactory.AddError(
+            issues,
+            "extra_actor.registry_mismatch",
+            $"Extra actor {fieldName} must mirror registry value '{expected}'.",
+            assetPath,
+            $"ExtraActorCharacterDefinition.{fieldName}");
     }
 }
 

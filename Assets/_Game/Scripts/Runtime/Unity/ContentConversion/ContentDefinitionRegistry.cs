@@ -28,6 +28,7 @@ internal sealed class ContentDefinitionRegistry
     private readonly Dictionary<string, RaceDefinition> _raceDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, ClassDefinition> _classDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, CharacterDefinition> _characterDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, ExtraActorCharacterDefinition> _extraActorDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, ItemBaseDefinition> _itemDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, AffixDefinition> _affixDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, AugmentDefinition> _augmentDefinitions = new(StringComparer.Ordinal);
@@ -67,6 +68,7 @@ internal sealed class ContentDefinitionRegistry
     internal IReadOnlyDictionary<string, RaceDefinition> RaceDefinitions => _raceDefinitions;
     internal IReadOnlyDictionary<string, ClassDefinition> ClassDefinitions => _classDefinitions;
     internal IReadOnlyDictionary<string, CharacterDefinition> CharacterDefinitions => _characterDefinitions;
+    internal IReadOnlyDictionary<string, ExtraActorCharacterDefinition> ExtraActorDefinitions => _extraActorDefinitions;
     internal IReadOnlyDictionary<string, ItemBaseDefinition> ItemDefinitions => _itemDefinitions;
     internal IReadOnlyDictionary<string, AffixDefinition> AffixDefinitions => _affixDefinitions;
     internal IReadOnlyDictionary<string, AugmentDefinition> AugmentDefinitions => _augmentDefinitions;
@@ -126,6 +128,7 @@ internal sealed class ContentDefinitionRegistry
             var races = LoadDefinitions<RaceDefinition>("_Game/Content/Definitions/Races", "Assets/Resources/_Game/Content/Definitions/Races");
             var classes = LoadDefinitions<ClassDefinition>("_Game/Content/Definitions/Classes", "Assets/Resources/_Game/Content/Definitions/Classes");
             var characters = LoadDefinitions<CharacterDefinition>("_Game/Content/Definitions/Characters", "Assets/Resources/_Game/Content/Definitions/Characters");
+            var extraActors = LoadDefinitions<ExtraActorCharacterDefinition>("_Game/Content/Definitions/ExtraActors", "Assets/Resources/_Game/Content/Definitions/ExtraActors");
             var items = LoadDefinitions<ItemBaseDefinition>("_Game/Content/Definitions/Items", "Assets/Resources/_Game/Content/Definitions/Items");
             var affixes = LoadDefinitions<AffixDefinition>("_Game/Content/Definitions/Affixes", "Assets/Resources/_Game/Content/Definitions/Affixes");
             var augments = LoadDefinitions<AugmentDefinition>("_Game/Content/Definitions/Augments", "Assets/Resources/_Game/Content/Definitions/Augments");
@@ -227,6 +230,8 @@ internal sealed class ContentDefinitionRegistry
                 _classDefinitions[@class.Id] = @class;
             foreach (var character in characters.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
                 _characterDefinitions[character.Id] = character;
+            foreach (var extraActor in extraActors.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _extraActorDefinitions[extraActor.Id] = extraActor;
             foreach (var archetype in archetypes.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
                 _archetypeDefinitions[archetype.Id] = archetype;
 
@@ -315,6 +320,7 @@ internal sealed class ContentDefinitionRegistry
         _raceDefinitions.Clear();
         _classDefinitions.Clear();
         _characterDefinitions.Clear();
+        _extraActorDefinitions.Clear();
         _itemDefinitions.Clear();
         _affixDefinitions.Clear();
         _augmentDefinitions.Clear();

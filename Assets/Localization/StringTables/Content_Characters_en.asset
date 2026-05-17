@@ -194,6 +194,278 @@ MonoBehaviour:
     m_Localized: Shaman character identity
     m_Metadata:
       m_Items: []
+  - m_Id: 12715849889943552
+    m_Localized: Kojin Gate Warden
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715849927692288
+    m_Localized: Kojin Gate Warden boss encounter profile for site_ashen_gate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850254848000
+    m_Localized: Solarium Border Lancer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850254848001
+    m_Localized: Solarium Border Lancer encounter extra profile for site_ashen_gate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850586198016
+    m_Localized: Solarium Sigil Scribe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850586198017
+    m_Localized: Solarium Sigil Scribe encounter extra profile for site_ashen_gate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850900770816
+    m_Localized: Border Reliquary Carrier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850900770817
+    m_Localized: Border Reliquary Carrier encounter extra profile for site_ashen_gate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851215343616
+    m_Localized: Wolfpine Outrider
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851215343617
+    m_Localized: Wolfpine Outrider encounter extra profile for site_wolfpine_trail.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851529916416
+    m_Localized: Wolfpine Ember Runner Cell
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851529916417
+    m_Localized: Wolfpine Ember Runner Cell encounter extra profile for site_wolfpine_trail.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851844489216
+    m_Localized: Grey Fang Vanguard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851844489217
+    m_Localized: Grey Fang Vanguard encounter extra profile for site_wolfpine_trail.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852159062016
+    m_Localized: Bastion Line Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852159062017
+    m_Localized: Bastion Line Guard encounter extra profile for site_sunken_bastion.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852473634816
+    m_Localized: Bastion Reliquary Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852473634817
+    m_Localized: Bastion Reliquary Guard encounter extra profile for site_sunken_bastion.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852813373440
+    m_Localized: Sunken Adjudicator Lieutenant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852813373441
+    m_Localized: Sunken Adjudicator Lieutenant encounter extra profile for site_sunken_bastion.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853174083584
+    m_Localized: Sunken Bastion Adjudicator
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853174083585
+    m_Localized: Sunken Bastion Adjudicator boss encounter profile for site_sunken_bastion.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853509627904
+    m_Localized: Tithe Mark Bearer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853509627905
+    m_Localized: Tithe Mark Bearer encounter extra profile for site_tithe_road.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853870338048
+    m_Localized: Tithe Chain Cantor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853870338049
+    m_Localized: Tithe Chain Cantor encounter extra profile for site_tithe_road.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854189105152
+    m_Localized: Tithe Executioner Proxy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854189105153
+    m_Localized: Tithe Executioner Proxy encounter extra profile for site_tithe_road.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854528843776
+    m_Localized: Tithe Pureflame Inquisitor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854528843777
+    m_Localized: Tithe Pureflame Inquisitor boss encounter profile for site_tithe_road.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854872776704
+    m_Localized: Pale Memorial Keeper
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854872776705
+    m_Localized: Pale Memorial Keeper encounter extra profile for site_ruined_crypts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855250264064
+    m_Localized: Pale Tomb Sentinel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855250264065
+    m_Localized: Pale Tomb Sentinel encounter extra profile for site_ruined_crypts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855594196992
+    m_Localized: Black Roll Bailiff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855594196993
+    m_Localized: Black Roll Bailiff encounter extra profile for site_ruined_crypts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855950712832
+    m_Localized: Crypt List Keeper
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855950712833
+    m_Localized: Crypt List Keeper boss encounter profile for site_ruined_crypts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715856298840064
+    m_Localized: Lattice Root Usher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715856298840065
+    m_Localized: Lattice Root Usher encounter extra profile for site_bone_orchard.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715856667938816
+    m_Localized: Lattice Echo Caretaker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715856667938817
+    m_Localized: Lattice Echo Caretaker encounter extra profile for site_bone_orchard.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857028648960
+    m_Localized: Bone Orchard Watcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857028648961
+    m_Localized: Bone Orchard Watcher boss encounter profile for site_bone_orchard.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857385164800
+    m_Localized: Glass Field Cleric
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857385164801
+    m_Localized: Glass Field Cleric encounter extra profile for site_glass_forest.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857720709120
+    m_Localized: Glass Shard Bailiff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857720709121
+    m_Localized: Glass Shard Bailiff encounter extra profile for site_glass_forest.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858043670528
+    m_Localized: Glass Forest Recordkeeper
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858043670529
+    m_Localized: Glass Forest Recordkeeper boss encounter profile for site_glass_forest.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858366631936
+    m_Localized: Menagerie Snare Runner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858366631937
+    m_Localized: Menagerie Snare Runner encounter extra profile for site_starved_menagerie.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858689593344
+    m_Localized: Sample B17 Survivor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858689593345
+    m_Localized: Sample B17 Survivor encounter extra profile for site_starved_menagerie.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859020943360
+    m_Localized: Menagerie Keeper
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859020943361
+    m_Localized: Menagerie Keeper boss encounter profile for site_starved_menagerie.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859352293376
+    m_Localized: Heartforge Gate Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859352293377
+    m_Localized: Heartforge Gate Guard encounter extra profile for site_heartforge_gate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859675254784
+    m_Localized: Record Rights Marker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859675254785
+    m_Localized: Record Rights Marker encounter extra profile for site_heartforge_gate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859994021888
+    m_Localized: Heartforge Gate Warden
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859994021889
+    m_Localized: Heartforge Gate Warden boss encounter profile for site_heartforge_gate.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860312788992
+    m_Localized: Worldscar Archive Cell
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860312788993
+    m_Localized: Worldscar Archive Cell encounter extra profile for site_worldscar_depths.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860639944704
+    m_Localized: Worldscar Rite Echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860639944705
+    m_Localized: Worldscar Rite Echo encounter extra profile for site_worldscar_depths.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860979683328
+    m_Localized: Worldscar Record Bailiff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860979683329
+    m_Localized: Worldscar Record Bailiff encounter extra profile for site_worldscar_depths.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

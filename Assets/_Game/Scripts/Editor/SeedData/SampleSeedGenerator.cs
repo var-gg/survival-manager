@@ -10,6 +10,7 @@ using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Core;
 using SM.Core.Contracts;
+using SM.Unity;
 using UnityEditor;
 using UnityEditor.Localization;
 using UnityEngine;
@@ -25,6 +26,7 @@ public static class SampleSeedGenerator
     private const string DialogueSequencesDir = ResourcesRoot + "/DialogueSequences";
     private const string ChapterBeatsDir = ResourcesRoot + "/ChapterBeats";
     private const string HeroLoreDir = ResourcesRoot + "/HeroLore";
+    private const string ExtraActorsDir = ResourcesRoot + "/ExtraActors";
     private const string StoryTableName = ContentLocalizationTables.Story;
 
     [MenuItem("SM/Internal/Content/Generate Sample Content")]
@@ -64,6 +66,7 @@ public static class SampleSeedGenerator
         CreateTraitTokens();
         CreateRewardSourcesAndDropTables();
         CreateCampaignEncounterCatalog();
+        var extraActors = CreateExtraActorCharacters();
         var rewardTables = CreateRewardTables();
         CreateExpedition(rewardTables);
         RepairResidualAuthoring(stableTags);
@@ -84,7 +87,7 @@ public static class SampleSeedGenerator
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         }
 
-        Debug.Log($"SM sample content generated under Resources. Root={ResourcesRoot}, Stats={stats.Count}, Races={races.Count}, Classes={classes.Count}, Skills={skills.Count}, Archetypes={patchedArchetypes.Count}, Characters={characters.Count}");
+        Debug.Log($"SM sample content generated under Resources. Root={ResourcesRoot}, Stats={stats.Count}, Races={races.Count}, Classes={classes.Count}, Skills={skills.Count}, Archetypes={patchedArchetypes.Count}, Characters={characters.Count}, ExtraActors={extraActors.Count}");
     }
 
     [MenuItem("SM/Internal/Content/Migrate Legacy Sample Content")]
@@ -196,6 +199,7 @@ public static class SampleSeedGenerator
         CheckMinimum(failures, "StatusFamilies/status_family_guarded.asset", HasCanonicalAsset<StatusFamilyDefinition>($"{ResourcesRoot}/StatusFamilies/status_family_guarded.asset", status => status.Id, "guarded"));
         CheckMinimum(failures, "RewardSources/reward_source_skirmish.asset", HasCanonicalAsset<RewardSourceDefinition>($"{ResourcesRoot}/RewardSources/reward_source_skirmish.asset", reward => reward.Id, "reward_source_skirmish"));
         CheckMinimum(failures, "TraitTokens/trait_reroll_token.asset", HasCanonicalAsset<TraitTokenDefinition>($"{ResourcesRoot}/TraitTokens/trait_reroll_token.asset", token => token.Id, "trait_reroll_token"));
+        CheckMinimum(failures, "ExtraActors/extra_kojin_gate_warden.asset", HasCanonicalAsset<ExtraActorCharacterDefinition>($"{ExtraActorsDir}/extra_kojin_gate_warden.asset", definition => definition.Id, "extra_kojin_gate_warden"));
         CheckMinimum(failures, "StoryEvents/story_event_site_intro_ashen_gate.asset", HasCanonicalAsset<StoryEventDefinition>($"{StoryEventsDir}/story_event_site_intro_ashen_gate.asset", definition => definition.Id, "story_event_site_intro_ashen_gate"));
         CheckMinimum(failures, "DialogueSequences/dialogue_scene_ashen_gate_intro.asset", HasCanonicalAsset<DialogueSequenceDefinition>($"{DialogueSequencesDir}/dialogue_scene_ashen_gate_intro.asset", definition => definition.Id, "dialogue_scene_ashen_gate_intro"));
         CheckMinimum(failures, "ChapterBeats/beat.chapter_ashen_gate.site_ashen_gate.node_1.asset", HasCanonicalAsset<ChapterBeatDefinition>($"{ChapterBeatsDir}/beat.chapter_ashen_gate.site_ashen_gate.node_1.asset", definition => definition.Id, "beat.chapter_ashen_gate.site_ashen_gate.node_1"));
@@ -250,6 +254,7 @@ public static class SampleSeedGenerator
             $"{ResourcesRoot}/TraitTokens",
             $"{ResourcesRoot}/Rewards",
             $"{ResourcesRoot}/Expeditions",
+            ExtraActorsDir,
             StoryEventsDir,
             DialogueSequencesDir,
             ChapterBeatsDir,
@@ -3673,6 +3678,101 @@ public static class SampleSeedGenerator
         DeleteUnexpectedCampaignAssets("BossOverlays", overlayFiles);
         DeleteUnexpectedCampaignAssets("Encounters", encounterFiles);
         DeleteUnexpectedCampaignAssets("EnemySquads", squadFiles);
+    }
+
+    private static IReadOnlyDictionary<string, ExtraActorCharacterDefinition> CreateExtraActorCharacters()
+    {
+        var expectedFileNames = ExtraActorCharacterRegistry.Profiles
+            .Select(profile => $"{profile.ActorId}.asset")
+            .ToHashSet(StringComparer.Ordinal);
+        DeleteUnexpectedCampaignAssets("ExtraActors", expectedFileNames);
+
+        var result = new Dictionary<string, ExtraActorCharacterDefinition>(StringComparer.Ordinal);
+        foreach (var profile in ExtraActorCharacterRegistry.Profiles)
+        {
+            var localizedName = SplitDisplayName(profile.DisplayName);
+            var enDescription = BuildExtraActorEnDescription(
+                localizedName.En,
+                string.Equals(profile.ExposureTier.ToString(), nameof(ExtraActorExposureTierValue.BossActor), StringComparison.Ordinal),
+                profile.SiteId);
+            var asset = CreateAsset<ExtraActorCharacterDefinition>($"{ExtraActorsDir}/{profile.ActorId}.asset", definition =>
+            {
+                definition.Id = profile.ActorId;
+                definition.NameKey = ContentLocalizationTables.BuildCharacterNameKey(profile.ActorId);
+                definition.DescriptionKey = ContentLocalizationTables.BuildCharacterDescriptionKey(profile.ActorId);
+                definition.ExposureTier = ToExposureTierDefinitionValue(profile.ExposureTier.ToString());
+                definition.ChapterId = profile.ChapterId;
+                definition.SiteId = profile.SiteId;
+                definition.FirstClearSpawnPolicy = ToSpawnPolicyDefinitionValue(profile.FirstClearSpawnPolicy.ToString());
+                definition.StorySafety = profile.StorySafety;
+                definition.FactionId = profile.FactionId;
+                definition.CombatArchetypeId = profile.CombatArchetypeId;
+                definition.P09BasePresetId = profile.P09BasePresetId;
+                definition.ModelArchetype = profile.ModelArchetype;
+                definition.IllustrationTier = ToIllustrationTierDefinitionValue(profile.IllustrationTier.ToString());
+                definition.BarkSetId = profile.BarkSetId;
+                definition.DossierHook = profile.DossierHook;
+                definition.GachaEligible = profile.GachaEligible;
+                UpsertStringEntry(ContentLocalizationTables.Characters, definition.NameKey, localizedName.Ko, localizedName.En);
+                UpsertStringEntry(ContentLocalizationTables.Characters, definition.DescriptionKey, profile.DossierHook, enDescription);
+            });
+
+            result[profile.ActorId] = asset;
+        }
+
+        return result;
+    }
+
+    private static ExtraActorExposureTierValue ToExposureTierDefinitionValue(string value)
+    {
+        return value switch
+        {
+            nameof(ExtraActorExposureTierValue.BossActor) => ExtraActorExposureTierValue.BossActor,
+            _ => ExtraActorExposureTierValue.ExtraActor,
+        };
+    }
+
+    private static ExtraActorSpawnPolicyValue ToSpawnPolicyDefinitionValue(string value)
+    {
+        return value switch
+        {
+            nameof(ExtraActorSpawnPolicyValue.SiteLocked) => ExtraActorSpawnPolicyValue.SiteLocked,
+            nameof(ExtraActorSpawnPolicyValue.ChapterPool) => ExtraActorSpawnPolicyValue.ChapterPool,
+            nameof(ExtraActorSpawnPolicyValue.PostClearPool) => ExtraActorSpawnPolicyValue.PostClearPool,
+            nameof(ExtraActorSpawnPolicyValue.EventOnly) => ExtraActorSpawnPolicyValue.EventOnly,
+            _ => ExtraActorSpawnPolicyValue.SiteLocalPool,
+        };
+    }
+
+    private static ExtraActorIllustrationTierValue ToIllustrationTierDefinitionValue(string value)
+    {
+        return value switch
+        {
+            nameof(ExtraActorIllustrationTierValue.BossCard) => ExtraActorIllustrationTierValue.BossCard,
+            nameof(ExtraActorIllustrationTierValue.PromotableCard) => ExtraActorIllustrationTierValue.PromotableCard,
+            _ => ExtraActorIllustrationTierValue.ExtraCard,
+        };
+    }
+
+    private static (string Ko, string En) SplitDisplayName(string displayName)
+    {
+        if (string.IsNullOrWhiteSpace(displayName))
+        {
+            return (string.Empty, string.Empty);
+        }
+
+        var parts = displayName.Split(new[] { " / " }, 2, StringSplitOptions.None);
+        return parts.Length == 2
+            ? (parts[0], parts[1])
+            : (displayName, displayName);
+    }
+
+    private static string BuildExtraActorEnDescription(string displayName, bool isBoss, string siteId)
+    {
+        var tier = isBoss
+            ? "boss encounter profile"
+            : "encounter extra profile";
+        return $"{displayName} {tier} for {siteId}.";
     }
 
     private static void DeleteUnexpectedCampaignAssets(string folderName, HashSet<string> expectedFileNames)

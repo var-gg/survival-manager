@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22aadf3933f75294bb8f2c238a933e11, type: 3}
+  m_Name: extra_tithe_inquisitor_pureflame
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.ExtraActorCharacterDefinition
+  Id: extra_tithe_inquisitor_pureflame
+  NameKey: content.character.extra_tithe_inquisitor_pureflame.name
+  DescriptionKey: content.character.extra_tithe_inquisitor_pureflame.desc
+  ExposureTier: 1
+  ChapterId: chapter_sunken_bastion
+  SiteId: site_tithe_road
+  FirstClearSpawnPolicy: 0
+  StorySafety: actual_enemy_unit
+  FactionId: faction_solarum
+  CombatArchetypeId: hexer
+  P09BasePresetId: hexer
+  ModelArchetype: adjudicator
+  IllustrationTier: 1
+  BarkSetId: bark_set_extra_tithe_inquisitor_pureflame
+  DossierHook: "\uC815\uD654\uB97C \uAD8C\uB825 \uC5B8\uC5B4\uB85C \uBC14\uAFB8\uB294
+    \uB300\uC2EC\uBB38\uAD00"
+  GachaEligible: 1

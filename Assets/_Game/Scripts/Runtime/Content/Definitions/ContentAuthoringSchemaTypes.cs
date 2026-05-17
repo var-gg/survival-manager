@@ -98,6 +98,28 @@ namespace SM.Content.Definitions
         Alignment = 4,
     }
 
+    public enum ExtraActorExposureTierValue
+    {
+        ExtraActor = 0,
+        BossActor = 1,
+    }
+
+    public enum ExtraActorSpawnPolicyValue
+    {
+        SiteLocked = 0,
+        SiteLocalPool = 1,
+        ChapterPool = 2,
+        PostClearPool = 3,
+        EventOnly = 4,
+    }
+
+    public enum ExtraActorIllustrationTierValue
+    {
+        ExtraCard = 0,
+        BossCard = 1,
+        PromotableCard = 2,
+    }
+
     public enum StatusStackPolicyValue
     {
         LegacyDerived = 0,

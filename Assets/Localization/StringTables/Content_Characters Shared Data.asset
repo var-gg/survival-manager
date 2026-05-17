@@ -191,6 +191,278 @@ MonoBehaviour:
     m_Key: content.character.shaman.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 12715849889943552
+    m_Key: content.character.extra_kojin_gate_warden.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715849927692288
+    m_Key: content.character.extra_kojin_gate_warden.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850254848000
+    m_Key: content.character.extra_solarum_border_lancer.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850254848001
+    m_Key: content.character.extra_solarum_border_lancer.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850586198016
+    m_Key: content.character.extra_solarum_sigil_scribe.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850586198017
+    m_Key: content.character.extra_solarum_sigil_scribe.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850900770816
+    m_Key: content.character.extra_border_reliquary_carry.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715850900770817
+    m_Key: content.character.extra_border_reliquary_carry.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851215343616
+    m_Key: content.character.extra_wolfpine_outrider.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851215343617
+    m_Key: content.character.extra_wolfpine_outrider.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851529916416
+    m_Key: content.character.extra_wolfpine_ember_runner_cell.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851529916417
+    m_Key: content.character.extra_wolfpine_ember_runner_cell.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851844489216
+    m_Key: content.character.extra_grey_fang_vanguard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715851844489217
+    m_Key: content.character.extra_grey_fang_vanguard.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852159062016
+    m_Key: content.character.extra_bastion_line_guard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852159062017
+    m_Key: content.character.extra_bastion_line_guard.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852473634816
+    m_Key: content.character.extra_bastion_reliquary_guard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852473634817
+    m_Key: content.character.extra_bastion_reliquary_guard.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852813373440
+    m_Key: content.character.extra_sunken_adjudicator_lieutenant.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715852813373441
+    m_Key: content.character.extra_sunken_adjudicator_lieutenant.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853174083584
+    m_Key: content.character.extra_sunken_bastion_adjudicator.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853174083585
+    m_Key: content.character.extra_sunken_bastion_adjudicator.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853509627904
+    m_Key: content.character.extra_tithe_mark_bearer.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853509627905
+    m_Key: content.character.extra_tithe_mark_bearer.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853870338048
+    m_Key: content.character.extra_tithe_chain_cantor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715853870338049
+    m_Key: content.character.extra_tithe_chain_cantor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854189105152
+    m_Key: content.character.extra_tithe_executioner_proxy.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854189105153
+    m_Key: content.character.extra_tithe_executioner_proxy.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854528843776
+    m_Key: content.character.extra_tithe_inquisitor_pureflame.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854528843777
+    m_Key: content.character.extra_tithe_inquisitor_pureflame.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854872776704
+    m_Key: content.character.extra_pale_memorial_keeper.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715854872776705
+    m_Key: content.character.extra_pale_memorial_keeper.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855250264064
+    m_Key: content.character.extra_pale_tomb_sentinel.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855250264065
+    m_Key: content.character.extra_pale_tomb_sentinel.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855594196992
+    m_Key: content.character.extra_black_roll_bailiff.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855594196993
+    m_Key: content.character.extra_black_roll_bailiff.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855950712832
+    m_Key: content.character.extra_crypt_list_keeper.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715855950712833
+    m_Key: content.character.extra_crypt_list_keeper.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715856298840064
+    m_Key: content.character.extra_lattice_root_usher.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715856298840065
+    m_Key: content.character.extra_lattice_root_usher.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715856667938816
+    m_Key: content.character.extra_lattice_echo_caretaker.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715856667938817
+    m_Key: content.character.extra_lattice_echo_caretaker.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857028648960
+    m_Key: content.character.extra_bone_orchard_watcher.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857028648961
+    m_Key: content.character.extra_bone_orchard_watcher.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857385164800
+    m_Key: content.character.extra_glass_field_cleric.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857385164801
+    m_Key: content.character.extra_glass_field_cleric.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857720709120
+    m_Key: content.character.extra_glass_shard_bailiff.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715857720709121
+    m_Key: content.character.extra_glass_shard_bailiff.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858043670528
+    m_Key: content.character.extra_glass_forest_recordkeeper.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858043670529
+    m_Key: content.character.extra_glass_forest_recordkeeper.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858366631936
+    m_Key: content.character.extra_menagerie_snare_runner.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858366631937
+    m_Key: content.character.extra_menagerie_snare_runner.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858689593344
+    m_Key: content.character.extra_sample_b17_survivor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715858689593345
+    m_Key: content.character.extra_sample_b17_survivor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859020943360
+    m_Key: content.character.extra_menagerie_keeper.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859020943361
+    m_Key: content.character.extra_menagerie_keeper.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859352293376
+    m_Key: content.character.extra_heartforge_gate_guard.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859352293377
+    m_Key: content.character.extra_heartforge_gate_guard.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859675254784
+    m_Key: content.character.extra_record_rights_marker.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859675254785
+    m_Key: content.character.extra_record_rights_marker.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859994021888
+    m_Key: content.character.extra_heartforge_gate_warden.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715859994021889
+    m_Key: content.character.extra_heartforge_gate_warden.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860312788992
+    m_Key: content.character.extra_worldscar_archive_cell.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860312788993
+    m_Key: content.character.extra_worldscar_archive_cell.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860639944704
+    m_Key: content.character.extra_worldscar_rite_echo.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860639944705
+    m_Key: content.character.extra_worldscar_rite_echo.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860979683328
+    m_Key: content.character.extra_worldscar_record_bailiff.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12715860979683329
+    m_Key: content.character.extra_worldscar_record_bailiff.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
