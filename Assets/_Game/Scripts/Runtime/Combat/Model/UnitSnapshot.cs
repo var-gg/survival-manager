@@ -106,6 +106,10 @@ public sealed class UnitSnapshot
     public float MaxEnergy => Math.Max(0f, Definition.EffectiveEnergy.Max);
     public float Armor => Math.Max(0f, Stats.Get(StatKey.Armor) - GetStatusMagnitude("sunder"));
     public float Resist => Math.Max(0f, Stats.Get(StatKey.Resist) - GetStatusMagnitude("sunder"));
+    public float PhysPen => Math.Max(0f, Stats.Get(StatKey.PhysPen));
+    public float MagPen => Math.Max(0f, Stats.Get(StatKey.MagPen));
+    public float Lifesteal => Math.Max(0f, Stats.Get(StatKey.Lifesteal));
+    public float Omnivamp => Math.Max(0f, Stats.Get(StatKey.Omnivamp));
     public float PhysPower => Stats.Get(StatKey.PhysPower);
     public float MagPower => Stats.Get(StatKey.MagPower);
     public float AttackSpeed => Math.Max(0.1f, Stats.Get(StatKey.AttackSpeed) * GetSlowMultiplier());
@@ -119,9 +123,11 @@ public sealed class UnitSnapshot
     public float CooldownRecovery => SkillHaste;
     public float AggroRadius => Math.Max(AttackRange, Stats.Get(StatKey.AggroRadius));
     public FloatRange PreferredRangeBand => Footprint.PreferredRangeBand;
-    public float PreferredDistance => Definition.PreferredDistance > 0f
-        ? Definition.PreferredDistance
-        : Footprint.PreferredRangeBand.Midpoint;
+    public float PreferredDistance => Math.Max(0.5f, Stats.Get(StatKey.PreferredDistance) > 0f
+        ? Stats.Get(StatKey.PreferredDistance)
+        : Definition.PreferredDistance > 0f
+            ? Definition.PreferredDistance
+            : Footprint.PreferredRangeBand.Midpoint);
     public float ProtectRadius => Math.Max(0f, Definition.ProtectRadius > 0f ? Definition.ProtectRadius : Stats.Get(StatKey.ProtectRadius));
     public float AttackWindup => Math.Max(0.05f, Stats.Get(StatKey.AttackWindup));
     public float CastWindup => Math.Max(0.05f, Stats.Get(StatKey.CastWindup));

@@ -59,6 +59,7 @@ public static class CombatActionResolver
                 {
                     state.RegisterDamage(actor, target);
                     target.TakeDamage(attackResult.Value);
+                    ApplyDamageDrain(state, actor, BattleActionType.BasicAttack, null, attackResult.Value);
                     target.GainEnergyFromDirectHitTaken();
                     if (target.IsAlive)
                     {
@@ -190,6 +191,7 @@ public static class CombatActionResolver
                     {
                         state.RegisterDamage(actor, target);
                         target.TakeDamage(skillResult.Value);
+                        ApplyDamageDrain(state, actor, BattleActionType.ActiveSkill, skill, skillResult.Value);
                         target.GainEnergyFromDirectHitTaken();
                         if (target.IsAlive)
                         {
@@ -263,6 +265,7 @@ public static class CombatActionResolver
             {
                 state.RegisterDamage(actor, target);
                 target.TakeDamage(resolvedValue);
+                ApplyDamageDrain(state, actor, BattleActionType.ActiveSkill, skill, resolvedValue);
                 target.GainEnergyFromDirectHitTaken();
                 caughtTargets.Add(target);
                 BattleTelemetryRecorder.RecordImpact(
@@ -326,6 +329,58 @@ public static class CombatActionResolver
         }
 
         return $"{left}+{right}";
+    }
+
+    private static void ApplyDamageDrain(
+        BattleState state,
+        UnitSnapshot actor,
+        BattleActionType actionType,
+        BattleSkillSpec? skill,
+        float damageValue)
+    {
+        if (damageValue <= 0f || !actor.IsAlive)
+        {
+            return;
+        }
+
+        var ratio = ResolveDamageDrainRatio(actor, actionType);
+        if (ratio <= 0f)
+        {
+            return;
+        }
+
+        var heal = damageValue * ratio;
+        actor.Heal(heal);
+        BattleTelemetryRecorder.RecordImpact(
+            state,
+            TelemetryEventKind.HealingApplied,
+            actor,
+            actor,
+            actionType,
+            skill,
+            heal,
+            0f,
+            ResolveDamageDrainNote(actor, actionType));
+    }
+
+    private static float ResolveDamageDrainRatio(UnitSnapshot actor, BattleActionType actionType)
+    {
+        var ratio = actor.Omnivamp;
+        if (actionType == BattleActionType.BasicAttack)
+        {
+            ratio += actor.Lifesteal;
+        }
+
+        return Math.Clamp(ratio, 0f, 1f);
+    }
+
+    private static string ResolveDamageDrainNote(UnitSnapshot actor, BattleActionType actionType)
+    {
+        var hasLifesteal = actionType == BattleActionType.BasicAttack && actor.Lifesteal > 0f;
+        var hasOmnivamp = actor.Omnivamp > 0f;
+        return hasLifesteal && hasOmnivamp
+            ? "lifesteal+omnivamp"
+            : hasLifesteal ? "lifesteal" : "omnivamp";
     }
 
     internal static BattleEvent BuildEvent(

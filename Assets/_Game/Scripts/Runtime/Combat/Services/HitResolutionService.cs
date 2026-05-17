@@ -23,22 +23,23 @@ public static class HitResolutionService
 
     public static HitResolutionResult ResolveBasicAttack(BattleState state, UnitSnapshot actor, UnitSnapshot target)
     {
+        var damageType = actor.EffectiveBasicAttack.DamageType;
+        var basePower = damageType == DamageType.Magical
+            ? actor.MagPower
+            : actor.PhysPower;
         return ResolveDamage(
             state,
             actor,
             target,
             BattleActionType.BasicAttack,
-            DamageType.Physical,
-            actor.PhysPower,
+            damageType,
+            basePower,
             canCrit: true);
     }
 
     public static HitResolutionResult ResolveSkillDamage(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec skill)
     {
-        var power = skill.ResolvedPowerFlat;
-        var basePower = skill.DamageType == DamageType.Magical
-            ? actor.MagPower + power
-            : actor.PhysPower + power;
+        var basePower = ResolveSkillDamagePower(actor, skill);
         return ResolveDamage(
             state,
             actor,
@@ -57,12 +58,7 @@ public static class HitResolutionService
             return Math.Max(1f, actor.HealPower);
         }
 
-        return skill.Kind switch
-        {
-            SkillKind.Heal => Math.Max(1f, actor.HealPower + skill.ResolvedPowerFlat),
-            SkillKind.Shield => Math.Max(1f, actor.HealPower + skill.ResolvedPowerFlat),
-            _ => Math.Max(1f, actor.HealPower + skill.ResolvedPowerFlat),
-        };
+        return Math.Max(1f, ResolveSkillSupportPower(actor, skill));
     }
 
     private static HitResolutionResult ResolveDamage(
@@ -93,8 +89,10 @@ public static class HitResolutionService
             powerAfterCrit *= 1f - Math.Clamp(target.Behavior.BlockMitigation, 0f, MaxBlockMitigationFraction);
         }
 
-        var mitigation = damageType == DamageType.Magical ? target.Resist : target.Armor;
-        var reductionFactor = 1f - (mitigation / (mitigation + ArmorScalingK));
+        var mitigation = ResolveEffectiveMitigation(actor, target, damageType);
+        var reductionFactor = mitigation <= 0f
+            ? 1f
+            : 1f - (mitigation / (mitigation + ArmorScalingK));
         var baseResolved = Math.Max(1f, powerAfterCrit * reductionFactor * target.GetIncomingDamageMultiplier());
         var focusMultiplier = ResolveFocusDamageMultiplier(state, actor, target, skill);
         var resolved = Math.Max(1f, baseResolved * focusMultiplier);
@@ -103,6 +101,58 @@ public static class HitResolutionService
             ? critical ? "crit+block" : "block"
             : critical ? "crit" : string.Empty;
         return new HitResolutionResult(resolved, false, critical, blocked, mitigation, note);
+    }
+
+    private static float ResolveSkillDamagePower(UnitSnapshot actor, BattleSkillSpec skill)
+    {
+        if (!UsesAuthoredCoefficients(skill))
+        {
+            return skill.DamageType switch
+            {
+                DamageType.Magical => actor.MagPower + skill.ResolvedPowerFlat,
+                DamageType.Healing => actor.HealPower + skill.ResolvedPowerFlat,
+                _ => actor.PhysPower + skill.ResolvedPowerFlat,
+            };
+        }
+
+        return ResolveCoefficientPower(actor, skill);
+    }
+
+    private static float ResolveSkillSupportPower(UnitSnapshot actor, BattleSkillSpec skill)
+    {
+        if (!UsesAuthoredCoefficients(skill))
+        {
+            return actor.HealPower + skill.ResolvedPowerFlat;
+        }
+
+        return ResolveCoefficientPower(actor, skill);
+    }
+
+    private static float ResolveCoefficientPower(UnitSnapshot actor, BattleSkillSpec skill)
+    {
+        return skill.ResolvedPowerFlat
+               + (actor.PhysPower * Math.Max(0f, skill.PhysCoeff))
+               + (actor.MagPower * Math.Max(0f, skill.MagCoeff))
+               + (actor.HealPower * Math.Max(0f, skill.HealCoeff))
+               + (actor.MaxHealth * Math.Max(0f, skill.HealthCoeff));
+    }
+
+    private static bool UsesAuthoredCoefficients(BattleSkillSpec skill)
+    {
+        return !IsApproximately(skill.PhysCoeff, 1f)
+               || !IsApproximately(skill.MagCoeff, 0f)
+               || !IsApproximately(skill.HealCoeff, 0f)
+               || !IsApproximately(skill.HealthCoeff, 0f);
+    }
+
+    private static float ResolveEffectiveMitigation(UnitSnapshot actor, UnitSnapshot target, DamageType damageType)
+    {
+        return damageType switch
+        {
+            DamageType.True => 0f,
+            DamageType.Magical => Math.Max(0f, target.Resist - actor.MagPen),
+            _ => Math.Max(0f, target.Armor - actor.PhysPen),
+        };
     }
 
     private static float ResolveFocusDamageMultiplier(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec? skill)
@@ -168,5 +218,10 @@ public static class HitResolutionService
 
             return hash;
         }
+    }
+
+    private static bool IsApproximately(float left, float right)
+    {
+        return Math.Abs(left - right) <= 0.0001f;
     }
 }

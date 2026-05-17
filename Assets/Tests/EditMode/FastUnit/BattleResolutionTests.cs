@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Core.Contracts;
+using SM.Core.Stats;
 
 namespace SM.Tests.EditMode;
 
@@ -203,6 +205,140 @@ public sealed class BattleResolutionTests
     }
 
     [Test]
+    public void SkillDamage_UsesCoefficients_Penetration_AndTrueDamageBypass()
+    {
+        var magicalSkill = new BattleSkillSpec(
+            "arcane_bolt",
+            "Arcane Bolt",
+            SkillKind.Strike,
+            0f,
+            6f,
+            DamageType: DamageType.Magical,
+            PowerFlat: 2f,
+            PhysCoeff: 0f,
+            MagCoeff: 1.5f);
+        var trueSkill = new BattleSkillSpec(
+            "pure_cut",
+            "Pure Cut",
+            SkillKind.Strike,
+            0f,
+            6f,
+            DamageType: DamageType.True,
+            PowerFlat: 12f,
+            PhysCoeff: 0f);
+        var attacker = CombatTestFactory.CreateLoopAUnit(
+            "attacker",
+            physPower: 4f,
+            signatureActive: magicalSkill) with
+        {
+            BaseStats = WithStats(
+                CombatTestFactory.CreateLoopAUnit("attacker").BaseStats,
+                (StatKey.MagPower, 10f),
+                (StatKey.MagPen, 3f)),
+        };
+        var target = CombatTestFactory.CreateLoopAUnit("target", race: "undead", hp: 200f, armor: 99f) with
+        {
+            BaseStats = WithStats(
+                CombatTestFactory.CreateLoopAUnit("target").BaseStats,
+                (StatKey.Armor, 99f),
+                (StatKey.Resist, 8f)),
+        };
+        var state = CombatTestFactory.CreateBattleState(new[] { attacker }, new[] { target }, seed: 11);
+
+        var magical = HitResolutionService.ResolveSkillDamage(state, state.Allies[0], state.Enemies[0], magicalSkill);
+        var pure = HitResolutionService.ResolveSkillDamage(state, state.Allies[0], state.Enemies[0], trueSkill);
+
+        Assert.That(magical.MitigationValue, Is.EqualTo(5f).Within(0.001f));
+        Assert.That(magical.Value, Is.EqualTo(17f * (1f - (5f / 15f))).Within(0.001f));
+        Assert.That(pure.MitigationValue, Is.EqualTo(0f).Within(0.001f));
+        Assert.That(pure.Value, Is.EqualTo(12f).Within(0.001f));
+    }
+
+    [Test]
+    public void SupportValue_UsesAuthoredCoefficients_AndKeepsLegacyHealFallback()
+    {
+        var authored = new BattleSkillSpec(
+            "mend",
+            "Mend",
+            SkillKind.Heal,
+            0f,
+            5f,
+            PowerFlat: 3f,
+            PhysCoeff: 0f,
+            MagCoeff: 0.5f,
+            HealCoeff: 1f);
+        var legacy = new SkillDefinition("legacy_heal", "Legacy Heal", SkillKind.Heal, 4f, 5f);
+        var healer = CombatTestFactory.CreateLoopAUnit("healer", physPower: 20f) with
+        {
+            BaseStats = WithStats(
+                CombatTestFactory.CreateLoopAUnit("healer").BaseStats,
+                (StatKey.MagPower, 6f),
+                (StatKey.HealPower, 4f)),
+        };
+        var target = CombatTestFactory.CreateLoopAUnit("target", race: "undead");
+        var state = CombatTestFactory.CreateBattleState(new[] { healer }, new[] { target });
+
+        Assert.That(HitResolutionService.ResolveSupportValue(state.Allies[0], authored), Is.EqualTo(10f).Within(0.001f));
+        Assert.That(HitResolutionService.ResolveSupportValue(state.Allies[0], legacy), Is.EqualTo(8f).Within(0.001f));
+    }
+
+    [Test]
+    public void DamageDrain_AppliesLifestealAndOmnivamp_FromStats()
+    {
+        var attacker = CombatTestFactory.CreateLoopAUnit(
+            "attacker",
+            hp: 100f,
+            physPower: 20f,
+            armor: 0f,
+            attackRange: 20f,
+            energy: new EnergyProfile(0f, 0f)) with
+        {
+            BaseStats = WithStats(
+                CombatTestFactory.CreateLoopAUnit("attacker", hp: 100f, physPower: 20f, armor: 0f, attackRange: 20f).BaseStats,
+                (StatKey.Lifesteal, 0.25f),
+                (StatKey.Omnivamp, 0.10f)),
+        };
+        var target = CombatTestFactory.CreateLoopAUnit("target", race: "undead", hp: 100f, armor: 0f, attackRange: 20f, energy: new EnergyProfile(0f, 0f));
+        var state = CombatTestFactory.CreateBattleState(new[] { attacker }, new[] { target }, seed: 13);
+        var actor = state.Allies[0];
+        actor.TakeDamage(50f);
+
+        actor.BeginWindup(BattleActionType.BasicAttack, state.Enemies[0].Id, null);
+        actor.FinishWindup();
+        CombatActionResolver.Resolve(state, actor);
+
+        Assert.That(actor.CurrentHealth, Is.EqualTo(57f).Within(0.001f));
+        Assert.That(state.TelemetryEvents.Any(evt =>
+            evt.EventKind == TelemetryEventKind.HealingApplied
+            && evt.StringValueA == "lifesteal+omnivamp"
+            && evt.ValueA > 6.99f
+            && evt.ValueA < 7.01f), Is.True);
+    }
+
+    [Test]
+    public void PreferredDistance_ReadsStatModifiers()
+    {
+        var watchfulPackage = new CombatModifierPackage(
+            "item.watchful",
+            ModifierSource.Item,
+            new[]
+            {
+                new StatModifier(StatKey.PreferredDistance, ModifierOp.Flat, 3f, ModifierSource.Item, "item.watchful"),
+            });
+        var unit = CombatTestFactory.CreateUnit("ranger", preferredDistance: 2f) with
+        {
+            BaseStats = WithStats(
+                CombatTestFactory.CreateUnit("ranger", preferredDistance: 2f).BaseStats,
+                (StatKey.PreferredDistance, 2f)),
+            Packages = new[] { watchfulPackage },
+        };
+        var target = CombatTestFactory.CreateUnit("target", race: "undead");
+        var state = CombatTestFactory.CreateBattleState(new[] { unit }, new[] { target });
+
+        Assert.That(state.Allies[0].PreferredDistance, Is.EqualTo(5f).Within(0.001f));
+    }
+
+    [Test]
     public void HealerDoesNotOutHealSingleAttacker()
     {
         // Hexer: HealPower=4, skill PowerFlat=4 → heal 8 HP
@@ -247,5 +383,16 @@ public sealed class BattleResolutionTests
             evt.ActorId.Value == attackerId
             && evt.ActionType == BattleActionType.BasicAttack
             && evt.LogCode == BattleLogCode.BasicAttackDamage);
+    }
+
+    private static Dictionary<StatKey, float> WithStats(Dictionary<StatKey, float> source, params (StatKey Key, float Value)[] stats)
+    {
+        var result = new Dictionary<StatKey, float>(source);
+        foreach (var (key, value) in stats)
+        {
+            result[key] = value;
+        }
+
+        return result;
     }
 }
