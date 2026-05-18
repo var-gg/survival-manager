@@ -1,0 +1,73 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!-- Inventory tab V1 (시안 갤러리 #6) — audit §4.1 P1-3
+         currency header (Gold/Echo) / 4 category sidebar (ALL + 3 slot) / item grid / selected item detail (affix 이름+범위) -->
+    <Style src="../../Foundation/Styles/ThemeTokens.uss" />
+    <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
+    <Style src="../../Foundation/USS/foundation_glow.uss" />
+    <Style src="../../Screens/Town/Preview/InventoryPreview.uss" />
+    <Style src="InventoryTab.uss" />
+    <ui:VisualElement name="InvRoot" class="inv-root">
+        <ui:VisualElement class="inv-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="inv-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement class="inv-frame sm-modal-frame sm-modal-frame--parchment sm-modal-anim">
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+
+            <!-- Top currency header -->
+            <ui:VisualElement class="inv-currency-header">
+                <ui:VisualElement class="inv-currency">
+                    <ui:VisualElement name="GoldIcon" class="inv-currency__icon" picking-mode="Ignore" />
+                    <ui:Label class="inv-currency__amount" text="9,876,543" />
+                </ui:VisualElement>
+                <ui:VisualElement class="inv-currency">
+                    <ui:VisualElement name="EchoIcon" class="inv-currency__icon" picking-mode="Ignore" />
+                    <ui:Label class="inv-currency__amount" text="543,210" />
+                </ui:VisualElement>
+                <ui:Button class="inv-currency__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="inv-body">
+                <!-- Left sidebar (5 categories) -->
+                <ui:VisualElement name="CategorySidebar" class="inv-sidebar" />
+
+                <!-- Center 5x4 grid -->
+                <ui:VisualElement class="inv-main">
+                    <ui:VisualElement class="inv-main__filter-row">
+                        <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ItemGrid" class="inv-grid" />
+                </ui:VisualElement>
+
+                <!-- Right detail panel -->
+                <ui:VisualElement class="inv-detail">
+                    <ui:VisualElement name="DetailIcon" class="inv-detail__icon" picking-mode="Ignore" />
+                    <ui:VisualElement class="inv-detail__name-bar">
+                        <ui:VisualElement class="inv-detail__name-glyph" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="DetailAffixes" class="inv-detail__affixes" />
+                    <ui:VisualElement class="inv-detail__owner">
+                        <ui:VisualElement class="inv-detail__owner-icon" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-detail__owner-glyph" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <!-- equip / compare — sell은 runtime API 부재로 제거 (audit §4.1 P1-3) -->
+                    <ui:VisualElement class="inv-detail__buttons">
+                        <ui:Button class="inv-detail__btn inv-detail__btn--equip sm-cta sm-cta--inline sm-cta--primary">
+                            <ui:VisualElement class="inv-detail__btn-glyph" picking-mode="Ignore" />
+                        </ui:Button>
+                        <ui:Button class="inv-detail__btn inv-detail__btn--compare sm-cta sm-cta--inline sm-cta--secondary">
+                            <ui:VisualElement class="inv-detail__btn-glyph" picking-mode="Ignore" />
+                        </ui:Button>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -146,6 +146,7 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
                 WeaponFamilyKey: r.WeaponFamily,
                 WeaponFamilyLabel: familyLabel,
                 IsEquipped: r.Equipped,
+                IsSelected: i == 0,
                 IconSprite: LoadAffixSprite(r.Icon)));
         }
         return items;

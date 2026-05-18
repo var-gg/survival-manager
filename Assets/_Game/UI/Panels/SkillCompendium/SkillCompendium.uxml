@@ -1,0 +1,96 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="../../Foundation/Styles/ThemeTokens.uss" />
+    <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
+    <Style src="../../Foundation/USS/foundation_glow.uss" />
+    <Style src="../../Screens/Town/Preview/CompendiumPreview.uss" />
+    <Style src="SkillCompendium.uss" />
+    <ui:VisualElement name="CompendiumRoot" class="cmp-root" style="display: none;">
+        <ui:VisualElement class="cmp-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="cmp-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement class="cmp-frame sm-modal-frame sm-modal-frame--parchment sm-modal-anim">
+            <ui:VisualElement class="cmp-frame__wash" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="cmp-frame__inner-line" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="cmp-header">
+                <ui:VisualElement class="cmp-header__seal" picking-mode="Ignore" />
+                <ui:VisualElement class="cmp-header__copy" picking-mode="Ignore">
+                    <ui:Label name="CompendiumTitle" class="cmp-title" />
+                    <ui:Label name="CompendiumSubtitle" class="cmp-subtitle" />
+                </ui:VisualElement>
+                <ui:Button name="CompendiumCloseButton" class="cmp-close sm-cta sm-cta--inline sm-cta--secondary" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="CompendiumTabRow" class="cmp-tabs" />
+
+            <ui:VisualElement class="cmp-filters">
+                <ui:TextField name="CompendiumSearchField" class="cmp-filter__search" />
+                <ui:VisualElement name="CompendiumSkillFilters" class="cmp-filter__skill-row">
+                    <ui:DropdownField name="CompendiumClassFilter" class="cmp-filter__dropdown" />
+                    <ui:DropdownField name="CompendiumSlotFilter" class="cmp-filter__dropdown" />
+                    <ui:DropdownField name="CompendiumVfxFamilyFilter" class="cmp-filter__dropdown" />
+                </ui:VisualElement>
+                <ui:Label name="CompendiumResultSummary" class="cmp-filter__summary" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="cmp-body">
+                <ui:VisualElement class="cmp-catalog-shell">
+                    <ui:VisualElement class="cmp-panel-corner cmp-panel-corner--tl" picking-mode="Ignore" />
+                    <ui:VisualElement class="cmp-panel-corner cmp-panel-corner--br" picking-mode="Ignore" />
+                    <ui:ScrollView name="CompendiumEntryScroll" class="cmp-entry-scroll">
+                        <ui:VisualElement name="CompendiumEntryList" class="cmp-entry-list" />
+                    </ui:ScrollView>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="cmp-detail">
+                    <ui:VisualElement class="cmp-panel-corner cmp-panel-corner--tl" picking-mode="Ignore" />
+                    <ui:VisualElement class="cmp-panel-corner cmp-panel-corner--br" picking-mode="Ignore" />
+                    <ui:VisualElement class="cmp-detail__top">
+                        <ui:VisualElement class="cmp-detail__icon-shell" picking-mode="Ignore">
+                            <ui:VisualElement name="CompendiumDetailIcon" class="cmp-detail__icon" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="cmp-detail__copy">
+                            <ui:Label name="CompendiumDetailTitle" class="cmp-detail__title" />
+                            <ui:Label name="CompendiumDetailSubtitle" class="cmp-detail__subtitle" />
+                            <ui:Label name="CompendiumDetailDescription" class="cmp-detail__description" />
+                            <ui:Label name="CompendiumDetailHook" class="cmp-detail__hook" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="CompendiumDetailKeywordRow" class="cmp-detail__keyword-row" />
+                    <ui:VisualElement name="CompendiumVfxPreviewStage" class="cmp-vfx-stage">
+                        <ui:VisualElement class="cmp-vfx-stage__floor" picking-mode="Ignore" />
+                        <ui:VisualElement class="cmp-vfx-stage__grid" picking-mode="Ignore" />
+                        <ui:VisualElement class="cmp-vfx-reticle cmp-vfx-reticle--caster" picking-mode="Ignore" />
+                        <ui:VisualElement class="cmp-vfx-reticle cmp-vfx-reticle--target" picking-mode="Ignore" />
+                        <ui:Image name="CompendiumVfxPrefabPreviewImage" class="cmp-vfx-prefab-preview" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxCaster" class="cmp-vfx-node cmp-vfx-node--caster" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxTarget" class="cmp-vfx-node cmp-vfx-node--target" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxTrace" class="cmp-vfx-trace" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxProjectile" class="cmp-vfx-projectile" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxBurst" class="cmp-vfx-burst" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxPulseA" class="cmp-vfx-pulse cmp-vfx-pulse--a" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxPulseB" class="cmp-vfx-pulse cmp-vfx-pulse--b" picking-mode="Ignore" />
+                        <ui:VisualElement class="cmp-vfx-hud" picking-mode="Ignore">
+                            <ui:Label name="CompendiumVfxPatternLabel" class="cmp-vfx-hud__chip cmp-vfx-hud__chip--pattern" />
+                            <ui:Label name="CompendiumVfxRouteLabel" class="cmp-vfx-hud__chip cmp-vfx-hud__chip--route" />
+                            <ui:Label name="CompendiumVfxAssetLabel" class="cmp-vfx-hud__chip cmp-vfx-hud__chip--asset" />
+                        </ui:VisualElement>
+                        <ui:Label name="CompendiumVfxCasterLabel" class="cmp-vfx-actor-label cmp-vfx-actor-label--caster" picking-mode="Ignore" />
+                        <ui:Label name="CompendiumVfxTargetLabel" class="cmp-vfx-actor-label cmp-vfx-actor-label--target" picking-mode="Ignore" />
+                        <ui:VisualElement class="cmp-vfx-caption" picking-mode="Ignore">
+                            <ui:Label name="CompendiumVfxPreviewTitle" class="cmp-vfx-caption__title" />
+                            <ui:Label name="CompendiumVfxPreviewCaption" class="cmp-vfx-caption__body" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Button name="CompendiumVfxReplayButton" class="cmp-vfx-replay sm-cta sm-cta--inline sm-cta--secondary" />
+                    <ui:VisualElement name="CompendiumDetailMetrics" class="cmp-detail__metrics" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

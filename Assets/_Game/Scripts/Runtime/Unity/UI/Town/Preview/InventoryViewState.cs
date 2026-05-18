@@ -26,6 +26,7 @@ public sealed record InventoryItemViewState(
     string WeaponFamilyKey,     // shield / blade / bow / focus
     string WeaponFamilyLabel,   // 방패 / 검 / 활 / 매개체
     bool IsEquipped,
+    bool IsSelected,
     Texture2D? IconSprite
 );
 

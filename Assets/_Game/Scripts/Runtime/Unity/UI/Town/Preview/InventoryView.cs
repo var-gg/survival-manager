@@ -21,8 +21,11 @@ public sealed class InventoryView
     private readonly VisualElement _detailAffixes;
     private readonly VisualElement? _modalRoot;
     private readonly Button? _closeButton;
+    private readonly Button? _equipButton;
+    private readonly Button? _compareButton;
 
     private IInventoryActions? _actions;
+    private string _currentDetailItemInstanceId = string.Empty;
 
     public void BindClose(Action close)
     {
@@ -53,6 +56,8 @@ public sealed class InventoryView
         if (root == null) throw new ArgumentNullException(nameof(root));
         _modalRoot = root.Q<VisualElement>("InvRoot");
         _closeButton = root.Q<Button>(className: "inv-currency__close");   // UXML currency header에 X 버튼
+        _equipButton = root.Q<Button>(className: "inv-detail__btn--equip");
+        _compareButton = root.Q<Button>(className: "inv-detail__btn--compare");
         _goldIcon = root.Q<VisualElement>("GoldIcon")
             ?? throw new ArgumentException("GoldIcon 못 찾음");
         _echoIcon = root.Q<VisualElement>("EchoIcon")
@@ -76,6 +81,16 @@ public sealed class InventoryView
     public void Bind(IInventoryActions actions)
     {
         _actions = actions;
+        if (_equipButton != null)
+        {
+            _equipButton.clicked -= HandleEquipClicked;
+            _equipButton.clicked += HandleEquipClicked;
+        }
+        if (_compareButton != null)
+        {
+            _compareButton.clicked -= HandleCompareClicked;
+            _compareButton.clicked += HandleCompareClicked;
+        }
     }
 
     public void Render(InventoryViewState state)
@@ -131,6 +146,7 @@ public sealed class InventoryView
             cell.AddToClassList("inv-grid__cell");
             cell.AddToClassList("sm-hover-raise");   // 콘솔급 motion — hover raise
             cell.AddToClassList($"inv-grid__cell--{item.RarityKey}");
+            if (item.IsSelected) cell.AddToClassList("inv-grid__cell--selected");
 
             var iconLayer = new VisualElement();
             iconLayer.AddToClassList("inv-grid__cell-icon");
@@ -159,10 +175,12 @@ public sealed class InventoryView
     {
         if (detail == null)
         {
+            _currentDetailItemInstanceId = string.Empty;
             _detailAffixes.Clear();
             return;
         }
 
+        _currentDetailItemInstanceId = detail.ItemInstanceId;
         if (detail.IconSprite != null) _detailIcon.style.backgroundImage = new StyleBackground(detail.IconSprite);
 
         _detailAffixes.Clear();
@@ -192,6 +210,18 @@ public sealed class InventoryView
 
             _detailAffixes.Add(row);
         }
+    }
+
+    private void HandleEquipClicked()
+    {
+        if (!string.IsNullOrEmpty(_currentDetailItemInstanceId))
+            _actions?.OnEquipItem(_currentDetailItemInstanceId);
+    }
+
+    private void HandleCompareClicked()
+    {
+        if (!string.IsNullOrEmpty(_currentDetailItemInstanceId))
+            _actions?.OnCompareItem(_currentDetailItemInstanceId);
     }
 }
 

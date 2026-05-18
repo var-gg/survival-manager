@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Content.Definitions;
+using SM.Persistence.Abstractions.Models;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -21,6 +23,7 @@ public sealed class InventoryPresenter : IInventoryActions
     private readonly InventoryView _view;
     private readonly SpriteLoader _currencySprite;
     private readonly SpriteLoader _affixSprite;
+    private readonly ContentTextResolver? _contentText;
     private string _selectedCategoryKey = "weapon";  // default selection
     private string _selectedItemInstanceId = string.Empty;
 
@@ -28,12 +31,14 @@ public sealed class InventoryPresenter : IInventoryActions
         GameSessionRoot root,
         InventoryView view,
         SpriteLoader? currencySprite = null,
-        SpriteLoader? affixSprite = null)
+        SpriteLoader? affixSprite = null,
+        ContentTextResolver? contentText = null)
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _view = view ?? throw new ArgumentNullException(nameof(view));
         _currencySprite = currencySprite ?? (_ => null);
         _affixSprite = affixSprite ?? (_ => null);
+        _contentText = contentText;
     }
 
     public void Initialize()
@@ -95,27 +100,56 @@ public sealed class InventoryPresenter : IInventoryActions
             StringComparer.Ordinal);
         var lookup = _root.CombatContentLookup;
 
-        var items = session.Profile.Inventory
+        var entries = session.Profile.Inventory
             .Select(item =>
             {
                 var iconKey = item.ItemBaseId;
                 var rarityKey = "common";
                 var weaponFamilyKey = "item";
+                var slotKey = "item";
                 if (lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
                 {
                     iconKey = string.IsNullOrWhiteSpace(itemDef.IconId) ? item.ItemBaseId : itemDef.IconId;
                     rarityKey = itemDef.RarityTier.ToString().ToLowerInvariant();
                     weaponFamilyKey = ResolveFamilyKey(itemDef);
+                    slotKey = ResolveSlotKey(itemDef.SlotType);
                 }
 
-                return new InventoryItemViewState(
+                var itemState = new InventoryItemViewState(
                     ItemInstanceId: item.ItemInstanceId,
                     IconKey: iconKey,
                     RarityKey: rarityKey,
                     WeaponFamilyKey: weaponFamilyKey,
                     WeaponFamilyLabel: WeaponFamilyLabels.TryGetValue(weaponFamilyKey, out var lbl) ? lbl : weaponFamilyKey,
                     IsEquipped: equippedItemIds.Contains(item.ItemInstanceId),
+                    IsSelected: false,
                     IconSprite: _affixSprite(iconKey) ?? _affixSprite(item.ItemBaseId));
+                return new InventoryItemPresentation(item, slotKey, iconKey, itemState);
+            })
+            .ToList();
+
+        var filteredEntries = entries
+            .Where(e => CategoryMatches(_selectedCategoryKey, e.SlotKey))
+            .ToList();
+        if (filteredEntries.Count == 0 && !string.Equals(_selectedCategoryKey, "all", StringComparison.Ordinal))
+        {
+            _selectedCategoryKey = "all";
+            filteredEntries = entries;
+        }
+
+        if (filteredEntries.Count > 0 &&
+            (string.IsNullOrEmpty(_selectedItemInstanceId) ||
+             !filteredEntries.Any(e => string.Equals(e.Record.ItemInstanceId, _selectedItemInstanceId, StringComparison.Ordinal))))
+        {
+            _selectedItemInstanceId = filteredEntries[0].Record.ItemInstanceId;
+        }
+
+        var selectedEntry = filteredEntries
+            .FirstOrDefault(e => string.Equals(e.Record.ItemInstanceId, _selectedItemInstanceId, StringComparison.Ordinal));
+        var items = filteredEntries
+            .Select(e => e.ViewState with
+            {
+                IsSelected = string.Equals(e.Record.ItemInstanceId, _selectedItemInstanceId, StringComparison.Ordinal)
             })
             .ToList();
 
@@ -124,23 +158,57 @@ public sealed class InventoryPresenter : IInventoryActions
             Echo: echo,
             GoldSprite: _currencySprite("gold"),
             EchoSprite: _currencySprite("echo"),
-            Categories: BuildCategories(items.Count),
+            Categories: BuildCategories(entries),
             Items: items,
-            Detail: null);  // TODO Sprint 3: selected item detail
+            Detail: selectedEntry.Record != null ? BuildDetail(selectedEntry.Record, selectedEntry.IconKey) : null);
     }
 
-    private IReadOnlyList<InventoryCategoryViewState> BuildCategories(int totalItems)
+    private InventoryDetailViewState BuildDetail(InventoryItemRecord item, string iconKey)
+    {
+        var affixes = item.AffixIds
+            .Select(affixId =>
+            {
+                var group = "prefix";
+                var valueRange = "—";
+                if (_root.CombatContentLookup.TryGetAffixDefinition(affixId, out var affixDef))
+                {
+                    group = affixDef.Tier.ToString().ToLowerInvariant();
+                    valueRange = $"{affixDef.ValueMin:0.#} ~ {affixDef.ValueMax:0.#}";
+                }
+
+                return new InventoryAffixRowViewState(
+                    GroupKey: group,
+                    Name: _contentText?.GetAffixName(affixId) ?? affixId,
+                    ValueRange: valueRange);
+            })
+            .ToList();
+
+        return new InventoryDetailViewState(
+            ItemInstanceId: item.ItemInstanceId,
+            IconSprite: _affixSprite(iconKey) ?? _affixSprite(item.ItemBaseId),
+            Affixes: affixes);
+    }
+
+    private IReadOnlyList<InventoryCategoryViewState> BuildCategories(IReadOnlyList<InventoryItemPresentation> entries)
     {
         const int rosterCap = 300;
         return CategoryCatalog
             .Select(c => new InventoryCategoryViewState(
                 Key: c.Key,
                 Label: c.Label,
-                Count: c.Key == "all" ? $"{totalItems}/{rosterCap}" : "?/100",
+                Count: c.Key == "all"
+                    ? $"{entries.Count}/{rosterCap}"
+                    : $"{entries.Count(e => CategoryMatches(c.Key, e.SlotKey))}/100",
                 IconSprite: _affixSprite(c.IconKey),
                 IsSelected: string.Equals(c.Key, _selectedCategoryKey, StringComparison.Ordinal)))
             .ToList();
     }
+
+    private readonly record struct InventoryItemPresentation(
+        InventoryItemRecord Record,
+        string SlotKey,
+        string IconKey,
+        InventoryItemViewState ViewState);
 
     private readonly record struct CategoryCatalogEntry(string Key, string Label, string IconKey);
 
@@ -164,7 +232,19 @@ public sealed class InventoryPresenter : IInventoryActions
     public static IReadOnlyList<(string Key, string Label, string IconKey)> Categories
         => CategoryCatalog.Select(c => (c.Key, c.Label, c.IconKey)).ToList();
 
-    private static string ResolveFamilyKey(SM.Content.Definitions.ItemBaseDefinition item)
+    private static bool CategoryMatches(string categoryKey, string slotKey) =>
+        string.Equals(categoryKey, "all", StringComparison.Ordinal) ||
+        string.Equals(categoryKey, slotKey, StringComparison.Ordinal);
+
+    private static string ResolveSlotKey(ItemSlotType slot) => slot switch
+    {
+        ItemSlotType.Weapon => "weapon",
+        ItemSlotType.Armor => "armor",
+        ItemSlotType.Accessory => "accessory",
+        _ => "item",
+    };
+
+    private static string ResolveFamilyKey(ItemBaseDefinition item)
     {
         return item.SlotType switch
         {

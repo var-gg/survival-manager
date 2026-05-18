@@ -116,6 +116,11 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         var session = _root.SessionState;
         var inventory = session.Profile.Inventory;
         var lookup = _root.CombatContentLookup;
+        var selectedItem = ResolveSelectedItem();
+        if (selectedItem != null && string.IsNullOrEmpty(_selectedItemInstanceId))
+        {
+            _selectedItemInstanceId = selectedItem.ItemInstanceId;
+        }
 
         // Pool — Profile.Inventory 전체. ItemBaseDefinition으로 이름 / slot / rarity 보강.
         var pool = inventory
@@ -142,7 +147,6 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
 
         // Affix list — selected item의 AffixIds. group은 AffixDefinition.Tier에서 read (index 추정 폐기).
         // 값은 instance 확정 roll 미저장 (AffixIds = definition id) → ValueMin~ValueMax 범위 표기.
-        var selectedItem = ResolveSelectedItem();
         var affixes = new List<EquipmentRefitAffixRowViewState>();
         if (selectedItem != null)
         {

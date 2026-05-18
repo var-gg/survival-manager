@@ -21,6 +21,7 @@ public sealed class EquipmentRefitView
     private readonly Label _refitCostLabel;
     private readonly VisualElement? _modalRoot;
     private readonly Button? _closeButton;
+    private readonly Button? _refitButton;
 
     private IEquipmentRefitActions? _actions;
 
@@ -53,6 +54,7 @@ public sealed class EquipmentRefitView
         if (root == null) throw new ArgumentNullException(nameof(root));
         _modalRoot = root.Q<VisualElement>("ErpRoot");
         _closeButton = root.Q<Button>(className: "erp-header__close");
+        _refitButton = root.Q<Button>(className: "erp-refit-cta");
         _standeePortrait = root.Q<VisualElement>("StandeePortrait")
             ?? throw new ArgumentException("StandeePortrait 못 찾음");
         _echoIcon = root.Q<VisualElement>("EchoIcon")
@@ -71,6 +73,11 @@ public sealed class EquipmentRefitView
     public void Bind(IEquipmentRefitActions actions)
     {
         _actions = actions;
+        if (_refitButton != null)
+        {
+            _refitButton.clicked -= HandleRefitClicked;
+            _refitButton.clicked += HandleRefitClicked;
+        }
     }
 
     public void Render(EquipmentRefitViewState state)
@@ -164,6 +171,11 @@ public sealed class EquipmentRefitView
             row.RegisterCallback<ClickEvent>(_ => _actions?.OnPoolItemSelected(item.ItemInstanceId));
             _inventoryPool.Add(row);
         }
+    }
+
+    private void HandleRefitClicked()
+    {
+        _actions?.OnRefitConfirmed();
     }
 }
 

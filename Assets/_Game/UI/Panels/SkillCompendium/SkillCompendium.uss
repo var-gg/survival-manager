@@ -1,0 +1,106 @@
+.cmp-frame {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_outer.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 96;
+    -unity-slice-bottom: 96;
+    -unity-slice-scale: 0.5;
+    background-color: var(--sm-bg-0);
+}
+
+.cmp-catalog-shell,
+.cmp-detail,
+.cmp-detail__top,
+.cmp-vfx-stage {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.5;
+    background-color: var(--sm-bg-1);
+}
+
+.cmp-skill-card,
+.cmp-entry,
+.cmp-character-card {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.34;
+    background-color: var(--sm-bg-2);
+}
+
+.cmp-skill-card--selected,
+.cmp-entry--selected,
+.cmp-character-card--selected {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_selected_base.png");
+    background-color: var(--sm-bg-3);
+}
+
+.cmp-entry--locked,
+.cmp-character-card--locked {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_locked.png");
+}
+
+.cmp-detail__icon-shell,
+.cmp-detail__icon,
+.cmp-entry__icon,
+.cmp-skill-card__icon,
+.cmp-character-card__portrait {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
+    -unity-slice-left: 56;
+    -unity-slice-right: 56;
+    -unity-slice-top: 56;
+    -unity-slice-bottom: 56;
+    -unity-slice-scale: 0.4;
+}
+
+.cmp-tab {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Tab/ui_tab_inactive.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 72;
+    -unity-slice-bottom: 48;
+    -unity-slice-scale: 0.34;
+}
+
+.cmp-tab--selected {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Tab/ui_tab_active.png");
+}
+
+.cmp-filter__search .unity-base-text-field__input,
+.cmp-filter__search .unity-text-field__input {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Input/ui_input_bg.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 56;
+    -unity-slice-bottom: 56;
+    -unity-slice-scale: 0.34;
+}
+
+.cmp-filter__dropdown .unity-base-field__input,
+.cmp-filter__dropdown .unity-base-popup-field__input {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Input/ui_dropdown_bg.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 96;
+    -unity-slice-top: 56;
+    -unity-slice-bottom: 56;
+    -unity-slice-scale: 0.34;
+}
+
+.cmp-header__seal {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Ornament/ui_header_decoration_center.png");
+}
+
+.cmp-close,
+.cmp-vfx-replay {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_dark.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.34;
+}
