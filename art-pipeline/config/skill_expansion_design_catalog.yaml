@@ -1,0 +1,878 @@
+schema: skill_expansion_design_catalog_v1
+updated_at: '2026-05-18'
+quota_source: art-pipeline/config/combat_roster_skill_quota.yaml
+purpose: Concrete 36-skill expansion backlog for the 22-hero target roster, designed
+  before VFX lock and icon generation.
+icon_pipeline:
+  batch_size: 4
+  sheet_size: 1568x1568
+  cell_size: 768x768
+  gutter: 32px #FF00FF
+  output_dir: art-pipeline/output/icons/skill/expansion_v1
+  chroma_contract: Outside each symbol's 2-4 px dark outer stroke, every pixel must
+    be flat #FF00FF with no shadow, blur, glow, particles, haze, or residue.
+  first_sheet_ref_strategy: Use four existing character portrait outputs as style/color
+    references for the first mixed seed sheet.
+  followup_ref_strategy: After the first sheet is split, promote 2-3 generated icon
+    pieces into art-pipeline/ref/icons and attach those as canonical style refs for
+    later sheets.
+  promoted_style_refs:
+  - ref_id: skill_expansion_v1_style_ref_01
+    source_icon_id: skill_icon_aegis_sentinel_oath
+  - ref_id: skill_expansion_v1_style_ref_02
+    source_icon_id: skill_icon_prism_lance
+  - ref_id: skill_expansion_v1_style_ref_03
+    source_icon_id: skill_icon_shardblade_sever
+slot_backlog:
+  CoreActive: 10
+  UtilityActive: 10
+  Passive: 14
+  Support: 2
+class_backlog:
+  vanguard: 12
+  ranger: 10
+  duelist: 7
+  mystic: 7
+sheets:
+- id: skill_expansion_v1_seed_style_mix
+  title: Expansion v1 Seed Style Mix
+  refs:
+  - hero_aegis_sentinel:portrait_full
+  - hero_prism_seeker:portrait_full
+  - hero_shardblade:portrait_full
+  - hero_echo_savant:portrait_full
+  style_seed: true
+  skills:
+  - skill_aegis_sentinel_oath
+  - skill_prism_lance
+  - skill_shardblade_sever
+  - skill_echo_resonance
+- id: skill_expansion_v1_vanguard_aegis
+  title: Vanguard Aegis / Formation
+  refs:
+  - skill_expansion_v1_style_ref_01
+  - skill_expansion_v1_style_ref_02
+  - skill_expansion_v1_style_ref_03
+  skills:
+  - skill_aegis_linebreaker
+  - skill_square_wall
+  - skill_aegis_intercept
+  - support_line_anchor
+- id: skill_expansion_v1_vanguard_iron_pelt
+  title: Vanguard Iron Pelt / Attrition
+  refs:
+  - skill_expansion_v1_style_ref_01
+  - skill_expansion_v1_style_ref_02
+  - skill_expansion_v1_style_ref_03
+  skills:
+  - skill_iron_pelt_maul
+  - skill_rusthide_charge
+  - skill_iron_pelt_roar
+  - skill_iron_hide_memory
+- id: skill_expansion_v1_vanguard_passives
+  title: Vanguard Guard / Pathfinder Passives
+  refs:
+  - skill_expansion_v1_style_ref_01
+  - skill_expansion_v1_style_ref_02
+  - skill_expansion_v1_style_ref_03
+  skills:
+  - skill_sentinel_oath
+  - skill_lattice_bastion
+  - skill_pelt_last_stand
+  - skill_glass_pathfinder
+- id: skill_expansion_v1_ranger_prism_ember
+  title: Ranger Prism / Ember Actives
+  refs:
+  - skill_expansion_v1_style_ref_01
+  - skill_expansion_v1_style_ref_02
+  - skill_expansion_v1_style_ref_03
+  skills:
+  - skill_ember_arrow
+  - skill_cinder_overrun
+  - skill_refracting_snare
+  - skill_signal_flare
+- id: skill_expansion_v1_ranger_passives
+  title: Ranger Sight / Motion Passives
+  refs:
+  - skill_expansion_v1_style_ref_01
+  - skill_expansion_v1_style_ref_02
+  - skill_expansion_v1_style_ref_03
+  skills:
+  - skill_ash_step
+  - skill_prism_sight
+  - skill_heat_haze
+  - skill_quick_kindling
+- id: skill_expansion_v1_ranger_duelist_bridge
+  title: Ranger / Duelist Precision Bridge
+  refs:
+  - skill_expansion_v1_style_ref_01
+  - skill_expansion_v1_style_ref_02
+  - skill_expansion_v1_style_ref_03
+  skills:
+  - skill_mirror_cut
+  - skill_fracture_step
+  - skill_riposte_angle
+  - support_resonance_cleanse
+- id: skill_expansion_v1_duelist_shard
+  title: Duelist Shardblade Passives
+  refs:
+  - skill_expansion_v1_style_ref_01
+  - skill_expansion_v1_style_ref_02
+  - skill_expansion_v1_style_ref_03
+  skills:
+  - skill_shard_memory
+  - skill_edge_of_sentence
+  - skill_bloodless_form
+  - skill_memory_tuning
+- id: skill_expansion_v1_mystic_echo
+  title: Mystic Echo Savant
+  refs:
+  - skill_expansion_v1_style_ref_01
+  - skill_expansion_v1_style_ref_02
+  - skill_expansion_v1_style_ref_03
+  skills:
+  - skill_phase_tether
+  - skill_echo_archive
+  - skill_lattice_listener
+  - skill_savant_last_word
+skills:
+- id: skill_aegis_sentinel_oath
+  icon_id: skill_icon_aegis_sentinel_oath
+  target_hero: hero_aegis_sentinel
+  target_class: vanguard
+  slot: CoreActive
+  kind: Shield
+  delivery: Nova
+  damage: Magical
+  target_rule: ProtectedAlly
+  power: 0
+  cooldown: 3.2
+  statuses:
+  - id: barrier
+    duration: 0
+    magnitude: 7
+  - id: guarded
+    duration: 2.4
+    magnitude: 1
+  name_en: Sentinel Oath
+  name_ko: 파수의 맹세
+  effect_en: Projects a square oath mark, granting barrier and guarded to the ally
+    under pressure.
+  effect_ko: 압박받는 아군에게 방진 맹세 표식을 펼쳐 barrier와 guarded를 부여한다.
+  icon_prompt: square ivory shield sigil with a lattice oath knot and a blue-white
+    pulse contained inside the stroke
+  palette: ivory steel, muted blue, warm gold accent
+- id: skill_aegis_linebreaker
+  icon_id: skill_icon_aegis_linebreaker
+  target_hero: hero_aegis_sentinel
+  target_class: vanguard
+  slot: CoreActive
+  kind: Strike
+  delivery: Melee
+  damage: Physical
+  target_rule: MostExposedEnemy
+  power: 4.4
+  cooldown: 2.4
+  statuses:
+  - id: sunder
+    duration: 3
+    magnitude: 1
+  name_en: Linebreaker
+  name_ko: 전열 파쇄
+  effect_en: Shield-bashes the exposed enemy and applies sunder.
+  effect_ko: 노출된 적을 방패로 밀어쳐 sunder를 건다.
+  icon_prompt: blunt shield corner breaking a straight enemy line into two clean
+    plate shards
+  palette: steel, chalk white, muted amber
+- id: skill_square_wall
+  icon_id: skill_icon_square_wall
+  target_hero: hero_aegis_sentinel
+  target_class: vanguard
+  slot: UtilityActive
+  kind: Shield
+  delivery: Zone
+  damage: Magical
+  target_rule: Self
+  power: 0
+  cooldown: 5
+  statuses:
+  - id: barrier
+    duration: 0
+    magnitude: 9
+  name_en: Square Wall
+  name_ko: 방진벽
+  effect_en: Raises a short-lived lattice wall around the front line, adding barrier.
+  effect_ko: 전열 주변에 짧게 유지되는 격자 방벽을 세워 barrier를 더한다.
+  icon_prompt: four interlocking square plates forming a compact wall, viewed as a
+    single emblem
+  palette: pale stone, blue-grey, gold seam
+- id: skill_aegis_intercept
+  icon_id: skill_icon_aegis_intercept
+  target_hero: hero_aegis_sentinel
+  target_class: vanguard
+  slot: UtilityActive
+  kind: Buff
+  delivery: Aura
+  damage: Magical
+  target_rule: ProtectedAlly
+  power: 0
+  cooldown: 4.2
+  statuses:
+  - id: guarded
+    duration: 3
+    magnitude: 1
+  name_en: Intercept Angle
+  name_ko: 가로막는 각도
+  effect_en: Marks a protected ally and biases the sentinel to intercept incoming
+    pressure.
+  effect_ko: 보호 대상 아군을 지정해 들어오는 압박을 파수자가 가로막도록 만든다.
+  icon_prompt: bent silver arrow redirecting into a small shield diamond, no figure
+  palette: steel, desaturated blue, copper accent
+- id: skill_sentinel_oath
+  icon_id: skill_icon_sentinel_oath
+  target_hero: hero_aegis_sentinel
+  target_class: vanguard
+  slot: Passive
+  kind: Buff
+  delivery: Melee
+  damage: Physical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Oath Weight
+  name_ko: 맹세의 무게
+  effect_en: Passive; improves reliability when holding anchor posture.
+  effect_ko: 패시브. anchor 자세를 유지할 때 신뢰도와 방어 지속력을 높인다.
+  icon_prompt: heavy oath seal tied to a shield base with two restrained cords
+  palette: iron, ivory, old gold
+- id: skill_lattice_bastion
+  icon_id: skill_icon_lattice_bastion
+  target_hero: hero_aegis_sentinel
+  target_class: vanguard
+  slot: Passive
+  kind: Buff
+  delivery: Zone
+  damage: Magical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Lattice Bastion
+  name_ko: 격자 보루
+  effect_en: Passive; converts repeated pressure into extra barrier budget.
+  effect_ko: 패시브. 반복 압박을 추가 barrier 예산으로 전환한다.
+  icon_prompt: small fortress block overlaid with a clean geometric lattice cross
+  palette: blue-white, slate, gold point
+- id: support_line_anchor
+  icon_id: skill_icon_support_line_anchor
+  target_hero: hero_aegis_sentinel
+  target_class: vanguard
+  slot: Support
+  kind: Buff
+  delivery: Aura
+  damage: Physical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses:
+  - id: guarded
+    duration: 2
+    magnitude: 1
+  name_en: Line Anchor
+  name_ko: 전열 고정
+  effect_en: Support modifier; guard effects also steady nearby allies.
+  effect_ko: 서포트 증강. guard 효과가 인접 아군의 전열도 안정시킨다.
+  icon_prompt: anchored horizontal shield line with one central square pin
+  palette: dark steel, ivory, muted blue
+- id: skill_iron_pelt_maul
+  icon_id: skill_icon_iron_pelt_maul
+  target_hero: hero_iron_pelt
+  target_class: vanguard
+  slot: CoreActive
+  kind: Strike
+  delivery: Melee
+  damage: Physical
+  target_rule: NearestEnemy
+  power: 4.8
+  cooldown: 2.6
+  statuses:
+  - id: wound
+    duration: 4
+    magnitude: 1
+  name_en: Iron Pelt Maul
+  name_ko: 철피 난타
+  effect_en: Heavy close strike that wounds the nearest enemy.
+  effect_ko: 가장 가까운 적을 무겁게 후려쳐 wound를 남긴다.
+  icon_prompt: rust-dark maul head colliding with a cracked hide plate, no hand
+  palette: dark iron, rust red, moss green accent
+- id: skill_rusthide_charge
+  icon_id: skill_icon_rusthide_charge
+  target_hero: hero_iron_pelt
+  target_class: vanguard
+  slot: CoreActive
+  kind: Strike
+  delivery: Melee
+  damage: Physical
+  target_rule: MostExposedEnemy
+  power: 4.3
+  cooldown: 3.1
+  statuses:
+  - id: root
+    duration: 1.6
+    magnitude: 1
+  name_en: Rusthide Charge
+  name_ko: 녹가죽 돌진
+  effect_en: Charges the exposed enemy and briefly roots them.
+  effect_ko: 노출된 적에게 돌진해 짧게 root를 건다.
+  icon_prompt: forward iron plate wedge with moss-green impact cracks trapped inside
+    the outline
+  palette: blackened iron, rust, muted green
+- id: skill_iron_pelt_roar
+  icon_id: skill_icon_iron_pelt_roar
+  target_hero: hero_iron_pelt
+  target_class: vanguard
+  slot: UtilityActive
+  kind: Debuff
+  delivery: Nova
+  damage: Physical
+  target_rule: NearestEnemy
+  power: 0
+  cooldown: 5.2
+  statuses:
+  - id: exposed
+    duration: 3
+    magnitude: 1
+  name_en: Iron Pelt Roar
+  name_ko: 철피 포효
+  effect_en: Emits a short pressure roar that exposes nearby enemies.
+  effect_ko: 짧은 압박 포효로 주변 적을 exposed 상태로 만든다.
+  icon_prompt: contained jagged sound wedge bursting from a dark iron pelt sigil,
+    no mouth
+  palette: iron black, ochre, rust
+- id: skill_iron_hide_memory
+  icon_id: skill_icon_iron_hide_memory
+  target_hero: hero_iron_pelt
+  target_class: vanguard
+  slot: Passive
+  kind: Buff
+  delivery: Melee
+  damage: Physical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Iron-Hide Memory
+  name_ko: 철가죽 기억
+  effect_en: Passive; repeated damage grants a small durability budget.
+  effect_ko: 패시브. 반복 피해를 받을수록 내구 예산을 조금 얻는다.
+  icon_prompt: layered hide scale with an old iron memory knot in the center
+  palette: dark hide, iron, moss
+- id: skill_pelt_last_stand
+  icon_id: skill_icon_pelt_last_stand
+  target_hero: hero_iron_pelt
+  target_class: vanguard
+  slot: Passive
+  kind: Buff
+  delivery: Aura
+  damage: Physical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses:
+  - id: unstoppable
+    duration: 2
+    magnitude: 1
+  name_en: Last Pelt Standing
+  name_ko: 마지막 철피
+  effect_en: Passive; low health briefly grants unstoppable once per combat.
+  effect_ko: 패시브. 체력이 낮을 때 전투당 한 번 짧은 unstoppable을 얻는다.
+  icon_prompt: cracked hide plate refusing to split, with a small green ember inside
+  palette: rust black, green ember, bone edge
+- id: skill_prism_lance
+  icon_id: skill_icon_prism_lance
+  target_hero: hero_prism_seeker
+  target_class: ranger
+  slot: CoreActive
+  kind: Strike
+  delivery: Projectile
+  damage: Magical
+  target_rule: MarkedTarget
+  power: 3.9
+  cooldown: 2.2
+  statuses:
+  - id: marked
+    duration: 4
+    magnitude: 1
+  name_en: Prism Lance
+  name_ko: 프리즘 창
+  effect_en: Fires a thin prism bolt that prefers marked targets and refreshes mark.
+  effect_ko: 가느다란 프리즘 탄을 쏘아 marked 대상을 우선하고 표식을 갱신한다.
+  icon_prompt: thin crystal arrow-lance piercing a small blue focus diamond
+  palette: cyan, pale gold, glass white
+- id: skill_ember_arrow
+  icon_id: skill_icon_ember_arrow
+  target_hero: hero_ember_runner
+  target_class: ranger
+  slot: CoreActive
+  kind: Strike
+  delivery: Projectile
+  damage: Physical
+  target_rule: NearestEnemy
+  power: 3.7
+  cooldown: 2
+  statuses:
+  - id: burn
+    duration: 4
+    magnitude: 1
+  name_en: Ember Arrow
+  name_ko: 불씨 화살
+  effect_en: Shoots a fast ember-tipped arrow that applies burn.
+  effect_ko: 빠른 불씨 화살로 적에게 burn을 건다.
+  icon_prompt: compact ember arrowhead with a contained orange coal core
+  palette: charcoal, ember orange, warm cream
+- id: skill_cinder_overrun
+  icon_id: skill_icon_cinder_overrun
+  target_hero: hero_ember_runner
+  target_class: ranger
+  slot: CoreActive
+  kind: Strike
+  delivery: Ranged
+  damage: Physical
+  target_rule: LowestHpEnemy
+  power: 3.4
+  cooldown: 2.8
+  statuses:
+  - id: slow
+    duration: 2.5
+    magnitude: 1
+  name_en: Cinder Overrun
+  name_ko: 잿불 추격
+  effect_en: Pressures a weakened enemy with a cinder shot and slows them.
+  effect_ko: 약해진 적을 잿불 사격으로 압박하고 slow를 건다.
+  icon_prompt: low arcing cinder shot chasing a small cracked target diamond
+  palette: ember orange, soot, muted teal
+- id: skill_refracting_snare
+  icon_id: skill_icon_refracting_snare
+  target_hero: hero_prism_seeker
+  target_class: ranger
+  slot: UtilityActive
+  kind: Debuff
+  delivery: Trap
+  damage: Magical
+  target_rule: MostExposedEnemy
+  power: 0
+  cooldown: 5
+  statuses:
+  - id: root
+    duration: 2
+    magnitude: 1
+  name_en: Refracting Snare
+  name_ko: 굴절 덫
+  effect_en: Places a prism snare that roots an exposed target.
+  effect_ko: 노출된 대상을 root시키는 프리즘 덫을 놓는다.
+  icon_prompt: angular glass snare loop closing around a tiny light shard
+  palette: glass cyan, silver, pale amber
+- id: skill_signal_flare
+  icon_id: skill_icon_signal_flare
+  target_hero: hero_prism_seeker
+  target_class: ranger
+  slot: UtilityActive
+  kind: Debuff
+  delivery: Ranged
+  damage: Magical
+  target_rule: MarkedTarget
+  power: 0
+  cooldown: 4.5
+  statuses:
+  - id: marked
+    duration: 5
+    magnitude: 1
+  - id: exposed
+    duration: 2.5
+    magnitude: 1
+  name_en: Signal Flare
+  name_ko: 신호 섬광
+  effect_en: Marks a priority target and briefly exposes it.
+  effect_ko: 우선 대상을 marked로 지정하고 짧게 exposed를 부여한다.
+  icon_prompt: small cyan flare over a gold target notch, no explosion outside stroke
+  palette: cyan, gold, dark blue
+- id: skill_ash_step
+  icon_id: skill_icon_ash_step
+  target_hero: hero_ember_runner
+  target_class: ranger
+  slot: UtilityActive
+  kind: Utility
+  delivery: Zone
+  damage: Physical
+  target_rule: Self
+  power: 0
+  cooldown: 4.8
+  statuses:
+  - id: unstoppable
+    duration: 1.5
+    magnitude: 1
+  name_en: Ash Step
+  name_ko: 잿걸음
+  effect_en: Creates a short ash path and grants brief unstoppable repositioning.
+  effect_ko: 짧은 잿길을 만들고 순간적인 unstoppable 재배치를 얻는다.
+  icon_prompt: footless ash path slash with two ember ticks, no leg or body
+  palette: ash grey, ember, muted green
+- id: skill_prism_sight
+  icon_id: skill_icon_prism_sight
+  target_hero: hero_prism_seeker
+  target_class: ranger
+  slot: Passive
+  kind: Buff
+  delivery: Projectile
+  damage: Magical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Prism Sight
+  name_ko: 프리즘 시야
+  effect_en: Passive; marked targets increase projectile reliability.
+  effect_ko: 패시브. marked 대상에 대한 투사체 신뢰도를 높인다.
+  icon_prompt: clear prism eye-shaped diamond crossed by a single arrow line, no eye
+  palette: cyan glass, white, gold
+- id: skill_heat_haze
+  icon_id: skill_icon_heat_haze
+  target_hero: hero_ember_runner
+  target_class: ranger
+  slot: Passive
+  kind: Buff
+  delivery: Ranged
+  damage: Physical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Heat Haze
+  name_ko: 열아지랑이
+  effect_en: Passive; after moving, incoming ranged pressure is less reliable.
+  effect_ko: 패시브. 이동 후 자신에게 들어오는 원거리 압박의 신뢰도를 낮춘다.
+  icon_prompt: contained amber heat ripple bending a small arrow silhouette
+  palette: ember amber, charcoal, cream
+- id: skill_quick_kindling
+  icon_id: skill_icon_quick_kindling
+  target_hero: hero_ember_runner
+  target_class: ranger
+  slot: Passive
+  kind: Buff
+  delivery: Ranged
+  damage: Physical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Quick Kindling
+  name_ko: 빠른 불쏘시개
+  effect_en: Passive; first burn application in combat gains extra tempo budget.
+  effect_ko: 패시브. 전투 첫 burn 부여가 추가 템포 예산을 얻는다.
+  icon_prompt: three small kindling sparks aligned like fast arrow ticks
+  palette: ember, soot, warm gold
+- id: skill_glass_pathfinder
+  icon_id: skill_icon_glass_pathfinder
+  target_hero: hero_prism_seeker
+  target_class: ranger
+  slot: Passive
+  kind: Utility
+  delivery: Zone
+  damage: Magical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Glass Pathfinder
+  name_ko: 유리길 탐색자
+  effect_en: Passive; improves target switching when fighting through marked zones.
+  effect_ko: 패시브. marked 구역을 사이에 둔 전투에서 대상 전환을 개선한다.
+  icon_prompt: angular glass path split into two clean tactical lanes
+  palette: glass blue, white, muted gold
+- id: skill_shardblade_sever
+  icon_id: skill_icon_shardblade_sever
+  target_hero: hero_shardblade
+  target_class: duelist
+  slot: CoreActive
+  kind: Strike
+  delivery: Melee
+  damage: 'True'
+  target_rule: MostExposedEnemy
+  power: 3.6
+  cooldown: 2.7
+  statuses:
+  - id: wound
+    duration: 4
+    magnitude: 1
+  - id: sunder
+    duration: 3
+    magnitude: 1
+  name_en: Shardblade Sever
+  name_ko: 편검 절단
+  effect_en: A precise shard cut that wounds and sunders an exposed target.
+  effect_ko: 노출된 대상을 정확히 베어 wound와 sunder를 남긴다.
+  icon_prompt: single broken crystal blade cutting a red-black pressure thread
+  palette: indigo, crystal white, dark red accent
+- id: skill_mirror_cut
+  icon_id: skill_icon_mirror_cut
+  target_hero: hero_shardblade
+  target_class: duelist
+  slot: CoreActive
+  kind: Strike
+  delivery: Projectile
+  damage: Magical
+  target_rule: MarkedTarget
+  power: 3.5
+  cooldown: 2.4
+  statuses:
+  - id: exposed
+    duration: 2
+    magnitude: 1
+  name_en: Mirror Cut
+  name_ko: 거울 베기
+  effect_en: Throws a mirror-thin shard at a marked target and exposes them.
+  effect_ko: marked 대상에게 거울처럼 얇은 파편을 던져 exposed를 건다.
+  icon_prompt: thin mirror shard slash reflecting a small cyan cut line
+  palette: mirror silver, indigo, cyan
+- id: skill_fracture_step
+  icon_id: skill_icon_fracture_step
+  target_hero: hero_shardblade
+  target_class: duelist
+  slot: UtilityActive
+  kind: Utility
+  delivery: Zone
+  damage: 'True'
+  target_rule: Self
+  power: 0
+  cooldown: 4.6
+  statuses:
+  - id: slow
+    duration: 2
+    magnitude: 1
+  name_en: Fracture Step
+  name_ko: 균열 보법
+  effect_en: Leaves a fractured lane that slows enemies trying to follow.
+  effect_ko: 뒤따르는 적을 slow시키는 균열 궤적을 남긴다.
+  icon_prompt: footless fracture lane, two indigo shards separated by a white crack
+  palette: indigo, white crystal, dark steel
+- id: skill_riposte_angle
+  icon_id: skill_icon_riposte_angle
+  target_hero: hero_shardblade
+  target_class: duelist
+  slot: UtilityActive
+  kind: Buff
+  delivery: Ranged
+  damage: Physical
+  target_rule: Self
+  power: 0
+  cooldown: 3.8
+  statuses:
+  - id: guarded
+    duration: 1.8
+    magnitude: 1
+  name_en: Riposte Angle
+  name_ko: 반격각
+  effect_en: Sets a narrow counter angle and briefly gains guarded.
+  effect_ko: 좁은 반격 각도를 잡고 짧게 guarded를 얻는다.
+  icon_prompt: narrow parry line bouncing a red spark back along a measured angle
+  palette: steel, indigo, red spark
+- id: skill_shard_memory
+  icon_id: skill_icon_shard_memory
+  target_hero: hero_shardblade
+  target_class: duelist
+  slot: Passive
+  kind: Buff
+  delivery: Ranged
+  damage: Magical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Shard Memory
+  name_ko: 파편 기억
+  effect_en: Passive; hitting exposed targets stores a small follow-up budget.
+  effect_ko: 패시브. exposed 대상을 맞히면 작은 후속 예산을 저장한다.
+  icon_prompt: small memory bead trapped inside a broken crystal shard
+  palette: crystal white, indigo, pale gold
+- id: skill_edge_of_sentence
+  icon_id: skill_icon_edge_of_sentence
+  target_hero: hero_shardblade
+  target_class: duelist
+  slot: Passive
+  kind: Buff
+  delivery: Melee
+  damage: 'True'
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Edge of Sentence
+  name_ko: 선고의 칼끝
+  effect_en: Passive; execution windows gain a small true-damage bias.
+  effect_ko: 패시브. 처형 타이밍에 소량의 true damage 편향을 얻는다.
+  icon_prompt: execution point hovering over a small sealed verdict diamond, no letters
+  palette: black steel, red, pale crystal
+- id: skill_bloodless_form
+  icon_id: skill_icon_bloodless_form
+  target_hero: hero_shardblade
+  target_class: duelist
+  slot: Passive
+  kind: Utility
+  delivery: Melee
+  damage: 'True'
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Bloodless Form
+  name_ko: 무혈식
+  effect_en: Passive; reduces self-risk when chaining utility movement.
+  effect_ko: 패시브. utility 이동을 연계할 때 자기 위험도를 줄인다.
+  icon_prompt: pale empty stance sigil made of two clean blade arcs, no body
+  palette: pale grey, indigo, muted red
+- id: skill_echo_resonance
+  icon_id: skill_icon_echo_resonance
+  target_hero: hero_echo_savant
+  target_class: mystic
+  slot: CoreActive
+  kind: Debuff
+  delivery: Projectile
+  damage: Magical
+  target_rule: MarkedTarget
+  power: 3.2
+  cooldown: 3
+  statuses:
+  - id: silence
+    duration: 2
+    magnitude: 1
+  name_en: Echo Resonance
+  name_ko: 공명 반향
+  effect_en: Sends a focused resonance pulse that silences a marked target.
+  effect_ko: 집중 공명파로 marked 대상을 silence시킨다.
+  icon_prompt: blue sound line passing through a small memory prism, no letters
+  palette: deep teal, blue-white, old gold
+- id: skill_memory_tuning
+  icon_id: skill_icon_memory_tuning
+  target_hero: hero_echo_savant
+  target_class: mystic
+  slot: UtilityActive
+  kind: Heal
+  delivery: Aura
+  damage: Healing
+  target_rule: LowestHpAlly
+  power: 3
+  cooldown: 4.8
+  statuses:
+  - id: barrier
+    duration: 0
+    magnitude: 4
+  name_en: Memory Tuning
+  name_ko: 기억 조율
+  effect_en: Tunes an injured ally's memory pattern, healing and adding a light barrier.
+  effect_ko: 부상당한 아군의 기억 패턴을 조율해 회복시키고 작은 barrier를 더한다.
+  icon_prompt: tuning fork-shaped light around a green memory bead, no text
+  palette: teal, pale green, gold
+- id: skill_phase_tether
+  icon_id: skill_icon_phase_tether
+  target_hero: hero_echo_savant
+  target_class: mystic
+  slot: UtilityActive
+  kind: Debuff
+  delivery: Zone
+  damage: Magical
+  target_rule: MostExposedEnemy
+  power: 0
+  cooldown: 5.2
+  statuses:
+  - id: root
+    duration: 2
+    magnitude: 1
+  - id: slow
+    duration: 3
+    magnitude: 1
+  name_en: Phase Tether
+  name_ko: 위상 결박
+  effect_en: Tethers an exposed enemy in phase noise, rooting and slowing them.
+  effect_ko: 노출된 적을 위상 잡음에 묶어 root와 slow를 건다.
+  icon_prompt: teal phase cord knot wrapping a small black prism
+  palette: teal, black, pale gold
+- id: skill_echo_archive
+  icon_id: skill_icon_echo_archive
+  target_hero: hero_echo_savant
+  target_class: mystic
+  slot: Passive
+  kind: Buff
+  delivery: Aura
+  damage: Magical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Echo Archive
+  name_ko: 반향 기록고
+  effect_en: Passive; repeated status applications improve reliability.
+  effect_ko: 패시브. 상태이상 반복 적용의 신뢰도를 높인다.
+  icon_prompt: small open archive prism with a contained echo ring, no letters
+  palette: deep teal, ivory, blue
+- id: skill_lattice_listener
+  icon_id: skill_icon_lattice_listener
+  target_hero: hero_echo_savant
+  target_class: mystic
+  slot: Passive
+  kind: Utility
+  delivery: Zone
+  damage: Magical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses: []
+  name_en: Lattice Listener
+  name_ko: 격자 청취자
+  effect_en: Passive; improves target selection against controlled enemies.
+  effect_ko: 패시브. 제어된 적을 상대로 대상 선택을 개선한다.
+  icon_prompt: quiet lattice antenna glyph listening to a blue ripple
+  palette: teal, blue-white, gold
+- id: skill_savant_last_word
+  icon_id: skill_icon_savant_last_word
+  target_hero: hero_echo_savant
+  target_class: mystic
+  slot: Passive
+  kind: Debuff
+  delivery: Zone
+  damage: Magical
+  target_rule: Self
+  power: 0
+  cooldown: 0
+  statuses:
+  - id: silence
+    duration: 1.4
+    magnitude: 1
+  name_en: Last Word
+  name_ko: 마지막 발화
+  effect_en: Passive; once per combat, a collapsing ally can emit a brief silence
+    pulse.
+  effect_ko: 패시브. 전투당 한 번 쓰러지는 아군이 짧은 silence 파동을 남길 수 있다.
+  icon_prompt: final blue sound glyph sealed inside a dark memory bead, no text
+  palette: dark teal, blue, pale gold
+- id: support_resonance_cleanse
+  icon_id: skill_icon_support_resonance_cleanse
+  target_hero: hero_echo_savant
+  target_class: mystic
+  slot: Support
+  kind: Heal
+  delivery: Aura
+  damage: Healing
+  target_rule: LowestHpAlly
+  power: 0
+  cooldown: 0
+  statuses:
+  - id: unstoppable
+    duration: 1.2
+    magnitude: 1
+  name_en: Resonance Cleanse
+  name_ko: 공명 정화
+  effect_en: Support modifier; cleanse effects also grant a short unstoppable pulse.
+  effect_ko: 서포트 증강. cleanse 계열 효과가 짧은 unstoppable 파동도 부여한다.
+  icon_prompt: clean teal resonance ring washing over a small gold spark
+  palette: teal, pale green, gold

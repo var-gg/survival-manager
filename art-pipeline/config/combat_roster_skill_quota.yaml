@@ -70,8 +70,8 @@ skill_quota:
       vanguard: 12
       ranger: 10
       duelist: 7
-      mystic: 6
-      cross_class: 1
+      mystic: 7
+      cross_class: 0
   class_skill_targets:
     vanguard:
       total: 24
