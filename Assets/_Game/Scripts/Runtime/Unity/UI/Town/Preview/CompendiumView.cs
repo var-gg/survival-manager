@@ -155,6 +155,7 @@ public sealed class CompendiumView
     private void RenderEntries(CompendiumViewState state)
     {
         _entryList.Clear();
+        _entryList.EnableInClassList("cmp-entry-list--skill-grid", state.ActiveTab == CompendiumTab.Skills);
         switch (state.ActiveTab)
         {
             case CompendiumTab.Status:
@@ -178,10 +179,79 @@ public sealed class CompendiumView
             default:
                 foreach (var entry in state.Skills)
                 {
-                    _entryList.Add(BuildEntry(entry.Id, entry.Name, entry.SlotLabel, entry.VfxHookId, entry.IsSelected, entry.IconSprite));
+                    _entryList.Add(BuildSkillCard(entry));
                 }
                 break;
         }
+    }
+
+    private VisualElement BuildSkillCard(CompendiumSkillViewState skill)
+    {
+        var button = new Button { text = string.Empty };
+        button.AddToClassList("cmp-skill-card");
+        if (skill.IsSelected)
+        {
+            button.AddToClassList("cmp-skill-card--selected");
+        }
+
+        var top = new VisualElement();
+        top.AddToClassList("cmp-skill-card__top");
+
+        var iconBox = new VisualElement();
+        iconBox.AddToClassList("cmp-skill-card__icon");
+        if (skill.IconSprite != null)
+        {
+            iconBox.style.backgroundImage = new StyleBackground(skill.IconSprite);
+        }
+        top.Add(iconBox);
+
+        var headline = new VisualElement();
+        headline.AddToClassList("cmp-skill-card__headline");
+        var intent = new Label(skill.IntentLabel);
+        intent.AddToClassList("cmp-skill-card__intent");
+        headline.Add(intent);
+        var title = new Label(skill.Name);
+        title.AddToClassList("cmp-skill-card__title");
+        headline.Add(title);
+        top.Add(headline);
+        button.Add(top);
+
+        var chips = new VisualElement();
+        chips.AddToClassList("cmp-skill-card__chips");
+        chips.Add(BuildSkillChip(skill.SlotLabel, "slot"));
+        chips.Add(BuildSkillChip(skill.ClassLabel, "class"));
+        button.Add(chips);
+
+        var combatLine = new Label(skill.CombatLineLabel);
+        combatLine.AddToClassList("cmp-skill-card__line");
+        button.Add(combatLine);
+
+        var quickStats = new Label(skill.QuickStatLabel);
+        quickStats.AddToClassList("cmp-skill-card__stats");
+        button.Add(quickStats);
+
+        if (skill.HasStatusPayload)
+        {
+            var status = new Label(skill.StatusLabel);
+            status.AddToClassList("cmp-skill-card__status");
+            button.Add(status);
+        }
+
+        var vfx = new Label(skill.VfxFamilyLabel);
+        vfx.AddToClassList("cmp-skill-card__vfx");
+        button.Add(vfx);
+
+        var captured = skill.Id;
+        button.clicked += () => _actions?.SelectEntry(captured);
+        return button;
+    }
+
+    private static Label BuildSkillChip(string text, string variant)
+    {
+        var chip = new Label(text);
+        chip.AddToClassList("cmp-skill-card__chip");
+        chip.AddToClassList($"cmp-skill-card__chip--{variant}");
+        return chip;
     }
 
     private VisualElement BuildEntry(

@@ -148,6 +148,133 @@
     flex-direction: column;
 }
 
+.cmp-entry-list--skill-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+.cmp-skill-card {
+    width: 206px;
+    min-height: 198px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding-top: 10px;
+    padding-bottom: 9px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: rgba(26, 34, 69, 0.84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(230, 183, 81, 0.30);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+}
+
+.cmp-skill-card--selected {
+    background-color: rgba(200, 147, 42, 0.24);
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.cmp-skill-card__top {
+    flex-direction: row;
+    align-items: center;
+}
+
+.cmp-skill-card__icon {
+    width: 58px;
+    height: 58px;
+    margin-right: 9px;
+    background-color: rgba(245, 234, 208, 0.08);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.cmp-skill-card__headline {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.cmp-skill-card__intent {
+    color: var(--sm-gold-200);
+    font-size: 10px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.cmp-skill-card__title {
+    color: var(--sm-vellum);
+    font-size: 13px;
+    -unity-font-style: bold;
+    margin-top: 3px;
+    white-space: normal;
+}
+
+.cmp-skill-card__chips {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 9px;
+}
+
+.cmp-skill-card__chip {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 6px;
+    padding-right: 6px;
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    background-color: rgba(245, 234, 208, 0.07);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.18);
+    border-right-color: rgba(245, 234, 208, 0.18);
+    border-top-color: rgba(245, 234, 208, 0.18);
+    border-bottom-color: rgba(245, 234, 208, 0.18);
+    white-space: normal;
+}
+
+.cmp-skill-card__chip--slot {
+    color: var(--sm-gold-100);
+}
+
+.cmp-skill-card__line {
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    margin-top: 2px;
+    white-space: normal;
+}
+
+.cmp-skill-card__stats {
+    color: var(--sm-vellum);
+    font-size: 11px;
+    -unity-font-style: bold;
+    margin-top: 6px;
+    white-space: normal;
+}
+
+.cmp-skill-card__status {
+    color: rgba(116, 255, 190, 0.92);
+    font-size: 10px;
+    margin-top: 5px;
+    white-space: normal;
+}
+
+.cmp-skill-card__vfx {
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    margin-top: 5px;
+    white-space: normal;
+}
+
 .cmp-entry {
     flex-direction: row;
     margin-bottom: 8px;

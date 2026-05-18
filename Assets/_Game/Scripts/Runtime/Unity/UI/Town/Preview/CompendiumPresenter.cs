@@ -17,6 +17,7 @@ internal sealed class CompendiumPresenter : ICompendiumActions
     private readonly ContentTextResolver _contentText;
     private readonly ContentIconResolver _iconResolver;
     private readonly CompendiumFilterSupport _filterSupport;
+    private readonly CompendiumSkillReadoutFormatter _skillReadoutFormatter;
     private readonly CompendiumVfxPreviewResolver _vfxPreviewResolver;
     private readonly CompendiumView _view;
 
@@ -40,6 +41,7 @@ internal sealed class CompendiumPresenter : ICompendiumActions
         _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
         _iconResolver = iconResolver ?? throw new ArgumentNullException(nameof(iconResolver));
         _filterSupport = new CompendiumFilterSupport(_contentText, Localize);
+        _skillReadoutFormatter = new CompendiumSkillReadoutFormatter(Localize);
         _vfxPreviewResolver = new CompendiumVfxPreviewResolver(Localize);
         _view = view ?? throw new ArgumentNullException(nameof(view));
     }
@@ -228,16 +230,20 @@ internal sealed class CompendiumPresenter : ICompendiumActions
             Description: _contentText.GetSkillDescription(skill.Id),
             SlotLabel: _filterSupport.FormatSlot(skill.SlotKind),
             ClassLabel: classTags.Length == 0
-                ? Localize("ui.town.compendium.class.any", "Any class")
+                ? Localize("ui.town.compendium.class.any", "전체 클래스")
                 : string.Join(", ", classTags.Select(_contentText.GetClassName)),
-            DamageLabel: skill.DamageType.ToString(),
-            DeliveryLabel: skill.Delivery.ToString(),
-            TargetLabel: skill.TargetRule.ToString(),
+            IntentLabel: _skillReadoutFormatter.FormatIntent(skill),
+            QuickStatLabel: _skillReadoutFormatter.FormatQuickStats(skill),
+            CombatLineLabel: _skillReadoutFormatter.FormatCombatLine(skill),
+            DamageLabel: _skillReadoutFormatter.FormatDamage(skill.DamageType),
+            DeliveryLabel: _skillReadoutFormatter.FormatDelivery(skill.Delivery),
+            TargetLabel: _skillReadoutFormatter.FormatTarget(skill.TargetRule),
             PowerLabel: FormatNumber(skill.Power),
             CooldownLabel: FormatSeconds(skill.BaseCooldownSeconds),
             StatusLabel: statuses.Length == 0
-                ? Localize("ui.town.compendium.status.none", "None")
+                ? Localize("ui.town.compendium.status.none", "없음")
                 : string.Join(", ", statuses.Select(FormatStatusApplication)),
+            HasStatusPayload: statuses.Length > 0,
             IconId: string.IsNullOrWhiteSpace(skill.IconId) ? "-" : skill.IconId,
             VfxHookId: string.IsNullOrWhiteSpace(skill.VfxHookId) ? "-" : skill.VfxHookId,
             VfxFamilyLabel: presentation.Family.ToString(),
