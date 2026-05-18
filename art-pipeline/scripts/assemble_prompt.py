@@ -11,8 +11,8 @@ Multi-subject support (v2 — 2026-05-09):
 - LAYOUT block (map/icon/cutscene)이 정의되면 prompt에 포함.
 
 Usage:
-    python assemble_prompt.py <subject_page.md>            # prints to stdout
-    python assemble_prompt.py <subject_page.md> --json     # also prints metadata to stderr
+    python assemble_prompt.py <subject_page.md>            # legacy file-backed subject
+    python assemble_prompt.py --subject-json <subject.json> --pipeline-root art-pipeline
 
 Domain (survival-manager game):
     subject_page = art-pipeline/subjects/{kind_dir}/{subject_id}/{variant}.md
@@ -95,6 +95,20 @@ KIND_TO_REF_DIR = {
 }
 
 
+def _validate_subject_frontmatter(fm: Any, source: Path) -> dict[str, Any]:
+    if not isinstance(fm, dict):
+        raise ValueError(f"{source}: frontmatter must be a mapping")
+
+    missing = [k for k in REQUIRED_FRONTMATTER if k not in fm]
+    if missing:
+        raise ValueError(f"{source}: frontmatter missing fields {missing}")
+
+    if not isinstance(fm["refs"], list):
+        raise ValueError(f"{source}: frontmatter field 'refs' must be a list")
+
+    return fm
+
+
 def parse_subject(subject_path: Path) -> tuple[dict[str, Any], str]:
     """Return (frontmatter_dict, prompt_fence_content).
 
@@ -110,13 +124,7 @@ def parse_subject(subject_path: Path) -> tuple[dict[str, Any], str]:
     fm_raw = text[4:end]
     body = text[end + 5 :]
 
-    fm = yaml.safe_load(fm_raw)
-    if not isinstance(fm, dict):
-        raise ValueError(f"{subject_path}: frontmatter must be a YAML mapping")
-
-    missing = [k for k in REQUIRED_FRONTMATTER if k not in fm]
-    if missing:
-        raise ValueError(f"{subject_path}: frontmatter missing fields {missing}")
+    fm = _validate_subject_frontmatter(yaml.safe_load(fm_raw), subject_path)
 
     fence_match = re.search(r"```prompt\s*\n(.*?)\n```", body, re.DOTALL)
     if not fence_match:
@@ -124,6 +132,33 @@ def parse_subject(subject_path: Path) -> tuple[dict[str, Any], str]:
     fence = fence_match.group(1).strip()
 
     return fm, fence
+
+
+def parse_subject_json(subject_path: Path) -> tuple[dict[str, Any], str]:
+    """Return (frontmatter_dict, prompt_content) from a repo-external JSON subject.
+
+    This keeps Pindoc-hydrated image generation inputs out of the repository. The
+    JSON shape is intentionally close to the legacy Markdown schema:
+
+        {"frontmatter": {...}, "prompt": "..."}
+    """
+    try:
+        data = json.loads(subject_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        raise ValueError(f"{subject_path}: invalid JSON ({e})") from e
+
+    if not isinstance(data, dict):
+        raise ValueError(f"{subject_path}: JSON root must be an object")
+
+    fm = _validate_subject_frontmatter(
+        data.get("frontmatter") if "frontmatter" in data else data.get("fm"),
+        subject_path,
+    )
+    prompt = data.get("prompt") or data.get("prompt_fence") or data.get("fence")
+    if not isinstance(prompt, str) or not prompt.strip():
+        raise ValueError(f"{subject_path}: JSON field 'prompt' must be a non-empty string")
+
+    return fm, prompt.strip()
 
 
 def _extract_blocks(path: Path, names: list[str]) -> dict[str, str]:
@@ -140,7 +175,41 @@ def _extract_blocks(path: Path, names: list[str]) -> dict[str, str]:
     return out
 
 
-def extract_anchor_for_kind(pipeline_root: Path, kind: str) -> dict[str, str]:
+def _extract_anchor_json(path: Path) -> dict[str, str]:
+    """Extract style blocks from a repo-external JSON style anchor."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        raise ValueError(f"{path}: invalid JSON ({e})") from e
+
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: JSON root must be an object")
+
+    blocks = data.get("blocks", data)
+    if not isinstance(blocks, dict):
+        raise ValueError(f"{path}: JSON field 'blocks' must be an object")
+
+    aliases = {
+        "ART STYLE": ("ART STYLE", "art_style"),
+        "LAYOUT / COMPOSITION": ("LAYOUT / COMPOSITION", "layout"),
+        "SHADING / LIGHTING": ("SHADING / LIGHTING", "shading"),
+        "CHROMA BACKGROUND": ("CHROMA BACKGROUND", "chroma"),
+        "NEGATIVE": ("NEGATIVE", "negative"),
+    }
+    out: dict[str, str] = {}
+    for name, keys in aliases.items():
+        value = next((blocks[k] for k in keys if isinstance(blocks.get(k), str)), "")
+        out[name] = value.strip()
+    return out
+
+
+def extract_anchor_for_kind(
+    pipeline_root: Path,
+    kind: str,
+    *,
+    style_root: Path | None = None,
+    style_json: Path | None = None,
+) -> dict[str, str]:
     """Resolve common + sub anchor for a subject kind.
 
     Returns dict with keys: art_style / layout / shading / chroma / negative.
@@ -152,29 +221,33 @@ def extract_anchor_for_kind(pipeline_root: Path, kind: str) -> dict[str, str]:
         raise ValueError(
             f"unknown kind '{kind}' — add mapping in KIND_TO_ANCHOR_FILE"
         )
-    sub_path = pipeline_root / "style" / sub_filename
-    if not sub_path.is_file():
-        sub_path = pipeline_root / "working" / "style" / sub_filename
     if not common_path.is_file():
         raise FileNotFoundError(f"style-anchor-common not found: {common_path}")
-    if not sub_path.is_file():
-        raise FileNotFoundError(
-            "style-anchor for kind "
-            f"'{kind}' not found. Hydrate the Pindoc-owned prompt source into "
-            f"{pipeline_root / 'working' / 'style' / sub_filename}."
-        )
 
     common = _extract_blocks(common_path, ["STYLE BASELINE", "NEGATIVE COMMON"])
-    sub = _extract_blocks(
-        sub_path,
-        [
-            "ART STYLE",
-            "LAYOUT / COMPOSITION",
-            "SHADING / LIGHTING",
-            "CHROMA BACKGROUND",
-            "NEGATIVE",
-        ],
-    )
+    block_names = [
+        "ART STYLE",
+        "LAYOUT / COMPOSITION",
+        "SHADING / LIGHTING",
+        "CHROMA BACKGROUND",
+        "NEGATIVE",
+    ]
+    if style_json is not None:
+        sub = _extract_anchor_json(style_json)
+    else:
+        candidates: list[Path] = []
+        if style_root is not None:
+            candidates.append(style_root / sub_filename)
+        candidates.append(pipeline_root / "style" / sub_filename)
+        sub_path = next((p for p in candidates if p.is_file()), None)
+        if sub_path is None:
+            searched = ", ".join(str(p) for p in candidates)
+            raise FileNotFoundError(
+                f"style-anchor for kind '{kind}' not found. "
+                "Pindoc-owned prompt sources must be passed with --style-json "
+                f"or a repo-external --style-root. Searched: {searched}"
+            )
+        sub = _extract_blocks(sub_path, block_names)
 
     art_style_parts = [p for p in [common["STYLE BASELINE"], sub["ART STYLE"]] if p]
     negative_parts = [p for p in [sub["NEGATIVE"], common["NEGATIVE COMMON"]] if p]
@@ -298,25 +371,50 @@ def assemble(
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("subject", type=Path, help="path to subject page .md")
+    ap.add_argument("subject", nargs="?", type=Path, help="path to legacy subject page .md")
+    ap.add_argument("--subject-json", type=Path, help="repo-external subject JSON")
+    ap.add_argument("--pipeline-root", type=Path, help="art-pipeline root for repo-external JSON input")
+    ap.add_argument("--style-json", type=Path, help="repo-external style anchor JSON")
+    ap.add_argument("--style-root", type=Path, help="repo-external directory containing style-anchor-*.md files")
     ap.add_argument("--json", action="store_true", help="print metadata as JSON to stderr")
     args = ap.parse_args()
 
-    subject_path = args.subject.resolve()
+    if args.subject is not None and args.subject_json is not None:
+        print("error: pass either legacy subject .md or --subject-json, not both", file=sys.stderr)
+        return 1
+    if args.subject is None and args.subject_json is None:
+        print("error: subject .md or --subject-json is required", file=sys.stderr)
+        return 1
+
+    subject_path = (args.subject_json or args.subject).resolve()
     if not subject_path.is_file():
         print(f"error: subject file not found: {subject_path}", file=sys.stderr)
         return 1
 
     try:
-        fm, fence = parse_subject(subject_path)
+        if args.subject_json is not None:
+            fm, fence = parse_subject_json(subject_path)
+        else:
+            fm, fence = parse_subject(subject_path)
     except ValueError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
 
-    pipeline_root = find_pipeline_root(subject_path)
+    if args.pipeline_root is not None:
+        pipeline_root = args.pipeline_root.resolve()
+    elif args.subject_json is not None:
+        print("error: --pipeline-root is required with --subject-json", file=sys.stderr)
+        return 1
+    else:
+        pipeline_root = find_pipeline_root(subject_path)
 
     try:
-        anchor = extract_anchor_for_kind(pipeline_root, fm["kind"])
+        anchor = extract_anchor_for_kind(
+            pipeline_root,
+            fm["kind"],
+            style_root=args.style_root.resolve() if args.style_root else None,
+            style_json=args.style_json.resolve() if args.style_json else None,
+        )
     except (ValueError, FileNotFoundError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 4

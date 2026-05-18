@@ -16,6 +16,7 @@ Pipeline:
 
 Usage:
     python upload_subject.py <subject.md>
+    python upload_subject.py --subject-json <subject.json> --pipeline-root art-pipeline
     python upload_subject.py <subject.md> --dry-run    # compose only, no browser
     python upload_subject.py <subject.md> --headless   # after session saved
     python upload_subject.py <subject.md> --force      # overwrite rendered output
@@ -55,6 +56,7 @@ from assemble_prompt import (  # noqa: E402
     extract_anchor_for_kind,
     find_pipeline_root,
     parse_subject,
+    parse_subject_json,
     resolve_ref_paths,
 )
 
@@ -556,7 +558,12 @@ def run_chroma_key(pipeline_root: Path, raw_path: Path, final_path: Path, chroma
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("subject", type=Path, help="path to subject .md")
+    ap.add_argument("subject", nargs="?", type=Path, help="path to legacy subject .md")
+    ap.add_argument("--subject-json", type=Path, help="repo-external subject JSON")
+    ap.add_argument("--pipeline-root", type=Path, help="art-pipeline root for repo-external JSON input")
+    ap.add_argument("--style-json", type=Path, help="repo-external style anchor JSON")
+    ap.add_argument("--style-root", type=Path, help="repo-external directory containing style-anchor-*.md files")
+    ap.add_argument("--no-status-write", action="store_true", help="do not mutate the input subject file")
     ap.add_argument("--dry-run", action="store_true", help="compose only, no browser")
     ap.add_argument("--headless", action="store_true", help="headless browser (after session saved)")
     ap.add_argument("--force", action="store_true", help="overwrite existing rendered output")
@@ -566,13 +573,23 @@ def main() -> int:
     ap.add_argument("--no-chroma", action="store_true", help="skip chroma cutout (raw save only)")
     args = ap.parse_args()
 
-    subject_path = args.subject.resolve()
+    if args.subject is not None and args.subject_json is not None:
+        print("error: pass either legacy subject .md or --subject-json, not both", file=sys.stderr)
+        return 1
+    if args.subject is None and args.subject_json is None:
+        print("error: subject .md or --subject-json is required", file=sys.stderr)
+        return 1
+
+    subject_path = (args.subject_json or args.subject).resolve()
     if not subject_path.is_file():
         print(f"error: subject file not found: {subject_path}", file=sys.stderr)
         return 1
 
     try:
-        fm, fence = parse_subject(subject_path)
+        if args.subject_json is not None:
+            fm, fence = parse_subject_json(subject_path)
+        else:
+            fm, fence = parse_subject(subject_path)
     except ValueError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
@@ -581,12 +598,23 @@ def main() -> int:
         print("error: subject status is already 'rendered'. Use --force to regenerate.", file=sys.stderr)
         return 3
 
-    pipeline_root = find_pipeline_root(subject_path)
+    if args.pipeline_root is not None:
+        pipeline_root = args.pipeline_root.resolve()
+    elif args.subject_json is not None:
+        print("error: --pipeline-root is required with --subject-json", file=sys.stderr)
+        return 1
+    else:
+        pipeline_root = find_pipeline_root(subject_path)
     config = load_config(pipeline_root)
     timeout = args.timeout or config["default_timeout"]
 
     try:
-        anchor = extract_anchor_for_kind(pipeline_root, fm["kind"])
+        anchor = extract_anchor_for_kind(
+            pipeline_root,
+            fm["kind"],
+            style_root=args.style_root.resolve() if args.style_root else None,
+            style_json=args.style_json.resolve() if args.style_json else None,
+        )
         ref_paths = resolve_ref_paths(pipeline_root, fm["refs"], fm["kind"])
     except (ValueError, FileNotFoundError) as e:
         print(f"error: {e}", file=sys.stderr)
@@ -680,7 +708,10 @@ def main() -> int:
         final_path.parent.mkdir(parents=True, exist_ok=True)
         final_path.write_bytes(raw_path.read_bytes())
 
-    update_status(subject_path, str(fm.get("status") or "prompted"), "rendered")
+    if args.no_status_write or args.subject_json is not None:
+        print("[imagegen] status write skipped for repo-external subject input", file=sys.stderr)
+    else:
+        update_status(subject_path, str(fm.get("status") or "prompted"), "rendered")
 
     result = {
         "subject": fm["slug"],

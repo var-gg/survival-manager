@@ -13,6 +13,7 @@ param(
     3. [Category("FastUnit")] 테스트 코드에서 authored Unity object fixture를 사용하면 실패
     4. EditMode test class가 class-level execution category를 선언하지 않으면 실패
     5. 스크립트/문서에서 -quit를 -runTests와 같이 사용하면 실패
+    6. Pindoc 소스여야 하는 imagegen 입력 Markdown이 repo-local 임시 파일로 생기면 실패
 #>
 
 $ErrorActionPreference = 'Continue'
@@ -335,6 +336,49 @@ foreach ($dir in $scriptDirs) {
 
 if (-not $check4Fail -and $exitCode -eq 0) {
     Write-Host "  PASS: No -quit combined with -runTests." -ForegroundColor Green
+}
+
+# ────────────────────────────────────────────────
+# Check 5: repo-local imagegen Markdown prompt spill
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 5: repo-local imagegen Markdown prompt spill ==" -ForegroundColor Cyan
+$check5Fail = $false
+
+$forbiddenImagegenMarkdownDirs = @(
+    'art-pipeline/working',
+    'art-pipeline/subjects/ui_detail',
+    'art-pipeline/subjects/ui_mockups'
+)
+
+foreach ($dir in $forbiddenImagegenMarkdownDirs) {
+    $fullDir = Join-Path $RepoRoot $dir
+    if (-not (Test-Path $fullDir)) { continue }
+
+    $files = Get-ChildItem $fullDir -Filter '*.md' -Recurse -File -ErrorAction SilentlyContinue
+    foreach ($file in $files) {
+        $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/').Replace('\', '/')
+        Write-LintError -Check 'ImagegenMarkdown-spill' -File $relPath -Detail 'Pindoc-owned imagegen prompt/style input must be hydrated as repo-external JSON or passed from outside the repo, not stored as local Markdown.'
+        $check5Fail = $true
+    }
+}
+
+$forbiddenImagegenMarkdownFiles = @(
+    'art-pipeline/style/style-anchor-ui-detail.md',
+    'art-pipeline/style/style-anchor-ui-mockup.md',
+    'art-pipeline/subjects/backgrounds/ui_compendium/dusk_v2.md'
+)
+
+foreach ($file in $forbiddenImagegenMarkdownFiles) {
+    $fullPath = Join-Path $RepoRoot $file
+    if (Test-Path $fullPath) {
+        Write-LintError -Check 'ImagegenMarkdown-spill' -File $file -Detail 'This generated prompt/style source belongs in Pindoc or repo-external transient input, not repository Markdown.'
+        $check5Fail = $true
+    }
+}
+
+if (-not $check5Fail -and $exitCode -eq 0) {
+    Write-Host "  PASS: No repo-local Pindoc-owned imagegen Markdown prompt spill." -ForegroundColor Green
 }
 
 # ────────────────────────────────────────────────
