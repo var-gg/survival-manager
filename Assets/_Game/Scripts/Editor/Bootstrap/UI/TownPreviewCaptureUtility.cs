@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Reflection;
+using SM.Unity;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -125,6 +127,8 @@ public static class TownPreviewCaptureUtility
     private static MethodInfo? _repaintOffscreenPanels;
     private static MethodInfo? _renderRuntimePanel;
     private static bool _reflectionResolved;
+    private static bool _playModeCaptureRequested;
+    private static bool _playModeCaptureStartedByUtility;
 
     [MenuItem("SM/Town/▶ Preview 전체 캡쳐", false, 4)]
     public static void CaptureAll()
@@ -136,6 +140,23 @@ public static class TownPreviewCaptureUtility
     public static void CaptureCompendium()
     {
         StartCapture(new[] { CompendiumTarget });
+    }
+
+    [MenuItem("SM/Town/▶ Preview 도감 PlayMode 캡쳐", false, 6)]
+    public static void CaptureCompendiumPlayMode()
+    {
+        Directory.CreateDirectory(OutputDir);
+        if (EditorApplication.isPlaying)
+        {
+            StartCompendiumPlayModeCapture(stopWhenDone: false);
+            return;
+        }
+
+        _playModeCaptureRequested = true;
+        _playModeCaptureStartedByUtility = true;
+        EditorApplication.playModeStateChanged -= HandleCompendiumPlayModeStateChanged;
+        EditorApplication.playModeStateChanged += HandleCompendiumPlayModeStateChanged;
+        EditorApplication.isPlaying = true;
     }
 
     private static void StartCapture((Action<VisualElement> Build, string FileName)[] targets)
@@ -283,6 +304,131 @@ public static class TownPreviewCaptureUtility
             _renderTexture.Release();
             UnityEngine.Object.DestroyImmediate(_renderTexture);
             _renderTexture = null;
+        }
+    }
+
+    private static void HandleCompendiumPlayModeStateChanged(PlayModeStateChange state)
+    {
+        if (!_playModeCaptureRequested || state != PlayModeStateChange.EnteredPlayMode)
+        {
+            return;
+        }
+
+        _playModeCaptureRequested = false;
+        EditorApplication.playModeStateChanged -= HandleCompendiumPlayModeStateChanged;
+        EditorApplication.delayCall += () => StartCompendiumPlayModeCapture(stopWhenDone: _playModeCaptureStartedByUtility);
+    }
+
+    private static void StartCompendiumPlayModeCapture(bool stopWhenDone)
+    {
+        var host = new GameObject("__CompendiumPlayModeCapture")
+        {
+            hideFlags = HideFlags.HideAndDontSave,
+        };
+        var capture = host.AddComponent<CompendiumPlayModeCaptureRunner>();
+        capture.Begin(stopWhenDone);
+    }
+
+    private sealed class CompendiumPlayModeCaptureRunner : MonoBehaviour
+    {
+        private bool _stopWhenDone;
+
+        public void Begin(bool stopWhenDone)
+        {
+            _stopWhenDone = stopWhenDone;
+            StartCoroutine(CaptureRoutine());
+        }
+
+        private IEnumerator CaptureRoutine()
+        {
+            yield return null;
+            yield return null;
+            yield return WaitForLocalization();
+
+            var opened = false;
+            for (var attempt = 0; attempt < 90 && !opened; attempt++)
+            {
+                opened = TryOpenCompendium();
+                if (!opened)
+                {
+                    yield return null;
+                }
+            }
+
+            if (!opened)
+            {
+                Debug.LogWarning("[PreviewCapture] Compendium PlayMode capture failed: presenter not ready.");
+                Finish();
+                yield break;
+            }
+
+            for (var i = 0; i < 8; i++)
+            {
+                yield return new WaitForEndOfFrame();
+            }
+
+            var texture = ScreenCapture.CaptureScreenshotAsTexture();
+            if (texture == null)
+            {
+                Debug.LogWarning("[PreviewCapture] Compendium PlayMode capture failed: ScreenCapture returned null.");
+                Finish();
+                yield break;
+            }
+
+            try
+            {
+                var path = Path.Combine(OutputDir, "compendium.png");
+                File.WriteAllBytes(path, texture.EncodeToPNG());
+                Debug.Log($"[PreviewCapture] compendium.png PlayMode 저장 ({texture.width}x{texture.height})");
+            }
+            finally
+            {
+                Destroy(texture);
+                Finish();
+            }
+        }
+
+        private static IEnumerator WaitForLocalization()
+        {
+            var root = GameSessionRoot.Instance ?? GameSessionRoot.EnsureInstance();
+            if (root?.Localization != null && !root.Localization.IsInitialized)
+            {
+                yield return root.Localization.EnsureInitialized();
+            }
+        }
+
+        private static bool TryOpenCompendium()
+        {
+            var controller = FindFirstObjectByType<TownScreenController>();
+            if (controller == null)
+            {
+                return false;
+            }
+
+            controller.EnsureRuntimeControls();
+            var field = typeof(TownScreenController).GetField(
+                "_compendiumPresenter",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            var presenter = field?.GetValue(controller);
+            var open = presenter?.GetType().GetMethod("Open", BindingFlags.Instance | BindingFlags.Public);
+            if (open == null)
+            {
+                return false;
+            }
+
+            open.Invoke(presenter, null);
+            return true;
+        }
+
+        private void Finish()
+        {
+            AssetDatabase.Refresh();
+            if (_stopWhenDone)
+            {
+                EditorApplication.isPlaying = false;
+            }
+
+            Destroy(gameObject);
         }
     }
 

@@ -23,6 +23,7 @@ public sealed class CompendiumView
     private readonly VisualElement _tabRow;
     private readonly TextField _searchField;
     private readonly VisualElement _skillFilters;
+    private readonly ScrollView _entryScroll;
     private readonly DropdownField _classFilter;
     private readonly DropdownField _slotFilter;
     private readonly DropdownField _vfxFamilyFilter;
@@ -53,6 +54,7 @@ public sealed class CompendiumView
         _tabRow = Require<VisualElement>(root, "CompendiumTabRow");
         _searchField = Require<TextField>(root, "CompendiumSearchField");
         _skillFilters = Require<VisualElement>(root, "CompendiumSkillFilters");
+        _entryScroll = Require<ScrollView>(root, "CompendiumEntryScroll");
         _classFilter = Require<DropdownField>(root, "CompendiumClassFilter");
         _slotFilter = Require<DropdownField>(root, "CompendiumSlotFilter");
         _vfxFamilyFilter = Require<DropdownField>(root, "CompendiumVfxFamilyFilter");
@@ -69,6 +71,10 @@ public sealed class CompendiumView
         _detailHook = Require<Label>(root, "CompendiumDetailHook");
         _closeButton = Require<Button>(root, "CompendiumCloseButton");
         _vfxReplayButton = Require<Button>(root, "CompendiumVfxReplayButton");
+
+        _entryScroll.mode = ScrollViewMode.Vertical;
+        _entryScroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+        _entryScroll.verticalScrollerVisibility = ScrollerVisibility.Auto;
     }
 
     public void Bind(ICompendiumActions actions)
@@ -178,9 +184,17 @@ public sealed class CompendiumView
                 }
                 break;
             default:
-                foreach (var entry in state.Skills)
+                VisualElement? skillRow = null;
+                for (var index = 0; index < state.Skills.Count; index++)
                 {
-                    _entryList.Add(BuildSkillCard(entry));
+                    if (index % 2 == 0)
+                    {
+                        skillRow = new VisualElement();
+                        skillRow.AddToClassList("cmp-skill-row");
+                        _entryList.Add(skillRow);
+                    }
+
+                    skillRow?.Add(BuildSkillCard(state.Skills[index]));
                 }
                 break;
         }

@@ -599,7 +599,19 @@ internal sealed class CompendiumPresenter : ICompendiumActions
 
     private string Localize(string table, string key, string fallback)
     {
-        return _localization.LocalizeOrFallback(table, key, fallback);
+        var resolved = _localization.LocalizeOrFallback(table, key, fallback);
+        return LooksLikeMissingLocalization(resolved, key) ? fallback : resolved;
+    }
+
+    private static bool LooksLikeMissingLocalization(string value, string key)
+    {
+        if (string.IsNullOrWhiteSpace(value) || string.Equals(value, key, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return value.StartsWith("No translation found", StringComparison.Ordinal)
+               || value.Contains($"'{key}'", StringComparison.Ordinal);
     }
 
     private static string PrimaryClassTag(BattleSkillSpec skill)

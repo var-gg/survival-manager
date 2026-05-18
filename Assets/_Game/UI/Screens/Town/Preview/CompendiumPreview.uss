@@ -29,6 +29,21 @@
     bottom: 42px;
 }
 
+.cmp-frame.sm-modal-frame--parchment {
+    background-color: rgba(17, 22, 42, 0.94);
+    border-left-color: rgba(226, 181, 88, 0.86);
+    border-right-color: rgba(226, 181, 88, 0.86);
+    border-top-color: rgba(226, 181, 88, 0.86);
+    border-bottom-color: rgba(226, 181, 88, 0.86);
+}
+
+.cmp-frame .sm-modal-frame__texture {
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(230, 183, 81, 0.30);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+}
+
 .cmp-header {
     flex-direction: row;
     align-items: center;
@@ -37,7 +52,8 @@
     padding-left: 24px;
     padding-right: 24px;
     border-bottom-width: 1px;
-    border-bottom-color: rgba(138, 100, 24, 0.32);
+    border-bottom-color: rgba(230, 183, 81, 0.28);
+    background-color: rgba(15, 20, 40, 0.96);
 }
 
 .cmp-header__copy {
@@ -52,13 +68,18 @@
 }
 
 .cmp-subtitle {
-    color: var(--sm-ink-3);
+    color: rgba(245, 234, 208, 0.70);
     font-size: 12px;
     margin-top: 4px;
 }
 
 .cmp-close {
     width: 72px;
+    background-color: rgba(45, 37, 45, 0.92);
+    border-left-color: rgba(230, 183, 81, 0.74);
+    border-right-color: rgba(230, 183, 81, 0.74);
+    border-top-color: rgba(230, 183, 81, 0.74);
+    border-bottom-color: rgba(230, 183, 81, 0.74);
 }
 
 .cmp-tabs {
@@ -67,7 +88,9 @@
     padding-bottom: 8px;
     padding-left: 20px;
     padding-right: 20px;
-    background-color: rgba(20, 26, 53, 0.72);
+    background-color: rgba(12, 16, 34, 0.96);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.16);
 }
 
 .cmp-tab {
@@ -75,7 +98,7 @@
     margin-right: 8px;
     padding-top: 7px;
     padding-bottom: 7px;
-    background-color: rgba(38, 45, 84, 0.74);
+    background-color: rgba(32, 39, 76, 0.92);
     color: var(--sm-ink-2);
     border-left-width: 1px;
     border-right-width: 1px;
@@ -89,7 +112,7 @@
 }
 
 .cmp-tab--selected {
-    background-color: rgba(200, 147, 42, 0.32);
+    background-color: rgba(196, 142, 39, 0.70);
     color: var(--sm-gold-100);
     border-left-color: var(--sm-gold-200);
     border-right-color: var(--sm-gold-200);
@@ -104,7 +127,7 @@
     padding-bottom: 9px;
     padding-left: 20px;
     padding-right: 20px;
-    background-color: rgba(13, 18, 40, 0.78);
+    background-color: rgba(8, 12, 27, 0.96);
     border-bottom-width: 1px;
     border-bottom-color: rgba(230, 183, 81, 0.18);
 }
@@ -112,6 +135,25 @@
 .cmp-filter__search {
     width: 230px;
     margin-right: 10px;
+    color: var(--sm-vellum);
+}
+
+.cmp-filter__search .unity-base-field__label,
+.cmp-filter__dropdown .unity-base-field__label {
+    color: rgba(245, 234, 208, 0.78);
+}
+
+.cmp-filter__search .unity-base-text-field__input,
+.cmp-filter__search .unity-text-field__input {
+    background-color: rgba(7, 10, 22, 0.78);
+    color: var(--sm-vellum);
+    border-left-color: rgba(230, 183, 81, 0.36);
+    border-right-color: rgba(230, 183, 81, 0.36);
+    border-top-color: rgba(230, 183, 81, 0.36);
+    border-bottom-color: rgba(230, 183, 81, 0.36);
+}
+
+.cmp-filter__dropdown .unity-base-popup-field__text {
     color: var(--sm-vellum);
 }
 
@@ -126,6 +168,16 @@
     color: var(--sm-vellum);
 }
 
+.cmp-filter__dropdown .unity-base-field__input,
+.cmp-filter__dropdown .unity-base-popup-field__input {
+    background-color: rgba(7, 10, 22, 0.74);
+    color: var(--sm-vellum);
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(230, 183, 81, 0.30);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+}
+
 .cmp-filter__summary {
     min-width: 92px;
     color: var(--sm-ink-3);
@@ -137,10 +189,11 @@
     flex-direction: row;
     flex-grow: 1;
     padding: 16px;
+    background-color: rgba(9, 13, 28, 0.52);
 }
 
 .cmp-entry-scroll {
-    width: 440px;
+    width: 470px;
     margin-right: 14px;
 }
 
@@ -149,9 +202,15 @@
 }
 
 .cmp-entry-list--skill-grid {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     align-content: flex-start;
+    width: 452px;
+}
+
+.cmp-skill-row {
+    flex-direction: row;
+    width: 452px;
+    flex-shrink: 0;
 }
 
 .cmp-entry-list--character-grid {
@@ -161,15 +220,18 @@
 }
 
 .cmp-skill-card {
-    width: 206px;
-    min-height: 198px;
+    width: 218px;
+    min-height: 186px;
+    flex-direction: column;
+    flex-grow: 0;
+    flex-shrink: 0;
     margin-right: 8px;
     margin-bottom: 8px;
     padding-top: 10px;
     padding-bottom: 9px;
     padding-left: 10px;
     padding-right: 10px;
-    background-color: rgba(26, 34, 69, 0.84);
+    background-color: rgba(24, 31, 61, 0.88);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -181,7 +243,7 @@
 }
 
 .cmp-skill-card--selected {
-    background-color: rgba(200, 147, 42, 0.24);
+    background-color: rgba(198, 140, 37, 0.26);
     border-left-color: var(--sm-gold-200);
     border-right-color: var(--sm-gold-200);
     border-top-color: var(--sm-gold-200);
@@ -489,7 +551,7 @@
 .cmp-detail {
     flex-grow: 1;
     padding: 18px;
-    background-color: rgba(28, 34, 67, 0.86);
+    background-color: rgba(14, 18, 35, 0.94);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -501,8 +563,8 @@
 }
 
 .cmp-detail__icon {
-    width: 112px;
-    height: 112px;
+    width: 104px;
+    height: 104px;
     align-self: flex-start;
     background-color: rgba(245, 234, 208, 0.06);
     -unity-background-scale-mode: scale-to-fit;
@@ -510,7 +572,7 @@
 
 .cmp-detail__title {
     color: var(--sm-vellum);
-    font-size: 24px;
+    font-size: 22px;
     -unity-font-style: bold;
     margin-top: 14px;
     white-space: normal;
@@ -538,11 +600,11 @@
 }
 
 .cmp-vfx-stage {
-    height: 178px;
+    height: 242px;
     margin-top: 14px;
     overflow: hidden;
     position: relative;
-    background-color: rgba(9, 13, 28, 0.86);
+    background-color: rgba(6, 9, 20, 0.92);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -780,14 +842,14 @@
 }
 
 .cmp-detail__metrics {
-    margin-top: 16px;
+    margin-top: 12px;
     flex-direction: column;
 }
 
 .cmp-metric {
     flex-direction: row;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 4px;
+    padding-bottom: 4px;
     border-bottom-width: 1px;
     border-bottom-color: rgba(230, 183, 81, 0.18);
 }
