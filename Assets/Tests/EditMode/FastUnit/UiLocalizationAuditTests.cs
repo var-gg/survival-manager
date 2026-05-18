@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -86,5 +87,31 @@ public sealed class UiLocalizationAuditTests
             .ToList();
 
         Assert.That(missing, Is.Empty, $"Missing shared UI localization keys: {string.Join(", ", missing)}");
+    }
+
+    [Test]
+    public void UnityLocalizationYaml_DoesNotAppendEntriesAfterReferencesBlock()
+    {
+        var paths = Directory.GetFiles(Path.Combine("Assets", "Localization", "StringTables"), "*.asset");
+        var failures = new List<string>();
+        foreach (var path in paths)
+        {
+            var lines = File.ReadAllLines(path);
+            var referencesIndex = Array.FindIndex(lines, line => line == "  references:");
+            if (referencesIndex < 0)
+            {
+                continue;
+            }
+
+            for (var i = referencesIndex + 1; i < lines.Length; i++)
+            {
+                if (lines[i].StartsWith("  - m_Id:", StringComparison.Ordinal))
+                {
+                    failures.Add($"{path}:{i + 1}");
+                }
+            }
+        }
+
+        Assert.That(failures, Is.Empty, $"Unity YAML entries must be serialized before references blocks: {string.Join(", ", failures)}");
     }
 }

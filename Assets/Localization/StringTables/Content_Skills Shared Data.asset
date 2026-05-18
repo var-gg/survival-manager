@@ -431,17 +431,6 @@ MonoBehaviour:
     m_Key: content.skill.support_hunter_mark.desc
     m_Metadata:
       m_Items: []
-  m_Metadata:
-    m_Items: []
-  m_KeyGenerator:
-    rid: 1798213439901401339
-  references:
-    version: 2
-    RefIds:
-    - rid: 1798213439901401339
-      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
-      data:
-        m_CustomEpoch: 1774854113794
   - m_Id: 335601013350402
     m_Key: content.skill.skill_aegis_sentinel_oath.name
     m_Metadata:
@@ -730,3 +719,14 @@ MonoBehaviour:
     m_Key: content.skill.support_resonance_cleanse.desc
     m_Metadata:
       m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1798213439901401339
+  references:
+    version: 2
+    RefIds:
+    - rid: 1798213439901401339
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1774854113794

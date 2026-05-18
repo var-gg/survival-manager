@@ -434,9 +434,6 @@ MonoBehaviour:
     m_Localized: "\uC0AC\uB0E5 \uD45C\uC2DD \uC9C0\uC6D0 modifier"
     m_Metadata:
       m_Items: []
-  references:
-    version: 2
-    RefIds: []
   - m_Id: 335601013350402
     m_Localized: "\ud30c\uc218\uc758 \ub9f9\uc138"
     m_Metadata:
@@ -725,3 +722,6 @@ MonoBehaviour:
     m_Localized: "\uc11c\ud3ec\ud2b8 \uc99d\uac15. cleanse \uacc4\uc5f4 \ud6a8\uacfc\uac00 \uc9e7\uc740 unstoppable \ud30c\ub3d9\ub3c4 \ubd80\uc5ec\ud55c\ub2e4."
     m_Metadata:
       m_Items: []
+  references:
+    version: 2
+    RefIds: []

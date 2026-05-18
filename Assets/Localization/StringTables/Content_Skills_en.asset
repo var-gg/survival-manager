@@ -434,9 +434,6 @@ MonoBehaviour:
     m_Localized: Hunter Mark Support modifier
     m_Metadata:
       m_Items: []
-  references:
-    version: 2
-    RefIds: []
   - m_Id: 335601013350402
     m_Localized: "Sentinel Oath"
     m_Metadata:
@@ -725,3 +722,6 @@ MonoBehaviour:
     m_Localized: "Support modifier; cleanse effects also grant a short unstoppable pulse."
     m_Metadata:
       m_Items: []
+  references:
+    version: 2
+    RefIds: []
