@@ -33,6 +33,31 @@ def scalar(text: str, key: str) -> str:
     return match.group(1).strip() if match else ""
 
 
+def stable_tag_ids_by_guid() -> dict[str, str]:
+    result: dict[str, str] = {}
+    for path in sorted((CONTENT_ROOT / "StableTags").glob("*.asset")):
+        text = path.read_text(encoding="utf-8")
+        tag_id = scalar(text, "Id")
+        meta = path.with_name(f"{path.name}.meta")
+        if not tag_id or not meta.is_file():
+            continue
+        meta_text = meta.read_text(encoding="utf-8")
+        match = re.search(r"^guid:\s*([0-9a-fA-F]{32})\s*$", meta_text, re.MULTILINE)
+        if match:
+            result[match.group(1)] = tag_id
+    return result
+
+
+def section_guids(text: str, section: str) -> list[str]:
+    match = re.search(rf"^  {re.escape(section)}:\s*(?:\[\])?\s*$", text, re.MULTILINE)
+    if not match:
+        return []
+    start = match.end()
+    end_match = re.search(r"^  [A-Za-z0-9_]+:", text[start:], re.MULTILINE)
+    end = start + end_match.start() if end_match else len(text)
+    return re.findall(r"guid:\s*([0-9a-fA-F]{32})", text[start:end])
+
+
 def enum_name(value: str, names: dict[int, str]) -> str:
     try:
         return names[int(value)]
@@ -41,16 +66,23 @@ def enum_name(value: str, names: dict[int, str]) -> str:
 
 
 def runtime_skill_rows() -> list[dict[str, Any]]:
+    tags_by_guid = stable_tag_ids_by_guid()
     rows: list[dict[str, Any]] = []
     for path in sorted((CONTENT_ROOT / "Skills").glob("*.asset")):
         text = path.read_text(encoding="utf-8")
         rows.append(
             {
                 "id": scalar(text, "Id") or path.stem,
+                "icon_id": scalar(text, "IconId"),
                 "slot": enum_name(scalar(text, "SlotKind"), SLOT_NAMES),
                 "delivery": enum_name(scalar(text, "Delivery"), DELIVERY_NAMES),
                 "damage": enum_name(scalar(text, "DamageType"), DAMAGE_NAMES),
                 "statuses": re.findall(r"^\s+StatusId:\s*(\S+)", text, re.MULTILINE),
+                "required_classes": [
+                    tags_by_guid[guid]
+                    for guid in section_guids(text, "RequiredClassTags")
+                    if guid in tags_by_guid
+                ],
             }
         )
     return rows
@@ -65,6 +97,7 @@ def expansion_rows(catalog: dict[str, Any]) -> list[dict[str, Any]]:
         rows.append(
             {
                 "id": str(skill["id"]),
+                "icon_id": str(skill["icon_id"]),
                 "slot": str(skill["slot"]),
                 "target_class": str(skill["target_class"]),
                 "delivery": str(skill["delivery"]),
@@ -80,6 +113,9 @@ def validate_catalog(catalog: dict[str, Any], failures: list[str]) -> None:
     ids = [row["id"] for row in rows]
     if len(ids) != len(set(ids)):
         failures.append("duplicate expansion skill ids")
+    true_damage = [row["id"] for row in rows if row["damage"] == "True"]
+    if true_damage:
+        failures.append(f"True damage is blocked by current V1 validation policy: {true_damage}")
 
     sheets = catalog.get("sheets")
     if not isinstance(sheets, list):
@@ -99,6 +135,26 @@ def validate_catalog(catalog: dict[str, Any], failures: list[str]) -> None:
             failures.append(f"{key} mismatch expected={expected} actual={dict(actual)}")
 
 
+def validate_authored_assets(current: list[dict[str, Any]], expansion: list[dict[str, Any]], failures: list[str]) -> None:
+    current_by_id = {row["id"]: row for row in current}
+    authored = 0
+    for row in expansion:
+        current_row = current_by_id.get(row["id"])
+        if current_row is None:
+            continue
+        authored += 1
+        for key in ("icon_id", "slot", "delivery", "damage"):
+            if current_row.get(key) != row.get(key):
+                failures.append(f"{row['id']}: authored {key}={current_row.get(key)!r}, catalog={row.get(key)!r}")
+        if current_row.get("required_classes") != [row["target_class"]]:
+            failures.append(
+                f"{row['id']}: authored required_classes={current_row.get('required_classes')!r}, catalog target_class={row['target_class']!r}"
+            )
+        if sorted(current_row.get("statuses", [])) != sorted(row.get("statuses", [])):
+            failures.append(f"{row['id']}: authored statuses={current_row.get('statuses')!r}, catalog={row.get('statuses')!r}")
+    print(f"authored expansion skills={authored}/{len(expansion)}")
+
+
 def compare_min(label: str, current: int, target: int, failures: list[str]) -> None:
     status = "OK" if current >= target else f"gap {target - current}"
     print(f"{label}: projected={current} target>={target} {status}")
@@ -113,26 +169,41 @@ def compare_max(label: str, current: int, limit: int, failures: list[str]) -> No
         failures.append(f"{label}: projected={current}, max={limit}")
 
 
+def row_classes(row: dict[str, Any]) -> list[str]:
+    if "target_class" in row:
+        return [row["target_class"]]
+    return [str(value) for value in row.get("required_classes", [])]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--catalog", type=Path, default=CATALOG_PATH)
     parser.add_argument("--quota", type=Path, default=QUOTA_PATH)
+    parser.add_argument(
+        "--strict-class-pools",
+        action="store_true",
+        help="fail class_skill_targets gaps; default is advisory until the skill acquisition model is settled",
+    )
     args = parser.parse_args()
 
     catalog = load_yaml(args.catalog)
     quota = load_yaml(args.quota)
     current = runtime_skill_rows()
     expansion = expansion_rows(catalog)
-    projected = current + expansion
+    current_ids = {row["id"] for row in current}
+    pending_expansion = [row for row in expansion if row["id"] not in current_ids]
+    projected = current + pending_expansion
 
     failures: list[str] = []
     validate_catalog(catalog, failures)
+    validate_authored_assets(current, expansion, failures)
 
     skill_quota = quota["skill_quota"]
     diversity = quota["diversity_quota"]
 
     print("[catalog]")
     print(f"expansion skills={len(expansion)} sheets={len(catalog.get('sheets', []))}")
+    print(f"pending expansion skills={len(pending_expansion)}")
     print(f"expansion slots={dict(Counter(row['slot'] for row in expansion))}")
     print(f"expansion classes={dict(Counter(row['target_class'] for row in expansion))}")
 
@@ -141,6 +212,27 @@ def main() -> int:
     slot_counts = Counter(row["slot"] for row in projected)
     for slot, target in skill_quota["slot_targets"].items():
         compare_min(f"slot {slot}", slot_counts.get(slot, 0), int(target), failures)
+
+    print("\n[projected class pools]")
+    class_failures: list[str] = []
+    class_targets = skill_quota.get("class_skill_targets", {})
+    class_slot_counts: dict[str, Counter[str]] = {}
+    for row in projected:
+        for class_id in row_classes(row):
+            if not class_id:
+                continue
+            class_slot_counts.setdefault(class_id, Counter())[row["slot"]] += 1
+    for class_id, target in class_targets.items():
+        if not isinstance(target, dict) or "total" not in target:
+            continue
+        counts = class_slot_counts.get(class_id, Counter())
+        compare_min(f"class {class_id} total", sum(counts.values()), int(target["total"]), class_failures)
+        for slot, slot_target in target.get("slot_minimums", {}).items():
+            compare_min(f"class {class_id} slot {slot}", counts.get(slot, 0), int(slot_target), class_failures)
+    if class_failures:
+        print("class pool gaps are advisory until skill acquisition/loadout ownership is settled")
+        if args.strict_class_pools:
+            failures.extend(class_failures)
 
     print("\n[projected diversity]")
     delivery_counts = Counter(row["delivery"] for row in projected)

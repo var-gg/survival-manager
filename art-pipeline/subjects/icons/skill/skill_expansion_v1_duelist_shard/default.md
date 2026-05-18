@@ -34,7 +34,7 @@ skill_bindings:
   slot: Passive
   kind: Buff
   delivery: Melee
-  damage: 'True'
+  damage: Magical
   statuses: []
 - skill_id: skill_bloodless_form
   icon_id: skill_icon_bloodless_form
@@ -43,7 +43,7 @@ skill_bindings:
   slot: Passive
   kind: Utility
   delivery: Melee
-  damage: 'True'
+  damage: Magical
   statuses: []
 - skill_id: skill_memory_tuning
   icon_id: skill_icon_memory_tuning
@@ -95,10 +95,10 @@ Per-cell descriptors:
 small memory bead trapped inside a broken crystal shard. Palette: crystal white, indigo, pale gold. Runtime: skill_shard_memory / Shard Memory (파편 기억): duelist Passive Buff, Ranged, Magical, power 0, cooldown 0, statuses none. Effect: Passive; hitting exposed targets stores a small follow-up budget..
 
 (1,0) skill_icon_edge_of_sentence:
-execution point hovering over a small sealed verdict diamond, no letters. Palette: black steel, red, pale crystal. Runtime: skill_edge_of_sentence / Edge of Sentence (선고의 칼끝): duelist Passive Buff, Melee, True, power 0, cooldown 0, statuses none. Effect: Passive; execution windows gain a small true-damage bias..
+execution point hovering over a small sealed verdict diamond, no letters. Palette: black steel, red, pale crystal. Runtime: skill_edge_of_sentence / Edge of Sentence (선고의 칼끝): duelist Passive Buff, Melee, Magical, power 0, cooldown 0, statuses none. Effect: Passive; execution windows gain a small true-damage bias..
 
 (0,1) skill_icon_bloodless_form:
-pale empty stance sigil made of two clean blade arcs, no body. Palette: pale grey, indigo, muted red. Runtime: skill_bloodless_form / Bloodless Form (무혈식): duelist Passive Utility, Melee, True, power 0, cooldown 0, statuses none. Effect: Passive; reduces self-risk when chaining utility movement..
+pale empty stance sigil made of two clean blade arcs, no body. Palette: pale grey, indigo, muted red. Runtime: skill_bloodless_form / Bloodless Form (무혈식): duelist Passive Utility, Melee, Magical, power 0, cooldown 0, statuses none. Effect: Passive; reduces self-risk when chaining utility movement..
 
 (1,1) skill_icon_memory_tuning:
 tuning fork-shaped light around a green memory bead, no text. Palette: teal, pale green, gold. Runtime: skill_memory_tuning / Memory Tuning (기억 조율): mystic UtilityActive Heal, Aura, Healing, power 3, cooldown 4.8, statuses barrier(0s/4). Effect: Tunes an injured ally's memory pattern, healing and adding a light barrier..

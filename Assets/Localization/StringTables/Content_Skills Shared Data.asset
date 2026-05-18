@@ -442,3 +442,291 @@ MonoBehaviour:
       type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
       data:
         m_CustomEpoch: 1774854113794
+  - m_Id: 335601013350402
+    m_Key: content.skill.skill_aegis_sentinel_oath.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350403
+    m_Key: content.skill.skill_aegis_sentinel_oath.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350404
+    m_Key: content.skill.skill_aegis_linebreaker.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350405
+    m_Key: content.skill.skill_aegis_linebreaker.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350406
+    m_Key: content.skill.skill_square_wall.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350407
+    m_Key: content.skill.skill_square_wall.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350408
+    m_Key: content.skill.skill_aegis_intercept.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350409
+    m_Key: content.skill.skill_aegis_intercept.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350410
+    m_Key: content.skill.skill_sentinel_oath.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350411
+    m_Key: content.skill.skill_sentinel_oath.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350412
+    m_Key: content.skill.skill_lattice_bastion.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350413
+    m_Key: content.skill.skill_lattice_bastion.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350414
+    m_Key: content.skill.support_line_anchor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350415
+    m_Key: content.skill.support_line_anchor.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350416
+    m_Key: content.skill.skill_iron_pelt_maul.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350417
+    m_Key: content.skill.skill_iron_pelt_maul.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350418
+    m_Key: content.skill.skill_rusthide_charge.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350419
+    m_Key: content.skill.skill_rusthide_charge.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350420
+    m_Key: content.skill.skill_iron_pelt_roar.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350421
+    m_Key: content.skill.skill_iron_pelt_roar.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350422
+    m_Key: content.skill.skill_iron_hide_memory.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350423
+    m_Key: content.skill.skill_iron_hide_memory.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350424
+    m_Key: content.skill.skill_pelt_last_stand.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350425
+    m_Key: content.skill.skill_pelt_last_stand.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350426
+    m_Key: content.skill.skill_prism_lance.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350427
+    m_Key: content.skill.skill_prism_lance.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350428
+    m_Key: content.skill.skill_ember_arrow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350429
+    m_Key: content.skill.skill_ember_arrow.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350430
+    m_Key: content.skill.skill_cinder_overrun.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350431
+    m_Key: content.skill.skill_cinder_overrun.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350432
+    m_Key: content.skill.skill_refracting_snare.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350433
+    m_Key: content.skill.skill_refracting_snare.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350434
+    m_Key: content.skill.skill_signal_flare.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350435
+    m_Key: content.skill.skill_signal_flare.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350436
+    m_Key: content.skill.skill_ash_step.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350437
+    m_Key: content.skill.skill_ash_step.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350438
+    m_Key: content.skill.skill_prism_sight.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350439
+    m_Key: content.skill.skill_prism_sight.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350440
+    m_Key: content.skill.skill_heat_haze.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350441
+    m_Key: content.skill.skill_heat_haze.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350442
+    m_Key: content.skill.skill_quick_kindling.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350443
+    m_Key: content.skill.skill_quick_kindling.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350444
+    m_Key: content.skill.skill_glass_pathfinder.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350445
+    m_Key: content.skill.skill_glass_pathfinder.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350446
+    m_Key: content.skill.skill_shardblade_sever.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350447
+    m_Key: content.skill.skill_shardblade_sever.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350448
+    m_Key: content.skill.skill_mirror_cut.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350449
+    m_Key: content.skill.skill_mirror_cut.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350450
+    m_Key: content.skill.skill_fracture_step.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350451
+    m_Key: content.skill.skill_fracture_step.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350452
+    m_Key: content.skill.skill_riposte_angle.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350453
+    m_Key: content.skill.skill_riposte_angle.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350454
+    m_Key: content.skill.skill_shard_memory.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350455
+    m_Key: content.skill.skill_shard_memory.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350456
+    m_Key: content.skill.skill_edge_of_sentence.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350457
+    m_Key: content.skill.skill_edge_of_sentence.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350458
+    m_Key: content.skill.skill_bloodless_form.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350459
+    m_Key: content.skill.skill_bloodless_form.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350460
+    m_Key: content.skill.skill_echo_resonance.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350461
+    m_Key: content.skill.skill_echo_resonance.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350462
+    m_Key: content.skill.skill_memory_tuning.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350463
+    m_Key: content.skill.skill_memory_tuning.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350464
+    m_Key: content.skill.skill_phase_tether.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350465
+    m_Key: content.skill.skill_phase_tether.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350466
+    m_Key: content.skill.skill_echo_archive.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350467
+    m_Key: content.skill.skill_echo_archive.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350468
+    m_Key: content.skill.skill_lattice_listener.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350469
+    m_Key: content.skill.skill_lattice_listener.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350470
+    m_Key: content.skill.skill_savant_last_word.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350471
+    m_Key: content.skill.skill_savant_last_word.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350472
+    m_Key: content.skill.support_resonance_cleanse.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350473
+    m_Key: content.skill.support_resonance_cleanse.desc
+    m_Metadata:
+      m_Items: []

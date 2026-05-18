@@ -53,7 +53,7 @@ skill_bindings:
   slot: CoreActive
   kind: Strike
   delivery: Melee
-  damage: 'True'
+  damage: Magical
   statuses:
   - id: wound
     duration: 4
@@ -114,7 +114,7 @@ square ivory shield sigil with a lattice oath knot and a blue-white pulse contai
 thin crystal arrow-lance piercing a small blue focus diamond. Palette: cyan, pale gold, glass white. Runtime: skill_prism_lance / Prism Lance (프리즘 창): ranger CoreActive Strike, Projectile, Magical, power 3.9, cooldown 2.2, statuses marked(4s/1). Effect: Fires a thin prism bolt that prefers marked targets and refreshes mark..
 
 (0,1) skill_icon_shardblade_sever:
-single broken crystal blade cutting a red-black pressure thread. Palette: indigo, crystal white, dark red accent. Runtime: skill_shardblade_sever / Shardblade Sever (편검 절단): duelist CoreActive Strike, Melee, True, power 3.6, cooldown 2.7, statuses wound(4s/1), sunder(3s/1). Effect: A precise shard cut that wounds and sunders an exposed target..
+single broken crystal blade cutting a red-black pressure thread. Palette: indigo, crystal white, dark red accent. Runtime: skill_shardblade_sever / Shardblade Sever (편검 절단): duelist CoreActive Strike, Melee, Magical, power 3.6, cooldown 2.7, statuses wound(4s/1), sunder(3s/1). Effect: A precise shard cut that wounds and sunders an exposed target..
 
 (1,1) skill_icon_echo_resonance:
 blue sound line passing through a small memory prism, no letters. Palette: deep teal, blue-white, old gold. Runtime: skill_echo_resonance / Echo Resonance (공명 반향): mystic CoreActive Debuff, Projectile, Magical, power 3.2, cooldown 3, statuses silence(2s/1). Effect: Sends a focused resonance pulse that silences a marked target..

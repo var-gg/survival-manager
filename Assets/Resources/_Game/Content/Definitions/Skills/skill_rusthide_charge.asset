@@ -1,0 +1,145 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 317f0135c04991a4e91ddd8d0479dbe4, type: 3}
+  m_Name: skill_rusthide_charge
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
+  Id: skill_rusthide_charge
+  NameKey: content.skill.skill_rusthide_charge.name
+  DescriptionKey: content.skill.skill_rusthide_charge.desc
+  TemplateType: 1
+  Kind: 0
+  SlotKind: 0
+  DamageType: 0
+  Delivery: 0
+  TargetRule: 2
+  Power: 4.3
+  Range: 1.5
+  RangeMin: 0
+  RangeMax: -1
+  Radius: 0
+  Width: 0
+  ArcDegrees: 0
+  PowerFlat: 4.3
+  PhysCoeff: 1
+  MagCoeff: 0
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 1
+  ActivationModel: 2
+  Lane: 0
+  LockRule: 2
+  AuthorityLayer: 1
+  BudgetCard:
+    Domain: 1
+    Rarity: 0
+    PowerBand: 2
+    RoleProfile: 0
+    Vector:
+      SustainedDamage: 3
+      BurstDamage: 4
+      Durability: 0
+      Control: 1
+      Mobility: 1
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 3
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 1
+    ConditionClauseCount: 1
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns:
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
+  ManaCost: 0
+  ResourceCost: -1
+  BaseCooldownSeconds: 3.1
+  CooldownSeconds: -1
+  CastWindupSeconds: 0
+  RecoverySeconds: -1
+  PowerBudget: 0
+  InterruptRefundScalar: 0.5
+  AiIntents:
+  AiScoreHints:
+    BurstBias: 1
+    ProtectBias: 0
+    MaintainRangeBias: 0
+    ExecuteBias: 1
+    ControlBias: 1
+    MinimumTargetHealthRatio: 0
+    MaximumTargetHealthRatio: 1
+    MinimumDistance: 0
+    MaximumDistance: 1.5
+  AnimationHookId:
+  IconId: skill_icon_rusthide_charge
+  VfxHookId: vfx.skill_rusthide_charge
+  SfxHookId:
+  LearnSource: 2
+  EffectFamilyId: expansion_v1_vanguard
+  MutuallyExclusiveGroupId:
+  RecruitNativeTags: []
+  RecruitPlanTags: []
+  RecruitScoutTags: []
+  TargetRuleData:
+    Domain: 2
+    PrimarySelector: 8
+    FallbackPolicy: 2
+    Filters: 69
+    ReevaluateIntervalSeconds: 0.25
+    MinimumCommitSeconds: 0.75
+    MaxAcquireRange: 0
+    PreferredMinTargets: 1
+    ClusterRadius: 2.5
+    LockTargetAtCastStart: 1
+    RetargetLockMode: 3
+  SummonProfile:
+    EntityKind: 1
+    BehaviorKind: 1
+    Eligibility: 24
+    CreditPolicy: 15
+    MaxConcurrentPerSource: 2
+    MaxConcurrentPerOwner: 4
+    DespawnOnOwnerDeath: 1
+    OwnerDeathDespawnDelaySeconds: 1
+    InheritOwnerTarget: 1
+    IsPersistent: 1
+    Inheritance:
+      OffenseBonusScalar: 0.5
+      DefenseBonusScalar: 0.35
+      UtilityBonusScalar: 0.25
+      InheritCritChance: 0
+      InheritDodge: 0
+      InheritBlock: 0
+  Effects: []
+  CompileTags:
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
+  RuleModifierTags: []
+  SupportAllowedTags: []
+  SupportBlockedTags: []
+  RequiredWeaponTags: []
+  RequiredClassTags:
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
+  AppliedStatuses:
+  - Id: status_root
+    StatusId: root
+    DurationSeconds: 1.6
+    Magnitude: 1
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
+    Effects: []
+  CleanseProfileId:
+  legacyDisplayName:

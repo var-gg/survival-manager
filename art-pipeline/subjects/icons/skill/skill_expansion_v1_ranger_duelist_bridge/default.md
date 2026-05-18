@@ -37,7 +37,7 @@ skill_bindings:
   slot: UtilityActive
   kind: Utility
   delivery: Zone
-  damage: 'True'
+  damage: Magical
   statuses:
   - id: slow
     duration: 2
@@ -104,7 +104,7 @@ Per-cell descriptors:
 thin mirror shard slash reflecting a small cyan cut line. Palette: mirror silver, indigo, cyan. Runtime: skill_mirror_cut / Mirror Cut (거울 베기): duelist CoreActive Strike, Projectile, Magical, power 3.5, cooldown 2.4, statuses exposed(2s/1). Effect: Throws a mirror-thin shard at a marked target and exposes them..
 
 (1,0) skill_icon_fracture_step:
-footless fracture lane, two indigo shards separated by a white crack. Palette: indigo, white crystal, dark steel. Runtime: skill_fracture_step / Fracture Step (균열 보법): duelist UtilityActive Utility, Zone, True, power 0, cooldown 4.6, statuses slow(2s/1). Effect: Leaves a fractured lane that slows enemies trying to follow..
+footless fracture lane, two indigo shards separated by a white crack. Palette: indigo, white crystal, dark steel. Runtime: skill_fracture_step / Fracture Step (균열 보법): duelist UtilityActive Utility, Zone, Magical, power 0, cooldown 4.6, statuses slow(2s/1). Effect: Leaves a fractured lane that slows enemies trying to follow..
 
 (0,1) skill_icon_riposte_angle:
 narrow parry line bouncing a red spark back along a measured angle. Palette: steel, indigo, red spark. Runtime: skill_riposte_angle / Riposte Angle (반격각): duelist UtilityActive Buff, Ranged, Physical, power 0, cooldown 3.8, statuses guarded(1.8s/1). Effect: Sets a narrow counter angle and briefly gains guarded..

@@ -3,6 +3,9 @@ updated_at: '2026-05-18'
 quota_source: art-pipeline/config/combat_roster_skill_quota.yaml
 purpose: Concrete 36-skill expansion backlog for the 22-hero target roster, designed
   before VFX lock and icon generation.
+implementation_status: authored_skill_assets_materialized
+ownership_policy: Skills are class-pool content, not character-owned loadout bindings;
+  concrete loadout/equipment/gacha acquisition rules remain deferred to Pindoc.
 icon_pipeline:
   batch_size: 4
   sheet_size: 1568x1568
@@ -598,7 +601,7 @@ skills:
   slot: CoreActive
   kind: Strike
   delivery: Melee
-  damage: 'True'
+  damage: Magical
   target_rule: MostExposedEnemy
   power: 3.6
   cooldown: 2.7
@@ -643,7 +646,7 @@ skills:
   slot: UtilityActive
   kind: Utility
   delivery: Zone
-  damage: 'True'
+  damage: Magical
   target_rule: Self
   power: 0
   cooldown: 4.6
@@ -703,7 +706,7 @@ skills:
   slot: Passive
   kind: Buff
   delivery: Melee
-  damage: 'True'
+  damage: Magical
   target_rule: Self
   power: 0
   cooldown: 0
@@ -721,7 +724,7 @@ skills:
   slot: Passive
   kind: Utility
   delivery: Melee
-  damage: 'True'
+  damage: Magical
   target_rule: Self
   power: 0
   cooldown: 0

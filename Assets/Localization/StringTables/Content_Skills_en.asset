@@ -437,3 +437,291 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+  - m_Id: 335601013350402
+    m_Localized: "Sentinel Oath"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350403
+    m_Localized: "Projects a square oath mark, granting barrier and guarded to the ally under pressure."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350404
+    m_Localized: "Linebreaker"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350405
+    m_Localized: "Shield-bashes the exposed enemy and applies sunder."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350406
+    m_Localized: "Square Wall"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350407
+    m_Localized: "Raises a short-lived lattice wall around the front line, adding barrier."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350408
+    m_Localized: "Intercept Angle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350409
+    m_Localized: "Marks a protected ally and biases the sentinel to intercept incoming pressure."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350410
+    m_Localized: "Oath Weight"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350411
+    m_Localized: "Passive; improves reliability when holding anchor posture."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350412
+    m_Localized: "Lattice Bastion"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350413
+    m_Localized: "Passive; converts repeated pressure into extra barrier budget."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350414
+    m_Localized: "Line Anchor"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350415
+    m_Localized: "Support modifier; guard effects also steady nearby allies."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350416
+    m_Localized: "Iron Pelt Maul"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350417
+    m_Localized: "Heavy close strike that wounds the nearest enemy."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350418
+    m_Localized: "Rusthide Charge"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350419
+    m_Localized: "Charges the exposed enemy and briefly roots them."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350420
+    m_Localized: "Iron Pelt Roar"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350421
+    m_Localized: "Emits a short pressure roar that exposes nearby enemies."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350422
+    m_Localized: "Iron-Hide Memory"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350423
+    m_Localized: "Passive; repeated damage grants a small durability budget."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350424
+    m_Localized: "Last Pelt Standing"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350425
+    m_Localized: "Passive; low health briefly grants unstoppable once per combat."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350426
+    m_Localized: "Prism Lance"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350427
+    m_Localized: "Fires a thin prism bolt that prefers marked targets and refreshes mark."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350428
+    m_Localized: "Ember Arrow"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350429
+    m_Localized: "Shoots a fast ember-tipped arrow that applies burn."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350430
+    m_Localized: "Cinder Overrun"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350431
+    m_Localized: "Pressures a weakened enemy with a cinder shot and slows them."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350432
+    m_Localized: "Refracting Snare"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350433
+    m_Localized: "Places a prism snare that roots an exposed target."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350434
+    m_Localized: "Signal Flare"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350435
+    m_Localized: "Marks a priority target and briefly exposes it."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350436
+    m_Localized: "Ash Step"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350437
+    m_Localized: "Creates a short ash path and grants brief unstoppable repositioning."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350438
+    m_Localized: "Prism Sight"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350439
+    m_Localized: "Passive; marked targets increase projectile reliability."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350440
+    m_Localized: "Heat Haze"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350441
+    m_Localized: "Passive; after moving, incoming ranged pressure is less reliable."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350442
+    m_Localized: "Quick Kindling"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350443
+    m_Localized: "Passive; first burn application in combat gains extra tempo budget."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350444
+    m_Localized: "Glass Pathfinder"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350445
+    m_Localized: "Passive; improves target switching when fighting through marked zones."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350446
+    m_Localized: "Shardblade Sever"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350447
+    m_Localized: "A precise shard cut that wounds and sunders an exposed target."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350448
+    m_Localized: "Mirror Cut"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350449
+    m_Localized: "Throws a mirror-thin shard at a marked target and exposes them."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350450
+    m_Localized: "Fracture Step"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350451
+    m_Localized: "Leaves a fractured lane that slows enemies trying to follow."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350452
+    m_Localized: "Riposte Angle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350453
+    m_Localized: "Sets a narrow counter angle and briefly gains guarded."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350454
+    m_Localized: "Shard Memory"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350455
+    m_Localized: "Passive; hitting exposed targets stores a small follow-up budget."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350456
+    m_Localized: "Edge of Sentence"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350457
+    m_Localized: "Passive; execution windows gain a small true-damage bias."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350458
+    m_Localized: "Bloodless Form"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350459
+    m_Localized: "Passive; reduces self-risk when chaining utility movement."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350460
+    m_Localized: "Echo Resonance"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350461
+    m_Localized: "Sends a focused resonance pulse that silences a marked target."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350462
+    m_Localized: "Memory Tuning"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350463
+    m_Localized: "Tunes an injured ally's memory pattern, healing and adding a light barrier."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350464
+    m_Localized: "Phase Tether"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350465
+    m_Localized: "Tethers an exposed enemy in phase noise, rooting and slowing them."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350466
+    m_Localized: "Echo Archive"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350467
+    m_Localized: "Passive; repeated status applications improve reliability."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350468
+    m_Localized: "Lattice Listener"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350469
+    m_Localized: "Passive; improves target selection against controlled enemies."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350470
+    m_Localized: "Last Word"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350471
+    m_Localized: "Passive; once per combat, a collapsing ally can emit a brief silence pulse."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350472
+    m_Localized: "Resonance Cleanse"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 335601013350473
+    m_Localized: "Support modifier; cleanse effects also grant a short unstoppable pulse."
+    m_Metadata:
+      m_Items: []

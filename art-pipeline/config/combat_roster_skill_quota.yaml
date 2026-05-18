@@ -73,6 +73,10 @@ skill_quota:
       mystic: 7
       cross_class: 0
   class_skill_targets:
+    status: advisory_until_skill_acquisition_model_decision
+    rationale: Class pool totals help judge breadth, but support slot/class distribution
+      should not become a hard implementation gate until the loadout vs draft/gacha
+      acquisition model is settled in Pindoc.
     vanguard:
       total: 24
       slot_minimums:

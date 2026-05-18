@@ -573,9 +573,9 @@ internal sealed class SkillCatalogValidator : ICatalogValidationRule
         var statusIds = context.Statuses.Keys.ToHashSet(StringComparer.Ordinal);
         var cleanseProfileIds = context.CleanseProfiles.Keys.ToHashSet(StringComparer.Ordinal);
         var supportModifierSkills = context.Skills.Where(skill => skill.Id.StartsWith("support_", StringComparison.Ordinal)).ToList();
-        if (supportModifierSkills.Count != 12)
+        if (supportModifierSkills.Count < 12)
         {
-            ContentValidationIssueFactory.AddError(issues, "skill.support_modifier_floor", $"Support modifier floor must stay at 12. Found {supportModifierSkills.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "skill.support_modifier_floor", $"Support modifier floor must be at least 12. Found {supportModifierSkills.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
         foreach (var skill in context.Skills)
