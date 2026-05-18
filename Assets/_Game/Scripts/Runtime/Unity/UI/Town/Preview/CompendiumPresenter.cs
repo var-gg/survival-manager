@@ -501,7 +501,12 @@ internal sealed class CompendiumPresenter : ICompendiumActions
             StyleKey: skill.VfxPreviewStyle,
             Prefab: skill.VfxPreviewPrefab,
             PrefabLabel: skill.VfxPrefabLabel,
-            Caption: $"{Localize("ui.town.compendium.vfx.caption", "Hook-based showcase preview")} / {skill.VfxFamilyLabel} / {skill.VfxSkinLabel} / {skill.CueSequenceLabel} / {skill.VfxPrefabLabel}");
+            PatternLabel: $"{skill.VfxFamilyLabel} / {skill.VfxSkinLabel}",
+            RouteLabel: $"{skill.DeliveryLabel} -> {skill.TargetLabel}",
+            AssetLabel: skill.VfxPrefabLabel,
+            CasterLabel: Localize("ui.town.compendium.vfx.caster", "시전자"),
+            TargetLabel: Localize("ui.town.compendium.vfx.target", "대상"),
+            Caption: $"{Localize("ui.town.compendium.vfx.caption", "스킬 연출 미리보기")} / {skill.CueSequenceLabel}");
     }
 
     private static CompendiumVfxPreviewViewState EmptyVfxPreview()
@@ -515,6 +520,11 @@ internal sealed class CompendiumPresenter : ICompendiumActions
             StyleKey: string.Empty,
             Prefab: null,
             PrefabLabel: string.Empty,
+            PatternLabel: string.Empty,
+            RouteLabel: string.Empty,
+            AssetLabel: string.Empty,
+            CasterLabel: string.Empty,
+            TargetLabel: string.Empty,
             Caption: string.Empty);
     }
 

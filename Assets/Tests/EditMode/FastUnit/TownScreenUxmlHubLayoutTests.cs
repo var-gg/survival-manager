@@ -64,9 +64,13 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(compendiumUxml, Does.Contain("CompendiumVfxPrefabPreviewImage"));
         Assert.That(compendiumUxml, Does.Contain("CompendiumVfxReplayButton"));
         Assert.That(compendiumUxml, Does.Contain("CompendiumVfxProjectile"));
+        Assert.That(compendiumUxml, Does.Contain("CompendiumVfxPatternLabel"));
+        Assert.That(compendiumUxml, Does.Contain("CompendiumVfxCasterLabel"));
         var compendiumUss = File.ReadAllText("Assets/_Game/UI/Screens/Town/Preview/CompendiumPreview.uss");
         Assert.That(compendiumUss, Does.Contain("cmp-entry-list--skill-grid"));
         Assert.That(compendiumUss, Does.Contain("cmp-skill-card"));
+        Assert.That(compendiumUss, Does.Contain("cmp-vfx-hud"));
+        Assert.That(compendiumUss, Does.Contain("cmp-vfx-actor-label"));
         var compendiumView = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/CompendiumView.cs");
         Assert.That(compendiumView, Does.Contain("BuildSkillCard"));
         // 옛 V1/V2 element 폐기 검증

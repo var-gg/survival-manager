@@ -29,6 +29,11 @@ internal sealed class CompendiumVfxPreviewView
     private readonly VisualElement _burst;
     private readonly VisualElement _pulseA;
     private readonly VisualElement _pulseB;
+    private readonly Label _pattern;
+    private readonly Label _route;
+    private readonly Label _asset;
+    private readonly Label _casterLabel;
+    private readonly Label _targetLabel;
     private readonly Label _title;
     private readonly Label _caption;
     private readonly IVisualElementScheduledItem _animation;
@@ -50,6 +55,11 @@ internal sealed class CompendiumVfxPreviewView
         _burst = Require<VisualElement>(root, "CompendiumVfxBurst");
         _pulseA = Require<VisualElement>(root, "CompendiumVfxPulseA");
         _pulseB = Require<VisualElement>(root, "CompendiumVfxPulseB");
+        _pattern = Require<Label>(root, "CompendiumVfxPatternLabel");
+        _route = Require<Label>(root, "CompendiumVfxRouteLabel");
+        _asset = Require<Label>(root, "CompendiumVfxAssetLabel");
+        _casterLabel = Require<Label>(root, "CompendiumVfxCasterLabel");
+        _targetLabel = Require<Label>(root, "CompendiumVfxTargetLabel");
         _title = Require<Label>(root, "CompendiumVfxPreviewTitle");
         _caption = Require<Label>(root, "CompendiumVfxPreviewCaption");
         _animation = _stage.schedule.Execute(UpdateFrame).Every(16);
@@ -71,6 +81,11 @@ internal sealed class CompendiumVfxPreviewView
         _caption.text = string.IsNullOrWhiteSpace(state.HookId)
             ? state.Caption
             : $"{state.Caption} / {state.HookId}";
+        _pattern.text = state.PatternLabel;
+        _route.text = state.RouteLabel;
+        _asset.text = state.AssetLabel;
+        _casterLabel.text = state.CasterLabel;
+        _targetLabel.text = state.TargetLabel;
         ApplyStyleClass(state.StyleKey);
         _prefabStage.Render(_prefabPreviewImage, state.Prefab, state.PlayToken);
 
@@ -134,6 +149,8 @@ internal sealed class CompendiumVfxPreviewView
         SetCircle(_burst, 76f, 46f, 18f + impact * 76f, (1f - impact) * 0.92f);
         SetCircle(_pulseA, 75f, 45f, 32f + impact * 92f, (1f - impact) * 0.36f);
         SetCircle(_pulseB, 73f, 43f, 24f + impact * 52f, (1f - impact) * 0.48f);
+        SetLabel(_casterLabel, 8f, 70f, 0.78f);
+        SetLabel(_targetLabel, 73f, 70f, 0.72f + impact * 0.22f);
     }
 
     private void ApplyCenteredFrame(float t, string style)
@@ -150,6 +167,8 @@ internal sealed class CompendiumVfxPreviewView
         SetCircle(_burst, centerX - 3f, 42f, 30f + bloom * 104f, (1f - bloom) * 0.88f);
         SetCircle(_pulseA, centerX - 5f, 40f, 44f + bloom * 132f, (1f - bloom) * 0.34f);
         SetCircle(_pulseB, centerX + 2f, 45f, 24f + bloom * 72f, (1f - bloom) * 0.46f);
+        SetLabel(_casterLabel, 15f, 70f, 0.78f);
+        SetLabel(_targetLabel, 68f, 70f, 0.72f + bloom * 0.22f);
     }
 
     private void ApplyStyleClass(string styleKey)
@@ -178,6 +197,13 @@ internal sealed class CompendiumVfxPreviewView
         element.style.top = Length.Percent(topPercent);
         element.style.width = Length.Percent(Mathf.Max(0f, widthPercent));
         element.style.height = height;
+        element.style.opacity = Mathf.Clamp01(opacity);
+    }
+
+    private static void SetLabel(VisualElement element, float leftPercent, float topPercent, float opacity)
+    {
+        element.style.left = Length.Percent(leftPercent);
+        element.style.top = Length.Percent(topPercent);
         element.style.opacity = Mathf.Clamp01(opacity);
     }
 

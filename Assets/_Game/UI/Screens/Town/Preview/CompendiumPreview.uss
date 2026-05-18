@@ -501,6 +501,64 @@
     border-bottom-color: rgba(255, 233, 148, 0.52);
 }
 
+.cmp-vfx-hud {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 9px;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.cmp-vfx-hud__chip {
+    margin-right: 5px;
+    margin-bottom: 4px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 6px;
+    padding-right: 6px;
+    color: var(--sm-vellum);
+    font-size: 9px;
+    background-color: rgba(11, 17, 35, 0.74);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.20);
+    border-right-color: rgba(245, 234, 208, 0.20);
+    border-top-color: rgba(245, 234, 208, 0.20);
+    border-bottom-color: rgba(245, 234, 208, 0.20);
+    white-space: normal;
+}
+
+.cmp-vfx-hud__chip--pattern {
+    color: var(--sm-gold-100);
+}
+
+.cmp-vfx-hud__chip--route {
+    color: rgba(118, 204, 255, 0.95);
+}
+
+.cmp-vfx-hud__chip--asset {
+    color: var(--sm-ink-2);
+}
+
+.cmp-vfx-actor-label {
+    position: absolute;
+    color: var(--sm-ink-2);
+    font-size: 9px;
+    -unity-font-style: bold;
+    background-color: rgba(9, 13, 28, 0.62);
+}
+
+.cmp-vfx-actor-label--caster {
+    color: rgba(139, 190, 255, 0.95);
+}
+
+.cmp-vfx-actor-label--target {
+    color: rgba(255, 159, 149, 0.95);
+}
+
 .cmp-vfx-caption {
     position: absolute;
     left: 12px;

@@ -114,6 +114,11 @@ public sealed record CompendiumVfxPreviewViewState(
     string StyleKey,
     GameObject? Prefab,
     string PrefabLabel,
+    string PatternLabel,
+    string RouteLabel,
+    string AssetLabel,
+    string CasterLabel,
+    string TargetLabel,
     string Caption);
 
 public sealed record CompendiumViewState(
