@@ -1,0 +1,129 @@
+schema: combat_roster_skill_quota_v1
+updated_at: '2026-05-18'
+source_truth:
+  runtime_characters: Assets/Resources/_Game/Content/Definitions/Characters/*.asset
+  runtime_archetypes: Assets/Resources/_Game/Content/Definitions/Archetypes/*.asset
+  runtime_skills: Assets/Resources/_Game/Content/Definitions/Skills/*.asset
+  story_character_manifest: art-pipeline/config/character_asset_manifest.yaml
+policy:
+  roster_layers:
+    runtime_playable_current: 16
+    story_hero_target_non_npc: 22
+    story_portrait_total_with_npc: 28
+    story_npc_targets: 6
+  interpretation: Runtime currently closes 16 playable CharacterDefinition/ArchetypeDefinition
+    assets. The 22 number is the non-NPC hero/story combat candidate count in the
+    character art manifest; six of those are not runtime playable yet.
+target_roster:
+  total_playable_heroes: 22
+  class_targets:
+    vanguard: 6
+    ranger: 6
+    duelist: 5
+    mystic: 5
+  pending_runtime_heroes:
+  - id: hero_echo_savant
+    target_class: mystic
+    combat_class: echo_savant
+    source: art-pipeline/config/character_asset_manifest.yaml
+  - id: hero_aegis_sentinel
+    target_class: vanguard
+    combat_class: aegis_sentinel
+    source: art-pipeline/config/character_asset_manifest.yaml
+  - id: hero_shardblade
+    target_class: duelist
+    combat_class: shardblade
+    source: art-pipeline/config/character_asset_manifest.yaml
+  - id: hero_prism_seeker
+    target_class: ranger
+    combat_class: prism_seeker
+    source: art-pipeline/config/character_asset_manifest.yaml
+  - id: hero_ember_runner
+    target_class: ranger
+    combat_class: ember_runner
+    source: art-pipeline/config/character_asset_manifest.yaml
+  - id: hero_iron_pelt
+    target_class: vanguard
+    combat_class: iron_pelt_hardliner
+    source: art-pipeline/config/character_asset_manifest.yaml
+skill_quota:
+  minimum_total_for_22_roster: 72
+  target_total_for_vfx_ready_22_roster: 88
+  rationale:
+    minimum: Preserve the current 3.25 skill-per-runtime-character density when
+      expanding from 16 to 22 heroes.
+    target: Four meaningful skill/presentation handles per target hero before
+      locking the VFX list.
+  slot_targets:
+    CoreActive: 22
+    UtilityActive: 22
+    Passive: 22
+    Support: 22
+  creation_backlog_from_current_runtime:
+    total_new_skill_definitions: 36
+    by_slot:
+      CoreActive: 10
+      UtilityActive: 10
+      Passive: 14
+      Support: 2
+    by_class_minimum:
+      vanguard: 12
+      ranger: 10
+      duelist: 7
+      mystic: 6
+      cross_class: 1
+  class_skill_targets:
+    vanguard:
+      total: 24
+      slot_minimums:
+        CoreActive: 6
+        UtilityActive: 6
+        Passive: 6
+        Support: 6
+    ranger:
+      total: 24
+      slot_minimums:
+        CoreActive: 6
+        UtilityActive: 6
+        Passive: 6
+        Support: 6
+    duelist:
+      total: 20
+      slot_minimums:
+        CoreActive: 5
+        UtilityActive: 5
+        Passive: 5
+        Support: 5
+    mystic:
+      total: 20
+      slot_minimums:
+        CoreActive: 5
+        UtilityActive: 5
+        Passive: 5
+        Support: 5
+diversity_quota:
+  status_interaction_minimum: 30
+  unique_status_id_band:
+    min: 10
+    max: 14
+  delivery_caps:
+    Aura:
+      max: 40
+  delivery_minimums:
+    Melee: 18
+    RangedOrProjectile: 18
+    ZoneNovaTrap: 10
+  damage_mix:
+    Physical:
+      max: 56
+    MagicalOrTrue:
+      min: 14
+    Healing:
+      min: 8
+notes:
+- Do not treat story NPC portrait targets as playable combat quota.
+- Existing support overages may remain; quota gaps should be closed by adding
+  underrepresented active, passive, status, and non-aura delivery skills.
+- Pindoc remains the durable design/wiki surface; this file is the local
+  implementation and art-pipeline quota contract until the Pindoc task can be
+  updated.
