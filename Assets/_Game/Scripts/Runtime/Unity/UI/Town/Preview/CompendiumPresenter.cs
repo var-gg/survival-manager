@@ -7,19 +7,28 @@ using SM.Unity.UI;
 
 namespace SM.Unity.UI.Town.Preview;
 
-public sealed class CompendiumPresenter : ICompendiumActions
+internal sealed class CompendiumPresenter : ICompendiumActions
 {
+    private const string AnyFilterValue = "";
+    private const int InitialVisibleCharacterCount = 8;
+
     private readonly GameSessionRoot _root;
     private readonly GameLocalizationController _localization;
     private readonly ContentTextResolver _contentText;
     private readonly ContentIconResolver _iconResolver;
+    private readonly CompendiumFilterSupport _filterSupport;
+    private readonly CompendiumVfxPreviewResolver _vfxPreviewResolver;
     private readonly CompendiumView _view;
 
     private CompendiumTab _activeTab = CompendiumTab.Skills;
     private string _selectedEntryId = string.Empty;
+    private string _searchText = string.Empty;
+    private string _skillClassFilter = AnyFilterValue;
+    private string _skillSlotFilter = AnyFilterValue;
+    private string _skillVfxFamilyFilter = AnyFilterValue;
     private int _previewPlayToken;
 
-    public CompendiumPresenter(
+    internal CompendiumPresenter(
         GameSessionRoot root,
         GameLocalizationController localization,
         ContentTextResolver contentText,
@@ -30,6 +39,8 @@ public sealed class CompendiumPresenter : ICompendiumActions
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
         _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
         _iconResolver = iconResolver ?? throw new ArgumentNullException(nameof(iconResolver));
+        _filterSupport = new CompendiumFilterSupport(_contentText, Localize);
+        _vfxPreviewResolver = new CompendiumVfxPreviewResolver(Localize);
         _view = view ?? throw new ArgumentNullException(nameof(view));
     }
 
@@ -105,6 +116,38 @@ public sealed class CompendiumPresenter : ICompendiumActions
         Refresh();
     }
 
+    public void SetSearchText(string searchText)
+    {
+        var normalized = searchText ?? string.Empty;
+        if (string.Equals(_searchText, normalized, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _searchText = normalized;
+        if (_activeTab == CompendiumTab.Skills)
+        {
+            _previewPlayToken++;
+        }
+
+        Refresh();
+    }
+
+    public void SetSkillClassFilter(string value)
+    {
+        SetSkillFilter(ref _skillClassFilter, value);
+    }
+
+    public void SetSkillSlotFilter(string value)
+    {
+        SetSkillFilter(ref _skillSlotFilter, value);
+    }
+
+    public void SetSkillVfxFamilyFilter(string value)
+    {
+        SetSkillFilter(ref _skillVfxFamilyFilter, value);
+    }
+
     private CompendiumViewState BuildState()
     {
         var snapshot = _root.CombatContentLookup.Snapshot;
@@ -112,11 +155,26 @@ public sealed class CompendiumPresenter : ICompendiumActions
         var statuses = BuildStatuses(snapshot);
         var synergies = BuildSynergies();
         var characters = BuildCharacters(snapshot);
+        var (shownCount, totalCount) = ResolveActiveCounts(
+            snapshot,
+            skills.Count,
+            statuses.Count,
+            synergies.Count,
+            characters.Count);
 
         return new CompendiumViewState(
             Title: Localize("ui.town.compendium.title", "시스템 도감"),
             Subtitle: Localize("ui.town.compendium.subtitle", "스킬, 상태, 시너지, 캐릭터 언락 표면"),
             CloseLabel: Localize(GameLocalizationTables.UICommon, "ui.common.close", "Close"),
+            Filters: _filterSupport.BuildFilterBar(
+                snapshot,
+                _activeTab,
+                _searchText,
+                _skillClassFilter,
+                _skillSlotFilter,
+                _skillVfxFamilyFilter,
+                shownCount,
+                totalCount),
             Tabs: BuildTabs(),
             ActiveTab: _activeTab,
             Skills: skills,
@@ -142,11 +200,15 @@ public sealed class CompendiumPresenter : ICompendiumActions
 
     private IReadOnlyList<CompendiumSkillViewState> BuildSkills(CombatContentSnapshot snapshot)
     {
-        var selectedId = ResolveSelectedId(snapshot.SkillCatalog.Keys);
-        return snapshot.SkillCatalog.Values
+        var filtered = snapshot.SkillCatalog.Values
             .OrderBy(skill => PrimaryClassTag(skill))
-            .ThenBy(skill => SlotOrder(skill.SlotKind))
+            .ThenBy(skill => CompendiumFilterSupport.SlotOrder(skill.SlotKind))
             .ThenBy(skill => skill.Id, StringComparer.Ordinal)
+            .Where(skill => _filterSupport.MatchesSkillFilters(skill, _skillClassFilter, _skillSlotFilter, _skillVfxFamilyFilter))
+            .Where(skill => _filterSupport.MatchesSkillSearch(skill, _searchText))
+            .ToArray();
+        var selectedId = ResolveSelectedId(filtered.Select(skill => skill.Id));
+        return filtered
             .Select(skill => BuildSkill(skill, selectedId))
             .ToList();
     }
@@ -158,12 +220,13 @@ public sealed class CompendiumPresenter : ICompendiumActions
         var statuses = skill.AppliedStatuses?.Where(status => !string.IsNullOrWhiteSpace(status.StatusId)).ToArray()
                        ?? Array.Empty<StatusApplicationSpec>();
         var presentation = skill.EffectivePresentation;
+        var previewPrefab = _vfxPreviewResolver.ResolvePrefab(skill, presentation, out var previewPrefabLabel);
 
         return new CompendiumSkillViewState(
             Id: skill.Id,
             Name: _contentText.GetSkillName(skill.Id),
             Description: _contentText.GetSkillDescription(skill.Id),
-            SlotLabel: FormatSlot(skill.SlotKind),
+            SlotLabel: _filterSupport.FormatSlot(skill.SlotKind),
             ClassLabel: classTags.Length == 0
                 ? Localize("ui.town.compendium.class.any", "Any class")
                 : string.Join(", ", classTags.Select(_contentText.GetClassName)),
@@ -181,7 +244,9 @@ public sealed class CompendiumPresenter : ICompendiumActions
             VfxSkinLabel: presentation.Skin.ToString(),
             AnimationLabel: presentation.Gesture.ToString(),
             CueSequenceLabel: presentation.CueSequence.ToString(),
+            VfxPrefabLabel: previewPrefabLabel,
             VfxPreviewStyle: ResolveVfxPreviewStyle(presentation),
+            VfxPreviewPrefab: previewPrefab,
             IconSprite: _iconResolver.ResolveSkill(skill.Id),
             IsSelected: string.Equals(skill.Id, selectedId, StringComparison.Ordinal));
     }
@@ -189,16 +254,19 @@ public sealed class CompendiumPresenter : ICompendiumActions
     private IReadOnlyList<CompendiumStatusViewState> BuildStatuses(CombatContentSnapshot snapshot)
     {
         var statusFamilies = snapshot.StatusFamilies ?? new Dictionary<string, StatusFamilyTemplate>(StringComparer.Ordinal);
-        var selectedId = ResolveSelectedId(statusFamilies.Keys);
-        return statusFamilies.Values
+        var filtered = statusFamilies.Values
             .OrderBy(status => status.Group)
             .ThenBy(status => status.Id, StringComparer.Ordinal)
+            .Where(status => _filterSupport.MatchesStatusSearch(status, _searchText))
+            .ToArray();
+        var selectedId = ResolveSelectedId(filtered.Select(status => status.Id));
+        return filtered
             .Select(status => new CompendiumStatusViewState(
                 Id: status.Id,
                 Name: _contentText.GetStatusName(status.Id),
                 Description: _contentText.GetStatusDescription(status.Id),
                 GroupLabel: status.Group.ToString(),
-                RuleSummary: FormatStatusRule(status),
+                RuleSummary: _filterSupport.FormatStatusRule(status),
                 VfxCueId: string.IsNullOrWhiteSpace(status.VfxCueId) ? "-" : status.VfxCueId,
                 IsSelected: string.Equals(status.Id, selectedId, StringComparison.Ordinal)))
             .ToList();
@@ -207,7 +275,6 @@ public sealed class CompendiumPresenter : ICompendiumActions
     private IReadOnlyList<CompendiumSynergyViewState> BuildSynergies()
     {
         var ids = _root.CombatContentLookup.GetCanonicalSynergyFamilyIds();
-        var selectedId = ResolveSelectedId(ids);
         var result = new List<CompendiumSynergyViewState>(ids.Count);
         foreach (var id in ids)
         {
@@ -228,10 +295,16 @@ public sealed class CompendiumPresenter : ICompendiumActions
                 Description: _contentText.GetSynergyDescription(id),
                 CountedTagLabel: string.IsNullOrWhiteSpace(synergy.CountedTagId) ? "-" : synergy.CountedTagId,
                 TierSummary: tiers.Length == 0 ? "-" : string.Join(" / ", tiers),
-                IsSelected: string.Equals(id, selectedId, StringComparison.Ordinal)));
+                IsSelected: false));
         }
 
-        return result;
+        var filtered = result
+            .Where(synergy => _filterSupport.MatchesSynergySearch(synergy, _searchText))
+            .ToArray();
+        var selectedId = ResolveSelectedId(filtered.Select(synergy => synergy.Id));
+        return filtered
+            .Select(synergy => synergy with { IsSelected = string.Equals(synergy.Id, selectedId, StringComparison.Ordinal) })
+            .ToList();
     }
 
     private IReadOnlyList<CompendiumCharacterViewState> BuildCharacters(CombatContentSnapshot snapshot)
@@ -241,28 +314,47 @@ public sealed class CompendiumPresenter : ICompendiumActions
             .SelectMany(hero => new[] { hero.CharacterId, hero.HeroId })
             .Where(id => !string.IsNullOrWhiteSpace(id))
             .ToHashSet(StringComparer.Ordinal);
-        var selectedId = ResolveSelectedId(characters.Keys);
         var index = 1;
-        return characters.Values
+        var result = characters.Values
             .OrderBy(character => character.ClassId, StringComparer.Ordinal)
             .ThenBy(character => character.Id, StringComparer.Ordinal)
             .Select(character =>
             {
-                var isUnlocked = unlocked.Contains(character.Id);
-                var displayName = isUnlocked
+                var slotIndex = index;
+                var isProfileUnlocked = unlocked.Contains(character.Id);
+                var isVisible = isProfileUnlocked || slotIndex <= InitialVisibleCharacterCount;
+                var displayName = isVisible
                     ? _contentText.GetCharacterName(character.Id, character.DefaultArchetypeId)
-                    : string.Format(Localize("ui.town.compendium.character.locked_slot", "Slot {0:00}"), index);
+                    : string.Format(Localize("ui.town.compendium.character.locked_slot", "Slot {0:00}"), slotIndex);
+                var raceLabel = string.IsNullOrWhiteSpace(character.RaceId) ? "-" : _contentText.GetRaceName(character.RaceId);
+                var classLabel = string.IsNullOrWhiteSpace(character.ClassId) ? "-" : _contentText.GetClassName(character.ClassId);
+                var roleLabel = string.IsNullOrWhiteSpace(character.DefaultRoleInstructionId)
+                    ? "-"
+                    : _contentText.GetRoleName(character.DefaultRoleInstructionId);
                 index++;
                 return new CompendiumCharacterViewState(
                     Id: character.Id,
                     DisplayName: displayName,
-                    ClassLabel: string.IsNullOrWhiteSpace(character.ClassId) ? "-" : _contentText.GetClassName(character.ClassId),
-                    UnlockLabel: isUnlocked
+                    Description: isVisible
+                        ? _contentText.GetCharacterDescription(character.Id, character.DefaultArchetypeId)
+                        : Localize("ui.town.compendium.character.locked_description", "아직 정체와 이야기가 공개되지 않은 캐릭터 슬롯입니다."),
+                    RaceLabel: isVisible ? raceLabel : "-",
+                    ClassLabel: isVisible ? classLabel : Localize("ui.town.compendium.character.unknown_class", "미공개"),
+                    RoleLabel: isVisible ? roleLabel : "-",
+                    UnlockLabel: isProfileUnlocked
                         ? Localize("ui.town.compendium.character.unlocked", "Unlocked")
+                        : isVisible
+                            ? Localize("ui.town.compendium.character.initial_reveal", "Initial reveal")
                         : Localize("ui.town.compendium.character.locked", "Silhouette"),
-                    IsUnlocked: isUnlocked,
-                    IsSelected: string.Equals(character.Id, selectedId, StringComparison.Ordinal));
+                    PortraitSprite: isVisible ? _iconResolver.ResolveCharacter(character.Id) : null,
+                    IsUnlocked: isVisible,
+                    IsSelected: false);
             })
+            .Where(character => _filterSupport.MatchesCharacterSearch(character, _searchText))
+            .ToArray();
+        var selectedId = ResolveSelectedId(result.Select(character => character.Id));
+        return result
+            .Select(character => character with { IsSelected = string.Equals(character.Id, selectedId, StringComparison.Ordinal) })
             .ToList();
     }
 
@@ -292,27 +384,28 @@ public sealed class CompendiumPresenter : ICompendiumActions
             Title: skill.Name,
             Subtitle: $"{skill.SlotLabel} / {skill.ClassLabel}",
             Description: skill.Description,
-            HookLabel: $"VFX: {skill.VfxHookId} / {skill.VfxFamilyLabel} / {skill.VfxSkinLabel}",
+            HookLabel: $"{Localize("ui.town.compendium.hook.vfx", "연출")}: {skill.VfxHookId} / {skill.VfxFamilyLabel} / {skill.VfxSkinLabel}",
             IconSprite: skill.IconSprite,
             VfxPreview: BuildSkillVfxPreview(skill),
             Metrics: new[]
             {
-                new CompendiumMetricViewState("Id", skill.Id),
-                new CompendiumMetricViewState("IconId", skill.IconId),
-                new CompendiumMetricViewState("Damage", skill.DamageLabel),
-                new CompendiumMetricViewState("Delivery", skill.DeliveryLabel),
-                new CompendiumMetricViewState("Target", skill.TargetLabel),
-                new CompendiumMetricViewState("Power", skill.PowerLabel),
-                new CompendiumMetricViewState("Cooldown", skill.CooldownLabel),
-                new CompendiumMetricViewState("Status", skill.StatusLabel),
-                new CompendiumMetricViewState("VFX Family", skill.VfxFamilyLabel),
-                new CompendiumMetricViewState("VFX Skin", skill.VfxSkinLabel),
-                new CompendiumMetricViewState("Animation", skill.AnimationLabel),
-                new CompendiumMetricViewState("Cue", skill.CueSequenceLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("id", "ID"), skill.Id),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("icon", "아이콘"), skill.IconId),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("damage", "피해"), skill.DamageLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("delivery", "전달"), skill.DeliveryLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("target", "대상"), skill.TargetLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("power", "위력"), skill.PowerLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("cooldown", "재사용"), skill.CooldownLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("status", "상태"), skill.StatusLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("vfx_family", "연출 계열"), skill.VfxFamilyLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("vfx_skin", "연출 톤"), skill.VfxSkinLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("animation", "동작"), skill.AnimationLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("cue", "큐"), skill.CueSequenceLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("prefab", "프리팹"), skill.VfxPrefabLabel),
             });
     }
 
-    private static CompendiumDetailViewState BuildStatusDetail(CompendiumStatusViewState? status)
+    private CompendiumDetailViewState BuildStatusDetail(CompendiumStatusViewState? status)
     {
         if (status == null)
         {
@@ -323,17 +416,17 @@ public sealed class CompendiumPresenter : ICompendiumActions
             Title: status.Name,
             Subtitle: status.GroupLabel,
             Description: status.Description,
-            HookLabel: $"VFX: {status.VfxCueId}",
+            HookLabel: $"{Localize("ui.town.compendium.hook.vfx", "연출")}: {status.VfxCueId}",
             IconSprite: null,
             VfxPreview: EmptyVfxPreview(),
             Metrics: new[]
             {
-                new CompendiumMetricViewState("Id", status.Id),
-                new CompendiumMetricViewState("Rules", status.RuleSummary),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("id", "ID"), status.Id),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("rules", "규칙"), status.RuleSummary),
             });
     }
 
-    private static CompendiumDetailViewState BuildSynergyDetail(CompendiumSynergyViewState? synergy)
+    private CompendiumDetailViewState BuildSynergyDetail(CompendiumSynergyViewState? synergy)
     {
         if (synergy == null)
         {
@@ -344,18 +437,18 @@ public sealed class CompendiumPresenter : ICompendiumActions
             Title: synergy.Name,
             Subtitle: synergy.CountedTagLabel,
             Description: synergy.Description,
-            HookLabel: $"Breakpoints: {synergy.TierSummary}",
+            HookLabel: $"{Localize("ui.town.compendium.hook.breakpoints", "구간")}: {synergy.TierSummary}",
             IconSprite: null,
             VfxPreview: EmptyVfxPreview(),
             Metrics: new[]
             {
-                new CompendiumMetricViewState("Id", synergy.Id),
-                new CompendiumMetricViewState("Tag", synergy.CountedTagLabel),
-                new CompendiumMetricViewState("Tiers", synergy.TierSummary),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("id", "ID"), synergy.Id),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("tag", "태그"), synergy.CountedTagLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("tiers", "단계"), synergy.TierSummary),
             });
     }
 
-    private static CompendiumDetailViewState BuildCharacterDetail(CompendiumCharacterViewState? character)
+    private CompendiumDetailViewState BuildCharacterDetail(CompendiumCharacterViewState? character)
     {
         if (character == null)
         {
@@ -364,17 +457,18 @@ public sealed class CompendiumPresenter : ICompendiumActions
 
         return new CompendiumDetailViewState(
             Title: character.DisplayName,
-            Subtitle: character.ClassLabel,
-            Description: character.IsUnlocked
-                ? "Playable character entry. Story, portrait, and dossier fields are owned by the character content lane."
-                : "Locked character slot. The compendium shows the slot without revealing story or portrait content.",
+            Subtitle: $"{character.RaceLabel} / {character.ClassLabel}",
+            Description: character.Description,
             HookLabel: character.UnlockLabel,
-            IconSprite: null,
+            IconSprite: character.PortraitSprite,
             VfxPreview: EmptyVfxPreview(),
             Metrics: new[]
             {
-                new CompendiumMetricViewState("Id", character.Id),
-                new CompendiumMetricViewState("Unlock", character.UnlockLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("id", "ID"), character.Id),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("race", "종족"), character.RaceLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("class", "클래스"), character.ClassLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("role", "역할"), character.RoleLabel),
+                new CompendiumMetricViewState(_filterSupport.MetricLabel("unlock", "공개"), character.UnlockLabel),
             });
     }
 
@@ -399,7 +493,9 @@ public sealed class CompendiumPresenter : ICompendiumActions
             ReplayLabel: Localize("ui.town.compendium.vfx.replay", "Replay"),
             HookId: skill.VfxHookId,
             StyleKey: skill.VfxPreviewStyle,
-            Caption: $"{Localize("ui.town.compendium.vfx.caption", "Hook-based showcase preview")} / {skill.VfxFamilyLabel} / {skill.VfxSkinLabel} / {skill.CueSequenceLabel}");
+            Prefab: skill.VfxPreviewPrefab,
+            PrefabLabel: skill.VfxPrefabLabel,
+            Caption: $"{Localize("ui.town.compendium.vfx.caption", "Hook-based showcase preview")} / {skill.VfxFamilyLabel} / {skill.VfxSkinLabel} / {skill.CueSequenceLabel} / {skill.VfxPrefabLabel}");
     }
 
     private static CompendiumVfxPreviewViewState EmptyVfxPreview()
@@ -411,7 +507,38 @@ public sealed class CompendiumPresenter : ICompendiumActions
             ReplayLabel: string.Empty,
             HookId: string.Empty,
             StyleKey: string.Empty,
+            Prefab: null,
+            PrefabLabel: string.Empty,
             Caption: string.Empty);
+    }
+
+    private void SetSkillFilter(ref string current, string value)
+    {
+        var normalized = string.IsNullOrWhiteSpace(value) ? AnyFilterValue : value;
+        if (string.Equals(current, normalized, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        current = normalized;
+        _previewPlayToken++;
+        Refresh();
+    }
+
+    private (int Shown, int Total) ResolveActiveCounts(
+        CombatContentSnapshot snapshot,
+        int skillShown,
+        int statusShown,
+        int synergyShown,
+        int characterShown)
+    {
+        return _activeTab switch
+        {
+            CompendiumTab.Status => (statusShown, (snapshot.StatusFamilies ?? new Dictionary<string, StatusFamilyTemplate>(StringComparer.Ordinal)).Count),
+            CompendiumTab.Synergy => (synergyShown, _root.CombatContentLookup.GetCanonicalSynergyFamilyIds().Count),
+            CompendiumTab.Characters => (characterShown, (snapshot.Characters ?? new Dictionary<string, CharacterTemplate>(StringComparer.Ordinal)).Count),
+            _ => (skillShown, snapshot.SkillCatalog.Count),
+        };
     }
 
     private string ResolveSelectedId(IEnumerable<string> ids)
@@ -431,17 +558,6 @@ public sealed class CompendiumPresenter : ICompendiumActions
         return $"{name} {FormatSeconds(status.DurationSeconds)} / {FormatNumber(status.Magnitude)}";
     }
 
-    private static string FormatStatusRule(StatusFamilyTemplate status)
-    {
-        var flags = new List<string>();
-        if (status.IsHardControl) flags.Add("hard control");
-        if (status.UsesControlDiminishing) flags.Add("diminishing");
-        if (status.AffectedByTenacity) flags.Add($"tenacity {status.TenacityScale:0.##}");
-        if (status.AppliesPeriodicDamage) flags.Add("periodic damage");
-        if (status.IsRuleModifierOnly) flags.Add("rule modifier");
-        return flags.Count == 0 ? "-" : string.Join(", ", flags);
-    }
-
     private string Localize(string key, string fallback)
     {
         return Localize(GameLocalizationTables.UITown, key, fallback);
@@ -455,30 +571,6 @@ public sealed class CompendiumPresenter : ICompendiumActions
     private static string PrimaryClassTag(BattleSkillSpec skill)
     {
         return skill.RequiredClassTags?.FirstOrDefault(tag => !string.IsNullOrWhiteSpace(tag)) ?? string.Empty;
-    }
-
-    private static int SlotOrder(string slot)
-    {
-        return CompiledSkillSlots.Normalize(slot) switch
-        {
-            CompiledSkillSlots.CoreActive => 0,
-            CompiledSkillSlots.UtilityActive => 1,
-            CompiledSkillSlots.Passive => 2,
-            CompiledSkillSlots.Support => 3,
-            _ => 9,
-        };
-    }
-
-    private static string FormatSlot(string slot)
-    {
-        return CompiledSkillSlots.Normalize(slot) switch
-        {
-            CompiledSkillSlots.CoreActive => "Core",
-            CompiledSkillSlots.UtilityActive => "Utility",
-            CompiledSkillSlots.Passive => "Passive",
-            CompiledSkillSlots.Support => "Support",
-            _ => slot,
-        };
     }
 
     private static string ResolveVfxPreviewStyle(BattleSkillPresentationProfile presentation)

@@ -21,6 +21,7 @@ internal sealed class CompendiumVfxPreviewView
     };
 
     private readonly VisualElement _stage;
+    private readonly Image _prefabPreviewImage;
     private readonly VisualElement _caster;
     private readonly VisualElement _target;
     private readonly VisualElement _trace;
@@ -31,6 +32,7 @@ internal sealed class CompendiumVfxPreviewView
     private readonly Label _title;
     private readonly Label _caption;
     private readonly IVisualElementScheduledItem _animation;
+    private readonly CompendiumPrefabVfxPreviewStage _prefabStage = new();
 
     private CompendiumVfxPreviewViewState? _state;
     private int _lastPlayToken = -1;
@@ -40,6 +42,7 @@ internal sealed class CompendiumVfxPreviewView
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
         _stage = Require<VisualElement>(root, "CompendiumVfxPreviewStage");
+        _prefabPreviewImage = Require<Image>(root, "CompendiumVfxPrefabPreviewImage");
         _caster = Require<VisualElement>(root, "CompendiumVfxCaster");
         _target = Require<VisualElement>(root, "CompendiumVfxTarget");
         _trace = Require<VisualElement>(root, "CompendiumVfxTrace");
@@ -60,6 +63,7 @@ internal sealed class CompendiumVfxPreviewView
         if (!state.CanPreview)
         {
             _animation.Pause();
+            _prefabStage.Clear(_prefabPreviewImage);
             return;
         }
 
@@ -68,6 +72,7 @@ internal sealed class CompendiumVfxPreviewView
             ? state.Caption
             : $"{state.Caption} / {state.HookId}";
         ApplyStyleClass(state.StyleKey);
+        _prefabStage.Render(_prefabPreviewImage, state.Prefab, state.PlayToken);
 
         if (state.PlayToken != _lastPlayToken)
         {

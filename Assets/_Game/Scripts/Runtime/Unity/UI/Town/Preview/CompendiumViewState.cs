@@ -20,6 +20,25 @@ public sealed record CompendiumMetricViewState(
     string Label,
     string Value);
 
+public sealed record CompendiumFilterOptionViewState(
+    string Value,
+    string Label);
+
+public sealed record CompendiumFilterBarViewState(
+    bool ShowSkillFilters,
+    string SearchText,
+    string SearchPlaceholder,
+    string ClassLabel,
+    string ClassValue,
+    IReadOnlyList<CompendiumFilterOptionViewState> ClassOptions,
+    string SlotLabel,
+    string SlotValue,
+    IReadOnlyList<CompendiumFilterOptionViewState> SlotOptions,
+    string VfxFamilyLabel,
+    string VfxFamilyValue,
+    IReadOnlyList<CompendiumFilterOptionViewState> VfxFamilyOptions,
+    string ResultSummary);
+
 public sealed record CompendiumSkillViewState(
     string Id,
     string Name,
@@ -38,7 +57,9 @@ public sealed record CompendiumSkillViewState(
     string VfxSkinLabel,
     string AnimationLabel,
     string CueSequenceLabel,
+    string VfxPrefabLabel,
     string VfxPreviewStyle,
+    GameObject? VfxPreviewPrefab,
     Texture2D? IconSprite,
     bool IsSelected);
 
@@ -62,8 +83,12 @@ public sealed record CompendiumSynergyViewState(
 public sealed record CompendiumCharacterViewState(
     string Id,
     string DisplayName,
+    string Description,
+    string RaceLabel,
     string ClassLabel,
+    string RoleLabel,
     string UnlockLabel,
+    Texture2D? PortraitSprite,
     bool IsUnlocked,
     bool IsSelected);
 
@@ -83,12 +108,15 @@ public sealed record CompendiumVfxPreviewViewState(
     string ReplayLabel,
     string HookId,
     string StyleKey,
+    GameObject? Prefab,
+    string PrefabLabel,
     string Caption);
 
 public sealed record CompendiumViewState(
     string Title,
     string Subtitle,
     string CloseLabel,
+    CompendiumFilterBarViewState Filters,
     IReadOnlyList<CompendiumTabViewState> Tabs,
     CompendiumTab ActiveTab,
     IReadOnlyList<CompendiumSkillViewState> Skills,

@@ -11,6 +11,7 @@ internal sealed class ContentIconResolver
     private const string ItemPath = "_Game/Art/Icons/Item";
     private const string AugmentPath = "_Game/Art/Icons/Augment";
     private const string AffixPath = "_Game/Art/Icons/Affix";
+    private const string CharacterPath = "_Game/Art/Characters";
 
     private readonly ICombatContentLookup _lookup;
     private readonly Dictionary<string, Texture2D?> _cache = new(StringComparer.Ordinal);
@@ -31,6 +32,7 @@ internal sealed class ContentIconResolver
                ?? ResolveItem(key)
                ?? ResolveAugment(key)
                ?? ResolveAffix(key)
+               ?? ResolveCharacter(key)
                ?? ResolveDirect(key);
     }
 
@@ -82,6 +84,19 @@ internal sealed class ContentIconResolver
             ? affixId
             : $"affix_{affixId}";
         return Load($"{AffixPath}/{iconId}");
+    }
+
+    public Texture2D? ResolveCharacter(string characterId)
+    {
+        if (string.IsNullOrWhiteSpace(characterId))
+        {
+            return null;
+        }
+
+        return Load($"{CharacterPath}/{characterId}/portrait_face_default")
+               ?? Load($"{CharacterPath}/{characterId}/portrait_stance_idle")
+               ?? Load($"{CharacterPath}/{characterId}/portrait_full")
+               ?? Load($"{CharacterPath}/{characterId}/portrait_full_body");
     }
 
     private Texture2D? ResolveDirect(string key)

@@ -97,6 +97,42 @@
     border-bottom-color: var(--sm-gold-200);
 }
 
+.cmp-filters {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: rgba(13, 18, 40, 0.78);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.18);
+}
+
+.cmp-filter__search {
+    width: 230px;
+    margin-right: 10px;
+    color: var(--sm-vellum);
+}
+
+.cmp-filter__skill-row {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.cmp-filter__dropdown {
+    width: 164px;
+    margin-right: 8px;
+    color: var(--sm-vellum);
+}
+
+.cmp-filter__summary {
+    min-width: 92px;
+    color: var(--sm-ink-3);
+    font-size: 11px;
+    -unity-text-align: middle-right;
+}
+
 .cmp-body {
     flex-direction: row;
     flex-grow: 1;
@@ -138,6 +174,18 @@
 
 .cmp-entry--locked {
     opacity: 0.62;
+}
+
+.cmp-entry--locked .cmp-entry__icon {
+    background-color: rgba(245, 234, 208, 0.04);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.26);
+    border-right-color: rgba(245, 234, 208, 0.26);
+    border-top-color: rgba(245, 234, 208, 0.26);
+    border-bottom-color: rgba(245, 234, 208, 0.26);
 }
 
 .cmp-entry__icon {
@@ -248,6 +296,16 @@
     top: 0;
     bottom: 0;
     background-color: rgba(245, 234, 208, 0.03);
+}
+
+.cmp-vfx-prefab-preview {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: 0.9;
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 .cmp-vfx-node {

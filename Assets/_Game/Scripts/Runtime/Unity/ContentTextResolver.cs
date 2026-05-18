@@ -109,6 +109,23 @@ public sealed class ContentTextResolver
             : characterId;
     }
 
+    public string GetCharacterDescription(string characterId, string fallbackArchetypeId = "")
+    {
+        if (_lookup.TryGetCharacterDefinition(characterId, out var character))
+        {
+            var fallback = !string.IsNullOrWhiteSpace(character.LegacyDescription)
+                ? character.LegacyDescription
+                : !string.IsNullOrWhiteSpace(fallbackArchetypeId)
+                    ? GetArchetypeName(fallbackArchetypeId)
+                    : characterId;
+            return Localize(ContentLocalizationTables.Characters, character.DescriptionKey, fallback, characterId);
+        }
+
+        return !string.IsNullOrWhiteSpace(fallbackArchetypeId)
+            ? GetArchetypeName(fallbackArchetypeId)
+            : characterId;
+    }
+
     public string GetRoleName(string roleInstructionId, string fallbackRoleTag = "")
     {
         if (_lookup.TryGetRoleInstructionDefinition(roleInstructionId, out var roleInstruction))

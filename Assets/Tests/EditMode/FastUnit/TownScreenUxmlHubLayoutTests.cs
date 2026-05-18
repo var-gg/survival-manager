@@ -56,7 +56,12 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("RosterTemplate"));
         Assert.That(uxml, Does.Contain("CompendiumTemplate"));
         var compendiumUxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/Preview/CompendiumPreview.uxml");
+        Assert.That(compendiumUxml, Does.Contain("CompendiumSearchField"));
+        Assert.That(compendiumUxml, Does.Contain("CompendiumClassFilter"));
+        Assert.That(compendiumUxml, Does.Contain("CompendiumSlotFilter"));
+        Assert.That(compendiumUxml, Does.Contain("CompendiumVfxFamilyFilter"));
         Assert.That(compendiumUxml, Does.Contain("CompendiumVfxPreviewStage"));
+        Assert.That(compendiumUxml, Does.Contain("CompendiumVfxPrefabPreviewImage"));
         Assert.That(compendiumUxml, Does.Contain("CompendiumVfxReplayButton"));
         Assert.That(compendiumUxml, Does.Contain("CompendiumVfxProjectile"));
         // 옛 V1/V2 element 폐기 검증

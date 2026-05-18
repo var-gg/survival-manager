@@ -21,6 +21,16 @@
 
             <ui:VisualElement name="CompendiumTabRow" class="cmp-tabs" />
 
+            <ui:VisualElement class="cmp-filters">
+                <ui:TextField name="CompendiumSearchField" class="cmp-filter__search" />
+                <ui:VisualElement name="CompendiumSkillFilters" class="cmp-filter__skill-row">
+                    <ui:DropdownField name="CompendiumClassFilter" class="cmp-filter__dropdown" />
+                    <ui:DropdownField name="CompendiumSlotFilter" class="cmp-filter__dropdown" />
+                    <ui:DropdownField name="CompendiumVfxFamilyFilter" class="cmp-filter__dropdown" />
+                </ui:VisualElement>
+                <ui:Label name="CompendiumResultSummary" class="cmp-filter__summary" />
+            </ui:VisualElement>
+
             <ui:VisualElement class="cmp-body">
                 <ui:ScrollView name="CompendiumEntryScroll" class="cmp-entry-scroll">
                     <ui:VisualElement name="CompendiumEntryList" class="cmp-entry-list" />
@@ -34,6 +44,7 @@
                     <ui:Label name="CompendiumDetailHook" class="cmp-detail__hook" />
                     <ui:VisualElement name="CompendiumVfxPreviewStage" class="cmp-vfx-stage">
                         <ui:VisualElement class="cmp-vfx-stage__grid" picking-mode="Ignore" />
+                        <ui:Image name="CompendiumVfxPrefabPreviewImage" class="cmp-vfx-prefab-preview" picking-mode="Ignore" />
                         <ui:VisualElement name="CompendiumVfxCaster" class="cmp-vfx-node cmp-vfx-node--caster" picking-mode="Ignore" />
                         <ui:VisualElement name="CompendiumVfxTarget" class="cmp-vfx-node cmp-vfx-node--target" picking-mode="Ignore" />
                         <ui:VisualElement name="CompendiumVfxTrace" class="cmp-vfx-trace" picking-mode="Ignore" />

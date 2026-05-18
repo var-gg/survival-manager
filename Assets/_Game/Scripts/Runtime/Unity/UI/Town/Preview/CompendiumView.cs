@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,12 +11,22 @@ public interface ICompendiumActions
     void SelectTab(CompendiumTab tab);
     void SelectEntry(string id);
     void PlaySelectedPreview();
+    void SetSearchText(string searchText);
+    void SetSkillClassFilter(string value);
+    void SetSkillSlotFilter(string value);
+    void SetSkillVfxFamilyFilter(string value);
 }
 
 public sealed class CompendiumView
 {
     private readonly VisualElement _root;
     private readonly VisualElement _tabRow;
+    private readonly TextField _searchField;
+    private readonly VisualElement _skillFilters;
+    private readonly DropdownField _classFilter;
+    private readonly DropdownField _slotFilter;
+    private readonly DropdownField _vfxFamilyFilter;
+    private readonly Label _resultSummary;
     private readonly VisualElement _entryList;
     private readonly VisualElement _detailIcon;
     private readonly VisualElement _detailMetrics;
@@ -30,6 +41,9 @@ public sealed class CompendiumView
     private readonly Button _vfxReplayButton;
 
     private ICompendiumActions? _actions;
+    private IReadOnlyList<CompendiumFilterOptionViewState> _classOptions = Array.Empty<CompendiumFilterOptionViewState>();
+    private IReadOnlyList<CompendiumFilterOptionViewState> _slotOptions = Array.Empty<CompendiumFilterOptionViewState>();
+    private IReadOnlyList<CompendiumFilterOptionViewState> _vfxFamilyOptions = Array.Empty<CompendiumFilterOptionViewState>();
 
     public CompendiumView(VisualElement root)
     {
@@ -37,6 +51,12 @@ public sealed class CompendiumView
         _root = root.Q<VisualElement>("CompendiumRoot")
             ?? throw new ArgumentException("CompendiumRoot 못 찾음");
         _tabRow = Require<VisualElement>(root, "CompendiumTabRow");
+        _searchField = Require<TextField>(root, "CompendiumSearchField");
+        _skillFilters = Require<VisualElement>(root, "CompendiumSkillFilters");
+        _classFilter = Require<DropdownField>(root, "CompendiumClassFilter");
+        _slotFilter = Require<DropdownField>(root, "CompendiumSlotFilter");
+        _vfxFamilyFilter = Require<DropdownField>(root, "CompendiumVfxFamilyFilter");
+        _resultSummary = Require<Label>(root, "CompendiumResultSummary");
         _entryList = Require<VisualElement>(root, "CompendiumEntryList");
         _detailIcon = Require<VisualElement>(root, "CompendiumDetailIcon");
         _detailMetrics = Require<VisualElement>(root, "CompendiumDetailMetrics");
@@ -56,6 +76,10 @@ public sealed class CompendiumView
         _actions = actions ?? throw new ArgumentNullException(nameof(actions));
         _vfxReplayButton.clicked -= HandleVfxReplayClicked;
         _vfxReplayButton.clicked += HandleVfxReplayClicked;
+        _searchField.RegisterValueChangedCallback(evt => _actions?.SetSearchText(evt.newValue ?? string.Empty));
+        _classFilter.RegisterValueChangedCallback(evt => DispatchOption(_classOptions, evt.newValue, value => _actions?.SetSkillClassFilter(value)));
+        _slotFilter.RegisterValueChangedCallback(evt => DispatchOption(_slotOptions, evt.newValue, value => _actions?.SetSkillSlotFilter(value)));
+        _vfxFamilyFilter.RegisterValueChangedCallback(evt => DispatchOption(_vfxFamilyOptions, evt.newValue, value => _actions?.SetSkillVfxFamilyFilter(value)));
     }
 
     public void BindClose(Action close)
@@ -87,9 +111,27 @@ public sealed class CompendiumView
         _title.text = state.Title;
         _subtitle.text = state.Subtitle;
         _closeButton.text = state.CloseLabel;
+        RenderFilters(state.Filters);
         RenderTabs(state.Tabs);
         RenderEntries(state);
         RenderDetail(state.Detail);
+    }
+
+    private void RenderFilters(CompendiumFilterBarViewState filters)
+    {
+        _searchField.label = filters.SearchPlaceholder;
+        _searchField.tooltip = filters.SearchPlaceholder;
+        _searchField.SetValueWithoutNotify(filters.SearchText);
+
+        _skillFilters.style.display = filters.ShowSkillFilters ? DisplayStyle.Flex : DisplayStyle.None;
+        _resultSummary.text = filters.ResultSummary;
+
+        _classOptions = filters.ClassOptions;
+        _slotOptions = filters.SlotOptions;
+        _vfxFamilyOptions = filters.VfxFamilyOptions;
+        RenderDropdown(_classFilter, filters.ClassLabel, filters.ClassOptions, filters.ClassValue);
+        RenderDropdown(_slotFilter, filters.SlotLabel, filters.SlotOptions, filters.SlotValue);
+        RenderDropdown(_vfxFamilyFilter, filters.VfxFamilyLabel, filters.VfxFamilyOptions, filters.VfxFamilyValue);
     }
 
     private void RenderTabs(IReadOnlyList<CompendiumTabViewState> tabs)
@@ -130,7 +172,7 @@ public sealed class CompendiumView
             case CompendiumTab.Characters:
                 foreach (var entry in state.Characters)
                 {
-                    _entryList.Add(BuildEntry(entry.Id, entry.DisplayName, entry.ClassLabel, entry.UnlockLabel, entry.IsSelected, null, !entry.IsUnlocked));
+                    _entryList.Add(BuildEntry(entry.Id, entry.DisplayName, entry.ClassLabel, entry.UnlockLabel, entry.IsSelected, entry.PortraitSprite, !entry.IsUnlocked));
                 }
                 break;
             default:
@@ -219,6 +261,30 @@ public sealed class CompendiumView
     private void HandleVfxReplayClicked()
     {
         _actions?.PlaySelectedPreview();
+    }
+
+    private static void RenderDropdown(
+        DropdownField field,
+        string label,
+        IReadOnlyList<CompendiumFilterOptionViewState> options,
+        string selectedValue)
+    {
+        field.label = label;
+        field.choices = options.Select(option => option.Label).ToList();
+        var selectedLabel = options.FirstOrDefault(option => string.Equals(option.Value, selectedValue, StringComparison.Ordinal))?.Label
+                            ?? options.FirstOrDefault()?.Label
+                            ?? string.Empty;
+        field.SetValueWithoutNotify(selectedLabel);
+        field.SetEnabled(options.Count > 1);
+    }
+
+    private static void DispatchOption(
+        IReadOnlyList<CompendiumFilterOptionViewState> options,
+        string label,
+        Action<string> dispatch)
+    {
+        var option = options.FirstOrDefault(candidate => string.Equals(candidate.Label, label, StringComparison.Ordinal));
+        dispatch(option?.Value ?? string.Empty);
     }
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement
