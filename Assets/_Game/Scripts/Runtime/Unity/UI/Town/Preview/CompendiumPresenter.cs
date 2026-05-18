@@ -461,6 +461,24 @@ internal sealed class CompendiumPresenter : ICompendiumActions
             return EmptyDetail();
         }
 
+        if (!character.IsUnlocked)
+        {
+            return new CompendiumDetailViewState(
+                Title: character.DisplayName,
+                Subtitle: character.UnlockLabel,
+                Description: character.Description,
+                HookLabel: character.UnlockLabel,
+                IconSprite: null,
+                VfxPreview: EmptyVfxPreview(),
+                Metrics: new[]
+                {
+                    new CompendiumMetricViewState(_filterSupport.MetricLabel("unlock", "공개"), character.UnlockLabel),
+                    new CompendiumMetricViewState(_filterSupport.MetricLabel("race", "종족"), character.RaceLabel),
+                    new CompendiumMetricViewState(_filterSupport.MetricLabel("class", "클래스"), character.ClassLabel),
+                    new CompendiumMetricViewState(_filterSupport.MetricLabel("role", "역할"), character.RoleLabel),
+                });
+        }
+
         return new CompendiumDetailViewState(
             Title: character.DisplayName,
             Subtitle: $"{character.RaceLabel} / {character.ClassLabel}",

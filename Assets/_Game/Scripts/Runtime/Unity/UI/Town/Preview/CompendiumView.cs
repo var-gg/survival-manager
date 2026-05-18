@@ -156,6 +156,7 @@ public sealed class CompendiumView
     {
         _entryList.Clear();
         _entryList.EnableInClassList("cmp-entry-list--skill-grid", state.ActiveTab == CompendiumTab.Skills);
+        _entryList.EnableInClassList("cmp-entry-list--character-grid", state.ActiveTab == CompendiumTab.Characters);
         switch (state.ActiveTab)
         {
             case CompendiumTab.Status:
@@ -173,7 +174,7 @@ public sealed class CompendiumView
             case CompendiumTab.Characters:
                 foreach (var entry in state.Characters)
                 {
-                    _entryList.Add(BuildEntry(entry.Id, entry.DisplayName, entry.ClassLabel, entry.UnlockLabel, entry.IsSelected, entry.PortraitSprite, !entry.IsUnlocked));
+                    _entryList.Add(BuildCharacterCard(entry));
                 }
                 break;
             default:
@@ -252,6 +253,74 @@ public sealed class CompendiumView
         chip.AddToClassList("cmp-skill-card__chip");
         chip.AddToClassList($"cmp-skill-card__chip--{variant}");
         return chip;
+    }
+
+    private VisualElement BuildCharacterCard(CompendiumCharacterViewState character)
+    {
+        var button = new Button { text = string.Empty };
+        button.AddToClassList("cmp-character-card");
+        if (character.IsSelected)
+        {
+            button.AddToClassList("cmp-character-card--selected");
+        }
+        if (!character.IsUnlocked)
+        {
+            button.AddToClassList("cmp-character-card--locked");
+        }
+
+        var portrait = new VisualElement();
+        portrait.AddToClassList("cmp-character-card__portrait");
+        if (character.PortraitSprite != null)
+        {
+            portrait.style.backgroundImage = new StyleBackground(character.PortraitSprite);
+        }
+        else
+        {
+            portrait.Add(BuildCharacterSilhouette());
+        }
+        button.Add(portrait);
+
+        var title = new Label(character.DisplayName);
+        title.AddToClassList("cmp-character-card__title");
+        button.Add(title);
+
+        var tags = new VisualElement();
+        tags.AddToClassList("cmp-character-card__tags");
+        tags.Add(BuildCharacterTag(character.ClassLabel));
+        tags.Add(BuildCharacterTag(character.RoleLabel));
+        button.Add(tags);
+
+        var race = new Label(character.RaceLabel);
+        race.AddToClassList("cmp-character-card__race");
+        button.Add(race);
+
+        var unlock = new Label(character.UnlockLabel);
+        unlock.AddToClassList("cmp-character-card__unlock");
+        button.Add(unlock);
+
+        var captured = character.Id;
+        button.clicked += () => _actions?.SelectEntry(captured);
+        return button;
+    }
+
+    private static VisualElement BuildCharacterSilhouette()
+    {
+        var silhouette = new VisualElement();
+        silhouette.AddToClassList("cmp-character-card__silhouette");
+        var head = new VisualElement();
+        head.AddToClassList("cmp-character-card__silhouette-head");
+        silhouette.Add(head);
+        var body = new VisualElement();
+        body.AddToClassList("cmp-character-card__silhouette-body");
+        silhouette.Add(body);
+        return silhouette;
+    }
+
+    private static Label BuildCharacterTag(string text)
+    {
+        var tag = new Label(text);
+        tag.AddToClassList("cmp-character-card__tag");
+        return tag;
     }
 
     private VisualElement BuildEntry(
