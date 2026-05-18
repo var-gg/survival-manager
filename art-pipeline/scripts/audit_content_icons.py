@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -75,10 +76,22 @@ def audit_manifest_sources(catalog: dict[str, Any], runtime_root: Path) -> list[
     return issues
 
 
+def runtime_image_duplicates(runtime_root: Path, kind: str, icon_ids: list[str]) -> list[list[str]]:
+    hashes: dict[str, list[str]] = {}
+    for icon_id in sorted(set(icon_ids)):
+        path = runtime_root / TARGET_DIRS[kind] / f"{icon_id}.png"
+        if not path.is_file():
+            continue
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        hashes.setdefault(digest, []).append(icon_id)
+    return [ids for ids in hashes.values() if len(ids) > 1]
+
+
 def audit_assets(kind: str, folder: str, runtime_root: Path, known_ids: set[str]) -> dict[str, Any]:
     missing_field: list[str] = []
     missing_icon: list[str] = []
     unknown_manifest: list[str] = []
+    icon_ids: list[str] = []
     assets = sorted((CONTENT_ROOT / folder).glob("*.asset"))
     for path in assets:
         text = path.read_text(encoding="utf-8")
@@ -92,11 +105,15 @@ def audit_assets(kind: str, folder: str, runtime_root: Path, known_ids: set[str]
         target = runtime_root / TARGET_DIRS[kind] / f"{icon_id}.png"
         if not target.is_file():
             missing_icon.append(f"{asset_id}:{icon_id}")
+        icon_ids.append(icon_id)
     return {
         "asset_count": len(assets),
         "missing_field": missing_field,
         "missing_icon": missing_icon,
         "unknown_manifest": unknown_manifest,
+        "duplicate_runtime_images": runtime_image_duplicates(runtime_root, kind, icon_ids)
+        if kind == "skill"
+        else [],
     }
 
 
@@ -128,6 +145,10 @@ def main() -> int:
         failures.extend(f"{kind}: missing IconId {item}" for item in section["missing_field"])
         failures.extend(f"{kind}: missing icon {item}" for item in section["missing_icon"])
         failures.extend(f"{kind}: unknown manifest {item}" for item in section["unknown_manifest"])
+        failures.extend(
+            f"{kind}: duplicate runtime image {', '.join(group)}"
+            for group in section["duplicate_runtime_images"]
+        )
 
     for kind in ("skill", "item", "augment"):
         section = result[kind]
@@ -135,7 +156,8 @@ def main() -> int:
             f"[audit_content_icons] {kind}: assets={section['asset_count']} "
             f"missing_field={len(section['missing_field'])} "
             f"missing_icon={len(section['missing_icon'])} "
-            f"unknown_manifest={len(section['unknown_manifest'])}"
+            f"unknown_manifest={len(section['unknown_manifest'])} "
+            f"duplicate_runtime_images={len(section['duplicate_runtime_images'])}"
         )
     print(f"[audit_content_icons] manifest issues={len(result['manifest']['source_and_runtime_issues'])}")
 
