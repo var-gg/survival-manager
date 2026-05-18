@@ -317,11 +317,10 @@ public sealed partial class GameSessionState
             return archetype.LegacyDisplayName;
         }
 
-        if (!string.IsNullOrWhiteSpace(archetype.NameKey))
-        {
-            return archetype.NameKey;
-        }
-
+        // archetype.NameKey는 "content.archetype.warden.name" 같은 raw localization key.
+        // 이걸 Name으로 박으면 UI가 그대로 raw key를 표시한다 (ContentTextResolver를 거치지 않음).
+        // archetype.Id ("warden")로 fallback — UI Presenter가 ContentTextResolver.GetCharacterName으로
+        // localized 표시로 변환한다.
         return archetype.Id;
     }
 
