@@ -57,6 +57,8 @@ KIND_TO_ANCHOR_FILE = {
     "map_decor_breakdown": "style-anchor-map.md",
     "map_painted": "style-anchor-map.md",
     "environment_site": "style-anchor-map.md",  # legacy alias / town BG
+    # UI full-screen mockup / art bible reference family
+    "ui_mockup_reference": "style-anchor-ui-mockup.md",
     # icon family
     "skill_icon": "style-anchor-icon.md",
     "passive_icon": "style-anchor-icon.md",
@@ -84,6 +86,7 @@ KIND_TO_REF_DIR = {
     "map_decor_breakdown": "maps",
     "map_painted": "maps",
     "environment_site": "backgrounds",
+    "ui_mockup_reference": "backgrounds",
     "skill_icon": "icons",
     "passive_icon": "icons",
     "equipment_icon": "icons",
