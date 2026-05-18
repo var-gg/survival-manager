@@ -1067,6 +1067,178 @@ MonoBehaviour:
     m_Key: ui.town.compendium.vfx.caption
     m_Metadata:
       m_Items: []
+  - m_Id: 17841341840297984
+    m_Key: ui.town.compendium.filter.search
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852416
+    m_Key: ui.town.compendium.filter.class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852417
+    m_Key: ui.town.compendium.filter.slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852418
+    m_Key: ui.town.compendium.filter.vfx_family
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852419
+    m_Key: ui.town.compendium.filter.count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852420
+    m_Key: ui.town.compendium.filter.all_classes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852421
+    m_Key: ui.town.compendium.filter.all_slots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852422
+    m_Key: ui.town.compendium.filter.all_vfx
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852423
+    m_Key: ui.town.compendium.slot.core
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852424
+    m_Key: ui.town.compendium.slot.utility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852425
+    m_Key: ui.town.compendium.slot.passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852426
+    m_Key: ui.town.compendium.slot.support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852427
+    m_Key: ui.town.compendium.character.initial_reveal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852428
+    m_Key: ui.town.compendium.character.locked_description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852429
+    m_Key: ui.town.compendium.character.unknown_class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852430
+    m_Key: ui.town.compendium.hook.vfx
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852431
+    m_Key: ui.town.compendium.hook.breakpoints
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852432
+    m_Key: ui.town.compendium.metric.id
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852433
+    m_Key: ui.town.compendium.metric.icon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852434
+    m_Key: ui.town.compendium.metric.damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852435
+    m_Key: ui.town.compendium.metric.delivery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852436
+    m_Key: ui.town.compendium.metric.target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852437
+    m_Key: ui.town.compendium.metric.power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852438
+    m_Key: ui.town.compendium.metric.cooldown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852439
+    m_Key: ui.town.compendium.metric.status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852440
+    m_Key: ui.town.compendium.metric.vfx_family
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852441
+    m_Key: ui.town.compendium.metric.vfx_skin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852442
+    m_Key: ui.town.compendium.metric.animation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852443
+    m_Key: ui.town.compendium.metric.cue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852444
+    m_Key: ui.town.compendium.metric.prefab
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852445
+    m_Key: ui.town.compendium.metric.rules
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852446
+    m_Key: ui.town.compendium.metric.tag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852447
+    m_Key: ui.town.compendium.metric.tiers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852448
+    m_Key: ui.town.compendium.metric.race
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852449
+    m_Key: ui.town.compendium.metric.class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852450
+    m_Key: ui.town.compendium.metric.role
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852451
+    m_Key: ui.town.compendium.metric.unlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852452
+    m_Key: ui.town.compendium.status_rule.hard_control
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852453
+    m_Key: ui.town.compendium.status_rule.diminishing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852454
+    m_Key: ui.town.compendium.status_rule.tenacity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852455
+    m_Key: ui.town.compendium.status_rule.periodic_damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852456
+    m_Key: ui.town.compendium.status_rule.rule_modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852457
+    m_Key: ui.town.compendium.vfx.prefab_missing
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

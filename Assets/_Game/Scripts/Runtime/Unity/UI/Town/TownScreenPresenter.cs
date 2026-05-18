@@ -254,7 +254,15 @@ public sealed class TownScreenPresenter
     private string ResolveHeroDisplayName(string heroId, string? heroName)
     {
         if (string.IsNullOrEmpty(heroId)) return "—";
-        if (!string.IsNullOrEmpty(heroName)) return heroName!;
+
+        // heroName이 raw localization key ("content.archetype.warden.name") 또는 archetypeId 같은
+        // un-localized fallback이면 ContentTextResolver path로 진입해서 한국어 resolve. 정상 한국어
+        // 또는 영문 사용자 입력 이름만 그대로 통과.
+        var hasLocalizedName = !string.IsNullOrEmpty(heroName)
+            && !heroName!.StartsWith("content.", StringComparison.Ordinal)
+            && !string.Equals(heroName, heroId, StringComparison.Ordinal);
+        if (hasLocalizedName) return heroName!;
+
         return _contentText.GetCharacterName(heroId, heroId);
     }
 

@@ -1054,63 +1054,237 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021701
-    m_Localized: "Compendium"
+    m_Localized: Compendium
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021702
-    m_Localized: "System Compendium"
+    m_Localized: System Compendium
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021703
-    m_Localized: "Skills, status, synergy, and character unlock surface"
+    m_Localized: Skills, status, synergy, and character unlock surface
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021704
-    m_Localized: "Skills"
+    m_Localized: Skills
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021705
-    m_Localized: "Status"
+    m_Localized: Status
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021706
-    m_Localized: "Synergy"
+    m_Localized: Synergy
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021707
-    m_Localized: "Characters"
+    m_Localized: Characters
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021708
-    m_Localized: "Any class"
+    m_Localized: Any class
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021709
-    m_Localized: "None"
+    m_Localized: None
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021710
-    m_Localized: "Slot {0:00}"
+    m_Localized: Slot {0:00}
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021711
-    m_Localized: "Unlocked"
+    m_Localized: Unlocked
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021712
-    m_Localized: "Silhouette"
+    m_Localized: Silhouette
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021713
-    m_Localized: "VFX Preview"
+    m_Localized: VFX Preview
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021714
-    m_Localized: "Replay"
+    m_Localized: Replay
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021715
-    m_Localized: "Hook-based showcase preview"
+    m_Localized: Hook-based showcase preview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341840297984
+    m_Localized: Search
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852416
+    m_Localized: Class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852417
+    m_Localized: Slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852418
+    m_Localized: VFX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852419
+    m_Localized: '{0}/{1}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 17841341873852420
+    m_Localized: All classes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852421
+    m_Localized: All slots
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852422
+    m_Localized: All VFX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852423
+    m_Localized: Core
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852424
+    m_Localized: Utility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852425
+    m_Localized: Passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852426
+    m_Localized: Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852427
+    m_Localized: Initial reveal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852428
+    m_Localized: A character slot whose identity and story are not revealed yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852429
+    m_Localized: Unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852430
+    m_Localized: VFX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852431
+    m_Localized: Breakpoints
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852432
+    m_Localized: ID
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852433
+    m_Localized: Icon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852434
+    m_Localized: Damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852435
+    m_Localized: Delivery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852436
+    m_Localized: Target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852437
+    m_Localized: Power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852438
+    m_Localized: Cooldown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852439
+    m_Localized: Status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852440
+    m_Localized: VFX Family
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852441
+    m_Localized: VFX Skin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852442
+    m_Localized: Animation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852443
+    m_Localized: Cue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852444
+    m_Localized: Prefab
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852445
+    m_Localized: Rules
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852446
+    m_Localized: Tag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852447
+    m_Localized: Tiers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852448
+    m_Localized: Race
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852449
+    m_Localized: Class
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852450
+    m_Localized: Role
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852451
+    m_Localized: Reveal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852452
+    m_Localized: hard control
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852453
+    m_Localized: diminishing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852454
+    m_Localized: tenacity {0}
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 17841341873852455
+    m_Localized: periodic damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852456
+    m_Localized: rule modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852457
+    m_Localized: Unassigned
     m_Metadata:
       m_Items: []
   references:
@@ -1158,3 +1332,5 @@ MonoBehaviour:
         - id: 131
         - id: 132
         - id: 133
+        - id: 17841341873852419
+        - id: 17841341873852454
