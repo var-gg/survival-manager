@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  IconId: skill_icon_knot_arrow
+  IconId: skill_icon_ranger_support_2
   VfxHookId: vfx.skill_ranger_support_2
   SfxHookId: 
   LearnSource: 0

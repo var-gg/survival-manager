@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  IconId: skill_icon_memory_project
+  IconId: skill_icon_mystic_passive_2
   VfxHookId: vfx.skill_mystic_passive_2
   SfxHookId: 
   LearnSource: 0

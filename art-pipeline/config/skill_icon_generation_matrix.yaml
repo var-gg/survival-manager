@@ -1,0 +1,755 @@
+schema: skill_icon_generation_matrix_v1
+updated_at: '2026-05-18'
+source_truth: Assets/Resources/_Game/Content/Definitions/Skills/*.asset
+runtime_policy: Each authored SkillDefinitionAsset owns a stable unique IconId; character
+  art never owns skill icons.
+current_asset_status: fresh_render_pending; catalog_v2 may be placeholder-backfilled
+  from catalog_v1 motif art until ChatGPT image generation login is available
+imagegen_policy:
+  batch_size: 4
+  sheet_size: 1568x1568
+  cell_size: 768x768
+  gutter: '32px #FF00FF'
+  output_dir: art-pipeline/output/icons/skill/catalog_v2
+  outer_stroke: '2-4 px continuous dark stroke; outside stroke is flat #FF00FF only'
+sheets:
+- id: skill_catalog_v2_vanguard_core
+  title: Vanguard Core / Barrier
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_vanguard_core/default.md
+  skills:
+  - skill_id: skill_priest_core
+    icon_id: skill_icon_priest_core
+    slot: CoreActive
+    kind: Strike
+    delivery: Melee
+    damage: Magical
+    power: '3.8'
+    status_ids:
+    - barrier
+    effect_family_id: priest_signature
+    vfx_hook_id: vfx.skill_priest_core
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_priest_core.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+  - skill_id: skill_guardian_core
+    icon_id: skill_icon_guardian_core
+    slot: CoreActive
+    kind: Strike
+    delivery: Melee
+    damage: Physical
+    power: '4'
+    status_ids:
+    - guarded
+    effect_family_id: guard_signature
+    vfx_hook_id: vfx.skill_guardian_core
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_guardian_core.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+  - skill_id: skill_bulwark_core
+    icon_id: skill_icon_bulwark_core
+    slot: CoreActive
+    kind: Strike
+    delivery: Melee
+    damage: Physical
+    power: '4.2'
+    status_ids:
+    - barrier
+    effect_family_id: bulwark_signature
+    vfx_hook_id: vfx.skill_bulwark_core
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_bulwark_core.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+  - skill_id: skill_warden_utility
+    icon_id: skill_icon_warden_utility
+    slot: UtilityActive
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids:
+    - unstoppable
+    effect_family_id: guard_cleanse
+    vfx_hook_id: vfx.skill_warden_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_warden_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+- id: skill_catalog_v2_vanguard_stance
+  title: Vanguard Utility / Stance
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_vanguard_stance/default.md
+  skills:
+  - skill_id: skill_bulwark_utility
+    icon_id: skill_icon_bulwark_utility
+    slot: UtilityActive
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_bulwark_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_bulwark_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+  - skill_id: skill_guardian_utility
+    icon_id: skill_icon_guardian_utility
+    slot: UtilityActive
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: guard_rally
+    vfx_hook_id: vfx.skill_guardian_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_guardian_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+  - skill_id: skill_vanguard_passive_1
+    icon_id: skill_icon_vanguard_passive_1
+    slot: Passive
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_vanguard_passive_1
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_vanguard_passive_1.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+  - skill_id: skill_vanguard_passive_2
+    icon_id: skill_icon_vanguard_passive_2
+    slot: Passive
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_vanguard_passive_2
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_vanguard_passive_2.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+- id: skill_catalog_v2_vanguard_support
+  title: Vanguard Support
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_vanguard_support/default.md
+  skills:
+  - skill_id: skill_vanguard_support_1
+    icon_id: skill_icon_vanguard_support_1
+    slot: Support
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: guard_support
+    vfx_hook_id: vfx.skill_vanguard_support_1
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_vanguard_support_1.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+  - skill_id: skill_vanguard_support_2
+    icon_id: skill_icon_vanguard_support_2
+    slot: Support
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: bulwark_support
+    vfx_hook_id: vfx.skill_vanguard_support_2
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_vanguard_support_2.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+  - skill_id: support_anchored
+    icon_id: skill_icon_support_anchored
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: anchored_support
+    vfx_hook_id: vfx.support_anchored
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_anchored.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+  - skill_id: support_guarded
+    icon_id: skill_icon_support_guarded
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: guard_signature
+    vfx_hook_id: vfx.support_guarded
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_guarded.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_sigil_shield.png
+- id: skill_catalog_v2_duelist_core
+  title: Duelist Core Strikes
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_duelist_core/default.md
+  skills:
+  - skill_id: skill_power_strike
+    icon_id: skill_icon_power_strike
+    slot: CoreActive
+    kind: Strike
+    delivery: Melee
+    damage: Physical
+    power: '3'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_power_strike
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_power_strike.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
+  - skill_id: skill_raider_core
+    icon_id: skill_icon_raider_core
+    slot: CoreActive
+    kind: Strike
+    delivery: Melee
+    damage: Physical
+    power: '4.2'
+    status_ids:
+    - marked
+    effect_family_id: raider_signature
+    vfx_hook_id: vfx.skill_raider_core
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_raider_core.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
+  - skill_id: skill_reaver_core
+    icon_id: skill_icon_reaver_core
+    slot: CoreActive
+    kind: Strike
+    delivery: Melee
+    damage: Physical
+    power: '4'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_reaver_core
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_reaver_core.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
+  - skill_id: skill_slayer_core
+    icon_id: skill_icon_slayer_core
+    slot: CoreActive
+    kind: Strike
+    delivery: Melee
+    damage: Physical
+    power: '4.4'
+    status_ids:
+    - bleed
+    effect_family_id: slayer_signature
+    vfx_hook_id: vfx.skill_slayer_core
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_slayer_core.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
+- id: skill_catalog_v2_duelist_motion
+  title: Duelist Motion
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_duelist_motion/default.md
+  skills:
+  - skill_id: skill_raider_utility
+    icon_id: skill_icon_raider_utility
+    slot: UtilityActive
+    kind: Utility
+    delivery: Melee
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: mark_followup
+    vfx_hook_id: vfx.skill_raider_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_raider_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_return_path.png
+  - skill_id: skill_reaver_utility
+    icon_id: skill_icon_reaver_utility
+    slot: UtilityActive
+    kind: Utility
+    delivery: Melee
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: burst_followup
+    vfx_hook_id: vfx.skill_reaver_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_reaver_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_return_path.png
+  - skill_id: skill_slayer_utility
+    icon_id: skill_icon_slayer_utility
+    slot: UtilityActive
+    kind: Utility
+    delivery: Melee
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: bleed_followup
+    vfx_hook_id: vfx.skill_slayer_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_slayer_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_return_path.png
+  - skill_id: support_executioner
+    icon_id: skill_icon_support_executioner
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: executioner_support
+    vfx_hook_id: vfx.support_executioner
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_executioner.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
+- id: skill_catalog_v2_duelist_boons
+  title: Duelist Passive / Support
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_duelist_boons/default.md
+  skills:
+  - skill_id: skill_duelist_passive_1
+    icon_id: skill_icon_duelist_passive_1
+    slot: Passive
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_duelist_passive_1
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_duelist_passive_1.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
+  - skill_id: skill_duelist_passive_2
+    icon_id: skill_icon_duelist_passive_2
+    slot: Passive
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_duelist_passive_2
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_duelist_passive_2.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
+  - skill_id: skill_duelist_support_1
+    icon_id: skill_icon_duelist_support_1
+    slot: Support
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: slayer_support
+    vfx_hook_id: vfx.skill_duelist_support_1
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_duelist_support_1.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
+  - skill_id: skill_duelist_support_2
+    icon_id: skill_icon_duelist_support_2
+    slot: Support
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: raider_support
+    vfx_hook_id: vfx.skill_duelist_support_2
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_duelist_support_2.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
+- id: skill_catalog_v2_ranger_core
+  title: Ranger Core Shots
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_ranger_core/default.md
+  skills:
+  - skill_id: skill_scout_core
+    icon_id: skill_icon_scout_core
+    slot: CoreActive
+    kind: Strike
+    delivery: Projectile
+    damage: Physical
+    power: '3.7'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_scout_core
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_scout_core.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
+  - skill_id: skill_marksman_core
+    icon_id: skill_icon_marksman_core
+    slot: CoreActive
+    kind: Strike
+    delivery: Projectile
+    damage: Physical
+    power: '4.1'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_marksman_core
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_marksman_core.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
+  - skill_id: skill_precision_shot
+    icon_id: skill_icon_precision_shot
+    slot: CoreActive
+    kind: Strike
+    delivery: Projectile
+    damage: Physical
+    power: '2'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_precision_shot
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_precision_shot.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
+  - skill_id: support_hunter_mark
+    icon_id: skill_icon_support_hunter_mark
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: hunter_mark_support
+    vfx_hook_id: vfx.support_hunter_mark
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_hunter_mark.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
+- id: skill_catalog_v2_ranger_utility
+  title: Ranger Utility
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_ranger_utility/default.md
+  skills:
+  - skill_id: skill_scout_utility
+    icon_id: skill_icon_scout_utility
+    slot: UtilityActive
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids:
+    - exposed
+    effect_family_id: scout_exposed
+    vfx_hook_id: vfx.skill_scout_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_scout_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_wind_read.png
+  - skill_id: skill_marksman_utility
+    icon_id: skill_icon_marksman_utility
+    slot: UtilityActive
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids:
+    - sunder
+    effect_family_id: marksman_pierce
+    vfx_hook_id: vfx.skill_marksman_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_marksman_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_wind_read.png
+  - skill_id: skill_hunter_utility
+    icon_id: skill_icon_hunter_utility
+    slot: UtilityActive
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids:
+    - slow
+    effect_family_id: hunter_mark
+    vfx_hook_id: vfx.skill_hunter_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_hunter_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_wind_read.png
+  - skill_id: support_swift
+    icon_id: skill_icon_support_swift
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: swift_support
+    vfx_hook_id: vfx.support_swift
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_swift.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_wind_read.png
+- id: skill_catalog_v2_ranger_boons
+  title: Ranger Passive / Support
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_ranger_boons/default.md
+  skills:
+  - skill_id: skill_ranger_passive_1
+    icon_id: skill_icon_ranger_passive_1
+    slot: Passive
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_ranger_passive_1
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_ranger_passive_1.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
+  - skill_id: skill_ranger_passive_2
+    icon_id: skill_icon_ranger_passive_2
+    slot: Passive
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_ranger_passive_2
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_ranger_passive_2.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
+  - skill_id: skill_ranger_support_1
+    icon_id: skill_icon_ranger_support_1
+    slot: Support
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: hunter_support
+    vfx_hook_id: vfx.skill_ranger_support_1
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_ranger_support_1.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
+  - skill_id: skill_ranger_support_2
+    icon_id: skill_icon_ranger_support_2
+    slot: Support
+    kind: Buff
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: scout_support
+    vfx_hook_id: vfx.skill_ranger_support_2
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_ranger_support_2.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
+- id: skill_catalog_v2_cross_support
+  title: Cross-role Support Edges
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_cross_support/default.md
+  skills:
+  - skill_id: support_brutal
+    icon_id: skill_icon_support_brutal
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: brutal_support
+    vfx_hook_id: vfx.support_brutal
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_brutal.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_fang_strike.png
+  - skill_id: support_longshot
+    icon_id: skill_icon_support_longshot
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: longshot_support
+    vfx_hook_id: vfx.support_longshot
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_longshot.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
+  - skill_id: support_piercing
+    icon_id: skill_icon_support_piercing
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: piercing_support
+    vfx_hook_id: vfx.support_piercing
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_piercing.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_knot_arrow.png
+  - skill_id: support_purifying
+    icon_id: skill_icon_support_purifying
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: priest_signature
+    vfx_hook_id: vfx.support_purifying
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_purifying.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_ash_purification.png
+- id: skill_catalog_v2_mystic_core
+  title: Mystic Core / Utility
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_mystic_core/default.md
+  skills:
+  - skill_id: skill_hexer_core
+    icon_id: skill_icon_hexer_core
+    slot: CoreActive
+    kind: Strike
+    delivery: Ranged
+    damage: Magical
+    power: '4'
+    status_ids:
+    - burn
+    - silence
+    effect_family_id: hexer_signature
+    vfx_hook_id: vfx.skill_hexer_core
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_hexer_core.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_time_distance.png
+  - skill_id: skill_shaman_core
+    icon_id: skill_icon_shaman_core
+    slot: CoreActive
+    kind: Strike
+    delivery: Ranged
+    damage: Magical
+    power: '3.9'
+    status_ids:
+    - burn
+    effect_family_id: shaman_signature
+    vfx_hook_id: vfx.skill_shaman_core
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_shaman_core.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_voice_scar.png
+  - skill_id: skill_hexer_utility
+    icon_id: skill_icon_hexer_utility
+    slot: UtilityActive
+    kind: Heal
+    delivery: Ranged
+    damage: Healing
+    power: '3.8'
+    status_ids: []
+    effect_family_id: hexer_silence
+    vfx_hook_id: vfx.skill_hexer_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_hexer_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_memory_project.png
+  - skill_id: skill_shaman_utility
+    icon_id: skill_icon_shaman_utility
+    slot: UtilityActive
+    kind: Heal
+    delivery: Ranged
+    damage: Healing
+    power: '3.9'
+    status_ids: []
+    effect_family_id: shaman_zone
+    vfx_hook_id: vfx.skill_shaman_utility
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_shaman_utility.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_voice_scar.png
+- id: skill_catalog_v2_mystic_recovery
+  title: Mystic Recovery
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_mystic_recovery/default.md
+  skills:
+  - skill_id: skill_minor_heal
+    icon_id: skill_icon_minor_heal
+    slot: UtilityActive
+    kind: Heal
+    delivery: Melee
+    damage: Healing
+    power: '4'
+    status_ids: []
+    effect_family_id: minor_heal
+    vfx_hook_id: vfx.skill_minor_heal
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_minor_heal.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_platinum_aegis.png
+  - skill_id: skill_mystic_support_1
+    icon_id: skill_icon_mystic_support_1
+    slot: Support
+    kind: Buff
+    delivery: Aura
+    damage: Healing
+    power: '0'
+    status_ids: []
+    effect_family_id: priest_support
+    vfx_hook_id: vfx.skill_mystic_support_1
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_mystic_support_1.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_platinum_aegis.png
+  - skill_id: skill_mystic_support_2
+    icon_id: skill_icon_mystic_support_2
+    slot: Support
+    kind: Buff
+    delivery: Aura
+    damage: Healing
+    power: '0'
+    status_ids: []
+    effect_family_id: hexer_support
+    vfx_hook_id: vfx.skill_mystic_support_2
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_mystic_support_2.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_platinum_aegis.png
+  - skill_id: support_siphon
+    icon_id: skill_icon_support_siphon
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: siphon_support
+    vfx_hook_id: vfx.support_siphon
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_siphon.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_memory_project.png
+- id: skill_catalog_v2_mystic_boons
+  title: Mystic Passive / Echo
+  subject: art-pipeline/subjects/icons/skill/skill_catalog_v2_mystic_boons/default.md
+  skills:
+  - skill_id: skill_mystic_passive_1
+    icon_id: skill_icon_mystic_passive_1
+    slot: Passive
+    kind: Buff
+    delivery: Aura
+    damage: Healing
+    power: '0'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_mystic_passive_1
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_mystic_passive_1.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_memory_project.png
+  - skill_id: skill_mystic_passive_2
+    icon_id: skill_icon_mystic_passive_2
+    slot: Passive
+    kind: Buff
+    delivery: Aura
+    damage: Healing
+    power: '0'
+    status_ids: []
+    effect_family_id: ''
+    vfx_hook_id: vfx.skill_mystic_passive_2
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_mystic_passive_2.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_memory_project.png
+  - skill_id: support_lingering
+    icon_id: skill_icon_support_lingering
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: lingering_support
+    vfx_hook_id: vfx.support_lingering
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_lingering.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_voice_scar.png
+  - skill_id: support_echo
+    icon_id: skill_icon_support_echo
+    slot: Support
+    kind: Utility
+    delivery: Aura
+    damage: Physical
+    power: '0'
+    status_ids: []
+    effect_family_id: echo_support
+    vfx_hook_id: vfx.support_echo
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_echo.png
+    render_status: pending_fresh_render
+    placeholder_source: art-pipeline/output/icons/skill/catalog_v1/skill_icon_external_lexicon.png

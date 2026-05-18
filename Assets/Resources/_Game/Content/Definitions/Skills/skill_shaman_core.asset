@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  IconId: skill_icon_voice_scar
+  IconId: skill_icon_shaman_core
   VfxHookId: vfx.skill_shaman_core
   SfxHookId: 
   LearnSource: 0

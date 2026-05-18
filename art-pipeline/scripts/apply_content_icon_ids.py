@@ -12,7 +12,7 @@ CONTENT_ROOT = REPO_ROOT / "Assets" / "Resources" / "_Game" / "Content" / "Defin
 
 
 def scalar(text: str, key: str) -> str:
-    match = re.search(rf"^  {re.escape(key)}:\s*(.*)$", text, re.MULTILINE)
+    match = re.search(rf"^  {re.escape(key)}:[ \t]*(.*)$", text, re.MULTILINE)
     return match.group(1).strip() if match else ""
 
 
@@ -28,56 +28,10 @@ def set_field_after(text: str, key: str, value: str, after_key: str) -> str:
 
 
 def resolve_skill_icon_id(skill_id: str) -> str:
-    mapping = {
-        "skill_priest_core": "skill_icon_sigil_shield",
-        "skill_guardian_core": "skill_icon_sigil_shield",
-        "skill_bulwark_core": "skill_icon_sigil_shield",
-        "skill_minor_heal": "skill_icon_platinum_aegis",
-        "skill_mystic_support_1": "skill_icon_platinum_aegis",
-        "skill_mystic_support_2": "skill_icon_platinum_aegis",
-        "skill_hexer_core": "skill_icon_time_distance",
-        "skill_hexer_utility": "skill_icon_memory_project",
-        "skill_shaman_core": "skill_icon_voice_scar",
-        "skill_shaman_utility": "skill_icon_voice_scar",
-        "skill_raider_core": "skill_icon_fang_strike",
-        "skill_reaver_core": "skill_icon_fang_strike",
-        "skill_slayer_core": "skill_icon_fang_strike",
-        "skill_power_strike": "skill_icon_fang_strike",
-        "skill_raider_utility": "skill_icon_return_path",
-        "skill_reaver_utility": "skill_icon_return_path",
-        "skill_slayer_utility": "skill_icon_return_path",
-        "skill_scout_core": "skill_icon_knot_arrow",
-        "skill_marksman_core": "skill_icon_knot_arrow",
-        "skill_precision_shot": "skill_icon_knot_arrow",
-        "skill_scout_utility": "skill_icon_wind_read",
-        "skill_marksman_utility": "skill_icon_wind_read",
-        "skill_hunter_utility": "skill_icon_wind_read",
-        "support_purifying": "skill_icon_ash_purification",
-        "support_guarded": "skill_icon_sigil_shield",
-        "support_anchored": "skill_icon_sigil_shield",
-        "support_brutal": "skill_icon_fang_strike",
-        "support_executioner": "skill_icon_fang_strike",
-        "support_hunter_mark": "skill_icon_knot_arrow",
-        "support_longshot": "skill_icon_knot_arrow",
-        "support_piercing": "skill_icon_knot_arrow",
-        "support_swift": "skill_icon_wind_read",
-        "support_lingering": "skill_icon_voice_scar",
-        "support_siphon": "skill_icon_memory_project",
-        "support_echo": "skill_icon_external_lexicon",
-    }
-    if skill_id in mapping:
-        return mapping[skill_id]
-
-    lower = skill_id.lower()
-    if any(token in lower for token in ("vanguard", "warden", "guardian", "bulwark")):
-        return "skill_icon_sigil_shield"
-    if any(token in lower for token in ("duelist", "raider", "reaver", "slayer")):
-        return "skill_icon_fang_strike"
-    if any(token in lower for token in ("ranger", "scout", "marksman", "hunter")):
-        return "skill_icon_knot_arrow"
-    if any(token in lower for token in ("mystic", "priest", "hexer", "shaman")):
-        return "skill_icon_memory_project"
-    return "skill_icon_sigil_shield"
+    if not skill_id:
+        return ""
+    suffix = skill_id.removeprefix("skill_")
+    return f"skill_icon_{suffix}"
 
 
 def resolve_item_icon_id(item_id: str, slot_type: str, weapon_family: str) -> str:

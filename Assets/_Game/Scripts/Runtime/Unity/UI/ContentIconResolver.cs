@@ -43,7 +43,7 @@ internal sealed class ContentIconResolver
 
         var iconId = ResolveSkillIconId(skillId);
         return Load($"{SkillPath}/{iconId}")
-               ?? Load($"{SkillPath}/skill_icon_{skillId}");
+               ?? Load($"{SkillPath}/skill_icon_{StripPrefix(skillId, "skill_")}");
     }
 
     public Texture2D? ResolveItem(string itemId)

@@ -647,7 +647,7 @@ def main() -> int:
                     print(f"[imagegen] minimized {n} Playwright Chromium window(s)", file=sys.stderr)
 
             page = context.pages[0] if context.pages else context.new_page()
-            ensure_logged_in(page, config["chatgpt_project_url"])
+            ensure_logged_in(page, config["chatgpt_project_url"], timeout_s=timeout)
             if start_minimized:
                 pids = get_playwright_chromium_pids()
                 minimize_chrome_windows(pids, timeout_s=1.0)

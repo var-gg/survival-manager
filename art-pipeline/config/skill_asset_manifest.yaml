@@ -1,42 +1,147 @@
 schema: skill_asset_manifest_v1
-updated_at: 2026-05-13
-
+updated_at: '2026-05-18'
 policy:
-  hierarchy: "Skill images live under art-pipeline/subjects/icons/skill/**, not under character subject folders."
-  gameplay_binding: "Runtime ownership must be SkillId -> IconId -> Sprite/presentation catalog. Character pages do not own skill images."
-  canonical_catalog: "Canonical skill icon sheets use profile skill_catalog_sheet and write split outputs to output/icons/skill/catalog_v1/skill_icon_{skill}.png."
-  retired_character_theme_bridge: "Former character_theme_* sheets were migration seeds only and are no longer active skill icon generation units."
-
+  hierarchy: Skill images live under art-pipeline/subjects/icons/skill/**, not under
+    character subject folders.
+  gameplay_binding: Runtime ownership is one authored SkillDefinitionAsset.Id -> one
+    SkillDefinitionAsset.IconId -> Sprite/presentation catalog.
+  canonical_catalog: Canonical skill icon sheets write split outputs to art-pipeline/output/icons/skill/catalog_v2/skill_icon_{skill}.png.
+  generation_batch: 'Generate 4 icons per imagegen call as a 1568x1568 2x2 sheet:
+    768px cells with 32px #FF00FF gutters.'
+  placeholder_backfill: catalog_v2 files may be temporarily copied from catalog_v1
+    motifs only to keep runtime icons nonblank while fresh imagegen is blocked.
+  retired_character_theme_bridge: Former character_theme_* sheets were migration seeds
+    only and are no longer active skill icon generation units.
 profiles:
   skill_catalog_sheet:
-    description: "Canonical 2x2 skill icon sheet grouped by skill semantics, not by character ownership."
+    description: Canonical 2x2 skill icon sheet grouped by skill semantics, not by
+      character ownership.
     required:
-      - catalog_sheet
-
+    - catalog_sheet
 asset_requirements:
   catalog_sheet:
     kind: sheet_output
     subject: subjects/icons/skill/{id}/default.md
     outputs:
-      - output/{id}/default.png
+    - output/{id}/default.png
     dynamic_outputs:
       from_frontmatter: skills
-      pattern: output/icons/skill/catalog_v1/skill_icon_{skill}.png
-
+      pattern: output/icons/skill/catalog_v2/skill_icon_{skill}.png
 assets:
-  - id: skill_catalog_protection_recovery
-    profile: skill_catalog_sheet
-    semantic_family: protection_recovery
-    binding_status: canonical_skill_catalog
-  - id: skill_catalog_precision_projectile
-    profile: skill_catalog_sheet
-    semantic_family: precision_projectile
-    binding_status: canonical_skill_catalog
-  - id: skill_catalog_memory_ritual
-    profile: skill_catalog_sheet
-    semantic_family: memory_ritual
-    binding_status: canonical_skill_catalog
-  - id: skill_catalog_assault_motion
-    profile: skill_catalog_sheet
-    semantic_family: assault_motion
-    binding_status: canonical_skill_catalog
+- id: skill_catalog_v2_vanguard_core
+  profile: skill_catalog_sheet
+  semantic_family: vanguard_core
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_priest_core
+  - skill_guardian_core
+  - skill_bulwark_core
+  - skill_warden_utility
+- id: skill_catalog_v2_vanguard_stance
+  profile: skill_catalog_sheet
+  semantic_family: vanguard_stance
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_bulwark_utility
+  - skill_guardian_utility
+  - skill_vanguard_passive_1
+  - skill_vanguard_passive_2
+- id: skill_catalog_v2_vanguard_support
+  profile: skill_catalog_sheet
+  semantic_family: vanguard_support
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_vanguard_support_1
+  - skill_vanguard_support_2
+  - support_anchored
+  - support_guarded
+- id: skill_catalog_v2_duelist_core
+  profile: skill_catalog_sheet
+  semantic_family: duelist_core
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_power_strike
+  - skill_raider_core
+  - skill_reaver_core
+  - skill_slayer_core
+- id: skill_catalog_v2_duelist_motion
+  profile: skill_catalog_sheet
+  semantic_family: duelist_motion
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_raider_utility
+  - skill_reaver_utility
+  - skill_slayer_utility
+  - support_executioner
+- id: skill_catalog_v2_duelist_boons
+  profile: skill_catalog_sheet
+  semantic_family: duelist_boons
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_duelist_passive_1
+  - skill_duelist_passive_2
+  - skill_duelist_support_1
+  - skill_duelist_support_2
+- id: skill_catalog_v2_ranger_core
+  profile: skill_catalog_sheet
+  semantic_family: ranger_core
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_scout_core
+  - skill_marksman_core
+  - skill_precision_shot
+  - support_hunter_mark
+- id: skill_catalog_v2_ranger_utility
+  profile: skill_catalog_sheet
+  semantic_family: ranger_utility
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_scout_utility
+  - skill_marksman_utility
+  - skill_hunter_utility
+  - support_swift
+- id: skill_catalog_v2_ranger_boons
+  profile: skill_catalog_sheet
+  semantic_family: ranger_boons
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_ranger_passive_1
+  - skill_ranger_passive_2
+  - skill_ranger_support_1
+  - skill_ranger_support_2
+- id: skill_catalog_v2_cross_support
+  profile: skill_catalog_sheet
+  semantic_family: cross_support
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - support_brutal
+  - support_longshot
+  - support_piercing
+  - support_purifying
+- id: skill_catalog_v2_mystic_core
+  profile: skill_catalog_sheet
+  semantic_family: mystic_core
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_hexer_core
+  - skill_shaman_core
+  - skill_hexer_utility
+  - skill_shaman_utility
+- id: skill_catalog_v2_mystic_recovery
+  profile: skill_catalog_sheet
+  semantic_family: mystic_recovery
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_minor_heal
+  - skill_mystic_support_1
+  - skill_mystic_support_2
+  - support_siphon
+- id: skill_catalog_v2_mystic_boons
+  profile: skill_catalog_sheet
+  semantic_family: mystic_boons
+  binding_status: canonical_skill_catalog
+  skill_ids:
+  - skill_mystic_passive_1
+  - skill_mystic_passive_2
+  - support_lingering
+  - support_echo

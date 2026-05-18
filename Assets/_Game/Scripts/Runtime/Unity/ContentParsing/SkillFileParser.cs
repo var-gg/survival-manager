@@ -107,7 +107,7 @@ internal static class SkillFileParser
 
         if (string.IsNullOrWhiteSpace(definition.IconId) && !string.IsNullOrWhiteSpace(definition.Id))
         {
-            definition.IconId = $"skill_icon_{definition.Id}";
+            definition.IconId = $"skill_icon_{StripPrefix(definition.Id, "skill_")}";
         }
 
         if (!string.IsNullOrWhiteSpace(definition.CleanseProfileId))
@@ -211,5 +211,10 @@ internal static class SkillFileParser
             new() { Priority = 1, ConditionType = TacticConditionTypeValue.LowestHpEnemy, Threshold = 0f, ActionType = BattleActionTypeValue.BasicAttack, TargetSelector = TargetSelectorTypeValue.LowestHpEnemy },
             new() { Priority = 2, ConditionType = TacticConditionTypeValue.Fallback, Threshold = 0f, ActionType = BattleActionTypeValue.WaitDefend, TargetSelector = TargetSelectorTypeValue.Self },
         };
+    }
+
+    private static string StripPrefix(string value, string prefix)
+    {
+        return value.StartsWith(prefix, StringComparison.Ordinal) ? value[prefix.Length..] : value;
     }
 }

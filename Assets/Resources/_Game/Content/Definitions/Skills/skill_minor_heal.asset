@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  IconId: skill_icon_platinum_aegis
+  IconId: skill_icon_minor_heal
   VfxHookId: vfx.skill_minor_heal
   SfxHookId: 
   LearnSource: 0

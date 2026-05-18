@@ -82,7 +82,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  IconId: skill_icon_time_distance
+  IconId: skill_icon_hexer_core
   VfxHookId: vfx.skill_hexer_core
   SfxHookId: 
   LearnSource: 0

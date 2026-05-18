@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Split generated character-theme skill icon sheets into manifest outputs."""
+"""Split generated skill icon sheets into manifest outputs."""
 from __future__ import annotations
 
 import argparse
@@ -94,8 +94,9 @@ def suppress_magenta_spill(image_path: Path, target_rgb: tuple[int, int, int]) -
 
 def postprocess_subject(subject_path: Path, method: str = "auto", clean_spill: bool = True) -> list[Path]:
     fm = read_frontmatter(subject_path)
-    if fm.get("kind") != "skill_icon_theme_sheet":
-        raise ValueError(f"{subject_path}: kind must be skill_icon_theme_sheet")
+    kind = fm.get("kind")
+    if kind not in {"skill_icon_theme_sheet", "skill_icon_catalog_sheet"}:
+        raise ValueError(f"{subject_path}: kind must be skill_icon_theme_sheet or skill_icon_catalog_sheet")
 
     subject_id = fm.get("subject_id")
     skills = fm.get("skills")
@@ -112,14 +113,19 @@ def postprocess_subject(subject_path: Path, method: str = "auto", clean_spill: b
         if changed:
             print(f"[postprocess_skill_theme_sheets] recolored {changed} magenta spill px in {sheet_path.name}")
 
-    out_dir = PIPELINE_ROOT / "output" / "icons" / "skill" / subject_id
+    output_directory = fm.get("output_directory")
+    if isinstance(output_directory, str) and output_directory.strip():
+        out_dir = (PIPELINE_ROOT.parent / output_directory).resolve()
+    else:
+        out_dir = PIPELINE_ROOT / "output" / "icons" / "skill" / subject_id
+    output_prefix = str(fm.get("output_prefix") or "skill_icon")
     return split_sheet(
         sheet_path,
         rows=2,
         cols=2,
         emotions=[str(skill) for skill in skills],
         out_dir=out_dir,
-        prefix="skill_icon",
+        prefix=output_prefix,
         method=method,
     )
 

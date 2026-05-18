@@ -82,7 +82,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  IconId: skill_icon_ash_purification
+  IconId: skill_icon_support_purifying
   VfxHookId: vfx.support_purifying
   SfxHookId: 
   LearnSource: 0

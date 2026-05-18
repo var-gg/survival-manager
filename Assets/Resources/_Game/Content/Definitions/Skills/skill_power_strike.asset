@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  IconId: skill_icon_fang_strike
+  IconId: skill_icon_power_strike
   VfxHookId: vfx.skill_power_strike
   SfxHookId: 
   LearnSource: 0

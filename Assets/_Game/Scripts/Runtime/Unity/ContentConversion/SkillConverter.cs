@@ -106,7 +106,7 @@ internal static class SkillConverter
             recruitPlanTags,
             recruitScoutTags,
             BuildGovernanceSummary(skill.BudgetCard),
-            IconId: string.IsNullOrWhiteSpace(skill.IconId) ? $"skill_icon_{skill.Id}" : skill.IconId,
+            IconId: string.IsNullOrWhiteSpace(skill.IconId) ? $"skill_icon_{StripPrefix(skill.Id, "skill_")}" : skill.IconId,
             VfxHookId: string.IsNullOrWhiteSpace(skill.VfxHookId) ? $"vfx.{skill.Id}" : skill.VfxHookId);
     }
 
@@ -312,5 +312,10 @@ internal static class SkillConverter
         }
 
         return tags.Where(tag => !string.IsNullOrWhiteSpace(tag)).ToArray();
+    }
+
+    private static string StripPrefix(string value, string prefix)
+    {
+        return value.StartsWith(prefix, StringComparison.Ordinal) ? value[prefix.Length..] : value;
     }
 }

@@ -24,7 +24,7 @@ TARGET_DIRS = {
 
 
 def scalar(text: str, key: str) -> str:
-    match = re.search(rf"^  {re.escape(key)}:\s*(.*)$", text, re.MULTILINE)
+    match = re.search(rf"^  {re.escape(key)}:[ \t]*(.*)$", text, re.MULTILINE)
     return match.group(1).strip() if match else ""
 
 

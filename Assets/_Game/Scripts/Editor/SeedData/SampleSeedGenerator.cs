@@ -4040,43 +4040,7 @@ public static class SampleSeedGenerator
             return string.Empty;
         }
 
-        return skillId switch
-        {
-            "skill_priest_core" or "skill_guardian_core" or "skill_bulwark_core" => "skill_icon_sigil_shield",
-            "skill_minor_heal" or "skill_mystic_support_1" or "skill_mystic_support_2" => "skill_icon_platinum_aegis",
-            "skill_hexer_core" => "skill_icon_time_distance",
-            "skill_hexer_utility" => "skill_icon_memory_project",
-            "skill_shaman_core" or "skill_shaman_utility" => "skill_icon_voice_scar",
-            "skill_raider_core" or "skill_reaver_core" or "skill_slayer_core" or "skill_power_strike" => "skill_icon_fang_strike",
-            "skill_raider_utility" or "skill_reaver_utility" or "skill_slayer_utility" => "skill_icon_return_path",
-            "skill_scout_core" or "skill_marksman_core" or "skill_precision_shot" => "skill_icon_knot_arrow",
-            "skill_scout_utility" or "skill_marksman_utility" or "skill_hunter_utility" => "skill_icon_wind_read",
-            "support_purifying" => "skill_icon_ash_purification",
-            "support_guarded" or "support_anchored" => "skill_icon_sigil_shield",
-            "support_brutal" or "support_executioner" => "skill_icon_fang_strike",
-            "support_hunter_mark" or "support_longshot" or "support_piercing" => "skill_icon_knot_arrow",
-            "support_swift" => "skill_icon_wind_read",
-            "support_lingering" => "skill_icon_voice_scar",
-            "support_siphon" => "skill_icon_memory_project",
-            "support_echo" => "skill_icon_external_lexicon",
-            _ when skillId.Contains("vanguard", StringComparison.Ordinal)
-                || skillId.Contains("warden", StringComparison.Ordinal)
-                || skillId.Contains("guardian", StringComparison.Ordinal)
-                || skillId.Contains("bulwark", StringComparison.Ordinal) => "skill_icon_sigil_shield",
-            _ when skillId.Contains("duelist", StringComparison.Ordinal)
-                || skillId.Contains("raider", StringComparison.Ordinal)
-                || skillId.Contains("reaver", StringComparison.Ordinal)
-                || skillId.Contains("slayer", StringComparison.Ordinal) => "skill_icon_fang_strike",
-            _ when skillId.Contains("ranger", StringComparison.Ordinal)
-                || skillId.Contains("scout", StringComparison.Ordinal)
-                || skillId.Contains("marksman", StringComparison.Ordinal)
-                || skillId.Contains("hunter", StringComparison.Ordinal) => "skill_icon_knot_arrow",
-            _ when skillId.Contains("mystic", StringComparison.Ordinal)
-                || skillId.Contains("priest", StringComparison.Ordinal)
-                || skillId.Contains("hexer", StringComparison.Ordinal)
-                || skillId.Contains("shaman", StringComparison.Ordinal) => "skill_icon_memory_project",
-            _ => $"skill_icon_{skillId}"
-        };
+        return $"skill_icon_{(skillId.StartsWith("skill_", StringComparison.Ordinal) ? skillId["skill_".Length..] : skillId)}";
     }
 
     private static StatusApplicationRule MakeStatus(string id, string statusId, float durationSeconds, float magnitude)

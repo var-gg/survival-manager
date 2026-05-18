@@ -963,7 +963,7 @@ internal static class YamlFieldExtractor
                 skill.Id = CoalesceId(skill.Id, DeriveId(assetPath));
                 skill.NameKey = Coalesce(skill.NameKey, ContentLocalizationTables.BuildSkillNameKey(skill.Id));
                 skill.DescriptionKey = Coalesce(skill.DescriptionKey, ContentLocalizationTables.BuildSkillDescriptionKey(skill.Id));
-                skill.IconId = Coalesce(skill.IconId, $"skill_icon_{skill.Id}");
+                skill.IconId = Coalesce(skill.IconId, $"skill_icon_{StripPrefix(skill.Id, "skill_")}");
                 break;
             case TraitPoolDefinition traitPool:
                 traitPool.Id = CoalesceId(traitPool.Id, DeriveId(assetPath));
@@ -1117,6 +1117,11 @@ internal static class YamlFieldExtractor
         return string.IsNullOrWhiteSpace(current) || current.Contains(".unknown.", StringComparison.Ordinal)
             ? fallback
             : current;
+    }
+
+    internal static string StripPrefix(string value, string prefix)
+    {
+        return value.StartsWith(prefix, StringComparison.Ordinal) ? value[prefix.Length..] : value;
     }
 
     internal static void SetLegacyField(object instance, string fieldName, string value)

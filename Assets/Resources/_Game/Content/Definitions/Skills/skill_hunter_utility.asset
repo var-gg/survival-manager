@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumDistance: 0
     MaximumDistance: 0
   AnimationHookId: 
-  IconId: skill_icon_wind_read
+  IconId: skill_icon_hunter_utility
   VfxHookId: vfx.skill_hunter_utility
   SfxHookId: 
   LearnSource: 0
