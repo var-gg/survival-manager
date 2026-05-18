@@ -329,6 +329,7 @@ public static class LocalizationFoundationBootstrap
         {
             ["ui.common.help"] = ("도움말", "Help", false),
             ["ui.common.hide"] = ("닫기", "Hide", false),
+            ["ui.common.close"] = ("닫기", "Close", false),
             ["ui.common.unknown"] = ("알 수 없음", "Unknown", false),
         });
 
@@ -378,10 +379,22 @@ public static class LocalizationFoundationBootstrap
             // Phase 7 V3 hub column / utility entry / cluster labels (UXML literal 분리)
             ["ui.town.ledger.title"] = ("LEDGER · 마을 비망록", "LEDGER · Town Records", false),
             ["ui.town.entry.roster"] = ("◈  동료 명부", "◈  Roster", false),
+            ["ui.town.entry.compendium"] = ("도감", "Compendium", false),
             ["ui.town.entry.squad_builder"] = ("❖  전열 편성", "❖  Squad Builder", false),
             ["ui.town.entry.permanent_augment"] = ("✦  영구 강화", "✦  Permanent Augment", false),
             ["ui.town.entry.theater"] = ("▶  극장", "▶  Theater", false),
             ["ui.town.cluster.eyebrow"] = ("잿골에 머무는 동료", "Comrades staying in Ashglen", false),
+            ["ui.town.compendium.title"] = ("시스템 도감", "System Compendium", false),
+            ["ui.town.compendium.subtitle"] = ("스킬, 상태, 시너지, 캐릭터 언락 표면", "Skills, status, synergy, and character unlock surface", false),
+            ["ui.town.compendium.tab.skills"] = ("스킬", "Skills", false),
+            ["ui.town.compendium.tab.status"] = ("상태", "Status", false),
+            ["ui.town.compendium.tab.synergy"] = ("시너지", "Synergy", false),
+            ["ui.town.compendium.tab.characters"] = ("캐릭터", "Characters", false),
+            ["ui.town.compendium.class.any"] = ("모든 클래스", "Any class", false),
+            ["ui.town.compendium.status.none"] = ("없음", "None", false),
+            ["ui.town.compendium.character.locked_slot"] = ("슬롯 {0:00}", "Slot {0:00}", false),
+            ["ui.town.compendium.character.unlocked"] = ("해금", "Unlocked", false),
+            ["ui.town.compendium.character.locked"] = ("실루엣", "Silhouette", false),
         });
 
         AddOrUpdateEntries(new Dictionary<string, (string ko, string en, bool smart)>(StringComparer.Ordinal)

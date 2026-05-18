@@ -3,7 +3,7 @@
       잿골 Town hub V3 — pindoc://decision-town-hub-v3-ashglen-face-cluster.
       얼굴 중심 사각형 카드 cluster + 가변 deploy + 4 NPC ambient + 표정 swap + 바크 layer.
       Layout: top utility bar / middle backdrop+welcome captain / bottom NPC strip + hero cluster + utility column / CTA bar.
-      Modal Instance layer는 V2와 동일 (5 modal — Squad/Recruit/Equipment/Passive/Inventory + PermAugment + Roster placeholder).
+      Modal Instance layer는 V2와 동일한 overlay wrapper를 확장 (Squad/Recruit/Equipment/Passive/Inventory/PermAugment/Roster/Compendium).
     -->
     <ui:Template name="SquadBuilderTemplate" src="SquadBuilder.uxml" />
     <ui:Template name="RecruitTemplate" src="Preview/RecruitPreview.uxml" />
@@ -12,6 +12,7 @@
     <ui:Template name="PermanentAugmentTemplate" src="Preview/PermanentAugmentPreview.uxml" />
     <ui:Template name="InventoryTemplate" src="Preview/InventoryPreview.uxml" />
     <ui:Template name="RosterTemplate" src="Preview/RosterGridPreview.uxml" />
+    <ui:Template name="CompendiumTemplate" src="Preview/CompendiumPreview.uxml" />
     <ui:VisualElement name="TownScreenRoot" class="screen town-hub town-hub--v3">
         <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop sm-backdrop" picking-mode="Ignore" />
         <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim sm-backdrop-dim" picking-mode="Ignore" />
@@ -53,6 +54,9 @@
                 <ui:Label name="LedgerTitleLabel" class="town-hub__column-eyebrow" text="LEDGER · 마을 비망록" picking-mode="Ignore" />
                 <ui:Button name="RosterButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
                     <ui:Label name="RosterEntryLabel" class="town-hub__utility-name" text="◈  동료 명부" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="CompendiumButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
+                    <ui:Label name="CompendiumEntryLabel" class="town-hub__utility-name" text="도감" picking-mode="Ignore" />
                 </ui:Button>
                 <ui:Button name="SquadBuilderButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
                     <ui:Label name="SquadBuilderEntryLabel" class="town-hub__utility-name" text="❖  전열 편성" picking-mode="Ignore" />
@@ -108,6 +112,9 @@
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="RosterTemplate" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
+            <ui:Instance template="CompendiumTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

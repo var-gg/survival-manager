@@ -25,6 +25,7 @@ public sealed class TownScreenController : MonoBehaviour
     private PassiveBoardPresenter? _passiveBoardPresenter;
     private InventoryPresenter? _inventoryPresenter;
     private PermanentAugmentPresenter? _permanentAugmentPresenter;
+    private CompendiumPresenter? _compendiumPresenter;
     private RosterGridView? _rosterModalView;
     // jjjj hub V3 NPC mapping (pindoc://decision-town-hub-v3-ashglen-face-cluster):
     //   달목 → Recruit / 쇠매 → EquipmentRefit / 갈마 → PassiveBoard / 솔길 → Inventory.
@@ -102,6 +103,7 @@ public sealed class TownScreenController : MonoBehaviour
         TryWirePassiveBoard(panelHost.Root, view);
         TryWireInventory(panelHost.Root, view);
         TryWirePermanentAugment(panelHost.Root, view);
+        TryWireCompendium(panelHost.Root, view);
         TryWireSquadBuilder(panelHost.Root, view);
         TryWireRoster(panelHost.Root, view);
 
@@ -184,6 +186,24 @@ public sealed class TownScreenController : MonoBehaviour
         catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] PermanentAugment wire 실패: {e.Message}"); }
     }
 
+    private void TryWireCompendium(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            var compendiumView = new CompendiumView(root);
+            _compendiumPresenter = new CompendiumPresenter(
+                _root,
+                _localization,
+                _contentText,
+                _contentIconResolver,
+                compendiumView);
+            _compendiumPresenter.Initialize();
+            _compendiumPresenter.Close();
+            view.BindCompendiumOpen(_compendiumPresenter.Open);
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Compendium wire 실패: {e.Message}"); }
+    }
+
     private void TryWireSquadBuilder(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
@@ -255,6 +275,7 @@ public sealed class TownScreenController : MonoBehaviour
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
     {
         _presenter?.Refresh();
+        _compendiumPresenter?.Refresh();
     }
 }
 }

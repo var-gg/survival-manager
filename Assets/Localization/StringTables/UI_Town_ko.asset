@@ -1080,6 +1080,54 @@ MonoBehaviour:
     m_Localized: "\uC7BF\uACE8\uC5D0 \uBA38\uBB34\uB294 \uB3D9\uB8CC"
     m_Metadata:
       m_Items: []
+  - m_Id: 17541022661021701
+    m_Localized: "\ub3c4\uac10"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021702
+    m_Localized: "\uc2dc\uc2a4\ud15c \ub3c4\uac10"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021703
+    m_Localized: "\uc2a4\ud0ac, \uc0c1\ud0dc, \uc2dc\ub108\uc9c0, \uce90\ub9ad\ud130 \uc5b8\ub77d \ud45c\uba74"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021704
+    m_Localized: "\uc2a4\ud0ac"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021705
+    m_Localized: "\uc0c1\ud0dc"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021706
+    m_Localized: "\uc2dc\ub108\uc9c0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021707
+    m_Localized: "\uce90\ub9ad\ud130"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021708
+    m_Localized: "\ubaa8\ub4e0 \ud074\ub798\uc2a4"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021709
+    m_Localized: "\uc5c6\uc74c"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021710
+    m_Localized: "\uc2ac\ub86f {0:00}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021711
+    m_Localized: "\ud574\uae08"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021712
+    m_Localized: "\uc2e4\ub8e8\uc5e3"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

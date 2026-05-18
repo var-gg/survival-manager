@@ -244,6 +244,7 @@ public sealed class TownScreenPresenter
             StatusText: statusText,
             LedgerTitle: Localize(GameLocalizationTables.UITown, "ui.town.ledger.title", "LEDGER · 마을 비망록"),
             RosterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.roster", "◈  동료 명부"),
+            CompendiumEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.compendium", "도감"),
             SquadBuilderEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.squad_builder", "❖  전열 편성"),
             PermanentAugmentEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.permanent_augment", "✦  영구 강화"),
             TheaterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.theater", "▶  극장"),

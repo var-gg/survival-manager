@@ -53,6 +53,7 @@ public sealed record TownScreenViewState(
     // Phase 7 V3 hub V3 utility column / cluster / entry labels (UXML literal 분리)
     string LedgerTitle,
     string RosterEntryLabel,
+    string CompendiumEntryLabel,
     string SquadBuilderEntryLabel,
     string PermanentAugmentEntryLabel,
     string TheaterEntryLabel,

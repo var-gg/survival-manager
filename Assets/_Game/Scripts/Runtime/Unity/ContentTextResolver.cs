@@ -56,6 +56,16 @@ public sealed class ContentTextResolver
             : skillId;
     }
 
+    public string GetStatusName(string statusId)
+    {
+        return Localize(ContentLocalizationTables.Status, ContentLocalizationTables.BuildStatusNameKey(statusId), string.Empty, statusId);
+    }
+
+    public string GetStatusDescription(string statusId)
+    {
+        return Localize(ContentLocalizationTables.Status, ContentLocalizationTables.BuildStatusDescriptionKey(statusId), string.Empty, statusId);
+    }
+
     public string GetArchetypeName(string archetypeId)
     {
         return _lookup.TryGetArchetype(archetypeId, out var archetype)
@@ -153,6 +163,13 @@ public sealed class ContentTextResolver
     {
         return _lookup.TryGetSynergyDefinition(synergyId, out var synergy)
             ? Localize(ContentLocalizationTables.Synergies, synergy.NameKey, synergy.LegacyDisplayName, synergyId)
+            : synergyId;
+    }
+
+    public string GetSynergyDescription(string synergyId)
+    {
+        return _lookup.TryGetSynergyDefinition(synergyId, out var synergy)
+            ? Localize(ContentLocalizationTables.Synergies, synergy.DescriptionKey, string.Empty, synergyId)
             : synergyId;
     }
 

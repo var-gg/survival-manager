@@ -1,0 +1,252 @@
+.cmp-root {
+    flex-grow: 1;
+    color: var(--sm-ink-1);
+}
+
+.cmp-backdrop {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.cmp-backdrop-dim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(8, 12, 28, 0.68);
+}
+
+.cmp-frame {
+    left: 54px;
+    right: 54px;
+    top: 42px;
+    bottom: 42px;
+}
+
+.cmp-header {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 16px;
+    padding-bottom: 14px;
+    padding-left: 24px;
+    padding-right: 24px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(138, 100, 24, 0.32);
+}
+
+.cmp-header__copy {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.cmp-title {
+    color: var(--sm-vellum);
+    font-size: 22px;
+    -unity-font-style: bold;
+}
+
+.cmp-subtitle {
+    color: var(--sm-ink-3);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.cmp-close {
+    width: 72px;
+}
+
+.cmp-tabs {
+    flex-direction: row;
+    padding-top: 10px;
+    padding-bottom: 8px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: rgba(20, 26, 53, 0.72);
+}
+
+.cmp-tab {
+    min-width: 108px;
+    margin-right: 8px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    background-color: rgba(38, 45, 84, 0.74);
+    color: var(--sm-ink-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.32);
+    border-right-color: rgba(230, 183, 81, 0.32);
+    border-top-color: rgba(230, 183, 81, 0.32);
+    border-bottom-color: rgba(230, 183, 81, 0.32);
+    -unity-font-style: bold;
+}
+
+.cmp-tab--selected {
+    background-color: rgba(200, 147, 42, 0.32);
+    color: var(--sm-gold-100);
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.cmp-body {
+    flex-direction: row;
+    flex-grow: 1;
+    padding: 16px;
+}
+
+.cmp-entry-scroll {
+    width: 440px;
+    margin-right: 14px;
+}
+
+.cmp-entry-list {
+    flex-direction: column;
+}
+
+.cmp-entry {
+    flex-direction: row;
+    margin-bottom: 8px;
+    padding: 9px;
+    min-height: 76px;
+    background-color: rgba(28, 34, 67, 0.82);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.28);
+    border-right-color: rgba(230, 183, 81, 0.28);
+    border-top-color: rgba(230, 183, 81, 0.28);
+    border-bottom-color: rgba(230, 183, 81, 0.28);
+}
+
+.cmp-entry--selected {
+    background-color: rgba(200, 147, 42, 0.24);
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.cmp-entry--locked {
+    opacity: 0.62;
+}
+
+.cmp-entry__icon {
+    width: 54px;
+    height: 54px;
+    margin-right: 10px;
+    background-color: rgba(245, 234, 208, 0.08);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.cmp-entry__copy {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.cmp-entry__title {
+    color: var(--sm-vellum);
+    font-size: 13px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.cmp-entry__meta {
+    color: var(--sm-gold-200);
+    font-size: 11px;
+    margin-top: 4px;
+    white-space: normal;
+}
+
+.cmp-entry__hook {
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    margin-top: 3px;
+    white-space: normal;
+}
+
+.cmp-detail {
+    flex-grow: 1;
+    padding: 18px;
+    background-color: rgba(28, 34, 67, 0.86);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.45);
+    border-right-color: rgba(230, 183, 81, 0.45);
+    border-top-color: rgba(230, 183, 81, 0.45);
+    border-bottom-color: rgba(230, 183, 81, 0.45);
+}
+
+.cmp-detail__icon {
+    width: 112px;
+    height: 112px;
+    align-self: flex-start;
+    background-color: rgba(245, 234, 208, 0.06);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.cmp-detail__title {
+    color: var(--sm-vellum);
+    font-size: 24px;
+    -unity-font-style: bold;
+    margin-top: 14px;
+    white-space: normal;
+}
+
+.cmp-detail__subtitle {
+    color: var(--sm-gold-200);
+    font-size: 12px;
+    margin-top: 4px;
+    white-space: normal;
+}
+
+.cmp-detail__description {
+    color: var(--sm-ink-2);
+    font-size: 13px;
+    margin-top: 14px;
+    white-space: normal;
+}
+
+.cmp-detail__hook {
+    color: var(--sm-ink-3);
+    font-size: 11px;
+    margin-top: 10px;
+    white-space: normal;
+}
+
+.cmp-detail__metrics {
+    margin-top: 16px;
+    flex-direction: column;
+}
+
+.cmp-metric {
+    flex-direction: row;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.18);
+}
+
+.cmp-metric__label {
+    width: 112px;
+    color: var(--sm-ink-3);
+    font-size: 11px;
+}
+
+.cmp-metric__value {
+    flex-grow: 1;
+    color: var(--sm-vellum);
+    font-size: 11px;
+    white-space: normal;
+}

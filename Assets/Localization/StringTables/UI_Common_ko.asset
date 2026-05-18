@@ -181,6 +181,10 @@ MonoBehaviour:
     m_Localized: "\uC811\uAE30"
     m_Metadata:
       m_Items: []
+  - m_Id: 4793032717
+    m_Localized: "\ub2eb\uae30"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

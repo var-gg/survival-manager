@@ -1053,6 +1053,54 @@ MonoBehaviour:
     m_Localized: Comrades staying in Ashglen
     m_Metadata:
       m_Items: []
+  - m_Id: 17541022661021701
+    m_Localized: "Compendium"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021702
+    m_Localized: "System Compendium"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021703
+    m_Localized: "Skills, status, synergy, and character unlock surface"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021704
+    m_Localized: "Skills"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021705
+    m_Localized: "Status"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021706
+    m_Localized: "Synergy"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021707
+    m_Localized: "Characters"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021708
+    m_Localized: "Any class"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021709
+    m_Localized: "None"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021710
+    m_Localized: "Slot {0:00}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021711
+    m_Localized: "Unlocked"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021712
+    m_Localized: "Silhouette"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

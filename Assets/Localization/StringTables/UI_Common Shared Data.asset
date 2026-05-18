@@ -175,6 +175,10 @@ MonoBehaviour:
     m_Key: ui.common.collapse
     m_Metadata:
       m_Items: []
+  - m_Id: 4793032717
+    m_Key: ui.common.close
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

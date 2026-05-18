@@ -1007,6 +1007,54 @@ MonoBehaviour:
     m_Key: ui.town.cluster.eyebrow
     m_Metadata:
       m_Items: []
+  - m_Id: 17541022661021701
+    m_Key: ui.town.entry.compendium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021702
+    m_Key: ui.town.compendium.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021703
+    m_Key: ui.town.compendium.subtitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021704
+    m_Key: ui.town.compendium.tab.skills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021705
+    m_Key: ui.town.compendium.tab.status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021706
+    m_Key: ui.town.compendium.tab.synergy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021707
+    m_Key: ui.town.compendium.tab.characters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021708
+    m_Key: ui.town.compendium.class.any
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021709
+    m_Key: ui.town.compendium.status.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021710
+    m_Key: ui.town.compendium.character.locked_slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021711
+    m_Key: ui.town.compendium.character.unlocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021712
+    m_Key: ui.town.compendium.character.locked
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

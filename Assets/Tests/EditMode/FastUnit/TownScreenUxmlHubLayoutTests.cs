@@ -39,13 +39,14 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("BarkLayer"));
         // Utility entries (4)
         Assert.That(uxml, Does.Contain("RosterButton"));
+        Assert.That(uxml, Does.Contain("CompendiumButton"));
         Assert.That(uxml, Does.Contain("SquadBuilderButton"));
         Assert.That(uxml, Does.Contain("PermanentAugmentButton"));
         Assert.That(uxml, Does.Contain("TheaterButton"));
         // CTA
         Assert.That(uxml, Does.Contain("QuickBattleButton"));
         Assert.That(uxml, Does.Contain("ExpeditionButton"));
-        // Modal Templates — 7 (Squad/Recruit/Equipment/Passive/PermAugment/Inventory/Roster)
+        // Modal Templates — 8 (Squad/Recruit/Equipment/Passive/PermAugment/Inventory/Roster/Compendium)
         Assert.That(uxml, Does.Contain("SquadBuilderTemplate"));
         Assert.That(uxml, Does.Contain("RecruitTemplate"));
         Assert.That(uxml, Does.Contain("EquipmentRefitTemplate"));
@@ -53,6 +54,7 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("PermanentAugmentTemplate"));
         Assert.That(uxml, Does.Contain("InventoryTemplate"));
         Assert.That(uxml, Does.Contain("RosterTemplate"));
+        Assert.That(uxml, Does.Contain("CompendiumTemplate"));
         // 옛 V1/V2 element 폐기 검증
         Assert.That(uxml, Does.Not.Contain("RealmSummaryLabel"));
         Assert.That(uxml, Does.Not.Contain("NpcEntry_Dalmok"));      // V2 NPC entry — 코드 build로 대체

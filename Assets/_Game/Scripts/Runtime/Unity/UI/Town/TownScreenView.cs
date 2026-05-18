@@ -36,6 +36,8 @@ public sealed class TownScreenView
     private readonly Label _ledgerTitleLabel;
     private readonly Button _rosterButton;
     private readonly Label _rosterEntryLabel;
+    private readonly Button _compendiumButton;
+    private readonly Label _compendiumEntryLabel;
     private readonly Button _squadBuilderButton;
     private readonly Label _squadBuilderEntryLabel;
     private readonly Button _permanentAugmentButton;
@@ -79,6 +81,8 @@ public sealed class TownScreenView
         _ledgerTitleLabel = Require<Label>(root, "LedgerTitleLabel");
         _rosterButton = Require<Button>(root, "RosterButton");
         _rosterEntryLabel = Require<Label>(root, "RosterEntryLabel");
+        _compendiumButton = Require<Button>(root, "CompendiumButton");
+        _compendiumEntryLabel = Require<Label>(root, "CompendiumEntryLabel");
         _squadBuilderButton = Require<Button>(root, "SquadBuilderButton");
         _squadBuilderEntryLabel = Require<Label>(root, "SquadBuilderEntryLabel");
         _permanentAugmentButton = Require<Button>(root, "PermanentAugmentButton");
@@ -110,6 +114,7 @@ public sealed class TownScreenView
     }
 
     public void BindRosterOpen(Action open) => _rosterButton.clicked += open;
+    public void BindCompendiumOpen(Action open) => _compendiumButton.clicked += open;
     public void BindSquadBuilderOpen(Action open) => _squadBuilderButton.clicked += open;
     public void BindPermanentAugmentOpen(Action open) => _permanentAugmentButton.clicked += open;
     public void BindTheaterOpen(Action open) => _theaterButton.clicked += open;
@@ -137,6 +142,7 @@ public sealed class TownScreenView
 
         _ledgerTitleLabel.text = state.LedgerTitle;
         _rosterEntryLabel.text = state.RosterEntryLabel;
+        _compendiumEntryLabel.text = state.CompendiumEntryLabel;
         _squadBuilderEntryLabel.text = state.SquadBuilderEntryLabel;
         _permanentAugmentEntryLabel.text = state.PermanentAugmentEntryLabel;
         _theaterEntryLabel.text = state.TheaterEntryLabel;

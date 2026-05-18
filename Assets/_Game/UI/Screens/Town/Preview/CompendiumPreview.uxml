@@ -1,0 +1,40 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="CompendiumPreview.uss" />
+    <ui:VisualElement name="CompendiumRoot" class="cmp-root" style="display: none;">
+        <ui:VisualElement class="cmp-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="cmp-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement class="cmp-frame sm-modal-frame sm-modal-frame--parchment sm-modal-anim">
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="cmp-header">
+                <ui:VisualElement class="cmp-header__copy" picking-mode="Ignore">
+                    <ui:Label name="CompendiumTitle" class="cmp-title" />
+                    <ui:Label name="CompendiumSubtitle" class="cmp-subtitle" />
+                </ui:VisualElement>
+                <ui:Button name="CompendiumCloseButton" class="cmp-close sm-cta sm-cta--inline sm-cta--secondary" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="CompendiumTabRow" class="cmp-tabs" />
+
+            <ui:VisualElement class="cmp-body">
+                <ui:ScrollView name="CompendiumEntryScroll" class="cmp-entry-scroll">
+                    <ui:VisualElement name="CompendiumEntryList" class="cmp-entry-list" />
+                </ui:ScrollView>
+
+                <ui:VisualElement class="cmp-detail">
+                    <ui:VisualElement name="CompendiumDetailIcon" class="cmp-detail__icon" picking-mode="Ignore" />
+                    <ui:Label name="CompendiumDetailTitle" class="cmp-detail__title" />
+                    <ui:Label name="CompendiumDetailSubtitle" class="cmp-detail__subtitle" />
+                    <ui:Label name="CompendiumDetailDescription" class="cmp-detail__description" />
+                    <ui:Label name="CompendiumDetailHook" class="cmp-detail__hook" />
+                    <ui:VisualElement name="CompendiumDetailMetrics" class="cmp-detail__metrics" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
