@@ -34,6 +34,10 @@ public sealed record CompendiumSkillViewState(
     string StatusLabel,
     string IconId,
     string VfxHookId,
+    string VfxFamilyLabel,
+    string VfxSkinLabel,
+    string AnimationLabel,
+    string CueSequenceLabel,
     string VfxPreviewStyle,
     Texture2D? IconSprite,
     bool IsSelected);

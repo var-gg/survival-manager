@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Content;
 using UnityEngine;
@@ -394,7 +395,32 @@ internal sealed class SkillSchemaRule : DefinitionSchemaRule<SkillDefinitionAsse
             ContentValidationIssueFactory.AddError(issues, "skill.vfx_hook_required", "Skill VfxHookId is required as the pre-VFX catalog handshake.", assetPath);
         }
 
-        foreach (var status in skill.AppliedStatuses.Where(status => status != null))
+        var presentation = SkillPresentationProfileResolver.Resolve(
+            skill.Id,
+            (SkillKind)skill.Kind,
+            skill.DamageType switch
+            {
+                DamageTypeValue.Magical => DamageType.Magical,
+                DamageTypeValue.Healing => DamageType.Healing,
+                DamageTypeValue.True => DamageType.True,
+                _ => DamageType.Physical,
+            },
+            (SkillDelivery)skill.Delivery,
+            skill.SlotKind switch
+            {
+                SkillSlotKindValue.UtilityActive => CompiledSkillSlots.UtilityActive,
+                SkillSlotKindValue.Passive => CompiledSkillSlots.Passive,
+                SkillSlotKindValue.Support => CompiledSkillSlots.Support,
+                _ => CompiledSkillSlots.CoreActive,
+            },
+            skill.AppliedStatuses?.Count(status => status != null && !string.IsNullOrWhiteSpace(status.StatusId)) ?? 0,
+            skill.CleanseProfileId ?? string.Empty);
+        if (!presentation.IsResolved)
+        {
+            ContentValidationIssueFactory.AddError(issues, "skill.presentation_mapping", "Skill presentation family/skin/gesture/cue sequence must resolve before VFX authoring.", assetPath);
+        }
+
+        foreach (var status in skill.AppliedStatuses?.Where(status => status != null) ?? Enumerable.Empty<StatusApplicationRule>())
         {
             ContentDefinitionSchemaRuleSupport.ValidateStatusApplicationRule(status, assetPath, issues);
         }

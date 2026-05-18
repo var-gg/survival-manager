@@ -200,13 +200,17 @@ public record BattleSkillSpec(
     bool PunishCluster = false,
     bool AllowsEliteFocusCap = false,
     string IconId = "",
-    string VfxHookId = "")
+    string VfxHookId = "",
+    BattleSkillPresentationProfile? PresentationProfile = null)
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
 
     public ActionSlotKind EffectiveSlotKind => ResolvedSlotKind;
 
     public bool UsesEnergy => ActivationModel == ActivationModel.Energy;
+
+    public BattleSkillPresentationProfile EffectivePresentation
+        => PresentationProfile ?? BattleSkillPresentationProfile.Default;
 }
 
 public sealed record StatusApplicationSpec(

@@ -19,6 +19,28 @@ internal static class SkillConverter
     internal static BattleSkillSpec BuildSkillSpec(SkillDefinitionAsset skill)
     {
         var fallback = ResolveRecruitSkillFallback(skill);
+        var slotKind = ResolveSlotKind(skill.SlotKind);
+        var damageType = ResolveDamageType(skill.DamageType);
+        var delivery = (SkillDelivery)skill.Delivery;
+        var appliedStatuses = Enumerate(skill.AppliedStatuses)
+            .Where(rule => rule != null && !string.IsNullOrWhiteSpace(rule.StatusId))
+            .Select(rule => new StatusApplicationSpec(
+                string.IsNullOrWhiteSpace(rule.Id) ? $"{skill.Id}:{rule.StatusId}" : rule.Id,
+                rule.StatusId,
+                rule.DurationSeconds,
+                rule.Magnitude,
+                Math.Max(1, rule.MaxStacks),
+                rule.RefreshDurationOnReapply))
+            .ToList();
+        var effectFamilyId = string.IsNullOrWhiteSpace(skill.EffectFamilyId) ? fallback.EffectFamilyId : skill.EffectFamilyId;
+        var presentationProfile = SkillPresentationProfileResolver.Resolve(
+            skill.Id,
+            (SkillKind)skill.Kind,
+            damageType,
+            delivery,
+            slotKind,
+            appliedStatuses.Count,
+            skill.CleanseProfileId ?? string.Empty);
         IReadOnlyList<string> recruitNativeTags = ExtractTagIds(skill.RecruitNativeTags);
         if (recruitNativeTags.Count == 0)
         {
@@ -43,21 +65,9 @@ internal static class SkillConverter
             (SkillKind)skill.Kind,
             skill.Power,
             skill.Range,
-            skill.SlotKind switch
-            {
-                SkillSlotKindValue.UtilityActive => CompiledSkillSlots.UtilityActive,
-                SkillSlotKindValue.Passive => CompiledSkillSlots.Passive,
-                SkillSlotKindValue.Support => CompiledSkillSlots.Support,
-                _ => CompiledSkillSlots.CoreActive,
-            },
+            slotKind,
             ExtractTagIds(skill.CompileTags),
-            skill.DamageType switch
-            {
-                DamageTypeValue.Magical => DamageType.Magical,
-                DamageTypeValue.Healing => DamageType.Healing,
-                DamageTypeValue.True => DamageType.True,
-                _ => DamageType.Physical,
-            },
+            damageType,
             skill.PowerFlat,
             skill.PhysCoeff,
             skill.MagCoeff,
@@ -74,24 +84,9 @@ internal static class SkillConverter
             ExtractTagIds(skill.SupportBlockedTags),
             ExtractTagIds(skill.RequiredWeaponTags),
             ExtractTagIds(skill.RequiredClassTags),
-            Enumerate(skill.AppliedStatuses)
-                .Where(rule => rule != null && !string.IsNullOrWhiteSpace(rule.StatusId))
-                .Select(rule => new StatusApplicationSpec(
-                    string.IsNullOrWhiteSpace(rule.Id) ? $"{skill.Id}:{rule.StatusId}" : rule.Id,
-                    rule.StatusId,
-                    rule.DurationSeconds,
-                    rule.Magnitude,
-                    Math.Max(1, rule.MaxStacks),
-                    rule.RefreshDurationOnReapply))
-                .ToList(),
+            appliedStatuses,
             skill.CleanseProfileId ?? string.Empty,
-            CompiledSkillSlots.ToActionSlotKind(skill.SlotKind switch
-            {
-                SkillSlotKindValue.UtilityActive => CompiledSkillSlots.UtilityActive,
-                SkillSlotKindValue.Passive => CompiledSkillSlots.Passive,
-                SkillSlotKindValue.Support => CompiledSkillSlots.Support,
-                _ => CompiledSkillSlots.CoreActive,
-            }),
+            CompiledSkillSlots.ToActionSlotKind(slotKind),
             skill.ActivationModel,
             skill.Lane,
             skill.LockRule,
@@ -100,14 +95,15 @@ internal static class SkillConverter
             CloneEffects(skill.Effects),
             CloneSummonProfile(skill.SummonProfile),
             Mathf.Clamp01(skill.InterruptRefundScalar),
-            string.IsNullOrWhiteSpace(skill.EffectFamilyId) ? fallback.EffectFamilyId : skill.EffectFamilyId,
+            effectFamilyId,
             string.IsNullOrWhiteSpace(skill.MutuallyExclusiveGroupId) ? fallback.MutuallyExclusiveGroupId : skill.MutuallyExclusiveGroupId,
             recruitNativeTags,
             recruitPlanTags,
             recruitScoutTags,
             BuildGovernanceSummary(skill.BudgetCard),
             IconId: string.IsNullOrWhiteSpace(skill.IconId) ? $"skill_icon_{StripPrefix(skill.Id, "skill_")}" : skill.IconId,
-            VfxHookId: string.IsNullOrWhiteSpace(skill.VfxHookId) ? $"vfx.{skill.Id}" : skill.VfxHookId);
+            VfxHookId: string.IsNullOrWhiteSpace(skill.VfxHookId) ? $"vfx.{skill.Id}" : skill.VfxHookId,
+            PresentationProfile: presentationProfile);
     }
 
     internal static BattleBasicAttackSpec BuildBasicAttackSpec(UnitArchetypeDefinition definition)
@@ -312,6 +308,28 @@ internal static class SkillConverter
         }
 
         return tags.Where(tag => !string.IsNullOrWhiteSpace(tag)).ToArray();
+    }
+
+    private static string ResolveSlotKind(SkillSlotKindValue slotKind)
+    {
+        return slotKind switch
+        {
+            SkillSlotKindValue.UtilityActive => CompiledSkillSlots.UtilityActive,
+            SkillSlotKindValue.Passive => CompiledSkillSlots.Passive,
+            SkillSlotKindValue.Support => CompiledSkillSlots.Support,
+            _ => CompiledSkillSlots.CoreActive,
+        };
+    }
+
+    private static DamageType ResolveDamageType(DamageTypeValue damageType)
+    {
+        return damageType switch
+        {
+            DamageTypeValue.Magical => DamageType.Magical,
+            DamageTypeValue.Healing => DamageType.Healing,
+            DamageTypeValue.True => DamageType.True,
+            _ => DamageType.Physical,
+        };
     }
 
     private static string StripPrefix(string value, string prefix)

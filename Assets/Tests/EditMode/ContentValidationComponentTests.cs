@@ -182,6 +182,25 @@ public sealed class ContentValidationComponentTests
     }
 
     [Test]
+    public void SkillSchemaRule_ResolvesPresentationMappingForPilotSkill()
+    {
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_ember_arrow";
+        skill.NameKey = "content.skill.ember_arrow.name";
+        skill.DescriptionKey = "content.skill.ember_arrow.desc";
+        skill.IconId = "skill_icon_ember_arrow";
+        skill.VfxHookId = "vfx.skill_ember_arrow";
+        skill.Kind = SkillKindValue.Strike;
+        skill.DamageType = DamageTypeValue.Physical;
+        skill.Delivery = SkillDeliveryValue.Projectile;
+
+        var issues = new List<ContentValidationIssue>();
+        new SkillSchemaRule().Validate(new ValidationAssetDescriptor(skill, "Assets/skill_ember_arrow.asset", ValidationAssetSourceKind.Explicit, skill.GetType()), EmptyCatalog(), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Does.Not.Contain("skill.presentation_mapping"));
+    }
+
+    [Test]
     public void FactionIsolationValidator_FlagsSynergyLeak()
     {
         var site = Own(ScriptableObject.CreateInstance<ExpeditionSiteDefinition>());

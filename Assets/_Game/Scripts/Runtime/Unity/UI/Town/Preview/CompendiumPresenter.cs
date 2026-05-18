@@ -157,6 +157,7 @@ public sealed class CompendiumPresenter : ICompendiumActions
                         ?? Array.Empty<string>();
         var statuses = skill.AppliedStatuses?.Where(status => !string.IsNullOrWhiteSpace(status.StatusId)).ToArray()
                        ?? Array.Empty<StatusApplicationSpec>();
+        var presentation = skill.EffectivePresentation;
 
         return new CompendiumSkillViewState(
             Id: skill.Id,
@@ -176,7 +177,11 @@ public sealed class CompendiumPresenter : ICompendiumActions
                 : string.Join(", ", statuses.Select(FormatStatusApplication)),
             IconId: string.IsNullOrWhiteSpace(skill.IconId) ? "-" : skill.IconId,
             VfxHookId: string.IsNullOrWhiteSpace(skill.VfxHookId) ? "-" : skill.VfxHookId,
-            VfxPreviewStyle: ResolveVfxPreviewStyle(skill, statuses),
+            VfxFamilyLabel: presentation.Family.ToString(),
+            VfxSkinLabel: presentation.Skin.ToString(),
+            AnimationLabel: presentation.Gesture.ToString(),
+            CueSequenceLabel: presentation.CueSequence.ToString(),
+            VfxPreviewStyle: ResolveVfxPreviewStyle(presentation),
             IconSprite: _iconResolver.ResolveSkill(skill.Id),
             IsSelected: string.Equals(skill.Id, selectedId, StringComparison.Ordinal));
     }
@@ -287,7 +292,7 @@ public sealed class CompendiumPresenter : ICompendiumActions
             Title: skill.Name,
             Subtitle: $"{skill.SlotLabel} / {skill.ClassLabel}",
             Description: skill.Description,
-            HookLabel: $"VFX: {skill.VfxHookId}",
+            HookLabel: $"VFX: {skill.VfxHookId} / {skill.VfxFamilyLabel} / {skill.VfxSkinLabel}",
             IconSprite: skill.IconSprite,
             VfxPreview: BuildSkillVfxPreview(skill),
             Metrics: new[]
@@ -300,6 +305,10 @@ public sealed class CompendiumPresenter : ICompendiumActions
                 new CompendiumMetricViewState("Power", skill.PowerLabel),
                 new CompendiumMetricViewState("Cooldown", skill.CooldownLabel),
                 new CompendiumMetricViewState("Status", skill.StatusLabel),
+                new CompendiumMetricViewState("VFX Family", skill.VfxFamilyLabel),
+                new CompendiumMetricViewState("VFX Skin", skill.VfxSkinLabel),
+                new CompendiumMetricViewState("Animation", skill.AnimationLabel),
+                new CompendiumMetricViewState("Cue", skill.CueSequenceLabel),
             });
     }
 
@@ -390,7 +399,7 @@ public sealed class CompendiumPresenter : ICompendiumActions
             ReplayLabel: Localize("ui.town.compendium.vfx.replay", "Replay"),
             HookId: skill.VfxHookId,
             StyleKey: skill.VfxPreviewStyle,
-            Caption: Localize("ui.town.compendium.vfx.caption", "Hook-based showcase preview"));
+            Caption: $"{Localize("ui.town.compendium.vfx.caption", "Hook-based showcase preview")} / {skill.VfxFamilyLabel} / {skill.VfxSkinLabel} / {skill.CueSequenceLabel}");
     }
 
     private static CompendiumVfxPreviewViewState EmptyVfxPreview()
@@ -472,40 +481,19 @@ public sealed class CompendiumPresenter : ICompendiumActions
         };
     }
 
-    private static string ResolveVfxPreviewStyle(BattleSkillSpec skill, IReadOnlyList<StatusApplicationSpec> statuses)
+    private static string ResolveVfxPreviewStyle(BattleSkillPresentationProfile presentation)
     {
-        if (skill.DamageType == DamageType.Healing || skill.Kind == SkillKind.Heal || skill.HealCoeff > 0f)
+        return presentation.Family switch
         {
-            return "heal";
-        }
-
-        if (skill.Kind == SkillKind.Shield)
-        {
-            return "guard";
-        }
-
-        if (skill.Kind == SkillKind.Buff || skill.Delivery == SkillDelivery.Aura)
-        {
-            return "aura";
-        }
-
-        if (skill.Kind == SkillKind.Debuff || statuses.Count > 0)
-        {
-            return "control";
-        }
-
-        if (skill.Delivery is SkillDelivery.Nova or SkillDelivery.Zone or SkillDelivery.Trap
-            || skill.AreaEffectFamily != BattleAreaEffectFamily.SingleTarget)
-        {
-            return "area";
-        }
-
-        if (skill.Delivery is SkillDelivery.Projectile or SkillDelivery.Ranged)
-        {
-            return skill.DamageType == DamageType.Magical ? "arcane" : "projectile";
-        }
-
-        return skill.DamageType == DamageType.Magical ? "arcane" : "melee";
+            SkillPresentationFamily.Heal => "heal",
+            SkillPresentationFamily.Shield => "guard",
+            SkillPresentationFamily.Aura or SkillPresentationFamily.PassiveProc => "aura",
+            SkillPresentationFamily.Debuff => "control",
+            SkillPresentationFamily.Nova or SkillPresentationFamily.Zone or SkillPresentationFamily.Trap => "area",
+            SkillPresentationFamily.Projectile or SkillPresentationFamily.Ranged => presentation.Skin == SkillPresentationSkin.Arcane || presentation.Skin == SkillPresentationSkin.EchoArcane ? "arcane" : "projectile",
+            SkillPresentationFamily.Reposition => "area",
+            _ => presentation.Skin == SkillPresentationSkin.Arcane || presentation.Skin == SkillPresentationSkin.EchoArcane ? "arcane" : "melee",
+        };
     }
 
     private static string FormatNumber(float value)

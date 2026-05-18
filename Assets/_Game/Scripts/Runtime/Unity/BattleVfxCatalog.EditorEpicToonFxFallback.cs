@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using SM.Combat.Model;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,6 +30,13 @@ public sealed partial class BattleVfxCatalog
         AddEntry(catalog, BattlePresentationCueType.GuardEnter, "Assets/Epic Toon FX/Prefabs/Combat/Shield/ShieldSoftBlue.prefab", BattleActorSocketId.Telegraph, 1.7f, new Vector3(0f, 0.08f, 0f), Vector3.zero, Vector3.one * 0.78f, false);
         AddEntry(catalog, BattlePresentationCueType.RepositionStart, "Assets/Epic Toon FX/Prefabs/Environment/Dust/DustDirtyPoofSoft.prefab", BattleActorSocketId.FeetRing, 1.0f, Vector3.zero, Vector3.zero, Vector3.one * 0.46f, false);
         AddEntry(catalog, BattlePresentationCueType.DeathStart, "Assets/Epic Toon FX/Prefabs/Combat/Death/Souls/SoulGenericDeath.prefab", BattleActorSocketId.Center, 1.7f, Vector3.zero, Vector3.zero, Vector3.one * 0.62f, false);
+        AddEntry(catalog, BattlePresentationCueType.ActionCommitSkill, "Assets/Epic Toon FX/Prefabs/Combat/Sword/Wave/SwordWaveBlue.prefab", BattleActorSocketId.ProjectileOrigin, 1.25f, new Vector3(0f, 0.08f, 0.05f), Vector3.zero, Vector3.one * 0.58f, false, presentationFamily: SkillPresentationFamily.Melee, presentationSkin: SkillPresentationSkin.GuardSteel);
+        AddEntry(catalog, BattlePresentationCueType.ActionCommitSkill, "Assets/Epic Toon FX/Prefabs/Combat/Missiles/FireballSoft/FireballSoftMissileFire.prefab", BattleActorSocketId.ProjectileOrigin, 1.45f, new Vector3(0f, 0.08f, 0.05f), Vector3.zero, Vector3.one * 0.54f, false, BattleAnimationSemantic.BowShot, SkillPresentationFamily.Projectile, SkillPresentationSkin.Fire);
+        AddEntry(catalog, BattlePresentationCueType.ActionCommitSkill, "Assets/Epic Toon FX/Prefabs/Combat/Missiles/MagicSoft/MagicMissileSoftBlue.prefab", BattleActorSocketId.ProjectileOrigin, 1.45f, new Vector3(0f, 0.08f, 0.05f), Vector3.zero, Vector3.one * 0.58f, false, BattleAnimationSemantic.ProjectileCast, SkillPresentationFamily.Debuff, SkillPresentationSkin.EchoArcane);
+        AddEntry(catalog, BattlePresentationCueType.ActionCommitHeal, "Assets/Epic Toon FX/Prefabs/Interactive/Healing/HealOnceBurst.prefab", BattleActorSocketId.Cast, 1.55f, new Vector3(0f, 0.08f, 0f), Vector3.zero, Vector3.one * 0.72f, false, presentationFamily: SkillPresentationFamily.Heal, presentationSkin: SkillPresentationSkin.HealGold);
+        AddEntry(catalog, BattlePresentationCueType.GuardEnter, "Assets/Epic Toon FX/Prefabs/Combat/Shield/ShieldSoftBlue.prefab", BattleActorSocketId.Telegraph, 1.8f, new Vector3(0f, 0.08f, 0f), Vector3.zero, Vector3.one * 0.82f, false, BattleAnimationSemantic.GuardPose, SkillPresentationFamily.Shield, SkillPresentationSkin.GuardSteel);
+        AddEntry(catalog, BattlePresentationCueType.RepositionStart, "Assets/Epic Toon FX/Prefabs/Environment/Dust/DustDirtyPoofSoft.prefab", BattleActorSocketId.FeetRing, 1.0f, Vector3.zero, Vector3.zero, Vector3.one * 0.48f, false, BattleAnimationSemantic.DashEngage, SkillPresentationFamily.Reposition, SkillPresentationSkin.FrostGlass);
+        AddEntry(catalog, BattlePresentationCueType.ActionCommitSkill, "Assets/Epic Toon FX/Prefabs/Combat/Magic/Field/MagicFieldBlue.prefab", BattleActorSocketId.Telegraph, 1.7f, new Vector3(0f, 0.04f, 0f), Vector3.zero, Vector3.one * 0.62f, false, presentationFamily: SkillPresentationFamily.Zone, presentationSkin: SkillPresentationSkin.FrostGlass);
 
         _editorEpicToonFxFallbackCatalog = catalog.HasAnyEntry() ? catalog : null;
         return _editorEpicToonFxFallbackCatalog;
@@ -44,7 +52,9 @@ public sealed partial class BattleVfxCatalog
         Vector3 localEulerAngles,
         Vector3 localScale,
         bool parentToSocket,
-        BattleAnimationSemantic animationSemantic = BattleAnimationSemantic.None)
+        BattleAnimationSemantic animationSemantic = BattleAnimationSemantic.None,
+        SkillPresentationFamily presentationFamily = SkillPresentationFamily.Any,
+        SkillPresentationSkin presentationSkin = SkillPresentationSkin.Any)
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
         if (prefab == null)
@@ -52,7 +62,7 @@ public sealed partial class BattleVfxCatalog
             return;
         }
 
-        catalog.SetEntry(cueType, prefab, socketId, lifetimeSeconds, localOffset, localEulerAngles, localScale, parentToSocket, animationSemantic);
+        catalog.SetEntry(cueType, prefab, socketId, lifetimeSeconds, localOffset, localEulerAngles, localScale, parentToSocket, animationSemantic, presentationFamily, presentationSkin);
     }
 }
 #endif

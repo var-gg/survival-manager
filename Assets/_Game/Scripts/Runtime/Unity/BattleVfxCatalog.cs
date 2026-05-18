@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SM.Combat.Model;
 using UnityEngine;
 
 namespace SM.Unity;
@@ -69,6 +70,20 @@ public sealed partial class BattleVfxCatalog : ScriptableObject
         return TryResolve(cue.CueType, out entry);
     }
 
+    public bool TryResolve(
+        BattlePresentationCue cue,
+        BattleSkillPresentationProfile presentation,
+        out BattleVfxCatalogEntry entry)
+    {
+        var semantic = ResolveAnimationSemantic(presentation.Gesture);
+        if (TryResolvePresentation(cue.CueType, presentation.Family, presentation.Skin, semantic, out entry))
+        {
+            return true;
+        }
+
+        return TryResolve(cue, out entry);
+    }
+
     public void SetEntry(
         BattlePresentationCueType cueType,
         GameObject prefab,
@@ -78,9 +93,15 @@ public sealed partial class BattleVfxCatalog : ScriptableObject
         Vector3 localEulerAngles,
         Vector3 localScale,
         bool parentToSocket,
-        BattleAnimationSemantic animationSemantic = BattleAnimationSemantic.None)
+        BattleAnimationSemantic animationSemantic = BattleAnimationSemantic.None,
+        SkillPresentationFamily presentationFamily = SkillPresentationFamily.Any,
+        SkillPresentationSkin presentationSkin = SkillPresentationSkin.Any)
     {
-        var existing = entries.Find(entry => entry.CueType == cueType && entry.AnimationSemantic == animationSemantic);
+        var existing = entries.Find(entry =>
+            entry.CueType == cueType
+            && entry.AnimationSemantic == animationSemantic
+            && entry.PresentationFamily == presentationFamily
+            && entry.PresentationSkin == presentationSkin);
         if (existing == null)
         {
             entries.Add(new BattleVfxCatalogEntry(
@@ -92,11 +113,13 @@ public sealed partial class BattleVfxCatalog : ScriptableObject
                 localEulerAngles,
                 localScale,
                 parentToSocket,
-                animationSemantic));
+                animationSemantic,
+                presentationFamily,
+                presentationSkin));
             return;
         }
 
-        existing.Configure(prefab, socketId, lifetimeSeconds, localOffset, localEulerAngles, localScale, parentToSocket, animationSemantic);
+        existing.Configure(prefab, socketId, lifetimeSeconds, localOffset, localEulerAngles, localScale, parentToSocket, animationSemantic, presentationFamily, presentationSkin);
     }
 
     private bool HasAnyEntry()
@@ -110,6 +133,68 @@ public sealed partial class BattleVfxCatalog : ScriptableObject
         }
 
         return false;
+    }
+
+    private bool TryResolvePresentation(
+        BattlePresentationCueType cueType,
+        SkillPresentationFamily family,
+        SkillPresentationSkin skin,
+        BattleAnimationSemantic semantic,
+        out BattleVfxCatalogEntry entry)
+    {
+        if (FindPresentationEntry(cueType, family, skin, semantic, out entry))
+        {
+            return true;
+        }
+
+        if (FindPresentationEntry(cueType, family, skin, BattleAnimationSemantic.None, out entry))
+        {
+            return true;
+        }
+
+        if (FindPresentationEntry(cueType, family, SkillPresentationSkin.Any, semantic, out entry))
+        {
+            return true;
+        }
+
+        return FindPresentationEntry(cueType, family, SkillPresentationSkin.Any, BattleAnimationSemantic.None, out entry);
+    }
+
+    private bool FindPresentationEntry(
+        BattlePresentationCueType cueType,
+        SkillPresentationFamily family,
+        SkillPresentationSkin skin,
+        BattleAnimationSemantic semantic,
+        out BattleVfxCatalogEntry entry)
+    {
+        foreach (var candidate in entries)
+        {
+            if (candidate != null
+                && candidate.CueType == cueType
+                && candidate.PresentationFamily == family
+                && candidate.PresentationSkin == skin
+                && candidate.AnimationSemantic == semantic
+                && candidate.Prefab != null)
+            {
+                entry = candidate;
+                return true;
+            }
+        }
+
+        entry = null!;
+        return false;
+    }
+
+    private static BattleAnimationSemantic ResolveAnimationSemantic(SkillPresentationGesture gesture)
+    {
+        return gesture switch
+        {
+            SkillPresentationGesture.BowShot => BattleAnimationSemantic.BowShot,
+            SkillPresentationGesture.ProjectileCast => BattleAnimationSemantic.ProjectileCast,
+            SkillPresentationGesture.GuardPose => BattleAnimationSemantic.GuardPose,
+            SkillPresentationGesture.Reposition => BattleAnimationSemantic.DashEngage,
+            _ => BattleAnimationSemantic.None,
+        };
     }
 }
 
@@ -125,6 +210,8 @@ public sealed class BattleVfxCatalogEntry
     [SerializeField] private Vector3 localScale = Vector3.one;
     [SerializeField] private bool parentToSocket;
     [SerializeField] private BattleAnimationSemantic animationSemantic = BattleAnimationSemantic.None;
+    [SerializeField] private SkillPresentationFamily presentationFamily = SkillPresentationFamily.Any;
+    [SerializeField] private SkillPresentationSkin presentationSkin = SkillPresentationSkin.Any;
 
     public BattleVfxCatalogEntry(
         BattlePresentationCueType cueType,
@@ -135,10 +222,12 @@ public sealed class BattleVfxCatalogEntry
         Vector3 localEulerAngles,
         Vector3 localScale,
         bool parentToSocket,
-        BattleAnimationSemantic animationSemantic = BattleAnimationSemantic.None)
+        BattleAnimationSemantic animationSemantic = BattleAnimationSemantic.None,
+        SkillPresentationFamily presentationFamily = SkillPresentationFamily.Any,
+        SkillPresentationSkin presentationSkin = SkillPresentationSkin.Any)
     {
         this.cueType = cueType;
-        Configure(prefab, socketId, lifetimeSeconds, localOffset, localEulerAngles, localScale, parentToSocket, animationSemantic);
+        Configure(prefab, socketId, lifetimeSeconds, localOffset, localEulerAngles, localScale, parentToSocket, animationSemantic, presentationFamily, presentationSkin);
     }
 
     public BattlePresentationCueType CueType => cueType;
@@ -150,6 +239,8 @@ public sealed class BattleVfxCatalogEntry
     public Vector3 LocalScale => localScale;
     public bool ParentToSocket => parentToSocket;
     public BattleAnimationSemantic AnimationSemantic => animationSemantic;
+    public SkillPresentationFamily PresentationFamily => presentationFamily;
+    public SkillPresentationSkin PresentationSkin => presentationSkin;
 
     public void Configure(
         GameObject configuredPrefab,
@@ -159,7 +250,9 @@ public sealed class BattleVfxCatalogEntry
         Vector3 configuredLocalEulerAngles,
         Vector3 configuredLocalScale,
         bool configuredParentToSocket,
-        BattleAnimationSemantic configuredAnimationSemantic = BattleAnimationSemantic.None)
+        BattleAnimationSemantic configuredAnimationSemantic = BattleAnimationSemantic.None,
+        SkillPresentationFamily configuredPresentationFamily = SkillPresentationFamily.Any,
+        SkillPresentationSkin configuredPresentationSkin = SkillPresentationSkin.Any)
     {
         prefab = configuredPrefab;
         socketId = configuredSocketId;
@@ -169,5 +262,7 @@ public sealed class BattleVfxCatalogEntry
         localScale = configuredLocalScale == Vector3.zero ? Vector3.one : configuredLocalScale;
         parentToSocket = configuredParentToSocket;
         animationSemantic = configuredAnimationSemantic;
+        presentationFamily = configuredPresentationFamily;
+        presentationSkin = configuredPresentationSkin;
     }
 }

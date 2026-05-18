@@ -175,6 +175,63 @@ public sealed class BattleVfxCatalogTests
     }
 
     [Test]
+    public void Catalog_ResolvesPresentationSpecificEntryBeforeGenericCueEntry()
+    {
+        var genericPrefab = new GameObject("GenericSkillPrefab");
+        var fireProjectilePrefab = new GameObject("FireProjectileSkillPrefab");
+        var catalog = ScriptableObject.CreateInstance<BattleVfxCatalog>();
+
+        try
+        {
+            catalog.SetEntry(
+                BattlePresentationCueType.ActionCommitSkill,
+                genericPrefab,
+                BattleActorSocketId.ProjectileOrigin,
+                0.5f,
+                Vector3.zero,
+                Vector3.zero,
+                Vector3.one,
+                parentToSocket: false);
+
+            catalog.SetEntry(
+                BattlePresentationCueType.ActionCommitSkill,
+                fireProjectilePrefab,
+                BattleActorSocketId.ProjectileOrigin,
+                0.5f,
+                Vector3.zero,
+                Vector3.zero,
+                Vector3.one,
+                parentToSocket: false,
+                animationSemantic: BattleAnimationSemantic.BowShot,
+                presentationFamily: SkillPresentationFamily.Projectile,
+                presentationSkin: SkillPresentationSkin.Fire);
+
+            var profile = new BattleSkillPresentationProfile(
+                SkillPresentationFamily.Projectile,
+                SkillPresentationSkin.Fire,
+                SkillPresentationGesture.BowShot,
+                SkillPresentationCueSequence.ProjectileImpact);
+
+            var resolved = catalog.TryResolve(
+                new BattlePresentationCue(BattlePresentationCueType.ActionCommitSkill, 1, "actor"),
+                profile,
+                out var entry);
+
+            Assert.That(resolved, Is.True);
+            Assert.That(entry.Prefab, Is.SameAs(fireProjectilePrefab));
+            Assert.That(entry.PresentationFamily, Is.EqualTo(SkillPresentationFamily.Projectile));
+            Assert.That(entry.PresentationSkin, Is.EqualTo(SkillPresentationSkin.Fire));
+            Assert.That(entry.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BowShot));
+        }
+        finally
+        {
+            Object.DestroyImmediate(catalog);
+            Object.DestroyImmediate(fireProjectilePrefab);
+            Object.DestroyImmediate(genericPrefab);
+        }
+    }
+
+    [Test]
     public void Surface_SkipsBasicAttackWindupMagicCharge()
     {
         var root = new GameObject("Wrapper");
