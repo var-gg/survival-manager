@@ -84,9 +84,8 @@ public static class FirstPlayableRuntimeSceneBinder
                 ValidateScreenScene<TownScreenController>(scene, "TownRuntimePanelHost", "TownScreenController", controller => controller.EnsureRuntimeControls());
                 break;
 
-            case SceneNames.Expedition:
-                ValidateScreenScene<ExpeditionScreenController>(scene, "ExpeditionRuntimePanelHost", "ExpeditionScreenController", controller => controller.EnsureRuntimeControls());
-                break;
+            // SceneNames.Expedition은 decision-expedition-screen-deprecation-atlas-absorption (2026-05-18)으로
+            // 폐기. AtlasScreenController.ContinueToExpedition이 Battle/Reward로 직진입한다.
 
             case SceneNames.Atlas:
                 ValidateAtlas(scene);

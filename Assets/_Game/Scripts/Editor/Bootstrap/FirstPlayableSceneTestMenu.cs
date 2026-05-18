@@ -27,7 +27,7 @@ public static class FirstPlayableSceneTestMenu
     private const int FramesBeforeAutoAdvance = 30; // 약 0.5초 — bootstrap + scene binder 안정화
 
     private const string StepTown = "town";
-    private const string StepExpedition = "expedition";
+    private const string StepAtlas = "atlas";
 
     static FirstPlayableSceneTestMenu()
     {
@@ -43,10 +43,10 @@ public static class FirstPlayableSceneTestMenu
         OpenBootAndEnterPlay();
     }
 
-    [MenuItem("SM/Expedition 테스트", false, 6)]
-    public static void PlayExpedition()
+    [MenuItem("SM/Atlas 테스트", false, 6)]
+    public static void PlayAtlas()
     {
-        SessionState.SetString(TargetStepKey, StepExpedition);
+        SessionState.SetString(TargetStepKey, StepAtlas);
         SessionState.SetInt(FramesWaitedKey, 0);
         OpenBootAndEnterPlay();
     }
@@ -106,17 +106,17 @@ public static class FirstPlayableSceneTestMenu
                 Debug.Log("[FirstPlayableSceneTest] Town으로 자동 진입.");
                 break;
 
-            case StepExpedition:
-                // Town을 거쳐서 Expedition으로 — Town presenter의 정상 시작 path를 그대로 따른다.
+            case StepAtlas:
+                // ExpeditionScreen은 Atlas로 흡수됨 — Town exit checkpoint 후 Atlas surface로 직접 진입한다.
                 root.SessionState.BeginNewExpedition();
                 var checkpoint = root.SaveProfile(SessionCheckpointKind.TownExit);
                 if (!checkpoint.IsSuccessful)
                 {
-                    Debug.LogError($"[FirstPlayableSceneTest] Expedition checkpoint 실패: {checkpoint.Message}");
+                    Debug.LogError($"[FirstPlayableSceneTest] Atlas checkpoint 실패: {checkpoint.Message}");
                     return;
                 }
-                root.SceneFlow.GoToExpedition();
-                Debug.Log("[FirstPlayableSceneTest] Expedition으로 자동 진입 (Town 거치지 않음 — checkpoint만 처리).");
+                root.SceneFlow.GoToAtlas();
+                Debug.Log("[FirstPlayableSceneTest] Atlas로 자동 진입 (Town 거치지 않음 — checkpoint만 처리).");
                 break;
         }
     }

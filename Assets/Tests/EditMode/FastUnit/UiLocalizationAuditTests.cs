@@ -13,7 +13,7 @@ public sealed class UiLocalizationAuditTests
     private static readonly string[] ScreenUxmlPaths =
     {
         Path.Combine("Assets", "_Game", "UI", "Screens", "Town", "TownScreen.uxml"),
-        Path.Combine("Assets", "_Game", "UI", "Screens", "Expedition", "ExpeditionScreen.uxml"),
+        // ExpeditionScreen.uxml — decision-expedition-screen-deprecation-atlas-absorption로 폐기.
         Path.Combine("Assets", "_Game", "UI", "Screens", "Battle", "BattleScreen.uxml"),
         Path.Combine("Assets", "_Game", "UI", "Screens", "Reward", "RewardScreen.uxml"),
     };
@@ -24,7 +24,9 @@ public sealed class UiLocalizationAuditTests
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "BattleScreenController.cs"),
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Town", "TownScreenPresenter.cs"),
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Town", "TownCharacterSheetFormatter.cs"),
-        Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Expedition", "ExpeditionScreenPresenter.cs"),
+        // ExpeditionScreenPresenter.cs — decision-expedition-screen-deprecation-atlas-absorption로 폐기.
+        // 5-node site track UI는 Atlas screen으로 흡수, 관련 ui.expedition.* key는 Atlas Presenter가 사용.
+        Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Atlas", "AtlasScreenPresenter.cs"),
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Battle", "BattleScreenPresenter.cs"),
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Battle", "BattleUnitMetadataFormatter.cs"),
         Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "UI", "Reward", "RewardScreenPresenter.cs"),

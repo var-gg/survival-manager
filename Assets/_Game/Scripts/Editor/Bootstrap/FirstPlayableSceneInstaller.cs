@@ -19,7 +19,7 @@ namespace SM.Editor.Bootstrap;
 public static class FirstPlayableSceneInstaller
 {
     private const string ScenesRoot = "Assets/_Game/Scenes";
-    private static readonly string[] OrderedSceneNames = { "Boot", "Town", "Atlas", "Expedition", "Battle", "Reward" };
+    private static readonly string[] OrderedSceneNames = { "Boot", "Town", "Atlas", "Battle", "Reward" };
 
     [MenuItem("SM/Internal/Recovery/Repair First Playable Scenes")]
     public static void RepairFirstPlayableScenes()
@@ -30,7 +30,7 @@ public static class FirstPlayableSceneInstaller
         RebuildBoot();
         RebuildTown();
         AtlasGrayboxAuthoringAssetUtility.EnsureAtlasScene();
-        RebuildExpedition();
+        // RebuildExpedition() — decision-expedition-screen-deprecation-atlas-absorption로 폐기.
         RebuildBattle();
         RebuildReward();
         EnsureBuildSettings();
@@ -109,24 +109,10 @@ public static class FirstPlayableSceneInstaller
         Save(scene);
     }
 
-    private static void RebuildExpedition()
-    {
-        var scene = CreateFreshScene("Expedition");
-        EnsureRootObject("SceneMarker_Expedition");
-        EnsureCamera("Main Camera", true, new Vector3(0f, 0f, -10f), Quaternion.identity);
-        EnsureEventSystem();
-
-        var runtimeRoot = EnsureRootObject("ExpeditionRuntimeRoot");
-        var host = EnsureRuntimePanelHost(runtimeRoot.transform, SceneNames.Expedition);
-        var controllerGo = CreateChild(runtimeRoot.transform, "ExpeditionScreenController");
-        var controller = EnsureComponent<ExpeditionScreenController>(controllerGo);
-        Bind(controller, new Dictionary<string, Object>
-        {
-            ["panelHost"] = host,
-        });
-
-        Save(scene);
-    }
+    // RebuildExpedition()은 decision-expedition-screen-deprecation-atlas-absorption (2026-05-18)으로 폐기.
+    // ExpeditionScreen UI surface는 Atlas screen으로 흡수됐고, AtlasScreenController.ContinueToExpedition이
+    // NextBattleOrAdvance 분기를 inline 처리해 Battle/Reward로 직진입한다. Expedition.unity scene file은
+    // build settings에서 제거되며 본 installer는 해당 scene을 더 이상 만들지 않는다.
 
     private static void RebuildBattle()
     {
@@ -231,7 +217,6 @@ public static class FirstPlayableSceneInstaller
             ["SM.Unity::SM.Unity.GameBootstrap"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/GameBootstrap.cs"),
             ["SM.Unity::SM.Unity.BootScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BootScreenController.cs"),
             ["SM.Unity::SM.Unity.TownScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/TownScreenController.cs"),
-            ["SM.Unity::SM.Unity.ExpeditionScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/ExpeditionScreenController.cs"),
             ["SM.Unity::SM.Unity.RewardScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/RewardScreenController.cs"),
             ["SM.Unity::SM.Unity.BattleScreenController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BattleScreenController.cs"),
             ["SM.Unity::SM.Unity.BattlePresentationController"] = ResolveScriptGuid("Assets/_Game/Scripts/Runtime/Unity/BattlePresentationController.cs"),
@@ -326,16 +311,7 @@ public static class FirstPlayableSceneInstaller
                     });
                 break;
 
-            case SceneNames.Expedition:
-                ValidateScene(
-                    SceneNames.Expedition,
-                    new[] { "SceneMarker_Expedition", "ExpeditionRuntimeRoot", "ExpeditionRuntimePanelHost", "ExpeditionScreenController", "Main Camera", "EventSystem" },
-                    new Dictionary<string, System.Type[]>
-                    {
-                        ["ExpeditionRuntimePanelHost"] = new[] { typeof(RuntimePanelHost), typeof(UIDocument) },
-                        ["ExpeditionScreenController"] = new[] { typeof(ExpeditionScreenController) },
-                    });
-                break;
+            // SceneNames.Expedition은 decision-expedition-screen-deprecation-atlas-absorption로 폐기.
 
             case SceneNames.Battle:
                 ValidateScene(

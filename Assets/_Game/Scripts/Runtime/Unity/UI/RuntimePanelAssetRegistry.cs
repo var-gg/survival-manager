@@ -45,13 +45,8 @@ public static class RuntimePanelAssetRegistry
                     0);
                 return true;
 
-            case SceneNames.Expedition:
-                descriptor = new RuntimePanelScreenDescriptor(
-                    "ExpeditionRuntimePanelHost",
-                    "Assets/_Game/UI/Screens/Expedition/ExpeditionScreen.uxml",
-                    "Assets/_Game/UI/Screens/Expedition/ExpeditionScreen.uss",
-                    0);
-                return true;
+            // SceneNames.Expedition은 decision-expedition-screen-deprecation-atlas-absorption로 폐기.
+            // ExpeditionScreen.uxml/.uss는 git 제거. Atlas screen이 site track UI surface를 흡수.
 
             case SceneNames.Atlas:
                 descriptor = new RuntimePanelScreenDescriptor(

@@ -7,6 +7,7 @@ using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Unity;
 using SM.Unity.UI;
+using SM.Unity.UI.Atlas;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -42,13 +43,13 @@ public sealed class SceneIntegrityTests
 
     [TestCase("Assets/_Game/Scenes/Boot.unity")]
     [TestCase("Assets/_Game/Scenes/Town.unity")]
-    [TestCase("Assets/_Game/Scenes/Expedition.unity")]
+    [TestCase("Assets/_Game/Scenes/Atlas.unity")]
     [TestCase("Assets/_Game/Scenes/Battle.unity")]
     [TestCase("Assets/_Game/Scenes/Reward.unity")]
     [TestCase("Assets/_Game/UI/Screens/Town/TownScreen.uxml")]
     [TestCase("Assets/_Game/UI/Screens/Town/TownScreen.uss")]
-    [TestCase("Assets/_Game/UI/Screens/Expedition/ExpeditionScreen.uxml")]
-    [TestCase("Assets/_Game/UI/Screens/Expedition/ExpeditionScreen.uss")]
+    [TestCase("Assets/_Game/UI/Screens/Atlas/AtlasScreen.uxml")]
+    [TestCase("Assets/_Game/UI/Screens/Atlas/AtlasScreen.uss")]
     [TestCase("Assets/_Game/UI/Screens/Battle/BattleScreen.uxml")]
     [TestCase("Assets/_Game/UI/Screens/Battle/BattleScreen.uss")]
     [TestCase("Assets/_Game/UI/Screens/Reward/RewardScreen.uxml")]
@@ -85,18 +86,18 @@ public sealed class SceneIntegrityTests
     }
 
     [Test]
-    public void ExpeditionScene_Saves_RuntimePanelHost_And_Controller()
+    public void AtlasScene_Saves_RuntimePanelHost_And_Controller()
     {
-        var scene = OpenScene("Expedition");
-        AssertComponent<RuntimePanelHost>(scene, "ExpeditionRuntimePanelHost");
-        AssertComponent<UIDocument>(scene, "ExpeditionRuntimePanelHost");
-        AssertComponent<ExpeditionScreenController>(scene, "ExpeditionScreenController");
+        var scene = OpenScene("Atlas");
+        AssertComponent<RuntimePanelHost>(scene, "AtlasRuntimePanelHost");
+        AssertComponent<UIDocument>(scene, "AtlasRuntimePanelHost");
+        AssertComponent<AtlasScreenController>(scene, "AtlasScreenController");
         AssertInputSystemEventSystem(scene);
         AssertSceneDoesNotContainComponent<StandaloneInputModule>(scene);
     }
 
     [TestCase("Town", "TownRuntimePanelHost")]
-    [TestCase("Expedition", "ExpeditionRuntimePanelHost")]
+    [TestCase("Atlas", "AtlasRuntimePanelHost")]
     public void EditModeSceneBinding_DoesNotCreate_GameSessionRoot(string sceneName, string hostObjectName)
     {
         var scene = OpenScene(sceneName);

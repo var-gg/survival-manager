@@ -79,9 +79,9 @@ public sealed class PlayModeSmokeTests
         }
 
         yield return OpenExpeditionThroughAtlas(town!);
-        var expedition = FindAny<ExpeditionScreenController>();
-        Assert.That(expedition, Is.Not.Null, BuildSceneDiagnostic("Expedition scene should contain ExpeditionScreenController after Start Expedition."));
-        expedition!.NextBattle();
+        var atlas = FindAny<AtlasScreenController>();
+        Assert.That(atlas, Is.Not.Null, BuildSceneDiagnostic("Atlas scene should contain AtlasScreenController after Start Expedition."));
+        atlas!.ContinueToExpedition();
 
         yield return WaitForScene(SceneNames.Battle);
         yield return WaitForComponent<BattleScreenController>();
@@ -166,14 +166,14 @@ public sealed class PlayModeSmokeTests
             yield return OpenExpeditionThroughAtlas(town!);
         }
 
-        var expedition = FindAny<ExpeditionScreenController>();
-        Assert.That(expedition, Is.Not.Null, BuildSceneDiagnostic("Expedition scene should contain ExpeditionScreenController at extract."));
+        var atlas = FindAny<AtlasScreenController>();
+        Assert.That(atlas, Is.Not.Null, BuildSceneDiagnostic("Atlas scene should contain AtlasScreenController at extract."));
         var selectedNode = root.SessionState.GetSelectedExpeditionNode();
         Assert.That(selectedNode, Is.Not.Null);
         Assert.That(selectedNode!.RequiresBattle, Is.False, "Final extract should be a non-battle settlement node.");
         Assert.That(selectedNode.Id, Is.EqualTo($"{siteId}:extract"));
 
-        expedition!.NextBattle();
+        atlas!.ContinueToExpedition();
 
         yield return WaitForScene(SceneNames.Reward);
         yield return WaitForComponent<RewardScreenController>();
@@ -280,9 +280,6 @@ public sealed class PlayModeSmokeTests
         Assert.That(atlasHost, Is.Not.Null, BuildSceneDiagnostic("Atlas scene should contain AtlasRuntimePanelHost before Expedition."));
         Assert.That(atlasHost!.Root.Q<Button>("atlas-continue-button"), Is.Not.Null, "Atlas should expose the continue handoff button.");
 
-        atlas!.ContinueToExpedition();
-        yield return WaitForScene(SceneNames.Expedition);
-        yield return WaitForComponent<ExpeditionScreenController>();
     }
 
     private static IEnumerator WaitForScene(string sceneName, float timeout = 8f)

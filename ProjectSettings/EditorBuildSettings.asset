@@ -7,22 +7,19 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/_Game/Scenes/Boot.unity
-    guid: 1d6b74596c4b3454189186f5d07f8a0f
+    guid: 7bd5d00365765134589eccf25d401697
   - enabled: 1
     path: Assets/_Game/Scenes/Town.unity
-    guid: 50fecf6c0d2deed4fb386c437d552728
+    guid: 755573872917a414496dc18c09f32881
   - enabled: 1
     path: Assets/_Game/Scenes/Atlas.unity
     guid: ffa101e3fbc30bc4c93d9dd307be2a29
   - enabled: 1
-    path: Assets/_Game/Scenes/Expedition.unity
-    guid: 7c0db7099defe09488723054f6671aeb
-  - enabled: 1
     path: Assets/_Game/Scenes/Battle.unity
-    guid: 72bb29ba7b3d5db43966ece84a12f1a3
+    guid: 31fd2bb22fea6b34987043c977fa575b
   - enabled: 1
     path: Assets/_Game/Scenes/Reward.unity
-    guid: 843883dc81fb69643a702ecf6657f8e7
+    guid: fcf03c4568b7eba498fbf590b81c733f
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 0f43c156295fff14685c4bf25f470f3d, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
