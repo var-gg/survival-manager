@@ -153,11 +153,15 @@ def extract_anchor_for_kind(pipeline_root: Path, kind: str) -> dict[str, str]:
             f"unknown kind '{kind}' — add mapping in KIND_TO_ANCHOR_FILE"
         )
     sub_path = pipeline_root / "style" / sub_filename
+    if not sub_path.is_file():
+        sub_path = pipeline_root / "working" / "style" / sub_filename
     if not common_path.is_file():
         raise FileNotFoundError(f"style-anchor-common not found: {common_path}")
     if not sub_path.is_file():
         raise FileNotFoundError(
-            f"style-anchor for kind '{kind}' not found: {sub_path}"
+            "style-anchor for kind "
+            f"'{kind}' not found. Hydrate the Pindoc-owned prompt source into "
+            f"{pipeline_root / 'working' / 'style' / sub_filename}."
         )
 
     common = _extract_blocks(common_path, ["STYLE BASELINE", "NEGATIVE COMMON"])

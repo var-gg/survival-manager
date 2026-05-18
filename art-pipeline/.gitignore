@@ -1,6 +1,11 @@
 output/
 inbox/
 working/
+style/style-anchor-ui-detail.md
+style/style-anchor-ui-mockup.md
+subjects/backgrounds/ui_compendium/dusk_v2.md
+subjects/ui_detail/
+subjects/ui_mockups/
 postprocess/__pycache__/
 scripts/__pycache__/
 postprocess/*.pyc
