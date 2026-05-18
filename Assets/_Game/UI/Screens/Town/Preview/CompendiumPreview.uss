@@ -225,6 +225,180 @@
     white-space: normal;
 }
 
+.cmp-vfx-stage {
+    height: 178px;
+    margin-top: 14px;
+    overflow: hidden;
+    position: relative;
+    background-color: rgba(9, 13, 28, 0.86);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.32);
+    border-right-color: rgba(230, 183, 81, 0.32);
+    border-top-color: rgba(230, 183, 81, 0.32);
+    border-bottom-color: rgba(230, 183, 81, 0.32);
+}
+
+.cmp-vfx-stage__grid {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(245, 234, 208, 0.03);
+}
+
+.cmp-vfx-node {
+    position: absolute;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.52);
+    border-right-color: rgba(245, 234, 208, 0.52);
+    border-top-color: rgba(245, 234, 208, 0.52);
+    border-bottom-color: rgba(245, 234, 208, 0.52);
+    border-top-left-radius: 999px;
+    border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px;
+    border-bottom-right-radius: 999px;
+}
+
+.cmp-vfx-node--caster {
+    background-color: rgba(87, 161, 255, 0.36);
+}
+
+.cmp-vfx-node--target {
+    background-color: rgba(255, 111, 99, 0.32);
+}
+
+.cmp-vfx-trace {
+    position: absolute;
+    background-color: rgba(255, 221, 128, 0.68);
+}
+
+.cmp-vfx-projectile,
+.cmp-vfx-burst,
+.cmp-vfx-pulse {
+    position: absolute;
+    border-top-left-radius: 999px;
+    border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px;
+    border-bottom-right-radius: 999px;
+}
+
+.cmp-vfx-projectile {
+    background-color: rgba(255, 233, 148, 0.88);
+}
+
+.cmp-vfx-burst {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(255, 233, 148, 0.82);
+    border-right-color: rgba(255, 233, 148, 0.82);
+    border-top-color: rgba(255, 233, 148, 0.82);
+    border-bottom-color: rgba(255, 233, 148, 0.82);
+    background-color: rgba(255, 122, 82, 0.18);
+}
+
+.cmp-vfx-pulse {
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(255, 233, 148, 0.52);
+    border-right-color: rgba(255, 233, 148, 0.52);
+    border-top-color: rgba(255, 233, 148, 0.52);
+    border-bottom-color: rgba(255, 233, 148, 0.52);
+}
+
+.cmp-vfx-caption {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 9px;
+    flex-direction: column;
+}
+
+.cmp-vfx-caption__title {
+    color: var(--sm-vellum);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.cmp-vfx-caption__body {
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    margin-top: 2px;
+    white-space: normal;
+}
+
+.cmp-vfx-replay {
+    align-self: flex-start;
+    margin-top: 8px;
+    min-width: 72px;
+}
+
+.cmp-vfx-stage--projectile .cmp-vfx-projectile,
+.cmp-vfx-stage--projectile .cmp-vfx-trace {
+    background-color: rgba(255, 216, 95, 0.82);
+}
+
+.cmp-vfx-stage--arcane .cmp-vfx-projectile,
+.cmp-vfx-stage--arcane .cmp-vfx-trace {
+    background-color: rgba(118, 212, 255, 0.82);
+}
+
+.cmp-vfx-stage--arcane .cmp-vfx-burst,
+.cmp-vfx-stage--control .cmp-vfx-burst {
+    border-left-color: rgba(148, 189, 255, 0.82);
+    border-right-color: rgba(148, 189, 255, 0.82);
+    border-top-color: rgba(148, 189, 255, 0.82);
+    border-bottom-color: rgba(148, 189, 255, 0.82);
+    background-color: rgba(89, 109, 205, 0.20);
+}
+
+.cmp-vfx-stage--area .cmp-vfx-burst,
+.cmp-vfx-stage--area .cmp-vfx-pulse {
+    border-left-color: rgba(255, 171, 88, 0.82);
+    border-right-color: rgba(255, 171, 88, 0.82);
+    border-top-color: rgba(255, 171, 88, 0.82);
+    border-bottom-color: rgba(255, 171, 88, 0.82);
+}
+
+.cmp-vfx-stage--heal .cmp-vfx-projectile,
+.cmp-vfx-stage--heal .cmp-vfx-trace,
+.cmp-vfx-stage--heal .cmp-vfx-burst {
+    background-color: rgba(92, 231, 163, 0.30);
+}
+
+.cmp-vfx-stage--heal .cmp-vfx-burst,
+.cmp-vfx-stage--heal .cmp-vfx-pulse {
+    border-left-color: rgba(116, 255, 190, 0.82);
+    border-right-color: rgba(116, 255, 190, 0.82);
+    border-top-color: rgba(116, 255, 190, 0.82);
+    border-bottom-color: rgba(116, 255, 190, 0.82);
+}
+
+.cmp-vfx-stage--guard .cmp-vfx-burst,
+.cmp-vfx-stage--guard .cmp-vfx-pulse,
+.cmp-vfx-stage--aura .cmp-vfx-burst,
+.cmp-vfx-stage--aura .cmp-vfx-pulse {
+    border-left-color: rgba(118, 204, 255, 0.82);
+    border-right-color: rgba(118, 204, 255, 0.82);
+    border-top-color: rgba(118, 204, 255, 0.82);
+    border-bottom-color: rgba(118, 204, 255, 0.82);
+}
+
+.cmp-vfx-stage--control .cmp-vfx-projectile,
+.cmp-vfx-stage--control .cmp-vfx-trace {
+    background-color: rgba(191, 125, 255, 0.72);
+}
+
 .cmp-detail__metrics {
     margin-top: 16px;
     flex-direction: column;

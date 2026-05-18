@@ -1128,6 +1128,18 @@ MonoBehaviour:
     m_Localized: "\uc2e4\ub8e8\uc5e3"
     m_Metadata:
       m_Items: []
+  - m_Id: 17541022661021713
+    m_Localized: "연출 미리보기"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021714
+    m_Localized: "재생"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021715
+    m_Localized: "VFX hook 쇼케이스"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

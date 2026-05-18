@@ -1101,6 +1101,18 @@ MonoBehaviour:
     m_Localized: "Silhouette"
     m_Metadata:
       m_Items: []
+  - m_Id: 17541022661021713
+    m_Localized: "VFX Preview"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021714
+    m_Localized: "Replay"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021715
+    m_Localized: "Hook-based showcase preview"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

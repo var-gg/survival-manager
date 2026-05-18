@@ -1055,6 +1055,18 @@ MonoBehaviour:
     m_Key: ui.town.compendium.character.locked
     m_Metadata:
       m_Items: []
+  - m_Id: 17541022661021713
+    m_Key: ui.town.compendium.vfx.preview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021714
+    m_Key: ui.town.compendium.vfx.replay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17541022661021715
+    m_Key: ui.town.compendium.vfx.caption
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

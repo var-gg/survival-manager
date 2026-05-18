@@ -395,6 +395,9 @@ public static class LocalizationFoundationBootstrap
             ["ui.town.compendium.character.locked_slot"] = ("슬롯 {0:00}", "Slot {0:00}", false),
             ["ui.town.compendium.character.unlocked"] = ("해금", "Unlocked", false),
             ["ui.town.compendium.character.locked"] = ("실루엣", "Silhouette", false),
+            ["ui.town.compendium.vfx.preview"] = ("연출 미리보기", "VFX Preview", false),
+            ["ui.town.compendium.vfx.replay"] = ("재생", "Replay", false),
+            ["ui.town.compendium.vfx.caption"] = ("VFX hook 쇼케이스", "Hook-based showcase preview", false),
         });
 
         AddOrUpdateEntries(new Dictionary<string, (string ko, string en, bool smart)>(StringComparer.Ordinal)

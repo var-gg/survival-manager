@@ -32,6 +32,21 @@
                     <ui:Label name="CompendiumDetailSubtitle" class="cmp-detail__subtitle" />
                     <ui:Label name="CompendiumDetailDescription" class="cmp-detail__description" />
                     <ui:Label name="CompendiumDetailHook" class="cmp-detail__hook" />
+                    <ui:VisualElement name="CompendiumVfxPreviewStage" class="cmp-vfx-stage">
+                        <ui:VisualElement class="cmp-vfx-stage__grid" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxCaster" class="cmp-vfx-node cmp-vfx-node--caster" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxTarget" class="cmp-vfx-node cmp-vfx-node--target" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxTrace" class="cmp-vfx-trace" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxProjectile" class="cmp-vfx-projectile" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxBurst" class="cmp-vfx-burst" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxPulseA" class="cmp-vfx-pulse cmp-vfx-pulse--a" picking-mode="Ignore" />
+                        <ui:VisualElement name="CompendiumVfxPulseB" class="cmp-vfx-pulse cmp-vfx-pulse--b" picking-mode="Ignore" />
+                        <ui:VisualElement class="cmp-vfx-caption" picking-mode="Ignore">
+                            <ui:Label name="CompendiumVfxPreviewTitle" class="cmp-vfx-caption__title" />
+                            <ui:Label name="CompendiumVfxPreviewCaption" class="cmp-vfx-caption__body" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Button name="CompendiumVfxReplayButton" class="cmp-vfx-replay sm-cta sm-cta--inline sm-cta--secondary" />
                     <ui:VisualElement name="CompendiumDetailMetrics" class="cmp-detail__metrics" />
                 </ui:VisualElement>
             </ui:VisualElement>

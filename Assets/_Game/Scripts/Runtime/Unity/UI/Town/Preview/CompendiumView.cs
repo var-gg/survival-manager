@@ -9,6 +9,7 @@ public interface ICompendiumActions
 {
     void SelectTab(CompendiumTab tab);
     void SelectEntry(string id);
+    void PlaySelectedPreview();
 }
 
 public sealed class CompendiumView
@@ -18,6 +19,7 @@ public sealed class CompendiumView
     private readonly VisualElement _entryList;
     private readonly VisualElement _detailIcon;
     private readonly VisualElement _detailMetrics;
+    private readonly CompendiumVfxPreviewView _vfxPreview;
     private readonly Label _title;
     private readonly Label _subtitle;
     private readonly Label _detailTitle;
@@ -25,6 +27,7 @@ public sealed class CompendiumView
     private readonly Label _detailDescription;
     private readonly Label _detailHook;
     private readonly Button _closeButton;
+    private readonly Button _vfxReplayButton;
 
     private ICompendiumActions? _actions;
 
@@ -37,6 +40,7 @@ public sealed class CompendiumView
         _entryList = Require<VisualElement>(root, "CompendiumEntryList");
         _detailIcon = Require<VisualElement>(root, "CompendiumDetailIcon");
         _detailMetrics = Require<VisualElement>(root, "CompendiumDetailMetrics");
+        _vfxPreview = new CompendiumVfxPreviewView(root);
         _title = Require<Label>(root, "CompendiumTitle");
         _subtitle = Require<Label>(root, "CompendiumSubtitle");
         _detailTitle = Require<Label>(root, "CompendiumDetailTitle");
@@ -44,11 +48,14 @@ public sealed class CompendiumView
         _detailDescription = Require<Label>(root, "CompendiumDetailDescription");
         _detailHook = Require<Label>(root, "CompendiumDetailHook");
         _closeButton = Require<Button>(root, "CompendiumCloseButton");
+        _vfxReplayButton = Require<Button>(root, "CompendiumVfxReplayButton");
     }
 
     public void Bind(ICompendiumActions actions)
     {
         _actions = actions ?? throw new ArgumentNullException(nameof(actions));
+        _vfxReplayButton.clicked -= HandleVfxReplayClicked;
+        _vfxReplayButton.clicked += HandleVfxReplayClicked;
     }
 
     public void BindClose(Action close)
@@ -190,6 +197,9 @@ public sealed class CompendiumView
         _detailSubtitle.text = detail.Subtitle;
         _detailDescription.text = detail.Description;
         _detailHook.text = detail.HookLabel;
+        _vfxReplayButton.text = detail.VfxPreview.ReplayLabel;
+        _vfxReplayButton.style.display = detail.VfxPreview.CanPreview ? DisplayStyle.Flex : DisplayStyle.None;
+        _vfxPreview.Render(detail.VfxPreview);
 
         _detailMetrics.Clear();
         foreach (var metric in detail.Metrics)
@@ -204,6 +214,11 @@ public sealed class CompendiumView
             row.Add(value);
             _detailMetrics.Add(row);
         }
+    }
+
+    private void HandleVfxReplayClicked()
+    {
+        _actions?.PlaySelectedPreview();
     }
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement

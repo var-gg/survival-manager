@@ -17,6 +17,7 @@ public sealed class CompendiumPresenter : ICompendiumActions
 
     private CompendiumTab _activeTab = CompendiumTab.Skills;
     private string _selectedEntryId = string.Empty;
+    private int _previewPlayToken;
 
     public CompendiumPresenter(
         GameSessionRoot root,
@@ -42,6 +43,11 @@ public sealed class CompendiumPresenter : ICompendiumActions
     public void Open()
     {
         _view.Open();
+        if (_activeTab == CompendiumTab.Skills)
+        {
+            _previewPlayToken++;
+        }
+
         Refresh();
     }
 
@@ -64,6 +70,11 @@ public sealed class CompendiumPresenter : ICompendiumActions
 
         _activeTab = tab;
         _selectedEntryId = string.Empty;
+        if (_activeTab == CompendiumTab.Skills)
+        {
+            _previewPlayToken++;
+        }
+
         Refresh();
     }
 
@@ -75,6 +86,22 @@ public sealed class CompendiumPresenter : ICompendiumActions
         }
 
         _selectedEntryId = id;
+        if (_activeTab == CompendiumTab.Skills)
+        {
+            _previewPlayToken++;
+        }
+
+        Refresh();
+    }
+
+    public void PlaySelectedPreview()
+    {
+        if (_activeTab != CompendiumTab.Skills)
+        {
+            return;
+        }
+
+        _previewPlayToken++;
         Refresh();
     }
 
@@ -149,6 +176,7 @@ public sealed class CompendiumPresenter : ICompendiumActions
                 : string.Join(", ", statuses.Select(FormatStatusApplication)),
             IconId: string.IsNullOrWhiteSpace(skill.IconId) ? "-" : skill.IconId,
             VfxHookId: string.IsNullOrWhiteSpace(skill.VfxHookId) ? "-" : skill.VfxHookId,
+            VfxPreviewStyle: ResolveVfxPreviewStyle(skill, statuses),
             IconSprite: _iconResolver.ResolveSkill(skill.Id),
             IsSelected: string.Equals(skill.Id, selectedId, StringComparison.Ordinal));
     }
@@ -261,6 +289,7 @@ public sealed class CompendiumPresenter : ICompendiumActions
             Description: skill.Description,
             HookLabel: $"VFX: {skill.VfxHookId}",
             IconSprite: skill.IconSprite,
+            VfxPreview: BuildSkillVfxPreview(skill),
             Metrics: new[]
             {
                 new CompendiumMetricViewState("Id", skill.Id),
@@ -287,6 +316,7 @@ public sealed class CompendiumPresenter : ICompendiumActions
             Description: status.Description,
             HookLabel: $"VFX: {status.VfxCueId}",
             IconSprite: null,
+            VfxPreview: EmptyVfxPreview(),
             Metrics: new[]
             {
                 new CompendiumMetricViewState("Id", status.Id),
@@ -307,6 +337,7 @@ public sealed class CompendiumPresenter : ICompendiumActions
             Description: synergy.Description,
             HookLabel: $"Breakpoints: {synergy.TierSummary}",
             IconSprite: null,
+            VfxPreview: EmptyVfxPreview(),
             Metrics: new[]
             {
                 new CompendiumMetricViewState("Id", synergy.Id),
@@ -330,6 +361,7 @@ public sealed class CompendiumPresenter : ICompendiumActions
                 : "Locked character slot. The compendium shows the slot without revealing story or portrait content.",
             HookLabel: character.UnlockLabel,
             IconSprite: null,
+            VfxPreview: EmptyVfxPreview(),
             Metrics: new[]
             {
                 new CompendiumMetricViewState("Id", character.Id),
@@ -345,7 +377,32 @@ public sealed class CompendiumPresenter : ICompendiumActions
             Description: string.Empty,
             HookLabel: string.Empty,
             IconSprite: null,
+            VfxPreview: EmptyVfxPreview(),
             Metrics: Array.Empty<CompendiumMetricViewState>());
+    }
+
+    private CompendiumVfxPreviewViewState BuildSkillVfxPreview(CompendiumSkillViewState skill)
+    {
+        return new CompendiumVfxPreviewViewState(
+            CanPreview: true,
+            PlayToken: _previewPlayToken,
+            Title: Localize("ui.town.compendium.vfx.preview", "VFX Preview"),
+            ReplayLabel: Localize("ui.town.compendium.vfx.replay", "Replay"),
+            HookId: skill.VfxHookId,
+            StyleKey: skill.VfxPreviewStyle,
+            Caption: Localize("ui.town.compendium.vfx.caption", "Hook-based showcase preview"));
+    }
+
+    private static CompendiumVfxPreviewViewState EmptyVfxPreview()
+    {
+        return new CompendiumVfxPreviewViewState(
+            CanPreview: false,
+            PlayToken: 0,
+            Title: string.Empty,
+            ReplayLabel: string.Empty,
+            HookId: string.Empty,
+            StyleKey: string.Empty,
+            Caption: string.Empty);
     }
 
     private string ResolveSelectedId(IEnumerable<string> ids)
@@ -413,6 +470,42 @@ public sealed class CompendiumPresenter : ICompendiumActions
             CompiledSkillSlots.Support => "Support",
             _ => slot,
         };
+    }
+
+    private static string ResolveVfxPreviewStyle(BattleSkillSpec skill, IReadOnlyList<StatusApplicationSpec> statuses)
+    {
+        if (skill.DamageType == DamageType.Healing || skill.Kind == SkillKind.Heal || skill.HealCoeff > 0f)
+        {
+            return "heal";
+        }
+
+        if (skill.Kind == SkillKind.Shield)
+        {
+            return "guard";
+        }
+
+        if (skill.Kind == SkillKind.Buff || skill.Delivery == SkillDelivery.Aura)
+        {
+            return "aura";
+        }
+
+        if (skill.Kind == SkillKind.Debuff || statuses.Count > 0)
+        {
+            return "control";
+        }
+
+        if (skill.Delivery is SkillDelivery.Nova or SkillDelivery.Zone or SkillDelivery.Trap
+            || skill.AreaEffectFamily != BattleAreaEffectFamily.SingleTarget)
+        {
+            return "area";
+        }
+
+        if (skill.Delivery is SkillDelivery.Projectile or SkillDelivery.Ranged)
+        {
+            return skill.DamageType == DamageType.Magical ? "arcane" : "projectile";
+        }
+
+        return skill.DamageType == DamageType.Magical ? "arcane" : "melee";
     }
 
     private static string FormatNumber(float value)

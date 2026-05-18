@@ -34,6 +34,7 @@ public sealed record CompendiumSkillViewState(
     string StatusLabel,
     string IconId,
     string VfxHookId,
+    string VfxPreviewStyle,
     Texture2D? IconSprite,
     bool IsSelected);
 
@@ -68,7 +69,17 @@ public sealed record CompendiumDetailViewState(
     string Description,
     string HookLabel,
     Texture2D? IconSprite,
+    CompendiumVfxPreviewViewState VfxPreview,
     IReadOnlyList<CompendiumMetricViewState> Metrics);
+
+public sealed record CompendiumVfxPreviewViewState(
+    bool CanPreview,
+    int PlayToken,
+    string Title,
+    string ReplayLabel,
+    string HookId,
+    string StyleKey,
+    string Caption);
 
 public sealed record CompendiumViewState(
     string Title,
