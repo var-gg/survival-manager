@@ -19,6 +19,27 @@ public interface ICompendiumActions
 
 public sealed class CompendiumView
 {
+    private static readonly HashSet<string> DetailKeywordSkipLabels = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "ID",
+        "Icon",
+        "Prefab",
+        "Animation",
+        "Cue",
+        "아이콘",
+        "프리팹",
+        "동작",
+        "큐",
+    };
+
+    private static readonly HashSet<string> DetailKeywordSkipValues = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "-",
+        "0",
+        "None",
+        "없음",
+    };
+
     private readonly VisualElement _root;
     private readonly VisualElement _tabRow;
     private readonly TextField _searchField;
@@ -30,6 +51,7 @@ public sealed class CompendiumView
     private readonly Label _resultSummary;
     private readonly VisualElement _entryList;
     private readonly VisualElement _detailIcon;
+    private readonly VisualElement _detailKeywordRow;
     private readonly VisualElement _detailMetrics;
     private readonly CompendiumVfxPreviewView _vfxPreview;
     private readonly Label _title;
@@ -61,6 +83,7 @@ public sealed class CompendiumView
         _resultSummary = Require<Label>(root, "CompendiumResultSummary");
         _entryList = Require<VisualElement>(root, "CompendiumEntryList");
         _detailIcon = Require<VisualElement>(root, "CompendiumDetailIcon");
+        _detailKeywordRow = Require<VisualElement>(root, "CompendiumDetailKeywordRow");
         _detailMetrics = Require<VisualElement>(root, "CompendiumDetailMetrics");
         _vfxPreview = new CompendiumVfxPreviewView(root);
         _title = Require<Label>(root, "CompendiumTitle");
@@ -69,6 +92,7 @@ public sealed class CompendiumView
         _detailSubtitle = Require<Label>(root, "CompendiumDetailSubtitle");
         _detailDescription = Require<Label>(root, "CompendiumDetailDescription");
         _detailHook = Require<Label>(root, "CompendiumDetailHook");
+        _detailHook.style.display = DisplayStyle.None;
         _closeButton = Require<Button>(root, "CompendiumCloseButton");
         _vfxReplayButton = Require<Button>(root, "CompendiumVfxReplayButton");
 
@@ -396,6 +420,7 @@ public sealed class CompendiumView
         _vfxReplayButton.style.display = detail.VfxPreview.CanPreview ? DisplayStyle.Flex : DisplayStyle.None;
         _vfxPreview.Render(detail.VfxPreview);
 
+        RenderDetailKeywordRow(detail);
         _detailMetrics.Clear();
         foreach (var metric in detail.Metrics)
         {
@@ -409,6 +434,26 @@ public sealed class CompendiumView
             row.Add(value);
             _detailMetrics.Add(row);
         }
+    }
+
+    private void RenderDetailKeywordRow(CompendiumDetailViewState detail)
+    {
+        _detailKeywordRow.Clear();
+        foreach (var metric in detail.Metrics
+                     .Where(IsDetailKeywordMetric)
+                     .Take(6))
+        {
+            var chip = new Label($"{metric.Label}: {metric.Value}");
+            chip.AddToClassList("cmp-detail__keyword");
+            _detailKeywordRow.Add(chip);
+        }
+    }
+
+    private static bool IsDetailKeywordMetric(CompendiumMetricViewState metric)
+    {
+        return !DetailKeywordSkipLabels.Contains(metric.Label)
+               && !string.IsNullOrWhiteSpace(metric.Value)
+               && !DetailKeywordSkipValues.Contains(metric.Value);
     }
 
     private void HandleVfxReplayClicked()

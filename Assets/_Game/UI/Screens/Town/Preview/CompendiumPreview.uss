@@ -30,11 +30,28 @@
 }
 
 .cmp-frame.sm-modal-frame--parchment {
-    background-color: rgba(17, 22, 42, 0.94);
+    background-color: rgba(11, 15, 31, 0.95);
     border-left-color: rgba(226, 181, 88, 0.86);
     border-right-color: rgba(226, 181, 88, 0.86);
     border-top-color: rgba(226, 181, 88, 0.86);
     border-bottom-color: rgba(226, 181, 88, 0.86);
+}
+
+.cmp-frame__wash {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    bottom: 10px;
+    background-color: rgba(245, 234, 208, 0.025);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.06);
+    border-right-color: rgba(245, 234, 208, 0.06);
+    border-top-color: rgba(245, 234, 208, 0.06);
+    border-bottom-color: rgba(245, 234, 208, 0.06);
 }
 
 .cmp-frame .sm-modal-frame__texture {
@@ -44,16 +61,50 @@
     border-bottom-color: rgba(230, 183, 81, 0.30);
 }
 
+.cmp-frame__inner-line {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.16);
+    border-right-color: rgba(230, 183, 81, 0.16);
+    border-top-color: rgba(230, 183, 81, 0.16);
+    border-bottom-color: rgba(230, 183, 81, 0.16);
+}
+
 .cmp-header {
     flex-direction: row;
     align-items: center;
-    padding-top: 16px;
-    padding-bottom: 14px;
-    padding-left: 24px;
+    padding-top: 14px;
+    padding-bottom: 13px;
+    padding-left: 22px;
     padding-right: 24px;
     border-bottom-width: 1px;
     border-bottom-color: rgba(230, 183, 81, 0.28);
     background-color: rgba(15, 20, 40, 0.96);
+}
+
+.cmp-header__seal {
+    width: 48px;
+    height: 48px;
+    margin-right: 14px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Ornaments/ornament-vine-flourish.svg");
+    -unity-background-image-tint-color: rgba(230, 183, 81, 0.88);
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(200, 147, 42, 0.12);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.42);
+    border-right-color: rgba(230, 183, 81, 0.42);
+    border-top-color: rgba(230, 183, 81, 0.42);
+    border-bottom-color: rgba(230, 183, 81, 0.42);
 }
 
 .cmp-header__copy {
@@ -189,12 +240,70 @@
     flex-direction: row;
     flex-grow: 1;
     padding: 16px;
-    background-color: rgba(9, 13, 28, 0.52);
+    background-color: rgba(5, 8, 20, 0.62);
+}
+
+.cmp-catalog-shell {
+    width: 478px;
+    margin-right: 14px;
+    padding: 8px;
+    background-color: rgba(11, 16, 35, 0.74);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.34);
+    border-right-color: rgba(230, 183, 81, 0.34);
+    border-top-color: rgba(230, 183, 81, 0.34);
+    border-bottom-color: rgba(230, 183, 81, 0.34);
 }
 
 .cmp-entry-scroll {
-    width: 470px;
-    margin-right: 14px;
+    width: 460px;
+    flex-grow: 1;
+    background-color: rgba(5, 8, 20, 0.35);
+}
+
+.cmp-entry-scroll .unity-scroll-view__vertical-scroller {
+    width: 12px;
+    background-color: rgba(5, 8, 20, 0.72);
+}
+
+.cmp-entry-scroll .unity-scroller {
+    background-color: rgba(5, 8, 20, 0.72);
+}
+
+.cmp-entry-scroll .unity-scroller__slider {
+    background-color: rgba(230, 183, 81, 0.58);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.35);
+    border-right-color: rgba(245, 234, 208, 0.35);
+    border-top-color: rgba(245, 234, 208, 0.35);
+    border-bottom-color: rgba(245, 234, 208, 0.35);
+}
+
+.cmp-entry-scroll .unity-base-slider__tracker {
+    background-color: rgba(5, 8, 20, 0.82);
+}
+
+.cmp-entry-scroll .unity-base-slider__dragger {
+    background-color: rgba(230, 183, 81, 0.72);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.40);
+    border-right-color: rgba(245, 234, 208, 0.40);
+    border-top-color: rgba(245, 234, 208, 0.40);
+    border-bottom-color: rgba(245, 234, 208, 0.40);
+}
+
+.cmp-entry-scroll .unity-scroller__low-button,
+.cmp-entry-scroll .unity-scroller__high-button {
+    display: none;
 }
 
 .cmp-entry-list {
@@ -204,12 +313,12 @@
 .cmp-entry-list--skill-grid {
     flex-direction: column;
     align-content: flex-start;
-    width: 452px;
+    width: 442px;
 }
 
 .cmp-skill-row {
     flex-direction: row;
-    width: 452px;
+    width: 442px;
     flex-shrink: 0;
 }
 
@@ -220,7 +329,7 @@
 }
 
 .cmp-skill-card {
-    width: 218px;
+    width: 213px;
     min-height: 186px;
     flex-direction: column;
     flex-grow: 0;
@@ -231,7 +340,7 @@
     padding-bottom: 9px;
     padding-left: 10px;
     padding-right: 10px;
-    background-color: rgba(24, 31, 61, 0.88);
+    background-color: rgba(20, 27, 55, 0.92);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -243,11 +352,19 @@
 }
 
 .cmp-skill-card--selected {
-    background-color: rgba(198, 140, 37, 0.26);
+    background-color: rgba(198, 140, 37, 0.30);
     border-left-color: var(--sm-gold-200);
     border-right-color: var(--sm-gold-200);
     border-top-color: var(--sm-gold-200);
     border-bottom-color: var(--sm-gold-200);
+}
+
+.cmp-skill-card:hover {
+    background-color: rgba(32, 42, 78, 0.94);
+    border-left-color: rgba(230, 183, 81, 0.58);
+    border-right-color: rgba(230, 183, 81, 0.58);
+    border-top-color: rgba(230, 183, 81, 0.58);
+    border-bottom-color: rgba(230, 183, 81, 0.58);
 }
 
 .cmp-skill-card__top {
@@ -259,8 +376,16 @@
     width: 58px;
     height: 58px;
     margin-right: 9px;
-    background-color: rgba(245, 234, 208, 0.08);
+    background-color: rgba(245, 234, 208, 0.10);
     -unity-background-scale-mode: scale-to-fit;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.22);
+    border-right-color: rgba(230, 183, 81, 0.22);
+    border-top-color: rgba(230, 183, 81, 0.22);
+    border-bottom-color: rgba(230, 183, 81, 0.22);
 }
 
 .cmp-skill-card__headline {
@@ -551,7 +676,7 @@
 .cmp-detail {
     flex-grow: 1;
     padding: 18px;
-    background-color: rgba(14, 18, 35, 0.94);
+    background-color: rgba(9, 13, 28, 0.94);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -562,19 +687,79 @@
     border-bottom-color: rgba(230, 183, 81, 0.45);
 }
 
-.cmp-detail__icon {
-    width: 104px;
-    height: 104px;
+.cmp-panel-corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.48);
+    border-right-color: rgba(230, 183, 81, 0.48);
+    border-top-color: rgba(230, 183, 81, 0.48);
+    border-bottom-color: rgba(230, 183, 81, 0.48);
+}
+
+.cmp-panel-corner--tl {
+    left: 4px;
+    top: 4px;
+}
+
+.cmp-panel-corner--br {
+    right: 4px;
+    bottom: 4px;
+}
+
+.cmp-detail__top {
+    flex-direction: row;
+    height: 204px;
+    padding: 12px;
+    background-color: rgba(245, 234, 208, 0.035);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.22);
+    border-right-color: rgba(230, 183, 81, 0.22);
+    border-top-color: rgba(230, 183, 81, 0.22);
+    border-bottom-color: rgba(230, 183, 81, 0.22);
+}
+
+.cmp-detail__icon-shell {
+    width: 116px;
+    height: 116px;
+    margin-right: 14px;
     align-self: flex-start;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(245, 234, 208, 0.08);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.38);
+    border-right-color: rgba(230, 183, 81, 0.38);
+    border-top-color: rgba(230, 183, 81, 0.38);
+    border-bottom-color: rgba(230, 183, 81, 0.38);
+}
+
+.cmp-detail__icon {
+    width: 94px;
+    height: 94px;
     background-color: rgba(245, 234, 208, 0.06);
     -unity-background-scale-mode: scale-to-fit;
+}
+
+.cmp-detail__copy {
+    flex-grow: 1;
+    flex-direction: column;
 }
 
 .cmp-detail__title {
     color: var(--sm-vellum);
     font-size: 22px;
     -unity-font-style: bold;
-    margin-top: 14px;
     white-space: normal;
 }
 
@@ -588,23 +773,52 @@
 .cmp-detail__description {
     color: var(--sm-ink-2);
     font-size: 13px;
-    margin-top: 14px;
+    margin-top: 12px;
     white-space: normal;
 }
 
 .cmp-detail__hook {
+    display: none;
     color: var(--sm-ink-3);
     font-size: 11px;
     margin-top: 10px;
     white-space: normal;
 }
 
+.cmp-detail__keyword-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    min-height: 24px;
+}
+
+.cmp-detail__keyword {
+    margin-right: 6px;
+    margin-bottom: 5px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: var(--sm-gold-100);
+    font-size: 10px;
+    background-color: rgba(50, 40, 36, 0.76);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(230, 183, 81, 0.30);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+    white-space: normal;
+}
+
 .cmp-vfx-stage {
     height: 242px;
-    margin-top: 14px;
+    margin-top: 10px;
     overflow: hidden;
     position: relative;
-    background-color: rgba(6, 9, 20, 0.92);
+    background-color: rgba(4, 7, 16, 0.94);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -615,13 +829,55 @@
     border-bottom-color: rgba(230, 183, 81, 0.32);
 }
 
+.cmp-vfx-stage__floor {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 32px;
+    bottom: 0;
+    background-color: rgba(200, 147, 42, 0.035);
+}
+
 .cmp-vfx-stage__grid {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: rgba(245, 234, 208, 0.03);
+    background-color: rgba(245, 234, 208, 0.035);
+}
+
+.cmp-vfx-reticle {
+    position: absolute;
+    width: 92px;
+    height: 92px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.28);
+    border-right-color: rgba(230, 183, 81, 0.28);
+    border-top-color: rgba(230, 183, 81, 0.28);
+    border-bottom-color: rgba(230, 183, 81, 0.28);
+    border-top-left-radius: 999px;
+    border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px;
+    border-bottom-right-radius: 999px;
+    opacity: 0.72;
+}
+
+.cmp-vfx-reticle--caster {
+    left: 9%;
+    top: 38%;
+}
+
+.cmp-vfx-reticle--target {
+    right: 16%;
+    top: 38%;
+    border-left-color: rgba(255, 149, 102, 0.32);
+    border-right-color: rgba(255, 149, 102, 0.32);
+    border-top-color: rgba(255, 149, 102, 0.32);
+    border-bottom-color: rgba(255, 149, 102, 0.32);
 }
 
 .cmp-vfx-prefab-preview {
