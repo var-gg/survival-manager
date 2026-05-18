@@ -61,6 +61,8 @@ KIND_TO_ANCHOR_FILE = {
     "skill_icon": "style-anchor-icon.md",
     "passive_icon": "style-anchor-icon.md",
     "equipment_icon": "style-anchor-icon.md",
+    # UI detail asset family
+    "ui_detail_asset": "style-anchor-ui-detail.md",
     # cutscene
     "cutscene_cut": "style-anchor-cutscene.md",
 }
@@ -85,6 +87,7 @@ KIND_TO_REF_DIR = {
     "skill_icon": "icons",
     "passive_icon": "icons",
     "equipment_icon": "icons",
+    "ui_detail_asset": "ui_detail",
     "cutscene_cut": "cutscenes",
 }
 

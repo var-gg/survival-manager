@@ -716,6 +716,12 @@
     height: 204px;
     padding: 12px;
     background-color: rgba(245, 234, 208, 0.035);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/compendium_card_frame_dark_9slice.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.32;
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -819,6 +825,12 @@
     overflow: hidden;
     position: relative;
     background-color: rgba(4, 7, 16, 0.94);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/compendium_card_frame_dark_9slice.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.32;
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
