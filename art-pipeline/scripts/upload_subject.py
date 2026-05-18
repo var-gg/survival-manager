@@ -680,7 +680,7 @@ def main() -> int:
         final_path.parent.mkdir(parents=True, exist_ok=True)
         final_path.write_bytes(raw_path.read_bytes())
 
-    update_status(subject_path, "prompted", "rendered")
+    update_status(subject_path, str(fm.get("status") or "prompted"), "rendered")
 
     result = {
         "subject": fm["slug"],

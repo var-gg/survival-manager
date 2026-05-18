@@ -67,7 +67,7 @@ skill_bindings:
     duration: 1.2
     magnitude: 1
 style_seed: false
-status: blocked_style_seed_ref
+status: rendered
 ---
 
 # Ranger / Duelist Precision Bridge

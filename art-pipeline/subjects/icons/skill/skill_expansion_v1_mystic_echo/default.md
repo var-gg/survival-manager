@@ -64,7 +64,7 @@ skill_bindings:
     duration: 1.4
     magnitude: 1
 style_seed: false
-status: blocked_style_seed_ref
+status: rendered
 ---
 
 # Mystic Echo Savant

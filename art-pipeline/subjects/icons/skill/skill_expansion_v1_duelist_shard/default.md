@@ -58,7 +58,7 @@ skill_bindings:
     duration: 0
     magnitude: 4
 style_seed: false
-status: blocked_style_seed_ref
+status: rendered
 ---
 
 # Duelist Shardblade Passives

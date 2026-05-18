@@ -70,7 +70,7 @@ skill_bindings:
     duration: 2.5
     magnitude: 1
 style_seed: false
-status: blocked_style_seed_ref
+status: rendered
 ---
 
 # Ranger Prism / Ember Actives

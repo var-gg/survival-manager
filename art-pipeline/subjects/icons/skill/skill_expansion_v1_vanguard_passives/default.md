@@ -58,7 +58,7 @@ skill_bindings:
   damage: Magical
   statuses: []
 style_seed: false
-status: blocked_style_seed_ref
+status: rendered
 ---
 
 # Vanguard Guard / Pathfinder Passives

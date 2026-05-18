@@ -74,7 +74,7 @@ skill_bindings:
     duration: 2
     magnitude: 1
 style_seed: true
-status: prompted
+status: rendered
 ---
 
 # Expansion v1 Seed Style Mix

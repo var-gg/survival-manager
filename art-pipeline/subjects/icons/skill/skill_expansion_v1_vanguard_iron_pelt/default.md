@@ -64,7 +64,7 @@ skill_bindings:
   damage: Physical
   statuses: []
 style_seed: false
-status: blocked_style_seed_ref
+status: rendered
 ---
 
 # Vanguard Iron Pelt / Attrition

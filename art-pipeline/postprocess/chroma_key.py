@@ -59,8 +59,11 @@ def chroma_to_alpha(
     #    behind hair strands) untouched. Magic-wand fixes that.
     bg_mask = color_match
 
-    # 3) set background alpha to 0
+    # 3) set background alpha to 0 and clear its RGB before alpha feathering.
+    #    Otherwise the blurred alpha edge can reintroduce semi-transparent
+    #    magenta fringe around the icon silhouette.
     arr[bg_mask, 3] = 0
+    arr[bg_mask, :3] = 0
 
     # 4) chroma spill suppression on subject edge (magenta tint bleed)
     keep = ~bg_mask

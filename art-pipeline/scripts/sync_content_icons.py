@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import re
 from pathlib import Path
 from typing import Any
 
@@ -63,6 +65,34 @@ def normalize_icon(source: Path, target: Path, canvas_size: int, safe_box: int) 
     canvas.save(target, "PNG")
 
 
+def deterministic_guid(target: Path) -> str:
+    rel = target.relative_to(REPO_ROOT).as_posix()
+    return hashlib.md5(f"survival-manager:{rel}".encode("utf-8")).hexdigest()
+
+
+def ensure_unity_meta(target: Path) -> bool:
+    meta = target.with_name(f"{target.name}.meta")
+    if meta.is_file():
+        return False
+
+    template = next((path for path in sorted(target.parent.glob("*.png.meta")) if path != meta), None)
+    if template is None:
+        raise FileNotFoundError(f"no .png.meta template found in {target.parent}")
+
+    text = template.read_text(encoding="utf-8")
+    updated = re.sub(
+        r"^guid:\s*[0-9a-fA-F]{32}\s*$",
+        f"guid: {deterministic_guid(target)}",
+        text,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    if updated == text:
+        raise ValueError(f"{template}: missing guid line")
+    meta.write_text(updated, encoding="utf-8", newline="\n")
+    return True
+
+
 def iter_icons(catalog: dict[str, Any]) -> list[tuple[str, str, Path]]:
     icons = catalog.get("icons")
     if not isinstance(icons, dict):
@@ -100,6 +130,7 @@ def main() -> int:
     )
 
     written = 0
+    metas = 0
     for kind, icon_id, source in iter_icons(catalog):
         if not source.is_file():
             raise FileNotFoundError(source)
@@ -108,10 +139,12 @@ def main() -> int:
             print(f"[sync_content_icons] {source} -> {target}")
             continue
         normalize_icon(source, target, args.canvas_size, args.safe_box)
+        if ensure_unity_meta(target):
+            metas += 1
         written += 1
 
     if not args.dry_run:
-        print(f"[sync_content_icons] wrote {written} icons to {runtime_root}")
+        print(f"[sync_content_icons] wrote {written} icons to {runtime_root}; created {metas} meta files")
     return 0
 
 

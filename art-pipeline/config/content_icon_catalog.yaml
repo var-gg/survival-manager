@@ -10,8 +10,9 @@ policy:
     768px cells with 32px #FF00FF gutters.'
   single_icon_source: Single-icon subjects may use 1024x1024, but sheet generation
     is preferred for list work.
-  skill_source_ownership: Canonical skill icon PNGs live under art-pipeline/output/icons/skill/catalog_v2
-    and are one-to-one with authored SkillDefinitionAsset.IconId.
+  skill_source_ownership: Canonical authored skill icon PNGs live under art-pipeline/output/icons/skill/catalog_v2;
+    expansion-v1 backlog icons live under art-pipeline/output/icons/skill/expansion_v1
+    until their SkillDefinitionAsset content is authored.
   final_canvas: Sync output normalizes each icon to a 512x512 transparent PNG with
     the source centered inside a 448px safe box.
   chroma_contract: 'Source background must be flat #FF00FF from canvas edge to subject
@@ -129,6 +130,78 @@ icons:
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_vanguard_support_2.png
   - id: skill_icon_warden_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_warden_utility.png
+  - id: skill_icon_aegis_sentinel_oath
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_aegis_sentinel_oath.png
+  - id: skill_icon_aegis_linebreaker
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_aegis_linebreaker.png
+  - id: skill_icon_square_wall
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_square_wall.png
+  - id: skill_icon_aegis_intercept
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_aegis_intercept.png
+  - id: skill_icon_sentinel_oath
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_sentinel_oath.png
+  - id: skill_icon_lattice_bastion
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_lattice_bastion.png
+  - id: skill_icon_support_line_anchor
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_support_line_anchor.png
+  - id: skill_icon_iron_pelt_maul
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_iron_pelt_maul.png
+  - id: skill_icon_rusthide_charge
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_rusthide_charge.png
+  - id: skill_icon_iron_pelt_roar
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_iron_pelt_roar.png
+  - id: skill_icon_iron_hide_memory
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_iron_hide_memory.png
+  - id: skill_icon_pelt_last_stand
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_pelt_last_stand.png
+  - id: skill_icon_prism_lance
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_prism_lance.png
+  - id: skill_icon_ember_arrow
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_ember_arrow.png
+  - id: skill_icon_cinder_overrun
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_cinder_overrun.png
+  - id: skill_icon_refracting_snare
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_refracting_snare.png
+  - id: skill_icon_signal_flare
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_signal_flare.png
+  - id: skill_icon_ash_step
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_ash_step.png
+  - id: skill_icon_prism_sight
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_prism_sight.png
+  - id: skill_icon_heat_haze
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_heat_haze.png
+  - id: skill_icon_quick_kindling
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_quick_kindling.png
+  - id: skill_icon_glass_pathfinder
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_glass_pathfinder.png
+  - id: skill_icon_shardblade_sever
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_shardblade_sever.png
+  - id: skill_icon_mirror_cut
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_mirror_cut.png
+  - id: skill_icon_fracture_step
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_fracture_step.png
+  - id: skill_icon_riposte_angle
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_riposte_angle.png
+  - id: skill_icon_shard_memory
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_shard_memory.png
+  - id: skill_icon_edge_of_sentence
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_edge_of_sentence.png
+  - id: skill_icon_bloodless_form
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_bloodless_form.png
+  - id: skill_icon_echo_resonance
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_echo_resonance.png
+  - id: skill_icon_memory_tuning
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_memory_tuning.png
+  - id: skill_icon_phase_tether
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_phase_tether.png
+  - id: skill_icon_echo_archive
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_echo_archive.png
+  - id: skill_icon_lattice_listener
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_lattice_listener.png
+  - id: skill_icon_savant_last_word
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_savant_last_word.png
+  - id: skill_icon_support_resonance_cleanse
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_support_resonance_cleanse.png
   item:
   - id: item_icon_armor
     source: art-pipeline/output/icons/affix/affix_armor.png

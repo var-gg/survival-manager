@@ -9,6 +9,7 @@ icon_pipeline:
   cell_size: 768x768
   gutter: 32px #FF00FF
   output_dir: art-pipeline/output/icons/skill/expansion_v1
+  selected_dir: art-pipeline/selected/icons/skill/expansion_v1
   chroma_contract: Outside each symbol's 2-4 px dark outer stroke, every pixel must
     be flat #FF00FF with no shadow, blur, glow, particles, haze, or residue.
   first_sheet_ref_strategy: Use four existing character portrait outputs as style/color
