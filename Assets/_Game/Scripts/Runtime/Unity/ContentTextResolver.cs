@@ -49,6 +49,13 @@ public sealed class ContentTextResolver
             : skillId;
     }
 
+    public string GetSkillDescription(string skillId)
+    {
+        return _lookup.TryGetSkillDefinition(skillId, out var skill)
+            ? Localize(ContentLocalizationTables.Skills, skill.DescriptionKey, string.Empty, skillId)
+            : skillId;
+    }
+
     public string GetArchetypeName(string archetypeId)
     {
         return _lookup.TryGetArchetype(archetypeId, out var archetype)

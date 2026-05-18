@@ -128,6 +128,33 @@ public sealed class CharacterAxisLocalizationTests
     }
 
     [Test]
+    public void ContentTextResolver_ExposesSkillDescriptionThroughSkillTable()
+    {
+        var skill = ScriptableObject.CreateInstance<SkillDefinitionAsset>();
+        skill.Id = "skill_test_localized";
+        skill.NameKey = ContentLocalizationTables.BuildSkillNameKey(skill.Id);
+        skill.DescriptionKey = ContentLocalizationTables.BuildSkillDescriptionKey(skill.Id);
+        SetLegacyField(skill, "legacyDisplayName", "Legacy Skill Name");
+
+        var lookup = new FakeCombatContentLookup(
+            skills: new Dictionary<string, SkillDefinitionAsset> { [skill.Id] = skill });
+        var go = new GameObject("SkillTextResolver");
+        try
+        {
+            var localization = go.AddComponent<GameLocalizationController>();
+            var resolver = new ContentTextResolver(localization, lookup);
+
+            Assert.That(resolver.GetSkillName(skill.Id), Is.EqualTo("Legacy Skill Name"));
+            Assert.That(resolver.GetSkillDescription(skill.Id), Is.EqualTo(skill.Id));
+        }
+        finally
+        {
+            Object.DestroyImmediate(go);
+            Object.DestroyImmediate(skill);
+        }
+    }
+
+    [Test]
     public void BattleUnitMetadataFormatter_BuildsAxisSummaryFromCharacterHierarchy()
     {
         var race = ScriptableObject.CreateInstance<RaceDefinition>();
