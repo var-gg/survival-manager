@@ -201,6 +201,42 @@ MonoBehaviour:
   - mirror_cantor
   - pale_executor
   - rift_stalker
+  - skill_aegis_intercept
+  - skill_aegis_linebreaker
+  - skill_aegis_sentinel_oath
+  - skill_ash_step
+  - skill_bloodless_form
+  - skill_cinder_overrun
+  - skill_echo_archive
+  - skill_echo_resonance
+  - skill_edge_of_sentence
+  - skill_ember_arrow
+  - skill_fracture_step
+  - skill_glass_pathfinder
+  - skill_heat_haze
+  - skill_iron_hide_memory
+  - skill_iron_pelt_maul
+  - skill_iron_pelt_roar
+  - skill_lattice_bastion
+  - skill_lattice_listener
+  - skill_memory_tuning
+  - skill_mirror_cut
+  - skill_pelt_last_stand
+  - skill_phase_tether
+  - skill_prism_lance
+  - skill_prism_sight
+  - skill_quick_kindling
+  - skill_refracting_snare
+  - skill_riposte_angle
+  - skill_rusthide_charge
+  - skill_savant_last_word
+  - skill_sentinel_oath
+  - skill_shard_memory
+  - skill_shardblade_sever
+  - skill_signal_flare
+  - skill_square_wall
+  - support_line_anchor
+  - support_resonance_cleanse
   SynergyGrammar:
   - FamilyId: synergy_beastkin
     FamilyType: 0
