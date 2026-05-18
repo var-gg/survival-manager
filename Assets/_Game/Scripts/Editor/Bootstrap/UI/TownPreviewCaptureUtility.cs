@@ -8,14 +8,14 @@ using UnityEngine.UIElements;
 namespace SM.Editor.Bootstrap.UI;
 
 /// <summary>
-/// SM/Town Preview surface 캡쳐 유틸 — 9 surface를 UIDocument + PanelSettings.targetTexture로
+/// SM/Town Preview surface 캡쳐 유틸 — Town UI surface들을 UIDocument + PanelSettings.targetTexture로
 /// 오프스크린 RenderTexture에 렌더한 뒤 PNG로 저장. 디자인 검토 루프용.
 ///
 /// 핵심: OS 화면 픽셀(InternalEditorUtility.ReadScreenPixel)이 아니라 panel 자체를 RT에 렌더한다.
 /// → Unity가 포그라운드가 아니어도, 사용자가 다른 창을 쓰는 중이어도 정확히 캡쳐된다.
 /// (BattleSceneCaptureTool의 Camera.Render → RT → ReadPixels 패턴을 UI Toolkit panel에 적용.)
 ///
-/// 사용: 메뉴 `SM/Town/▶ Preview 9종 캡쳐` 또는
+/// 사용: 메뉴 `SM/Town/▶ Preview 전체 캡쳐` 또는
 ///       `unity-bridge.ps1 exec -Dangerous -Code 'SM.Editor.Bootstrap.UI.TownPreviewCaptureUtility.CaptureAll()'`.
 ///
 /// EditorApplication.update 기반 state machine — surface 빌드 → N프레임 layout/render 안정화
@@ -26,7 +26,10 @@ public static class TownPreviewCaptureUtility
 {
     // 각 surface Bootstrap의 public BuildInto(VisualElement)를 호출 — EditorWindow를 띄우지 않고
     // ScriptableObject 인스턴스만 만들어 지정 root에 빌드한다 (Make<T> 헬퍼).
-    private static readonly (Action<VisualElement> Build, string FileName)[] Targets =
+    private static readonly (Action<VisualElement> Build, string FileName) CompendiumTarget =
+        (r => Make<CompendiumPreviewBootstrap>(b => b.BuildInto(r)),       "compendium");
+
+    private static readonly (Action<VisualElement> Build, string FileName)[] AllTargets =
     {
         (r => Make<TownRosterGridPreviewBootstrap>(b => b.BuildInto(r)),   "roster_grid"),
         (r => Make<TacticalWorkshopPreviewBootstrap>(b => b.BuildInto(r)), "tactical_workshop"),
@@ -35,12 +38,14 @@ public static class TownPreviewCaptureUtility
         (r => Make<PermanentAugmentPreviewBootstrap>(b => b.BuildInto(r)), "permanent_augment"),
         (r => Make<PassiveBoardPreviewBootstrap>(b => b.BuildInto(r)),     "passive_board"),
         (r => Make<InventoryPreviewBootstrap>(b => b.BuildInto(r)),        "inventory"),
+        CompendiumTarget,
         (r => Make<TheaterPreviewBootstrap>(b => b.BuildInto(r)),          "theater"),
         (r => Make<SettingsPreviewBootstrap>(b => b.BuildInto(r)),         "settings"),
         // production Town hub + SquadBuilder modal — Phase 1/4 retroactive 시각 검증 (atom 적용).
         (r => BuildProductionTownHub(r, openSquadBuilder: false),          "production_town_hub"),
         (r => BuildProductionTownHub(r, openSquadBuilder: true),           "squad_builder_modal"),
     };
+    private static (Action<VisualElement> Build, string FileName)[] _activeTargets = AllTargets;
 
     private const string TownScreenUxmlPath = "Assets/_Game/UI/Screens/Town/TownScreen.uxml";
     private const string TownScreenUssPath = "Assets/_Game/UI/Screens/Town/TownScreen.uss";
@@ -118,19 +123,32 @@ public static class TownPreviewCaptureUtility
     // UIElementsRuntimeUtility의 내부 update/repaint를 명시 호출해야 RT에 렌더된다 (reflection).
     private static MethodInfo? _updateRuntimePanels;
     private static MethodInfo? _repaintOffscreenPanels;
+    private static MethodInfo? _renderRuntimePanel;
     private static bool _reflectionResolved;
 
-    [MenuItem("SM/Town/▶ Preview 9종 캡쳐", false, 4)]
+    [MenuItem("SM/Town/▶ Preview 전체 캡쳐", false, 4)]
     public static void CaptureAll()
     {
+        StartCapture(AllTargets);
+    }
+
+    [MenuItem("SM/Town/▶ Preview 도감 캡쳐", false, 5)]
+    public static void CaptureCompendium()
+    {
+        StartCapture(new[] { CompendiumTarget });
+    }
+
+    private static void StartCapture((Action<VisualElement> Build, string FileName)[] targets)
+    {
         Directory.CreateDirectory(OutputDir);
+        _activeTargets = targets;
         _index = 0;
         _phase = 0;
         _frameWait = 0;
         Cleanup();
         EditorApplication.update -= Step;
         EditorApplication.update += Step;
-        Debug.Log($"[PreviewCapture] 시작 — {Targets.Length} surface → {OutputDir}/ (offscreen RT 렌더, 포그라운드 무관)");
+        Debug.Log($"[PreviewCapture] 시작 — {_activeTargets.Length} surface → {OutputDir}/ (offscreen RT 렌더, 포그라운드 무관)");
     }
 
     /// <summary>EditorWindow를 띄우지 않고 인스턴스만 만들어 build 콜백 실행 후 폐기.</summary>
@@ -143,16 +161,16 @@ public static class TownPreviewCaptureUtility
 
     private static void Step()
     {
-        if (_index >= Targets.Length)
+        if (_index >= _activeTargets.Length)
         {
             EditorApplication.update -= Step;
             Cleanup();
             AssetDatabase.Refresh();
-            Debug.Log($"[PreviewCapture] 완료 — {Targets.Length} surface 저장");
+            Debug.Log($"[PreviewCapture] 완료 — {_activeTargets.Length} surface 저장");
             return;
         }
 
-        var target = Targets[_index];
+        var target = _activeTargets[_index];
 
         if (_phase == 0)
         {
@@ -283,26 +301,64 @@ public static class TownPreviewCaptureUtility
             if (runtimeUtility != null)
             {
                 const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-                try { _updateRuntimePanels = runtimeUtility.GetMethod("UpdateRuntimePanels", flags, null, Type.EmptyTypes, null); }
+                try
+                {
+                    _updateRuntimePanels = runtimeUtility.GetMethod("UpdateRuntimePanels", flags, null, Type.EmptyTypes, null)
+                                           ?? runtimeUtility.GetMethod("UpdatePanels", flags, null, Type.EmptyTypes, null);
+                }
                 catch (AmbiguousMatchException) { _updateRuntimePanels = null; }
-                try { _repaintOffscreenPanels = runtimeUtility.GetMethod("RepaintOffscreenPanels", flags, null, Type.EmptyTypes, null); }
+                try
+                {
+                    _repaintOffscreenPanels = runtimeUtility.GetMethod("RepaintOffscreenPanels", flags, null, Type.EmptyTypes, null)
+                                             ?? runtimeUtility.GetMethod("RenderOffscreenPanels", flags, null, Type.EmptyTypes, null);
+                }
                 catch (AmbiguousMatchException) { _repaintOffscreenPanels = null; }
+                var baseRuntimePanel = typeof(PanelSettings).Assembly
+                    .GetType("UnityEngine.UIElements.BaseRuntimePanel");
+                if (baseRuntimePanel != null)
+                {
+                    try
+                    {
+                        _renderRuntimePanel = runtimeUtility.GetMethod(
+                            "RenderPanel",
+                            flags,
+                            null,
+                            new[] { baseRuntimePanel, typeof(bool) },
+                            null);
+                    }
+                    catch (AmbiguousMatchException) { _renderRuntimePanel = null; }
+                }
             }
-            if (_repaintOffscreenPanels == null)
+            if (_repaintOffscreenPanels == null && _renderRuntimePanel == null)
             {
-                Debug.LogWarning("[PreviewCapture] UIElementsRuntimeUtility.RepaintOffscreenPanels 못 찾음 — " +
+                Debug.LogWarning("[PreviewCapture] UIElementsRuntimeUtility offscreen repaint method 못 찾음 — " +
                                  "panel이 RT에 안 그려질 수 있음 (Unity 버전 내부 API 변경 확인 필요)");
             }
         }
 
+        var prevActive = RenderTexture.active;
         try
         {
+            if (_renderTexture != null)
+            {
+                RenderTexture.active = _renderTexture;
+            }
+
             _updateRuntimePanels?.Invoke(null, null);
+            var panel = _uiDocument?.rootVisualElement?.panel;
+            if (_renderRuntimePanel != null && panel != null)
+            {
+                _renderRuntimePanel.Invoke(null, new object[] { panel, true });
+            }
             _repaintOffscreenPanels?.Invoke(null, null);
         }
         catch (Exception e)
         {
             Debug.LogWarning($"[PreviewCapture] PumpRuntimePanels 호출 실패: {e.Message}");
+        }
+        finally
+        {
+            RenderTexture.active = prevActive;
         }
     }
 }
