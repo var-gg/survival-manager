@@ -3,3 +3,4 @@
 이 디렉터리는 저장소 전용 에이전트 스킬 또는 작업 규칙 확장 파일을 둔다.
 
 - `code-structure-guard`: 구조 경계, god file, 무분별한 추상화 생성을 막는 구조 검수 스킬
+- `game-image-gen`: Pindoc-owned prompt/spec/style 원본을 repo 밖 JSON 입력으로 받아 게임 이미지 자산을 생성하는 스킬
