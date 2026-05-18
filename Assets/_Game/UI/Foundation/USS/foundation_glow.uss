@@ -1,0 +1,120 @@
+/*
+ * Foundation state feedback primitives.
+ *
+ * Unity USS does not reliably support box-shadow, radial-gradient, or keyframe
+ * animation across our target editor/runtime lane, so glow is represented as
+ * stacked hard-edge layers that a controller can toggle with transition states.
+ */
+
+.sm-foundation-state-layer {
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    top: -4px;
+    bottom: -4px;
+    opacity: 0;
+    scale: 0.98 0.98;
+    background-color: rgba(230, 183, 81, 0.00);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.00);
+    border-right-color: rgba(230, 183, 81, 0.00);
+    border-top-color: rgba(230, 183, 81, 0.00);
+    border-bottom-color: rgba(230, 183, 81, 0.00);
+    transition-property: opacity, scale, background-color, border-left-color, border-right-color, border-top-color, border-bottom-color;
+    transition-duration: 180ms, 180ms, 180ms, 180ms, 180ms, 180ms, 180ms;
+    transition-timing-function: ease-out;
+}
+
+.sm-foundation-glow-rect--active {
+    opacity: 1;
+    scale: 1.01 1.01;
+    background-color: rgba(230, 183, 81, 0.08);
+    border-left-color: rgba(245, 214, 138, 0.42);
+    border-right-color: rgba(245, 214, 138, 0.42);
+    border-top-color: rgba(245, 214, 138, 0.42);
+    border-bottom-color: rgba(245, 214, 138, 0.42);
+}
+
+.sm-foundation-glow-pulse-gold--low {
+    opacity: 0.45;
+    scale: 1.00 1.00;
+    background-color: rgba(230, 183, 81, 0.06);
+    border-left-color: rgba(230, 183, 81, 0.28);
+    border-right-color: rgba(230, 183, 81, 0.28);
+    border-top-color: rgba(230, 183, 81, 0.28);
+    border-bottom-color: rgba(230, 183, 81, 0.28);
+}
+
+.sm-foundation-glow-pulse-gold--high {
+    opacity: 0.85;
+    scale: 1.025 1.025;
+    background-color: rgba(245, 214, 138, 0.12);
+    border-left-color: rgba(245, 214, 138, 0.64);
+    border-right-color: rgba(245, 214, 138, 0.64);
+    border-top-color: rgba(245, 214, 138, 0.64);
+    border-bottom-color: rgba(245, 214, 138, 0.64);
+}
+
+.sm-foundation-glow-pulse-red--low {
+    opacity: 0.36;
+    scale: 1.00 1.00;
+    background-color: rgba(182, 51, 74, 0.05);
+    border-left-color: rgba(226, 85, 72, 0.24);
+    border-right-color: rgba(226, 85, 72, 0.24);
+    border-top-color: rgba(226, 85, 72, 0.24);
+    border-bottom-color: rgba(226, 85, 72, 0.24);
+}
+
+.sm-foundation-glow-pulse-red--high {
+    opacity: 0.72;
+    scale: 1.02 1.02;
+    background-color: rgba(182, 51, 74, 0.12);
+    border-left-color: rgba(226, 85, 72, 0.52);
+    border-right-color: rgba(226, 85, 72, 0.52);
+    border-top-color: rgba(226, 85, 72, 0.52);
+    border-bottom-color: rgba(226, 85, 72, 0.52);
+}
+
+.sm-foundation-hover-highlight {
+    opacity: 0;
+    background-color: rgba(245, 234, 208, 0.00);
+    transition-property: opacity, background-color;
+    transition-duration: 120ms, 120ms;
+    transition-timing-function: ease-out;
+}
+
+.sm-foundation-hover-highlight--active {
+    opacity: 1;
+    background-color: rgba(245, 234, 208, 0.08);
+}
+
+.sm-foundation-focus-outline {
+    position: absolute;
+    left: -3px;
+    right: -3px;
+    top: -3px;
+    bottom: -3px;
+    opacity: 0;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(245, 214, 138, 0.00);
+    border-right-color: rgba(245, 214, 138, 0.00);
+    border-top-color: rgba(245, 214, 138, 0.00);
+    border-bottom-color: rgba(245, 214, 138, 0.00);
+    transition-property: opacity, border-left-color, border-right-color, border-top-color, border-bottom-color;
+    transition-duration: 120ms, 120ms, 120ms, 120ms, 120ms;
+    transition-timing-function: ease-out;
+}
+
+.sm-foundation-focus-outline--active {
+    opacity: 1;
+    border-left-color: rgba(245, 214, 138, 0.92);
+    border-right-color: rgba(245, 214, 138, 0.92);
+    border-top-color: rgba(245, 214, 138, 0.92);
+    border-bottom-color: rgba(245, 214, 138, 0.92);
+}
