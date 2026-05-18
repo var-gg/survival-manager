@@ -8,6 +8,14 @@ using UnityEngine;
 namespace SM.Unity
 {
 
+/// <summary>
+/// 5-node site track UI surface — pindoc://decision-expedition-screen-deprecation-atlas-absorption (2026-05-18).
+/// ExpeditionScreen은 Atlas screen으로 UI surface 흡수됨. 사용자가 별개 screen으로 5-node track을 만나지
+/// 않는다. 본 controller는 transition window로 잠시 유지되며 (Start 끝에서 자동 NextBattleOrAdvance), 다음
+/// sprint에 UXML + USS + Controller + Presenter + View 4종 코드 제거.
+/// 데이터 모델 (ChapterId/SiteId/SiteNodeIndex)과 GameSessionState.ExpeditionProgress source는 보존.
+/// </summary>
+[System.Obsolete("ExpeditionScreen UI surface는 Atlas screen으로 흡수됨 — decision-expedition-screen-deprecation-atlas-absorption. 다음 sprint에 제거 예정.")]
 public sealed class ExpeditionScreenController : MonoBehaviour
 {
     [SerializeField] private RuntimePanelHost panelHost = null!;
@@ -32,6 +40,12 @@ public sealed class ExpeditionScreenController : MonoBehaviour
         {
             _storyBridge.Advance(NarrativeMoment.SiteEntered, BuildStoryMomentContext());
         }
+
+        // [Deprecation transition] decision-expedition-screen-deprecation-atlas-absorption (2026-05-18).
+        // Atlas confirm 후 selectedExpeditionNode가 이미 설정된 상태로 이 scene에 진입한다. ExpeditionScreen
+        // UI는 더 이상 사용자에게 노출하지 않고, transition 즉시 NextBattleOrAdvance로 Battle 또는 Reward
+        // scene으로 진행한다. SiteEntered narrative 발화는 직전 storyBridge.Advance에서 처리.
+        _presenter?.NextBattleOrAdvance();
     }
 
     private void OnDestroy()

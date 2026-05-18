@@ -6,6 +6,11 @@ using UnityEngine.UIElements;
 
 namespace SM.Unity.UI.Expedition;
 
+/// <summary>
+/// pindoc://decision-expedition-screen-deprecation-atlas-absorption — Atlas screen이 UI surface를 흡수.
+/// 본 View는 transition window 동안만 instantiate. 다음 sprint에 코드 제거.
+/// </summary>
+[System.Obsolete("ExpeditionScreen UI surface는 Atlas screen으로 흡수됨 — decision-expedition-screen-deprecation-atlas-absorption.")]
 public sealed class ExpeditionScreenView
 {
     private readonly Label _titleLabel;

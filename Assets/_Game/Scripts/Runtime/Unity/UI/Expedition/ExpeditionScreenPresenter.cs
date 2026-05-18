@@ -7,6 +7,12 @@ using UnityEngine;
 
 namespace SM.Unity.UI.Expedition;
 
+/// <summary>
+/// pindoc://decision-expedition-screen-deprecation-atlas-absorption — Atlas screen이 5-node site track
+/// UI surface를 흡수. 본 Presenter는 transition window로 잠시 유지되며 controller가 Start 끝에 자동
+/// NextBattleOrAdvance 호출하는 흐름의 backing. 다음 sprint에 코드 제거.
+/// </summary>
+[System.Obsolete("ExpeditionScreen UI surface는 Atlas screen으로 흡수됨 — decision-expedition-screen-deprecation-atlas-absorption.")]
 public sealed class ExpeditionScreenPresenter
 {
     private const string HelpPrefsKey = "SM.Help.Expedition";
