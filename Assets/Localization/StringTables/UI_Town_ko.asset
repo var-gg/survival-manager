@@ -1302,8 +1302,7 @@ MonoBehaviour:
   - m_Id: 17841341873852454
     m_Localized: "\uAC15\uC778\uD568 {0}"
     m_Metadata:
-      m_Items:
-      - rid: 162163771961769991
+      m_Items: []
   - m_Id: 17841341873852455
     m_Localized: "\uC8FC\uAE30 \uD53C\uD574"
     m_Metadata:
@@ -1314,6 +1313,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 17841341873852457
     m_Localized: "\uBBF8\uC5F0\uACB0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852458
+    m_Localized: "\uC804\uC220 \uACF5\uBC29"
     m_Metadata:
       m_Items: []
   references:
@@ -1362,4 +1365,3 @@ MonoBehaviour:
         - id: 132
         - id: 133
         - id: 17841341873852419
-        - id: 17841341873852454

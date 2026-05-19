@@ -119,22 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!115 &1149617015
-MonoScript:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
-  m_Icon: {fileID: 0}
-  m_Type: 0
-  m_ExecutionOrder: 0
-  m_ClassName: Phase2PanelRuntimeShowcaseController
-  m_Namespace: SM.Unity.UI.Panels
-  m_AssemblyName: SM.Unity
---- !u!1 &1252149597
+--- !u!1 &30654223
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -142,8 +127,110 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1252149599}
-  - component: {fileID: 1252149598}
+  - component: {fileID: 30654226}
+  - component: {fileID: 30654225}
+  - component: {fileID: 30654224}
+  m_Layer: 0
+  m_Name: Phase2PanelShowcase
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &30654224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30654223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 163cfd05b3376344fa4bb03e7ddf52b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SM.Unity::SM.Unity.UI.Panels.Phase2PanelRuntimeShowcaseController
+  document: {fileID: 30654225}
+  panelSettings: {fileID: 11400000, guid: 285b9902ba19a8043984b3c854054bd7, type: 2}
+  panels:
+  - Id: skill_compendium_skills
+    Kind: 0
+    VisualTreeAsset: {fileID: 9197481963319205126, guid: 08f41b7438798d84c8de50ec34dae97d, type: 3}
+  - Id: tactical_workshop
+    Kind: 1
+    VisualTreeAsset: {fileID: 9197481963319205126, guid: e9cc42c41db89de429f51e38336baf47, type: 3}
+  - Id: recruit_pack
+    Kind: 2
+    VisualTreeAsset: {fileID: 9197481963319205126, guid: 0b342befaa5ceab45bc66399673e0c0e, type: 3}
+  - Id: equipment_refit
+    Kind: 3
+    VisualTreeAsset: {fileID: 9197481963319205126, guid: c0e7ff0dcc9bb9f439d031341c1ec5bb, type: 3}
+  - Id: inventory_tab
+    Kind: 4
+    VisualTreeAsset: {fileID: 9197481963319205126, guid: c8c7c3c52e18cdb4cbd30d1336ceb6a1, type: 3}
+  - Id: town_roster_grid
+    Kind: 5
+    VisualTreeAsset: {fileID: 9197481963319205126, guid: 8fdec8f1d17bf1349a02d7ef317c29c8, type: 3}
+  - Id: town_squad_builder
+    Kind: 6
+    VisualTreeAsset: {fileID: 9197481963319205126, guid: d6105ddd42bcc5b4a8ba9cb4743cba44, type: 3}
+  - Id: permanent_augment
+    Kind: 7
+    VisualTreeAsset: {fileID: 9197481963319205126, guid: 7f31a60c255d12847a679831ec09e330, type: 3}
+  - Id: passive_board
+    Kind: 8
+    VisualTreeAsset: {fileID: 9197481963319205126, guid: a24a4fdc26926d7458993b44388e3dc3, type: 3}
+  - Id: settings_global
+    Kind: 9
+    VisualTreeAsset: {fileID: 9197481963319205126, guid: a6722d794b0af194a806e0ba37f6622f, type: 3}
+  startIndex: 0
+--- !u!114 &30654225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30654223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: 285b9902ba19a8043984b3c854054bd7, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 08f41b7438798d84c8de50ec34dae97d, type: 3}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!4 &30654226
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30654223}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &375065177
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 375065179}
+  - component: {fileID: 375065178}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -151,13 +238,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!20 &1252149598
+--- !u!20 &375065178
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252149597}
+  m_GameObject: {fileID: 375065177}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
@@ -202,13 +289,13 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &1252149599
+--- !u!4 &375065179
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252149597}
+  m_GameObject: {fileID: 375065177}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
@@ -217,111 +304,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2007706943
-GameObject:
+--- !u!115 &535084683
+MonoScript:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2007706946}
-  - component: {fileID: 2007706945}
-  - component: {fileID: 2007706944}
-  m_Layer: 0
-  m_Name: Phase2PanelShowcase
-  m_TagString: Untagged
+  m_Name: 
+  serializedVersion: 7
+  m_DefaultReferences: {}
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2007706944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2007706943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 163cfd05b3376344fa4bb03e7ddf52b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: SM.Unity::SM.Unity.UI.Panels.Phase2PanelRuntimeShowcaseController
-  document: {fileID: 2007706945}
-  panelSettings: {fileID: 11400000, guid: 285b9902ba19a8043984b3c854054bd7, type: 2}
-  panels:
-  - Id: skill_compendium_skills
-    Kind: 0
-    VisualTreeAsset: {fileID: 9197481963319205126, guid: 08f41b7438798d84c8de50ec34dae97d, type: 3}
-  - Id: tactical_workshop
-    Kind: 1
-    VisualTreeAsset: {fileID: 9197481963319205126, guid: e9cc42c41db89de429f51e38336baf47, type: 3}
-  - Id: recruit_pack
-    Kind: 2
-    VisualTreeAsset: {fileID: 9197481963319205126, guid: 0b342befaa5ceab45bc66399673e0c0e, type: 3}
-  - Id: equipment_refit
-    Kind: 3
-    VisualTreeAsset: {fileID: 9197481963319205126, guid: c0e7ff0dcc9bb9f439d031341c1ec5bb, type: 3}
-  - Id: inventory_tab
-    Kind: 4
-    VisualTreeAsset: {fileID: 9197481963319205126, guid: c8c7c3c52e18cdb4cbd30d1336ceb6a1, type: 3}
-  - Id: town_roster_grid
-    Kind: 5
-    VisualTreeAsset: {fileID: 9197481963319205126, guid: 8fdec8f1d17bf1349a02d7ef317c29c8, type: 3}
-  - Id: town_squad_builder
-    Kind: 6
-    VisualTreeAsset: {fileID: 9197481963319205126, guid: d6105ddd42bcc5b4a8ba9cb4743cba44, type: 3}
-  - Id: permanent_augment
-    Kind: 7
-    VisualTreeAsset: {fileID: 9197481963319205126, guid: 7f31a60c255d12847a679831ec09e330, type: 3}
-  - Id: passive_board
-    Kind: 8
-    VisualTreeAsset: {fileID: 9197481963319205126, guid: a24a4fdc26926d7458993b44388e3dc3, type: 3}
-  - Id: settings_global
-    Kind: 9
-    VisualTreeAsset: {fileID: 9197481963319205126, guid: a6722d794b0af194a806e0ba37f6622f, type: 3}
-  startIndex: 0
---- !u!114 &2007706945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2007706943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
-  m_PanelSettings: {fileID: 11400000, guid: 285b9902ba19a8043984b3c854054bd7, type: 2}
-  m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 08f41b7438798d84c8de50ec34dae97d, type: 3}
-  m_SortingOrder: 0
-  m_Position: 0
-  m_WorldSpaceSizeMode: 1
-  m_WorldSpaceWidth: 1920
-  m_WorldSpaceHeight: 1080
-  m_PivotReferenceSize: 0
-  m_Pivot: 0
-  m_WorldSpaceCollider: {fileID: 0}
---- !u!4 &2007706946
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2007706943}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Type: 0
+  m_ExecutionOrder: 0
+  m_ClassName: Phase2PanelRuntimeShowcaseController
+  m_Namespace: SM.Unity.UI.Panels
+  m_AssemblyName: SM.Unity
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1252149599}
-  - {fileID: 2007706946}
+  - {fileID: 375065179}
+  - {fileID: 30654226}
