@@ -218,9 +218,10 @@ public sealed class AtlasV2SpineSigilFastTests
         var state = presenter.Build();
 
         Assert.That(state.Preview.ThreatBandLabel, Is.Not.Null);
+        // NUnit 3에는 Is.AnyOf가 없어 Is.EqualTo .Or chain으로 표현.
         Assert.That(
             state.Preview.ThreatBandLabel,
-            Is.AnyOf("안정", "고조", "과중", "극단"),
+            Is.EqualTo("안정").Or.EqualTo("고조").Or.EqualTo("과중").Or.EqualTo("극단"),
             "ThreatBandLabel은 ComputeThreatBand 4개 band의 한국어 라벨이어야 한다.");
 
         var allBandLabels = Enum.GetValues(typeof(AtlasThreatBand))
