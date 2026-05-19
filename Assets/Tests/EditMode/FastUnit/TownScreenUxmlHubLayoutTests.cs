@@ -163,6 +163,7 @@ public sealed class TownScreenUxmlHubLayoutTests
         {
             "Assets/_Game/UI/Panels/RecruitPack/RecruitPack.uss",
             "Assets/_Game/UI/Panels/PermanentAugment/PermanentAugment.uss",
+            "Assets/_Game/UI/Panels/PassiveBoard/PassiveBoard.uss",
             "Assets/_Game/UI/Panels/SkillCompendium/SkillCompendium.uss",
             "Assets/_Game/UI/Panels/InventoryTab/InventoryTab.uss",
             "Assets/_Game/UI/Panels/EquipmentRefit/EquipmentRefit.uss",
@@ -182,10 +183,12 @@ public sealed class TownScreenUxmlHubLayoutTests
 
         var recruit = File.ReadAllText(panelPaths[0]);
         var permanent = File.ReadAllText(panelPaths[1]);
-        var inventory = File.ReadAllText(panelPaths[3]);
-        var equipmentRefit = File.ReadAllText(panelPaths[4]);
+        var passiveBoard = File.ReadAllText(panelPaths[2]);
+        var inventory = File.ReadAllText(panelPaths[4]);
+        var equipmentRefit = File.ReadAllText(panelPaths[5]);
         Assert.That(recruit, Does.Contain("ui_button_gold.png"));
         Assert.That(permanent, Does.Contain("ui_button_gold.png"));
+        Assert.That(passiveBoard, Does.Contain("ui_button_gold.png"));
         Assert.That(inventory, Does.Contain("ui_button_gold.png"));
         Assert.That(equipmentRefit, Does.Contain("ui_button_gold.png"));
     }
