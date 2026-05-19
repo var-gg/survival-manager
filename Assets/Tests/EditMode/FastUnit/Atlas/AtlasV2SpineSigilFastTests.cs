@@ -231,6 +231,7 @@ public sealed class AtlasV2SpineSigilFastTests
         content.Add(new VisualElement { name = "atlas-stage-candidate-list" });
         root.Add(content);
         root.Add(new VisualElement { name = "atlas-spine-progress-strip" });
+        root.Add(new VisualElement { name = "atlas-sitetrack-strip" });
         root.Add(new Label { name = "atlas-region-title" });
         root.Add(new Label { name = "atlas-placement-summary" });
         root.Add(new Label { name = "atlas-preview-title" });
