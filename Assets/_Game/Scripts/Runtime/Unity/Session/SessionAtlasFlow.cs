@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
+using SM.Meta.Model;
+using SM.Meta.Services;
 
 namespace SM.Unity;
 
@@ -77,6 +79,7 @@ public sealed partial class GameSessionState
             }
 
             _session._atlasExpeditionModifierPayload = null;
+            _session._runBattlePayload = null;
             var state = EnsureAtlasSession(region);
             var candidate = ResolveCandidateForCurrentExpeditionNode(region, state);
             if (candidate == null)
@@ -91,7 +94,9 @@ public sealed partial class GameSessionState
                 return false;
             }
 
-            _session._atlasExpeditionModifierPayload = BuildModifierPayload(region, state, candidate, node);
+            var modifier = BuildModifierPayload(region, state, candidate, node);
+            _session._atlasExpeditionModifierPayload = modifier;
+            _session._runBattlePayload = TryBuildRunBattlePayload(state, modifier);
             return true;
         }
 
@@ -99,6 +104,7 @@ public sealed partial class GameSessionState
         {
             _session._atlasSession = null;
             _session._atlasExpeditionModifierPayload = null;
+            _session._runBattlePayload = null;
         }
 
         private AtlasStageCandidate? ResolveCandidateForCurrentExpeditionNode(
@@ -176,6 +182,34 @@ public sealed partial class GameSessionState
                 stack.ThreatPressurePercent,
                 stack.AffinityBoostPercent,
                 stack.ResolvedModifiers);
+        }
+
+        private static RunBattlePayload? TryBuildRunBattlePayload(
+            AtlasSessionState state,
+            AtlasExpeditionModifierPayload modifier)
+        {
+            var resolvedIds = modifier.ResolvedModifiers
+                .Select(static m => $"{m.Category}:{m.Label}")
+                .Where(static id => !string.IsNullOrWhiteSpace(id))
+                .ToArray();
+
+            var input = new RunBattlePayloadInput(
+                RunId: state.Identity.RunId,
+                ChapterId: state.Identity.ChapterId,
+                SiteId: state.Identity.SiteId,
+                SiteNodeIndex: modifier.SiteNodeIndex,
+                EncounterId: state.Identity.EncounterId,
+                ExpeditionNodeId: modifier.ExpeditionNodeId,
+                SquadSnapshotId: state.Identity.SquadSnapshotId,
+                StageCandidatePathHash: modifier.StageCandidatePathHash,
+                NodeOverlayHash: modifier.NodeOverlayHash,
+                BattleContextHash: modifier.BattleContextHash,
+                RewardBiasPercent: modifier.RewardBiasPercent,
+                ThreatPressurePercent: modifier.ThreatPressurePercent,
+                AffinityBoostPercent: modifier.AffinityBoostPercent,
+                ResolvedModifierIds: resolvedIds);
+
+            return RunBattlePayloadBuilder.TryBuild(input, out var payload) ? payload : null;
         }
 
         private bool CanReuseSession(

@@ -61,6 +61,7 @@ public sealed partial class GameSessionState
     private CombatSandboxCompiledScenario? _compiledQuickBattleScenario;
     private AtlasSessionState? _atlasSession;
     private AtlasExpeditionModifierPayload? _atlasExpeditionModifierPayload;
+    private RunBattlePayload? _runBattlePayload;
 
     public SaveProfile Profile { get; private set; } = new();
     public ActiveRunState? ActiveRun { get; private set; }
@@ -70,6 +71,7 @@ public sealed partial class GameSessionState
     public ExpeditionState Expedition { get; private set; } = new();
     public AtlasSessionState? AtlasSession => _atlasSession;
     public AtlasExpeditionModifierPayload? AtlasExpeditionModifierPayload => _atlasExpeditionModifierPayload;
+    public RunBattlePayload? RunBattlePayload => _runBattlePayload;
     public string CurrentSceneName { get; private set; } = SceneNames.Boot;
     public int PermanentAugmentSlotCount { get; private set; } = 1;
     public int CurrentExpeditionNodeIndex { get; private set; }
@@ -211,6 +213,7 @@ public sealed partial class GameSessionState
             _compiledQuickBattleScenario = null;
             _atlasSession = null;
             _atlasExpeditionModifierPayload = null;
+            _runBattlePayload = null;
             SelectedTeamPosture = TeamPostureType.StandardAdvance;
             SelectedTeamTacticId = string.Empty;
             _recruitOfferGeneration = 0;

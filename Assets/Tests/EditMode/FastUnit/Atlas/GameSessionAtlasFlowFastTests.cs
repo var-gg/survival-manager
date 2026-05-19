@@ -127,6 +127,74 @@ public sealed class GameSessionAtlasFlowFastTests
     }
 
     [Test]
+    public void RunBattlePayload_IsPopulatedAfterSelectionHandoff()
+    {
+        var session = CreateBoundSession();
+        session.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        session.SelectAtlasSigil(region, "sigil_beast_spoils");
+        session.PlaceSelectedAtlasSigil(region, "hex_m1_m1");
+        session.SelectAtlasNode(region, "hex_m2_1");
+
+        Assert.That(session.TryApplyAtlasSelectionToExpedition(region), Is.True);
+
+        var modifier = session.AtlasExpeditionModifierPayload;
+        var payload = session.RunBattlePayload;
+        var atlas = session.AtlasSession;
+
+        Assert.That(payload, Is.Not.Null, "Atlas selection handoff 직후 RunBattlePayload가 세팅돼야 한다.");
+        Assert.That(modifier, Is.Not.Null);
+        Assert.That(atlas, Is.Not.Null);
+
+        // Atlas Identity와 modifier payload 핵심 필드가 RunBattlePayload로 일관 운반된다.
+        Assert.That(payload!.RunId, Is.EqualTo(atlas!.Identity.RunId));
+        Assert.That(payload.ChapterId, Is.EqualTo(atlas.Identity.ChapterId));
+        Assert.That(payload.SiteId, Is.EqualTo(atlas.Identity.SiteId));
+        Assert.That(payload.EncounterId, Is.EqualTo(atlas.Identity.EncounterId));
+        Assert.That(payload.SquadSnapshotId, Is.EqualTo(atlas.Identity.SquadSnapshotId));
+        Assert.That(payload.SiteNodeIndex, Is.EqualTo(modifier!.SiteNodeIndex));
+        Assert.That(payload.ExpeditionNodeId, Is.EqualTo(modifier.ExpeditionNodeId));
+        Assert.That(payload.StageCandidatePathHash, Is.EqualTo(modifier.StageCandidatePathHash));
+        Assert.That(payload.NodeOverlayHash, Is.EqualTo(modifier.NodeOverlayHash));
+        Assert.That(payload.BattleContextHash, Is.EqualTo(modifier.BattleContextHash));
+        Assert.That(payload.RewardBiasPercent, Is.EqualTo(modifier.RewardBiasPercent));
+        Assert.That(payload.IsValid, Is.True);
+    }
+
+    [Test]
+    public void RunBattlePayload_RebuildIsDeterministicForSameSelection()
+    {
+        var session = CreateBoundSession();
+        session.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        session.SelectAtlasSigil(region, "sigil_beast_spoils");
+        session.PlaceSelectedAtlasSigil(region, "hex_m1_m1");
+        session.SelectAtlasNode(region, "hex_m2_1");
+
+        Assert.That(session.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        var first = session.RunBattlePayload;
+
+        // 같은 session(=같은 RunId/SquadSnapshotId)에서 advance 없이 다시 handoff —
+        // 같은 sigil 배치와 candidate를 재계산하므로 hash 3종이 안정 재현돼야 한다.
+        Assert.That(session.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        var second = session.RunBattlePayload;
+
+        Assert.That(first, Is.Not.Null);
+        Assert.That(second, Is.Not.Null);
+
+        Assert.That(first!.RunId, Is.EqualTo(second!.RunId));
+        Assert.That(first.SquadSnapshotId, Is.EqualTo(second.SquadSnapshotId));
+        Assert.That(first.BattleContextHash, Is.EqualTo(second.BattleContextHash));
+        Assert.That(first.NodeOverlayHash, Is.EqualTo(second.NodeOverlayHash));
+        Assert.That(first.StageCandidatePathHash, Is.EqualTo(second.StageCandidatePathHash));
+        Assert.That(first.EncounterId, Is.EqualTo(second.EncounterId));
+        Assert.That(first.SiteNodeIndex, Is.EqualTo(second.SiteNodeIndex));
+        Assert.That(first.RewardBiasPercent, Is.EqualTo(second.RewardBiasPercent));
+    }
+
+    [Test]
     public void AtlasSelectionHandoff_KeepsAuthoredEncounterIdentityWhenModifiersApply()
     {
         var session = CreateBoundSession();
