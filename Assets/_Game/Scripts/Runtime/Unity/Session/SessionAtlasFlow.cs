@@ -111,6 +111,8 @@ public sealed partial class GameSessionState
             AtlasRegionDefinition region,
             AtlasSessionState state)
         {
+            // StageCandidatePath에 들어간 hex는 이미 SelectNode 시점에 lock check를 통과했다 —
+            // siteSpineIndex가 그 candidate를 따라 advance했기 때문에 지금 시점 lock 재검은 불필요.
             foreach (var hexId in state.StageCandidatePath ?? Array.Empty<string>())
             {
                 var candidate = AtlasSpineProgressionService.FindCandidate(region, hexId);
@@ -120,8 +122,17 @@ public sealed partial class GameSessionState
                 }
             }
 
+            // task-atlas-sitetrack-absorption-v1 acceptance #4·#5:
+            // 사용자가 future-locked node(Boss/Extract)를 click한 경우 SelectedNodeId의 candidate가
+            // lock 상태로 SelectedNodeId에 박혀 있다. direct handoff를 차단하고 current stage candidate로 fallback.
             var selectedCandidate = AtlasSpineProgressionService.FindCandidate(region, state.SelectedNodeId);
-            if (selectedCandidate != null && CandidateTargetsCurrentOrFutureNode(region, selectedCandidate))
+            if (selectedCandidate != null
+                && CandidateTargetsCurrentOrFutureNode(region, selectedCandidate)
+                && AtlasSpineProgressionService.CanEnterStoryCandidate(
+                    region,
+                    selectedCandidate.HexId,
+                    state.SiteSpineIndex,
+                    state.BossResolved))
             {
                 return selectedCandidate;
             }
@@ -130,7 +141,9 @@ public sealed partial class GameSessionState
                 .FirstOrDefault(candidate => CandidateTargetsCurrentOrFutureNode(region, candidate));
         }
 
-        private bool CandidateTargetsCurrentOrFutureNode(AtlasRegionDefinition region, AtlasStageCandidate candidate)
+        private bool CandidateTargetsCurrentOrFutureNode(
+            AtlasRegionDefinition region,
+            AtlasStageCandidate candidate)
         {
             var node = region.Nodes.FirstOrDefault(item => string.Equals(item.NodeId, candidate.HexId, StringComparison.Ordinal));
             return node is { SiteNodeIndex: >= 0 }

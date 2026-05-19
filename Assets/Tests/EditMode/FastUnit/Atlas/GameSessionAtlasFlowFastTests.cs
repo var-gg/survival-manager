@@ -256,6 +256,27 @@ public sealed class GameSessionAtlasFlowFastTests
     }
 
     [Test]
+    public void BossLockedNode_DoesNotBypassHandoff_FallsBackToCurrentStage()
+    {
+        var session = CreateBoundSession();
+        session.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        // hex_1_0은 Boss kind / SiteNodeIndex=3. current=0 / siteSpineIndex=0이라 locked 상태.
+        // 사용자가 그것을 click해도 direct battle bypass가 일어나면 안 된다 (acceptance #5).
+        session.SelectAtlasNode(region, "hex_1_0");
+        var applied = session.TryApplyAtlasSelectionToExpedition(region);
+
+        // Locked boss로 직접 handoff는 금지. fallback으로 1단계 unlocked candidate로 진행한다.
+        Assert.That(applied, Is.True, "current stage candidate가 unlocked면 handoff는 그쪽으로 진행돼야 한다.");
+        Assert.That(session.SelectedExpeditionNodeIndex, Is.EqualTo(0),
+            "Boss locked 상태에서는 SelectedExpeditionNodeIndex가 current(=0)에 머문다.");
+        Assert.That(session.GetSelectedExpeditionNode()?.Index, Is.EqualTo(0));
+        Assert.That(session.RunBattlePayload?.SiteNodeIndex ?? 0, Is.LessThan(3),
+            "RunBattlePayload SiteNodeIndex가 boss(3) 직진하지 않는다.");
+    }
+
+    [Test]
     public void AtlasSelectionHandoff_KeepsAuthoredEncounterIdentityWhenModifiersApply()
     {
         var session = CreateBoundSession();
