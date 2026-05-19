@@ -25,7 +25,8 @@ public sealed record RewardSettlementSummaryViewState(
     string RewardBiasChipText,
     string ThreatPressureChipText,
     string AffinityBoostChipText,
-    bool HasAnyModifier)
+    bool HasAnyModifier,
+    string ThreatBandLabelText = "")
 {
     public static readonly RewardSettlementSummaryViewState Empty = new(
         TitleText: "Settlement",
@@ -40,7 +41,8 @@ public sealed record RewardSettlementSummaryViewState(
         RewardBiasChipText: string.Empty,
         ThreatPressureChipText: string.Empty,
         AffinityBoostChipText: string.Empty,
-        HasAnyModifier: false);
+        HasAnyModifier: false,
+        ThreatBandLabelText: string.Empty);
 }
 
 public sealed record RewardScreenViewState(

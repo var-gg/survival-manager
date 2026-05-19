@@ -193,6 +193,19 @@ public sealed class RewardScreenPresenter
             percentResolver);
         var hasAnyModifier = modifierPayload?.HasAnyModifier ?? false;
 
+        // task-atlas-modifier-application-v1 acceptance #5: ThreatPressurePercent를 ComputeThreatBand로
+        // band label로 매핑해 chip 값과 band 요약을 같은 surface에 일관 표시.
+        // 본 baseline은 한국어 hardcoded — 영문 localization key 등록은 후속 turn에서 SharedData asset
+        // sync와 함께 처리 (UiLocalizationAuditTests의 SharedStringTables_Cover_RuntimeUiKeys 정합 유지).
+        var threatBand = AtlasModifierApplicationService.ComputeThreatBand(modifierPayload?.ThreatPressurePercent ?? 0);
+        var threatBandLabel = threatBand switch
+        {
+            AtlasThreatBand.Elevated => "위협 고조",
+            AtlasThreatBand.High => "위협 과중",
+            AtlasThreatBand.Severe => "위협 극단",
+            _ => string.Empty,
+        };
+
         return new RewardSettlementSummaryViewState(
             TitleText: titleText,
             SiteKeyText: siteKey,
@@ -206,7 +219,8 @@ public sealed class RewardScreenPresenter
             RewardBiasChipText: rewardBiasChip,
             ThreatPressureChipText: threatPressureChip,
             AffinityBoostChipText: affinityBoostChip,
-            HasAnyModifier: hasAnyModifier);
+            HasAnyModifier: hasAnyModifier,
+            ThreatBandLabelText: threatBandLabel);
     }
 
     private static string BuildStageValueText(RunOverlayState overlay, System.Func<string, string, string> textResolver)

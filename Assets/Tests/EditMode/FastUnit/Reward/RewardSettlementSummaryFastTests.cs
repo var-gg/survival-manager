@@ -105,6 +105,51 @@ public sealed class RewardSettlementSummaryFastTests
         Assert.That(state.RewardBiasChipText, Does.Contain("15"));
         Assert.That(state.ThreatPressureChipText, Is.Empty, "0%면 chip 표시 안 함.");
         Assert.That(state.AffinityBoostChipText, Does.Contain("8"));
+        Assert.That(state.ThreatBandLabelText, Is.Empty,
+            "ThreatPressurePercent=0은 Normal band → ThreatBandLabelText 표시 안 함.");
+    }
+
+    [Test]
+    public void BuildSettlementSummaryState_WithElevatedThreatPercent_RendersThreatBandLabel()
+    {
+        // task-atlas-modifier-application-v1 acceptance #5 evidence: ThreatPressurePercent를
+        // AtlasModifierApplicationService.ComputeThreatBand로 매핑해 ThreatBandLabelText에 노출.
+        // chip text와 band label이 같은 surface(RewardScreen settlement summary)에 일관 표시.
+        var session = GameSessionTestFactory.Create();
+        var activeRun = CreateStubActiveRun() with
+        {
+            Overlay = new RunOverlayState(
+                CurrentNodeIndex: 0,
+                TemporaryAugmentIds: System.Array.Empty<string>(),
+                PendingRewardIds: System.Array.Empty<string>(),
+                CompileVersion: string.Empty,
+                LastCompileHash: string.Empty,
+                SiteId: "site_threat",
+                SiteNodeIndex: 0,
+                EncounterId: "encounter_threat",
+                RewardCommitId: string.Empty)
+        };
+        InjectActiveRun(session, activeRun);
+        var payload = new AtlasExpeditionModifierPayload(
+            RegionId: "region_threat",
+            AtlasNodeId: "atlas_node_threat",
+            SiteNodeIndex: 0,
+            ExpeditionNodeId: "site_threat:0",
+            StageCandidatePathHash: "hash-spch",
+            NodeOverlayHash: "hash-noh",
+            BattleContextHash: "hash-ctx",
+            RewardBiasPercent: 0,
+            ThreatPressurePercent: 30,
+            AffinityBoostPercent: 0,
+            ResolvedModifiers: System.Array.Empty<SM.Atlas.Model.AtlasResolvedModifier>());
+        InjectAtlasModifierPayload(session, payload);
+
+        var state = RewardScreenPresenter.BuildSettlementSummaryStateForTest(session);
+
+        Assert.That(state.ThreatBandLabelText, Is.Not.Empty,
+            "Elevated band(threat=30%)는 ThreatBandLabelText에 한국어 label 표시.");
+        Assert.That(state.ThreatBandLabelText, Does.Contain("고조").Or.Contain("Elevated"),
+            "default fallback label은 '위협 고조'.");
     }
 
     private static ActiveRunState CreateStubActiveRun()
