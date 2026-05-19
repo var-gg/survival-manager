@@ -226,6 +226,62 @@ public sealed class RunLoopContractFastTests
     }
 
     [Test]
+    public void BindProfile_RestoresExpeditionSelectionAndOverlayTraceAfterReload()
+    {
+        // task-run-save-resume-idempotence-v1 acceptance #1: Atlas selection 결과로 advance한
+        // expedition state(CurrentNodeIndex, Overlay trace)가 reload 후 같은 위치로 복원.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+        session.MarkBattleResolved(true, 8, 4);
+        Assert.That(session.ApplyRewardChoice(0), Is.True);
+        session.ReturnToTownAfterReward();
+
+        var originalCurrentNodeIndex = session.CurrentExpeditionNodeIndex;
+        var originalSiteId = session.SelectedCampaignSiteId;
+        var originalChapterId = session.SelectedCampaignChapterId;
+
+        var reloaded = GameSessionTestFactory.Create(lookup);
+        reloaded.BindProfile(CloneProfile(session.Profile));
+        reloaded.SetCurrentScene(SceneNames.Town);
+
+        Assert.That(reloaded.CurrentExpeditionNodeIndex, Is.EqualTo(originalCurrentNodeIndex),
+            "advance한 CurrentExpeditionNodeIndex가 reload 후 복원.");
+        Assert.That(reloaded.SelectedCampaignSiteId, Is.EqualTo(originalSiteId),
+            "campaign site selection 보존.");
+        Assert.That(reloaded.SelectedCampaignChapterId, Is.EqualTo(originalChapterId),
+            "campaign chapter selection 보존.");
+        Assert.That(reloaded.CanResumeExpedition, Is.True,
+            "Atlas re-entry가 가능한 resume state로 복원.");
+    }
+
+    [Test]
+    public void BindProfile_WithNullActiveRun_LoadsCleanStateWithoutFailure()
+    {
+        // task-run-save-resume-idempotence-v1 acceptance #6: load failure 또는 fresh save에서
+        // Profile.ActiveRun이 null인 경우에도 safe fallback (NRE/corrupt state 없음).
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var donor = CreateBoundSession(lookup);
+        var profile = CloneProfile(donor.Profile);
+        profile.ActiveRun = null;
+
+        var reloaded = GameSessionTestFactory.Create(lookup);
+        reloaded.BindProfile(profile);
+        reloaded.SetCurrentScene(SceneNames.Town);
+
+        Assert.That(reloaded.ActiveRun, Is.Null,
+            "null ActiveRun이 그대로 null로 복원 (NRE 없이).");
+        Assert.That(reloaded.HasActiveExpeditionRun, Is.False);
+        Assert.That(reloaded.HasPendingRewardSettlement, Is.False);
+        Assert.That(reloaded.CanResumeExpedition, Is.False);
+        Assert.That(reloaded.CanChangeCampaignSelection, Is.True,
+            "fresh state는 새 expedition 시작 가능.");
+    }
+
+    [Test]
     public void RunEnd_InvalidatesAtlasSessionAndRunBattlePayloadAndPendingReward()
     {
         // task-run-save-resume-idempotence-v1 acceptance #4: run end는 Atlas session, RunBattlePayload,
