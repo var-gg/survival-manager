@@ -161,6 +161,63 @@ public sealed class RunLoopContractFastTests
     }
 
     [Test]
+    public void RunEnd_InvalidatesAtlasSessionAndRunBattlePayloadAndPendingReward()
+    {
+        // task-run-save-resume-idempotence-v1 acceptance #4: run end는 Atlas session, RunBattlePayload,
+        // pending reward를 invalidate해야 한다. 이후 reload나 새 run에서 stale state로 corrupt 안 됨.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+        session.MarkBattleResolved(true, 5, 2);
+        Assert.That(session.HasPendingRewardSettlement, Is.True);
+
+        // ExitCombatSandbox는 run end의 한 형태로 모든 transient state를 invalidate한다.
+        session.ExitCombatSandbox();
+
+        Assert.That(session.ActiveRun, Is.Null,
+            "run end → ActiveRun null.");
+        Assert.That(session.AtlasSession, Is.Null,
+            "run end → AtlasSession null.");
+        Assert.That(session.RunBattlePayload, Is.Null,
+            "run end → RunBattlePayload null (acceptance #4).");
+        Assert.That(session.HasPendingRewardSettlement, Is.False,
+            "run end → pending reward cleared.");
+    }
+
+    [Test]
+    public void Migration_LegacyActiveRunRecordWithoutRewardCommitId_LoadsAsEmptyString()
+    {
+        // task-run-save-resume-idempotence-v1 acceptance #5: 신규 필드 RewardCommitId 없는
+        // legacy save profile이 default ""로 safe 복원되어 normal flow에 NRE 없이 진입.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        var legacyProfile = CloneProfile(session.Profile);
+        legacyProfile.ActiveRun = new ActiveRunRecord
+        {
+            RunId = "legacy_run_001",
+            ExpeditionId = "exp_legacy",
+            BlueprintId = "blueprint_legacy",
+            ChapterId = "chapter_alpha",
+            SiteId = "site_alpha_gate",
+            BattleContextHash = "legacy_context_hash",
+            RewardSourceId = "legacy_source",
+            // RewardCommitId 미설정 — legacy save profile에 없는 신규 field.
+        };
+
+        var reloaded = GameSessionTestFactory.Create(lookup);
+        reloaded.BindProfile(legacyProfile);
+
+        Assert.That(reloaded.ActiveRun, Is.Not.Null);
+        Assert.That(reloaded.ActiveRun!.Overlay.RewardCommitId, Is.EqualTo(string.Empty),
+            "legacy ActiveRunRecord의 missing RewardCommitId가 default empty로 복원 (NRE 없이 safe).");
+        Assert.That(reloaded.ActiveRun.Overlay.BattleContextHash, Is.EqualTo("legacy_context_hash"),
+            "기존 fields는 그대로 복원.");
+    }
+
+    [Test]
     public void ReloadBeforeCommit_RestoresPendingChoicesAndRewardCommitId()
     {
         // task-reward-settlement-commit-v1 acceptance #4: commit 전 reload 시 같은 pending state
