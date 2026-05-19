@@ -161,6 +161,68 @@ public sealed class RunLoopContractFastTests
     }
 
     [Test]
+    public void ReloadBeforeCommit_RestoresPendingChoicesAndRewardCommitId()
+    {
+        // task-reward-settlement-commit-v1 acceptance #4: commit 전 reload 시 같은 pending state
+        // (commitId + reward choices)가 복원된다.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+        session.MarkBattleResolved(true, 9, 5);
+
+        var originalCommitId = session.ActiveRun?.Overlay.RewardCommitId;
+        var originalRewardSourceId = session.ActiveRun?.Overlay.RewardSourceId ?? string.Empty;
+        var originalPendingCount = session.PendingRewardChoices.Count;
+        Assert.That(originalCommitId, Is.Not.Empty);
+        Assert.That(originalRewardSourceId, Is.Not.Empty);
+        Assert.That(originalPendingCount, Is.GreaterThan(0));
+
+        // commit 전(ApplyRewardChoice 호출 X) reload.
+        var reloaded = GameSessionTestFactory.Create(lookup);
+        reloaded.BindProfile(CloneProfile(session.Profile));
+        reloaded.SetCurrentScene(SceneNames.Town);
+
+        Assert.That(reloaded.HasPendingRewardSettlement, Is.True,
+            "commit 전 reload는 pending state를 유지해야 한다.");
+        Assert.That(reloaded.ActiveRun?.Overlay.RewardCommitId, Is.EqualTo(originalCommitId),
+            "RewardCommitId는 reload 후 같은 값으로 복원된다 (deterministic dedup baseline).");
+        Assert.That(reloaded.ActiveRun?.Overlay.RewardSourceId, Is.EqualTo(originalRewardSourceId));
+        Assert.That(reloaded.PendingRewardChoices.Count, Is.EqualTo(originalPendingCount),
+            "pending reward choice 수가 reload 후 같다.");
+    }
+
+    [Test]
+    public void Defeat_StampsRewardCommitId_AndDoesNotEmitRewardChoiceLedgerEntry()
+    {
+        // task-reward-settlement-commit-v1 acceptance #5/#6 evidence:
+        // defeat path는 RewardCommitId를 stamp하지만 reward_choice ledger entry를 만들지 않는다
+        // (commit 미발생). ActiveRun도 corrupt되지 않는다.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+        session.MarkBattleResolved(false, 5, 2);
+
+        Assert.That(session.ActiveRun, Is.Not.Null);
+        Assert.That(session.ActiveRun!.LastSettlementWasVictory, Is.False,
+            "defeat 결과가 ActiveRun에 반영된다.");
+
+        var defeatCommitId = session.ActiveRun.Overlay.RewardCommitId;
+        Assert.That(defeatCommitId, Is.Not.Empty,
+            "defeat도 deterministic CommitId를 stamp한다 (outcome=defeat).");
+
+        var rewardChoiceEntries = session.Profile.RewardLedger.Count(entry =>
+            entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
+        Assert.That(rewardChoiceEntries, Is.EqualTo(0),
+            "defeat 시 ApplyRewardChoice 미호출 → reward_choice ledger entry는 0.");
+    }
+
+    [Test]
     public void BindProfile_RestoresRewardCommitId_AndLedgerEntriesAreStampedWithIt()
     {
         // task-reward-settlement-commit-v1 acceptance #3 / #4:
