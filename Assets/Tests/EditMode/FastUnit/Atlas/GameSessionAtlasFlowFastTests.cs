@@ -195,6 +195,42 @@ public sealed class GameSessionAtlasFlowFastTests
     }
 
     [Test]
+    public void RunBattlePayload_StageAdvanceDoesNotDriftRunIdentity()
+    {
+        var session = CreateBoundSession();
+        session.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        session.SelectAtlasSigil(region, "sigil_beast_spoils");
+        session.PlaceSelectedAtlasSigil(region, "hex_m1_m1");
+        session.SelectAtlasNode(region, "hex_m2_1");
+
+        Assert.That(session.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        var stage0 = session.RunBattlePayload;
+        Assert.That(stage0, Is.Not.Null, "stage 0 payload는 첫 handoff 직후 세팅돼야 한다.");
+
+        // Stage advance — current node가 0 → 1로 진행되면 다음 node 선택이 가능해진다.
+        Assert.That(session.ResolveSelectedExpeditionNode(), Is.True);
+        Assert.That(session.CurrentExpeditionNodeIndex, Is.EqualTo(1));
+
+        session.SelectAtlasNode(region, "hex_m1_2");
+        Assert.That(session.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        var stage1 = session.RunBattlePayload;
+        Assert.That(stage1, Is.Not.Null, "stage 1 payload는 advance 이후 재handoff에서 세팅돼야 한다.");
+
+        // Run-level identity는 stage advance에서 drift하지 않는다.
+        Assert.That(stage1!.RunId, Is.EqualTo(stage0!.RunId));
+        Assert.That(stage1.ChapterId, Is.EqualTo(stage0.ChapterId));
+        Assert.That(stage1.SiteId, Is.EqualTo(stage0.SiteId));
+        Assert.That(stage1.SquadSnapshotId, Is.EqualTo(stage0.SquadSnapshotId));
+
+        // Stage-dependent field는 변경된다 — drift는 expected field로 국한.
+        Assert.That(stage1.SiteNodeIndex, Is.EqualTo(1));
+        Assert.That(stage1.SiteNodeIndex, Is.Not.EqualTo(stage0.SiteNodeIndex));
+        Assert.That(stage1.BattleContextHash, Is.Not.EqualTo(stage0.BattleContextHash));
+    }
+
+    [Test]
     public void AtlasSelectionHandoff_KeepsAuthoredEncounterIdentityWhenModifiersApply()
     {
         var session = CreateBoundSession();
