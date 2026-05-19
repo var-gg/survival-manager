@@ -76,6 +76,39 @@ public sealed class EncounterResolutionServiceFastTests
     }
 
     [Test]
+    public void BuildBattleContextFromPayload_TryResolveEncounter_PreservesAuthoredCharacterId()
+    {
+        // task-battle-entry-authored-node-v1 acceptance #2: payload entry path가 authored V2
+        // CharacterId (예: npc_*, extra_*)를 보존한 채 BattleParticipantSpec까지 전달해야 한다.
+        var snapshot = CreateSnapshot();
+        var resolver = new EncounterResolutionService(snapshot);
+        var run = CreateRun();
+        var payload = new RunBattlePayload(
+            RunId: run.RunId,
+            ChapterId: "chapter_test",
+            SiteId: "site_test",
+            SiteNodeIndex: 0,
+            EncounterId: "encounter_test",
+            ExpeditionNodeId: "node_0",
+            SquadSnapshotId: "snap_1",
+            StageCandidatePathHash: "spch",
+            NodeOverlayHash: "noh",
+            BattleContextHash: "deadbeef1234567890abcdef1234567890abcdef1234567890abcdef12345678",
+            RewardBiasPercent: 0,
+            ThreatPressurePercent: 0,
+            AffinityBoostPercent: 0,
+            ResolvedModifierIds: Array.Empty<string>());
+
+        var context = resolver.BuildBattleContextFromPayload(run, payload);
+        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error);
+
+        var enemy = resolved.Enemies.Single();
+        Assert.That(enemy.ArchetypeId, Is.EqualTo("reaver"));
+        Assert.That(enemy.CharacterId, Is.EqualTo("npc_grey_fang"),
+            "RunBattlePayload entry path가 authored CharacterId를 BattleParticipantSpec까지 보존해야.");
+    }
+
+    [Test]
     public void BuildBattleContextFromPayload_InvalidPayload_FallsBackToDebugSmoke()
     {
         var snapshot = CreateSnapshot();
