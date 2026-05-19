@@ -434,7 +434,7 @@ public static class LocalizationFoundationBootstrap
             ["ui.town.compendium.metric.unlock"] = ("공개", "Reveal", false),
             ["ui.town.compendium.status_rule.hard_control"] = ("하드 제어", "hard control", false),
             ["ui.town.compendium.status_rule.diminishing"] = ("점감", "diminishing", false),
-            ["ui.town.compendium.status_rule.tenacity"] = ("강인함 {0}", "tenacity {0}", true),
+            ["ui.town.compendium.status_rule.tenacity"] = ("강인함 {0}", "tenacity {0}", false),
             ["ui.town.compendium.status_rule.periodic_damage"] = ("주기 피해", "periodic damage", false),
             ["ui.town.compendium.status_rule.rule_modifier"] = ("규칙 보정", "rule modifier", false),
             ["ui.town.compendium.vfx.preview"] = ("연출 미리보기", "VFX Preview", false),

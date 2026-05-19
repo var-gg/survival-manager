@@ -44,7 +44,9 @@ public sealed class PlayModeSmokeTests
         var startButtonLabel = GameObject.Find("OfflineLocalButtonText")?.GetComponent<UIText>();
         Assert.That(startButton, Is.Not.Null, BuildSceneDiagnostic("Boot scene should expose the Start Local Run button."));
         Assert.That(startButtonLabel, Is.Not.Null, BuildSceneDiagnostic("Boot scene should expose the Start Local Run label."));
-        Assert.That(startButtonLabel!.text, Is.EqualTo("Start Local Run"));
+        // localization-agnostic: 한국어 환경에서는 "로컬 실행 시작", 영문 환경에서는 "Start Local Run".
+        Assert.That(startButtonLabel!.text, Is.EqualTo("Start Local Run").Or.EqualTo("로컬 실행 시작"),
+            $"OfflineLocalButton label은 영문 또는 한국어로 표시 (실제: '{startButtonLabel.text}').");
         Assert.That(GameObject.Find("OnlineAuthoritativeButton"), Is.Null, "Boot scene should not expose the hidden future-seam online button.");
 
         startButton!.onClick.Invoke();
