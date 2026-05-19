@@ -131,6 +131,36 @@ public sealed class RunLoopContractFastTests
     }
 
     [Test]
+    public void MarkBattleResolved_StampsDeterministicRewardCommitIdOnOverlay()
+    {
+        // task-reward-settlement-commit-v1 acceptance #1 통합 evidence:
+        // MarkBattleResolved 시점에 RewardCommitIdService.Compute로 deterministic id를 만들고
+        // ActiveRun.Overlay.RewardCommitId에 stamp한다. battleContextHash + outcome 조합으로
+        // dedup key가 결정되므로 같은 input에서 같은 id가 재현된다.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        // BattleContextHash는 BuildBattleLoadoutSnapshot 시점(TryBuildBattleContext + SetBattleContext)에 stamping된다.
+        var snapshot = session.BuildBattleLoadoutSnapshot();
+        Assert.That(snapshot, Is.Not.Null);
+        var battleContextHash = session.ActiveRun?.Overlay.BattleContextHash;
+        Assert.That(battleContextHash, Is.Not.Null);
+        Assert.That(battleContextHash, Is.Not.Empty,
+            "Battle loadout compile 후 BattleContextHash가 overlay에 stamping돼야 한다.");
+
+        session.MarkBattleResolved(true, 8, 4);
+        var commitId = session.ActiveRun?.Overlay.RewardCommitId;
+        Assert.That(commitId, Is.Not.Empty,
+            "MarkBattleResolved가 RewardCommitId를 overlay에 stamping해야 한다 (acceptance #1).");
+
+        var expected = SM.Meta.Services.RewardCommitIdService.Compute(battleContextHash!, "victory");
+        Assert.That(commitId, Is.EqualTo(expected),
+            "stamping된 RewardCommitId는 RewardCommitIdService.Compute 결과와 일치한다 (deterministic dedup key).");
+    }
+
+    [Test]
     public void BindProfile_ResumesRewardSettlementWithoutDuplicatingRewardLedger()
     {
         var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();

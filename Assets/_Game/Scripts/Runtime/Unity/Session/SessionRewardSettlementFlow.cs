@@ -179,6 +179,14 @@ public sealed partial class GameSessionState
 
             if (_session.ActiveRun != null)
             {
+                // task-reward-settlement-commit-v1 acceptance #1: pending reward에 deterministic
+                // RewardCommitId를 stamp한다. battleContextHash + outcome으로 dedup key 생성.
+                // shouldCreateRewardSettlement=false인 sandbox/quick-battle lane은 commit id를 비운다.
+                var battleContextHash = _session.ActiveRun.Overlay.BattleContextHash;
+                var rewardCommitId = shouldCreateRewardSettlement && !string.IsNullOrWhiteSpace(battleContextHash)
+                    ? RewardCommitIdService.Compute(battleContextHash, victory ? "victory" : "defeat")
+                    : string.Empty;
+
                 _session.ActiveRun = _session.ActiveRun with
                 {
                     LastSettlementWasVictory = victory,
@@ -186,6 +194,7 @@ public sealed partial class GameSessionState
                     {
                         PendingRewardIds = shouldCreateRewardSettlement ? _session.ActiveRun.Overlay.PendingRewardIds : Array.Empty<string>(),
                         RewardSourceId = shouldCreateRewardSettlement ? _session.ActiveRun.Overlay.RewardSourceId : string.Empty,
+                        RewardCommitId = rewardCommitId,
                     }
                 };
             }

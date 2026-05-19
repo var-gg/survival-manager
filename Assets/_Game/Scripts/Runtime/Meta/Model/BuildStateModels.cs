@@ -66,7 +66,8 @@ public sealed record RunOverlayState(
     string BattleContextHash = "",
     string RewardSourceId = "",
     string FirstSelectedTemporaryAugmentId = "",
-    string PendingPermanentUnlockId = "");
+    string PendingPermanentUnlockId = "",
+    string RewardCommitId = "");
 
 public sealed record ActiveRunState(
     string RunId,
