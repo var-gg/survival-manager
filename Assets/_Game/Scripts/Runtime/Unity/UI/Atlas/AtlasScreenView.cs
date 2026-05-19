@@ -16,6 +16,7 @@ public sealed class AtlasScreenView
     private readonly VisualElement _sigilPool;
     private readonly VisualElement _stageCandidateList;
     private readonly VisualElement _spineProgressStrip;
+    private readonly VisualElement _siteTrackStrip;
     private readonly Label _regionTitle;
     private readonly Label _placementSummary;
     private readonly Label _previewTitle;
@@ -40,6 +41,7 @@ public sealed class AtlasScreenView
         _sigilPool = Require<VisualElement>("atlas-sigil-pool");
         _stageCandidateList = Require<VisualElement>("atlas-stage-candidate-list");
         _spineProgressStrip = Require<VisualElement>("atlas-spine-progress-strip");
+        _siteTrackStrip = Require<VisualElement>("atlas-sitetrack-strip");
         _regionTitle = Require<Label>("atlas-region-title");
         _placementSummary = Require<Label>("atlas-placement-summary");
         _previewTitle = Require<Label>("atlas-preview-title");
@@ -76,6 +78,7 @@ public sealed class AtlasScreenView
         RenderBoard(state);
         RenderSigilPool(state);
         RenderSpineProgress(state);
+        RenderSiteTrack(state);
         RenderStageCandidates(state);
         RenderPreview(state.Preview);
         _content.MarkDirtyRepaint();
@@ -135,6 +138,54 @@ public sealed class AtlasScreenView
             element.EnableInClassList("is-locked", stage.IsLocked);
             _spineProgressStrip.Add(element);
         }
+    }
+
+    private void RenderSiteTrack(AtlasScreenViewState state)
+    {
+        _siteTrackStrip.Clear();
+        var ordered = state.SpineStages.OrderBy(stage => stage.SiteNodeIndex).ToArray();
+        foreach (var stage in ordered)
+        {
+            var node = new VisualElement
+            {
+                tooltip = $"{stage.SiteNodeIndex + 1}/{ordered.Length} · {stage.Label}",
+            };
+            node.AddToClassList("sitetrack-node");
+            var kindToken = string.IsNullOrWhiteSpace(stage.StageKind) ? "unknown" : stage.StageKind;
+            node.AddToClassList($"sitetrack-node__kind-{kindToken}");
+            node.EnableInClassList("sitetrack-node--current", stage.IsCurrent);
+            node.EnableInClassList("sitetrack-node--completed", stage.IsCompleted && !stage.IsCurrent);
+            node.EnableInClassList("sitetrack-node--locked", stage.IsLocked && !stage.IsCurrent);
+
+            var icon = new Label(ResolveSiteTrackIcon(kindToken, stage.IsCompleted, stage.IsCurrent));
+            icon.AddToClassList("sitetrack-node__icon");
+            icon.pickingMode = PickingMode.Ignore;
+            node.Add(icon);
+
+            var label = new Label(stage.Label);
+            label.AddToClassList("sitetrack-node__label");
+            label.pickingMode = PickingMode.Ignore;
+            node.Add(label);
+
+            _siteTrackStrip.Add(node);
+        }
+    }
+
+    private static string ResolveSiteTrackIcon(string kindToken, bool isCompleted, bool isCurrent)
+    {
+        if (isCompleted && !isCurrent)
+        {
+            return "✓";
+        }
+
+        return kindToken switch
+        {
+            "skirmish" => "⚔",
+            "elite" => "★",
+            "boss" => "☠",
+            "extract" => "⇧",
+            _ => "•",
+        };
     }
 
     private void RenderStageCandidates(AtlasScreenViewState state)

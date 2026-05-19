@@ -558,3 +558,85 @@
 .atlas-spine-stage.is-locked {
     opacity: 0.48;
 }
+
+.sitetrack-strip {
+    min-height: 64px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(12, 15, 17, 0.66);
+    border-width: 1px;
+    border-color: rgba(255, 218, 138, 0.26);
+    border-radius: 8px;
+    margin-top: 8px;
+    padding: 6px 10px;
+}
+
+.sitetrack-node {
+    width: 92px;
+    min-height: 48px;
+    margin-left: 4px;
+    margin-right: 4px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.18);
+    background-color: rgba(40, 47, 53, 0.72);
+    padding: 4px 6px;
+    align-items: center;
+    justify-content: center;
+}
+
+.sitetrack-node__icon {
+    font-size: 18px;
+    unity-font-style: bold;
+    color: rgb(220, 226, 220);
+    margin-bottom: 2px;
+}
+
+.sitetrack-node__label {
+    font-size: 11px;
+    unity-font-style: bold;
+    color: rgb(200, 210, 202);
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.sitetrack-node--current {
+    border-color: rgb(245, 204, 112);
+    background-color: rgba(92, 74, 38, 0.92);
+}
+
+.sitetrack-node--current .sitetrack-node__icon,
+.sitetrack-node--current .sitetrack-node__label {
+    color: rgb(255, 238, 190);
+}
+
+.sitetrack-node--completed {
+    border-color: rgba(95, 173, 126, 0.78);
+    background-color: rgba(38, 64, 50, 0.78);
+}
+
+.sitetrack-node--completed .sitetrack-node__icon,
+.sitetrack-node--completed .sitetrack-node__label {
+    color: rgb(176, 223, 173);
+}
+
+.sitetrack-node--locked {
+    opacity: 0.46;
+}
+
+.sitetrack-node__kind-skirmish .sitetrack-node__icon {
+    color: rgb(228, 192, 142);
+}
+
+.sitetrack-node__kind-elite .sitetrack-node__icon {
+    color: rgb(232, 158, 218);
+}
+
+.sitetrack-node__kind-boss .sitetrack-node__icon {
+    color: rgb(241, 132, 132);
+}
+
+.sitetrack-node__kind-extract .sitetrack-node__icon {
+    color: rgb(120, 214, 178);
+}

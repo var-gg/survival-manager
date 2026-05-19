@@ -42,5 +42,7 @@
         </ui:VisualElement>
 
         <ui:VisualElement name="atlas-spine-progress-strip" class="atlas-spine-progress-strip" />
+
+        <ui:VisualElement name="atlas-sitetrack-strip" class="sitetrack-strip" />
     </ui:VisualElement>
 </ui:UXML>
