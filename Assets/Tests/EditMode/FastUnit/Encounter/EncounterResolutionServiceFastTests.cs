@@ -38,6 +38,80 @@ public sealed class EncounterResolutionServiceFastTests
         Assert.That(enemy.CharacterId, Is.EqualTo("npc_grey_fang"));
     }
 
+    [Test]
+    public void BuildBattleContextFromPayload_AuthoredEncounter_PreservesIdentityAndHash()
+    {
+        var snapshot = CreateSnapshot();
+        var resolver = new EncounterResolutionService(snapshot);
+        var run = CreateRun();
+        var payload = new RunBattlePayload(
+            RunId: run.RunId,
+            ChapterId: "chapter_test",
+            SiteId: "site_test",
+            SiteNodeIndex: 0,
+            EncounterId: "encounter_test",
+            ExpeditionNodeId: "expedition_node_0",
+            SquadSnapshotId: "squad_snapshot_1",
+            StageCandidatePathHash: "spch_a",
+            NodeOverlayHash: "noh_b",
+            BattleContextHash: "deadbeef1234567890abcdef1234567890abcdef1234567890abcdef12345678",
+            RewardBiasPercent: 15,
+            ThreatPressurePercent: 5,
+            AffinityBoostPercent: 10,
+            ResolvedModifierIds: new[] { "RewardBias:reward" });
+
+        var context = resolver.BuildBattleContextFromPayload(run, payload);
+
+        // payload.EncounterId가 catalog에 있으므로 직접 lookup; debug_smoke_observer로 fallback 금지.
+        Assert.That(context.EncounterId, Is.EqualTo("encounter_test"));
+        Assert.That(context.ChapterId, Is.EqualTo("chapter_test"));
+        Assert.That(context.SiteId, Is.EqualTo("site_test"));
+        Assert.That(context.SiteNodeIndex, Is.EqualTo(0));
+        // payload.BattleContextHash가 그대로 보존된다 (Atlas hash → Battle context 운반).
+        Assert.That(context.BattleContextHash, Is.EqualTo("deadbeef1234567890abcdef1234567890abcdef1234567890abcdef12345678"));
+        // Encounter content가 reward/faction/kind를 채운다.
+        Assert.That(context.RewardSourceId, Is.EqualTo("reward_source_test"));
+        Assert.That(context.FactionId, Is.EqualTo("faction_wolfpine"));
+        Assert.That(context.IsBoss, Is.False);
+    }
+
+    [Test]
+    public void BuildBattleContextFromPayload_InvalidPayload_FallsBackToDebugSmoke()
+    {
+        var snapshot = CreateSnapshot();
+        var resolver = new EncounterResolutionService(snapshot);
+        var run = CreateRun();
+
+        var context = resolver.BuildBattleContextFromPayload(run, RunBattlePayload.Empty);
+
+        // 무효 payload는 normal authored path를 타지 않고 debug smoke로 fallback (safety).
+        Assert.That(context.EncounterId, Is.EqualTo("debug_smoke_observer"));
+        Assert.That(context.SiteId, Is.EqualTo("quick_smoke"));
+    }
+
+    private static ActiveRunState CreateRun()
+    {
+        return new ActiveRunState(
+            RunId: "run_test_001",
+            ExpeditionId: "expedition_test_001",
+            Blueprint: new SquadBlueprintState(
+                BlueprintId: "blueprint_test",
+                DisplayName: "Blueprint Test",
+                TeamPosture: TeamPostureType.StandardAdvance,
+                TeamTacticId: "tactic_default",
+                DeploymentAssignments: new Dictionary<DeploymentAnchorId, string>(),
+                ExpeditionSquadHeroIds: Array.Empty<string>(),
+                HeroRoleIds: new Dictionary<string, string>(StringComparer.Ordinal)),
+            Overlay: new RunOverlayState(
+                CurrentNodeIndex: 0,
+                TemporaryAugmentIds: Array.Empty<string>(),
+                PendingRewardIds: Array.Empty<string>(),
+                CompileVersion: "v1",
+                LastCompileHash: "hash_v1"),
+            BattleDeployHeroIds: Array.Empty<string>(),
+            IsQuickBattle: false);
+    }
+
     private static CombatContentSnapshot CreateSnapshot()
     {
         return new CombatContentSnapshot(

@@ -142,6 +142,41 @@ public sealed class EncounterResolutionService
             encounter.BossOverlayId);
     }
 
+    /// <summary>
+    /// RunBattlePayload 기반 Battle context 생성. payload가 운반하는 EncounterId가 authored catalog에
+    /// 있으면 그 encounter content로 직접 매핑하고 payload.BattleContextHash를 그대로 보존한다
+    /// (normal path가 debug_smoke_observer로 fallback하지 않도록).
+    /// payload가 무효이거나 EncounterId가 catalog 미상이면 legacy site/nodeIndex 또는 debug smoke로 fallback.
+    /// task-battle-entry-authored-node-v1 acceptance #1/#2/#6.
+    /// </summary>
+    public BattleContextState BuildBattleContextFromPayload(ActiveRunState run, RunBattlePayload payload)
+    {
+        if (payload == null || !payload.IsValid)
+        {
+            return BuildDebugSmokeContext(run, 0);
+        }
+
+        if (HasAuthoredCatalog
+            && _content.Encounters!.TryGetValue(payload.EncounterId, out var encounter))
+        {
+            return new BattleContextState(
+                payload.ChapterId,
+                payload.SiteId,
+                payload.SiteNodeIndex,
+                payload.EncounterId,
+                ComputeSeed(payload.BattleContextHash),
+                payload.BattleContextHash,
+                encounter.RewardSourceId,
+                Math.Max(1, encounter.ThreatSkulls),
+                encounter.Kind == EncounterKindValue.Boss,
+                encounter.FactionId,
+                encounter.BossOverlayId);
+        }
+
+        // Encounter id가 catalog에 없으면 site/nodeIndex로 legacy 경로 재시도.
+        return BuildBattleContext(run, payload.ChapterId, payload.SiteId, payload.SiteNodeIndex);
+    }
+
     public BattleContextState BuildDebugSmokeContext(ActiveRunState run, int nodeIndex)
     {
         var contextHash = ComputeContextHash(run.RunId, "debug", "quick_smoke", nodeIndex, "debug_smoke_observer", "reward_source_debug_smoke");
