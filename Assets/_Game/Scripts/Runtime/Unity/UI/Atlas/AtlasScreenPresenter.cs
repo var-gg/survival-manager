@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
+using SM.Meta.Services;
 
 namespace SM.Unity.UI.Atlas;
 
@@ -260,6 +261,12 @@ public sealed class AtlasScreenPresenter
         var recommended = string.Join("\n", preview.RecommendedCharacters.Select(character =>
             $"{AtlasReadabilityFormatter.FormatCharacterName(character.CharacterId, character.DisplayName)} - {AtlasReadabilityFormatter.FormatRole(character.Role)} ({AtlasReadabilityFormatter.FormatRecommendationReason(character.Reason)})"));
 
+        // task-atlas-modifier-application-v1 acceptance #5 (3 surface 일관 표시) Atlas surface 측 closure —
+        // RewardScreen settlement summary가 이미 노출하는 ThreatBand 분기를
+        // Atlas preview에서도 같은 service 결과로 노출해 두 surface가 같은 값을 보이도록 한다.
+        var threatBand = AtlasModifierApplicationService.ComputeThreatBand(selectedStack?.ThreatPressurePercent ?? 0);
+        var threatBandLabel = AtlasReadabilityFormatter.FormatThreatBand(threatBand);
+
         return new AtlasPreviewPanelViewState(
             AtlasReadabilityFormatter.FormatNodeLabel(preview.NodeLabel),
             AtlasReadabilityFormatter.BuildJudgementLine(selectedNode, selectedStack),
@@ -268,7 +275,8 @@ public sealed class AtlasScreenPresenter
             AtlasReadabilityFormatter.BuildRewardPreview(selectedNode, selectedStack),
             recommended,
             AtlasReadabilityFormatter.FormatBoundaryNote(),
-            $"NodeOverlayHash={preview.NodeOverlayHash[..12]} / BattleContextHash={preview.BattleContextHash[..12]} / stageCandidatePathHash={stageCandidatePathHash[..12]} / input=runId>chapterId>siteId>nodeIndex>encounterId>stageCandidatePathHash>NodeOverlayHash>squadSnapshotId");
+            $"NodeOverlayHash={preview.NodeOverlayHash[..12]} / BattleContextHash={preview.BattleContextHash[..12]} / stageCandidatePathHash={stageCandidatePathHash[..12]} / input=runId>chapterId>siteId>nodeIndex>encounterId>stageCandidatePathHash>NodeOverlayHash>squadSnapshotId",
+            ThreatBandLabel: threatBandLabel);
     }
 
     private string BuildPlacementSummary(AtlasNodeModifierStack? selectedStack, string sigilSnapshotHash, int activeSigilCap)

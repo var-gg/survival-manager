@@ -452,6 +452,38 @@
     white-space: normal;
 }
 
+.atlas-preview-threat-band {
+    align-self: flex-start;
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: rgba(95, 173, 126, 0.52);
+    background-color: rgba(38, 64, 50, 0.62);
+    color: rgb(176, 223, 173);
+    font-size: 11px;
+    unity-font-style: bold;
+}
+
+.atlas-preview-threat-band.is-elevated {
+    border-color: rgba(231, 178, 83, 0.62);
+    background-color: rgba(99, 78, 36, 0.72);
+    color: rgb(255, 224, 158);
+}
+
+.atlas-preview-threat-band.is-high {
+    border-color: rgba(219, 98, 105, 0.66);
+    background-color: rgba(112, 46, 50, 0.72);
+    color: rgb(255, 226, 220);
+}
+
+.atlas-preview-threat-band.is-severe {
+    border-color: rgba(255, 92, 92, 0.84);
+    background-color: rgba(135, 28, 36, 0.84);
+    color: rgb(255, 240, 234);
+}
+
 .atlas-preview-label {
     font-size: 11px;
     unity-font-style: bold;

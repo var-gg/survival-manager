@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
+using SM.Meta.Services;
 using SM.Unity.UI.Atlas;
 using UnityEngine.UIElements;
 
@@ -208,6 +209,27 @@ public sealed class AtlasV2SpineSigilFastTests
         Assert.That(directNumberPattern.IsMatch(visibleText), Is.False, visibleText);
     }
 
+    [Test]
+    public void PreviewPanel_ThreatBandLabel_MatchesComputeThreatBand()
+    {
+        // task-atlas-modifier-application-v1 acceptance #5: Atlas preview ViewState가 같은
+        // ComputeThreatBand 분기를 한국어 라벨로 노출해 RewardScreen settlement summary와 같은 값을 보인다.
+        var presenter = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion());
+        var state = presenter.Build();
+
+        Assert.That(state.Preview.ThreatBandLabel, Is.Not.Null);
+        Assert.That(
+            state.Preview.ThreatBandLabel,
+            Is.AnyOf("안정", "고조", "과중", "극단"),
+            "ThreatBandLabel은 ComputeThreatBand 4개 band의 한국어 라벨이어야 한다.");
+
+        var allBandLabels = Enum.GetValues(typeof(AtlasThreatBand))
+            .Cast<AtlasThreatBand>()
+            .Select(AtlasReadabilityFormatter.FormatThreatBand)
+            .ToArray();
+        Assert.That(allBandLabels, Is.EqualTo(new[] { "안정", "고조", "과중", "극단" }));
+    }
+
     private static AtlasAnchorVisibilityState FindAnchorState(AtlasScreenViewState state, string nodeId)
     {
         return state.Tiles.Single(tile => tile.NodeId == nodeId).AnchorVisibilityState;
@@ -236,6 +258,7 @@ public sealed class AtlasV2SpineSigilFastTests
         root.Add(new Label { name = "atlas-placement-summary" });
         root.Add(new Label { name = "atlas-preview-title" });
         root.Add(new Label { name = "atlas-preview-judgement" });
+        root.Add(new Label { name = "atlas-preview-threat-band" });
         root.Add(new Label { name = "atlas-preview-enemy" });
         root.Add(new Label { name = "atlas-preview-modifiers" });
         root.Add(new Label { name = "atlas-preview-reward" });

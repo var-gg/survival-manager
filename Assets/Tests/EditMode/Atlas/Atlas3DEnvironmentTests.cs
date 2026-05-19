@@ -116,6 +116,7 @@ public sealed class Atlas3DEnvironmentTests
         root.Add(new Label { name = "atlas-placement-summary" });
         root.Add(new Label { name = "atlas-preview-title" });
         root.Add(new Label { name = "atlas-preview-judgement" });
+        root.Add(new Label { name = "atlas-preview-threat-band" });
         root.Add(new Label { name = "atlas-preview-enemy" });
         root.Add(new Label { name = "atlas-preview-modifiers" });
         root.Add(new Label { name = "atlas-preview-reward" });

@@ -71,7 +71,8 @@ public sealed record AtlasPreviewPanelViewState(
     string RewardPreview,
     string RecommendedCharacters,
     string BoundaryNote,
-    string DebugHashLine);
+    string DebugHashLine,
+    string ThreatBandLabel = "");
 
 public sealed record AtlasScreenViewState(
     string RegionTitle,

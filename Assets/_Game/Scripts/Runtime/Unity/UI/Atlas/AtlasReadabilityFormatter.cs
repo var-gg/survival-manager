@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SM.Atlas.Model;
+using SM.Meta.Services;
 
 namespace SM.Unity.UI.Atlas;
 
@@ -342,6 +343,23 @@ public static class AtlasReadabilityFormatter
     public static string FormatBoundaryNote()
     {
         return "각인은 노드의 보상 가중·위협 압력·인연 보정만 바꾸며, 전투 보상 이름표를 직접 만들지 않습니다.";
+    }
+
+    /// <summary>
+    /// AtlasModifierApplicationService.ComputeThreatBand 결과를 Atlas preview chip 표시용
+    /// 짧은 한국어 라벨로 변환한다. task-atlas-modifier-application-v1 acceptance #5
+    /// (3 surface 일관 표시) Atlas surface 측 closure — RewardScreen settlement summary와
+    /// 같은 band 분기를 공유하되 chip 컨텍스트에 맞춰 접두사 없는 짧은 형태로 노출.
+    /// </summary>
+    public static string FormatThreatBand(AtlasThreatBand band)
+    {
+        return band switch
+        {
+            AtlasThreatBand.Elevated => "고조",
+            AtlasThreatBand.High => "과중",
+            AtlasThreatBand.Severe => "극단",
+            _ => "안정",
+        };
     }
 
     public static string FormatSpineStageLabel(int stageIndex)

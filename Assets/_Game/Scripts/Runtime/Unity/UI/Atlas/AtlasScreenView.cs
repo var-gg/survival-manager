@@ -21,6 +21,7 @@ public sealed class AtlasScreenView
     private readonly Label _placementSummary;
     private readonly Label _previewTitle;
     private readonly Label _judgement;
+    private readonly Label _threatBand;
     private readonly Label _enemy;
     private readonly Label _modifiers;
     private readonly Label _reward;
@@ -46,6 +47,7 @@ public sealed class AtlasScreenView
         _placementSummary = Require<Label>("atlas-placement-summary");
         _previewTitle = Require<Label>("atlas-preview-title");
         _judgement = Require<Label>("atlas-preview-judgement");
+        _threatBand = Require<Label>("atlas-preview-threat-band");
         _enemy = Require<Label>("atlas-preview-enemy");
         _modifiers = Require<Label>("atlas-preview-modifiers");
         _reward = Require<Label>("atlas-preview-reward");
@@ -209,12 +211,24 @@ public sealed class AtlasScreenView
     {
         _previewTitle.text = preview.Title;
         _judgement.text = preview.JudgementLine;
+        RenderThreatBand(preview.ThreatBandLabel);
         _enemy.text = preview.EnemyPreview;
         _modifiers.text = preview.ModifierStack;
         _reward.text = preview.RewardPreview;
         _recommendations.text = preview.RecommendedCharacters;
         _boundary.text = preview.BoundaryNote;
         _hash.text = preview.DebugHashLine;
+    }
+
+    private void RenderThreatBand(string label)
+    {
+        // task-atlas-modifier-application-v1 acceptance #5: AtlasModifierApplicationService.ComputeThreatBand
+        // 결과를 chip으로 노출. RewardScreen settlement summary와 같은 band 분기를 공유하면서
+        // Atlas preview는 base("안정")도 명시해 현재 노드 위협 상태를 항상 한 줄로 읽히도록 한다.
+        _threatBand.text = string.IsNullOrEmpty(label) ? string.Empty : $"위협 {label}";
+        _threatBand.EnableInClassList("is-elevated", label == "고조");
+        _threatBand.EnableInClassList("is-high", label == "과중");
+        _threatBand.EnableInClassList("is-severe", label == "극단");
     }
 
     private void RenderStageCandidateBadge(AtlasHexTileViewState tile)
