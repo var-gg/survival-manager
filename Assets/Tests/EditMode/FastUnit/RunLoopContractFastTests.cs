@@ -161,6 +161,36 @@ public sealed class RunLoopContractFastTests
     }
 
     [Test]
+    public void RunOverlay_TraceFields_AreFullyPopulatedAfterBattleResolve()
+    {
+        // task-vertical-slice-smoke-evidence-v1 acceptance #2 EditMode 통합 evidence:
+        // Town → Atlas (implicit BeginNew) → Battle → MarkBattleResolved 한 phase가 끝났을 때
+        // RunId + ChapterId + SiteId + SiteNodeIndex + EncounterId + BattleContextHash +
+        // RewardSourceId + RewardCommitId 7 trace field가 모두 stamping돼 있어야 한다.
+        // PlayMode smoke가 동등한 traversal을 돌릴 때 이 fields를 직접 report로 dump한다.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+        session.MarkBattleResolved(true, 10, 5);
+
+        var run = session.ActiveRun;
+        Assert.That(run, Is.Not.Null);
+        Assert.That(run!.RunId, Is.Not.Empty, "RunId stamping.");
+
+        var overlay = run.Overlay;
+        Assert.That(overlay.ChapterId, Is.Not.Empty, "ChapterId stamping.");
+        Assert.That(overlay.SiteId, Is.Not.Empty, "SiteId stamping.");
+        Assert.That(overlay.SiteNodeIndex, Is.GreaterThanOrEqualTo(0), "SiteNodeIndex stamping (0-based).");
+        Assert.That(overlay.EncounterId, Is.Not.Empty, "EncounterId stamping (authored or canonical).");
+        Assert.That(overlay.BattleContextHash, Is.Not.Empty, "BattleContextHash stamping (deterministic hash).");
+        Assert.That(overlay.RewardSourceId, Is.Not.Empty, "RewardSourceId stamping (settlement payload).");
+        Assert.That(overlay.RewardCommitId, Is.Not.Empty, "RewardCommitId stamping (commit-once dedup key).");
+    }
+
+    [Test]
     public void RunEnd_InvalidatesAtlasSessionAndRunBattlePayloadAndPendingReward()
     {
         // task-run-save-resume-idempotence-v1 acceptance #4: run end는 Atlas session, RunBattlePayload,
