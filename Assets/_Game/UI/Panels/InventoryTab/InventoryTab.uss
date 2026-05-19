@@ -69,3 +69,28 @@
     -unity-slice-bottom: 64;
     -unity-slice-scale: 0.34;
 }
+
+.inv-detail__name-bar {
+    min-height: 64px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.inv-detail__name-copy {
+    flex-grow: 1;
+}
+
+.inv-detail__name {
+    font-size: 13px;
+}
+
+.inv-detail__meta,
+.inv-detail__set {
+    margin-top: 3px;
+}
+
+.inv-detail__links {
+    margin-top: 5px;
+}

@@ -4,6 +4,7 @@
     <Style src="../../Foundation/Styles/ThemeTokens.uss" />
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
     <Style src="../../Foundation/USS/foundation_glow.uss" />
+    <Style src="../../Foundation/USS/common_detail.uss" />
     <Style src="../../Screens/Town/Preview/InventoryPreview.uss" />
     <Style src="InventoryTab.uss" />
     <ui:VisualElement name="InvRoot" class="inv-root">
@@ -47,10 +48,16 @@
                 </ui:VisualElement>
 
                 <!-- Right detail panel -->
-                <ui:VisualElement class="inv-detail">
-                    <ui:VisualElement name="DetailIcon" class="inv-detail__icon" picking-mode="Ignore" />
+                <ui:VisualElement class="inv-detail sm-cd-panel">
+                    <ui:VisualElement name="DetailIcon" class="inv-detail__icon sm-cd-icon" picking-mode="Ignore" />
                     <ui:VisualElement class="inv-detail__name-bar">
                         <ui:VisualElement class="inv-detail__name-glyph" picking-mode="Ignore" />
+                        <ui:VisualElement class="inv-detail__name-copy">
+                            <ui:Label name="DetailNameLabel" class="inv-detail__name sm-cd-title" />
+                            <ui:Label name="DetailMetaLabel" class="inv-detail__meta sm-cd-meta" />
+                            <ui:Label name="DetailSetBonusLabel" class="inv-detail__set sm-cd-body-text" />
+                            <ui:VisualElement name="DetailCrossLinks" class="inv-detail__links sm-cd-tag-row" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement name="DetailAffixes" class="inv-detail__affixes" />
                     <ui:VisualElement class="inv-detail__owner">

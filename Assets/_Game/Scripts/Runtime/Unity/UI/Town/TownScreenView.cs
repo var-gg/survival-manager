@@ -40,6 +40,8 @@ public sealed class TownScreenView
     private readonly Label _compendiumEntryLabel;
     private readonly Button _squadBuilderButton;
     private readonly Label _squadBuilderEntryLabel;
+    private readonly Button _tacticalWorkshopButton;
+    private readonly Label _tacticalWorkshopEntryLabel;
     private readonly Button _permanentAugmentButton;
     private readonly Label _permanentAugmentEntryLabel;
     private readonly Button _theaterButton;
@@ -85,6 +87,8 @@ public sealed class TownScreenView
         _compendiumEntryLabel = Require<Label>(root, "CompendiumEntryLabel");
         _squadBuilderButton = Require<Button>(root, "SquadBuilderButton");
         _squadBuilderEntryLabel = Require<Label>(root, "SquadBuilderEntryLabel");
+        _tacticalWorkshopButton = Require<Button>(root, "TacticalWorkshopButton");
+        _tacticalWorkshopEntryLabel = Require<Label>(root, "TacticalWorkshopEntryLabel");
         _permanentAugmentButton = Require<Button>(root, "PermanentAugmentButton");
         _permanentAugmentEntryLabel = Require<Label>(root, "PermanentAugmentEntryLabel");
         _theaterButton = Require<Button>(root, "TheaterButton");
@@ -116,6 +120,7 @@ public sealed class TownScreenView
     public void BindRosterOpen(Action open) => _rosterButton.clicked += open;
     public void BindCompendiumOpen(Action open) => _compendiumButton.clicked += open;
     public void BindSquadBuilderOpen(Action open) => _squadBuilderButton.clicked += open;
+    public void BindTacticalWorkshopOpen(Action open) => _tacticalWorkshopButton.clicked += open;
     public void BindPermanentAugmentOpen(Action open) => _permanentAugmentButton.clicked += open;
     public void BindTheaterOpen(Action open) => _theaterButton.clicked += open;
 
@@ -144,6 +149,7 @@ public sealed class TownScreenView
         _rosterEntryLabel.text = state.RosterEntryLabel;
         _compendiumEntryLabel.text = state.CompendiumEntryLabel;
         _squadBuilderEntryLabel.text = state.SquadBuilderEntryLabel;
+        _tacticalWorkshopEntryLabel.text = state.TacticalWorkshopEntryLabel;
         _permanentAugmentEntryLabel.text = state.PermanentAugmentEntryLabel;
         _theaterEntryLabel.text = state.TheaterEntryLabel;
         _clusterEyebrowLabel.text = state.ClusterEyebrow;

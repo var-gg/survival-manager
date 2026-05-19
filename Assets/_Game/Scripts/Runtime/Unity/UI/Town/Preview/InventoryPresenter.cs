@@ -165,6 +165,35 @@ public sealed class InventoryPresenter : IInventoryActions
 
     private InventoryDetailViewState BuildDetail(InventoryItemRecord item, string iconKey)
     {
+        var name = item.ItemBaseId;
+        var slotLabel = "item";
+        var rarityKey = "common";
+        var weaponFamilyLabel = "item";
+        var setBonusTier = string.Empty;
+        var crossLinks = new List<string>();
+        if (_root.CombatContentLookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
+        {
+            name = _contentText?.GetItemName(item.ItemBaseId) ?? itemDef.LegacyDisplayName;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = itemDef.Id;
+            }
+
+            slotLabel = ResolveSlotKey(itemDef.SlotType);
+            rarityKey = itemDef.RarityTier.ToString().ToLowerInvariant();
+            var familyKey = ResolveFamilyKey(itemDef);
+            weaponFamilyLabel = WeaponFamilyLabels.TryGetValue(familyKey, out var label) ? label : familyKey;
+            setBonusTier = string.IsNullOrWhiteSpace(itemDef.BudgetBand)
+                ? "set bonus schema pending"
+                : $"budget {itemDef.BudgetBand}";
+            crossLinks.Add(slotLabel);
+            crossLinks.Add(weaponFamilyLabel);
+            if (!string.IsNullOrWhiteSpace(itemDef.CraftCategory))
+            {
+                crossLinks.Add(itemDef.CraftCategory);
+            }
+        }
+
         var affixes = item.AffixIds
             .Select(affixId =>
             {
@@ -186,7 +215,13 @@ public sealed class InventoryPresenter : IInventoryActions
         return new InventoryDetailViewState(
             ItemInstanceId: item.ItemInstanceId,
             IconSprite: _affixSprite(iconKey) ?? _affixSprite(item.ItemBaseId),
-            Affixes: affixes);
+            Affixes: affixes,
+            Name: name,
+            SlotLabel: slotLabel,
+            RarityKey: rarityKey,
+            WeaponFamilyLabel: weaponFamilyLabel,
+            SetBonusTier: setBonusTier,
+            CrossLinks: crossLinks);
     }
 
     private IReadOnlyList<InventoryCategoryViewState> BuildCategories(IReadOnlyList<InventoryItemPresentation> entries)

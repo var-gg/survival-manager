@@ -246,6 +246,7 @@ public sealed class TownScreenPresenter
             RosterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.roster", "◈  동료 명부"),
             CompendiumEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.compendium", "도감"),
             SquadBuilderEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.squad_builder", "❖  전열 편성"),
+            TacticalWorkshopEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.tactical_workshop", "전술 공방"),
             PermanentAugmentEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.permanent_augment", "✦  영구 강화"),
             TheaterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.theater", "▶  극장"),
             ClusterEyebrow: Localize(GameLocalizationTables.UITown, "ui.town.cluster.eyebrow", "잿골에 머무는 동료"));

@@ -39,7 +39,13 @@ public sealed record InventoryAffixRowViewState(
 public sealed record InventoryDetailViewState(
     string ItemInstanceId,
     Texture2D? IconSprite,
-    IReadOnlyList<InventoryAffixRowViewState> Affixes
+    IReadOnlyList<InventoryAffixRowViewState> Affixes,
+    string Name = "",
+    string SlotLabel = "",
+    string RarityKey = "",
+    string WeaponFamilyLabel = "",
+    string SetBonusTier = "",
+    IReadOnlyList<string>? CrossLinks = null
 );
 
 public sealed record InventoryViewState(

@@ -3,16 +3,17 @@
       잿골 Town hub V3 — pindoc://decision-town-hub-v3-ashglen-face-cluster.
       얼굴 중심 사각형 카드 cluster + 가변 deploy + 4 NPC ambient + 표정 swap + 바크 layer.
       Layout: top utility bar / middle backdrop+welcome captain / bottom NPC strip + hero cluster + utility column / CTA bar.
-      Modal Instance layer는 V2와 동일한 overlay wrapper를 확장 (Squad/Recruit/Equipment/Passive/Inventory/PermAugment/Roster/Compendium).
+      Modal Instance layer는 Panels/** ArtBible source를 production Town modal로 승격한다.
     -->
-    <ui:Template name="SquadBuilderTemplate" src="SquadBuilder.uxml" />
-    <ui:Template name="RecruitTemplate" src="Preview/RecruitPreview.uxml" />
-    <ui:Template name="EquipmentRefitTemplate" src="Preview/EquipmentRefitPreview.uxml" />
-    <ui:Template name="PassiveBoardTemplate" src="Preview/PassiveBoardPreview.uxml" />
-    <ui:Template name="PermanentAugmentTemplate" src="Preview/PermanentAugmentPreview.uxml" />
-    <ui:Template name="InventoryTemplate" src="Preview/InventoryPreview.uxml" />
-    <ui:Template name="RosterTemplate" src="Preview/RosterGridPreview.uxml" />
-    <ui:Template name="CompendiumTemplate" src="Preview/CompendiumPreview.uxml" />
+    <ui:Template name="SquadBuilderTemplate" src="../../Panels/TownSquadBuilder/TownSquadBuilder.uxml" />
+    <ui:Template name="RecruitTemplate" src="../../Panels/RecruitPack/RecruitPack.uxml" />
+    <ui:Template name="EquipmentRefitTemplate" src="../../Panels/EquipmentRefit/EquipmentRefit.uxml" />
+    <ui:Template name="PassiveBoardTemplate" src="../../Panels/PassiveBoard/PassiveBoard.uxml" />
+    <ui:Template name="PermanentAugmentTemplate" src="../../Panels/PermanentAugment/PermanentAugment.uxml" />
+    <ui:Template name="InventoryTemplate" src="../../Panels/InventoryTab/InventoryTab.uxml" />
+    <ui:Template name="RosterTemplate" src="../../Panels/TownRosterGrid/TownRosterGrid.uxml" />
+    <ui:Template name="CompendiumTemplate" src="../../Panels/SkillCompendium/SkillCompendium.uxml" />
+    <ui:Template name="TacticalWorkshopTemplate" src="../../Panels/TacticalWorkshop/TacticalWorkshop.uxml" />
     <ui:VisualElement name="TownScreenRoot" class="screen town-hub town-hub--v3">
         <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop sm-backdrop" picking-mode="Ignore" />
         <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim sm-backdrop-dim" picking-mode="Ignore" />
@@ -60,6 +61,9 @@
                 </ui:Button>
                 <ui:Button name="SquadBuilderButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
                     <ui:Label name="SquadBuilderEntryLabel" class="town-hub__utility-name" text="❖  전열 편성" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="TacticalWorkshopButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
+                    <ui:Label name="TacticalWorkshopEntryLabel" class="town-hub__utility-name" text="전술 공방" picking-mode="Ignore" />
                 </ui:Button>
                 <ui:Button name="PermanentAugmentButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
                     <ui:Label name="PermanentAugmentEntryLabel" class="town-hub__utility-name" text="✦  영구 강화" picking-mode="Ignore" />
@@ -115,6 +119,9 @@
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="CompendiumTemplate" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
+            <ui:Instance template="TacticalWorkshopTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

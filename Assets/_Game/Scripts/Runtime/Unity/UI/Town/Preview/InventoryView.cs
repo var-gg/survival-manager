@@ -19,6 +19,10 @@ public sealed class InventoryView
     private readonly VisualElement _itemGrid;
     private readonly VisualElement _detailIcon;
     private readonly VisualElement _detailAffixes;
+    private readonly Label? _detailNameLabel;
+    private readonly Label? _detailMetaLabel;
+    private readonly Label? _detailSetBonusLabel;
+    private readonly VisualElement? _detailCrossLinks;
     private readonly VisualElement? _modalRoot;
     private readonly Button? _closeButton;
     private readonly Button? _equipButton;
@@ -70,6 +74,10 @@ public sealed class InventoryView
             ?? throw new ArgumentException("DetailIcon 못 찾음");
         _detailAffixes = root.Q<VisualElement>("DetailAffixes")
             ?? throw new ArgumentException("DetailAffixes 못 찾음");
+        _detailNameLabel = root.Q<Label>("DetailNameLabel");
+        _detailMetaLabel = root.Q<Label>("DetailMetaLabel");
+        _detailSetBonusLabel = root.Q<Label>("DetailSetBonusLabel");
+        _detailCrossLinks = root.Q<VisualElement>("DetailCrossLinks");
 
         // Currency amount labels — 옛 mock의 hardcoded text는 UXML에 있음 ("9,876,543" 등).
         // V1: currency 부모 element 안의 inv-currency__amount Label 두 개.
@@ -177,11 +185,28 @@ public sealed class InventoryView
         {
             _currentDetailItemInstanceId = string.Empty;
             _detailAffixes.Clear();
+            if (_detailNameLabel != null) _detailNameLabel.text = string.Empty;
+            if (_detailMetaLabel != null) _detailMetaLabel.text = string.Empty;
+            if (_detailSetBonusLabel != null) _detailSetBonusLabel.text = string.Empty;
+            _detailCrossLinks?.Clear();
             return;
         }
 
         _currentDetailItemInstanceId = detail.ItemInstanceId;
         if (detail.IconSprite != null) _detailIcon.style.backgroundImage = new StyleBackground(detail.IconSprite);
+        if (_detailNameLabel != null) _detailNameLabel.text = detail.Name;
+        if (_detailMetaLabel != null)
+        {
+            _detailMetaLabel.text = $"{detail.SlotLabel} / {detail.RarityKey} / {detail.WeaponFamilyLabel}";
+        }
+        if (_detailSetBonusLabel != null)
+        {
+            _detailSetBonusLabel.text = detail.SetBonusTier;
+            _detailSetBonusLabel.style.display = string.IsNullOrWhiteSpace(detail.SetBonusTier)
+                ? DisplayStyle.None
+                : DisplayStyle.Flex;
+        }
+        RenderCrossLinks(detail.CrossLinks);
 
         _detailAffixes.Clear();
         string? previousGroup = null;
@@ -209,6 +234,35 @@ public sealed class InventoryView
             row.Add(value);
 
             _detailAffixes.Add(row);
+        }
+    }
+
+    private void RenderCrossLinks(System.Collections.Generic.IReadOnlyList<string>? crossLinks)
+    {
+        if (_detailCrossLinks == null)
+        {
+            return;
+        }
+
+        _detailCrossLinks.Clear();
+        _detailCrossLinks.style.display = crossLinks == null || crossLinks.Count == 0
+            ? DisplayStyle.None
+            : DisplayStyle.Flex;
+        if (crossLinks == null)
+        {
+            return;
+        }
+
+        foreach (var link in crossLinks)
+        {
+            if (string.IsNullOrWhiteSpace(link))
+            {
+                continue;
+            }
+
+            var chip = new Label(link);
+            chip.AddToClassList("sm-cd-tag");
+            _detailCrossLinks.Add(chip);
         }
     }
 

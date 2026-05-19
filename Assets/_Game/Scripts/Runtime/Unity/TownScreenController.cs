@@ -26,6 +26,8 @@ public sealed class TownScreenController : MonoBehaviour
     private InventoryPresenter? _inventoryPresenter;
     private PermanentAugmentPresenter? _permanentAugmentPresenter;
     private CompendiumPresenter? _compendiumPresenter;
+    private TacticalWorkshopPresenter? _tacticalWorkshopPresenter;
+    private TacticalWorkshopView? _tacticalWorkshopView;
     private RosterGridView? _rosterModalView;
     // jjjj hub V3 NPC mapping (pindoc://decision-town-hub-v3-ashglen-face-cluster):
     //   달목 → Recruit / 쇠매 → EquipmentRefit / 갈마 → PassiveBoard / 솔길 → Inventory.
@@ -105,6 +107,7 @@ public sealed class TownScreenController : MonoBehaviour
         TryWirePermanentAugment(panelHost.Root, view);
         TryWireCompendium(panelHost.Root, view);
         TryWireSquadBuilder(panelHost.Root, view);
+        TryWireTacticalWorkshop(panelHost.Root, view);
         TryWireRoster(panelHost.Root, view);
 
         view.BindTheaterOpen(() => _presenter?.Refresh("극장 (Theater) — story replay surface 후속 wire."));
@@ -202,6 +205,29 @@ public sealed class TownScreenController : MonoBehaviour
             view.BindCompendiumOpen(_compendiumPresenter.Open);
         }
         catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Compendium wire 실패: {e.Message}"); }
+    }
+
+    private void TryWireTacticalWorkshop(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            _tacticalWorkshopView = new TacticalWorkshopView(root);
+            _tacticalWorkshopPresenter = new TacticalWorkshopPresenter(
+                _root,
+                _tacticalWorkshopView,
+                _contentIconResolver.ResolveAny,
+                _contentIconResolver.ResolveAny,
+                _contentIconResolver.ResolveAny);
+            _tacticalWorkshopPresenter.Initialize();
+            _tacticalWorkshopView.BindClose(_tacticalWorkshopView.Close);
+            _tacticalWorkshopView.Close();
+            view.BindTacticalWorkshopOpen(() =>
+            {
+                _tacticalWorkshopView.Open();
+                _tacticalWorkshopPresenter.Refresh();
+            });
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] TacticalWorkshop wire 실패: {e.Message}"); }
     }
 
     private void TryWireSquadBuilder(UnityEngine.UIElements.VisualElement root, TownScreenView view)

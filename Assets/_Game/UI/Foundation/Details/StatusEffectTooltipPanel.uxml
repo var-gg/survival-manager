@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="../USS/common_detail.uss" />
+    <ui:VisualElement name="StatusEffectTooltipPanel" class="sm-cd-panel">
+        <ui:VisualElement class="sm-cd-chip">
+            <ui:VisualElement name="StatusEffectIcon" class="sm-cd-icon" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-cd-copy">
+                <ui:Label name="StatusEffectNameLabel" class="sm-cd-title" />
+                <ui:Label name="StatusEffectDurationLabel" class="sm-cd-meta" />
+                <ui:Label name="StatusEffectOwnerLabel" class="sm-cd-body-text" />
+                <ui:Label name="StatusEffectPersistenceLabel" class="sm-cd-body-text" />
+                <ui:Label name="StatusEffectCleanseLabel" class="sm-cd-body-text" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

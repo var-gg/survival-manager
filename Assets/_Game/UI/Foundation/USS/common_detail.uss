@@ -1,0 +1,107 @@
+.sm-cd-modal {
+    background-color: var(--sm-transparent);
+}
+
+.sm-cd-panel {
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a36);
+    border-right-color: var(--sm-gold-300-a36);
+    border-top-color: var(--sm-gold-300-a36);
+    border-bottom-color: var(--sm-gold-300-a36);
+}
+
+.sm-cd-body {
+    flex-grow: 1;
+}
+
+.sm-cd-card,
+.sm-cd-chip {
+    background-color: var(--sm-vellum-a08);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a24);
+    border-right-color: var(--sm-gold-300-a24);
+    border-top-color: var(--sm-gold-300-a24);
+    border-bottom-color: var(--sm-gold-300-a24);
+}
+
+.sm-cd-copy {
+    flex-grow: 1;
+}
+
+.sm-cd-icon {
+    background-color: var(--sm-bg-portrait-a82);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-muted-a54);
+    border-right-color: var(--sm-gold-muted-a54);
+    border-top-color: var(--sm-gold-muted-a54);
+    border-bottom-color: var(--sm-gold-muted-a54);
+}
+
+.sm-cd-kicker,
+.sm-cd-meta {
+    color: var(--sm-gold-100);
+    font-size: 9px;
+    -unity-font-style: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sm-cd-title {
+    color: var(--sm-ink-0);
+    font-size: 11px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.sm-cd-body-text {
+    margin-top: 3px;
+    color: var(--sm-ink-2);
+    font-size: 9px;
+    line-height: 12px;
+    white-space: normal;
+}
+
+.sm-cd-tag-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.sm-cd-tag {
+    margin-right: 4px;
+    margin-bottom: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    color: var(--sm-gold-100);
+    font-size: 8px;
+    background-color: var(--sm-gold-300-a12);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a24);
+    border-right-color: var(--sm-gold-300-a24);
+    border-top-color: var(--sm-gold-300-a24);
+    border-bottom-color: var(--sm-gold-300-a24);
+}
+
+.sm-cd-bottom-sheet.sm-bs-unit-detail-backdrop--mobile .sm-cd-panel {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    width: auto;
+    max-height: 82%;
+}

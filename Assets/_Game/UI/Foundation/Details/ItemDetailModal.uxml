@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="../USS/common_detail.uss" />
+    <ui:VisualElement name="ItemDetailModal" class="sm-cd-modal sm-cd-bottom-sheet">
+        <ui:VisualElement name="ItemDetailPanel" class="sm-cd-panel">
+            <ui:VisualElement class="sm-cd-card">
+                <ui:VisualElement name="ItemDetailIcon" class="sm-cd-icon" picking-mode="Ignore" />
+                <ui:VisualElement class="sm-cd-copy">
+                    <ui:Label name="ItemDetailNameLabel" class="sm-cd-title" />
+                    <ui:Label name="ItemDetailMetaLabel" class="sm-cd-meta" />
+                    <ui:Label name="ItemDetailBudgetLabel" class="sm-cd-body-text" />
+                    <ui:VisualElement name="ItemDetailAffixes" class="sm-cd-tag-row" />
+                    <ui:VisualElement name="ItemDetailCrossLinks" class="sm-cd-tag-row" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

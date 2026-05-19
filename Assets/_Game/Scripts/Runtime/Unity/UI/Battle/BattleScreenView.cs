@@ -783,10 +783,13 @@ public sealed class BattleScreenView
             var state = slots[i];
             var slot = new VisualElement();
             slot.AddToClassList("sm-bs-skill-slot");
-            slot.EnableInClassList("sm-bs-skill-slot--signature", i is 0 or 2);
-            slot.EnableInClassList("sm-bs-skill-slot--flex", i is 1 or 3);
+            slot.AddToClassList("sm-cd-card");
+            slot.AddToClassList($"sm-bs-skill-slot--{state.PresentationStyle}");
+            slot.EnableInClassList("sm-bs-skill-slot--signature", state.IsSignatureSlot);
+            slot.EnableInClassList("sm-bs-skill-slot--flex", state.IsFlexSlot);
+            slot.EnableInClassList("sm-bs-skill-slot--active", state.IsActiveSlot);
             slot.EnableInClassList("sm-bs-skill-slot--missing", state.Icon == null);
-            slot.tooltip = string.IsNullOrWhiteSpace(state.SkillId) ? state.SkillName : state.SkillId;
+            slot.tooltip = BuildSkillTooltip(state);
 
             if (state.Icon != null)
             {
@@ -797,6 +800,7 @@ public sealed class BattleScreenView
                     pickingMode = PickingMode.Ignore
                 };
                 icon.AddToClassList("sm-bs-skill-icon");
+                icon.AddToClassList("sm-cd-icon");
                 slot.Add(icon);
             }
             else
@@ -804,14 +808,91 @@ public sealed class BattleScreenView
                 var fallback = new Label(BuildInitial(state.SkillName));
                 fallback.AddToClassList("sm-bs-skill-icon");
                 fallback.AddToClassList("sm-bs-skill-icon--missing");
+                fallback.AddToClassList("sm-cd-icon");
                 slot.Add(fallback);
             }
 
-            var label = new Label($"{state.SlotLabel}\n{state.SkillName}");
+            var copy = new VisualElement();
+            copy.AddToClassList("sm-cd-copy");
+            var slotLabel = new Label(state.SlotLabel);
+            slotLabel.AddToClassList("sm-cd-kicker");
+            copy.Add(slotLabel);
+            var label = new Label(state.SkillName);
             label.AddToClassList("sm-bs-skill-label");
-            slot.Add(label);
+            label.AddToClassList("sm-cd-title");
+            copy.Add(label);
+            if (!string.IsNullOrWhiteSpace(state.TimingText))
+            {
+                var timing = new Label(state.TimingText);
+                timing.AddToClassList("sm-cd-meta");
+                copy.Add(timing);
+            }
+
+            if (!string.IsNullOrWhiteSpace(state.EffectSummary))
+            {
+                var summary = new Label(state.EffectSummary);
+                summary.AddToClassList("sm-cd-body-text");
+                copy.Add(summary);
+            }
+
+            if (state.Tags.Count > 0)
+            {
+                copy.Add(BuildTagRow(state.Tags));
+            }
+
+            slot.Add(copy);
             _skillPresentationSlots.Add(slot);
         }
+    }
+
+    private static string BuildSkillTooltip(BattleSkillSlotViewState state)
+    {
+        var lines = new List<string> { state.SkillName };
+        if (!string.IsNullOrWhiteSpace(state.SkillId))
+        {
+            lines.Add(state.SkillId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(state.Description))
+        {
+            lines.Add(state.Description);
+        }
+
+        if (!string.IsNullOrWhiteSpace(state.TimingText))
+        {
+            lines.Add(state.TimingText);
+        }
+
+        if (!string.IsNullOrWhiteSpace(state.EffectSummary))
+        {
+            lines.Add(state.EffectSummary);
+        }
+
+        if (!string.IsNullOrWhiteSpace(state.ScalingSummary))
+        {
+            lines.Add(state.ScalingSummary);
+        }
+
+        if (state.Tags.Count > 0)
+        {
+            lines.Add(string.Join(" / ", state.Tags));
+        }
+
+        return string.Join("\n", lines);
+    }
+
+    private static VisualElement BuildTagRow(IReadOnlyList<string> tags)
+    {
+        var row = new VisualElement();
+        row.AddToClassList("sm-cd-tag-row");
+        foreach (var tag in tags)
+        {
+            var chip = new Label(tag);
+            chip.AddToClassList("sm-cd-tag");
+            row.Add(chip);
+        }
+
+        return row;
     }
 
     private void RenderEquipment(IReadOnlyList<BattleEquipmentSlotViewState>? slots)
@@ -906,8 +987,9 @@ public sealed class BattleScreenView
         {
             var element = new VisualElement();
             element.AddToClassList("sm-bs-status-chip");
+            element.AddToClassList("sm-cd-chip");
             element.EnableInClassList("sm-bs-status-chip--permanent", chip.Section == BattleStatusEffectSection.Permanent);
-            element.tooltip = $"{chip.Label}\n{chip.SourceActorName}";
+            element.tooltip = BuildStatusTooltip(chip);
 
             if (chip.Icon != null)
             {
@@ -918,6 +1000,7 @@ public sealed class BattleScreenView
                     pickingMode = PickingMode.Ignore
                 };
                 icon.AddToClassList("sm-bs-status-chip-icon");
+                icon.AddToClassList("sm-cd-icon");
                 element.Add(icon);
             }
             else
@@ -925,12 +1008,18 @@ public sealed class BattleScreenView
                 var fallback = new Label(BuildInitial(chip.Label));
                 fallback.AddToClassList("sm-bs-status-chip-icon");
                 fallback.AddToClassList("sm-bs-status-chip-icon--missing");
+                fallback.AddToClassList("sm-cd-icon");
                 element.Add(fallback);
             }
 
             var label = new Label(chip.Label);
             label.AddToClassList("sm-bs-status-chip-label");
+            label.AddToClassList("sm-cd-title");
             element.Add(label);
+
+            var meta = new Label(chip.DurationText);
+            meta.AddToClassList("sm-cd-meta");
+            element.Add(meta);
 
             if (chip.StackCount > 1)
             {
@@ -947,6 +1036,24 @@ public sealed class BattleScreenView
             element.Add(ring);
             container.Add(element);
         }
+    }
+
+    private static string BuildStatusTooltip(BattleStatusEffectChip chip)
+    {
+        var lines = new List<string>
+        {
+            chip.Label,
+            chip.SourceActorName,
+            chip.DurationText,
+            chip.PersistenceText,
+            chip.CleanseText
+        };
+        if (!string.IsNullOrWhiteSpace(chip.Description))
+        {
+            lines.Insert(1, chip.Description);
+        }
+
+        return string.Join("\n", lines.Where(line => !string.IsNullOrWhiteSpace(line)));
     }
 
     private static void RenderDialGrid(VisualElement container, IReadOnlyList<BattleTacticDial>? dials)

@@ -37,16 +37,17 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("DeployRow"));
         Assert.That(uxml, Does.Contain("RosterRow"));
         Assert.That(uxml, Does.Contain("BarkLayer"));
-        // Utility entries (4)
+        // Utility entries
         Assert.That(uxml, Does.Contain("RosterButton"));
         Assert.That(uxml, Does.Contain("CompendiumButton"));
         Assert.That(uxml, Does.Contain("SquadBuilderButton"));
+        Assert.That(uxml, Does.Contain("TacticalWorkshopButton"));
         Assert.That(uxml, Does.Contain("PermanentAugmentButton"));
         Assert.That(uxml, Does.Contain("TheaterButton"));
         // CTA
         Assert.That(uxml, Does.Contain("QuickBattleButton"));
         Assert.That(uxml, Does.Contain("ExpeditionButton"));
-        // Modal Templates — 8 (Squad/Recruit/Equipment/Passive/PermAugment/Inventory/Roster/Compendium)
+        // Modal Templates — production Town uses Assets/_Game/UI/Panels/** as ArtBible source.
         Assert.That(uxml, Does.Contain("SquadBuilderTemplate"));
         Assert.That(uxml, Does.Contain("RecruitTemplate"));
         Assert.That(uxml, Does.Contain("EquipmentRefitTemplate"));
@@ -55,7 +56,13 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("InventoryTemplate"));
         Assert.That(uxml, Does.Contain("RosterTemplate"));
         Assert.That(uxml, Does.Contain("CompendiumTemplate"));
-        var compendiumUxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/Preview/CompendiumPreview.uxml");
+        Assert.That(uxml, Does.Contain("TacticalWorkshopTemplate"));
+        Assert.That(uxml, Does.Contain("../../Panels/RecruitPack/RecruitPack.uxml"));
+        Assert.That(uxml, Does.Contain("../../Panels/EquipmentRefit/EquipmentRefit.uxml"));
+        Assert.That(uxml, Does.Contain("../../Panels/InventoryTab/InventoryTab.uxml"));
+        Assert.That(uxml, Does.Contain("../../Panels/SkillCompendium/SkillCompendium.uxml"));
+        Assert.That(uxml, Does.Contain("../../Panels/TacticalWorkshop/TacticalWorkshop.uxml"));
+        var compendiumUxml = File.ReadAllText("Assets/_Game/UI/Panels/SkillCompendium/SkillCompendium.uxml");
         Assert.That(compendiumUxml, Does.Contain("CompendiumSearchField"));
         Assert.That(compendiumUxml, Does.Contain("CompendiumClassFilter"));
         Assert.That(compendiumUxml, Does.Contain("CompendiumSlotFilter"));
@@ -84,16 +91,13 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Not.Contain("FilterStrip"));           // V1 RosterGrid filter chip
         Assert.That(uxml, Does.Not.Contain("EquipmentRefitButton"));  // V2 toolbar — NPC click 매핑
         Assert.That(uxml, Does.Not.Contain("PassiveBoardButton"));    // V2 toolbar
-        // TacticalWorkshop은 commit dbbb9d4a에서 분리 (audit §2.2 + P1-1)
-        Assert.That(uxml, Does.Not.Contain("TacticalWorkshopButton"));
-        Assert.That(uxml, Does.Not.Contain("TacticalWorkshopTemplate"));
     }
 
     [Test]
     public void SquadBuilderUxml_Declares_All_Anchor_And_Posture_Controls()
     {
         // audit §2.2 SquadBuilder modal — anchor 6 (Front 3 + Back 3) + posture 5.
-        var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/SquadBuilder.uxml");
+        var uxml = File.ReadAllText("Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uxml");
         Assert.That(uxml, Does.Contain("SquadBuilderRoot"));
         Assert.That(uxml, Does.Contain("SquadBuilderCloseButton"));
         // 6 anchor
@@ -109,5 +113,38 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("SquadBuilderPosture_ProtectCarry"));
         Assert.That(uxml, Does.Contain("SquadBuilderPosture_CollapseWeakSide"));
         Assert.That(uxml, Does.Contain("SquadBuilderPosture_AllInBackline"));
+    }
+
+    [Test]
+    public void CommonDetailContracts_Declare_Skill_Item_Status_Surfaces()
+    {
+        var uss = File.ReadAllText("Assets/_Game/UI/Foundation/USS/common_detail.uss");
+        Assert.That(uss, Does.Contain("sm-cd-modal"));
+        Assert.That(uss, Does.Contain("sm-cd-bottom-sheet"));
+        Assert.That(uss, Does.Contain("sm-cd-card"));
+        Assert.That(uss, Does.Contain("sm-cd-tag"));
+
+        var skill = File.ReadAllText("Assets/_Game/UI/Foundation/Details/SkillDetailModal.uxml");
+        Assert.That(skill, Does.Contain("SkillDetailNameLabel"));
+        Assert.That(skill, Does.Contain("SkillDetailTimingLabel"));
+        Assert.That(skill, Does.Contain("SkillDetailScalingLabel"));
+
+        var item = File.ReadAllText("Assets/_Game/UI/Foundation/Details/ItemDetailModal.uxml");
+        Assert.That(item, Does.Contain("ItemDetailMetaLabel"));
+        Assert.That(item, Does.Contain("ItemDetailBudgetLabel"));
+        Assert.That(item, Does.Contain("ItemDetailCrossLinks"));
+
+        var status = File.ReadAllText("Assets/_Game/UI/Foundation/Details/StatusEffectTooltipPanel.uxml");
+        Assert.That(status, Does.Contain("StatusEffectDurationLabel"));
+        Assert.That(status, Does.Contain("StatusEffectOwnerLabel"));
+        Assert.That(status, Does.Contain("StatusEffectCleanseLabel"));
+
+        var battle = File.ReadAllText("Assets/_Game/UI/Screens/Battle/BattleScreen.uxml");
+        Assert.That(battle, Does.Contain("sm-cd-modal"));
+        Assert.That(battle, Does.Contain("sm-cd-panel"));
+
+        var inventory = File.ReadAllText("Assets/_Game/UI/Panels/InventoryTab/InventoryTab.uxml");
+        Assert.That(inventory, Does.Contain("DetailCrossLinks"));
+        Assert.That(inventory, Does.Contain("sm-cd-panel"));
     }
 }

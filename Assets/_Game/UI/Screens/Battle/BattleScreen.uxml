@@ -1,4 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="../../Foundation/USS/common_detail.uss" />
     <ui:VisualElement name="BattleScreenRoot" class="screen battle-screen sm-bs-shell">
         <ui:VisualElement name="TopChrome" class="screen__topbar screen__toolbar sm-bs-topbar">
             <ui:Label name="TitleLabel" class="screen__title sm-bs-title" />
@@ -77,8 +78,8 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <ui:VisualElement name="SelectedUnitPanel" class="sm-bs-unit-detail-backdrop">
-            <ui:VisualElement name="UnitDetailPanel" class="panel battle-shell__selected-unit sm-bs-unit-detail-panel sm-vellum-card">
+        <ui:VisualElement name="SelectedUnitPanel" class="sm-bs-unit-detail-backdrop sm-cd-modal sm-cd-bottom-sheet">
+            <ui:VisualElement name="UnitDetailPanel" class="panel battle-shell__selected-unit sm-bs-unit-detail-panel sm-vellum-card sm-cd-panel">
                 <ui:VisualElement class="sm-bs-unit-detail-header">
                     <ui:Label name="SelectedUnitHeaderLabel" class="panel__title sm-bs-section-title sm-bs-unit-detail-title" />
                     <ui:Button name="UnitDetailCloseButton" class="ui-button sm-bs-control-btn sm-bs-unit-detail-close" />
@@ -105,7 +106,7 @@
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="UnitDetailTabBody" class="sm-bs-unit-tab-body">
+                    <ui:VisualElement name="UnitDetailTabBody" class="sm-bs-unit-tab-body sm-cd-body">
                         <ui:VisualElement name="UnitDetailOverviewContent" class="sm-bs-unit-tab-content">
                             <ui:VisualElement name="OverviewCoreStats" class="sm-bs-stat-grid sm-bs-stat-grid--overview" />
                             <ui:VisualElement name="OverviewFormationGrid" class="sm-bs-anchor-grid" />

@@ -17,6 +17,7 @@ namespace SM.Unity.UI.Town.Preview;
 public sealed class TacticalWorkshopView
 {
     private readonly VisualElement _root;
+    private readonly Button? _closeButton;
     private readonly VisualElement _anchorPad;
     private readonly VisualElement _postureRow;
     private readonly VisualElement _synergyRow;
@@ -27,7 +28,9 @@ public sealed class TacticalWorkshopView
 
     public TacticalWorkshopView(VisualElement root)
     {
-        _root = root ?? throw new ArgumentNullException(nameof(root));
+        if (root == null) throw new ArgumentNullException(nameof(root));
+        _root = root.Q<VisualElement>("TwpRoot") ?? root;
+        _closeButton = root.Q<Button>(className: "twp-header__close");
         _anchorPad = root.Q<VisualElement>(className: "twp-anchor-pad")
             ?? throw new ArgumentException("twp-anchor-pad 못 찾음");
         _postureRow = root.Q<VisualElement>("PostureCardRow")
@@ -43,6 +46,28 @@ public sealed class TacticalWorkshopView
     public void Bind(ITacticalWorkshopActions actions)
     {
         _actions = actions;
+    }
+
+    public void BindClose(Action close)
+    {
+        if (_closeButton == null || close == null) return;
+        _closeButton.clicked += close;
+    }
+
+    public void Open()
+    {
+        _root.style.display = DisplayStyle.Flex;
+        _root.RemoveFromClassList("sm-modal-anim--enter");
+        var wrapper = _root.parent?.parent;
+        if (wrapper != null) wrapper.style.display = DisplayStyle.Flex;
+    }
+
+    public void Close()
+    {
+        _root.style.display = DisplayStyle.None;
+        _root.AddToClassList("sm-modal-anim--enter");
+        var wrapper = _root.parent?.parent;
+        if (wrapper != null) wrapper.style.display = DisplayStyle.None;
     }
 
     public void Render(TacticalWorkshopViewState state)

@@ -1239,6 +1239,10 @@ MonoBehaviour:
     m_Key: ui.town.compendium.vfx.prefab_missing
     m_Metadata:
       m_Items: []
+  - m_Id: 17841341873852458
+    m_Key: ui.town.entry.tactical_workshop
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

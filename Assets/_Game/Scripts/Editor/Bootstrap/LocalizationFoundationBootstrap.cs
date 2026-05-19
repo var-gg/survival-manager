@@ -381,6 +381,7 @@ public static class LocalizationFoundationBootstrap
             ["ui.town.entry.roster"] = ("◈  동료 명부", "◈  Roster", false),
             ["ui.town.entry.compendium"] = ("도감", "Compendium", false),
             ["ui.town.entry.squad_builder"] = ("❖  전열 편성", "❖  Squad Builder", false),
+            ["ui.town.entry.tactical_workshop"] = ("전술 공방", "Tactical Workshop", false),
             ["ui.town.entry.permanent_augment"] = ("✦  영구 강화", "✦  Permanent Augment", false),
             ["ui.town.entry.theater"] = ("▶  극장", "▶  Theater", false),
             ["ui.town.cluster.eyebrow"] = ("잿골에 머무는 동료", "Comrades staying in Ashglen", false),

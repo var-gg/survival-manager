@@ -11,7 +11,17 @@ public sealed record BattleSkillSlotViewState(
     string SlotLabel,
     string SkillName,
     string SkillId,
-    Texture2D? Icon);
+    Texture2D? Icon,
+    string Description,
+    string TimingText,
+    string EffectSummary,
+    string ScalingSummary,
+    IReadOnlyList<string> Tags,
+    bool IsSignatureSlot,
+    bool IsFlexSlot,
+    bool IsActiveSlot,
+    bool HasResolvedDefinition,
+    string PresentationStyle);
 
 public enum BattleStatLineCategory
 {
@@ -43,7 +53,11 @@ public sealed record BattleStatusEffectChip(
     float MaxDurationSeconds,
     int StackCount,
     string SourceActorName,
-    BattleStatusEffectSection Section);
+    BattleStatusEffectSection Section,
+    string Description,
+    string DurationText,
+    string PersistenceText,
+    string CleanseText);
 
 public sealed record BattleTacticDial(
     string Label,
@@ -103,6 +117,7 @@ public readonly record struct BattleUnitOverheadText(
 public sealed class BattleUnitMetadataFormatter
 {
     private readonly GameLocalizationController _localization;
+    private readonly ICombatContentLookup _lookup;
     private readonly ContentTextResolver _contentText;
     private readonly ContentIconResolver _iconResolver;
     private readonly BattleUnitPortraitResolver _portraitResolver = new();
@@ -112,6 +127,7 @@ public sealed class BattleUnitMetadataFormatter
         ICombatContentLookup lookup)
     {
         _localization = localization;
+        _lookup = lookup;
         _contentText = new ContentTextResolver(localization, lookup);
         _iconResolver = new ContentIconResolver(lookup);
     }
@@ -291,30 +307,54 @@ public sealed class BattleUnitMetadataFormatter
                 AxisLabel("ui.battle.skill.signature_active", "고유 액티브", "Signature"),
                 unit.SignatureActiveId,
                 unit.SignatureActiveName,
-                unit.CharacterId),
+                unit.CharacterId,
+                ActionSlotKind.SignatureActive),
             BuildSkillSlot(
                 AxisLabel("ui.battle.skill.flex_active", "교체 액티브", "Flex"),
                 unit.FlexActiveId,
                 unit.FlexActiveName,
-                unit.CharacterId),
+                unit.CharacterId,
+                ActionSlotKind.FlexActive),
             BuildSkillSlot(
                 AxisLabel("ui.battle.skill.signature_passive", "고유 패시브", "Signature Passive"),
                 unit.SignaturePassiveId,
                 unit.SignaturePassiveName,
-                unit.CharacterId),
+                unit.CharacterId,
+                ActionSlotKind.SignaturePassive),
             BuildSkillSlot(
                 AxisLabel("ui.battle.skill.flex_passive", "교체 패시브", "Flex Passive"),
                 unit.FlexPassiveId,
                 unit.FlexPassiveName,
-                unit.CharacterId),
+                unit.CharacterId,
+                ActionSlotKind.FlexPassive),
         };
     }
 
-    private BattleSkillSlotViewState BuildSkillSlot(string slotLabel, string skillId, string skillName, string characterId)
+    private BattleSkillSlotViewState BuildSkillSlot(
+        string slotLabel,
+        string skillId,
+        string skillName,
+        string characterId,
+        ActionSlotKind slotKind)
     {
         var resolvedName = ResolveSkillDisplayName(skillId, skillName);
         var icon = _iconResolver.ResolveSkill(skillId, characterId);
-        return new BattleSkillSlotViewState(slotLabel, resolvedName, skillId, icon);
+        var skill = ResolveCompiledSkill(skillId);
+        return new BattleSkillSlotViewState(
+            slotLabel,
+            resolvedName,
+            skillId,
+            icon,
+            ResolveSkillDescription(skillId, skill),
+            BuildSkillTimingText(skill, slotKind),
+            BuildSkillEffectSummary(skill),
+            BuildSkillScalingSummary(skill),
+            BuildSkillTags(skill),
+            slotKind is ActionSlotKind.SignatureActive or ActionSlotKind.SignaturePassive,
+            slotKind is ActionSlotKind.FlexActive or ActionSlotKind.FlexPassive,
+            slotKind is ActionSlotKind.SignatureActive or ActionSlotKind.FlexActive,
+            skill != null,
+            ResolvePresentationStyle(skill));
     }
 
     private IReadOnlyList<BattleStatusEffectChip> BuildStatusEffectChips(BattleUnitReadModel unit, string characterName)
@@ -330,13 +370,17 @@ public sealed class BattleUnitMetadataFormatter
         {
             chips.Add(new BattleStatusEffectChip(
                 statusId,
-                BattleReadabilityFormatter.HumanizeToken(statusId, statusId),
+                ResolveStatusLabel(statusId),
                 null,
                 0f,
                 0f,
                 1,
                 characterName,
-                BattleStatusEffectSection.BattleScoped));
+                BattleStatusEffectSection.BattleScoped,
+                ResolveStatusDescription(statusId),
+                AxisLabel("ui.battle.detail.status.battle_scoped", "전투 효과", "Battle Scoped"),
+                AxisLabel("ui.battle.detail.status.battle_scoped", "전투 효과", "Battle Scoped"),
+                "Cleanse profile pending"));
         }
 
         if (!unit.IsAlive || unit.CurrentHealth <= 0f)
@@ -404,10 +448,14 @@ public sealed class BattleUnitMetadataFormatter
             0f,
             1,
             sourceActorName,
-            BattleStatusEffectSection.Permanent));
+            BattleStatusEffectSection.Permanent,
+            ResolveSkillDescription(skillId, ResolveCompiledSkill(skillId)),
+            AxisLabel("ui.battle.detail.status.permanent", "영구 효과", "Permanent"),
+            AxisLabel("ui.battle.detail.status.permanent", "영구 효과", "Permanent"),
+            "Not cleanseable"));
     }
 
-    private static BattleStatusEffectChip BuildRuntimeChip(
+    private BattleStatusEffectChip BuildRuntimeChip(
         string statusId,
         string label,
         string sourceActorName,
@@ -422,7 +470,13 @@ public sealed class BattleUnitMetadataFormatter
             maxDurationSeconds,
             1,
             sourceActorName,
-            BattleStatusEffectSection.BattleScoped);
+            BattleStatusEffectSection.BattleScoped,
+            string.Empty,
+            maxDurationSeconds > 0.01f
+                ? $"{remainingSeconds:0.#}s / {maxDurationSeconds:0.#}s"
+                : "Battle Scoped",
+            "Battle Scoped",
+            "Cleanse profile pending");
     }
 
     private BattleTacticSummary BuildTacticSummary(BattleUnitReadModel unit, TeamTacticProfile? teamTactic)
@@ -558,6 +612,231 @@ public sealed class BattleUnitMetadataFormatter
         }
 
         return false;
+    }
+
+    private BattleSkillSpec? ResolveCompiledSkill(string skillId)
+    {
+        if (string.IsNullOrWhiteSpace(skillId))
+        {
+            return null;
+        }
+
+        try
+        {
+            return _lookup.Snapshot.SkillCatalog.TryGetValue(skillId, out var skill)
+                ? skill
+                : null;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    private string ResolveSkillDescription(string skillId, BattleSkillSpec? skill)
+    {
+        if (string.IsNullOrWhiteSpace(skillId))
+        {
+            return string.Empty;
+        }
+
+        var description = _contentText.GetSkillDescription(skillId);
+        if (!string.IsNullOrWhiteSpace(description)
+            && !string.Equals(description, skillId, StringComparison.Ordinal)
+            && !description.StartsWith("content.", StringComparison.Ordinal))
+        {
+            return description;
+        }
+
+        return skill == null
+            ? string.Empty
+            : BuildSkillEffectSummary(skill);
+    }
+
+    private string BuildSkillTimingText(BattleSkillSpec? skill, ActionSlotKind slotKind)
+    {
+        if (skill == null)
+        {
+            return string.Empty;
+        }
+
+        var parts = new List<string>();
+        if (skill.BaseCooldownSeconds > 0.01f)
+        {
+            parts.Add($"{AxisLabel("ui.battle.axis.cooldown", "쿨다운", "Cooldown")} {skill.BaseCooldownSeconds:0.#}s");
+        }
+        else if (slotKind is ActionSlotKind.SignaturePassive or ActionSlotKind.FlexPassive)
+        {
+            parts.Add(AxisLabel("ui.battle.detail.status.permanent", "영구 효과", "Permanent"));
+        }
+        else
+        {
+            parts.Add(Localize(GameLocalizationTables.UICommon, "ui.common.none", "None"));
+        }
+
+        if (skill.CastWindupSeconds > 0.01f)
+        {
+            parts.Add($"{AxisLabel("ui.battle.axis.windup", "시전", "Windup")} {skill.CastWindupSeconds:0.#}s");
+        }
+
+        if (skill.ManaCost > 0.01f)
+        {
+            parts.Add($"{AxisLabel("ui.battle.axis.energy", "에너지", "Energy")} {skill.ManaCost:0.#}");
+        }
+
+        return string.Join(" / ", parts);
+    }
+
+    private string BuildSkillEffectSummary(BattleSkillSpec? skill)
+    {
+        if (skill == null)
+        {
+            return string.Empty;
+        }
+
+        var range = skill.Range <= 0.05f
+            ? Localize(GameLocalizationTables.UIBattle, "ui.battle.range.contact", "Contact")
+            : $"{skill.Range:0.#}m";
+        return $"{FormatSkillKind(skill.Kind)} / {FormatDamage(skill.DamageType)} / {FormatDelivery(skill.Delivery)} / {FormatTarget(skill.TargetRule)} / {AxisLabel("ui.battle.axis.range", "사거리", "Range")} {range}";
+    }
+
+    private string BuildSkillScalingSummary(BattleSkillSpec? skill)
+    {
+        if (skill == null)
+        {
+            return string.Empty;
+        }
+
+        var parts = new List<string>
+        {
+            $"Power {skill.Power:0.##}"
+        };
+        if (Math.Abs(skill.PowerFlat) > 0.001f)
+        {
+            parts.Add($"Flat {skill.PowerFlat:0.##}");
+        }
+
+        AddCoeff(parts, "Phys", skill.PhysCoeff);
+        AddCoeff(parts, "Mag", skill.MagCoeff);
+        AddCoeff(parts, "Heal", skill.HealCoeff);
+        AddCoeff(parts, "HP", skill.HealthCoeff);
+        return string.Join(" / ", parts);
+    }
+
+    private static void AddCoeff(ICollection<string> parts, string label, float value)
+    {
+        if (Math.Abs(value) > 0.001f)
+        {
+            parts.Add($"{label} x{value:0.##}");
+        }
+    }
+
+    private static IReadOnlyList<string> BuildSkillTags(BattleSkillSpec? skill)
+    {
+        if (skill == null)
+        {
+            return Array.Empty<string>();
+        }
+
+        return (skill.CompileTags ?? Array.Empty<string>())
+            .Concat(skill.RuleModifierTags ?? Array.Empty<string>())
+            .Concat(skill.RequiredClassTags ?? Array.Empty<string>())
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            .Distinct(StringComparer.Ordinal)
+            .Take(6)
+            .ToArray();
+    }
+
+    private static string ResolvePresentationStyle(BattleSkillSpec? skill)
+    {
+        if (skill == null)
+        {
+            return "missing";
+        }
+
+        return skill.EffectivePresentation.Family switch
+        {
+            SkillPresentationFamily.Heal => "heal",
+            SkillPresentationFamily.Shield => "guard",
+            SkillPresentationFamily.Debuff => "control",
+            SkillPresentationFamily.Projectile or SkillPresentationFamily.Ranged => "projectile",
+            SkillPresentationFamily.Nova or SkillPresentationFamily.Zone or SkillPresentationFamily.Trap => "area",
+            SkillPresentationFamily.Reposition => "mobility",
+            SkillPresentationFamily.Aura or SkillPresentationFamily.PassiveProc => "support",
+            _ => "strike",
+        };
+    }
+
+    private string FormatSkillKind(SkillKind kind)
+    {
+        var ko = string.Equals(_localization.CurrentLocale?.Identifier.Code, "ko", StringComparison.OrdinalIgnoreCase);
+        return kind switch
+        {
+            SkillKind.Heal => ko ? "회복" : "Heal",
+            SkillKind.Shield => ko ? "보호막" : "Shield",
+            SkillKind.Buff => "Buff",
+            SkillKind.Debuff => "Debuff",
+            SkillKind.Utility => "Utility",
+            _ => "Strike",
+        };
+    }
+
+    private string FormatDamage(DamageType damage)
+    {
+        return damage switch
+        {
+            DamageType.Physical => "Physical",
+            DamageType.Magical => "Magical",
+            DamageType.Healing => "Healing",
+            DamageType.True => "True",
+            _ => damage.ToString(),
+        };
+    }
+
+    private string FormatDelivery(SkillDelivery delivery)
+    {
+        return delivery switch
+        {
+            SkillDelivery.Melee => "Melee",
+            SkillDelivery.Ranged => "Ranged",
+            SkillDelivery.Projectile => "Projectile",
+            SkillDelivery.Nova => "Nova",
+            SkillDelivery.Aura => "Aura",
+            SkillDelivery.Trap => "Trap",
+            SkillDelivery.Zone => "Zone",
+            _ => delivery.ToString(),
+        };
+    }
+
+    private string FormatTarget(SkillTargetRule target)
+    {
+        return target switch
+        {
+            SkillTargetRule.NearestEnemy => "Nearest Enemy",
+            SkillTargetRule.LowestHpEnemy => "Lowest HP Enemy",
+            SkillTargetRule.MostExposedEnemy => "Most Exposed Enemy",
+            SkillTargetRule.LowestHpAlly => "Lowest HP Ally",
+            SkillTargetRule.ProtectedAlly => "Protected Ally",
+            SkillTargetRule.Self => "Self",
+            SkillTargetRule.MarkedTarget => "Marked Target",
+            _ => target.ToString(),
+        };
+    }
+
+    private string ResolveStatusLabel(string statusId)
+    {
+        var label = _contentText.GetStatusName(statusId);
+        return string.IsNullOrWhiteSpace(label) || string.Equals(label, statusId, StringComparison.Ordinal)
+            ? BattleReadabilityFormatter.HumanizeToken(statusId, statusId)
+            : label;
+    }
+
+    private string ResolveStatusDescription(string statusId)
+    {
+        var description = _contentText.GetStatusDescription(statusId);
+        return string.IsNullOrWhiteSpace(description) || string.Equals(description, statusId, StringComparison.Ordinal)
+            ? string.Empty
+            : description;
     }
 
     private string ResolveSkillDisplayName(string skillId, string skillName)

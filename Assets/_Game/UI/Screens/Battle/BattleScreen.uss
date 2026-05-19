@@ -795,7 +795,7 @@
 
 .battle-screen .sm-bs-skill-slot {
     width: 48%;
-    min-height: 58px;
+    min-height: 124px;
     margin-right: 6px;
     margin-bottom: 6px;
     padding-top: 5px;
@@ -803,7 +803,7 @@
     padding-left: 6px;
     padding-right: 6px;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     background-color: var(--sm-vellum-a08);
     border-left-width: 1px;
     border-right-width: 1px;
@@ -825,6 +825,29 @@
     border-left-color: var(--sm-fam-mystic);
 }
 
+.battle-screen .sm-bs-skill-slot--active {
+    background-color: var(--sm-gold-300-a10);
+}
+
+.battle-screen .sm-bs-skill-slot--heal,
+.battle-screen .sm-bs-skill-slot--support {
+    border-top-color: var(--sm-state-safe-a86);
+}
+
+.battle-screen .sm-bs-skill-slot--guard {
+    border-top-color: var(--sm-fam-vanguard);
+}
+
+.battle-screen .sm-bs-skill-slot--control,
+.battle-screen .sm-bs-skill-slot--area {
+    border-top-color: var(--sm-fam-mystic);
+}
+
+.battle-screen .sm-bs-skill-slot--projectile,
+.battle-screen .sm-bs-skill-slot--strike {
+    border-top-color: var(--sm-fam-striker);
+}
+
 .battle-screen .sm-bs-skill-slot--missing {
     background-color: var(--sm-vellum-a05);
 }
@@ -843,7 +866,7 @@
 .battle-screen .sm-bs-skill-label {
     flex-grow: 1;
     color: var(--sm-ink-1);
-    font-size: 10px;
+    font-size: 11px;
     white-space: normal;
 }
 
@@ -914,7 +937,7 @@
 .battle-screen .sm-bs-status-chip {
     position: relative;
     width: 112px;
-    min-height: 62px;
+    min-height: 78px;
     margin-right: 6px;
     margin-bottom: 6px;
     padding-top: 5px;
@@ -946,6 +969,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.battle-screen .sm-bs-status-chip .sm-cd-meta {
+    margin-top: 3px;
+    white-space: normal;
 }
 
 .battle-screen .sm-bs-status-chip-stack {

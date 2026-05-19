@@ -55,6 +55,7 @@ public sealed record TownScreenViewState(
     string RosterEntryLabel,
     string CompendiumEntryLabel,
     string SquadBuilderEntryLabel,
+    string TacticalWorkshopEntryLabel,
     string PermanentAugmentEntryLabel,
     string TheaterEntryLabel,
     string ClusterEyebrow);
