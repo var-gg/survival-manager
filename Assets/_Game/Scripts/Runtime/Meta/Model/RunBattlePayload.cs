@@ -33,6 +33,14 @@ public sealed record RunBattlePayload(
         && SiteNodeIndex >= 0
         && !string.IsNullOrWhiteSpace(BattleContextHash);
 
+    /// <summary>
+    /// SiteTrack의 extract node를 가리키는 payload인지. caller는 이 flag로 Battle scene 진입 대신
+    /// settlement/reward path로 분기한다. task-battle-entry-authored-node-v1 acceptance #5.
+    /// </summary>
+    public bool IsExtract =>
+        !string.IsNullOrWhiteSpace(EncounterId)
+        && EncounterId.EndsWith(":extract", StringComparison.Ordinal);
+
     public static RunBattlePayload Empty { get; } = new(
         RunId: string.Empty,
         ChapterId: string.Empty,

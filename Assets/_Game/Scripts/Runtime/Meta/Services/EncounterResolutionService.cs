@@ -156,6 +156,26 @@ public sealed class EncounterResolutionService
             return BuildDebugSmokeContext(run, 0);
         }
 
+        // Extract node: Battle scene 진입이 아니라 settlement signal. caller는 BattleContextState의
+        // EncounterId가 ":extract"로 끝나면 GoToReward로 분기해야 한다 (acceptance #5).
+        if (payload.IsExtract
+            && HasAuthoredCatalog
+            && _content.ExpeditionSites!.TryGetValue(payload.SiteId, out var extractSite))
+        {
+            return new BattleContextState(
+                payload.ChapterId,
+                payload.SiteId,
+                payload.SiteNodeIndex,
+                payload.EncounterId,
+                ComputeSeed(payload.BattleContextHash),
+                payload.BattleContextHash,
+                extractSite.ExtractRewardSourceId,
+                1,
+                false,
+                extractSite.FactionId,
+                string.Empty);
+        }
+
         if (HasAuthoredCatalog
             && _content.Encounters!.TryGetValue(payload.EncounterId, out var encounter))
         {

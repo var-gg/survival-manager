@@ -109,6 +109,44 @@ public sealed class EncounterResolutionServiceFastTests
     }
 
     [Test]
+    public void BuildBattleContextFromPayload_ExtractNode_RoutesToSettlementSignal()
+    {
+        // task-battle-entry-authored-node-v1 acceptance #5: extract node payload는 Battle scene을
+        // 열지 않고 settlement signal을 운반해야 한다. BuildBattleContextFromPayload가 IsBoss=false,
+        // RewardSourceId=site.ExtractRewardSourceId, EncounterId=":extract" suffix 유지. caller는
+        // EncounterId 또는 RewardSourceId로 GoToReward 분기.
+        var snapshot = CreateSnapshot();
+        var resolver = new EncounterResolutionService(snapshot);
+        var run = CreateRun();
+        var payload = new RunBattlePayload(
+            RunId: run.RunId,
+            ChapterId: "chapter_test",
+            SiteId: "site_test",
+            SiteNodeIndex: 4,
+            EncounterId: "site_test:extract",
+            ExpeditionNodeId: "extract_node",
+            SquadSnapshotId: "snap_1",
+            StageCandidatePathHash: "spch",
+            NodeOverlayHash: "noh",
+            BattleContextHash: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+            RewardBiasPercent: 0,
+            ThreatPressurePercent: 0,
+            AffinityBoostPercent: 0,
+            ResolvedModifierIds: Array.Empty<string>());
+
+        Assert.That(payload.IsExtract, Is.True, "RunBattlePayload.IsExtract가 `:extract` suffix를 감지해야.");
+
+        var context = resolver.BuildBattleContextFromPayload(run, payload);
+
+        Assert.That(context.EncounterId, Is.EqualTo("site_test:extract"));
+        Assert.That(context.RewardSourceId, Is.EqualTo("reward_source_extract"),
+            "Extract context는 site.ExtractRewardSourceId를 운반해야.");
+        Assert.That(context.IsBoss, Is.False);
+        Assert.That(context.BattleContextHash, Is.EqualTo(payload.BattleContextHash),
+            "payload hash는 그대로 보존.");
+    }
+
+    [Test]
     public void BuildBattleContextFromPayload_InvalidPayload_FallsBackToDebugSmoke()
     {
         var snapshot = CreateSnapshot();
