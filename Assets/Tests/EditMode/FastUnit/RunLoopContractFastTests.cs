@@ -161,6 +161,41 @@ public sealed class RunLoopContractFastTests
     }
 
     [Test]
+    public void ApplyRewardChoice_FinalizesPendingSettlement_SoTownReentryReadyForResume()
+    {
+        // task-reward-settlement-commit-v1 acceptance #7 EditMode evidence:
+        // ApplyRewardChoice가 pending → settled로 transition시키고 Town 복귀 시 expedition resume이
+        // 가능한 상태로 만든다. reward ledger entry가 추가되어 inventory/equipment refresh의
+        // source-of-truth가 박힌다.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+        session.MarkBattleResolved(true, 8, 4);
+
+        Assert.That(session.HasPendingRewardSettlement, Is.True,
+            "Battle resolve 후 pending state는 commit 전.");
+
+        var ledgerCountBefore = session.Profile.RewardLedger.Count(entry =>
+            entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
+
+        Assert.That(session.ApplyRewardChoice(0), Is.True);
+        session.ReturnToTownAfterReward();
+
+        Assert.That(session.HasPendingRewardSettlement, Is.False,
+            "ReturnToTownAfterReward(Town 복귀 path)가 FinalizeRewardSettlement 트리거.");
+        Assert.That(session.CanResumeExpedition, Is.True,
+            "Town 복귀 후 expedition resume 가능한 상태.");
+
+        var ledgerCountAfter = session.Profile.RewardLedger.Count(entry =>
+            entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
+        Assert.That(ledgerCountAfter, Is.GreaterThan(ledgerCountBefore),
+            "reward_choice ledger에 새 entry 추가 — Town inventory/equipment refresh source.");
+    }
+
+    [Test]
     public void RunOverlay_TraceFields_AreFullyPopulatedAfterBattleResolve()
     {
         // task-vertical-slice-smoke-evidence-v1 acceptance #2 EditMode 통합 evidence:
