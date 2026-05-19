@@ -23,6 +23,18 @@ public sealed class RewardScreenView
     private readonly Label _statusLabel;
     private readonly Button _returnTownButton;
     private readonly IReadOnlyList<(Label title, Label body, Label kind, Label context, Button button)> _choiceCards;
+    private readonly Label _settlementSummaryTitleLabel;
+    private readonly Label _settlementSiteKeyLabel;
+    private readonly Label _settlementSiteValueLabel;
+    private readonly Label _settlementStageKeyLabel;
+    private readonly Label _settlementStageValueLabel;
+    private readonly Label _settlementEncounterKeyLabel;
+    private readonly Label _settlementEncounterValueLabel;
+    private readonly Label _settlementCommitIdKeyLabel;
+    private readonly Label _settlementCommitIdValueLabel;
+    private readonly Label _settlementModifierRewardBiasChip;
+    private readonly Label _settlementModifierThreatPressureChip;
+    private readonly Label _settlementModifierAffinityBoostChip;
 
     public RewardScreenView(VisualElement root)
     {
@@ -49,6 +61,18 @@ public sealed class RewardScreenView
                 Require<Label>(root, $"ChoiceCard{index}ContextLabel"),
                 Require<Button>(root, $"ChoiceCard{index}Button")))
             .ToArray();
+        _settlementSummaryTitleLabel = Require<Label>(root, "SettlementSummaryTitleLabel");
+        _settlementSiteKeyLabel = Require<Label>(root, "SettlementSiteKeyLabel");
+        _settlementSiteValueLabel = Require<Label>(root, "SettlementSiteValueLabel");
+        _settlementStageKeyLabel = Require<Label>(root, "SettlementStageKeyLabel");
+        _settlementStageValueLabel = Require<Label>(root, "SettlementStageValueLabel");
+        _settlementEncounterKeyLabel = Require<Label>(root, "SettlementEncounterKeyLabel");
+        _settlementEncounterValueLabel = Require<Label>(root, "SettlementEncounterValueLabel");
+        _settlementCommitIdKeyLabel = Require<Label>(root, "SettlementCommitIdKeyLabel");
+        _settlementCommitIdValueLabel = Require<Label>(root, "SettlementCommitIdValueLabel");
+        _settlementModifierRewardBiasChip = Require<Label>(root, "SettlementModifierRewardBiasChip");
+        _settlementModifierThreatPressureChip = Require<Label>(root, "SettlementModifierThreatPressureChip");
+        _settlementModifierAffinityBoostChip = Require<Label>(root, "SettlementModifierAffinityBoostChip");
     }
 
     public void Bind(RewardScreenPresenter presenter)
@@ -102,6 +126,34 @@ public sealed class RewardScreenView
             _choiceCards[i].button.SetEnabled(cardState.IsEnabled);
             SetPrimaryClass(_choiceCards[i].button, cardState.IsEnabled && !state.ReturnTownIsPrimary);
         }
+
+        RenderSettlementSummary(state.SettlementSummary);
+    }
+
+    public void RenderSettlementSummary(RewardSettlementSummaryViewState state)
+    {
+        var snapshot = state ?? RewardSettlementSummaryViewState.Empty;
+        _settlementSummaryTitleLabel.text = snapshot.TitleText;
+        _settlementSiteKeyLabel.text = snapshot.SiteKeyText;
+        _settlementSiteValueLabel.text = snapshot.SiteValueText;
+        _settlementStageKeyLabel.text = snapshot.StageKeyText;
+        _settlementStageValueLabel.text = snapshot.StageValueText;
+        _settlementEncounterKeyLabel.text = snapshot.EncounterKeyText;
+        _settlementEncounterValueLabel.text = snapshot.EncounterValueText;
+        _settlementCommitIdKeyLabel.text = snapshot.CommitIdKeyText;
+        _settlementCommitIdValueLabel.text = snapshot.CommitIdValueText;
+
+        ApplyChip(_settlementModifierRewardBiasChip, snapshot.RewardBiasChipText);
+        ApplyChip(_settlementModifierThreatPressureChip, snapshot.ThreatPressureChipText);
+        ApplyChip(_settlementModifierAffinityBoostChip, snapshot.AffinityBoostChipText);
+    }
+
+    private static void ApplyChip(Label chip, string text)
+    {
+        chip.text = text ?? string.Empty;
+        chip.style.display = string.IsNullOrWhiteSpace(text)
+            ? DisplayStyle.None
+            : DisplayStyle.Flex;
     }
 
     private static void SetPrimaryClass(VisualElement element, bool enabled)

@@ -17,6 +17,33 @@
             <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss" />
         </ui:VisualElement>
 
+        <ui:VisualElement name="SettlementSummaryPanel" class="panel panel--dense reward-settlement-summary">
+            <ui:Label name="SettlementSummaryTitleLabel" class="panel__title reward-settlement-summary__title" />
+            <ui:VisualElement class="reward-settlement-summary__rows">
+                <ui:VisualElement class="reward-settlement-summary__row">
+                    <ui:Label name="SettlementSiteKeyLabel" class="reward-settlement-summary__key" />
+                    <ui:Label name="SettlementSiteValueLabel" class="reward-settlement-summary__value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="reward-settlement-summary__row">
+                    <ui:Label name="SettlementStageKeyLabel" class="reward-settlement-summary__key" />
+                    <ui:Label name="SettlementStageValueLabel" class="reward-settlement-summary__value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="reward-settlement-summary__row">
+                    <ui:Label name="SettlementEncounterKeyLabel" class="reward-settlement-summary__key" />
+                    <ui:Label name="SettlementEncounterValueLabel" class="reward-settlement-summary__value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="reward-settlement-summary__row">
+                    <ui:Label name="SettlementCommitIdKeyLabel" class="reward-settlement-summary__key" />
+                    <ui:Label name="SettlementCommitIdValueLabel" class="reward-settlement-summary__value" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="SettlementModifierChips" class="reward-settlement-summary__chips">
+                <ui:Label name="SettlementModifierRewardBiasChip" class="reward-settlement-summary__chip" />
+                <ui:Label name="SettlementModifierThreatPressureChip" class="reward-settlement-summary__chip" />
+                <ui:Label name="SettlementModifierAffinityBoostChip" class="reward-settlement-summary__chip" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
         <ui:VisualElement class="screen__body">
             <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel">

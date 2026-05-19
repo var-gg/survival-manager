@@ -483,6 +483,42 @@ MonoBehaviour:
     m_Key: ui.reward.continuation.resume
     m_Metadata:
       m_Items: []
+  - m_Id: 112
+    m_Key: ui.reward.settlement.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 113
+    m_Key: ui.reward.settlement.site_key
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114
+    m_Key: ui.reward.settlement.stage_key
+    m_Metadata:
+      m_Items: []
+  - m_Id: 115
+    m_Key: ui.reward.settlement.encounter_key
+    m_Metadata:
+      m_Items: []
+  - m_Id: 116
+    m_Key: ui.reward.settlement.commit_key
+    m_Metadata:
+      m_Items: []
+  - m_Id: 117
+    m_Key: ui.reward.settlement.stage_value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 118
+    m_Key: ui.reward.settlement.chip.reward_bias
+    m_Metadata:
+      m_Items: []
+  - m_Id: 119
+    m_Key: ui.reward.settlement.chip.threat_pressure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 120
+    m_Key: ui.reward.settlement.chip.affinity_boost
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

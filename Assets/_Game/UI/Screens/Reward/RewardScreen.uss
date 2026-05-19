@@ -26,3 +26,85 @@
 .reward-screen .card__title {
     color: var(--sm-gold-100);
 }
+
+.reward-screen .reward-settlement-summary {
+    flex-direction: column;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: 4px;
+    margin-bottom: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background-color: var(--sm-bg-1-a54);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
+}
+
+.reward-screen .reward-settlement-summary__title {
+    color: var(--sm-gold-200);
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-bottom: 4px;
+}
+
+.reward-screen .reward-settlement-summary__rows {
+    flex-direction: column;
+}
+
+.reward-screen .reward-settlement-summary__row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+.reward-screen .reward-settlement-summary__key {
+    min-width: 96px;
+    color: var(--sm-ink-2);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.reward-screen .reward-settlement-summary__value {
+    flex-grow: 1;
+    color: var(--sm-vellum);
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reward-screen .reward-settlement-summary__chips {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.reward-screen .reward-settlement-summary__chip {
+    margin-right: 6px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    color: var(--sm-gold-100);
+    font-size: 10px;
+    background-color: var(--sm-vellum-a07);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a24);
+    border-right-color: var(--sm-gold-300-a24);
+    border-top-color: var(--sm-gold-300-a24);
+    border-bottom-color: var(--sm-gold-300-a24);
+}

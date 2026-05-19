@@ -12,6 +12,37 @@ public sealed record RewardChoiceCardViewState(
     string Tooltip,
     bool IsEnabled);
 
+public sealed record RewardSettlementSummaryViewState(
+    string TitleText,
+    string SiteKeyText,
+    string SiteValueText,
+    string StageKeyText,
+    string StageValueText,
+    string EncounterKeyText,
+    string EncounterValueText,
+    string CommitIdKeyText,
+    string CommitIdValueText,
+    string RewardBiasChipText,
+    string ThreatPressureChipText,
+    string AffinityBoostChipText,
+    bool HasAnyModifier)
+{
+    public static readonly RewardSettlementSummaryViewState Empty = new(
+        TitleText: "Settlement",
+        SiteKeyText: "Site",
+        SiteValueText: "-",
+        StageKeyText: "Stage",
+        StageValueText: "-",
+        EncounterKeyText: "Encounter",
+        EncounterValueText: "-",
+        CommitIdKeyText: "Commit",
+        CommitIdValueText: "-",
+        RewardBiasChipText: string.Empty,
+        ThreatPressureChipText: string.Empty,
+        AffinityBoostChipText: string.Empty,
+        HasAnyModifier: false);
+}
+
 public sealed record RewardScreenViewState(
     string Title,
     string LocaleStatus,
@@ -29,4 +60,5 @@ public sealed record RewardScreenViewState(
     string ReturnTownLabel,
     string ReturnTownTooltip,
     bool CanReturnToTown,
-    bool ReturnTownIsPrimary);
+    bool ReturnTownIsPrimary,
+    RewardSettlementSummaryViewState SettlementSummary);

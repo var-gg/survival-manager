@@ -133,7 +133,113 @@ public sealed class RewardScreenPresenter
             BuildReturnTownLabel(session),
             BuildReturnTownTooltip(session),
             canReturnToTown,
-            canReturnToTown);
+            canReturnToTown,
+            BuildSettlementSummaryState(session));
+    }
+
+    public RewardSettlementSummaryViewState BuildSettlementSummaryState(GameSessionState session)
+    {
+        return BuildSettlementSummaryStateCore(
+            session,
+            (key, fallback) => Localize(GameLocalizationTables.UIReward, key, fallback),
+            (key, fallback, percent) => Localize(GameLocalizationTables.UIReward, key, fallback, percent));
+    }
+
+    internal static RewardSettlementSummaryViewState BuildSettlementSummaryStateForTest(GameSessionState session)
+    {
+        return BuildSettlementSummaryStateCore(
+            session,
+            (_, fallback) => fallback,
+            (_, fallback, percent) => string.Format(System.Globalization.CultureInfo.InvariantCulture, fallback, percent));
+    }
+
+    private static RewardSettlementSummaryViewState BuildSettlementSummaryStateCore(
+        GameSessionState session,
+        System.Func<string, string, string> textResolver,
+        System.Func<string, string, int, string> percentResolver)
+    {
+        var overlay = session?.ActiveRun?.Overlay;
+        if (overlay == null)
+        {
+            return RewardSettlementSummaryViewState.Empty;
+        }
+
+        var titleText = textResolver("ui.reward.settlement.title", "Settlement");
+        var siteKey = textResolver("ui.reward.settlement.site_key", "Site");
+        var stageKey = textResolver("ui.reward.settlement.stage_key", "Stage");
+        var encounterKey = textResolver("ui.reward.settlement.encounter_key", "Encounter");
+        var commitIdKey = textResolver("ui.reward.settlement.commit_key", "Commit");
+
+        var siteValue = string.IsNullOrWhiteSpace(overlay.SiteId) ? "-" : overlay.SiteId;
+        var stageValue = BuildStageValueText(overlay, textResolver);
+        var encounterValue = string.IsNullOrWhiteSpace(overlay.EncounterId) ? "-" : overlay.EncounterId;
+        var commitIdValue = BuildCommitIdValueText(overlay.RewardCommitId);
+
+        var modifierPayload = session!.AtlasExpeditionModifierPayload;
+        var rewardBiasChip = BuildModifierChipText(
+            "ui.reward.settlement.chip.reward_bias",
+            "Reward Bias +{0}%",
+            modifierPayload?.RewardBiasPercent ?? 0,
+            percentResolver);
+        var threatPressureChip = BuildModifierChipText(
+            "ui.reward.settlement.chip.threat_pressure",
+            "Threat Pressure +{0}%",
+            modifierPayload?.ThreatPressurePercent ?? 0,
+            percentResolver);
+        var affinityBoostChip = BuildModifierChipText(
+            "ui.reward.settlement.chip.affinity_boost",
+            "Affinity Boost +{0}%",
+            modifierPayload?.AffinityBoostPercent ?? 0,
+            percentResolver);
+        var hasAnyModifier = modifierPayload?.HasAnyModifier ?? false;
+
+        return new RewardSettlementSummaryViewState(
+            TitleText: titleText,
+            SiteKeyText: siteKey,
+            SiteValueText: siteValue,
+            StageKeyText: stageKey,
+            StageValueText: stageValue,
+            EncounterKeyText: encounterKey,
+            EncounterValueText: encounterValue,
+            CommitIdKeyText: commitIdKey,
+            CommitIdValueText: commitIdValue,
+            RewardBiasChipText: rewardBiasChip,
+            ThreatPressureChipText: threatPressureChip,
+            AffinityBoostChipText: affinityBoostChip,
+            HasAnyModifier: hasAnyModifier);
+    }
+
+    private static string BuildStageValueText(RunOverlayState overlay, System.Func<string, string, string> textResolver)
+    {
+        var chapter = string.IsNullOrWhiteSpace(overlay.ChapterId) ? "-" : overlay.ChapterId;
+        var siteNodeIndex = overlay.SiteNodeIndex.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var format = textResolver("ui.reward.settlement.stage_value", "{0} / Node {1}");
+        return string.Format(System.Globalization.CultureInfo.InvariantCulture, format, chapter, siteNodeIndex);
+    }
+
+    private static string BuildCommitIdValueText(string rewardCommitId)
+    {
+        if (string.IsNullOrWhiteSpace(rewardCommitId))
+        {
+            return "-";
+        }
+
+        var trimmed = rewardCommitId.Trim();
+        return trimmed.Length <= 12 ? trimmed : trimmed.Substring(0, 12);
+    }
+
+    private static string BuildModifierChipText(
+        string key,
+        string fallbackFormat,
+        int percent,
+        System.Func<string, string, int, string> percentResolver)
+    {
+        if (percent <= 0)
+        {
+            return string.Empty;
+        }
+
+        return percentResolver(key, fallbackFormat, percent);
     }
 
     private IReadOnlyList<RewardChoiceCardViewState> BuildChoiceCards(GameSessionState session)
