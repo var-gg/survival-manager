@@ -1001,3 +1001,56 @@
 .battle-screen .battle-settings__section {
     margin-top: 10px;
 }
+
+.battle-screen .sm-bs-debug-foldout {
+    position: absolute;
+    top: 64px;
+    right: 16px;
+    min-width: 220px;
+    max-width: 320px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 2px;
+    padding-bottom: 4px;
+    background-color: var(--sm-bg-1-a54);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
+    opacity: 0.85;
+    font-size: 10px;
+    color: var(--sm-ink-2);
+}
+
+.battle-screen .sm-bs-debug-foldout-body {
+    flex-direction: column;
+    margin-top: 2px;
+    margin-left: 6px;
+}
+
+.battle-screen .sm-bs-debug-foldout-row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+.battle-screen .sm-bs-debug-foldout-key {
+    min-width: 110px;
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    -unity-font-style: bold;
+}
+
+.battle-screen .sm-bs-debug-foldout-value {
+    flex-grow: 1;
+    color: var(--sm-vellum);
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

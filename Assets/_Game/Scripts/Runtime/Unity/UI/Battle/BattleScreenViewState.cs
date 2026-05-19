@@ -24,6 +24,14 @@ public sealed record BattleRosterUnitViewState(
     bool IsSelected,
     Texture2D? Portrait);
 
+public sealed record BattleDebugFoldoutViewState(
+    string EncounterId,
+    string SiteNodeIndexText,
+    string BattleContextHash)
+{
+    public static readonly BattleDebugFoldoutViewState Empty = new("-", "-", "-");
+}
+
 public sealed record BattleSettingsViewState(
     bool IsVisible,
     string Title,

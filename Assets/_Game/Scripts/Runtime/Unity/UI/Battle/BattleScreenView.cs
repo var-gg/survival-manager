@@ -126,6 +126,10 @@ public sealed class BattleScreenView
     private readonly VisualElement _statusPermanentGrid;
     private readonly Label _statusBattleScopedTitle;
     private readonly VisualElement _statusBattleGrid;
+    private readonly Foldout _battleDebugFoldout;
+    private readonly Label _battleDebugEncounterIdValue;
+    private readonly Label _battleDebugSiteNodeIndexValue;
+    private readonly Label _battleDebugBattleContextHashValue;
 
     private Action<float>? _seekRequested;
     private BattleScreenActions? _actions;
@@ -231,6 +235,10 @@ public sealed class BattleScreenView
         _statusPermanentGrid = Require<VisualElement>(root, "StatusPermanentGrid");
         _statusBattleScopedTitle = Require<Label>(root, "StatusBattleScopedTitle");
         _statusBattleGrid = Require<VisualElement>(root, "StatusBattleGrid");
+        _battleDebugFoldout = Require<Foldout>(root, "BattleDebugFoldout");
+        _battleDebugEncounterIdValue = Require<Label>(root, "BattleDebugEncounterIdValue");
+        _battleDebugSiteNodeIndexValue = Require<Label>(root, "BattleDebugSiteNodeIndexValue");
+        _battleDebugBattleContextHashValue = Require<Label>(root, "BattleDebugBattleContextHashValue");
         _selectedUnitPortraitImage.scaleMode = ScaleMode.ScaleAndCrop;
         _unitDetailCloseButton.text = "X";
 
@@ -289,7 +297,10 @@ public sealed class BattleScreenView
             _statusPermanentTitle,
             _statusPermanentGrid,
             _statusBattleScopedTitle,
-            _statusBattleGrid);
+            _statusBattleGrid,
+            _battleDebugEncounterIdValue,
+            _battleDebugSiteNodeIndexValue,
+            _battleDebugBattleContextHashValue);
 
         SetBlocking(
             _localeKoButton,
@@ -320,7 +331,16 @@ public sealed class BattleScreenView
             _toggleOverheadButton,
             _toggleDamageTextButton,
             _toggleTeamSummaryButton,
-            _toggleDebugOverlayButton);
+            _toggleDebugOverlayButton,
+            _battleDebugFoldout);
+    }
+
+    public void RenderDebugFoldout(BattleDebugFoldoutViewState state)
+    {
+        var snapshot = state ?? BattleDebugFoldoutViewState.Empty;
+        _battleDebugEncounterIdValue.text = snapshot.EncounterId;
+        _battleDebugSiteNodeIndexValue.text = snapshot.SiteNodeIndexText;
+        _battleDebugBattleContextHashValue.text = snapshot.BattleContextHash;
     }
 
     public void Bind(BattleScreenActions actions)

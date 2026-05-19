@@ -25,6 +25,20 @@ public sealed class BattleScreenPresenter
         _options = options;
     }
 
+    public BattleDebugFoldoutViewState BuildDebugFoldoutState()
+    {
+        var overlay = _sessionState.ActiveRun?.Overlay;
+        if (overlay == null)
+        {
+            return BattleDebugFoldoutViewState.Empty;
+        }
+
+        var encounterId = string.IsNullOrWhiteSpace(overlay.EncounterId) ? "-" : overlay.EncounterId;
+        var contextHash = string.IsNullOrWhiteSpace(overlay.BattleContextHash) ? "-" : overlay.BattleContextHash;
+        var siteNodeIndexText = overlay.SiteNodeIndex.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        return new BattleDebugFoldoutViewState(encounterId, siteNodeIndexText, contextHash);
+    }
+
     public BattleShellViewState BuildLoadingState(bool showHelp = false, bool isSummaryExpanded = true)
     {
         return CreateState(

@@ -678,6 +678,7 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         _view!.Render(_presenter!.BuildLoadingState(_helpState.IsVisible, _summaryExpanded));
+        _view.RenderDebugFoldout(_presenter!.BuildDebugFoldoutState());
         _view.SetScrubberInteractable(false);
     }
 
@@ -686,6 +687,7 @@ public sealed class BattleScreenController : MonoBehaviour
         if (EnsureViewReady())
         {
             _view!.Render(_presenter!.BuildErrorState(message, _helpState.IsVisible, _summaryExpanded));
+            _view.RenderDebugFoldout(_presenter!.BuildDebugFoldoutState());
             _view.SetScrubberInteractable(false);
         }
 
@@ -703,6 +705,7 @@ public sealed class BattleScreenController : MonoBehaviour
         if (currentStep == null)
         {
             _view!.Render(_presenter!.BuildLoadingState(_helpState.IsVisible, _summaryExpanded));
+            _view.RenderDebugFoldout(_presenter!.BuildDebugFoldoutState());
             _view.SetScrubberInteractable(false);
             return;
         }
@@ -739,6 +742,7 @@ public sealed class BattleScreenController : MonoBehaviour
             isSummaryExpanded: _summaryExpanded,
             selectedUnit: selectedUnitState);
         _view!.Render(state);
+        _view.RenderDebugFoldout(_presenter!.BuildDebugFoldoutState());
         _view.SetScrubberInteractable(IsSmokeLane && _timeline != null && _policy.CanSeek(_timeline.IsFinished));
     }
 

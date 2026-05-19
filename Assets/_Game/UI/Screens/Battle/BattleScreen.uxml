@@ -23,6 +23,23 @@
             <ui:Button name="SettingsButton" class="ui-button sm-bs-control-btn sm-bs-settings-entry" />
         </ui:VisualElement>
 
+        <ui:Foldout name="BattleDebugFoldout" text="Battle Debug" value="false" class="battle-debug-foldout sm-bs-debug-foldout">
+            <ui:VisualElement name="BattleDebugFoldoutBody" class="battle-debug-foldout__body sm-bs-debug-foldout-body">
+                <ui:VisualElement class="battle-debug-foldout__row sm-bs-debug-foldout-row">
+                    <ui:Label name="BattleDebugEncounterIdKey" class="battle-debug-foldout__key sm-bs-debug-foldout-key" text="EncounterId" />
+                    <ui:Label name="BattleDebugEncounterIdValue" class="battle-debug-foldout__value sm-bs-debug-foldout-value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="battle-debug-foldout__row sm-bs-debug-foldout-row">
+                    <ui:Label name="BattleDebugSiteNodeIndexKey" class="battle-debug-foldout__key sm-bs-debug-foldout-key" text="SiteNodeIndex" />
+                    <ui:Label name="BattleDebugSiteNodeIndexValue" class="battle-debug-foldout__value sm-bs-debug-foldout-value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="battle-debug-foldout__row sm-bs-debug-foldout-row">
+                    <ui:Label name="BattleDebugBattleContextHashKey" class="battle-debug-foldout__key sm-bs-debug-foldout-key" text="BattleContextHash" />
+                    <ui:Label name="BattleDebugBattleContextHashValue" class="battle-debug-foldout__value sm-bs-debug-foldout-value" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:Foldout>
+
         <ui:VisualElement name="HelpStrip" class="help-strip sm-bs-help-strip">
             <ui:Label name="HelpBodyLabel" class="panel__text help-strip__body" />
             <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss sm-bs-control-btn" />
