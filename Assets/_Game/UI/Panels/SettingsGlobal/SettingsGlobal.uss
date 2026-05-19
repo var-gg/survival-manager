@@ -1,0 +1,76 @@
+.stp-frame {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_outer.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 96;
+    -unity-slice-bottom: 96;
+    -unity-slice-scale: 0.5;
+    background-color: var(--sm-bg-0);
+}
+
+.stp-options,
+.stp-sidebar,
+.stp-actions {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.42;
+    background-color: var(--sm-bg-1);
+}
+
+.stp-sidebar__row,
+.stp-opt-row {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.34;
+    background-color: var(--sm-bg-2);
+}
+
+.stp-sidebar__row--selected,
+.stp-opt-row--dirty {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_selected_base.png");
+}
+
+.stp-sidebar__icon {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
+    -unity-slice-left: 56;
+    -unity-slice-right: 56;
+    -unity-slice-top: 56;
+    -unity-slice-bottom: 56;
+    -unity-slice-scale: 0.32;
+}
+
+.stp-header__ornament {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Divider/ui_divider_horizontal_diamond.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.stp-header__close {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_close_button.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.stp-actions__apply {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_gold.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.34;
+}
+
+.stp-actions__cancel,
+.stp-actions__reset,
+.stp-opt-row__reset {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_dark.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.34;
+}

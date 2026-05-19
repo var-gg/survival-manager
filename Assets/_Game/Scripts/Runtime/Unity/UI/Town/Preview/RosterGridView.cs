@@ -78,6 +78,11 @@ public sealed class RosterGridView
 
     private VisualElement BuildHeroCard(RosterGridHeroCardViewState hero)
     {
+        if (_heroCardTemplate == null)
+        {
+            return BuildFallbackHeroCard(hero);
+        }
+
         var instance = _heroCardTemplate.Instantiate();
         var card = instance.Q<VisualElement>("HeroPortraitCard");
         if (card != null)
@@ -88,6 +93,77 @@ public sealed class RosterGridView
             card.RegisterCallback<ClickEvent>(_ => _actions?.OnHeroSelected(hero.HeroId));
         }
         return instance;
+    }
+
+    private VisualElement BuildFallbackHeroCard(RosterGridHeroCardViewState hero)
+    {
+        var card = new VisualElement { name = "HeroPortraitCard" };
+        card.AddToClassList("sm-hpc");
+        Add(card, "outline", "sm-hpc__outline");
+        Add(card, "inset", "sm-hpc__inset");
+        Add(card, "rib", "sm-hpc__rib");
+        Add(card, "gem", "sm-hpc__gem");
+        Add(card, "cornament-tl", "sm-hpc__cornament", "sm-hpc__cornament--tl");
+        Add(card, "cornament-tr", "sm-hpc__cornament", "sm-hpc__cornament--tr");
+        Add(card, "cornament-bl", "sm-hpc__cornament", "sm-hpc__cornament--bl");
+        Add(card, "cornament-br", "sm-hpc__cornament", "sm-hpc__cornament--br");
+
+        var portrait = Add(card, "portrait", "sm-hpc__portrait");
+        Add(portrait, "portrait-inset", "sm-hpc__portrait-inset");
+        var silhouette = Add(portrait, "silhouette", "sm-hpc__silhouette");
+        Add(silhouette, string.Empty, "sm-hpc__p09-placeholder-bust");
+        Add(silhouette, string.Empty, "sm-hpc__p09-placeholder-head");
+        var placeholder = new Label("P09 RenderTexture");
+        placeholder.AddToClassList("sm-hpc__p09-placeholder-label");
+        silhouette.Add(placeholder);
+        Add(portrait, "portrait-glow", "sm-hpc__portrait-glow");
+        var tag = new Label("P09") { name = "tag" };
+        tag.AddToClassList("sm-hpc__tag");
+        portrait.Add(tag);
+
+        var tier = Add(portrait, "tier", "sm-hpc__tier");
+        Add(tier, string.Empty, "sm-hpc__tier-jewel", "sm-hpc__tier-jewel--1");
+        Add(tier, string.Empty, "sm-hpc__tier-jewel", "sm-hpc__tier-jewel--2");
+        Add(tier, string.Empty, "sm-hpc__tier-jewel", "sm-hpc__tier-jewel--3");
+
+        var nameKo = new Label { name = "name-ko" };
+        nameKo.AddToClassList("sm-hpc__name-ko");
+        card.Add(nameKo);
+        var nameEn = new Label { name = "name-en" };
+        nameEn.AddToClassList("sm-hpc__name-en");
+        card.Add(nameEn);
+
+        var archetypeChip = Add(card, "archetype-chip", "sm-hpc__archetype-chip");
+        Add(archetypeChip, string.Empty, "sm-hpc__archetype-chip-cap", "sm-hpc__archetype-chip-cap--tl");
+        Add(archetypeChip, string.Empty, "sm-hpc__archetype-chip-cap", "sm-hpc__archetype-chip-cap--br");
+        Add(archetypeChip, string.Empty, "sm-hpc__archetype-jewel");
+        var archetype = new Label { name = "archetype-text" };
+        archetype.AddToClassList("sm-hpc__archetype-text");
+        archetypeChip.Add(archetype);
+
+        ApplyHeroCardClasses(card, hero);
+        ApplyHeroCardLabels(card, hero);
+        InjectProfileOverlay(card, hero);
+        card.RegisterCallback<ClickEvent>(_ => _actions?.OnHeroSelected(hero.HeroId));
+        return card;
+    }
+
+    private static VisualElement Add(VisualElement parent, string name, params string[] classes)
+    {
+        var element = new VisualElement();
+        if (!string.IsNullOrEmpty(name))
+        {
+            element.name = name;
+        }
+
+        foreach (var className in classes)
+        {
+            element.AddToClassList(className);
+        }
+
+        element.pickingMode = PickingMode.Ignore;
+        parent.Add(element);
+        return element;
     }
 
     private static void ApplyHeroCardClasses(VisualElement card, RosterGridHeroCardViewState hero)

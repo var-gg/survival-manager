@@ -1,9 +1,14 @@
 using System;
 using SM.Unity.UI.Panels.EquipmentRefit;
 using SM.Unity.UI.Panels.InventoryTab;
+using SM.Unity.UI.Panels.PassiveBoard;
+using SM.Unity.UI.Panels.PermanentAugment;
 using SM.Unity.UI.Panels.RecruitPack;
+using SM.Unity.UI.Panels.SettingsGlobal;
 using SM.Unity.UI.Panels.SkillCompendium;
 using SM.Unity.UI.Panels.TacticalWorkshop;
+using SM.Unity.UI.Panels.TownRosterGrid;
+using SM.Unity.UI.Panels.TownSquadBuilder;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -65,6 +70,11 @@ public sealed class Phase2PanelRuntimeShowcaseController : MonoBehaviour
                     break;
                 }
             }
+
+            if (panels.Length >= 10 && Input.GetKeyDown(KeyCode.Alpha0))
+            {
+                Show(9);
+            }
         }
     }
 
@@ -81,7 +91,7 @@ public sealed class Phase2PanelRuntimeShowcaseController : MonoBehaviour
         var entry = panels[_activeIndex];
         if (entry.VisualTreeAsset == null)
         {
-            Debug.LogWarning($"[Phase2PanelShowcase] Missing UXML for {entry.Id}");
+            Debug.LogWarning($"[PanelShowcase] Missing UXML for {entry.Id}");
             return;
         }
 
@@ -116,6 +126,11 @@ public sealed class Phase2PanelRuntimeShowcaseController : MonoBehaviour
         PanelKind.RecruitPack => typeof(RecruitPackController),
         PanelKind.EquipmentRefit => typeof(EquipmentRefitController),
         PanelKind.InventoryTab => typeof(InventoryTabController),
+        PanelKind.TownRosterGrid => typeof(TownRosterGridController),
+        PanelKind.TownSquadBuilder => typeof(TownSquadBuilderController),
+        PanelKind.PermanentAugment => typeof(PermanentAugmentController),
+        PanelKind.PassiveBoard => typeof(PassiveBoardController),
+        PanelKind.SettingsGlobal => typeof(SettingsGlobalController),
         _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
     };
 
@@ -134,5 +149,10 @@ public sealed class Phase2PanelRuntimeShowcaseController : MonoBehaviour
         RecruitPack,
         EquipmentRefit,
         InventoryTab,
+        TownRosterGrid,
+        TownSquadBuilder,
+        PermanentAugment,
+        PassiveBoard,
+        SettingsGlobal,
     }
 }

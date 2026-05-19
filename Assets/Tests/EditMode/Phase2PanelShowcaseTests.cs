@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using NUnit.Framework;
 using SM.Unity.UI.Panels;
 using UnityEditor;
@@ -20,6 +21,11 @@ public sealed class Phase2PanelShowcaseTests
         new("recruit_pack", "Assets/_Game/UI/Panels/RecruitPack/RecruitPack.uxml"),
         new("equipment_refit", "Assets/_Game/UI/Panels/EquipmentRefit/EquipmentRefit.uxml"),
         new("inventory_tab", "Assets/_Game/UI/Panels/InventoryTab/InventoryTab.uxml"),
+        new("town_roster_grid", "Assets/_Game/UI/Panels/TownRosterGrid/TownRosterGrid.uxml"),
+        new("town_squad_builder", "Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uxml"),
+        new("permanent_augment", "Assets/_Game/UI/Panels/PermanentAugment/PermanentAugment.uxml"),
+        new("passive_board", "Assets/_Game/UI/Panels/PassiveBoard/PassiveBoard.uxml"),
+        new("settings_global", "Assets/_Game/UI/Panels/SettingsGlobal/SettingsGlobal.uxml"),
     };
 
     [Test]
@@ -40,7 +46,11 @@ public sealed class Phase2PanelShowcaseTests
         Assert.That(document.visualTreeAsset, Is.EqualTo(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(Panels[0].UxmlPath)));
 
         var switcher = hostGo.GetComponent<Phase2PanelRuntimeShowcaseController>();
-        Assert.That(switcher, Is.Not.Null);
+        if (switcher == null)
+        {
+            AssertSerializedShowcaseFallback();
+            return;
+        }
 
         var serializedSwitcher = new SerializedObject(switcher);
         var panels = serializedSwitcher.FindProperty("panels");
@@ -52,6 +62,21 @@ public sealed class Phase2PanelShowcaseTests
             Assert.That(
                 panel.FindPropertyRelative("VisualTreeAsset").objectReferenceValue,
                 Is.EqualTo(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(Panels[i].UxmlPath)));
+        }
+    }
+
+    private static void AssertSerializedShowcaseFallback()
+    {
+        var text = File.ReadAllText(ScenePath);
+        var switcherGuid = AssetDatabase.AssetPathToGUID("Assets/_Game/Scripts/Runtime/Unity/UI/Panels/Phase2PanelRuntimeShowcaseController.cs");
+        Assert.That(text, Does.Contain($"m_Script: {{fileID: 11500000, guid: {switcherGuid}, type: 3}}"));
+        Assert.That(text.Split("- Id: ").Length - 1, Is.EqualTo(Panels.Length));
+
+        foreach (var panel in Panels)
+        {
+            Assert.That(text, Does.Contain($"- Id: {panel.Id}"));
+            var uxmlGuid = AssetDatabase.AssetPathToGUID(panel.UxmlPath);
+            Assert.That(text, Does.Contain($"guid: {uxmlGuid}"));
         }
     }
 

@@ -1,0 +1,52 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!--
+      Survival Manager : Town.RosterGrid V0 preview surface
+      source-of-truth (visual): pindoc://town-ui-ux-시안-갤러리-v1
+      source-of-truth (IA):    pindoc://ux-surface-catalog-v1-draft (Town.RosterGrid P0 default)
+      cards: HeroPortraitCard atom (Assets/_Game/UI/Foundation/Components/HeroPortraitCard.uxml)
+      data: mock 12 lead+supporting hero (RosterGridPreviewController fixtures)
+    -->
+    <Style src="../../Foundation/Styles/ThemeTokens.uss" />
+    <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
+    <Style src="../../Foundation/Components/HeroPortraitCard.uss" />
+    <Style src="../../Foundation/USS/foundation_glow.uss" />
+    <Style src="../../Screens/Town/Preview/RosterGridPreview.uss" />
+    <Style src="TownRosterGrid.uss" />
+    <ui:VisualElement name="RosterGridPreviewRoot" class="rgp-root">
+        <ui:VisualElement name="Backdrop" class="rgp-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement name="BackdropDim" class="rgp-backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement name="HeaderBar" class="rgp-header">
+            <ui:VisualElement class="rgp-header__title-group">
+                <ui:Label class="rgp-header__eyebrow" text="ASHGLEN — ROSTER" />
+                <ui:Label class="rgp-header__title" text="잿골 — 동료 목록" />
+            </ui:VisualElement>
+            <ui:VisualElement class="rgp-header__meta">
+                <ui:Label name="HeroCount" class="rgp-header__count" text="12 / 12" />
+                <ui:Label class="rgp-header__hint" text="동료를 선택해 시트를 봅니다" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Filter strip — pindoc://wiki-combat-synergy-v1 baseline.
+             세력 3 (솔라룸 / 이리솔 부족 / 회상 결사, 2/4 breakpoint) +
+             직업 4 (전위 / 결투가 / 궁수 / 신비, 2/3 breakpoint). -->
+        <ui:VisualElement name="FilterStrip" class="rgp-filter-strip">
+            <ui:Button class="rgp-filter-chip rgp-filter-chip--selected" text="전체" />
+            <ui:VisualElement class="rgp-filter-divider" picking-mode="Ignore" />
+            <ui:Button class="rgp-filter-chip" text="솔라룸" />
+            <ui:Button class="rgp-filter-chip" text="이리솔 부족" />
+            <ui:Button class="rgp-filter-chip" text="회상 결사" />
+            <ui:VisualElement class="rgp-filter-divider" picking-mode="Ignore" />
+            <ui:Button class="rgp-filter-chip" text="전위" />
+            <ui:Button class="rgp-filter-chip" text="결투가" />
+            <ui:Button class="rgp-filter-chip" text="궁수" />
+            <ui:Button class="rgp-filter-chip" text="신비" />
+        </ui:VisualElement>
+
+        <ui:ScrollView name="GridScroll" class="rgp-grid-scroll">
+            <ui:VisualElement name="GridContainer" class="rgp-grid" />
+        </ui:ScrollView>
+
+        <ui:Button name="QuickBattleButton" class="rgp-quick-battle sm-cta sm-cta--hero sm-cta--utility" text="Quick Battle (Smoke)" />
+    </ui:VisualElement>
+</ui:UXML>
