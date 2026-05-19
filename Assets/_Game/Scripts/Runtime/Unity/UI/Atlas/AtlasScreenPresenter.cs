@@ -193,7 +193,9 @@ public sealed class AtlasScreenPresenter
                 stage <= _session.SiteSpineIndex || (stage == 5 && _session.BossResolved),
                 stage == sessionResolution.CurrentStageIndex,
                 stage == AtlasSpineProgressionService.BossStageIndex && _session.SiteSpineIndex < 3
-                || stage == AtlasSpineProgressionService.ExtractStageIndex && !_session.BossResolved))
+                || stage == AtlasSpineProgressionService.ExtractStageIndex && !_session.BossResolved,
+                SiteNodeIndex: stage - 1,
+                StageKind: AtlasReadabilityFormatter.FormatSpineStageKind(stage)))
             .ToArray();
     }
 

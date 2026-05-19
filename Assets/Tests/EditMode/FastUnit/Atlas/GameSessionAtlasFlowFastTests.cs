@@ -127,6 +127,31 @@ public sealed class GameSessionAtlasFlowFastTests
     }
 
     [Test]
+    public void SpineStages_ExposeSiteNodeIndexAndStageKindFromExpeditionProgress()
+    {
+        var session = CreateBoundSession();
+        session.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        var presenter = new AtlasScreenPresenter(region, session.EnsureAtlasSession(region));
+        var state = presenter.Build();
+
+        Assert.That(state.SpineStages.Count, Is.EqualTo(5));
+        // SiteNodeIndex는 0-based 5-node SiteTrack (skirmish/skirmish/elite/boss/extract).
+        Assert.That(
+            state.SpineStages.Select(s => s.SiteNodeIndex).ToArray(),
+            Is.EqualTo(new[] { 0, 1, 2, 3, 4 }));
+        // StageKind id는 task-atlas-sitetrack-absorption-v1 acceptance #1/#3의 baseline.
+        Assert.That(
+            state.SpineStages.Select(s => s.StageKind).ToArray(),
+            Is.EqualTo(new[] { "skirmish", "skirmish", "elite", "boss", "extract" }));
+        // Korean label은 readability 유지.
+        Assert.That(
+            state.SpineStages.Select(s => s.Label).ToArray(),
+            Is.EqualTo(new[] { "진입", "교전", "단서", "보스", "추출" }));
+    }
+
+    [Test]
     public void RunBattlePayload_IsPopulatedAfterSelectionHandoff()
     {
         var session = CreateBoundSession();

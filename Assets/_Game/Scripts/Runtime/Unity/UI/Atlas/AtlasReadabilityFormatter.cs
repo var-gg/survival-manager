@@ -357,6 +357,22 @@ public static class AtlasReadabilityFormatter
         };
     }
 
+    /// <summary>
+    /// 5-node SiteTrack의 stage kind id. `skirmish → skirmish → elite → boss → extract` baseline.
+    /// task-atlas-sitetrack-absorption-v1 acceptance #1/#3 (stage kind label/chip in ViewState).
+    /// </summary>
+    public static string FormatSpineStageKind(int stageIndex)
+    {
+        return stageIndex switch
+        {
+            1 or 2 => "skirmish",
+            3 => "elite",
+            4 => "boss",
+            5 => "extract",
+            _ => "unknown",
+        };
+    }
+
     public static string BuildCandidateSummary(AtlasRegionNode node, AtlasNodeModifierStack? stack)
     {
         var reward = FormatRewardBiasLabel(stack?.RewardBiasPercent ?? 0);

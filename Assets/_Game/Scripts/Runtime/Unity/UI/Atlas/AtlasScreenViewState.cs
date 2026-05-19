@@ -49,7 +49,9 @@ public sealed record AtlasSpineStageViewState(
     string Label,
     bool IsCompleted,
     bool IsCurrent,
-    bool IsLocked);
+    bool IsLocked,
+    int SiteNodeIndex = 0,
+    string StageKind = "");
 
 public sealed record AtlasStageCandidateViewState(
     string HexId,
