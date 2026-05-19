@@ -958,6 +958,16 @@ public sealed partial class GameSessionState
             return true;
         }
 
+        // Atlas selection handoff 직후라면 RunBattlePayload가 이미 세팅돼 있다. 그 경우
+        // payload entry path를 우선해서 Atlas identity/hash를 Battle context로 그대로 운반한다
+        // (task-battle-entry-authored-node-v1 acceptance #1/#6).
+        if (_runBattlePayload is { } payload && payload.IsValid)
+        {
+            context = resolver.BuildBattleContextFromPayload(run, payload);
+            error = string.Empty;
+            return true;
+        }
+
         EnsureCampaignSelection();
         var selectedNode = GetSelectedExpeditionNode() ?? GetCurrentExpeditionNode();
         var nodeIndex = selectedNode?.Index ?? CurrentExpeditionNodeIndex;
