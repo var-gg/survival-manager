@@ -47,7 +47,16 @@ docs/02_design/ui/handoff/**/*.download
 # Local agent / Unity transient artifacts
 .mcp.json
 .claude/
+.agents/
+.codex/
 Saves/
+
+# Unity PlayMode 임시 scene (UUID 형태로 자동 생성)
+Assets/InitTestScene*.unity
+Assets/InitTestScene*.unity.meta
+
+# gpt-pro-submit workspace hook — payload만 ignored, config/scenarios는 트래킹
+.gptprosubmit/payload/
 Captures/
 TestResults-Batch.xml
 Assets/_Recovery/

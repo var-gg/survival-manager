@@ -1,0 +1,20 @@
+# survival-manager workspace hook for ~/.claude/skills/gpt-pro-submit/
+# orchestrate.py가 cwd 위쪽 어디서든 이 파일을 발견하면 workspace 모드로 동작
+
+chatgpt_project_url: "https://chatgpt.com/g/g-p-69c7aa09d1588191a8dd5bd93db389ba-survival-manager/project"
+
+# game-image-gen과 동일 user-data-dir 공유 — ChatGPT 로그인 세션 재사용
+user_data_dir: "~/.claude/comic-imagegen/chrome-user-data"
+
+pindoc:
+  enabled: true
+  base: "http://localhost:5830"
+  project_slug: "survival-manager"
+
+fetch:
+  # Pro·확장 모드 응답은 20분+ 가능. timeout 여유 있게.
+  timeout: 1800
+  poll_interval: 8.0
+  stable_seconds: 12.0
+
+payload_keep_last: 5
