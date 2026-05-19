@@ -31,6 +31,7 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("SettingsButton"));
         Assert.That(uxml, Does.Contain("ReturnToStartButton"));
         // V3 layout containers — face card는 코드 build
+        Assert.That(uxml, Does.Contain("../../Foundation/Components/HeroFaceCard.uss"));
         Assert.That(uxml, Does.Contain("NpcStrip"));
         Assert.That(uxml, Does.Contain("WelcomeCaptainMount"));
         Assert.That(uxml, Does.Contain("WelcomeCaptainGreeting"));
@@ -146,5 +147,23 @@ public sealed class TownScreenUxmlHubLayoutTests
         var inventory = File.ReadAllText("Assets/_Game/UI/Panels/InventoryTab/InventoryTab.uxml");
         Assert.That(inventory, Does.Contain("DetailCrossLinks"));
         Assert.That(inventory, Does.Contain("sm-cd-panel"));
+    }
+
+    [Test]
+    public void Recruit_And_PermanentAugment_Do_Not_Use_Floating_Frame_As_Inner_Card_Chrome()
+    {
+        // decision-ui-chrome-hierarchy-slice-discipline:
+        // ui_card_frame_normal / ui_icon_slot_frame are not slice-safe for inner L3/L4 chrome.
+        // Keep image-sliced action buttons, but do not repeat ornate card/icon frames inside these modals.
+        var recruit = File.ReadAllText("Assets/_Game/UI/Panels/RecruitPack/RecruitPack.uss");
+        var permanent = File.ReadAllText("Assets/_Game/UI/Panels/PermanentAugment/PermanentAugment.uss");
+
+        Assert.That(recruit, Does.Not.Contain("ui_card_frame_normal.png"));
+        Assert.That(recruit, Does.Not.Contain("ui_icon_slot_frame.png"));
+        Assert.That(recruit, Does.Contain("ui_button_gold.png"));
+
+        Assert.That(permanent, Does.Not.Contain("ui_card_frame_normal.png"));
+        Assert.That(permanent, Does.Not.Contain("ui_icon_slot_frame.png"));
+        Assert.That(permanent, Does.Contain("ui_button_gold.png"));
     }
 }

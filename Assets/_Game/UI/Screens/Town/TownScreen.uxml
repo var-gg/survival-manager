@@ -5,6 +5,7 @@
       Layout: top utility bar / middle backdrop+welcome captain / bottom NPC strip + hero cluster + utility column / CTA bar.
       Modal Instance layer는 Panels/** ArtBible source를 production Town modal로 승격한다.
     -->
+    <Style src="../../Foundation/Components/HeroFaceCard.uss" />
     <ui:Template name="SquadBuilderTemplate" src="../../Panels/TownSquadBuilder/TownSquadBuilder.uxml" />
     <ui:Template name="RecruitTemplate" src="../../Panels/RecruitPack/RecruitPack.uxml" />
     <ui:Template name="EquipmentRefitTemplate" src="../../Panels/EquipmentRefit/EquipmentRefit.uxml" />

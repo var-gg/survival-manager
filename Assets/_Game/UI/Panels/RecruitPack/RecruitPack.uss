@@ -9,33 +9,46 @@
 }
 
 .rcp-card {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
-    -unity-slice-left: 64;
-    -unity-slice-right: 64;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.34;
-    background-color: var(--sm-bg-1);
+    background-image: none;
+    background-color: rgba(22, 29, 60, 0.90);
+    border-left-color: rgba(230, 183, 81, 0.22);
+    border-right-color: rgba(230, 183, 81, 0.22);
+    border-top-color: rgba(230, 183, 81, 0.20);
+    border-bottom-color: rgba(230, 183, 81, 0.28);
 }
 
 .rcp-card--on-plan {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_selected_base.png");
+    background-image: none;
+    background-color: rgba(47, 48, 64, 0.94);
+    border-left-color: rgba(230, 183, 81, 0.72);
+    border-right-color: rgba(230, 183, 81, 0.72);
+    border-top-color: rgba(245, 214, 138, 0.78);
+    border-bottom-color: rgba(200, 147, 42, 0.82);
 }
 
 .rcp-card--protected {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_locked.png");
+    background-image: none;
+    background-color: rgba(18, 24, 55, 0.96);
+    border-left-color: rgba(127, 163, 224, 0.68);
+    border-right-color: rgba(127, 163, 224, 0.68);
+    border-top-color: rgba(180, 205, 255, 0.70);
+    border-bottom-color: rgba(74, 114, 184, 0.82);
 }
 
 .rcp-card__portrait,
 .rcp-card__class-glyph,
 .rcp-actions__scout-icon,
 .rcp-actions__refresh-icon {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
-    -unity-slice-left: 56;
-    -unity-slice-right: 56;
-    -unity-slice-top: 56;
-    -unity-slice-bottom: 56;
-    -unity-slice-scale: 0.32;
+    background-image: none;
+    background-color: rgba(8, 12, 28, 0.58);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 214, 138, 0.20);
+    border-right-color: rgba(245, 214, 138, 0.20);
+    border-top-color: rgba(245, 214, 138, 0.18);
+    border-bottom-color: rgba(245, 214, 138, 0.26);
 }
 
 .rcp-header__ornament,
