@@ -55,7 +55,7 @@ Saves/
 Assets/InitTestScene*.unity
 Assets/InitTestScene*.unity.meta
 
-# gpt-pro-submit workspace hook — payload만 ignored, config/scenarios는 트래킹
+# gpt-pro-submit global skill workspace hook — payload만 ignored, config/scenarios는 트래킹
 .gptprosubmit/payload/
 Captures/
 TestResults-Batch.xml

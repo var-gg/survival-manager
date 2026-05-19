@@ -1,7 +1,12 @@
 # `.gptprosubmit/` — workspace hook
 
-`~/.claude/skills/gpt-pro-submit/` 글로벌 스킬의 워크스페이스 hook.
+글로벌 `gpt-pro-submit` 스킬의 워크스페이스 hook.
 orchestrate.py가 cwd 위쪽에서 이 디렉토리를 발견하면 여기 config + scenarios + payload를 사용한다.
+
+기본 실행 경로:
+
+- Codex: `~/.codex/skills/gpt-pro-submit/scripts/orchestrate.py`
+- Claude Code: `~/.claude/skills/gpt-pro-submit/scripts/orchestrate.py`
 
 ## 구성
 
@@ -13,18 +18,18 @@ orchestrate.py가 cwd 위쪽에서 이 디렉토리를 발견하면 여기 confi
 
 ```powershell
 # pindoc bundle 풀 사이클 (submit + fetch)
-python ~/.claude/skills/gpt-pro-submit/scripts/orchestrate.py narrative-consistency-fix
+python ~/.codex/skills/gpt-pro-submit/scripts/orchestrate.py narrative-consistency-fix
 
 # focus hint 추가
-python ~/.claude/skills/gpt-pro-submit/scripts/orchestrate.py narrative-consistency-fix --extra "단린 voice 위주로"
+python ~/.codex/skills/gpt-pro-submit/scripts/orchestrate.py narrative-consistency-fix --extra "단린 voice 위주로"
 
 # 특정 slug만
-python ~/.claude/skills/gpt-pro-submit/scripts/orchestrate.py narrative-consistency-fix --slugs hero-dawn-priest,hero-grave-hexer
+python ~/.codex/skills/gpt-pro-submit/scripts/orchestrate.py narrative-consistency-fix --slugs hero-dawn-priest,hero-grave-hexer
 
 # bundle/prompt 검토만 (브라우저 안 띄움)
-python ~/.claude/skills/gpt-pro-submit/scripts/orchestrate.py narrative-consistency-fix --dry-run
+python ~/.codex/skills/gpt-pro-submit/scripts/orchestrate.py narrative-consistency-fix --dry-run
 ```
 
-## 기존 Codex 스킬과의 관계
+## 레거시 로컬 스킬 정리
 
-`.agents/skills/gpt-pro-submit/`는 Codex가 사용하는 동등 스킬로 그대로 유지. 이 디렉토리(`.gptprosubmit/`)는 Claude Code 글로벌 스킬용. 둘은 같은 ChatGPT 프로젝트를 가리키되 코드는 분리되어 있다.
+이전의 `.agents/skills/gpt-pro-submit/` 로컬 스킬은 제거했다. 중복 스킬 노출과 코드 분기를 막기 위해 `gpt-pro-submit` 실행 코드는 글로벌 스킬 하나만 사용한다.

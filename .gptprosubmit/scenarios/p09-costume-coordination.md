@@ -12,7 +12,7 @@ output_format: _output_format.md
 
 22명 캐릭터(lead 4 + sub-antagonist 4 + supporting 8 + background 8 — wiki registry 기준)의 P09 외형이 현재 monotonic 적용 상태(예: Armor_010 슬롯 5개를 그대로 일괄 사용 + 단톤 색 override)다. GPT Pro에 통합 재산출을 위임해서 진영/직책/voice baseline은 유지하되 캐릭터별 미세 파츠 변주 + 색감 다양화로 디자인 매력과 시각 식별성을 동시에 챙긴다. 응답은 머신리더블 YAML이며, 별도 셋업 에이전트가 그대로 P09 `*.asset`에 적용한다.
 
-## 조립 규칙 (Claude용 메타)
+## 조립 규칙 (호출자용 메타)
 
 - `default_scope.areas` 두 area를 pack_wiki.py로 전부 dump (Task 제외)
 - `character-lore`: 캐릭터 wiki(각자 "외모" + "P09 visual spec" 섹션에 현재 P09 적용값 + 색 override 텍스트 명세) + `wiki-character-p09-appearance-presets`(전체 캐릭터 preset JSON) + registry/emotion/operation layer
@@ -184,7 +184,7 @@ characters:
 
 ## Default scope 보완
 
-P09 작업의 cross-reference 필요시 Claude가 추가:
+P09 작업의 cross-reference 필요시 호출자가 추가:
 
 - `narrative-script` 일부 (캐릭터의 chapter 등장 비트가 외형 결정에 영향 줄 때 — e.g., 캠페인 후반 단린 인장 풀린 모습) — 기본 미포함
 - `flows` 의 `flow-p09-character-preset` — preset 고정/재수정 운영 flow — 기본 미포함, 사용자 hint 있을 때만

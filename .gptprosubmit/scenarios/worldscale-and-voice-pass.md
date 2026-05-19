@@ -17,7 +17,7 @@ output_format: _output_format.md
 
 scope에 `content` area 추가가 핵심 — `wiki-world-building-bible-mirror`, `narrative-faction-conflict-driver-v1`, `analysis-historical-truth-layer` 등 거시 lore baseline 문서가 거기 있다.
 
-## 조립 규칙 (Claude용 메타)
+## 조립 규칙 (호출자용 메타)
 
 - `default_scope.areas` 세 area를 pack_wiki.py로 전부 dump (Task 제외)
 - placeholder 치환:

@@ -1,4 +1,4 @@
-# survival-manager workspace hook for ~/.claude/skills/gpt-pro-submit/
+# survival-manager workspace hook for global gpt-pro-submit skill
 # orchestrate.py가 cwd 위쪽 어디서든 이 파일을 발견하면 workspace 모드로 동작
 
 chatgpt_project_url: "https://chatgpt.com/g/g-p-69c7aa09d1588191a8dd5bd93db389ba-survival-manager/project"

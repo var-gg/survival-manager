@@ -10,10 +10,10 @@ output_format: _output_format.md
 
 # Scenario: narrative-consistency-fix
 
-이 markdown은 Claude가 GPT Pro 전달용 prompt를 조립하기 위한 template다.
-placeholder는 `{{...}}` 형식이며 Claude가 호출 인자/맥락으로 채운다.
+이 markdown은 호출자가 GPT Pro 전달용 prompt를 조립하기 위한 template다.
+placeholder는 `{{...}}` 형식이며 호출자가 호출 인자/맥락으로 채운다.
 
-## 조립 규칙 (Claude용 메타 — prompt에 들어가지 않음)
+## 조립 규칙 (호출자용 메타 — prompt에 들어가지 않음)
 
 - `default_scope.areas` 두 area를 pindoc.artifact.search/read로 모두 수집. 사용자가 `--slugs` 명시했으면 그것이 우선
 - `_template_*` slug, `status: superseded` artifact 제외 (frontmatter 지시 준수)
@@ -118,7 +118,7 @@ slug별 patch. 각 slug에 대해 아래 4 sub-section을 두되, **해당 항�
 
 ## Default scope 보완
 
-기본 두 area만으로 부족한 경우 Claude가 판단해서 추가:
+기본 두 area만으로 부족한 경우 호출자가 판단해서 추가:
 
 - `narrative-process` (22): 작업 메타라 기본 제외하되, 사용자가 reskin 진행 상황 검수를 원하면 포함
 - `content` (16): reader copy 포함. wiki 외부 노출 텍스트라 narrative 검수 대상으로 포함 가능
