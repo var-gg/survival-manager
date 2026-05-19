@@ -836,6 +836,7 @@
     border-bottom-width: 2.5px;
     -unity-font-style: bold;
     letter-spacing: 1px;
+    -unity-background-scale-mode: stretch-to-fill;
     transition-property: background-color, scale, translate, border-top-color, border-bottom-color;
     transition-duration: 120ms;
     transition-timing-function: ease-out;
@@ -864,6 +865,12 @@
 
 /* primary — gold filled, deep amber rim. JRPG hero CTA 톤. */
 .sm-cta--primary {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_gold.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.34;
     background-color: rgba(200, 147, 42, 0.95);
     border-top-color: var(--sm-gold-100);
     border-left-color: var(--sm-gold-300);
@@ -879,6 +886,12 @@
 
 /* secondary — navy parchment + gold trim. utility/menu CTA. */
 .sm-cta--secondary {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_dark.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.34;
     background-color: rgba(38, 45, 84, 0.92);
     border-top-color: var(--sm-gold-200);
     border-left-color: var(--sm-gold-400);

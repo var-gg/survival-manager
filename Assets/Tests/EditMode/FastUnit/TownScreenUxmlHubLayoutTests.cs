@@ -158,6 +158,8 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(theme, Does.Contain(".sm-chrome-l2"));
         Assert.That(theme, Does.Contain(".sm-chrome-l3"));
         Assert.That(theme, Does.Contain(".sm-chrome-l4"));
+        Assert.That(theme, Does.Contain("ui_button_gold.png"));
+        Assert.That(theme, Does.Contain("ui_button_dark.png"));
 
         var panelPaths = new[]
         {

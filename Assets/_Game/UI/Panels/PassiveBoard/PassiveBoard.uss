@@ -26,11 +26,25 @@
 }
 
 .pbp-board__glow {
-    background-image: none;
-    background-color: rgba(200, 147, 42, 0.12);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/glow_halo_warm_gold.png");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 0.42;
 }
 
-.pbp-board__node,
+.pbp-board__node {
+    background-image: none;
+    background-color: var(--sm-bg-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-1);
+    border-right-color: var(--sm-line-1);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+}
+
 .pbp-detail__desc {
     background-image: none;
     background-color: var(--sm-bg-2);
@@ -58,8 +72,7 @@
 }
 
 .pbp-header__portrait,
-.pbp-header__class-icon,
-.pbp-detail__icon {
+.pbp-header__class-icon {
     background-image: none;
     background-color: var(--sm-bg-0-a84);
     border-left-width: 1px;
@@ -74,6 +87,23 @@
     border-top-right-radius: var(--sm-r-md);
     border-bottom-left-radius: var(--sm-r-md);
     border-bottom-right-radius: var(--sm-r-md);
+}
+
+.pbp-detail__icon {
+    background-image: none;
+    background-color: rgba(200, 147, 42, 0.18);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-vellum-a12);
+    border-right-color: var(--sm-vellum-a12);
+    border-top-color: var(--sm-vellum-a15);
+    border-bottom-color: var(--sm-vellum-a09);
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
 }
 
 .pbp-detail__activate {
