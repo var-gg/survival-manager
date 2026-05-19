@@ -109,6 +109,27 @@ public sealed class EncounterResolutionServiceFastTests
     }
 
     [Test]
+    public void BuildSiteTrack_ExtractNode_HasRequiresBattleFalse_RoutesCallerToReward()
+    {
+        // task-battle-entry-authored-node-v1 acceptance #5 caller 측 evidence.
+        // BuildSiteTrack 결과의 extract node가 RequiresBattle=false라
+        // AtlasScreenController.ContinueToExpedition이 GoToReward로 분기한다.
+        var snapshot = CreateSnapshot();
+        var resolver = new EncounterResolutionService(snapshot);
+
+        var siteTrack = resolver.BuildSiteTrack("chapter_test", "site_test");
+        Assert.That(siteTrack.Count, Is.GreaterThan(0));
+
+        var extract = siteTrack[siteTrack.Count - 1];
+        Assert.That(extract.EncounterId, Is.EqualTo("site_test:extract"),
+            "마지막 node는 extract id pattern을 가진다.");
+        Assert.That(extract.RequiresBattle, Is.False,
+            "Extract node는 Battle scene 진입을 요구하지 않는다 (RequiresBattle=false).");
+        Assert.That(extract.RewardSourceId, Is.EqualTo("reward_source_extract"),
+            "Extract node는 site.ExtractRewardSourceId를 운반.");
+    }
+
+    [Test]
     public void BuildBattleContextFromPayload_ExtractNode_RoutesToSettlementSignal()
     {
         // task-battle-entry-authored-node-v1 acceptance #5: extract node payload는 Battle scene을
