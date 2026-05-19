@@ -161,6 +161,46 @@ public sealed class RunLoopContractFastTests
     }
 
     [Test]
+    public void BindProfile_RestoresRewardCommitId_AndLedgerEntriesAreStampedWithIt()
+    {
+        // task-reward-settlement-commit-v1 acceptance #3 / #4:
+        // - #3: ApplyRewardChoice 후 reward_choice ledger entry가 RewardCommitId를 stamp한다.
+        // - #4: reload(BindProfile) 후 그 entry들이 그대로 복원되고 pending state는 finalize된다.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+        session.MarkBattleResolved(true, 12, 6);
+
+        var originalCommitId = session.ActiveRun?.Overlay.RewardCommitId;
+        Assert.That(originalCommitId, Is.Not.Empty,
+            "stamping이 완료된 상태로 ApplyRewardChoice 진입.");
+
+        Assert.That(session.ApplyRewardChoice(0), Is.True);
+
+        var stampedEntries = session.Profile.RewardLedger.Count(entry =>
+            string.Equals(entry.CommitId, originalCommitId, StringComparison.Ordinal)
+            && entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
+        Assert.That(stampedEntries, Is.GreaterThanOrEqualTo(1),
+            "acceptance #3: reward_choice ledger entry가 RewardCommitId를 stamp한다.");
+
+        var reloaded = GameSessionTestFactory.Create(lookup);
+        reloaded.BindProfile(CloneProfile(session.Profile));
+        reloaded.SetCurrentScene(SceneNames.Town);
+
+        Assert.That(reloaded.HasPendingRewardSettlement, Is.False,
+            "acceptance #4: commit이 끝난 settlement은 reload 후 pending이 아니다.");
+
+        var reloadedStampedEntries = reloaded.Profile.RewardLedger.Count(entry =>
+            string.Equals(entry.CommitId, originalCommitId, StringComparison.Ordinal)
+            && entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
+        Assert.That(reloadedStampedEntries, Is.EqualTo(stampedEntries),
+            "acceptance #4: CommitId-stamped ledger entry가 reload로 그대로 복원된다.");
+    }
+
+    [Test]
     public void BindProfile_ResumesRewardSettlementWithoutDuplicatingRewardLedger()
     {
         var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();

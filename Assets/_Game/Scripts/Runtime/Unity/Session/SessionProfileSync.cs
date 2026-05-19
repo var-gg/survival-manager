@@ -686,6 +686,18 @@ public sealed partial class GameSessionState
                    && entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
     }
 
+    /// <summary>
+    /// task-reward-settlement-commit-v1 acceptance #3: RewardCommitId 기반 dedup. 같은 commitId가
+    /// 이미 RewardLedger에 reward_choice entry로 기록돼 있으면 두 번째 commit은 mutation 없이 통과.
+    /// </summary>
+    private bool HasRecordedRewardSettlementByCommitId(string commitId)
+    {
+        return !string.IsNullOrWhiteSpace(commitId)
+               && Profile.RewardLedger.Any(entry =>
+                   string.Equals(entry.CommitId, commitId, StringComparison.Ordinal)
+                   && entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal));
+    }
+
     private void RebindNarrativeServices()
     {
         StoryDirector = _narrativeRuntimeBootstrap.CreateStoryDirector(Profile.Narrative);

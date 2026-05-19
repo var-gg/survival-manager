@@ -14,4 +14,5 @@ public sealed class RewardLedgerEntryRecord
     public string Summary = string.Empty;
     public string SourceId = string.Empty;
     public string SourceKind = string.Empty;
+    public string CommitId = string.Empty;
 }

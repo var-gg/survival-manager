@@ -220,7 +220,13 @@ public sealed partial class GameSessionState
 
             var choice = _session._pendingRewardChoices[index];
             var rewardSourceId = _session.ActiveRun?.Overlay.RewardSourceId ?? string.Empty;
-            if (_session.HasRecordedRewardSettlement(rewardSourceId))
+            var rewardCommitId = _session.ActiveRun?.Overlay.RewardCommitId ?? string.Empty;
+            // task-reward-settlement-commit-v1 acceptance #3: rewardSourceId 기반 기존 dedup에
+            // RewardCommitId 기반 검사를 추가해 reload-after-commit non-regression을 강화한다.
+            // 같은 site에서 다른 outcome으로 두 번 도달하는 경우(예: defeat 후 retry)에 대해서도
+            // commitId가 다르면 정상 처리되고, 같은 commitId면 두 번째 호출은 mutation 없이 통과.
+            if (_session.HasRecordedRewardSettlement(rewardSourceId)
+                || _session.HasRecordedRewardSettlementByCommitId(rewardCommitId))
             {
                 _session._pendingRewardChoices.Clear();
                 _session.LastRewardApplicationSummary = new SessionTextToken(
@@ -272,6 +278,7 @@ public sealed partial class GameSessionState
                         Summary = BuildRewardChoiceSummaryKey(choice),
                         SourceId = _session.ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
                         SourceKind = _session.ResolveRewardSourceKind(_session.ActiveRun?.Overlay.RewardSourceId, isSettlementChoice: true),
+                        CommitId = rewardCommitId,
                     });
                     _session.LastRewardApplicationSummary = BuildRewardChoiceSummaryToken(choice);
                     break;
@@ -358,6 +365,7 @@ public sealed partial class GameSessionState
             Summary = result.RewardEntry.Summary,
             SourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
             SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId, isSettlementChoice: true),
+            CommitId = ActiveRun?.Overlay.RewardCommitId ?? string.Empty,
         });
         if (result.InventoryEntry != null)
         {
