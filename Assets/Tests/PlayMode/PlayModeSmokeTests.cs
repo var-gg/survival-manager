@@ -108,8 +108,23 @@ public sealed class PlayModeSmokeTests
         Assert.That(battle.LatestStep!.Units.Any(unit => unit.Id.EndsWith(heroA) && unit.Anchor == DeploymentAnchorId.BackBottom), Is.True, "Assigned anchor should flow into live battle state.");
         Assert.That(battle.LatestStep!.Units.Any(unit => unit.Id.EndsWith(heroB) && unit.Anchor == DeploymentAnchorId.FrontCenter), Is.True, "Second assigned anchor should flow into live battle state.");
 
+        // task-vertical-slice-smoke-evidence-v1 acceptance #2: RunBattlePayload + Atlas overlay
+        // trace fields가 Battle scene 진입 시점에 ActiveRun.Overlay에 stamping돼 있어야 한다.
+        var overlayAtBattle = root.SessionState.ActiveRun?.Overlay;
+        Assert.That(overlayAtBattle, Is.Not.Null);
+        Assert.That(overlayAtBattle!.BattleContextHash, Is.Not.Empty,
+            "Battle 진입 시점에 BattleContextHash가 overlay에 stamping돼야 한다 (Atlas → Battle 운반).");
+        Assert.That(overlayAtBattle.EncounterId, Is.Not.Empty,
+            "Battle 진입 시점에 authored EncounterId가 overlay에 운반돼야 한다.");
+
         battle.SetSpeed4();
         yield return WaitForCondition(() => battle.IsPlaybackFinished, 20f);
+
+        // Battle 종료 후 (ContinueToReward 직전) RewardCommitId stamping 검증.
+        var overlayAtResolve = root.SessionState.ActiveRun?.Overlay;
+        Assert.That(overlayAtResolve?.RewardCommitId, Is.Not.Empty,
+            "Battle 종료(MarkBattleResolved 결과) 후 RewardCommitId가 overlay에 stamping돼야 한다.");
+
         battle.ContinueToReward();
 
         yield return WaitForScene(SceneNames.Reward);
