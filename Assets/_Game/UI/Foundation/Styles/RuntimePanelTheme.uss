@@ -954,6 +954,74 @@
     border-bottom-color: rgba(230, 183, 81, 0.20);
 }
 
+/* --- ArtBible chrome hierarchy ---
+   decision-ui-chrome-hierarchy-slice-discipline: ornate raster chrome is L1-only.
+   Inner production Town panels use quiet L2/L3/L4 surfaces so gold corners stay rare. */
+.sm-chrome-l2 {
+    background-color: var(--sm-bg-1);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a20);
+    border-right-color: var(--sm-gold-300-a20);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-lg);
+    border-top-right-radius: var(--sm-r-lg);
+    border-bottom-left-radius: var(--sm-r-lg);
+    border-bottom-right-radius: var(--sm-r-lg);
+}
+
+.sm-chrome-l3 {
+    background-color: var(--sm-bg-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-1);
+    border-right-color: var(--sm-line-1);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+}
+
+.sm-chrome-l3--selected {
+    background-color: var(--sm-bg-3);
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.sm-chrome-l3--locked {
+    background-color: var(--sm-bg-1-a54);
+    border-left-color: var(--sm-gold-muted-a40);
+    border-right-color: var(--sm-gold-muted-a40);
+    border-top-color: var(--sm-gold-muted-a44);
+    border-bottom-color: var(--sm-gold-muted-a40);
+    opacity: 0.76;
+}
+
+.sm-chrome-l4 {
+    background-color: var(--sm-bg-0-a84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-vellum-a12);
+    border-right-color: var(--sm-vellum-a12);
+    border-top-color: var(--sm-vellum-a15);
+    border-bottom-color: var(--sm-vellum-a09);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+}
+
 /* --- 9-slice card frame texture overlay ---
    card / panel 단위 ornate border. modal frame보다 얇은 trim. */
 .sm-card-frame__texture {

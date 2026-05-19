@@ -150,20 +150,43 @@ public sealed class TownScreenUxmlHubLayoutTests
     }
 
     [Test]
-    public void Recruit_And_PermanentAugment_Do_Not_Use_Floating_Frame_As_Inner_Card_Chrome()
+    public void ProductionTownPanels_Do_Not_Use_Floating_Frame_As_Inner_Card_Chrome()
     {
         // decision-ui-chrome-hierarchy-slice-discipline:
-        // ui_card_frame_normal / ui_icon_slot_frame are not slice-safe for inner L3/L4 chrome.
-        // Keep image-sliced action buttons, but do not repeat ornate card/icon frames inside these modals.
-        var recruit = File.ReadAllText("Assets/_Game/UI/Panels/RecruitPack/RecruitPack.uss");
-        var permanent = File.ReadAllText("Assets/_Game/UI/Panels/PermanentAugment/PermanentAugment.uss");
+        // inner panel/card/icon chrome must be L2/L3/L4 line work, not repeated ornate 9-slice.
+        var theme = File.ReadAllText("Assets/_Game/UI/Foundation/Styles/RuntimePanelTheme.uss");
+        Assert.That(theme, Does.Contain(".sm-chrome-l2"));
+        Assert.That(theme, Does.Contain(".sm-chrome-l3"));
+        Assert.That(theme, Does.Contain(".sm-chrome-l4"));
 
-        Assert.That(recruit, Does.Not.Contain("ui_card_frame_normal.png"));
-        Assert.That(recruit, Does.Not.Contain("ui_icon_slot_frame.png"));
+        var panelPaths = new[]
+        {
+            "Assets/_Game/UI/Panels/RecruitPack/RecruitPack.uss",
+            "Assets/_Game/UI/Panels/PermanentAugment/PermanentAugment.uss",
+            "Assets/_Game/UI/Panels/SkillCompendium/SkillCompendium.uss",
+            "Assets/_Game/UI/Panels/InventoryTab/InventoryTab.uss",
+            "Assets/_Game/UI/Panels/EquipmentRefit/EquipmentRefit.uss",
+            "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss",
+        };
+
+        foreach (var path in panelPaths)
+        {
+            var uss = File.ReadAllText(path);
+            Assert.That(uss, Does.Contain("ui_panel_frame_outer.png"), path);
+            Assert.That(uss, Does.Not.Contain("ui_panel_frame_inner.png"), path);
+            Assert.That(uss, Does.Not.Contain("ui_card_frame_normal.png"), path);
+            Assert.That(uss, Does.Not.Contain("ui_card_frame_selected_base.png"), path);
+            Assert.That(uss, Does.Not.Contain("ui_card_frame_locked.png"), path);
+            Assert.That(uss, Does.Not.Contain("ui_icon_slot_frame.png"), path);
+        }
+
+        var recruit = File.ReadAllText(panelPaths[0]);
+        var permanent = File.ReadAllText(panelPaths[1]);
+        var inventory = File.ReadAllText(panelPaths[3]);
+        var equipmentRefit = File.ReadAllText(panelPaths[4]);
         Assert.That(recruit, Does.Contain("ui_button_gold.png"));
-
-        Assert.That(permanent, Does.Not.Contain("ui_card_frame_normal.png"));
-        Assert.That(permanent, Does.Not.Contain("ui_icon_slot_frame.png"));
         Assert.That(permanent, Does.Contain("ui_button_gold.png"));
+        Assert.That(inventory, Does.Contain("ui_button_gold.png"));
+        Assert.That(equipmentRefit, Does.Contain("ui_button_gold.png"));
     }
 }

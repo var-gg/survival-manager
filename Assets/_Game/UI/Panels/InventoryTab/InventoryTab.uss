@@ -12,30 +12,46 @@
 .inv-sidebar,
 .inv-main,
 .inv-detail {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
-    -unity-slice-left: 64;
-    -unity-slice-right: 64;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.42;
     background-color: var(--sm-bg-1);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a20);
+    border-right-color: var(--sm-gold-300-a20);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-lg);
+    border-top-right-radius: var(--sm-r-lg);
+    border-bottom-left-radius: var(--sm-r-lg);
+    border-bottom-right-radius: var(--sm-r-lg);
 }
 
 .inv-sidebar__row,
 .inv-grid__cell,
 .inv-detail__affix-row {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
-    -unity-slice-left: 64;
-    -unity-slice-right: 64;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.34;
     background-color: var(--sm-bg-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-1);
+    border-right-color: var(--sm-line-1);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
 }
 
 .inv-sidebar__row--selected,
 .inv-grid__cell--selected {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_selected_base.png");
+    background-color: var(--sm-bg-3);
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-300-a42);
 }
 
 .inv-currency__icon,
@@ -43,12 +59,19 @@
 .inv-grid__cell-icon,
 .inv-detail__icon,
 .inv-detail__owner-icon {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
-    -unity-slice-left: 56;
-    -unity-slice-right: 56;
-    -unity-slice-top: 56;
-    -unity-slice-bottom: 56;
-    -unity-slice-scale: 0.32;
+    background-color: var(--sm-bg-0-a84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-vellum-a12);
+    border-right-color: var(--sm-vellum-a12);
+    border-top-color: var(--sm-vellum-a15);
+    border-bottom-color: var(--sm-vellum-a09);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
 }
 
 .inv-currency__close,
