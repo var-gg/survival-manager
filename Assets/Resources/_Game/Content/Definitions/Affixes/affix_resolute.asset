@@ -16,52 +16,57 @@ MonoBehaviour:
   NameKey: content.affix.affix_resolute.name
   DescriptionKey: content.affix.affix_resolute.desc
   Category: 3
-  Tier: 1
-  AffixFamily: 0
-  EffectType: 0
-  ValueMin: 0
-  ValueMax: 0
+  Tier: 2
+  AffixFamily: 2
+  EffectType: 3
+  ValueMin: 0.04
+  ValueMax: 0.08
   AllowedSlotTypes: 0100000002000000
   CompileTags:
-  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
   RuleModifierTags: []
-  RequiredTags: []
+  RequiredTags:
+  - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
   ExcludedTags: []
   ItemLevelMin: 0
   SpawnWeight: 1
-  ExclusiveGroupId: 
-  BudgetScore: 0
+  ExclusiveGroupId: conditional.control_tenacity
+  BudgetScore: 10
   BudgetCard:
     Domain: 4
     Rarity: 0
-    PowerBand: 2
+    PowerBand: 1
     RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
-      Durability: 4
+      Durability: 0
       Control: 0
       Mobility: 0
-      Support: 1
+      Support: 0
       CounterCoverage: 0
-      Reliability: 1
+      Reliability: 6
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 1
+    KeywordCount: 0
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  TextTemplateKey: 
+  TextTemplateKey: content.affix.template.conditional
   AuthorityLayer: 2
-  Effects: []
+  Effects:
+  - Layer: 2
+    Scope: 0
+    Capabilities: 1
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   Modifiers:
   - StatId: tenacity
-    Op: 0
-    Value: 0.25
-  - StatId: resist
-    Op: 0
-    Value: 0.6
+    Op: 1
+    Value: 0.06
   legacyDisplayName: 
   legacyDescription: 

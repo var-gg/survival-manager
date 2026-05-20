@@ -707,8 +707,7 @@ public sealed partial class GameSessionState
             return Result.Fail($"Echo가 부족합니다. Refit에는 {echoCost} Echo가 필요합니다.");
         }
 
-        var slice = _combatContentLookup.GetFirstPlayableSlice();
-        var availableAffixes = slice?.AffixIds ?? Array.Empty<string>();
+        var availableAffixes = BuildRefitCandidateAffixIds(item, affixSlotIndex);
         var seed = BuildStableSeed(itemInstanceId, affixSlotIndex + Profile.Currencies.Echo);
         var result = RefitService.Refit(item.AffixIds, affixSlotIndex, availableAffixes, seed);
         if (result == null)

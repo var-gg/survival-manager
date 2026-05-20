@@ -9,6 +9,8 @@
   },
   "ignores": [
     "PINDOC.md",
+    ".gptprosubmit/payload/**",
+    "Packages/**",
     "Assets/ThirdParty/**"
   ]
 }

@@ -24,14 +24,15 @@ MonoBehaviour:
   AffixPoolTag: pool_armor
   CraftCategory: armor
   BudgetBand: personal_power_9
-  CraftCurrencyTag: ember_dust
+  CraftCurrencyTag: echo
   GrantedSkills: []
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
   RuleModifierTags: []
   AllowedClassTags: []
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 00000000010000000200000004000000
+  AllowedCraftOperations: 01000000
   BaseModifiers:
   - StatId: max_health
     Op: 0

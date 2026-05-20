@@ -2,12 +2,14 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-05-20
 - 소스오브트루스: `docs/02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
 - 관련문서:
   - `docs/02_design/meta/economy-protection-contract.md`
+  - `docs/02_design/meta/item-and-affix-system.md`
   - `docs/02_design/combat/hero-traits.md`
   - `docs/03_architecture/unit-economy-schema.md`
+  - `pindoc://decision-equipment-content-v1-assetization-contract`
 
 ## 목적
 
@@ -31,9 +33,9 @@
 
 | source id | 자동 드롭 | reward card | 주 용도 |
 | --- | --- | --- | --- |
-| `reward_source_skirmish` | 예 | 예 | gold, `ember_dust`, low-rarity item/manual |
-| `reward_source_elite` | 예 | 예 | gold 증가, guaranteed material, better drop |
-| `reward_source_boss` | 예 | 예 | `boss_sigil`, `echo_crystal`, named/high-value drop |
+| `reward_source_skirmish` | 예 | 예 | gold, low-rarity item/manual |
+| `reward_source_elite` | 예 | 예 | gold 증가, better item/manual |
+| `reward_source_boss` | 예 | 예 | named/high-value item/manual |
 | `reward_source_shrine_event` | 예 | 예 | event/shrine 보상 소스 |
 | `reward_source_extract` | 예 | 예 | end-run 정산과 bonus chest |
 | `reward_source_salvage` | 예 | 아니오 | dismantle / salvage settlement |
@@ -42,10 +44,10 @@
 
 | bracket id | 의미 | launch floor 예시 |
 | --- | --- | --- |
-| `common` | 기초 재화와 소재 | gold, `ember_dust`, base material |
+| `common` | 기초 재화와 낮은 risk 보상 | gold, low-rarity item |
 | `advanced` | 일반 파밍의 상위층 | rolled item, skill shard |
 | `elite` | elite 전용 확정 가치 | better manual, trait token, rare pack |
-| `boss` | 보스 전용 고가치 | `boss_sigil`, named item, permanent candidate |
+| `boss` | 보스 전용 고가치 | named item, permanent candidate |
 
 launch floor에서는 ARPG식 5~6단계 rarity ladder를 열지 않는다.
 
@@ -56,10 +58,23 @@ launch floor에서는 ARPG식 5~6단계 rarity ladder를 열지 않는다.
 - boss는 `elite`와 `boss`를 연다.
 - extract는 base drop table과 bonus bundle을 함께 계산할 수 있다.
 - salvage는 material recovery 소스로만 사용한다.
+- V1 live lane에서 skirmish / elite / boss의 automatic item reward는 `RewardType.Item`이어야 한다.
+- `RewardType.Item` entry의 `ContentId`는 실제 `ItemBaseDefinition`을 가리켜야 한다.
 - skirmish / elite / boss drop table은 `RequiredContextTags = SiteId + answer_lane_*`로
   site별 routed entry를 가진다.
 - generic source matrix는 유지하되, live subset에서는 `무슨 source인가`와 함께
   `무슨 질문의 답인가`를 같이 기록한다.
+
+## committed V1 automatic item drops
+
+장비 콘텐츠 V1은 item reward가 skill/manual placeholder inventory item으로 변환되지 않도록 drop table에 실제 item entry를 둔다.
+아래 entry는 `EquipmentContentV1CatalogValidator`가 필수 조건으로 검증한다.
+
+| source id | required item ids |
+| --- | --- |
+| `reward_source_skirmish` | `item_iron_sword`, `item_leather_armor`, `item_lucky_charm` |
+| `reward_source_elite` | `item_bone_blade`, `item_guardian_shield`, `item_priest_focus` |
+| `reward_source_boss` | `item_prayer_bead`, `item_bulwark_armor`, `item_rift_bow` |
 
 ## live answer-lane routing
 
@@ -76,9 +91,10 @@ launch floor에서는 ARPG식 5~6단계 rarity ladder를 열지 않는다.
 
 `reward_source_boss`, seed `12345` 기준 예시 bundle:
 
-- `boss_sigil_drop x1`
-- `echo_crystal_boss x2`
+- `gold_boss_cache`
 - `item_prayer_bead x1`
+- `item_bulwark_armor x1`
+- `item_rift_bow x1`
 
 ## trait token 정책
 
@@ -96,3 +112,4 @@ regular battle drop에서 무작위 추가 trait를 빈번하게 지급하지 �
 - market / trade
 - long-form salvage economy
 - post-battle inventory capacity puzzle
+- material crafting currency as live sink

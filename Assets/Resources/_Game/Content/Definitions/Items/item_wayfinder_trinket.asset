@@ -17,21 +17,25 @@ MonoBehaviour:
   DescriptionKey: content.item.item_wayfinder_trinket.desc
   IconId: item_icon_trinket
   SlotType: 2
-  IdentityKind: 0
+  IdentityKind: 1
   ItemFamilyTag: accessory
   WeaponFamilyTag: 
-  RarityTier: 0
+  RarityTier: 2
   AffixPoolTag: pool_accessory
-  CraftCategory: accessory
+  CraftCategory: ranger
   BudgetBand: personal_power_8
-  CraftCurrencyTag: ember_dust
-  GrantedSkills: []
-  CompileTags: []
+  CraftCurrencyTag: echo
+  GrantedSkills:
+  - {fileID: 11400000, guid: ec4f11bb00a058140aadccc582bab6e2, type: 2}
+  CompileTags:
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   RuleModifierTags: []
-  AllowedClassTags: []
+  AllowedClassTags:
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 00000000010000000200000004000000
+  AllowedCraftOperations: 01000000
   BaseModifiers:
   - StatId: move_speed
     Op: 0

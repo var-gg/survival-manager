@@ -17,47 +17,54 @@ MonoBehaviour:
   DescriptionKey: content.affix.affix_vital.desc
   Category: 3
   Tier: 1
-  AffixFamily: 0
-  EffectType: 0
-  ValueMin: 0
-  ValueMax: 0
+  AffixFamily: 1
+  EffectType: 1
+  ValueMin: 2
+  ValueMax: 5
   AllowedSlotTypes: 0100000002000000
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
   ItemLevelMin: 0
   SpawnWeight: 1
-  ExclusiveGroupId: 
-  BudgetScore: 0
+  ExclusiveGroupId: prefix.max_health
+  BudgetScore: 8
   BudgetCard:
     Domain: 4
     Rarity: 0
-    PowerBand: 2
+    PowerBand: 1
     RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
-      Durability: 4
+      Durability: 0
       Control: 0
       Mobility: 0
-      Support: 1
+      Support: 0
       CounterCoverage: 0
-      Reliability: 1
+      Reliability: 6
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 1
+    KeywordCount: 0
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  TextTemplateKey: 
+  TextTemplateKey: content.affix.template.scalar
   AuthorityLayer: 2
-  Effects: []
+  Effects:
+  - Layer: 2
+    Scope: 0
+    Capabilities: 1
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   Modifiers:
   - StatId: max_health
     Op: 0
-    Value: 2
+    Value: 3.5
   legacyDisplayName: 
   legacyDescription: 

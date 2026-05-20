@@ -15,53 +15,59 @@ MonoBehaviour:
   Id: affix_watchful
   NameKey: content.affix.affix_watchful.name
   DescriptionKey: content.affix.affix_watchful.desc
-  Category: 4
-  Tier: 1
-  AffixFamily: 0
-  EffectType: 0
-  ValueMin: 0
-  ValueMax: 0
-  AllowedSlotTypes: 0200000001000000
+  Category: 5
+  Tier: 2
+  AffixFamily: 3
+  EffectType: 2
+  ValueMin: 0.03
+  ValueMax: 0.06
+  AllowedSlotTypes: 0000000002000000
   CompileTags:
-  - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
-  RuleModifierTags: []
+  - {fileID: 11400000, guid: b3f169cbfb1cd2042af9b8c8c80c8345, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  RuleModifierTags:
+  - {fileID: 11400000, guid: b3f169cbfb1cd2042af9b8c8c80c8345, type: 2}
+  - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
   RequiredTags: []
   ExcludedTags: []
   ItemLevelMin: 0
   SpawnWeight: 1
-  ExclusiveGroupId: 
-  BudgetScore: 0
+  ExclusiveGroupId: build.watchful_mark
+  BudgetScore: 12
   BudgetCard:
     Domain: 4
     Rarity: 0
-    PowerBand: 2
+    PowerBand: 3
     RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
-      Durability: 1
+      Durability: 0
       Control: 0
-      Mobility: 1
-      Support: 3
+      Mobility: 0
+      Support: 0
       CounterCoverage: 0
-      Reliability: 1
+      Reliability: 6
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 1
+    KeywordCount: 0
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  TextTemplateKey: 
+  TextTemplateKey: content.affix.template.build
   AuthorityLayer: 2
-  Effects: []
+  Effects:
+  - Layer: 2
+    Scope: 0
+    Capabilities: 1
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   Modifiers:
-  - StatId: aggro_radius
-    Op: 0
-    Value: 0.5
-  - StatId: preferred_distance
-    Op: 0
-    Value: 0.2
+  - StatId: crit_chance
+    Op: 1
+    Value: 0.044999998
   legacyDisplayName: 
   legacyDescription: 

@@ -17,47 +17,55 @@ MonoBehaviour:
   DescriptionKey: content.affix.affix_piercing.desc
   Category: 0
   Tier: 1
-  AffixFamily: 0
-  EffectType: 0
-  ValueMin: 0
-  ValueMax: 0
+  AffixFamily: 1
+  EffectType: 1
+  ValueMin: 0.4
+  ValueMax: 0.9
   AllowedSlotTypes: 00000000
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 81f8159238428fa4fa946849f2e98580, type: 2}
+  - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
   ItemLevelMin: 0
   SpawnWeight: 1
-  ExclusiveGroupId: 
-  BudgetScore: 0
+  ExclusiveGroupId: prefix.phys_pen
+  BudgetScore: 8
   BudgetCard:
     Domain: 4
     Rarity: 0
-    PowerBand: 2
+    PowerBand: 1
     RoleProfile: -1
     Vector:
-      SustainedDamage: 3
-      BurstDamage: 2
+      SustainedDamage: 0
+      BurstDamage: 0
       Durability: 0
       Control: 0
       Mobility: 0
       Support: 0
       CounterCoverage: 0
-      Reliability: 1
+      Reliability: 6
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 1
+    KeywordCount: 0
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  TextTemplateKey: 
+  TextTemplateKey: content.affix.template.scalar
   AuthorityLayer: 2
-  Effects: []
+  Effects:
+  - Layer: 2
+    Scope: 0
+    Capabilities: 1
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   Modifiers:
   - StatId: phys_pen
     Op: 0
-    Value: 0.7
+    Value: 0.65
   legacyDisplayName: 
   legacyDescription: 

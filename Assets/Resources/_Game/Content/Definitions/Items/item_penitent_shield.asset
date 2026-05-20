@@ -17,23 +17,26 @@ MonoBehaviour:
   DescriptionKey: content.item.item_penitent_shield.desc
   IconId: item_icon_shield
   SlotType: 0
-  IdentityKind: 0
+  IdentityKind: 1
   ItemFamilyTag: shield
   WeaponFamilyTag: shield
-  RarityTier: 0
+  RarityTier: 2
   AffixPoolTag: pool_shield
   CraftCategory: vanguard
   BudgetBand: personal_power_10
-  CraftCurrencyTag: ember_dust
-  GrantedSkills: []
+  CraftCurrencyTag: echo
+  GrantedSkills:
+  - {fileID: 11400000, guid: 9079bacc511ab944f9fc2895fe983736, type: 2}
   CompileTags:
   - {fileID: 11400000, guid: 2f240f94125537247a2371d267839993, type: 2}
+  - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
   RuleModifierTags: []
   AllowedClassTags:
   - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 00000000010000000200000004000000
+  AllowedCraftOperations: 01000000
   BaseModifiers:
   - StatId: armor
     Op: 0

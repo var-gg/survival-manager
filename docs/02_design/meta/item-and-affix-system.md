@@ -12,6 +12,7 @@
   - `docs/02_design/meta/economy-protection-contract.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
   - `pindoc://decision-equipment-presentation-v1-contract`
+  - `pindoc://decision-equipment-content-v1-assetization-contract`
 
 ## 목적
 
@@ -21,7 +22,11 @@ affix field schema와 catalog는 별도 문서가 소유하고, 이 문서는 it
 ## launch floor 구현 범위
 
 - base item
-- `implicit 1 + prefix 2 + suffix 2`
+- item catalog `42`: `Common 30 / Rare 9 / Epic 3`
+- item identity `42`: `Baseline 34 / Named 6 / Unique 2`
+- affix catalog `30`: live `24`, reserved `6`
+- live affix mix: `Implicit 6 / Prefix 12 / Suffix 6`
+- live family mix: `CoreScalar 14 / ConditionalTagged 6 / BuildShaping 4`
 - `weapon / armor / accessory` 3슬롯
 - `shield / blade / bow / focus` weapon family
 - granted skill
@@ -57,10 +62,11 @@ shield 전용 별도 슬롯은 열지 않는다.
 
 ## affix와 unique 규칙
 
-- affix slot은 `implicit 1`, `prefix 2`, `suffix 2`를 상한으로 둔다.
-- 아이템 한 장의 핵심 affix 라인은 `2`, 최대 `3`이다.
+- `implicit`은 base item identity에 붙는 고정 축이고, V1 `Refit` 대상이 아니다.
+- `prefix / suffix`만 `15 Echo` single-affix refit 후보가 된다.
+- 아이템 생성 시 Common은 `implicit + prefix`, Rare/Named는 `implicit + prefix + suffix`, Epic/Unique는 `implicit + prefix + prefix + suffix`를 기본 표시 단위로 쓴다.
 - affix family는 `CoreScalar`, `ConditionalTagged`, `BuildShaping`으로 나눈다.
-- unique / boss item은 numeric affix를 늘리지 않고 `signature rule modifier` 1개를 사용한다.
+- unique / boss item은 rarity가 아니라 identity다. 수치 과적 대신 granted skill 또는 rule marker를 우선한다.
 - item authoring은 canonical `WeaponFamilyTag`, optional `GrantedSkillId`, optional `UniqueRuleModifierTag`를 가진다.
 - `dodge`, `block`, `status_potency`, `summon_power`는 v1 broad affix public layer로 성급히 승격하지 않는다.
 
@@ -71,6 +77,14 @@ shield 전용 별도 슬롯은 열지 않는다.
 - recruit / retrain / refit이 각각 외부 파워 / flex 보정 / 장비 보정 역할을 나눠 가진다.
 - launch floor normal lane에서는 `EmberDust`, `EchoCrystal`, `BossSigil` 같은 material currency를 live sink로 올리지 않는다.
 - crafting 시스템 전체는 later scope로 민다.
+
+## 구현 고정점
+
+- Pindoc 결정 `pindoc://decision-equipment-content-v1-assetization-contract`가 item/affix/drop/refit V1 자산화 계약을 소유한다.
+- repo 구현은 `EquipmentContentV1Contract`, `EquipmentContentV1Assetizer`, `EquipmentContentV1CatalogValidator`가 같은 숫자와 ID manifest를 공유한다.
+- `SampleSeedGenerator.Generate()`는 sample content 재생성 후 V1 assetizer를 다시 적용한다.
+- drop table의 item entry는 `RewardType.Item`이어야 하며, item 획득 시 runtime이 affix id를 생성한다.
+- `InventoryItemRecord`에는 source, lock, rolled value를 저장하지 않는다. V1은 definition id 기반 표시와 deterministic refit 후보만 닫는다.
 
 ## UI 표현 계약
 

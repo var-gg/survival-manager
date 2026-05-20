@@ -17,21 +17,25 @@ MonoBehaviour:
   DescriptionKey: content.item.item_prayer_bead.desc
   IconId: item_icon_trinket
   SlotType: 2
-  IdentityKind: 0
+  IdentityKind: 2
   ItemFamilyTag: accessory
   WeaponFamilyTag: 
-  RarityTier: 0
+  RarityTier: 3
   AffixPoolTag: pool_accessory
-  CraftCategory: accessory
+  CraftCategory: mystic
   BudgetBand: personal_power_8
-  CraftCurrencyTag: ember_dust
-  GrantedSkills: []
-  CompileTags: []
+  CraftCurrencyTag: echo
+  GrantedSkills:
+  - {fileID: 11400000, guid: 842b174f92a91a24db7e7ab0d1d7b11c, type: 2}
+  CompileTags:
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   RuleModifierTags: []
-  AllowedClassTags: []
+  AllowedClassTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 00000000010000000200000004000000
+  AllowedCraftOperations: 01000000
   BaseModifiers:
   - StatId: heal_power
     Op: 0

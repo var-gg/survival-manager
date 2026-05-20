@@ -35,6 +35,7 @@ internal sealed class CatalogValidationContext
         TraitTokens = catalog.OfType<TraitTokenDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Skills = catalog.OfType<SkillDefinitionAsset>().ToList();
         Items = catalog.OfType<ItemBaseDefinition>().ToList();
+        Affixes = catalog.OfType<AffixDefinition>().ToList();
         Synergies = catalog.OfType<SynergyDefinition>().ToList();
         ArchetypeIds = Archetypes.Keys.ToHashSet(StringComparer.Ordinal);
         FirstPlayableSliceAsset = catalog.OfType<FirstPlayableSliceDefinitionAsset>().FirstOrDefault();
@@ -59,6 +60,7 @@ internal sealed class CatalogValidationContext
     internal IReadOnlyDictionary<string, TraitTokenDefinition> TraitTokens { get; }
     internal IReadOnlyList<SkillDefinitionAsset> Skills { get; }
     internal IReadOnlyList<ItemBaseDefinition> Items { get; }
+    internal IReadOnlyList<AffixDefinition> Affixes { get; }
     internal IReadOnlyList<SynergyDefinition> Synergies { get; }
     internal IReadOnlyCollection<string> ArchetypeIds { get; }
     internal FirstPlayableSliceDefinitionAsset? FirstPlayableSliceAsset { get; }
@@ -101,6 +103,7 @@ internal sealed class CatalogValidationRuleRegistry
             new BuildLaneCoverageCatalogValidator(),
             new SkillCatalogValidator(),
             new ItemCatalogValidator(),
+            new EquipmentContentV1CatalogValidator(),
             new FactionIsolationValidator(),
         });
     }
@@ -552,6 +555,19 @@ internal sealed class RewardCatalogValidator : ICatalogValidationRule
                 {
                     ContentValidationIssueFactory.AddError(issues, "reward.rarity_band_out_of_source", $"Drop table entry '{entry.Id}' uses rarity '{entry.RarityBracket}' outside reward source '{rewardSource.Id}'.", assetPath);
                 }
+
+                if (entry.Id.StartsWith("item_", StringComparison.Ordinal)
+                    && entry.RewardType != RewardType.Item)
+                {
+                    ContentValidationIssueFactory.AddError(issues, "reward.item_entry_type", $"Drop table entry '{entry.Id}' must use RewardType.Item.", assetPath);
+                }
+
+                if (entry.RewardType == RewardType.Item
+                    && context.Items.Count > 0
+                    && context.Items.All(item => !string.Equals(item.Id, entry.Id, StringComparison.Ordinal)))
+                {
+                    ContentValidationIssueFactory.AddError(issues, "reward.item_entry_ref", $"Drop table item reward '{entry.Id}' has no matching ItemBaseDefinition.", assetPath);
+                }
             }
         }
 
@@ -688,20 +704,19 @@ internal sealed class ItemCatalogValidator : ICatalogValidationRule
                 ContentValidationIssueFactory.AddError(issues, "item.craft_currency_ref", $"Item '{item.Id}' references unsupported craft currency '{craftCurrencyId}'.", assetPath);
             }
 
-            if (item.IdentityKind == ItemIdentityValue.Unique && !string.Equals(craftCurrencyId, "boss_sigil", StringComparison.Ordinal))
-            {
-                ContentValidationIssueFactory.AddError(issues, "item.unique_craft_currency", "Unique/boss items must use 'boss_sigil' as their imprint currency.", assetPath);
-            }
-
             var operations = NormalizeCraftOperations(item);
-            if (operations.Count > 5)
+            if (!operations.Contains(CraftOperationKindValue.Reforge))
             {
-                ContentValidationIssueFactory.AddError(issues, "item.affix_slot_overfill", $"Item '{item.Id}' exposes more than 5 launch-floor craft operations.", assetPath);
+                ContentValidationIssueFactory.AddError(issues, "item.refit_missing", $"Item '{item.Id}' must expose Reforge as the V1 Echo refit operation.", assetPath);
             }
 
-            if (!operations.Contains(CraftOperationKindValue.Salvage))
+            var deferredOperations = operations
+                .Where(operation => operation != CraftOperationKindValue.Reforge)
+                .Distinct()
+                .ToList();
+            foreach (var operation in deferredOperations)
             {
-                ContentValidationIssueFactory.AddError(issues, "item.salvage_missing", $"Item '{item.Id}' must support salvage in the launch-floor crafting contract.", assetPath);
+                ContentValidationIssueFactory.AddError(issues, "item.deferred_craft_operation", $"Item '{item.Id}' exposes deferred craft operation '{operation}'. V1 only allows Echo Refit/Reforge.", assetPath);
             }
         }
     }
@@ -748,7 +763,7 @@ internal sealed class ItemCatalogValidator : ICatalogValidationRule
             return item.CraftCurrencyTag;
         }
 
-        return item.IdentityKind == ItemIdentityValue.Unique ? "boss_sigil" : "ember_dust";
+        return "echo";
     }
 
     private static IReadOnlyList<CraftOperationKindValue> NormalizeCraftOperations(ItemBaseDefinition item)
@@ -758,20 +773,203 @@ internal sealed class ItemCatalogValidator : ICatalogValidationRule
             return item.AllowedCraftOperations;
         }
 
-        var operations = new List<CraftOperationKindValue>
-        {
-            CraftOperationKindValue.Temper,
-            CraftOperationKindValue.Reforge,
-            CraftOperationKindValue.Seal,
-            CraftOperationKindValue.Salvage,
-        };
+        return new List<CraftOperationKindValue> { CraftOperationKindValue.Reforge };
+    }
+}
 
-        if (item.IdentityKind == ItemIdentityValue.Unique)
+internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRule
+{
+    public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
+    {
+        if (!HasFullEquipmentCatalog(context))
         {
-            operations.Insert(3, CraftOperationKindValue.Imprint);
+            return;
         }
 
-        return operations;
+        ValidateItemDistribution(context, issues);
+        ValidateAffixDistribution(context, issues);
+        ValidateDropTableItems(context, issues);
+    }
+
+    private static bool HasFullEquipmentCatalog(CatalogValidationContext context)
+    {
+        return context.Items.Count >= EquipmentContentV1Contract.ItemCount
+            && context.Affixes.Count >= EquipmentContentV1Contract.AffixCount
+            && context.DropTables.Count >= 3;
+    }
+
+    private static void ValidateItemDistribution(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
+    {
+        if (context.Items.Count != EquipmentContentV1Contract.ItemCount)
+        {
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.item_count", $"Equipment V1 item catalog must contain {EquipmentContentV1Contract.ItemCount} bases. Found {context.Items.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+        }
+
+        var commonCount = context.Items.Count(item => item.RarityTier == ItemRarityTierValue.Common);
+        var rareCount = context.Items.Count(item => item.RarityTier == ItemRarityTierValue.Rare);
+        var epicCount = context.Items.Count(item => item.RarityTier == ItemRarityTierValue.Epic);
+        if (commonCount != 30 || rareCount != 9 || epicCount != 3)
+        {
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.item_rarity_mix", $"Equipment V1 rarity mix must be Common/Rare/Epic = 30/9/3. Found {commonCount}/{rareCount}/{epicCount}.", ContentValidationPolicyCatalog.ReportFolderName);
+        }
+
+        var baselineCount = context.Items.Count(item => item.IdentityKind == ItemIdentityValue.Baseline);
+        var namedCount = context.Items.Count(item => item.IdentityKind == ItemIdentityValue.Named);
+        var uniqueCount = context.Items.Count(item => item.IdentityKind == ItemIdentityValue.Unique);
+        if (baselineCount != 34 || namedCount != 6 || uniqueCount != 2)
+        {
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.item_identity_mix", $"Equipment V1 identity mix must be Baseline/Named/Unique = 34/6/2. Found {baselineCount}/{namedCount}/{uniqueCount}.", ContentValidationPolicyCatalog.ReportFolderName);
+        }
+
+        var skillIds = context.Skills.Select(skill => skill.Id).ToHashSet(StringComparer.Ordinal);
+        foreach (var item in context.Items)
+        {
+            var assetPath = context.GetPath(item);
+            if (!string.Equals(item.CraftCurrencyTag, EquipmentContentV1Contract.RefitCurrencyTag, StringComparison.Ordinal))
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.refit_currency", $"Item '{item.Id}' must use '{EquipmentContentV1Contract.RefitCurrencyTag}' as the V1 refit currency.", assetPath);
+            }
+
+            if (item.AllowedCraftOperations.Count != 1 || item.AllowedCraftOperations[0] != CraftOperationKindValue.Reforge)
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.refit_only", $"Item '{item.Id}' must expose only Reforge for the V1 crafting surface.", assetPath);
+            }
+
+            if (EquipmentContentV1Contract.RareItemIds.Contains(item.Id) && item.RarityTier != ItemRarityTierValue.Rare)
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.item_rarity_id", $"Item '{item.Id}' is locked to Rare in the V1 equipment contract.", assetPath);
+            }
+
+            if (EquipmentContentV1Contract.EpicItemIds.Contains(item.Id) && item.RarityTier != ItemRarityTierValue.Epic)
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.item_rarity_id", $"Item '{item.Id}' is locked to Epic in the V1 equipment contract.", assetPath);
+            }
+
+            if (EquipmentContentV1Contract.NamedItemIds.Contains(item.Id) && item.IdentityKind != ItemIdentityValue.Named)
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.item_identity_id", $"Item '{item.Id}' is locked to Named in the V1 equipment contract.", assetPath);
+            }
+
+            if (EquipmentContentV1Contract.UniqueItemIds.Contains(item.Id) && item.IdentityKind != ItemIdentityValue.Unique)
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.item_identity_id", $"Item '{item.Id}' is locked to Unique in the V1 equipment contract.", assetPath);
+            }
+
+            if ((item.IdentityKind == ItemIdentityValue.Named || item.IdentityKind == ItemIdentityValue.Unique)
+                && item.GrantedSkills.Count == 0
+                && item.UniqueRuleTags.Count == 0
+                && item.RuleModifierTags.Count == 0)
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.identity_payload", $"Named/Unique item '{item.Id}' must define a granted skill or rule payload.", assetPath);
+            }
+
+            foreach (var skill in item.GrantedSkills.Where(skill => skill != null))
+            {
+                if (!skillIds.Contains(skill.Id))
+                {
+                    ContentValidationIssueFactory.AddError(issues, "equipment_v1.granted_skill_ref", $"Item '{item.Id}' grants missing skill '{skill.Id}'.", assetPath);
+                }
+            }
+        }
+    }
+
+    private static void ValidateAffixDistribution(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
+    {
+        var affixesById = context.Affixes
+            .Where(affix => !string.IsNullOrWhiteSpace(affix.Id))
+            .ToDictionary(affix => affix.Id, affix => affix, StringComparer.Ordinal);
+        var liveAffixes = context.Affixes
+            .Where(affix => EquipmentContentV1Contract.LiveAffixIds.Contains(affix.Id))
+            .ToList();
+        var reservedAffixes = context.Affixes
+            .Where(affix => EquipmentContentV1Contract.ReservedAffixIds.Contains(affix.Id))
+            .ToList();
+
+        if (liveAffixes.Count != EquipmentContentV1Contract.LiveAffixCount || reservedAffixes.Count != EquipmentContentV1Contract.ReservedAffixCount)
+        {
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_live_reserved_mix", $"Equipment V1 affix mix must be live/reserved = 24/6. Found {liveAffixes.Count}/{reservedAffixes.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+        }
+
+        var tierMix = liveAffixes
+            .GroupBy(affix => affix.Tier)
+            .ToDictionary(group => group.Key, group => group.Count());
+        if (GetCount(tierMix, AffixTierValue.Implicit) != 6
+            || GetCount(tierMix, AffixTierValue.Prefix) != 12
+            || GetCount(tierMix, AffixTierValue.Suffix) != 6)
+        {
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_tier_mix", $"Live affix tiers must be Implicit/Prefix/Suffix = 6/12/6.", ContentValidationPolicyCatalog.ReportFolderName);
+        }
+
+        var familyMix = liveAffixes
+            .GroupBy(affix => affix.AffixFamily)
+            .ToDictionary(group => group.Key, group => group.Count());
+        if (GetCount(familyMix, AffixFamilyValue.CoreScalar) != 14
+            || GetCount(familyMix, AffixFamilyValue.ConditionalTagged) != 6
+            || GetCount(familyMix, AffixFamilyValue.BuildShaping) != 4)
+        {
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_family_mix", $"Live affix families must be CoreScalar/ConditionalTagged/BuildShaping = 14/6/4.", ContentValidationPolicyCatalog.ReportFolderName);
+        }
+
+        foreach (var spec in EquipmentContentV1Contract.AffixSpecs)
+        {
+            if (!affixesById.TryGetValue(spec.Id, out var affix))
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_missing", $"Equipment V1 affix '{spec.Id}' is missing.", ContentValidationPolicyCatalog.ReportFolderName);
+                continue;
+            }
+
+            var assetPath = context.GetPath(affix);
+            if (affix.Tier != spec.Tier || affix.AffixFamily != spec.Family || affix.EffectType != spec.EffectType)
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_contract", $"Affix '{affix.Id}' tier/family/effect type drifted from the V1 contract.", assetPath);
+            }
+
+            if (EquipmentContentV1Contract.LiveAffixIds.Contains(affix.Id))
+            {
+                if (affix.SpawnWeight <= 0f || affix.ItemLevelMin >= EquipmentContentV1Contract.ReservedAffixItemLevelMin)
+                {
+                    ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_live_spawn", $"Live affix '{affix.Id}' must be spawnable in V1.", assetPath);
+                }
+
+                if (string.IsNullOrWhiteSpace(affix.TextTemplateKey)
+                    || string.IsNullOrWhiteSpace(affix.ExclusiveGroupId)
+                    || affix.ValueMax <= 0f
+                    || affix.Modifiers.Count == 0)
+                {
+                    ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_authoring_payload", $"Live affix '{affix.Id}' must define text template, exclusive group, value range, and numeric modifier.", assetPath);
+                }
+            }
+            else if (affix.SpawnWeight != 0f || affix.ItemLevelMin < EquipmentContentV1Contract.ReservedAffixItemLevelMin)
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_reserved_spawn", $"Reserved affix '{affix.Id}' must be non-spawning in V1.", assetPath);
+            }
+        }
+    }
+
+    private static void ValidateDropTableItems(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
+    {
+        foreach (var (tableId, itemIds) in EquipmentContentV1Contract.RequiredItemDropsByTable)
+        {
+            if (!context.DropTables.TryGetValue(tableId, out var table))
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.drop_table_missing", $"Equipment V1 drop table '{tableId}' is missing.", ContentValidationPolicyCatalog.ReportFolderName);
+                continue;
+            }
+
+            var assetPath = context.GetPath(table);
+            foreach (var itemId in itemIds)
+            {
+                if (table.Entries.All(entry => !string.Equals(entry.Id, itemId, StringComparison.Ordinal) || entry.RewardType != RewardType.Item))
+                {
+                    ContentValidationIssueFactory.AddError(issues, "equipment_v1.item_drop_route", $"Drop table '{tableId}' must expose item reward '{itemId}'.", assetPath);
+                }
+            }
+        }
+    }
+
+    private static int GetCount<TKey>(IReadOnlyDictionary<TKey, int> counts, TKey key)
+    {
+        return counts.TryGetValue(key, out var count) ? count : 0;
     }
 }
 

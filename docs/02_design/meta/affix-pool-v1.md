@@ -2,12 +2,13 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-05-20
 - 소스오브트루스: `docs/02_design/meta/affix-pool-v1.md`
 - 관련문서:
   - `docs/02_design/meta/affix-authoring-schema.md`
   - `docs/02_design/meta/item-and-affix-system.md`
   - `docs/03_architecture/content-seed-assets.md`
+  - `pindoc://decision-equipment-content-v1-assetization-contract`
 
 ## 목적
 
@@ -16,8 +17,34 @@
 ## capacity vs live subset
 
 - schema capacity: `100~120`
-- v1 catalog target: `54`
-- current live subset target: `16~24`
+- v1 committed catalog: `30`
+- current live subset: `24`
+- current reserved subset: `6`
+
+## committed v1 live subset
+
+| tier | count | affix ids |
+| --- | ---: | --- |
+| `Implicit` | 6 | `affix_sharp`, `affix_focusing`, `affix_sturdy`, `affix_warded`, `affix_blessed`, `affix_hasty` |
+| `Prefix` | 12 | `affix_fierce`, `affix_precise`, `affix_piercing`, `affix_vital`, `affix_ironclad`, `affix_mender`, `affix_lithe`, `affix_lucid`, `affix_farshot`, `affix_guarded`, `affix_channeling`, `affix_cleansing` |
+| `Suffix` | 6 | `affix_bracing`, `affix_resolute`, `affix_relentless`, `affix_watchful`, `affix_packborn`, `affix_wraithbound` |
+
+| family | count | 역할 |
+| --- | ---: | --- |
+| `CoreScalar` | 14 | stat scalar와 slot-readable item identity |
+| `ConditionalTagged` | 6 | tag 조건을 가진 build 방향성 |
+| `BuildShaping` | 4 | rule marker를 가진 후속 확장용 build hook |
+
+## reserved v1 subset
+
+아래 6개는 committed asset으로 유지하되 `SpawnWeight = 0`, `ItemLevelMin = 999`로 live roll에서 제외한다.
+
+- `affix_heavy`
+- `affix_hallowed`
+- `affix_quick`
+- `affix_ravenous`
+- `affix_reaching`
+- `affix_spined`
 
 ## core scalar 24
 

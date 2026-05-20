@@ -123,7 +123,6 @@ public sealed partial class GameSessionState
 
         var archetypeIds = _combatContentLookup.GetCanonicalArchetypeIds();
         var itemIds = _combatContentLookup.GetCanonicalItemIds();
-        var affixIds = _combatContentLookup.GetCanonicalAffixIds();
         for (var i = 0; i < Math.Min(MetaBalanceDefaults.ExpeditionSquadCap, archetypeIds.Count); i++)
         {
             var archetypeId = archetypeIds[i];
@@ -133,15 +132,7 @@ public sealed partial class GameSessionState
             if (itemIds.Count > 0 && i < 4)
             {
                 var itemInstanceId = $"demo-item-{i + 1}";
-                Profile.Inventory.Add(new InventoryItemRecord
-                {
-                    ItemInstanceId = itemInstanceId,
-                    ItemBaseId = itemIds[i % itemIds.Count],
-                    EquippedHeroId = heroId,
-                    AffixIds = affixIds.Count == 0
-                        ? new List<string>()
-                        : new List<string> { affixIds[i % affixIds.Count] }
-                });
+                Profile.Inventory.Add(CreateGeneratedInventoryItem(itemIds[i % itemIds.Count], itemInstanceId, heroId));
                 equippedItems.Add(itemInstanceId);
             }
 

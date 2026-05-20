@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-16
+- 최종수정일: 2026-05-20
 - 소스오브트루스: `docs/02_design/meta/index.md`
 - 관련문서:
   - `docs/02_design/index.md`
@@ -47,3 +47,4 @@ Town/expedition loop, 경제, 모집, 장비, augment, synergy, PVP, 캠페인 �
 - site topology와 encounter lane은 `campaign-chapter-and-expedition-sites.md`가 소유한다. narrative 문서는 해당 ID를 참조만 한다.
 - story unlock/fail-safe/UI 표면화는 `story-gating-and-unlock-rules.md`가 소유한다.
 - narrative beat와 감정값은 Pindoc narrative artifacts가 소유한다. repo `docs/02_design/narrative/**`는 schema와 seed transition reference만 남긴다.
+- 장비 콘텐츠 V1의 item/affix/drop/refit 자산화 결정은 `pindoc://decision-equipment-content-v1-assetization-contract`가 소유하고, repo 문서는 validator/runtime contract만 반영한다.

@@ -20,20 +20,22 @@ MonoBehaviour:
   IdentityKind: 0
   ItemFamilyTag: focus
   WeaponFamilyTag: focus
-  RarityTier: 0
+  RarityTier: 2
   AffixPoolTag: pool_focus
   CraftCategory: mystic
   BudgetBand: personal_power_10
-  CraftCurrencyTag: ember_dust
+  CraftCurrencyTag: echo
   GrantedSkills: []
   CompileTags:
   - {fileID: 11400000, guid: 5b8638d14ee22444e8b2baf4abd01965, type: 2}
+  - {fileID: 11400000, guid: 754f0c18dd0a18e4781970042cb79b6a, type: 2}
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   RuleModifierTags: []
   AllowedClassTags:
   - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 00000000010000000200000004000000
+  AllowedCraftOperations: 01000000
   BaseModifiers:
   - StatId: mag_power
     Op: 0

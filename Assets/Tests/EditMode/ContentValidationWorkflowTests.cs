@@ -419,6 +419,42 @@ public sealed class ContentValidationWorkflowTests
     }
 
     [Test]
+    public void EquipmentAssets_ExposeV1AssetizationContract()
+    {
+        SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(EquipmentAssets_ExposeV1AssetizationContract));
+
+        var items = LoadAssets<ItemBaseDefinition>("Assets/Resources/_Game/Content/Definitions/Items", "*.asset");
+        var affixes = LoadAssets<AffixDefinition>("Assets/Resources/_Game/Content/Definitions/Affixes", "*.asset");
+        var dropTables = LoadAssets<DropTableDefinition>("Assets/Resources/_Game/Content/Definitions/DropTables", "*.asset")
+            .ToDictionary(table => table.Id, StringComparer.Ordinal);
+
+        Assert.That(items, Has.Count.EqualTo(EquipmentContentV1Contract.ItemCount));
+        Assert.That(items.Count(item => item.RarityTier == ItemRarityTierValue.Common), Is.EqualTo(30));
+        Assert.That(items.Count(item => item.RarityTier == ItemRarityTierValue.Rare), Is.EqualTo(9));
+        Assert.That(items.Count(item => item.RarityTier == ItemRarityTierValue.Epic), Is.EqualTo(3));
+        Assert.That(items.Count(item => item.IdentityKind == ItemIdentityValue.Baseline), Is.EqualTo(34));
+        Assert.That(items.Count(item => item.IdentityKind == ItemIdentityValue.Named), Is.EqualTo(6));
+        Assert.That(items.Count(item => item.IdentityKind == ItemIdentityValue.Unique), Is.EqualTo(2));
+        Assert.That(items.All(item => item.CraftCurrencyTag == EquipmentContentV1Contract.RefitCurrencyTag), Is.True);
+        Assert.That(items.All(item => item.AllowedCraftOperations.SequenceEqual(new[] { CraftOperationKindValue.Reforge })), Is.True);
+
+        Assert.That(affixes, Has.Count.EqualTo(EquipmentContentV1Contract.AffixCount));
+        Assert.That(affixes.Count(affix => EquipmentContentV1Contract.LiveAffixIds.Contains(affix.Id)), Is.EqualTo(EquipmentContentV1Contract.LiveAffixCount));
+        Assert.That(affixes.Count(affix => EquipmentContentV1Contract.ReservedAffixIds.Contains(affix.Id)), Is.EqualTo(EquipmentContentV1Contract.ReservedAffixCount));
+        Assert.That(affixes.Where(affix => EquipmentContentV1Contract.LiveAffixIds.Contains(affix.Id)).All(affix => affix.SpawnWeight > 0f && affix.ValueMax > 0f), Is.True);
+        Assert.That(affixes.Where(affix => EquipmentContentV1Contract.ReservedAffixIds.Contains(affix.Id)).All(affix => affix.SpawnWeight == 0f && affix.ItemLevelMin >= EquipmentContentV1Contract.ReservedAffixItemLevelMin), Is.True);
+
+        foreach (var (tableId, itemIds) in EquipmentContentV1Contract.RequiredItemDropsByTable)
+        {
+            Assert.That(dropTables.ContainsKey(tableId), Is.True, $"Missing drop table {tableId}.");
+            foreach (var itemId in itemIds)
+            {
+                Assert.That(dropTables[tableId].Entries.Any(entry => entry.Id == itemId && entry.RewardType == RewardType.Item), Is.True, $"{tableId} must expose {itemId} as RewardType.Item.");
+            }
+        }
+    }
+
+    [Test]
     public void BalanceSweepRunner_CsvSummary_ContainsExtendedMetricColumns()
     {
         var report = new BalanceSweepReport
@@ -523,5 +559,15 @@ public sealed class ContentValidationWorkflowTests
         var asset = AssetDatabase.LoadAssetAtPath<T>(path!);
         Assert.That(asset, Is.Not.Null, $"Failed to load canonical asset at {path}.");
         return asset!;
+    }
+
+    private static List<T> LoadAssets<T>(string folder, string pattern) where T : UnityEngine.Object
+    {
+        return Directory.EnumerateFiles(folder, pattern, SearchOption.TopDirectoryOnly)
+            .Select(path => path.Replace('\\', '/'))
+            .Select(AssetDatabase.LoadAssetAtPath<T>)
+            .Where(asset => asset != null)
+            .Select(asset => asset!)
+            .ToList();
     }
 }

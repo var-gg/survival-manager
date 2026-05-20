@@ -15,49 +15,58 @@ MonoBehaviour:
   Id: affix_guarded
   NameKey: content.affix.affix_guarded.name
   DescriptionKey: content.affix.affix_guarded.desc
-  Category: 4
+  Category: 5
   Tier: 1
-  AffixFamily: 0
-  EffectType: 0
-  ValueMin: 0
-  ValueMax: 0
+  AffixFamily: 2
+  EffectType: 3
+  ValueMin: 1
+  ValueMax: 2
   AllowedSlotTypes: 0100000002000000
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   RuleModifierTags: []
-  RequiredTags: []
+  RequiredTags:
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
   ExcludedTags: []
   ItemLevelMin: 0
   SpawnWeight: 1
-  ExclusiveGroupId: 
-  BudgetScore: 0
+  ExclusiveGroupId: conditional.guard_armor
+  BudgetScore: 10
   BudgetCard:
     Domain: 4
     Rarity: 0
-    PowerBand: 2
+    PowerBand: 1
     RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
-      Durability: 1
+      Durability: 0
       Control: 0
-      Mobility: 1
-      Support: 3
+      Mobility: 0
+      Support: 0
       CounterCoverage: 0
-      Reliability: 1
+      Reliability: 6
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 1
+    KeywordCount: 0
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  TextTemplateKey: 
+  TextTemplateKey: content.affix.template.conditional
   AuthorityLayer: 2
-  Effects: []
+  Effects:
+  - Layer: 2
+    Scope: 0
+    Capabilities: 1
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   Modifiers:
-  - StatId: protect_radius
+  - StatId: armor
     Op: 0
-    Value: 0.35
+    Value: 1.5
   legacyDisplayName: 
   legacyDescription: 

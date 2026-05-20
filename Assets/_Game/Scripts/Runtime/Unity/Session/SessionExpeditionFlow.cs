@@ -1152,24 +1152,16 @@ public sealed partial class GameSessionState
                 summaryParts.Add($"{entry.Id} x{Math.Max(1, entry.Amount)}");
                 break;
             case SM.Core.Content.RewardType.Item:
-            case SM.Core.Content.RewardType.SkillManual:
-            case SM.Core.Content.RewardType.SkillShard:
                 for (var i = 0; i < Math.Max(1, entry.Amount); i++)
                 {
-                    var instanceId = $"{entry.Id}-{Guid.NewGuid():N}";
-                    Profile.Inventory.Add(new InventoryItemRecord
-                    {
-                        ItemInstanceId = instanceId,
-                        ItemBaseId = entry.Id,
-                        EquippedHeroId = string.Empty,
-                        AffixIds = new List<string>()
-                    });
+                    var itemRecord = CreateGeneratedInventoryItem(entry.Id);
+                    Profile.Inventory.Add(itemRecord);
 
                     Profile.InventoryLedger.Add(new InventoryLedgerEntryRecord
                     {
                         EntryId = Guid.NewGuid().ToString("N"),
                         RunId = ActiveRun?.RunId ?? string.Empty,
-                        ItemInstanceId = instanceId,
+                        ItemInstanceId = itemRecord.ItemInstanceId,
                         ItemBaseId = entry.Id,
                         ChangeKind = "automatic_loot",
                         Amount = 1,
@@ -1180,6 +1172,10 @@ public sealed partial class GameSessionState
                     });
                 }
 
+                summaryParts.Add($"{entry.Id} x{entry.Amount}");
+                break;
+            case SM.Core.Content.RewardType.SkillManual:
+            case SM.Core.Content.RewardType.SkillShard:
                 summaryParts.Add($"{entry.Id} x{entry.Amount}");
                 break;
             default:

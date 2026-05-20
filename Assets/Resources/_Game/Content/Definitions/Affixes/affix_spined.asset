@@ -15,49 +15,55 @@ MonoBehaviour:
   Id: affix_spined
   NameKey: content.affix.affix_spined.name
   DescriptionKey: content.affix.affix_spined.desc
-  Category: 3
-  Tier: 1
-  AffixFamily: 0
-  EffectType: 0
-  ValueMin: 0
-  ValueMax: 0
-  AllowedSlotTypes: 01000000
+  Category: 4
+  Tier: 2
+  AffixFamily: 1
+  EffectType: 1
+  ValueMin: 1
+  ValueMax: 2
+  AllowedSlotTypes: 0000000001000000
   CompileTags: []
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
-  ItemLevelMin: 0
-  SpawnWeight: 1
-  ExclusiveGroupId: 
-  BudgetScore: 0
+  ItemLevelMin: 999
+  SpawnWeight: 0
+  ExclusiveGroupId: reserved.spined_pierce
+  BudgetScore: 6
   BudgetCard:
     Domain: 4
     Rarity: 0
-    PowerBand: 2
+    PowerBand: 1
     RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
-      Durability: 4
+      Durability: 0
       Control: 0
       Mobility: 0
-      Support: 1
+      Support: 0
       CounterCoverage: 0
-      Reliability: 1
+      Reliability: 6
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 1
+    KeywordCount: 0
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  TextTemplateKey: 
+  TextTemplateKey: content.affix.template.reserved
   AuthorityLayer: 2
-  Effects: []
+  Effects:
+  - Layer: 2
+    Scope: 0
+    Capabilities: 1
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   Modifiers:
-  - StatId: max_health
+  - StatId: phys_pen
     Op: 0
-    Value: 3
+    Value: 1.5
   legacyDisplayName: 
   legacyDescription: 

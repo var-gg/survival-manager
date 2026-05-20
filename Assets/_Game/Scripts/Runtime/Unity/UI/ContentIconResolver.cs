@@ -13,6 +13,34 @@ internal sealed class ContentIconResolver
     private const string AffixPath = "_Game/Art/Icons/Affix";
     private const string CharacterPath = "_Game/Art/Characters";
 
+    private static readonly IReadOnlyDictionary<string, string> AffixIconIds = new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        ["affix_sharp"] = "affix_atk",
+        ["affix_focusing"] = "affix_magic_atk",
+        ["affix_sturdy"] = "affix_armor",
+        ["affix_warded"] = "affix_resist_magic",
+        ["affix_blessed"] = "affix_heal",
+        ["affix_hasty"] = "affix_speed",
+        ["affix_fierce"] = "affix_atk",
+        ["affix_precise"] = "affix_crit",
+        ["affix_piercing"] = "affix_pierce",
+        ["affix_vital"] = "affix_hp",
+        ["affix_ironclad"] = "affix_armor",
+        ["affix_mender"] = "affix_heal",
+        ["affix_lithe"] = "affix_speed",
+        ["affix_lucid"] = "affix_cooldown",
+        ["affix_farshot"] = "affix_pierce",
+        ["affix_guarded"] = "affix_block",
+        ["affix_channeling"] = "affix_cast_speed",
+        ["affix_cleansing"] = "affix_cleanse",
+        ["affix_bracing"] = "affix_hp",
+        ["affix_resolute"] = "affix_resist_phys",
+        ["affix_relentless"] = "affix_charge",
+        ["affix_watchful"] = "affix_crit",
+        ["affix_packborn"] = "affix_link",
+        ["affix_wraithbound"] = "affix_amplify",
+    };
+
     private readonly ICombatContentLookup _lookup;
     private readonly Dictionary<string, Texture2D?> _cache = new(StringComparer.Ordinal);
 
@@ -80,7 +108,9 @@ internal sealed class ContentIconResolver
             return null;
         }
 
-        var iconId = affixId.StartsWith("affix_", StringComparison.Ordinal)
+        var iconId = AffixIconIds.TryGetValue(affixId, out var mappedIconId)
+            ? mappedIconId
+            : affixId.StartsWith("affix_", StringComparison.Ordinal)
             ? affixId
             : $"affix_{affixId}";
         return Load($"{AffixPath}/{iconId}");

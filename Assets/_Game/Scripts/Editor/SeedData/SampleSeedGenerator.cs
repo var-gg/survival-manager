@@ -80,6 +80,9 @@ public static class SampleSeedGenerator
         PatchSafeTargetSpecialistFallbackYaml();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        EquipmentContentV1Assetizer.Apply();
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         var fixedScriptReferences = CanonicalContentScriptReferenceRepair.RepairResourcesRoot();
         if (fixedScriptReferences > 0)
         {
@@ -2498,17 +2501,10 @@ public static class SampleSeedGenerator
             var itemFamilyTag = NormalizeItemFamilyTag(item);
             var weaponFamilyTag = item.SlotType == ItemSlotType.Weapon ? itemFamilyTag : string.Empty;
             var craftCurrencyTag = string.IsNullOrWhiteSpace(item.CraftCurrencyTag)
-                ? (item.IdentityKind == ItemIdentityValue.Unique ? "boss_sigil" : "ember_dust")
+                ? "echo"
                 : item.CraftCurrencyTag;
             var allowedCraftOperations = item.AllowedCraftOperations.Count == 0
-                ? new List<CraftOperationKindValue>
-                {
-                    CraftOperationKindValue.Temper,
-                    CraftOperationKindValue.Reforge,
-                    CraftOperationKindValue.Seal,
-                    item.IdentityKind == ItemIdentityValue.Unique ? CraftOperationKindValue.Imprint : CraftOperationKindValue.Salvage,
-                    CraftOperationKindValue.Salvage,
-                }.Distinct().ToList()
+                ? new List<CraftOperationKindValue> { CraftOperationKindValue.Reforge }
                 : item.AllowedCraftOperations.ToList();
 
             item.ItemFamilyTag = itemFamilyTag;
@@ -3121,17 +3117,10 @@ public static class SampleSeedGenerator
             var weaponFamilyTag = item.SlotType == ItemSlotType.Weapon ? itemFamilyTag : string.Empty;
             var craftCategory = NormalizeCraftCategory(item, itemFamilyTag);
             var craftCurrencyTag = string.IsNullOrWhiteSpace(item.CraftCurrencyTag)
-                ? (item.IdentityKind == ItemIdentityValue.Unique ? "boss_sigil" : "ember_dust")
+                ? "echo"
                 : item.CraftCurrencyTag;
             var allowedCraftOperations = item.AllowedCraftOperations.Count == 0
-                ? new List<CraftOperationKindValue>
-                {
-                    CraftOperationKindValue.Temper,
-                    CraftOperationKindValue.Reforge,
-                    CraftOperationKindValue.Seal,
-                    item.IdentityKind == ItemIdentityValue.Unique ? CraftOperationKindValue.Imprint : CraftOperationKindValue.Salvage,
-                    CraftOperationKindValue.Salvage,
-                }.Distinct().ToList()
+                ? new List<CraftOperationKindValue> { CraftOperationKindValue.Reforge }
                 : item.AllowedCraftOperations.ToList();
 
             var compileTags = item.CompileTags.Where(IsValidTagReference).Distinct().ToList();

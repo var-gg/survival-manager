@@ -247,18 +247,13 @@ public sealed partial class GameSessionState
                     _session.ApplyLedgerBackedReward(new RewardOption(choice.PayloadId, SM.Core.Content.RewardType.Gold, choice.GoldAmount, BuildRewardChoiceSummaryKey(choice)), BuildRewardChoiceSummaryToken(choice));
                     break;
                 case RewardChoiceKind.Item:
-                    _session.Profile.Inventory.Add(new InventoryItemRecord
-                    {
-                        ItemInstanceId = $"{choice.PayloadId}-{Guid.NewGuid():N}",
-                        ItemBaseId = choice.PayloadId,
-                        EquippedHeroId = string.Empty,
-                        AffixIds = new List<string>()
-                    });
+                    var itemRecord = _session.CreateGeneratedInventoryItem(choice.PayloadId);
+                    _session.Profile.Inventory.Add(itemRecord);
                     _session.Profile.InventoryLedger.Add(new InventoryLedgerEntryRecord
                     {
                         EntryId = Guid.NewGuid().ToString("N"),
                         RunId = _session.ActiveRun?.RunId ?? string.Empty,
-                        ItemInstanceId = _session.Profile.Inventory.Last().ItemInstanceId,
+                        ItemInstanceId = itemRecord.ItemInstanceId,
                         ItemBaseId = choice.PayloadId,
                         ChangeKind = "reward_item",
                         Amount = 1,

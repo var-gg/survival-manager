@@ -17,23 +17,26 @@ MonoBehaviour:
   DescriptionKey: content.item.item_cantor_focus.desc
   IconId: item_icon_focus
   SlotType: 0
-  IdentityKind: 0
+  IdentityKind: 1
   ItemFamilyTag: focus
   WeaponFamilyTag: focus
-  RarityTier: 0
+  RarityTier: 2
   AffixPoolTag: pool_focus
   CraftCategory: mystic
   BudgetBand: personal_power_10
-  CraftCurrencyTag: ember_dust
-  GrantedSkills: []
+  CraftCurrencyTag: echo
+  GrantedSkills:
+  - {fileID: 11400000, guid: 842b174f92a91a24db7e7ab0d1d7b11c, type: 2}
   CompileTags:
   - {fileID: 11400000, guid: 5b8638d14ee22444e8b2baf4abd01965, type: 2}
+  - {fileID: 11400000, guid: 754f0c18dd0a18e4781970042cb79b6a, type: 2}
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   RuleModifierTags: []
   AllowedClassTags:
   - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 00000000010000000200000004000000
+  AllowedCraftOperations: 01000000
   BaseModifiers:
   - StatId: mag_power
     Op: 0

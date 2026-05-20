@@ -118,25 +118,25 @@ MonoBehaviour:
   - affix_blessed
   - affix_bracing
   - affix_channeling
+  - affix_cleansing
   - affix_farshot
   - affix_fierce
+  - affix_focusing
   - affix_guarded
-  - affix_hallowed
   - affix_hasty
-  - affix_heavy
   - affix_ironclad
+  - affix_lithe
   - affix_lucid
   - affix_mender
   - affix_packborn
+  - affix_piercing
   - affix_precise
-  - affix_quick
-  - affix_ravenous
   - affix_relentless
   - affix_resolute
   - affix_sharp
-  - affix_spined
   - affix_sturdy
   - affix_vital
+  - affix_warded
   - affix_watchful
   - affix_wraithbound
   SynergyFamilyIds:
@@ -180,12 +180,12 @@ MonoBehaviour:
   - board_ranger
   - board_mystic
   ParkingLotContentIds:
-  - affix_cleansing
-  - affix_focusing
-  - affix_lithe
-  - affix_piercing
+  - affix_hallowed
+  - affix_heavy
+  - affix_quick
+  - affix_ravenous
   - affix_reaching
-  - affix_warded
+  - affix_spined
   - augment_perm_legacy_bone
   - augment_perm_legacy_chalice
   - augment_perm_legacy_crown

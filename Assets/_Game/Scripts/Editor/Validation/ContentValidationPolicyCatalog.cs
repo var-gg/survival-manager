@@ -89,6 +89,7 @@ internal static class ContentValidationPolicyCatalog
     internal static readonly HashSet<string> AllowedCraftCurrencyIds = new(StringComparer.Ordinal)
     {
         "gold",
+        "echo",
         "ember_dust",
         "echo_crystal",
         "boss_sigil",

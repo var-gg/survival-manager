@@ -15,52 +15,57 @@ MonoBehaviour:
   Id: affix_ironclad
   NameKey: content.affix.affix_ironclad.name
   DescriptionKey: content.affix.affix_ironclad.desc
-  Category: 3
+  Category: 2
   Tier: 1
-  AffixFamily: 0
-  EffectType: 0
-  ValueMin: 0
-  ValueMax: 0
+  AffixFamily: 1
+  EffectType: 1
+  ValueMin: 1
+  ValueMax: 3
   AllowedSlotTypes: 01000000
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
   ItemLevelMin: 0
   SpawnWeight: 1
-  ExclusiveGroupId: 
-  BudgetScore: 0
+  ExclusiveGroupId: prefix.armor
+  BudgetScore: 8
   BudgetCard:
     Domain: 4
     Rarity: 0
-    PowerBand: 2
+    PowerBand: 1
     RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
-      Durability: 4
+      Durability: 0
       Control: 0
       Mobility: 0
-      Support: 1
+      Support: 0
       CounterCoverage: 0
-      Reliability: 1
+      Reliability: 6
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 1
+    KeywordCount: 0
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  TextTemplateKey: 
+  TextTemplateKey: content.affix.template.scalar
   AuthorityLayer: 2
-  Effects: []
+  Effects:
+  - Layer: 2
+    Scope: 0
+    Capabilities: 1
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   Modifiers:
-  - StatId: max_health
-    Op: 0
-    Value: 2
   - StatId: armor
     Op: 0
-    Value: 0.8
+    Value: 2
   legacyDisplayName: 
   legacyDescription: 

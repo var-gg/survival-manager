@@ -17,23 +17,25 @@ MonoBehaviour:
   DescriptionKey: content.item.item_bulwark_armor.desc
   IconId: item_icon_armor
   SlotType: 1
-  IdentityKind: 0
+  IdentityKind: 1
   ItemFamilyTag: vanguard_armor
   WeaponFamilyTag: 
-  RarityTier: 0
+  RarityTier: 3
   AffixPoolTag: pool_vanguard_armor
   CraftCategory: vanguard
   BudgetBand: personal_power_9
-  CraftCurrencyTag: ember_dust
-  GrantedSkills: []
+  CraftCurrencyTag: echo
+  GrantedSkills:
+  - {fileID: 11400000, guid: 4dd611eacab313b4ba0cdde8577a54c2, type: 2}
   CompileTags:
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
   RuleModifierTags: []
   AllowedClassTags:
   - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 00000000010000000200000004000000
+  AllowedCraftOperations: 01000000
   BaseModifiers:
   - StatId: max_health
     Op: 0
