@@ -72,21 +72,3 @@
     border-bottom-left-radius: var(--sm-r-md);
     border-bottom-right-radius: var(--sm-r-md);
 }
-
-.erp-header__close {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_dark.png");
-    -unity-slice-left: 96;
-    -unity-slice-right: 96;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.34;
-}
-
-.erp-refit-cta {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_gold.png");
-    -unity-slice-left: 96;
-    -unity-slice-right: 96;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.34;
-}

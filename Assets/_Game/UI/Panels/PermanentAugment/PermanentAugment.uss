@@ -52,21 +52,3 @@
     border-top-color: rgba(245, 214, 138, 0.20);
     border-bottom-color: rgba(245, 214, 138, 0.28);
 }
-
-.pap-header__close {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_dark.png");
-    -unity-slice-left: 96;
-    -unity-slice-right: 96;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.34;
-}
-
-.pap-equip-cta {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_gold.png");
-    -unity-slice-left: 96;
-    -unity-slice-right: 96;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.34;
-}

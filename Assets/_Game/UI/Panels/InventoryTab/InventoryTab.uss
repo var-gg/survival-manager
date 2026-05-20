@@ -74,25 +74,6 @@
     border-bottom-right-radius: var(--sm-r-md);
 }
 
-.inv-currency__close,
-.inv-detail__btn--compare {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_dark.png");
-    -unity-slice-left: 96;
-    -unity-slice-right: 96;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.34;
-}
-
-.inv-detail__btn--equip {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_gold.png");
-    -unity-slice-left: 96;
-    -unity-slice-right: 96;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.34;
-}
-
 .inv-detail__name-bar {
     min-height: 64px;
     flex-direction: row;

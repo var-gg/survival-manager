@@ -26,7 +26,7 @@
             <ui:VisualElement class="twp-header">
                 <ui:Label class="twp-header__eyebrow" text="TACTICAL WORKSHOP" />
                 <ui:Label class="twp-header__title" text="전술 공방" />
-                <ui:Button class="twp-header__close" text="X" />
+                <ui:Button class="twp-header__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
             </ui:VisualElement>
 
             <ui:VisualElement class="twp-columns">

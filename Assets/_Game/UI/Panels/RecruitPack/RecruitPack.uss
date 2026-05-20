@@ -162,32 +162,12 @@
     -unity-background-scale-mode: stretch-to-fill;
 }
 
-.rcp-header__close,
-.rcp-actions__scout {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_dark.png");
-    -unity-slice-left: 96;
-    -unity-slice-right: 96;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.34;
-}
-
 .rcp-actions__scout {
     color: var(--sm-gold-100);
     border-left-color: rgba(230, 183, 81, 0.40);
     border-right-color: rgba(230, 183, 81, 0.40);
     border-top-color: rgba(245, 214, 138, 0.42);
     border-bottom-color: rgba(138, 100, 24, 0.70);
-}
-
-.rcp-card__recruit,
-.rcp-actions__refresh {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_gold.png");
-    -unity-slice-left: 96;
-    -unity-slice-right: 96;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.34;
 }
 
 .rcp-card__recruit,
