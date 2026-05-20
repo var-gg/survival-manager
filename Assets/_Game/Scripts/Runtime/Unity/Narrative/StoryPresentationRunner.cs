@@ -531,14 +531,27 @@ public sealed class StoryPresentationRunner : MonoBehaviour
         IReadOnlyDictionary<string, StorySpeakerSide> sideBySpeaker)
     {
         var participants = new List<StorySpeakerModel>();
-        foreach (var pair in sideBySpeaker.OrderBy(p => (int)p.Value))
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var line in sequence.Lines ?? Array.Empty<DialogueLineDefinition>())
         {
+            if (line == null
+                || IsNarrator(line.SpeakerId)
+                || string.IsNullOrWhiteSpace(line.SpeakerId)
+                || !seen.Add(line.SpeakerId))
+            {
+                continue;
+            }
+
+            var side = sideBySpeaker.TryGetValue(line.SpeakerId, out var resolvedSide)
+                ? resolvedSide
+                : StorySpeakerSide.None;
             participants.Add(new StorySpeakerModel(
-                pair.Key,
-                ResolveSpeakerDisplayName(pair.Key),
-                pair.Value,
-                ResolveDefaultEmote(sequence, pair.Key)));
+                line.SpeakerId,
+                ResolveSpeakerDisplayName(line.SpeakerId),
+                side,
+                ResolveDefaultEmote(sequence, line.SpeakerId)));
         }
+
         return participants;
     }
 

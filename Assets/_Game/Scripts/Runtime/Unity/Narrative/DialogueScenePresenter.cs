@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,6 +12,11 @@ public sealed class DialogueScenePresenter : IDisposable
     private DialogueScenePlaybackModel? _model;
     private Action? _onCompleted;
     private IVisualElementScheduledItem? _typingSchedule;
+    private Dictionary<string, StorySpeakerModel>? _participantsById;
+    private StorySpeakerModel? _stageLeft;
+    private StorySpeakerModel? _stageRight;
+    private StorySpeakerSide _lastSpokenSide = StorySpeakerSide.Left;
+    private StorySpeakerSide _currentActiveSide = StorySpeakerSide.None;
     private string _resolvedLineText = string.Empty;
     private int _visibleCharacterCount;
     private double _typingStartedAt;
@@ -43,6 +49,11 @@ public sealed class DialogueScenePresenter : IDisposable
 
         _model = model;
         _onCompleted = onCompleted;
+        _participantsById = BuildParticipantLookup(model);
+        _stageLeft = model.LeftSpeaker;
+        _stageRight = model.RightSpeaker;
+        _lastSpokenSide = StorySpeakerSide.Left;
+        _currentActiveSide = StorySpeakerSide.None;
         CurrentLineIndex = 0;
         IsPlaying = true;
         _view.Show();
@@ -128,6 +139,11 @@ public sealed class DialogueScenePresenter : IDisposable
         StopTypingSchedule();
         _model = null;
         _onCompleted = null;
+        _participantsById = null;
+        _stageLeft = null;
+        _stageRight = null;
+        _lastSpokenSide = StorySpeakerSide.Left;
+        _currentActiveSide = StorySpeakerSide.None;
         _resolvedLineText = string.Empty;
         _visibleCharacterCount = 0;
         _resumeTypingAfterConfirmation = false;
@@ -169,6 +185,7 @@ public sealed class DialogueScenePresenter : IDisposable
 
         var line = _model.Lines[CurrentLineIndex];
         _resolvedLineText = line.IsNarrator ? line.LineText : Quote(line.LineText);
+        _currentActiveSide = UpdateStageForLine(line);
         _visibleCharacterCount = restartTyping ? 0 : Math.Min(_visibleCharacterCount, _resolvedLineText.Length);
         IsSkipConfirmationOpen = false;
         _resumeTypingAfterConfirmation = false;
@@ -196,18 +213,17 @@ public sealed class DialogueScenePresenter : IDisposable
         }
 
         var line = _model.Lines[CurrentLineIndex];
-        var activeSide = line.IsNarrator ? StorySpeakerSide.None : line.SpeakerSide;
-        var leftPortrait = ResolvePortrait(_model.LeftSpeaker, line, StorySpeakerSide.Left);
-        var rightPortrait = ResolvePortrait(_model.RightSpeaker, line, StorySpeakerSide.Right);
+        var leftPortrait = ResolvePortrait(_stageLeft, line, StorySpeakerSide.Left);
+        var rightPortrait = ResolvePortrait(_stageRight, line, StorySpeakerSide.Right);
         var state = new DialogueSceneViewState(
             line.IsNarrator ? string.Empty : line.SpeakerNameText,
             _resolvedLineText,
             line.IsNarrator,
-            activeSide,
+            _currentActiveSide,
             leftPortrait,
-            _model.LeftSpeaker.HasValue && leftPortrait != null,
+            _stageLeft.HasValue && leftPortrait != null,
             rightPortrait,
-            _model.RightSpeaker.HasValue && rightPortrait != null,
+            _stageRight.HasValue && rightPortrait != null,
             ShowSkipAll: true,
             ShowSkipConfirmation: IsSkipConfirmationOpen,
             _model.SkipConfirmTitleText,
@@ -217,6 +233,79 @@ public sealed class DialogueScenePresenter : IDisposable
 
         _view.Render(state);
         _view.SetDisplayedText(_resolvedLineText[..Math.Min(_visibleCharacterCount, _resolvedLineText.Length)]);
+    }
+
+    // 무대는 좌·우 2슬롯뿐이라, 화자가 3명 이상인 씬에서도 현재 화자가 항상 슬롯을
+    // 차지하도록 직전 화자가 있는 쪽을 남기고 반대쪽 슬롯을 새 화자로 교체한다.
+    private StorySpeakerSide UpdateStageForLine(StoryDialogueLineModel line)
+    {
+        if (line.IsNarrator || string.IsNullOrEmpty(line.SpeakerId))
+        {
+            return StorySpeakerSide.None;
+        }
+
+        var side = PlaceSpeakerOnStage(line.SpeakerId);
+        _lastSpokenSide = side;
+        return side;
+    }
+
+    private StorySpeakerSide PlaceSpeakerOnStage(string speakerId)
+    {
+        if (_stageLeft.HasValue && string.Equals(_stageLeft.Value.CharacterId, speakerId, StringComparison.Ordinal))
+        {
+            return StorySpeakerSide.Left;
+        }
+
+        if (_stageRight.HasValue && string.Equals(_stageRight.Value.CharacterId, speakerId, StringComparison.Ordinal))
+        {
+            return StorySpeakerSide.Right;
+        }
+
+        var speaker = ResolveParticipant(speakerId);
+        if (!_stageLeft.HasValue)
+        {
+            _stageLeft = speaker;
+            return StorySpeakerSide.Left;
+        }
+
+        if (!_stageRight.HasValue)
+        {
+            _stageRight = speaker;
+            return StorySpeakerSide.Right;
+        }
+
+        if (_lastSpokenSide == StorySpeakerSide.Left)
+        {
+            _stageRight = speaker;
+            return StorySpeakerSide.Right;
+        }
+
+        _stageLeft = speaker;
+        return StorySpeakerSide.Left;
+    }
+
+    private StorySpeakerModel ResolveParticipant(string speakerId)
+    {
+        if (_participantsById != null && _participantsById.TryGetValue(speakerId, out var speaker))
+        {
+            return speaker;
+        }
+
+        return new StorySpeakerModel(speakerId, speakerId, StorySpeakerSide.None, "Default");
+    }
+
+    private static Dictionary<string, StorySpeakerModel> BuildParticipantLookup(DialogueScenePlaybackModel model)
+    {
+        var lookup = new Dictionary<string, StorySpeakerModel>(StringComparer.Ordinal);
+        foreach (var participant in model.Participants)
+        {
+            if (!string.IsNullOrEmpty(participant.CharacterId))
+            {
+                lookup[participant.CharacterId] = participant;
+            }
+        }
+
+        return lookup;
     }
 
     private void StartTyping()
@@ -313,11 +402,9 @@ public sealed class DialogueScenePresenter : IDisposable
         }
 
         var resolvedSpeaker = speaker.Value;
-        var emoteId = line.IsNarrator
-            ? resolvedSpeaker.DefaultEmoteId
-            : line.SpeakerSide == side
-                ? line.EmoteId
-                : resolvedSpeaker.DefaultEmoteId;
+        var isActiveSpeaker = !line.IsNarrator
+                              && string.Equals(line.SpeakerId, resolvedSpeaker.CharacterId, StringComparison.Ordinal);
+        var emoteId = isActiveSpeaker ? line.EmoteId : resolvedSpeaker.DefaultEmoteId;
 
         return _portraitResolver.TryResolve(resolvedSpeaker.CharacterId, emoteId, side, out var portrait)
             ? portrait

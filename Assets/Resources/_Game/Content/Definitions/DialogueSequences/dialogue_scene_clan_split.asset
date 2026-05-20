@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Name: line_01
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_clan_split.line.01
-  _speakerId: npc_ember_runner
+  _speakerId: hero_ember_runner
   _textKey: loc.story.scene_clan_split.1
   _emote: shock
   _emotionTextKey: 
@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Name: line_03
   m_EditorClassIdentifier: SM.Content:SM.Content:DialogueLineDefinition
   _id: dialogue_scene_clan_split.line.03
-  _speakerId: npc_ember_runner
+  _speakerId: hero_ember_runner
   _textKey: loc.story.scene_clan_split.3
   _emote: weary
   _emotionTextKey: 
