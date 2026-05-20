@@ -161,6 +161,7 @@ pwsh -File tools/unity-bridge.ps1 test-batch-fast   # FastUnit 카테고리만 �
 ## Unity 에디터 자동화 안정성
 
 - compile 후 5초 대기 후 다음 명령을 실행한다.
+- 이 Unity workspace에서 작업하는 에이전트는 검증/복구를 위해 프로젝트를 잡고 있는 Unity editor와 import worker를 종료·재시작할 기본 권한을 가진다. 필요할 때 사용자에게 별도 승인 요청 없이 진행한다.
 - 에디터 freeze 감지 시: `tools/focus-unity.ps1`로 포커스 시도 → 실패 시 강제 종료 → 재실행 → `tools/wait-unity-ready.ps1`로 복구 확인.
 - 강제 복구 예산: 최대 2회. 초과 시 현재 루프를 멈추고 사용자에게 보고한다.
 - `ScriptableObject.CreateInstance`, `RuntimeCombatContentLookup`, public `GameSessionState` 생성자를 테스트에서 직접 사용하면 Unity object lifecycle 또는 `Resources.LoadAll` 경로가 트리거될 수 있다. FastUnit에서는 pure fixture, `FakeCombatContentLookup`, `GameSessionTestFactory`를 사용한다.

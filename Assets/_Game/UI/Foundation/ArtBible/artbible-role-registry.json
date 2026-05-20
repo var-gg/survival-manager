@@ -119,6 +119,159 @@
       "allowedStates": ["small", "notable", "keystone", "active", "locked"],
       "shapePolicy": "preserve-node-silhouette",
       "severity": "warning"
+    },
+    {
+      "id": "screen.inventory.item-cell",
+      "description": "Inventory/refit L3 item cell or row. Sparse console JRPG item plate; no repeated ornate modal/card chrome.",
+      "canonicalClasses": ["sm-item-cell"],
+      "productionSelectors": [
+        ".inv-grid__cell",
+        ".erp-pool-row"
+      ],
+      "allowedStates": ["selected", "equipped", "locked", "disabled"],
+      "forbiddenImages": [
+        "ui_panel_frame_outer.png",
+        "ui_panel_frame_inner.png",
+        "ui_card_frame_normal.png",
+        "ui_card_frame_selected_base.png",
+        "ui_card_frame_locked.png",
+        "ui_icon_slot_frame.png",
+        "ornament-corner-vine.svg"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "item.icon.content",
+      "description": "Item content silhouette. Item rows resolve item icons before affix fallback; affix icons stay in affix rows.",
+      "canonicalClasses": ["sm-item-icon"],
+      "productionSelectors": [
+        ".inv-grid__cell-icon",
+        ".inv-detail__icon",
+        ".erp-pool-row__weapon-icon",
+        ".erp-slot"
+      ],
+      "allowedResourcePrefixes": [
+        "_Game/Art/Icons/Item/item_icon_"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "item.badge.slot",
+      "description": "Small slot badge for weapon/armor/accessory.",
+      "canonicalClasses": ["sm-item-badge", "sm-item-badge--slot"],
+      "productionSelectors": [
+        ".inv-detail__slot",
+        ".erp-pool-row__slot",
+        ".erp-context__slot"
+      ],
+      "allowedStates": ["weapon", "armor", "accessory"],
+      "forbiddenStates": ["shield", "blade", "bow", "focus"],
+      "severity": "error"
+    },
+    {
+      "id": "item.badge.weapon-family",
+      "description": "Small weapon family badge, visible only for weapon items.",
+      "canonicalClasses": ["sm-item-badge", "sm-item-badge--family"],
+      "productionSelectors": [
+        ".inv-grid__cell-family",
+        ".inv-detail__family",
+        ".erp-context__family"
+      ],
+      "allowedStates": ["shield", "blade", "bow", "focus"],
+      "reservedStates": ["greatblade", "polearm"],
+      "severity": "error"
+    },
+    {
+      "id": "item.badge.rarity",
+      "description": "Subtle launch-floor rarity strip/pip. Rarity must not become a full frame tier.",
+      "canonicalClasses": ["sm-item-rarity"],
+      "productionSelectors": [
+        ".inv-grid__cell-rarity",
+        ".inv-detail__rarity",
+        ".erp-pool-row__rarity"
+      ],
+      "allowedStates": ["common", "rare", "epic"],
+      "forbiddenStates": ["magic", "legendary", "mythic", "unique"],
+      "forbiddenImages": [
+        "ui_panel_frame_outer.png",
+        "ui_card_frame_selected_base.png",
+        "ui_card_frame_locked.png",
+        "ornament-corner-vine.svg"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "item.badge.identity",
+      "description": "Named/Unique identity marker. Identity is not rarity.",
+      "canonicalClasses": ["sm-item-identity"],
+      "productionSelectors": [
+        ".inv-detail__identity",
+        ".erp-context__identity"
+      ],
+      "allowedStates": ["baseline", "named", "unique"],
+      "forbiddenStates": ["legendary", "mythic"],
+      "severity": "error"
+    },
+    {
+      "id": "affix.row.item-detail",
+      "description": "Affix row for inventory detail and refit target selection.",
+      "canonicalClasses": ["sm-affix-row"],
+      "productionSelectors": [
+        ".inv-detail__affix-row",
+        ".erp-affix-row"
+      ],
+      "allowedStates": ["implicit", "prefix", "suffix", "selected", "refit-target"],
+      "forbiddenImages": [
+        "ui_panel_frame_outer.png",
+        "ui_panel_frame_inner.png",
+        "ui_card_frame_normal.png",
+        "ui_card_frame_selected_base.png",
+        "ornament-corner-vine.svg"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "item.state.overlay",
+      "description": "State-only treatment for selected/equipped/locked/refit-target. State must not introduce a new frame tier.",
+      "canonicalClasses": ["sm-item-state"],
+      "productionSelectors": [
+        ".inv-grid__cell--selected",
+        ".inv-grid__cell-equipped",
+        ".erp-pool-row--selected",
+        ".erp-affix-row--selected"
+      ],
+      "allowedStates": ["selected", "equipped", "locked", "refit-target", "disabled"],
+      "forbiddenImages": [
+        "ui_panel_frame_outer.png",
+        "ui_panel_frame_inner.png",
+        "ui_card_frame_selected_base.png",
+        "ui_card_frame_locked.png",
+        "ornament-corner-vine.svg"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "operation.refit.cta",
+      "description": "Launch-floor refit operation CTA. Uses canonical CTA slices; no crafting rail.",
+      "canonicalClasses": ["sm-operation", "sm-operation--refit", "sm-cta"],
+      "productionSelectors": [
+        ".erp-refit-cta"
+      ],
+      "allowedOperations": ["refit"],
+      "forbiddenOperations": ["temper", "seal", "imprint", "salvage", "recipe", "socket", "gem"],
+      "requiredButtonSlices": [
+        "ui_button_gold.png",
+        "ui_button_dark.png"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "item.provenance.badge",
+      "description": "Deferred. May only be used after item instance provenance is persisted.",
+      "canonicalClasses": ["sm-item-provenance"],
+      "productionSelectors": [],
+      "allowedStates": [],
+      "severity": "warning"
     }
   ]
 }

@@ -136,7 +136,10 @@ public sealed class TownScreenController : MonoBehaviour
                 _root,
                 equipmentRefitView,
                 _contentText,
-                _contentIconResolver.ResolveAny);
+                itemIconSprite: _contentIconResolver.ResolveItem,
+                currencySprite: _contentIconResolver.ResolveAny,
+                portraitLoader: _contentIconResolver.ResolveAny,
+                affixIconSprite: _contentIconResolver.ResolveAffix);
             _equipmentRefitPresenter.Initialize();
             _equipmentRefitPresenter.Close();
             _presenter?.SetNpcOpener("soemae", _equipmentRefitPresenter.Open);
@@ -165,7 +168,10 @@ public sealed class TownScreenController : MonoBehaviour
             _inventoryPresenter = new InventoryPresenter(
                 _root,
                 inventoryView,
-                affixSprite: _contentIconResolver.ResolveAny);
+                currencySprite: _contentIconResolver.ResolveAny,
+                itemIconSprite: _contentIconResolver.ResolveItem,
+                contentText: _contentText,
+                affixIconSprite: _contentIconResolver.ResolveAffix);
             _inventoryPresenter.Initialize();
             _inventoryPresenter.Close();
             _presenter?.SetNpcOpener("solgil", _inventoryPresenter.Open);

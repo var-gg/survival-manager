@@ -66,8 +66,9 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
             _presenter = new InventoryPresenter(
                 sessionRoot,
                 view,
-                PreviewSessionContext.LoadCurrencySprite,
-                PreviewSessionContext.LoadAffixSprite);
+                currencySprite: PreviewSessionContext.LoadCurrencySprite,
+                itemIconSprite: PreviewSessionContext.LoadItemSprite,
+                affixIconSprite: PreviewSessionContext.LoadAffixSprite);
             _presenter.Initialize();
             return true;
         }
@@ -101,7 +102,7 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
                 Key: c.Key,
                 Label: c.Label,
                 Count: counts[i++],
-                IconSprite: LoadAffixSprite(c.IconKey),
+                IconSprite: PreviewSessionContext.LoadItemSprite(c.IconKey),
                 IsSelected: c.Key == "weapon"))
             .ToList();
     }
@@ -139,15 +140,24 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
             var r = rows[i];
             var familyLabel = InventoryPresenter.WeaponFamilyLabels.TryGetValue(r.WeaponFamily, out var lbl)
                 ? lbl : r.WeaponFamily;
+            var presentation = EquipmentPresentationPolicy.Build("weapon", r.WeaponFamily, r.Rarity, "Baseline", Array.Empty<string>());
             items.Add(new InventoryItemViewState(
                 ItemInstanceId: $"mock_item_{i:D2}",
                 IconKey: r.Icon,
-                RarityKey: r.Rarity,
-                WeaponFamilyKey: r.WeaponFamily,
-                WeaponFamilyLabel: familyLabel,
+                RarityKey: presentation.RarityKey,
+                RawRarityKey: presentation.RawRarityKey,
+                SlotKey: presentation.SlotKey,
+                SlotLabel: presentation.SlotLabel,
+                WeaponFamilyKey: presentation.FamilyKey,
+                WeaponFamilyLabel: string.IsNullOrWhiteSpace(presentation.FamilyLabel) ? familyLabel : presentation.FamilyLabel,
+                IdentityKey: presentation.IdentityKey,
+                IdentityLabel: presentation.IdentityLabel,
+                ShowsIdentityBadge: presentation.ShowsIdentityBadge,
+                CanRefit: presentation.CanRefit,
+                IsLaunchSupportedRarity: presentation.IsLaunchSupportedRarity,
                 IsEquipped: r.Equipped,
                 IsSelected: i == 0,
-                IconSprite: LoadAffixSprite(r.Icon)));
+                IconSprite: PreviewSessionContext.LoadItemSprite(r.WeaponFamily) ?? LoadAffixSprite(r.Icon)));
         }
         return items;
     }

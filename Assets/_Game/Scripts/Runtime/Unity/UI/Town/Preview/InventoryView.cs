@@ -72,6 +72,7 @@ public sealed class InventoryView
             ?? throw new ArgumentException("ItemGrid 못 찾음");
         _detailIcon = root.Q<VisualElement>("DetailIcon")
             ?? throw new ArgumentException("DetailIcon 못 찾음");
+        _detailIcon.AddToClassList("sm-item-icon");
         _detailAffixes = root.Q<VisualElement>("DetailAffixes")
             ?? throw new ArgumentException("DetailAffixes 못 찾음");
         _detailNameLabel = root.Q<Label>("DetailNameLabel");
@@ -152,28 +153,56 @@ public sealed class InventoryView
         {
             var cell = new VisualElement();
             cell.AddToClassList("inv-grid__cell");
+            cell.AddToClassList("sm-item-cell");
             cell.AddToClassList("sm-hover-raise");   // 콘솔급 motion — hover raise
             cell.AddToClassList($"inv-grid__cell--{item.RarityKey}");
             if (item.IsSelected) cell.AddToClassList("inv-grid__cell--selected");
+            if (item.IsSelected) cell.AddToClassList("sm-item-cell--selected");
+            if (item.IsEquipped) cell.AddToClassList("sm-item-cell--equipped");
 
             var iconLayer = new VisualElement();
             iconLayer.AddToClassList("inv-grid__cell-icon");
+            iconLayer.AddToClassList("sm-item-icon");
             if (item.IconSprite != null) iconLayer.style.backgroundImage = new StyleBackground(item.IconSprite);
             cell.Add(iconLayer);
 
+            var rarity = new VisualElement();
+            rarity.AddToClassList("inv-grid__cell-rarity");
+            rarity.AddToClassList("sm-item-rarity");
+            rarity.AddToClassList($"sm-item-rarity--{item.RarityKey}");
+            cell.Add(rarity);
+
             var familyBadge = new Label(item.WeaponFamilyLabel);
             familyBadge.AddToClassList("inv-grid__cell-family");
+            familyBadge.AddToClassList("sm-item-badge");
+            familyBadge.AddToClassList("sm-item-badge--family");
             familyBadge.AddToClassList($"inv-grid__cell-family--{item.WeaponFamilyKey}");
+            familyBadge.style.display = string.IsNullOrWhiteSpace(item.WeaponFamilyKey)
+                ? DisplayStyle.None
+                : DisplayStyle.Flex;
             cell.Add(familyBadge);
+
+            if (item.ShowsIdentityBadge)
+            {
+                var identity = new Label(item.IdentityLabel);
+                identity.AddToClassList("inv-grid__cell-identity");
+                identity.AddToClassList("sm-item-identity");
+                identity.AddToClassList($"sm-item-identity--{item.IdentityKey}");
+                cell.Add(identity);
+            }
 
             if (item.IsEquipped)
             {
                 var eq = new VisualElement();
                 eq.AddToClassList("inv-grid__cell-equipped");
+                eq.AddToClassList("sm-item-state");
                 cell.Add(eq);
             }
 
-            cell.tooltip = $"{item.IconKey} ({item.WeaponFamilyKey}) · {item.RarityKey}{(item.IsEquipped ? " · equipped" : "")}";
+            var rarityTooltip = item.IsLaunchSupportedRarity
+                ? item.RarityKey
+                : $"{item.RawRarityKey} as {item.RarityKey}";
+            cell.tooltip = $"{item.IconKey} ({item.SlotKey}/{item.WeaponFamilyKey}) · {rarityTooltip}{(item.IsEquipped ? " · equipped" : "")}";
             cell.RegisterCallback<ClickEvent>(_ => _actions?.OnItemSelected(item.ItemInstanceId));
             _itemGrid.Add(cell);
         }
@@ -197,7 +226,9 @@ public sealed class InventoryView
         if (_detailNameLabel != null) _detailNameLabel.text = detail.Name;
         if (_detailMetaLabel != null)
         {
-            _detailMetaLabel.text = $"{detail.SlotLabel} / {detail.RarityKey} / {detail.WeaponFamilyLabel}";
+            _detailMetaLabel.text = string.IsNullOrWhiteSpace(detail.WeaponFamilyLabel)
+                ? $"{detail.SlotLabel} / {detail.RarityKey}"
+                : $"{detail.SlotLabel} / {detail.RarityKey} / {detail.WeaponFamilyLabel}";
         }
         if (_detailSetBonusLabel != null)
         {
@@ -223,7 +254,9 @@ public sealed class InventoryView
 
             var row = new VisualElement();
             row.AddToClassList("inv-detail__affix-row");
+            row.AddToClassList("sm-affix-row");
             row.AddToClassList($"inv-detail__affix-row--{affix.GroupKey}");
+            row.AddToClassList($"sm-affix-row--{affix.GroupKey}");
 
             var nameEl = new Label(affix.Name);
             nameEl.AddToClassList("inv-detail__affix-name");
@@ -262,6 +295,7 @@ public sealed class InventoryView
 
             var chip = new Label(link);
             chip.AddToClassList("sm-cd-tag");
+            chip.AddToClassList("sm-item-badge");
             _detailCrossLinks.Add(chip);
         }
     }

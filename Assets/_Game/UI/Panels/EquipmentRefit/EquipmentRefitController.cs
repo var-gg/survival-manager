@@ -64,9 +64,10 @@ public sealed class EquipmentRefitController : MonoBehaviour
             root,
             view,
             contentText,
-            iconResolver.ResolveAny,
-            iconResolver.ResolveAny,
-            iconResolver.ResolveAny);
+            itemIconSprite: iconResolver.ResolveItem,
+            currencySprite: iconResolver.ResolveAny,
+            portraitLoader: iconResolver.ResolveAny,
+            affixIconSprite: iconResolver.ResolveAffix);
         _presenter.Initialize();
     }
 }

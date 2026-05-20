@@ -2,13 +2,14 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-05-20
 - 소스오브트루스: `docs/02_design/meta/equipment-family-and-crafting-depth.md`
 - 관련문서:
   - `docs/02_design/meta/item-and-affix-system.md`
   - `docs/02_design/meta/economy-protection-contract.md`
   - `docs/02_design/combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`
   - `docs/02_design/systems/skills-items-and-passive-boards.md`
+  - `pindoc://decision-equipment-presentation-v1-contract`
 
 ## 목적
 
@@ -67,3 +68,10 @@ shield 전용 별도 slot은 열지 않는다.
 - socket / gem / orb zoo
 - recipe tree 대량 확장
 - launch floor 밖 family 실전 count 증가
+
+## UI 표현 비목표
+
+- `shield`는 weapon family badge로만 표시하고 equipment slot badge로 표시하지 않는다.
+- `greatblade`, `polearm`은 안전한 후속 확장 후보지만 V1 UI class나 asset으로 선반영하지 않는다.
+- 제작 깊이는 `15 Echo` single-affix refit CTA만 노출한다. `Temper`, `Seal`, `Imprint`, `Salvage` operation chip이나 recipe/material rail은 후속 결정 전까지 만들지 않는다.
+- family별 ornate frame이나 rarity별 card frame을 만들지 않는다. item cell은 공통 L3 plate 위에 slot/family/rarity/identity state만 얹는다.

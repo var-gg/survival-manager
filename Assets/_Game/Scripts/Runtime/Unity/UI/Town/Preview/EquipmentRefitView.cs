@@ -55,6 +55,8 @@ public sealed class EquipmentRefitView
         _modalRoot = root.Q<VisualElement>("ErpRoot");
         _closeButton = root.Q<Button>(className: "erp-header__close");
         _refitButton = root.Q<Button>(className: "erp-refit-cta");
+        _refitButton?.AddToClassList("sm-operation");
+        _refitButton?.AddToClassList("sm-operation--refit");
         _standeePortrait = root.Q<VisualElement>("StandeePortrait")
             ?? throw new ArgumentException("StandeePortrait 못 찾음");
         _echoIcon = root.Q<VisualElement>("EchoIcon")
@@ -88,9 +90,18 @@ public sealed class EquipmentRefitView
         if (state.EquippedHeroPortrait != null)
             _standeePortrait.style.backgroundImage = new StyleBackground(state.EquippedHeroPortrait);
         if (_selectedItemName != null)
-            _selectedItemName.text = $"{state.SelectedItemName}  ·  {state.SelectedItemSlotLabel}";
+        {
+            var familyText = string.IsNullOrWhiteSpace(state.SelectedItemFamilyLabel)
+                ? string.Empty
+                : $" · {state.SelectedItemFamilyLabel}";
+            var identityText = state.SelectedItemShowsIdentityBadge
+                ? $" · {state.SelectedItemIdentityLabel}"
+                : string.Empty;
+            _selectedItemName.text = $"{state.SelectedItemName}  ·  {state.SelectedItemSlotLabel}{familyText}{identityText}";
+        }
         if (_equippedHeroLabel != null)
             _equippedHeroLabel.text = state.EquippedHeroLabel;
+        _refitButton?.SetEnabled(state.SelectedItemCanRefit);
 
         if (state.EchoSprite != null) _echoIcon.style.backgroundImage = new StyleBackground(state.EchoSprite);
         _refitCostLabel.text = $"REFIT (-{state.RefitCost} Echo)";
@@ -116,8 +127,16 @@ public sealed class EquipmentRefitView
 
             var row = new VisualElement();
             row.AddToClassList("erp-affix-row");
+            row.AddToClassList("sm-affix-row");
             row.AddToClassList($"erp-affix-row--{affix.GroupKey}");
-            if (affix.IsSelectedForReroll) row.AddToClassList("erp-affix-row--selected");
+            row.AddToClassList($"sm-affix-row--{affix.GroupKey}");
+            if (affix.IsSelectedForReroll)
+            {
+                row.AddToClassList("erp-affix-row--selected");
+                row.AddToClassList("sm-affix-row--selected");
+                row.AddToClassList("sm-affix-row--refit-target");
+                row.AddToClassList("sm-item-state");
+            }
 
             var icon = new VisualElement();
             icon.AddToClassList("erp-affix-row__icon");
@@ -147,10 +166,17 @@ public sealed class EquipmentRefitView
         {
             var row = new VisualElement();
             row.AddToClassList("erp-pool-row");
-            if (item.IsSelected) row.AddToClassList("erp-pool-row--selected");
+            row.AddToClassList("sm-item-cell");
+            if (item.IsSelected)
+            {
+                row.AddToClassList("erp-pool-row--selected");
+                row.AddToClassList("sm-item-cell--selected");
+                row.AddToClassList("sm-item-state");
+            }
 
             var icon = new VisualElement();
             icon.AddToClassList("erp-pool-row__weapon-icon");
+            icon.AddToClassList("sm-item-icon");
             if (item.IconSprite != null) icon.style.backgroundImage = new StyleBackground(item.IconSprite);
             row.Add(icon);
 
@@ -158,16 +184,41 @@ public sealed class EquipmentRefitView
             name.AddToClassList("erp-pool-row__name");
             row.Add(name);
 
-            var slot = new Label(item.SlotKey);
+            var slot = new Label(item.SlotLabel);
             slot.AddToClassList("erp-pool-row__slot");
+            slot.AddToClassList("sm-item-badge");
+            slot.AddToClassList("sm-item-badge--slot");
+            slot.AddToClassList($"erp-pool-row__slot--{item.SlotKey}");
             row.Add(slot);
 
-            var gem = new VisualElement();
-            gem.AddToClassList("erp-pool-row__gem");
-            gem.AddToClassList($"erp-pool-row__gem--{item.RarityKey}");
-            row.Add(gem);
+            if (!string.IsNullOrWhiteSpace(item.FamilyKey))
+            {
+                var family = new Label(item.FamilyLabel);
+                family.AddToClassList("erp-pool-row__family");
+                family.AddToClassList("sm-item-badge");
+                family.AddToClassList("sm-item-badge--family");
+                row.Add(family);
+            }
 
-            row.tooltip = $"{item.Name} · {item.SlotKey} · {item.RarityKey}";
+            if (item.ShowsIdentityBadge)
+            {
+                var identity = new Label(item.IdentityLabel);
+                identity.AddToClassList("erp-pool-row__identity");
+                identity.AddToClassList("sm-item-identity");
+                identity.AddToClassList($"sm-item-identity--{item.IdentityKey}");
+                row.Add(identity);
+            }
+
+            var rarity = new VisualElement();
+            rarity.AddToClassList("erp-pool-row__rarity");
+            rarity.AddToClassList("sm-item-rarity");
+            rarity.AddToClassList($"sm-item-rarity--{item.RarityKey}");
+            row.Add(rarity);
+
+            var rarityTooltip = item.IsLaunchSupportedRarity
+                ? item.RarityKey
+                : $"{item.RawRarityKey} as {item.RarityKey}";
+            row.tooltip = $"{item.Name} · {item.SlotKey} · {item.FamilyKey} · {rarityTooltip}";
             row.RegisterCallback<ClickEvent>(_ => _actions?.OnPoolItemSelected(item.ItemInstanceId));
             _inventoryPool.Add(row);
         }

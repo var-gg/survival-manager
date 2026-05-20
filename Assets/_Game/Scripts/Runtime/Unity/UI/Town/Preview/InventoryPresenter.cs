@@ -22,7 +22,8 @@ public sealed class InventoryPresenter : IInventoryActions
     private readonly GameSessionRoot _root;
     private readonly InventoryView _view;
     private readonly SpriteLoader _currencySprite;
-    private readonly SpriteLoader _affixSprite;
+    private readonly SpriteLoader _itemIconSprite;
+    private readonly SpriteLoader _affixIconSprite;
     private readonly ContentTextResolver? _contentText;
     private string _selectedCategoryKey = "weapon";  // default selection
     private string _selectedItemInstanceId = string.Empty;
@@ -31,13 +32,15 @@ public sealed class InventoryPresenter : IInventoryActions
         GameSessionRoot root,
         InventoryView view,
         SpriteLoader? currencySprite = null,
-        SpriteLoader? affixSprite = null,
-        ContentTextResolver? contentText = null)
+        SpriteLoader? itemIconSprite = null,
+        ContentTextResolver? contentText = null,
+        SpriteLoader? affixIconSprite = null)
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _view = view ?? throw new ArgumentNullException(nameof(view));
         _currencySprite = currencySprite ?? (_ => null);
-        _affixSprite = affixSprite ?? (_ => null);
+        _itemIconSprite = itemIconSprite ?? (_ => null);
+        _affixIconSprite = affixIconSprite ?? itemIconSprite ?? (_ => null);
         _contentText = contentText;
     }
 
@@ -104,26 +107,39 @@ public sealed class InventoryPresenter : IInventoryActions
             .Select(item =>
             {
                 var iconKey = item.ItemBaseId;
-                var rarityKey = "common";
                 var weaponFamilyKey = "item";
                 var slotKey = "item";
+                var presentation = EquipmentPresentationPolicy.Build(slotKey, weaponFamilyKey, "Common", "Baseline", Array.Empty<string>());
                 if (lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
                 {
                     iconKey = string.IsNullOrWhiteSpace(itemDef.IconId) ? item.ItemBaseId : itemDef.IconId;
-                    rarityKey = itemDef.RarityTier.ToString().ToLowerInvariant();
                     weaponFamilyKey = ResolveFamilyKey(itemDef);
                     slotKey = ResolveSlotKey(itemDef.SlotType);
+                    presentation = EquipmentPresentationPolicy.Build(
+                        slotKey,
+                        weaponFamilyKey,
+                        itemDef.RarityTier.ToString(),
+                        itemDef.IdentityKind.ToString(),
+                        EnumerateCraftOperations(itemDef));
                 }
 
                 var itemState = new InventoryItemViewState(
                     ItemInstanceId: item.ItemInstanceId,
                     IconKey: iconKey,
-                    RarityKey: rarityKey,
-                    WeaponFamilyKey: weaponFamilyKey,
-                    WeaponFamilyLabel: WeaponFamilyLabels.TryGetValue(weaponFamilyKey, out var lbl) ? lbl : weaponFamilyKey,
+                    RarityKey: presentation.RarityKey,
+                    RawRarityKey: presentation.RawRarityKey,
+                    SlotKey: presentation.SlotKey,
+                    SlotLabel: presentation.SlotLabel,
+                    WeaponFamilyKey: presentation.FamilyKey,
+                    WeaponFamilyLabel: presentation.FamilyLabel,
+                    IdentityKey: presentation.IdentityKey,
+                    IdentityLabel: presentation.IdentityLabel,
+                    ShowsIdentityBadge: presentation.ShowsIdentityBadge,
+                    CanRefit: presentation.CanRefit,
+                    IsLaunchSupportedRarity: presentation.IsLaunchSupportedRarity,
                     IsEquipped: equippedItemIds.Contains(item.ItemInstanceId),
                     IsSelected: false,
-                    IconSprite: _affixSprite(iconKey) ?? _affixSprite(item.ItemBaseId));
+                    IconSprite: _itemIconSprite(iconKey) ?? _itemIconSprite(item.ItemBaseId) ?? _affixIconSprite(iconKey));
                 return new InventoryItemPresentation(item, slotKey, iconKey, itemState);
             })
             .ToList();
@@ -167,8 +183,16 @@ public sealed class InventoryPresenter : IInventoryActions
     {
         var name = item.ItemBaseId;
         var slotLabel = "item";
+        var slotKey = "item";
         var rarityKey = "common";
+        var rawRarityKey = "common";
+        var weaponFamilyKey = string.Empty;
         var weaponFamilyLabel = "item";
+        var identityKey = "baseline";
+        var identityLabel = string.Empty;
+        var showsIdentityBadge = false;
+        var canRefit = true;
+        var isLaunchSupportedRarity = true;
         var setBonusTier = string.Empty;
         var crossLinks = new List<string>();
         if (_root.CombatContentLookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
@@ -179,15 +203,32 @@ public sealed class InventoryPresenter : IInventoryActions
                 name = itemDef.Id;
             }
 
-            slotLabel = ResolveSlotKey(itemDef.SlotType);
-            rarityKey = itemDef.RarityTier.ToString().ToLowerInvariant();
+            slotKey = ResolveSlotKey(itemDef.SlotType);
             var familyKey = ResolveFamilyKey(itemDef);
-            weaponFamilyLabel = WeaponFamilyLabels.TryGetValue(familyKey, out var label) ? label : familyKey;
+            var presentation = EquipmentPresentationPolicy.Build(
+                slotKey,
+                familyKey,
+                itemDef.RarityTier.ToString(),
+                itemDef.IdentityKind.ToString(),
+                EnumerateCraftOperations(itemDef));
+            slotLabel = presentation.SlotLabel;
+            rarityKey = presentation.RarityKey;
+            rawRarityKey = presentation.RawRarityKey;
+            weaponFamilyKey = presentation.FamilyKey;
+            weaponFamilyLabel = presentation.FamilyLabel;
+            identityKey = presentation.IdentityKey;
+            identityLabel = presentation.IdentityLabel;
+            showsIdentityBadge = presentation.ShowsIdentityBadge;
+            canRefit = presentation.CanRefit;
+            isLaunchSupportedRarity = presentation.IsLaunchSupportedRarity;
             setBonusTier = string.IsNullOrWhiteSpace(itemDef.BudgetBand)
                 ? "set bonus schema pending"
                 : $"budget {itemDef.BudgetBand}";
             crossLinks.Add(slotLabel);
-            crossLinks.Add(weaponFamilyLabel);
+            if (!string.IsNullOrWhiteSpace(weaponFamilyLabel))
+            {
+                crossLinks.Add(weaponFamilyLabel);
+            }
             if (!string.IsNullOrWhiteSpace(itemDef.CraftCategory))
             {
                 crossLinks.Add(itemDef.CraftCategory);
@@ -214,12 +255,20 @@ public sealed class InventoryPresenter : IInventoryActions
 
         return new InventoryDetailViewState(
             ItemInstanceId: item.ItemInstanceId,
-            IconSprite: _affixSprite(iconKey) ?? _affixSprite(item.ItemBaseId),
+            IconSprite: _itemIconSprite(iconKey) ?? _itemIconSprite(item.ItemBaseId) ?? _affixIconSprite(iconKey),
             Affixes: affixes,
             Name: name,
+            SlotKey: slotKey,
             SlotLabel: slotLabel,
             RarityKey: rarityKey,
+            RawRarityKey: rawRarityKey,
+            WeaponFamilyKey: weaponFamilyKey,
             WeaponFamilyLabel: weaponFamilyLabel,
+            IdentityKey: identityKey,
+            IdentityLabel: identityLabel,
+            ShowsIdentityBadge: showsIdentityBadge,
+            CanRefit: canRefit,
+            IsLaunchSupportedRarity: isLaunchSupportedRarity,
             SetBonusTier: setBonusTier,
             CrossLinks: crossLinks);
     }
@@ -234,7 +283,7 @@ public sealed class InventoryPresenter : IInventoryActions
                 Count: c.Key == "all"
                     ? $"{entries.Count}/{rosterCap}"
                     : $"{entries.Count(e => CategoryMatches(c.Key, e.SlotKey))}/100",
-                IconSprite: _affixSprite(c.IconKey),
+                IconSprite: _itemIconSprite(c.IconKey) ?? _affixIconSprite(c.IconKey),
                 IsSelected: string.Equals(c.Key, _selectedCategoryKey, StringComparison.Ordinal)))
             .ToList();
     }
@@ -249,10 +298,10 @@ public sealed class InventoryPresenter : IInventoryActions
 
     private static readonly CategoryCatalogEntry[] CategoryCatalog =
     {
-        new("all",       "ALL",       "atk"),
-        new("weapon",    "WEAPON",    "pierce"),
+        new("all",       "ALL",       "blade"),
+        new("weapon",    "WEAPON",    "weapon"),
         new("armor",     "ARMOR",     "armor"),
-        new("accessory", "ACCESSORY", "amplify"),
+        new("accessory", "ACCESSORY", "accessory"),
     };
 
     /// <summary>weapon family → 한국어 표시명. art-pipeline V1 weapon family 4종.</summary>
@@ -292,5 +341,10 @@ public sealed class InventoryPresenter : IInventoryActions
             SM.Content.Definitions.ItemSlotType.Accessory => "accessory",
             _ => "item",
         };
+    }
+
+    private static IEnumerable<string> EnumerateCraftOperations(ItemBaseDefinition item)
+    {
+        return item.AllowedCraftOperations?.Select(operation => operation.ToString()) ?? Array.Empty<string>();
     }
 }

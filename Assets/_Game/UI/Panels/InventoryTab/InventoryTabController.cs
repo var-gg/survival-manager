@@ -60,7 +60,13 @@ public sealed class InventoryTabController : MonoBehaviour
         var contentText = new ContentTextResolver(root.Localization, root.CombatContentLookup);
         var iconResolver = new ContentIconResolver(root.CombatContentLookup);
         var view = new InventoryView(document.rootVisualElement);
-        _presenter = new InventoryPresenter(root, view, iconResolver.ResolveAny, iconResolver.ResolveAny, contentText);
+        _presenter = new InventoryPresenter(
+            root,
+            view,
+            currencySprite: iconResolver.ResolveAny,
+            itemIconSprite: iconResolver.ResolveItem,
+            contentText: contentText,
+            affixIconSprite: iconResolver.ResolveAffix);
         _presenter.Initialize();
     }
 }

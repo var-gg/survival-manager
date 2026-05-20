@@ -17,6 +17,7 @@ namespace SM.Unity.UI.Town.Preview;
 public sealed record EquipmentRefitAffixRowViewState(
     string AffixId,              // click identity ← AffixDefinition.Id
     string GroupKey,             // implicit / prefix / suffix ← AffixDefinition.Tier
+    string CategoryKey,          // offenseflat / utility / ...
     string Name,                 // ← AffixDefinition.NameKey resolved
     string ValueRange,           // ← AffixDefinition.ValueMin~ValueMax (instance roll 미저장 — 범위)
     Texture2D? IconSprite,
@@ -27,8 +28,17 @@ public sealed record EquipmentRefitPoolRowViewState(
     string ItemInstanceId,
     string Name,                 // ← ItemBaseDefinition.NameKey resolved
     string SlotKey,              // weapon / armor / accessory ← ItemBaseDefinition.SlotType
+    string SlotLabel,
+    string FamilyKey,
+    string FamilyLabel,
     Texture2D? IconSprite,
     string RarityKey,            // common / rare / epic ← ItemBaseDefinition.RarityTier
+    string RawRarityKey,
+    string IdentityKey,
+    string IdentityLabel,
+    bool ShowsIdentityBadge,
+    bool CanRefit,
+    bool IsLaunchSupportedRarity,
     bool IsSelected
 );
 
@@ -36,6 +46,12 @@ public sealed record EquipmentRefitViewState(
     string SelectedItemName,         // 선택 item 이름 (좌측 컨텍스트)
     string SelectedItemSlotLabel,    // Weapon / Armor / Accessory
     string SelectedItemRarityKey,    // common / rare / epic
+    string SelectedItemFamilyKey,
+    string SelectedItemFamilyLabel,
+    string SelectedItemIdentityKey,
+    string SelectedItemIdentityLabel,
+    bool SelectedItemShowsIdentityBadge,
+    bool SelectedItemCanRefit,
     string EquippedHeroLabel,        // "장착: {hero}" 또는 "미장착" ← EquippedHeroId
     Texture2D? EquippedHeroPortrait, // EquippedHeroId의 portrait (미장착이면 null)
     Texture2D? EchoSprite,

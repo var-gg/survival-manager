@@ -15,6 +15,8 @@ public sealed class UiArtBibleConformanceFastTests
     private const string RegistryPath = "Assets/_Game/UI/Foundation/ArtBible/artbible-role-registry.json";
     private const string ExceptionsPath = "Assets/_Game/UI/Foundation/ArtBible/artbible-exceptions.json";
     private const string RuntimePanelThemePath = "Assets/_Game/UI/Foundation/Styles/RuntimePanelTheme.uss";
+    private const string InventoryViewPath = "Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/InventoryView.cs";
+    private const string EquipmentRefitViewPath = "Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/EquipmentRefitView.cs";
     private const string ReportDirectory = "Library/SM/Reports";
     private const string MarkdownReportPath = ReportDirectory + "/ui-artbible-conformance.md";
     private const string JsonReportPath = ReportDirectory + "/ui-artbible-conformance.json";
@@ -36,6 +38,15 @@ public sealed class UiArtBibleConformanceFastTests
         Assert.That(registry, Does.Contain("\"chrome.l2.content-panel\""));
         Assert.That(registry, Does.Contain("\"screen.recruit.candidate-card\""));
         Assert.That(registry, Does.Contain("\"screen.passive.node\""));
+        Assert.That(registry, Does.Contain("\"screen.inventory.item-cell\""));
+        Assert.That(registry, Does.Contain("\"item.icon.content\""));
+        Assert.That(registry, Does.Contain("\"item.badge.slot\""));
+        Assert.That(registry, Does.Contain("\"item.badge.weapon-family\""));
+        Assert.That(registry, Does.Contain("\"item.badge.rarity\""));
+        Assert.That(registry, Does.Contain("\"item.badge.identity\""));
+        Assert.That(registry, Does.Contain("\"affix.row.item-detail\""));
+        Assert.That(registry, Does.Contain("\"item.state.overlay\""));
+        Assert.That(registry, Does.Contain("\"operation.refit.cta\""));
         Assert.That(registry, Does.Contain("\"ui_button_gold.png\""));
         Assert.That(registry, Does.Contain("\"ui_button_dark.png\""));
         Assert.That(exceptions, Does.Contain("\"exceptions\""));
@@ -86,6 +97,7 @@ public sealed class UiArtBibleConformanceFastTests
         AnalyzeMonitoredPanels(registry, findings);
         AnalyzeProductionUxmlImports(registry, findings);
         AnalyzeLocalButtonSliceDuplication(registry, findings);
+        AnalyzeEquipmentRoleUsage(findings);
 
         findings.Sort(CompareFindings);
         return findings;
@@ -105,6 +117,16 @@ public sealed class UiArtBibleConformanceFastTests
         RequireToken(findings, RuntimePanelThemePath, theme, ".sm-chrome-l4", "AB010_MISSING_CHROME_ROLE", "RuntimePanelTheme must declare L4 element chrome.");
         RequireToken(findings, RuntimePanelThemePath, theme, ".sm-cta--primary", "AB011_MISSING_BUTTON_ROLE", "RuntimePanelTheme must declare primary CTA material.");
         RequireToken(findings, RuntimePanelThemePath, theme, ".sm-cta--secondary", "AB011_MISSING_BUTTON_ROLE", "RuntimePanelTheme must declare secondary CTA material.");
+        RequireToken(findings, RuntimePanelThemePath, theme, ".sm-item-cell", "AB013_MISSING_EQUIPMENT_ROLE", "RuntimePanelTheme must declare equipment item cell role.");
+        RequireToken(findings, RuntimePanelThemePath, theme, ".sm-item-icon", "AB013_MISSING_EQUIPMENT_ROLE", "RuntimePanelTheme must declare equipment item icon role.");
+        RequireToken(findings, RuntimePanelThemePath, theme, ".sm-item-badge--slot", "AB013_MISSING_EQUIPMENT_ROLE", "RuntimePanelTheme must declare item slot badge role.");
+        RequireToken(findings, RuntimePanelThemePath, theme, ".sm-item-badge--family", "AB013_MISSING_EQUIPMENT_ROLE", "RuntimePanelTheme must declare item family badge role.");
+        RequireToken(findings, RuntimePanelThemePath, theme, ".sm-item-rarity--common", "AB013_MISSING_EQUIPMENT_ROLE", "RuntimePanelTheme must declare common item rarity role.");
+        RequireToken(findings, RuntimePanelThemePath, theme, ".sm-item-rarity--rare", "AB013_MISSING_EQUIPMENT_ROLE", "RuntimePanelTheme must declare rare item rarity role.");
+        RequireToken(findings, RuntimePanelThemePath, theme, ".sm-item-rarity--epic", "AB013_MISSING_EQUIPMENT_ROLE", "RuntimePanelTheme must declare epic item rarity role.");
+        RequireToken(findings, RuntimePanelThemePath, theme, ".sm-item-identity--unique", "AB013_MISSING_EQUIPMENT_ROLE", "RuntimePanelTheme must declare unique identity role.");
+        RequireToken(findings, RuntimePanelThemePath, theme, ".sm-affix-row--implicit", "AB013_MISSING_EQUIPMENT_ROLE", "RuntimePanelTheme must declare implicit affix row role.");
+        RequireToken(findings, RuntimePanelThemePath, theme, ".sm-operation--refit", "AB013_MISSING_EQUIPMENT_ROLE", "RuntimePanelTheme must declare refit operation role.");
         RequireToken(findings, RuntimePanelThemePath, theme, "ui_button_gold.png", "AB012_MISSING_BUTTON_MATERIAL", "Primary CTA must use the gold sliced button material.");
         RequireToken(findings, RuntimePanelThemePath, theme, "ui_button_dark.png", "AB012_MISSING_BUTTON_MATERIAL", "Secondary CTA must use the dark sliced button material.");
         AnalyzeCanonicalButtonSlices(RuntimePanelThemePath, theme, findings, ArtBibleSeverity.Error);
@@ -131,6 +153,7 @@ public sealed class UiArtBibleConformanceFastTests
                 }
             }
 
+            AnalyzeForbiddenEquipmentRarityClasses(path, uss, findings);
             AnalyzeCanonicalButtonSlices(path, uss, findings, ArtBibleSeverity.Error);
         }
     }
@@ -154,6 +177,7 @@ public sealed class UiArtBibleConformanceFastTests
                 }
             }
 
+            AnalyzeForbiddenEquipmentRarityClasses(path, uss, findings);
             AnalyzeCanonicalButtonSlices(path, uss, findings, ArtBibleSeverity.Warning);
         }
     }
@@ -184,6 +208,77 @@ public sealed class UiArtBibleConformanceFastTests
                 uss.Contains("ui_button_dark.png", StringComparison.Ordinal))
             {
                 findings.Add(Warning("AB102_LOCAL_BUTTON_SLICE_DUPLICATION", path, "Panel-local button slice material should migrate to shared sm-cta role classes."));
+            }
+        }
+    }
+
+    private static void AnalyzeEquipmentRoleUsage(List<ArtBibleFinding> findings)
+    {
+        RequireSourceTokens(
+            findings,
+            InventoryViewPath,
+            new[]
+            {
+                "sm-item-cell",
+                "sm-item-icon",
+                "sm-item-badge--family",
+                "sm-item-rarity",
+                "sm-item-state",
+                "sm-affix-row"
+            });
+        RequireSourceTokens(
+            findings,
+            EquipmentRefitViewPath,
+            new[]
+            {
+                "sm-item-cell",
+                "sm-item-icon",
+                "sm-item-badge--slot",
+                "sm-item-rarity",
+                "sm-item-state",
+                "sm-affix-row",
+                "sm-operation--refit"
+            });
+
+        foreach (var path in new[] { InventoryViewPath, EquipmentRefitViewPath })
+        {
+            if (!File.Exists(path))
+            {
+                continue;
+            }
+
+            AnalyzeForbiddenEquipmentRarityClasses(path, File.ReadAllText(path), findings);
+        }
+    }
+
+    private static void RequireSourceTokens(List<ArtBibleFinding> findings, string path, IEnumerable<string> tokens)
+    {
+        if (!File.Exists(path))
+        {
+            findings.Add(Error("AB030_MISSING_EQUIPMENT_VIEW", path, "Equipment presentation source file is missing."));
+            return;
+        }
+
+        var text = File.ReadAllText(path);
+        foreach (var token in tokens)
+        {
+            RequireToken(findings, path, text, token, "AB031_MISSING_EQUIPMENT_ROLE_USAGE", "Equipment views must apply shared ArtBible role class: " + token);
+        }
+    }
+
+    private static void AnalyzeForbiddenEquipmentRarityClasses(string path, string text, List<ArtBibleFinding> findings)
+    {
+        foreach (var forbidden in new[]
+                 {
+                     "sm-item-rarity--magic",
+                     "sm-item-rarity--legendary",
+                     "sm-item-rarity--unique",
+                     "sm-item-rarity--mythic"
+                 })
+        {
+            if (text.Contains(forbidden, StringComparison.Ordinal))
+            {
+                findings.Add(Error("AB032_FORBIDDEN_EQUIPMENT_RARITY_CLASS", path, "V1 equipment presentation must not declare forbidden rarity class: " + forbidden));
             }
         }
     }

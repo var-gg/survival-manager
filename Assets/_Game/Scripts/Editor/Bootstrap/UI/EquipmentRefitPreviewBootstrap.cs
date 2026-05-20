@@ -69,9 +69,10 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
                 sessionRoot,
                 view,
                 contentText,
-                PreviewSessionContext.LoadAffixSprite,
-                PreviewSessionContext.LoadCurrencySprite,
-                PreviewSessionContext.LoadHeroPortrait);
+                itemIconSprite: PreviewSessionContext.LoadItemSprite,
+                currencySprite: PreviewSessionContext.LoadCurrencySprite,
+                portraitLoader: PreviewSessionContext.LoadHeroPortrait,
+                affixIconSprite: PreviewSessionContext.LoadAffixSprite);
             _presenter.Initialize();
             return true;
         }
@@ -101,6 +102,7 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
             affixes.Add(new EquipmentRefitAffixRowViewState(
                 AffixId: a.AffixId,
                 GroupKey: a.Group,
+                CategoryKey: "utility",
                 Name: a.Name,
                 ValueRange: a.Range,
                 IconSprite: LoadAffixSprite(a.Icon),
@@ -123,12 +125,23 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
         for (var i = 0; i < poolRaw.Length; i++)
         {
             var p = poolRaw[i];
+            var familyKey = p.Slot == "weapon" ? (p.Icon == "armor" ? "shield" : "blade") : string.Empty;
+            var presentation = EquipmentPresentationPolicy.Build(p.Slot, familyKey, p.Rarity, "Baseline", Array.Empty<string>());
             pool.Add(new EquipmentRefitPoolRowViewState(
                 ItemInstanceId: $"mock_pool_{i:D2}",
                 Name: p.Name,
-                SlotKey: p.Slot,
-                IconSprite: LoadAffixSprite(p.Icon),
-                RarityKey: p.Rarity,
+                SlotKey: presentation.SlotKey,
+                SlotLabel: presentation.SlotLabel,
+                FamilyKey: presentation.FamilyKey,
+                FamilyLabel: presentation.FamilyLabel,
+                IconSprite: PreviewSessionContext.LoadItemSprite(string.IsNullOrWhiteSpace(presentation.FamilyKey) ? p.Slot : presentation.FamilyKey) ?? LoadAffixSprite(p.Icon),
+                RarityKey: presentation.RarityKey,
+                RawRarityKey: presentation.RawRarityKey,
+                IdentityKey: presentation.IdentityKey,
+                IdentityLabel: presentation.IdentityLabel,
+                ShowsIdentityBadge: presentation.ShowsIdentityBadge,
+                CanRefit: presentation.CanRefit,
+                IsLaunchSupportedRarity: presentation.IsLaunchSupportedRarity,
                 IsSelected: p.Selected));
         }
 
@@ -136,6 +149,12 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
             SelectedItemName: "강철 장검",
             SelectedItemSlotLabel: "무기",
             SelectedItemRarityKey: "epic",
+            SelectedItemFamilyKey: "blade",
+            SelectedItemFamilyLabel: "검",
+            SelectedItemIdentityKey: "baseline",
+            SelectedItemIdentityLabel: "",
+            SelectedItemShowsIdentityBadge: false,
+            SelectedItemCanRefit: true,
             EquippedHeroLabel: "장착: Dawn Priest",
             EquippedHeroPortrait: AssetDatabase.LoadAssetAtPath<Texture2D>(PortraitPath),
             EchoSprite: AssetDatabase.LoadAssetAtPath<Texture2D>(EchoIconPath),

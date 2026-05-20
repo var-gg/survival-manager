@@ -1,5 +1,13 @@
 # 희귀도 사다리 계약
 
+- 상태: active
+- 소유자: repository
+- 최종수정일: 2026-05-20
+- 관련문서:
+  - `docs/02_design/meta/item-and-affix-system.md`
+  - `docs/02_design/meta/equipment-family-and-crafting-depth.md`
+  - `pindoc://decision-equipment-presentation-v1-contract`
+
 ## 목적
 
 Loop C의 `ContentRarity`는 단순 수치 증폭이 아니라 어떤 축을 얼마나 건드릴 수
@@ -15,6 +23,20 @@ Loop C의 `ContentRarity`는 단순 수치 증폭이 아니라 어떤 축을 얼
 
 - `Legendary`, `Unique`, `Mythic` 같은 추가 combat rarity는 V1에서 금지한다.
 - item/drop rarity는 별도 체계로 남긴다.
+
+## item presentation reconcile
+
+`ItemRarityTierValue`는 호환을 위해 `Common / Magic / Rare / Epic / Legendary` 값을 가질 수 있다.
+그러나 V1 Inventory/EquipmentRefit의 플레이어 노출 rarity class는 `common / rare / epic`만 canonical이다.
+
+- `Common`은 `common`으로 표시한다.
+- `Rare`는 `rare`로 표시한다.
+- `Epic`은 `epic`으로 표시한다.
+- `Magic`은 live visual tier가 아니라 `rare` compatible fallback으로 표시한다.
+- `Legendary`는 live visual tier가 아니라 `epic` compatible fallback으로 표시한다.
+- `Unique`는 rarity가 아니라 `ItemIdentityValue.Unique` identity marker로 표시한다.
+
+이 fallback은 UI가 깨지지 않게 하는 호환 정책이지, V1 live content authoring에서 `Magic`과 `Legendary`를 적극 사용하라는 뜻이 아니다.
 
 ## boundary rule
 

@@ -179,12 +179,23 @@
     margin-left: 6px;
     margin-right: 6px;
 }
-.erp-pool-row__gem { width: 12px; height: 12px; margin-left: 6px;
+.erp-pool-row__family,
+.erp-pool-row__identity {
+    font-size: 8px;
+    margin-left: 4px;
+    margin-right: 4px;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+.erp-pool-row__rarity { width: 12px; height: 12px; margin-left: 6px;
     border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;
 }
-.erp-pool-row__gem--epic { background-color: rgba(181,97,214,0.95); }
-.erp-pool-row__gem--rare { background-color: rgba(91,142,209,0.95); }
-.erp-pool-row__gem--common { background-color: rgba(216,199,153,0.85); }
+.erp-pool-row__rarity.sm-item-rarity {
+    min-width: 12px;
+    max-width: 12px;
+}
 
 .erp-pool-actions { flex-direction: row; justify-content: space-around; padding-top: 8px; }
 .erp-pool-actions__chip {
@@ -242,6 +253,11 @@
     border-bottom-right-radius: var(--sm-r-md);
 }
 
+.erp-affix-row.sm-affix-row,
+.erp-pool-row.sm-item-cell {
+    background-color: var(--sm-bg-2);
+}
+
 .erp-affix-row--selected,
 .erp-pool-row--selected {
     background-color: var(--sm-bg-3);
@@ -249,6 +265,12 @@
     border-right-color: var(--sm-gold-300-a42);
     border-top-color: var(--sm-gold-200);
     border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.erp-pool-row__slot.sm-item-badge,
+.erp-pool-row__family.sm-item-badge,
+.erp-pool-row__identity.sm-item-identity {
+    min-width: 0;
 }
 
 .erp-slot,

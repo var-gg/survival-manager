@@ -10,10 +10,9 @@ namespace SM.Unity.UI.Town.Preview;
 /// Equipment Refit V1 Presenter — selected item의 affix 5 line + inventory pool → ViewState.
 ///
 /// Sprint 3 wire: Profile.Inventory (InventoryItemRecord[]) → pool. selected item의 AffixIds → affix list.
-/// ItemBaseDefinition.WeaponFamilyTag / RarityTier로 pool gem 색상. RefitItem edit wire.
+/// ItemBaseDefinition.WeaponFamilyTag / RarityTier / IdentityKind를 공통 presentation policy로 변환.
 ///
-/// affix group (implicit/prefix/suffix) 분류는 V1 floor 규약 (implicit 1 + prefix 2 + suffix 2) 순서로 추정 —
-/// 정확한 prefix/suffix flag은 AffixDefinition에서 read해야 하나 본 Sprint는 index 기반 추정으로 wire.
+/// affix group (implicit/prefix/suffix)은 AffixDefinition.Tier에서 read.
 ///
 /// 워크플로우: 사용자가 affix 선택 + Refit → SessionState.RefitItem → BattleTest stat 즉시 반영.
 /// </summary>
@@ -27,7 +26,8 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
     private readonly GameSessionRoot _root;
     private readonly EquipmentRefitView _view;
     private readonly ContentTextResolver _contentText;
-    private readonly SpriteLoader _affixSprite;
+    private readonly SpriteLoader _itemIconSprite;
+    private readonly SpriteLoader _affixIconSprite;
     private readonly SpriteLoader _currencySprite;
     private readonly SpriteLoader _portraitLoader;
     private int _selectedAffixIndex = -1;
@@ -37,15 +37,16 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         GameSessionRoot root,
         EquipmentRefitView view,
         ContentTextResolver contentText,
-        SpriteLoader? affixSprite = null,
+        SpriteLoader? itemIconSprite = null,
         SpriteLoader? currencySprite = null,
-        SpriteLoader? portraitLoader = null)
+        SpriteLoader? portraitLoader = null,
+        SpriteLoader? affixIconSprite = null)
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _view = view ?? throw new ArgumentNullException(nameof(view));
         _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
-        // production hub modal에서는 sprite loader 미주입 — null fallback (후속 task에서 Resources/Addressables 적용).
-        _affixSprite = affixSprite ?? (_ => null);
+        _itemIconSprite = itemIconSprite ?? (_ => null);
+        _affixIconSprite = affixIconSprite ?? itemIconSprite ?? (_ => null);
         _currencySprite = currencySprite ?? (_ => null);
         _portraitLoader = portraitLoader ?? (_ => null);
     }
@@ -127,20 +128,36 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             .Select(item =>
             {
                 var slotKey = "weapon";
-                var rarityKey = "common";
                 var iconKey = item.ItemBaseId;
+                var familyKey = string.Empty;
+                var presentation = EquipmentPresentationPolicy.Build(slotKey, familyKey, "Common", "Baseline", Array.Empty<string>());
                 if (lookup.TryGetItemDefinition(item.ItemBaseId, out var baseDef))
                 {
-                    slotKey = baseDef.SlotType.ToString().ToLowerInvariant();
-                    rarityKey = baseDef.RarityTier.ToString().ToLowerInvariant();
+                    slotKey = ResolveSlotKey(baseDef.SlotType);
+                    familyKey = ResolveFamilyKey(baseDef);
                     iconKey = string.IsNullOrWhiteSpace(baseDef.IconId) ? item.ItemBaseId : baseDef.IconId;
+                    presentation = EquipmentPresentationPolicy.Build(
+                        slotKey,
+                        familyKey,
+                        baseDef.RarityTier.ToString(),
+                        baseDef.IdentityKind.ToString(),
+                        EnumerateCraftOperations(baseDef));
                 }
                 return new EquipmentRefitPoolRowViewState(
                     ItemInstanceId: item.ItemInstanceId,
                     Name: _contentText.GetItemName(item.ItemBaseId),
-                    SlotKey: slotKey,
-                    IconSprite: _affixSprite(iconKey) ?? _affixSprite(item.ItemBaseId),
-                    RarityKey: rarityKey,
+                    SlotKey: presentation.SlotKey,
+                    SlotLabel: presentation.SlotLabel,
+                    FamilyKey: presentation.FamilyKey,
+                    FamilyLabel: presentation.FamilyLabel,
+                    IconSprite: _itemIconSprite(iconKey) ?? _itemIconSprite(item.ItemBaseId) ?? _affixIconSprite(iconKey),
+                    RarityKey: presentation.RarityKey,
+                    RawRarityKey: presentation.RawRarityKey,
+                    IdentityKey: presentation.IdentityKey,
+                    IdentityLabel: presentation.IdentityLabel,
+                    ShowsIdentityBadge: presentation.ShowsIdentityBadge,
+                    CanRefit: presentation.CanRefit,
+                    IsLaunchSupportedRarity: presentation.IsLaunchSupportedRarity,
                     IsSelected: string.Equals(item.ItemInstanceId, _selectedItemInstanceId, StringComparison.Ordinal));
             })
             .ToList();
@@ -154,18 +171,21 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             {
                 var affixId = selectedItem.AffixIds[i];
                 var group = "prefix";
+                var category = "utility";
                 var valueRange = "—";
                 if (lookup.TryGetAffixDefinition(affixId, out var affixDef))
                 {
                     group = affixDef.Tier.ToString().ToLowerInvariant();
+                    category = affixDef.Category.ToString().ToLowerInvariant();
                     valueRange = $"{affixDef.ValueMin:0.#} ~ {affixDef.ValueMax:0.#}";
                 }
                 affixes.Add(new EquipmentRefitAffixRowViewState(
                     AffixId: affixId,
                     GroupKey: group,
+                    CategoryKey: category,
                     Name: _contentText.GetAffixName(affixId),
                     ValueRange: valueRange,
-                    IconSprite: _affixSprite(affixId),
+                    IconSprite: _affixIconSprite(affixId),
                     IsSelectedForReroll: i == _selectedAffixIndex));
             }
         }
@@ -174,6 +194,12 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         var selectedItemName = "—";
         var selectedSlotLabel = "—";
         var selectedRarityKey = "common";
+        var selectedFamilyKey = string.Empty;
+        var selectedFamilyLabel = string.Empty;
+        var selectedIdentityKey = "baseline";
+        var selectedIdentityLabel = string.Empty;
+        var selectedShowsIdentityBadge = false;
+        var selectedCanRefit = true;
         var equippedHeroLabel = "미장착";
         Texture2D? equippedHeroPortrait = null;
         if (selectedItem != null)
@@ -181,8 +207,20 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             selectedItemName = _contentText.GetItemName(selectedItem.ItemBaseId);
             if (lookup.TryGetItemDefinition(selectedItem.ItemBaseId, out var baseDef))
             {
-                selectedSlotLabel = SlotLabelKo(baseDef.SlotType);
-                selectedRarityKey = baseDef.RarityTier.ToString().ToLowerInvariant();
+                var presentation = EquipmentPresentationPolicy.Build(
+                    ResolveSlotKey(baseDef.SlotType),
+                    ResolveFamilyKey(baseDef),
+                    baseDef.RarityTier.ToString(),
+                    baseDef.IdentityKind.ToString(),
+                    EnumerateCraftOperations(baseDef));
+                selectedSlotLabel = presentation.SlotLabel;
+                selectedRarityKey = presentation.RarityKey;
+                selectedFamilyKey = presentation.FamilyKey;
+                selectedFamilyLabel = presentation.FamilyLabel;
+                selectedIdentityKey = presentation.IdentityKey;
+                selectedIdentityLabel = presentation.IdentityLabel;
+                selectedShowsIdentityBadge = presentation.ShowsIdentityBadge;
+                selectedCanRefit = presentation.CanRefit;
             }
             if (!string.IsNullOrEmpty(selectedItem.EquippedHeroId))
             {
@@ -198,6 +236,12 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             SelectedItemName: selectedItemName,
             SelectedItemSlotLabel: selectedSlotLabel,
             SelectedItemRarityKey: selectedRarityKey,
+            SelectedItemFamilyKey: selectedFamilyKey,
+            SelectedItemFamilyLabel: selectedFamilyLabel,
+            SelectedItemIdentityKey: selectedIdentityKey,
+            SelectedItemIdentityLabel: selectedIdentityLabel,
+            SelectedItemShowsIdentityBadge: selectedShowsIdentityBadge,
+            SelectedItemCanRefit: selectedCanRefit,
             EquippedHeroLabel: equippedHeroLabel,
             EquippedHeroPortrait: equippedHeroPortrait,
             EchoSprite: _currencySprite("echo"),
@@ -206,11 +250,29 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             Pool: pool);
     }
 
-    private static string SlotLabelKo(ItemSlotType slot) => slot switch
+    private static string ResolveSlotKey(ItemSlotType slot) => slot switch
     {
-        ItemSlotType.Weapon    => "무기",
-        ItemSlotType.Armor     => "방어구",
-        ItemSlotType.Accessory => "장신구",
-        _ => slot.ToString(),
+        ItemSlotType.Weapon => "weapon",
+        ItemSlotType.Armor => "armor",
+        ItemSlotType.Accessory => "accessory",
+        _ => "item",
     };
+
+    private static string ResolveFamilyKey(ItemBaseDefinition item)
+    {
+        return item.SlotType switch
+        {
+            ItemSlotType.Weapon when !string.IsNullOrWhiteSpace(item.WeaponFamilyTag) => item.WeaponFamilyTag,
+            ItemSlotType.Weapon when item.Id.Contains("shield", StringComparison.Ordinal) => "shield",
+            ItemSlotType.Weapon when item.Id.Contains("bow", StringComparison.Ordinal) => "bow",
+            ItemSlotType.Weapon when item.Id.Contains("focus", StringComparison.Ordinal) || item.Id.Contains("bead", StringComparison.Ordinal) => "focus",
+            ItemSlotType.Weapon => "blade",
+            _ => string.Empty,
+        };
+    }
+
+    private static IEnumerable<string> EnumerateCraftOperations(ItemBaseDefinition item)
+    {
+        return item.AllowedCraftOperations?.Select(operation => operation.ToString()) ?? Array.Empty<string>();
+    }
 }

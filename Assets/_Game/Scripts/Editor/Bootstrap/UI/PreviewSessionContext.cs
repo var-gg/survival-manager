@@ -23,6 +23,7 @@ internal static class PreviewSessionContext
     private const string ThreatSpriteFmt   = "Assets/_Game/UI/Foundation/Sprites/Threat/threat_{0}.png";
     private const string AugmentSpriteFmt  = "Assets/_Game/UI/Foundation/Sprites/Augment/augment_{0}.png";
     private const string CurrencySpriteFmt = "Assets/_Game/UI/Foundation/Sprites/Currency/currency_{0}.png";
+    private const string ItemSpriteFmt     = "Assets/Resources/_Game/Art/Icons/Item/{0}.png";
     private const string PortraitPathFmt   = "Assets/Resources/_Game/Art/Characters/hero_{0}/portrait_full.png";
 
     /// <summary>
@@ -53,6 +54,16 @@ internal static class PreviewSessionContext
     public static Texture2D? LoadThreatSprite(string key)   => Load(ThreatSpriteFmt, key);
     public static Texture2D? LoadAugmentSprite(string key)  => Load(AugmentSpriteFmt, key);
     public static Texture2D? LoadCurrencySprite(string key) => Load(CurrencySpriteFmt, key);
+    public static Texture2D? LoadItemSprite(string key)
+    {
+        var normalized = key switch
+        {
+            "weapon" => "blade",
+            "accessory" => "trinket",
+            _ => key,
+        };
+        return Load(ItemSpriteFmt, normalized) ?? Load(ItemSpriteFmt, normalized.StartsWith("item_icon_", StringComparison.Ordinal) ? normalized : $"item_icon_{normalized}");
+    }
     public static Texture2D? LoadHeroPortrait(string heroId) => Load(PortraitPathFmt, heroId);
 
     private static Texture2D? Load(string fmt, string key)

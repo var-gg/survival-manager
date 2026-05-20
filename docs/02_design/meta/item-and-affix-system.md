@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-05-20
 - 소스오브트루스: `docs/02_design/meta/item-and-affix-system.md`
 - 관련문서:
   - `docs/02_design/meta/affix-authoring-schema.md`
@@ -11,6 +11,7 @@
   - `docs/02_design/meta/equipment-family-and-crafting-depth.md`
   - `docs/02_design/meta/economy-protection-contract.md`
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
+  - `pindoc://decision-equipment-presentation-v1-contract`
 
 ## 목적
 
@@ -70,6 +71,17 @@ shield 전용 별도 슬롯은 열지 않는다.
 - recruit / retrain / refit이 각각 외부 파워 / flex 보정 / 장비 보정 역할을 나눠 가진다.
 - launch floor normal lane에서는 `EmberDust`, `EchoCrystal`, `BossSigil` 같은 material currency를 live sink로 올리지 않는다.
 - crafting 시스템 전체는 later scope로 민다.
+
+## UI 표현 계약
+
+장비 UI는 `pindoc://decision-equipment-presentation-v1-contract`를 따른다.
+
+- Inventory/EquipmentRefit이 노출하는 V1 범주는 `slot`, `weapon family`, `common / rare / epic` 표현 rarity, `baseline / named / unique` identity, `implicit / prefix / suffix` affix tier, `selected / equipped / refit-target`, `15 Echo Refit`까지다.
+- `Magic`과 `Legendary`는 enum 호환값일 수 있지만 V1 live visual tier가 아니다. UI는 fallback 렌더링을 제공하되 별도 frame/rarity class를 만들지 않는다.
+- `Unique`는 rarity가 아니라 identity 또는 signature rule marker다.
+- `InventoryItemRecord`에 source, lock, rolled affix value가 없으므로 provenance badge, locked overlay, 확정 roll 수치는 표시하지 않는다.
+- `Temper / Seal / Imprint / Salvage`, recipe rail, material rail은 crafting service와 persistence가 생기기 전까지 UI에 열지 않는다.
+- 아이템 cell과 affix row는 L3/L4 표면이다. L1 modal frame, ornate corner flourish, rarity별 gold frame을 재사용하지 않는다.
 
 ## 장기 규칙
 

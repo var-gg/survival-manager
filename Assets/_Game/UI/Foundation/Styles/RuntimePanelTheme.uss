@@ -1035,6 +1035,194 @@
     border-bottom-right-radius: var(--sm-r-md);
 }
 
+/* --- Equipment presentation roles ---
+   decision-equipment-presentation-v1-contract: item/affix/refit are L3/L4
+   surfaces. These classes are USS-only by default so rarity/state does not
+   become another ornate frame tier. */
+.sm-item-cell {
+    background-color: var(--sm-bg-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-1);
+    border-right-color: var(--sm-line-1);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+}
+
+.sm-item-cell--selected {
+    background-color: var(--sm-bg-3);
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.sm-item-cell--equipped {
+    border-left-color: var(--sm-gold-300-a42);
+}
+
+.sm-item-cell--locked,
+.sm-item-cell--disabled {
+    background-color: var(--sm-bg-1-a54);
+    border-left-color: var(--sm-gold-muted-a40);
+    border-right-color: var(--sm-gold-muted-a40);
+    border-top-color: var(--sm-gold-muted-a44);
+    border-bottom-color: var(--sm-gold-muted-a40);
+    opacity: 0.72;
+}
+
+.sm-item-icon {
+    background-color: var(--sm-bg-0-a84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-vellum-a12);
+    border-right-color: var(--sm-vellum-a12);
+    border-top-color: var(--sm-vellum-a15);
+    border-bottom-color: var(--sm-vellum-a09);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.sm-item-badge,
+.sm-item-identity {
+    background-color: rgba(20, 26, 53, 0.88);
+    color: var(--sm-vellum);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a24);
+    border-right-color: var(--sm-gold-300-a24);
+    border-top-color: var(--sm-gold-300-a32);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-sm);
+    border-top-right-radius: var(--sm-r-sm);
+    border-bottom-left-radius: var(--sm-r-sm);
+    border-bottom-right-radius: var(--sm-r-sm);
+    -unity-font-style: bold;
+}
+
+.sm-item-badge--slot {
+    color: var(--sm-gold-100);
+}
+
+.sm-item-badge--family {
+    color: var(--sm-vellum);
+}
+
+.sm-item-identity--baseline {
+    display: none;
+}
+
+.sm-item-identity--named {
+    color: var(--sm-gold-100);
+}
+
+.sm-item-identity--unique {
+    color: var(--sm-rare-epic-glow);
+    border-top-color: var(--sm-rare-epic);
+}
+
+.sm-item-rarity {
+    background-color: var(--sm-rare-common);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-rare-common-deep);
+    border-right-color: var(--sm-rare-common-deep);
+    border-top-color: var(--sm-rare-common-glow);
+    border-bottom-color: var(--sm-rare-common-deep);
+}
+
+.sm-item-rarity.sm-item-rarity--common {
+    background-color: var(--sm-rare-common);
+    border-left-color: var(--sm-rare-common-deep);
+    border-right-color: var(--sm-rare-common-deep);
+    border-top-color: var(--sm-rare-common-glow);
+    border-bottom-color: var(--sm-rare-common-deep);
+}
+
+.sm-item-rarity.sm-item-rarity--rare {
+    background-color: var(--sm-rare-rare);
+    border-left-color: var(--sm-rare-rare-deep);
+    border-right-color: var(--sm-rare-rare-deep);
+    border-top-color: var(--sm-rare-rare-glow);
+    border-bottom-color: var(--sm-rare-rare-deep);
+}
+
+.sm-item-rarity.sm-item-rarity--epic {
+    background-color: var(--sm-rare-epic);
+    border-left-color: var(--sm-rare-epic-deep);
+    border-right-color: var(--sm-rare-epic-deep);
+    border-top-color: var(--sm-rare-epic-glow);
+    border-bottom-color: var(--sm-rare-epic-deep);
+}
+
+.sm-affix-row {
+    background-color: var(--sm-bg-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-1);
+    border-right-color: var(--sm-line-1);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+}
+
+.sm-affix-row--implicit {
+    border-left-width: 3px;
+    border-left-color: var(--sm-gold-200);
+}
+
+.sm-affix-row--prefix {
+    border-left-width: 3px;
+    border-left-color: rgba(127, 163, 224, 0.78);
+}
+
+.sm-affix-row--suffix {
+    border-left-width: 3px;
+    border-left-color: rgba(166, 220, 154, 0.78);
+}
+
+.sm-affix-row--selected,
+.sm-affix-row--refit-target {
+    background-color: var(--sm-bg-3);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.sm-item-state {
+    background-color: var(--sm-gold-200);
+}
+
+.sm-operation {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.sm-operation--refit {
+    color: rgb(31, 19, 9);
+}
+
 /* --- 9-slice card frame texture overlay ---
    card / panel 단위 ornate border. modal frame보다 얇은 trim. */
 .sm-card-frame__texture {

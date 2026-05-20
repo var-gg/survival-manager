@@ -74,6 +74,14 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
+.inv-grid__cell-rarity {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4px;
+}
+
 /* Weapon family badge — top-left corner. item-and-affix-system.md V1: shield/blade/bow/focus */
 .inv-grid__cell-family {
     position: absolute;
@@ -100,6 +108,17 @@
 .inv-grid__cell-family--blade  { background-color: rgba(182, 51, 74, 0.85); }
 .inv-grid__cell-family--bow    { background-color: rgba(120, 200, 140, 0.85); }
 .inv-grid__cell-family--focus  { background-color: rgba(138, 92, 184, 0.85); }
+
+.inv-grid__cell-identity {
+    position: absolute;
+    right: 2px;
+    bottom: 6px;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    font-size: 7px;
+}
 
 /* Equipped marker — top-right gold dot */
 .inv-grid__cell-equipped {
@@ -239,6 +258,11 @@
     border-bottom-right-radius: var(--sm-r-md);
 }
 
+.inv-grid__cell.sm-item-cell,
+.inv-detail__affix-row.sm-affix-row {
+    background-color: var(--sm-bg-2);
+}
+
 .inv-sidebar__row--selected,
 .inv-grid__cell--selected {
     background-color: var(--sm-bg-3);
@@ -246,6 +270,17 @@
     border-right-color: var(--sm-gold-300-a42);
     border-top-color: var(--sm-gold-200);
     border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.inv-grid__cell-rarity.sm-item-rarity {
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 1px;
+    border-bottom-width: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .inv-currency__icon,

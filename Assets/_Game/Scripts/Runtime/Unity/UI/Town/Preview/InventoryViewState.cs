@@ -21,10 +21,18 @@ public sealed record InventoryCategoryViewState(
 
 public sealed record InventoryItemViewState(
     string ItemInstanceId,      // 식별자
-    string IconKey,             // affix sprite proxy
+    string IconKey,             // item icon id / item base fallback
     string RarityKey,           // common / rare / epic
+    string RawRarityKey,        // common / magic / rare / epic / legendary compatibility
+    string SlotKey,             // weapon / armor / accessory / item
+    string SlotLabel,           // 무기 / 방어구 / 장신구
     string WeaponFamilyKey,     // shield / blade / bow / focus
     string WeaponFamilyLabel,   // 방패 / 검 / 활 / 매개체
+    string IdentityKey,         // baseline / named / unique
+    string IdentityLabel,       // NAMED / SIGNATURE
+    bool ShowsIdentityBadge,
+    bool CanRefit,
+    bool IsLaunchSupportedRarity,
     bool IsEquipped,
     bool IsSelected,
     Texture2D? IconSprite
@@ -41,9 +49,17 @@ public sealed record InventoryDetailViewState(
     Texture2D? IconSprite,
     IReadOnlyList<InventoryAffixRowViewState> Affixes,
     string Name = "",
+    string SlotKey = "",
     string SlotLabel = "",
     string RarityKey = "",
+    string RawRarityKey = "",
+    string WeaponFamilyKey = "",
     string WeaponFamilyLabel = "",
+    string IdentityKey = "",
+    string IdentityLabel = "",
+    bool ShowsIdentityBadge = false,
+    bool CanRefit = false,
+    bool IsLaunchSupportedRarity = true,
     string SetBonusTier = "",
     IReadOnlyList<string>? CrossLinks = null
 );
