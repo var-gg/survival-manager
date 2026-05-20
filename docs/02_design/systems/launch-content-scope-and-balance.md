@@ -54,10 +54,10 @@ temporary augment는 GPT Pro P0 dial pass 이후 V1 prototype에서 먼저 safe 
 ## current pre-art closure 기준
 
 - 이번 패스의 핵심 gap은 raw count 부족이 아니라 authored floor closure다.
-- `12 core archetype / 6 site / 24 encounter / 6 boss overlay / 6 reward source` count는 유지한다.
+- `12 core archetype / 10 site / 40 encounter / 10 boss overlay / 6 reward source` count는 유지한다.
 - 추가 생성보다 아래 순서를 우선한다.
   1. live subset truth 정리
-  2. 24 encounter를 8 authored family로 재배치
+  2. 40 encounter를 8 authored family로 재배치
   3. site별 primary answer lane을 reward routing과 validator로 잠금
 - balance tuning은 truth cleanup과 matrix closure 뒤에만 진행한다.
 

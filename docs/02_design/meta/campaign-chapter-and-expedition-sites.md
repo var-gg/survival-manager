@@ -2,12 +2,13 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-10
+- 최종수정일: 2026-05-20
 - 소스오브트루스: `docs/02_design/meta/campaign-chapter-and-expedition-sites.md`
 - 관련문서:
   - `docs/02_design/meta/town-and-expedition-loop.md`
   - `docs/02_design/combat/encounter-catalog-and-scaling.md`
   - `docs/03_architecture/encounter-authoring-and-runtime-resolution.md`
+  - `pindoc://decision-launch-encounter-matrix-support-gate-anchor`
 
 ## 목적
 
@@ -54,36 +55,51 @@ launch floor에서 expedition은 branch graph가 아니라 authored site track�
 
 | site id | skirmish 1 | skirmish 2 | elite | boss | primary answer lane |
 | --- | --- | --- | --- | --- | --- |
-| `site_ashen_gate` | `bastion_front` | `mark_execute` | `protect_carry` | `bastion_front + defensive_boon` | `answer_lane_guard_anchor` |
-| `site_wolfpine_trail` | `weakside_dive` | `tempo_swarm` | `weakside_dive` | `weakside_dive + pack_instinct` | `answer_lane_peel_anti_dive` |
+| `site_ashen_gate` | `bastion_front` | `protect_carry` | `control_cleanse` | `sustain_grind` | `answer_lane_guard_anchor` |
+| `site_wolfpine_trail` | `weakside_dive` | `tempo_swarm` | `mark_execute` | `protect_carry` | `answer_lane_peel_anti_dive` |
 
 ### chapter 2 — chapter_sunken_bastion
 
 | site id | skirmish 1 | skirmish 2 | elite | boss | primary answer lane |
 | --- | --- | --- | --- | --- | --- |
-| `site_sunken_bastion` | `bastion_front` | `protect_carry` | `bastion_front` | `bastion_front + defensive_boon` | `answer_lane_break_formation` |
-| `site_tithe_road` | `mark_execute` | `control_cleanse` | `mark_execute` | `mark_execute + purification` | `answer_lane_anti_mark_cleanse` |
+| `site_sunken_bastion` | `bastion_front` | `control_cleanse` | `sustain_grind` | `protect_carry` | `answer_lane_break_formation` |
+| `site_tithe_road` | `mark_execute` | `control_cleanse` | `weakside_dive` | `sustain_grind` | `answer_lane_anti_mark_cleanse` |
 
 ### chapter 3 — chapter_ruined_crypts
 
 | site id | skirmish 1 | skirmish 2 | elite | boss | primary answer lane |
 | --- | --- | --- | --- | --- | --- |
-| `site_ruined_crypts` | `sustain_grind` | `bastion_front` | `mark_execute` | `sustain_grind + defensive_boon` | `answer_lane_anti_sustain_finish` |
-| `site_bone_orchard` | `summon_pressure` | `sustain_grind` | `summon_pressure` | `summon_pressure + awakening` | `answer_lane_anti_summon_burst` |
+| `site_ruined_crypts` | `control_cleanse` | `sustain_grind` | `protect_carry` | `summon_pressure` | `answer_lane_anti_sustain_finish` |
+| `site_bone_orchard` | `summon_pressure` | `tempo_swarm` | `mark_execute` | `control_cleanse` | `answer_lane_anti_summon_burst` |
 
 ### chapter 4 — chapter_glass_forest
 
 | site id | skirmish 1 | skirmish 2 | elite | boss | primary answer lane |
 | --- | --- | --- | --- | --- | --- |
-| `site_glass_forest` | `control_cleanse` | `weakside_dive` | `control_cleanse` | `control_cleanse + crystalline` | `answer_lane_cleanse_mobility` |
-| `site_starved_menagerie` | `tempo_swarm` | `sustain_grind` | `tempo_swarm` | `tempo_swarm + mutation` | `answer_lane_anti_swarm_persistence` |
+| `site_glass_forest` | `control_cleanse` | `mark_execute` | `weakside_dive` | `sustain_grind` | `answer_lane_cleanse_mobility` |
+| `site_starved_menagerie` | `tempo_swarm` | `summon_pressure` | `weakside_dive` | `mark_execute` | `answer_lane_anti_swarm_persistence` |
 
 ### chapter 5 — chapter_heartforge_descent
 
 | site id | skirmish 1 | skirmish 2 | elite | boss | primary answer lane |
 | --- | --- | --- | --- | --- | --- |
-| `site_heartforge_gate` | `bastion_front` | `mark_execute` | `bastion_front + mark_execute` | `bastion_front + mark_execute + forge_aegis` | `answer_lane_hybrid_break` |
-| `site_worldscar_depths` | `tempo_swarm + control_cleanse` | `weakside_dive + summon_pressure` | `sustain_grind + bastion_front + mark_execute` | `final_cycle` | `answer_lane_adaptive_mastery` |
+| `site_heartforge_gate` | `bastion_front` | `mark_execute` | `control_cleanse` | `protect_carry` | `answer_lane_hybrid_break` |
+| `site_worldscar_depths` | `control_cleanse` | `sustain_grind` | `summon_pressure` | `bastion_front` | `answer_lane_adaptive_mastery` |
+
+## encounter family distribution manifest
+
+Validator는 40 encounter authored matrix의 exact count를 검증한다.
+
+| family id | expected count |
+| --- | ---: |
+| `encounter_family_bastion_front` | 4 |
+| `encounter_family_protect_carry` | 5 |
+| `encounter_family_weakside_dive` | 4 |
+| `encounter_family_tempo_swarm` | 3 |
+| `encounter_family_sustain_grind` | 6 |
+| `encounter_family_mark_execute` | 6 |
+| `encounter_family_control_cleanse` | 8 |
+| `encounter_family_summon_pressure` | 4 |
 
 ### 규칙 요약
 

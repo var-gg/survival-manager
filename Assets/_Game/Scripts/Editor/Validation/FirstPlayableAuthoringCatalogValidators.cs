@@ -190,11 +190,22 @@ internal sealed class EncounterAuthoringCatalogValidator : ICatalogValidationRul
             }
         }
 
-        foreach (var familyId in FirstPlayableAuthoringContract.AllowedEncounterFamilyIds)
+        var expectedFamilyTotal = FirstPlayableAuthoringContract.ExpectedEncounterFamilyCounts.Values.Sum();
+        if (expectedFamilyTotal != FirstPlayableAuthoringContract.ExpectedEncounterCount)
         {
-            if (!familyCounts.TryGetValue(familyId, out var count) || count < 2 || count > 4)
+            ContentValidationIssueFactory.AddError(
+                issues,
+                "encounter.family_distribution_contract",
+                $"Expected encounter family manifest must sum to {FirstPlayableAuthoringContract.ExpectedEncounterCount}. Found {expectedFamilyTotal}.",
+                ContentValidationPolicyCatalog.ReportFolderName);
+        }
+
+        foreach (var (familyId, expectedCount) in FirstPlayableAuthoringContract.ExpectedEncounterFamilyCounts)
+        {
+            familyCounts.TryGetValue(familyId, out var count);
+            if (count != expectedCount)
             {
-                ContentValidationIssueFactory.AddError(issues, "encounter.family_distribution", $"Encounter family '{familyId}' must appear 2~4 times. Found {count}.", ContentValidationPolicyCatalog.ReportFolderName);
+                ContentValidationIssueFactory.AddError(issues, "encounter.family_distribution", $"Encounter family '{familyId}' must appear exactly {expectedCount} times in the 10-site / 40-encounter matrix. Found {count}.", ContentValidationPolicyCatalog.ReportFolderName);
             }
         }
 

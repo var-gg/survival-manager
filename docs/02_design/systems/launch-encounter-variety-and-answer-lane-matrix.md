@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-05-20
 - 소스오브트루스: `docs/02_design/systems/launch-encounter-variety-and-answer-lane-matrix.md`
 - 관련문서:
   - `docs/02_design/combat/encounter-catalog-and-scaling.md`
@@ -10,10 +10,11 @@
   - `docs/02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
   - Pindoc character-lore / roster artifacts
   - `docs/02_design/systems/first-playable-slice.md`
+  - `pindoc://decision-launch-encounter-matrix-support-gate-anchor`
 
 ## 목적
 
-이 문서는 current pre-art floor에서 `24 encounter / 6 site / 8 authored family`를
+이 문서는 current pre-art floor에서 `40 encounter / 10 site / 8 authored family`를
 어떻게 닫는지 고정한다.
 카운트를 늘리는 대신, 각 site가 서로 다른 질문을 던지고 reward가 다음 답으로 이어지게
 하는 authored matrix를 소유한다.
@@ -35,12 +36,31 @@
 
 | site id | skirmish 1 | skirmish 2 | elite | boss | primary answer lane |
 | --- | --- | --- | --- | --- | --- |
-| `site_ashen_gate` | `bastion_front` | `mark_execute` | `protect_carry` | `bastion_front + defensive_boon` | `answer_lane_guard_anchor` |
-| `site_cinder_watch` | `protect_carry` | `weakside_dive` | `mark_execute` | `weakside_dive + tactical_mark` | `answer_lane_reach_anti_carry` |
-| `site_forgotten_warren` | `tempo_swarm` | `summon_pressure` | `control_cleanse` | `summon_pressure + attrition-vulnerability` | `answer_lane_anti_swarm_persistence` |
-| `site_twisted_den` | `weakside_dive` | `control_cleanse` | `tempo_swarm` | `weakside_dive + control` | `answer_lane_peel_cleanse` |
-| `site_ruined_crypt` | `sustain_grind` | `bastion_front` | `mark_execute` | `sustain_grind + defensive_boon` | `answer_lane_anti_sustain_finish` |
-| `site_grave_sanctum` | `control_cleanse` | `protect_carry` | `summon_pressure` | `control_cleanse + mark_execute` | `answer_lane_hybrid_boss_prep` |
+| `site_ashen_gate` | `bastion_front` | `protect_carry` | `control_cleanse` | `sustain_grind` | `answer_lane_guard_anchor` |
+| `site_wolfpine_trail` | `weakside_dive` | `tempo_swarm` | `mark_execute` | `protect_carry` | `answer_lane_peel_anti_dive` |
+| `site_sunken_bastion` | `bastion_front` | `control_cleanse` | `sustain_grind` | `protect_carry` | `answer_lane_break_formation` |
+| `site_tithe_road` | `mark_execute` | `control_cleanse` | `weakside_dive` | `sustain_grind` | `answer_lane_anti_mark_cleanse` |
+| `site_ruined_crypts` | `control_cleanse` | `sustain_grind` | `protect_carry` | `summon_pressure` | `answer_lane_anti_sustain_finish` |
+| `site_bone_orchard` | `summon_pressure` | `tempo_swarm` | `mark_execute` | `control_cleanse` | `answer_lane_anti_summon_burst` |
+| `site_glass_forest` | `control_cleanse` | `mark_execute` | `weakside_dive` | `sustain_grind` | `answer_lane_cleanse_mobility` |
+| `site_starved_menagerie` | `tempo_swarm` | `summon_pressure` | `weakside_dive` | `mark_execute` | `answer_lane_anti_swarm_persistence` |
+| `site_heartforge_gate` | `bastion_front` | `mark_execute` | `control_cleanse` | `protect_carry` | `answer_lane_hybrid_break` |
+| `site_worldscar_depths` | `control_cleanse` | `sustain_grind` | `summon_pressure` | `bastion_front` | `answer_lane_adaptive_mastery` |
+
+## encounter family distribution
+
+Validator는 10-site / 40-encounter manifest를 exact count로 검증한다.
+
+| family id | expected count |
+| --- | ---: |
+| `encounter_family_bastion_front` | 4 |
+| `encounter_family_protect_carry` | 5 |
+| `encounter_family_weakside_dive` | 4 |
+| `encounter_family_tempo_swarm` | 3 |
+| `encounter_family_sustain_grind` | 6 |
+| `encounter_family_mark_execute` | 6 |
+| `encounter_family_control_cleanse` | 8 |
+| `encounter_family_summon_pressure` | 4 |
 
 ## reward routing
 
@@ -50,11 +70,15 @@ drop routing은 `RewardSource` 자체를 늘리지 않고
 | site id | skirmish | elite | boss |
 | --- | --- | --- | --- |
 | `site_ashen_gate` | `support_guarded` | `support_anchored` | `support_guarded` |
-| `site_cinder_watch` | `support_longshot` | `support_hunter_mark` | `support_piercing` |
-| `site_forgotten_warren` | `support_echo` | `support_lingering` | `support_siphon` |
-| `site_twisted_den` | `support_purifying` | `support_swift` | `support_purifying` |
-| `site_ruined_crypt` | `support_executioner` | `support_piercing` | `support_brutal` |
-| `site_grave_sanctum` | `support_siphon` | `support_echo` | `support_hunter_mark` |
+| `site_wolfpine_trail` | `support_brutal` | `support_swift` | `support_executioner` |
+| `site_sunken_bastion` | `support_guarded` | `support_anchored` | `support_purifying` |
+| `site_tithe_road` | `support_hunter_mark` | `support_piercing` | `support_purifying` |
+| `site_ruined_crypts` | `support_executioner` | `support_piercing` | `support_brutal` |
+| `site_bone_orchard` | `support_echo` | `support_lingering` | `support_siphon` |
+| `site_glass_forest` | `support_purifying` | `support_swift` | `support_hunter_mark` |
+| `site_starved_menagerie` | `support_echo` | `support_lingering` | `support_siphon` |
+| `site_heartforge_gate` | `support_guarded` | `support_piercing` | `support_executioner` |
+| `site_worldscar_depths` | `support_purifying` | `support_echo` | `support_hunter_mark` |
 
 ## build lane floor
 
@@ -78,6 +102,6 @@ drop routing은 `RewardSource` 자체를 늘리지 않고
 - encounter asset은 `encounter_family_*` 1개와 `answer_lane_*` 1개를 exact set으로 가진다.
 - boss overlay는 `overlay_ask_*` 1개만 가진다.
 - 같은 site의 두 skirmish는 같은 family를 공유하지 않는다.
-- 6 site의 4-beat sequence는 서로 모두 달라야 한다.
-- 각 family는 2~4회 사용한다.
+- 10 site의 4-beat sequence는 서로 모두 달라야 한다.
+- 각 family는 40 encounter exact manifest count를 따른다.
 - boss는 `primary family + overlay ask`의 최대 2 ask만 허용한다.

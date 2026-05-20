@@ -13,11 +13,17 @@ internal sealed record ArchetypeBuildLaneExpectation(
     string AltLaneId,
     string AltSupportId);
 
+internal sealed record SupportModifierGateContract(
+    IReadOnlyList<string> RequiredWeaponTags,
+    IReadOnlyList<string> RequiredClassTags,
+    bool IsGlobal);
+
 internal static class FirstPlayableAuthoringContract
 {
     internal const int LiveSignaturePassiveCap = 8;
     internal const int LiveFlexActiveCap = 12;
     internal const int LiveFlexPassiveCap = 20;
+    internal const int ExpectedEncounterCount = 40;
 
     internal static readonly IReadOnlyList<string> RequiredPassiveBoardIds = new[]
     {
@@ -42,12 +48,54 @@ internal static class FirstPlayableAuthoringContract
     internal static readonly HashSet<string> AllowedAnswerLaneIds = new(StringComparer.Ordinal)
     {
         "answer_lane_guard_anchor",
-        "answer_lane_reach_anti_carry",
-        "answer_lane_anti_swarm_persistence",
-        "answer_lane_peel_cleanse",
+        "answer_lane_peel_anti_dive",
+        "answer_lane_break_formation",
+        "answer_lane_anti_mark_cleanse",
         "answer_lane_anti_sustain_finish",
-        "answer_lane_hybrid_boss_prep",
+        "answer_lane_anti_summon_burst",
+        "answer_lane_cleanse_mobility",
+        "answer_lane_anti_swarm_persistence",
+        "answer_lane_hybrid_break",
+        "answer_lane_adaptive_mastery",
     };
+
+    internal static readonly IReadOnlyDictionary<string, int> ExpectedEncounterFamilyCounts =
+        new Dictionary<string, int>(StringComparer.Ordinal)
+        {
+            ["encounter_family_bastion_front"] = 4,
+            ["encounter_family_protect_carry"] = 5,
+            ["encounter_family_weakside_dive"] = 4,
+            ["encounter_family_tempo_swarm"] = 3,
+            ["encounter_family_sustain_grind"] = 6,
+            ["encounter_family_mark_execute"] = 6,
+            ["encounter_family_control_cleanse"] = 8,
+            ["encounter_family_summon_pressure"] = 4,
+        };
+
+    internal static readonly HashSet<string> GlobalSupportModifierIds = new(StringComparer.Ordinal)
+    {
+        "support_brutal",
+        "support_swift",
+        "support_echo",
+        "support_lingering",
+    };
+
+    internal static readonly IReadOnlyDictionary<string, SupportModifierGateContract> SupportModifierGateContracts =
+        new Dictionary<string, SupportModifierGateContract>(StringComparer.Ordinal)
+        {
+            ["support_brutal"] = new(Array.Empty<string>(), Array.Empty<string>(), true),
+            ["support_swift"] = new(Array.Empty<string>(), Array.Empty<string>(), true),
+            ["support_piercing"] = new(new[] { "bow" }, Array.Empty<string>(), false),
+            ["support_echo"] = new(Array.Empty<string>(), Array.Empty<string>(), true),
+            ["support_lingering"] = new(Array.Empty<string>(), Array.Empty<string>(), true),
+            ["support_purifying"] = new(Array.Empty<string>(), new[] { "mystic" }, false),
+            ["support_guarded"] = new(new[] { "shield" }, new[] { "vanguard" }, false),
+            ["support_executioner"] = new(new[] { "blade" }, new[] { "duelist" }, false),
+            ["support_longshot"] = new(new[] { "bow" }, new[] { "ranger" }, false),
+            ["support_siphon"] = new(new[] { "focus" }, new[] { "mystic" }, false),
+            ["support_anchored"] = new(new[] { "shield" }, new[] { "vanguard" }, false),
+            ["support_hunter_mark"] = new(new[] { "bow" }, new[] { "ranger" }, false),
+        };
 
     internal static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> ClassLaneSupportIds =
         new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal)

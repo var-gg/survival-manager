@@ -675,13 +675,34 @@ internal sealed class SkillCatalogValidator : ICatalogValidationRule
                     ContentValidationIssueFactory.AddError(issues, "skill.support_allowed_tags", $"Support modifier '{skill.Id}' must define at least one include tag.", assetPath);
                 }
 
-                if (!allowedTagIds.Overlaps(ContentValidationPolicyCatalog.CanonicalClassIds)
-                    && !allowedTagIds.Overlaps(ContentValidationPolicyCatalog.AllowedRoleFamilyTags))
+                var isGlobalSupport = FirstPlayableAuthoringContract.GlobalSupportModifierIds.Contains(skill.Id);
+                var hasGateAnchor = requiredWeaponIds.Count > 0 || requiredClassIds.Count > 0;
+                if (!isGlobalSupport && !hasGateAnchor)
                 {
-                    ContentValidationIssueFactory.AddError(issues, "skill.support_gate_anchor", $"Support modifier '{skill.Id}' must include at least one class or role-family gate tag.", assetPath);
+                    ContentValidationIssueFactory.AddError(issues, "skill.support_gate_anchor", $"Support modifier '{skill.Id}' must declare at least one RequiredWeaponTags or RequiredClassTags gate unless it is an explicit global support.", assetPath);
+                }
+
+                if (isGlobalSupport && hasGateAnchor)
+                {
+                    ContentValidationIssueFactory.AddError(issues, "skill.support_global_gate_mismatch", $"Global support modifier '{skill.Id}' must not declare RequiredWeaponTags or RequiredClassTags.", assetPath);
+                }
+
+                if (FirstPlayableAuthoringContract.SupportModifierGateContracts.TryGetValue(skill.Id, out var expectedGate)
+                    && (!requiredWeaponIds.SetEquals(expectedGate.RequiredWeaponTags)
+                        || !requiredClassIds.SetEquals(expectedGate.RequiredClassTags)
+                        || isGlobalSupport != expectedGate.IsGlobal))
+                {
+                    var expectedWeapons = FormatGateList(expectedGate.RequiredWeaponTags);
+                    var expectedClasses = FormatGateList(expectedGate.RequiredClassTags);
+                    ContentValidationIssueFactory.AddError(issues, "skill.support_gate_contract", $"Support modifier '{skill.Id}' must use RequiredWeaponTags=[{expectedWeapons}], RequiredClassTags=[{expectedClasses}], IsGlobal={expectedGate.IsGlobal}.", assetPath);
                 }
             }
         }
+    }
+
+    private static string FormatGateList(IEnumerable<string> ids)
+    {
+        return string.Join(", ", ids.OrderBy(id => id, StringComparer.Ordinal));
     }
 }
 

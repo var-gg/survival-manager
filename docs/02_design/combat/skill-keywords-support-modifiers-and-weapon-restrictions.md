@@ -2,13 +2,14 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-05-20
 - 소스오브트루스: `docs/02_design/combat/skill-keywords-support-modifiers-and-weapon-restrictions.md`
 - 관련문서:
   - `docs/02_design/combat/skill-taxonomy-and-damage-model.md`
   - `docs/02_design/meta/equipment-family-and-crafting-depth.md`
   - `docs/03_architecture/skill-tag-catalog-and-compatibility-resolution.md`
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
+  - `pindoc://decision-launch-encounter-matrix-support-gate-anchor`
 
 ## 목적
 
@@ -69,6 +70,21 @@ runtime asset에서는 위 키워드를 `tag_*` stable tag로 materialize한다.
 | `support_siphon` | `burst`, `burn` | 없음 | `focus` | `mystic` |
 | `support_anchored` | `shield`, `guard`, `aura` | `dash` | `shield` | `vanguard` |
 | `support_hunter_mark` | `mark`, `projectile` | `heal` | `bow` | `ranger` |
+
+### support gate anchor 규칙
+
+`SupportAllowedTags`와 `SupportBlockedTags`는 keyword compatibility filter다.
+class 또는 weapon gate anchor는 `RequiredClassTags`와 `RequiredWeaponTags`가 소유한다.
+
+global support modifier는 아래 4개만 허용한다.
+
+- `support_brutal`
+- `support_swift`
+- `support_echo`
+- `support_lingering`
+
+`support_piercing`은 global이 아니며 `bow` weapon gate를 가진다.
+그 외 canonical support modifier는 위 표의 required weapon 또는 required class 중 하나 이상을 asset에 기록해야 한다.
 
 ## weapon family restriction floor
 

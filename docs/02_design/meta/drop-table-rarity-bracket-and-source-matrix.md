@@ -10,6 +10,7 @@
   - `docs/02_design/combat/hero-traits.md`
   - `docs/03_architecture/unit-economy-schema.md`
   - `pindoc://decision-equipment-content-v1-assetization-contract`
+  - `pindoc://decision-launch-encounter-matrix-support-gate-anchor`
 
 ## 목적
 
@@ -76,16 +77,23 @@ launch floor에서는 ARPG식 5~6단계 rarity ladder를 열지 않는다.
 | `reward_source_elite` | `item_bone_blade`, `item_guardian_shield`, `item_priest_focus` |
 | `reward_source_boss` | `item_prayer_bead`, `item_bulwark_armor`, `item_rift_bow` |
 
-## live answer-lane routing
+## live answer-lane routing coverage
 
-| site id | skirmish routed reward | elite routed reward | boss routed reward |
-| --- | --- | --- | --- |
-| `site_ashen_gate` | `support_guarded` | `support_anchored` | `support_guarded` |
-| `site_cinder_watch` | `support_longshot` | `support_hunter_mark` | `support_piercing` |
-| `site_forgotten_warren` | `support_echo` | `support_lingering` | `support_siphon` |
-| `site_twisted_den` | `support_purifying` | `support_swift` | `support_purifying` |
-| `site_ruined_crypt` | `support_executioner` | `support_piercing` | `support_brutal` |
-| `site_grave_sanctum` | `support_siphon` | `support_echo` | `support_hunter_mark` |
+skirmish / elite / boss drop table은 아래 10개 site lane에 대해 routed entry를 각각 가진다.
+route entry id는 `{source_prefix}_{site_id}_{answer_lane_id}` 형태이며, `RequiredContextTags`에 같은 `site_id`와 `answer_lane_id`를 기록한다.
+
+| site id | primary answer lane |
+| --- | --- |
+| `site_ashen_gate` | `answer_lane_guard_anchor` |
+| `site_wolfpine_trail` | `answer_lane_peel_anti_dive` |
+| `site_sunken_bastion` | `answer_lane_break_formation` |
+| `site_tithe_road` | `answer_lane_anti_mark_cleanse` |
+| `site_ruined_crypts` | `answer_lane_anti_sustain_finish` |
+| `site_bone_orchard` | `answer_lane_anti_summon_burst` |
+| `site_glass_forest` | `answer_lane_cleanse_mobility` |
+| `site_starved_menagerie` | `answer_lane_anti_swarm_persistence` |
+| `site_heartforge_gate` | `answer_lane_hybrid_break` |
+| `site_worldscar_depths` | `answer_lane_adaptive_mastery` |
 
 ## automatic loot 예시
 
