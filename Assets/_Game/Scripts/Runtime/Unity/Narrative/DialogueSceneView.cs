@@ -7,13 +7,13 @@ namespace SM.Unity.Narrative;
 public sealed class DialogueSceneView : IDisposable
 {
     private readonly VisualElement _leftSlot;
-    private readonly Image _leftPortrait;
+    private readonly VisualElement _leftPortrait;
     private readonly Label _nameplateLabel;
     private readonly Label _lineLabel;
     private readonly Label _continueHintLabel;
     private readonly Button _skipAllButton;
     private readonly VisualElement _rightSlot;
-    private readonly Image _rightPortrait;
+    private readonly VisualElement _rightPortrait;
     private readonly VisualElement _skipConfirmOverlay;
     private readonly Label _skipConfirmTitleLabel;
     private readonly Label _skipConfirmBodyLabel;
@@ -31,21 +31,18 @@ public sealed class DialogueSceneView : IDisposable
     {
         Root = root ?? throw new ArgumentNullException(nameof(root));
         _leftSlot = Require<VisualElement>(root, "dialogue-scene-left-slot");
-        _leftPortrait = Require<Image>(root, "dialogue-scene-left-portrait");
+        _leftPortrait = Require<VisualElement>(root, "dialogue-scene-left-portrait");
         _nameplateLabel = Require<Label>(root, "dialogue-scene-nameplate");
         _lineLabel = Require<Label>(root, "dialogue-scene-line");
         _continueHintLabel = Require<Label>(root, "dialogue-scene-continue-hint");
         _skipAllButton = Require<Button>(root, "dialogue-scene-skip-all-button");
         _rightSlot = Require<VisualElement>(root, "dialogue-scene-right-slot");
-        _rightPortrait = Require<Image>(root, "dialogue-scene-right-portrait");
+        _rightPortrait = Require<VisualElement>(root, "dialogue-scene-right-portrait");
         _skipConfirmOverlay = Require<VisualElement>(root, "dialogue-scene-skip-confirm-overlay");
         _skipConfirmTitleLabel = Require<Label>(root, "dialogue-scene-skip-confirm-title");
         _skipConfirmBodyLabel = Require<Label>(root, "dialogue-scene-skip-confirm-body");
         _skipConfirmAcceptButton = Require<Button>(root, "dialogue-scene-skip-confirm-accept-button");
         _skipConfirmCancelButton = Require<Button>(root, "dialogue-scene-skip-confirm-cancel-button");
-
-        _leftPortrait.scaleMode = ScaleMode.ScaleAndCrop;
-        _rightPortrait.scaleMode = ScaleMode.ScaleAndCrop;
 
         _rootPointerUpHandler = HandleRootPointerUp;
         _skipPointerUpHandler = StopPointerPropagation;
@@ -174,12 +171,12 @@ public sealed class DialogueSceneView : IDisposable
         ToggleClass(label, "story-text--character", !isNarrator);
     }
 
-    private static void ApplyPortrait(VisualElement slot, Image image, bool show, Sprite? sprite, bool active)
+    private static void ApplyPortrait(VisualElement slot, VisualElement image, bool show, Sprite? sprite, bool active)
     {
         slot.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
         slot.visible = show;
         ToggleClass(slot, "story-portrait-slot--hidden", !show);
-        image.sprite = sprite;
+        image.style.backgroundImage = sprite != null ? new StyleBackground(sprite) : new StyleBackground();
         ToggleClass(image, "story-portrait--active", show && active);
         ToggleClass(image, "story-portrait--inactive", show && !active);
     }

@@ -9,38 +9,35 @@
     background-color: rgb(16, 15, 20);
 }
 
-/* 포트레잇 무대 — 화면 위쪽, 하단 대사창 공간만 비운다 */
+/* 포트레잇 무대 — 화면 위쪽, 대사창 바로 위까지 */
 .dialogue-scene-stage {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
-    bottom: 288px;
+    bottom: 232px;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-end;
-    padding-left: 64px;
-    padding-right: 64px;
+    padding-left: 88px;
+    padding-right: 88px;
 }
 
+/* 슬롯 — 포트레잇 표시 영역. 높이 고정, 무대 하단(대사창 위)에 정렬 */
 .dialogue-scene-slot {
-    width: 38%;
-    height: 100%;
-    justify-content: flex-end;
-    overflow: hidden;
+    width: 478px;
+    height: 730px;
+    max-height: 100%;
 }
 
-.dialogue-scene-slot--left {
-    align-items: flex-start;
-}
-
-.dialogue-scene-slot--right {
-    align-items: flex-end;
-}
-
+/* 버스트 — 잘라내지 않고 비율 유지(contain), 바닥 기준 정렬 */
 .dialogue-scene-portrait {
     width: 100%;
-    height: 96%;
+    height: 100%;
+    background-size: contain;
+    background-position-x: center;
+    background-position-y: bottom;
+    background-repeat: no-repeat;
 }
 
 /* 하단 대사창 — 화면 폭을 거의 가득 채우는 미연시 텍스트 박스 */
