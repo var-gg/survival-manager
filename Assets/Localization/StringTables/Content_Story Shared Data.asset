@@ -8311,6 +8311,22 @@ MonoBehaviour:
     m_Key: loc.story.presentation.dialogue_scene_trail_scout_tc1_both_sides_guilty.body
     m_Metadata:
       m_Items: []
+  - m_Id: 14521854286172160
+    m_Key: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14521854323920896
+    m_Key: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc3_questions_remained.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14521854323920897
+    m_Key: loc.story.dialogue.dialogue_seq_dialogue_scene_oath_slayer_tc1_was_this_blade_justice.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14521854323920898
+    m_Key: loc.story.dialogue.dialogue_seq_dialogue_scene_storm_shaman_tc1_song_of_the_lost.010
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

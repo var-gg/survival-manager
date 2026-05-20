@@ -36,42 +36,6 @@ MonoBehaviour:
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-7688480688344369621
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__010
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.005
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-7396940975490691131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__009
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.004
-  _emote: default
-  _emotionTextKey: loc.story.emotion.gentle
-  _autoAdvanceHint: 0
 --- !u!114 &-5208295824655284533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,24 +54,6 @@ MonoBehaviour:
   _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
---- !u!114 &-4940356135477442589
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_12
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__012
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.007
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.resolute
-  _autoAdvanceHint: 0
 --- !u!114 &-3522415597962792214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,9 +68,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__007
   _speakerId: hero_grave_hexer
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.007
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-2060623220972930391
 MonoBehaviour:
@@ -167,11 +113,6 @@ MonoBehaviour:
   - {fileID: 69813090661802685}
   - {fileID: -3522415597962792214}
   - {fileID: 2668661889210758430}
-  - {fileID: -7396940975490691131}
-  - {fileID: -7688480688344369621}
-  - {fileID: 4698136530232916358}
-  - {fileID: -4940356135477442589}
-  - {fileID: 4450048495602546909}
 --- !u!114 &69813090661802685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,10 +126,10 @@ MonoBehaviour:
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__006
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.003
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.006
   _emote: default
-  _emotionTextKey: loc.story.emotion.thoughtful
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &1133104740164243442
 MonoBehaviour:
@@ -221,10 +162,10 @@ MonoBehaviour:
   m_Name: line_08
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__008
-  _speakerId: hero_grave_hexer
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.003
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.008
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4230667647539110917
 MonoBehaviour:
@@ -241,42 +182,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.002
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &4450048495602546909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_13
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__013
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.008
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &4698136530232916358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_11
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell__line__011
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_grave_hexer_tc1_humor_bell.006
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

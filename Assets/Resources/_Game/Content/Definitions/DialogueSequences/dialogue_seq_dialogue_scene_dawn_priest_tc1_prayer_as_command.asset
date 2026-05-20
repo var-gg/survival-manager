@@ -1,41 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7341241972207421226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__010
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.004
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-7060195004971361667
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_14
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__014
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.008
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
 --- !u!114 &-6744451206148598684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -49,24 +13,6 @@ MonoBehaviour:
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__007
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
-  _autoAdvanceHint: 0
---- !u!114 &-4355108463974765578
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_13
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__013
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.007
   _emote: serious
@@ -86,7 +32,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__008
   _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.005
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.008
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
@@ -162,24 +108,6 @@ MonoBehaviour:
   _emote: sad
   _emotionTextKey: loc.story.emotion.weary
   _autoAdvanceHint: 0
---- !u!114 &-125841207622225600
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_11
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__011
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.005
-  _emote: default
-  _emotionTextKey: loc.story.emotion.gentle
-  _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,12 +131,6 @@ MonoBehaviour:
   - {fileID: 2654356793073177855}
   - {fileID: -6744451206148598684}
   - {fileID: -3745391950993583536}
-  - {fileID: 8507525688768514129}
-  - {fileID: -7341241972207421226}
-  - {fileID: -125841207622225600}
-  - {fileID: 5716854166397676423}
-  - {fileID: -4355108463974765578}
-  - {fileID: -7060195004971361667}
 --- !u!114 &2654356793073177855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,10 +144,10 @@ MonoBehaviour:
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__006
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.003
-  _emote: sad
-  _emotionTextKey: loc.story.emotion.weary
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.006
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3808164901516362012
 MonoBehaviour:
@@ -244,42 +166,6 @@ MonoBehaviour:
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.004
   _emote: sad
   _emotionTextKey: loc.story.emotion.weary
-  _autoAdvanceHint: 0
---- !u!114 &5716854166397676423
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_12
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__012
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.006
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &8507525688768514129
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command__line__009
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dawn_priest_tc1_prayer_as_command.003
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &8692484454945633315
 MonoBehaviour:

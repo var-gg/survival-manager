@@ -32,7 +32,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range__line__008
   _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.005
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.008
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
@@ -49,24 +49,6 @@ MonoBehaviour:
   m_Name: line_03
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range__line__003
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.003
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-4298120504874132387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range__line__009
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.003
   _emote: default
@@ -89,42 +71,6 @@ MonoBehaviour:
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.001
   _emote: serious
   _emotionTextKey: loc.story.emotion.direct
-  _autoAdvanceHint: 0
---- !u!114 &-2467406092236726094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_13
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range__line__013
-  _speakerId: hero_dread_marksman
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.007
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
-  _autoAdvanceHint: 0
---- !u!114 &-2041140165447692972
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_12
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range__line__012
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.006
-  _emote: default
-  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1010422771741548899
 MonoBehaviour:
@@ -167,12 +113,6 @@ MonoBehaviour:
   - {fileID: 5293742620144412100}
   - {fileID: 1841608134178835730}
   - {fileID: -5153845545180978246}
-  - {fileID: -4298120504874132387}
-  - {fileID: 3755452229782208369}
-  - {fileID: 5144686383604614285}
-  - {fileID: -2041140165447692972}
-  - {fileID: -2467406092236726094}
-  - {fileID: 3650810104606020528}
 --- !u!114 &1841608134178835730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,7 +127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range__line__007
   _speakerId: hero_dread_marksman
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.004
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.007
   _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
@@ -209,42 +149,6 @@ MonoBehaviour:
   _emote: serious
   _emotionTextKey: loc.story.emotion.direct
   _autoAdvanceHint: 0
---- !u!114 &3650810104606020528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_14
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range__line__014
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.008
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &3755452229782208369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range__line__010
-  _speakerId: hero_dread_marksman
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
-  _autoAdvanceHint: 0
 --- !u!114 &4265581562275785044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,24 +167,6 @@ MonoBehaviour:
   _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
---- !u!114 &5144686383604614285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_11
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range__line__011
-  _speakerId: hero_dread_marksman
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.005
-  _emote: default
-  _emotionTextKey: loc.story.emotion.thoughtful
-  _autoAdvanceHint: 0
 --- !u!114 &5293742620144412100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,8 +180,8 @@ MonoBehaviour:
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range__line__006
-  _speakerId: hero_dread_marksman
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.003
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_dread_marksman_tc1_within_normal_range.006
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0

@@ -7,7 +7,7 @@
     한 번에 실행한다.
 
     단계:
-    1. Python parser: master-script.md + schema → narrative-seed.json
+    1. Python parser: raw-wiki/*.md (pindoc 위키 덤프) → narrative-seed-wiki.json
     2. Unity importer: JSON → StoryEvent/DialogueSequence SO + Content_Story 로컬라이제이션
     3. Portrait placeholder: 캐릭터별 Default.png 자동 생성
 .PARAMETER ParseOnly
@@ -31,9 +31,9 @@ if (-not (Test-Path $tempDir)) {
     New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
 }
 
-$pythonScript = Join-Path $PSScriptRoot 'narrative_build.py'
+$pythonScript = Join-Path $PSScriptRoot 'wiki_narrative_extract.py'
 if (-not (Test-Path $pythonScript)) {
-    Write-Error "narrative_build.py not found at $pythonScript"
+    Write-Error "wiki_narrative_extract.py not found at $pythonScript"
     exit 1
 }
 
@@ -58,7 +58,7 @@ if (-not (Test-Path $executeMethodScript)) {
 }
 
 & pwsh -File $executeMethodScript `
-    -Method 'SM.Editor.Narrative.NarrativeSeedImporter.ImportFromMenu' `
+    -Method 'SM.Editor.Narrative.NarrativeSeedImporter.ImportWikiFromMenu' `
     -LogFile 'Logs/narrative-import.log' `
     -PhaseName 'narrative seed import' `
     -ProjectRoot $repoRoot

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__006
   _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.002
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.006
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
@@ -36,42 +36,6 @@ MonoBehaviour:
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &-4064914112666818637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__009
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.002
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-2672044134681466218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_13
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__013
-  _speakerId: hero_aegis_sentinel
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.006
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.resolute
-  _autoAdvanceHint: 0
 --- !u!114 &-1900371038376944670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,25 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__008
   _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.004
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &-1688949459613595591
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__010
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.003
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.008
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
@@ -131,12 +77,6 @@ MonoBehaviour:
   - {fileID: -8672889904814726125}
   - {fileID: 4816313322466801173}
   - {fileID: -1900371038376944670}
-  - {fileID: -4064914112666818637}
-  - {fileID: -1688949459613595591}
-  - {fileID: 3038458441997387141}
-  - {fileID: 7079471056781336008}
-  - {fileID: -2672044134681466218}
-  - {fileID: 5788768972133586949}
 --- !u!114 &1651566730010725551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,24 +113,6 @@ MonoBehaviour:
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &3038458441997387141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_11
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__011
-  _speakerId: hero_aegis_sentinel
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
-  _autoAdvanceHint: 0
 --- !u!114 &4816313322466801173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,10 +126,10 @@ MonoBehaviour:
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__007
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.003
-  _emote: default
-  _emotionTextKey: 
+  _speakerId: hero_aegis_sentinel
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.007
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &5691776685852990635
 MonoBehaviour:
@@ -242,42 +164,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__002
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.002
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &5788768972133586949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_14
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__014
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.007
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &7079471056781336008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_12
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise__line__012
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_aegis_sentinel_tc1_one_lattice_line_of_promise.005
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

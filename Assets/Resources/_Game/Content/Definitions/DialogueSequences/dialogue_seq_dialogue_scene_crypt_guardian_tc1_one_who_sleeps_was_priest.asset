@@ -31,28 +31,10 @@ MonoBehaviour:
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__006
-  _speakerId: hero_crypt_guardian
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.003
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.006
   _emote: default
-  _emotionTextKey: loc.story.emotion.thoughtful
-  _autoAdvanceHint: 0
---- !u!114 &-6701337534508130038
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_11
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__011
-  _speakerId: hero_crypt_guardian
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.005
-  _emote: default
-  _emotionTextKey: loc.story.emotion.gentle
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5460428352528334368
 MonoBehaviour:
@@ -86,27 +68,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__007
   _speakerId: hero_crypt_guardian
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
-  _autoAdvanceHint: 0
---- !u!114 &-2622643992118650561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__009
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.003
-  _emote: default
-  _emotionTextKey: 
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.007
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &-1660355559902788680
 MonoBehaviour:
@@ -149,30 +113,6 @@ MonoBehaviour:
   - {fileID: -7884811480123893862}
   - {fileID: -4341227199137258670}
   - {fileID: 2541154011769826106}
-  - {fileID: -2622643992118650561}
-  - {fileID: 4262288684488694449}
-  - {fileID: -6701337534508130038}
-  - {fileID: 1366960544381449573}
-  - {fileID: 925284239317731872}
-  - {fileID: 4902982555076376174}
---- !u!114 &925284239317731872
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_13
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__013
-  _speakerId: hero_crypt_guardian
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.007
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.resolute
-  _autoAdvanceHint: 0
 --- !u!114 &1305042673800481094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,24 +131,6 @@ MonoBehaviour:
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
---- !u!114 &1366960544381449573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_12
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__012
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.006
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
 --- !u!114 &2541154011769826106
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,7 +145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__008
   _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.005
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.008
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
@@ -242,42 +164,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.003
-  _emote: default
-  _emotionTextKey: 
-  _autoAdvanceHint: 0
---- !u!114 &4262288684488694449
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__010
-  _speakerId: hero_crypt_guardian
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
-  _autoAdvanceHint: 0
---- !u!114 &4902982555076376174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_14
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest__line__014
-  _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_crypt_guardian_tc1_one_who_sleeps_was_priest.008
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

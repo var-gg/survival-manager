@@ -150,6 +150,24 @@ def normalize_content(text: str) -> str:
     return t
 
 
+def clean_display_text(text: str) -> str:
+    """대사창에 그대로 노출할 표시용 텍스트로 정리한다.
+
+    제작 주석(voice 마커), 선두 연기 지문 괄호, 바깥 따옴표 한 겹을 제거한다.
+    presenter가 비-내레이터 줄을 다시 따옴표로 감싸므로 바깥 따옴표는 여기서 뗀다.
+    line-ID 해시는 normalize_content를 계속 쓰므로 ID 안정성에는 영향이 없다."""
+    t = VOICE_MARKER_RE.sub("", text).strip()
+    t = t.replace("…", "...").replace("​", "")
+    t = re.sub(r"\s+", " ", t).strip()
+    t = re.sub(r"^\([^)]{1,24}\)\s*", "", t).strip()
+    for open_q, close_q in (('"', '"'), ("“", "”"),
+                            ("「", "」"), ("『", "』")):
+        if len(t) >= 2 and t.startswith(open_q) and t.endswith(close_q):
+            t = t[1:-1].strip()
+            break
+    return t
+
+
 def extract_voice_role(text: str) -> str:
     """Pull first voice marker role out (hook / closure / 명상 line / etc.)."""
     m = VOICE_MARKER_RE.search(text)
@@ -462,17 +480,26 @@ def build_seed(scenes: dict[str, WikiScene]) -> dict:
     line_index_map = {}  # scene_id -> [line_id, ...] in order
 
     for scene_id, scene in scenes.items():
+        # 분기 평탄화: 첫 분기만 정본으로 채택한다. 선택지 미지원 상태에서
+        # branch별 lineIndex(3a/3b/3c → 3) 충돌로 textKey가 겹쳐, 같은 줄이
+        # 화자만 바뀐 채 반복 재생되던 문제를 제거한다.
+        first_branch = next(
+            (ln.branch_tag for ln in scene.lines if ln.branch_tag), "")
+        kept_lines = [ln for ln in scene.lines
+                      if not ln.branch_tag or ln.branch_tag == first_branch]
+        # lineIndex 재번호: 원본 # 는 분기 letter 접미사(3a/3b)·call-response 등으로
+        # 같은 번호가 겹친다. 출력 순서대로 0..N-1 부여해 textKey 충돌을 원천 차단한다.
         lines_out = []
-        for ln in scene.lines:
+        for new_index, ln in enumerate(kept_lines):
             lines_out.append({
                 "lineId": ln.line_id,
-                "lineIndex": ln.line_index,
+                "lineIndex": new_index,
                 "speakerAlias": ln.speaker_alias,
                 "speakerId": ln.speaker_id,
                 "emotionRaw": ln.emotion_raw,
                 "emotionId": ln.emotion_id,
                 "emoteId": ln.emote_id,
-                "text": ln.text_ko,
+                "text": clean_display_text(ln.text_ko),
                 "en": "",
                 "branchTag": ln.branch_tag,
                 "sectionLabel": ln.section_label,
@@ -498,7 +525,7 @@ def build_seed(scenes: dict[str, WikiScene]) -> dict:
             "body": None,
             "iconId": None,
         })
-        line_index_map[scene_id] = [ln.line_id for ln in scene.lines]
+        line_index_map[scene_id] = [ln.line_id for ln in kept_lines]
 
     return {
         "version": 1,
