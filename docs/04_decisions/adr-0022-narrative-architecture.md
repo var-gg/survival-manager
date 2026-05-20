@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-16
+- 최종수정일: 2026-05-21
 - 소스오브트루스: `docs/04_decisions/adr-0022-narrative-architecture.md`
 - 관련문서:
   - `docs/03_architecture/narrative-code-architecture.md`
@@ -58,13 +58,13 @@
 
 ## 후속 작업
 
-1. `RewardCommitted` 시점의 authored trigger 연결
-2. same-SHA Unity compile / batch evidence refresh
-3. concrete battle/reward summary type canonicalization
+1. same-SHA Unity compile / batch evidence refresh
 
 완료된 후속 작업:
 
 - narrative seed content와 editor import/validation lane 추가
+- `RewardCommitted` 시점의 authored trigger 연결 — `RewardScreenController`가 `RewardOpened`/`RewardCommitted`를 raise하고, `RewardCommitted` context에 `RewardSummary`를 싣는다
+- battle/reward summary type canonicalization — `StoryMomentContext`가 `SM.Core`의 `BattleSummaryRecord?`/`RewardSummaryRecord?` canonical record를 사용한다. `RewardSummary` runtime 채움은 완료, `BattleSummary` 채움은 deferred
 
 ## 작성 지침
 

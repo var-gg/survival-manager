@@ -196,6 +196,38 @@ public sealed class RunLoopContractFastTests
     }
 
     [Test]
+    public void ApplyRewardChoice_PopulatesLastCommittedRewardSummary()
+    {
+        // p1 RewardCommitted wiring evidence: ApplyRewardChoice가 commit 시점에
+        // LastCommittedRewardSummary(RewardSummaryRecord)를 채워, RewardScreenController가
+        // RewardCommitted moment context에 실어 보낼 수 있게 한다.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+        session.MarkBattleResolved(true, 8, 4);
+
+        Assert.That(session.LastCommittedRewardSummary, Is.Null,
+            "commit 전에는 마지막 보상 요약이 없다.");
+
+        var rewardSourceId = session.ActiveRun?.Overlay.RewardSourceId ?? string.Empty;
+        Assert.That(session.ApplyRewardChoice(0), Is.True);
+
+        var summary = session.LastCommittedRewardSummary;
+        Assert.That(summary, Is.Not.Null,
+            "ApplyRewardChoice가 RewardSummary를 채운다.");
+        Assert.That(summary!.ChoiceIndex, Is.EqualTo(0));
+        Assert.That(summary.RewardSourceId, Is.EqualTo(rewardSourceId));
+        Assert.That(summary.WasRecoveredSettlement, Is.False,
+            "정상 commit 경로는 recovered settlement가 아니다.");
+        Assert.That(summary.ChoiceKind, Is.Not.Empty);
+        Assert.That(summary.ChapterId, Is.Not.Empty, "ChapterId stamping.");
+        Assert.That(summary.SiteId, Is.Not.Empty, "SiteId stamping.");
+    }
+
+    [Test]
     public void RunOverlay_TraceFields_AreFullyPopulatedAfterBattleResolve()
     {
         // task-vertical-slice-smoke-evidence-v1 acceptance #2 EditMode 통합 evidence:

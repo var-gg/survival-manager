@@ -2,7 +2,7 @@
 
 - 상태: draft
 - 소유자: repository
-- 최종수정일: 2026-04-16
+- 최종수정일: 2026-05-21
 - 소스오브트루스: `docs/03_architecture/narrative-code-architecture.md`
 - 관련문서:
   - `docs/02_design/meta/story-gating-and-unlock-rules.md`
@@ -33,11 +33,11 @@
   - `TownScreenController -> NarrativeMoment.TownEntered`
   - `ExpeditionScreenController -> NarrativeMoment.SiteEntered`
   - `BattleScreenController -> NarrativeMoment.BattleResolved`
-  - `RewardScreenController -> NarrativeMoment.RewardOpened`
+  - `RewardScreenController -> NarrativeMoment.RewardOpened` (보상 화면 진입)
+  - `RewardScreenController -> NarrativeMoment.RewardCommitted` (보상 선택 확정)
 
 아직 닫히지 않은 것:
 
-- `RewardCommitted` 시점의 authored narrative trigger 연결
 - same-SHA Unity compile / batch evidence refresh
 
 ## 어셈블리 경계
@@ -105,7 +105,7 @@
 | --- | --- |
 | `StorySceneFlowBridge` | scene controller가 `NarrativeMoment`를 raise하고, pending presentation dequeue를 request dispatch 직전까지 늦춰 scene 전환 중 손실을 최소화한다 |
 | `StoryPresentationRunner` | `StoryPresentationRequest`를 `DialogueSequenceDefinition` / `HeroLoreDefinition` / localized story key 기반 UI model로 변환하고 presenter를 순차 실행한다 |
-| `ResourcesStoryPortraitResolver` | `Narrative/Portraits/{characterId}/{emoteId}` 규칙으로 portrait를 resolve한다 |
+| `ResourcesStoryPortraitResolver` | `_Game/Art/Characters/{characterId}` 아래 `portrait_bust_{emote}_{R/L}` / `portrait_face_{emote}` 규칙으로 portrait를 resolve한다 |
 | `ToastBannerPresenter`, `DialogueOverlayPresenter`, `DialogueScenePresenter`, `StoryCardPresenter` | UITK view wrapper를 순수 C# presenter로 구동한다 |
 | `StoryToastBannerView`, `DialogueOverlayView`, `DialogueSceneView`, `StoryCardView` | `Q<T>("name")` 바인딩, 표시 토글, 이벤트 emit만 담당한다 |
 | `Story*ViewState`, `StorySpeakerModel`, `StoryDialogueLineModel`, `Dialogue*PlaybackModel` | runtime adapter가 presenter에 전달하는 렌더링 snapshot / playback contract다 |
@@ -116,8 +116,8 @@
 | --- | --- |
 | `NarrativeSeedImporter` | `Temp/Narrative/narrative-seed.json`을 `StoryEventDefinition`, `DialogueSequenceDefinition`, `Content_Story` localization entry로 반영한다 |
 | `NarrativeAssetValidator` | narrative definition asset, dialogue sequence asset, story localization table, portrait 기본 검증을 묶어 실행한다 |
-| `NarrativePortraitValidator` | `tools/narrative-authoring-map.json`의 speaker/emote mapping을 기준으로 portrait placeholder 누락을 검증한다 |
-| `NarrativePortraitPlaceholderGenerator` | speaker별 `Assets/Resources/Narrative/Portraits/{speakerId}/Default.png` placeholder를 생성한다 |
+| `NarrativePortraitValidator` | `tools/narrative-authoring-map.json` speaker가 가리키는 캐릭터 폴더의 `portrait_face_default` 필수와 bust/emote 변형 누락을 검증한다 |
+| `NarrativePortraitPlaceholderGenerator` | 캐릭터별 `_Game/Art/Characters/{characterId}/portrait_face_default.png` placeholder를 생성한다 |
 | `tools/narrative_validate.py` / `tools/narrative-validate.ps1` | authoring Markdown 구조와 cross-reference를 Unity import 전에 검증한다 |
 | `tools/narrative_build.py` / `tools/narrative-build.ps1` | authoring Markdown을 seed manifest로 변환하고 Unity importer/portrait placeholder lane으로 넘긴다 |
 
@@ -171,7 +171,9 @@ repository load 단계와 `GameSessionState.BindProfile()`에서 `NarrativeProgr
 
 ## 구현 메모
 
-- `StoryMomentContext.BattleSummary` / `RewardSummary`는 현재 `object?`로 유지한다.
-- concrete summary record는 repo에 명확한 canonical type이 생길 때 교체한다.
+- `StoryMomentContext.BattleSummary` / `RewardSummary`는 `SM.Core`의 `BattleSummaryRecord?` / `RewardSummaryRecord?` canonical record로 타입이 고정돼 있다.
+- `RewardScreenController`는 보상 화면 진입 시 `RewardOpened`를, 보상 선택 확정(= 보상 정산 완료) 시 `RewardCommitted`를 raise한다. `RewardOpened` context는 chapter/site/node만 담고, `RewardCommitted` context는 `GameSessionState.LastCommittedRewardSummary`(session truth)를 `RewardSummary`로 함께 싣는다. presentation 계층은 summary truth를 생성하지 않고 session이 노출한 record를 얹기만 한다.
+- `BattleSummary`는 V1 현재 어느 moment context에도 채워지지 않는다(deferred). 전투 결과에 분기하는 authored event가 필요해지면 `BattleScreenController`가 `RewardSummary`와 동일 패턴으로 채운다.
+- `StoryPresentationRequest.ContextSnapshot`은 같은 세션의 enqueue->dequeue 동안만 유효한 값이며 save truth가 아니다. `NarrativeProgressRecord.Normalize`는 이를 carry하지 않고 `.Empty`로 리셋한다.
 - `StoryPresentationRunner`는 현재 `PresentationKey -> localized story key / dialogue sequence / hero lore` adapter를 내부에 둔다.
 - authored dialogue/human-facing story string asset이 비어 있으면 runner는 localization key 또는 presentation key fallback으로 degrade한다.

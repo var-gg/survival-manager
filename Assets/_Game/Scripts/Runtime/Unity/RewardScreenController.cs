@@ -124,7 +124,7 @@ public sealed class RewardScreenController : MonoBehaviour
         return _storyBridge != null;
     }
 
-    private StoryMomentContext BuildStoryMomentContext()
+    private StoryMomentContext BuildStoryMomentContext(bool withRewardSummary = false)
     {
         var session = _root.SessionState;
         return new StoryMomentContext
@@ -132,6 +132,7 @@ public sealed class RewardScreenController : MonoBehaviour
             ChapterId = session.SelectedCampaignChapterId,
             SiteId = session.SelectedCampaignSiteId,
             NodeIndex = session.CurrentExpeditionNodeIndex,
+            RewardSummary = withRewardSummary ? session.LastCommittedRewardSummary : null,
         };
     }
 
@@ -142,7 +143,7 @@ public sealed class RewardScreenController : MonoBehaviour
             return;
         }
 
-        _storyBridge.Advance(NarrativeMoment.RewardCommitted, BuildStoryMomentContext());
+        _storyBridge.Advance(NarrativeMoment.RewardCommitted, BuildStoryMomentContext(withRewardSummary: true));
     }
 
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)

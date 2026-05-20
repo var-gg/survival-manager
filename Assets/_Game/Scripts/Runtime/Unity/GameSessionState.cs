@@ -85,6 +85,7 @@ public sealed partial class GameSessionState
     public SessionTextToken LastExpeditionEffectMessage { get; private set; } = SessionTextToken.Empty;
     public SessionTextToken LastRewardApplicationSummary { get; private set; } = SessionTextToken.Empty;
     public SessionTextToken LastPermanentUnlockSummary { get; private set; } = SessionTextToken.Empty;
+    public RewardSummaryRecord? LastCommittedRewardSummary { get; private set; }
     public TeamPostureType SelectedTeamPosture { get; private set; } = TeamPostureType.StandardAdvance;
     public string SelectedTeamTacticId { get; private set; } = string.Empty;
     public IReadOnlyList<string> ExpeditionSquadHeroIds => _expeditionSquadHeroIds;
@@ -206,6 +207,7 @@ public sealed partial class GameSessionState
             LastExpeditionEffectMessage = SessionTextToken.Empty;
             LastRewardApplicationSummary = SessionTextToken.Empty;
             LastPermanentUnlockSummary = SessionTextToken.Empty;
+            LastCommittedRewardSummary = null;
             _lastAutomaticLootBundle = null;
             _hasPendingRewardSettlement = false;
             _lastDuplicateConversion = null;

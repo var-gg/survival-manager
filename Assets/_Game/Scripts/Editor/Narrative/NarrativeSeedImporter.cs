@@ -145,6 +145,18 @@ public static class NarrativeSeedImporter
             if (isNew) created++; else updated++;
         }
 
+        // --- Story Archive Catalog ---
+        if (manifest.ArchiveEntries.Count > 0)
+        {
+            EnsureFolder(ArchiveCatalogDir);
+            var catalogPath = $"{ArchiveCatalogDir}/StoryArchiveCatalog.asset";
+            bool catalogIsNew = !File.Exists(catalogPath);
+            var catalog = CreateOrLoadAsset<StoryArchiveCatalogDefinition>(catalogPath);
+            ApplyArchiveCatalog(catalog, catalogPath, manifest.ArchiveEntries);
+            EditorUtility.SetDirty(catalog);
+            if (catalogIsNew) created++; else updated++;
+        }
+
         // --- Localization ---
         LocalizationFoundationBootstrap.EnsureFoundationAssets();
         var collection = EnsureStoryTableCollection();
@@ -279,6 +291,36 @@ public static class NarrativeSeedImporter
                 lso.ApplyModifiedPropertiesWithoutUndo();
             });
         SetObjectReferenceArray(so.FindProperty("_lines"), lineAssets);
+
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void ApplyArchiveCatalog(
+        StoryArchiveCatalogDefinition asset,
+        string assetPath,
+        IReadOnlyList<NarrativeArchiveEntryDto> entries)
+    {
+        var so = new SerializedObject(asset);
+
+        var entryAssets = SyncChildAssets<StoryArchiveEntryDefinition>(
+            assetPath, "entry", entries.Count,
+            (child, index) =>
+            {
+                var cso = new SerializedObject(child);
+                var entry = entries[index];
+                cso.FindProperty("_eventId").stringValue = entry.EventId;
+                cso.FindProperty("_chapterId").stringValue = entry.ChapterId;
+                cso.FindProperty("_siteId").stringValue = entry.SiteId;
+                cso.FindProperty("_presentationKey").stringValue = entry.PresentationKey;
+                cso.FindProperty("_presentationKind").enumValueIndex = (int)entry.Kind;
+                cso.FindProperty("_runtimeContext").enumValueIndex = (int)entry.RuntimeContext;
+                // _replayPolicy는 manifest DTO에 아직 없다 — build 파이프라인이 산출하기 전까지 Full 기본값.
+                cso.FindProperty("_replayPolicy").enumValueIndex = (int)StoryArchiveReplayPolicy.Full;
+                cso.FindProperty("_labelTextKey").stringValue = entry.DisplayTitle;
+                cso.FindProperty("_sourceOrder").intValue = entry.SourceOrder;
+                cso.ApplyModifiedPropertiesWithoutUndo();
+            });
+        SetObjectReferenceArray(so.FindProperty("_entries"), entryAssets);
 
         so.ApplyModifiedPropertiesWithoutUndo();
     }

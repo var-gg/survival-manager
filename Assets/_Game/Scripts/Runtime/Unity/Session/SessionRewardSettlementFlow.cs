@@ -236,10 +236,14 @@ public sealed partial class GameSessionState
                 _session.AppendRuntimeTelemetry(RuntimeOperationalTelemetry.CreateRewardSettlementDuplicatePrevented(
                     _session.ResolveTelemetryRunId(),
                     rewardSourceId));
+                _session.LastCommittedRewardSummary = BuildRewardSummary(
+                    index, choice, rewardSourceId, goldDelta: 0, echoDelta: 0, wasRecovered: true);
                 _session.SyncActiveRunIfPresent();
                 return true;
             }
 
+            var goldBeforeChoice = _session.Profile.Currencies.Gold;
+            var echoBeforeChoice = _session.Profile.Currencies.Echo;
             var timestamp = DateTime.UtcNow.ToString("O");
             switch (choice.Kind)
             {
@@ -306,6 +310,13 @@ public sealed partial class GameSessionState
                 _session.Profile.Currencies.Gold,
                 _session.Profile.Currencies.Echo));
             _session.AppendRuntimeTelemetry(_session.BuildEconomySnapshot("reward_choice_applied"));
+            _session.LastCommittedRewardSummary = BuildRewardSummary(
+                index,
+                choice,
+                rewardSourceId,
+                goldDelta: _session.Profile.Currencies.Gold - goldBeforeChoice,
+                echoDelta: _session.Profile.Currencies.Echo - echoBeforeChoice,
+                wasRecovered: false);
             _session._pendingRewardChoices.Clear();
             _session.SyncActiveRunIfPresent();
             return true;
@@ -321,6 +332,26 @@ public sealed partial class GameSessionState
             }
 
             return _session.ResolvePendingPermanentUnlockId(augmentId);
+        }
+
+        private RewardSummaryRecord BuildRewardSummary(
+            int index,
+            RewardChoiceViewModel choice,
+            string rewardSourceId,
+            int goldDelta,
+            int echoDelta,
+            bool wasRecovered)
+        {
+            return new RewardSummaryRecord(
+                ChapterId: _session.ActiveRun?.Overlay.ChapterId ?? _session.Profile.CampaignProgress.SelectedChapterId,
+                SiteId: _session.ActiveRun?.Overlay.SiteId ?? _session.Profile.CampaignProgress.SelectedSiteId,
+                RewardSourceId: rewardSourceId,
+                ChoiceIndex: index,
+                ChoiceKind: choice.Kind.ToString(),
+                PayloadId: choice.PayloadId,
+                GoldDelta: goldDelta,
+                EchoDelta: echoDelta,
+                WasRecoveredSettlement: wasRecovered);
         }
     }
 

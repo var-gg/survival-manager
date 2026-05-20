@@ -98,6 +98,7 @@ public sealed record NarrativeProgressRecord
                 continue;
             }
 
+            // ContextSnapshot은 same-session enqueue->dequeue 전용 값이라 save truth가 아니다 — normalize는 carry하지 않고 .Empty로 둔다.
             normalized.Add(new StoryPresentationRequest
             {
                 PresentationKind = request.PresentationKind,

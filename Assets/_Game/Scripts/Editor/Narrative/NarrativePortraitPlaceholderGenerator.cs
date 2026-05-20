@@ -9,7 +9,7 @@ namespace SM.Editor.Narrative;
 public static class NarrativePortraitPlaceholderGenerator
 {
     private const string AuthoringMapPath = "tools/narrative-authoring-map.json";
-    private const string PortraitsRoot = "Assets/Resources/Narrative/Portraits";
+    private const string PortraitsRoot = "Assets/Resources/_Game/Art/Characters";
     private const int PlaceholderSize = 256;
 
     [MenuItem("SM/내러티브/포트레이트 플레이스홀더 생성")]
@@ -41,7 +41,7 @@ public static class NarrativePortraitPlaceholderGenerator
             }
 
             var folderPath = $"{PortraitsRoot}/{speakerId}";
-            var defaultPath = $"{folderPath}/Default.png";
+            var defaultPath = $"{folderPath}/portrait_face_default.png";
 
             EnsureFolder(folderPath);
 
