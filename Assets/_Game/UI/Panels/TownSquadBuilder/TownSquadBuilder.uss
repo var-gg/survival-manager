@@ -9,13 +9,16 @@
 }
 
 .sm-sqb-modal__section {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
-    -unity-slice-left: 64;
-    -unity-slice-right: 64;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.42;
-    background-color: var(--sm-bg-1);
+    background-image: none;
+    background-color: rgba(24, 31, 63, 0.86);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.18);
+    border-right-color: rgba(230, 183, 81, 0.18);
+    border-top-color: rgba(230, 183, 81, 0.16);
+    border-bottom-color: rgba(230, 183, 81, 0.24);
     padding-left: var(--sm-s-4);
     padding-right: var(--sm-s-4);
     padding-top: var(--sm-s-4);
@@ -25,20 +28,6 @@
 .sm-sqb-modal__divider {
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Divider/ui_divider_horizontal_diamond.png");
     -unity-background-scale-mode: scale-to-fit;
-}
-
-.sm-sqb-modal__anchor-button,
-.sm-sqb-modal__posture-button {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_dark.png");
-    -unity-slice-left: 96;
-    -unity-slice-right: 96;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
-    -unity-slice-scale: 0.32;
-}
-
-.sm-sqb-modal__posture-button--selected {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_gold.png");
 }
 
 .sm-sqb-modal__close {

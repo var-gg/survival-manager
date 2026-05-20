@@ -8,12 +8,12 @@
     "Assets/_Game/UI/Panels/SkillCompendium/SkillCompendium.uss",
     "Assets/_Game/UI/Panels/InventoryTab/InventoryTab.uss",
     "Assets/_Game/UI/Panels/EquipmentRefit/EquipmentRefit.uss",
-    "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"
-  ],
-  "monitoredProductionPanelUss": [
+    "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss",
     "Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uss",
     "Assets/_Game/UI/Panels/TownRosterGrid/TownRosterGrid.uss",
     "Assets/_Game/UI/Panels/SettingsGlobal/SettingsGlobal.uss"
+  ],
+  "monitoredProductionPanelUss": [
   ],
   "productionUxmlRoots": [
     "Assets/_Game/UI/Panels",

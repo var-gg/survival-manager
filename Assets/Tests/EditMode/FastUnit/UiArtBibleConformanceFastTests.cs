@@ -28,8 +28,8 @@ public sealed class UiArtBibleConformanceFastTests
         var registry = File.ReadAllText(RegistryPath);
         var exceptions = File.ReadAllText(ExceptionsPath);
 
-        Assert.That(ReadStringArray(registry, "enforcedProductionPanelUss").Count, Is.GreaterThanOrEqualTo(7));
-        Assert.That(ReadStringArray(registry, "monitoredProductionPanelUss").Count, Is.GreaterThanOrEqualTo(3));
+        Assert.That(ReadStringArray(registry, "enforcedProductionPanelUss").Count, Is.GreaterThanOrEqualTo(10));
+        Assert.That(registry, Does.Contain("\"monitoredProductionPanelUss\""));
         Assert.That(registry, Does.Contain("\"button.cta.primary\""));
         Assert.That(registry, Does.Contain("\"button.cta.secondary\""));
         Assert.That(registry, Does.Contain("\"chrome.l1.outer-modal\""));
@@ -40,8 +40,6 @@ public sealed class UiArtBibleConformanceFastTests
         Assert.That(registry, Does.Contain("\"ui_button_dark.png\""));
         Assert.That(exceptions, Does.Contain("\"exceptions\""));
         Assert.That(exceptions, Does.Contain("\"AB101_PRODUCTION_IMPORTS_PREVIEW_STYLE\""));
-        Assert.That(exceptions, Does.Contain("\"AB102_LOCAL_BUTTON_SLICE_DUPLICATION\""));
-        Assert.That(exceptions, Does.Contain("\"AB151_MONITORED_PANEL_INNER_CHROME\""));
     }
 
     [Test]
