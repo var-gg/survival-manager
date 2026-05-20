@@ -15,12 +15,12 @@
 *.gif binary
 *.psd filter=lfs diff=lfs merge=lfs -text
 *.fbx filter=lfs diff=lfs merge=lfs -text
-*.anim binary
-*.controller binary
-*.unity binary
-*.prefab binary
-*.mat binary
-*.asset binary
+*.anim text eol=lf diff
+*.controller text eol=lf diff
+*.unity text eol=lf diff
+*.prefab text eol=lf diff
+*.mat text eol=lf diff
+*.asset text eol=lf diff
 *.wav filter=lfs diff=lfs merge=lfs -text
 *.mp3 filter=lfs diff=lfs merge=lfs -text
 *.ogg filter=lfs diff=lfs merge=lfs -text
