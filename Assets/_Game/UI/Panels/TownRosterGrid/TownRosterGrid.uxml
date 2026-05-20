@@ -10,7 +10,6 @@
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
     <Style src="../../Foundation/Components/HeroPortraitCard.uss" />
     <Style src="../../Foundation/USS/foundation_glow.uss" />
-    <Style src="../../Screens/Town/Preview/RosterGridPreview.uss" />
     <Style src="TownRosterGrid.uss" />
     <ui:VisualElement name="RosterGridPreviewRoot" class="rgp-root">
         <ui:VisualElement name="Backdrop" class="rgp-backdrop" picking-mode="Ignore" />

@@ -7,7 +7,6 @@
     <Style src="../../Foundation/Styles/ThemeTokens.uss" />
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
     <Style src="../../Foundation/USS/foundation_glow.uss" />
-    <Style src="../../Screens/Town/Preview/EquipmentRefitPreview.uss" />
     <Style src="EquipmentRefit.uss" />
     <ui:VisualElement name="ErpRoot" class="erp-root">
         <ui:VisualElement class="erp-backdrop" picking-mode="Ignore" />

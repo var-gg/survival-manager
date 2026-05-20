@@ -4,7 +4,6 @@
     <Style src="../../Foundation/Styles/ThemeTokens.uss" />
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
     <Style src="../../Foundation/USS/foundation_glow.uss" />
-    <Style src="../../Screens/Town/Preview/SettingsPreview.uss" />
     <Style src="SettingsGlobal.uss" />
     <ui:VisualElement name="StpRoot" class="stp-root">
         <ui:VisualElement class="stp-backdrop" picking-mode="Ignore" />

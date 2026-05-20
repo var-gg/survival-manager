@@ -4,7 +4,6 @@
     <Style src="../../Foundation/Styles/ThemeTokens.uss" />
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
     <Style src="../../Foundation/USS/foundation_glow.uss" />
-    <Style src="../../Screens/Town/Preview/PassiveBoardPreview.uss" />
     <Style src="PassiveBoard.uss" />
     <ui:VisualElement name="PbpRoot" class="pbp-root">
         <ui:VisualElement class="pbp-backdrop" picking-mode="Ignore" />

@@ -1,15 +1,5 @@
 {
   "version": 1,
   "policy": "Exceptions must name the role, path, reason, owner, and expiry condition. Permanent style drift is not an exception.",
-  "exceptions": [
-    {
-      "id": "ABX-001",
-      "ruleId": "AB101_PRODUCTION_IMPORTS_PREVIEW_STYLE",
-      "path": "Assets/_Game/UI/Panels/**/*.uxml",
-      "severity": "warning",
-      "reason": "Phase 1 keeps Preview USS imports visible while ArtBible role markers and production USS ownership are reconciled.",
-      "owner": "UI ArtBible rollout",
-      "expiresWhen": "Panel UXML files import only panel-local USS and Foundation ArtBible styles."
-    }
-  ]
+  "exceptions": []
 }

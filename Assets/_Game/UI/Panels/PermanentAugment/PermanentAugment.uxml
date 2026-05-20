@@ -5,7 +5,6 @@
     <Style src="../../Foundation/Styles/ThemeTokens.uss" />
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
     <Style src="../../Foundation/USS/foundation_glow.uss" />
-    <Style src="../../Screens/Town/Preview/PermanentAugmentPreview.uss" />
     <Style src="PermanentAugment.uss" />
     <ui:VisualElement name="PapRoot" class="pap-root">
         <ui:VisualElement class="pap-backdrop" picking-mode="Ignore" />

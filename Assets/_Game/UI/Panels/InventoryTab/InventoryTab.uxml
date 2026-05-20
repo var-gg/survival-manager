@@ -5,7 +5,6 @@
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
     <Style src="../../Foundation/USS/foundation_glow.uss" />
     <Style src="../../Foundation/USS/common_detail.uss" />
-    <Style src="../../Screens/Town/Preview/InventoryPreview.uss" />
     <Style src="InventoryTab.uss" />
     <ui:VisualElement name="InvRoot" class="inv-root">
         <ui:VisualElement class="inv-backdrop" picking-mode="Ignore" />

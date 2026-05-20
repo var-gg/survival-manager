@@ -39,7 +39,6 @@ public sealed class UiArtBibleConformanceFastTests
         Assert.That(registry, Does.Contain("\"ui_button_gold.png\""));
         Assert.That(registry, Does.Contain("\"ui_button_dark.png\""));
         Assert.That(exceptions, Does.Contain("\"exceptions\""));
-        Assert.That(exceptions, Does.Contain("\"AB101_PRODUCTION_IMPORTS_PREVIEW_STYLE\""));
     }
 
     [Test]
@@ -57,6 +56,15 @@ public sealed class UiArtBibleConformanceFastTests
             errors,
             Is.Empty,
             "ArtBible conformance errors were found. See " + MarkdownReportPath + Environment.NewLine + FormatFindings(errors));
+
+        var warnings = findings
+            .Where(finding => finding.Severity == ArtBibleSeverity.Warning)
+            .ToArray();
+
+        Assert.That(
+            warnings,
+            Is.Empty,
+            "ArtBible conformance warnings were found. See " + MarkdownReportPath + Environment.NewLine + FormatFindings(warnings));
     }
 
     private static ArtBibleRegistry LoadRegistry()
@@ -157,7 +165,7 @@ public sealed class UiArtBibleConformanceFastTests
             var uxml = File.ReadAllText(path);
             if (uxml.Contains("Screens/Town/Preview", StringComparison.Ordinal))
             {
-                findings.Add(Warning("AB101_PRODUCTION_IMPORTS_PREVIEW_STYLE", path, "Production UXML still imports a Town Preview USS."));
+                findings.Add(Error("AB101_PRODUCTION_IMPORTS_PREVIEW_STYLE", path, "Production UXML must not import a Town Preview USS."));
             }
         }
     }

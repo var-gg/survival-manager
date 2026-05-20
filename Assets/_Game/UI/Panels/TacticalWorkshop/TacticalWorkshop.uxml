@@ -9,7 +9,6 @@
     <Style src="../../Foundation/Styles/ThemeTokens.uss" />
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
     <Style src="../../Foundation/USS/foundation_glow.uss" />
-    <Style src="../../Screens/Town/Preview/TacticalWorkshopPreview.uss" />
     <Style src="TacticalWorkshop.uss" />
     <ui:VisualElement name="TwpRoot" class="twp-root">
         <ui:VisualElement name="Backdrop" class="twp-backdrop" picking-mode="Ignore" />

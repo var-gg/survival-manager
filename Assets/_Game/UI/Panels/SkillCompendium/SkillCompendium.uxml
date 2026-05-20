@@ -2,7 +2,6 @@
     <Style src="../../Foundation/Styles/ThemeTokens.uss" />
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
     <Style src="../../Foundation/USS/foundation_glow.uss" />
-    <Style src="../../Screens/Town/Preview/CompendiumPreview.uss" />
     <Style src="SkillCompendium.uss" />
     <ui:VisualElement name="CompendiumRoot" class="cmp-root" style="display: none;">
         <ui:VisualElement class="cmp-backdrop" picking-mode="Ignore" />

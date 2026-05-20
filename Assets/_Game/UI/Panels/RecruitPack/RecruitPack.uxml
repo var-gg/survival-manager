@@ -12,7 +12,6 @@
     <Style src="../../Foundation/Styles/ThemeTokens.uss" />
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
     <Style src="../../Foundation/USS/foundation_glow.uss" />
-    <Style src="../../Screens/Town/Preview/RecruitPreview.uss" />
     <Style src="RecruitPack.uss" />
     <ui:VisualElement name="RcpRoot" class="rcp-root">
         <ui:VisualElement name="Backdrop" class="rcp-backdrop" picking-mode="Ignore" />

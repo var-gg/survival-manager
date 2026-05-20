@@ -1,3 +1,1144 @@
+/* Production-owned styles migrated from Assets/_Game/UI/Screens/Town/Preview/CompendiumPreview.uss.
+   Keep production panel UXML free of Screens/Town/Preview imports. */
+
+.cmp-root {
+    flex-grow: 1;
+    color: var(--sm-ink-1);
+}
+
+.cmp-backdrop {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.cmp-backdrop-dim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(8, 12, 28, 0.68);
+}
+
+.cmp-frame {
+    left: 54px;
+    right: 54px;
+    top: 42px;
+    bottom: 42px;
+}
+
+.cmp-frame.sm-modal-frame--parchment {
+    background-color: rgba(11, 15, 31, 0.95);
+    border-left-color: rgba(226, 181, 88, 0.86);
+    border-right-color: rgba(226, 181, 88, 0.86);
+    border-top-color: rgba(226, 181, 88, 0.86);
+    border-bottom-color: rgba(226, 181, 88, 0.86);
+}
+
+.cmp-frame__wash {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    bottom: 10px;
+    background-color: rgba(245, 234, 208, 0.025);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.06);
+    border-right-color: rgba(245, 234, 208, 0.06);
+    border-top-color: rgba(245, 234, 208, 0.06);
+    border-bottom-color: rgba(245, 234, 208, 0.06);
+}
+
+.cmp-frame .sm-modal-frame__texture {
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(230, 183, 81, 0.30);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+}
+
+.cmp-frame__inner-line {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.16);
+    border-right-color: rgba(230, 183, 81, 0.16);
+    border-top-color: rgba(230, 183, 81, 0.16);
+    border-bottom-color: rgba(230, 183, 81, 0.16);
+}
+
+.cmp-header {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 14px;
+    padding-bottom: 13px;
+    padding-left: 22px;
+    padding-right: 24px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.28);
+    background-color: rgba(15, 20, 40, 0.96);
+}
+
+.cmp-header__seal {
+    width: 48px;
+    height: 48px;
+    margin-right: 14px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Ornaments/ornament-vine-flourish.svg");
+    -unity-background-image-tint-color: rgba(230, 183, 81, 0.88);
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(200, 147, 42, 0.12);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.42);
+    border-right-color: rgba(230, 183, 81, 0.42);
+    border-top-color: rgba(230, 183, 81, 0.42);
+    border-bottom-color: rgba(230, 183, 81, 0.42);
+}
+
+.cmp-header__copy {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.cmp-title {
+    color: var(--sm-vellum);
+    font-size: 22px;
+    -unity-font-style: bold;
+}
+
+.cmp-subtitle {
+    color: rgba(245, 234, 208, 0.70);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.cmp-close {
+    width: 72px;
+    background-color: rgba(45, 37, 45, 0.92);
+    border-left-color: rgba(230, 183, 81, 0.74);
+    border-right-color: rgba(230, 183, 81, 0.74);
+    border-top-color: rgba(230, 183, 81, 0.74);
+    border-bottom-color: rgba(230, 183, 81, 0.74);
+}
+
+.cmp-tabs {
+    flex-direction: row;
+    padding-top: 10px;
+    padding-bottom: 8px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: rgba(12, 16, 34, 0.96);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.16);
+}
+
+.cmp-tab {
+    min-width: 108px;
+    margin-right: 8px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    background-color: rgba(32, 39, 76, 0.92);
+    color: var(--sm-ink-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.32);
+    border-right-color: rgba(230, 183, 81, 0.32);
+    border-top-color: rgba(230, 183, 81, 0.32);
+    border-bottom-color: rgba(230, 183, 81, 0.32);
+    -unity-font-style: bold;
+}
+
+.cmp-tab--selected {
+    background-color: rgba(196, 142, 39, 0.70);
+    color: var(--sm-gold-100);
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.cmp-filters {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: rgba(8, 12, 27, 0.96);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.18);
+}
+
+.cmp-filter__search {
+    width: 230px;
+    margin-right: 10px;
+    color: var(--sm-vellum);
+}
+
+.cmp-filter__search .unity-base-field__label,
+.cmp-filter__dropdown .unity-base-field__label {
+    color: rgba(245, 234, 208, 0.78);
+}
+
+.cmp-filter__search .unity-base-text-field__input,
+.cmp-filter__search .unity-text-field__input {
+    background-color: rgba(7, 10, 22, 0.78);
+    color: var(--sm-vellum);
+    border-left-color: rgba(230, 183, 81, 0.36);
+    border-right-color: rgba(230, 183, 81, 0.36);
+    border-top-color: rgba(230, 183, 81, 0.36);
+    border-bottom-color: rgba(230, 183, 81, 0.36);
+}
+
+.cmp-filter__dropdown .unity-base-popup-field__text {
+    color: var(--sm-vellum);
+}
+
+.cmp-filter__skill-row {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.cmp-filter__dropdown {
+    width: 164px;
+    margin-right: 8px;
+    color: var(--sm-vellum);
+}
+
+.cmp-filter__dropdown .unity-base-field__input,
+.cmp-filter__dropdown .unity-base-popup-field__input {
+    background-color: rgba(7, 10, 22, 0.74);
+    color: var(--sm-vellum);
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(230, 183, 81, 0.30);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+}
+
+.cmp-filter__summary {
+    min-width: 92px;
+    color: var(--sm-ink-3);
+    font-size: 11px;
+    -unity-text-align: middle-right;
+}
+
+.cmp-body {
+    flex-direction: row;
+    flex-grow: 1;
+    padding: 16px;
+    background-color: rgba(5, 8, 20, 0.62);
+}
+
+.cmp-catalog-shell {
+    width: 478px;
+    margin-right: 14px;
+    padding: 8px;
+    background-color: rgba(11, 16, 35, 0.74);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.34);
+    border-right-color: rgba(230, 183, 81, 0.34);
+    border-top-color: rgba(230, 183, 81, 0.34);
+    border-bottom-color: rgba(230, 183, 81, 0.34);
+}
+
+.cmp-entry-scroll {
+    width: 460px;
+    flex-grow: 1;
+    background-color: rgba(5, 8, 20, 0.35);
+}
+
+.cmp-entry-scroll .unity-scroll-view__vertical-scroller {
+    width: 12px;
+    background-color: rgba(5, 8, 20, 0.72);
+}
+
+.cmp-entry-scroll .unity-scroller {
+    background-color: rgba(5, 8, 20, 0.72);
+}
+
+.cmp-entry-scroll .unity-scroller__slider {
+    background-color: rgba(230, 183, 81, 0.58);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.35);
+    border-right-color: rgba(245, 234, 208, 0.35);
+    border-top-color: rgba(245, 234, 208, 0.35);
+    border-bottom-color: rgba(245, 234, 208, 0.35);
+}
+
+.cmp-entry-scroll .unity-base-slider__tracker {
+    background-color: rgba(5, 8, 20, 0.82);
+}
+
+.cmp-entry-scroll .unity-base-slider__dragger {
+    background-color: rgba(230, 183, 81, 0.72);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.40);
+    border-right-color: rgba(245, 234, 208, 0.40);
+    border-top-color: rgba(245, 234, 208, 0.40);
+    border-bottom-color: rgba(245, 234, 208, 0.40);
+}
+
+.cmp-entry-scroll .unity-scroller__low-button,
+.cmp-entry-scroll .unity-scroller__high-button {
+    display: none;
+}
+
+.cmp-entry-list {
+    flex-direction: column;
+}
+
+.cmp-entry-list--skill-grid {
+    flex-direction: column;
+    align-content: flex-start;
+    width: 442px;
+}
+
+.cmp-skill-row {
+    flex-direction: row;
+    width: 442px;
+    flex-shrink: 0;
+}
+
+.cmp-entry-list--character-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+.cmp-skill-card {
+    width: 213px;
+    min-height: 186px;
+    flex-direction: column;
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding-top: 10px;
+    padding-bottom: 9px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: rgba(20, 27, 55, 0.92);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(230, 183, 81, 0.30);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+}
+
+.cmp-skill-card--selected {
+    background-color: rgba(198, 140, 37, 0.30);
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.cmp-skill-card:hover {
+    background-color: rgba(32, 42, 78, 0.94);
+    border-left-color: rgba(230, 183, 81, 0.58);
+    border-right-color: rgba(230, 183, 81, 0.58);
+    border-top-color: rgba(230, 183, 81, 0.58);
+    border-bottom-color: rgba(230, 183, 81, 0.58);
+}
+
+.cmp-skill-card__top {
+    flex-direction: row;
+    align-items: center;
+}
+
+.cmp-skill-card__icon {
+    width: 58px;
+    height: 58px;
+    margin-right: 9px;
+    background-color: rgba(245, 234, 208, 0.10);
+    -unity-background-scale-mode: scale-to-fit;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.22);
+    border-right-color: rgba(230, 183, 81, 0.22);
+    border-top-color: rgba(230, 183, 81, 0.22);
+    border-bottom-color: rgba(230, 183, 81, 0.22);
+}
+
+.cmp-skill-card__headline {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.cmp-skill-card__intent {
+    color: var(--sm-gold-200);
+    font-size: 10px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.cmp-skill-card__title {
+    color: var(--sm-vellum);
+    font-size: 13px;
+    -unity-font-style: bold;
+    margin-top: 3px;
+    white-space: normal;
+}
+
+.cmp-skill-card__chips {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 9px;
+}
+
+.cmp-skill-card__chip {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 6px;
+    padding-right: 6px;
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    background-color: rgba(245, 234, 208, 0.07);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.18);
+    border-right-color: rgba(245, 234, 208, 0.18);
+    border-top-color: rgba(245, 234, 208, 0.18);
+    border-bottom-color: rgba(245, 234, 208, 0.18);
+    white-space: normal;
+}
+
+.cmp-skill-card__chip--slot {
+    color: var(--sm-gold-100);
+}
+
+.cmp-skill-card__line {
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    margin-top: 2px;
+    white-space: normal;
+}
+
+.cmp-skill-card__stats {
+    color: var(--sm-vellum);
+    font-size: 11px;
+    -unity-font-style: bold;
+    margin-top: 6px;
+    white-space: normal;
+}
+
+.cmp-skill-card__status {
+    color: rgba(116, 255, 190, 0.92);
+    font-size: 10px;
+    margin-top: 5px;
+    white-space: normal;
+}
+
+.cmp-skill-card__vfx {
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    margin-top: 5px;
+    white-space: normal;
+}
+
+.cmp-character-card {
+    width: 136px;
+    min-height: 222px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    padding-left: 9px;
+    padding-right: 9px;
+    background-color: rgba(26, 34, 69, 0.84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(230, 183, 81, 0.30);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+}
+
+.cmp-character-card--selected {
+    background-color: rgba(200, 147, 42, 0.24);
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.cmp-character-card--locked {
+    opacity: 0.72;
+}
+
+.cmp-character-card__portrait {
+    height: 118px;
+    background-color: rgba(245, 234, 208, 0.06);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.cmp-character-card--locked .cmp-character-card__portrait {
+    background-color: rgba(8, 12, 25, 0.82);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.18);
+    border-right-color: rgba(245, 234, 208, 0.18);
+    border-top-color: rgba(245, 234, 208, 0.18);
+    border-bottom-color: rgba(245, 234, 208, 0.18);
+}
+
+.cmp-character-card__silhouette {
+    align-self: center;
+    width: 76px;
+    height: 102px;
+    margin-top: 9px;
+    position: relative;
+}
+
+.cmp-character-card__silhouette-head {
+    position: absolute;
+    left: 24px;
+    top: 8px;
+    width: 28px;
+    height: 28px;
+    background-color: rgba(245, 234, 208, 0.22);
+    border-top-left-radius: 999px;
+    border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px;
+    border-bottom-right-radius: 999px;
+}
+
+.cmp-character-card__silhouette-body {
+    position: absolute;
+    left: 13px;
+    top: 40px;
+    width: 50px;
+    height: 54px;
+    background-color: rgba(245, 234, 208, 0.16);
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+}
+
+.cmp-character-card__title {
+    color: var(--sm-vellum);
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-top: 8px;
+    white-space: normal;
+}
+
+.cmp-character-card__tags {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.cmp-character-card__tag {
+    margin-right: 4px;
+    margin-bottom: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: var(--sm-gold-100);
+    font-size: 9px;
+    background-color: rgba(245, 234, 208, 0.07);
+    white-space: normal;
+}
+
+.cmp-character-card__race {
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    margin-top: 1px;
+    white-space: normal;
+}
+
+.cmp-character-card__unlock {
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    margin-top: 5px;
+    white-space: normal;
+}
+
+.cmp-character-card--locked .cmp-character-card__title {
+    color: var(--sm-ink-2);
+}
+
+.cmp-character-card--locked .cmp-character-card__unlock {
+    color: rgba(255, 196, 119, 0.92);
+}
+
+.cmp-entry {
+    flex-direction: row;
+    margin-bottom: 8px;
+    padding: 9px;
+    min-height: 76px;
+    background-color: rgba(28, 34, 67, 0.82);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.28);
+    border-right-color: rgba(230, 183, 81, 0.28);
+    border-top-color: rgba(230, 183, 81, 0.28);
+    border-bottom-color: rgba(230, 183, 81, 0.28);
+}
+
+.cmp-entry--selected {
+    background-color: rgba(200, 147, 42, 0.24);
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+
+.cmp-entry--locked {
+    opacity: 0.62;
+}
+
+.cmp-entry--locked .cmp-entry__icon {
+    background-color: rgba(245, 234, 208, 0.04);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.26);
+    border-right-color: rgba(245, 234, 208, 0.26);
+    border-top-color: rgba(245, 234, 208, 0.26);
+    border-bottom-color: rgba(245, 234, 208, 0.26);
+}
+
+.cmp-entry__icon {
+    width: 54px;
+    height: 54px;
+    margin-right: 10px;
+    background-color: rgba(245, 234, 208, 0.08);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.cmp-entry__copy {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.cmp-entry__title {
+    color: var(--sm-vellum);
+    font-size: 13px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.cmp-entry__meta {
+    color: var(--sm-gold-200);
+    font-size: 11px;
+    margin-top: 4px;
+    white-space: normal;
+}
+
+.cmp-entry__hook {
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    margin-top: 3px;
+    white-space: normal;
+}
+
+.cmp-detail {
+    flex-grow: 1;
+    padding: 18px;
+    background-color: rgba(9, 13, 28, 0.94);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.45);
+    border-right-color: rgba(230, 183, 81, 0.45);
+    border-top-color: rgba(230, 183, 81, 0.45);
+    border-bottom-color: rgba(230, 183, 81, 0.45);
+}
+
+.cmp-panel-corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.48);
+    border-right-color: rgba(230, 183, 81, 0.48);
+    border-top-color: rgba(230, 183, 81, 0.48);
+    border-bottom-color: rgba(230, 183, 81, 0.48);
+}
+
+.cmp-panel-corner--tl {
+    left: 4px;
+    top: 4px;
+}
+
+.cmp-panel-corner--br {
+    right: 4px;
+    bottom: 4px;
+}
+
+.cmp-detail__top {
+    flex-direction: row;
+    height: 204px;
+    padding: 12px;
+    background-color: rgba(245, 234, 208, 0.035);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/compendium_card_frame_dark_9slice.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.32;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.22);
+    border-right-color: rgba(230, 183, 81, 0.22);
+    border-top-color: rgba(230, 183, 81, 0.22);
+    border-bottom-color: rgba(230, 183, 81, 0.22);
+}
+
+.cmp-detail__icon-shell {
+    width: 116px;
+    height: 116px;
+    margin-right: 14px;
+    align-self: flex-start;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(245, 234, 208, 0.08);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.38);
+    border-right-color: rgba(230, 183, 81, 0.38);
+    border-top-color: rgba(230, 183, 81, 0.38);
+    border-bottom-color: rgba(230, 183, 81, 0.38);
+}
+
+.cmp-detail__icon {
+    width: 94px;
+    height: 94px;
+    background-color: rgba(245, 234, 208, 0.06);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.cmp-detail__copy {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.cmp-detail__title {
+    color: var(--sm-vellum);
+    font-size: 22px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.cmp-detail__subtitle {
+    color: var(--sm-gold-200);
+    font-size: 12px;
+    margin-top: 4px;
+    white-space: normal;
+}
+
+.cmp-detail__description {
+    color: var(--sm-ink-2);
+    font-size: 13px;
+    margin-top: 12px;
+    white-space: normal;
+}
+
+.cmp-detail__hook {
+    display: none;
+    color: var(--sm-ink-3);
+    font-size: 11px;
+    margin-top: 10px;
+    white-space: normal;
+}
+
+.cmp-detail__keyword-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    min-height: 24px;
+}
+
+.cmp-detail__keyword {
+    margin-right: 6px;
+    margin-bottom: 5px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: var(--sm-gold-100);
+    font-size: 10px;
+    background-color: rgba(50, 40, 36, 0.76);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(230, 183, 81, 0.30);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+    white-space: normal;
+}
+
+.cmp-vfx-stage {
+    height: 242px;
+    margin-top: 10px;
+    overflow: hidden;
+    position: relative;
+    background-color: rgba(4, 7, 16, 0.94);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/compendium_card_frame_dark_9slice.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.32;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.32);
+    border-right-color: rgba(230, 183, 81, 0.32);
+    border-top-color: rgba(230, 183, 81, 0.32);
+    border-bottom-color: rgba(230, 183, 81, 0.32);
+}
+
+.cmp-vfx-stage__floor {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 32px;
+    bottom: 0;
+    background-color: rgba(200, 147, 42, 0.035);
+}
+
+.cmp-vfx-stage__grid {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(245, 234, 208, 0.035);
+}
+
+.cmp-vfx-reticle {
+    position: absolute;
+    width: 92px;
+    height: 92px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.28);
+    border-right-color: rgba(230, 183, 81, 0.28);
+    border-top-color: rgba(230, 183, 81, 0.28);
+    border-bottom-color: rgba(230, 183, 81, 0.28);
+    border-top-left-radius: 999px;
+    border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px;
+    border-bottom-right-radius: 999px;
+    opacity: 0.72;
+}
+
+.cmp-vfx-reticle--caster {
+    left: 9%;
+    top: 38%;
+}
+
+.cmp-vfx-reticle--target {
+    right: 16%;
+    top: 38%;
+    border-left-color: rgba(255, 149, 102, 0.32);
+    border-right-color: rgba(255, 149, 102, 0.32);
+    border-top-color: rgba(255, 149, 102, 0.32);
+    border-bottom-color: rgba(255, 149, 102, 0.32);
+}
+
+.cmp-vfx-prefab-preview {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: 0.9;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.cmp-vfx-node {
+    position: absolute;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.52);
+    border-right-color: rgba(245, 234, 208, 0.52);
+    border-top-color: rgba(245, 234, 208, 0.52);
+    border-bottom-color: rgba(245, 234, 208, 0.52);
+    border-top-left-radius: 999px;
+    border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px;
+    border-bottom-right-radius: 999px;
+}
+
+.cmp-vfx-node--caster {
+    background-color: rgba(87, 161, 255, 0.36);
+}
+
+.cmp-vfx-node--target {
+    background-color: rgba(255, 111, 99, 0.32);
+}
+
+.cmp-vfx-trace {
+    position: absolute;
+    background-color: rgba(255, 221, 128, 0.68);
+}
+
+.cmp-vfx-projectile,
+.cmp-vfx-burst,
+.cmp-vfx-pulse {
+    position: absolute;
+    border-top-left-radius: 999px;
+    border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px;
+    border-bottom-right-radius: 999px;
+}
+
+.cmp-vfx-projectile {
+    background-color: rgba(255, 233, 148, 0.88);
+}
+
+.cmp-vfx-burst {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(255, 233, 148, 0.82);
+    border-right-color: rgba(255, 233, 148, 0.82);
+    border-top-color: rgba(255, 233, 148, 0.82);
+    border-bottom-color: rgba(255, 233, 148, 0.82);
+    background-color: rgba(255, 122, 82, 0.18);
+}
+
+.cmp-vfx-pulse {
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(255, 233, 148, 0.52);
+    border-right-color: rgba(255, 233, 148, 0.52);
+    border-top-color: rgba(255, 233, 148, 0.52);
+    border-bottom-color: rgba(255, 233, 148, 0.52);
+}
+
+.cmp-vfx-hud {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 9px;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.cmp-vfx-hud__chip {
+    margin-right: 5px;
+    margin-bottom: 4px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 6px;
+    padding-right: 6px;
+    color: var(--sm-vellum);
+    font-size: 9px;
+    background-color: rgba(11, 17, 35, 0.74);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 234, 208, 0.20);
+    border-right-color: rgba(245, 234, 208, 0.20);
+    border-top-color: rgba(245, 234, 208, 0.20);
+    border-bottom-color: rgba(245, 234, 208, 0.20);
+    white-space: normal;
+}
+
+.cmp-vfx-hud__chip--pattern {
+    color: var(--sm-gold-100);
+}
+
+.cmp-vfx-hud__chip--route {
+    color: rgba(118, 204, 255, 0.95);
+}
+
+.cmp-vfx-hud__chip--asset {
+    color: var(--sm-ink-2);
+}
+
+.cmp-vfx-actor-label {
+    position: absolute;
+    color: var(--sm-ink-2);
+    font-size: 9px;
+    -unity-font-style: bold;
+    background-color: rgba(9, 13, 28, 0.62);
+}
+
+.cmp-vfx-actor-label--caster {
+    color: rgba(139, 190, 255, 0.95);
+}
+
+.cmp-vfx-actor-label--target {
+    color: rgba(255, 159, 149, 0.95);
+}
+
+.cmp-vfx-caption {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 9px;
+    flex-direction: column;
+}
+
+.cmp-vfx-caption__title {
+    color: var(--sm-vellum);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.cmp-vfx-caption__body {
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    margin-top: 2px;
+    white-space: normal;
+}
+
+.cmp-vfx-replay {
+    align-self: flex-start;
+    margin-top: 8px;
+    min-width: 72px;
+}
+
+.cmp-vfx-stage--projectile .cmp-vfx-projectile,
+.cmp-vfx-stage--projectile .cmp-vfx-trace {
+    background-color: rgba(255, 216, 95, 0.82);
+}
+
+.cmp-vfx-stage--arcane .cmp-vfx-projectile,
+.cmp-vfx-stage--arcane .cmp-vfx-trace {
+    background-color: rgba(118, 212, 255, 0.82);
+}
+
+.cmp-vfx-stage--arcane .cmp-vfx-burst,
+.cmp-vfx-stage--control .cmp-vfx-burst {
+    border-left-color: rgba(148, 189, 255, 0.82);
+    border-right-color: rgba(148, 189, 255, 0.82);
+    border-top-color: rgba(148, 189, 255, 0.82);
+    border-bottom-color: rgba(148, 189, 255, 0.82);
+    background-color: rgba(89, 109, 205, 0.20);
+}
+
+.cmp-vfx-stage--area .cmp-vfx-burst,
+.cmp-vfx-stage--area .cmp-vfx-pulse {
+    border-left-color: rgba(255, 171, 88, 0.82);
+    border-right-color: rgba(255, 171, 88, 0.82);
+    border-top-color: rgba(255, 171, 88, 0.82);
+    border-bottom-color: rgba(255, 171, 88, 0.82);
+}
+
+.cmp-vfx-stage--heal .cmp-vfx-projectile,
+.cmp-vfx-stage--heal .cmp-vfx-trace,
+.cmp-vfx-stage--heal .cmp-vfx-burst {
+    background-color: rgba(92, 231, 163, 0.30);
+}
+
+.cmp-vfx-stage--heal .cmp-vfx-burst,
+.cmp-vfx-stage--heal .cmp-vfx-pulse {
+    border-left-color: rgba(116, 255, 190, 0.82);
+    border-right-color: rgba(116, 255, 190, 0.82);
+    border-top-color: rgba(116, 255, 190, 0.82);
+    border-bottom-color: rgba(116, 255, 190, 0.82);
+}
+
+.cmp-vfx-stage--guard .cmp-vfx-burst,
+.cmp-vfx-stage--guard .cmp-vfx-pulse,
+.cmp-vfx-stage--aura .cmp-vfx-burst,
+.cmp-vfx-stage--aura .cmp-vfx-pulse {
+    border-left-color: rgba(118, 204, 255, 0.82);
+    border-right-color: rgba(118, 204, 255, 0.82);
+    border-top-color: rgba(118, 204, 255, 0.82);
+    border-bottom-color: rgba(118, 204, 255, 0.82);
+}
+
+.cmp-vfx-stage--control .cmp-vfx-projectile,
+.cmp-vfx-stage--control .cmp-vfx-trace {
+    background-color: rgba(191, 125, 255, 0.72);
+}
+
+.cmp-detail__metrics {
+    margin-top: 12px;
+    flex-direction: column;
+}
+
+.cmp-metric {
+    flex-direction: row;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.18);
+}
+
+.cmp-metric__label {
+    width: 112px;
+    color: var(--sm-ink-3);
+    font-size: 11px;
+}
+
+.cmp-metric__value {
+    flex-grow: 1;
+    color: var(--sm-vellum);
+    font-size: 11px;
+    white-space: normal;
+}
+
+/* Panel-local ArtBible ownership overrides. */
 .cmp-frame {
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_outer.png");
     -unity-slice-left: 96;
