@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "goal": "Town production UI controls should read as console JRPG material, not generic web components.",
+  "enforcedProductionPanelUss": [
+    "Assets/_Game/UI/Panels/RecruitPack/RecruitPack.uss",
+    "Assets/_Game/UI/Panels/PermanentAugment/PermanentAugment.uss",
+    "Assets/_Game/UI/Panels/PassiveBoard/PassiveBoard.uss",
+    "Assets/_Game/UI/Panels/SkillCompendium/SkillCompendium.uss",
+    "Assets/_Game/UI/Panels/InventoryTab/InventoryTab.uss",
+    "Assets/_Game/UI/Panels/EquipmentRefit/EquipmentRefit.uss",
+    "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"
+  ],
+  "monitoredProductionPanelUss": [
+    "Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uss",
+    "Assets/_Game/UI/Panels/TownRosterGrid/TownRosterGrid.uss",
+    "Assets/_Game/UI/Panels/SettingsGlobal/SettingsGlobal.uss"
+  ],
+  "productionUxmlRoots": [
+    "Assets/_Game/UI/Panels",
+    "Assets/_Game/UI/Screens/Town"
+  ],
+  "forbiddenInnerChromeImages": [
+    "ui_panel_frame_inner.png",
+    "ui_card_frame_normal.png",
+    "ui_card_frame_selected_base.png",
+    "ui_card_frame_locked.png",
+    "ui_icon_slot_frame.png"
+  ],
+  "canonicalButtonSlices": [
+    {
+      "material": "material.gold-button-slice",
+      "image": "ui_button_gold.png",
+      "sliceLeft": "96",
+      "sliceRight": "96",
+      "sliceTop": "64",
+      "sliceBottom": "64",
+      "sliceScale": "0.34"
+    },
+    {
+      "material": "material.dark-button-slice",
+      "image": "ui_button_dark.png",
+      "sliceLeft": "96",
+      "sliceRight": "96",
+      "sliceTop": "64",
+      "sliceBottom": "64",
+      "sliceScale": "0.34"
+    }
+  ],
+  "roles": [
+    {
+      "id": "button.cta.primary",
+      "description": "Gold sliced commit CTA: recruit, activate, equip, refit, confirm, paid refresh.",
+      "canonicalClasses": ["sm-cta", "sm-cta--primary"],
+      "canonicalMaterial": "material.gold-button-slice",
+      "productionSelectors": [
+        ".rcp-card__recruit",
+        ".rcp-actions__refresh",
+        ".pbp-detail__activate",
+        ".inv-detail__btn--equip",
+        ".erp-refit-cta",
+        ".pap-equip-cta"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "button.cta.secondary",
+      "description": "Dark sliced utility CTA: close, scout, compare, replay, cancel.",
+      "canonicalClasses": ["sm-cta", "sm-cta--secondary"],
+      "canonicalMaterial": "material.dark-button-slice",
+      "productionSelectors": [
+        ".rcp-actions__scout",
+        ".cmp-close",
+        ".cmp-vfx-replay",
+        ".inv-detail__btn--compare",
+        ".erp-header__close",
+        ".twp-header__close"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "chrome.l1.outer-modal",
+      "description": "Only top-level modal shell may use ornate gold frame and corner flourish.",
+      "canonicalClasses": ["sm-modal-frame"],
+      "allowedImages": [
+        "ui_panel_frame_outer.png",
+        "ornament-corner-vine.svg"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "chrome.l2.content-panel",
+      "description": "Quiet inner panel. No ornate raster frame.",
+      "canonicalClasses": ["sm-chrome-l2"],
+      "forbiddenImages": [
+        "ui_panel_frame_inner.png",
+        "ui_card_frame_normal.png",
+        "ui_card_frame_selected_base.png",
+        "ui_card_frame_locked.png",
+        "ui_icon_slot_frame.png"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "screen.recruit.candidate-card",
+      "description": "Recruit candidate card. L3 card material with slot-state tint only.",
+      "canonicalClasses": ["rcp-card"],
+      "forbiddenImages": [
+        "ui_card_frame_normal.png",
+        "ui_card_frame_selected_base.png",
+        "ui_card_frame_locked.png",
+        "ui_icon_slot_frame.png"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "screen.passive.node",
+      "description": "PassiveBoard node. L3 hierarchy, but node silhouette is role-defined and must not be flattened into a generic rounded rectangle.",
+      "canonicalClasses": ["pbp-board__node"],
+      "allowedStates": ["small", "notable", "keystone", "active", "locked"],
+      "shapePolicy": "preserve-node-silhouette",
+      "severity": "warning"
+    }
+  ]
+}

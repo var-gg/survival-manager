@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "policy": "Exceptions must name the role, path, reason, owner, and expiry condition. Permanent style drift is not an exception.",
+  "exceptions": [
+    {
+      "id": "ABX-001",
+      "ruleId": "AB101_PRODUCTION_IMPORTS_PREVIEW_STYLE",
+      "path": "Assets/_Game/UI/Panels/**/*.uxml",
+      "severity": "warning",
+      "reason": "Phase 1 keeps Preview USS imports visible while ArtBible role markers and production USS ownership are reconciled.",
+      "owner": "UI ArtBible rollout",
+      "expiresWhen": "Panel UXML files import only panel-local USS and Foundation ArtBible styles."
+    },
+    {
+      "id": "ABX-002",
+      "ruleId": "AB102_LOCAL_BUTTON_SLICE_DUPLICATION",
+      "path": "Assets/_Game/UI/Panels/**/*.uss",
+      "severity": "warning",
+      "reason": "Panel-local CTA selectors still carry sliced button assets until they are routed through sm-cta role classes.",
+      "owner": "UI ArtBible rollout",
+      "expiresWhen": "CTA material is expressed through sm-cta/sm-cta--primary or sm-cta/sm-cta--secondary without per-panel slice duplication."
+    },
+    {
+      "id": "ABX-003",
+      "ruleId": "AB151_MONITORED_PANEL_INNER_CHROME",
+      "path": "Assets/_Game/UI/Panels/TownSquadBuilder/**, Assets/_Game/UI/Panels/TownRosterGrid/**, Assets/_Game/UI/Panels/SettingsGlobal/**",
+      "severity": "warning",
+      "reason": "These panels are known pre-rollout surfaces. They must remain visible in the report but do not block the Phase 1 closure.",
+      "owner": "UI ArtBible rollout",
+      "expiresWhen": "The monitored panels enter enforcedProductionPanelUss or are replaced by reconciled production variants."
+    }
+  ]
+}
