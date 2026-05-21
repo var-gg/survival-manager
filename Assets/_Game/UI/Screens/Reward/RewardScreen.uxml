@@ -46,6 +46,14 @@
 
         <ui:VisualElement class="screen__body">
             <ui:VisualElement class="screen__column">
+                <ui:VisualElement class="panel reward-progression-panel">
+                    <ui:Label name="ProgressionTitleLabel" class="panel__title" />
+                    <ui:VisualElement name="RewardProgressionRows" class="reward-progression-rows" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel reward-timeline-panel">
+                    <ui:Label name="TimelineTitleLabel" class="panel__title" />
+                    <ui:VisualElement name="RewardTimelineTicks" class="reward-timeline-ticks" />
+                </ui:VisualElement>
                 <ui:VisualElement class="panel">
                     <ui:Label name="SummaryTitleLabel" class="panel__title" />
                     <ui:Label name="RunDeltaLabel" class="panel__text" />

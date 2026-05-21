@@ -114,6 +114,7 @@ public sealed class RewardScreenPresenter
     {
         var defaultStatus = BuildDefaultStatus(session);
         var canReturnToTown = session.PendingRewardChoices.Count == 0;
+        var profile = _root.ProfileQueries.GetProfileView(_root.ActiveProfileId);
         return new RewardScreenViewState(
             Localize(GameLocalizationTables.UIReward, "ui.reward.title", "Reward Operator UI"),
             BuildLocaleStatus(),
@@ -125,6 +126,8 @@ public sealed class RewardScreenPresenter
             BuildRunDeltaText(session),
             Localize(GameLocalizationTables.UIReward, "ui.reward.panel.build_context", "Build Impact"),
             BuildBuildContextText(session),
+            Localize(GameLocalizationTables.UIReward, "ui.reward.panel.progression", "Progression"),
+            Localize(GameLocalizationTables.UIReward, "ui.reward.panel.timeline", "Event Timeline"),
             Localize(GameLocalizationTables.UIReward, "ui.reward.choices.header", "Choose one reward card"),
             BuildChoiceCards(session),
             string.IsNullOrWhiteSpace(message)
@@ -134,7 +137,9 @@ public sealed class RewardScreenPresenter
             BuildReturnTownTooltip(session),
             canReturnToTown,
             canReturnToTown,
-            BuildSettlementSummaryState(session));
+            BuildSettlementSummaryState(session),
+            BuildProgressionRows(session, profile),
+            BuildTimelineTicks(session, profile));
     }
 
     public RewardSettlementSummaryViewState BuildSettlementSummaryState(GameSessionState session)
@@ -151,6 +156,89 @@ public sealed class RewardScreenPresenter
             session,
             (_, fallback) => fallback,
             (_, fallback, percent) => string.Format(System.Globalization.CultureInfo.InvariantCulture, fallback, percent));
+    }
+
+    internal static IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRowsForTest(GameSessionState session, ProfileView profile)
+    {
+        return BuildProgressionRowsCore(
+            session,
+            profile,
+            token => token.HasValue ? "recorded" : "none",
+            BuildContinuationTextForTest);
+    }
+
+    internal static IReadOnlyList<RewardTimelineTickViewState> BuildTimelineTicksForTest(GameSessionState session, ProfileView profile)
+    {
+        return BuildTimelineTicksCore(session, profile);
+    }
+
+    private IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRows(GameSessionState session, ProfileView profile)
+    {
+        return BuildProgressionRowsCore(
+            session,
+            profile,
+            token => token.HasValue ? token.Resolve(_localization, _contentText) : Localize(GameLocalizationTables.UICommon, "ui.common.none", "None"),
+            BuildContinuationText);
+    }
+
+    private static IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRowsCore(
+        GameSessionState session,
+        ProfileView profile,
+        Func<SessionTextToken, string> resolveToken,
+        Func<GameSessionState, string> resolveContinuation)
+    {
+        var battleValue = session.LastBattleSummary.HasValue
+            ? resolveToken(session.LastBattleSummary)
+            : session.LastBattleVictory ? "Victory" : "Defeat";
+        var lootValue = session.LastAutomaticLootBundle == null
+            ? "None"
+            : LootResolutionService.FormatSummary(session.LastAutomaticLootBundle);
+        var choiceValue = session.LastRewardApplicationSummary.HasValue
+            ? resolveToken(session.LastRewardApplicationSummary)
+            : session.PendingRewardChoices.Count == 0 ? "Applied" : "Awaiting choice";
+
+        return new[]
+        {
+            new RewardProgressionRowViewState("Battle", battleValue, session.LastBattleVictory ? "victory" : "defeat"),
+            new RewardProgressionRowViewState("Auto Loot", lootValue, session.LastAutomaticLootBundle == null ? "empty" : "loot"),
+            new RewardProgressionRowViewState("Reward Choice", choiceValue, session.PendingRewardChoices.Count == 0 ? "applied" : "pending"),
+            new RewardProgressionRowViewState("Wallet", $"{profile.Gold} Gold / {profile.Echo} Echo", "economy"),
+            new RewardProgressionRowViewState("Inventory", $"{profile.InventoryCount} items", "inventory"),
+            new RewardProgressionRowViewState("Continuation", resolveContinuation(session), session.PendingRewardChoices.Count == 0 ? "ready" : "locked"),
+        };
+    }
+
+    private IReadOnlyList<RewardTimelineTickViewState> BuildTimelineTicks(GameSessionState session, ProfileView profile)
+    {
+        return BuildTimelineTicksCore(session, profile);
+    }
+
+    private static IReadOnlyList<RewardTimelineTickViewState> BuildTimelineTicksCore(GameSessionState session, ProfileView profile)
+    {
+        var rewardApplied = session.LastRewardApplicationSummary.HasValue || session.PendingRewardChoices.Count == 0;
+        return new[]
+        {
+            new RewardTimelineTickViewState(
+                "Battle",
+                session.LastBattleSummary.HasValue ? "settlement recorded" : "fallback settlement",
+                true,
+                false),
+            new RewardTimelineTickViewState(
+                "Auto Loot",
+                session.LastAutomaticLootBundle == null ? "no automatic loot" : "automatic loot bundled",
+                session.LastAutomaticLootBundle != null,
+                false),
+            new RewardTimelineTickViewState(
+                "Reward Choice",
+                rewardApplied ? "choice applied" : $"{session.PendingRewardChoices.Count} pending choices",
+                rewardApplied,
+                !rewardApplied),
+            new RewardTimelineTickViewState(
+                "Return",
+                rewardApplied ? $"town return ready · {profile.InventoryCount} inventory" : "locked until reward choice",
+                rewardApplied,
+                rewardApplied),
+        };
     }
 
     private static RewardSettlementSummaryViewState BuildSettlementSummaryStateCore(
@@ -624,6 +712,18 @@ public sealed class RewardScreenPresenter
         return IsFinalExtractSettlement(session)
             ? Localize(GameLocalizationTables.UIReward, "ui.reward.continuation.complete", "Run closes after this return to Town.")
             : Localize(GameLocalizationTables.UIReward, "ui.reward.continuation.resume", "Run stays active and can resume from Town.");
+    }
+
+    private static string BuildContinuationTextForTest(GameSessionState session)
+    {
+        if (session.IsQuickBattleSmokeActive)
+        {
+            return "Smoke lane closes and returns to Town.";
+        }
+
+        return IsFinalExtractSettlement(session)
+            ? "Run closes after this return to Town."
+            : "Run stays active and can resume from Town.";
     }
 
     private string ResolveChoiceTitle(RewardChoiceViewModel choice) => Localize(GameLocalizationTables.UIReward, choice.TitleKey, choice.PayloadId);

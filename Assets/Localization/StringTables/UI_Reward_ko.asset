@@ -548,6 +548,14 @@ MonoBehaviour:
       \uC7AC\uAC1C\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
+  - m_Id: 121
+    m_Localized: "\uC9C4\uD589"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122
+    m_Localized: "\uC774\uBCA4\uD2B8 \uD0C0\uC784\uB77C\uC778"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

@@ -45,6 +45,17 @@ public sealed record RewardSettlementSummaryViewState(
         ThreatBandLabelText: string.Empty);
 }
 
+public sealed record RewardProgressionRowViewState(
+    string KeyText,
+    string ValueText,
+    string ToneKey);
+
+public sealed record RewardTimelineTickViewState(
+    string StepText,
+    string DetailText,
+    bool IsComplete,
+    bool IsCurrent);
+
 public sealed record RewardScreenViewState(
     string Title,
     string LocaleStatus,
@@ -56,6 +67,8 @@ public sealed record RewardScreenViewState(
     string RunDeltaText,
     string BuildContextTitle,
     string BuildContextText,
+    string ProgressionTitle,
+    string TimelineTitle,
     string ChoicesHeaderText,
     IReadOnlyList<RewardChoiceCardViewState> Choices,
     string StatusText,
@@ -63,4 +76,6 @@ public sealed record RewardScreenViewState(
     string ReturnTownTooltip,
     bool CanReturnToTown,
     bool ReturnTownIsPrimary,
-    RewardSettlementSummaryViewState SettlementSummary);
+    RewardSettlementSummaryViewState SettlementSummary,
+    IReadOnlyList<RewardProgressionRowViewState> ProgressionRows,
+    IReadOnlyList<RewardTimelineTickViewState> TimelineTicks);

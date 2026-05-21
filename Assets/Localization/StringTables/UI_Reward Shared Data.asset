@@ -519,6 +519,14 @@ MonoBehaviour:
     m_Key: ui.reward.settlement.chip.affinity_boost
     m_Metadata:
       m_Items: []
+  - m_Id: 121
+    m_Key: ui.reward.panel.progression
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122
+    m_Key: ui.reward.panel.timeline
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

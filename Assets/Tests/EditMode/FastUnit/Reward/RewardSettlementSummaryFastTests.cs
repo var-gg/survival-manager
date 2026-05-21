@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SM.Combat.Model;
@@ -150,6 +152,55 @@ public sealed class RewardSettlementSummaryFastTests
             "Elevated band(threat=30%)는 ThreatBandLabelText에 한국어 label 표시.");
         Assert.That(state.ThreatBandLabelText, Does.Contain("고조").Or.Contain("Elevated"),
             "default fallback label은 '위협 고조'.");
+    }
+
+    [Test]
+    public void RewardResultProgressionRows_AndTimelineTicks_AreDeclared()
+    {
+        var session = GameSessionTestFactory.Create();
+        var profile = new ProfileView(
+            "profile-test",
+            "Player",
+            SessionRealm.OfflineLocal,
+            false,
+            Gold: 123,
+            Echo: 45,
+            PermanentAugmentSlotCount: 0,
+            HeroCount: 2,
+            InventoryCount: 7,
+            Heroes: System.Array.Empty<ProfileHeroView>());
+
+        var rows = RewardScreenPresenter.BuildProgressionRowsForTest(session, profile);
+        var ticks = RewardScreenPresenter.BuildTimelineTicksForTest(session, profile);
+
+        Assert.That(rows.Select(row => row.KeyText), Is.SupersetOf(new[] { "Battle", "Auto Loot", "Reward Choice", "Wallet", "Inventory", "Continuation" }));
+        Assert.That(rows.Single(row => row.KeyText == "Wallet").ValueText, Does.Contain("123").And.Contain("45"));
+        Assert.That(rows.Single(row => row.KeyText == "Inventory").ValueText, Does.Contain("7"));
+        Assert.That(ticks.Select(tick => tick.StepText), Is.EqualTo(new[] { "Battle", "Auto Loot", "Reward Choice", "Return" }));
+        Assert.That(ticks.Any(tick => tick.IsCurrent), Is.True);
+
+        var viewStateSource = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenViewState.cs");
+        var presenterSource = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenPresenter.cs");
+        var viewSource = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenView.cs");
+        var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Reward/RewardScreen.uxml");
+
+        Assert.That(viewStateSource, Does.Contain("RewardProgressionRowViewState"));
+        Assert.That(viewStateSource, Does.Contain("RewardTimelineTickViewState"));
+        Assert.That(viewStateSource, Does.Contain("ProgressionTitle"));
+        Assert.That(viewStateSource, Does.Contain("TimelineTitle"));
+        Assert.That(viewStateSource, Does.Contain("ProgressionRows"));
+        Assert.That(viewStateSource, Does.Contain("TimelineTicks"));
+        Assert.That(presenterSource, Does.Contain("LastBattleSummary"));
+        Assert.That(presenterSource, Does.Contain("LastAutomaticLootBundle"));
+        Assert.That(presenterSource, Does.Contain("LastRewardApplicationSummary"));
+        Assert.That(presenterSource, Does.Contain("BuildProgressionRows"));
+        Assert.That(presenterSource, Does.Contain("BuildTimelineTicks"));
+        Assert.That(viewSource, Does.Contain("RenderProgressionRows"));
+        Assert.That(viewSource, Does.Contain("RenderTimelineTicks"));
+        Assert.That(uxml, Does.Contain("ProgressionTitleLabel"));
+        Assert.That(uxml, Does.Contain("TimelineTitleLabel"));
+        Assert.That(uxml, Does.Contain("RewardProgressionRows"));
+        Assert.That(uxml, Does.Contain("RewardTimelineTicks"));
     }
 
     private static ActiveRunState CreateStubActiveRun()

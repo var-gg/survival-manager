@@ -27,6 +27,90 @@
     color: var(--sm-gold-100);
 }
 
+.reward-screen .reward-progression-panel,
+.reward-screen .reward-timeline-panel {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.reward-screen .reward-progression-rows,
+.reward-screen .reward-timeline-ticks {
+    flex-direction: column;
+}
+
+.reward-screen .reward-progression-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: var(--sm-bg-1-a54);
+    border-left-width: 2px;
+    border-left-color: var(--sm-gold-300-a28);
+}
+
+.reward-screen .reward-progression-row--victory,
+.reward-screen .reward-progression-row--applied,
+.reward-screen .reward-progression-row--ready {
+    border-left-color: var(--sm-fam-beastkin);
+}
+
+.reward-screen .reward-progression-row--pending,
+.reward-screen .reward-progression-row--locked {
+    border-left-color: var(--sm-fam-mystic);
+}
+
+.reward-screen .reward-progression-row__key {
+    min-width: 96px;
+    color: var(--sm-ink-2);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.reward-screen .reward-progression-row__value {
+    flex-grow: 1;
+    color: var(--sm-vellum);
+    font-size: 11px;
+    white-space: normal;
+}
+
+.reward-screen .reward-timeline-tick {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.reward-screen .reward-timeline-tick__marker {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    border-radius: 9px;
+    background-color: var(--sm-bg-1-a54);
+    color: var(--sm-ink-2);
+    -unity-text-align: middle-center;
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.reward-screen .reward-timeline-tick--complete .reward-timeline-tick__marker {
+    background-color: var(--sm-fam-beastkin);
+    color: var(--sm-bg-0);
+}
+
+.reward-screen .reward-timeline-tick--current .reward-timeline-tick__marker {
+    background-color: var(--sm-gold-100);
+    color: var(--sm-bg-0);
+}
+
+.reward-screen .reward-timeline-tick__text {
+    flex-grow: 1;
+    color: var(--sm-ink-2);
+    font-size: 11px;
+    white-space: normal;
+}
+
 .reward-screen .reward-settlement-summary {
     flex-direction: column;
     margin-left: 8px;

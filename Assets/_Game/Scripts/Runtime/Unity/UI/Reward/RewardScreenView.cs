@@ -19,6 +19,10 @@ public sealed class RewardScreenView
     private readonly Label _runDeltaLabel;
     private readonly Label _buildContextTitleLabel;
     private readonly Label _buildContextLabel;
+    private readonly Label _progressionTitleLabel;
+    private readonly Label _timelineTitleLabel;
+    private readonly VisualElement _progressionRows;
+    private readonly VisualElement _timelineTicks;
     private readonly Label _choicesHeaderLabel;
     private readonly Label _statusLabel;
     private readonly Button _returnTownButton;
@@ -50,6 +54,10 @@ public sealed class RewardScreenView
         _runDeltaLabel = Require<Label>(root, "RunDeltaLabel");
         _buildContextTitleLabel = Require<Label>(root, "BuildContextTitleLabel");
         _buildContextLabel = Require<Label>(root, "BuildContextLabel");
+        _progressionTitleLabel = Require<Label>(root, "ProgressionTitleLabel");
+        _timelineTitleLabel = Require<Label>(root, "TimelineTitleLabel");
+        _progressionRows = Require<VisualElement>(root, "RewardProgressionRows");
+        _timelineTicks = Require<VisualElement>(root, "RewardTimelineTicks");
         _choicesHeaderLabel = Require<Label>(root, "ChoicesHeaderLabel");
         _statusLabel = Require<Label>(root, "StatusLabel");
         _returnTownButton = Require<Button>(root, "ReturnTownButton");
@@ -101,6 +109,10 @@ public sealed class RewardScreenView
         _runDeltaLabel.text = state.RunDeltaText;
         _buildContextTitleLabel.text = state.BuildContextTitle;
         _buildContextLabel.text = state.BuildContextText;
+        _progressionTitleLabel.text = state.ProgressionTitle;
+        _timelineTitleLabel.text = state.TimelineTitle;
+        RenderProgressionRows(state.ProgressionRows);
+        RenderTimelineTicks(state.TimelineTicks);
         _choicesHeaderLabel.text = state.ChoicesHeaderText;
         _statusLabel.text = state.StatusText;
         _returnTownButton.text = state.ReturnTownLabel;
@@ -128,6 +140,49 @@ public sealed class RewardScreenView
         }
 
         RenderSettlementSummary(state.SettlementSummary);
+    }
+
+    private void RenderProgressionRows(IReadOnlyList<RewardProgressionRowViewState> rows)
+    {
+        _progressionRows.Clear();
+        foreach (var row in rows ?? Array.Empty<RewardProgressionRowViewState>())
+        {
+            var container = new VisualElement();
+            container.AddToClassList("reward-progression-row");
+            container.AddToClassList($"reward-progression-row--{row.ToneKey}");
+
+            var key = new Label(row.KeyText);
+            key.AddToClassList("reward-progression-row__key");
+            container.Add(key);
+
+            var value = new Label(row.ValueText);
+            value.AddToClassList("reward-progression-row__value");
+            container.Add(value);
+
+            _progressionRows.Add(container);
+        }
+    }
+
+    private void RenderTimelineTicks(IReadOnlyList<RewardTimelineTickViewState> ticks)
+    {
+        _timelineTicks.Clear();
+        foreach (var tick in ticks ?? Array.Empty<RewardTimelineTickViewState>())
+        {
+            var container = new VisualElement();
+            container.AddToClassList("reward-timeline-tick");
+            container.EnableInClassList("reward-timeline-tick--complete", tick.IsComplete);
+            container.EnableInClassList("reward-timeline-tick--current", tick.IsCurrent);
+
+            var marker = new Label(tick.IsComplete ? "✓" : "•");
+            marker.AddToClassList("reward-timeline-tick__marker");
+            container.Add(marker);
+
+            var text = new Label($"{tick.StepText} · {tick.DetailText}");
+            text.AddToClassList("reward-timeline-tick__text");
+            container.Add(text);
+
+            _timelineTicks.Add(container);
+        }
     }
 
     public void RenderSettlementSummary(RewardSettlementSummaryViewState state)
