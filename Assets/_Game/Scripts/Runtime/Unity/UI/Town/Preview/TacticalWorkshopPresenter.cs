@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Content.Definitions;
+using SM.Core.Contracts;
 using SM.Meta.Model;
+using SM.Persistence.Abstractions.Models;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -29,19 +32,22 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
     private readonly SpriteLoader _postureSprite;
     private readonly SpriteLoader _threatSprite;
     private readonly SpriteLoader _classSprite;
+    private readonly ContentTextResolver _contentText;
 
     public TacticalWorkshopPresenter(
         GameSessionRoot root,
         TacticalWorkshopView view,
         SpriteLoader postureSprite,
         SpriteLoader threatSprite,
-        SpriteLoader classSprite)
+        SpriteLoader classSprite,
+        ContentTextResolver? contentText = null)
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _view = view ?? throw new ArgumentNullException(nameof(view));
         _postureSprite = postureSprite ?? throw new ArgumentNullException(nameof(postureSprite));
         _threatSprite = threatSprite ?? throw new ArgumentNullException(nameof(threatSprite));
         _classSprite = classSprite ?? throw new ArgumentNullException(nameof(classSprite));
+        _contentText = contentText ?? new ContentTextResolver(root.Localization, root.CombatContentLookup);
     }
 
     public void Initialize()
@@ -94,7 +100,7 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
         var heroById = session.Profile.Heroes.ToDictionary(h => h.HeroId, StringComparer.Ordinal);
 
         var anchors = new List<TacticalWorkshopAnchorViewState>(6);
-        foreach (DeploymentAnchorId anchor in Enum.GetValues(typeof(DeploymentAnchorId)))
+        foreach (var anchor in AnchorOrder)
         {
             var deployment = loadout?.Deployments.FirstOrDefault(d => d.Anchor == anchor);
             var heroId = deployment?.HeroId ?? string.Empty;
@@ -147,13 +153,165 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
 
     private IReadOnlyList<TacticalWorkshopHeroTacticViewState> BuildTactics(GameSessionState session)
     {
-        // Sprint 2: deployed hero × archetype의 RoleInstruction(Anchor/RoleTag/bias 3 float) +
-        // BehaviorProfile(FormationLine/RangeDiscipline) 매핑. condition→action→target rule chain은
-        // runtime 모델에 없음 (audit §4.1 P1-1) — 가짜 RuleSet 대신 실재 요약으로 빌드.
-        return Array.Empty<TacticalWorkshopHeroTacticViewState>();
+        // deployed hero × role instruction + behavior profile 요약.
+        // condition→action→target rule chain은 runtime 모델에 없으므로 가짜 RuleSet을 만들지 않는다.
+        var loadout = _root.ProfileQueries.GetLoadoutView(_root.ActiveProfileId);
+        var heroById = session.Profile.Heroes.ToDictionary(h => h.HeroId, StringComparer.Ordinal);
+        var activeBlueprint = ResolveActiveBlueprint(session);
+        var rows = new List<TacticalWorkshopHeroTacticViewState>();
+
+        foreach (var anchor in AnchorOrder)
+        {
+            var deployment = loadout?.Deployments.FirstOrDefault(d => d.Anchor == anchor);
+            var heroId = deployment?.HeroId ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(heroId) || !heroById.TryGetValue(heroId, out var hero))
+            {
+                continue;
+            }
+
+            var roleInstructionId = ResolveRoleInstructionId(hero, anchor, activeBlueprint);
+            var fallbackRoleTag = ResolveDefaultRoleTag(hero.ClassId, anchor);
+            RoleInstructionDefinition? roleInstruction = null;
+            if (!string.IsNullOrWhiteSpace(roleInstructionId)
+                && _root.CombatContentLookup.TryGetRoleInstructionDefinition(roleInstructionId, out var resolvedRole))
+            {
+                roleInstruction = resolvedRole;
+            }
+
+            var behaviorProfile = ResolveBehaviorProfile(hero);
+            rows.Add(new TacticalWorkshopHeroTacticViewState(
+                HeroId: hero.HeroId,
+                DisplayName: ResolveHeroDisplayName(hero),
+                AnchorLabel: LocalizeAnchor(anchor),
+                RoleLabel: _contentText.GetRoleName(roleInstructionId, roleInstruction?.RoleTag ?? fallbackRoleTag),
+                FormationLabel: LocalizeFormation(behaviorProfile?.FormationLine),
+                RangeLabel: LocalizeRange(behaviorProfile?.RangeDiscipline),
+                Biases: BuildBiases(roleInstruction)));
+        }
+
+        return rows;
     }
 
+    private SquadBlueprintRecord? ResolveActiveBlueprint(GameSessionState session)
+    {
+        return session.Profile.SquadBlueprints.FirstOrDefault(record =>
+                   string.Equals(record.BlueprintId, session.Profile.ActiveBlueprintId, StringComparison.Ordinal))
+               ?? session.Profile.SquadBlueprints.FirstOrDefault();
+    }
+
+    private string ResolveHeroDisplayName(HeroInstanceRecord hero)
+    {
+        if (!string.IsNullOrWhiteSpace(hero.Name))
+        {
+            return hero.Name;
+        }
+
+        if (!string.IsNullOrWhiteSpace(hero.CharacterId))
+        {
+            return _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId);
+        }
+
+        return !string.IsNullOrWhiteSpace(hero.ArchetypeId)
+            ? _contentText.GetArchetypeName(hero.ArchetypeId)
+            : hero.HeroId;
+    }
+
+    private string ResolveRoleInstructionId(HeroInstanceRecord hero, DeploymentAnchorId anchor, SquadBlueprintRecord? activeBlueprint)
+    {
+        if (activeBlueprint?.HeroRoleIds != null
+            && activeBlueprint.HeroRoleIds.TryGetValue(hero.HeroId, out var roleInstructionId)
+            && !string.IsNullOrWhiteSpace(roleInstructionId))
+        {
+            return roleInstructionId;
+        }
+
+        return ResolveDefaultRoleInstructionId(hero.ClassId, anchor);
+    }
+
+    private BehaviorProfileDefinition? ResolveBehaviorProfile(HeroInstanceRecord hero)
+    {
+        if (!string.IsNullOrWhiteSpace(hero.ArchetypeId)
+            && _root.CombatContentLookup.TryGetArchetype(hero.ArchetypeId, out var archetype))
+        {
+            return archetype.BehaviorProfile;
+        }
+
+        if (!string.IsNullOrWhiteSpace(hero.HeroId)
+            && _root.CombatContentLookup.TryGetArchetype(hero.HeroId, out var heroArchetype))
+        {
+            return heroArchetype.BehaviorProfile;
+        }
+
+        return null;
+    }
+
+    private static IReadOnlyList<TacticalWorkshopBiasViewState> BuildBiases(RoleInstructionDefinition? roleInstruction)
+    {
+        return new[]
+        {
+            new TacticalWorkshopBiasViewState("캐리 보호", Clamp01(roleInstruction?.ProtectCarryBias ?? 0f)),
+            new TacticalWorkshopBiasViewState("후열 압박", Clamp01(roleInstruction?.BacklinePressureBias ?? 0f)),
+            new TacticalWorkshopBiasViewState("후퇴 성향", Clamp01(roleInstruction?.RetreatBias ?? 0f)),
+        };
+    }
+
+    private static string ResolveDefaultRoleInstructionId(string classId, DeploymentAnchorId anchor)
+        => ResolveDefaultRoleTag(classId, anchor);
+
+    private static string ResolveDefaultRoleTag(string classId, DeploymentAnchorId anchor)
+    {
+        return classId switch
+        {
+            "vanguard" => "anchor",
+            "duelist" => "bruiser",
+            "ranger" => "carry",
+            "mystic" => "support",
+            _ => anchor.IsFrontRow() ? "frontline" : "backline",
+        };
+    }
+
+    private static string LocalizeAnchor(DeploymentAnchorId anchor) => anchor switch
+    {
+        DeploymentAnchorId.FrontTop => "전열 상",
+        DeploymentAnchorId.FrontCenter => "전열 중",
+        DeploymentAnchorId.FrontBottom => "전열 하",
+        DeploymentAnchorId.BackTop => "후열 상",
+        DeploymentAnchorId.BackCenter => "후열 중",
+        DeploymentAnchorId.BackBottom => "후열 하",
+        _ => anchor.ToString(),
+    };
+
+    private static string LocalizeFormation(FormationLine? formation) => formation switch
+    {
+        FormationLine.Frontline => "전열",
+        FormationLine.Midline => "중열",
+        FormationLine.Backline => "후열",
+        _ => "배치 기준",
+    };
+
+    private static string LocalizeRange(RangeDiscipline? range) => range switch
+    {
+        RangeDiscipline.Collapse => "압박 접근",
+        RangeDiscipline.HoldBand => "거리 유지",
+        RangeDiscipline.KiteBackward => "후퇴 카이팅",
+        RangeDiscipline.SideStepHold => "측면 유지",
+        RangeDiscipline.AnchorNearFrontline => "전열 근접",
+        _ => "기본 교전 거리",
+    };
+
+    private static float Clamp01(float value) => Mathf.Clamp01(value);
+
     // === Static catalog (pindoc V1 wiki SoT 한국어 표시명) ===
+
+    private static readonly DeploymentAnchorId[] AnchorOrder =
+    {
+        DeploymentAnchorId.FrontTop,
+        DeploymentAnchorId.FrontCenter,
+        DeploymentAnchorId.FrontBottom,
+        DeploymentAnchorId.BackTop,
+        DeploymentAnchorId.BackCenter,
+        DeploymentAnchorId.BackBottom,
+    };
 
     private readonly record struct PostureCatalogEntry(string Id, string SpriteKey, string KoLabel);
 

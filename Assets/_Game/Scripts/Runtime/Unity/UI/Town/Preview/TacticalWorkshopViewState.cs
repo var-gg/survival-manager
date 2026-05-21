@@ -59,13 +59,14 @@ public sealed record TacticalWorkshopBiasViewState(
 
 /// <summary>
 /// per-unit "tactic" = runtime 실재 요약 — read-only display.
-/// `RoleInstructionDefinition`(Anchor + RoleTag + bias) + `BehaviorProfileDefinition`(Formation + Range).
+/// current deployment anchor + `RoleInstructionDefinition`(RoleTag + bias) +
+/// `BehaviorProfileDefinition`(Formation + Range).
 /// 가짜 condition→action→target RuleSet 폐기 (audit §4.1 P1-1 — runtime에 rule chain 모델 없음).
 /// </summary>
 public sealed record TacticalWorkshopHeroTacticViewState(
     string HeroId,
     string DisplayName,
-    string AnchorLabel,        // ← RoleInstructionDefinition.Anchor (배치 위치)
+    string AnchorLabel,        // ← 현재 DeploymentAnchorId (배치 위치)
     string RoleLabel,          // ← RoleInstructionDefinition.RoleTag (역할)
     string FormationLabel,     // ← BehaviorProfileDefinition.FormationLine (전열/중열/후열)
     string RangeLabel,         // ← BehaviorProfileDefinition.RangeDiscipline (거리 규율)

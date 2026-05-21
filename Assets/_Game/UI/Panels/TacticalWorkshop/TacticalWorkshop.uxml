@@ -75,7 +75,7 @@
 
                 <!-- ============ MIDDLE: Posture + Tactic ============ -->
                 <ui:VisualElement class="twp-column twp-column--posture">
-                    <ui:Label class="twp-section-eyebrow" text="POSTURE — 팀 자세" />
+                    <ui:Label class="twp-section-eyebrow" text="TEAM POSTURE — 팀 태세" />
                     <ui:VisualElement name="PostureCardRow" class="twp-posture-row" />
 
                     <ui:VisualElement class="twp-tactic-section">

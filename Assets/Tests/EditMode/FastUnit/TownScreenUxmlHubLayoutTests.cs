@@ -117,6 +117,21 @@ public sealed class TownScreenUxmlHubLayoutTests
     }
 
     [Test]
+    public void TacticalWorkshopUxml_Declares_TeamPosture_And_Tactic_Rows()
+    {
+        var uxml = File.ReadAllText("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uxml");
+        Assert.That(uxml, Does.Contain("TEAM POSTURE — 팀 태세"));
+        Assert.That(uxml, Does.Not.Contain("팀 자세"));
+        Assert.That(uxml, Does.Contain("PostureCardRow"));
+        Assert.That(uxml, Does.Contain("TacticPresetRows"));
+
+        var presenter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/TacticalWorkshopPresenter.cs");
+        Assert.That(presenter, Does.Not.Contain("Array.Empty<TacticalWorkshopHeroTacticViewState>()"));
+        Assert.That(presenter, Does.Contain("new TacticalWorkshopHeroTacticViewState"));
+        Assert.That(presenter, Does.Contain("ResolveDefaultRoleInstructionId"));
+    }
+
+    [Test]
     public void CommonDetailContracts_Declare_Skill_Item_Status_Surfaces()
     {
         var uss = File.ReadAllText("Assets/_Game/UI/Foundation/USS/common_detail.uss");
