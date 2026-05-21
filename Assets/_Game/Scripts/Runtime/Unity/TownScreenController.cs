@@ -257,7 +257,11 @@ public sealed class TownScreenController : MonoBehaviour
             _characterSheetPresenter = new TownCharacterSheetPresenter(_root, _localization, _contentText, sheetView);
             _characterSheetPresenter.Initialize();
             _characterSheetPresenter.Close();
-            _presenter?.SetHeroOpener(_characterSheetPresenter.Open);
+            _presenter?.SetHeroOpener(heroId =>
+            {
+                _inventoryPresenter?.SetTargetHero(heroId);
+                _characterSheetPresenter.Open(heroId);
+            });
         }
         catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] CharacterSheet wire 실패: {e.Message}"); }
     }
@@ -271,7 +275,11 @@ public sealed class TownScreenController : MonoBehaviour
                 _root,
                 _rosterModalView,
                 _contentText,
-                heroId => _characterSheetPresenter?.Open(heroId));
+                heroId =>
+                {
+                    _inventoryPresenter?.SetTargetHero(heroId);
+                    _characterSheetPresenter?.Open(heroId);
+                });
             _rosterGridPresenter.Initialize();
             _rosterModalView.BindClose(_rosterModalView.Close);
             _rosterModalView.Close();

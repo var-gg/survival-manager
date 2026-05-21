@@ -143,7 +143,7 @@
 }
 
 /* Right detail */
-.inv-detail { width: 260px; padding: 18px;
+.inv-detail { width: 250px; padding: 18px;
     background-color: rgba(28,34,67,0.86);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.45); border-right-color: rgba(230,183,81,0.45);
@@ -210,6 +210,116 @@
 .inv-detail__btn-glyph { height: 6px; background-color: rgba(245,234,208,0.62);
     align-self: center; width: 70%; }
 
+.inv-compare {
+    width: 260px;
+    padding: 14px;
+    margin-left: 12px;
+    background-color: rgba(28,34,67,0.86);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230,183,81,0.45);
+    border-right-color: rgba(230,183,81,0.45);
+    border-top-color: rgba(230,183,81,0.45);
+    border-bottom-color: rgba(230,183,81,0.45);
+}
+
+.inv-compare__target {
+    padding-bottom: 8px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230,183,81,0.32);
+}
+
+.inv-compare__target-name {
+    font-size: 13px;
+}
+
+.inv-compare__cards {
+    flex-direction: row;
+    margin-top: 10px;
+}
+
+.inv-compare__card {
+    flex-grow: 1;
+    padding: 8px;
+    min-height: 70px;
+    background-color: rgba(20, 26, 53, 0.72);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.28);
+    border-right-color: rgba(230, 183, 81, 0.28);
+    border-top-color: rgba(230, 183, 81, 0.36);
+    border-bottom-color: rgba(230, 183, 81, 0.22);
+}
+
+.inv-compare__card--selected {
+    margin-right: 6px;
+}
+
+.inv-compare__card-title {
+    -unity-font-style: bold;
+}
+
+.inv-compare__card-meta,
+.inv-compare__owner {
+    margin-top: 4px;
+}
+
+.inv-compare__rows {
+    margin-top: 10px;
+}
+
+.inv-compare__row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 28px;
+    margin-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+    background-color: rgba(20, 26, 53, 0.66);
+    border-left-width: 2px;
+    border-left-color: rgba(230,183,81,0.32);
+}
+
+.inv-compare__row--same {
+    border-left-color: rgba(166, 220, 154, 0.75);
+}
+
+.inv-compare__row--different {
+    border-left-color: rgba(127, 163, 224, 0.78);
+}
+
+.inv-compare__row--new {
+    border-left-color: var(--sm-gold-200);
+}
+
+.inv-compare__row-key {
+    width: 58px;
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    -unity-font-style: bold;
+}
+
+.inv-compare__row-selected,
+.inv-compare__row-equipped {
+    flex-grow: 1;
+    color: var(--sm-vellum);
+    font-size: 10px;
+}
+
+.inv-compare__row-equipped {
+    color: var(--sm-ink-2);
+}
+
+.inv-compare__status {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: rgba(20, 26, 53, 0.72);
+}
+
 /* Panel-local ArtBible ownership overrides. */
 .inv-frame {
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_outer.png");
@@ -224,7 +334,8 @@
 .inv-currency,
 .inv-sidebar,
 .inv-main,
-.inv-detail {
+.inv-detail,
+.inv-compare {
     background-color: var(--sm-bg-1);
     border-left-width: 1px;
     border-right-width: 1px;

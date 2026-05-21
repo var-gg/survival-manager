@@ -73,6 +73,25 @@
                         </ui:Button>
                     </ui:VisualElement>
                 </ui:VisualElement>
+                <ui:VisualElement name="CompareLane" class="inv-compare sm-chrome-l2">
+                    <ui:VisualElement class="inv-compare__target">
+                        <ui:Label name="CompareTargetHeroLabel" class="inv-compare__target-name sm-cd-title" />
+                        <ui:Label name="CompareTargetMetaLabel" class="inv-compare__target-meta sm-cd-meta" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="inv-compare__cards">
+                        <ui:VisualElement class="inv-compare__card inv-compare__card--selected">
+                            <ui:Label name="CompareSelectedItemLabel" class="inv-compare__card-title sm-cd-body-text" />
+                            <ui:Label name="CompareSelectedItemMetaLabel" class="inv-compare__card-meta sm-cd-meta" />
+                            <ui:Label name="CompareOwnerLabel" class="inv-compare__owner sm-cd-meta" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="inv-compare__card inv-compare__card--equipped">
+                            <ui:Label name="CompareEquippedItemLabel" class="inv-compare__card-title sm-cd-body-text" />
+                            <ui:Label name="CompareEquippedItemMetaLabel" class="inv-compare__card-meta sm-cd-meta" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="CompareRows" class="inv-compare__rows" />
+                    <ui:Label name="CompareEquipStatusLabel" class="inv-compare__status sm-cd-body-text" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

@@ -89,7 +89,8 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
             EchoSprite: LoadCurrencySprite("echo"),
             Categories: BuildMockCategories(),
             Items: BuildMockItems(),
-            Detail: BuildMockDetail());
+            Detail: BuildMockDetail(),
+            Compare: null);
     }
 
     private IReadOnlyList<InventoryCategoryViewState> BuildMockCategories()

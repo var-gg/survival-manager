@@ -23,6 +23,16 @@ public sealed class InventoryView
     private readonly Label? _detailMetaLabel;
     private readonly Label? _detailSetBonusLabel;
     private readonly VisualElement? _detailCrossLinks;
+    private readonly VisualElement? _compareLane;
+    private readonly Label? _compareTargetHeroLabel;
+    private readonly Label? _compareTargetMetaLabel;
+    private readonly Label? _compareSelectedLabel;
+    private readonly Label? _compareSelectedMetaLabel;
+    private readonly Label? _compareEquippedLabel;
+    private readonly Label? _compareEquippedMetaLabel;
+    private readonly Label? _compareOwnerLabel;
+    private readonly Label? _compareEquipStatusLabel;
+    private readonly VisualElement? _compareRows;
     private readonly VisualElement? _modalRoot;
     private readonly Button? _closeButton;
     private readonly Button? _equipButton;
@@ -79,6 +89,16 @@ public sealed class InventoryView
         _detailMetaLabel = root.Q<Label>("DetailMetaLabel");
         _detailSetBonusLabel = root.Q<Label>("DetailSetBonusLabel");
         _detailCrossLinks = root.Q<VisualElement>("DetailCrossLinks");
+        _compareLane = root.Q<VisualElement>("CompareLane");
+        _compareTargetHeroLabel = root.Q<Label>("CompareTargetHeroLabel");
+        _compareTargetMetaLabel = root.Q<Label>("CompareTargetMetaLabel");
+        _compareSelectedLabel = root.Q<Label>("CompareSelectedItemLabel");
+        _compareSelectedMetaLabel = root.Q<Label>("CompareSelectedItemMetaLabel");
+        _compareEquippedLabel = root.Q<Label>("CompareEquippedItemLabel");
+        _compareEquippedMetaLabel = root.Q<Label>("CompareEquippedItemMetaLabel");
+        _compareOwnerLabel = root.Q<Label>("CompareOwnerLabel");
+        _compareEquipStatusLabel = root.Q<Label>("CompareEquipStatusLabel");
+        _compareRows = root.Q<VisualElement>("CompareRows");
 
         // Currency amount labels — 옛 mock의 hardcoded text는 UXML에 있음 ("9,876,543" 등).
         // V1: currency 부모 element 안의 inv-currency__amount Label 두 개.
@@ -115,6 +135,7 @@ public sealed class InventoryView
         RenderSidebar(state.Categories);
         RenderGrid(state.Items);
         RenderDetail(state.Detail);
+        RenderCompare(state.Compare);
     }
 
     private void RenderSidebar(System.Collections.Generic.IReadOnlyList<InventoryCategoryViewState> categories)
@@ -218,6 +239,7 @@ public sealed class InventoryView
             if (_detailMetaLabel != null) _detailMetaLabel.text = string.Empty;
             if (_detailSetBonusLabel != null) _detailSetBonusLabel.text = string.Empty;
             _detailCrossLinks?.Clear();
+            ApplyEquipCta(null);
             return;
         }
 
@@ -238,6 +260,7 @@ public sealed class InventoryView
                 : DisplayStyle.Flex;
         }
         RenderCrossLinks(detail.CrossLinks);
+        ApplyEquipCta(null);
 
         _detailAffixes.Clear();
         string? previousGroup = null;
@@ -267,6 +290,71 @@ public sealed class InventoryView
             row.Add(value);
 
             _detailAffixes.Add(row);
+        }
+    }
+
+    private void RenderCompare(InventoryCompareLaneViewState? compare)
+    {
+        if (_compareLane == null)
+        {
+            return;
+        }
+
+        _compareLane.style.display = compare == null ? DisplayStyle.None : DisplayStyle.Flex;
+        _compareRows?.Clear();
+        if (compare == null)
+        {
+            ApplyEquipCta(null);
+            return;
+        }
+
+        if (_compareTargetHeroLabel != null) _compareTargetHeroLabel.text = compare.TargetHeroLabel;
+        if (_compareTargetMetaLabel != null) _compareTargetMetaLabel.text = compare.TargetHeroMetaLabel;
+        if (_compareSelectedLabel != null) _compareSelectedLabel.text = compare.SelectedItemLabel;
+        if (_compareSelectedMetaLabel != null) _compareSelectedMetaLabel.text = compare.SelectedItemMetaLabel;
+        if (_compareEquippedLabel != null) _compareEquippedLabel.text = compare.EquippedItemLabel;
+        if (_compareEquippedMetaLabel != null) _compareEquippedMetaLabel.text = compare.EquippedItemMetaLabel;
+        if (_compareOwnerLabel != null) _compareOwnerLabel.text = compare.EquippedOwnerLabel;
+        if (_compareEquipStatusLabel != null) _compareEquipStatusLabel.text = compare.EquipCta.StatusText;
+
+        if (_compareRows != null)
+        {
+            foreach (var rowState in compare.Rows)
+            {
+                var row = new VisualElement();
+                row.AddToClassList("inv-compare__row");
+                row.AddToClassList($"inv-compare__row--{rowState.ToneKey}");
+
+                var key = new Label(rowState.Label);
+                key.AddToClassList("inv-compare__row-key");
+                row.Add(key);
+
+                var selected = new Label(rowState.SelectedValue);
+                selected.AddToClassList("inv-compare__row-selected");
+                row.Add(selected);
+
+                var equipped = new Label(rowState.EquippedValue);
+                equipped.AddToClassList("inv-compare__row-equipped");
+                row.Add(equipped);
+
+                _compareRows.Add(row);
+            }
+        }
+
+        ApplyEquipCta(compare.EquipCta);
+    }
+
+    private void ApplyEquipCta(InventoryEquipCtaViewState? cta)
+    {
+        if (_equipButton != null)
+        {
+            _equipButton.SetEnabled(cta?.CanEquip == true);
+            _equipButton.tooltip = cta?.TooltipText ?? string.Empty;
+        }
+
+        if (_compareButton != null)
+        {
+            _compareButton.SetEnabled(!string.IsNullOrEmpty(_currentDetailItemInstanceId));
         }
     }
 

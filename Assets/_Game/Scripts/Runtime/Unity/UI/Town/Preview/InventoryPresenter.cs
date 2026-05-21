@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
+using SM.Core.Results;
 using SM.Persistence.Abstractions.Models;
 using UnityEngine;
 
@@ -27,6 +28,8 @@ public sealed class InventoryPresenter : IInventoryActions
     private readonly ContentTextResolver? _contentText;
     private string _selectedCategoryKey = "weapon";  // default selection
     private string _selectedItemInstanceId = string.Empty;
+    private string _targetHeroId = string.Empty;
+    private string _lastEquipStatus = string.Empty;
 
     public InventoryPresenter(
         GameSessionRoot root,
@@ -62,6 +65,13 @@ public sealed class InventoryPresenter : IInventoryActions
         _view.Close();
     }
 
+    public void SetTargetHero(string heroId)
+    {
+        _targetHeroId = heroId ?? string.Empty;
+        _lastEquipStatus = string.Empty;
+        Refresh();
+    }
+
     public void Refresh()
     {
         _view.Render(BuildState());
@@ -81,14 +91,26 @@ public sealed class InventoryPresenter : IInventoryActions
 
     void IInventoryActions.OnEquipItem(string itemInstanceId)
     {
-        // TODO Sprint 2: SessionState.EquipItem(heroId, itemInstanceId) — hero 타깃 선택 UI 필요.
+        if (string.IsNullOrWhiteSpace(_targetHeroId))
+        {
+            _lastEquipStatus = "영웅을 먼저 선택하면 장착할 수 있습니다.";
+            Refresh();
+            return;
+        }
+
+        var result = _root.SessionState.EquipItem(_targetHeroId, itemInstanceId);
+        _lastEquipStatus = result.IsSuccess
+            ? "장착 완료"
+            : result.Error ?? "장착 실패";
+        Refresh();
     }
 
     // OnSellItem 제거: GameSessionState에 sell API 없음 (audit §4.1 P1-3). sell API 신설은 별도 task.
 
     void IInventoryActions.OnCompareItem(string itemInstanceId)
     {
-        // TODO Sprint 2: SessionState 통한 compare는 UI-only.
+        _selectedItemInstanceId = itemInstanceId;
+        Refresh();
     }
 
     private InventoryViewState BuildState()
@@ -176,7 +198,88 @@ public sealed class InventoryPresenter : IInventoryActions
             EchoSprite: _currencySprite("echo"),
             Categories: BuildCategories(entries),
             Items: items,
-            Detail: selectedEntry.Record != null ? BuildDetail(selectedEntry.Record, selectedEntry.IconKey) : null);
+            Detail: selectedEntry.Record != null ? BuildDetail(selectedEntry.Record, selectedEntry.IconKey) : null,
+            Compare: BuildCompare(selectedEntry.Record));
+    }
+
+    private InventoryCompareLaneViewState? BuildCompare(InventoryItemRecord? selectedItem)
+    {
+        if (selectedItem == null)
+        {
+            return null;
+        }
+
+        var session = _root.SessionState;
+        var targetHero = session.Profile.Heroes.FirstOrDefault(hero =>
+            string.Equals(hero.HeroId, _targetHeroId, StringComparison.Ordinal));
+        var selectedSummary = BuildCompareItemSummary(selectedItem);
+        var equippedItem = targetHero == null
+            ? null
+            : session.Profile.Inventory.FirstOrDefault(item =>
+                targetHero.EquippedItemIds.Contains(item.ItemInstanceId, StringComparer.Ordinal)
+                && string.Equals(BuildCompareItemSummary(item).SlotKey, selectedSummary.SlotKey, StringComparison.Ordinal));
+        var equippedSummary = BuildCompareItemSummary(equippedItem);
+        var canEquip = targetHero != null && CanEquipSelectedItem(selectedItem, targetHero.HeroId);
+        var status = BuildEquipStatus(selectedItem, targetHero, canEquip);
+
+        return new InventoryCompareLaneViewState(
+            TargetHeroId: targetHero?.HeroId ?? string.Empty,
+            TargetHeroLabel: targetHero != null ? ResolveHeroName(targetHero) : "선택 영웅 없음",
+            TargetHeroMetaLabel: targetHero != null
+                ? $"{_contentText?.GetClassName(targetHero.ClassId) ?? targetHero.ClassId} / {_contentText?.GetRaceName(targetHero.RaceId) ?? targetHero.RaceId}"
+                : "마을 hero card나 roster에서 대상을 선택",
+            SelectedItemLabel: selectedSummary.Name,
+            SelectedItemMetaLabel: selectedSummary.MetaLabel,
+            EquippedItemLabel: equippedSummary.Name,
+            EquippedItemMetaLabel: equippedSummary.MetaLabel,
+            EquippedOwnerLabel: selectedSummary.OwnerLabel,
+            Rows: BuildCompareRows(selectedSummary, equippedSummary),
+            EquipCta: new InventoryEquipCtaViewState(
+                CanEquip: canEquip,
+                Label: "장착",
+                StatusText: status,
+                TooltipText: canEquip ? "선택 영웅에게 장착" : status));
+    }
+
+    private IReadOnlyList<InventoryCompareRowViewState> BuildCompareRows(
+        InventoryCompareItemSummary selected,
+        InventoryCompareItemSummary equipped)
+    {
+        return new[]
+        {
+            new InventoryCompareRowViewState("slot", "Slot", selected.SlotLabel, equipped.SlotLabel, CompareTone(selected.SlotKey, equipped.SlotKey)),
+            new InventoryCompareRowViewState("rarity", "Rarity", selected.RarityKey, equipped.RarityKey, CompareTone(selected.RarityKey, equipped.RarityKey)),
+            new InventoryCompareRowViewState("family", "Family", selected.WeaponFamilyLabel, equipped.WeaponFamilyLabel, CompareTone(selected.WeaponFamilyKey, equipped.WeaponFamilyKey)),
+            new InventoryCompareRowViewState("affix", "Affix", $"{selected.AffixCount}", $"{equipped.AffixCount}", CompareTone(selected.AffixCount.ToString(), equipped.AffixCount.ToString())),
+        };
+    }
+
+    private bool CanEquipSelectedItem(InventoryItemRecord selectedItem, string targetHeroId)
+    {
+        return string.IsNullOrWhiteSpace(selectedItem.EquippedHeroId)
+            || string.Equals(selectedItem.EquippedHeroId, targetHeroId, StringComparison.Ordinal);
+    }
+
+    private string BuildEquipStatus(InventoryItemRecord selectedItem, HeroInstanceRecord? targetHero, bool canEquip)
+    {
+        if (!string.IsNullOrWhiteSpace(_lastEquipStatus))
+        {
+            return _lastEquipStatus;
+        }
+
+        if (targetHero == null)
+        {
+            return "대상 영웅을 선택하면 장착할 수 있습니다.";
+        }
+
+        if (!canEquip)
+        {
+            return "다른 영웅이 장착 중인 아이템입니다.";
+        }
+
+        return string.IsNullOrWhiteSpace(selectedItem.EquippedHeroId)
+            ? "현재 장비와 슬롯/희귀도/계열만 비교합니다."
+            : "이미 대상 영웅이 장착 중입니다.";
     }
 
     private InventoryDetailViewState BuildDetail(InventoryItemRecord item, string iconKey)
@@ -294,6 +397,17 @@ public sealed class InventoryPresenter : IInventoryActions
         string IconKey,
         InventoryItemViewState ViewState);
 
+    private readonly record struct InventoryCompareItemSummary(
+        string Name,
+        string MetaLabel,
+        string SlotKey,
+        string SlotLabel,
+        string RarityKey,
+        string WeaponFamilyKey,
+        string WeaponFamilyLabel,
+        string OwnerLabel,
+        int AffixCount);
+
     private readonly record struct CategoryCatalogEntry(string Key, string Label, string IconKey);
 
     private static readonly CategoryCatalogEntry[] CategoryCatalog =
@@ -346,5 +460,91 @@ public sealed class InventoryPresenter : IInventoryActions
     private static IEnumerable<string> EnumerateCraftOperations(ItemBaseDefinition item)
     {
         return item.AllowedCraftOperations?.Select(operation => operation.ToString()) ?? Array.Empty<string>();
+    }
+
+    private InventoryCompareItemSummary BuildCompareItemSummary(InventoryItemRecord? item)
+    {
+        if (item == null)
+        {
+            return new InventoryCompareItemSummary(
+                Name: "비어 있음",
+                MetaLabel: "대상 슬롯 장비 없음",
+                SlotKey: string.Empty,
+                SlotLabel: "-",
+                RarityKey: "-",
+                WeaponFamilyKey: string.Empty,
+                WeaponFamilyLabel: "-",
+                OwnerLabel: "미장착",
+                AffixCount: 0);
+        }
+
+        var name = item.ItemBaseId;
+        var slotKey = "item";
+        var slotLabel = "item";
+        var rarityKey = "common";
+        var familyKey = string.Empty;
+        var familyLabel = "item";
+        if (_root.CombatContentLookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
+        {
+            name = _contentText?.GetItemName(item.ItemBaseId) ?? itemDef.LegacyDisplayName;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = itemDef.Id;
+            }
+
+            slotKey = ResolveSlotKey(itemDef.SlotType);
+            familyKey = ResolveFamilyKey(itemDef);
+            var presentation = EquipmentPresentationPolicy.Build(
+                slotKey,
+                familyKey,
+                itemDef.RarityTier.ToString(),
+                itemDef.IdentityKind.ToString(),
+                EnumerateCraftOperations(itemDef));
+            slotLabel = presentation.SlotLabel;
+            rarityKey = presentation.RarityKey;
+            familyKey = presentation.FamilyKey;
+            familyLabel = presentation.FamilyLabel;
+        }
+
+        return new InventoryCompareItemSummary(
+            Name: name,
+            MetaLabel: $"{slotLabel} / {rarityKey} / {familyLabel}",
+            SlotKey: slotKey,
+            SlotLabel: slotLabel,
+            RarityKey: rarityKey,
+            WeaponFamilyKey: familyKey,
+            WeaponFamilyLabel: familyLabel,
+            OwnerLabel: ResolveOwnerLabel(item),
+            AffixCount: item.AffixIds?.Count ?? 0);
+    }
+
+    private string ResolveOwnerLabel(InventoryItemRecord item)
+    {
+        if (string.IsNullOrWhiteSpace(item.EquippedHeroId))
+        {
+            return "미장착";
+        }
+
+        var owner = _root.SessionState.Profile.Heroes.FirstOrDefault(hero =>
+            string.Equals(hero.HeroId, item.EquippedHeroId, StringComparison.Ordinal));
+        return owner != null ? ResolveHeroName(owner) : item.EquippedHeroId;
+    }
+
+    private string ResolveHeroName(HeroInstanceRecord hero)
+    {
+        var name = _contentText?.GetCharacterName(hero.CharacterId, hero.ArchetypeId);
+        return string.IsNullOrWhiteSpace(name) ? hero.HeroId : name;
+    }
+
+    private static string CompareTone(string selectedValue, string equippedValue)
+    {
+        if (string.IsNullOrWhiteSpace(equippedValue) || string.Equals(equippedValue, "-", StringComparison.Ordinal))
+        {
+            return "new";
+        }
+
+        return string.Equals(selectedValue, equippedValue, StringComparison.OrdinalIgnoreCase)
+            ? "same"
+            : "different";
     }
 }

@@ -64,6 +64,34 @@ public sealed record InventoryDetailViewState(
     IReadOnlyList<string>? CrossLinks = null
 );
 
+public sealed record InventoryCompareRowViewState(
+    string Key,
+    string Label,
+    string SelectedValue,
+    string EquippedValue,
+    string ToneKey
+);
+
+public sealed record InventoryEquipCtaViewState(
+    bool CanEquip,
+    string Label,
+    string StatusText,
+    string TooltipText
+);
+
+public sealed record InventoryCompareLaneViewState(
+    string TargetHeroId,
+    string TargetHeroLabel,
+    string TargetHeroMetaLabel,
+    string SelectedItemLabel,
+    string SelectedItemMetaLabel,
+    string EquippedItemLabel,
+    string EquippedItemMetaLabel,
+    string EquippedOwnerLabel,
+    IReadOnlyList<InventoryCompareRowViewState> Rows,
+    InventoryEquipCtaViewState EquipCta
+);
+
 public sealed record InventoryViewState(
     long Gold,
     long Echo,
@@ -71,5 +99,6 @@ public sealed record InventoryViewState(
     Texture2D? EchoSprite,
     IReadOnlyList<InventoryCategoryViewState> Categories,
     IReadOnlyList<InventoryItemViewState> Items,
-    InventoryDetailViewState? Detail
+    InventoryDetailViewState? Detail,
+    InventoryCompareLaneViewState? Compare
 );
