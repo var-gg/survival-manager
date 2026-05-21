@@ -21,6 +21,7 @@ public sealed class AtlasScreenView
     private readonly Label _placementSummary;
     private readonly Label _previewTitle;
     private readonly Label _judgement;
+    private readonly Label _actionRibbon;
     private readonly Label _threatBand;
     private readonly Label _enemy;
     private readonly Label _enemyIntel;
@@ -48,6 +49,7 @@ public sealed class AtlasScreenView
         _placementSummary = Require<Label>("atlas-placement-summary");
         _previewTitle = Require<Label>("atlas-preview-title");
         _judgement = Require<Label>("atlas-preview-judgement");
+        _actionRibbon = Require<Label>("atlas-preview-action-ribbon");
         _threatBand = Require<Label>("atlas-preview-threat-band");
         _enemy = Require<Label>("atlas-preview-enemy");
         _enemyIntel = Require<Label>("atlas-preview-enemy-intel");
@@ -203,7 +205,9 @@ public sealed class AtlasScreenView
                 tooltip = string.IsNullOrWhiteSpace(candidate.LockReason) ? candidate.HexId : candidate.LockReason,
             };
             button.AddToClassList("atlas-stage-candidate-button");
+            button.EnableInClassList("is-current", candidate.IsCurrentStage);
             button.EnableInClassList("is-selected", candidate.IsSelected);
+            button.EnableInClassList("is-enterable", candidate.CanEnter);
             button.EnableInClassList("is-locked", !candidate.CanEnter);
             _stageCandidateList.Add(button);
         }
@@ -213,6 +217,7 @@ public sealed class AtlasScreenView
     {
         _previewTitle.text = preview.Title;
         _judgement.text = preview.JudgementLine;
+        _actionRibbon.text = BuildActionRibbon(preview);
         RenderThreatBand(preview.ThreatBandLabel);
         _enemy.text = preview.EnemyPreview;
         RenderEnemyIntel(preview.EnemyIntel ?? AtlasEnemyIntelViewState.Empty);
@@ -221,6 +226,13 @@ public sealed class AtlasScreenView
         _recommendations.text = preview.RecommendedCharacters;
         _boundary.text = preview.BoundaryNote;
         _hash.text = preview.DebugHashLine;
+    }
+
+    private static string BuildActionRibbon(AtlasPreviewPanelViewState preview)
+    {
+        var intel = preview.EnemyIntel ?? AtlasEnemyIntelViewState.Empty;
+        var intelState = intel.IsVisible ? "적 징후 확인" : "적 징후 제한";
+        return $"selected node · {intelState} · 진행 전 예상";
     }
 
     private void RenderEnemyIntel(AtlasEnemyIntelViewState intel)
@@ -302,6 +314,11 @@ public sealed class AtlasScreenView
         hitZone.EnableInClassList("is-selected", tile.IsSelected);
         hitZone.EnableInClassList("is-locked", !tile.CanEnter);
         hitZone.EnableInClassList("is-anchor", tile.IsSigilAnchor);
+        hitZone.EnableInClassList("is-stage-candidate", !string.IsNullOrWhiteSpace(tile.StageCandidateBadge));
+        hitZone.EnableInClassList("is-stage-candidate-current", tile.StageBadgeVisibility == AtlasStageBadgeVisibility.Highlighted);
+        hitZone.EnableInClassList("is-stage-candidate-future", tile.StageBadgeVisibility == AtlasStageBadgeVisibility.Faded);
+        hitZone.EnableInClassList("is-pin-anchor", tile.IsSigilAnchor);
+        hitZone.EnableInClassList("is-current-selected", tile.IsCurrentStageCandidate && tile.IsSelected);
         AtlasHexOverlayBinder.ApplyHitZoneLayout(hitZone, tile);
         _candidateOverlay.Add(hitZone);
     }

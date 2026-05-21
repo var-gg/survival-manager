@@ -162,6 +162,34 @@ public sealed class AtlasV2SpineSigilFastTests
     }
 
     [Test]
+    public void AtlasDecisionPanel_NodeStateModifiers_AreDeclared()
+    {
+        var state = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion()).Build();
+        Assert.That(state.Tiles.Any(tile => tile.IsSelected), Is.True);
+        Assert.That(state.Tiles.Any(tile => tile.IsCurrentStageCandidate), Is.True);
+        Assert.That(state.Tiles.Any(tile => tile.IsSigilAnchor), Is.True);
+        Assert.That(state.Tiles.Any(tile => !tile.CanEnter), Is.True);
+        Assert.That(state.StageCandidates.Any(candidate => candidate.IsCurrentStage), Is.True);
+        Assert.That(state.StageCandidates.Any(candidate => !candidate.CanEnter), Is.True);
+
+        var viewSource = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Atlas/AtlasScreenView.cs");
+        var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Atlas/AtlasScreen.uxml");
+        var uss = File.ReadAllText("Assets/_Game/UI/Screens/Atlas/AtlasScreen.uss");
+
+        Assert.That(viewSource, Does.Contain("atlas-preview-action-ribbon"));
+        Assert.That(viewSource, Does.Contain("is-stage-candidate-current"));
+        Assert.That(viewSource, Does.Contain("is-stage-candidate-future"));
+        Assert.That(viewSource, Does.Contain("is-pin-anchor"));
+        Assert.That(viewSource, Does.Contain("is-current-selected"));
+        Assert.That(uxml, Does.Contain("atlas-preview-action-ribbon"));
+        Assert.That(uss, Does.Contain(".atlas-preview-action-ribbon"));
+        Assert.That(uss, Does.Contain(".atlas-hex-hit-zone.is-stage-candidate-current"));
+        Assert.That(uss, Does.Contain(".atlas-hex-hit-zone.is-stage-candidate-future"));
+        Assert.That(uss, Does.Contain(".atlas-hex-hit-zone.is-pin-anchor"));
+        Assert.That(uss, Does.Contain(".atlas-stage-candidate-button.is-current"));
+    }
+
+    [Test]
     public void WeaknessContractStub_NotPresentInOnePhaseScope()
     {
         var state = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion()).Build();
@@ -304,6 +332,7 @@ public sealed class AtlasV2SpineSigilFastTests
         root.Add(new Label { name = "atlas-placement-summary" });
         root.Add(new Label { name = "atlas-preview-title" });
         root.Add(new Label { name = "atlas-preview-judgement" });
+        root.Add(new Label { name = "atlas-preview-action-ribbon" });
         root.Add(new Label { name = "atlas-preview-threat-band" });
         root.Add(new Label { name = "atlas-preview-enemy" });
         root.Add(new Label { name = "atlas-preview-enemy-intel" });

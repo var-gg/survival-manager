@@ -22,6 +22,7 @@
             <ui:VisualElement class="atlas-preview">
                 <ui:Label name="atlas-preview-title" class="atlas-preview-title" />
                 <ui:Label name="atlas-preview-judgement" class="atlas-judgement" />
+                <ui:Label name="atlas-preview-action-ribbon" class="atlas-preview-action-ribbon" />
                 <ui:Label name="atlas-preview-threat-band" class="atlas-preview-threat-band" />
 
                 <ui:Label text="적 정보" class="atlas-preview-label" />

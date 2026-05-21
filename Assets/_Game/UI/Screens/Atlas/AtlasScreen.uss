@@ -80,6 +80,15 @@
     background-color: rgb(63, 59, 45);
 }
 
+.atlas-stage-candidate-button.is-current {
+    border-left-width: 5px;
+    border-left-color: rgb(245, 204, 112);
+}
+
+.atlas-stage-candidate-button.is-enterable {
+    background-color: rgb(43, 54, 50);
+}
+
 .atlas-stage-candidate-button.is-locked {
     opacity: 0.46;
 }
@@ -173,13 +182,38 @@
     border-color: rgba(255, 231, 145, 0.22);
 }
 
+.atlas-hex-hit-zone.is-stage-candidate {
+    background-color: rgba(255, 231, 145, 0.025);
+}
+
+.atlas-hex-hit-zone.is-stage-candidate-current {
+    border-width: 2px;
+    border-color: rgba(255, 231, 145, 0.44);
+    background-color: rgba(255, 231, 145, 0.08);
+}
+
+.atlas-hex-hit-zone.is-stage-candidate-future {
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.18);
+    background-color: rgba(255, 255, 255, 0.025);
+}
+
 .atlas-hex-hit-zone.is-selected {
     border-width: 2px;
     border-color: rgba(255, 238, 180, 0.58);
 }
 
+.atlas-hex-hit-zone.is-current-selected {
+    border-width: 3px;
+    border-color: rgb(255, 231, 145);
+}
+
 .atlas-hex-hit-zone.is-locked {
     opacity: 0.58;
+}
+
+.atlas-hex-hit-zone.is-pin-anchor {
+    border-radius: 12px;
 }
 
 .atlas-hex {
@@ -452,6 +486,19 @@
     white-space: normal;
 }
 
+.atlas-preview-action-ribbon {
+    align-self: flex-start;
+    margin-bottom: 8px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: rgba(245, 204, 112, 0.36);
+    background-color: rgba(53, 47, 34, 0.72);
+    color: rgb(255, 231, 145);
+    font-size: 11px;
+    unity-font-style: bold;
+}
+
 .atlas-preview-threat-band {
     align-self: flex-start;
     margin-top: 0;
@@ -495,6 +542,14 @@
     font-size: 12px;
     white-space: normal;
     color: rgb(230, 234, 229);
+}
+
+.atlas-preview-body--intel {
+    padding: 7px 8px;
+    border-left-width: 2px;
+    border-left-color: rgba(245, 204, 112, 0.46);
+    background-color: rgba(12, 15, 17, 0.28);
+    color: rgb(235, 229, 207);
 }
 
 .atlas-boundary-note {
